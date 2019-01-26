@@ -70,7 +70,7 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to discord.gg/VKhNB5g.
+        ///   Looks up a localized string similar to https://discord.gg/VKhNB5g.
         /// </summary>
         internal static string Discord_Invite {
             get {
