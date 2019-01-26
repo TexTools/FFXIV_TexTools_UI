@@ -13,6 +13,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+using FFXIV_TexTools.Helpers;
 using FFXIV_TexTools.Models;
 using FFXIV_TexTools.Properties;
 using FFXIV_TexTools.Resources;
@@ -25,8 +26,11 @@ using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Forms;
+using xivModdingFramework.General.Enums;
 using xivModdingFramework.Items.Interfaces;
+using xivModdingFramework.Mods;
 using xivModdingFramework.Mods.FileTypes;
+using xivModdingFramework.SqPack.FileTypes;
 using Application = System.Windows.Application;
 
 namespace FFXIV_TexTools
@@ -278,6 +282,83 @@ namespace FFXIV_TexTools
             {
                 await this.ShowMessageAsync("Mod Pack Creation Complete", $"The ModPack ({simpleCreator.ModPackFileName}.ttmp) has been successfully Created.");
             }
+        }
+
+        /// <summary>
+        /// Event handler for the start over menu item clicked
+        /// </summary>
+        private void Menu_StartOver_Click(object sender, RoutedEventArgs e)
+        {
+            var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
+
+            var index = new Index(gameDirectory);
+
+            if (index.IsIndexLocked(XivDataFile._0A_Exd))
+            {
+                FlexibleMessageBox.Show("Error Accessing Index File\n\n" +
+                                        "Please exit the game before proceeding.\n" +
+                                        "-----------------------------------------------------\n\n", 
+                    "Index Access Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                return;
+            }
+
+            var result = FlexibleMessageBox.Show("Starting over will:\n\n" +
+                                                 "Restore index files to their original state.\n" +
+                                                 "Delete all mod dat files from game folder.\n" +
+                                                 "Delete all mod list file entries.\n\n" +
+                                                 "Do you want to start over?", "Start Over", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+
+            if (result == System.Windows.Forms.DialogResult.Yes)
+            {
+                var modding = new Modding(gameDirectory);
+                var dat = new Dat(gameDirectory);
+
+                var indexBackupsDirectory = new DirectoryInfo(Settings.Default.Backup_Directory);
+                var modListDirectory = new DirectoryInfo(Path.Combine(gameDirectory.Parent.Parent.FullName, XivStrings.ModlistFilePath));
+
+                var backupFiles = Directory.GetFiles(indexBackupsDirectory.FullName);
+
+                // Make sure backups exist
+                if (backupFiles.Length == 0)
+                {
+                    FlexibleMessageBox.Show("No backup files found in the following directory:\n\n" +
+                                            $"{indexBackupsDirectory.FullName}\n" +
+                                            "-----------------------------------------------------\n\n",
+                        "Index Access Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                    return;
+                }
+
+                // Toggle off all mods
+                modding.ToggleAllMods(false);
+
+                // Copy backups to ffxiv folder
+                foreach (var backupFile in backupFiles)
+                {
+                    if (backupFile.Contains(".win32.index"))
+                    {
+                        File.Copy(backupFile, $"{gameDirectory}/{Path.GetFileName(backupFile)}", true);
+                    }
+                }
+
+                // Delete modded dat files
+                foreach (var xivDataFile in (XivDataFile[]) Enum.GetValues(typeof(XivDataFile)))
+                {
+                    var datFiles = dat.GetModdedDatList(xivDataFile);
+
+                    foreach (var datFile in datFiles)
+                    {
+                        File.Delete(datFile);
+                    }
+                }
+
+                // Delete mod list
+                File.Delete(modListDirectory.FullName);
+
+                modding.CreateModlist();
+            }
+
         }
     }
 }

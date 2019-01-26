@@ -62,7 +62,7 @@
             <MenuItem Header="Help">
                 <MenuItem x:Name="Menu_About" Header="About" Click="Menu_About_Click"/>
                 <MenuItem x:Name="Menu_ProblemCheck" Header="Check For Problems" Click="Menu_ProblemCheck_Click"/>
-                <MenuItem x:Name="Menu_StartOver" Header="Start Over" />
+                <MenuItem x:Name="Menu_StartOver" Header="Start Over" Click="Menu_StartOver_Click" />
                 <MenuItem x:Name="Menu_BugReport" Header="Report Bug" Click="Menu_BugReport_Click"/>
                 <MenuItem x:Name="Menu_Tutorials" Header="Tutorials" Click="Menu_Tutorials_Click"/>
             </MenuItem>
