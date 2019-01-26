@@ -89,7 +89,7 @@
                 </DrawingBrush>
             </Border.Background>
             <Grid>
-                <xctk:Zoombox x:Name="ImageZoombox" DragModifiers="0" ZoomModifiers="0" KeepContentInBounds="True" MinScale="0.2" MaxScale="20" IsAnimated="False" ViewStackMode="Disabled" PanDistance="2" >
+                <xctk:Zoombox x:Name="ImageZoombox" DragModifiers="0" ZoomModifiers="0" KeepContentInBounds="True" MinScale="0.05" MaxScale="20" IsAnimated="False" ViewStackMode="Disabled" PanDistance="2" >
                     <Viewbox>
                         <Image Source="{Binding ImageDisplay}" Effect="{Binding ImageEffect}" VerticalAlignment="Center" HorizontalAlignment="Center" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
                     </Viewbox>
