@@ -212,22 +212,22 @@
     <Compile Include="Views\CustomizeSettingsView.xaml.cs">
       <DependentUpon>CustomizeSettingsView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\ExportModelOptionsView.xaml.cs">
+    <Compile Include="Views\Models\ExportModelOptionsView.xaml.cs">
       <DependentUpon>ExportModelOptionsView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\ExportTextureOptionsView.xaml.cs">
+    <Compile Include="Views\Textures\ExportTextureOptionsView.xaml.cs">
       <DependentUpon>ExportTextureOptionsView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\ImportModelOptionsView.xaml.cs">
+    <Compile Include="Views\Models\ImportModelOptionsView.xaml.cs">
       <DependentUpon>ImportModelOptionsView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\ImportModPackWizard.xaml.cs">
+    <Compile Include="Views\ModPack\ImportModPackWizard.xaml.cs">
       <DependentUpon>ImportModPackWizard.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\ImportTextureOptionsView.xaml.cs">
+    <Compile Include="Views\Textures\ImportTextureOptionsView.xaml.cs">
       <DependentUpon>ImportTextureOptionsView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\ImportWizardModPackControl.xaml.cs">
+    <Compile Include="Views\ModPack\ImportWizardModPackControl.xaml.cs">
       <DependentUpon>ImportWizardModPackControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\LanguageOptionsView.xaml.cs">
@@ -236,37 +236,37 @@
     <Compile Include="Views\ModelSearchView.xaml.cs">
       <DependentUpon>ModelSearchView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\ModelView.xaml.cs">
+    <Compile Include="Views\Models\ModelView.xaml.cs">
       <DependentUpon>ModelView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\ModelViewerOptionsView.xaml.cs">
+    <Compile Include="Views\Models\ModelViewerOptionsView.xaml.cs">
       <DependentUpon>ModelViewerOptionsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ModListView.xaml.cs">
       <DependentUpon>ModListView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\ModPackWizard.xaml.cs">
+    <Compile Include="Views\ModPack\ModPackWizard.xaml.cs">
       <DependentUpon>ModPackWizard.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\MoreTextureOptionsView.xaml.cs">
+    <Compile Include="Views\Textures\MoreTextureOptionsView.xaml.cs">
       <DependentUpon>MoreTextureOptionsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ProblemCheckView.xaml.cs">
       <DependentUpon>ProblemCheckView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\SimpleModPackCreator.xaml.cs">
+    <Compile Include="Views\ModPack\SimpleModPackCreator.xaml.cs">
       <DependentUpon>SimpleModPackCreator.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\SimpleModPackImporter.xaml.cs">
+    <Compile Include="Views\ModPack\SimpleModPackImporter.xaml.cs">
       <DependentUpon>SimpleModPackImporter.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\TextureView.xaml.cs">
+    <Compile Include="Views\Textures\TextureView.xaml.cs">
       <DependentUpon>TextureView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\WizardAddGroupWindow.xaml.cs">
+    <Compile Include="Views\ModPack\WizardAddGroupWindow.xaml.cs">
       <DependentUpon>WizardAddGroupWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\WizardModPackControl.xaml.cs">
+    <Compile Include="Views\ModPack\WizardModPackControl.xaml.cs">
       <DependentUpon>WizardModPackControl.xaml</DependentUpon>
     </Compile>
     <Page Include="MainWindow.xaml">
@@ -293,27 +293,27 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\ExportModelOptionsView.xaml">
+    <Page Include="Views\Models\ExportModelOptionsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\ExportTextureOptionsView.xaml">
+    <Page Include="Views\Textures\ExportTextureOptionsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\ImportModelOptionsView.xaml">
+    <Page Include="Views\Models\ImportModelOptionsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\ImportModPackWizard.xaml">
+    <Page Include="Views\ModPack\ImportModPackWizard.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\ImportTextureOptionsView.xaml">
+    <Page Include="Views\Textures\ImportTextureOptionsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\ImportWizardModPackControl.xaml">
+    <Page Include="Views\ModPack\ImportWizardModPackControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -325,11 +325,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\ModelView.xaml">
+    <Page Include="Views\Models\ModelView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\ModelViewerOptionsView.xaml">
+    <Page Include="Views\Models\ModelViewerOptionsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -337,11 +337,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\ModPackWizard.xaml">
+    <Page Include="Views\ModPack\ModPackWizard.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\MoreTextureOptionsView.xaml">
+    <Page Include="Views\Textures\MoreTextureOptionsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -349,23 +349,23 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\SimpleModPackCreator.xaml">
+    <Page Include="Views\ModPack\SimpleModPackCreator.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\SimpleModPackImporter.xaml">
+    <Page Include="Views\ModPack\SimpleModPackImporter.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\TextureView.xaml">
+    <Page Include="Views\Textures\TextureView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\WizardAddGroupWindow.xaml">
+    <Page Include="Views\ModPack\WizardAddGroupWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\WizardModPackControl.xaml">
+    <Page Include="Views\ModPack\WizardModPackControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -445,6 +445,7 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

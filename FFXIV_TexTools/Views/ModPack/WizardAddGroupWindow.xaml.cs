@@ -15,6 +15,7 @@
 
 using FFXIV_TexTools.Helpers;
 using FFXIV_TexTools.Models;
+using FFXIV_TexTools.Properties;
 using FFXIV_TexTools.Resources;
 using ImageMagick;
 using MahApps.Metro.Controls;
@@ -31,6 +32,7 @@ using System.Windows.Media;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Items.DataContainers;
 using xivModdingFramework.Items.Interfaces;
+using xivModdingFramework.Materials.FileTypes;
 using xivModdingFramework.Models.FileTypes;
 using xivModdingFramework.Mods.DataContainers;
 using xivModdingFramework.SqPack.FileTypes;
@@ -644,12 +646,12 @@ namespace FFXIV_TexTools.Views
                     modCB.SelectedMod = modItem;
                     ttp.Type = XivTexType.Multi;
                 }
-                //else if (itemPath.Contains("material"))
-                //{
-                //    modCB.Name = $"{XivTexType.ColorSet} ({Path.GetFileNameWithoutExtension(itemPath)})";
-                //    modCB.SelectedMod = modItem;
-                //    ttp.Type = XivTexType.ColorSet;
-                //}
+                else if (itemPath.Contains("material"))
+                {
+                    modCB.Name = $"{XivTexType.ColorSet} ({Path.GetFileNameWithoutExtension(itemPath)})";
+                    modCB.SelectedMod = modItem;
+                    ttp.Type = XivTexType.ColorSet;
+                }
                 else if (itemPath.Contains("decal"))
                 {
                     modCB.Name = $"{XivTexType.Mask} ({Path.GetFileNameWithoutExtension(itemPath)})";
@@ -854,6 +856,8 @@ namespace FFXIV_TexTools.Views
 
             var mod = selectedItem.SelectedMod;
 
+            byte[] modData;
+
             var includedMod = new IncludedMods
             {
                 Name = $"{Path.GetFileNameWithoutExtension(mod.fullPath)} ({((Category)ModListTreeView.SelectedItem).Name})",
@@ -861,12 +865,24 @@ namespace FFXIV_TexTools.Views
             };
 
             var includedModsList = IncludedModsList.Items.Cast<IncludedMods>().ToList();
+
             var tex = new Tex(_gameDirectory);
             var texData = tex.GetTexData(selectedItem.TexTypePath);
 
             var ddsDirectory = new DirectoryInfo(CustomTextureTextBox.Text);
 
-            var modData = tex.DDStoTexData(texData, ((Category)ModListTreeView.SelectedItem).Item, ddsDirectory);
+            if (selectedItem.TexTypePath.Type == XivTexType.ColorSet)
+            {
+                var mtrl = new Mtrl(_gameDirectory, XivDataFiles.GetXivDataFile(mod.datFile));
+
+                var xivMtrl = mtrl.GetMtrlData(mod.data.modOffset, mod.fullPath, int.Parse(Settings.Default.DX_Version));
+
+                modData = tex.DDStoMtrlData(xivMtrl, ddsDirectory, ((Category) ModListTreeView.SelectedItem).Item);
+            }
+            else
+            {
+                modData = tex.DDStoTexData(texData, ((Category)ModListTreeView.SelectedItem).Item, ddsDirectory);
+            }
 
             if (includedModsList.Any(item => item.Name.Equals(includedMod.Name)))
             {
