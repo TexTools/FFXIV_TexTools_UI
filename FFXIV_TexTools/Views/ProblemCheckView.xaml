@@ -1,0 +1,24 @@
+﻿<mah:MetroWindow x:Class="FFXIV_TexTools.Views.ProblemCheckView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FFXIV_TexTools.Views"
+        xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+        mc:Ignorable="d"
+        Title="Problem Checker" Height="450" Width="400" WindowStartupLocation="CenterOwner" ShowMaxRestoreButton="False" ShowMinButton="False">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <RichTextBox x:Name="cfpTextBox" Grid.Row="0" FontFamily="Consolas" VerticalScrollBarVisibility="Auto" Grid.ColumnSpan="2">
+            <RichTextBox.Resources>
+                <Style TargetType="{x:Type Paragraph}">
+                    <Setter Property="Margin" Value="0"/>
+                </Style>
+            </RichTextBox.Resources>
+        </RichTextBox>
+        <Button x:Name="CloseButton" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" Content="Close" Click="CloseButton_Click"/>
+    </Grid>
+</mah:MetroWindow>

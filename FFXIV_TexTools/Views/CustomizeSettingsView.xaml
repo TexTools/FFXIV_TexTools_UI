@@ -1,0 +1,88 @@
+﻿<mah:MetroWindow x:Class="FFXIV_TexTools.Views.CustomizeSettingsView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FFXIV_TexTools.Views"
+        xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        mc:Ignorable="d"
+        Title="Customize" Height="450" Width="800" ShowMaxRestoreButton="False" ShowMinButton="False" WindowStartupLocation="CenterOwner">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <GroupBox Header="Directories" Grid.Column="0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBox x:Name="FfxivDir" Grid.Row="0" Text="{Binding FFXIV_Directory}" TextWrapping="NoWrap" IsReadOnly="True" Margin="5" mah:TextBoxHelper.Watermark="FFXIV Directory" mah:TextBoxHelper.UseFloatingWatermark="True"/>
+                <TextBox x:Name="SaveDir" Grid.Row="1" Text="{Binding Save_Directory}" TextWrapping="NoWrap" IsReadOnly="True" Margin="5" mah:TextBoxHelper.Watermark="Save Directory" mah:TextBoxHelper.UseFloatingWatermark="True"/>
+                <TextBox x:Name="BackupDir" Grid.Row="2" Text="{Binding Backups_Directory}" TextWrapping="NoWrap" IsReadOnly="True" Margin="5" mah:TextBoxHelper.Watermark="Backups Directory" mah:TextBoxHelper.UseFloatingWatermark="True"/>
+                <TextBox x:Name="ModPackDir" Grid.Row="3" Text="{Binding ModPack_Directory}" TextWrapping="NoWrap" IsReadOnly="True" Margin="5" mah:TextBoxHelper.Watermark="Mod Pack Directory" mah:TextBoxHelper.UseFloatingWatermark="True"/>
+
+                <Button Content="..." Grid.Row="0" Grid.Column="1" Margin="5" Command="{Binding FFXIV_SelectDir}" HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="25" MinHeight="25" HorizontalContentAlignment="Center" VerticalContentAlignment="Top"/>
+                <Button Content="..." Grid.Row="1" Grid.Column="1" Margin="5" Command="{Binding Save_SelectDir}" HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="25" MinHeight="25" VerticalContentAlignment="Top" HorizontalContentAlignment="Center"/>
+                <Button Content="..." Grid.Row="2" Grid.Column="1" Margin="5" Command="{Binding Backup_SelectDir}" HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="25" MinHeight="25" VerticalContentAlignment="Top" HorizontalContentAlignment="Center"/>
+                <Button Content="..." Grid.Row="3" Grid.Column="1" Margin="5" Command="{Binding ModPack_SelectDir}" HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="25" MinHeight="25" VerticalContentAlignment="Top" HorizontalContentAlignment="Center"/>
+            </Grid>
+        </GroupBox>
+        <GroupBox Grid.Column="1" Header="Colors &amp; Skins">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <StackPanel Orientation="Horizontal">
+                    <ComboBox x:Name="SkinComboBox" ItemsSource="{Binding SkinTypes}" SelectedItem="{Binding Selected_SkinType}" VerticalAlignment="Center" HorizontalAlignment="Left" mah:TextBoxHelper.Watermark="Default Skin" mah:TextBoxHelper.UseFloatingWatermark="True"/>
+                    <Label Content="This will only affect shared races"/>
+                </StackPanel>
+                <Grid Grid.Row="1" Margin="0,10,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Label Content="Skin Color" Grid.Row="0" Margin="5"/>
+                    <xctk:ColorPicker x:Name="SkinColorPicker" SelectedColor="{Binding Selected_SkinColor}" ColorMode="ColorCanvas" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" MinWidth="120"/>
+
+                    <Label Content="Hair Color" Grid.Row="1" Margin="5"/>
+                    <xctk:ColorPicker x:Name="HairColorPicker" SelectedColor="{Binding Selected_HairColor}" ColorMode="ColorCanvas" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" MinWidth="120"/>
+
+                    <Label Content="Iris Color" Grid.Row="2" Margin="5"/>
+                    <xctk:ColorPicker x:Name="IrisColorPicker" SelectedColor="{Binding Selected_IrisColor}" ColorMode="ColorCanvas" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" MinWidth="120"/>
+
+                    <Label Content="Etc Color" Grid.Row="3" Margin="5"/>
+                    <xctk:ColorPicker x:Name="EtcColorPicker" SelectedColor="{Binding Selected_EtcColor}" ColorMode="ColorCanvas" Grid.Row="3" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" MinWidth="120"/>
+
+                    <Label Content="BG Color" Grid.Row="4" Margin="5"/>
+                    <xctk:ColorPicker x:Name="BGColorPicker" SelectedColor="{Binding Selected_BgColor}" ColorMode="ColorCanvas" Grid.Row="4" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" MinWidth="120"/>
+
+                    <TextBlock Grid.Row="5" Grid.ColumnSpan="3" TextWrapping="WrapWithOverflow" Text="Note: The Skin Color is mixed with the default skin color from the texture. All others are direct colors." VerticalAlignment="Top" Margin="0,10,0,0"/>
+
+                    <Button x:Name="DefaultButton" Content="Reset to Default" Command="{Binding Customize_Reset}" Grid.Row="6" Grid.Column="0" Margin="5"/>
+                    <Button x:Name="CloseButton" Grid.Row="6" Grid.Column="2" Content="Close" Margin="5" Click="CloseButton_Click" />
+                </Grid>
+            </Grid>
+        </GroupBox>
+    </Grid>
+</mah:MetroWindow>

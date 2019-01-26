@@ -1,0 +1,69 @@
+﻿<mah:MetroWindow x:Class="FFXIV_TexTools.Views.ModPackWizard"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FFXIV_TexTools.Views"
+        xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:s="clr-namespace:System;assembly=mscorlib"
+        mc:Ignorable="d"
+        Title="Create ModPack Wizard" Height="600" Width="800" ShowMaxRestoreButton="False" ShowMinButton="False" WindowStartupLocation="CenterOwner" Closing="MetroWindow_Closing">
+    <xctk:Wizard x:Name="modPackWizard" Next="modPackWizard_Next" NextButtonContent="New Page &gt;" BackButtonContent="&lt; Previous Page" HelpButtonContent="Create ModPack" Help="ModPackWizard_CreateModPack" IsTabStop="False">
+        <xctk:WizardPage Title="Mod Pack General Info" Description="Please fill out the general information for the Mod Pack you are creating." PageType="Interior" IsTabStop="False">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Grid Grid.Column="0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Label Content="Name:" Grid.Column="0" Grid.Row="0" VerticalAlignment="Center"/>
+                        <Label Content="Version:" Grid.Column="0" Grid.Row="1" VerticalAlignment="Center"/>
+                        <TextBox x:Name="ModPackName" Text="{Binding ModPackName}" mah:TextBoxHelper.Watermark="Mod Pack Name" Grid.Column="1" Grid.Row="0" Margin="5" TextChanged="ModPackName_TextChanged" TabIndex="0"/>
+                        <xctk:MaskedTextBox x:Name="ModPackVersion" Text="{Binding ModPackVersion}" Grid.Column="1" Grid.Row="1" Margin="5" Mask="0 . 9 . 9" MinHeight="26"  TabIndex="2"  PreviewMouseUp="ModPackVersion_PreviewMouseUp" InsertKeyMode="Overwrite" VerticalContentAlignment="Bottom" Padding="0,0,0,2" />
+                    </Grid>
+                    <Grid Grid.Column="1">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Label Content="Author:" Grid.Column="0" VerticalAlignment="Center"/>
+                            <TextBox x:Name="ModPackAuthor" Text="{Binding ModPackAuthor}" mah:TextBoxHelper.Watermark="Mod Pack Author" Grid.Column="1" Margin="5" TabIndex="1"/>
+                        </Grid>
+                    </Grid>
+                </Grid>
+                <Grid Grid.Row="1">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Label Content="Enter a brief description of your Mod Pack." Grid.ColumnSpan="2"/>
+                        <TextBox x:Name="ModPackDescription" Text="{Binding ModPackDescription}" Grid.Row="1" TextWrapping="Wrap" mah:TextBoxHelper.Watermark="(e.g., This Mod Pack modifies blah blah blah, it replaces blah, and comes with several options for blah.)" Grid.ColumnSpan="2"/>
+                    </Grid>
+                </Grid>
+            </Grid>
+        </xctk:WizardPage>
+        <xctk:WizardPage PageType="Blank">
+            <local:WizardModPackControl/>
+        </xctk:WizardPage>
+    </xctk:Wizard>
+</mah:MetroWindow>

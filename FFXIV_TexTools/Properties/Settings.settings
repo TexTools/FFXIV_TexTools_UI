@@ -1,0 +1,45 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="FFXIV_TexTools.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="FFXIV_Directory" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="Save_Directory" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="Application_Language" Type="System.String" Scope="User">
+      <Value Profile="(Default)">English</Value>
+    </Setting>
+    <Setting Name="Application_Theme" Type="System.String" Scope="User">
+      <Value Profile="(Default)">BaseLight</Value>
+    </Setting>
+    <Setting Name="BG_Color" Type="System.String" Scope="User">
+      <Value Profile="(Default)">#FF777777</Value>
+    </Setting>
+    <Setting Name="DX_Version" Type="System.String" Scope="User">
+      <Value Profile="(Default)">11</Value>
+    </Setting>
+    <Setting Name="Backup_Directory" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="ModPack_Directory" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="Default_Race" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Hyur Midlander</Value>
+    </Setting>
+    <Setting Name="Skin_Color" Type="System.String" Scope="User">
+      <Value Profile="(Default)">#FFFFFFFF</Value>
+    </Setting>
+    <Setting Name="Hair_Color" Type="System.String" Scope="User">
+      <Value Profile="(Default)">#FF603913</Value>
+    </Setting>
+    <Setting Name="Iris_Color" Type="System.String" Scope="User">
+      <Value Profile="(Default)">#FF603913</Value>
+    </Setting>
+    <Setting Name="Etc_Color" Type="System.String" Scope="User">
+      <Value Profile="(Default)">#FF603913</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

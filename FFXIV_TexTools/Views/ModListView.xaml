@@ -1,0 +1,182 @@
+﻿<mah:MetroWindow x:Class="FFXIV_TexTools.Views.ModListView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FFXIV_TexTools.Views"
+        xmlns:vms="clr-namespace:FFXIV_TexTools.ViewModels"
+        xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+        xmlns:models="clr-namespace:FFXIV_TexTools.Models"
+        mc:Ignorable="d"
+        Title="Mod List" Height="500" Width="800" ShowMaxRestoreButton="False" ShowMinButton="False" WindowStartupLocation="CenterOwner">
+    <mah:MetroWindow.DataContext>
+        <vms:ModListViewModel/>
+    </mah:MetroWindow.DataContext>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="2*"/>
+        </Grid.ColumnDefinitions>
+        <GroupBox Grid.Column="0" Header="Modded Items" Margin="5">
+            <StackPanel>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Label Content="Filter By:"></Label>
+                    <RadioButton Grid.Column="1" Content="Item" GroupName="Lights" Margin="5" IsChecked="{Binding ItemFilter}"/>
+                    <RadioButton Grid.Column="2" Content="Mod Pack" GroupName="Lights" Margin="5" IsChecked="{Binding ModPackFilter}"/>
+                </Grid>
+                <TreeView x:Name="ModListTreeView" ItemsSource="{Binding Categories}" SelectedItemChanged="TreeView_SelectedItemChanged" Style="{StaticResource VirtualisedMetroTreeView}">
+                    <TreeView.ItemContainerStyle>
+                        <Style TargetType="{x:Type TreeViewItem}">
+                            <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}"/>
+                        </Style>
+                    </TreeView.ItemContainerStyle>
+                    <TreeView.Resources>
+                        <HierarchicalDataTemplate ItemsSource="{Binding Categories}" DataType="{x:Type models:Category}">
+                            <StackPanel>
+                                <TextBlock Text="{Binding Name}"/>
+                            </StackPanel>
+                        </HierarchicalDataTemplate>
+                    </TreeView.Resources>
+                </TreeView>
+            </StackPanel>
+        </GroupBox>
+
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="9*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <GroupBox Grid.Row="0" Header="Preview List" Margin="5">
+                <Grid>
+                    <ListView x:Name="ModItemList" ItemsSource="{Binding ModListPreviewList}" SelectionChanged="ListBox_SelectionChanged" BorderThickness="0" BorderBrush="{x:Null}" Visibility="{Binding ListVisibility}">
+                        <ListView.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel/>
+                            </ItemsPanelTemplate>
+                        </ListView.ItemsPanel>
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <Border BorderBrush="{Binding ActiveBorder}" BorderThickness="2" Background="{Binding Active}" Opacity="{Binding ActiveOpacity}">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="3*"/>
+                                            <RowDefinition/>
+                                        </Grid.RowDefinitions>
+                                        <Grid Grid.Row="1">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition/>
+                                                <RowDefinition Height="2*"/>
+                                                <RowDefinition/>
+                                                <RowDefinition Height="2*"/>
+                                            </Grid.RowDefinitions>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="1*"/>
+                                                <ColumnDefinition Width="1*"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <Border BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" BorderThickness="1" Grid.Row="1">
+                                                <Viewbox StretchDirection="DownOnly">
+                                                    <Label Content="{Binding Race}"/>
+                                                </Viewbox>
+                                            </Border>
+
+                                            <Border BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" BorderThickness="1" Grid.Row="3">
+                                                <Viewbox StretchDirection="DownOnly">
+                                                    <Label Content="{Binding Map}"/>
+                                                </Viewbox>
+                                            </Border>
+
+                                            <Border BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" BorderThickness="1" Grid.Row="1" Grid.Column="1">
+                                                <Viewbox StretchDirection="DownOnly">
+                                                    <Label Content="{Binding Part}"/>
+                                                </Viewbox>
+                                            </Border>
+
+                                            <Border BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" BorderThickness="1" Grid.Column="1" Grid.Row="3">
+                                                <Viewbox StretchDirection="DownOnly">
+                                                    <Label Content="{Binding Type}"/>
+                                                </Viewbox>
+                                            </Border>
+
+                                            <Border Background="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}">
+                                                <Viewbox StretchDirection="DownOnly">
+                                                    <Label Content="Race"  VerticalContentAlignment="Top" Padding="0" HorizontalContentAlignment="Center"/>
+                                                </Viewbox>
+                                            </Border>
+
+                                            <Border Background="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Grid.Row="2">
+                                                <Viewbox StretchDirection="DownOnly">
+                                                    <Label Content="Map" VerticalContentAlignment="Top" HorizontalContentAlignment="Center" Padding="0" />
+                                                </Viewbox>
+                                            </Border>
+
+                                            <Border Background="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Grid.Column="1">
+                                                <Viewbox StretchDirection="DownOnly">
+                                                    <Label Content="Part" VerticalContentAlignment="Top" HorizontalContentAlignment="Center" Padding="0"/>
+                                                </Viewbox>
+                                            </Border>
+
+                                            <Border Background="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Grid.Row="2" Grid.Column="1">
+                                                <Viewbox StretchDirection="DownOnly">
+                                                    <Label Content="Type" VerticalContentAlignment="Top" HorizontalContentAlignment="Center" Padding="0"/>
+                                                </Viewbox>
+                                            </Border>
+                                        </Grid>
+                                        <Image Margin="5" Source="{Binding Image}" MaxWidth="200" MaxHeight="200" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                    <Grid Visibility="{Binding InfoGridVisibility}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Grid Grid.Column="0">
+                            <StackPanel>
+                                <Label Content="{Binding ModPackTitle, FallbackValue='ModPack Title'}" MinWidth="80" HorizontalAlignment="Left" FontWeight="Bold"/>
+                                <StackPanel Orientation="Horizontal">
+                                    <Label Content="Author: " MinWidth="80"/>
+                                    <Label Content="{Binding ModPackModAuthorLabel, FallbackValue='0'}" FontWeight="Bold"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <Label Content="Mod Count: " MinWidth="80"/>
+                                    <Label Content="{Binding ModPackModCountLabel, FallbackValue='0'}" FontWeight="Bold"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <Label Content="Version: " MinWidth="80"/>
+                                    <Label Content="{Binding ModPackModVersionLabel, FallbackValue='1.0'}" FontWeight="Bold"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Grid>
+                        <Grid Grid.Column="1">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Label Grid.Row="0" Content="Mod Pack Content"/>
+                                <TextBox Grid.Row="1" TextWrapping="NoWrap" Text="{Binding ModPackContentList}" HorizontalScrollBarVisibility="Visible" IsReadOnly="True"/>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </GroupBox>
+            <Grid Margin="10" Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Button x:Name="modToggleButton" Content="{Binding ModToggleText}" Margin="10,0" IsEnabled="False" Click="modToggleButton_Click"/>
+                <Button x:Name="modDeleteButton" Content="Delete" Grid.Column="1" Margin="10,0" IsEnabled="False" Click="modDeleteButton_Click"/>
+            </Grid>
+        </Grid>
+    </Grid>
+</mah:MetroWindow>

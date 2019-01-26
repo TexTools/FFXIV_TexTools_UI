@@ -1,0 +1,52 @@
+﻿<mah:MetroWindow x:Class="FFXIV_TexTools.Views.ImportModPackWizard"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FFXIV_TexTools.Views"
+        xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        mc:Ignorable="d"
+        Title="Import ModPack Wizard" Height="600" Width="800" ShowMaxRestoreButton="False" ShowMinButton="False" WindowStartupLocation="CenterOwner" Closing="MetroWindow_Closing">
+    <xctk:Wizard x:Name="importModPackWizard" NextButtonContent="New Page &gt;" BackButtonContent="&lt; Previous Page"  Next="ImportModPackWizard_Next" CanHelp="False" HelpButtonVisibility="Collapsed" Finish="ImportModPackWizard_Finish" Previous="ImportModPackWizard_Previous" FinishButtonClosesWindow="False">
+        <xctk:WizardPage Title="Mod Pack Importer" Description="Go through the wizard and select relevant options to import mod pack" PageType="Interior">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Grid Grid.Row="0">
+                    <Grid Grid.Column="0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <StackPanel Grid.Column="0" Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+                            <Label Content="Name:" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            <Label Name="ModPackNameLabel" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="0" Grid.Row="2" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+                            <Label Content="Author:" VerticalAlignment="Center"/>
+                            <Label Name="ModPackAuthorLabel" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="0" Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+                            <Label Content="Version:"  VerticalAlignment="Center"/>
+                            <Label Name="ModPackVersionLabel" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold"/>
+                        </StackPanel>
+                    </Grid>
+                </Grid>
+                <Grid Grid.Row="1">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Label Content="Description"/>
+                        <TextBox x:Name="ModPackDescription" Grid.Row="1" TextWrapping="Wrap" IsReadOnly="True"/>
+                    </Grid>
+                </Grid>
+            </Grid>
+        </xctk:WizardPage>
+    </xctk:Wizard>
+</mah:MetroWindow>
