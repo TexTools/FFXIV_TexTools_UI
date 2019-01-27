@@ -1103,34 +1103,49 @@ namespace FFXIV_TexTools.ViewModels
                 var pixelSettings =
                     new PixelStorageSettings(modelMaps.Width, modelMaps.Height, StorageType.Char, PixelMapping.RGBA);
 
-                using (var magickImage = new MagickImage(modelMaps.Diffuse, pixelSettings))
+                if (modelMaps.Diffuse != null && modelMaps.Diffuse.Length > 0)
                 {
-                    magickImage.Format = MagickFormat.Bmp3;
-                    magickImage.Write($"{path}\\{modelName}_{matNum}_Diffuse.bmp");
+                    using (var magickImage = new MagickImage(modelMaps.Diffuse, pixelSettings))
+                    {
+                        magickImage.Format = MagickFormat.Bmp3;
+                        magickImage.Write($"{path}\\{modelName}_{matNum}_Diffuse.bmp");
+                    }
                 }
 
-                using (var magickImage = new MagickImage(modelMaps.Normal, pixelSettings))
+                if (modelMaps.Normal != null && modelMaps.Normal.Length > 0)
                 {
-                    magickImage.Format = MagickFormat.Bmp3;
-                    magickImage.Write($"{path}\\{modelName}_{matNum}_Normal.bmp");
+                    using (var magickImage = new MagickImage(modelMaps.Normal, pixelSettings))
+                    {
+                        magickImage.Format = MagickFormat.Bmp3;
+                        magickImage.Write($"{path}\\{modelName}_{matNum}_Normal.bmp");
+                    }
                 }
 
-                using (var magickImage = new MagickImage(modelMaps.Specular, pixelSettings))
+                if (modelMaps.Specular != null && modelMaps.Specular.Length > 0)
                 {
-                    magickImage.Format = MagickFormat.Bmp3;
-                    magickImage.Write($"{path}\\{modelName}_{matNum}_Specular.bmp");
+                    using (var magickImage = new MagickImage(modelMaps.Specular, pixelSettings))
+                    {
+                        magickImage.Format = MagickFormat.Bmp3;
+                        magickImage.Write($"{path}\\{modelName}_{matNum}_Specular.bmp");
+                    }
                 }
 
-                using (var magickImage = new MagickImage(modelMaps.Alpha, pixelSettings))
+                if (modelMaps.Alpha != null && modelMaps.Alpha.Length > 0)
                 {
-                    magickImage.Format = MagickFormat.Bmp3;
-                    magickImage.Write($"{path}\\{modelName}_{matNum}_Alpha.bmp");
+                    using (var magickImage = new MagickImage(modelMaps.Alpha, pixelSettings))
+                    {
+                        magickImage.Format = MagickFormat.Bmp3;
+                        magickImage.Write($"{path}\\{modelName}_{matNum}_Alpha.bmp");
+                    }
                 }
 
-                using (var magickImage = new MagickImage(modelMaps.Emissive, pixelSettings))
+                if (modelMaps.Emissive != null && modelMaps.Emissive.Length > 0)
                 {
-                    magickImage.Format = MagickFormat.Bmp3;
-                    magickImage.Write($"{path}\\{modelName}_{matNum}_Emissive.bmp");
+                    using (var magickImage = new MagickImage(modelMaps.Emissive, pixelSettings))
+                    {
+                        magickImage.Format = MagickFormat.Bmp3;
+                        magickImage.Write($"{path}\\{modelName}_{matNum}_Emissive.bmp");
+                    }
                 }
             }
         }
