@@ -53,7 +53,7 @@
             </Grid.RowDefinitions>
             <GroupBox Grid.Row="0" Header="Preview List" Margin="5">
                 <Grid>
-                    <ListView x:Name="ModItemList" ItemsSource="{Binding ModListPreviewList}" SelectionChanged="ListBox_SelectionChanged" BorderThickness="0" BorderBrush="{x:Null}" Visibility="{Binding ListVisibility}">
+                    <ListView x:Name="ModItemList" ItemsSource="{Binding ModListPreviewList}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="ListBox_SelectionChanged" BorderThickness="0" BorderBrush="{x:Null}" Visibility="{Binding ListVisibility}">
                         <ListView.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <WrapPanel/>
