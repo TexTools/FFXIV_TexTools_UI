@@ -30,6 +30,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Input;
+using FFXIV_TexTools.Properties;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Items.Categories;
@@ -893,7 +894,7 @@ namespace FFXIV_TexTools.ViewModels
         /// <returns>The status of the DDS files existence</returns>
         private bool DDSFileExists()
         {
-            var savePath = new DirectoryInfo(Properties.Settings.Default.Save_Directory);
+            var savePath = new DirectoryInfo(Settings.Default.Save_Directory);
 
             if (_item != null)
             {
@@ -988,7 +989,7 @@ namespace FFXIV_TexTools.ViewModels
         {
             var texData = _tex.GetTexData(SelectedMap.TexType);
 
-            var savePath = new DirectoryInfo(Properties.Settings.Default.Save_Directory);
+            var savePath = new DirectoryInfo(Settings.Default.Save_Directory);
 
             if (_uiItem != null)
             {
@@ -1011,7 +1012,7 @@ namespace FFXIV_TexTools.ViewModels
 
         private void SaveBmp(object obj)
         {
-            var savePath = new DirectoryInfo(Properties.Settings.Default.Save_Directory);
+            var savePath = new DirectoryInfo(Settings.Default.Save_Directory);
 
             var path = _uiItem != null ? IOUtil.MakeItemSavePath(_uiItem, savePath) : IOUtil.MakeItemSavePath(_item, savePath, SelectedRace.XivRace);
 
@@ -1030,7 +1031,7 @@ namespace FFXIV_TexTools.ViewModels
         {
             var texData = _tex.GetTexData(SelectedMap.TexType);
 
-            var savePath = new DirectoryInfo(Properties.Settings.Default.Save_Directory);
+            var savePath = new DirectoryInfo(Settings.Default.Save_Directory);
 
             if (_uiItem != null)
             {
@@ -1060,7 +1061,7 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         private void OpenSavedFolder(object obj)
         {
-            var savePath = new DirectoryInfo(Properties.Settings.Default.Save_Directory);
+            var savePath = new DirectoryInfo(Settings.Default.Save_Directory);
             var path = savePath.FullName;
 
             if (_item != null)
@@ -1090,9 +1091,9 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         private void ImportDDS(object obj)
         {
-            var dxVersion = int.Parse(Properties.Settings.Default.DX_Version);
+            var dxVersion = int.Parse(Settings.Default.DX_Version);
 
-            var savePath = new DirectoryInfo(Properties.Settings.Default.Save_Directory);
+            var savePath = new DirectoryInfo(Settings.Default.Save_Directory);
             var path = savePath.FullName;
 
             if (_item != null)
@@ -1105,7 +1106,6 @@ namespace FFXIV_TexTools.ViewModels
             }
 
             var fullPath = new DirectoryInfo($"{path}\\{Path.GetFileNameWithoutExtension(SelectedMap.TexType.Path)}.dds");
-
 
             if (SelectedMap.TexType.Type != XivTexType.ColorSet)
             {
@@ -1131,6 +1131,60 @@ namespace FFXIV_TexTools.ViewModels
 
             _textureView.BottomFlyout.IsOpen = false;
             UpdateImage();
+        }
+
+        /// <summary>
+        /// Command for the Import From Button
+        /// </summary>
+        public ICommand ImportFromButton => new RelayCommand(ImportFrom);
+
+        /// <summary>
+        /// Imports a texture file 
+        /// </summary>
+        /// <remarks>
+        /// Import a texture file from any location
+        /// </remarks>
+        private void ImportFrom(object obj)
+        {
+            var saveDir = new DirectoryInfo(Settings.Default.Save_Directory);
+            var path = new DirectoryInfo(IOUtil.MakeItemSavePath(_item, saveDir, SelectedRace.XivRace)); 
+
+            var openFileDialog = new OpenFileDialog {InitialDirectory = path.FullName, Filter = "Texture Files(*.DDS;*.BMP) |*.DDS;*.BMP"};
+
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                var fileDir = new DirectoryInfo(openFileDialog.FileName);
+                var dxVersion = int.Parse(Settings.Default.DX_Version);
+
+                if (fileDir.FullName.ToLower().Contains(".dds"))
+                {
+                    if (SelectedMap.TexType.Type != XivTexType.ColorSet)
+                    {
+                        var texData = _tex.GetTexData(SelectedMap.TexType);
+
+                        if (_item != null)
+                        {
+                            _tex.TexDDSImporter(texData, _item, fileDir, XivStrings.TexTools);
+                        }
+                        else if (_uiItem != null)
+                        {
+                            _tex.TexDDSImporter(texData, _uiItem, fileDir, XivStrings.TexTools);
+                        }
+                    }
+                    else
+                    {
+                        var newColorSetOffset = _tex.TexColorImporter(_xivMtrl, fileDir, _item, XivStrings.TexTools);
+                        _xivMtrl = _mtrl.GetMtrlData(newColorSetOffset, _xivMtrl.MTRLPath, dxVersion);
+                    }
+                }
+                else
+                {
+                    //TODO: BMP Import
+                }
+
+                _textureView.BottomFlyout.IsOpen = false;
+                UpdateImage();
+            }
         }
 
         /// <summary>
