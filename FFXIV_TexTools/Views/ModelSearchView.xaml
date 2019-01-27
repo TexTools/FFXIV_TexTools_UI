@@ -7,7 +7,7 @@
         xmlns:VMs="clr-namespace:FFXIV_TexTools.ViewModels"
         xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
         mc:Ignorable="d"
-        Title="Model Search" Height="450" Width="450" ShowMaxRestoreButton="False" ShowMinButton="False" WindowStartupLocation="CenterOwner">
+        Title="Model Search" Height="450" Width="450" ShowMaxRestoreButton="False" ShowMinButton="False" WindowStartupLocation="CenterOwner" Closing="MetroWindow_Closing">
     <mah:MetroWindow.Resources>
         <DataTemplate x:Key="SlotBorderTemplate">
             <Border BorderBrush="#FF000000" BorderThickness="0,0,1,1" Margin="-6,-2,-6,-2">
