@@ -897,7 +897,7 @@ namespace FFXIV_TexTools.ViewModels
 
             if (_item != null)
             {
-                return IOUtil.DDSFileExists(_item, savePath, Path.GetFileNameWithoutExtension(SelectedMap.TexType.Path));
+                return IOUtil.DDSFileExists(_item, savePath, Path.GetFileNameWithoutExtension(SelectedMap.TexType.Path), SelectedRace.XivRace);
             }
 
             if (_uiItem != null)
@@ -996,7 +996,7 @@ namespace FFXIV_TexTools.ViewModels
             }
             else
             {
-                _tex.SaveTexAsDDS(_item, texData, savePath);
+                _tex.SaveTexAsDDS(_item, texData, savePath, SelectedRace.XivRace);
             }
 
             ImportEnabled = DDSFileExists();
@@ -1013,7 +1013,7 @@ namespace FFXIV_TexTools.ViewModels
         {
             var savePath = new DirectoryInfo(Properties.Settings.Default.Save_Directory);
 
-            var path = _uiItem != null ? IOUtil.MakeItemSavePath(_uiItem, savePath) : IOUtil.MakeItemSavePath(_item, savePath);
+            var path = _uiItem != null ? IOUtil.MakeItemSavePath(_uiItem, savePath) : IOUtil.MakeItemSavePath(_item, savePath, SelectedRace.XivRace);
 
             Directory.CreateDirectory(path);
 
@@ -1038,10 +1038,10 @@ namespace FFXIV_TexTools.ViewModels
             }
             else
             {
-                _tex.SaveTexAsDDS(_item, texData, savePath);
+                _tex.SaveTexAsDDS(_item, texData, savePath, SelectedRace.XivRace);
             }
 
-            var path = _uiItem != null ? IOUtil.MakeItemSavePath(_uiItem, savePath) : IOUtil.MakeItemSavePath(_item, savePath);
+            var path = _uiItem != null ? IOUtil.MakeItemSavePath(_uiItem, savePath) : IOUtil.MakeItemSavePath(_item, savePath, SelectedRace.XivRace);
 
             Directory.CreateDirectory(path);
 
@@ -1065,7 +1065,7 @@ namespace FFXIV_TexTools.ViewModels
 
             if (_item != null)
             {
-                path = IOUtil.MakeItemSavePath(_item, savePath);
+                path = IOUtil.MakeItemSavePath(_item, savePath, SelectedRace.XivRace);
             }
             else if (_uiItem != null)
             {
@@ -1097,7 +1097,7 @@ namespace FFXIV_TexTools.ViewModels
 
             if (_item != null)
             {
-                path = IOUtil.MakeItemSavePath(_item, savePath);
+                path = IOUtil.MakeItemSavePath(_item, savePath, SelectedRace.XivRace);
             }
             else if (_uiItem != null)
             {

@@ -95,7 +95,7 @@ namespace FFXIV_TexTools.ViewModels
 
             _item = itemModel;
 
-            _gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
+            _gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
             _mdl = new Mdl(_gameDirectory, _item.DataFile);
 
             if (itemModel.Category.Equals(XivStrings.Gear))
@@ -998,12 +998,12 @@ namespace FFXIV_TexTools.ViewModels
         /// </remarks>
         private void OpenSavedFolder(object obj)
         {
-            var savePath = new DirectoryInfo(Properties.Settings.Default.Save_Directory);
+            var savePath = new DirectoryInfo(Settings.Default.Save_Directory);
             var path = savePath.FullName;
 
             if (_item != null)
             {
-                path = $"{IOUtil.MakeItemSavePath(_item, savePath)}\\3D";
+                path = $"{IOUtil.MakeItemSavePath(_item, savePath, SelectedRace.XivRace)}\\3D";
             }
 
             if (!Directory.Exists(path))
@@ -1036,7 +1036,7 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         private void ModStatusToggle(object obj)
         {
-            var gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
+            var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
             var modlist = new Modding(gameDirectory);
 
             if (ModToggleText.Equals("Enable"))
@@ -1071,8 +1071,8 @@ namespace FFXIV_TexTools.ViewModels
             try
             {
                 var dae = new Dae(_gameDirectory, _item.DataFile);
-                var saveDir = new DirectoryInfo(Properties.Settings.Default.Save_Directory);
-                dae.MakeDaeFileFromModel(_item, _mdlData, saveDir);
+                var saveDir = new DirectoryInfo(Settings.Default.Save_Directory);
+                dae.MakeDaeFileFromModel(_item, _mdlData, saveDir, SelectedRace.XivRace);
                 _modelView.BottomFlyout.IsOpen = false;
                 ExportMaterials();
             }
@@ -1096,8 +1096,9 @@ namespace FFXIV_TexTools.ViewModels
                 var modelMaps = materialDict.Value;
                 var matNum = materialDict.Key;
 
-                var saveDir = new DirectoryInfo(Properties.Settings.Default.Save_Directory);
-                var path = $"{IOUtil.MakeItemSavePath(_item, saveDir)}\\3D";
+                var saveDir = new DirectoryInfo(Settings.Default.Save_Directory);
+
+                var path = $"{IOUtil.MakeItemSavePath(_item, saveDir, SelectedRace.XivRace)}\\3D";
 
                 var pixelSettings =
                     new PixelStorageSettings(modelMaps.Width, modelMaps.Height, StorageType.Char, PixelMapping.RGBA);
@@ -1142,8 +1143,8 @@ namespace FFXIV_TexTools.ViewModels
             try
             {
                 var dae = new Dae(_gameDirectory, _item.DataFile);
-                var saveDir = new DirectoryInfo(Properties.Settings.Default.Save_Directory);
-                dae.MakeDaeFileFromModel(_item, _mdlData, saveDir);
+                var saveDir = new DirectoryInfo(Settings.Default.Save_Directory);
+                dae.MakeDaeFileFromModel(_item, _mdlData, saveDir, SelectedRace.XivRace);
             }
             catch (Exception e)
             {
@@ -1162,10 +1163,10 @@ namespace FFXIV_TexTools.ViewModels
         private void ExportObj(object o)
         {
             var obj = new Obj(_gameDirectory);
-            var saveDir = new DirectoryInfo(Properties.Settings.Default.Save_Directory);
+            var saveDir = new DirectoryInfo(Settings.Default.Save_Directory);
 
             _modelView.BottomFlyout.IsOpen = false;
-            obj.ExportObj(_item, _mdlData, saveDir);
+            obj.ExportObj(_item, _mdlData, saveDir, SelectedRace.XivRace);
         }
 
         #endregion
@@ -1180,8 +1181,8 @@ namespace FFXIV_TexTools.ViewModels
         /// </remarks>
         private void Import(object obj)
         {
-            var saveDir = new DirectoryInfo(Properties.Settings.Default.Save_Directory);
-            var path = $"{IOUtil.MakeItemSavePath(_item, saveDir)}\\3D";
+            var saveDir = new DirectoryInfo(Settings.Default.Save_Directory);
+            var path = $"{IOUtil.MakeItemSavePath(_item, saveDir, SelectedRace.XivRace)}\\3D";
             var modelName = Path.GetFileNameWithoutExtension(_mdlData.MdlPath.File);
             var savePath = new DirectoryInfo(Path.Combine(path, modelName) + ".dae");
 
@@ -1210,8 +1211,8 @@ namespace FFXIV_TexTools.ViewModels
         /// </remarks>
         private void ImportFrom(object obj)
         {
-            var saveDir = new DirectoryInfo(Properties.Settings.Default.Save_Directory);
-            var path = $"{IOUtil.MakeItemSavePath(_item, saveDir)}\\3D";
+            var saveDir = new DirectoryInfo(Settings.Default.Save_Directory);
+            var path = $"{IOUtil.MakeItemSavePath(_item, saveDir, SelectedRace.XivRace)}\\3D";
 
             var openFileDialog = new OpenFileDialog();
             openFileDialog.InitialDirectory = path;
@@ -1307,8 +1308,8 @@ namespace FFXIV_TexTools.ViewModels
 
             ExportEnabled = true;
 
-            var saveDir = new DirectoryInfo(Properties.Settings.Default.Save_Directory);
-            var path = $"{IOUtil.MakeItemSavePath(_item, saveDir)}\\3D";
+            var saveDir = new DirectoryInfo(Settings.Default.Save_Directory);
+            var path = $"{IOUtil.MakeItemSavePath(_item, saveDir, SelectedRace.XivRace)}\\3D";
             var modelName = Path.GetFileNameWithoutExtension(_mdlData.MdlPath.File);
             var savePath = Path.Combine(path, modelName) + ".dae";
 
@@ -1664,7 +1665,7 @@ namespace FFXIV_TexTools.ViewModels
         /// <returns>The application language as XivLanguage</returns>
         private static XivLanguage GetLanguage()
         {
-            var language = Properties.Settings.Default.Application_Language;
+            var language = Settings.Default.Application_Language;
 
             switch (language)
             {
