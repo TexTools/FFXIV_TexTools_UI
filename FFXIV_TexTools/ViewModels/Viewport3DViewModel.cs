@@ -95,22 +95,28 @@ namespace FFXIV_TexTools.ViewModels
 
                 var textureData = textureDataDictionary[mdlData.LoDList[0].MeshDataList[i].MeshInfo.MaterialIndex];
 
-                Stream diffuse, specular, normal = null, alpha, emissive;
+                Stream diffuse = null, specular = null, normal = null, alpha = null, emissive = null;
 
                 var pixelSettings =
                     new PixelStorageSettings(textureData.Width, textureData.Height, StorageType.Char, PixelMapping.RGBA);
 
-                using (var image = new MagickImage(textureData.Diffuse, pixelSettings))
+                if (textureData.Diffuse != null && textureData.Diffuse.Length > 0)
                 {
-                    diffuse = new MemoryStream(image.ToByteArray(MagickFormat.Bmp));
+                    using (var image = new MagickImage(textureData.Diffuse, pixelSettings))
+                    {
+                        diffuse = new MemoryStream(image.ToByteArray(MagickFormat.Bmp));
+                    }
                 }
 
-                using (var image = new MagickImage(textureData.Specular, pixelSettings))
+                if (textureData.Specular != null && textureData.Specular.Length > 0)
                 {
-                    specular = new MemoryStream(image.ToByteArray(MagickFormat.Bmp));
+                    using (var image = new MagickImage(textureData.Specular, pixelSettings))
+                    {
+                        specular = new MemoryStream(image.ToByteArray(MagickFormat.Bmp));
+                    }
                 }
 
-                if (textureData.Normal != null)
+                if (textureData.Normal != null && textureData.Normal.Length > 0)
                 {
                     using (var image = new MagickImage(textureData.Normal, pixelSettings))
                     {
@@ -118,15 +124,22 @@ namespace FFXIV_TexTools.ViewModels
                     }
                 }
 
-                using (var image = new MagickImage(textureData.Alpha, pixelSettings))
+                if (textureData.Alpha != null && textureData.Alpha.Length > 0)
                 {
-                    alpha = new MemoryStream(image.ToByteArray(MagickFormat.Bmp));
+                    using (var image = new MagickImage(textureData.Alpha, pixelSettings))
+                    {
+                        alpha = new MemoryStream(image.ToByteArray(MagickFormat.Bmp));
+                    }
                 }
 
-                using (var image = new MagickImage(textureData.Emissive, pixelSettings))
+                if (textureData.Emissive != null && textureData.Emissive.Length > 0)
                 {
-                    emissive = new MemoryStream(image.ToByteArray(MagickFormat.Bmp));
+                    using (var image = new MagickImage(textureData.Emissive, pixelSettings))
+                    {
+                        emissive = new MemoryStream(image.ToByteArray(MagickFormat.Bmp));
+                    }
                 }
+
 
                 var material = new PhongMaterial
                 {
