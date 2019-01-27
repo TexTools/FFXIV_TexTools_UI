@@ -28,8 +28,10 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Input;
+using MahApps.Metro.Controls.Dialogs;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Mods;
 
@@ -38,6 +40,7 @@ namespace FFXIV_TexTools.ViewModels
     public class MainViewModel : INotifyPropertyChanged
     {
         private readonly DirectoryInfo _gameDirectory;
+        private MainWindow _mainWindow;
 
         private List<Category> _categories = new List<Category>();
 
@@ -46,10 +49,11 @@ namespace FFXIV_TexTools.ViewModels
         private string _searchText;
         private string _dxVersionText = $"DX: {Properties.Settings.Default.DX_Version}";
 
-        public MainViewModel()
+        public MainViewModel(MainWindow mainWindow)
         {
             SetDirectories(true);
 
+            _mainWindow = mainWindow;
             _gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
 
             FillTree();
@@ -513,33 +517,58 @@ namespace FFXIV_TexTools.ViewModels
         /// Enables all mods in the mod list
         /// </summary>
         /// <param name="obj"></param>
-        private void EnableAllMods(object obj)
+        private async void EnableAllMods(object obj)
         {
+            var progressController = await _mainWindow.ShowProgressAsync("Enabling Mods", "Please Wait...");
+
             if (FlexibleMessageBox.Show(
                     "This will Enable all mods located in the modlist. \n\n Are you sure you want to proceed?",
                     "Enable All Mods", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
-                var modding = new Modding(_gameDirectory);
-                modding.ToggleAllMods(true);
+                var task = Task.Run(() =>
+                {
+                    var modding = new Modding(_gameDirectory);
+                    modding.ToggleAllMods(true);
+                });
 
-                FlexibleMessageBox.Show("All Mods were Enabled Successfully.", "Success", MessageBoxButtons.OK, MessageBoxIcon.None);
+                task.Wait();
+
+                await progressController.CloseAsync();
+
+                await _mainWindow.ShowMessageAsync("Success", "All Mods were Enabled Successfully");
             }
-
+            else
+            {
+                await progressController.CloseAsync();
+            }
         }
 
         /// <summary>
         /// Disables all mods in the mod list
         /// </summary>
-        private void DisableAllMods(object obj)
+        private async void DisableAllMods(object obj)
         {
+            var progressController = await _mainWindow.ShowProgressAsync("Disabling Mods", "Please Wait...");
+
             if (FlexibleMessageBox.Show(
                     "This will Disable all mods located in the modlist. \n\n Are you sure you want to proceed?",
                     "Disable All Mods", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
-                var modding = new Modding(_gameDirectory);
-                modding.ToggleAllMods(false);
+                var task = Task.Run((() =>
+                {
+                    var modding = new Modding(_gameDirectory);
+                    modding.ToggleAllMods(false);
+                }));
 
-                FlexibleMessageBox.Show("All Mods were Disabled Successfully.", "Success", MessageBoxButtons.OK, MessageBoxIcon.None);
+                task.Wait();
+
+                await progressController.CloseAsync();
+
+                await _mainWindow.ShowMessageAsync("Success", "All Mods were Disabled Successfully");
+            }
+            else
+            {
+                await progressController.CloseAsync();
             }
 
         }
