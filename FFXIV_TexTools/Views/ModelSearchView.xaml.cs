@@ -28,5 +28,10 @@ namespace FFXIV_TexTools.Views
             InitializeComponent();
             this.DataContext = new ModelSearchViewModel(mw);
         }
+
+        private void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            Owner.Activate();
+        }
     }
 }
