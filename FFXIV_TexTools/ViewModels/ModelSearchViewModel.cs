@@ -203,6 +203,8 @@ namespace FFXIV_TexTools.ViewModels
             var modelView = _mainView.ModelTabItem.Content as ModelView;
             var modelViewModel = modelView.DataContext as ModelViewModel;
 
+            if(SelectedItem == null) return;
+
             int.TryParse(SelectedItem.Body, out var body);
             var variant = SelectedItem.Variant;
 
