@@ -1074,6 +1074,7 @@ namespace FFXIV_TexTools.ViewModels
                 var saveDir = new DirectoryInfo(Settings.Default.Save_Directory);
                 dae.MakeDaeFileFromModel(_item, _mdlData, saveDir, SelectedRace.XivRace);
                 _modelView.BottomFlyout.IsOpen = false;
+                ImportEnabled = true;
                 ExportMaterials();
             }
             catch (Exception e)
