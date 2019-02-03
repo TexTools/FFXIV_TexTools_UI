@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using FFXIV_TexTools.Helpers;
+using FFXIV_TexTools.Properties;
 using FFXIV_TexTools.Resources;
 using FFXIV_TexTools.Views;
 using ImageMagick;
@@ -23,12 +24,12 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Input;
-using System.Windows.Media;
-using FFXIV_TexTools.Properties;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Items.Categories;
@@ -43,6 +44,7 @@ using xivModdingFramework.Models.ModelTextures;
 using xivModdingFramework.Mods;
 using xivModdingFramework.Mods.Enums;
 using Color = SharpDX.Color;
+using ColorConverter = System.Windows.Media.ColorConverter;
 using WinColor = System.Windows.Media.Color;
 
 namespace FFXIV_TexTools.ViewModels
@@ -1083,6 +1085,7 @@ namespace FFXIV_TexTools.ViewModels
                     $"There was an error attempting to export the model as a dae.\n\n{e.Message}", "Error exporting Dae",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+
         }
 
         /// <summary>
@@ -1106,20 +1109,30 @@ namespace FFXIV_TexTools.ViewModels
 
                 if (modelMaps.Diffuse != null && modelMaps.Diffuse.Length > 0)
                 {
-                    using (var magickImage = new MagickImage(modelMaps.Diffuse, pixelSettings))
+                    using (var bmp = GetBitmapFromPixelData(modelMaps.Diffuse, modelMaps.Width, modelMaps.Height))
                     {
-                        magickImage.Format = MagickFormat.Bmp3;
-                        magickImage.Write($"{path}\\{modelName}_{matNum}_Diffuse.bmp");
+                        bmp.Save($"{path}\\{modelName}_{matNum}_Diffuse.bmp", ImageFormat.Bmp);
                     }
+
+                    //using (var magickImage = new MagickImage(modelMaps.Diffuse, pixelSettings))
+                    //{
+                    //    magickImage.Format = MagickFormat.Png32;
+                    //    magickImage.Write($"{path}\\{modelName}_{matNum}_Diffuse.bmp");
+                    //}
                 }
 
                 if (modelMaps.Normal != null && modelMaps.Normal.Length > 0)
                 {
-                    using (var magickImage = new MagickImage(modelMaps.Normal, pixelSettings))
+                    using (var bmp = GetBitmapFromPixelData(modelMaps.Normal, modelMaps.Width, modelMaps.Height))
                     {
-                        magickImage.Format = MagickFormat.Bmp3;
-                        magickImage.Write($"{path}\\{modelName}_{matNum}_Normal.bmp");
+                        bmp.Save($"{path}\\{modelName}_{matNum}_Normal.bmp", ImageFormat.Bmp);
                     }
+
+                    //using (var magickImage = new MagickImage(modelMaps.Normal, pixelSettings))
+                    //{
+                    //    magickImage.Format = MagickFormat.Bmp3;
+                    //    magickImage.Write($"{path}\\{modelName}_{matNum}_Normal.bmp");
+                    //}
                 }
 
                 if (modelMaps.Specular != null && modelMaps.Specular.Length > 0)
@@ -1149,6 +1162,38 @@ namespace FFXIV_TexTools.ViewModels
                     }
                 }
             }
+        }
+
+        /// <summary>
+        ///  Converts raw pixel data into a Bitmap
+        /// </summary>
+        /// <param name="pixelData">The raw pixel data</param>
+        /// <param name="width">The width of the bitmap</param>
+        /// <param name="height">The height of the bitmap</param>
+        /// <returns>The converted bitmap image</returns>
+        private Bitmap GetBitmapFromPixelData(byte[] pixelData, int width, int height)
+        {
+            var bitmap = new Bitmap(width, height);
+
+            using (var memoryStream = new MemoryStream(pixelData))
+            {
+                using (var binaryReader = new BinaryReader(memoryStream))
+                {
+                    for (var y = 0; y < height; y++)
+                    {
+                        for (var x = 0; x < width; x++)
+                        {
+                            var red = binaryReader.ReadByte();
+                            var green = binaryReader.ReadByte();
+                            var blue = binaryReader.ReadByte();
+                            var alpha = binaryReader.ReadByte();
+
+                            bitmap.SetPixel(x, y, System.Drawing.Color.FromArgb(alpha, red, green, blue));
+                        }
+                    }
+                }
+            }
+            return bitmap;
         }
 
         /// <summary>
