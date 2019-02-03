@@ -390,7 +390,7 @@ namespace FFXIV_TexTools.ViewModels
 
                 item.ModelInfo = new XivModelInfo
                 {
-                    ModelID = int.Parse(fullPath.Substring(fullPath.LastIndexOf("/", StringComparison.Ordinal) + 1, 6))
+                    ModelID = int.Parse(fullPath.Substring(fullPath.LastIndexOf("_m", StringComparison.Ordinal) + 2, 4))
                 };
             }
 
