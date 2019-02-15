@@ -8,11 +8,11 @@
              d:DesignHeight="400" d:DesignWidth="200">
     <StackPanel>
         <Label Content = "Current Language: " Margin="10"/>
-        <Button Content="English" Margin="10"/>
-        <Button Content="Japanese" Margin="10"/>
-        <Button Content="German" Margin="10"/>
-        <Button Content="French" Margin="10"/>
-        <Button Content="Korean" Margin="10"/>
-        <Button Content="Chinese" Margin="10"/>
+        <Button x:Name="EnglishBtn" Content="English" Margin="10" Click="EnglishBtn_Click"/>
+        <Button x:Name="JapaneseBtn" Content="Japanese" Margin="10" Click="JapaneseBtn_Click"/>
+        <Button x:Name="GermanBtn" Content="German" Margin="10" Click="GermanBtn_Click"/>
+        <Button x:Name="FrenchBtn" Content="French" Margin="10" Click="FrenchBtn_Click"/>
+        <Button x:Name="KoreanBtn" Content="Korean" Margin="10" Click="KoreanBtn_Click" IsEnabled="False"/>
+        <Button x:Name="ChineseBtn" Content="Chinese" Margin="10" Click="ChineseBtn_Click" IsEnabled="False"/>
     </StackPanel>
 </UserControl>

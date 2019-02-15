@@ -27,5 +27,51 @@ namespace FFXIV_TexTools.Views
         {
             InitializeComponent();
         }
+
+        /// <summary>
+        /// Updates the application's language to the given one.
+        /// </summary>
+        /// <param name="language">Language name string</param>
+        /// <param name="message">Message for the language change.</param>
+        private void UpdateLanguage(string language, string message)
+        {
+            Properties.Settings.Default.Application_Language = language;
+            Properties.Settings.Default.Save();
+
+            Helpers.FlexibleMessageBox.Show(message);
+
+            System.Windows.Forms.Application.Restart();
+            System.Windows.Application.Current.Shutdown();
+        }
+
+        private void EnglishBtn_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            UpdateLanguage("English", "TexTools will now restart to apply the changes.");
+        }
+
+        private void JapaneseBtn_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            UpdateLanguage("Japanese", "TexToolsは変更を適用するためリスタートしました。");
+        }
+
+        private void GermanBtn_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            UpdateLanguage("German", "TexTools wurde neu gestartet, um die Änderungen anzuwenden.");
+        }
+
+        private void FrenchBtn_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            UpdateLanguage("French", "TexTools a redémarré pour appliquer les modifications.");
+        }
+
+        private void KoreanBtn_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            UpdateLanguage("Korean", "TexTools가 변경 사항을 적용하기 위해 재시작되었습니다.");
+        }
+
+        private void ChineseBtn_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            UpdateLanguage("Chinese", "TexTools重新启动以应用更改。");
+        }
     }
 }
