@@ -255,7 +255,7 @@ namespace FFXIV_TexTools.ViewModels
 
                     _partCount = partList.Count;
                 }
-                else if (_item.ItemCategory.Equals(XivStrings.Mounts) && _item.ModelInfo.ModelType == XivItemType.demihuman)
+                else if ((_item.ItemCategory.Equals(XivStrings.Mounts) || _item.ItemCategory.Equals(XivStrings.Monster)) && _item.ModelInfo.ModelType == XivItemType.demihuman)
                 {
                     var equipParts = _companions.GetDemiHumanMountTextureEquipPartList(_item);
 
@@ -406,7 +406,7 @@ namespace FFXIV_TexTools.ViewModels
 
                 SelectedTypeIndex = 0;
             }
-            else if (_item.ItemCategory.Equals(XivStrings.Mounts) && _item.ModelInfo.ModelType == XivItemType.demihuman)
+            else if ((_item.ItemCategory.Equals(XivStrings.Mounts) || _item.ItemCategory.Equals(XivStrings.Monster)) && _item.ModelInfo.ModelType == XivItemType.demihuman)
             {
                 TypeVisibility = Visibility.Visible;
 
@@ -637,7 +637,7 @@ namespace FFXIV_TexTools.ViewModels
                 }
                 else
                 {
-                    if (_item.ItemCategory.Equals(XivStrings.Mounts) && _item.ModelInfo.ModelType == XivItemType.demihuman)
+                    if ((_item.ItemCategory.Equals(XivStrings.Mounts) || _item.ItemCategory.Equals(XivStrings.Monster)) && _item.ModelInfo.ModelType == XivItemType.demihuman)
                     {
                         _xivMtrl = _mtrl.GetMtrlData(_item, SelectedRace.XivRace, SelectedType.Name[0], dxVersion);
                     }
