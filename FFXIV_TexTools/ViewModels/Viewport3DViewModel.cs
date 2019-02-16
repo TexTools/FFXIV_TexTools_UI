@@ -51,7 +51,6 @@ namespace FFXIV_TexTools.ViewModels
             SubTitle = "";
 
             EffectsManager = new CustomEffectsManager();
-            RenderTechnique = EffectsManager[CustomEffectsManager.CustomShaderNames.CustomShader];
 
             Camera = new PerspectiveCamera();
 
@@ -98,7 +97,7 @@ namespace FFXIV_TexTools.ViewModels
                 Stream diffuse = null, specular = null, normal = null, alpha = null, emissive = null;
 
                 var pixelSettings =
-                    new PixelStorageSettings(textureData.Width, textureData.Height, StorageType.Char, PixelMapping.RGBA);
+                    new PixelReadSettings(textureData.Width, textureData.Height, StorageType.Char, PixelMapping.RGBA);
 
                 if (textureData.Diffuse != null && textureData.Diffuse.Length > 0)
                 {

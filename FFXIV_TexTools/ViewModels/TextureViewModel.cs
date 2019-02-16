@@ -791,7 +791,7 @@ namespace FFXIV_TexTools.ViewModels
                 var mapBytes = _tex.GetImageData(texData);
 
                 var pixelSettings =
-                    new PixelStorageSettings(texData.Width, texData.Height, StorageType.Char, PixelMapping.RGBA);
+                    new PixelReadSettings(texData.Width, texData.Height, StorageType.Char, PixelMapping.RGBA);
 
                 using (var magickImage = new MagickImage(mapBytes, pixelSettings))
                 {
@@ -815,7 +815,7 @@ namespace FFXIV_TexTools.ViewModels
             else
             {
                 var pixelSettings =
-                    new PixelStorageSettings(4, 16, StorageType.Float, PixelMapping.RGBA);
+                    new PixelReadSettings(4, 16, StorageType.Float, PixelMapping.RGBA);
 
                 var floats = Half.ConvertToFloat(_xivMtrl.ColorSetData.ToArray());
 

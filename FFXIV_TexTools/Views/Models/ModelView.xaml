@@ -9,6 +9,9 @@
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <hx:RenderTechniqueConverter x:Key="RenderTechniqueConverter"/>
+    </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition/>
@@ -42,7 +45,6 @@
                 Title="{Binding Title}"
                 SubTitle="{Binding SubTitle}"
                 BackgroundColor="{Binding BackgroundColor}"
-                RenderTechnique="{Binding RenderTechnique}"
                 EffectsManager="{Binding EffectsManager}"
                 DataContext="{Binding ViewPortVM}"
                 ShowTriangleCountInfo="True" FXAALevel="Medium" MSAA="Two" ZoomExtentsWhenLoaded="True" 

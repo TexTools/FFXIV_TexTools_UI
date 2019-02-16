@@ -15,11 +15,24 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using HelixToolkit.Wpf.SharpDX;
+using HelixToolkit.Wpf.SharpDX.Model.Scene;
 
 namespace FFXIV_TexTools.Custom
 {
     public class CustomMeshGeometryModel3D : MeshGeometryModel3D
     {
         public bool IsBody { get; set; }
+
+        protected override SceneNode OnCreateSceneNode()
+        {
+            var node = base.OnCreateSceneNode();
+
+            node.OnSetRenderTechnique = host =>
+            {
+                return host.EffectsManager[CustomEffectsManager.CustomShaderNames.CustomShader];
+            };
+
+            return node;
+        }
     }
 }

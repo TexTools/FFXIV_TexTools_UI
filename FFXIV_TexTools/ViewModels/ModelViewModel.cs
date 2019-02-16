@@ -1129,7 +1129,7 @@ namespace FFXIV_TexTools.ViewModels
                 var path = $"{IOUtil.MakeItemSavePath(_item, saveDir, SelectedRace.XivRace)}\\3D";
 
                 var pixelSettings =
-                    new PixelStorageSettings(modelMaps.Width, modelMaps.Height, StorageType.Char, PixelMapping.RGBA);
+                    new PixelReadSettings(modelMaps.Width, modelMaps.Height, StorageType.Char, PixelMapping.RGBA);
 
                 if (modelMaps.Diffuse != null && modelMaps.Diffuse.Length > 0)
                 {
