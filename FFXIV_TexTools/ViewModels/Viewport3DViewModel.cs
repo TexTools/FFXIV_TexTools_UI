@@ -66,7 +66,9 @@ namespace FFXIV_TexTools.ViewModels
         {
             SharpDX.BoundingBox? boundingBox = null;
 
-            for (var i = 0; i < mdlData.LoDList[0].MeshCount; i++)
+            var totalMeshCount = mdlData.LoDList[0].MeshCount + mdlData.LoDList[0].ExtraMeshCount;
+
+            for (var i = 0; i < totalMeshCount; i++)
             {
                 var meshData = mdlData.LoDList[0].MeshDataList[i].VertexData;
 

@@ -483,7 +483,7 @@ namespace FFXIV_TexTools.ViewModels
                 _mdlData = _mdl.GetMdlData(_item, SelectedRace.XivRace, null, SelectedPart.MdlPath);
             }
 
-            _meshCount = _mdlData.LoDList[0].MeshCount;
+            _meshCount = _mdlData.LoDList[0].MeshCount + _mdlData.LoDList[0].ExtraMeshCount;
 
             PathString = $"{_mdlData.MdlPath.Folder}/{_mdlData.MdlPath.File}";
 
