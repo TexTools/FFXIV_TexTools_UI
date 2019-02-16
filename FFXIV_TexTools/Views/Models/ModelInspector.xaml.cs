@@ -426,6 +426,18 @@ namespace FFXIV_TexTools.Views.Models
             AddText(textBox, "Unknown 1:\t\t", "Black", false);
             AddText(textBox, $"{lod.Unknown1}\n\n", "Black", true);
 
+            // Mesh End
+            AddText(textBox, "Mesh End:\t\t", "Black", false);
+            AddText(textBox, $"{lod.MeshEnd}\n\n", "Black", true);
+
+            // Extra Mesh Count
+            AddText(textBox, "Extra Mesh Count:\t", "Black", false);
+            AddText(textBox, $"{lod.ExtraMeshCount}\n\n", "Black", true);
+
+            // Mesh Sum
+            AddText(textBox, "Mesh Sum:\t\t", "Black", false);
+            AddText(textBox, $"{lod.MeshSum}\n\n", "Black", true);
+
             // Unknown 2
             AddText(textBox, "Unknown 2:\t\t", "Black", false);
             AddText(textBox, $"{lod.Unknown2}\n\n", "Black", true);
@@ -442,21 +454,17 @@ namespace FFXIV_TexTools.Views.Models
             AddText(textBox, "Unknown 5:\t\t", "Black", false);
             AddText(textBox, $"{lod.Unknown5}\n\n", "Black", true);
 
-            // Unknown 6
-            AddText(textBox, "Unknown 6:\t\t", "Black", false);
-            AddText(textBox, $"{lod.Unknown6}\n\n", "Black", true);
-
             // Index Start
             AddText(textBox, "Index Start:\t\t", "Black", false);
             AddText(textBox, $"{lod.IndexDataStart}\n\n", "Black", true);
 
+            // Unknown 6
+            AddText(textBox, "Unknown 6:\t\t", "Black", false);
+            AddText(textBox, $"{lod.Unknown6}\n\n", "Black", true);
+
             // Unknown 7
             AddText(textBox, "Unknown 7:\t\t", "Black", false);
             AddText(textBox, $"{lod.Unknown7}\n\n", "Black", true);
-
-            // Unknown 8
-            AddText(textBox, "Unknown 8:\t\t", "Black", false);
-            AddText(textBox, $"{lod.Unknown8}\n\n", "Black", true);
 
             // Vertex Size
             AddText(textBox, "Vertex Size:\t\t", "Black", false);
