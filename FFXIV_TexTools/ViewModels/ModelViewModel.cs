@@ -172,7 +172,6 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     Parts.Clear();
                     Numbers.Clear();
-                    Meshes.Clear();
 
                     GetNumbers();
                 }
@@ -259,8 +258,6 @@ namespace FFXIV_TexTools.ViewModels
                 if (SelectedNumberIndex > -1)
                 {
                     Parts.Clear();
-                    Meshes.Clear();
-
                     GetParts();
                 }
             }
@@ -397,7 +394,6 @@ namespace FFXIV_TexTools.ViewModels
                 NotifyPropertyChanged(nameof(SelectedPart));
                 if (SelectedPartIndex > -1)
                 {
-                    Meshes.Clear();
                     GetMeshes();
                 }
             }
@@ -447,6 +443,8 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         private void GetMeshes()
         {
+            Meshes.Clear();
+
             if (_item.Category.Equals(XivStrings.Gear))
             {
                 var xivGear = _item as XivGear;
