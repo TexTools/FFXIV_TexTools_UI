@@ -12,7 +12,7 @@
             <RowDefinition/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <RichTextBox x:Name="cfpTextBox" Grid.Row="0" FontFamily="Consolas" VerticalScrollBarVisibility="Auto" Grid.ColumnSpan="2">
+        <RichTextBox x:Name="cfpTextBox" Grid.Row="0" FontFamily="Consolas" VerticalScrollBarVisibility="Auto" Grid.ColumnSpan="2" IsReadOnly="True">
             <RichTextBox.Resources>
                 <Style TargetType="{x:Type Paragraph}">
                     <Setter Property="Margin" Value="0"/>
