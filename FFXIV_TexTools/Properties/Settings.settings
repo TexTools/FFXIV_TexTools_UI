@@ -41,5 +41,8 @@
     <Setting Name="Etc_Color" Type="System.String" Scope="User">
       <Value Profile="(Default)">#FF603913</Value>
     </Setting>
+    <Setting Name="Cull_Mode" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Back</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
