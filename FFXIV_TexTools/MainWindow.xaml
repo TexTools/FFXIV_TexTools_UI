@@ -84,7 +84,7 @@
                     <TextBox x:Name="ItemSearchTextBox" Controls:TextBoxHelper.Watermark="Search..." Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top"/>
                     <TreeView x:Name="ItemTreeView" Margin="0,26,0,0" ItemsSource="{Binding Categories}" SelectedItemChanged="TreeView_SelectedItemChanged" Style="{StaticResource VirtualisedMetroTreeView}">
                         <TreeView.ItemContainerStyle>
-                            <Style TargetType="{x:Type TreeViewItem}">
+                            <Style BasedOn="{StaticResource MetroTreeViewItem}" TargetType="{x:Type TreeViewItem}">
                                 <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}"/>
                             </Style>
                         </TreeView.ItemContainerStyle>
