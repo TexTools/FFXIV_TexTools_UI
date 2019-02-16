@@ -22,6 +22,8 @@ using System.IO;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Media;
+using ImageMagick;
+using MahApps.Metro;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Mods.DataContainers;
@@ -37,10 +39,17 @@ namespace FFXIV_TexTools.Views
         private ProblemChecker _problemChecker;
         private DirectoryInfo _gameDirectory;
         private List<XivDataFile> _indexDatRepairList = new List<XivDataFile>();
+        private string textColor = "Black";
 
         public ProblemCheckView()
         {
             InitializeComponent();
+
+            var appStyle = ThemeManager.DetectAppStyle(Application.Current);
+            if (((AppTheme)appStyle.Item1).Name.Equals("BaseDark"))
+            {
+                textColor = "White";
+            }
 
             _gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
 
@@ -48,7 +57,7 @@ namespace FFXIV_TexTools.Views
 
             var index = new Index(_gameDirectory);
 
-            AddText("Initializing Problem Check....\n\n", "Black");
+            AddText("Initializing Problem Check....\n\n", textColor);
 
             AddText("Checking Index Dat Values....\n", "Blue");
 
@@ -86,7 +95,7 @@ namespace FFXIV_TexTools.Views
 
             foreach (var file in filesToCheck)
             {
-                AddText($"\t{file.GetDataFileName()} Index Files", "Black");
+                AddText($"\t{file.GetDataFileName()} Index Files", textColor);
 
                 var result = _problemChecker.CheckIndexDatCounts(file);
 
@@ -146,7 +155,7 @@ namespace FFXIV_TexTools.Views
                         tabs = "\t\t";
                     }
 
-                    AddText($"\t{fileName}{tabs}", "Black");
+                    AddText($"\t{fileName}{tabs}", textColor);
 
                     if (mod.data.originalOffset == 0)
                     {
@@ -227,18 +236,18 @@ namespace FFXIV_TexTools.Views
                             {
                                 if (val.Equals("1"))
                                 {
-                                    AddText($"\t{line.Substring(0, line.IndexOf("\t"))} ON\t", "Black");
+                                    AddText($"\t{line.Substring(0, line.IndexOf("\t"))} ON\t", textColor);
                                     AddText("\u2716\n", "Red");
 
                                     AddText("\nCertain mods have issues with LoD ON.\n", "Orange");
-                                    AddText("\tTurning off LoD...\n", "Black");
+                                    AddText("\tTurning off LoD...\n", textColor);
                                     tmpLine = lineNum;
                                     problem = true;
 
                                     break;
                                 }
 
-                                AddText($"\t{line.Substring(0, line.IndexOf("\t"))} OFF\t", "Black");
+                                AddText($"\t{line.Substring(0, line.IndexOf("\t"))} OFF\t", textColor);
                                 AddText("\u2714\n", "Green");
 
                             }
@@ -246,7 +255,7 @@ namespace FFXIV_TexTools.Views
                             {
                                 if (val.Equals("1"))
                                 {
-                                    AddText($"\t{line.Substring(0, line.IndexOf("\t"))} ON\t", "Black");
+                                    AddText($"\t{line.Substring(0, line.IndexOf("\t"))} ON\t", textColor);
                                     AddText("\u2716\n", "Red");
                                     tmpLine = lineNum;
                                     problem = true;
@@ -254,7 +263,7 @@ namespace FFXIV_TexTools.Views
                                     break;
                                 }
 
-                                AddText($"\t{line.Substring(0, line.IndexOf("\t"))} OFF\t", "Black");
+                                AddText($"\t{line.Substring(0, line.IndexOf("\t"))} OFF\t", textColor);
                                 AddText("\u2714\n", "Green");
                             }
 
@@ -272,7 +281,7 @@ namespace FFXIV_TexTools.Views
 
                         File.WriteAllLines($"{dir}\\FFXIV.cfg", lines);
 
-                        AddText("\tLoD OFF, running check...\n\n", "Black");
+                        AddText("\tLoD OFF, running check...\n\n", textColor);
                         CheckLoD();
                     }
                 }
