@@ -18,14 +18,13 @@ using FFXIV_TexTools.Helpers;
 using FFXIV_TexTools.Properties;
 using FFXIV_TexTools.Resources;
 using FFXIV_TexTools.Views;
+using FFXIV_TexTools.Views.Models;
 using ImageMagick;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Windows;
 using System.Windows.Forms;
@@ -144,6 +143,8 @@ namespace FFXIV_TexTools.ViewModels
             RaceComboboxEnabled = _raceCount > 1;
 
             SelectedRaceIndex = 0;
+
+            CullModeToggle = Settings.Default.Cull_Mode == "None";
         }
 
         #region Race
@@ -886,9 +887,21 @@ namespace FFXIV_TexTools.ViewModels
             set
             {
                 _cullModeToggle = value;
-                ViewPortVM.UpdateCullMode(value);
+                UpdateCullMode(value);
                 NotifyPropertyChanged(nameof(CullModeToggle));
             }
+        }
+
+        /// <summary>
+        /// Updates the Cull Mode
+        /// </summary>
+        private void UpdateCullMode(bool noneCull)
+        {
+            ViewPortVM.UpdateCullMode(noneCull);
+
+            Settings.Default.Cull_Mode = noneCull ? "None" : "Back";
+
+            Settings.Default.Save();
         }
 
         /// <summary>
@@ -991,6 +1004,7 @@ namespace FFXIV_TexTools.ViewModels
         public ICommand ImportFromCommand => new RelayCommand(ImportFrom);
         public ICommand AdvancedImportCommand => new RelayCommand(AdvancedImport);
         public ICommand OpenFolder => new RelayCommand(OpenSavedFolder);
+        public ICommand ModelInspector => new RelayCommand(OpenModelInspector);
 
         /// <summary>
         /// Opens the folder in which the exported data is saved
@@ -1014,6 +1028,16 @@ namespace FFXIV_TexTools.ViewModels
             }
 
             Process.Start(path);
+        }
+
+        private void OpenModelInspector(object obj)
+        {
+            if (_mdlData != null)
+            {
+                var modelInspector = new ModelInspector(_mdlData);
+                modelInspector.Owner = Window.GetWindow(_modelView);
+                modelInspector.Show();
+            }
         }
 
         #endregion
@@ -1109,30 +1133,22 @@ namespace FFXIV_TexTools.ViewModels
 
                 if (modelMaps.Diffuse != null && modelMaps.Diffuse.Length > 0)
                 {
-                    using (var bmp = GetBitmapFromPixelData(modelMaps.Diffuse, modelMaps.Width, modelMaps.Height))
+                    using (var magickImage = new MagickImage(modelMaps.Diffuse, pixelSettings))
                     {
-                        bmp.Save($"{path}\\{modelName}_{matNum}_Diffuse.bmp", ImageFormat.Bmp);
+                        magickImage.Settings.SetDefine("bmp3:alpha", "true");
+                        magickImage.Format = MagickFormat.Bmp3;
+                        magickImage.Write($"{path}\\{modelName}_{matNum}_Diffuse.bmp");
                     }
-
-                    //using (var magickImage = new MagickImage(modelMaps.Diffuse, pixelSettings))
-                    //{
-                    //    magickImage.Format = MagickFormat.Png32;
-                    //    magickImage.Write($"{path}\\{modelName}_{matNum}_Diffuse.bmp");
-                    //}
                 }
 
                 if (modelMaps.Normal != null && modelMaps.Normal.Length > 0)
                 {
-                    using (var bmp = GetBitmapFromPixelData(modelMaps.Normal, modelMaps.Width, modelMaps.Height))
+                    using (var magickImage = new MagickImage(modelMaps.Normal, pixelSettings))
                     {
-                        bmp.Save($"{path}\\{modelName}_{matNum}_Normal.bmp", ImageFormat.Bmp);
+                        magickImage.Settings.SetDefine("bmp3:alpha", "true");
+                        magickImage.Format = MagickFormat.Bmp3;
+                        magickImage.Write($"{path}\\{modelName}_{matNum}_Normal.bmp");
                     }
-
-                    //using (var magickImage = new MagickImage(modelMaps.Normal, pixelSettings))
-                    //{
-                    //    magickImage.Format = MagickFormat.Bmp3;
-                    //    magickImage.Write($"{path}\\{modelName}_{matNum}_Normal.bmp");
-                    //}
                 }
 
                 if (modelMaps.Specular != null && modelMaps.Specular.Length > 0)
@@ -1162,38 +1178,6 @@ namespace FFXIV_TexTools.ViewModels
                     }
                 }
             }
-        }
-
-        /// <summary>
-        ///  Converts raw pixel data into a Bitmap
-        /// </summary>
-        /// <param name="pixelData">The raw pixel data</param>
-        /// <param name="width">The width of the bitmap</param>
-        /// <param name="height">The height of the bitmap</param>
-        /// <returns>The converted bitmap image</returns>
-        private Bitmap GetBitmapFromPixelData(byte[] pixelData, int width, int height)
-        {
-            var bitmap = new Bitmap(width, height);
-
-            using (var memoryStream = new MemoryStream(pixelData))
-            {
-                using (var binaryReader = new BinaryReader(memoryStream))
-                {
-                    for (var y = 0; y < height; y++)
-                    {
-                        for (var x = 0; x < width; x++)
-                        {
-                            var red = binaryReader.ReadByte();
-                            var green = binaryReader.ReadByte();
-                            var blue = binaryReader.ReadByte();
-                            var alpha = binaryReader.ReadByte();
-
-                            bitmap.SetPixel(x, y, System.Drawing.Color.FromArgb(alpha, red, green, blue));
-                        }
-                    }
-                }
-            }
-            return bitmap;
         }
 
         /// <summary>
@@ -1357,7 +1341,6 @@ namespace FFXIV_TexTools.ViewModels
         {
             ViewPortVM.ClearModels();
             TransparencyToggle = false;
-            CullModeToggle = false;
 
             _materialDictionary = GetMaterials();
 
@@ -1692,7 +1675,6 @@ namespace FFXIV_TexTools.ViewModels
             NumberVisibility = Visibility.Collapsed;
             PartVisibility = Visibility.Collapsed;
             TransparencyToggle = false;
-            CullModeToggle = false;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
