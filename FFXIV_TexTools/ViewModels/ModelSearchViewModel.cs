@@ -32,7 +32,7 @@ namespace FFXIV_TexTools.ViewModels
 {
     public class ModelSearchViewModel: INotifyPropertyChanged
     {
-        private string _selectedCategory, _modelSearchID, _statusLabel;
+        private string _selectedCategory, _modelSearchID, _statusLabel, _currentCategory;
         private string _modelSearchWaterMark = "Enter a Model ID...";
         private int _selectedCategoryIndex, _currentID;
         private List<SearchResults> _resultList;
@@ -150,8 +150,9 @@ namespace FFXIV_TexTools.ViewModels
             try
             {
                 id = int.Parse(ModelSearchID);
-                if(_currentID == id) return;
+                if(_currentID == id && _currentCategory == SelectedCategory) return;
                 _currentID = id;
+                _selectedCategory = SelectedCategory;
             }
             catch (Exception e)
             {
