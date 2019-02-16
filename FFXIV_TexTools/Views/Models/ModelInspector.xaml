@@ -1,0 +1,77 @@
+﻿<mah:MetroWindow x:Class="FFXIV_TexTools.Views.Models.ModelInspector"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FFXIV_TexTools.Views.Models"
+        xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+        mc:Ignorable="d"
+        Title="Model Inspector" Height="450" Width="1000" WindowStartupLocation="CenterOwner" Closing="MetroWindow_Closing">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <GroupBox Grid.Column="0" Header="Model MetaData">
+            <RichTextBox x:Name="ModelMetaDataRichTextBox" FontFamily="Consolas" VerticalScrollBarVisibility="Auto" IsReadOnly="True" HorizontalScrollBarVisibility="Auto">
+                <RichTextBox.Resources>
+                    <Style TargetType="{x:Type Paragraph}">
+                        <Setter Property="Margin" Value="0"/>
+                    </Style>
+                </RichTextBox.Resources>
+            </RichTextBox>
+        </GroupBox>
+        <GroupBox Grid.Column="1" Header="Paths">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <ComboBox x:Name="PathComboBox" Grid.Row="0" mah:TextBoxHelper.UseFloatingWatermark="True" mah:TextBoxHelper.Watermark="Path Type" SelectionChanged="PathComboBox_SelectionChanged" DisplayMemberPath="Key"/>
+                <RichTextBox x:Name="PathsRichTextBox" Grid.Row="1" FontFamily="Consolas" VerticalScrollBarVisibility="Auto" IsReadOnly="True">
+                    <RichTextBox.Resources>
+                        <Style TargetType="{x:Type Paragraph}">
+                            <Setter Property="Margin" Value="0"/>
+                        </Style>
+                    </RichTextBox.Resources>
+                </RichTextBox>
+            </Grid>
+        </GroupBox>
+        <GroupBox Grid.Column="2" Header="Other Data">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <ComboBox x:Name="OtherDataComboBox" Grid.Row="0" mah:TextBoxHelper.UseFloatingWatermark="True" mah:TextBoxHelper.Watermark="Data Type" SelectionChanged="OtherDataComboBox_SelectionChanged"/>
+                <RichTextBox x:Name="OtherDataRichTextBox" Grid.Row="1" FontFamily="Consolas" VerticalScrollBarVisibility="Auto" IsReadOnly="True">
+                    <RichTextBox.Resources>
+                        <Style TargetType="{x:Type Paragraph}">
+                            <Setter Property="Margin" Value="0"/>
+                        </Style>
+                    </RichTextBox.Resources>
+                </RichTextBox>
+            </Grid>
+        </GroupBox>
+        <GroupBox Grid.Column="3" Header="Level Of Detail">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <ComboBox x:Name="LoDComboBox" Grid.Row="0" mah:TextBoxHelper.UseFloatingWatermark="True" mah:TextBoxHelper.Watermark="LoD Number" SelectionChanged="LoDComboBox_SelectionChanged"/>
+                <RichTextBox x:Name="LodRichTextBox" Grid.Row="1" FontFamily="Consolas" VerticalScrollBarVisibility="Auto" IsReadOnly="True">
+                    <RichTextBox.Resources>
+                        <Style TargetType="{x:Type Paragraph}">
+                            <Setter Property="Margin" Value="0"/>
+                        </Style>
+                    </RichTextBox.Resources>
+                </RichTextBox>
+                <Button x:Name="MeshInspectorButton" Grid.Row="2" Content="Open Mesh Inspector" Click="MeshInspectorButton_Click"/>
+            </Grid>
+        </GroupBox>
+    </Grid>
+</mah:MetroWindow>

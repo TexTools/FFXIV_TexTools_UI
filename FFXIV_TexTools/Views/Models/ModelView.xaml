@@ -80,7 +80,18 @@
             </mah:FlyoutsControl>
         </Grid>
 
-        <TextBox Grid.Row="2" Text="{Binding PathString}" TextWrapping="NoWrap" VerticalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" mah:TextBoxHelper.Watermark="MDL Path" Margin="5" IsReadOnly="true"/>
+
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBox Grid.Column="0" Text="{Binding PathString}" TextWrapping="NoWrap" VerticalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" mah:TextBoxHelper.Watermark="MDL Path" Margin="5" IsReadOnly="true"/>
+            <Button Grid.Column="1" Margin="5" Command="{Binding ModelInspector}" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <iconPacks:PackIconModern Kind="PageSearch"/>
+            </Button>
+        </Grid>
+
 
         <Grid Grid.Row="3">
             <Grid.ColumnDefinitions>

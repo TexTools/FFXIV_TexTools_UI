@@ -1,0 +1,66 @@
+﻿<mah:MetroWindow x:Class="FFXIV_TexTools.Views.Models.MeshInspectorView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FFXIV_TexTools.Views.Models"
+        xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+        mc:Ignorable="d"
+        Title="Mesh Inspector" Height="450" Width="800" WindowStartupLocation="CenterOwner" Closing="MetroWindow_Closing">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <GroupBox Grid.Column="0" Header="Mesh MetaData">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <ComboBox x:Name="MeshNumComboBox" Grid.Row="0" mah:TextBoxHelper.UseFloatingWatermark="True" mah:TextBoxHelper.Watermark="Mesh Number" SelectionChanged="MeshNumComboBox_SelectionChanged"/>
+                <RichTextBox x:Name="MeshMetaDataRichTextBox" Grid.Row="1" FontFamily="Consolas" VerticalScrollBarVisibility="Auto" IsReadOnly="True">
+                    <RichTextBox.Resources>
+                        <Style TargetType="{x:Type Paragraph}">
+                            <Setter Property="Margin" Value="0"/>
+                        </Style>
+                    </RichTextBox.Resources>
+                </RichTextBox>
+            </Grid>
+        </GroupBox>
+        <GroupBox Grid.Column="1" Header="Mesh Parts">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <ComboBox x:Name="PartNumComboBox" Grid.Row="0" mah:TextBoxHelper.UseFloatingWatermark="True" mah:TextBoxHelper.Watermark="Part Number" SelectionChanged="PartNumComboBox_SelectionChanged"/>
+                <RichTextBox x:Name="MeshPartsRichTextBox" Grid.Row="1" FontFamily="Consolas" VerticalScrollBarVisibility="Auto" IsReadOnly="True">
+                    <RichTextBox.Resources>
+                        <Style TargetType="{x:Type Paragraph}">
+                            <Setter Property="Margin" Value="0"/>
+                        </Style>
+                    </RichTextBox.Resources>
+                </RichTextBox>
+            </Grid>
+        </GroupBox>
+        <GroupBox Grid.Column="2" Header="Vertex Data Structure">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <ComboBox x:Name="StructNumComboBox" Grid.Row="0" mah:TextBoxHelper.UseFloatingWatermark="True" mah:TextBoxHelper.Watermark="Struct Number" SelectionChanged="StructNumComboBox_SelectionChanged"/>
+                <RichTextBox x:Name="DataStructRichTextBox" Grid.Row="1" FontFamily="Consolas" VerticalScrollBarVisibility="Auto" IsReadOnly="True">
+                    <RichTextBox.Resources>
+                        <Style TargetType="{x:Type Paragraph}">
+                            <Setter Property="Margin" Value="0"/>
+                        </Style>
+                    </RichTextBox.Resources>
+                </RichTextBox>
+            </Grid>
+        </GroupBox>
+
+    </Grid>
+</mah:MetroWindow>
