@@ -80,8 +80,8 @@ namespace FFXIV_TexTools.ViewModels
             _typePartWatermark = XivStrings.TypePart, _textureMapWatermark = XivStrings.Texture_Map;
         private string _modToggleText = "Enable/Disable";
 
-        private bool _raceEnabled, _partEnabled, _typeEnabled, _typePartEnabled, _mapEnabled;
-        private bool _exportEnabled, _importEnabled, _modStatusEnabled, _moreOptionsEnabled, _translucencyEnabled, _translucencyCheck;
+        private bool _raceEnabled, _partEnabled, _typeEnabled, _typePartEnabled, _mapEnabled, _channelsEnabled;
+        private bool _exportEnabled, _importEnabled, _ddsImportEnabled, _bmpImportEnabled, _modStatusEnabled, _moreOptionsEnabled, _translucencyEnabled, _translucencyCheck;
         private bool _redChecked = true, _greenChecked = true, _blueChecked = true, _alphaChecked;
 
         private int _raceIndex, _partIndex, _typeIndex, _typePartIndex, _mapIndex, _partCount, _typeCount, _typePartCount, _mapCount, _raceCount;
@@ -90,6 +90,7 @@ namespace FFXIV_TexTools.ViewModels
         public TextureViewModel(TextureView textureView)
         {
             _textureView = textureView;
+            ChannelsEnabled = false;
         }
 
         /// <summary>
@@ -783,6 +784,7 @@ namespace FFXIV_TexTools.ViewModels
         public void UpdateImage()
         {
             ImageDisplay = null;
+            ChannelsEnabled = true;
 
             if (SelectedMap.TexType.Type != XivTexType.ColorSet)
             {
@@ -861,7 +863,8 @@ namespace FFXIV_TexTools.ViewModels
             }
 
             ExportEnabled = true;
-            ImportEnabled = DDSFileExists();
+            ImportEnabled = true;
+            DDSImportEnabled = DDSFileExists();
             MoreOptionsEnabled = true;
 
             if (_xivMtrl != null)
@@ -1000,7 +1003,7 @@ namespace FFXIV_TexTools.ViewModels
                 _tex.SaveTexAsDDS(_item, texData, savePath, SelectedRace.XivRace);
             }
 
-            ImportEnabled = DDSFileExists();
+            DDSImportEnabled = DDSFileExists();
             _textureView.BottomFlyout.IsOpen = false;
         }
 
@@ -1049,6 +1052,8 @@ namespace FFXIV_TexTools.ViewModels
             _magickImage.Write($"{path}/{Path.GetFileNameWithoutExtension(SelectedMap.TexType.Path)}.bmp", MagickFormat.Bmp);
 
             _textureView.BottomFlyout.IsOpen = false;
+
+            DDSImportEnabled = true;
         }
 
         /// <summary>
@@ -1182,9 +1187,10 @@ namespace FFXIV_TexTools.ViewModels
                     //TODO: BMP Import
                 }
 
-                _textureView.BottomFlyout.IsOpen = false;
                 UpdateImage();
             }
+
+            _textureView.BottomFlyout.IsOpen = false;
         }
 
         /// <summary>
@@ -1245,6 +1251,31 @@ namespace FFXIV_TexTools.ViewModels
             }
         }
 
+        /// <summary>
+        /// The enabled status for the BMP import button
+        /// </summary>
+        public bool BMPImportEnabled
+        {
+            get => _bmpImportEnabled;
+            set
+            {
+                _bmpImportEnabled = value;
+                NotifyPropertyChanged(nameof(BMPImportEnabled));
+            }
+        }
+
+        /// <summary>
+        /// The enabled status for the DDS import button
+        /// </summary>
+        public bool DDSImportEnabled
+        {
+            get => _ddsImportEnabled;
+            set
+            {
+                _ddsImportEnabled = value;
+                NotifyPropertyChanged(nameof(DDSImportEnabled));
+            }
+        }
         /// <summary>
         /// The enabled status for the mod status button
         /// </summary>
@@ -1464,6 +1495,16 @@ namespace FFXIV_TexTools.ViewModels
 
         // Color Channels
         #region ColorChannels
+
+        public bool ChannelsEnabled
+        {
+            get => _channelsEnabled;
+            set
+            {
+                _channelsEnabled = value;
+                NotifyPropertyChanged(nameof(ChannelsEnabled));
+            }
+        }
 
         /// <summary>
         /// Red color channel checked status
