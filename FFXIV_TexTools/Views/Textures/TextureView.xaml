@@ -133,7 +133,7 @@
 
         <mah:FlyoutsControl Grid.Row="2" Grid.RowSpan="2" VerticalAlignment="Bottom">
             <mah:Flyout x:Name="BottomFlyout" Position="Bottom">
-                <local:ExportModelOptionsView/>
+                <local:ExportTextureOptionsView/>
             </mah:Flyout>
         </mah:FlyoutsControl>
 
