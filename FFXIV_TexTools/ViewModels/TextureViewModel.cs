@@ -990,9 +990,21 @@ namespace FFXIV_TexTools.ViewModels
 
         private void SaveDDS(object obj)
         {
-            var texData = _tex.GetTexData(SelectedMap.TexType);
-
+            XivTex texData;
             var savePath = new DirectoryInfo(Settings.Default.Save_Directory);
+
+
+            if (SelectedMap.TexType.Type == XivTexType.ColorSet)
+            {
+                texData = _mtrl.MtrlToXivTex(_xivMtrl);
+
+                _mtrl.SaveColorSetExtraData(_item, _xivMtrl, savePath, SelectedRace.XivRace);
+            }
+            else
+            {
+                texData = _tex.GetTexData(SelectedMap.TexType);
+            }
+
 
             if (_uiItem != null)
             {
@@ -1118,14 +1130,25 @@ namespace FFXIV_TexTools.ViewModels
 
                 if (File.Exists(fullPath.FullName))
                 {
-                    if (_item != null)
+                    try
                     {
-                        _tex.TexDDSImporter(texData, _item, fullPath, XivStrings.TexTools);
+                        if (_item != null)
+                        {
+                            _tex.TexDDSImporter(texData, _item, fullPath, XivStrings.TexTools);
+                        }
+                        else if (_uiItem != null)
+                        {
+                            _tex.TexDDSImporter(texData, _uiItem, fullPath, XivStrings.TexTools);
+                        }
                     }
-                    else if (_uiItem != null)
+                    catch(Exception ex)
                     {
-                        _tex.TexDDSImporter(texData, _uiItem, fullPath, XivStrings.TexTools);
+                        FlexibleMessageBox.Show(
+                            $"There was an error Importing the Texture.\n\nError Message:\n{ex.Message}", "Error Importing Texture",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
                     }
+
                 }
             }
             else
@@ -1167,14 +1190,25 @@ namespace FFXIV_TexTools.ViewModels
                     {
                         var texData = _tex.GetTexData(SelectedMap.TexType);
 
-                        if (_item != null)
+                        try
                         {
-                            _tex.TexDDSImporter(texData, _item, fileDir, XivStrings.TexTools);
+                            if (_item != null)
+                            {
+                                _tex.TexDDSImporter(texData, _item, fileDir, XivStrings.TexTools);
+                            }
+                            else if (_uiItem != null)
+                            {
+                                _tex.TexDDSImporter(texData, _uiItem, fileDir, XivStrings.TexTools);
+                            }
                         }
-                        else if (_uiItem != null)
+                        catch (Exception ex)
                         {
-                            _tex.TexDDSImporter(texData, _uiItem, fileDir, XivStrings.TexTools);
+                            FlexibleMessageBox.Show(
+                                $"There was an error Importing the Texture.\n\nError Message:\n{ex.Message}", "Error Importing Texture",
+                                MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
                         }
+
                     }
                     else
                     {
@@ -1582,25 +1616,7 @@ namespace FFXIV_TexTools.ViewModels
 
         private static XivLanguage GetLanguage()
         {
-            var language = Properties.Settings.Default.Application_Language;
-
-            switch (language)
-            {
-                case "English":
-                    return XivLanguage.English;
-                case "Japanese":
-                    return XivLanguage.Japanese;
-                case "German":
-                    return XivLanguage.German;
-                case "French":
-                    return XivLanguage.French;
-                case "Korean":
-                    return XivLanguage.Korean;
-                case "Chinese":
-                    return XivLanguage.Chinese;
-                default:
-                    return XivLanguage.English;
-            }
+            return XivLanguages.GetXivLanguage(Properties.Settings.Default.Application_Language);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
