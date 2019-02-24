@@ -19,11 +19,13 @@ using FFXIV_TexTools.Helpers;
 using FFXIV_TexTools.Models;
 using FFXIV_TexTools.Resources;
 using FolderSelect;
+using MahApps.Metro.Controls.Dialogs;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -31,9 +33,9 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Input;
-using MahApps.Metro.Controls.Dialogs;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Mods;
+using xivModdingFramework.SqPack.FileTypes;
 
 namespace FFXIV_TexTools.ViewModels
 {
@@ -51,18 +53,103 @@ namespace FFXIV_TexTools.ViewModels
 
         public MainViewModel(MainWindow mainWindow)
         {
+            var ci = new CultureInfo(Properties.Settings.Default.Application_Language)
+            {
+                NumberFormat = {NumberDecimalSeparator = "."}
+            };
+            CultureInfo.DefaultThreadCurrentCulture = ci;
+            CultureInfo.DefaultThreadCurrentUICulture = ci;
+            CultureInfo.CurrentCulture = ci;
+            CultureInfo.CurrentUICulture = ci;
+
             SetDirectories(true);
 
             _mainWindow = mainWindow;
             _gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
 
+            CheckForOldModList();
+            CheckGameVersion();
+
             FillTree();
+        }
+
+        private void CheckForOldModList()
+        {
+            var oldModListFileDirectory = new DirectoryInfo($"{Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)}/TexTools/TexTools.modlist");
+
+            if (File.Exists(oldModListFileDirectory.FullName))
+            {
+                var modListContent = File.ReadAllLines(oldModListFileDirectory.FullName);
+
+                if (modListContent.Length > 0)
+                {
+                    var warningMessage =
+                        "Older TexTools ModList Found.\n\nThe Older ModList is incompatible with this version.\n\nIn order to use this version, all previous mods will be disabled, and the previous ModList erased.\n\n" +
+                        "If you would like to retain your mods, it is recommended that you create a backup ModPack in the older TexTools Version, then import it into this one.\n\nWould you like to continue?";
+
+                    if (FlexibleMessageBox.Show(
+                            $"{warningMessage}",
+                            "Older ModList Found", MessageBoxButtons.YesNo, MessageBoxIcon.Question) ==
+                        DialogResult.Yes)
+                    {
+                        var modding = new Modding(_gameDirectory);
+                        var index = new Index(_gameDirectory);
+                        var dat = new Dat(_gameDirectory);
+                        var error = false;
+
+                        if (index.IsIndexLocked(XivDataFile._0A_Exd))
+                        {
+                            FlexibleMessageBox.Show("Unable to continue while game is running.\n\nPlease exit the game and try again.", $"ModList Disable Failed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            error = true;
+                        }
+                        else
+                        {
+                            try
+                            {
+                                modding.DisableOldModList(oldModListFileDirectory);
+                            }
+                            catch (Exception ex)
+                            {
+                                error = true;
+                                var message =
+                                    $"There was an error attempting to disable a mod from previous version.\n\nError Message:\n{ex.Message}\n\nIt is recommended to do a Start Over from the previous version first.";
+                                FlexibleMessageBox.Show(message, $"Previous Version Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            }
+                        }
+
+                        if (!error)
+                        {
+                            File.Delete(oldModListFileDirectory.FullName);
+
+                            // Delete modded dat files
+                            foreach (var xivDataFile in (XivDataFile[])Enum.GetValues(typeof(XivDataFile)))
+                            {
+                                var datFiles = dat.GetModdedDatList(xivDataFile);
+
+                                foreach (var datFile in datFiles)
+                                {
+                                    File.Delete(datFile);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            System.Windows.Application.Current.Shutdown();
+                        }
+
+                    }
+                    else
+                    {
+                        System.Windows.Application.Current.Shutdown();
+                    }
+                }
+            }
         }
 
         /// <summary>
         /// Asks for game directory and sets default save directory
         /// </summary>
-        private static void SetDirectories(bool valid)
+        private void SetDirectories(bool valid)
         {
             if (valid)
             {
@@ -132,29 +219,14 @@ namespace FFXIV_TexTools.ViewModels
                     SetDirectories(false);
                 }
 
-                if (Properties.Settings.Default.Save_Directory.Equals(""))
-                {
-                    var md = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "/TexTools/Saved";
-                    Directory.CreateDirectory(md);
-                    Properties.Settings.Default.Save_Directory = md;
-                    Properties.Settings.Default.Save();
-                }
+                SetSaveDirectory();
 
-                if (Properties.Settings.Default.Backup_Directory.Equals(""))
-                {
-                    var md = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "/TexTools/Index_Backups";
-                    Directory.CreateDirectory(md);
-                    Properties.Settings.Default.Backup_Directory = md;
-                    Properties.Settings.Default.Save();
-                }
+                SetBackupsDirectory();
 
-                if (Properties.Settings.Default.ModPack_Directory.Equals(""))
-                {
-                    var md = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "/TexTools/ModPacks";
-                    Directory.CreateDirectory(md);
-                    Properties.Settings.Default.ModPack_Directory = md;
-                    Properties.Settings.Default.Save();
-                }
+                SetModPackDirectory();
+
+                var modding = new Modding(new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory));
+                modding.CreateModlist();
             }
             else
             {
@@ -199,6 +271,159 @@ namespace FFXIV_TexTools.ViewModels
                 else
                 {
                     Environment.Exit(0);
+                }
+            }
+        }
+
+        private void SetSaveDirectory()
+        {
+            if (string.IsNullOrEmpty(Properties.Settings.Default.Save_Directory))
+            {
+                var md = $"{Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)}/TexTools/Saved";
+                Directory.CreateDirectory(md);
+                Properties.Settings.Default.Save_Directory = md;
+                Properties.Settings.Default.Save();
+            }
+            else
+            {
+                if (!Directory.Exists(Properties.Settings.Default.Save_Directory))
+                {
+                    Directory.CreateDirectory(Properties.Settings.Default.Save_Directory);
+                }
+            }
+        }
+
+        private void SetBackupsDirectory()
+        {
+            if (string.IsNullOrEmpty(Properties.Settings.Default.Backup_Directory))
+            {
+                var md = $"{Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)}/TexTools/Index_Backups";
+                Directory.CreateDirectory(md);
+                Properties.Settings.Default.Backup_Directory = md;
+                Properties.Settings.Default.Save();
+            }
+            else
+            {
+                if (!Directory.Exists(Properties.Settings.Default.Backup_Directory))
+                {
+                    Directory.CreateDirectory(Properties.Settings.Default.Backup_Directory);
+                }
+            }
+        }
+
+        private void SetModPackDirectory()
+        {
+            if (string.IsNullOrEmpty(Properties.Settings.Default.ModPack_Directory))
+            {
+                var md = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "/TexTools/ModPacks";
+                Directory.CreateDirectory(md);
+                Properties.Settings.Default.ModPack_Directory = md;
+                Properties.Settings.Default.Save();
+            }
+            else
+            {
+                if (!Directory.Exists(Properties.Settings.Default.ModPack_Directory))
+                {
+                    Directory.CreateDirectory(Properties.Settings.Default.ModPack_Directory);
+                }
+            }
+        }
+
+        private void CheckGameVersion()
+        {
+            var applicationVersion = FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location).FileVersion;
+
+            Version ffxivVersion = null;
+            var needsNewBackup = false;
+            var backupMessage = "";
+
+            var modding = new Modding(_gameDirectory);
+            var backupDirectory = new DirectoryInfo(Properties.Settings.Default.Backup_Directory);
+
+            var versionFile = $"{_gameDirectory.Parent.Parent.FullName}\\ffxivgame.ver";
+
+            if (File.Exists(versionFile))
+            {
+                var versionData = File.ReadAllLines(versionFile);
+                ffxivVersion = new Version(versionData[0].Substring(0, versionData[0].LastIndexOf(".")));
+            }
+            else
+            {
+                FlexibleMessageBox.Show("TexTools was unable to determine the game version.", $"Version Check Error {applicationVersion}", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (string.IsNullOrEmpty(Properties.Settings.Default.FFXIV_Version))
+            {
+                Properties.Settings.Default.FFXIV_Version = ffxivVersion.ToString();
+                Properties.Settings.Default.Save();
+
+                needsNewBackup = true;
+                backupMessage = "New TexTools Install Detected. \nWould you like to create a new backup of your index files now? (Recommended)";
+            }
+            else
+            {
+                var versionCheck = new Version(Properties.Settings.Default.FFXIV_Version);
+
+                if (ffxivVersion > versionCheck)
+                {
+                    needsNewBackup = true;
+                    backupMessage = "A newer version of FFXIV was detected. \nWould you like to create a new backup of your index files now? (Recommended) \n\nWarning:\nIn order to create a clean backup, all active modifications will be set to disabled, they will have to be re-enabled manually.";
+                }
+            }
+
+            if (!Directory.Exists(backupDirectory.FullName))
+            {
+                FlexibleMessageBox.Show("Unable to find backup directory", $"Backup Creation Failed {applicationVersion}", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (Directory.GetFiles(backupDirectory.FullName).Length == 0)
+            {
+                needsNewBackup = true;
+                backupMessage = "No Index Backups were found. \nWould you like to create a new backup of your index files now? (Recommended) \n\nWarning:\nIn order to create a clean backup, all active modifications will be set to disabled, they will have to be re-enabled manually.";
+            }
+
+            if (needsNewBackup)
+            {
+                var indexFiles = new XivDataFile[] {XivDataFile._04_Chara, XivDataFile._06_Ui, XivDataFile._01_Bgcommon};
+                var index = new Index(_gameDirectory);
+
+                if (MessageBox.Show(backupMessage, "Create Backup?", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) ==
+                    DialogResult.Yes)
+                {
+                    try
+                    {
+                        // Toggle off all mods
+                        modding.ToggleAllMods(false);
+                    }
+                    catch (Exception ex)
+                    {
+                        FlexibleMessageBox.Show($"Unable to create backup files.\n\nError Message:\n{ex.Message}", $"Backup Creation Failed {applicationVersion}", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
+                    if (index.IsIndexLocked(XivDataFile._0A_Exd))
+                    {
+                        FlexibleMessageBox.Show("Unable to create backup while game is running.", $"Backup Creation Failed {applicationVersion}", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
+                    foreach (var xivDataFile in indexFiles)
+                    {
+                        try
+                        {
+                            File.Copy($"{_gameDirectory.FullName}\\{xivDataFile.GetDataFileName()}.win32.index",
+                                $"{backupDirectory}\\{xivDataFile.GetDataFileName()}.win32.index", true);
+                            File.Copy($"{_gameDirectory.FullName}\\{xivDataFile.GetDataFileName()}.win32.index2",
+                                $"{backupDirectory}\\{xivDataFile.GetDataFileName()}.win32.index2", true);
+                        }
+                        catch(Exception e)
+                        {
+                        FlexibleMessageBox.Show($"Unable to create backups.\n\nError: {e.Message}", $"Backup Creation Failed {applicationVersion}", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                        }
+                    }
                 }
             }
         }
