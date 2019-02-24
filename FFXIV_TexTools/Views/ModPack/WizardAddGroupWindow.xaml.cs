@@ -317,28 +317,28 @@ namespace FFXIV_TexTools.Views
                 item.Category = XivStrings.Character;
 
 
-                if (item.ItemCategory.Equals(XivStrings.Body))
+                if (item.Name.Equals(XivStrings.Body))
                 {
                     item.ModelInfo = new XivModelInfo
                     {
                         ModelID = int.Parse(fullPath.Substring(fullPath.IndexOf("/body", StringComparison.Ordinal) + 7, 4))
                     };
                 }
-                else if (item.ItemCategory.Equals(XivStrings.Hair))
+                else if (item.Name.Equals(XivStrings.Hair))
                 {
                     item.ModelInfo = new XivModelInfo
                     {
                         ModelID = int.Parse(fullPath.Substring(fullPath.IndexOf("/hair", StringComparison.Ordinal) + 7, 4))
                     };
                 }
-                else if (item.ItemCategory.Equals(XivStrings.Face))
+                else if (item.Name.Equals(XivStrings.Face))
                 {
                     item.ModelInfo = new XivModelInfo
                     {
                         ModelID = int.Parse(fullPath.Substring(fullPath.IndexOf("/face", StringComparison.Ordinal) + 7, 4))
                     };
                 }
-                else if (item.ItemCategory.Equals(XivStrings.Tail))
+                else if (item.Name.Equals(XivStrings.Tail))
                 {
                     item.ModelInfo = new XivModelInfo
                     {
@@ -351,14 +351,14 @@ namespace FFXIV_TexTools.Views
             {
                 item.Category = XivStrings.Character;
 
-                if (item.ItemCategory.Equals(XivStrings.Face_Paint))
+                if (item.Name.Equals(XivStrings.Face_Paint))
                 {
                     item.ModelInfo = new XivModelInfo
                     {
                         ModelID = int.Parse(fullPath.Substring(fullPath.LastIndexOf("_", StringComparison.Ordinal) + 1, 1))
                     };
                 }
-                else if (item.ItemCategory.Equals(XivStrings.Equip_Decals))
+                else if (item.Name.Equals(XivStrings.Equip_Decals))
                 {
                     item.ModelInfo = new XivModelInfo
                     {
