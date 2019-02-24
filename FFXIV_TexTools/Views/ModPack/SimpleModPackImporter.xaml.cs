@@ -53,7 +53,7 @@ namespace FFXIV_TexTools.Views
         public static extern long StrFormatByteSize(long fileSize, [MarshalAs(UnmanagedType.LPTStr)] StringBuilder buffer, int bufferSize);
 
 
-        public SimpleModPackImporter(DirectoryInfo modPackDirectory)
+        public SimpleModPackImporter(DirectoryInfo modPackDirectory, ModPackJson modPackJson)
         {
             InitializeComponent();
 
@@ -62,14 +62,13 @@ namespace FFXIV_TexTools.Views
             _texToolsModPack = new TTMP(new DirectoryInfo(Properties.Settings.Default.ModPack_Directory),
                 XivStrings.TexTools);
 
-            try
+            if (modPackJson != null)
             {
-                var info = _texToolsModPack.GetModPackJsonData(modPackDirectory);
-                ImportSimpleModPack(info.ModPackJson);
+                ImportSimpleModPack(modPackJson);
             }
-            catch (Exception ex)
+            else
             {
-                ImportOldModPack(modPackDirectory);
+                ImportOldModPack();
             }
         }
 
@@ -135,11 +134,11 @@ namespace FFXIV_TexTools.Views
         /// Imports a first generation mod pack
         /// </summary>
         /// <param name="modPackDirectory">The mod pack directory</param>
-        private void ImportOldModPack(DirectoryInfo modPackDirectory)
+        private void ImportOldModPack()
         {
             var modding = new Modding(_gameDirectory);
 
-            var originalModPackData = _texToolsModPack.GetOriginalModPackJsonData(modPackDirectory);
+            var originalModPackData = _texToolsModPack.GetOriginalModPackJsonData(_modPackDirectory);
 
             foreach (var modsJson in originalModPackData)
             {
