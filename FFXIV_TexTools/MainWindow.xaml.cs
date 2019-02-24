@@ -229,7 +229,7 @@ namespace FFXIV_TexTools
                 }
                 else
                 {
-                    await this.ShowMessageAsync("Mod Pack Creation Complete", $"The ModPack ({wizard.ModPackFileName}.ttmp) has been successfully Created.");
+                    await this.ShowMessageAsync("Mod Pack Creation Complete", $"The ModPack ({wizard.ModPackFileName}.ttmp2) has been successfully Created.");
                 }
             }
         }
@@ -241,7 +241,7 @@ namespace FFXIV_TexTools
         {
             var modPackDirectory = new DirectoryInfo(Settings.Default.ModPack_Directory);
 
-            var openFileDialog = new OpenFileDialog {InitialDirectory = modPackDirectory.FullName, Filter = "TexToolsModPack TTMP (*.ttmp)|*.ttmp"};
+            var openFileDialog = new OpenFileDialog {InitialDirectory = modPackDirectory.FullName, Filter = "TexToolsModPack TTMP (*.ttmp;*.ttmp2)|*.ttmp;*.ttmp2"};
 
             if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
@@ -250,17 +250,30 @@ namespace FFXIV_TexTools
                     var ttmp = new TTMP(modPackDirectory, XivStrings.TexTools);
                     var ttmpData = ttmp.GetModPackJsonData(new DirectoryInfo(openFileDialog.FileName));
 
-                    var importWizard = new ImportModPackWizard(ttmpData.ModPackJson, ttmpData.ImageDictionary, new DirectoryInfo(openFileDialog.FileName)) { Owner = this };
-                    var result = importWizard.ShowDialog();
-
-                    if (result == true)
+                    if (ttmpData.ModPackJson.TTMPVersion.Contains("w"))
                     {
-                        await this.ShowMessageAsync("Import Complete", $"{importWizard.TotalModsImported} mod(s) successfully imported.");
+                        var importWizard = new ImportModPackWizard(ttmpData.ModPackJson, ttmpData.ImageDictionary, new DirectoryInfo(openFileDialog.FileName)) { Owner = this };
+                        var result = importWizard.ShowDialog();
+
+                        if (result == true)
+                        {
+                            await this.ShowMessageAsync("Import Complete", $"{importWizard.TotalModsImported} mod(s) successfully imported.");
+                        }
+                    }
+                    else
+                    {
+                        var simpleImport = new SimpleModPackImporter(new DirectoryInfo(openFileDialog.FileName), ttmpData.ModPackJson) { Owner = this };
+                        var result = simpleImport.ShowDialog();
+
+                        if (result == true)
+                        {
+                            await this.ShowMessageAsync("Import Complete", $"{simpleImport.TotalModsImported} mod(s) successfully imported.");
+                        }
                     }
                 }
                 catch (Exception ex)
                 {
-                    var simpleImport = new SimpleModPackImporter(new DirectoryInfo(openFileDialog.FileName)) { Owner = this };
+                    var simpleImport = new SimpleModPackImporter(new DirectoryInfo(openFileDialog.FileName), null) { Owner = this };
                     var result = simpleImport.ShowDialog();
 
                     if (result == true)
@@ -281,7 +294,7 @@ namespace FFXIV_TexTools
 
             if (result == true)
             {
-                await this.ShowMessageAsync("Mod Pack Creation Complete", $"The ModPack ({simpleCreator.ModPackFileName}.ttmp) has been successfully Created.");
+                await this.ShowMessageAsync("Mod Pack Creation Complete", $"The ModPack ({simpleCreator.ModPackFileName}.ttmp2) has been successfully Created.");
             }
         }
 
@@ -325,24 +338,25 @@ namespace FFXIV_TexTools
                     // Make sure backups exist
                     if (backupFiles.Length == 0)
                     {
-                        FlexibleMessageBox.Show("No backup files found in the following directory:\n\n" +
-                                                $"{indexBackupsDirectory.FullName}\n" +
+                        FlexibleMessageBox.Show($"No backup files found in the following directory:\n{indexBackupsDirectory.FullName}\n\n" +
+                                                $"Index entries will be put back to original offsets instead.\n" +
                                                 "-----------------------------------------------------\n\n",
-                            "Index Access Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            "Backup Files Missing", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
-                        return;
+                        // Toggle off all mods
+                        modding.ToggleAllMods(false);
                     }
-
-                    // Toggle off all mods
-                    modding.ToggleAllMods(false);
-
-                    // Copy backups to ffxiv folder
-                    foreach (var backupFile in backupFiles)
+                    else
                     {
-                        if (backupFile.Contains(".win32.index"))
+                        // Copy backups to ffxiv folder
+                        foreach (var backupFile in backupFiles)
                         {
-                            File.Copy(backupFile, $"{gameDirectory}/{Path.GetFileName(backupFile)}", true);
+                            if (backupFile.Contains(".win32.index"))
+                            {
+                                File.Copy(backupFile, $"{gameDirectory}/{Path.GetFileName(backupFile)}", true);
+                            }
                         }
+
                     }
 
                     // Delete modded dat files
@@ -368,6 +382,11 @@ namespace FFXIV_TexTools
                 await this.ShowMessageAsync("Start Over Complete", "The start over process has been completed.");
             }
 
+        }
+
+        private void Menu_Donate_Click(object sender, RoutedEventArgs e)
+        {
+            System.Diagnostics.Process.Start(WebUrl.FFXIV_Donate);
         }
     }
 }
