@@ -35,7 +35,7 @@ namespace FFXIV_TexTools.Views
         /// </summary>
         private void DonateButton_Click(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
+            System.Diagnostics.Process.Start(WebUrl.Donate_Website);
         }
 
         /// <summary>
