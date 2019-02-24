@@ -300,25 +300,7 @@ namespace FFXIV_TexTools.ViewModels
 
         private static XivLanguage GetLanguage()
         {
-            var language = Properties.Settings.Default.Application_Language;
-
-            switch (language)
-            {
-                case "English":
-                    return XivLanguage.English;
-                case "Japanese":
-                    return XivLanguage.Japanese;
-                case "German":
-                    return XivLanguage.German;
-                case "French":
-                    return XivLanguage.French;
-                case "Korean":
-                    return XivLanguage.Korean;
-                case "Chinese":
-                    return XivLanguage.Chinese;
-                default:
-                    return XivLanguage.English;
-            }
+            return XivLanguages.GetXivLanguage(Properties.Settings.Default.Application_Language);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
