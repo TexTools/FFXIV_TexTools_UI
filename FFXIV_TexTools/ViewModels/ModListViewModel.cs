@@ -389,7 +389,7 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     item.Category = XivStrings.UI;
 
-                    if (modItem.fullPath.Contains("ui/uld"))
+                    if (modItem.fullPath.Contains("ui/uld") || modItem.fullPath.Contains("ui/map"))
                     {
                         item.ModelInfo = new XivModelInfo
                         {
