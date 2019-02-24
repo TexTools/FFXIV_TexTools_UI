@@ -7,7 +7,14 @@
              mc:Ignorable="d" 
              d:DesignHeight="400" d:DesignWidth="200">
     <StackPanel>
-        <Label Content = "Current Language: " Margin="10"/>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Label Grid.Column="0" Content="Current Language: " Margin="10"/>
+            <Label Grid.Column="1" x:Name="CurrentLanguageLabel" Margin="10" FontWeight="Bold"/>
+        </Grid>
         <Button x:Name="EnglishBtn" Content="English" Margin="10" Click="EnglishBtn_Click"/>
         <Button x:Name="JapaneseBtn" Content="Japanese" Margin="10" Click="JapaneseBtn_Click"/>
         <Button x:Name="GermanBtn" Content="German" Margin="10" Click="GermanBtn_Click"/>
