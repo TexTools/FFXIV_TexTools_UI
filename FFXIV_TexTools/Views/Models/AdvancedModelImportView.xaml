@@ -1,0 +1,163 @@
+﻿<mah:MetroWindow x:Class="FFXIV_TexTools.Views.Models.AdvancedModelImportView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FFXIV_TexTools.Views.Models"
+        xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+        mc:Ignorable="d"
+        Title="Advanced Model Import" Height="1000" Width="800" WindowStartupLocation="CenterOwner" IsMaxRestoreButtonEnabled="False" IsMinButtonEnabled="False">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0" Orientation="Vertical">
+            <Label Content="DAE file to import"/>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBox Grid.Column="0" IsReadOnly="True" Margin="5" Text="{Binding DaeLocationText}"/>
+                <Button Grid.Column="1" Content=" ... " Margin="5" Command="{Binding FileSelectCommand}"/>
+            </Grid>
+        </StackPanel>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <GroupBox Grid.Column="0" Header="{Binding MaterialsGroupHeader, FallbackValue='Materials'}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <ListBox Grid.Row="0" ItemsSource="{Binding MaterialsList}" SelectedItem="{Binding SelectedMaterial}"/>
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBox Grid.Column="0" Margin="5" Text="{Binding MaterialStringText}"/>
+                        <Button Grid.Column="1" Margin="5" Content="Add/Remove" Command="{Binding AddRemoveMaterialCommand}"/>
+                    </Grid>
+                </Grid>
+            </GroupBox>
+            <GroupBox Grid.Column="1" Header="{Binding AttributesGroupHeader, FallbackValue='Attributes'}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <ListBox Grid.Row="0" ItemsSource="{Binding AttributeList}" SelectedItem="{Binding SelectedAttribute}"/>
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBox Grid.Column="0" Margin="5" Text="{Binding AttributeStringText}"/>
+                        <Button Grid.Column="1" Margin="5" Content="Add/Remove" Command="{Binding AddRemoveAttributeCommand}"/>
+
+                    </Grid>
+                </Grid>
+            </GroupBox>
+            <GroupBox Grid.Column="2" Header="{Binding BonesGroupHeader, FallbackValue='Bones'}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <ListBox Grid.Row="0" ItemsSource="{Binding BoneList}"/>
+                    <Label Grid.Row="1" Margin="5" Content="Bone addition is automatic" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </Grid>
+            </GroupBox>
+        </Grid>
+        <GroupBox Grid.Row="2" Header="Mesh Data">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Grid Grid.Column="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <ComboBox Grid.Row="0" Margin="5" mah:TextBoxHelper.UseFloatingWatermark="True" mah:TextBoxHelper.Watermark="Mesh Number" ItemsSource="{Binding MeshNumbers}" SelectedItem="{Binding SelectedMeshNumber}" SelectedIndex="{Binding SelectedMeshNumberIndex}"/>
+                    <ComboBox Grid.Row="1" Margin="5" mah:TextBoxHelper.UseFloatingWatermark="True" mah:TextBoxHelper.Watermark="Material Used" ItemsSource="{Binding MaterialUsed}" SelectedItem="{Binding SelectedMaterialUsed}" SelectedIndex="{Binding SelectedMaterialUsedIndex}"/>
+                    <Label Grid.Row="2" Margin="5" Content="{Binding PartCountLabel, FallbackValue='Part Count: 0'}" VerticalAlignment="Center"/>
+                    <GroupBox Grid.Row="3" Header="DAE Info">
+                        <RichTextBox x:Name="DaeInfoTextBox" VerticalScrollBarVisibility="Auto" IsReadOnly="True" >
+                            <RichTextBox.Resources>
+                                <Style TargetType="{x:Type Paragraph}">
+                                    <Setter Property="Margin" Value="0"/>
+                                </Style>
+                            </RichTextBox.Resources>
+                        </RichTextBox>
+                    </GroupBox>
+                </Grid>
+                <GroupBox Grid.Column="1" Header="{Binding ShapesHeader, FallbackValue='Shapes'}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <ListBox Grid.Row="0" Margin="5" ItemsSource="{Binding ShapesList}"/>
+                        <CheckBox Grid.Row="1" Margin="5" Content="Disable Shape Data" IsChecked="{Binding DisableShapeDataChecked}" IsEnabled="{Binding ShapeDataCheckBoxEnabled}"/>
+                        <TextBlock Grid.Row="2" Margin="5" Text="{Binding ShapeDescription}"/>
+                    </Grid>
+                </GroupBox>
+            </Grid>
+        </GroupBox>
+        <GroupBox Grid.Row="3" Header="Part Data">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Grid Grid.Column="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <ComboBox Grid.Row="0" Margin="5" mah:TextBoxHelper.UseFloatingWatermark="True" mah:TextBoxHelper.Watermark="Part Number" ItemsSource="{Binding PartNumbers}" SelectedItem="{Binding SelectedPartNumber, Mode=TwoWay}" SelectedIndex="{Binding SelectedPartNumberIndex}"/>
+                    <GroupBox Grid.Row="1" Header="Available Attributes">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <ListBox Grid.Row="0" Margin="5" ItemsSource="{Binding AttributeList}" SelectedItem="{Binding SelectedAvailableAttribute}"/>
+                            <Button Grid.Row="1" Margin="5" Content="Add To Part Attribute" Command="{Binding AddPartAttributeCommand}"/>
+                        </Grid>
+                    </GroupBox>
+                </Grid>
+                <GroupBox Grid.Column="1" Header="{Binding PartAttributesLabel, FallbackValue='Part Attributes'}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <ListBox Grid.Row="0" Margin="5" ItemsSource="{Binding PartAttributes}" SelectedItem="{Binding SelectedPartAttribute}"/>
+                        <Button Grid.Row="1" Margin="5" Content="Remove Part Attribute" Command="{Binding RemovePartAttributeCommand}"/>
+                    </Grid>
+                </GroupBox>
+            </Grid>
+        </GroupBox>
+        <Grid Grid.Row="4">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Margin="5" Content="Cancel" Click="Button_Click"/>
+                <Button Margin="5" Content="Import" Command="{Binding ImportCommand}" Click="Button_Click_1"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</mah:MetroWindow>
