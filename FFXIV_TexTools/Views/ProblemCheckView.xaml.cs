@@ -76,6 +76,9 @@ namespace FFXIV_TexTools.Views
                 }
             }
 
+            AddText("\nChecking Dat....\n", "Blue");
+            CheckDat();
+
             AddText("\nChecking Modlist....\n", "Blue");
             CheckMods();
 
@@ -126,6 +129,33 @@ namespace FFXIV_TexTools.Views
             }
         }
 
+        private void CheckDat()
+        {
+            var fileInfo = new FileInfo($"{_gameDirectory}\\{XivDataFile._06_Ui.GetDataFileName()}.win32.dat1");
+
+            AddText($"\t{XivDataFile._06_Ui.GetDataFileName()} Dat1", textColor);
+
+            if (fileInfo.Exists)
+            {
+                if (fileInfo.Length < 10000000)
+                {
+                    AddText("\t\u2716\n", "Red");
+                    AddText("\tThe Dat File ( 060000.win32.dat1 ) is missing data. \n", "Red");
+                }
+                else
+                {
+                    AddText("\t\u2714\n", "Green");
+                }
+            }
+            else
+            {
+                AddText("\t\u2716\n", "Red");
+                AddText("\tThe Dat File ( 060000.win32.dat1 ) could not be found. \n", "Red");
+            }
+
+
+        }
+
         /// <summary>
         /// Checks the mods for any problems
         /// </summary>
@@ -172,7 +202,18 @@ namespace FFXIV_TexTools.Views
                         AddText("\t\u2714", "Green");
                     }
 
-                    var fileType = dat.GetFileType(mod.data.modOffset, XivDataFiles.GetXivDataFile(mod.datFile));
+                    var fileType = 0;
+                    try
+                    {
+                        fileType = dat.GetFileType(mod.data.modOffset, XivDataFiles.GetXivDataFile(mod.datFile));
+                    }
+                    catch(Exception ex)
+                    {
+                        AddText("\t\u2716\n", "Red");
+                        AddText($"\tError: {ex.Message}\n", "Red");
+                    }
+
+
                     if (fileType != 2 && fileType != 3 && fileType != 4)
                     {
                         AddText("\t\u2716\n", "Red");
