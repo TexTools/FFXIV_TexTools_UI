@@ -79,6 +79,24 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&amp;hosted_button_id=B78KX56JPQFMJ&amp;source=url.
+        /// </summary>
+        internal static string Donate_Website {
+            get {
+                return ResourceManager.GetString("Donate_Website", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to https://textools.dualwield.net/donate/.
+        /// </summary>
+        internal static string FFXIV_Donate {
+            get {
+                return ResourceManager.GetString("FFXIV_Donate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to https://www.nexusmods.com/finalfantasy14.
         /// </summary>
         internal static string NexusMods_Website {
