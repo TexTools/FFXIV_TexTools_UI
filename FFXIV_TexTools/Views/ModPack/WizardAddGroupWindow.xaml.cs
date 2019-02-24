@@ -393,10 +393,22 @@ namespace FFXIV_TexTools.Views
             {
                 item.Category = XivStrings.UI;
 
-                item.ModelInfo = new XivModelInfo
+
+                if (modItem.fullPath.Contains("ui/uld") || modItem.fullPath.Contains("ui/map"))
                 {
-                    ModelID = int.Parse(fullPath.Substring(fullPath.LastIndexOf("/", StringComparison.Ordinal) + 1, 6))
-                };
+                    item.ModelInfo = new XivModelInfo
+                    {
+                        ModelID = 0
+                    };
+                }
+                else
+                {
+                    item.ModelInfo = new XivModelInfo
+                    {
+                        ModelID = int.Parse(fullPath.Substring(fullPath.LastIndexOf("/", StringComparison.Ordinal) + 1,
+                            6))
+                    };
+                }
             }
 
             if (modItem.fullPath.Contains("/hou/"))
