@@ -9,7 +9,7 @@
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="Application_Language" Type="System.String" Scope="User">
-      <Value Profile="(Default)">English</Value>
+      <Value Profile="(Default)">en</Value>
     </Setting>
     <Setting Name="Application_Theme" Type="System.String" Scope="User">
       <Value Profile="(Default)">BaseLight</Value>
@@ -43,6 +43,9 @@
     </Setting>
     <Setting Name="Cull_Mode" Type="System.String" Scope="User">
       <Value Profile="(Default)">Back</Value>
+    </Setting>
+    <Setting Name="FFXIV_Version" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
     </Setting>
   </Settings>
 </SettingsFile>

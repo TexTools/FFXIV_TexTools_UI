@@ -49,7 +49,7 @@ namespace FFXIV_TexTools.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("English")]
+        [global::System.Configuration.DefaultSettingValueAttribute("en")]
         public string Application_Language {
             get {
                 return ((string)(this["Application_Language"]));
@@ -188,6 +188,18 @@ namespace FFXIV_TexTools.Properties {
             }
             set {
                 this["Cull_Mode"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string FFXIV_Version {
+            get {
+                return ((string)(this["FFXIV_Version"]));
+            }
+            set {
+                this["FFXIV_Version"] = value;
             }
         }
     }
