@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+using FFXIV_TexTools.Helpers;
 using FFXIV_TexTools.Models;
 using FFXIV_TexTools.Resources;
 using ImageMagick;
@@ -26,6 +27,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Windows;
+using System.Windows.Forms;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using xivModdingFramework.General.Enums;
@@ -279,119 +281,145 @@ namespace FFXIV_TexTools.ViewModels
                 DataFile = XivDataFiles.GetXivDataFile(modItem.datFile)
             };
 
-            if (modItem.fullPath.Contains("chara/equipment") || modItem.fullPath.Contains("chara/accessory"))
+            try
             {
-                item.Category = XivStrings.Gear;
-                item.ModelInfo = new XivModelInfo
+                if (modItem.fullPath.Contains("chara/equipment") || modItem.fullPath.Contains("chara/accessory"))
                 {
-                    ModelID = int.Parse(fullPath.Substring(17, 4))
-                };
-            }
-
-            if (modItem.fullPath.Contains("chara/weapon"))
-            {
-                item.Category = XivStrings.Gear;
-                item.ModelInfo = new XivModelInfo
-                {
-                    ModelID = int.Parse(fullPath.Substring(14, 4))
-                };
-            }
-
-            if (modItem.fullPath.Contains("chara/human"))
-            {
-                item.Category = XivStrings.Character;
-
-
-                if (item.ItemCategory.Equals(XivStrings.Body))
-                {
+                    item.Category = XivStrings.Gear;
                     item.ModelInfo = new XivModelInfo
                     {
-                        ModelID = int.Parse(fullPath.Substring(fullPath.IndexOf("/body", StringComparison.Ordinal) + 7, 4))
+                        ModelID = int.Parse(fullPath.Substring(17, 4))
                     };
                 }
-                else if (item.ItemCategory.Equals(XivStrings.Hair))
+
+                if (modItem.fullPath.Contains("chara/weapon"))
                 {
+                    item.Category = XivStrings.Gear;
                     item.ModelInfo = new XivModelInfo
                     {
-                        ModelID = int.Parse(fullPath.Substring(fullPath.IndexOf("/hair", StringComparison.Ordinal) + 7, 4))
+                        ModelID = int.Parse(fullPath.Substring(14, 4))
                     };
                 }
-                else if (item.ItemCategory.Equals(XivStrings.Face))
+
+                if (modItem.fullPath.Contains("chara/human"))
                 {
+                    item.Category = XivStrings.Character;
+
+
+                    if (item.Name.Equals(XivStrings.Body))
+                    {
+                        item.ModelInfo = new XivModelInfo
+                        {
+                            ModelID = int.Parse(
+                                fullPath.Substring(fullPath.IndexOf("/body", StringComparison.Ordinal) + 7, 4))
+                        };
+                    }
+                    else if (item.Name.Equals(XivStrings.Hair))
+                    {
+                        item.ModelInfo = new XivModelInfo
+                        {
+                            ModelID = int.Parse(
+                                fullPath.Substring(fullPath.IndexOf("/hair", StringComparison.Ordinal) + 7, 4))
+                        };
+                    }
+                    else if (item.Name.Equals(XivStrings.Face))
+                    {
+                        item.ModelInfo = new XivModelInfo
+                        {
+                            ModelID = int.Parse(
+                                fullPath.Substring(fullPath.IndexOf("/face", StringComparison.Ordinal) + 7, 4))
+                        };
+                    }
+                    else if (item.Name.Equals(XivStrings.Tail))
+                    {
+                        item.ModelInfo = new XivModelInfo
+                        {
+                            ModelID = int.Parse(
+                                fullPath.Substring(fullPath.IndexOf("/tail", StringComparison.Ordinal) + 7, 4))
+                        };
+                    }
+                }
+
+                if (modItem.fullPath.Contains("chara/common"))
+                {
+                    item.Category = XivStrings.Character;
+
+                    if (item.Name.Equals(XivStrings.Face_Paint))
+                    {
+                        item.ModelInfo = new XivModelInfo
+                        {
+                            ModelID = int.Parse(
+                                fullPath.Substring(fullPath.LastIndexOf("_", StringComparison.Ordinal) + 1, 1))
+                        };
+                    }
+                    else if (item.Name.Equals(XivStrings.Equip_Decals))
+                    {
+                        item.ModelInfo = new XivModelInfo
+                        {
+                            ModelID = int.Parse(
+                                fullPath.Substring(fullPath.LastIndexOf("_", StringComparison.Ordinal) + 1, 3))
+                        };
+                    }
+                }
+
+                if (modItem.fullPath.Contains("chara/monster"))
+                {
+                    item.Category = XivStrings.Companions;
+
                     item.ModelInfo = new XivModelInfo
                     {
-                        ModelID = int.Parse(fullPath.Substring(fullPath.IndexOf("/face", StringComparison.Ordinal) + 7, 4))
+                        ModelID = int.Parse(fullPath.Substring(15, 4)),
+                        Body = int.Parse(fullPath.Substring(fullPath.IndexOf("/body", StringComparison.Ordinal) + 7, 4))
                     };
                 }
-                else if (item.ItemCategory.Equals(XivStrings.Tail))
+
+                if (modItem.fullPath.Contains("chara/demihuman"))
                 {
+                    item.Category = XivStrings.Companions;
+
                     item.ModelInfo = new XivModelInfo
                     {
-                        ModelID = int.Parse(fullPath.Substring(fullPath.IndexOf("/tail", StringComparison.Ordinal) + 7, 4))
+                        Body = int.Parse(fullPath.Substring(17, 4)),
+                        ModelID = int.Parse(
+                            fullPath.Substring(fullPath.IndexOf("t/e", StringComparison.Ordinal) + 3, 4))
+                    };
+                }
+
+                if (modItem.fullPath.Contains("ui/"))
+                {
+                    item.Category = XivStrings.UI;
+
+                    if (modItem.fullPath.Contains("ui/uld"))
+                    {
+                        item.ModelInfo = new XivModelInfo
+                        {
+                            ModelID = 0
+                        };
+                    }
+                    else
+                    {
+                        item.ModelInfo = new XivModelInfo
+                        {
+                            ModelID = int.Parse(fullPath.Substring(fullPath.LastIndexOf("/", StringComparison.Ordinal) + 1,
+                                6))
+                        };
+                    }
+                }
+
+                if (modItem.fullPath.Contains("/hou/"))
+                {
+                    item.Category = XivStrings.Housing;
+
+                    item.ModelInfo = new XivModelInfo
+                    {
+                        ModelID = int.Parse(fullPath.Substring(fullPath.LastIndexOf("_m", StringComparison.Ordinal) + 2,
+                            4))
                     };
                 }
             }
-
-            if (modItem.fullPath.Contains("chara/common"))
+            catch (Exception ex)
             {
-                item.Category = XivStrings.Character;
-
-                if (item.ItemCategory.Equals(XivStrings.Face_Paint))
-                {
-                    item.ModelInfo = new XivModelInfo
-                    {
-                        ModelID = int.Parse(fullPath.Substring(fullPath.LastIndexOf("_", StringComparison.Ordinal) + 1, 1))
-                    };
-                }
-                else if (item.ItemCategory.Equals(XivStrings.Equip_Decals))
-                {
-                    item.ModelInfo = new XivModelInfo
-                    {
-                        ModelID = int.Parse(fullPath.Substring(fullPath.LastIndexOf("_", StringComparison.Ordinal) + 1, 3))
-                    };
-                }
-            }
-
-            if (modItem.fullPath.Contains("chara/monster"))
-            {
-                item.Category = XivStrings.Companions;
-
-                item.ModelInfo = new XivModelInfo
-                {
-                    ModelID = int.Parse(fullPath.Substring(15, 4)),
-                    Body = int.Parse(fullPath.Substring(fullPath.IndexOf("/body", StringComparison.Ordinal) + 7, 4))
-                };
-            }
-
-            if (modItem.fullPath.Contains("chara/demihuman"))
-            {
-                item.Category = XivStrings.Companions;
-
-                item.ModelInfo = new XivModelInfo
-                {
-                    Body = int.Parse(fullPath.Substring(17, 4)),
-                    ModelID = int.Parse(fullPath.Substring(fullPath.IndexOf("t/e", StringComparison.Ordinal) + 3, 4))
-                };
-            }
-
-            if (modItem.fullPath.Contains("ui/"))
-            {
-                item.Category = XivStrings.UI;
-
-                item.ModelInfo = new XivModelInfo
-                {
-                    ModelID = int.Parse(fullPath.Substring(fullPath.LastIndexOf("/", StringComparison.Ordinal) + 1, 6))
-                };
-            }
-
-            if (modItem.fullPath.Contains("/hou/"))
-            {
-                item.Category = XivStrings.Housing;
-
-                item.ModelInfo = new XivModelInfo
-                {
-                    ModelID = int.Parse(fullPath.Substring(fullPath.LastIndexOf("_m", StringComparison.Ordinal) + 2, 4))
-                };
+                throw new Exception($"There was an error getting the model data for {modItem.name} | {modItem.fullPath}");
             }
 
             return item;
@@ -617,7 +645,21 @@ namespace FFXIV_TexTools.ViewModels
                         Path = modItem.fullPath
                     };
 
-                    var texData = tex.GetTexData(ttp);
+                    XivTex texData;
+                    try
+                    {
+                        texData = tex.GetTexData(ttp);
+                    }
+                    catch (Exception ex)
+                    {
+                        var message =
+                            $"There was an error reading the texture file {ttp.Path}.\n\n{ex.Message}";
+                        FlexibleMessageBox.Show(
+                            message, "Error Reading Texture Data",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        continue;
+                    }
+
                     var mapBytes = tex.GetImageData(texData);
 
                     var pixelSettings =
