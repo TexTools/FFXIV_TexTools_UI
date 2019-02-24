@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System.Windows.Controls;
+using xivModdingFramework.General.Enums;
 
 namespace FFXIV_TexTools.Views
 {
@@ -26,6 +27,8 @@ namespace FFXIV_TexTools.Views
         public LanguageOptionsView()
         {
             InitializeComponent();
+
+            CurrentLanguageLabel.Content = $"{XivLanguages.GetXivLanguage(Properties.Settings.Default.Application_Language)}";
         }
 
         /// <summary>
@@ -46,32 +49,32 @@ namespace FFXIV_TexTools.Views
 
         private void EnglishBtn_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            UpdateLanguage("English", "TexTools will now restart to apply the changes.");
+            UpdateLanguage("en", "TexTools will now restart to apply the changes.");
         }
 
         private void JapaneseBtn_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            UpdateLanguage("Japanese", "TexToolsは変更を適用するためリスタートしました。");
+            UpdateLanguage("ja", "TexToolsは変更を適用するためリスタートしました。");
         }
 
         private void GermanBtn_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            UpdateLanguage("German", "TexTools wurde neu gestartet, um die Änderungen anzuwenden.");
+            UpdateLanguage("de", "TexTools wurde neu gestartet, um die Änderungen anzuwenden.");
         }
 
         private void FrenchBtn_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            UpdateLanguage("French", "TexTools a redémarré pour appliquer les modifications.");
+            UpdateLanguage("fr", "TexTools a redémarré pour appliquer les modifications.");
         }
 
         private void KoreanBtn_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            UpdateLanguage("Korean", "TexTools가 변경 사항을 적용하기 위해 재시작되었습니다.");
+            UpdateLanguage("ko", "TexTools가 변경 사항을 적용하기 위해 재시작되었습니다.");
         }
 
         private void ChineseBtn_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            UpdateLanguage("Chinese", "TexTools重新启动以应用更改。");
+            UpdateLanguage("zh", "TexTools重新启动以应用更改。");
         }
     }
 }
