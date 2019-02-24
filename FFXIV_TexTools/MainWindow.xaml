@@ -9,7 +9,7 @@
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         xmlns:views ="clr-namespace:FFXIV_TexTools.Views"
         mc:Ignorable="d"
-        Title="FFXIV TexTools" Height="720" Width="1280" WindowStartupLocation="CenterScreen">
+        Title="FFXIV TexTools 2.0 Beta2" Height="720" Width="1280" WindowStartupLocation="CenterScreen">
     <Controls:MetroWindow.RightWindowCommands>
         <Controls:WindowCommands>
             <Button Content="{Binding DXVersionText}" Command="{Binding DXVersionCommand}" />
@@ -57,14 +57,17 @@
                     <MenuItem x:Name="MenuLightTheme" Header="Light" Click="MenuLightTheme_Click"/>
                     <MenuItem x:Name="MenuDarkTheme" Header="Dark" Click="MenuDarkTheme_Click"/>
                 </MenuItem>
-
             </MenuItem>
             <MenuItem Header="Help">
-                <MenuItem x:Name="Menu_About" Header="About" Click="Menu_About_Click"/>
                 <MenuItem x:Name="Menu_ProblemCheck" Header="Check For Problems" Click="Menu_ProblemCheck_Click"/>
                 <MenuItem x:Name="Menu_StartOver" Header="Start Over" Click="Menu_StartOver_Click" />
                 <MenuItem x:Name="Menu_BugReport" Header="Report Bug" Click="Menu_BugReport_Click"/>
                 <MenuItem x:Name="Menu_Tutorials" Header="Tutorials" Click="Menu_Tutorials_Click"/>
+            </MenuItem>
+            <MenuItem Header="About">
+                <MenuItem x:Name="Menu_About" Header="About TexTools" Click="Menu_About_Click"/>
+                <MenuItem x:Name="Menu_Donate" Header="Donate" Click="Menu_Donate_Click"/>
+
             </MenuItem>
             <MenuItem Header="Mod Repos" HorizontalAlignment="Right">
                 <MenuItem x:Name="PKEmporium" Header="PrettyKitty Emporium" Click="PKEmporium_Click"/>
@@ -99,7 +102,15 @@
                 </Grid>
             </GroupBox>
 
-            <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch"/>
+            <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" >
+                <GridSplitter.Background>
+                    <VisualBrush Stretch="Uniform">
+                        <VisualBrush.Visual>
+                            <Path Data="M22.793,12.196C19.432,12.196 16.715,9.467 16.715,6.097 16.715,2.73 19.432,0 22.793,0 26.146,0 28.866,2.729 28.866,6.097 28.866,9.466 26.145,12.196 22.793,12.196z M22.794,28.889C19.433,28.889 16.715,26.16 16.715,22.79 16.715,19.424 19.432,16.691 22.793,16.691 26.146,16.691 28.866,19.423 28.868,22.79 28.866,26.162 26.144,28.889 22.794,28.889z M22.794,45.583C19.433,45.583 16.715,42.854 16.715,39.484 16.715,36.114 19.432,33.386 22.793,33.386 26.146,33.384 28.866,36.115 28.866,39.484 28.866,42.853 26.144,45.583 22.794,45.583z" Fill="Black"/>
+                        </VisualBrush.Visual>
+                    </VisualBrush>
+                </GridSplitter.Background>
+            </GridSplitter>
             <Controls:MetroTabControl x:Name="TabsControl" Grid.Column="2" Controls:TabControlHelper.Underlined="TabPanel">
                 <TabItem x:Name="TextureTabItem" Header="Texture">
                     <views:TextureView/>
