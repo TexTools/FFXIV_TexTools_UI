@@ -18,8 +18,12 @@
             <ColumnDefinition Width="2*"/>
         </Grid.ColumnDefinitions>
         <GroupBox Grid.Column="0" Header="Modded Items" Margin="5">
-            <StackPanel>
-                <Grid>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Grid Grid.Row="0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition/>
@@ -29,7 +33,7 @@
                     <RadioButton Grid.Column="1" Content="Item" GroupName="Lights" Margin="5" IsChecked="{Binding ItemFilter}"/>
                     <RadioButton Grid.Column="2" Content="Mod Pack" GroupName="Lights" Margin="5" IsChecked="{Binding ModPackFilter}"/>
                 </Grid>
-                <TreeView x:Name="ModListTreeView" ItemsSource="{Binding Categories}" SelectedItemChanged="TreeView_SelectedItemChanged" Style="{StaticResource VirtualisedMetroTreeView}">
+                <TreeView x:Name="ModListTreeView" Grid.Row="1" ItemsSource="{Binding Categories}" SelectedItemChanged="TreeView_SelectedItemChanged" Style="{StaticResource VirtualisedMetroTreeView}">
                     <TreeView.ItemContainerStyle>
                         <Style TargetType="{x:Type TreeViewItem}">
                             <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}"/>
@@ -43,7 +47,7 @@
                         </HierarchicalDataTemplate>
                     </TreeView.Resources>
                 </TreeView>
-            </StackPanel>
+            </Grid>
         </GroupBox>
 
         <Grid Grid.Column="1">
