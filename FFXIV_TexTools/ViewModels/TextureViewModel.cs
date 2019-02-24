@@ -996,8 +996,7 @@ namespace FFXIV_TexTools.ViewModels
 
             if (SelectedMap.TexType.Type == XivTexType.ColorSet)
             {
-                texData = _mtrl.MtrlToXivTex(_xivMtrl);
-
+                texData = _mtrl.MtrlToXivTex(_xivMtrl, SelectedMap.TexType);
                 _mtrl.SaveColorSetExtraData(_item, _xivMtrl, savePath, SelectedRace.XivRace);
             }
             else
