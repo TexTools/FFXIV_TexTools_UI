@@ -457,7 +457,16 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     if (modItem.fullPath.Contains("equipment"))
                     {
-                        var raceCode = itemPath.Substring(itemPath.LastIndexOf("_c") + 2, 4);
+                        string raceCode;
+                        if (itemPath.Contains("/v"))
+                        {
+                            raceCode = itemPath.Substring(itemPath.LastIndexOf("_c") + 2, 4);
+                        }
+                        else
+                        {
+                            raceCode = itemPath.Substring(itemPath.LastIndexOf("/c") + 2, 4);
+                        }
+
                         modListModel.Race = XivRaces.GetXivRace(raceCode).GetDisplayName();
                     }
                     else
