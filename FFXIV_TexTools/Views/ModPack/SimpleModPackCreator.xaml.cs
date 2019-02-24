@@ -368,7 +368,7 @@ namespace FFXIV_TexTools.Views
             if (ModPackName.Text.Equals(string.Empty))
             {
                 if (FlexibleMessageBox.Show(new Wpf32Window(this),
-                        $"Nothing was entered for ModPack Name\n\nAuthor will default to \"ModPack\"",
+                        $"Nothing was entered for ModPack Name\n\nModPack Name will default to \"ModPack\"",
                         "No Name Found", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) ==
                     System.Windows.Forms.DialogResult.OK)
                 {
@@ -381,6 +381,12 @@ namespace FFXIV_TexTools.Views
             }
 
             var verString = ModPackVersion.Text.Replace("_", "0");
+
+            // Replace commas with periods for different culture formats such as FR
+            if (verString.Contains(","))
+            {
+                verString = verString.Replace(",", ".");
+            }
 
             var versionNumber = Version.Parse(verString);
 

@@ -69,6 +69,11 @@ namespace FFXIV_TexTools.Views
 
             var verString = ModPackVersion.Text.Replace("_", "0");
 
+            if (verString.Contains(","))
+            {
+                verString = verString.Replace(",", ".");
+            }
+
             VersionNumber = Version.Parse(verString);
 
             if (VersionNumber.ToString().Equals("0.0.0"))
