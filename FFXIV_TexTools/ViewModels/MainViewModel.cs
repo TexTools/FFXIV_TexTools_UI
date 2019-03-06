@@ -392,6 +392,12 @@ namespace FFXIV_TexTools.ViewModels
                 if (MessageBox.Show(backupMessage, "Create Backup?", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) ==
                     DialogResult.Yes)
                 {
+                    if (index.IsIndexLocked(XivDataFile._0A_Exd))
+                    {
+                        FlexibleMessageBox.Show("Unable to create backup while game is running.", $"Backup Creation Failed {applicationVersion}", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
                     try
                     {
                         // Toggle off all mods
@@ -400,12 +406,6 @@ namespace FFXIV_TexTools.ViewModels
                     catch (Exception ex)
                     {
                         FlexibleMessageBox.Show($"Unable to create backup files.\n\nError Message:\n{ex.Message}", $"Backup Creation Failed {applicationVersion}", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        return;
-                    }
-
-                    if (index.IsIndexLocked(XivDataFile._0A_Exd))
-                    {
-                        FlexibleMessageBox.Show("Unable to create backup while game is running.", $"Backup Creation Failed {applicationVersion}", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
 
@@ -420,10 +420,12 @@ namespace FFXIV_TexTools.ViewModels
                         }
                         catch(Exception e)
                         {
-                        FlexibleMessageBox.Show($"Unable to create backups.\n\nError: {e.Message}", $"Backup Creation Failed {applicationVersion}", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
+                            FlexibleMessageBox.Show($"Unable to create backups.\n\nError: {e.Message}", $"Backup Creation Failed {applicationVersion}", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
                     }
+
+                    Properties.Settings.Default.FFXIV_Version = ffxivVersion.ToString();
+                    Properties.Settings.Default.Save();
                 }
             }
         }
