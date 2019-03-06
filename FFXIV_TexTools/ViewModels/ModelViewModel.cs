@@ -463,9 +463,9 @@ namespace FFXIV_TexTools.ViewModels
                 }
                 else if (_item.Category.Equals(XivStrings.Character))
                 {
-                    _item.ModelInfo = new XivModelInfo {Body = int.Parse(SelectedNumber.Name)};
+                    _item.ModelInfo = new XivModelInfo { Body = int.Parse(SelectedNumber.Name) };
 
-                    ((XivCharacter) _item).ItemSubCategory = SelectedPart.Name;
+                    ((XivCharacter)_item).ItemSubCategory = SelectedPart.Name;
 
                     _mdlData = _mdl.GetMdlData(_item, SelectedRace.XivRace);
                 }
@@ -473,7 +473,7 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     if (_item.ModelInfo.ModelType == XivItemType.demihuman)
                     {
-                        ((XivMount) _item).ItemSubCategory = SelectedPart.Name;
+                        ((XivMount)_item).ItemSubCategory = SelectedPart.Name;
                     }
 
                     _mdlData = _mdl.GetMdlData(_item, SelectedRace.XivRace);
@@ -482,7 +482,7 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     if (PartVisibility == Visibility.Visible)
                     {
-                        ((XivFurniture) _item).ItemSubCategory = SelectedPart.Name;
+                        ((XivFurniture)_item).ItemSubCategory = SelectedPart.Name;
                     }
 
                     _mdlData = _mdl.GetMdlData(_item, SelectedRace.XivRace, null, SelectedPart.MdlPath);
@@ -1121,7 +1121,8 @@ namespace FFXIV_TexTools.ViewModels
         {
             try
             {
-                var dae = new Dae(_gameDirectory, _item.DataFile);
+                var appVersion = FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location).FileVersion;
+                var dae = new Dae(_gameDirectory, _item.DataFile, Settings.Default.DAE_Plugin_Target, appVersion);
                 var saveDir = new DirectoryInfo(Settings.Default.Save_Directory);
                 dae.MakeDaeFileFromModel(_item, _mdlData, saveDir, SelectedRace.XivRace);
                 _modelView.BottomFlyout.IsOpen = false;
@@ -1213,7 +1214,8 @@ namespace FFXIV_TexTools.ViewModels
         {
             try
             {
-                var dae = new Dae(_gameDirectory, _item.DataFile);
+                var appVersion = FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location).FileVersion;
+                var dae = new Dae(_gameDirectory, _item.DataFile, Settings.Default.DAE_Plugin_Target, appVersion);
                 var saveDir = new DirectoryInfo(Settings.Default.Save_Directory);
                 dae.MakeDaeFileFromModel(_item, _mdlData, saveDir, SelectedRace.XivRace);
             }
@@ -1266,22 +1268,22 @@ namespace FFXIV_TexTools.ViewModels
 
             var modData = modlist.TryGetModEntry(mdlPath);
 
-            // pass in the original mdl if the current one is modded
             try
             {
+                // pass in the original mdl if the current one is modded
                 if (modData != null && modData.enabled)
                 {
                     var originalMdl = _mdl.GetMdlData(_item, SelectedRace.XivRace, null, modData.fullPath,
                         modData.data.originalOffset);
 
-                    warnings = _mdl.ImportModel(_item, originalMdl, savePath, null, XivStrings.TexTools);
+                    warnings = _mdl.ImportModel(_item, originalMdl, savePath, null, XivStrings.TexTools, Settings.Default.DAE_Plugin_Target);
                 }
                 else
                 {
-                    warnings = _mdl.ImportModel(_item, _mdlData, savePath, null, XivStrings.TexTools);
+                    warnings = _mdl.ImportModel(_item, _mdlData, savePath, null, XivStrings.TexTools, Settings.Default.DAE_Plugin_Target);
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 FlexibleMessageBox.Show(
                     $"There was an error attempting to import the model.\n\n{ex.Message}", "Error Importing Dae",
@@ -1327,7 +1329,7 @@ namespace FFXIV_TexTools.ViewModels
                 try
                 {
                     warnings = _mdl.ImportModel(_item, _mdlData, new DirectoryInfo(openFileDialog.FileName), null,
-                        XivStrings.TexTools);
+                        XivStrings.TexTools, Settings.Default.DAE_Plugin_Target);
                 }
                 catch (Exception ex)
                 {
@@ -1361,9 +1363,37 @@ namespace FFXIV_TexTools.ViewModels
         /// <param name="obj"></param>
         private void AdvancedImport(object obj)
         {
-            var advImportedView = new AdvancedModelImportView(_mdlData, _item, SelectedRace.XivRace)
-                { Owner = Window.GetWindow(_modelView)};
-            var result = advImportedView.ShowDialog();
+            var modlist = new Modding(_gameDirectory);
+            var mdlPath = Path.Combine(_mdlData.MdlPath.Folder, _mdlData.MdlPath.File);
+            bool? result = false;
+
+            var modData = modlist.TryGetModEntry(mdlPath);
+
+            try
+            {
+                // pass in the original mdl if the current one is modded
+                if (modData != null && modData.enabled)
+                {
+                    var originalMdl = _mdl.GetMdlData(_item, SelectedRace.XivRace, null, modData.fullPath,
+                        modData.data.originalOffset);
+
+                    var advImportedView = new AdvancedModelImportView(originalMdl, _item, SelectedRace.XivRace, false)
+                        { Owner = Window.GetWindow(_modelView) };
+                    result = advImportedView.ShowDialog();
+                }
+                else
+                {
+                    var advImportedView = new AdvancedModelImportView(_mdlData, _item, SelectedRace.XivRace, false)
+                        { Owner = Window.GetWindow(_modelView) };
+                    result = advImportedView.ShowDialog();
+                }
+            }
+            catch (Exception ex)
+            {
+                FlexibleMessageBox.Show(
+                    $"There was an error building Advanced Import Window.\n\n{ex.Message}", "Advanced Import Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
 
             if (result == true)
             {
