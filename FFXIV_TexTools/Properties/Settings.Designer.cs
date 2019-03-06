@@ -202,5 +202,17 @@ namespace FFXIV_TexTools.Properties {
                 this["FFXIV_Version"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("OpenCOLLADA")]
+        public string DAE_Plugin_Target {
+            get {
+                return ((string)(this["DAE_Plugin_Target"]));
+            }
+            set {
+                this["DAE_Plugin_Target"] = value;
+            }
+        }
     }
 }

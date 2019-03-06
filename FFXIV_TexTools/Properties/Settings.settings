@@ -47,5 +47,8 @@
     <Setting Name="FFXIV_Version" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
+    <Setting Name="DAE_Plugin_Target" Type="System.String" Scope="User">
+      <Value Profile="(Default)">OpenCOLLADA</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
