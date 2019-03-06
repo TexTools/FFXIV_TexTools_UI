@@ -554,7 +554,7 @@ namespace FFXIV_TexTools.ViewModels
                         modListModel.Map = "UI";
                     }
                 }
-                else if (itemPath.Contains("model"))
+                else if (itemPath.Contains(".mdl"))
                 {
                     modListModel.Map = "3D";
                 }
@@ -639,7 +639,7 @@ namespace FFXIV_TexTools.ViewModels
                         modListModel.Image = magickImage.ToBitmapSource();
                     }
                 }
-                else if (itemPath.Contains("model"))
+                else if (itemPath.Contains(".mdl"))
                 {
                     modListModel.Image = new BitmapImage(new Uri("pack://application:,,,/FFXIV_TexTools;component/Resources/3DModel.png"));
                 }
