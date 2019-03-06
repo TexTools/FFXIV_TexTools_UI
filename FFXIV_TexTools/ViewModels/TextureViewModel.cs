@@ -816,12 +816,38 @@ namespace FFXIV_TexTools.ViewModels
             }
             else
             {
-                var pixelSettings =
-                    new PixelReadSettings(4, 16, StorageType.Float, PixelMapping.RGBA);
+                var dxVersion = int.Parse(Properties.Settings.Default.DX_Version);
+
+                if (_item.Category.Equals(XivStrings.Character))
+                {
+                    if (TypePartVisibility == Visibility.Visible)
+                    {
+                        _xivMtrl = _mtrl.GetMtrlData(_item, SelectedRace.XivRace, SelectedTypePart.Name[0], dxVersion);
+                    }
+                    else
+                    {
+                        _xivMtrl = _mtrl.GetMtrlData(_item, SelectedRace.XivRace, SelectedType.Name[0], dxVersion);
+                    }
+                }
+                else
+                {
+                    if ((_item.ItemCategory.Equals(XivStrings.Mounts) || _item.ItemCategory.Equals(XivStrings.Monster)) && _item.ModelInfo.ModelType == XivItemType.demihuman)
+                    {
+                        _xivMtrl = _mtrl.GetMtrlData(_item, SelectedRace.XivRace, SelectedType.Name[0], dxVersion);
+                    }
+                    else
+                    {
+                        _xivMtrl = _mtrl.GetMtrlData(_item, SelectedRace.XivRace, SelectedPart.Name[0], dxVersion);
+                    }
+
+                }
 
                 var floats = Half.ConvertToFloat(_xivMtrl.ColorSetData.ToArray());
 
                 var floatArray = Utilities.ToByteArray(floats);
+
+                var pixelSettings =
+                    new PixelReadSettings(4, 16, StorageType.Float, PixelMapping.RGBA);
 
                 using (var magickImage = new MagickImage(floatArray, pixelSettings))
                 {
