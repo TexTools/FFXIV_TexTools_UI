@@ -127,6 +127,7 @@
                                         <RowDefinition Height="Auto"/>
                                         <RowDefinition Height="Auto"/>
                                         <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
                                         <RowDefinition/>
                                     </Grid.RowDefinitions>
                                     <ComboBox x:Name="ModelTypeComboBox" Grid.Row="0" mah:TextBoxHelper.Watermark="Model Type" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5" DisplayMemberPath="Name"/>
@@ -151,11 +152,18 @@
                                             </Grid.ColumnDefinitions>
                                             <TextBox x:Name="CustomModelTextBox" Grid.Column="0" IsReadOnly="True" mah:TextBoxHelper.Watermark="Select a file..." VerticalAlignment="Top" Margin="0,0,10,0"/>
                                             <Button x:Name="GetCustomModelButton" Grid.Column="1" Content=" . . . " VerticalAlignment="Top" Margin="0,0,10,0" Click="GetCustomModelButton_Click"/>
-                                            <Button x:Name="AdvOptionsButton" Grid.Column="2" Content="Adv. Options " VerticalAlignment="Top" Click="AdvOptionsButton_Click" IsEnabled="False"/>
                                         </Grid>
                                         <Button x:Name="AddCustomModelButton" Grid.Column="1" Content="ADD" VerticalAlignment="Top" Margin="10,0,0,0" Click="AddCustomModelButton_Click"/>
                                     </Grid>
-                                    <Label x:Name="NoModelModsLabel" Grid.Row="3" Foreground="DarkRed" FontWeight="Bold" Margin="5"/>
+                                    <Grid Grid.Row="3" Margin="5">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="2*"/>
+                                            <ColumnDefinition/>
+                                        </Grid.ColumnDefinitions>
+                                        <Label Grid.Column="0" Content="Add a Model using advanced options"/>
+                                        <Button x:Name="AdvOptionsButton" Grid.Column="1" Content="Add w/ Adv. Options " VerticalAlignment="Top" Margin="10,0,0,0" Click="AdvOptionsButton_Click"/>
+                                    </Grid>
+                                    <Label x:Name="NoModelModsLabel" Grid.Row="4" Foreground="DarkRed" FontWeight="Bold" Margin="5"/>
                                 </Grid>
                             </GroupBox>
                         </Grid>

@@ -17,6 +17,7 @@ using FFXIV_TexTools.Helpers;
 using FFXIV_TexTools.Models;
 using FFXIV_TexTools.Properties;
 using FFXIV_TexTools.Resources;
+using FFXIV_TexTools.Views.Models;
 using ImageMagick;
 using MahApps.Metro.Controls;
 using Newtonsoft.Json;
@@ -393,7 +394,6 @@ namespace FFXIV_TexTools.Views
             {
                 item.Category = XivStrings.UI;
 
-
                 if (modItem.fullPath.Contains("ui/uld") || modItem.fullPath.Contains("ui/map"))
                 {
                     item.ModelInfo = new XivModelInfo
@@ -417,7 +417,7 @@ namespace FFXIV_TexTools.Views
 
                 item.ModelInfo = new XivModelInfo
                 {
-                    ModelID = int.Parse(fullPath.Substring(fullPath.LastIndexOf("/", StringComparison.Ordinal) + 1, 6))
+                    ModelID = int.Parse(fullPath.Substring(fullPath.LastIndexOf("_m", StringComparison.Ordinal) + 2, 3))
                 };
             }
 
@@ -705,7 +705,7 @@ namespace FFXIV_TexTools.Views
                 }
 
                 // Models
-                if (itemPath.Contains("model"))
+                if (itemPath.Contains(".mdl"))
                 {
                     modCB.Name = $"{((IItemModel)selectedItem.Item).ModelInfo.ModelID} ({Path.GetFileNameWithoutExtension(itemPath)})";
                     modCB.SelectedMod = modItem;
@@ -749,7 +749,7 @@ namespace FFXIV_TexTools.Views
                 AddCurrentModelButton.IsEnabled = true;
                 GetCustomModelButton.IsEnabled = true;
                 CustomModelTextBox.IsEnabled = true;
-                //AdvOptionsButton.IsEnabled = false;
+                AdvOptionsButton.IsEnabled = true;
                 AddCustomModelButton.IsEnabled = false;
                 ModelTypeComboBox.SelectedIndex = 0;
                 NoModelModsLabel.Content = string.Empty;
@@ -760,7 +760,7 @@ namespace FFXIV_TexTools.Views
                 AddCurrentModelButton.IsEnabled = false;
                 GetCustomModelButton.IsEnabled = false;
                 CustomModelTextBox.IsEnabled = false;
-                //AdvOptionsButton.IsEnabled = false;
+                AdvOptionsButton.IsEnabled = false;
                 AddCustomModelButton.IsEnabled = false;
                 NoModelModsLabel.Content = "There are no 3D Model mods present.\n\nIf you would like to enable this, first import a model for the selected item.";
             }
@@ -1016,7 +1016,50 @@ namespace FFXIV_TexTools.Views
         /// </summary>
         private void AdvOptionsButton_Click(object sender, RoutedEventArgs e)
         {
-            // TODO: Advanced Model Options
+            var selectedItem = ModelTypeComboBox.SelectedItem as ModComboBox;
+
+            var mod = selectedItem.SelectedMod;
+
+            var includedMod = new IncludedMods
+            {
+                Name = $"{Path.GetFileNameWithoutExtension(mod.fullPath)} ({((Category)ModListTreeView.SelectedItem).Name})",
+                FullPath = mod.fullPath
+            };
+
+            var itemModel = MakeItemModel(mod);
+
+            var includedModsList = IncludedModsList.Items.Cast<IncludedMods>().ToList();
+            var mdl = new Mdl(_gameDirectory, XivDataFiles.GetXivDataFile(mod.datFile));
+
+            var xivMdl = mdl.GetMdlData(itemModel, GetRace(mod.fullPath), null, null, mod.data.originalOffset);
+
+            var advancedImportView = new AdvancedModelImportView(xivMdl, itemModel, GetRace(mod.fullPath), true);
+            var result = advancedImportView.ShowDialog();
+
+            if (result == true)
+            {
+                if (includedModsList.Any(item => item.Name.Equals(includedMod.Name)))
+                {
+                    if (FlexibleMessageBox.Show(
+                            $"This Option already includes {includedMod.Name}  \n\n Would you like to overwrite the existing mod for this option?",
+                            "Overwrite?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) ==
+                        System.Windows.Forms.DialogResult.Yes)
+                    {
+                        _selectedModOption.Mods[mod.fullPath].ModDataBytes = advancedImportView.RawModelData;
+                    }
+                }
+                else
+                {
+                    IncludedModsList.Items.Add(includedMod);
+                    _selectedModOption.Mods.Add(mod.fullPath, new ModData
+                    {
+                        Name = mod.name,
+                        Category = mod.category,
+                        FullPath = mod.fullPath,
+                        ModDataBytes = advancedImportView.RawModelData
+                    });
+                }
+            }
         }
 
 
@@ -1039,11 +1082,19 @@ namespace FFXIV_TexTools.Views
 
             var includedModsList = IncludedModsList.Items.Cast<IncludedMods>().ToList();
             var mdl = new Mdl(_gameDirectory, XivDataFiles.GetXivDataFile(mod.datFile));
-            var xivMdl = mdl.GetMdlData(itemModel, GetRace(mod.fullPath));
-            var importResults = mdl.ImportModel(itemModel, xivMdl, new DirectoryInfo(CustomModelTextBox.Text), null, XivStrings.TexTools,
-                true);
+            var xivMdl = mdl.GetMdlData(itemModel, GetRace(mod.fullPath), null, null, mod.data.originalOffset);
+            var warnings = mdl.ImportModel(itemModel, xivMdl, new DirectoryInfo(CustomModelTextBox.Text), null, XivStrings.TexTools, 
+                Settings.Default.DAE_Plugin_Target, true);
 
-            //TODO: Add dialogs for import results (warning messages)
+            if (warnings.Count > 0)
+            {
+                foreach (var warning in warnings)
+                {
+                    FlexibleMessageBox.Show(
+                        $"{warning.Value}", $"{warning.Key}",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+            }
 
             var mdlData = mdl.MDLRawData;
 
