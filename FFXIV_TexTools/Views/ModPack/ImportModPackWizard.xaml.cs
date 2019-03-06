@@ -37,6 +37,7 @@ namespace FFXIV_TexTools.Views
         private readonly DirectoryInfo _modPackDirectory;
         private ProgressDialogController _progressController;
         private readonly Dictionary<string, MagickImage> _imageDictionary;
+        private ModPack _modPackEntry;
 
         public ImportModPackWizard(ModPackJson modPackJson, Dictionary<string, MagickImage> imageDictionary, DirectoryInfo modPackDirectory)
         {
@@ -49,6 +50,8 @@ namespace FFXIV_TexTools.Views
             ModPackAuthorLabel.Content = modPackJson.Author;
             ModPackVersionLabel.Content = modPackJson.Version;
             ModPackDescription.Text = modPackJson.Description;
+
+            _modPackEntry = new ModPack{name = modPackJson.Name, author = modPackJson.Author, version = modPackJson.Version};
 
             _pageCount = modPackJson.ModPackPages.Count;
 
@@ -130,6 +133,11 @@ namespace FFXIV_TexTools.Views
                         }
                     }
                 }
+            }
+
+            foreach (var modsJson in importList)
+            {
+                modsJson.ModPackEntry = _modPackEntry;
             }
 
             var gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);

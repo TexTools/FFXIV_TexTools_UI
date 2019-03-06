@@ -107,6 +107,9 @@ namespace FFXIV_TexTools.Views
                     active = true;
                 }
 
+                modsJson.ModPackEntry = new ModPack
+                    {name = modPackJson.Name, author = modPackJson.Author, version = modPackJson.Version};
+
                 _simpleDataList.Add(new SimpleModPackEntries
                 {
                     Name = modsJson.Name,
@@ -116,7 +119,7 @@ namespace FFXIV_TexTools.Views
                     Num = number,
                     Map = map,
                     Active = active,
-                    JsonEntry = modsJson
+                    JsonEntry = modsJson,
                 });
             }
 
@@ -127,6 +130,8 @@ namespace FFXIV_TexTools.Views
             _simpleDataList.Sort();
 
             ModListView.ItemsSource = new ObservableCollection<SimpleModPackEntries>(_simpleDataList);
+
+            ModListView.SelectAll();
         }
 
 
@@ -183,6 +188,8 @@ namespace FFXIV_TexTools.Views
             _simpleDataList.Sort();
 
             ModListView.ItemsSource = new ObservableCollection<SimpleModPackEntries>(_simpleDataList);
+
+            ModListView.SelectAll();
         }
 
         /// <summary>
