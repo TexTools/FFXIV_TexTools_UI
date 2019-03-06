@@ -46,23 +46,24 @@ namespace FFXIV_TexTools.ViewModels
         private LevelOfDetail _lod;
         private readonly IItemModel _itemModel;
         private readonly XivRace _selectedRace;
-        private List<string> _boneList,  _shapesList;
+        private List<string> _shapesList, _colladaBoneList;
         private List<int> _meshNumbers, _partNumbers;
-        private ObservableCollection<string> _materialsList, _materialUsedList, _partAttributeList, _attributeList;
+        private ObservableCollection<string> _materialsList, _materialUsedList, _partAttributeList, _attributeList, _boneList;
         private string _materialsGroupHeader, _attributesGroupHeader, _boneGroupHeader, _shapesHeader, _shapeDescription;
         private string _selectedMaterial, _selectedAttribute, _selectedMaterialUsed, _selectedPartAttribute, _selectedAvailablePartAttribute;
         private string _materialText, _attributeText, _partCountLabel, _partAttributesLabel, _daeLocationText;
         private int _selectedMeshNumber, _selectedMeshNumberIndex, _selectedPartNumber, _selectedPartNumberIndex, _selectedMaterialUsedIndex;
-        private bool _shapeDataCheckBoxEnabled, _disableShapeDataChecked;
+        private bool _shapeDataCheckBoxEnabled, _disableShapeDataChecked, _fromWizard;
         private readonly string _textColor = "Black";
         private Dictionary<string, string> _attributeDictionary, _shapeDictionary;
         private Dictionary<string, int> _attributeMaskDictionary;
         private Dictionary<int, List<int>> _daeMeshPartDictionary;
         private readonly AdvancedModelImportView _view;
         private Dictionary<string, ModelImportSettings> _importDictionary = new Dictionary<string, ModelImportSettings>();
+        private int? _meshDiff;
 
 
-        public AdvancedImportViewModel(XivMdl xivMdl, IItemModel itemModel, XivRace selectedRace, AdvancedModelImportView view)
+        public AdvancedImportViewModel(XivMdl xivMdl, IItemModel itemModel, XivRace selectedRace, AdvancedModelImportView view, bool fromWizard)
         {
             var appStyle = ThemeManager.DetectAppStyle(System.Windows.Application.Current);
             if (appStyle.Item1.Name.Equals("BaseDark"))
@@ -75,22 +76,23 @@ namespace FFXIV_TexTools.ViewModels
             _lod = xivMdl.LoDList[0];
             _itemModel = itemModel;
             _selectedRace = selectedRace;
-            _dae = new Dae(new DirectoryInfo(Settings.Default.FFXIV_Directory), itemModel.DataFile);
-            Initialize();
+            _fromWizard = fromWizard;
+            _dae = new Dae(new DirectoryInfo(Settings.Default.FFXIV_Directory), itemModel.DataFile, Settings.Default.DAE_Plugin_Target);
+            Initialize(false);
         }
 
         /// <summary>
         /// Initialize Advanced Import
         /// </summary>
-        private void Initialize()
+        private void Initialize(bool refresh)
         {
+            _meshDiff = null;
+            _importDictionary.Clear();
+
             MaterialsList = new ObservableCollection<string>(_xivMdl.PathData.MaterialList);
             AttributeList = new ObservableCollection<string>(MakeAttributeNameDictionary());
-            BoneList      = _xivMdl.PathData.BoneList;
-
-            MaterialsGroupHeader  = $"Materials (Count: {MaterialsList.Count})";
-            AttributesGroupHeader = $"Attributes (Count: {AttributeList.Count})";
-            BonesGroupHeader      = $"Bones (Count: {BoneList.Count})";
+            BoneList      = new ObservableCollection<string>(_xivMdl.PathData.BoneList);
+            var extraBoneList = new List<string>();
 
             MaterialUsed = MaterialsList;
 
@@ -102,21 +104,53 @@ namespace FFXIV_TexTools.ViewModels
 
             MeshNumbers = meshNumberList;
 
-            var saveDir = new DirectoryInfo(Settings.Default.Save_Directory);
-            var path = $"{IOUtil.MakeItemSavePath(_itemModel, saveDir, _selectedRace)}\\3D";
-            var modelName = Path.GetFileNameWithoutExtension(_xivMdl.MdlPath.File);
-            var savePath = new DirectoryInfo(Path.Combine(path, modelName) + ".dae");
-
-            if (File.Exists(savePath.FullName))
+            if (!refresh)
             {
-                DaeLocationText = savePath.FullName;
+                var saveDir = new DirectoryInfo(Settings.Default.Save_Directory);
+                var path = $"{IOUtil.MakeItemSavePath(_itemModel, saveDir, _selectedRace)}\\3D";
+                var modelName = Path.GetFileNameWithoutExtension(_xivMdl.MdlPath.File);
+                var savePath = new DirectoryInfo(Path.Combine(path, modelName) + ".dae");
 
-                _daeMeshPartDictionary = _dae.QuickColladaReader(savePath);
+                if (File.Exists(savePath.FullName))
+                {
+                    DaeLocationText = savePath.FullName;
+
+                    var quickColladaData = _dae.QuickColladaReader(savePath);
+                    _daeMeshPartDictionary = quickColladaData.MeshPartDictionary;
+                    _colladaBoneList = quickColladaData.BoneList;
+                }
             }
 
-            foreach (var meshNum in _daeMeshPartDictionary.Keys)
+            var extraBoneCount = 0;
+            var extraBoneCountString = "";
+            if (_colladaBoneList != null)
             {
-                _importDictionary.Add(meshNum.ToString(), new ModelImportSettings{PartList = _daeMeshPartDictionary[meshNum]});
+                if (_colladaBoneList.Count > BoneList.Count)
+                {
+                    extraBoneCount = _colladaBoneList.Count - BoneList.Count;
+                    extraBoneCountString = $"+ { extraBoneCount}";
+                }
+
+                foreach (var bone in _colladaBoneList)
+                {
+                    if (!BoneList.Contains(bone))
+                    {
+                        BoneList.Add($"+ {bone}");
+                        extraBoneList.Add(bone);
+                    }
+                }
+            }
+
+            MaterialsGroupHeader = $"Materials (Count: {MaterialsList.Count})";
+            AttributesGroupHeader = $"Attributes (Count: {AttributeList.Count})";
+            BonesGroupHeader = $"Bones (Count: {_xivMdl.PathData.BoneList.Count} {extraBoneCountString})";
+
+            if (_daeMeshPartDictionary != null)
+            {
+                foreach (var meshNum in _daeMeshPartDictionary.Keys)
+                {
+                    _importDictionary.Add(meshNum.ToString(), new ModelImportSettings { PartList = _daeMeshPartDictionary[meshNum], ExtraBones = extraBoneList});
+                }
             }
 
             SelectedMeshNumberIndex = 0;
@@ -208,7 +242,7 @@ namespace FFXIV_TexTools.ViewModels
         /// <summary>
         /// List of bone strings
         /// </summary>
-        public List<string> BoneList
+        public ObservableCollection<string> BoneList
         {
             get => _boneList;
             set
@@ -316,9 +350,12 @@ namespace FFXIV_TexTools.ViewModels
             set
             {
                 _selectedMeshNumberIndex = value;
-                UpdatePartNumbers();
-                UpdateMaterialUsed();
-                UpdateShapes();
+                if (value != -1)
+                {
+                    UpdatePartNumbers();
+                    UpdateMaterialUsed();
+                    UpdateShapes();
+                }
                 NotifyPropertyChanged(nameof(SelectedMeshNumberIndex));
             }
         }
@@ -536,6 +573,8 @@ namespace FFXIV_TexTools.ViewModels
             }
         }
 
+        public byte[] RawModelData { get; set; }
+
         #endregion
 
         #region Commands
@@ -557,33 +596,50 @@ namespace FFXIV_TexTools.ViewModels
         private void UpdatePartNumbers()
         {
             var partNumberList = new List<int>();
-            var originalPartListCount = _lod.MeshDataList[SelectedMeshNumber].MeshPartList.Count;
-            var daePartList = _daeMeshPartDictionary[SelectedMeshNumber];
+            var partCount = "";
             var partDiff = "";
 
-            if (daePartList.Count > originalPartListCount)
+            if (_lod.MeshDataList.Count > SelectedMeshNumber)
             {
-                partDiff = $"(+{daePartList.Count - originalPartListCount})";
-                for (var i = 0; i < daePartList.Count; i++)
+                var originalPartListCount = _lod.MeshDataList[SelectedMeshNumber].MeshPartList.Count;
+                partCount = $"{originalPartListCount}";
+                var daePartList = _daeMeshPartDictionary[SelectedMeshNumber];
+
+                if (daePartList.Count > originalPartListCount)
                 {
-                    partNumberList.Add(i);
+                    partDiff = $"(+{daePartList.Count - originalPartListCount})";
+                    for (var i = 0; i < daePartList.Count; i++)
+                    {
+                        partNumberList.Add(i);
+                    }
+                }
+                else
+                {
+                    if (daePartList.Count < originalPartListCount)
+                    {
+                        partDiff = $"(-{originalPartListCount - daePartList.Count})";
+                    }
+
+                    for (var i = 0; i < _lod.MeshDataList[SelectedMeshNumber].MeshPartList.Count; i++)
+                    {
+                        partNumberList.Add(i);
+                    }
                 }
             }
             else
             {
-                if (daePartList.Count < originalPartListCount)
-                {
-                    partDiff = $"(-{originalPartListCount - daePartList.Count})";
-                }
+                var daePartList = _daeMeshPartDictionary[SelectedMeshNumber];
 
-                for (var i = 0; i < _lod.MeshDataList[SelectedMeshNumber].MeshPartList.Count; i++)
+                for (var i = 0; i < daePartList.Count; i++)
                 {
                     partNumberList.Add(i);
                 }
+
+                partCount = $"{partNumberList.Count}";
             }
 
             PartNumbers = partNumberList;
-            PartCountLabel = $"Part Count: {PartNumbers.Count} {partDiff}";
+            PartCountLabel = $"Part Count: {partCount} {partDiff}";
             SelectedPartNumberIndex = 0;
 
             CheckForDaeDiscrepancy();
@@ -594,7 +650,16 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         private void UpdateMaterialUsed()
         {
-            var materialIndex = _lod.MeshDataList[SelectedMeshNumber].MeshInfo.MaterialIndex;
+            var materialIndex = 0;
+
+            if (_lod.MeshDataList.Count > SelectedMeshNumber)
+            {
+                materialIndex = _lod.MeshDataList[SelectedMeshNumber].MeshInfo.MaterialIndex;
+            }
+            else
+            {
+                materialIndex = _importDictionary[SelectedMeshNumber.ToString()].MaterialIndex;
+            }
 
             SelectedMaterialUsedIndex = materialIndex;
         }
@@ -605,7 +670,7 @@ namespace FFXIV_TexTools.ViewModels
         private void UpdateMdlMaterialUsed()
         {
             // Change the XivMdl data directly for material index if the mesh exists, otherwise add it to the import settings
-            if (SelectedMeshNumber > _lod.MeshDataList.Count)
+            if (SelectedMeshNumber >= _lod.MeshDataList.Count)
             {
                 _importDictionary[SelectedMeshNumber.ToString()].MaterialIndex = (short)SelectedMaterialUsedIndex;
             }
@@ -620,16 +685,22 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         private void UpdateAttributesUsed()
         {
-            var attributeMask = _lod.MeshDataList[SelectedMeshNumber].MeshPartList[SelectedPartNumber].AttributeIndex;
-
             var attributeNameList = new List<string>();
 
-            for (var i = 0; i < AttributeList.Count; i++)
+            if (_lod.MeshDataList.Count > SelectedMeshNumber)
             {
-                var value = 1 << i;
-                if ((attributeMask & value) > 0)
+                if (_lod.MeshDataList[SelectedMeshNumber].MeshPartList.Count > SelectedPartNumber)
                 {
-                    attributeNameList.Add($"{AttributeList[i]}");
+                    var attributeMask = _lod.MeshDataList[SelectedMeshNumber].MeshPartList[SelectedPartNumber].AttributeIndex;
+
+                    for (var i = 0; i < AttributeList.Count; i++)
+                    {
+                        var value = 1 << i;
+                        if ((attributeMask & value) > 0)
+                        {
+                            attributeNameList.Add($"{AttributeList[i]}");
+                        }
+                    }
                 }
             }
 
@@ -647,25 +718,32 @@ namespace FFXIV_TexTools.ViewModels
 
             var shapePathList = new List<string>();
 
-            if (_lod.MeshDataList[SelectedMeshNumber].ShapePathList != null)
+            if (_lod.MeshDataList.Count > SelectedMeshNumber)
             {
-                foreach (var shapePath in _lod.MeshDataList[SelectedMeshNumber].ShapePathList)
+                if (_lod.MeshDataList[SelectedMeshNumber].ShapePathList != null)
                 {
-                    shapePathList.Add(_shapeDictionary[shapePath]);
+                    foreach (var shapePath in _lod.MeshDataList[SelectedMeshNumber].ShapePathList)
+                    {
+                        shapePathList.Add(_shapeDictionary[shapePath]);
+                    }
                 }
             }
 
-            //ShapeDataCheckBoxEnabled = shapePathList.Count >= 1;
-
-            if (ShapeDataCheckBoxEnabled)
+            if (shapePathList.Count > 0)
             {
+                ShapeDataCheckBoxEnabled = true;
+
+                DisableShapeDataChecked = _importDictionary[SelectedMeshNumber.ToString()].Disable;
+
                 ShapeDescription =
-                    "This will disable all shape data for all meshes.\n" +
+                    "This will disable all shape data for this meshes.\n" +
                     "This option is used when holes appear upon equipping other items\n\n" +
                     "More options for shape data will be available in a later version.";
             }
             else
             {
+                ShapeDataCheckBoxEnabled = false;
+
                 ShapeDescription = "There is no Shape Data for this mesh.\n\n" +
                                    "Options are disabled.";
             }
@@ -696,40 +774,65 @@ namespace FFXIV_TexTools.ViewModels
             var meshCount = _daeMeshPartDictionary.Count;
 
             // Check for mesh difference
-            if (meshCount > _lod.MeshDataList.Count)
+            if (_meshDiff == null)
             {
-                var extraCount = meshCount - _lod.MeshDataList.Count;
-                AddText($"{extraCount}", "Green", true);
-                AddText($" added mesh(es)\nChange material for new mesh(es) if necessary.\n\n", _textColor, false);
-
-                // Update mesh number list
-                var meshNumberList = new List<int>();
-                for (var i = 0; i < meshCount; i++)
+                if (meshCount > MeshNumbers.Count)
                 {
-                    meshNumberList.Add(i);
-                }
+                    var extraCount = meshCount - _lod.MeshDataList.Count;
+                    AddText($"{extraCount}", "Green", true);
+                    AddText($" added mesh(es)\nChange material for new mesh(es) if necessary.\n\n", _textColor, false);
 
-                MeshNumbers = meshNumberList;
-            }
-            else if (meshCount < _lod.MeshDataList.Count)
-            {
-                var removedCount = _lod.MeshDataList.Count - meshCount;
-                AddText($"{removedCount}", "Red", true);
-                AddText($" removed mesh(es)\nRemoved Mesh Number(s): ", _textColor, false);
-
-                foreach (var meshNumber in MeshNumbers)
-                {
-                    if (!_daeMeshPartDictionary.ContainsKey(meshNumber))
+                    // Update mesh number list
+                    var meshNumberList = new List<int>();
+                    for (var i = 0; i < meshCount; i++)
                     {
-                        AddText($"{meshNumber} ", "Red", true);
+                        meshNumberList.Add(i);
                     }
-                }
 
-                AddText("\nChanges to these removed meshes above will have no effect\n\n", _textColor, true);
+                    _meshDiff = extraCount;
+                    MeshNumbers = meshNumberList;
+                }
+                else if (meshCount < MeshNumbers.Count)
+                {
+                    var removedCount = meshCount - _lod.MeshDataList.Count;
+                    AddText($"{Math.Abs(removedCount)}", "Red", true);
+                    AddText($" removed mesh(es)\nRemoved Mesh Number(s): ", _textColor, false);
+
+                    foreach (var meshNumber in MeshNumbers)
+                    {
+                        if (!_daeMeshPartDictionary.ContainsKey(meshNumber))
+                        {
+                            AddText($"{meshNumber} ", "Red", true);
+                        }
+                    }
+
+                    AddText("\nChanges to these removed meshes above will have no effect\n\n", _textColor, true);
+
+                    _meshDiff = removedCount;
+                }
+                else
+                {
+                    AddText("No difference in mesh counts.\n\n\n", _textColor, false);
+
+                    _meshDiff = 0;
+                }
             }
             else
             {
-                AddText("No difference in mesh counts.\n\n\n", _textColor, false);
+                if (_meshDiff == 0)
+                {
+                    AddText("No difference in mesh counts.\n\n\n", _textColor, false);
+                }
+                else if (_meshDiff > 0)
+                {
+                    AddText($"{_meshDiff}", "Green", true);
+                    AddText($" added mesh(es)\nChange material for new mesh(es) if necessary.\n\n", _textColor, false);
+                }
+                else
+                {
+                    AddText($"{Math.Abs(_meshDiff.Value)}", "Red", true);
+                    AddText($" removed mesh(es)\nRemoved Mesh Number(s): ", _textColor, false);
+                }
             }
 
             // Check for mesh part difference
@@ -737,31 +840,38 @@ namespace FFXIV_TexTools.ViewModels
             {
                 var meshPartList = _daeMeshPartDictionary[SelectedMeshNumber];
 
-                if (meshPartList.Count > _lod.MeshDataList[SelectedMeshNumber].MeshPartList.Count)
+                if (_lod.MeshDataList.Count > SelectedMeshNumber)
                 {
-                    var extraCount = meshPartList.Count - _lod.MeshDataList[SelectedMeshNumber].MeshPartList.Count;
-                    AddText($"{extraCount}", "Green", true);
-                    AddText(" added mesh part(s) for this mesh\nChange attributes for new part(s) below if necessary", _textColor, false);
-                }
-                else if(meshPartList.Count < _lod.MeshDataList[SelectedMeshNumber].MeshPartList.Count)
-                {
-                    var removedCount = _lod.MeshDataList[SelectedMeshNumber].MeshPartList.Count - meshPartList.Count;
-                    AddText($"{removedCount}", "Red", true);
-                    AddText(" removed mesh part(s) for this mesh\nRemoved Part Number(s): ", _textColor, false);
-
-                    foreach (var partNumber in PartNumbers)
+                    if (meshPartList.Count > _lod.MeshDataList[SelectedMeshNumber].MeshPartList.Count)
                     {
-                        if (!meshPartList.Contains(partNumber))
-                        {
-                            AddText($"{partNumber} ", "Red", true);
-                        }
+                        var extraCount = meshPartList.Count - _lod.MeshDataList[SelectedMeshNumber].MeshPartList.Count;
+                        AddText($"{extraCount}", "Green", true);
+                        AddText(" added mesh part(s) for this mesh\nChange attributes for new part(s) below if necessary", _textColor, false);
                     }
+                    else if (meshPartList.Count < _lod.MeshDataList[SelectedMeshNumber].MeshPartList.Count)
+                    {
+                        var removedCount = _lod.MeshDataList[SelectedMeshNumber].MeshPartList.Count - meshPartList.Count;
+                        AddText($"{removedCount}", "Red", true);
+                        AddText(" removed mesh part(s) for this mesh\nRemoved Part Number(s): ", _textColor, false);
 
-                    AddText("\nChanges to these removed parts below will have no effect", _textColor, false);
+                        foreach (var partNumber in PartNumbers)
+                        {
+                            if (!meshPartList.Contains(partNumber))
+                            {
+                                AddText($"{partNumber} ", "Red", true);
+                            }
+                        }
+
+                        AddText("\nChanges to these removed parts below will have no effect", _textColor, false);
+                    }
+                    else
+                    {
+                        AddText("No difference in mesh part counts for this mesh.", _textColor, false);
+                    }
                 }
                 else
                 {
-                    AddText("No difference in mesh part counts for this mesh.", _textColor, false);
+                    AddText($"This is a new mesh containing {meshPartList.Count} parts.", _textColor, false);
                 }
             }
         }
@@ -839,11 +949,35 @@ namespace FFXIV_TexTools.ViewModels
         {
             if (string.IsNullOrEmpty(SelectedAvailableAttribute)) return;
 
-            var attributeMask = _lod.MeshDataList[SelectedMeshNumber].MeshPartList[SelectedPartNumber].AttributeIndex;
+            var attributeMask = 0;
 
-            attributeMask += _attributeMaskDictionary[SelectedAvailableAttribute];
+            if (_lod.MeshDataList.Count > SelectedMeshNumber && _lod.MeshDataList[SelectedMeshNumber].MeshPartList.Count > SelectedPartNumber)
+            {
+                attributeMask = _lod.MeshDataList[SelectedMeshNumber].MeshPartList[SelectedPartNumber].AttributeIndex;
 
-            _lod.MeshDataList[SelectedMeshNumber].MeshPartList[SelectedPartNumber].AttributeIndex = attributeMask;
+                attributeMask += _attributeMaskDictionary[SelectedAvailableAttribute];
+
+                _lod.MeshDataList[SelectedMeshNumber].MeshPartList[SelectedPartNumber].AttributeIndex = attributeMask;
+            }
+            else
+            {
+                var importDictMesh = _importDictionary[SelectedMeshNumber.ToString()];
+
+                if (importDictMesh.PartAttributeDictionary.ContainsKey(SelectedPartNumber))
+                {
+                    attributeMask = importDictMesh.PartAttributeDictionary[SelectedPartNumber];
+
+                    attributeMask += _attributeMaskDictionary[SelectedAvailableAttribute];
+
+                    importDictMesh.PartAttributeDictionary[SelectedPartNumber] = attributeMask;
+                }
+                else
+                {
+                    attributeMask += _attributeMaskDictionary[SelectedAvailableAttribute];
+
+                    importDictMesh.PartAttributeDictionary.Add(SelectedPartNumber, attributeMask);
+                }
+            }
 
             PartAttributes.Add(SelectedAvailableAttribute);
         }
@@ -855,11 +989,26 @@ namespace FFXIV_TexTools.ViewModels
         {
             if (string.IsNullOrEmpty(SelectedPartAttribute)) return;
 
-            var attributeMask = _lod.MeshDataList[SelectedMeshNumber].MeshPartList[SelectedPartNumber].AttributeIndex;
+            var attributeMask = 0;
 
-            attributeMask -= _attributeMaskDictionary[SelectedPartAttribute];
+            if (_lod.MeshDataList.Count > SelectedMeshNumber && _lod.MeshDataList[SelectedMeshNumber].MeshPartList.Count > SelectedPartNumber)
+            {
+                attributeMask = _lod.MeshDataList[SelectedMeshNumber].MeshPartList[SelectedPartNumber].AttributeIndex;
 
-            _lod.MeshDataList[SelectedMeshNumber].MeshPartList[SelectedPartNumber].AttributeIndex = attributeMask;
+                attributeMask -= _attributeMaskDictionary[SelectedPartAttribute];
+
+                _lod.MeshDataList[SelectedMeshNumber].MeshPartList[SelectedPartNumber].AttributeIndex = attributeMask;
+            }
+            else
+            {
+                var importDictMesh = _importDictionary[SelectedMeshNumber.ToString()];
+
+                attributeMask = importDictMesh.PartAttributeDictionary[SelectedPartNumber];
+
+                attributeMask -= _attributeMaskDictionary[SelectedPartAttribute];
+
+                importDictMesh.PartAttributeDictionary[SelectedPartNumber] = attributeMask;
+            }
 
             var attributeIndex = PartAttributes.IndexOf(SelectedPartAttribute);
 
@@ -871,10 +1020,42 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         private void Import(object obj)
         {
+            Dictionary<string, string> warnings;
+
             var mdl = new Mdl(new DirectoryInfo(Settings.Default.FFXIV_Directory), _itemModel.DataFile);
 
-            mdl.ImportModel(_itemModel, _xivMdl, new DirectoryInfo(DaeLocationText), _importDictionary,
-                XivStrings.TexTools);
+            try
+            {
+                if (_fromWizard)
+                {
+                    warnings = mdl.ImportModel(_itemModel, _xivMdl, new DirectoryInfo(DaeLocationText), _importDictionary,
+                        XivStrings.TexTools, Settings.Default.DAE_Plugin_Target, true);
+
+                    RawModelData = mdl.MDLRawData;
+                }
+                else
+                {
+                    warnings = mdl.ImportModel(_itemModel, _xivMdl, new DirectoryInfo(DaeLocationText), _importDictionary,
+                        XivStrings.TexTools, Settings.Default.DAE_Plugin_Target);
+                }
+            }
+            catch (Exception ex)
+            {
+                FlexibleMessageBox.Show(
+                    $"There was an error attempting to import the model.\n\n{ex.Message}", "Error Importing Dae",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            if (warnings.Count > 0)
+            {
+                foreach (var warning in warnings)
+                {
+                    FlexibleMessageBox.Show(
+                        $"{warning.Value}", $"{warning.Key}",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+            }
         }
 
         /// <summary>
@@ -1030,7 +1211,11 @@ namespace FFXIV_TexTools.ViewModels
             {
                 DaeLocationText = openFileDialog.FileName;
 
-                _daeMeshPartDictionary = _dae.QuickColladaReader(new DirectoryInfo(openFileDialog.FileName));
+                var quickColladaData = _dae.QuickColladaReader(new DirectoryInfo(openFileDialog.FileName));
+                _daeMeshPartDictionary = quickColladaData.MeshPartDictionary;
+                _colladaBoneList = quickColladaData.BoneList;
+
+                Initialize(true);
             }
         }
 
