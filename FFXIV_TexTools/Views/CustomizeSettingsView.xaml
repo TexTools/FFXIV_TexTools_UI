@@ -13,30 +13,40 @@
             <ColumnDefinition/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <GroupBox Header="Directories" Grid.Column="0">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <GroupBox Header="Directories" Grid.Row="0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
 
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <TextBox x:Name="FfxivDir" Grid.Row="0" Text="{Binding FFXIV_Directory}" TextWrapping="NoWrap" IsReadOnly="True" Margin="5" mah:TextBoxHelper.Watermark="FFXIV Directory" mah:TextBoxHelper.UseFloatingWatermark="True"/>
-                <TextBox x:Name="SaveDir" Grid.Row="1" Text="{Binding Save_Directory}" TextWrapping="NoWrap" IsReadOnly="True" Margin="5" mah:TextBoxHelper.Watermark="Save Directory" mah:TextBoxHelper.UseFloatingWatermark="True"/>
-                <TextBox x:Name="BackupDir" Grid.Row="2" Text="{Binding Backups_Directory}" TextWrapping="NoWrap" IsReadOnly="True" Margin="5" mah:TextBoxHelper.Watermark="Backups Directory" mah:TextBoxHelper.UseFloatingWatermark="True"/>
-                <TextBox x:Name="ModPackDir" Grid.Row="3" Text="{Binding ModPack_Directory}" TextWrapping="NoWrap" IsReadOnly="True" Margin="5" mah:TextBoxHelper.Watermark="Mod Pack Directory" mah:TextBoxHelper.UseFloatingWatermark="True"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox x:Name="FfxivDir" Grid.Row="0" Text="{Binding FFXIV_Directory}" TextWrapping="NoWrap" IsReadOnly="True" Margin="5" mah:TextBoxHelper.Watermark="FFXIV Directory" mah:TextBoxHelper.UseFloatingWatermark="True"/>
+                    <TextBox x:Name="SaveDir" Grid.Row="1" Text="{Binding Save_Directory}" TextWrapping="NoWrap" IsReadOnly="True" Margin="5" mah:TextBoxHelper.Watermark="Save Directory" mah:TextBoxHelper.UseFloatingWatermark="True"/>
+                    <TextBox x:Name="BackupDir" Grid.Row="2" Text="{Binding Backups_Directory}" TextWrapping="NoWrap" IsReadOnly="True" Margin="5" mah:TextBoxHelper.Watermark="Backups Directory" mah:TextBoxHelper.UseFloatingWatermark="True"/>
+                    <TextBox x:Name="ModPackDir" Grid.Row="3" Text="{Binding ModPack_Directory}" TextWrapping="NoWrap" IsReadOnly="True" Margin="5" mah:TextBoxHelper.Watermark="Mod Pack Directory" mah:TextBoxHelper.UseFloatingWatermark="True"/>
 
-                <Button Content="..." Grid.Row="0" Grid.Column="1" Margin="5" Command="{Binding FFXIV_SelectDir}" HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="25" MinHeight="25" HorizontalContentAlignment="Center" VerticalContentAlignment="Top"/>
-                <Button Content="..." Grid.Row="1" Grid.Column="1" Margin="5" Command="{Binding Save_SelectDir}" HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="25" MinHeight="25" VerticalContentAlignment="Top" HorizontalContentAlignment="Center"/>
-                <Button Content="..." Grid.Row="2" Grid.Column="1" Margin="5" Command="{Binding Backup_SelectDir}" HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="25" MinHeight="25" VerticalContentAlignment="Top" HorizontalContentAlignment="Center"/>
-                <Button Content="..." Grid.Row="3" Grid.Column="1" Margin="5" Command="{Binding ModPack_SelectDir}" HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="25" MinHeight="25" VerticalContentAlignment="Top" HorizontalContentAlignment="Center"/>
-            </Grid>
-        </GroupBox>
+                    <Button Content="..." Grid.Row="0" Grid.Column="1" Margin="5" Command="{Binding FFXIV_SelectDir}" HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="25" MinHeight="25" HorizontalContentAlignment="Center" VerticalContentAlignment="Top"/>
+                    <Button Content="..." Grid.Row="1" Grid.Column="1" Margin="5" Command="{Binding Save_SelectDir}" HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="25" MinHeight="25" VerticalContentAlignment="Top" HorizontalContentAlignment="Center"/>
+                    <Button Content="..." Grid.Row="2" Grid.Column="1" Margin="5" Command="{Binding Backup_SelectDir}" HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="25" MinHeight="25" VerticalContentAlignment="Top" HorizontalContentAlignment="Center"/>
+                    <Button Content="..." Grid.Row="3" Grid.Column="1" Margin="5" Command="{Binding ModPack_SelectDir}" HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="25" MinHeight="25" VerticalContentAlignment="Top" HorizontalContentAlignment="Center"/>
+                </Grid>
+            </GroupBox>
+            <GroupBox Grid.Row="1" Header="Export Settings">
+                <ComboBox VerticalAlignment="Top" HorizontalAlignment="Left" mah:TextBoxHelper.UseFloatingWatermark="True" mah:TextBoxHelper.Watermark="DAE Plugin Target" ItemsSource="{Binding TargetImporters}" SelectedItem="{Binding SelectedImporter}"/>
+            </GroupBox>
+        </Grid>
+
         <GroupBox Grid.Column="1" Header="Colors &amp; Skins">
             <Grid>
                 <Grid.RowDefinitions>
