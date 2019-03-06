@@ -42,6 +42,12 @@ namespace FFXIV_TexTools.ViewModels
                 {XivStringRaces.Aura_R},
                 {XivStringRaces.Aura_X}
             };
+
+            TargetImporters = new List<string>
+            {
+                {XivStrings.OpenCollada},
+                {XivStrings.AutodeskCollada}
+            };
         }
 
         #region Public Properties
@@ -165,6 +171,26 @@ namespace FFXIV_TexTools.ViewModels
                     SetSkin(value);
                 }
 
+            }
+        }
+
+        /// <summary>
+        /// The list of target importers
+        /// </summary>
+        public List<string> TargetImporters { get; set; }
+
+        /// <summary>
+        /// The selected importer
+        /// </summary>
+        public string SelectedImporter
+        {
+            get => Settings.Default.DAE_Plugin_Target;
+            set
+            {
+                if (SelectedImporter != value)
+                {
+                    SetImporter(value);
+                }
             }
         }
 
@@ -447,6 +473,15 @@ namespace FFXIV_TexTools.ViewModels
             Settings.Default.Save();
         }
 
+        /// <summary>
+        /// Saves the importer to the settings
+        /// </summary>
+        /// <param name="importer">The importer</param>
+        private void SetImporter(string importer)
+        {
+            Settings.Default.DAE_Plugin_Target = importer;
+            Settings.Default.Save();
+        }
         #endregion
 
 
