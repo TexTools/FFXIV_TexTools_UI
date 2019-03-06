@@ -243,6 +243,8 @@ namespace FFXIV_TexTools
 
             var openFileDialog = new OpenFileDialog {InitialDirectory = modPackDirectory.FullName, Filter = "TexToolsModPack TTMP (*.ttmp;*.ttmp2)|*.ttmp;*.ttmp2"};
 
+            var importError = false;
+
             if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 try
@@ -252,17 +254,48 @@ namespace FFXIV_TexTools
 
                     if (ttmpData.ModPackJson.TTMPVersion.Contains("w"))
                     {
-                        var importWizard = new ImportModPackWizard(ttmpData.ModPackJson, ttmpData.ImageDictionary, new DirectoryInfo(openFileDialog.FileName)) { Owner = this };
-                        var result = importWizard.ShowDialog();
-
-                        if (result == true)
+                        try
                         {
-                            await this.ShowMessageAsync("Import Complete", $"{importWizard.TotalModsImported} mod(s) successfully imported.");
+                            var importWizard = new ImportModPackWizard(ttmpData.ModPackJson, ttmpData.ImageDictionary,
+                                new DirectoryInfo(openFileDialog.FileName)) {Owner = this};
+                            var result = importWizard.ShowDialog();
+
+                            if (result == true)
+                            {
+                                await this.ShowMessageAsync("Import Complete",
+                                    $"{importWizard.TotalModsImported} mod(s) successfully imported.");
+                            }
+                        }
+                        catch
+                        {
+                            importError = true;
                         }
                     }
-                    else
+                    else if(ttmpData.ModPackJson.TTMPVersion.Contains("s"))
                     {
-                        var simpleImport = new SimpleModPackImporter(new DirectoryInfo(openFileDialog.FileName), ttmpData.ModPackJson) { Owner = this };
+                        try
+                        {
+                            var simpleImport = new SimpleModPackImporter(new DirectoryInfo(openFileDialog.FileName),
+                                ttmpData.ModPackJson) {Owner = this};
+                            var result = simpleImport.ShowDialog();
+
+                            if (result == true)
+                            {
+                                await this.ShowMessageAsync("Import Complete",
+                                    $"{simpleImport.TotalModsImported} mod(s) successfully imported.");
+                            }
+                        }
+                        catch
+                        {
+                            importError = true;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    if (!importError)
+                    {
+                        var simpleImport = new SimpleModPackImporter(new DirectoryInfo(openFileDialog.FileName), null) { Owner = this };
                         var result = simpleImport.ShowDialog();
 
                         if (result == true)
@@ -270,16 +303,11 @@ namespace FFXIV_TexTools
                             await this.ShowMessageAsync("Import Complete", $"{simpleImport.TotalModsImported} mod(s) successfully imported.");
                         }
                     }
-                }
-                catch (Exception ex)
-                {
-                    var simpleImport = new SimpleModPackImporter(new DirectoryInfo(openFileDialog.FileName), null) { Owner = this };
-                    var result = simpleImport.ShowDialog();
-
-                    if (result == true)
+                    else
                     {
-                        await this.ShowMessageAsync("Import Complete", $"{simpleImport.TotalModsImported} mod(s) successfully imported.");
+                        FlexibleMessageBox.Show($"There was an error importing the mod pack\n\nMessage: {ex.Message}", $"ModPack Import Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
+
                 }
             }
         }
@@ -387,6 +415,57 @@ namespace FFXIV_TexTools
         private void Menu_Donate_Click(object sender, RoutedEventArgs e)
         {
             System.Diagnostics.Process.Start(WebUrl.FFXIV_Donate);
+        }
+
+        private async void Menu_Backup_Click(object sender, RoutedEventArgs e)
+        {
+            var result = FlexibleMessageBox.Show("This will create a backup of the index files TexTools can modify (01, 04, 06)\n\n" +
+                                                 "Do you want to Backup Now?" +
+                                                 "\n\nWarning:\nIn order to create a clean backup, all active modifications will be set to disabled, they will have to be re-enabled manually.",
+                "Backup Index Files", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+
+            if (result == System.Windows.Forms.DialogResult.Yes)
+            {
+                var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
+                var backupDirectory = new DirectoryInfo(Properties.Settings.Default.Backup_Directory);
+                var indexFiles = new XivDataFile[] { XivDataFile._04_Chara, XivDataFile._06_Ui, XivDataFile._01_Bgcommon };
+                var index = new Index(gameDirectory);
+                var modding = new Modding(gameDirectory);
+
+                if (index.IsIndexLocked(XivDataFile._0A_Exd))
+                {
+                    FlexibleMessageBox.Show("Unable to create backup while game is running.", $"Backup Creation Failed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                try
+                {
+                    // Toggle off all mods
+                    modding.ToggleAllMods(false);
+                }
+                catch (Exception ex)
+                {
+                    FlexibleMessageBox.Show($"Unable to create backup files.\n\nError Message:\n{ex.Message}", $"Backup Creation Failed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                foreach (var xivDataFile in indexFiles)
+                {
+                    try
+                    {
+                        File.Copy($"{gameDirectory.FullName}\\{xivDataFile.GetDataFileName()}.win32.index",
+                            $"{backupDirectory}\\{xivDataFile.GetDataFileName()}.win32.index", true);
+                        File.Copy($"{gameDirectory.FullName}\\{xivDataFile.GetDataFileName()}.win32.index2",
+                            $"{backupDirectory}\\{xivDataFile.GetDataFileName()}.win32.index2", true);
+                    }
+                    catch (Exception ex)
+                    {
+                        FlexibleMessageBox.Show($"Unable to create backups.\n\nError: {ex.Message}", $"Backup Creation Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+
+                await this.ShowMessageAsync("Backup Complete", "The index files have been successfully backed up");
+            }
         }
     }
 }
