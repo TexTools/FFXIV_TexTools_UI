@@ -79,6 +79,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Autodesk Collada.
+        /// </summary>
+        internal static string AutodeskCollada {
+            get {
+                return ResourceManager.GetString("AutodeskCollada", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Body.
         /// </summary>
         internal static string Body {
@@ -363,6 +372,15 @@ namespace FFXIV_TexTools.Resources {
         internal static string Number {
             get {
                 return ResourceManager.GetString("Number", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to OpenCOLLADA.
+        /// </summary>
+        internal static string OpenCollada {
+            get {
+                return ResourceManager.GetString("OpenCollada", resourceCulture);
             }
         }
         

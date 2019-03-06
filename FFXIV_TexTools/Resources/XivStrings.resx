@@ -258,4 +258,10 @@
   <data name="Ring_Left" xml:space="preserve">
     <value>Ring Left</value>
   </data>
+  <data name="AutodeskCollada" xml:space="preserve">
+    <value>Autodesk Collada</value>
+  </data>
+  <data name="OpenCollada" xml:space="preserve">
+    <value>OpenCOLLADA</value>
+  </data>
 </root>
