@@ -156,7 +156,7 @@
         <Grid Grid.Row="4">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                 <Button Margin="5" Content="Cancel" Click="Button_Click"/>
-                <Button Margin="5" Content="Import" Command="{Binding ImportCommand}" Click="Button_Click_1"/>
+                <Button x:Name="ImportButton" Margin="5" Content="Import" Command="{Binding ImportCommand}" Click="ImportButton_Click"/>
             </StackPanel>
         </Grid>
     </Grid>

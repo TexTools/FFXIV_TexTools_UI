@@ -26,13 +26,25 @@ namespace FFXIV_TexTools.Views.Models
     /// </summary>
     public partial class AdvancedModelImportView
     {
-        public AdvancedModelImportView(XivMdl xivMdl, IItemModel itemModel, XivRace selectedRace)
+        private AdvancedImportViewModel _viewModel;
+        private bool _fromWizard;
+
+        public AdvancedModelImportView(XivMdl xivMdl, IItemModel itemModel, XivRace selectedRace, bool fromWizard)
         {
             InitializeComponent();
 
-            var advancedImportViewModel = new AdvancedImportViewModel(xivMdl, itemModel, selectedRace, this);
-            this.DataContext = advancedImportViewModel;
+            _fromWizard = fromWizard;
+            _viewModel = new AdvancedImportViewModel(xivMdl, itemModel, selectedRace, this, fromWizard);
+            this.DataContext = _viewModel;
+
+            if (fromWizard)
+            {
+                Title = "Advanced Model Options";
+                ImportButton.Content = "Add";
+            }
         }
+
+        public byte[] RawModelData { get; set; }
 
         /// <summary>
         /// Event Handler for Cancel Button Click
@@ -46,9 +58,15 @@ namespace FFXIV_TexTools.Views.Models
         /// <summary>
         /// Event Handler for Import Button Click
         /// </summary>
-        private void Button_Click_1(object sender, System.Windows.RoutedEventArgs e)
+        private void ImportButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
             DialogResult = true;
+
+            if (_fromWizard)
+            {
+                RawModelData = _viewModel.RawModelData;
+            }
+
             Close();
         }
     }
