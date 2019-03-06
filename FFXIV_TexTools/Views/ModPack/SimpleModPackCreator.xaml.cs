@@ -133,7 +133,7 @@ namespace FFXIV_TexTools.Views
             }
             else if (modPath.Contains(".tex") || modPath.Contains(".mdl") || modPath.Contains(".atex"))
             {
-                if (modPath.Contains(".tex") || modPath.Contains(".mdl") || modPath.Contains(".atex"))
+                if (modPath.Contains("accessory") || modPath.Contains("weapon") || modPath.Contains("/common/"))
                 {
                     xivRace = XivRace.All_Races;
                 }
