@@ -21,8 +21,10 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -53,7 +55,7 @@ namespace FFXIV_TexTools.Views
         public static extern long StrFormatByteSize(long fileSize, [MarshalAs(UnmanagedType.LPTStr)] StringBuilder buffer, int bufferSize);
 
 
-        public SimpleModPackImporter(DirectoryInfo modPackDirectory, ModPackJson modPackJson)
+        public SimpleModPackImporter(DirectoryInfo modPackDirectory, ModPackJson modPackJson, bool silent = false)
         {
             InitializeComponent();
 
@@ -69,6 +71,11 @@ namespace FFXIV_TexTools.Views
             else
             {
                 ImportOldModPack();
+            }
+
+            if (silent)
+            {
+                FinalizeImport();
             }
         }
 
@@ -406,6 +413,26 @@ namespace FFXIV_TexTools.Views
             _progressController.SetProgress(value);
         }
 
+        /// <summary>
+        /// Writes all selected mods to game data
+        /// </summary>
+        private async void FinalizeImport()
+        {
+            _progressController = await this.ShowProgressAsync("Importing ModPack", "Please Stand By...");
+
+            var importList = (from SimpleModPackEntries selectedItem in ModListView.SelectedItems select selectedItem.JsonEntry).ToList();
+
+            var modListDirectory = new DirectoryInfo(Path.Combine(_gameDirectory.Parent.Parent.FullName, XivStrings.ModlistFilePath));
+
+            var progressIndicator = new Progress<double>(ReportProgress);
+
+            TotalModsImported = await _texToolsModPack.ImportModPackAsync(_modPackDirectory, importList, _gameDirectory, modListDirectory, progressIndicator);
+
+            await _progressController.CloseAsync();
+
+            DialogResult = true;
+        }
+
         #endregion
 
 
@@ -441,21 +468,9 @@ namespace FFXIV_TexTools.Views
         /// <summary>
         /// Event handler for the import mod pack button clicked
         /// </summary>
-        private async void ImportModPackButton_Click(object sender, RoutedEventArgs e)
+        private void ImportModPackButton_Click(object sender, RoutedEventArgs e)
         {
-            _progressController = await this.ShowProgressAsync("Importing ModPack", "Please Stand By...");
-
-            var importList = (from SimpleModPackEntries selectedItem in ModListView.SelectedItems select selectedItem.JsonEntry).ToList();
-
-            var modListDirectory = new DirectoryInfo(Path.Combine(_gameDirectory.Parent.Parent.FullName, XivStrings.ModlistFilePath));
-
-            var progressIndicator = new Progress<double>(ReportProgress);
-
-            TotalModsImported = await _texToolsModPack.ImportModPackAsync(_modPackDirectory, importList, _gameDirectory, modListDirectory, progressIndicator);
-
-            await _progressController.CloseAsync();
-
-            DialogResult = true;
+            FinalizeImport();
         }
 
         /// <summary>

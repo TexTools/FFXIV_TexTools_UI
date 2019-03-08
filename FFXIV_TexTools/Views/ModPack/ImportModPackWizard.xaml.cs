@@ -109,7 +109,40 @@ namespace FFXIV_TexTools.Views
         /// <summary>
         /// The event handler for the finish button
         /// </summary>
-        private async void ImportModPackWizard_Finish(object sender, Xceed.Wpf.Toolkit.Core.CancelRoutedEventArgs e)
+        private void ImportModPackWizard_Finish(object sender, Xceed.Wpf.Toolkit.Core.CancelRoutedEventArgs e)
+        {
+            FinalizeImport();
+        }
+
+        /// <summary>
+        /// Event handler for previous page
+        /// </summary>
+        private void ImportModPackWizard_Previous(object sender, Xceed.Wpf.Toolkit.Core.CancelRoutedEventArgs e)
+        {
+            _currentPage--;
+
+            importModPackWizard.FinishButtonVisibility = Visibility.Collapsed;
+            importModPackWizard.CanFinish = false;
+        }
+
+        #endregion
+
+
+        #region Private Methods
+
+        /// <summary>
+        /// Updates the progress bar
+        /// </summary>
+        /// <param name="value">The progress value</param>
+        private void ReportProgress(double value)
+        {
+            _progressController.SetProgress(value);
+        }
+
+        /// <summary>
+        /// Writes all selected mods to game data
+        /// </summary>
+        private async void FinalizeImport()
         {
             _progressController = await this.ShowProgressAsync("Importing ModPack", "Please Stand By...");
 
@@ -150,31 +183,6 @@ namespace FFXIV_TexTools.Views
             await _progressController.CloseAsync();
 
             DialogResult = true;
-        }
-
-        /// <summary>
-        /// Event handler for previous page
-        /// </summary>
-        private void ImportModPackWizard_Previous(object sender, Xceed.Wpf.Toolkit.Core.CancelRoutedEventArgs e)
-        {
-            _currentPage--;
-
-            importModPackWizard.FinishButtonVisibility = Visibility.Collapsed;
-            importModPackWizard.CanFinish = false;
-        }
-
-        #endregion
-
-
-        #region Private Methods
-
-        /// <summary>
-        /// Updates the progress bar
-        /// </summary>
-        /// <param name="value">The progress value</param>
-        private void ReportProgress(double value)
-        {
-            _progressController.SetProgress(value);
         }
 
         #endregion

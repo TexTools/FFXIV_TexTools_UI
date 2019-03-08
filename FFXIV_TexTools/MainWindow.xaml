@@ -41,7 +41,7 @@
                     <MenuItem x:Name="Menu_MakeModpackWizard" Header="ModPack Wizard" Click="Menu_MakeModpackWizard_Click"/>
                     <MenuItem x:Name="Menu_MakeSimpleModpack" Header="Simple ModPack" Click="Menu_MakeSimpleModpack_Click"/>
                 </MenuItem>
-                <MenuItem x:Name="Menu_ImportModpack" Header="Import ModPack" Click="Menu_ImportModpack_Click"/>
+                <MenuItem x:Name="Menu_ImportModpack" Header="Import ModPacks" Click="Menu_ImportModpack_Click"/>
                 <MenuItem x:Name="Menu_BatchProcessing" Header="Batch">
                     <MenuItem x:Name="Menu_DisableAll" Header="Disable All Mods" Command="{Binding DisableAllModsCommand}"/>
                     <MenuItem x:Name="Menu_EnableAll" Header="Enable All Mods" Command="{Binding EnableAllModsCommand}"/>
