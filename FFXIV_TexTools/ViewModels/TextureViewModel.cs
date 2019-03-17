@@ -243,6 +243,11 @@ namespace FFXIV_TexTools.ViewModels
                         _item.ItemCategory.Equals(XivStrings.Equip_Decals))
                     {
                         partList = _character.GetDecalNums(_item).Select(part => part.ToString()).ToList();
+
+                        if (_item.ItemCategory.Equals(XivStrings.Equip_Decals))
+                        {
+                            partList.Add("_stigma");
+                        }
                     }
                     else
                     {
@@ -365,10 +370,12 @@ namespace FFXIV_TexTools.ViewModels
             {
                 TypeVisibility = Visibility.Visible;
                 // Create the model info for character
-                _item.ModelInfo = new XivModelInfo
+                _item.ModelInfo = new XivModelInfo();
+
+                if (!SelectedPart.Name.Equals("_stigma"))
                 {
-                    Body = int.Parse(SelectedPart.Name)
-                };
+                    _item.ModelInfo.Body = int.Parse(SelectedPart.Name);
+                }
 
                 // For hair and face we get the type (Hair, Accessory, Face, Iris, Etc)
                 if (_item.ItemCategory.Equals(XivStrings.Hair) || _item.ItemCategory.Equals(XivStrings.Face))
@@ -609,6 +616,11 @@ namespace FFXIV_TexTools.ViewModels
                     else if (_item.ItemCategory.Equals(XivStrings.Equip_Decals))
                     {
                         var path = $"{XivStrings.EquipDecalFolder}/{string.Format(XivStrings.EquipDecalFile, SelectedPart.Name)}";
+
+                        if (SelectedPart.Name.Equals("_stigma"))
+                        {
+                            path = $"{XivStrings.EquipDecalFolder}/_stigma.tex";
+                        }
 
                         ttpList = new List<TexTypePath> { new TexTypePath { DataFile = _item.DataFile, Path = path, Type = XivTexType.Mask } };
                     }
