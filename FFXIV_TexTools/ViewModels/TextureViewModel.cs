@@ -272,6 +272,23 @@ namespace FFXIV_TexTools.ViewModels
 
                     _partCount = equipParts.Count;
                 }
+                else if (_item.Category.Equals(XivStrings.Gear))
+                {
+                    var xivGear = _item as XivGear;
+
+                    Parts.Add(new ComboBoxData { Name = "Primary" });
+
+                    if (xivGear.SecondaryModelInfo != null && xivGear.SecondaryModelInfo.ModelID > 0)
+                    {
+                        Parts.Add(new ComboBoxData{Name = "Secondary"});
+                    }
+                    else
+                    {
+                        PartVisibility = Visibility.Collapsed;
+                    }
+
+                    _partCount = Parts.Count;
+                }
                 else
                 {
                     partList = _tex.GetTexturePartList(_item, SelectedRace.XivRace, _item.DataFile);
@@ -426,6 +443,23 @@ namespace FFXIV_TexTools.ViewModels
                 foreach (var part in parts)
                 {
                     Types.Add(new ComboBoxData{Name = part.ToString()});
+                }
+
+                _typeCount = Types.Count;
+
+                TypeComboboxEnabled = _typeCount > 1;
+
+                SelectedTypeIndex = 0;
+            }
+            else if(_item.Category.Equals(XivStrings.Gear))
+            {
+                TypeVisibility = Visibility.Visible;
+
+                var typesList = _tex.GetTexturePartList(_item, SelectedRace.XivRace, _item.DataFile, SelectedPart.Name);
+
+                foreach (var type in typesList)
+                {
+                    Types.Add(new ComboBoxData { Name = type });
                 }
 
                 _typeCount = Types.Count;
@@ -654,6 +688,10 @@ namespace FFXIV_TexTools.ViewModels
                     {
                         _xivMtrl = _mtrl.GetMtrlData(_item, SelectedRace.XivRace, SelectedType.Name[0], dxVersion);
                     }
+                    else if (_item.Category.Equals(XivStrings.Gear))
+                    {
+                        _xivMtrl = _mtrl.GetMtrlData(_item, SelectedRace.XivRace, SelectedType.Name[0], dxVersion, SelectedPart.Name);
+                    }
                     else
                     {
                         _xivMtrl = _mtrl.GetMtrlData(_item, SelectedRace.XivRace, SelectedPart.Name[0], dxVersion);
@@ -846,6 +884,10 @@ namespace FFXIV_TexTools.ViewModels
                     if ((_item.ItemCategory.Equals(XivStrings.Mounts) || _item.ItemCategory.Equals(XivStrings.Monster)) && _item.ModelInfo.ModelType == XivItemType.demihuman)
                     {
                         _xivMtrl = _mtrl.GetMtrlData(_item, SelectedRace.XivRace, SelectedType.Name[0], dxVersion);
+                    }
+                    else if (_item.Category.Equals(XivStrings.Gear))
+                    {
+                        _xivMtrl = _mtrl.GetMtrlData(_item, SelectedRace.XivRace, SelectedType.Name[0], dxVersion, SelectedPart.Name);
                     }
                     else
                     {
