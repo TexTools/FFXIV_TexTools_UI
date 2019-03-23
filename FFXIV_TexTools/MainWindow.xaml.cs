@@ -241,75 +241,99 @@ namespace FFXIV_TexTools
         {
             var modPackDirectory = new DirectoryInfo(Settings.Default.ModPack_Directory);
 
-            var openFileDialog = new OpenFileDialog {InitialDirectory = modPackDirectory.FullName, Filter = "TexToolsModPack TTMP (*.ttmp;*.ttmp2)|*.ttmp;*.ttmp2"};
+            var openFileDialog = new OpenFileDialog {InitialDirectory = modPackDirectory.FullName, Filter = "TexToolsModPack TTMP (*.ttmp;*.ttmp2)|*.ttmp;*.ttmp2", Multiselect = true};
 
-            var importError = false;
+            if (openFileDialog.ShowDialog() != System.Windows.Forms.DialogResult.OK) 
+                return;
+            
+            var importMultiple = openFileDialog.FileNames.Length > 1;
 
-            if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            var modsImported = 0;
+
+            foreach (var fileName in openFileDialog.FileNames)
             {
-                try
+                modsImported += await ImportModpack(new DirectoryInfo(fileName), modPackDirectory, importMultiple);
+            }
+
+            if (modsImported > 0)
+            {
+                await this.ShowMessageAsync("Import Complete",
+                    $"{modsImported} mod(s) successfully imported.");
+            }
+        }
+
+        /// <summary>
+        /// This method opens the modpack import wizard or imports a modpack silently
+        /// </summary>
+        /// <param name="path">The path to the modpack</param>
+        /// <param name="silent">If the modpack wizard should be shown or the modpack should just be imported without any user interaction</param>
+        /// <returns></returns>
+        private async Task<int> ImportModpack(DirectoryInfo path, DirectoryInfo modPackDirectory, bool silent = false)
+        {
+            var importError = false;
+            
+            try
+            {
+                var ttmp = new TTMP(modPackDirectory, XivStrings.TexTools);
+                var ttmpData = ttmp.GetModPackJsonData(path);
+
+                if (ttmpData.ModPackJson.TTMPVersion.Contains("w"))
                 {
-                    var ttmp = new TTMP(modPackDirectory, XivStrings.TexTools);
-                    var ttmpData = ttmp.GetModPackJsonData(new DirectoryInfo(openFileDialog.FileName));
-
-                    if (ttmpData.ModPackJson.TTMPVersion.Contains("w"))
+                    try
                     {
-                        try
-                        {
-                            var importWizard = new ImportModPackWizard(ttmpData.ModPackJson, ttmpData.ImageDictionary,
-                                new DirectoryInfo(openFileDialog.FileName)) {Owner = this};
-                            var result = importWizard.ShowDialog();
+                        var importWizard = new ImportModPackWizard(ttmpData.ModPackJson, ttmpData.ImageDictionary,
+                            path) {Owner = this};
+                        var result = importWizard.ShowDialog();
 
-                            if (result == true)
-                            {
-                                await this.ShowMessageAsync("Import Complete",
-                                    $"{importWizard.TotalModsImported} mod(s) successfully imported.");
-                            }
-                        }
-                        catch
+                        if (result == true)
                         {
-                            importError = true;
+                            return importWizard.TotalModsImported;
                         }
                     }
-                    else if(ttmpData.ModPackJson.TTMPVersion.Contains("s"))
+                    catch
                     {
-                        try
-                        {
-                            var simpleImport = new SimpleModPackImporter(new DirectoryInfo(openFileDialog.FileName),
-                                ttmpData.ModPackJson) {Owner = this};
-                            var result = simpleImport.ShowDialog();
-
-                            if (result == true)
-                            {
-                                await this.ShowMessageAsync("Import Complete",
-                                    $"{simpleImport.TotalModsImported} mod(s) successfully imported.");
-                            }
-                        }
-                        catch
-                        {
-                            importError = true;
-                        }
+                        importError = true;
                     }
                 }
-                catch (Exception ex)
+                else if(ttmpData.ModPackJson.TTMPVersion.Contains("s"))
                 {
-                    if (!importError)
+                    try
                     {
-                        var simpleImport = new SimpleModPackImporter(new DirectoryInfo(openFileDialog.FileName), null) { Owner = this };
+                        var simpleImport = new SimpleModPackImporter(path,
+                            ttmpData.ModPackJson, silent) {Owner = this};
                         var result = simpleImport.ShowDialog();
 
                         if (result == true)
                         {
-                            await this.ShowMessageAsync("Import Complete", $"{simpleImport.TotalModsImported} mod(s) successfully imported.");
+                            return simpleImport.TotalModsImported;
                         }
                     }
-                    else
+                    catch
                     {
-                        FlexibleMessageBox.Show($"There was an error importing the mod pack\n\nMessage: {ex.Message}", $"ModPack Import Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        importError = true;
                     }
-
                 }
             }
+            catch (Exception ex)
+            {
+                if (!importError)
+                {
+                    var simpleImport = new SimpleModPackImporter(path, null, silent) { Owner = this };
+                    var result = simpleImport.ShowDialog();
+
+                    if (result == true)
+                    {
+                        return simpleImport.TotalModsImported;
+                    }
+                }
+                else
+                {
+                    FlexibleMessageBox.Show($"There was an error importing the mod pack at {path.FullName}\n\nMessage: {ex.Message}", $"ModPack Import Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return 0;
+                }
+            }
+
+            return 0;
         }
 
         /// <summary>

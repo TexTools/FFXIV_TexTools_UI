@@ -146,10 +146,6 @@
     <Reference Include="Xceed.Wpf.Toolkit, Version=3.5.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
       <HintPath>..\packages\Extended.Wpf.Toolkit.3.5.0\lib\net40\Xceed.Wpf.Toolkit.dll</HintPath>
     </Reference>
-    <Reference Include="xivModdingFramework, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\xivModdingFramework\xivModdingFramework\bin\Release\netstandard2.0\xivModdingFramework.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -459,6 +455,12 @@
     <Content Include="Resources\Shaders\CommonBuffers.hlsl" />
     <Content Include="Resources\Shaders\DataStructs.hlsl" />
     <Content Include="Resources\Shaders\psCommon.hlsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\lib\xivModdingFramework\xivModdingFramework\xivModdingFramework.csproj">
+      <Project>{fd6972eb-a726-4b6e-973e-2fa5f7f0ce7b}</Project>
+      <Name>xivModdingFramework</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
