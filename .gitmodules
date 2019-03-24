@@ -1,3 +1,4 @@
 [submodule "lib/xivModdingFramework"]
 	path = lib/xivModdingFramework
 	url = https://github.com/liinko/xivModdingFramework
+	branch = master
