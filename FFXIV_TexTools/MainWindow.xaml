@@ -49,6 +49,7 @@
             </MenuItem>
             <MenuItem Header="Search" StaysOpenOnClick="True">
                 <MenuItem x:Name="Menu_ModelIDSearch" Header="Model ID" Click="Menu_ModelIDSearch_Click"/>
+                <MenuItem x:Name="Menu_IconSearch" Header="Icon ID" Click="Menu_IconIDSearch_Click"/>
             </MenuItem>
             <MenuItem Header="Options" StaysOpenOnClick="True">
                 <MenuItem x:Name="Menu_Customize" Header="Customize" Click="Customize_Click"/>

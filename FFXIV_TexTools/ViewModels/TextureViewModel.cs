@@ -41,6 +41,7 @@ using xivModdingFramework.Materials.DataContainers;
 using xivModdingFramework.Materials.FileTypes;
 using xivModdingFramework.Mods;
 using xivModdingFramework.Mods.Enums;
+using xivModdingFramework.SqPack.FileTypes;
 using xivModdingFramework.Textures.DataContainers;
 using xivModdingFramework.Textures.Enums;
 using xivModdingFramework.Textures.FileTypes;
@@ -738,7 +739,44 @@ namespace FFXIV_TexTools.ViewModels
                     }
                     else
                     {
-                        ttpList = null;
+                        if (_uiItem.ItemCategory.Equals("Icon"))
+                        {
+                            var index = new Index(new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory));
+                            var languages = new[] {"en", "ja", "fr", "de"};
+                            var iconFile = $"{_uiItem.IconNumber.ToString().PadLeft(6, '0')}.tex";
+                            var iconFolder = $"{Path.GetDirectoryName(_uiItem.UiPath).Replace("\\", "/")}";
+
+                            ttpList = new List<TexTypePath>();
+
+                            if (index.FileExists(HashGenerator.GetHash(iconFile), HashGenerator.GetHash(iconFolder), XivDataFile._06_Ui))
+                            {
+                                var ttp = new TexTypePath { DataFile = _uiItem.DataFile, Path = _uiItem.UiPath, Type = XivTexType.Icon };
+                                ttpList.Add(ttp);
+                            }
+
+                            foreach (var language in languages)
+                            {
+                                var iconLangFolder = $"{iconFolder}/{language}";
+
+                                if (index.FileExists(HashGenerator.GetHash(iconFile), HashGenerator.GetHash(iconLangFolder), XivDataFile._06_Ui))
+                                {
+                                    var ttp = new TexTypePath { DataFile = _uiItem.DataFile, Path = $"{iconLangFolder}/{iconFile}", Type = XivTexType.Icon, Name = $"Icon {language}"};
+                                    ttpList.Add(ttp);
+                                }
+                            }
+
+                            var iconHQFolder = $"{iconFolder}/hq";
+
+                            if (index.FileExists(HashGenerator.GetHash(iconFile), HashGenerator.GetHash(iconHQFolder), XivDataFile._06_Ui))
+                            {
+                                var ttp = new TexTypePath { DataFile = _uiItem.DataFile, Path = $"{iconHQFolder}/{iconFile}", Type = XivTexType.Icon, Name = "Icon HQ"};
+                                ttpList.Add(ttp);
+                            }
+                        }
+                        else
+                        {
+                            ttpList = null;
+                        }
                     }
 
                 }
@@ -747,7 +785,7 @@ namespace FFXIV_TexTools.ViewModels
                     var iconNum = _uiItem.IconNumber;
                     var baseNum = 0;
 
-                    if (iconNum > 1000)
+                    if (iconNum >= 1000)
                     {
                         baseNum = (int)Math.Truncate(iconNum / 1000f) * 1000;
                     }

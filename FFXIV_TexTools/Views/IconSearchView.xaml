@@ -1,0 +1,29 @@
+﻿<mah:MetroWindow x:Class="FFXIV_TexTools.Views.IconSearchView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FFXIV_TexTools.Views"
+        xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+        mc:Ignorable="d"
+        Title="Icon Search" Height="110" Width="500" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" IsMinButtonEnabled="False" IsMaxRestoreButtonEnabled="False">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid VerticalAlignment="Center" Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBox Grid.Column="0" mah:TextBoxHelper.UseFloatingWatermark="True" mah:TextBoxHelper.Watermark="Icon ID" Margin="5" VerticalContentAlignment="Center" Text="{Binding IconText, UpdateSourceTrigger=PropertyChanged}">
+                <TextBox.InputBindings>
+                    <KeyBinding Key="Return" Command="{Binding TextBoxEnterCommand}"/>
+                </TextBox.InputBindings>
+            </TextBox>
+            <Button Grid.Column="1" Content="Open" Margin="5" MinWidth="100" Command="{Binding OpenIconCommand}"/>
+        </Grid>
+        <Label Grid.Row="1" Foreground="DarkRed" VerticalContentAlignment="Center" Content="{Binding IconStatusLabel}" />
+    </Grid>
+</mah:MetroWindow>

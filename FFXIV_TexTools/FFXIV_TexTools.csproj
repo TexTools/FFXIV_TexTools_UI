@@ -187,6 +187,7 @@
     <Compile Include="ViewModels\AdvancedImportViewModel.cs" />
     <Compile Include="ViewModels\BaseViewPortViewModel.cs" />
     <Compile Include="ViewModels\CustomizeViewModel.cs" />
+    <Compile Include="ViewModels\IconSearchViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\ModelSearchViewModel.cs" />
     <Compile Include="ViewModels\ModelViewModel.cs" />
@@ -198,6 +199,9 @@
     </Compile>
     <Compile Include="Views\CustomizeSettingsView.xaml.cs">
       <DependentUpon>CustomizeSettingsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\IconSearchView.xaml.cs">
+      <DependentUpon>IconSearchView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Models\AdvancedModelImportView.xaml.cs">
       <DependentUpon>AdvancedModelImportView.xaml</DependentUpon>
@@ -286,6 +290,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\CustomizeSettingsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\IconSearchView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

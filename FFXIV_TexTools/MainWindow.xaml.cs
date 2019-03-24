@@ -130,6 +130,15 @@ namespace FFXIV_TexTools
         }
 
         /// <summary>
+        /// Event handler for the icon id search clicked
+        /// </summary>
+        private void Menu_IconIDSearch_Click(object sender, RoutedEventArgs e)
+        {
+            var iconSearchView = new IconSearchView(this) {Owner = this};
+            iconSearchView.Show();
+        }
+
+        /// <summary>
         /// Event handler for the about menu item clicked
         /// </summary>
         private void Menu_About_Click(object sender, RoutedEventArgs e)
