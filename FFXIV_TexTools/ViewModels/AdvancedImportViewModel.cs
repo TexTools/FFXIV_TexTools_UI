@@ -603,26 +603,29 @@ namespace FFXIV_TexTools.ViewModels
             {
                 var originalPartListCount = _lod.MeshDataList[SelectedMeshNumber].MeshPartList.Count;
                 partCount = $"{originalPartListCount}";
-                var daePartList = _daeMeshPartDictionary[SelectedMeshNumber];
-
-                if (daePartList.Count > originalPartListCount)
+                if (_daeMeshPartDictionary.ContainsKey(SelectedMeshNumber))
                 {
-                    partDiff = $"(+{daePartList.Count - originalPartListCount})";
-                    for (var i = 0; i < daePartList.Count; i++)
-                    {
-                        partNumberList.Add(i);
-                    }
-                }
-                else
-                {
-                    if (daePartList.Count < originalPartListCount)
-                    {
-                        partDiff = $"(-{originalPartListCount - daePartList.Count})";
-                    }
+                    var daePartList = _daeMeshPartDictionary[SelectedMeshNumber];
 
-                    for (var i = 0; i < _lod.MeshDataList[SelectedMeshNumber].MeshPartList.Count; i++)
+                    if (daePartList.Count > originalPartListCount)
                     {
-                        partNumberList.Add(i);
+                        partDiff = $"(+{daePartList.Count - originalPartListCount})";
+                        for (var i = 0; i < daePartList.Count; i++)
+                        {
+                            partNumberList.Add(i);
+                        }
+                    }
+                    else
+                    {
+                        if (daePartList.Count < originalPartListCount)
+                        {
+                            partDiff = $"(-{originalPartListCount - daePartList.Count})";
+                        }
+
+                        for (var i = 0; i < _lod.MeshDataList[SelectedMeshNumber].MeshPartList.Count; i++)
+                        {
+                            partNumberList.Add(i);
+                        }
                     }
                 }
             }
