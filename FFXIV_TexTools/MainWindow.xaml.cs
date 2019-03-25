@@ -43,7 +43,23 @@ namespace FFXIV_TexTools
     {
         public MainWindow()
         {
-            InitializeComponent();
+            var fileVersion = FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location).FileVersion;
+
+            try
+            {
+                InitializeComponent();
+            }
+            catch(Exception e)
+            {
+                System.Windows.MessageBox.Show(
+                    "TexTools was unable to locate dependency files.\nPlease make sure you are running TexTools in the folder it came in.\n\nIf you continue to receive this error," +
+                    $"\nPlease make sure your Anti-Virus is not blocking TexTools.\n\nError: {e.Message}",
+                    "Dependencies Error v" + fileVersion);
+                Environment.Exit(-1);
+                return;
+            }
+
+            ItemSearchTextBox.Focus();
             var mainViewModel = new MainViewModel(this);
             this.DataContext = mainViewModel;
         }
