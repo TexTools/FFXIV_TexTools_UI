@@ -27,6 +27,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Timers;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Input;
@@ -45,6 +46,7 @@ using xivModdingFramework.Mods;
 using xivModdingFramework.Mods.Enums;
 using Color = SharpDX.Color;
 using ColorConverter = System.Windows.Media.ColorConverter;
+using Timer = System.Timers.Timer;
 using WinColor = System.Windows.Media.Color;
 
 namespace FFXIV_TexTools.ViewModels
@@ -63,7 +65,7 @@ namespace FFXIV_TexTools.ViewModels
         private string _partWatermark = XivStrings.Part, _numberWatermark = XivStrings.Number, _raceWatermark = XivStrings.Race, 
             _meshWatermark = XivStrings.Mesh, _pathString;
 
-        private string _lightXLabel = "X  |  0", _lightYLabel = "Y  |  0", _lightZLabel = "Z  |  0", _reflectionLabel = "Reflection  |  1", _modToggleText = "Enable/Disable";
+        private string _lightXLabel = "X  |  0", _lightYLabel = "Y  |  0", _lightZLabel = "Z  |  0", _reflectionLabel = "Reflection  |  1", _modToggleText = "Enable/Disable", _modelStatusLabel;
         private ComboBoxData _selectedRace, _selectedPart, _selectedNumber, _selectedMesh;
         private Visibility _numberVisibility, _partVisibility, _lightToggleVisibility = Visibility.Collapsed;
         private bool _light1Check = true, _light2Check, _light3Check, _lightRenderToggle, _transparencyToggle, _cullModeToggle;
@@ -73,6 +75,7 @@ namespace FFXIV_TexTools.ViewModels
         private Mdl _mdl;
         private XivMdl _mdlData;
         private Viewport3DViewModel _viewPortVM;
+        private Timer _modelStatusTimer;
 
         private Dictionary<int, ModelTextureData> _materialDictionary;
 
@@ -146,6 +149,8 @@ namespace FFXIV_TexTools.ViewModels
             SelectedRaceIndex = 0;
 
             CullModeToggle = Settings.Default.Cull_Mode == "None";
+
+            ShowModelStatus("Model Loaded Successfully");
         }
 
         #region Race
@@ -1096,6 +1101,53 @@ namespace FFXIV_TexTools.ViewModels
         }
 
         /// <summary>
+        /// THe label for the model status
+        /// </summary>
+        public string ModelStatusLabel
+        {
+            get => _modelStatusLabel;
+            set
+            {
+                _modelStatusLabel = value;
+                NotifyPropertyChanged(nameof(ModelStatusLabel));
+            }
+        }
+
+        /// <summary>
+        /// Shows the model status and starts timer
+        /// </summary>
+        /// <param name="status">The status message</param>
+        private void ShowModelStatus(string status)
+        {
+            ModelStatusLabel = status;
+
+            if (_modelStatusTimer != null)
+            {
+                _modelStatusTimer.Stop();
+                _modelStatusTimer.Dispose();
+            }
+
+            _modelStatusTimer = new Timer(3000);
+            _modelStatusTimer.AutoReset = false;
+            _modelStatusTimer.Enabled = true;
+            _modelStatusTimer.Elapsed += ModelStatusTimerOnElapsed;
+        }
+
+        /// <summary>
+        /// Event handler for model status timer elapsed, which clears the text
+        /// </summary>
+        private void ModelStatusTimerOnElapsed(object sender, ElapsedEventArgs e)
+        {
+            if (_modelStatusTimer != null)
+            {
+                _modelStatusTimer.Stop();
+                _modelStatusTimer.Dispose();
+            }
+
+            ModelStatusLabel = string.Empty;
+        }
+
+        /// <summary>
         /// Toggles the mod for the selected item ON or OFF
         /// </summary>
         private void ModStatusToggle(object obj)
@@ -1483,6 +1535,8 @@ namespace FFXIV_TexTools.ViewModels
             BasicImportEnabled = File.Exists(savePath);
             ImportEnabled = true;
             UpdateTexEnabled = true;
+
+            ShowModelStatus("Model Updated Successfully");
         }
         #endregion
 

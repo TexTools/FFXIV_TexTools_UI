@@ -36,7 +36,8 @@
         </UniformGrid>
 
         <Grid Grid.Row="1">
-            <hx:Viewport3DX
+            <Grid>
+                <hx:Viewport3DX
                 x:Name="viewport3DX"
                 Camera="{Binding Camera}"
                 CoordinateSystemLabelForeground="White"
@@ -49,31 +50,33 @@
                 DataContext="{Binding ViewPortVM}"
                 ShowTriangleCountInfo="True" FXAALevel="Medium" MSAA="Two" ZoomExtentsWhenLoaded="True" 
                 EnableOITRendering="True" OITWeightMode="Linear0" ZoomDistanceLimitNear="0.0001">
-                <hx:Viewport3DX.InputBindings>
-                    <KeyBinding Key="B" Command="hx:ViewportCommands.BackView" />
-                    <KeyBinding Key="F" Command="hx:ViewportCommands.FrontView" />
-                    <KeyBinding Key="U" Command="hx:ViewportCommands.TopView" />
-                    <KeyBinding Key="D" Command="hx:ViewportCommands.BottomView" />
-                    <KeyBinding Key="L" Command="hx:ViewportCommands.LeftView" />
-                    <KeyBinding Key="R" Command="hx:ViewportCommands.RightView" />
-                    <KeyBinding Command="hx:ViewportCommands.ZoomExtents" Gesture="Control+E" />
-                    <KeyBinding Command="hx:ViewportCommands.Reset" Gesture="Control+R"/>
-                    <MouseBinding Command="hx:ViewportCommands.Rotate" Gesture="RightClick" />
-                    <MouseBinding Command="hx:ViewportCommands.Zoom" Gesture="MiddleClick" />
-                    <MouseBinding Command="hx:ViewportCommands.Pan" Gesture="LeftClick" />
-                </hx:Viewport3DX.InputBindings>
-                <hx:DirectionalLight3D
+                    <hx:Viewport3DX.InputBindings>
+                        <KeyBinding Key="B" Command="hx:ViewportCommands.BackView" />
+                        <KeyBinding Key="F" Command="hx:ViewportCommands.FrontView" />
+                        <KeyBinding Key="U" Command="hx:ViewportCommands.TopView" />
+                        <KeyBinding Key="D" Command="hx:ViewportCommands.BottomView" />
+                        <KeyBinding Key="L" Command="hx:ViewportCommands.LeftView" />
+                        <KeyBinding Key="R" Command="hx:ViewportCommands.RightView" />
+                        <KeyBinding Command="hx:ViewportCommands.ZoomExtents" Gesture="Control+E" />
+                        <KeyBinding Command="hx:ViewportCommands.Reset" Gesture="Control+R"/>
+                        <MouseBinding Command="hx:ViewportCommands.Rotate" Gesture="RightClick" />
+                        <MouseBinding Command="hx:ViewportCommands.Zoom" Gesture="MiddleClick" />
+                        <MouseBinding Command="hx:ViewportCommands.Pan" Gesture="LeftClick" />
+                    </hx:Viewport3DX.InputBindings>
+                    <hx:DirectionalLight3D
                     Direction="{Binding Light1Direction}"
                     Color="White"/>
-                <hx:DirectionalLight3D
+                    <hx:DirectionalLight3D
                     Direction="{Binding Light2Direction}"
                     Color="White" />
-                <hx:DirectionalLight3D
+                    <hx:DirectionalLight3D
                     Direction="{Binding Light3Direction}"                 
                     IsRendering="{Binding RenderLight3}"
                     Color="White" />
-                <hx:GroupModel3D ItemsSource="{Binding Models}"/>
-            </hx:Viewport3DX>
+                    <hx:GroupModel3D ItemsSource="{Binding Models}"/>
+                </hx:Viewport3DX>
+                <Label VerticalAlignment="Bottom" HorizontalAlignment="Center" Content="{Binding ModelStatusLabel}" Foreground="#FF151515" FontSize="18"/>
+            </Grid>
             <Button x:Name="ViewerOptionsButton" HorizontalAlignment="Left" VerticalAlignment="Bottom" Content="Viewer Options" Command="{Binding ViewOptionsCommand}"/>
             <mah:FlyoutsControl Grid.RowSpan="2" HorizontalAlignment="Right">
                 <mah:Flyout x:Name="ViewerOptionsFlyout" Header="Viewer Options" Position="Right" Width="250" HorizontalAlignment="Left" IsOpen="{Binding FlyoutOpen}">
