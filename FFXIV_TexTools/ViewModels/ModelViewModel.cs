@@ -312,11 +312,19 @@ namespace FFXIV_TexTools.ViewModels
             {
                 var xivGear = _item as XivGear;
 
-                Parts.Add(new ComboBoxData { Name = "Primary" });
-
-                if (xivGear.SecondaryModelInfo != null && xivGear.SecondaryModelInfo.ModelID > 0)
+                if (xivGear.ItemCategory.Equals("Rings"))
                 {
-                    Parts.Add(new ComboBoxData { Name = "Secondary" });
+                    Parts.Add(new ComboBoxData { Name = "Right" });
+                    Parts.Add(new ComboBoxData { Name = "Left" });
+                }
+                else
+                {
+                    Parts.Add(new ComboBoxData { Name = "Primary" });
+
+                    if (xivGear.SecondaryModelInfo != null && xivGear.SecondaryModelInfo.ModelID > 0)
+                    {
+                        Parts.Add(new ComboBoxData { Name = "Secondary" });
+                    }
                 }
 
                 PartVisibility = Visibility.Visible;
@@ -459,6 +467,10 @@ namespace FFXIV_TexTools.ViewModels
                     else if (SelectedPart.Name.Equals("Secondary"))
                     {
                         _mdlData = _mdl.GetMdlData(xivGear, SelectedRace.XivRace, xivGear.SecondaryModelInfo);
+                    }
+                    else
+                    {
+                        _mdlData = _mdl.GetMdlData(xivGear, SelectedRace.XivRace, null, null, 0, SelectedPart.Name);
                     }
                 }
                 else if (_item.Category.Equals(XivStrings.Character))
