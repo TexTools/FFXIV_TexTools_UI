@@ -216,6 +216,10 @@ namespace FFXIV_TexTools.Views
             {
                 xivRace = XivRace.Monster;
             }
+            else if(modPath.Contains("bgcommon"))
+            {
+                xivRace = XivRace.All_Races;
+            }
             else if (modPath.Contains(".tex") || modPath.Contains(".mdl") || modPath.Contains(".atex"))
             {
                 if (modPath.Contains("accessory") || modPath.Contains("weapon") || modPath.Contains("/common/"))
