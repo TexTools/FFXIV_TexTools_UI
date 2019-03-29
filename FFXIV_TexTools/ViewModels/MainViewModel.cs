@@ -46,8 +46,6 @@ namespace FFXIV_TexTools.ViewModels
 
         private List<Category> _categories = new List<Category>();
 
-        private List<Category> _originalCategories = new List<Category>();
-
         private string _searchText;
         private string _dxVersionText = $"DX: {Properties.Settings.Default.DX_Version}";
 
@@ -584,8 +582,6 @@ namespace FFXIV_TexTools.ViewModels
                     Categories[4].CategoryList.Add(xivFurniture.ItemCategory);
                 }
             }
-
-            _originalCategories = Categories;
         }
 
         /// <summary>
@@ -624,94 +620,6 @@ namespace FFXIV_TexTools.ViewModels
             {
                 _searchText = value;
                 NotifyPropertyChanged(nameof(SearchText));
-                SearchTextFilter();
-            }
-        }
-
-        /// <summary>
-        /// The search Text Filter
-        /// </summary>
-        private void SearchTextFilter()
-        {
-            if (SearchText.Length > 2)
-            {
-                var filteredCategory = new List<Category>();
-
-                // Gear / Companion
-                foreach (var category in _originalCategories)
-                {
-                    var mainCategory = new Category{Name = category.Name, CategoryList = new List<string>(), Categories = new ObservableCollection<Category>()};
-
-                    if (category.Categories.Count > 0)
-                    {
-                        foreach (var subCategory in category.Categories)
-                        {
-                            if (subCategory.Categories != null && subCategory.Categories.Count > 0)
-                            {
-                                var sCategory = new Category { Name = subCategory.Name, CategoryList = new List<string>(), Categories = new ObservableCollection<Category>() };
-
-                                foreach (var item in subCategory.Categories)
-                                {
-                                    if (item.Categories != null && item.Categories.Count > 0)
-                                    {
-                                        var uiCat = new Category{ Name = item.Name, CategoryList = new List<string>(), Categories = new ObservableCollection<Category>() };
-
-                                        foreach (var uiItem in item.Categories)
-                                        {
-                                            if (uiItem.Name.ToLower().Contains(SearchText.ToLower()))
-                                            {
-                                                uiCat.IsExpanded = true;
-                                                uiCat.CategoryList.Add(item.Name);
-                                                uiCat.Categories.Add(uiItem);
-                                            }
-                                        }
-
-                                        if (uiCat.Categories.Count > 0)
-                                        {
-                                            sCategory.CategoryList.Add(item.Name);
-                                            sCategory.Categories.Add(uiCat);
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (item.Name.ToLower().Contains(SearchText.ToLower()))
-                                        {
-                                            sCategory.CategoryList.Add(item.Name);
-                                            sCategory.Categories.Add(item);
-                                        }
-                                    }
-                                }
-
-                                if (sCategory.CategoryList.Count > 0)
-                                {
-                                    sCategory.IsExpanded = true;
-                                    mainCategory.CategoryList.Add(sCategory.Name);
-                                    mainCategory.Categories.Add(sCategory);
-                                }
-                            }
-                            else
-                            {
-                                if (subCategory.Name.ToLower().Contains(SearchText.ToLower()))
-                                {
-                                    mainCategory.CategoryList.Add(subCategory.Name);
-                                    mainCategory.Categories.Add(subCategory);
-                                }
-                            }
-                        }
-                    }
-
-                    if (mainCategory.CategoryList.Count > 0)
-                    {
-                        mainCategory.IsExpanded = true;
-                        filteredCategory.Add(mainCategory);
-                    }
-                }
-
-                Categories = filteredCategory;
-            }
-            else
-            {
-                Categories = _originalCategories;
             }
         }
 

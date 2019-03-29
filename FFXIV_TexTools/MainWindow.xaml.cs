@@ -25,7 +25,9 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
+using SysTimer = System.Timers;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Forms;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Items.Interfaces;
@@ -41,6 +43,8 @@ namespace FFXIV_TexTools
     /// </summary>
     public partial class MainWindow
     {
+        private SysTimer.Timer searchTimer = new SysTimer.Timer(300);
+
         public MainWindow()
         {
             var fileVersion = FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location).FileVersion;
@@ -62,6 +66,10 @@ namespace FFXIV_TexTools
             ItemSearchTextBox.Focus();
             var mainViewModel = new MainViewModel(this);
             this.DataContext = mainViewModel;
+
+            searchTimer.Enabled = true;
+            searchTimer.AutoReset = false;
+            searchTimer.Elapsed += SearchTimerOnElapsed;
         }
 
         /// <summary>
@@ -515,6 +523,44 @@ namespace FFXIV_TexTools
 
                 await this.ShowMessageAsync("Backup Complete", "The index files have been successfully backed up");
             }
+        }
+
+        private void ItemTreeView_Loaded(object sender, RoutedEventArgs e)
+        {
+            var view = (CollectionView) CollectionViewSource.GetDefaultView(ItemTreeView.ItemsSource);
+            view.Filter = SearchFilter;
+        }
+
+        private bool SearchFilter(object item)
+        {
+            if (((Category)item).Categories != null)
+            {
+                var subItems = (CollectionView)CollectionViewSource.GetDefaultView(((Category)item).Categories);
+
+                subItems.Filter = SearchFilter;
+
+                ((Category)item).IsExpanded = !string.IsNullOrEmpty(ItemSearchTextBox.Text);
+
+                return !subItems.IsEmpty;
+            }
+
+            return ((Category)item).Name.ToLower().Contains(ItemSearchTextBox.Text.ToLower());
+        }
+
+        private void ItemSearchTextBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        {
+            searchTimer.Stop();
+            searchTimer.Start();
+        }
+
+        private void SearchTimerOnElapsed(object sender, SysTimer.ElapsedEventArgs e)
+        {
+            Dispatcher.Invoke(UpdateFilter);
+        }
+
+        private void UpdateFilter()
+        {
+            CollectionViewSource.GetDefaultView(ItemTreeView.ItemsSource).Refresh();
         }
     }
 }

@@ -85,8 +85,8 @@
 
             <GroupBox Header="Item List" Margin="5">
                 <Grid Grid.Column="0">
-                    <TextBox x:Name="ItemSearchTextBox" Controls:TextBoxHelper.Watermark="Search..." Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top"/>
-                    <TreeView x:Name="ItemTreeView" Margin="0,26,0,0" ItemsSource="{Binding Categories}" SelectedItemChanged="TreeView_SelectedItemChanged" Style="{StaticResource VirtualisedMetroTreeView}">
+                    <TextBox x:Name="ItemSearchTextBox" Controls:TextBoxHelper.Watermark="Search..." Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" TextChanged="ItemSearchTextBox_TextChanged"/>
+                    <TreeView x:Name="ItemTreeView" Margin="0,26,0,0" ItemsSource="{Binding Categories}" SelectedItemChanged="TreeView_SelectedItemChanged" Style="{StaticResource VirtualisedMetroTreeView}" Loaded="ItemTreeView_Loaded">
                         <TreeView.ItemContainerStyle>
                             <Style BasedOn="{StaticResource MetroTreeViewItem}" TargetType="{x:Type TreeViewItem}">
                                 <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}"/>
