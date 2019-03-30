@@ -361,10 +361,13 @@ namespace FFXIV_TexTools.Views
                 }
                 else if (item.Name.Equals(XivStrings.Equip_Decals))
                 {
-                    item.ModelInfo = new XivModelInfo
+                    if (!fullPath.Contains("_stigma"))
                     {
-                        ModelID = int.Parse(fullPath.Substring(fullPath.LastIndexOf("_", StringComparison.Ordinal) + 1, 3))
-                    };
+                        item.ModelInfo = new XivModelInfo
+                        {
+                            ModelID = int.Parse(fullPath.Substring(fullPath.LastIndexOf("_", StringComparison.Ordinal) + 1, 3))
+                        };
+                    }
                 }
             }
 
