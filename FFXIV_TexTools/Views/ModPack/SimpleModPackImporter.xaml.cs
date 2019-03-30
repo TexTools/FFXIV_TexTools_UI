@@ -183,14 +183,15 @@ namespace FFXIV_TexTools.Views
                         FullPath = modsJson.FullPath,
                         DatFile = modsJson.DatFile,
                         ModOffset = modsJson.ModOffset,
-                        ModSize = modsJson.ModSize
+                        ModSize = modsJson.ModSize,
+                        ModPackEntry = new ModPack { name = Path.GetFileNameWithoutExtension(_modPackDirectory.FullName), author = "N/A", version = "1.0.0" }
                     }
                 });
             }
 
-            ModPackName.Content = "N/A";
+            ModPackName.Content = Path.GetFileNameWithoutExtension(_modPackDirectory.FullName);
             ModPackAuthor.Content = "N/A";
-            ModPackVersion.Content = "N/A";
+            ModPackVersion.Content = "1.0.0";
 
             _simpleDataList.Sort();
 
