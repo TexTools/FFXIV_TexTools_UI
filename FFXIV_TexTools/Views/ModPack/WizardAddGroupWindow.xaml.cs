@@ -842,22 +842,40 @@ namespace FFXIV_TexTools.Views
                         "Overwrite?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) ==
                     System.Windows.Forms.DialogResult.Yes)
                 {
-                    _selectedModOption.Mods[mod.fullPath].ModDataBytes = dat.GetRawData(mod.data.modOffset,
-                        XivDataFiles.GetXivDataFile(mod.datFile), mod.data.modSize);
+                    var rawData = dat.GetRawData(mod.data.modOffset, XivDataFiles.GetXivDataFile(mod.datFile), mod.data.modSize);
+
+                    if (rawData == null)
+                    {
+                        FlexibleMessageBox.Show(
+                            $"There was an issue obtaining the Raw Data for the mod.\n\nOffset: {mod.data.modOffset}\nData File: {mod.datFile}",
+                            "Error Reading Mod Data", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
+                    _selectedModOption.Mods[mod.fullPath].ModDataBytes = rawData;
                 }
             }
             else
             {
-                IncludedModsList.Items.Add(includedMod);
+                var rawData = dat.GetRawData(mod.data.modOffset, XivDataFiles.GetXivDataFile(mod.datFile), mod.data.modSize);
+
+                if (rawData == null)
+                {
+                    FlexibleMessageBox.Show(
+                        $"There was an issue obtaining the Raw Data for the mod.\n\nOffset: {mod.data.modOffset}\nData File: {mod.datFile}",
+                        "Error Reading Mod Data", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
 
                 var modData = new ModData
                 {
                     Name = mod.name,
                     Category = mod.category,
                     FullPath = mod.fullPath,
-                    ModDataBytes = dat.GetRawData(mod.data.modOffset, XivDataFiles.GetXivDataFile(mod.datFile), mod.data.modSize)
+                    ModDataBytes = rawData
                 };
 
+                IncludedModsList.Items.Add(includedMod);
                 _selectedModOption.Mods.Add(mod.fullPath, modData);
             }
         }
@@ -948,22 +966,40 @@ namespace FFXIV_TexTools.Views
                         "Overwrite?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) ==
                     System.Windows.Forms.DialogResult.Yes)
                 {
-                    _selectedModOption.Mods[mod.fullPath].ModDataBytes = dat.GetRawData(mod.data.modOffset,
-                        XivDataFiles.GetXivDataFile(mod.datFile), mod.data.modSize);
+                    var rawData = dat.GetRawData(mod.data.modOffset, XivDataFiles.GetXivDataFile(mod.datFile), mod.data.modSize);
+
+                    if (rawData == null)
+                    {
+                        FlexibleMessageBox.Show(
+                            $"There was an issue obtaining the Raw Data for the mod.\n\nOffset: {mod.data.modOffset}\nData File: {mod.datFile}",
+                            "Error Reading Mod Data", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
+                    _selectedModOption.Mods[mod.fullPath].ModDataBytes = rawData;
                 }
             }
             else
             {
-                IncludedModsList.Items.Add(includedMod);
+                var rawData = dat.GetRawData(mod.data.modOffset, XivDataFiles.GetXivDataFile(mod.datFile), mod.data.modSize);
+
+                if (rawData == null)
+                {
+                    FlexibleMessageBox.Show(
+                        $"There was an issue obtaining the Raw Data for the mod.\n\nOffset: {mod.data.modOffset}\nData File: {mod.datFile}",
+                        "Error Reading Mod Data", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
 
                 var modData = new ModData
                 {
                     Name = mod.name,
                     Category = mod.category,
                     FullPath = mod.fullPath,
-                    ModDataBytes = dat.GetRawData(mod.data.modOffset, XivDataFiles.GetXivDataFile(mod.datFile), mod.data.modSize)
+                    ModDataBytes = rawData
                 };
 
+                IncludedModsList.Items.Add(includedMod);
                 _selectedModOption.Mods.Add(mod.fullPath, modData);
             }
         }
@@ -994,22 +1030,40 @@ namespace FFXIV_TexTools.Views
                         "Overwrite?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) ==
                     System.Windows.Forms.DialogResult.Yes)
                 {
-                    _selectedModOption.Mods[mod.fullPath].ModDataBytes = dat.GetRawData(mod.data.modOffset,
-                        XivDataFiles.GetXivDataFile(mod.datFile), mod.data.modSize);
+                    var rawData = dat.GetRawData(mod.data.modOffset, XivDataFiles.GetXivDataFile(mod.datFile), mod.data.modSize);
+
+                    if (rawData == null)
+                    {
+                        FlexibleMessageBox.Show(
+                            $"There was an issue obtaining the Raw Data for the mod.\n\nOffset: {mod.data.modOffset}\nData File: {mod.datFile}",
+                            "Error Reading Mod Data", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
+                    _selectedModOption.Mods[mod.fullPath].ModDataBytes = rawData;
                 }
             }
             else
             {
-                IncludedModsList.Items.Add(includedMod);
+                var rawData = dat.GetRawData(mod.data.modOffset, XivDataFiles.GetXivDataFile(mod.datFile), mod.data.modSize);
+
+                if (rawData == null)
+                {
+                    FlexibleMessageBox.Show(
+                        $"There was an issue obtaining the Raw Data for the mod.\n\nOffset: {mod.data.modOffset}\nData File: {mod.datFile}",
+                        "Error Reading Mod Data", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
 
                 var modData = new ModData
                 {
                     Name = mod.name,
                     Category = mod.category,
                     FullPath = mod.fullPath,
-                    ModDataBytes = dat.GetRawData(mod.data.modOffset, XivDataFiles.GetXivDataFile(mod.datFile), mod.data.modSize)
+                    ModDataBytes = rawData
                 };
 
+                IncludedModsList.Items.Add(includedMod);
                 _selectedModOption.Mods.Add(mod.fullPath, modData);
             }
         }
