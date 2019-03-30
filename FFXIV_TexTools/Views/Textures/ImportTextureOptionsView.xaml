@@ -9,6 +9,6 @@
     <UniformGrid Rows="1">
         <Button Content="Import DDS" VerticalAlignment="Center" Margin="10" Command="{Binding ImportDDSButton}" IsEnabled="{Binding DDSImportEnabled}"/>
         <Button Content="Import From..." VerticalAlignment="Center" Margin="10" Command="{Binding ImportFromButton}"/>
-        <Button Content="Import BMP" VerticalAlignment="Center" Margin="10" Command="{Binding ImportBMPButton}" IsEnabled="{Binding BMPImportEnabled, FallbackValue=False}"/>
+        <Button Content="Import BMP" VerticalAlignment="Center" Margin="10" Command="{Binding ImportBMPButton}" IsEnabled="{Binding BMPImportEnabled}"/>
     </UniformGrid>
 </UserControl>

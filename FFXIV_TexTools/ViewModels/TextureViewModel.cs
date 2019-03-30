@@ -983,6 +983,7 @@ namespace FFXIV_TexTools.ViewModels
             ExportEnabled = true;
             ImportEnabled = true;
             DDSImportEnabled = DDSFileExists();
+            BMPImportEnabled = BMPFileExists();
             MoreOptionsEnabled = true;
 
             if (_xivMtrl != null)
@@ -1025,6 +1026,27 @@ namespace FFXIV_TexTools.ViewModels
             if (_uiItem != null)
             {
                 return IOUtil.DDSFileExists(_uiItem, savePath, Path.GetFileNameWithoutExtension(SelectedMap.TexType.Path));
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Checks whether a BMP file exists
+        /// </summary>
+        /// <returns>The status of the BMP files existence</returns>
+        private bool BMPFileExists()
+        {
+            var savePath = new DirectoryInfo(Settings.Default.Save_Directory);
+
+            if (_item != null)
+            {
+                return IOUtil.BMPFileExists(_item, savePath, Path.GetFileNameWithoutExtension(SelectedMap.TexType.Path), SelectedRace.XivRace);
+            }
+
+            if (_uiItem != null)
+            {
+                return IOUtil.BMPFileExists(_uiItem, savePath, Path.GetFileNameWithoutExtension(SelectedMap.TexType.Path));
             }
 
             return false;
@@ -1152,6 +1174,8 @@ namespace FFXIV_TexTools.ViewModels
 
             _magickImage.Write($"{path}/{Path.GetFileNameWithoutExtension(SelectedMap.TexType.Path)}.bmp", MagickFormat.Bmp);
             _textureView.BottomFlyout.IsOpen = false;
+
+            BMPImportEnabled = BMPFileExists();
         }
 
         /// <summary>
@@ -1291,8 +1315,16 @@ namespace FFXIV_TexTools.ViewModels
         /// </remarks>
         private void ImportFrom(object obj)
         {
-            var saveDir = new DirectoryInfo(Settings.Default.Save_Directory);
-            var path = new DirectoryInfo(IOUtil.MakeItemSavePath(_item, saveDir, SelectedRace.XivRace)); 
+            var path = new DirectoryInfo(Settings.Default.Save_Directory);
+
+            if (_item != null)
+            {
+                path = new DirectoryInfo(IOUtil.MakeItemSavePath(_item, path, SelectedRace.XivRace));
+            }
+            else if (_uiItem != null)
+            {
+                path = new DirectoryInfo(IOUtil.MakeItemSavePath(_uiItem, path));
+            }
 
             var openFileDialog = new OpenFileDialog {InitialDirectory = path.FullName, Filter = "Texture Files(*.DDS;*.BMP) |*.DDS;*.BMP"};
 
@@ -1325,7 +1357,6 @@ namespace FFXIV_TexTools.ViewModels
                                 MessageBoxButtons.OK, MessageBoxIcon.Error);
                             return;
                         }
-
                     }
                     else
                     {
@@ -1335,7 +1366,36 @@ namespace FFXIV_TexTools.ViewModels
                 }
                 else
                 {
-                    //TODO: BMP Import
+                    if (SelectedMap.TexType.Type != XivTexType.ColorSet)
+                    {
+                        var texData = _tex.GetTexData(SelectedMap.TexType);
+
+                        try
+                        {
+                            if (_item != null)
+                            {
+                                _tex.TexBMPImporter(texData, _item, fileDir, XivStrings.TexTools);
+                            }
+                            else if (_uiItem != null)
+                            {
+                                _tex.TexBMPImporter(texData, _uiItem, fileDir, XivStrings.TexTools);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            FlexibleMessageBox.Show(
+                                $"There was an error Importing the Texture.\n\nError Message:\n{ex.Message}", "Error Importing Texture",
+                                MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        FlexibleMessageBox.Show(
+                            $"ColorSet BMP import is not supported.", "Error Importing Texture",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
                 }
 
                 UpdateImage();
@@ -1343,6 +1403,67 @@ namespace FFXIV_TexTools.ViewModels
 
             _textureView.BottomFlyout.IsOpen = false;
         }
+
+        /// <summary>
+        /// Command for the Import From Button
+        /// </summary>
+        public ICommand ImportBMPButton => new RelayCommand(ImportBMP);
+
+        private void ImportBMP(object obj)
+        {
+            var savePath = new DirectoryInfo(Settings.Default.Save_Directory);
+            var path = savePath.FullName;
+
+            if (_item != null)
+            {
+                path = IOUtil.MakeItemSavePath(_item, savePath, SelectedRace.XivRace);
+            }
+            else if (_uiItem != null)
+            {
+                path = IOUtil.MakeItemSavePath(_uiItem, savePath);
+            }
+
+            var fullPath = new DirectoryInfo($"{path}\\{Path.GetFileNameWithoutExtension(SelectedMap.TexType.Path)}.bmp");
+
+            if (SelectedMap.TexType.Type != XivTexType.ColorSet)
+            {
+                var texData = _tex.GetTexData(SelectedMap.TexType);
+
+                if (File.Exists(fullPath.FullName))
+                {
+                    try
+                    {
+                        if (_item != null)
+                        {
+                            _tex.TexBMPImporter(texData, _item, fullPath, XivStrings.TexTools);
+                        }
+                        else if (_uiItem != null)
+                        {
+                            _tex.TexBMPImporter(texData, _uiItem, fullPath, XivStrings.TexTools);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        FlexibleMessageBox.Show(
+                            $"There was an error Importing the Texture.\n\nError Message:\n{ex.Message}", "Error Importing Texture",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
+                }
+            }
+            else
+            {
+                FlexibleMessageBox.Show(
+                    $"ColorSet BMP import is not supported.", "Error Importing Texture",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            _textureView.BottomFlyout.IsOpen = false;
+            UpdateImage();
+        }
+
 
         /// <summary>
         /// Command for the Mod Status Toggle Button
