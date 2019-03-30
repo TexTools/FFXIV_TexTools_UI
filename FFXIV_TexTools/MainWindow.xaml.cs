@@ -410,12 +410,21 @@ namespace FFXIV_TexTools
 
             if (result == System.Windows.Forms.DialogResult.Yes)
             {
+                var indexBackupsDirectory = new DirectoryInfo(Settings.Default.Backup_Directory);
+
+                if (!Directory.Exists(indexBackupsDirectory.FullName))
+                {
+                    FlexibleMessageBox.Show("Error Accessing Index Backups Folder\n\n" +
+                                            "Please set your Index Backups directory in Options > Customize and try again.\n",
+                        "Index Backups Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
                 var task = Task.Run((() =>
                 {
                     var modding = new Modding(gameDirectory);
                     var dat = new Dat(gameDirectory);
 
-                    var indexBackupsDirectory = new DirectoryInfo(Settings.Default.Backup_Directory);
                     var modListDirectory = new DirectoryInfo(Path.Combine(gameDirectory.Parent.Parent.FullName, XivStrings.ModlistFilePath));
 
                     var backupFiles = Directory.GetFiles(indexBackupsDirectory.FullName);
