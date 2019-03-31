@@ -9,7 +9,7 @@
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         xmlns:views ="clr-namespace:FFXIV_TexTools.Views"
         mc:Ignorable="d"
-        Title="FFXIV TexTools 2.0 Beta3" Height="720" Width="1280" WindowStartupLocation="CenterScreen">
+        Title="FFXIV TexTools 2.0 Beta3" Height="720" Width="1280" WindowStartupLocation="CenterScreen" Closing="MetroWindow_Closing">
     <Controls:MetroWindow.RightWindowCommands>
         <Controls:WindowCommands>
             <Button Content="{Binding DXVersionText}" Command="{Binding DXVersionCommand}" />

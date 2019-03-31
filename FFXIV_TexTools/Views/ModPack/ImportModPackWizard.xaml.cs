@@ -38,13 +38,15 @@ namespace FFXIV_TexTools.Views
         private ProgressDialogController _progressController;
         private readonly Dictionary<string, MagickImage> _imageDictionary;
         private ModPack _modPackEntry;
+        private bool _messageInImport;
 
-        public ImportModPackWizard(ModPackJson modPackJson, Dictionary<string, MagickImage> imageDictionary, DirectoryInfo modPackDirectory)
+        public ImportModPackWizard(ModPackJson modPackJson, Dictionary<string, MagickImage> imageDictionary, DirectoryInfo modPackDirectory, bool messageInImport = false)
         {
             InitializeComponent();
 
             _imageDictionary = imageDictionary;
             _modPackDirectory = modPackDirectory;
+            _messageInImport = messageInImport;
 
             ModPackNameLabel.Content = modPackJson.Name;
             ModPackAuthorLabel.Content = modPackJson.Author;
@@ -103,7 +105,10 @@ namespace FFXIV_TexTools.Views
                 magickImage.Dispose();
             }
 
-            Owner.Activate();
+            if (_messageInImport)
+            {
+                Owner.Activate();
+            }
         }
 
         /// <summary>
@@ -181,6 +186,12 @@ namespace FFXIV_TexTools.Views
             TotalModsImported = await texToolsModPack.ImportModPackAsync(_modPackDirectory, importList, gameDirectory, modListDirectory, progressIndicator);
 
             await _progressController.CloseAsync();
+
+            if (_messageInImport)
+            {
+                await this.ShowMessageAsync("Import Complete",
+                    $"{TotalModsImported} mod(s) successfully imported.");
+            }
 
             DialogResult = true;
         }

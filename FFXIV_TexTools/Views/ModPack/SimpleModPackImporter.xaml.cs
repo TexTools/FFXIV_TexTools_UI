@@ -50,12 +50,13 @@ namespace FFXIV_TexTools.Views
         private readonly TTMP _texToolsModPack;
         private int _modCount;
         private long _modSize;
+        private bool _messageInImport;
 
         [DllImport("Shlwapi.dll", CharSet = CharSet.Auto)]
         public static extern long StrFormatByteSize(long fileSize, [MarshalAs(UnmanagedType.LPTStr)] StringBuilder buffer, int bufferSize);
 
 
-        public SimpleModPackImporter(DirectoryInfo modPackDirectory, ModPackJson modPackJson, bool silent = false)
+        public SimpleModPackImporter(DirectoryInfo modPackDirectory, ModPackJson modPackJson, bool silent = false, bool messageInImport = false)
         {
             InitializeComponent();
 
@@ -63,6 +64,7 @@ namespace FFXIV_TexTools.Views
             _gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
             _texToolsModPack = new TTMP(new DirectoryInfo(Properties.Settings.Default.ModPack_Directory),
                 XivStrings.TexTools);
+            _messageInImport = messageInImport;
 
             if (modPackJson != null)
             {
@@ -434,6 +436,12 @@ namespace FFXIV_TexTools.Views
             TotalModsImported = await _texToolsModPack.ImportModPackAsync(_modPackDirectory, importList, _gameDirectory, modListDirectory, progressIndicator);
 
             await _progressController.CloseAsync();
+
+            if (_messageInImport)
+            {
+                await this.ShowMessageAsync("Import Complete",
+                    $"{TotalModsImported} mod(s) successfully imported.");
+            }
 
             DialogResult = true;
         }

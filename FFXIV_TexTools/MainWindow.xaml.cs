@@ -44,10 +44,17 @@ namespace FFXIV_TexTools
     public partial class MainWindow
     {
         private SysTimer.Timer searchTimer = new SysTimer.Timer(300);
+        private string _startupArgs;
 
-        public MainWindow()
+        public MainWindow(string[] args)
         {
             var fileVersion = FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location).FileVersion;
+
+            if (args != null && args.Length > 0)
+            {
+                _startupArgs = args[0];
+                OnlyImport();
+            }
 
             try
             {
@@ -70,6 +77,15 @@ namespace FFXIV_TexTools
             searchTimer.Enabled = true;
             searchTimer.AutoReset = false;
             searchTimer.Elapsed += SearchTimerOnElapsed;
+        }
+
+        private async void OnlyImport()
+        {
+            var modPackDirectory = new DirectoryInfo(Settings.Default.ModPack_Directory);
+
+            await ImportModpack(new DirectoryInfo(_startupArgs), modPackDirectory, false, true);
+
+            Application.Current.Shutdown();
         }
 
         /// <summary>
@@ -301,7 +317,7 @@ namespace FFXIV_TexTools
         /// <param name="path">The path to the modpack</param>
         /// <param name="silent">If the modpack wizard should be shown or the modpack should just be imported without any user interaction</param>
         /// <returns></returns>
-        private async Task<int> ImportModpack(DirectoryInfo path, DirectoryInfo modPackDirectory, bool silent = false)
+        private async Task<int> ImportModpack(DirectoryInfo path, DirectoryInfo modPackDirectory, bool silent = false, bool messageInImport = false)
         {
             var importError = false;
             
@@ -315,7 +331,17 @@ namespace FFXIV_TexTools
                     try
                     {
                         var importWizard = new ImportModPackWizard(ttmpData.ModPackJson, ttmpData.ImageDictionary,
-                            path) {Owner = this};
+                            path, messageInImport);
+
+                        if (messageInImport)
+                        {
+                            importWizard.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                        }
+                        else
+                        {
+                            importWizard.Owner = this;
+                        }
+
                         var result = importWizard.ShowDialog();
 
                         if (result == true)
@@ -333,7 +359,17 @@ namespace FFXIV_TexTools
                     try
                     {
                         var simpleImport = new SimpleModPackImporter(path,
-                            ttmpData.ModPackJson, silent) {Owner = this};
+                            ttmpData.ModPackJson, silent, messageInImport);
+
+                        if (messageInImport)
+                        {
+                            simpleImport.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                        }
+                        else
+                        {
+                            simpleImport.Owner = this;
+                        }
+
                         var result = simpleImport.ShowDialog();
 
                         if (result == true)
@@ -351,7 +387,17 @@ namespace FFXIV_TexTools
             {
                 if (!importError)
                 {
-                    var simpleImport = new SimpleModPackImporter(path, null, silent) { Owner = this };
+                    var simpleImport = new SimpleModPackImporter(path, null, silent, messageInImport);
+
+                    if (messageInImport)
+                    {
+                        simpleImport.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                    }
+                    else
+                    {
+                        simpleImport.Owner = this;
+                    }
+
                     var result = simpleImport.ShowDialog();
 
                     if (result == true)
@@ -570,6 +616,15 @@ namespace FFXIV_TexTools
         private void UpdateFilter()
         {
             CollectionViewSource.GetDefaultView(ItemTreeView.ItemsSource).Refresh();
+        }
+
+        private void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (searchTimer != null)
+            {
+                searchTimer.Elapsed -= SearchTimerOnElapsed;
+                searchTimer.Dispose();
+            }
         }
     }
 }
