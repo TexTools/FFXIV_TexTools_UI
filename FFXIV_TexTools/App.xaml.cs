@@ -23,6 +23,9 @@ namespace FFXIV_TexTools
 
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             base.OnStartup(e);
+
+            var mainWindow = new MainWindow(e.Args);
+            mainWindow.Show();
         }
 
         private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
