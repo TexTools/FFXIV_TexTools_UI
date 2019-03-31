@@ -66,7 +66,7 @@ namespace FFXIV_TexTools.Custom
         public static class CustomPSShaderDescription
         {
             public static ShaderDescription PSCustomMesh = new ShaderDescription(nameof(PSCustomMesh), ShaderStage.Pixel,
-                new ShaderReflector(), ShaderHelper.LoadShaderCode(@"Resources\Shaders\psCustomMeshBlinnPhong.cso"));
+                new ShaderReflector(), ShaderHelper.LoadShaderCode($"{AppDomain.CurrentDomain.BaseDirectory}\\Resources\\Shaders\\psCustomMeshBlinnPhong.cso"));
         }
 
         public static class ShaderHelper
