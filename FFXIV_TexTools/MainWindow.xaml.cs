@@ -29,6 +29,7 @@ using SysTimer = System.Timers;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Forms;
+using AutoUpdaterDotNET;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Items.Interfaces;
 using xivModdingFramework.Mods;
@@ -48,6 +49,7 @@ namespace FFXIV_TexTools
 
         public MainWindow(string[] args)
         {
+            CheckForUpdates();
             CheckForSettingsUpdate();
 
             var fileVersion = FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location).FileVersion;
@@ -79,6 +81,11 @@ namespace FFXIV_TexTools
             searchTimer.Enabled = true;
             searchTimer.AutoReset = false;
             searchTimer.Elapsed += SearchTimerOnElapsed;
+        }
+
+        private void CheckForUpdates()
+        {
+            AutoUpdater.Start("https://raw.githubusercontent.com/liinko/FFXIVTexToolsWeb/master/updater.xml");
         }
 
         private void CheckForSettingsUpdate()
