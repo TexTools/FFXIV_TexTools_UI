@@ -626,5 +626,12 @@ namespace FFXIV_TexTools
                 searchTimer.Dispose();
             }
         }
+
+        private void MetroWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            var fileVersion = FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location).FileVersion;
+
+            Title += $" {fileVersion.Substring(0, fileVersion.LastIndexOf("."))} Final Beta";
+        }
     }
 }

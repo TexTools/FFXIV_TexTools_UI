@@ -20,7 +20,16 @@
                 <RowDefinition Height="2*"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
-            <TextBox Grid.Row="0" TextWrapping="Wrap" AcceptsReturn="True" Text="FFXIV TexTools&#xA;Beta Version 3&#xA;Created By Liinko" IsReadOnly="True" FontSize="20" BorderThickness="0"/>
+            <Grid Grid.Row="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <TextBox Grid.Row="0" TextWrapping="Wrap" AcceptsReturn="True" Text="FFXIV TexTools" IsReadOnly="True" FontSize="20" BorderThickness="0"/>
+                <TextBox x:Name="VersionTextBox" Grid.Row="1" TextWrapping="Wrap" AcceptsReturn="True" IsReadOnly="True" FontSize="20" BorderThickness="0"/>
+                <TextBox Grid.Row="2" TextWrapping="Wrap" AcceptsReturn="True" Text="Created By Liinko" IsReadOnly="True" FontSize="20" BorderThickness="0"/>
+            </Grid>
             <Button x:Name="DonateButton" Grid.Row="1" BorderBrush="{x:Null}" Click="DonateButton_Click" Foreground="{x:Null}" Background="{x:Null}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" >
                 <Button.Content>
                     <Image Source="/FFXIV_TexTools;component/Resources/PaypalDonateButton.png" Stretch="Uniform"/>
