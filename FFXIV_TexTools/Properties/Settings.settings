@@ -50,5 +50,8 @@
     <Setting Name="DAE_Plugin_Target" Type="System.String" Scope="User">
       <Value Profile="(Default)">OpenCOLLADA</Value>
     </Setting>
+    <Setting Name="UpgradeRequired" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

@@ -48,6 +48,8 @@ namespace FFXIV_TexTools
 
         public MainWindow(string[] args)
         {
+            CheckForSettingsUpdate();
+
             var fileVersion = FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location).FileVersion;
 
             if (args != null && args.Length > 0)
@@ -77,6 +79,16 @@ namespace FFXIV_TexTools
             searchTimer.Enabled = true;
             searchTimer.AutoReset = false;
             searchTimer.Elapsed += SearchTimerOnElapsed;
+        }
+
+        private void CheckForSettingsUpdate()
+        {
+            if (Settings.Default.UpgradeRequired)
+            {
+                Settings.Default.Upgrade();
+                Settings.Default.UpgradeRequired = false;
+                Settings.Default.Save();
+            }
         }
 
         private async void OnlyImport()
