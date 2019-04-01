@@ -599,6 +599,8 @@ namespace FFXIV_TexTools.ViewModels
             var partCount = "";
             var partDiff = "";
 
+            if(_daeMeshPartDictionary == null) return;
+
             if (_lod.MeshDataList.Count > SelectedMeshNumber)
             {
                 var originalPartListCount = _lod.MeshDataList[SelectedMeshNumber].MeshPartList.Count;
@@ -717,6 +719,8 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         private void UpdateShapes()
         {
+            if (_importDictionary == null || _importDictionary.Count < 1) return;
+
             MakeShapeNameDictionary();
 
             var shapePathList = new List<string>();
