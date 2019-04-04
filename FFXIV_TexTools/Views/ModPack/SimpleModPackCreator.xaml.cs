@@ -220,6 +220,12 @@ namespace FFXIV_TexTools.Views
                 number = int.Parse(t).ToString();
             }
 
+            if (modPath.Contains("/tail/"))
+            {
+                var t = modPath.Substring(modPath.LastIndexOf("l/t") + 3, 4);
+                number = int.Parse(t).ToString();
+            }
+
             return number;
         }
 
