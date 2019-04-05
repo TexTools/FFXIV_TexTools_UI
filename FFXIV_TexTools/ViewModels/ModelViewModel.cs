@@ -1382,6 +1382,10 @@ namespace FFXIV_TexTools.ViewModels
             var saveDir = new DirectoryInfo(Settings.Default.Save_Directory);
             var path = new DirectoryInfo($"{IOUtil.MakeItemSavePath(_item, saveDir, SelectedRace.XivRace)}\\3D");
 
+            var modlist = new Modding(_gameDirectory);
+            var mdlPath = Path.Combine(_mdlData.MdlPath.Folder, _mdlData.MdlPath.File);
+            var modData = modlist.TryGetModEntry(mdlPath);
+
             var openFileDialog = new OpenFileDialog();
             openFileDialog.InitialDirectory = path.FullName;
             openFileDialog.Filter = "Collada DAE (*.dae)|*.dae";
@@ -1392,8 +1396,19 @@ namespace FFXIV_TexTools.ViewModels
 
                 try
                 {
-                    warnings = _mdl.ImportModel(_item, _mdlData, new DirectoryInfo(openFileDialog.FileName), null,
-                        XivStrings.TexTools, Settings.Default.DAE_Plugin_Target);
+                    if (modData != null && modData.enabled)
+                    {
+                        var originalMdl = _mdl.GetMdlData(_item, SelectedRace.XivRace, null, modData.fullPath,
+                            modData.data.originalOffset);
+
+                        warnings = _mdl.ImportModel(_item, originalMdl, new DirectoryInfo(openFileDialog.FileName), null,
+                            XivStrings.TexTools, Settings.Default.DAE_Plugin_Target);
+                    }
+                    else
+                    {
+                        warnings = _mdl.ImportModel(_item, _mdlData, new DirectoryInfo(openFileDialog.FileName), null,
+                            XivStrings.TexTools, Settings.Default.DAE_Plugin_Target);
+                    }
                 }
                 catch (Exception ex)
                 {
