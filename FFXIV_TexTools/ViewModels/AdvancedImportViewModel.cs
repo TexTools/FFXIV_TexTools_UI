@@ -53,7 +53,7 @@ namespace FFXIV_TexTools.ViewModels
         private string _selectedMaterial, _selectedAttribute, _selectedMaterialUsed, _selectedPartAttribute, _selectedAvailablePartAttribute;
         private string _materialText, _attributeText, _partCountLabel, _partAttributesLabel, _daeLocationText;
         private int _selectedMeshNumber, _selectedMeshNumberIndex, _selectedPartNumber, _selectedPartNumberIndex, _selectedMaterialUsedIndex;
-        private bool _shapeDataCheckBoxEnabled, _disableShapeDataChecked, _fromWizard;
+        private bool _shapeDataCheckBoxEnabled, _disableShapeDataChecked, _fromWizard, _flipAlphaChecked;
         private readonly string _textColor = "Black";
         private Dictionary<string, string> _attributeDictionary, _shapeDictionary;
         private Dictionary<string, int> _attributeMaskDictionary;
@@ -103,6 +103,11 @@ namespace FFXIV_TexTools.ViewModels
             }
 
             MeshNumbers = meshNumberList;
+
+            if (_itemModel.Category.Equals("Character"))
+            {
+                FlipAlphaChecked = true;
+            }
 
             if (!refresh)
             {
@@ -573,6 +578,23 @@ namespace FFXIV_TexTools.ViewModels
             }
         }
 
+        public bool FlipAlphaChecked
+        {
+            get => _flipAlphaChecked;
+            set
+            {
+                _flipAlphaChecked = value;
+                foreach (var importDictionaryValue in _importDictionary.Values)
+                {
+                    importDictionaryValue.FlipAlpha = value;
+                }
+                NotifyPropertyChanged(nameof(FlipAlphaChecked));
+            }
+        }
+
+        /// <summary>
+        /// The raw data for the model
+        /// </summary>
         public byte[] RawModelData { get; set; }
 
         #endregion

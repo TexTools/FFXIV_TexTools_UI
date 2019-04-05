@@ -67,16 +67,25 @@
                     </Grid>
                 </Grid>
             </GroupBox>
-            <GroupBox Grid.Column="2" Header="{Binding BonesGroupHeader, FallbackValue='Bones'}">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
-                    <ListBox Grid.Row="0" ItemsSource="{Binding BoneList}"/>
-                    <Label Grid.Row="1" Margin="5" Content="Bone addition is automatic" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                </Grid>
-            </GroupBox>
+            <Grid Grid.Column="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <GroupBox Grid.Row="0" Header="{Binding BonesGroupHeader, FallbackValue='Bones'}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <ListBox Grid.Row="0" ItemsSource="{Binding BoneList}"/>
+                        <Label Grid.Row="1" Margin="5" Content="Bone addition is automatic" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Grid>
+                </GroupBox>
+                <GroupBox Grid.Row="1" Header="Vertex Colors">
+                    <CheckBox Content="Flip Alpha" IsChecked="{Binding FlipAlphaChecked}"/>
+                </GroupBox>
+            </Grid>
         </Grid>
         <GroupBox Grid.Row="2" Header="Mesh Data">
             <Grid>
