@@ -115,7 +115,7 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     DaeLocationText = savePath.FullName;
 
-                    var quickColladaData = _dae.QuickColladaReader(savePath);
+                    var quickColladaData = _dae.QuickColladaReader(savePath, _xivMdl);
                     _daeMeshPartDictionary = quickColladaData.MeshPartDictionary;
                     _colladaBoneList = quickColladaData.BoneList;
                 }
@@ -1218,7 +1218,7 @@ namespace FFXIV_TexTools.ViewModels
             {
                 DaeLocationText = openFileDialog.FileName;
 
-                var quickColladaData = _dae.QuickColladaReader(new DirectoryInfo(openFileDialog.FileName));
+                var quickColladaData = _dae.QuickColladaReader(new DirectoryInfo(openFileDialog.FileName), _xivMdl);
                 _daeMeshPartDictionary = quickColladaData.MeshPartDictionary;
                 _colladaBoneList = quickColladaData.BoneList;
 
