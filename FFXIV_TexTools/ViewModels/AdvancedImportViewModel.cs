@@ -771,6 +771,7 @@ namespace FFXIV_TexTools.ViewModels
             }
             else
             {
+                DisableShapeDataChecked = false;
                 ShapeDataCheckBoxEnabled = false;
 
                 ShapeDescription = "There is no Shape Data for this mesh.\n\n" +
