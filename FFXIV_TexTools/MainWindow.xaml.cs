@@ -31,6 +31,7 @@ using System.Windows.Data;
 using System.Windows.Forms;
 using AutoUpdaterDotNET;
 using xivModdingFramework.General.Enums;
+using xivModdingFramework.Helpers;
 using xivModdingFramework.Items.Interfaces;
 using xivModdingFramework.Mods;
 using xivModdingFramework.Mods.FileTypes;
@@ -488,6 +489,7 @@ namespace FFXIV_TexTools
                 var task = Task.Run((() =>
                 {
                     var modding = new Modding(gameDirectory);
+                    var problemChecker = new ProblemChecker(gameDirectory);
                     var dat = new Dat(gameDirectory);
 
                     var modListDirectory = new DirectoryInfo(Path.Combine(gameDirectory.Parent.Parent.FullName, XivStrings.ModlistFilePath));
@@ -515,7 +517,6 @@ namespace FFXIV_TexTools
                                 File.Copy(backupFile, $"{gameDirectory}/{Path.GetFileName(backupFile)}", true);
                             }
                         }
-
                     }
 
                     // Delete modded dat files
@@ -526,6 +527,11 @@ namespace FFXIV_TexTools
                         foreach (var datFile in datFiles)
                         {
                             File.Delete(datFile);
+                        }
+
+                        if (datFiles.Count > 0)
+                        {
+                            problemChecker.RepairIndexDatCounts(xivDataFile);
                         }
                     }
 
