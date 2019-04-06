@@ -31,7 +31,7 @@ namespace FFXIV_TexTools.Views
             InitializeComponent();
 
             var fileVersion = FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location).FileVersion;
-            VersionTextBox.Text = $"Version {fileVersion.Substring(0, fileVersion.LastIndexOf("."))} Final Beta";
+            VersionTextBox.Text = $"Version {fileVersion.Substring(0, fileVersion.LastIndexOf("."))}";
         }
 
         /// <summary>

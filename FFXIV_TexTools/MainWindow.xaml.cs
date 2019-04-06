@@ -664,7 +664,7 @@ namespace FFXIV_TexTools
         {
             var fileVersion = FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location).FileVersion;
 
-            Title += $" {fileVersion.Substring(0, fileVersion.LastIndexOf("."))} Final Beta";
+            Title += $" {fileVersion.Substring(0, fileVersion.LastIndexOf("."))}";
         }
 
         private void GithubButton_Click(object sender, RoutedEventArgs e)
