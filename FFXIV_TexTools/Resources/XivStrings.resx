@@ -264,4 +264,43 @@
   <data name="OpenCollada" xml:space="preserve">
     <value>OpenCOLLADA</value>
   </data>
+  <data name="Body_Hands_Legs" xml:space="preserve">
+    <value>Body + Hands + Legs</value>
+  </data>
+  <data name="Body_Hands_Legs_Feet" xml:space="preserve">
+    <value>Body + Hands + Legs + Feet</value>
+  </data>
+  <data name="Body_Legs_Feet" xml:space="preserve">
+    <value>Body + Legs + Feet</value>
+  </data>
+  <data name="Food" xml:space="preserve">
+    <value>Food</value>
+  </data>
+  <data name="Head_Body" xml:space="preserve">
+    <value>Head + Body</value>
+  </data>
+  <data name="Legs_Feet" xml:space="preserve">
+    <value>Legs + Feet</value>
+  </data>
+  <data name="Main_Hand" xml:space="preserve">
+    <value>Main Hand</value>
+  </data>
+  <data name="Main_Off" xml:space="preserve">
+    <value>Main Hand + Off Hand</value>
+  </data>
+  <data name="Off_Hand" xml:space="preserve">
+    <value>Off Hand</value>
+  </data>
+  <data name="Rings" xml:space="preserve">
+    <value>Rings</value>
+  </data>
+  <data name="Soul_Crystal" xml:space="preserve">
+    <value>Soul Crystal</value>
+  </data>
+  <data name="Two_Handed" xml:space="preserve">
+    <value>Two Handed</value>
+  </data>
+  <data name="Waist" xml:space="preserve">
+    <value>Waist</value>
+  </data>
 </root>

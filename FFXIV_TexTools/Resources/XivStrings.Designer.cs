@@ -19,7 +19,7 @@ namespace FFXIV_TexTools.Resources {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class XivStrings {
@@ -93,6 +93,33 @@ namespace FFXIV_TexTools.Resources {
         internal static string Body {
             get {
                 return ResourceManager.GetString("Body", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Body + Hands + Legs.
+        /// </summary>
+        internal static string Body_Hands_Legs {
+            get {
+                return ResourceManager.GetString("Body_Hands_Legs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Body + Hands + Legs + Feet.
+        /// </summary>
+        internal static string Body_Hands_Legs_Feet {
+            get {
+                return ResourceManager.GetString("Body_Hands_Legs_Feet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Body + Legs + Feet.
+        /// </summary>
+        internal static string Body_Legs_Feet {
+            get {
+                return ResourceManager.GetString("Body_Legs_Feet", resourceCulture);
             }
         }
         
@@ -205,6 +232,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Food.
+        /// </summary>
+        internal static string Food {
+            get {
+                return ResourceManager.GetString("Food", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Furniture.
         /// </summary>
         internal static string Furniture {
@@ -250,6 +286,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Head + Body.
+        /// </summary>
+        internal static string Head_Body {
+            get {
+                return ResourceManager.GetString("Head_Body", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Housing.
         /// </summary>
         internal static string Housing {
@@ -286,6 +331,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Legs + Feet.
+        /// </summary>
+        internal static string Legs_Feet {
+            get {
+                return ResourceManager.GetString("Legs_Feet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Loading Screen.
         /// </summary>
         internal static string Loading_Screen {
@@ -300,6 +354,24 @@ namespace FFXIV_TexTools.Resources {
         internal static string LoadingScreen {
             get {
                 return ResourceManager.GetString("LoadingScreen", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Main Hand.
+        /// </summary>
+        internal static string Main_Hand {
+            get {
+                return ResourceManager.GetString("Main_Hand", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Main Hand + Off Hand.
+        /// </summary>
+        internal static string Main_Off {
+            get {
+                return ResourceManager.GetString("Main_Off", resourceCulture);
             }
         }
         
@@ -376,6 +448,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Off Hand.
+        /// </summary>
+        internal static string Off_Hand {
+            get {
+                return ResourceManager.GetString("Off_Hand", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to OpenCOLLADA.
         /// </summary>
         internal static string OpenCollada {
@@ -430,6 +511,24 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Rings.
+        /// </summary>
+        internal static string Rings {
+            get {
+                return ResourceManager.GetString("Rings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Soul Crystal.
+        /// </summary>
+        internal static string Soul_Crystal {
+            get {
+                return ResourceManager.GetString("Soul_Crystal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Tail.
         /// </summary>
         internal static string Tail {
@@ -453,6 +552,15 @@ namespace FFXIV_TexTools.Resources {
         internal static string Texture_Map {
             get {
                 return ResourceManager.GetString("Texture_Map", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Two Handed.
+        /// </summary>
+        internal static string Two_Handed {
+            get {
+                return ResourceManager.GetString("Two_Handed", resourceCulture);
             }
         }
         
@@ -489,6 +597,15 @@ namespace FFXIV_TexTools.Resources {
         internal static string ULD {
             get {
                 return ResourceManager.GetString("ULD", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Waist.
+        /// </summary>
+        internal static string Waist {
+            get {
+                return ResourceManager.GetString("Waist", resourceCulture);
             }
         }
         

@@ -444,6 +444,13 @@ namespace FFXIV_TexTools.ViewModels
             // Gear List
             var gearList = itemList.GetGearList();
 
+            foreach (var categoryOrder in _categoryOrderList)
+            {
+                var category = new Category { Name = categoryOrder, Categories = new ObservableCollection<Category>(), CategoryList = new List<string>() };
+                Categories[0].Categories.Add(category);
+                Categories[0].CategoryList.Add(categoryOrder);
+            }
+
             foreach (var xivGear in gearList)
             {
                 if (Categories[0].CategoryList.Contains(xivGear.ItemCategory))
@@ -717,5 +724,30 @@ namespace FFXIV_TexTools.ViewModels
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
+        // A list containing the category order
+        private readonly List<string> _categoryOrderList = new List<string>
+        {
+            {XivStrings.Head },
+            {XivStrings.Body },
+            {XivStrings.Hands },
+            {XivStrings.Legs },
+            {XivStrings.Feet },
+            {XivStrings.Main_Hand },
+            {XivStrings.Off_Hand },
+            {XivStrings.Two_Handed },
+            {XivStrings.Main_Off },
+            {XivStrings.Ears },
+            {XivStrings.Neck },
+            {XivStrings.Wrists },
+            {XivStrings.Rings },
+            {XivStrings.Body_Hands_Legs_Feet },
+            {XivStrings.Body_Hands_Legs },
+            {XivStrings.Body_Legs_Feet },
+            {XivStrings.Head_Body },
+            {XivStrings.Legs_Feet },
+            {XivStrings.All },
+            {XivStrings.Food }
+        };
     }
 }
