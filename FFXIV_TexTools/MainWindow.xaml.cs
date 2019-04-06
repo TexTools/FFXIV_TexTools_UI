@@ -13,6 +13,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+using AutoUpdaterDotNET;
 using FFXIV_TexTools.Helpers;
 using FFXIV_TexTools.Models;
 using FFXIV_TexTools.Properties;
@@ -25,11 +26,9 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
-using SysTimer = System.Timers;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Forms;
-using AutoUpdaterDotNET;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Items.Interfaces;
@@ -37,6 +36,7 @@ using xivModdingFramework.Mods;
 using xivModdingFramework.Mods.FileTypes;
 using xivModdingFramework.SqPack.FileTypes;
 using Application = System.Windows.Application;
+using SysTimer = System.Timers;
 
 namespace FFXIV_TexTools
 {
@@ -148,8 +148,15 @@ namespace FFXIV_TexTools
         /// </summary>
         private void TreeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-            var selectedItem = e.NewValue as Category;
+            UpdateViews(e.NewValue as Category);
+        }
 
+        /// <summary>
+        /// Updates the texture and model views with the selected item
+        /// </summary>
+        /// <param name="selectedItem">The selected item</param>
+        private void UpdateViews(Category selectedItem)
+        {
             if (selectedItem?.Item != null)
             {
                 var textureView = TextureTabItem.Content as TextureView;
@@ -544,9 +551,10 @@ namespace FFXIV_TexTools
 
                 task.Wait();
 
+                UpdateViews(ItemTreeView.SelectedItem as Category);
+
                 await this.ShowMessageAsync("Start Over Complete", "The start over process has been completed.");
             }
-
         }
 
         private void Menu_Donate_Click(object sender, RoutedEventArgs e)
