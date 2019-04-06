@@ -105,14 +105,25 @@ namespace FFXIV_TexTools.Views
                 if (result)
                 {
                     _indexDatRepairList.Add(file);
-                    AddText("\t\u2716\n", "Red");
+                    AddText("\t\u2716\t", "Red");
+                    problemFound = true;
+                }
+                else
+                {
+                    AddText("\t\u2714\t", "Green");
+                }
+
+                result = _problemChecker.CheckForLargeDats(file);
+
+                if (result)
+                {
+                    AddText("\t\u2716\nExtra Dat files found, recommend Start Over\n", "Red");
                     problemFound = true;
                 }
                 else
                 {
                     AddText("\t\u2714\n", "Green");
                 }
-
             }
 
             return problemFound;
