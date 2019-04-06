@@ -666,5 +666,10 @@ namespace FFXIV_TexTools
 
             Title += $" {fileVersion.Substring(0, fileVersion.LastIndexOf("."))} Final Beta";
         }
+
+        private void GithubButton_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start(WebUrl.Github_Website);
+        }
     }
 }

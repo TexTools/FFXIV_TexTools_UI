@@ -22,6 +22,9 @@
             <Button x:Name="DiscordButton" ToolTip="Join us on Discord" Click="DiscordButton_Click">
                 <iconPacks:PackIconSimpleIcons Kind="Discord" VerticalAlignment="Center" HorizontalAlignment="Center"/>
             </Button>
+            <Button x:Name="GithubButton" ToolTip="View Github Repo" Click="GithubButton_Click">
+                <iconPacks:PackIconSimpleIcons Kind="GitHub" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            </Button>
         </Controls:WindowCommands>
     </Controls:MetroWindow.LeftWindowCommands>
     <Grid>
