@@ -77,6 +77,7 @@ namespace FFXIV_TexTools.ViewModels
                     Positions = meshData.Positions,
                     Normals = meshData.Normals,
                     Indices = meshData.Indices,
+                    Colors = meshData.Colors4,
                     TextureCoordinates = meshData.TextureCoordinates0,
                 };
 
