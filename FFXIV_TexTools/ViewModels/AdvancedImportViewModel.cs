@@ -53,7 +53,7 @@ namespace FFXIV_TexTools.ViewModels
         private string _selectedMaterial, _selectedAttribute, _selectedMaterialUsed, _selectedPartAttribute, _selectedAvailablePartAttribute;
         private string _materialText, _attributeText, _partCountLabel, _partAttributesLabel, _daeLocationText;
         private int _selectedMeshNumber, _selectedMeshNumberIndex, _selectedPartNumber, _selectedPartNumberIndex, _selectedMaterialUsedIndex;
-        private bool _shapeDataCheckBoxEnabled, _disableShapeDataChecked, _fromWizard, _flipAlphaChecked;
+        private bool _shapeDataCheckBoxEnabled, _disableShapeDataChecked, _fromWizard, _flipAlphaChecked, _importButtonEnabled;
         private readonly string _textColor = "Black";
         private Dictionary<string, string> _attributeDictionary, _shapeDictionary;
         private Dictionary<string, int> _attributeMaskDictionary;
@@ -123,6 +123,8 @@ namespace FFXIV_TexTools.ViewModels
                     var quickColladaData = _dae.QuickColladaReader(savePath, _xivMdl);
                     _daeMeshPartDictionary = quickColladaData.MeshPartDictionary;
                     _colladaBoneList = quickColladaData.BoneList;
+
+                    ImportButtonEnabled = true;
                 }
             }
 
@@ -589,6 +591,16 @@ namespace FFXIV_TexTools.ViewModels
                     importDictionaryValue.FlipAlpha = value;
                 }
                 NotifyPropertyChanged(nameof(FlipAlphaChecked));
+            }
+        }
+
+        public bool ImportButtonEnabled
+        {
+            get => _importButtonEnabled;
+            set
+            {
+                _importButtonEnabled = value;
+                NotifyPropertyChanged(nameof(ImportButtonEnabled));
             }
         }
 
@@ -1244,6 +1256,7 @@ namespace FFXIV_TexTools.ViewModels
                 var quickColladaData = _dae.QuickColladaReader(new DirectoryInfo(openFileDialog.FileName), _xivMdl);
                 _daeMeshPartDictionary = quickColladaData.MeshPartDictionary;
                 _colladaBoneList = quickColladaData.BoneList;
+                ImportButtonEnabled = true;
 
                 Initialize(true);
             }
