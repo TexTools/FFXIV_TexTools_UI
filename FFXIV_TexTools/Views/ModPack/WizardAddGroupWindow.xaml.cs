@@ -29,6 +29,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
+using System.Windows.Input;
 using System.Windows.Media;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Items.DataContainers;
@@ -1281,5 +1282,13 @@ namespace FFXIV_TexTools.Views
             public string FullPath { get; set; }
         }
 
+        private void OptionNameTextBox_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if (e.Key == Key.Return)
+            {
+                AddOption(OptionNameTextBox.Text);
+                e.Handled = true;
+            }
+        }
     }
 }
