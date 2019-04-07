@@ -721,11 +721,14 @@ namespace FFXIV_TexTools.Views
                 // Material
                 if (itemPath.Contains(".mtrl"))
                 {
-                    modCB.Name = $"Material ({Path.GetFileNameWithoutExtension(itemPath)})";
-                    modCB.SelectedMod = modItem;
-                    modCB.TexTypePath = null;
+                    var materialModCB = new ModComboBox
+                    {
+                        Name = $"Material ({Path.GetFileNameWithoutExtension(itemPath)})",
+                        SelectedMod = modItem,
+                        TexTypePath = null
+                    };
 
-                    MaterialComboBox.Items.Add(modCB);
+                    MaterialComboBox.Items.Add(materialModCB);
                     MaterialTabItem.IsEnabled = true;
                 }
             }
@@ -901,7 +904,6 @@ namespace FFXIV_TexTools.Views
             var includedModsList = IncludedModsList.Items.Cast<IncludedMods>().ToList();
 
             var tex = new Tex(_gameDirectory);
-            var texData = tex.GetTexData(selectedItem.TexTypePath);
 
             var ddsDirectory = new DirectoryInfo(CustomTextureTextBox.Text);
 
@@ -915,6 +917,8 @@ namespace FFXIV_TexTools.Views
             }
             else
             {
+                var texData = tex.GetTexData(selectedItem.TexTypePath);
+
                 modData = tex.DDStoTexData(texData, ((Category)ModListTreeView.SelectedItem).Item, ddsDirectory);
             }
 
