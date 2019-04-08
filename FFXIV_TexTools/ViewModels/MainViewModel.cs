@@ -68,7 +68,14 @@ namespace FFXIV_TexTools.ViewModels
             CheckForOldModList();
             CheckGameVersion();
 
-            FillTree();
+            try
+            {
+                FillTree();
+            }
+            catch (Exception ex)
+            {
+                FlexibleMessageBox.Show($"There was an error getting the Items List\n\n{ex.Message}", $"Items List Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void CheckForOldModList()
