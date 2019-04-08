@@ -1622,20 +1622,30 @@ namespace FFXIV_TexTools.ViewModels
         {
             if (_xivMtrl == null) return;
 
-            if (TranslucencyCheck)
+            try
             {
-                if (_xivMtrl.ShaderNumber == 0x0D)
+                if (TranslucencyCheck)
                 {
-                    _mtrl.ToggleTranslucency(_xivMtrl, _item, TranslucencyCheck, XivStrings.TexTools);
+                    if (_xivMtrl.ShaderNumber == 0x0D)
+                    {
+                        _mtrl.ToggleTranslucency(_xivMtrl, _item, TranslucencyCheck, XivStrings.TexTools);
+                    }
+                }
+                else
+                {
+                    if (_xivMtrl.ShaderNumber == 0x1D)
+                    {
+                        _mtrl.ToggleTranslucency(_xivMtrl, _item, TranslucencyCheck, XivStrings.TexTools);
+                    }
                 }
             }
-            else
+            catch (Exception ex)
             {
-                if (_xivMtrl.ShaderNumber == 0x1D)
-                {
-                    _mtrl.ToggleTranslucency(_xivMtrl, _item, TranslucencyCheck, XivStrings.TexTools);
-                }
+                FlexibleMessageBox.Show(
+                    $"There was an error attempting to toggle translucency\n\n{ex.Message}", "Error Toggling Translucency",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+
         }
 
         /// <summary>
