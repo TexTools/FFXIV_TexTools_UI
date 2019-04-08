@@ -404,6 +404,9 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <EmbeddedResource Include="..\lib\xivModdingFramework\xivModdingFramework\Resources\XivStrings.zh.resx">
+      <Link>Resources\XivStrings.zh.resx</Link>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

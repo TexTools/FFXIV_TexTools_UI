@@ -55,6 +55,16 @@ namespace FFXIV_TexTools.ViewModels
             {
                 NumberFormat = {NumberDecimalSeparator = "."}
             };
+            //esrinzou for china ffxiv
+            if (CultureInfo.CurrentUICulture.Name == "zh-CN")
+            {
+                Properties.Settings.Default.Application_Language = "zh";
+                ci = new CultureInfo(Properties.Settings.Default.Application_Language)
+                {
+                    NumberFormat = { NumberDecimalSeparator = "." }
+                };
+            }
+            //esrinzou end
             CultureInfo.DefaultThreadCurrentCulture = ci;
             CultureInfo.DefaultThreadCurrentUICulture = ci;
             CultureInfo.CurrentCulture = ci;
