@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+using FFXIV_TexTools.Helpers;
 using FFXIV_TexTools.Resources;
 using MahApps.Metro;
 using Newtonsoft.Json;
@@ -22,11 +23,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows;
 using System.Windows.Documents;
+using System.Windows.Forms;
 using System.Windows.Media;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Mods.DataContainers;
 using xivModdingFramework.SqPack.FileTypes;
+using Application = System.Windows.Application;
 
 namespace FFXIV_TexTools.Views
 {
@@ -99,29 +102,38 @@ namespace FFXIV_TexTools.Views
             {
                 AddText($"\t{file.GetDataFileName()} Index Files", textColor);
 
-                var result = _problemChecker.CheckIndexDatCounts(file);
+                try
+                {
+                    var result = _problemChecker.CheckIndexDatCounts(file);
 
-                if (result)
-                {
-                    _indexDatRepairList.Add(file);
-                    AddText("\t\u2716\t", "Red");
-                    problemFound = true;
-                }
-                else
-                {
-                    AddText("\t\u2714\t", "Green");
-                }
+                    if (result)
+                    {
+                        _indexDatRepairList.Add(file);
+                        AddText("\t\u2716\t", "Red");
+                        problemFound = true;
+                    }
+                    else
+                    {
+                        AddText("\t\u2714\t", "Green");
+                    }
 
-                result = _problemChecker.CheckForLargeDats(file);
+                    result = _problemChecker.CheckForLargeDats(file);
 
-                if (result)
-                {
-                    AddText("\t\u2716\nExtra Dat files found, recommend Start Over\n", "Red");
-                    problemFound = true;
+                    if (result)
+                    {
+                        AddText("\t\u2716\nExtra Dat files found, recommend Start Over\n", "Red");
+                        problemFound = true;
+                    }
+                    else
+                    {
+                        AddText("\t\u2714\n", "Green");
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    AddText("\t\u2714\n", "Green");
+                    FlexibleMessageBox.Show(
+                        $"There was an issue checking Index Dat Counts\n{ex.Message}", "Problem Check Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
 
