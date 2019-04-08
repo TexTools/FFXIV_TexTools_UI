@@ -4,11 +4,12 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:FFXIV_TexTools.Views"
+             xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
              mc:Ignorable="d" 
              d:DesignHeight="200" d:DesignWidth="800">
     <UniformGrid Rows="1">
-        <Button Content="Export DDS" VerticalAlignment="Center" Margin="10" Command="{Binding ExportDDS}"/>
-        <Button Content="Export BMP" VerticalAlignment="Center" Margin="10" Command="{Binding ExportBmp}"/>
-        <Button Content="Export Both" VerticalAlignment="Center" Margin="10" Command="{Binding ExportAll}"/>
+        <Button Content="{Binding Source={x:Static resx:UIStrings.Export_DDS}}" VerticalAlignment="Center" Margin="10" Command="{Binding ExportDDS}"/>
+        <Button Content="{Binding Source={x:Static resx:UIStrings.Export_BMP}}" VerticalAlignment="Center" Margin="10" Command="{Binding ExportBmp}"/>
+        <Button Content="{Binding Source={x:Static resx:UIStrings.Export_Both}}" VerticalAlignment="Center" Margin="10" Command="{Binding ExportAll}"/>
     </UniformGrid>
 </UserControl>

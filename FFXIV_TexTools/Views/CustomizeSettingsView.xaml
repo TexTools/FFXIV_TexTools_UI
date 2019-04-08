@@ -7,7 +7,8 @@
         xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
-        Title="Customize" Height="450" Width="800" ShowMaxRestoreButton="False" ShowMinButton="False" WindowStartupLocation="CenterOwner">
+        xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
+        Title="{Binding Source={x:Static resx:UIStrings.Customize}}" Height="450" Width="800" ShowMaxRestoreButton="False" ShowMinButton="False" WindowStartupLocation="CenterOwner">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
@@ -18,7 +19,7 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
-            <GroupBox Header="Directories" Grid.Row="0">
+            <GroupBox Header="{Binding Source={x:Static resx:UIStrings.Directories}}" Grid.Row="0">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -31,10 +32,10 @@
                         <ColumnDefinition />
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <TextBox x:Name="FfxivDir" Grid.Row="0" Text="{Binding FFXIV_Directory}" TextWrapping="NoWrap" IsReadOnly="True" Margin="5" mah:TextBoxHelper.Watermark="FFXIV Directory" mah:TextBoxHelper.UseFloatingWatermark="True"/>
-                    <TextBox x:Name="SaveDir" Grid.Row="1" Text="{Binding Save_Directory}" TextWrapping="NoWrap" IsReadOnly="True" Margin="5" mah:TextBoxHelper.Watermark="Save Directory" mah:TextBoxHelper.UseFloatingWatermark="True"/>
-                    <TextBox x:Name="BackupDir" Grid.Row="2" Text="{Binding Backups_Directory}" TextWrapping="NoWrap" IsReadOnly="True" Margin="5" mah:TextBoxHelper.Watermark="Backups Directory" mah:TextBoxHelper.UseFloatingWatermark="True"/>
-                    <TextBox x:Name="ModPackDir" Grid.Row="3" Text="{Binding ModPack_Directory}" TextWrapping="NoWrap" IsReadOnly="True" Margin="5" mah:TextBoxHelper.Watermark="Mod Pack Directory" mah:TextBoxHelper.UseFloatingWatermark="True"/>
+                    <TextBox x:Name="FfxivDir" Grid.Row="0" Text="{Binding FFXIV_Directory}" TextWrapping="NoWrap" IsReadOnly="True" Margin="5" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.FFXIV_Directory}}" mah:TextBoxHelper.UseFloatingWatermark="True"/>
+                    <TextBox x:Name="SaveDir" Grid.Row="1" Text="{Binding Save_Directory}" TextWrapping="NoWrap" IsReadOnly="True" Margin="5" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.Save_Directory}}" mah:TextBoxHelper.UseFloatingWatermark="True"/>
+                    <TextBox x:Name="BackupDir" Grid.Row="2" Text="{Binding Backups_Directory}" TextWrapping="NoWrap" IsReadOnly="True" Margin="5" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.Backups_Directory}}" mah:TextBoxHelper.UseFloatingWatermark="True"/>
+                    <TextBox x:Name="ModPackDir" Grid.Row="3" Text="{Binding ModPack_Directory}" TextWrapping="NoWrap" IsReadOnly="True" Margin="5" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.Mod_Pack_Directory}}" mah:TextBoxHelper.UseFloatingWatermark="True"/>
 
                     <Button Content="..." Grid.Row="0" Grid.Column="1" Margin="5" Command="{Binding FFXIV_SelectDir}" HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="25" MinHeight="25" HorizontalContentAlignment="Center" VerticalContentAlignment="Top"/>
                     <Button Content="..." Grid.Row="1" Grid.Column="1" Margin="5" Command="{Binding Save_SelectDir}" HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="25" MinHeight="25" VerticalContentAlignment="Top" HorizontalContentAlignment="Center"/>
@@ -42,20 +43,20 @@
                     <Button Content="..." Grid.Row="3" Grid.Column="1" Margin="5" Command="{Binding ModPack_SelectDir}" HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="25" MinHeight="25" VerticalContentAlignment="Top" HorizontalContentAlignment="Center"/>
                 </Grid>
             </GroupBox>
-            <GroupBox Grid.Row="1" Header="Export Settings">
+            <GroupBox Grid.Row="1" Header="{Binding Source={x:Static resx:UIStrings.Export_Settings}}">
                 <ComboBox VerticalAlignment="Top" HorizontalAlignment="Left" mah:TextBoxHelper.UseFloatingWatermark="True" mah:TextBoxHelper.Watermark="DAE Plugin Target" ItemsSource="{Binding TargetImporters}" SelectedItem="{Binding SelectedImporter}"/>
             </GroupBox>
         </Grid>
 
-        <GroupBox Grid.Column="1" Header="Colors &amp; Skins">
+        <GroupBox Grid.Column="1" Header="{Binding Source={x:Static resx:UIStrings.Colors_Skins}}">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
                 <StackPanel Orientation="Horizontal">
-                    <ComboBox x:Name="SkinComboBox" ItemsSource="{Binding SkinTypes}" SelectedItem="{Binding Selected_SkinType}" VerticalAlignment="Center" HorizontalAlignment="Left" mah:TextBoxHelper.Watermark="Default Skin" mah:TextBoxHelper.UseFloatingWatermark="True"/>
-                    <Label Content="This will only affect shared races"/>
+                    <ComboBox x:Name="SkinComboBox" ItemsSource="{Binding SkinTypes}" SelectedItem="{Binding Selected_SkinType}" VerticalAlignment="Center" HorizontalAlignment="Left" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.Default_Skin}}" mah:TextBoxHelper.UseFloatingWatermark="True"/>
+                    <Label Content="{Binding Source={x:Static resx:UIStrings.This_will_only_affect_shared_races}}"/>
                 </StackPanel>
                 <Grid Grid.Row="1" Margin="0,10,0,0">
                     <Grid.RowDefinitions>
@@ -72,25 +73,25 @@
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <Label Content="Skin Color" Grid.Row="0" Margin="5"/>
+                    <Label Content="{Binding Source={x:Static resx:UIStrings.Skin_Color}}" Grid.Row="0" Margin="5"/>
                     <xctk:ColorPicker x:Name="SkinColorPicker" SelectedColor="{Binding Selected_SkinColor}" ColorMode="ColorCanvas" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" MinWidth="120"/>
 
-                    <Label Content="Hair Color" Grid.Row="1" Margin="5"/>
+                    <Label Content="{Binding Source={x:Static resx:UIStrings.Hair_Color}}" Grid.Row="1" Margin="5"/>
                     <xctk:ColorPicker x:Name="HairColorPicker" SelectedColor="{Binding Selected_HairColor}" ColorMode="ColorCanvas" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" MinWidth="120"/>
 
-                    <Label Content="Iris Color" Grid.Row="2" Margin="5"/>
+                    <Label Content="{Binding Source={x:Static resx:UIStrings.Iris_Color}}" Grid.Row="2" Margin="5"/>
                     <xctk:ColorPicker x:Name="IrisColorPicker" SelectedColor="{Binding Selected_IrisColor}" ColorMode="ColorCanvas" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" MinWidth="120"/>
 
-                    <Label Content="Etc Color" Grid.Row="3" Margin="5"/>
+                    <Label Content="{Binding Source={x:Static resx:UIStrings.Etc_Color}}" Grid.Row="3" Margin="5"/>
                     <xctk:ColorPicker x:Name="EtcColorPicker" SelectedColor="{Binding Selected_EtcColor}" ColorMode="ColorCanvas" Grid.Row="3" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" MinWidth="120"/>
 
-                    <Label Content="BG Color" Grid.Row="4" Margin="5"/>
+                    <Label Content="{Binding Source={x:Static resx:UIStrings.BG_Color}}" Grid.Row="4" Margin="5"/>
                     <xctk:ColorPicker x:Name="BGColorPicker" SelectedColor="{Binding Selected_BgColor}" ColorMode="ColorCanvas" Grid.Row="4" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" MinWidth="120"/>
 
-                    <TextBlock Grid.Row="5" Grid.ColumnSpan="3" TextWrapping="WrapWithOverflow" Text="Note: The Skin Color is mixed with the default skin color from the texture. All others are direct colors." VerticalAlignment="Top" Margin="0,10,0,0"/>
+                    <TextBlock Grid.Row="5" Grid.ColumnSpan="3" TextWrapping="WrapWithOverflow" Text="{Binding Source={x:Static resx:UIStrings.Skin_Color_Note_Info}}" VerticalAlignment="Top" Margin="0,10,0,0"/>
 
-                    <Button x:Name="DefaultButton" Content="Reset to Default" Command="{Binding Customize_Reset}" Grid.Row="6" Grid.Column="0" Margin="5"/>
-                    <Button x:Name="CloseButton" Grid.Row="6" Grid.Column="2" Content="Close" Margin="5" Click="CloseButton_Click" />
+                    <Button x:Name="DefaultButton" Content="{Binding Source={x:Static resx:UIStrings.Reset_to_Default}}" Command="{Binding Customize_Reset}" Grid.Row="6" Grid.Column="0" Margin="5"/>
+                    <Button x:Name="CloseButton" Grid.Row="6" Grid.Column="2" Content="{Binding Source={x:Static resx:UIStrings.Close}}" Margin="5" Click="CloseButton_Click" />
                 </Grid>
             </Grid>
         </GroupBox>

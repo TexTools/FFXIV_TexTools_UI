@@ -77,7 +77,11 @@ namespace FFXIV_TexTools.Views
 
             if (listbox.SelectedItem is ModListViewModel.ModListModel selectedModItem)
             {
-                (DataContext as ModListViewModel).ModToggleText = selectedModItem.ModItem.enabled ? "Disable" : "Enable";
+                //esrinzou for chinese UI
+                //(DataContext as ModListViewModel).ModToggleText = selectedModItem.ModItem.enabled ? "Disable" : "Enable";
+                //esrinzou begin
+                (DataContext as ModListViewModel).ModToggleText = selectedModItem.ModItem.enabled ? FFXIV_TexTools.Resources.UIStrings.Disable : FFXIV_TexTools.Resources.UIStrings.Enable;
+                //esrinzou end
 
                 modToggleButton.IsEnabled = true;
                 modDeleteButton.IsEnabled = true;
@@ -96,15 +100,27 @@ namespace FFXIV_TexTools.Views
             if ((ModListTreeView.SelectedItem as Category).ParentCategory.Name.Equals("ModPacks"))
             {
                 var selectedItem = (ModListTreeView.SelectedItem as Category);
-                if ((DataContext as ModListViewModel).ModToggleText == "Enable")
+                //esrinzou for chinese UI
+                //if ((DataContext as ModListViewModel).ModToggleText == "Enable")
+                //esrinzou begin
+                if ((DataContext as ModListViewModel).ModToggleText == FFXIV_TexTools.Resources.UIStrings.Enable)
+                //esrinzou end
                 {
                     modding.ToggleModPackStatus(selectedItem.Name, true);
-                    (DataContext as ModListViewModel).ModToggleText = "Disable";
+                    //esrinzou for chinese UI
+                    //(DataContext as ModListViewModel).ModToggleText = "Disable";
+                    //esrinzou begin
+                    (DataContext as ModListViewModel).ModToggleText = FFXIV_TexTools.Resources.UIStrings.Disable;
+                    //esrinzou end
                 }
                 else
                 {
                     modding.ToggleModPackStatus(selectedItem.Name, false);
-                    (DataContext as ModListViewModel).ModToggleText = "Enable";
+                    //esrinzou for chinese UI
+                    //(DataContext as ModListViewModel).ModToggleText = "Enable";
+                    //esrinzou begin
+                    (DataContext as ModListViewModel).ModToggleText = FFXIV_TexTools.Resources.UIStrings.Enable;
+                    //esrinzou end
                 }
 
                 (DataContext as ModListViewModel).UpdateInfoGrid(selectedItem);
@@ -116,7 +132,11 @@ namespace FFXIV_TexTools.Views
                     if (selectedModItem.ModItem.enabled)
                     {
                         modding.ToggleModStatus(selectedModItem.ModItem.fullPath, false);
-                        (DataContext as ModListViewModel).ModToggleText = "Enable";
+                        //esrinzou for chinese UI
+                        //(DataContext as ModListViewModel).ModToggleText = "Enable";
+                        //esrinzou begin
+                        (DataContext as ModListViewModel).ModToggleText = FFXIV_TexTools.Resources.UIStrings.Enable;
+                        //esrinzou end
                         selectedModItem.ActiveBorder = Brushes.Red;
                         selectedModItem.Active = Brushes.Gray;
                         selectedModItem.ActiveOpacity = 0.5f;
@@ -125,7 +145,11 @@ namespace FFXIV_TexTools.Views
                     else
                     {
                         modding.ToggleModStatus(selectedModItem.ModItem.fullPath, true);
-                        (DataContext as ModListViewModel).ModToggleText = "Disable";
+                        //esrinzou for chinese UI
+                        //(DataContext as ModListViewModel).ModToggleText = "Disable";
+                        //esrinzou begin
+                        (DataContext as ModListViewModel).ModToggleText = FFXIV_TexTools.Resources.UIStrings.Disable;
+                        //esrinzou end
                         selectedModItem.ActiveBorder = Brushes.Green;
                         selectedModItem.Active = Brushes.Transparent;
                         selectedModItem.ActiveOpacity = 1;

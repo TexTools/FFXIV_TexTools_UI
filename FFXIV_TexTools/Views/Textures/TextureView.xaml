@@ -7,6 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
     xmlns:local="clr-namespace:FFXIV_TexTools.Views"
+    xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
     x:Class="FFXIV_TexTools.Views.TextureView"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
@@ -120,10 +121,10 @@
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
             <UniformGrid Rows="1" Grid.Column="0">
-                <Button x:Name="ExportTextureButton" Content="Export" Margin="5" Click="ExportTextureButton_Click" VerticalAlignment="Center" IsEnabled="{Binding ExportEnabled, FallbackValue=false}"/>
-                <Button x:Name="ImportTextureButton" Content="Import" Margin="5" Click="ImportTextureButton_Click" VerticalAlignment="Center" IsEnabled="{Binding ImportEnabled, FallbackValue=false}"/>
+                <Button x:Name="ExportTextureButton" Content="{Binding Source={x:Static resx:UIStrings.Export}}" Margin="5" Click="ExportTextureButton_Click" VerticalAlignment="Center" IsEnabled="{Binding ExportEnabled, FallbackValue=false}"/>
+                <Button x:Name="ImportTextureButton" Content="{Binding Source={x:Static resx:UIStrings.Import}}" Margin="5" Click="ImportTextureButton_Click" VerticalAlignment="Center" IsEnabled="{Binding ImportEnabled, FallbackValue=false}"/>
                 <Button x:Name="ModStatusToggleButton" Content="{Binding ModToggleText, FallbackValue=Enable/Disable}" Margin="5" VerticalAlignment="Center" Command="{Binding ModStatusToggleButton}"  IsEnabled="{Binding ModStatusToggleEnabled, FallbackValue=false}"/>
-                <Button x:Name="MoreTextureOptionsButton" Content="More Options" Margin="5" Click="MoreTextureOptionsButton_Click" VerticalAlignment="Center" IsEnabled="{Binding MoreOptionsEnabled, FallbackValue=false}"/>
+                <Button x:Name="MoreTextureOptionsButton" Content="{Binding Source={x:Static resx:UIStrings.More_Options}}" Margin="5" Click="MoreTextureOptionsButton_Click" VerticalAlignment="Center" IsEnabled="{Binding MoreOptionsEnabled, FallbackValue=false}"/>
             </UniformGrid>
             <Button Margin="5" Grid.Column="1" VerticalAlignment="Center" Command="{Binding OpenFolder}">
                 <iconPacks:PackIconFontAwesome Kind="FolderOpenRegular"/>

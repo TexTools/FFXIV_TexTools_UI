@@ -44,7 +44,11 @@ namespace FFXIV_TexTools.ViewModels
     {
         private readonly DirectoryInfo _modListDirectory;
         private readonly DirectoryInfo _gameDirectory;
-        private string _modToggleText = "Enable/Disable";
+        //esrinzou for chinese UI
+        //private string _modToggleText = "Enable/Disable";
+        //esrinzou begin
+        private string _modToggleText = UIStrings.Enable_Disable;
+        //esrinzou end
         private Visibility _listVisibility = Visibility.Visible, _infoGridVisibility = Visibility.Collapsed;
         private string _modPackTitle, _modPackModAuthorLabel, _modPackModCountLabel, _modPackModVersionLabel, _modPackContentList;
         private bool _itemFilter, _modPackFilter;
@@ -92,7 +96,11 @@ namespace FFXIV_TexTools.ViewModels
 
             var categoryItem = new Category
             {
-                Name = "Standalone (Non-ModPack)",
+                //esrinzou for chinese UI
+                //Name = "Standalone (Non-ModPack)",
+                //esrinzou begin
+                Name = UIStrings.Standalone_Non_ModPack,
+                //esrinzou end
                 ParentCategory = category
             };
 
@@ -177,7 +185,11 @@ namespace FFXIV_TexTools.ViewModels
 
             var category = new Category
             {
-                Name = "Standalone (Non-ModPack)",
+                //esrinzou for chinese UI
+                //Name = "Standalone (Non-ModPack)",
+                //esrinzou begin
+                Name = UIStrings.Standalone_Non_ModPack,
+                //esrinzou end
                 Categories = new ObservableCollection<Category>(),
                 CategoryList = new List<string>(),
                 ParentCategory = modPacksParent
@@ -202,7 +214,11 @@ namespace FFXIV_TexTools.ViewModels
             {
                 List<Mod> modsInModpack;
 
-                if (!modPackCategory.Key.Equals("Standalone (Non-ModPack)"))
+                //esrinzou for chinese UI
+                //if (!modPackCategory.Key.Equals("Standalone (Non-ModPack)"))
+                //esrinzou begin
+                if (!modPackCategory.Key.Equals(UIStrings.Standalone_Non_ModPack))
+                //esrinzou end
                 {
                     modsInModpack = (from mod in modList.Mods
                         where mod.modPack != null && mod.modPack.name.Equals(modPackCategory.Key)
@@ -725,7 +741,11 @@ namespace FFXIV_TexTools.ViewModels
             var modList = JsonConvert.DeserializeObject<ModList>(File.ReadAllText(_modListDirectory.FullName));
             List<Mod> modPackModList = null;
 
-            if (category.Name.Equals("Standalone (Non-ModPack)"))
+            //esrinzou for chinese UI
+            //if (category.Name.Equals("Standalone (Non-ModPack)"))
+            //esrinzou begin
+            if (category.Name.Equals(UIStrings.Standalone_Non_ModPack))
+            //esrinzou end
             {
                 modPackModList = (from items in modList.Mods
                     where !items.name.Equals(string.Empty) && items.modPack == null
@@ -779,7 +799,11 @@ namespace FFXIV_TexTools.ViewModels
                 ModPackContentList += $"[{ mod.Value}] {mod.Key}\n";
             }
 
-            ModToggleText = enabledCount > disabledCount ? "Disable" : "Enable";
+            //esrinzou for chinese UI
+            //ModToggleText = enabledCount > disabledCount ? "Disable" : "Enable";
+            //esrinzou begin
+            ModToggleText = enabledCount > disabledCount ? UIStrings.Disable : UIStrings.Enable;
+            //esrinzou end
         }
 
         /// <summary>

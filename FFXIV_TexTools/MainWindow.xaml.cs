@@ -475,11 +475,19 @@ namespace FFXIV_TexTools
                 return;
             }
 
+            //esrinzou for chinese UI
+            /*
             var result = FlexibleMessageBox.Show("Starting over will:\n\n" +
                                                  "Restore index files to their original state.\n" +
                                                  "Delete all mod dat files from game folder.\n" +
                                                  "Delete all mod list file entries.\n\n" +
                                                  "Do you want to start over?", "Start Over", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+
+             */
+            //esrinzou begin
+            var result = FlexibleMessageBox.Show(UIStrings.Start_Over_Info, UIStrings.Start_Over, MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+
+            //esrinzou end
 
             if (result == System.Windows.Forms.DialogResult.Yes)
             {

@@ -39,8 +39,13 @@ namespace FFXIV_TexTools.Views.Models
 
             if (fromWizard)
             {
-                Title = "Advanced Model Options";
-                ImportButton.Content = "Add";
+                //esrinzou for chinese UI
+                //Title = "Advanced Model Options";
+                //ImportButton.Content = "Add";
+                //esrinzou begin
+                Title = FFXIV_TexTools.Resources.UIStrings.Advanced_Model_Options;
+                ImportButton.Content = FFXIV_TexTools.Resources.UIStrings.Add;
+                //esrinzou end
             }
         }
 

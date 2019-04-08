@@ -6,8 +6,9 @@
         xmlns:local="clr-namespace:FFXIV_TexTools.Views"
         xmlns:VMs="clr-namespace:FFXIV_TexTools.ViewModels"
         xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+        xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
         mc:Ignorable="d"
-        Title="Model Search" Height="450" Width="450" ShowMaxRestoreButton="False" ShowMinButton="False" WindowStartupLocation="CenterOwner" Closing="MetroWindow_Closing">
+        Title="{Binding Source={x:Static resx:UIStrings.Model_Search}}" Height="450" Width="450" ShowMaxRestoreButton="False" ShowMinButton="False" WindowStartupLocation="CenterOwner" Closing="MetroWindow_Closing">
     <mah:MetroWindow.Resources>
         <DataTemplate x:Key="SlotBorderTemplate">
             <Border BorderBrush="#FF000000" BorderThickness="0,0,1,1" Margin="-6,-2,-6,-2">
@@ -58,13 +59,13 @@
             <ComboBox Grid.Column="0" mah:TextBoxHelper.UseFloatingWatermark="True" mah:TextBoxHelper.Watermark="Type" Margin="5" 
                       ItemsSource="{Binding SearchCategories}" SelectedItem="{Binding SelectedCategory}" SelectedIndex="{Binding SelectedCategoryIndex}"/>
             <TextBox Grid.Column="1" mah:TextBoxHelper.Watermark="{Binding ModelSearchWaterMark}" VerticalContentAlignment="Center" Margin="5" Text="{Binding ModelSearchID}"/>
-            <Button Grid.Column="2" Content="Search" Margin="5" Command="{Binding ModelSearchCommand}"/>
+            <Button Grid.Column="2" Content="{Binding Source={x:Static resx:UIStrings.Search}}" Margin="5" Command="{Binding ModelSearchCommand}"/>
         </Grid>
         <DataGrid Grid.Row="1" ItemsSource="{Binding Path=ResultList}" IsReadOnly="True" SelectedItem="{Binding SelectedItem}" SelectionMode="Single" ColumnWidth="*" AutoGenerateColumns="False">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Slot" Binding="{Binding Path=Slot}" IsReadOnly="True"/>
-                <DataGridTextColumn Header="Body" Binding="{Binding Path=Body}" IsReadOnly="True"/>
-                <DataGridTextColumn Header="Variant" Binding="{Binding Path=Variant}" IsReadOnly="True" SortDirection="Ascending"/>
+                <DataGridTextColumn Header="{Binding Source={x:Static resx:UIStrings.Slot}}" Binding="{Binding Path=Slot}" IsReadOnly="True"/>
+                <DataGridTextColumn Header="{Binding Source={x:Static resx:UIStrings.Body}}" Binding="{Binding Path=Body}" IsReadOnly="True"/>
+                <DataGridTextColumn Header="{Binding Source={x:Static resx:UIStrings.Variant}}" Binding="{Binding Path=Variant}" IsReadOnly="True" SortDirection="Ascending"/>
             </DataGrid.Columns>
         </DataGrid>
         <Grid Grid.Row="2">
@@ -73,7 +74,7 @@
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
             <Label Grid.Column="0" Margin="5" Content="{Binding StatusLabel}"/>
-            <Button Grid.Column="1" Content="Open" Margin="5" Command="{Binding OpenItemCommand}"/>
+            <Button Grid.Column="1" Content="{Binding Source={x:Static resx:UIStrings.Open}}" Margin="5" Command="{Binding OpenItemCommand}"/>
         </Grid>
 
     </Grid>

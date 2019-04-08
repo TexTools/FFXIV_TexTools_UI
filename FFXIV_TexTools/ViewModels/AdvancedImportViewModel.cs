@@ -148,9 +148,15 @@ namespace FFXIV_TexTools.ViewModels
                 }
             }
 
-            MaterialsGroupHeader = $"Materials (Count: {MaterialsList.Count})";
-            AttributesGroupHeader = $"Attributes (Count: {AttributeList.Count})";
-            BonesGroupHeader = $"Bones (Count: {_xivMdl.PathData.BoneList.Count} {extraBoneCountString})";
+            //esrinzou for chinese UI
+            //MaterialsGroupHeader = $"Materials (Count: {MaterialsList.Count})";
+            //AttributesGroupHeader = $"Attributes (Count: {AttributeList.Count})";
+            //BonesGroupHeader = $"Bones (Count: {_xivMdl.PathData.BoneList.Count} {extraBoneCountString})";
+            //esrinzou begin
+            MaterialsGroupHeader = $"{UIStrings.Materials} ({UIStrings.Count}: {MaterialsList.Count})";
+            AttributesGroupHeader = $"{UIStrings.Attributes} ({UIStrings.Count}: {AttributeList.Count})";
+            BonesGroupHeader = $"{UIStrings.Bones} ({UIStrings.Count}: {_xivMdl.PathData.BoneList.Count} {extraBoneCountString})";
+            //esrinzou end
 
             if (_daeMeshPartDictionary != null)
             {
@@ -678,7 +684,11 @@ namespace FFXIV_TexTools.ViewModels
             }
 
             PartNumbers = partNumberList;
-            PartCountLabel = $"Part Count: {partCount} {partDiff}";
+            //esrinzou for chinese UI
+            //PartCountLabel = $"Part Count: {partCount} {partDiff}";
+            //esrinzou begin
+            PartCountLabel = $"{UIStrings.Part_Count}: {partCount} {partDiff}";
+            //esrinzou end
             SelectedPartNumberIndex = 0;
 
             CheckForDaeDiscrepancy();
@@ -745,7 +755,11 @@ namespace FFXIV_TexTools.ViewModels
 
             PartAttributes = new ObservableCollection<string>(attributeNameList);
 
-            PartAttributesLabel = $"Part Attributes (Count: {PartAttributes.Count})";
+            //esrinzou for chinese UI
+            //PartAttributesLabel = $"Part Attributes (Count: {PartAttributes.Count})";
+            //esrinzou begin
+            PartAttributesLabel = $"{UIStrings.Part_Attributes} ({UIStrings.Count}: {PartAttributes.Count})";
+            //esrinzou end
         }
 
         /// <summary>
@@ -776,23 +790,41 @@ namespace FFXIV_TexTools.ViewModels
 
                 DisableShapeDataChecked = _importDictionary[SelectedMeshNumber.ToString()].Disable;
 
+                //esrinzou for chinese UI
+                /*ShapeDescription =
+                                "This will disable all shape data for this meshes.\n" +
+                                "This option is used when holes appear upon equipping other items\n\n" +
+                                "More options for shape data will be available in a later version.";*/
+                //esrinzou begin
                 ShapeDescription =
-                    "This will disable all shape data for this meshes.\n" +
-                    "This option is used when holes appear upon equipping other items\n\n" +
-                    "More options for shape data will be available in a later version.";
+                            $"{UIStrings.ShapeDescription1_line1}\n" +
+                            $"{UIStrings.ShapeDescription1_line2}\n\n" +
+                            $"{UIStrings.ShapeDescription1_line3}";
+                //esrinzou end
             }
             else
             {
                 DisableShapeDataChecked = false;
                 ShapeDataCheckBoxEnabled = false;
 
-                ShapeDescription = "There is no Shape Data for this mesh.\n\n" +
-                                   "Options are disabled.";
+                //esrinzou for chinese UI
+                /*
+                 ShapeDescription = "There is no Shape Data for this mesh.\n\n" +
+                                    "Options are disabled.";
+                 */
+                //esrinzou begin
+                ShapeDescription = $"{UIStrings.ShapeDescription2_line1}\n\n" +
+                                   $"{UIStrings.ShapeDescription2_line2}";
+                //esrinzou end
             }
 
             ShapesList = shapePathList;
 
-            ShapesHeader = $"Shapes (Count: {ShapesList.Count})";
+            //esrinzou for chinese UI
+            //ShapesHeader = $"Shapes (Count: {ShapesList.Count})";
+            //esrinzou begin
+            ShapesHeader = $"{UIStrings.Shapes} ({UIStrings.Count}: {ShapesList.Count})";
+            //esrinzou end
         }
 
         /// <summary>
@@ -946,7 +978,11 @@ namespace FFXIV_TexTools.ViewModels
                 }
             }
 
-            MaterialsGroupHeader = $"Materials (Count: {MaterialsList.Count})";
+            //esrinzou for chinese UI
+            //MaterialsGroupHeader = $"Materials (Count: {MaterialsList.Count})";
+            //esrinzou begin
+            MaterialsGroupHeader = $"{UIStrings.Materials} ({UIStrings.Count}: {MaterialsList.Count})";
+            //esrinzou end
         }
 
         /// <summary>
@@ -981,7 +1017,11 @@ namespace FFXIV_TexTools.ViewModels
 
             AttributeList = new ObservableCollection<string>(MakeAttributeNameDictionary());
 
-            AttributesGroupHeader = $"Attributes (Count: {AttributeList.Count})";
+            //esrinzou for chinese UI
+            //AttributesGroupHeader = $"Attributes (Count: {AttributeList.Count})";
+            //esrinzou begin
+            AttributesGroupHeader = $"{UIStrings.Attributes} ({UIStrings.Count}: {AttributeList.Count})";
+            //esrinzou end
         }
 
         /// <summary>

@@ -4,16 +4,17 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FFXIV_TexTools.Views.Models"
+        xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
         xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
         mc:Ignorable="d"
-        Title="Mesh Inspector" Height="450" Width="800" WindowStartupLocation="CenterOwner" Closing="MetroWindow_Closing" ShowMaxRestoreButton="False" ShowMinButton="False">
+        Title="{Binding Source={x:Static resx:UIStrings.Mesh_Inspector}}" Height="450" Width="800" WindowStartupLocation="CenterOwner" Closing="MetroWindow_Closing" ShowMaxRestoreButton="False" ShowMinButton="False">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
             <ColumnDefinition/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <GroupBox Grid.Column="0" Header="Mesh MetaData">
+        <GroupBox Grid.Column="0" Header="{Binding Source={x:Static resx:UIStrings.Mesh_MetaData}}">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -29,7 +30,7 @@
                 </RichTextBox>
             </Grid>
         </GroupBox>
-        <GroupBox Grid.Column="1" Header="Mesh Parts">
+        <GroupBox Grid.Column="1" Header="{Binding Source={x:Static resx:UIStrings.Mesh_Parts}}">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -45,7 +46,7 @@
                 </RichTextBox>
             </Grid>
         </GroupBox>
-        <GroupBox Grid.Column="2" Header="Vertex Data Structure">
+        <GroupBox Grid.Column="2" Header="{Binding Source={x:Static resx:UIStrings.Vertex_Data_Structure}}">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>

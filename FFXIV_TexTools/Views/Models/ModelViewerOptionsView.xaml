@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:FFXIV_TexTools.Views"
              xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls" x:Class="FFXIV_TexTools.Views.ModelViewerOptionsView"
+             xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="250">
     <StackPanel>
@@ -14,20 +15,20 @@
                 <ColumnDefinition/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <mah:ToggleSwitch Header="Transparency" 
+            <mah:ToggleSwitch Header="{Binding Source={x:Static resx:UIStrings.Translucency}}" 
                               Style="{StaticResource MahApps.Metro.Styles.ToggleSwitch.Win10}"
-                              OffLabel="Disabled"
-                              OnLabel="Enabled" Margin="5" IsChecked="{Binding TransparencyToggle}"/>
-            <mah:ToggleSwitch Header="Cull Mode" 
+                              OffLabel="{Binding Source={x:Static resx:UIStrings.Disabled}}"
+                              OnLabel="{Binding Source={x:Static resx:UIStrings.Enabled}}" Margin="5" IsChecked="{Binding TransparencyToggle}"/>
+            <mah:ToggleSwitch Header="{Binding Source={x:Static resx:UIStrings.Cull_Mode}}" 
                               Grid.Column="1"
                               Style="{StaticResource MahApps.Metro.Styles.ToggleSwitch.Win10}"
-                              OffLabel="Back"
-                              OnLabel="None" Margin="5" IsChecked="{Binding CullModeToggle}"/>
+                              OffLabel="{Binding Source={x:Static resx:UIStrings.Back}}"
+                              OnLabel="{Binding Source={x:Static resx:UIStrings.None}}" Margin="5" IsChecked="{Binding CullModeToggle}"/>
         </Grid>
 
         <Label Content="{Binding ReflectionLabel, FallbackValue=Reflection}" Margin="5"/>
         <Slider Margin="5" AutoToolTipPlacement="TopLeft" Value="{Binding ReflectionValue}" Minimum="-1" Maximum="100"/>
-        <Label Content="Lights"/>
+        <Label Content="{Binding Source={x:Static resx:UIStrings.Lights}}"/>
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
