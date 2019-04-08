@@ -333,6 +333,14 @@ namespace FFXIV_TexTools
 
             foreach (var fileName in openFileDialog.FileNames)
             {
+                var fileInfo = new FileInfo(fileName);
+
+                if (fileInfo.Length == 0)
+                {
+                    FlexibleMessageBox.Show($"TTMP file [ {Path.GetFileNameWithoutExtension(fileName)} ] is empty.\n\nImporting Canceled.", $"Import Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    continue;
+                }
+
                 modsImported += await ImportModpack(new DirectoryInfo(fileName), modPackDirectory, importMultiple);
             }
 
