@@ -120,11 +120,23 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     DaeLocationText = savePath.FullName;
 
-                    var quickColladaData = _dae.QuickColladaReader(savePath, _xivMdl);
-                    _daeMeshPartDictionary = quickColladaData.MeshPartDictionary;
-                    _colladaBoneList = quickColladaData.BoneList;
+                    try
+                    {
+                        var quickColladaData = _dae.QuickColladaReader(savePath, _xivMdl);
+                        _daeMeshPartDictionary = quickColladaData.MeshPartDictionary;
+                        _colladaBoneList = quickColladaData.BoneList;
 
-                    ImportButtonEnabled = true;
+                        ImportButtonEnabled = true;
+                    }
+                    catch (Exception e)
+                    {
+                        FlexibleMessageBox.Show(
+                            $"{e.Message}", "Error Reading DAE Data",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                        DaeLocationText = string.Empty;
+                    }
+
                 }
             }
 
@@ -774,7 +786,15 @@ namespace FFXIV_TexTools.ViewModels
             {
                 ShapeDataCheckBoxEnabled = true;
 
-                DisableShapeDataChecked = _importDictionary[SelectedMeshNumber.ToString()].Disable;
+                if (_importDictionary.ContainsKey(SelectedMeshNumber.ToString()))
+                {
+                    DisableShapeDataChecked = _importDictionary[SelectedMeshNumber.ToString()].Disable;
+                }
+                else
+                {
+                    DisableShapeDataChecked = false;
+                    ShapeDataCheckBoxEnabled = false;
+                }
 
                 ShapeDescription =
                     "This will disable all shape data for this meshes.\n" +
@@ -1253,12 +1273,24 @@ namespace FFXIV_TexTools.ViewModels
             {
                 DaeLocationText = openFileDialog.FileName;
 
-                var quickColladaData = _dae.QuickColladaReader(new DirectoryInfo(openFileDialog.FileName), _xivMdl);
-                _daeMeshPartDictionary = quickColladaData.MeshPartDictionary;
-                _colladaBoneList = quickColladaData.BoneList;
-                ImportButtonEnabled = true;
+                try
+                {
+                    var quickColladaData = _dae.QuickColladaReader(new DirectoryInfo(openFileDialog.FileName), _xivMdl);
+                    _daeMeshPartDictionary = quickColladaData.MeshPartDictionary;
+                    _colladaBoneList = quickColladaData.BoneList;
+                    ImportButtonEnabled = true;
 
-                Initialize(true);
+                    Initialize(true);
+                }
+                catch (Exception e)
+                {
+                    FlexibleMessageBox.Show(
+                        $"{e.Message}", "Error Reading DAE Data",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                    DaeLocationText = string.Empty;
+                }
+
             }
         }
 
