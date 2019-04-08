@@ -79,6 +79,11 @@ namespace FFXIV_TexTools
             var mainViewModel = new MainViewModel(this);
             this.DataContext = mainViewModel;
 
+            if (searchTimer == null)
+            {
+                searchTimer = new SysTimer.Timer(300);
+            }
+
             searchTimer.Enabled = true;
             searchTimer.AutoReset = false;
             searchTimer.Elapsed += SearchTimerOnElapsed;
