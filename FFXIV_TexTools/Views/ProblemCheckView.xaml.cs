@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using FFXIV_TexTools.Resources;
+using MahApps.Metro;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -22,8 +23,6 @@ using System.IO;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Media;
-using ImageMagick;
-using MahApps.Metro;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Mods.DataContainers;
