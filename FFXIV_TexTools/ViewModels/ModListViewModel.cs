@@ -626,20 +626,30 @@ namespace FFXIV_TexTools.ViewModels
 
                     var offset = modItem.enabled ? modItem.data.modOffset : modItem.data.originalOffset;
 
-                    var mtrlData = mtrl.GetMtrlData(offset, modItem.fullPath, dxVersion);
-
-                    var floats = Half.ConvertToFloat(mtrlData.ColorSetData.ToArray());
-
-                    var floatArray = Utilities.ToByteArray(floats);
-
-                    var pixelSettings =
-                        new PixelReadSettings(4, 16, StorageType.Float, PixelMapping.RGBA);
-
-                    using (var magickImage = new MagickImage(floatArray, pixelSettings))
+                    try
                     {
-                        magickImage.Alpha(AlphaOption.Opaque);
-                        modListModel.Image = magickImage.ToBitmapSource();
+                        var mtrlData = mtrl.GetMtrlData(offset, modItem.fullPath, dxVersion);
+
+                        var floats = Half.ConvertToFloat(mtrlData.ColorSetData.ToArray());
+
+                        var floatArray = Utilities.ToByteArray(floats);
+
+                        var pixelSettings =
+                            new PixelReadSettings(4, 16, StorageType.Float, PixelMapping.RGBA);
+
+                        using (var magickImage = new MagickImage(floatArray, pixelSettings))
+                        {
+                            magickImage.Alpha(AlphaOption.Opaque);
+                            modListModel.Image = magickImage.ToBitmapSource();
+                        }
                     }
+                    catch (Exception ex)
+                    {
+                        FlexibleMessageBox.Show(
+                            $"There was an error reading the material file {modItem.fullPath}\n\n{ex.Message}", "Error Reading Material Data",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+
                 }
                 else if (itemPath.Contains(".mdl"))
                 {
