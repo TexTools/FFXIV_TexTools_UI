@@ -668,6 +668,18 @@ namespace FFXIV_TexTools.ViewModels
         /// <param name="obj"></param>
         private async void EnableAllMods(object obj)
         {
+            var index = new Index(_gameDirectory);
+
+            if (index.IsIndexLocked(XivDataFile._0A_Exd))
+            {
+                FlexibleMessageBox.Show("Error Accessing Index File\n\n" +
+                                        "Please exit the game before proceeding.\n" +
+                                        "-----------------------------------------------------\n\n",
+                    "Index Access Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                return;
+            }
+
             var progressController = await _mainWindow.ShowProgressAsync("Enabling Mods", "Please Wait...");
 
             if (FlexibleMessageBox.Show(
@@ -697,6 +709,18 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         private async void DisableAllMods(object obj)
         {
+            var index = new Index(_gameDirectory);
+
+            if (index.IsIndexLocked(XivDataFile._0A_Exd))
+            {
+                FlexibleMessageBox.Show("Error Accessing Index File\n\n" +
+                                        "Please exit the game before proceeding.\n" +
+                                        "-----------------------------------------------------\n\n",
+                    "Index Access Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                return;
+            }
+
             var progressController = await _mainWindow.ShowProgressAsync("Disabling Mods", "Please Wait...");
 
             if (FlexibleMessageBox.Show(

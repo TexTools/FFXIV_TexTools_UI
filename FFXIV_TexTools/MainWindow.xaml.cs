@@ -106,9 +106,22 @@ namespace FFXIV_TexTools
 
         private async void OnlyImport()
         {
-            var modPackDirectory = new DirectoryInfo(Settings.Default.ModPack_Directory);
+            var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
+            var index = new Index(gameDirectory);
 
-            await ImportModpack(new DirectoryInfo(_startupArgs), modPackDirectory, false, true);
+            if (index.IsIndexLocked(XivDataFile._0A_Exd))
+            {
+                FlexibleMessageBox.Show("Error Accessing Index File\n\n" +
+                                        "Please exit the game before proceeding.\n" +
+                                        "-----------------------------------------------------\n\n",
+                    "Index Access Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            else
+            {
+                var modPackDirectory = new DirectoryInfo(Settings.Default.ModPack_Directory);
+
+                await ImportModpack(new DirectoryInfo(_startupArgs), modPackDirectory, false, true);
+            }
 
             Application.Current.Shutdown();
         }
@@ -320,6 +333,19 @@ namespace FFXIV_TexTools
         /// </summary>
         private async void Menu_ImportModpack_Click(object sender, RoutedEventArgs e)
         {
+            var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
+            var index = new Index(gameDirectory);
+
+            if (index.IsIndexLocked(XivDataFile._0A_Exd))
+            {
+                FlexibleMessageBox.Show("Error Accessing Index File\n\n" +
+                                        "Please exit the game before proceeding.\n" +
+                                        "-----------------------------------------------------\n\n",
+                    "Index Access Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                return;
+            }
+
             var modPackDirectory = new DirectoryInfo(Settings.Default.ModPack_Directory);
 
             var openFileDialog = new OpenFileDialog {InitialDirectory = modPackDirectory.FullName, Filter = "TexToolsModPack TTMP (*.ttmp;*.ttmp2)|*.ttmp;*.ttmp2", Multiselect = true};
