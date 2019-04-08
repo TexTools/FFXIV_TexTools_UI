@@ -626,20 +626,30 @@ namespace FFXIV_TexTools.ViewModels
 
                     var offset = modItem.enabled ? modItem.data.modOffset : modItem.data.originalOffset;
 
-                    var mtrlData = mtrl.GetMtrlData(offset, modItem.fullPath, dxVersion);
-
-                    var floats = Half.ConvertToFloat(mtrlData.ColorSetData.ToArray());
-
-                    var floatArray = Utilities.ToByteArray(floats);
-
-                    var pixelSettings =
-                        new PixelReadSettings(4, 16, StorageType.Float, PixelMapping.RGBA);
-
-                    using (var magickImage = new MagickImage(floatArray, pixelSettings))
+                    try
                     {
-                        magickImage.Alpha(AlphaOption.Opaque);
-                        modListModel.Image = magickImage.ToBitmapSource();
+                        var mtrlData = mtrl.GetMtrlData(offset, modItem.fullPath, dxVersion);
+
+                        var floats = Half.ConvertToFloat(mtrlData.ColorSetData.ToArray());
+
+                        var floatArray = Utilities.ToByteArray(floats);
+
+                        var pixelSettings =
+                            new PixelReadSettings(4, 16, StorageType.Float, PixelMapping.RGBA);
+
+                        using (var magickImage = new MagickImage(floatArray, pixelSettings))
+                        {
+                            magickImage.Alpha(AlphaOption.Opaque);
+                            modListModel.Image = magickImage.ToBitmapSource();
+                        }
                     }
+                    catch (Exception ex)
+                    {
+                        FlexibleMessageBox.Show(
+                            $"There was an error reading the material file {modItem.fullPath}\n\n{ex.Message}", "Error Reading Material Data",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+
                 }
                 else if (itemPath.Contains(".mdl"))
                 {
@@ -807,15 +817,36 @@ namespace FFXIV_TexTools.ViewModels
 
             if (remainingList.Count == 0)
             {
-                var parentCategory = (from parent in Categories
-                    where parent.Name.Equals(item.ModItem.category)
-                    select parent).FirstOrDefault();
-
-                parentCategory.Categories.Remove(category);
-
-                if (parentCategory.Categories.Count == 0)
+                Category parentCategory = null;
+                if (ModPackFilter)
                 {
-                    Categories.Remove(parentCategory);
+                    foreach (var modPackCategory in Categories)
+                    {
+                        parentCategory = (from parent in modPackCategory.Categories
+                            where parent.Name.Equals(item.ModItem.category)
+                            select parent).FirstOrDefault();
+
+                        if (parentCategory != null)
+                        {
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    parentCategory = (from parent in Categories
+                        where parent.Name.Equals(item.ModItem.category)
+                        select parent).FirstOrDefault();
+                }
+
+                if (Categories != null)
+                {
+                    parentCategory.Categories.Remove(category);
+
+                    if (parentCategory.Categories.Count == 0)
+                    {
+                        Categories.Remove(parentCategory);
+                    }
                 }
             }
 
