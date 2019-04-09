@@ -7,6 +7,7 @@
              xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls" 
              xmlns:hx="http://helix-toolkit.org/wpf/SharpDX"
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
@@ -77,9 +78,9 @@
                 </hx:Viewport3DX>
                 <Label VerticalAlignment="Bottom" HorizontalAlignment="Center" Content="{Binding ModelStatusLabel}" Foreground="#FF151515" FontSize="18"/>
             </Grid>
-            <Button x:Name="ViewerOptionsButton" HorizontalAlignment="Left" VerticalAlignment="Bottom" Content="Viewer Options" Command="{Binding ViewOptionsCommand}"/>
+            <Button x:Name="ViewerOptionsButton" HorizontalAlignment="Left" VerticalAlignment="Bottom" Content="{Binding Source={x:Static resx:UIStrings.Viewer_Options}}" Command="{Binding ViewOptionsCommand}"/>
             <mah:FlyoutsControl Grid.RowSpan="2" HorizontalAlignment="Right">
-                <mah:Flyout x:Name="ViewerOptionsFlyout" Header="Viewer Options" Position="Right" Width="250" HorizontalAlignment="Left" IsOpen="{Binding FlyoutOpen}">
+                <mah:Flyout x:Name="ViewerOptionsFlyout" Header="{Binding Source={x:Static resx:UIStrings.Viewer_Options}}" Position="Right" Width="250" HorizontalAlignment="Left" IsOpen="{Binding FlyoutOpen}">
                     <local:ModelViewerOptionsView/>
                 </mah:Flyout>
             </mah:FlyoutsControl>
@@ -104,11 +105,11 @@
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
             <UniformGrid Grid.Column="0" Rows="1">
-                <Button x:Name="ExportModelButton" Content="Export" Margin="5" VerticalAlignment="Center" Click="ExportModelButton_Click" IsEnabled="{Binding ExportEnabled, FallbackValue=false}"/>
-                <Button x:Name="ImportModelButton" Content="Import" Margin="5" VerticalAlignment="Center" Click="ImportModelButton_Click" IsEnabled="{Binding ImportEnabled, FallbackValue=false}"/>
+                <Button x:Name="ExportModelButton" Content="{Binding Source={x:Static resx:UIStrings.Export}}" Margin="5" VerticalAlignment="Center" Click="ExportModelButton_Click" IsEnabled="{Binding ExportEnabled, FallbackValue=false}"/>
+                <Button x:Name="ImportModelButton" Content="{Binding Source={x:Static resx:UIStrings.Import}}" Margin="5" VerticalAlignment="Center" Click="ImportModelButton_Click" IsEnabled="{Binding ImportEnabled, FallbackValue=false}"/>
                 <Button x:Name="ModStatusToggleButton" Content="{Binding ModToggleText, FallbackValue=Enable/Disable}" Margin="5" VerticalAlignment="Center" IsEnabled="{Binding ModStatusToggleEnabled, FallbackValue=false}" Command="{Binding ModStatusToggleButton}"/>
-                <Button x:Name="MoreModelOptionsButton" Content="More Options" Margin="5" VerticalAlignment="Center" IsEnabled="{Binding MoreOptionsEnabled, FallbackValue=false}" Visibility="Collapsed"/>
-                <Button Content="Update TEX" Margin="5" VerticalAlignment="Center" Command="{Binding UpdateTexButton}" IsEnabled="{Binding UpdateTexEnabled, FallbackValue=false}"/>
+                <Button x:Name="MoreModelOptionsButton" Content="{Binding Source={x:Static resx:UIStrings.More_Options}}" Margin="5" VerticalAlignment="Center" IsEnabled="{Binding MoreOptionsEnabled, FallbackValue=false}" Visibility="Collapsed"/>
+                <Button Content="{Binding Source={x:Static resx:UIStrings.Update_TEX}}" Margin="5" VerticalAlignment="Center" Command="{Binding UpdateTexButton}" IsEnabled="{Binding UpdateTexEnabled, FallbackValue=false}"/>
             </UniformGrid>
             <Button Margin="5" Grid.Column="1" VerticalAlignment="Center" Command="{Binding OpenFolder}">
                 <iconPacks:PackIconFontAwesome Kind="FolderOpenRegular"/>

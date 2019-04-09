@@ -66,7 +66,11 @@ namespace FFXIV_TexTools.ViewModels
         private string _partWatermark = XivStrings.Part, _numberWatermark = XivStrings.Number, _raceWatermark = XivStrings.Race, 
             _meshWatermark = XivStrings.Mesh, _pathString;
 
-        private string _lightXLabel = "X  |  0", _lightYLabel = "Y  |  0", _lightZLabel = "Z  |  0", _reflectionLabel = "Reflection  |  1", _modToggleText = "Enable/Disable", _modelStatusLabel;
+        //esrinzou for chinese UI
+        //private string _lightXLabel = "X  |  0", _lightYLabel = "Y  |  0", _lightZLabel = "Z  |  0", _reflectionLabel = "Reflection  |  1", _modToggleText = "Enable/Disable", _modelStatusLabel;
+        //esrinzou begin
+        private string _lightXLabel = "X  |  0", _lightYLabel = "Y  |  0", _lightZLabel = "Z  |  0", _reflectionLabel = $"{UIStrings.Reflection}  |  1", _modToggleText = UIStrings.Enable_Disable, _modelStatusLabel;
+        //esrinzou end
         private ComboBoxData _selectedRace, _selectedPart, _selectedNumber, _selectedMesh;
         private Visibility _numberVisibility, _partVisibility, _lightToggleVisibility = Visibility.Collapsed;
         private bool _light1Check = true, _light2Check, _light3Check, _lightRenderToggle, _transparencyToggle, _cullModeToggle;
@@ -537,16 +541,28 @@ namespace FFXIV_TexTools.ViewModels
             {
                 case XivModStatus.Enabled:
                     ModStatusToggleEnabled = true;
-                    ModToggleText = "Disable";
+                    //esrinzou for chinese UI
+                    //ModToggleText = "Disable";
+                    //esrinzou begin
+                    ModToggleText = UIStrings.Disable;
+                    //esrinzou end
                     break;
                 case XivModStatus.Disabled:
                     ModStatusToggleEnabled = true;
-                    ModToggleText = "Enable";
+                    //esrinzou for chinese UI
+                    //ModToggleText = "Enable";
+                    //esrinzou begin
+                    ModToggleText = UIStrings.Enable;
+                    //esrinzou end
                     break;
                 case XivModStatus.Original:
                 default:
                     ModStatusToggleEnabled = false;
-                    ModToggleText = "Enable/Disable";
+                    //esrinzou for chinese UI
+                    //ModToggleText = "Enable/Disable";
+                    //esrinzou begin
+                    ModToggleText = UIStrings.Enable_Disable;
+                    //esrinzou end
                     break;
             }
 
@@ -760,7 +776,11 @@ namespace FFXIV_TexTools.ViewModels
             {
                 _reflectionValue = value;
                 ViewPortVM.UpdateReflection(value);
-                ReflectionLabel = $"Reflection  |  {value}";
+                //esrinzou for chinese UI
+                //ReflectionLabel = $"Reflection  |  {value}";
+                //esrinzou begin
+                ReflectionLabel = $"{UIStrings.Reflection}  |  {value}";
+                //esrinzou end
                 NotifyPropertyChanged(nameof(ReflectionValue));
             }
         }
@@ -930,7 +950,11 @@ namespace FFXIV_TexTools.ViewModels
         {
             ViewPortVM.UpdateCullMode(noneCull);
 
-            Settings.Default.Cull_Mode = noneCull ? "None" : "Back";
+            //esrinzou for chinese UI
+            //Settings.Default.Cull_Mode = noneCull ? "None" : "Back";
+            //esrinzou begin
+            Settings.Default.Cull_Mode = noneCull ? UIStrings.None : UIStrings.Back;
+            //esrinzou end
 
             Settings.Default.Save();
         }
@@ -1155,11 +1179,19 @@ namespace FFXIV_TexTools.ViewModels
         {
             var modlist = new Modding(_gameDirectory);
 
-            if (ModToggleText.Equals("Enable"))
+            //esrinzou for chinese UI
+            //if (ModToggleText.Equals("Enable"))
+            //esrinzou begin
+            if (ModToggleText.Equals(UIStrings.Enable))
+            //esrinzou end
             {
                 modlist.ToggleModStatus(PathString, true);
             }
-            else if (ModToggleText.Equals("Disable"))
+            //esrinzou for chinese UI
+            //else if (ModToggleText.Equals("Disable"))
+            //esrinzou begin
+            else if (ModToggleText.Equals(UIStrings.Disable))
+            //esrinzou end
             {
                 modlist.ToggleModStatus(PathString, false);
             }

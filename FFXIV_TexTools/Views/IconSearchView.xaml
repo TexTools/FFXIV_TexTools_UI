@@ -6,7 +6,8 @@
         xmlns:local="clr-namespace:FFXIV_TexTools.Views"
         xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
         mc:Ignorable="d"
-        Title="Icon Search" Height="110" Width="500" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" IsMinButtonEnabled="False" IsMaxRestoreButtonEnabled="False">
+        xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
+        Title="{Binding Source={x:Static resx:UIStrings.Icon_Search}}" Height="110" Width="500" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" IsMinButtonEnabled="False" IsMaxRestoreButtonEnabled="False">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -17,12 +18,12 @@
                 <ColumnDefinition/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
-            <TextBox Grid.Column="0" mah:TextBoxHelper.UseFloatingWatermark="True" mah:TextBoxHelper.Watermark="Icon ID" Margin="5" VerticalContentAlignment="Center" Text="{Binding IconText, UpdateSourceTrigger=PropertyChanged}">
+            <TextBox Grid.Column="0" mah:TextBoxHelper.UseFloatingWatermark="True" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.Icon_ID}}" Margin="5" VerticalContentAlignment="Center" Text="{Binding IconText, UpdateSourceTrigger=PropertyChanged}">
                 <TextBox.InputBindings>
                     <KeyBinding Key="Return" Command="{Binding TextBoxEnterCommand}"/>
                 </TextBox.InputBindings>
             </TextBox>
-            <Button Grid.Column="1" Content="Open" Margin="5" MinWidth="100" Command="{Binding OpenIconCommand}"/>
+            <Button Grid.Column="1" Content="{Binding Source={x:Static resx:UIStrings.Open}}" Margin="5" MinWidth="100" Command="{Binding OpenIconCommand}"/>
         </Grid>
         <Label Grid.Row="1" Foreground="DarkRed" VerticalContentAlignment="Center" Content="{Binding IconStatusLabel}" />
     </Grid>

@@ -4,9 +4,10 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FFXIV_TexTools.Views"
+        xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
         xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
         mc:Ignorable="d"
-        Title="About" Height="450" Width="800" WindowStartupLocation="CenterOwner" ResizeMode="NoResize" ShowMaxRestoreButton="False" ShowMinButton="False">
+        Title="{Binding Source={x:Static resx:UIStrings.About}}" Height="450" Width="800" WindowStartupLocation="CenterOwner" ResizeMode="NoResize" ShowMaxRestoreButton="False" ShowMinButton="False">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
@@ -41,8 +42,8 @@
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <Button x:Name="WebsiteButton" Grid.Column="0" Content="Visit Website" Click="WebsiteButton_Click" Margin="5"/>
-                <Button x:Name="CloseButton" Grid.Column="1" Content="Close" Click="CloseButton_Click" Margin="5"/>
+                <Button x:Name="WebsiteButton" Grid.Column="0" Content="{Binding Source={x:Static resx:UIStrings.Visit_Website}}" Click="WebsiteButton_Click" Margin="5"/>
+                <Button x:Name="CloseButton" Grid.Column="1" Content="{Binding Source={x:Static resx:UIStrings.Close}}" Click="CloseButton_Click" Margin="5"/>
             </Grid>
         </Grid>
     </Grid>

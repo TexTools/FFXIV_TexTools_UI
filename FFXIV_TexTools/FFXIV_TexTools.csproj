@@ -172,6 +172,16 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>CommonInstallDirectories.resx</DependentUpon>
     </Compile>
+    <Compile Include="Resources\UIStrings.zh.Designer.cs">
+      <DependentUpon>UIStrings.zh.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Resources\UIStrings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>UIStrings.resx</DependentUpon>
+    </Compile>
     <Compile Include="Resources\WebUrl.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -404,6 +414,9 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <EmbeddedResource Include="..\lib\xivModdingFramework\xivModdingFramework\Resources\XivStrings.zh.resx">
+      <Link>Resources\XivStrings.zh.resx</Link>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -412,9 +425,21 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>CommonInstallDirectories.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Include="Resources\UIStrings.zh.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>UIStrings.zh.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\UIStrings.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>UIStrings.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="Resources\WebUrl.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>WebUrl.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\XivStringRaces.zh.resx">
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Resources\XivStringRaces.resx">
       <Generator>ResXFileCodeGenerator</Generator>
