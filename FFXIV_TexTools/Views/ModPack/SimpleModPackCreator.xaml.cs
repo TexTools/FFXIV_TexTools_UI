@@ -88,7 +88,11 @@ namespace FFXIV_TexTools.Views
                 {
                     Name = mod.name,
                     Category = mod.category,
-                    Race = race.ToString(),
+                    //esrinzou for chinese UI
+                    //Race = race.ToString(),
+                    //esrinzou begin
+                    Race = race.GetDisplayName(),
+                    //esrinzou end
                     Part = type,
                     Num = number,
                     Map = map,

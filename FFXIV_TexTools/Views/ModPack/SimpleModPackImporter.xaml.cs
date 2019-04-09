@@ -173,7 +173,11 @@ namespace FFXIV_TexTools.Views
                 {
                     Name = modsJson.Name,
                     Category = modsJson.Category,
-                    Race = race.ToString(),
+                    //esrinzou for chinese UI
+                    //Race = race.ToString(),
+                    //esrinzou begin
+                    Race = race.GetDisplayName(),
+                    //esrinzou end
                     Part = type,
                     Num = number,
                     Map = map,
@@ -181,7 +185,11 @@ namespace FFXIV_TexTools.Views
                     JsonEntry = new ModsJson
                     {
                         Name = modsJson.Name,
-                        Category = modsJson.Category,
+                        //esrinzou for chinese UI
+                        //Category = modsJson.Category,
+                        //esrinzou begin
+                        Category = modsJson.Category.GetDisplayName(),
+                        //esrinzou end
                         FullPath = modsJson.FullPath,
                         DatFile = modsJson.DatFile,
                         ModOffset = modsJson.ModOffset,
