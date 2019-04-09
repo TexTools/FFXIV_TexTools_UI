@@ -29,6 +29,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
+using System.Windows.Input;
 using System.Windows.Media;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Items.DataContainers;
@@ -720,11 +721,14 @@ namespace FFXIV_TexTools.Views
                 // Material
                 if (itemPath.Contains(".mtrl"))
                 {
-                    modCB.Name = $"Material ({Path.GetFileNameWithoutExtension(itemPath)})";
-                    modCB.SelectedMod = modItem;
-                    modCB.TexTypePath = null;
+                    var materialModCB = new ModComboBox
+                    {
+                        Name = $"Material ({Path.GetFileNameWithoutExtension(itemPath)})",
+                        SelectedMod = modItem,
+                        TexTypePath = null
+                    };
 
-                    MaterialComboBox.Items.Add(modCB);
+                    MaterialComboBox.Items.Add(materialModCB);
                     MaterialTabItem.IsEnabled = true;
                 }
             }
@@ -900,7 +904,6 @@ namespace FFXIV_TexTools.Views
             var includedModsList = IncludedModsList.Items.Cast<IncludedMods>().ToList();
 
             var tex = new Tex(_gameDirectory);
-            var texData = tex.GetTexData(selectedItem.TexTypePath);
 
             var ddsDirectory = new DirectoryInfo(CustomTextureTextBox.Text);
 
@@ -914,6 +917,8 @@ namespace FFXIV_TexTools.Views
             }
             else
             {
+                var texData = tex.GetTexData(selectedItem.TexTypePath);
+
                 modData = tex.DDStoTexData(texData, ((Category)ModListTreeView.SelectedItem).Item, ddsDirectory);
             }
 
@@ -1281,5 +1286,13 @@ namespace FFXIV_TexTools.Views
             public string FullPath { get; set; }
         }
 
+        private void OptionNameTextBox_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if (e.Key == Key.Return)
+            {
+                AddOption(OptionNameTextBox.Text);
+                e.Handled = true;
+            }
+        }
     }
 }

@@ -13,6 +13,7 @@
 // 
 // You should have received a copy of the GNU General Public License
 
+using FFXIV_TexTools.Helpers;
 using FFXIV_TexTools.Resources;
 using ImageMagick;
 using MahApps.Metro.Controls.Dialogs;
@@ -21,6 +22,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Windows;
+using System.Windows.Forms;
 using Xceed.Wpf.Toolkit;
 using xivModdingFramework.Mods.DataContainers;
 using xivModdingFramework.Mods.FileTypes;
@@ -183,7 +185,26 @@ namespace FFXIV_TexTools.Views
 
             var progressIndicator = new Progress<double>(ReportProgress);
 
-            TotalModsImported = await texToolsModPack.ImportModPackAsync(_modPackDirectory, importList, gameDirectory, modListDirectory, progressIndicator);
+            try
+            {
+                var importResults = await texToolsModPack.ImportModPackAsync(_modPackDirectory, importList,
+                    gameDirectory, modListDirectory, progressIndicator);
+
+                TotalModsImported = importResults.ImportCount;
+
+                if (!string.IsNullOrEmpty(importResults.Errors))
+                {
+                    FlexibleMessageBox.Show(
+                        $"There were errors importing some mods.\n\n{importResults.Errors}", "Errors during import",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                FlexibleMessageBox.Show(
+                    $"There was an error attempting to import mods\n\n{ex.Message}", "Error Importing Mods",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
 
             await _progressController.CloseAsync();
 

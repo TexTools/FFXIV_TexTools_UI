@@ -1265,6 +1265,19 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         private void ImportDDS(object obj)
         {
+            var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
+            var index = new Index(gameDirectory);
+
+            if (index.IsIndexLocked(XivDataFile._0A_Exd))
+            {
+                FlexibleMessageBox.Show("Error Accessing Index File\n\n" +
+                                        "Please exit the game before proceeding.\n" +
+                                        "-----------------------------------------------------\n\n",
+                    "Index Access Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                return;
+            }
+
             var dxVersion = int.Parse(Settings.Default.DX_Version);
 
             var savePath = new DirectoryInfo(Settings.Default.Save_Directory);
@@ -1331,6 +1344,19 @@ namespace FFXIV_TexTools.ViewModels
         /// </remarks>
         private void ImportFrom(object obj)
         {
+            var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
+            var index = new Index(gameDirectory);
+
+            if (index.IsIndexLocked(XivDataFile._0A_Exd))
+            {
+                FlexibleMessageBox.Show("Error Accessing Index File\n\n" +
+                                        "Please exit the game before proceeding.\n" +
+                                        "-----------------------------------------------------\n\n",
+                    "Index Access Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                return;
+            }
+
             var path = new DirectoryInfo(Settings.Default.Save_Directory);
 
             if (_item != null)
@@ -1427,6 +1453,19 @@ namespace FFXIV_TexTools.ViewModels
 
         private void ImportBMP(object obj)
         {
+            var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
+            var index = new Index(gameDirectory);
+
+            if (index.IsIndexLocked(XivDataFile._0A_Exd))
+            {
+                FlexibleMessageBox.Show("Error Accessing Index File\n\n" +
+                                        "Please exit the game before proceeding.\n" +
+                                        "-----------------------------------------------------\n\n",
+                    "Index Access Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                return;
+            }
+
             var savePath = new DirectoryInfo(Settings.Default.Save_Directory);
             var path = savePath.FullName;
 
@@ -1646,20 +1685,30 @@ namespace FFXIV_TexTools.ViewModels
         {
             if (_xivMtrl == null) return;
 
-            if (TranslucencyCheck)
+            try
             {
-                if (_xivMtrl.ShaderNumber == 0x0D)
+                if (TranslucencyCheck)
                 {
-                    _mtrl.ToggleTranslucency(_xivMtrl, _item, TranslucencyCheck, XivStrings.TexTools);
+                    if (_xivMtrl.ShaderNumber == 0x0D)
+                    {
+                        _mtrl.ToggleTranslucency(_xivMtrl, _item, TranslucencyCheck, XivStrings.TexTools);
+                    }
+                }
+                else
+                {
+                    if (_xivMtrl.ShaderNumber == 0x1D)
+                    {
+                        _mtrl.ToggleTranslucency(_xivMtrl, _item, TranslucencyCheck, XivStrings.TexTools);
+                    }
                 }
             }
-            else
+            catch (Exception ex)
             {
-                if (_xivMtrl.ShaderNumber == 0x1D)
-                {
-                    _mtrl.ToggleTranslucency(_xivMtrl, _item, TranslucencyCheck, XivStrings.TexTools);
-                }
+                FlexibleMessageBox.Show(
+                    $"There was an error attempting to toggle translucency\n\n{ex.Message}", "Error Toggling Translucency",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+
         }
 
         /// <summary>

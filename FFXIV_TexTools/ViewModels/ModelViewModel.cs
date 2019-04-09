@@ -44,6 +44,7 @@ using xivModdingFramework.Models.FileTypes;
 using xivModdingFramework.Models.ModelTextures;
 using xivModdingFramework.Mods;
 using xivModdingFramework.Mods.Enums;
+using xivModdingFramework.SqPack.FileTypes;
 using Color = SharpDX.Color;
 using ColorConverter = System.Windows.Media.ColorConverter;
 using Timer = System.Timers.Timer;
@@ -1351,6 +1352,19 @@ namespace FFXIV_TexTools.ViewModels
         /// </remarks>
         private void Import(object obj)
         {
+            var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
+            var index = new Index(gameDirectory);
+
+            if (index.IsIndexLocked(XivDataFile._0A_Exd))
+            {
+                FlexibleMessageBox.Show("Error Accessing Index File\n\n" +
+                                        "Please exit the game before proceeding.\n" +
+                                        "-----------------------------------------------------\n\n",
+                    "Index Access Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                return;
+            }
+
             var saveDir = new DirectoryInfo(Settings.Default.Save_Directory);
             var path = $"{IOUtil.MakeItemSavePath(_item, saveDir, SelectedRace.XivRace)}\\3D";
             var modelName = Path.GetFileNameWithoutExtension(_mdlData.MdlPath.File);
@@ -1411,6 +1425,19 @@ namespace FFXIV_TexTools.ViewModels
         /// </remarks>
         private void ImportFrom(object obj)
         {
+            var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
+            var index = new Index(gameDirectory);
+
+            if (index.IsIndexLocked(XivDataFile._0A_Exd))
+            {
+                FlexibleMessageBox.Show("Error Accessing Index File\n\n" +
+                                        "Please exit the game before proceeding.\n" +
+                                        "-----------------------------------------------------\n\n",
+                    "Index Access Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                return;
+            }
+
             var saveDir = new DirectoryInfo(Settings.Default.Save_Directory);
             var path = new DirectoryInfo($"{IOUtil.MakeItemSavePath(_item, saveDir, SelectedRace.XivRace)}\\3D");
 
@@ -1474,6 +1501,19 @@ namespace FFXIV_TexTools.ViewModels
         /// <param name="obj"></param>
         private void AdvancedImport(object obj)
         {
+            var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
+            var index = new Index(gameDirectory);
+
+            if (index.IsIndexLocked(XivDataFile._0A_Exd))
+            {
+                FlexibleMessageBox.Show("Error Accessing Index File\n\n" +
+                                        "Please exit the game before proceeding.\n" +
+                                        "-----------------------------------------------------\n\n",
+                    "Index Access Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                return;
+            }
+
             var modlist = new Modding(_gameDirectory);
             var mdlPath = Path.Combine(_mdlData.MdlPath.Folder, _mdlData.MdlPath.File);
             bool? result = false;

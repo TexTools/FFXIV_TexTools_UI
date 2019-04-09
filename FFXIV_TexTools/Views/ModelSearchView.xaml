@@ -58,7 +58,11 @@
             </Grid.ColumnDefinitions>
             <ComboBox Grid.Column="0" mah:TextBoxHelper.UseFloatingWatermark="True" mah:TextBoxHelper.Watermark="Type" Margin="5" 
                       ItemsSource="{Binding SearchCategories}" SelectedItem="{Binding SelectedCategory}" SelectedIndex="{Binding SelectedCategoryIndex}"/>
-            <TextBox Grid.Column="1" mah:TextBoxHelper.Watermark="{Binding ModelSearchWaterMark}" VerticalContentAlignment="Center" Margin="5" Text="{Binding ModelSearchID}"/>
+            <TextBox Grid.Column="1" mah:TextBoxHelper.Watermark="{Binding ModelSearchWaterMark}" VerticalContentAlignment="Center" Margin="5" Text="{Binding ModelSearchID, UpdateSourceTrigger=PropertyChanged}">
+                <TextBox.InputBindings>
+                    <KeyBinding Key="Return" Command="{Binding ModelSearchCommand}"/>
+                </TextBox.InputBindings>
+            </TextBox>
             <Button Grid.Column="2" Content="{Binding Source={x:Static resx:UIStrings.Search}}" Margin="5" Command="{Binding ModelSearchCommand}"/>
         </Grid>
         <DataGrid Grid.Row="1" ItemsSource="{Binding Path=ResultList}" IsReadOnly="True" SelectedItem="{Binding SelectedItem}" SelectionMode="Single" ColumnWidth="*" AutoGenerateColumns="False">
