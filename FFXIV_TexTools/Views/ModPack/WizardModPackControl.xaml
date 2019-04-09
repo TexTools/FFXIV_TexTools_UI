@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:FFXIV_TexTools.Views"
+             xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
@@ -31,7 +32,7 @@
                 <RowDefinition/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <GroupBox Grid.Row="0" Header="Options List" Margin="5">
+            <GroupBox Grid.Row="0" Header="{Binding Source={x:Static resx:UIStrings.Option_List}}" Margin="5">
                 <ListBox x:Name="OptionsList" SelectionChanged="OptionsList_SelectionChanged">
                     <ListBox.GroupStyle>
                         <GroupStyle>
@@ -62,9 +63,9 @@
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <Button x:Name="AddGroupButton" Grid.Column="0" Content="Add" Margin="5" Click="AddGroupButton_Click"/>
-                <Button x:Name="EditGroupButton" Grid.Column="1" Content="Edit" Margin="5" Click="EditGroupButton_Click" IsEnabled="False"/>
-                <Button x:Name="DeleteGroupButton" Grid.Column="2" Content="Delete" Margin="5" Click="DeleteGroupButton_Click" IsEnabled="False"/>
+                <Button x:Name="AddGroupButton" Grid.Column="0" Content="{Binding Source={x:Static resx:UIStrings.Add}}" Margin="5" Click="AddGroupButton_Click"/>
+                <Button x:Name="EditGroupButton" Grid.Column="1" Content="{Binding Source={x:Static resx:UIStrings.Edit}}" Margin="5" Click="EditGroupButton_Click" IsEnabled="False"/>
+                <Button x:Name="DeleteGroupButton" Grid.Column="2" Content="{Binding Source={x:Static resx:UIStrings.Delete}}" Margin="5" Click="DeleteGroupButton_Click" IsEnabled="False"/>
             </Grid>
         </Grid>
         <Grid Column="1">
@@ -72,10 +73,10 @@
                 <RowDefinition/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
-            <GroupBox Grid.Row="0" Header="Description" Margin="5">
+            <GroupBox Grid.Row="0" Header="{Binding Source={x:Static resx:UIStrings.Description}}" Margin="5">
                 <TextBox x:Name="OptionDescriptionTextBox" IsReadOnly="True"/>
             </GroupBox>
-            <GroupBox Grid.Row="1" Header="Preview" Margin="5">
+            <GroupBox Grid.Row="1" Header="{Binding Source={x:Static resx:UIStrings.Preview}}" Margin="5">
                 <Image x:Name="OptionPreviewImage"/>
             </GroupBox>
         </Grid>

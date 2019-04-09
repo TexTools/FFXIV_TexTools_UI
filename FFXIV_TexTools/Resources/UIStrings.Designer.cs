@@ -97,6 +97,24 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   查找类似 Add a Model using advanced options 的本地化字符串。
+        /// </summary>
+        public static string Add_a_Model_using_advanced_options {
+            get {
+                return ResourceManager.GetString("Add_a_Model_using_advanced_options", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Add Group 的本地化字符串。
+        /// </summary>
+        public static string Add_Group {
+            get {
+                return ResourceManager.GetString("Add_Group", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Add/Remove 的本地化字符串。
         /// </summary>
         public static string Add_Remove {
@@ -111,6 +129,15 @@ namespace FFXIV_TexTools.Resources {
         public static string Add_To_Part_Attribute {
             get {
                 return ResourceManager.GetString("Add_To_Part_Attribute", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Add w/ Adv. Options 的本地化字符串。
+        /// </summary>
+        public static string Add_w_Adv_Options {
+            get {
+                return ResourceManager.GetString("Add_w_Adv_Options", resourceCulture);
             }
         }
         
@@ -259,11 +286,29 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   查找类似 China Discord 的本地化字符串。
+        /// </summary>
+        public static string ChinaDiscord {
+            get {
+                return ResourceManager.GetString("ChinaDiscord", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Clear Selected 的本地化字符串。
         /// </summary>
         public static string Clear_Selected {
             get {
                 return ResourceManager.GetString("Clear_Selected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Click here to add a preview image 的本地化字符串。
+        /// </summary>
+        public static string Clic_here_to_add_a_preview_image {
+            get {
+                return ResourceManager.GetString("Clic_here_to_add_a_preview_image", resourceCulture);
             }
         }
         
@@ -385,6 +430,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   查找类似 Description 的本地化字符串。
+        /// </summary>
+        public static string Description {
+            get {
+                return ResourceManager.GetString("Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Directories 的本地化字符串。
         /// </summary>
         public static string Directories {
@@ -439,6 +493,24 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   查找类似 Done 的本地化字符串。
+        /// </summary>
+        public static string Done {
+            get {
+                return ResourceManager.GetString("Done", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Edit 的本地化字符串。
+        /// </summary>
+        public static string Edit {
+            get {
+                return ResourceManager.GetString("Edit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Enable 的本地化字符串。
         /// </summary>
         public static string Enable {
@@ -484,11 +556,29 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   查找类似 Enter a description for the selected option here... 的本地化字符串。
+        /// </summary>
+        public static string Enter_a_description_for_the_selected_option_here_dot {
+            get {
+                return ResourceManager.GetString("Enter_a_description_for_the_selected_option_here_dot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Enter a Model ID... 的本地化字符串。
         /// </summary>
         public static string Enter_a_Model_ID_dot {
             get {
                 return ResourceManager.GetString("Enter_a_Model_ID_dot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Enter a Name for the Group here 的本地化字符串。
+        /// </summary>
+        public static string Enter_a_Name_for_the_Group_here {
+            get {
+                return ResourceManager.GetString("Enter_a_Name_for_the_Group_here", resourceCulture);
             }
         }
         
@@ -592,11 +682,65 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   查找类似 Finish 的本地化字符串。
+        /// </summary>
+        public static string Finish {
+            get {
+                return ResourceManager.GetString("Finish", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Flip Alpha 的本地化字符串。
         /// </summary>
         public static string Flip_Alpha {
             get {
                 return ResourceManager.GetString("Flip_Alpha", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 (For Translucency or ColorSet) 的本地化字符串。
+        /// </summary>
+        public static string For_Translucency_or_ColorSet {
+            get {
+                return ResourceManager.GetString("For_Translucency_or_ColorSet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Go through the wizard and select relevant options to import mod pack 的本地化字符串。
+        /// </summary>
+        public static string Go_through_the_wizard_and_select_relevant_options_to_import_mod_pack {
+            get {
+                return ResourceManager.GetString("Go_through_the_wizard_and_select_relevant_options_to_import_mod_pack", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Group Options 的本地化字符串。
+        /// </summary>
+        public static string Group_Options {
+            get {
+                return ResourceManager.GetString("Group_Options", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Group Settings 的本地化字符串。
+        /// </summary>
+        public static string Group_Settings {
+            get {
+                return ResourceManager.GetString("Group_Settings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Group Title: 的本地化字符串。
+        /// </summary>
+        public static string Group_Title_colon {
+            get {
+                return ResourceManager.GetString("Group_Title_colon", resourceCulture);
             }
         }
         
@@ -673,11 +817,38 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   查找类似 Import ModPack 的本地化字符串。
+        /// </summary>
+        public static string Import_ModPack {
+            get {
+                return ResourceManager.GetString("Import_ModPack", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Import ModPack Wizard 的本地化字符串。
+        /// </summary>
+        public static string Import_ModPack_Wizard {
+            get {
+                return ResourceManager.GetString("Import_ModPack_Wizard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Import ModPacks 的本地化字符串。
         /// </summary>
         public static string Import_ModPacks {
             get {
                 return ResourceManager.GetString("Import_ModPacks", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Included Mods in Option 的本地化字符串。
+        /// </summary>
+        public static string Included_Mods_in_Option {
+            get {
+                return ResourceManager.GetString("Included_Mods_in_Option", resourceCulture);
             }
         }
         
@@ -750,6 +921,24 @@ namespace FFXIV_TexTools.Resources {
         public static string Map {
             get {
                 return ResourceManager.GetString("Map", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Material 的本地化字符串。
+        /// </summary>
+        public static string Material {
+            get {
+                return ResourceManager.GetString("Material", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Material Options 的本地化字符串。
+        /// </summary>
+        public static string Material_Options {
+            get {
+                return ResourceManager.GetString("Material_Options", resourceCulture);
             }
         }
         
@@ -862,6 +1051,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   查找类似 Mod Pack Importer 的本地化字符串。
+        /// </summary>
+        public static string Mod_Pack_Importer {
+            get {
+                return ResourceManager.GetString("Mod_Pack_Importer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Mod Pack Name 的本地化字符串。
         /// </summary>
         public static string Mod_Pack_Name {
@@ -925,11 +1123,29 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   查找类似 Model Options 的本地化字符串。
+        /// </summary>
+        public static string Model_Options {
+            get {
+                return ResourceManager.GetString("Model_Options", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Model Search 的本地化字符串。
         /// </summary>
         public static string Model_Search {
             get {
                 return ResourceManager.GetString("Model_Search", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Model Type 的本地化字符串。
+        /// </summary>
+        public static string Model_Type {
+            get {
+                return ResourceManager.GetString("Model_Type", resourceCulture);
             }
         }
         
@@ -975,6 +1191,15 @@ namespace FFXIV_TexTools.Resources {
         public static string More_Options {
             get {
                 return ResourceManager.GetString("More_Options", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Multi-Selection 的本地化字符串。
+        /// </summary>
+        public static string Multi_Selection {
+            get {
+                return ResourceManager.GetString("Multi_Selection", resourceCulture);
             }
         }
         
@@ -1051,11 +1276,56 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   查找类似 Option Description 的本地化字符串。
+        /// </summary>
+        public static string Option_Description {
+            get {
+                return ResourceManager.GetString("Option_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Option List 的本地化字符串。
+        /// </summary>
+        public static string Option_List {
+            get {
+                return ResourceManager.GetString("Option_List", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Option Name 的本地化字符串。
+        /// </summary>
+        public static string Option_Name {
+            get {
+                return ResourceManager.GetString("Option_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Option Preview Image 的本地化字符串。
+        /// </summary>
+        public static string Option_Preview_Image {
+            get {
+                return ResourceManager.GetString("Option_Preview_Image", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Options 的本地化字符串。
         /// </summary>
         public static string Options {
             get {
                 return ResourceManager.GetString("Options", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Options List 的本地化字符串。
+        /// </summary>
+        public static string Options_List {
+            get {
+                return ResourceManager.GetString("Options_List", resourceCulture);
             }
         }
         
@@ -1132,6 +1402,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   查找类似 Preview 的本地化字符串。
+        /// </summary>
+        public static string Preview {
+            get {
+                return ResourceManager.GetString("Preview", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 &lt; Previous Page 的本地化字符串。
         /// </summary>
         public static string Previous_Page {
@@ -1164,6 +1443,15 @@ namespace FFXIV_TexTools.Resources {
         public static string Reflection {
             get {
                 return ResourceManager.GetString("Reflection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Remove 的本地化字符串。
+        /// </summary>
+        public static string Remove {
+            get {
+                return ResourceManager.GetString("Remove", resourceCulture);
             }
         }
         
@@ -1222,6 +1510,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   查找类似 Select a file... 的本地化字符串。
+        /// </summary>
+        public static string Select_a_file_dot {
+            get {
+                return ResourceManager.GetString("Select_a_file_dot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Select Active 的本地化字符串。
         /// </summary>
         public static string Select_Active {
@@ -1245,6 +1542,15 @@ namespace FFXIV_TexTools.Resources {
         public static string Select_Language {
             get {
                 return ResourceManager.GetString("Select_Language", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Select Mod 的本地化字符串。
+        /// </summary>
+        public static string Select_Mod {
+            get {
+                return ResourceManager.GetString("Select_Mod", resourceCulture);
             }
         }
         
@@ -1321,6 +1627,24 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   查找类似 Simple ModPack Importer 的本地化字符串。
+        /// </summary>
+        public static string Simple_ModPack_Importer {
+            get {
+                return ResourceManager.GetString("Simple_ModPack_Importer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Single-Selection 的本地化字符串。
+        /// </summary>
+        public static string Single_Selection {
+            get {
+                return ResourceManager.GetString("Single_Selection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Size: 的本地化字符串。
         /// </summary>
         public static string Size_colon {
@@ -1390,11 +1714,47 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   查找类似 3D Model 的本地化字符串。
+        /// </summary>
+        public static string TD_Model {
+            get {
+                return ResourceManager.GetString("TD_Model", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Texture 的本地化字符串。
         /// </summary>
         public static string Texture {
             get {
                 return ResourceManager.GetString("Texture", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Texture Map 的本地化字符串。
+        /// </summary>
+        public static string Texture_Map {
+            get {
+                return ResourceManager.GetString("Texture_Map", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Texture Options 的本地化字符串。
+        /// </summary>
+        public static string Texture_Options {
+            get {
+                return ResourceManager.GetString("Texture_Options", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Textures 的本地化字符串。
+        /// </summary>
+        public static string Textures {
+            get {
+                return ResourceManager.GetString("Textures", resourceCulture);
             }
         }
         
@@ -1449,6 +1809,15 @@ namespace FFXIV_TexTools.Resources {
         public static string Update_TEX {
             get {
                 return ResourceManager.GetString("Update_TEX", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Use Currently Modded Item 的本地化字符串。
+        /// </summary>
+        public static string Use_Currently_Modded_Item {
+            get {
+                return ResourceManager.GetString("Use_Currently_Modded_Item", resourceCulture);
             }
         }
         

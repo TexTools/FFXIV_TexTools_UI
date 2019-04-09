@@ -609,4 +609,127 @@ Do you want to start over?</value>
   <data name="Visit_Website" xml:space="preserve">
     <value>Visit Website</value>
   </data>
+  <data name="Add_a_Model_using_advanced_options" xml:space="preserve">
+    <value>Add a Model using advanced options</value>
+  </data>
+  <data name="Add_Group" xml:space="preserve">
+    <value>Add Group</value>
+  </data>
+  <data name="Add_w_Adv_Options" xml:space="preserve">
+    <value>Add w/ Adv. Options</value>
+  </data>
+  <data name="Clic_here_to_add_a_preview_image" xml:space="preserve">
+    <value>Click here to add a preview image</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="Done" xml:space="preserve">
+    <value>Done</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="Enter_a_description_for_the_selected_option_here_dot" xml:space="preserve">
+    <value>Enter a description for the selected option here...</value>
+  </data>
+  <data name="Enter_a_Name_for_the_Group_here" xml:space="preserve">
+    <value>Enter a Name for the Group here</value>
+  </data>
+  <data name="Finish" xml:space="preserve">
+    <value>Finish</value>
+  </data>
+  <data name="For_Translucency_or_ColorSet" xml:space="preserve">
+    <value>(For Translucency or ColorSet)</value>
+  </data>
+  <data name="Go_through_the_wizard_and_select_relevant_options_to_import_mod_pack" xml:space="preserve">
+    <value>Go through the wizard and select relevant options to import mod pack</value>
+  </data>
+  <data name="Group_Options" xml:space="preserve">
+    <value>Group Options</value>
+  </data>
+  <data name="Group_Settings" xml:space="preserve">
+    <value>Group Settings</value>
+  </data>
+  <data name="Group_Title_colon" xml:space="preserve">
+    <value>Group Title:</value>
+  </data>
+  <data name="Import_ModPack" xml:space="preserve">
+    <value>Import ModPack</value>
+  </data>
+  <data name="Import_ModPack_Wizard" xml:space="preserve">
+    <value>Import ModPack Wizard</value>
+  </data>
+  <data name="Included_Mods_in_Option" xml:space="preserve">
+    <value>Included Mods in Option</value>
+  </data>
+  <data name="Material" xml:space="preserve">
+    <value>Material</value>
+  </data>
+  <data name="Material_Options" xml:space="preserve">
+    <value>Material Options</value>
+  </data>
+  <data name="Model_Options" xml:space="preserve">
+    <value>Model Options</value>
+  </data>
+  <data name="Model_Type" xml:space="preserve">
+    <value>Model Type</value>
+  </data>
+  <data name="Mod_Pack_Importer" xml:space="preserve">
+    <value>Mod Pack Importer</value>
+  </data>
+  <data name="Multi_Selection" xml:space="preserve">
+    <value>Multi-Selection</value>
+  </data>
+  <data name="Options_List" xml:space="preserve">
+    <value>Options List</value>
+  </data>
+  <data name="Option_Description" xml:space="preserve">
+    <value>Option Description</value>
+  </data>
+  <data name="Option_List" xml:space="preserve">
+    <value>Option List</value>
+  </data>
+  <data name="Option_Name" xml:space="preserve">
+    <value>Option Name</value>
+  </data>
+  <data name="Option_Preview_Image" xml:space="preserve">
+    <value>Option Preview Image</value>
+  </data>
+  <data name="Preview" xml:space="preserve">
+    <value>Preview</value>
+  </data>
+  <data name="Remove" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="Select_a_file_dot" xml:space="preserve">
+    <value>Select a file...</value>
+  </data>
+  <data name="Select_Mod" xml:space="preserve">
+    <value>Select Mod</value>
+  </data>
+  <data name="Simple_ModPack_Importer" xml:space="preserve">
+    <value>Simple ModPack Importer</value>
+  </data>
+  <data name="Single_Selection" xml:space="preserve">
+    <value>Single-Selection</value>
+  </data>
+  <data name="TD_Model" xml:space="preserve">
+    <value>3D Model</value>
+  </data>
+  <data name="Textures" xml:space="preserve">
+    <value>Textures</value>
+  </data>
+  <data name="Texture_Map" xml:space="preserve">
+    <value>Texture Map</value>
+  </data>
+  <data name="Texture_Options" xml:space="preserve">
+    <value>Texture Options</value>
+  </data>
+  <data name="Use_Currently_Modded_Item" xml:space="preserve">
+    <value>Use Currently Modded Item</value>
+  </data>
+  <data name="ChinaDiscord" xml:space="preserve">
+    <value>China Discord</value>
+  </data>
 </root>

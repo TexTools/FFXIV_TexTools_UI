@@ -49,7 +49,7 @@ namespace FFXIV_TexTools
         private string _startupArgs;
 
         public MainWindow(string[] args)
-        {
+        {     
             CheckForUpdates();
             CheckForSettingsUpdate();
 
@@ -64,8 +64,14 @@ namespace FFXIV_TexTools
             try
             {
                 InitializeComponent();
+                //esrinzou for chinese UI
+                if (System.Globalization.CultureInfo.CurrentUICulture.Name == "zh-CN")
+                {
+                    this.ChinaDiscordButton.Visibility = Visibility.Visible;
+                }
+                //esrinzou end      
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 System.Windows.MessageBox.Show(
                     "TexTools was unable to locate dependency files.\nPlease make sure you are running TexTools in the folder it came in.\n\nIf you continue to receive this error," +
@@ -717,6 +723,11 @@ namespace FFXIV_TexTools
         private void GithubButton_Click(object sender, RoutedEventArgs e)
         {
             Process.Start(WebUrl.Github_Website);
+        }
+
+        private void ChinaDiscordButton_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start("https://discord.gg/sx4RtsN");
         }
     }
 }

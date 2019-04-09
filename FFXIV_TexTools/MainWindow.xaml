@@ -13,6 +13,7 @@
         Title="FFXIV TexTools" Height="720" Width="1280" WindowStartupLocation="CenterScreen" Closing="MetroWindow_Closing" Loaded="MetroWindow_Loaded">
     <Controls:MetroWindow.RightWindowCommands>
         <Controls:WindowCommands>
+            <Button x:Name="ChinaDiscordButton" Content="{Binding Source={x:Static resx:UIStrings.ChinaDiscord}}" Visibility="Collapsed" Click="ChinaDiscordButton_Click"/>
             <Button Content="{Binding DXVersionText}" Command="{Binding DXVersionCommand}" />
             <Button x:Name="LanguageButton" Content="{Binding Source={x:Static resx:UIStrings.Language}}" Click="LanguageButton_Click"/>
         </Controls:WindowCommands>
