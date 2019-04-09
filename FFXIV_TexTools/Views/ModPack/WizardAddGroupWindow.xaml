@@ -59,7 +59,7 @@
                                     <ColumnDefinition/>
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBox x:Name="OptionNameTextBox" Grid.Column="0" mah:TextBoxHelper.Watermark="Option Name" Margin="0,0,10,0"/>
+                                <TextBox x:Name="OptionNameTextBox" Grid.Column="0" mah:TextBoxHelper.Watermark="Option Name" Margin="0,0,10,0" KeyDown="OptionNameTextBox_KeyDown"/>
                                 <Button x:Name="AddOptionButton" Grid.Column="1" Content="Add" Click="AddOptionButton_Click"/>
                             </Grid>
                             <ListBox x:Name="OptionList" Grid.Row="1" SelectionChanged="OptionList_SelectionChanged" Margin="5"/>
