@@ -693,11 +693,18 @@ namespace FFXIV_TexTools
             }
             Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() =>
             {
-                //var t = ItemTreeView.ItemsSource as System.Collections.ObjectModel.ObservableCollection<Category>;
                 var vm = this.DataContext as MainViewModel;
-                vm.FillTree(()=> {
-                    DoEvent();
-                });
+                try
+                {
+                    vm.FillTree(() =>
+                    {
+                        DoEvent();
+                    });
+                }
+                catch(Exception ex)
+                {
+                    FlexibleMessageBox.Show($"There was an error getting the Items List\n\n{ex.Message}", $"Items List Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
                 var view = (CollectionView)CollectionViewSource.GetDefaultView(ItemTreeView.ItemsSource);
                 view.Filter = SearchFilter;
             }),DispatcherPriority.Background);
