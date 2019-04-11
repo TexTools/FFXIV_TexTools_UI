@@ -25,10 +25,12 @@ using MahApps.Metro.Controls.Dialogs;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Forms;
+using System.Windows.Threading;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Items.Interfaces;
@@ -665,11 +667,41 @@ namespace FFXIV_TexTools
                 await this.ShowMessageAsync("Backup Complete", "The index files have been successfully backed up");
             }
         }
-
         private void ItemTreeView_Loaded(object sender, RoutedEventArgs e)
         {
-            var view = (CollectionView) CollectionViewSource.GetDefaultView(ItemTreeView.ItemsSource);
-            view.Filter = SearchFilter;
+            //esrinzou for quick start
+            //var view = (CollectionView)CollectionViewSource.GetDefaultView(ItemTreeView.ItemsSource);
+            //view.Filter = SearchFilter;
+            //esrinzou begin
+            void DoEvent()
+            {
+                DispatcherOperationCallback exitFrameCallback = new DispatcherOperationCallback(ExitFrame);
+                DispatcherFrame nestedFrame = new DispatcherFrame();
+                DispatcherOperation exitOperation = Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Background, exitFrameCallback, nestedFrame);
+                Dispatcher.PushFrame(nestedFrame);
+                if (exitOperation.Status !=
+                DispatcherOperationStatus.Completed)
+                {
+                    exitOperation.Abort();
+                }
+            }
+            object ExitFrame(object state)
+            {
+                DispatcherFrame frame = state as DispatcherFrame;
+                frame.Continue = false;
+                return null;
+            }
+            Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() =>
+            {
+                //var t = ItemTreeView.ItemsSource as System.Collections.ObjectModel.ObservableCollection<Category>;
+                var vm = this.DataContext as MainViewModel;
+                vm.FillTree(()=> {
+                    DoEvent();
+                });
+                var view = (CollectionView)CollectionViewSource.GetDefaultView(ItemTreeView.ItemsSource);
+                view.Filter = SearchFilter;
+            }),DispatcherPriority.Background);
+            //esrinzou end
         }
 
         private bool SearchFilter(object item)

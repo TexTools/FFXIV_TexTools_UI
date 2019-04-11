@@ -91,16 +91,16 @@
             <GroupBox Header="{Binding Source={x:Static resx:UIStrings.Item_List}}" Margin="5">
                 <Grid Grid.Column="0">
                     <TextBox x:Name="ItemSearchTextBox" Controls:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.Search_dot}}" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" TextChanged="ItemSearchTextBox_TextChanged"/>
-                    <TreeView x:Name="ItemTreeView" Margin="0,26,0,0" ItemsSource="{Binding Categories}" SelectedItemChanged="TreeView_SelectedItemChanged" Style="{StaticResource VirtualisedMetroTreeView}" Loaded="ItemTreeView_Loaded">
+                    <TreeView x:Name="ItemTreeView" Margin="0,26,0,0" ItemsSource="{Binding Categories,Mode=TwoWay}" SelectedItemChanged="TreeView_SelectedItemChanged" Style="{StaticResource VirtualisedMetroTreeView}" Loaded="ItemTreeView_Loaded">
                         <TreeView.ItemContainerStyle>
                             <Style BasedOn="{StaticResource MetroTreeViewItem}" TargetType="{x:Type TreeViewItem}">
-                                <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}"/>
+                                <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay,AsyncState=True}"/>
                             </Style>
                         </TreeView.ItemContainerStyle>
                         <TreeView.Resources>
-                            <HierarchicalDataTemplate ItemsSource="{Binding Categories}" DataType="{x:Type models:Category}">
+                            <HierarchicalDataTemplate ItemsSource="{Binding Categories,AsyncState=True}" DataType="{x:Type models:Category}">
                                 <StackPanel>
-                                    <TextBlock Text="{Binding Name}"/>
+                                    <TextBlock Text="{Binding Name,AsyncState=True}"/>
                                 </StackPanel>
                             </HierarchicalDataTemplate>
                         </TreeView.Resources>
