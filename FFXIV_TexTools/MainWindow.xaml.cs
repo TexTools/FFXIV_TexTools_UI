@@ -727,7 +727,7 @@ namespace FFXIV_TexTools
 
         private void ChinaDiscordButton_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start("https://discord.gg/sx4RtsN");
+            Process.Start("http://149.129.96.215:8989");
         }
     }
 }
