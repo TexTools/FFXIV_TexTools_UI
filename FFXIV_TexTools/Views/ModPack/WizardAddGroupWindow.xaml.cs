@@ -711,7 +711,18 @@ namespace FFXIV_TexTools.Views
                 // Models
                 if (itemPath.Contains(".mdl"))
                 {
-                    modCB.Name = $"{((IItemModel)selectedItem.Item).ModelInfo.ModelID} ({Path.GetFileNameWithoutExtension(itemPath)})";
+                    //esrinzou for Repair program crash when selecting [character/Body] item
+                    //modCB.Name = $"{((IItemModel)selectedItem.Item).ModelInfo.ModelID} ({Path.GetFileNameWithoutExtension(itemPath)})";
+                    //esrinzou begin
+                    if (((IItemModel)selectedItem.Item).ModelInfo == null)
+                    {
+                        modCB.Name = $"{((IItemModel)selectedItem.Item).Name} ({Path.GetFileNameWithoutExtension(itemPath)})";
+                    }
+                    else
+                    {
+                        modCB.Name = $"{((IItemModel)selectedItem.Item).ModelInfo.ModelID} ({Path.GetFileNameWithoutExtension(itemPath)})";
+                    }
+                    //esrinzou end
                     modCB.SelectedMod = modItem;
                     modCB.TexTypePath = null;
 

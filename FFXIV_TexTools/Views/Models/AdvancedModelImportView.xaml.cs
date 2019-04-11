@@ -65,6 +65,9 @@ namespace FFXIV_TexTools.Views.Models
         /// </summary>
         private void ImportButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
+            //esrinzou for fix Mod Pack Wizard Add_w_Adv_Options RawModelData==null bug
+            this._viewModel.ImportCommand.Execute(null);
+            //esrinzou end
             DialogResult = true;
 
             if (_fromWizard)
