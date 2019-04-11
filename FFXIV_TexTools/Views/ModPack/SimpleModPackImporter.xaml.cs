@@ -33,6 +33,7 @@ using xivModdingFramework.Mods;
 using xivModdingFramework.Mods.DataContainers;
 using xivModdingFramework.Mods.Enums;
 using xivModdingFramework.Mods.FileTypes;
+using xivModdingFramework.SqPack.FileTypes;
 using xivModdingFramework.Textures.Enums;
 using Path = System.IO.Path;
 
@@ -50,7 +51,7 @@ namespace FFXIV_TexTools.Views
         private readonly TTMP _texToolsModPack;
         private int _modCount;
         private long _modSize;
-        private bool _messageInImport;
+        private bool _messageInImport, _indexLockStatus;
 
         [DllImport("Shlwapi.dll", CharSet = CharSet.Auto)]
         public static extern long StrFormatByteSize(long fileSize, [MarshalAs(UnmanagedType.LPTStr)] StringBuilder buffer, int bufferSize);
@@ -65,6 +66,15 @@ namespace FFXIV_TexTools.Views
             _texToolsModPack = new TTMP(new DirectoryInfo(Properties.Settings.Default.ModPack_Directory),
                 XivStrings.TexTools);
             _messageInImport = messageInImport;
+
+            var index = new Index(_gameDirectory);
+
+            _indexLockStatus = index.IsIndexLocked(XivDataFile._0A_Exd);
+
+            if (_indexLockStatus)
+            {
+                LockedStatusLabel.Content = "Unable to import while game is running.";
+            }
 
             if (modPackJson != null)
             {
@@ -500,7 +510,10 @@ namespace FFXIV_TexTools.Views
             ModCountLabel.Content = _modCount;
             ModSizeLabel.Content = byteFormatedString.ToString();
 
-            ImportModPackButton.IsEnabled = ModListView.SelectedItems.Count > 0;
+            if (!_indexLockStatus)
+            {
+                ImportModPackButton.IsEnabled = ModListView.SelectedItems.Count > 0;
+            }
         }
 
         /// <summary>
