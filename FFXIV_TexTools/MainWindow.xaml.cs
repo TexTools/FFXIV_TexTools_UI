@@ -49,9 +49,22 @@ namespace FFXIV_TexTools
     {
         private SysTimer.Timer searchTimer = new SysTimer.Timer(300);
         private string _startupArgs;
-
+        private bool _isMainWindowOK = false;
         public MainWindow(string[] args)
-        {     
+        {
+            //esrinzou for quick UI
+            var pbar_window = new ProgressBarWindow();
+            pbar_window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            pbar_window.UpdateProcessAction = () =>
+            {
+                while (!_isMainWindowOK)
+                {
+                    Task.Delay(1);
+                    UIHelper.RefreshUI();
+                }
+            };
+            pbar_window.Show();
+            //esrinzou end
             CheckForUpdates();
             CheckForSettingsUpdate();
 
@@ -750,6 +763,7 @@ namespace FFXIV_TexTools
             var fileVersion = FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location).FileVersion;
 
             Title += $" {fileVersion.Substring(0, fileVersion.LastIndexOf("."))}";
+            _isMainWindowOK = true;
         }
 
         private void GithubButton_Click(object sender, RoutedEventArgs e)
