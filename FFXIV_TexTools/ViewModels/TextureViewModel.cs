@@ -46,6 +46,7 @@ using xivModdingFramework.Textures.DataContainers;
 using xivModdingFramework.Textures.Enums;
 using xivModdingFramework.Textures.FileTypes;
 using BitmapSource = System.Windows.Media.Imaging.BitmapSource;
+using System.Threading.Tasks;
 
 namespace FFXIV_TexTools.ViewModels
 {
@@ -151,7 +152,24 @@ namespace FFXIV_TexTools.ViewModels
                 }
                 else
                 {
-                    _charaRaceAndNumberDictionary = _character.GetRacesAndNumbersForTextures(item as XivCharacter);
+                    //esrinzou for quick U                    
+                    //_charaRaceAndNumberDictionary = _character.GetRacesAndNumbersForTextures(item as XivCharacter);
+                    //esrinzou begin
+                    var pbar_window = new ProgressBarWindow();
+                    pbar_window.Owner = Window.GetWindow(this._textureView);
+                    pbar_window.UpdateProcessAction = () =>
+                    {
+                        var task=Task.Factory.StartNew(() =>
+                        {
+                            _charaRaceAndNumberDictionary = _character.GetRacesAndNumbersForTextures(item as XivCharacter);
+                        });
+                        while (!task.IsCompleted)
+                        {
+                            UIHelper.RefreshUI();
+                        }
+                    };
+                    pbar_window.ShowDialog();
+                    //esrinzou end
 
                     foreach (var racesAndNumber in _charaRaceAndNumberDictionary)
                     {

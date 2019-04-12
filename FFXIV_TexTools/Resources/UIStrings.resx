@@ -732,4 +732,7 @@ Do you want to start over?</value>
   <data name="ChinaDiscord" xml:space="preserve">
     <value>China Discord</value>
   </data>
+  <data name="Loading" xml:space="preserve">
+    <value>Loading</value>
+  </data>
 </root>

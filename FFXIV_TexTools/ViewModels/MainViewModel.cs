@@ -77,7 +77,7 @@ namespace FFXIV_TexTools.ViewModels
 
             CheckForOldModList();
             CheckGameVersion();
-            //esrinzou for quick start
+            //esrinzou for quick UI
             //try
             //{
             //    FillTree();
@@ -449,12 +449,15 @@ namespace FFXIV_TexTools.ViewModels
         /// <summary>
         /// Fills the tree view with items
         /// </summary>
-        //esrinzou for quick start
+        //esrinzou for quick UI
         //private void FillTree()
         //esrinzou begin
-        public  void FillTree(Action refreshUI)
+        public void FillTree()
         //esrinzou end
         {
+            //esrinzou for quick UI
+            List<Category> Categories = new List<Category>();
+            //esrinzou end
             Categories.Add(new Category{Name = "Gear", Categories = new ObservableCollection<Category>(), CategoryList = new List<string>()});
             Categories.Add(new Category{Name = "Character", Categories = new ObservableCollection<Category>(), CategoryList = new List<string>() });
             Categories.Add(new Category{Name = "Companions", Categories = new ObservableCollection<Category>(), CategoryList = new List<string>() });
@@ -471,9 +474,6 @@ namespace FFXIV_TexTools.ViewModels
                 var category = new Category { Name = categoryOrder, Categories = new ObservableCollection<Category>(), CategoryList = new List<string>() };
                 Categories[0].Categories.Add(category);
                 Categories[0].CategoryList.Add(categoryOrder);
-                //esrinzou for quick start
-                refreshUI();
-                //esrinzou end
             }
 
             foreach (var xivGear in gearList)
@@ -494,9 +494,6 @@ namespace FFXIV_TexTools.ViewModels
                     Categories[0].Categories.Add(category);
                     Categories[0].CategoryList.Add(xivGear.ItemCategory);
                 }
-                //esrinzou for quick start
-                refreshUI();
-                //esrinzou end
             }
 
             // Character List
@@ -506,9 +503,6 @@ namespace FFXIV_TexTools.ViewModels
             {
                 Categories[1].Categories.Add(new Category{Name = xivCharacter.Name, Item = xivCharacter});
                 Categories[1].CategoryList.Add(xivCharacter.Name);
-                //esrinzou for quick start
-                refreshUI();
-                //esrinzou end
             }
 
             // Companion List
@@ -519,9 +513,6 @@ namespace FFXIV_TexTools.ViewModels
             foreach (var xivMinion in companionList.MinionList)
             {
                 minionCategory.Categories.Add(new Category{Name = xivMinion.Name, Item = xivMinion});
-                //esrinzou for quick start
-                refreshUI();
-                //esrinzou end
             }
 
             var mountCategory = new Category { Name = "Mounts", Categories = new ObservableCollection<Category>() };
@@ -529,9 +520,6 @@ namespace FFXIV_TexTools.ViewModels
             foreach (var xivMount in companionList.MountList)
             {
                 mountCategory.Categories.Add(new Category { Name = xivMount.Name, Item = xivMount });
-                //esrinzou for quick start
-                refreshUI();
-                //esrinzou end
             }
 
             var petCategory = new Category { Name = "Pets", Categories = new ObservableCollection<Category>() };
@@ -539,9 +527,6 @@ namespace FFXIV_TexTools.ViewModels
             foreach (var xivPet in companionList.PetList)
             {
                 petCategory.Categories.Add(new Category { Name = xivPet.Name, Item = xivPet });
-                //esrinzou for quick start
-                refreshUI();
-                //esrinzou end
             }
 
             // UI List
@@ -605,9 +590,6 @@ namespace FFXIV_TexTools.ViewModels
                         Categories[3].CategoryList.Add(xivUi.ItemCategory);
                     }
                 }
-                //esrinzou for quick start
-                refreshUI();
-                //esrinzou end
             }
 
             // Housing List
@@ -631,10 +613,13 @@ namespace FFXIV_TexTools.ViewModels
                     Categories[4].Categories.Add(category);
                     Categories[4].CategoryList.Add(xivFurniture.ItemCategory);
                 }
-                //esrinzou for quick start
-                refreshUI();
-                //esrinzou end
             }
+            //esrinzou for quick UI
+            UIHelper.UIInvoke(() =>
+            {
+                this.Categories = Categories;
+            });
+            //esrinzou end
         }
 
         /// <summary>

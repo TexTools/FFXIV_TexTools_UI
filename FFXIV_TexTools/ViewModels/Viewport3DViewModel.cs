@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using FFXIV_TexTools.Custom;
+using FFXIV_TexTools.Helpers;
 using FFXIV_TexTools.Resources;
 using HelixToolkit.Wpf.SharpDX;
 using HelixToolkit.Wpf.SharpDX.Cameras;
@@ -24,6 +25,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Windows;
 using System.Windows.Media.Media3D;
 using xivModdingFramework.Models.DataContainers;
 using MeshBuilder = HelixToolkit.Wpf.SharpDX.MeshBuilder;
@@ -42,7 +44,12 @@ namespace FFXIV_TexTools.ViewModels
         private bool _renderLight3;
         private readonly ModelViewModel _modelViewModel;
 
-        public ObservableElement3DCollection Models { get; } = new ObservableElement3DCollection();
+        //esrinzou for quick UI
+        //public ObservableElement3DCollection Models { get; } = new ObservableElement3DCollection();
+        //esrinzou begin
+        public bool Rendered { get; set; } = false;
+        public ObservableElement3DCollection Models { get; private set; } = new ObservableElement3DCollection();
+        //esrinzou end
 
         public Viewport3DViewModel(ModelViewModel mvm)
         {
@@ -64,6 +71,9 @@ namespace FFXIV_TexTools.ViewModels
         /// <param name="textureDataDictionary">The texture dictionary for the model</param>
         public void UpdateModel(XivMdl mdlData, Dictionary<int, ModelTextureData> textureDataDictionary)
         {
+            //esrinzou for quick UI
+            ObservableElement3DCollection Models = new ObservableElement3DCollection();
+            //esrinzou end
             SharpDX.BoundingBox? boundingBox = null;
 
             var totalMeshCount = mdlData.LoDList[0].MeshCount + mdlData.LoDList[0].ExtraMeshCount;
@@ -168,7 +178,22 @@ namespace FFXIV_TexTools.ViewModels
 
                 Models.Add(mgm3d);
             }
-            
+            //esrinzou for quick UI
+            var pbar_window = new ProgressBarWindow();
+            pbar_window.Owner = Window.GetWindow(_modelViewModel.ModelView);
+            pbar_window.UpdateProcessAction = () =>
+            {
+                foreach (var model in Models)
+                {
+                    UIHelper.UIInvoke(() =>
+                    {
+                        this.Models.Add(model);
+                        UIHelper.RefreshUI();
+                    });
+                }
+            };
+            pbar_window.ShowDialog();
+            //esrinzou end
             SpecularShine = 1;
 
             var center = boundingBox.GetValueOrDefault().Center;
@@ -178,7 +203,6 @@ namespace FFXIV_TexTools.ViewModels
             _lightZ = center.Z;
 
             Light3Direction = new Vector3D(_lightX, _lightY, _lightZ);
-
             Camera.UpDirection = new Vector3D(0, 1, 0);
             Camera.CameraInternal.PropertyChanged += CameraInternal_PropertyChanged;
         }
@@ -281,7 +305,7 @@ namespace FFXIV_TexTools.ViewModels
         /// <summary>
         /// The amount of specular shine applied
         /// </summary>
-        public int SpecularShine{ get; set; }
+        public int SpecularShine { get; set; }
 
         #endregion
 
@@ -385,29 +409,29 @@ namespace FFXIV_TexTools.ViewModels
             switch (lightNumber)
             {
                 case 0:
-                {
-                    var x = Light1Direction.X - _light1X;
-                    var y = Light1Direction.Y - _light1Y;
-                    var z = Light1Direction.Z - _light1Z;
+                    {
+                        var x = Light1Direction.X - _light1X;
+                        var y = Light1Direction.Y - _light1Y;
+                        var z = Light1Direction.Z - _light1Z;
 
-                    return (x, y, z);
-                }
+                        return (x, y, z);
+                    }
                 case 1:
-                {
-                    var x = Light2Direction.X - _light2X;
-                    var y = Light2Direction.Y - _light2Y;
-                    var z = Light2Direction.Z - _light2Z;
+                    {
+                        var x = Light2Direction.X - _light2X;
+                        var y = Light2Direction.Y - _light2Y;
+                        var z = Light2Direction.Z - _light2Z;
 
-                    return (x, y, z);
-                }
+                        return (x, y, z);
+                    }
                 case 2:
-                {
-                    var x = Light3Direction.X - _lightX;
-                    var y = Light3Direction.Y - _lightY;
-                    var z = Light3Direction.Z - _lightZ;
+                    {
+                        var x = Light3Direction.X - _lightX;
+                        var y = Light3Direction.Y - _lightY;
+                        var z = Light3Direction.Z - _lightZ;
 
-                    return (x, y, z);
-                }
+                        return (x, y, z);
+                    }
                 default:
                     return (0, 0, 0);
             }
@@ -421,7 +445,7 @@ namespace FFXIV_TexTools.ViewModels
         {
             foreach (var model in Models)
             {
-                var material = ((CustomMeshGeometryModel3D) model).Material as PhongMaterial;
+                var material = ((CustomMeshGeometryModel3D)model).Material as PhongMaterial;
 
                 material.SpecularShininess = value;
             }
@@ -441,7 +465,7 @@ namespace FFXIV_TexTools.ViewModels
         {
             foreach (var model in Models)
             {
-                var isBody = ((CustomMeshGeometryModel3D) model).IsBody;
+                var isBody = ((CustomMeshGeometryModel3D)model).IsBody;
 
                 if (isBody) continue;
 
@@ -471,10 +495,10 @@ namespace FFXIV_TexTools.ViewModels
         {
             foreach (var model in Models)
             {
-                ((CustomMeshGeometryModel3D) model).CullMode = noneCullMode ? CullMode.None : CullMode.Back;
+                ((CustomMeshGeometryModel3D)model).CullMode = noneCullMode ? CullMode.None : CullMode.Back;
             }
         }
-        
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected void NotifyPropertyChanged(string propertyName)

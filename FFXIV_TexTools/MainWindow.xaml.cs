@@ -174,7 +174,13 @@ namespace FFXIV_TexTools
         /// </summary>
         private void TreeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-            UpdateViews(e.NewValue as Category);
+            //esrinzou for quick UI
+            //UpdateViews(e.NewValue as Category);
+            //esrinzou begin
+            App.Current.Dispatcher.InvokeAsync(() => {
+                UpdateViews(e.NewValue as Category);
+            });
+            //esrinzou end
         }
 
         /// <summary>
@@ -185,8 +191,8 @@ namespace FFXIV_TexTools
         {
             if (selectedItem?.Item != null)
             {
-                var textureView = TextureTabItem.Content as TextureView;
-                var textureViewModel = textureView.DataContext as TextureViewModel;
+                TextureView textureView = TextureTabItem.Content as TextureView; ;
+                TextureViewModel textureViewModel = textureView.DataContext as TextureViewModel;
 
                 textureViewModel.UpdateTexture(selectedItem.Item);
 
@@ -669,44 +675,31 @@ namespace FFXIV_TexTools
         }
         private void ItemTreeView_Loaded(object sender, RoutedEventArgs e)
         {
-            //esrinzou for quick start
+            //esrinzou for quick UI
             //var view = (CollectionView)CollectionViewSource.GetDefaultView(ItemTreeView.ItemsSource);
             //view.Filter = SearchFilter;
-            //esrinzou begin
-            void DoEvent()
+            //esrinzou begin            
+            App.Current.Dispatcher.BeginInvoke(new Action(() =>
             {
-                DispatcherOperationCallback exitFrameCallback = new DispatcherOperationCallback(ExitFrame);
-                DispatcherFrame nestedFrame = new DispatcherFrame();
-                DispatcherOperation exitOperation = Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Background, exitFrameCallback, nestedFrame);
-                Dispatcher.PushFrame(nestedFrame);
-                if (exitOperation.Status !=
-                DispatcherOperationStatus.Completed)
-                {
-                    exitOperation.Abort();
-                }
-            }
-            object ExitFrame(object state)
-            {
-                DispatcherFrame frame = state as DispatcherFrame;
-                frame.Continue = false;
-                return null;
-            }
-            Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() =>
-            {
+                var pbar_window = new ProgressBarWindow();
+                pbar_window.Owner = this;
                 var vm = this.DataContext as MainViewModel;
-                try
+                pbar_window.UpdateProcessAction = () =>
                 {
-                    vm.FillTree(() =>
+                    try
                     {
-                        DoEvent();
+                        vm.FillTree();
+                    }
+                    catch (Exception ex)
+                    {
+                        FlexibleMessageBox.Show($"There was an error getting the Items List\n\n{ex.Message}", $"Items List Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                    App.Current.Dispatcher.Invoke(() => { 
+                        var view = (CollectionView)CollectionViewSource.GetDefaultView(ItemTreeView.ItemsSource);
+                        view.Filter = SearchFilter;
                     });
-                }
-                catch(Exception ex)
-                {
-                    FlexibleMessageBox.Show($"There was an error getting the Items List\n\n{ex.Message}", $"Items List Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-                var view = (CollectionView)CollectionViewSource.GetDefaultView(ItemTreeView.ItemsSource);
-                view.Filter = SearchFilter;
+                };
+                pbar_window.ShowDialog();
             }),DispatcherPriority.Background);
             //esrinzou end
         }

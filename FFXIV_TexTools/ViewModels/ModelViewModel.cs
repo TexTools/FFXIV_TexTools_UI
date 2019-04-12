@@ -27,6 +27,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
 using System.Windows.Forms;
@@ -85,6 +86,9 @@ namespace FFXIV_TexTools.ViewModels
         private Dictionary<int, ModelTextureData> _materialDictionary;
 
         private DirectoryInfo _gameDirectory;
+        //esrinzou for quick UI
+        public ModelView ModelView { get => _modelView; }
+        //esrinzou end
 
         public ModelViewModel(ModelView modelView)
         {
@@ -135,7 +139,23 @@ namespace FFXIV_TexTools.ViewModels
             {
                 var character = new Character(_gameDirectory);
 
-                _charaRaceAndNumberDictionary = character.GetRacesAndNumbersForModels(_item as XivCharacter);
+                //esrinzou for quick UI
+                //_charaRaceAndNumberDictionary = character.GetRacesAndNumbersForModels(_item as XivCharacter);
+                //esrinzou begin
+                var pbar_window = new ProgressBarWindow();
+                pbar_window.Owner = Window.GetWindow(this.ModelView);
+                pbar_window.UpdateProcessAction = () =>
+                {
+                    var task = Task.Factory.StartNew(() => { 
+                        _charaRaceAndNumberDictionary = character.GetRacesAndNumbersForModels(_item as XivCharacter);
+                    });
+                    while (!task.IsCompleted)
+                    {
+                        UIHelper.RefreshUI();
+                    }
+                };
+                pbar_window.ShowDialog();                
+                //esrinzou end
 
                 foreach (var racesAndNumber in _charaRaceAndNumberDictionary)
                 {
@@ -1601,10 +1621,47 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         public void UpdateViewPort()
         {
+            //esrinzou for quick UI
+            //ViewPortVM.ClearModels();
+            //TransparencyToggle = false;
+
+            //_materialDictionary = GetMaterials();
+
+            //ViewPortVM.UpdateModel(_mdlData, _materialDictionary);
+
+            //ReflectionValue = ViewPortVM.SpecularShine;
+
+            //_modelView.viewport3DX.ZoomExtents();
+
+            //ExportEnabled = true;
+
+            //var saveDir = new DirectoryInfo(Settings.Default.Save_Directory);
+            //var path = $"{IOUtil.MakeItemSavePath(_item, saveDir, SelectedRace.XivRace)}\\3D";
+            //var modelName = Path.GetFileNameWithoutExtension(_mdlData.MdlPath.File);
+            //var savePath = Path.Combine(path, modelName) + ".dae";
+
+            //BasicImportEnabled = File.Exists(savePath);
+            //ImportEnabled = true;
+            //UpdateTexEnabled = true;
+
+            //ShowModelStatus("Model Updated Successfully");
+
+            //esrinzou begin
             ViewPortVM.ClearModels();
             TransparencyToggle = false;
-
-            _materialDictionary = GetMaterials();
+            var pbar_window = new ProgressBarWindow();
+            pbar_window.Owner = Window.GetWindow(this.ModelView);
+            pbar_window.UpdateProcessAction = () =>
+            {
+                var task = Task.Factory.StartNew(() => {
+                    _materialDictionary = GetMaterials();
+                });
+                while (!task.IsCompleted)
+                {
+                    UIHelper.RefreshUI();
+                }
+            };
+            pbar_window.ShowDialog();
 
             ViewPortVM.UpdateModel(_mdlData, _materialDictionary);
 
@@ -1624,6 +1681,7 @@ namespace FFXIV_TexTools.ViewModels
             UpdateTexEnabled = true;
 
             ShowModelStatus("Model Updated Successfully");
+            //esrinzou end
         }
         #endregion
 

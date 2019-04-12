@@ -726,4 +726,7 @@
   <data name="ChinaDiscord" xml:space="preserve">
     <value>国服Mod交流群</value>
   </data>
+  <data name="Loading" xml:space="preserve">
+    <value>加载中</value>
+  </data>
 </root>
