@@ -159,7 +159,11 @@ namespace FFXIV_TexTools.Views
 
             if (fileInfo.Exists)
             {
-                if (fileInfo.Length < 10000000)
+                //esrinzou for fix checkdat error
+                //if (fileInfo.Length < 10000000)
+                //esrinzou begin
+                if (fileInfo.Length < 1024*10)
+                //esrinzou end
                 {
                     AddText("\t\u2716\n", "Red");
                     AddText("\tThe Dat File ( 060000.win32.dat1 ) is missing data. \n", "Red");
