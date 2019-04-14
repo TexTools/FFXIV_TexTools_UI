@@ -77,13 +77,17 @@
                 </hx:Viewport3DX>
                 <Label VerticalAlignment="Bottom" HorizontalAlignment="Center" Content="{Binding ModelStatusLabel}" Foreground="#FF151515" FontSize="18"/>
             </Grid>
-            <Button x:Name="ViewerOptionsButton" HorizontalAlignment="Left" VerticalAlignment="Bottom" Content="Viewer Options" Command="{Binding ViewOptionsCommand}"/>
-            <mah:FlyoutsControl Grid.RowSpan="2" HorizontalAlignment="Right">
-                <mah:Flyout x:Name="ViewerOptionsFlyout" Header="Viewer Options" Position="Right" Width="250" HorizontalAlignment="Left" IsOpen="{Binding FlyoutOpen}">
-                    <local:ModelViewerOptionsView/>
-                </mah:Flyout>
-            </mah:FlyoutsControl>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="5">
+                <Button x:Name="ViewerOptionsButton" Content="Viewer Options" Command="{Binding ViewOptionsCommand}"/>
+                <CheckBox Margin="5,0,0,0" Content="Keep Camera Position" IsChecked="{Binding KeepCameraChecked}"/>
+            </StackPanel>
+
         </Grid>
+        <mah:FlyoutsControl Grid.Row="0" Grid.RowSpan="2" HorizontalAlignment="Right">
+            <mah:Flyout x:Name="ViewerOptionsFlyout" Header="Viewer Options" Position="Right" Width="250" IsOpen="{Binding FlyoutOpen}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
+                <local:ModelViewerOptionsView/>
+            </mah:Flyout>
+        </mah:FlyoutsControl>
 
 
         <Grid Grid.Row="2">
