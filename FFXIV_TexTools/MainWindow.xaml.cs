@@ -504,6 +504,7 @@ namespace FFXIV_TexTools
             var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
 
             var index = new Index(gameDirectory);
+            var outdated = false;
 
             if (index.IsIndexLocked(XivDataFile._0A_Exd))
             {
@@ -533,10 +534,32 @@ namespace FFXIV_TexTools
                     return;
                 }
 
+                var filesToCheck = new XivDataFile[] { XivDataFile._01_Bgcommon, XivDataFile._04_Chara, XivDataFile._06_Ui };
+
+                var problemChecker = new ProblemChecker(gameDirectory);
+
+                foreach (var xivDataFile in filesToCheck)
+                {
+                    var backupFile = new DirectoryInfo($"{indexBackupsDirectory.FullName}\\{xivDataFile.GetDataFileName()}.win32.index");
+
+                    if(!File.Exists(backupFile.FullName)) continue;
+
+                    var outdatedCheck = problemChecker.CheckForOutdatedBackups(xivDataFile, indexBackupsDirectory);
+
+                    if (!outdatedCheck)
+                    {
+                        FlexibleMessageBox.Show("Index Backups are outdated.\n\n" +
+                                                "Please create a new backup from Help > Backup Index Files\n\n" +
+                                                "TexTools will attempt to start over without using backups.",
+                            "Index Backups Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                        outdated = true;
+                    }
+                }
+
                 var task = Task.Run((() =>
                 {
                     var modding = new Modding(gameDirectory);
-                    var problemChecker = new ProblemChecker(gameDirectory);
                     var dat = new Dat(gameDirectory);
 
                     var modListDirectory = new DirectoryInfo(Path.Combine(gameDirectory.Parent.Parent.FullName, XivStrings.ModlistFilePath));
@@ -551,6 +574,11 @@ namespace FFXIV_TexTools
                                                 "-----------------------------------------------------\n\n",
                             "Backup Files Missing", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
+                        // Toggle off all mods
+                        modding.ToggleAllMods(false);
+                    }
+                    else if (outdated)
+                    {
                         // Toggle off all mods
                         modding.ToggleAllMods(false);
                     }
