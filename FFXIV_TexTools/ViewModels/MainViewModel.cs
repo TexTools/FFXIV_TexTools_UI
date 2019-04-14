@@ -34,6 +34,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Input;
 using xivModdingFramework.General.Enums;
+using xivModdingFramework.Helpers;
 using xivModdingFramework.Mods;
 using xivModdingFramework.SqPack.FileTypes;
 
@@ -136,12 +137,19 @@ namespace FFXIV_TexTools.ViewModels
                                     File.Delete(datFile);
                                 }
                             }
+
+                            var xivDataFiles = new XivDataFile[] { XivDataFile._0A_Exd, XivDataFile._01_Bgcommon, XivDataFile._04_Chara, XivDataFile._06_Ui };
+                            var problemChecker = new ProblemChecker(_gameDirectory);
+
+                            foreach (var xivDataFile in xivDataFiles)
+                            {
+                                problemChecker.RepairIndexDatCounts(xivDataFile);
+                            }
                         }
                         else
                         {
                             System.Windows.Application.Current.Shutdown();
                         }
-
                     }
                     else
                     {
