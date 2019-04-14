@@ -16,6 +16,7 @@
         <Grid Grid.Column="0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
             <GroupBox Header="Directories" Grid.Row="0">
@@ -25,7 +26,6 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
-
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition />
@@ -44,6 +44,16 @@
             </GroupBox>
             <GroupBox Grid.Row="1" Header="Export Settings">
                 <ComboBox VerticalAlignment="Top" HorizontalAlignment="Left" mah:TextBoxHelper.UseFloatingWatermark="True" mah:TextBoxHelper.Watermark="DAE Plugin Target" ItemsSource="{Binding TargetImporters}" SelectedItem="{Binding SelectedImporter}"/>
+            </GroupBox>
+            <GroupBox Grid.Row="2" Header="Default Race">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <ComboBox VerticalAlignment="Top" HorizontalAlignment="Left" mah:TextBoxHelper.UseFloatingWatermark="True" mah:TextBoxHelper.Watermark="Race" ItemsSource="{Binding DefaultRaces}" SelectedItem="{Binding SelectedDefaultRace}"/>
+                    <TextBox Grid.Row="1" Text="TexTools will choose the selected race by default if available when viewing Textures and Models." IsReadOnly="True" TextWrapping="Wrap" BorderThickness="0"/>
+                </Grid>
             </GroupBox>
         </Grid>
 

@@ -34,6 +34,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Input;
 using xivModdingFramework.General.Enums;
+using xivModdingFramework.Helpers;
 using xivModdingFramework.Mods;
 using xivModdingFramework.SqPack.FileTypes;
 
@@ -67,6 +68,7 @@ namespace FFXIV_TexTools.ViewModels
 
             CheckForOldModList();
             CheckGameVersion();
+            CheckIndexFiles();
 
             try
             {
@@ -76,8 +78,13 @@ namespace FFXIV_TexTools.ViewModels
             {
                 FlexibleMessageBox.Show($"There was an error getting the Items List\n\n{ex.Message}", $"Items List Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+
+            SetDefaults();
         }
 
+        /// <summary>
+        /// Checks for older modlist
+        /// </summary>
         private void CheckForOldModList()
         {
             var oldModListFileDirectory = new DirectoryInfo($"{Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)}/TexTools/TexTools.modlist");
@@ -127,7 +134,7 @@ namespace FFXIV_TexTools.ViewModels
                             File.Delete(oldModListFileDirectory.FullName);
 
                             // Delete modded dat files
-                            foreach (var xivDataFile in (XivDataFile[])Enum.GetValues(typeof(XivDataFile)))
+                            foreach (var xivDataFile in (XivDataFile[]) Enum.GetValues(typeof(XivDataFile)))
                             {
                                 var datFiles = dat.GetModdedDatList(xivDataFile);
 
@@ -141,12 +148,27 @@ namespace FFXIV_TexTools.ViewModels
                         {
                             System.Windows.Application.Current.Shutdown();
                         }
-
                     }
                     else
                     {
                         System.Windows.Application.Current.Shutdown();
                     }
+                }
+            }
+        }
+
+        private void CheckIndexFiles()
+        {
+            var xivDataFiles = new XivDataFile[] { XivDataFile._0A_Exd, XivDataFile._01_Bgcommon, XivDataFile._04_Chara, XivDataFile._06_Ui };
+            var problemChecker = new ProblemChecker(_gameDirectory);
+
+            foreach (var xivDataFile in xivDataFiles)
+            {
+                var errorFound = problemChecker.CheckIndexDatCounts(xivDataFile);
+
+                if (errorFound)
+                {
+                    problemChecker.RepairIndexDatCounts(xivDataFile);
                 }
             }
         }
@@ -660,6 +682,15 @@ namespace FFXIV_TexTools.ViewModels
             }
 
             DXVersionText = $"DX: {Properties.Settings.Default.DX_Version}";
+        }
+
+
+        private void SetDefaults()
+        {
+            if (string.IsNullOrEmpty(Properties.Settings.Default.Default_Race_Selection))
+            {
+                Properties.Settings.Default.Default_Race_Selection = XivRace.Hyur_Midlander_Male.GetDisplayName();
+            }
         }
 
         /// <summary>

@@ -69,7 +69,7 @@ namespace FFXIV_TexTools.ViewModels
         private string _lightXLabel = "X  |  0", _lightYLabel = "Y  |  0", _lightZLabel = "Z  |  0", _reflectionLabel = "Reflection  |  1", _modToggleText = "Enable/Disable", _modelStatusLabel;
         private ComboBoxData _selectedRace, _selectedPart, _selectedNumber, _selectedMesh;
         private Visibility _numberVisibility, _partVisibility, _lightToggleVisibility = Visibility.Collapsed;
-        private bool _light1Check = true, _light2Check, _light3Check, _lightRenderToggle, _transparencyToggle, _cullModeToggle;
+        private bool _light1Check = true, _light2Check, _light3Check, _lightRenderToggle, _transparencyToggle, _cullModeToggle, _keepCameraChecked;
 
         private IItemModel _item;
         private Dictionary<XivRace, int[]> _charaRaceAndNumberDictionary;
@@ -147,7 +147,17 @@ namespace FFXIV_TexTools.ViewModels
 
             RaceComboboxEnabled = _raceCount > 1;
 
-            SelectedRaceIndex = 0;
+            var defaultRace = (from race in Races
+                where race.XivRace.GetDisplayName().Equals(Settings.Default.Default_Race_Selection)
+                select race).ToList();
+
+            var raceIndex = 0;
+            if (defaultRace.Count > 0)
+            {
+                raceIndex = Races.IndexOf(defaultRace[0]);
+            }
+
+            SelectedRaceIndex = raceIndex;
 
             CullModeToggle = Settings.Default.Cull_Mode == "None";
 
@@ -923,6 +933,16 @@ namespace FFXIV_TexTools.ViewModels
             }
         }
 
+        public bool KeepCameraChecked
+        {
+            get => _keepCameraChecked;
+            set
+            {
+                _keepCameraChecked = value;
+                NotifyPropertyChanged(nameof(KeepCameraChecked));
+            }
+        }
+
         /// <summary>
         /// Updates the Cull Mode
         /// </summary>
@@ -1578,7 +1598,10 @@ namespace FFXIV_TexTools.ViewModels
 
             ReflectionValue = ViewPortVM.SpecularShine;
 
-            _modelView.viewport3DX.ZoomExtents();
+            if (!KeepCameraChecked)
+            {
+                _modelView.viewport3DX.ZoomExtents();
+            }
 
             ExportEnabled = true;
 
