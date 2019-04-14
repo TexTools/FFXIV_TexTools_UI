@@ -78,6 +78,8 @@ namespace FFXIV_TexTools.ViewModels
             {
                 FlexibleMessageBox.Show($"There was an error getting the Items List\n\n{ex.Message}", $"Items List Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+
+            SetDefaults();
         }
 
         /// <summary>
@@ -680,6 +682,15 @@ namespace FFXIV_TexTools.ViewModels
             }
 
             DXVersionText = $"DX: {Properties.Settings.Default.DX_Version}";
+        }
+
+
+        private void SetDefaults()
+        {
+            if (string.IsNullOrEmpty(Properties.Settings.Default.Default_Race_Selection))
+            {
+                Properties.Settings.Default.Default_Race_Selection = XivRace.Hyur_Midlander_Male.GetDisplayName();
+            }
         }
 
         /// <summary>

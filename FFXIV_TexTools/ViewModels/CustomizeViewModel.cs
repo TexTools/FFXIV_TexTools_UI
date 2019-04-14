@@ -24,6 +24,7 @@ using System.IO;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
+using xivModdingFramework.General.Enums;
 
 namespace FFXIV_TexTools.ViewModels
 {
@@ -48,6 +49,25 @@ namespace FFXIV_TexTools.ViewModels
                 {XivStrings.OpenCollada},
                 {XivStrings.AutodeskCollada}
             };
+
+            DefaultRaces = new List<string>
+            {
+                XivRace.Hyur_Midlander_Male.GetDisplayName(),
+                XivRace.Hyur_Midlander_Female.GetDisplayName(),
+                XivRace.Hyur_Highlander_Male.GetDisplayName(),
+                XivRace.Hyur_Highlander_Female.GetDisplayName(),
+                XivRace.Elezen_Male.GetDisplayName(),
+                XivRace.Elezen_Female.GetDisplayName(),
+                XivRace.Miqote_Male.GetDisplayName(),
+                XivRace.Miqote_Female.GetDisplayName(),
+                XivRace.Roegadyn_Male.GetDisplayName(),
+                XivRace.Roegadyn_Female.GetDisplayName(),
+                XivRace.Lalafell_Male.GetDisplayName(),
+                XivRace.Lalafell_Female.GetDisplayName(),
+                XivRace.AuRa_Male.GetDisplayName(),
+                XivRace.AuRa_Female.GetDisplayName()
+            };
+
         }
 
         #region Public Properties
@@ -171,6 +191,36 @@ namespace FFXIV_TexTools.ViewModels
                     SetSkin(value);
                 }
 
+            }
+        }
+
+        /// <summary>
+        /// The list of default races
+        /// </summary>
+        public List<string> DefaultRaces { get; }
+
+        /// <summary>
+        /// The selected default race
+        /// </summary>
+        public string SelectedDefaultRace
+        {
+            get
+            {
+                try
+                {
+                    return Settings.Default.Default_Race_Selection;
+                }
+                catch
+                {
+                    return XivRace.Hyur_Midlander_Male.GetDisplayName();
+                }
+            }
+            set
+            {
+                if (SelectedDefaultRace != value)
+                {
+                    SetDefaultRace(value);
+                }
             }
         }
 
@@ -411,6 +461,12 @@ namespace FFXIV_TexTools.ViewModels
             }
 
             Directory.Delete(target_dir, false);
+        }
+
+        private void SetDefaultRace(string selectedRace)
+        {
+            Settings.Default.Default_Race_Selection = selectedRace;
+            Settings.Default.Save();
         }
 
         /// <summary>
