@@ -194,7 +194,17 @@ namespace FFXIV_TexTools.ViewModels
 
             RaceComboboxEnabled = _raceCount > 1;
 
-            SelectedRaceIndex = 0;
+            var defaultRace = (from race in Races
+                where race.XivRace.GetDisplayName().Equals(Settings.Default.Default_Race_Selection)
+                select race).ToList();
+
+            var raceIndex = 0;
+            if (defaultRace.Count > 0)
+            {
+                raceIndex = Races.IndexOf(defaultRace[0]);
+            }
+
+            SelectedRaceIndex = raceIndex;
         }
 
         /// <summary>

@@ -78,6 +78,9 @@ namespace FFXIV_TexTools.Views
                 }
             }
 
+            AddText("\nChecking Index Backups....\n", "Blue");
+            CheckBackups();
+
             AddText("\nChecking Dat....\n", "Blue");
             CheckDat();
 
@@ -351,6 +354,46 @@ namespace FFXIV_TexTools.Views
                         AddText("\tLoD OFF, running check...\n\n", textColor);
                         CheckLoD();
                     }
+                }
+            }
+        }
+
+        private void CheckBackups()
+        {
+            var filesToCheck = new XivDataFile[] { XivDataFile._01_Bgcommon, XivDataFile._04_Chara, XivDataFile._06_Ui };
+
+            var backupDirectory = new DirectoryInfo(Properties.Settings.Default.Backup_Directory);
+
+            foreach (var file in filesToCheck)
+            {
+                AddText($"\t{file.GetDataFileName()} Index Files", textColor);
+
+                try
+                {
+                    var backupFile = new DirectoryInfo($"{backupDirectory.FullName}\\{file.GetDataFileName()}.win32.index");
+
+                    if (!File.Exists(backupFile.FullName))
+                    {
+                        AddText("\t\u2716\nNo Backup Found.\n", "Red");
+                        continue;
+                    }
+
+                    var result = _problemChecker.CheckForOutdatedBackups(file, backupDirectory);
+
+                    if (!result)
+                    {
+                        AddText("\t\u2716 index out of date.\n", "Red");
+                    }
+                    else
+                    {
+                        AddText("\t\u2714\n", "Green");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    FlexibleMessageBox.Show(
+                        $"There was an issue checking Backup Index Files\n{ex.Message}", "Problem Check Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }

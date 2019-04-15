@@ -87,8 +87,9 @@
         </Grid>
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition/>
-                <ColumnDefinition/>
+                <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <StackPanel Orientation="Horizontal">
                 <Label Content="{Binding Source={x:Static resx:UIStrings.Count_colon}}" Padding="0" VerticalAlignment="Center" Margin="5" />
@@ -96,7 +97,8 @@
                 <Label Content="{Binding Source={x:Static resx:UIStrings.Size_colon}}" Padding="0" VerticalAlignment="Center" Margin="5" />
                 <Label x:Name="ModSizeLabel" Content="0" Padding="0" VerticalAlignment="Center" Margin="5" FontWeight="Bold"/>
             </StackPanel>
-            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Label x:Name="LockedStatusLabel" Grid.Column="1" FontWeight="Bold" Foreground="Red" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"/>
+            <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
                 <Button x:Name="CancelButton" Content="{Binding Source={x:Static resx:UIStrings.Cancel}}" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="5" Click="CancelButton_Click"/>
                 <Button x:Name="ImportModPackButton" Content="{Binding Source={x:Static resx:UIStrings.Import_ModPack}}" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="5" Click="ImportModPackButton_Click" IsEnabled="False"/>
             </StackPanel>
