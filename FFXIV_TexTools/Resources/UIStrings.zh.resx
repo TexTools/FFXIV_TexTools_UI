@@ -729,4 +729,7 @@
   <data name="Loading" xml:space="preserve">
     <value>加载中</value>
   </data>
+  <data name="Keep_Camera_Position" xml:space="preserve">
+    <value>保持摄影机位置</value>
+  </data>
 </root>

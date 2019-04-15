@@ -735,4 +735,7 @@ Do you want to start over?</value>
   <data name="Loading" xml:space="preserve">
     <value>Loading</value>
   </data>
+  <data name="Keep_Camera_Position" xml:space="preserve">
+    <value>Keep Camera Position</value>
+  </data>
 </root>
