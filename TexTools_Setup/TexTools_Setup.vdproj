@@ -142,7 +142,7 @@
         "Entry"
         {
         "MsmKey" = "8:_1A2E4867C1E2A52D7287ABB299C604D7"
-        "OwnerKey" = "8:_D9B3268271AC95D98B818CB0FE1087C8"
+        "OwnerKey" = "8:_E7E1D1A74AFA1319CAB08F106499CB7E"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -250,7 +250,7 @@
         "Entry"
         {
         "MsmKey" = "8:_330A53328994C78C053BB77EF4506C77"
-        "OwnerKey" = "8:_D9B3268271AC95D98B818CB0FE1087C8"
+        "OwnerKey" = "8:_E7E1D1A74AFA1319CAB08F106499CB7E"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -472,7 +472,7 @@
         "Entry"
         {
         "MsmKey" = "8:_6512B0493BB0C7219889AD8649B4239A"
-        "OwnerKey" = "8:_D9B3268271AC95D98B818CB0FE1087C8"
+        "OwnerKey" = "8:_E7E1D1A74AFA1319CAB08F106499CB7E"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -526,18 +526,6 @@
         "Entry"
         {
         "MsmKey" = "8:_792D663048BE76B9CEA44DBE1F0C7BA3"
-        "OwnerKey" = "8:_011F309E78BD4309B14FAA65C6BE4F00"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_7BD6876E193B5D7956B407F80CE66A27"
-        "OwnerKey" = "8:_D9B3268271AC95D98B818CB0FE1087C8"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_7BD6876E193B5D7956B407F80CE66A27"
         "OwnerKey" = "8:_011F309E78BD4309B14FAA65C6BE4F00"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -819,6 +807,18 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_B98B5ADD5DEEC49A3E19E29B2F0F9B73"
+        "OwnerKey" = "8:_E7E1D1A74AFA1319CAB08F106499CB7E"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_B98B5ADD5DEEC49A3E19E29B2F0F9B73"
+        "OwnerKey" = "8:_011F309E78BD4309B14FAA65C6BE4F00"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_BA32B562CF55F071F5DB4ABA3CCA8627"
         "OwnerKey" = "8:_011F309E78BD4309B14FAA65C6BE4F00"
         "MsmSig" = "8:_UNDEFINED"
@@ -969,12 +969,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_D9B3268271AC95D98B818CB0FE1087C8"
-        "OwnerKey" = "8:_011F309E78BD4309B14FAA65C6BE4F00"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_DC3D88DE8539F0274E687E11B8FD8AF8"
         "OwnerKey" = "8:_011F309E78BD4309B14FAA65C6BE4F00"
         "MsmSig" = "8:_UNDEFINED"
@@ -1041,6 +1035,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_E7E1D1A74AFA1319CAB08F106499CB7E"
+        "OwnerKey" = "8:_011F309E78BD4309B14FAA65C6BE4F00"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_E9430A89A4E1E59F365BE6AA5F21C61E"
         "OwnerKey" = "8:_011F309E78BD4309B14FAA65C6BE4F00"
         "MsmSig" = "8:_UNDEFINED"
@@ -1084,7 +1084,7 @@
         "Entry"
         {
         "MsmKey" = "8:_F3B0D7310878732B591F662F1FF1BB7E"
-        "OwnerKey" = "8:_D9B3268271AC95D98B818CB0FE1087C8"
+        "OwnerKey" = "8:_E7E1D1A74AFA1319CAB08F106499CB7E"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -1270,7 +1270,7 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_7BD6876E193B5D7956B407F80CE66A27"
+        "OwnerKey" = "8:_B98B5ADD5DEEC49A3E19E29B2F0F9B73"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -4149,37 +4149,6 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_7BD6876E193B5D7956B407F80CE66A27"
-            {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:Magick.NET-Q8-AnyCPU, Version=7.11.0.0, Culture=neutral, PublicKeyToken=2004825badfa91ec, processorArchitecture=MSIL"
-                "ScatterAssemblies"
-                {
-                    "_7BD6876E193B5D7956B407F80CE66A27"
-                    {
-                    "Name" = "8:Magick.NET-Q8-AnyCPU.dll"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:Magick.NET-Q8-AnyCPU.dll"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_50C704BC8B9C4745936BD522F4A6BF46"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:TRUE"
-            "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_7D33EECE133CE11623370D740CE9B269"
             {
             "AssemblyRegister" = "3:1"
@@ -5345,6 +5314,37 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_B98B5ADD5DEEC49A3E19E29B2F0F9B73"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:Magick.NET-Q8-AnyCPU, Version=7.12.0.0, Culture=neutral, PublicKeyToken=2004825badfa91ec, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_B98B5ADD5DEEC49A3E19E29B2F0F9B73"
+                    {
+                    "Name" = "8:Magick.NET-Q8-AnyCPU.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:Magick.NET-Q8-AnyCPU.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_50C704BC8B9C4745936BD522F4A6BF46"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_BA32B562CF55F071F5DB4ABA3CCA8627"
             {
             "AssemblyRegister" = "3:1"
@@ -5994,37 +5994,6 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_D9B3268271AC95D98B818CB0FE1087C8"
-            {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:xivModdingFramework, Version=1.0.3.0, Culture=neutral, processorArchitecture=MSIL"
-                "ScatterAssemblies"
-                {
-                    "_D9B3268271AC95D98B818CB0FE1087C8"
-                    {
-                    "Name" = "8:xivModdingFramework.dll"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:xivModdingFramework.dll"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_50C704BC8B9C4745936BD522F4A6BF46"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:TRUE"
-            "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_DC3D88DE8539F0274E687E11B8FD8AF8"
             {
             "AssemblyRegister" = "3:1"
@@ -6342,6 +6311,37 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_E7E1D1A74AFA1319CAB08F106499CB7E"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:xivModdingFramework, Version=1.0.3.0, Culture=neutral, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_E7E1D1A74AFA1319CAB08F106499CB7E"
+                    {
+                    "Name" = "8:xivModdingFramework.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:xivModdingFramework.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_50C704BC8B9C4745936BD522F4A6BF46"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_E9430A89A4E1E59F365BE6AA5F21C61E"
@@ -6984,15 +6984,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:FFXIV TexTools"
-        "ProductCode" = "8:{E9ECA26F-5F46-4249-A5FC-7D8FB9831E29}"
-        "PackageCode" = "8:{E25DCC3D-F51A-4F25-9F45-A3E6D8892933}"
+        "ProductCode" = "8:{235BD802-687C-4040-89F9-901E69BF1808}"
+        "PackageCode" = "8:{2AA64DFE-75F5-4470-ADF8-C0DFF51A7839}"
         "UpgradeCode" = "8:{97CAD3BC-216F-48B8-A5D3-640372D11C94}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:2.0.4"
+        "ProductVersion" = "8:2.0.5"
         "Manufacturer" = "8:FFXIV TexTools"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
