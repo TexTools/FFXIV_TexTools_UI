@@ -548,12 +548,10 @@ namespace FFXIV_TexTools
 
                     if (!outdatedCheck)
                     {
-                        FlexibleMessageBox.Show("Index Backups are outdated.\n\n" +
-                                                "Please create a new backup from Help > Backup Index Files\n\n" +
-                                                "TexTools will attempt to start over without using backups.",
-                            "Index Backups Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                        outdated = true;
+                        outdated = FlexibleMessageBox.Show("Index Backups may be outdated.\n\n" +
+                                                "Click OK only if you are sure that your index backups are up to date\n\n" +
+                                                "Clicking Cancel will attempt to Start Over without using backups.",
+                            "Index Backups Error", MessageBoxButtons.OKCancel, MessageBoxIcon.Error) == System.Windows.Forms.DialogResult.Cancel;
                     }
                 }
 
