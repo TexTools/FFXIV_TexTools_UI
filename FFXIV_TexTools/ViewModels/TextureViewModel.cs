@@ -46,6 +46,7 @@ using xivModdingFramework.Textures.DataContainers;
 using xivModdingFramework.Textures.Enums;
 using xivModdingFramework.Textures.FileTypes;
 using BitmapSource = System.Windows.Media.Imaging.BitmapSource;
+using System.Threading.Tasks;
 
 namespace FFXIV_TexTools.ViewModels
 {
@@ -79,7 +80,11 @@ namespace FFXIV_TexTools.ViewModels
         private string _pathString, _textureFormat, _textureDimensions, _category;
         private string _partWatermark = XivStrings.Part, _typeWatermark = XivStrings.Type, _raceWatermark = XivStrings.Race,
             _typePartWatermark = XivStrings.TypePart, _textureMapWatermark = XivStrings.Texture_Map;
-        private string _modToggleText = "Enable/Disable";
+        //esrinzou for chinese UI
+        //private string _modToggleText = "Enable/Disable";
+        //esrinzou begin
+        private string _modToggleText = UIStrings.Enable_Disable;
+        //esrinzou end
 
         private bool _raceEnabled, _partEnabled, _typeEnabled, _typePartEnabled, _mapEnabled, _channelsEnabled;
         private bool _exportEnabled, _importEnabled, _ddsImportEnabled, _bmpImportEnabled, _modStatusEnabled, _moreOptionsEnabled, _translucencyEnabled, _translucencyCheck;
@@ -147,7 +152,24 @@ namespace FFXIV_TexTools.ViewModels
                 }
                 else
                 {
-                    _charaRaceAndNumberDictionary = _character.GetRacesAndNumbersForTextures(item as XivCharacter);
+                    //esrinzou for quick U                    
+                    //_charaRaceAndNumberDictionary = _character.GetRacesAndNumbersForTextures(item as XivCharacter);
+                    //esrinzou begin
+                    var pbar_window = new ProgressBarWindow();
+                    pbar_window.Owner = Window.GetWindow(this._textureView);
+                    pbar_window.UpdateProcessAction = () =>
+                    {
+                        var task=Task.Factory.StartNew(() =>
+                        {
+                            _charaRaceAndNumberDictionary = _character.GetRacesAndNumbersForTextures(item as XivCharacter);
+                        });
+                        while (!task.IsCompleted)
+                        {
+                            UIHelper.RefreshUI();
+                        }
+                    };
+                    pbar_window.ShowDialog();
+                    //esrinzou end
 
                     foreach (var racesAndNumber in _charaRaceAndNumberDictionary)
                     {
@@ -977,16 +999,28 @@ namespace FFXIV_TexTools.ViewModels
             {
                 case XivModStatus.Enabled:
                     ModStatusToggleEnabled = true;
-                    ModToggleText = "Disable";
+                    //esrinzou for chinese UI
+                    //ModToggleText = "Disable";
+                    //esrinzou begin
+                    ModToggleText = UIStrings.Disable;
+                    //esrinzou end
                     break;
                 case XivModStatus.Disabled:
                     ModStatusToggleEnabled = true;
-                    ModToggleText = "Enable";
+                    //esrinzou for chinese UI
+                    //ModToggleText = "Enable";
+                    //esrinzou begin
+                    ModToggleText = UIStrings.Enable;
+                    //esrinzou end
                     break;
                 case XivModStatus.Original:
                 default:
                     ModStatusToggleEnabled = false;
-                    ModToggleText = "Enable/Disable";
+                    //esrinzou for chinese UI
+                    //ModToggleText = "Enable/Disable";
+                    //esrinzou begin
+                    ModToggleText = UIStrings.Enable_Disable;
+                    //esrinzou end
                     break;
             }
 
@@ -1527,11 +1561,19 @@ namespace FFXIV_TexTools.ViewModels
             var gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
             var modlist = new Modding(gameDirectory);
 
-            if (ModToggleText.Equals("Enable"))
+            //esrinzou for chinese UI
+            //if (ModToggleText.Equals("Enable"))
+            //esrinzou begin
+            if (ModToggleText.Equals(UIStrings.Enable))
+            //esrinzou end
             {
                 modlist.ToggleModStatus(SelectedMap.TexType.Path, true);
             }
-            else if (ModToggleText.Equals("Disable"))
+            //esrinzou for chinese UI
+            //else if (ModToggleText.Equals("Disable"))
+            //esrinzou begin
+            else if (ModToggleText.Equals(UIStrings.Disable))
+            //esrinzou end           
             {
                 modlist.ToggleModStatus(SelectedMap.TexType.Path, false);
             }

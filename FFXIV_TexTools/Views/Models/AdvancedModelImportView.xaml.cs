@@ -39,8 +39,13 @@ namespace FFXIV_TexTools.Views.Models
 
             if (fromWizard)
             {
-                Title = "Advanced Model Options";
-                ImportButton.Content = "Add";
+                //esrinzou for chinese UI
+                //Title = "Advanced Model Options";
+                //ImportButton.Content = "Add";
+                //esrinzou begin
+                Title = FFXIV_TexTools.Resources.UIStrings.Advanced_Model_Options;
+                ImportButton.Content = FFXIV_TexTools.Resources.UIStrings.Add;
+                //esrinzou end
             }
         }
 
@@ -60,6 +65,9 @@ namespace FFXIV_TexTools.Views.Models
         /// </summary>
         private void ImportButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
+            //esrinzou for fix Mod Pack Wizard Add_w_Adv_Options RawModelData==null bug
+            this._viewModel.ImportCommand.Execute(null);
+            //esrinzou end
             DialogResult = true;
 
             if (_fromWizard)

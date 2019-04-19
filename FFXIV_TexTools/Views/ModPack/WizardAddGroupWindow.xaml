@@ -7,32 +7,33 @@
         xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:models="clr-namespace:FFXIV_TexTools.Models"
         x:Class="FFXIV_TexTools.Views.WizardAddGroupWindow"
+        xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
         mc:Ignorable="d"
-        Title="Add Group" Height="1000" Width="1000" WindowStartupLocation="CenterOwner" ShowMaxRestoreButton="False" ShowMinButton="False" Closing="MetroWindow_Closing">
+        Title="{Binding Source={x:Static resx:UIStrings.Add_Group}}" Height="1000" Width="1000" WindowStartupLocation="CenterOwner" ShowMaxRestoreButton="False" ShowMinButton="False" Closing="MetroWindow_Closing">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <GroupBox Grid.Row="0" Header="Group Settings">
+        <GroupBox Grid.Row="0" Header="{Binding Source={x:Static resx:UIStrings.Group_Settings}}">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <Label Content="Group Title: " HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                <TextBox x:Name="ModGroupTitle" Grid.Column="1" VerticalAlignment="Center" mah:TextBoxHelper.Watermark="Enter a Name for the Group here" MinWidth="100"/>
+                <Label Content="{Binding Source={x:Static resx:UIStrings.Group_Title_colon}}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                <TextBox x:Name="ModGroupTitle" Grid.Column="1" VerticalAlignment="Center" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.Enter_a_Name_for_the_Group_here}}" MinWidth="100"/>
                 <Grid Grid.Column="2" Margin="10,0,0,0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
                         <ColumnDefinition/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <RadioButton x:Name="SingleSelectRadioButton" Grid.Column="0" Content="Single-Selection" Margin="0,0,10,0" IsChecked="True"/>
-                    <RadioButton x:Name="MultiSelectRadioButton" Grid.Column="1" Content="Multi-Selection"/>
-                    <Button x:Name="DoneButton" Grid.Column="2" Content="Done" Click="DoneButton_Click"/>
+                    <RadioButton x:Name="SingleSelectRadioButton" Grid.Column="0" Content="{Binding Source={x:Static resx:UIStrings.Single_Selection}}" Margin="0,0,10,0" IsChecked="True"/>
+                    <RadioButton x:Name="MultiSelectRadioButton" Grid.Column="1" Content="{Binding Source={x:Static resx:UIStrings.Multi_Selection}}"/>
+                    <Button x:Name="DoneButton" Grid.Column="2" Content="{Binding Source={x:Static resx:UIStrings.Done}}" Click="DoneButton_Click"/>
                 </Grid>
             </Grid>
         </GroupBox>
@@ -47,7 +48,7 @@
                         <ColumnDefinition/>
                         <ColumnDefinition Width="1.5*"/>
                     </Grid.ColumnDefinitions>
-                    <GroupBox Grid.Column="0" Header="Group Options">
+                    <GroupBox Grid.Column="0" Header="{Binding Source={x:Static resx:UIStrings.Group_Options}}">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
@@ -59,11 +60,11 @@
                                     <ColumnDefinition/>
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBox x:Name="OptionNameTextBox" Grid.Column="0" mah:TextBoxHelper.Watermark="Option Name" Margin="0,0,10,0" KeyDown="OptionNameTextBox_KeyDown"/>
-                                <Button x:Name="AddOptionButton" Grid.Column="1" Content="Add" Click="AddOptionButton_Click"/>
+                                <TextBox x:Name="OptionNameTextBox" Grid.Column="0" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.Option_Name}}" Margin="0,0,10,0" KeyDown="OptionNameTextBox_KeyDown"/>
+                                <Button x:Name="AddOptionButton" Grid.Column="1" Content="{Binding Source={x:Static resx:UIStrings.Add}}" Click="AddOptionButton_Click"/>
                             </Grid>
                             <ListBox x:Name="OptionList" Grid.Row="1" SelectionChanged="OptionList_SelectionChanged" Margin="5"/>
-                            <Button x:Name="RemoveOptionButton" Grid.Row="2" Content="Remove" Click="RemoveOptionButton_Click" IsEnabled="False"/>
+                            <Button x:Name="RemoveOptionButton" Grid.Row="2" Content="{Binding Source={x:Static resx:UIStrings.Remove}}" Click="RemoveOptionButton_Click" IsEnabled="False"/>
                         </Grid>
                     </GroupBox>
 
@@ -72,30 +73,30 @@
                             <RowDefinition/>
                             <RowDefinition Height="2*"/>
                         </Grid.RowDefinitions>
-                        <GroupBox Grid.Row="0" Header="Option Description">
-                            <TextBox x:Name="OptionDescription" mah:TextBoxHelper.Watermark="Enter a description for the selected option here..." LostFocus="OptionDescription_LostFocus" />
+                        <GroupBox Grid.Row="0" Header="{Binding Source={x:Static resx:UIStrings.Option_Description}}">
+                            <TextBox x:Name="OptionDescription" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.Enter_a_description_for_the_selected_option_here_dot}}" LostFocus="OptionDescription_LostFocus" />
                         </GroupBox>
-                        <GroupBox Grid.Row="1" Header="Option Preview Image">
+                        <GroupBox Grid.Row="1" Header="{Binding Source={x:Static resx:UIStrings.Option_Preview_Image}}">
                             <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition/>
                                     <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
                                 <Image x:Name="OptionImage" />
-                                <Button x:Name="OptionImageButton" Grid.Row="1" Background="Transparent" Content="Click here to add a preview image" Click="OptionImageButton_Click"/>
+                                <Button x:Name="OptionImageButton" Grid.Row="1" Background="Transparent" Content="{Binding Source={x:Static resx:UIStrings.Clic_here_to_add_a_preview_image}}" Click="OptionImageButton_Click"/>
                             </Grid>
                         </GroupBox>
                     </Grid>
                 </Grid>
                 <Grid Grid.Column="1">
-                    <GroupBox Grid.Row="0" Header="Included Mods in Option">
+                    <GroupBox Grid.Row="0" Header="{Binding Source={x:Static resx:UIStrings.Included_Mods_in_Option}}">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition/>
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
                             <ListBox x:Name="IncludedModsList" Grid.Row="0" Margin="5" DisplayMemberPath="Name" SelectionChanged="IncludedModsList_SelectionChanged"/>
-                            <Button x:Name="RemoveModItemButton" Grid.Row="1" Content="Remove" Click="RemoveModItemButton_Click"/>
+                            <Button x:Name="RemoveModItemButton" Grid.Row="1" Content="{Binding Source={x:Static resx:UIStrings.Remove}}" Click="RemoveModItemButton_Click"/>
                         </Grid>
                     </GroupBox>
                 </Grid>
@@ -106,7 +107,7 @@
                 <ColumnDefinition/>
                 <ColumnDefinition Width="2*"/>
             </Grid.ColumnDefinitions>
-            <GroupBox Grid.Column="0" Header="Mod List">
+            <GroupBox Grid.Column="0" Header="{Binding Source={x:Static resx:UIStrings.Mod_List}}">
                 <TreeView x:Name="ModListTreeView" SelectedItemChanged="TreeView_SelectedItemChanged" Style="{StaticResource VirtualisedMetroTreeView}">
                     <TreeView.Resources>
                         <HierarchicalDataTemplate ItemsSource="{Binding Categories}" DataType="{x:Type models:Category}">
@@ -117,11 +118,11 @@
                     </TreeView.Resources>
                 </TreeView>
             </GroupBox>
-            <GroupBox x:Name="SelectModGroup" Grid.Column="1" Header="Select Mod">
+            <GroupBox x:Name="SelectModGroup" Grid.Column="1" Header="{Binding Source={x:Static resx:UIStrings.Select_Mod}}">
                 <mah:MetroTabControl x:Name="TabsControl" Grid.Column="2" mah:TabControlHelper.Underlined="TabPanel">
-                    <TabItem x:Name="ModelTabItem" Header="3D Model">
+                    <TabItem x:Name="ModelTabItem" Header="{Binding Source={x:Static resx:UIStrings.TD_Model}}">
                         <Grid>
-                            <GroupBox Header="Model Options">
+                            <GroupBox Header="{Binding Source={x:Static resx:UIStrings.Model_Options}}">
                                 <Grid>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto"/>
@@ -130,14 +131,14 @@
                                         <RowDefinition Height="Auto"/>
                                         <RowDefinition/>
                                     </Grid.RowDefinitions>
-                                    <ComboBox x:Name="ModelTypeComboBox" Grid.Row="0" mah:TextBoxHelper.Watermark="Model Type" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5" DisplayMemberPath="Name"/>
+                                    <ComboBox x:Name="ModelTypeComboBox" Grid.Row="0" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.Model_Type}}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5" DisplayMemberPath="Name"/>
                                     <Grid Grid.Row="1" Margin="5">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="2*"/>
                                             <ColumnDefinition/>
                                         </Grid.ColumnDefinitions>
-                                        <Label x:Name="ModelModItemLabel" Grid.Column="0" Content="Use Currently Modded Item "/>
-                                        <Button x:Name="AddCurrentModelButton" Grid.Column="1" Content="ADD" VerticalAlignment="Top" Margin="10,0,0,0" Click="AddCurrentModelButton_Click"/>
+                                        <Label x:Name="ModelModItemLabel" Grid.Column="0" Content="{Binding Source={x:Static resx:UIStrings.Use_Currently_Modded_Item}}"/>
+                                        <Button x:Name="AddCurrentModelButton" Grid.Column="1" Content="{Binding Source={x:Static resx:UIStrings.Add}}" VerticalAlignment="Top" Margin="10,0,0,0" Click="AddCurrentModelButton_Click"/>
                                     </Grid>
                                     <Grid Grid.Row="2" Margin="5">
                                         <Grid.ColumnDefinitions>
@@ -150,27 +151,27 @@
                                                 <ColumnDefinition Width="Auto"/>
                                                 <ColumnDefinition Width="Auto"/>
                                             </Grid.ColumnDefinitions>
-                                            <TextBox x:Name="CustomModelTextBox" Grid.Column="0" IsReadOnly="True" mah:TextBoxHelper.Watermark="Select a file..." VerticalAlignment="Top" Margin="0,0,10,0"/>
+                                            <TextBox x:Name="CustomModelTextBox" Grid.Column="0" IsReadOnly="True" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.Select_a_file_dot}}" VerticalAlignment="Top" Margin="0,0,10,0"/>
                                             <Button x:Name="GetCustomModelButton" Grid.Column="1" Content=" . . . " VerticalAlignment="Top" Margin="0,0,10,0" Click="GetCustomModelButton_Click"/>
                                         </Grid>
-                                        <Button x:Name="AddCustomModelButton" Grid.Column="1" Content="ADD" VerticalAlignment="Top" Margin="10,0,0,0" Click="AddCustomModelButton_Click"/>
+                                        <Button x:Name="AddCustomModelButton" Grid.Column="1" Content="{Binding Source={x:Static resx:UIStrings.Add}}" VerticalAlignment="Top" Margin="10,0,0,0" Click="AddCustomModelButton_Click"/>
                                     </Grid>
                                     <Grid Grid.Row="3" Margin="5">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="2*"/>
                                             <ColumnDefinition/>
                                         </Grid.ColumnDefinitions>
-                                        <Label Grid.Column="0" Content="Add a Model using advanced options"/>
-                                        <Button x:Name="AdvOptionsButton" Grid.Column="1" Content="Add w/ Adv. Options " VerticalAlignment="Top" Margin="10,0,0,0" Click="AdvOptionsButton_Click"/>
+                                        <Label Grid.Column="0" Content="{Binding Source={x:Static resx:UIStrings.Add_a_Model_using_advanced_options}}"/>
+                                        <Button x:Name="AdvOptionsButton" Grid.Column="1" Content="{Binding Source={x:Static resx:UIStrings.Add_w_Adv_Options}}" VerticalAlignment="Top" Margin="10,0,0,0" Click="AdvOptionsButton_Click"/>
                                     </Grid>
                                     <Label x:Name="NoModelModsLabel" Grid.Row="4" Foreground="DarkRed" FontWeight="Bold" Margin="5"/>
                                 </Grid>
                             </GroupBox>
                         </Grid>
                     </TabItem>
-                    <TabItem x:Name="TextureTabItem" Header="Textures">
+                    <TabItem x:Name="TextureTabItem" Header="{Binding Source={x:Static resx:UIStrings.Textures}}">
                         <Grid>
-                            <GroupBox Header="Texture Options">
+                            <GroupBox Header="{Binding Source={x:Static resx:UIStrings.Texture_Options}}">
                                 <Grid>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto"/>
@@ -178,14 +179,14 @@
                                         <RowDefinition Height="Auto"/>
                                         <RowDefinition/>
                                     </Grid.RowDefinitions>
-                                    <ComboBox x:Name="TextureMapComboBox" Grid.Row="0" mah:TextBoxHelper.Watermark="Texture Map" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5" DisplayMemberPath="Name"/>
+                                    <ComboBox x:Name="TextureMapComboBox" Grid.Row="0" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.Texture_Map}}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5" DisplayMemberPath="Name"/>
                                         <Grid Grid.Row="1" Margin="5">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="2*"/>
                                             <ColumnDefinition/>
                                         </Grid.ColumnDefinitions>
-                                        <Label Grid.Column="0" Content="Use Currently Modded Item "/>
-                                        <Button x:Name="AddCurrentTextureButton" Grid.Column="1" Content="ADD" VerticalAlignment="Top" Margin="10,0,0,0" Click="AddCurrentTextureButton_Click"/>
+                                        <Label Grid.Column="0" Content="{Binding Source={x:Static resx:UIStrings.Use_Currently_Modded_Item}}"/>
+                                        <Button x:Name="AddCurrentTextureButton" Grid.Column="1" Content="{Binding Source={x:Static resx:UIStrings.Add}}" VerticalAlignment="Top" Margin="10,0,0,0" Click="AddCurrentTextureButton_Click"/>
                                     </Grid>
                                     <Grid Grid.Row="2" Margin="5">
                                         <Grid.ColumnDefinitions>
@@ -197,19 +198,19 @@
                                                 <ColumnDefinition/>
                                                 <ColumnDefinition Width="Auto"/>
                                             </Grid.ColumnDefinitions>
-                                            <TextBox x:Name="CustomTextureTextBox" Grid.Column="0" IsReadOnly="True" mah:TextBoxHelper.Watermark="Select a file..." VerticalAlignment="Top" Margin="0,0,10,0"/>
+                                            <TextBox x:Name="CustomTextureTextBox" Grid.Column="0" IsReadOnly="True" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.Select_a_file_dot}}" VerticalAlignment="Top" Margin="0,0,10,0"/>
                                             <Button x:Name="GetCustomTextureButton" Grid.Column="1" Content=" . . . " VerticalAlignment="Top" Click="GetCustomTextureButton_Click"/>
                                         </Grid>
-                                        <Button x:Name="AddCustomTextureButton" Grid.Column="1" Content="ADD" VerticalAlignment="Top" Margin="10,0,0,0" Click="AddCustomTextureButton_Click"/>
+                                        <Button x:Name="AddCustomTextureButton" Grid.Column="1" Content="{Binding Source={x:Static resx:UIStrings.Add}}" VerticalAlignment="Top" Margin="10,0,0,0" Click="AddCustomTextureButton_Click"/>
                                     </Grid>
                                     <Label x:Name="NoTextureModsLabel" Grid.Row="3" Foreground="DarkRed" FontWeight="Bold" Margin="5"/>
                                 </Grid>
                             </GroupBox>
                         </Grid>
                     </TabItem>
-                    <TabItem x:Name="MaterialTabItem" Header="Material">
+                    <TabItem x:Name="MaterialTabItem" Header="{Binding Source={x:Static resx:UIStrings.Material}}">
                         <Grid>
-                            <GroupBox Header="Material Options">
+                            <GroupBox Header="{Binding Source={x:Static resx:UIStrings.Material_Options}}">
                                 <Grid>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto"/>
@@ -217,16 +218,16 @@
                                         <RowDefinition />
                                     </Grid.RowDefinitions>
                                     <StackPanel Orientation="Horizontal" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2">
-                                        <ComboBox x:Name="MaterialComboBox" mah:TextBoxHelper.Watermark="Material" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5" DisplayMemberPath="Name"/>
-                                        <Label Content="(For Translucency or ColorSet)" VerticalAlignment="Center" Margin="5"/>
+                                        <ComboBox x:Name="MaterialComboBox" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.Material}}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5" DisplayMemberPath="Name"/>
+                                        <Label Content="{Binding Source={x:Static resx:UIStrings.For_Translucency_or_ColorSet}}" VerticalAlignment="Center" Margin="5"/>
                                     </StackPanel>
                                     <Grid Grid.Row="1">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="2*"/>
                                             <ColumnDefinition/>
                                         </Grid.ColumnDefinitions>
-                                        <Label Grid.Column="0" Content="Use Currently Modded Item" VerticalAlignment="Bottom"/>
-                                        <Button x:Name="AddCurrentMaterialButton" Grid.Column="1" Grid.Row="1" Content="ADD" VerticalAlignment="Center" Click="AddCurrentMaterialButton_Click"/>
+                                        <Label Grid.Column="0" Content="{Binding Source={x:Static resx:UIStrings.Use_Currently_Modded_Item}}" VerticalAlignment="Bottom"/>
+                                        <Button x:Name="AddCurrentMaterialButton" Grid.Column="1" Grid.Row="1" Content="{Binding Source={x:Static resx:UIStrings.Add}}" VerticalAlignment="Center" Click="AddCurrentMaterialButton_Click"/>
                                     </Grid>
                                     <Label x:Name="NoMaterialsModsLabel" Grid.Row="3" Foreground="DarkRed" FontWeight="Bold" Margin="5"/>
 

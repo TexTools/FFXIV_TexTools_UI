@@ -6,8 +6,9 @@
         xmlns:local="clr-namespace:FFXIV_TexTools.Views"
         xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
         mc:Ignorable="d"
-        Title="Simple ModPack Importer" Height="600" Width="800" ShowMaxRestoreButton="False" ShowMinButton="False" WindowStartupLocation="CenterOwner">
+        Title="{Binding Source={x:Static resx:UIStrings.Simple_ModPack_Importer}}" Height="600" Width="800" ShowMaxRestoreButton="False" ShowMinButton="False" WindowStartupLocation="CenterOwner">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -25,7 +26,7 @@
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <Label Grid.Column="0" Content="Name:" VerticalAlignment="Center"/>
+                <Label Grid.Column="0" Content="{Binding Source={x:Static resx:UIStrings.Name_colon}}" VerticalAlignment="Center"/>
                 <Label x:Name="ModPackName" Grid.Column="1" VerticalAlignment="Center" FontWeight="Bold"/>
             </Grid>
             <Grid Grid.Column="1">
@@ -33,7 +34,7 @@
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <Label Grid.Column="0" Content="Author:" VerticalAlignment="Center"/>
+                <Label Grid.Column="0" Content="{Binding Source={x:Static resx:UIStrings.Author_colon}}" VerticalAlignment="Center"/>
                 <Label x:Name="ModPackAuthor" Grid.Column="1" VerticalAlignment="Center" FontWeight="Bold"/>
             </Grid>
             <Grid Grid.Column="2">
@@ -41,7 +42,7 @@
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <Label Grid.Column="0" Content="Version:" VerticalAlignment="Center"/>
+                <Label Grid.Column="0" Content="{Binding Source={x:Static resx:UIStrings.Version_colon}}" VerticalAlignment="Center"/>
                 <Label x:Name="ModPackVersion" Grid.Column="1" VerticalAlignment="Center" FontWeight="Bold"/>
             </Grid>
         </Grid>
@@ -55,8 +56,8 @@
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <Button x:Name="SelectAllButton" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="0" Content="Select All" Click="SelectAllButton_Click" Margin="5"/>
-                <Button x:Name="ClearSelectedButton" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="2" Content="Clear Selected" Click="ClearSelectedButton_Click" Margin="5"/>
+                <Button x:Name="SelectAllButton" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="0" Content="{Binding Source={x:Static resx:UIStrings.Select_All}}" Click="SelectAllButton_Click" Margin="5"/>
+                <Button x:Name="ClearSelectedButton" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="2" Content="{Binding Source={x:Static resx:UIStrings.Clear_Selected}}" Click="ClearSelectedButton_Click" Margin="5"/>
             </Grid>
             <ListView x:Name="ModListView" Grid.Row="1" SelectionChanged="ModListView_SelectionChanged" SelectionMode="Multiple"
                       BorderBrush="Black" BorderThickness="0,1" AlternationCount="2" GridViewColumnHeader.Click="Header_Click">
@@ -74,12 +75,12 @@
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
-                        <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}"/>
-                        <GridViewColumn Header="Map" DisplayMemberBinding="{Binding Map}"/>
-                        <GridViewColumn Header="Race" DisplayMemberBinding="{Binding Race}"/>
-                        <GridViewColumn Header="Num" DisplayMemberBinding="{Binding Num}"/>
-                        <GridViewColumn Header="Part" DisplayMemberBinding="{Binding Part}"/>
-                        <GridViewColumn Header="Active" DisplayMemberBinding="{Binding Active}"/>
+                        <GridViewColumn Header="{Binding Source={x:Static resx:UIStrings.Name}}" DisplayMemberBinding="{Binding Name}"/>
+                        <GridViewColumn Header="{Binding Source={x:Static resx:UIStrings.Map}}" DisplayMemberBinding="{Binding Map}"/>
+                        <GridViewColumn Header="{Binding Source={x:Static resx:UIStrings.Race}}" DisplayMemberBinding="{Binding Race}"/>
+                        <GridViewColumn Header="{Binding Source={x:Static resx:UIStrings.Num}}" DisplayMemberBinding="{Binding Num}"/>
+                        <GridViewColumn Header="{Binding Source={x:Static resx:UIStrings.Part}}" DisplayMemberBinding="{Binding Part}"/>
+                        <GridViewColumn Header="{Binding Source={x:Static resx:UIStrings.Active}}" DisplayMemberBinding="{Binding Active}"/>
                     </GridView>
                 </ListView.View>
             </ListView>
@@ -91,15 +92,15 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <StackPanel Orientation="Horizontal">
-                <Label Content="Count: " Padding="0" VerticalAlignment="Center" Margin="5" />
+                <Label Content="{Binding Source={x:Static resx:UIStrings.Count_colon}}" Padding="0" VerticalAlignment="Center" Margin="5" />
                 <Label x:Name="ModCountLabel" Content="0 " Padding="0" VerticalAlignment="Center" Margin="5" FontWeight="Bold"/>
-                <Label Content=" Size: " Padding="0" VerticalAlignment="Center" Margin="5" />
+                <Label Content="{Binding Source={x:Static resx:UIStrings.Size_colon}}" Padding="0" VerticalAlignment="Center" Margin="5" />
                 <Label x:Name="ModSizeLabel" Content="0" Padding="0" VerticalAlignment="Center" Margin="5" FontWeight="Bold"/>
             </StackPanel>
             <Label x:Name="LockedStatusLabel" Grid.Column="1" FontWeight="Bold" Foreground="Red" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"/>
             <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button x:Name="CancelButton" Content="Cancel" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="5" Click="CancelButton_Click"/>
-                <Button x:Name="ImportModPackButton" Content="Import ModPack" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="5" Click="ImportModPackButton_Click" IsEnabled="False"/>
+                <Button x:Name="CancelButton" Content="{Binding Source={x:Static resx:UIStrings.Cancel}}" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="5" Click="CancelButton_Click"/>
+                <Button x:Name="ImportModPackButton" Content="{Binding Source={x:Static resx:UIStrings.Import_ModPack}}" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="5" Click="ImportModPackButton_Click" IsEnabled="False"/>
             </StackPanel>
 
         </Grid>

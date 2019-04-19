@@ -4,12 +4,13 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FFXIV_TexTools.Views"
+        xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
         xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
-        Title="Import ModPack Wizard" Height="600" Width="800" ShowMaxRestoreButton="False" ShowMinButton="False" WindowStartupLocation="CenterOwner" Closing="MetroWindow_Closing">
-    <xctk:Wizard x:Name="importModPackWizard" NextButtonContent="New Page &gt;" BackButtonContent="&lt; Previous Page"  Next="ImportModPackWizard_Next" CanHelp="False" HelpButtonVisibility="Collapsed" Finish="ImportModPackWizard_Finish" Previous="ImportModPackWizard_Previous" FinishButtonClosesWindow="False">
-        <xctk:WizardPage Title="Mod Pack Importer" Description="Go through the wizard and select relevant options to import mod pack" PageType="Interior">
+        Title="{Binding Source={x:Static resx:UIStrings.Import_ModPack_Wizard}}" Height="600" Width="800" ShowMaxRestoreButton="False" ShowMinButton="False" WindowStartupLocation="CenterOwner" Closing="MetroWindow_Closing">
+    <xctk:Wizard x:Name="importModPackWizard" NextButtonContent="{Binding Source={x:Static resx:UIStrings.New_Page}}" BackButtonContent="{Binding Source={x:Static resx:UIStrings.Previous_Page}}"  Next="ImportModPackWizard_Next" CanHelp="False" HelpButtonVisibility="Collapsed" Finish="ImportModPackWizard_Finish" Previous="ImportModPackWizard_Previous" FinishButtonClosesWindow="False" FinishButtonContent="{Binding Source={x:Static resx:UIStrings.Finish}}" CancelButtonContent="{Binding Source={x:Static resx:UIStrings.Cancel}}">
+        <xctk:WizardPage Title="{Binding Source={x:Static resx:UIStrings.Mod_Pack_Importer}}" Description="{Binding Source={x:Static resx:UIStrings.Go_through_the_wizard_and_select_relevant_options_to_import_mod_pack}}" PageType="Interior">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -23,15 +24,15 @@
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
                         <StackPanel Grid.Column="0" Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
-                            <Label Content="Name:" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            <Label Content="{Binding Source={x:Static resx:UIStrings.Name_colon}}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                             <Label Name="ModPackNameLabel" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold"/>
                         </StackPanel>
                         <StackPanel Grid.Column="0" Grid.Row="2" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
-                            <Label Content="Author:" VerticalAlignment="Center"/>
+                            <Label Content="{Binding Source={x:Static resx:UIStrings.Author_colon}}" VerticalAlignment="Center"/>
                             <Label Name="ModPackAuthorLabel" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold"/>
                         </StackPanel>
                         <StackPanel Grid.Column="0" Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
-                            <Label Content="Version:"  VerticalAlignment="Center"/>
+                            <Label Content="{Binding Source={x:Static resx:UIStrings.Version_colon}}"  VerticalAlignment="Center"/>
                             <Label Name="ModPackVersionLabel" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold"/>
                         </StackPanel>
                     </Grid>
@@ -42,7 +43,7 @@
                             <RowDefinition Height="Auto"/>
                             <RowDefinition/>
                         </Grid.RowDefinitions>
-                        <Label Content="Description"/>
+                        <Label Content="{Binding Source={x:Static resx:UIStrings.Description}}"/>
                         <TextBox x:Name="ModPackDescription" Grid.Row="1" TextWrapping="Wrap" IsReadOnly="True"/>
                     </Grid>
                 </Grid>

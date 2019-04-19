@@ -4,11 +4,12 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:FFXIV_TexTools.Views"
+             xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
              mc:Ignorable="d" 
              d:DesignHeight="200" d:DesignWidth="800">
     <UniformGrid Rows="1">
-        <Button Content="Import" VerticalAlignment="Center" Margin="10" Command="{Binding ImportCommand}" IsEnabled="{Binding BasicImportEnabled}"/>
-        <Button Content="Import From..." VerticalAlignment="Center" Margin="10" Command="{Binding ImportFromCommand}"/>
-        <Button Content="Advanced Import" VerticalAlignment="Center" Margin="10" Command="{Binding AdvancedImportCommand}"/>
+        <Button Content="{Binding Source={x:Static resx:UIStrings.Import}}" VerticalAlignment="Center" Margin="10" Command="{Binding ImportCommand}" IsEnabled="{Binding BasicImportEnabled}"/>
+        <Button Content="{Binding Source={x:Static resx:UIStrings.Import_From_dot}}" VerticalAlignment="Center" Margin="10" Command="{Binding ImportFromCommand}"/>
+        <Button Content="{Binding Source={x:Static resx:UIStrings.Advanced_Import}}" VerticalAlignment="Center" Margin="10" Command="{Binding AdvancedImportCommand}"/>
     </UniformGrid>
 </UserControl>

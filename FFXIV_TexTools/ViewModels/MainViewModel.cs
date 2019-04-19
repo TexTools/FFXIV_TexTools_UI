@@ -56,6 +56,16 @@ namespace FFXIV_TexTools.ViewModels
             {
                 NumberFormat = {NumberDecimalSeparator = "."}
             };
+            //esrinzou for china ffxiv
+            if (CultureInfo.CurrentUICulture.Name == "zh-CN")
+            {
+                Properties.Settings.Default.Application_Language = "zh";
+                ci = new CultureInfo(Properties.Settings.Default.Application_Language)
+                {
+                    NumberFormat = { NumberDecimalSeparator = "." }
+                };
+            }
+            //esrinzou end
             CultureInfo.DefaultThreadCurrentCulture = ci;
             CultureInfo.DefaultThreadCurrentUICulture = ci;
             CultureInfo.CurrentCulture = ci;
@@ -68,18 +78,18 @@ namespace FFXIV_TexTools.ViewModels
 
             CheckForOldModList();
             CheckGameVersion();
-            CheckIndexFiles();
-
-            try
-            {
-                FillTree();
-            }
-            catch (Exception ex)
-            {
-                FlexibleMessageBox.Show($"There was an error getting the Items List\n\n{ex.Message}", $"Items List Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-
-            SetDefaults();
+			CheckIndexFiles();
+            //esrinzou for quick UI
+            //try
+            //{
+            //    FillTree();
+            //}
+            //catch (Exception ex)
+            //{
+            //    FlexibleMessageBox.Show($"There was an error getting the Items List\n\n{ex.Message}", $"Items List Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //}
+            //esrinzou end
+			SetDefaults();
         }
 
         /// <summary>
@@ -460,8 +470,15 @@ namespace FFXIV_TexTools.ViewModels
         /// <summary>
         /// Fills the tree view with items
         /// </summary>
-        private void FillTree()
+        //esrinzou for quick UI
+        //private void FillTree()
+        //esrinzou begin
+        public void FillTree()
+        //esrinzou end
         {
+            //esrinzou for quick UI
+            List<Category> Categories = new List<Category>();
+            //esrinzou end
             Categories.Add(new Category{Name = "Gear", Categories = new ObservableCollection<Category>(), CategoryList = new List<string>()});
             Categories.Add(new Category{Name = "Character", Categories = new ObservableCollection<Category>(), CategoryList = new List<string>() });
             Categories.Add(new Category{Name = "Companions", Categories = new ObservableCollection<Category>(), CategoryList = new List<string>() });
@@ -618,6 +635,12 @@ namespace FFXIV_TexTools.ViewModels
                     Categories[4].CategoryList.Add(xivFurniture.ItemCategory);
                 }
             }
+            //esrinzou for quick UI
+            UIHelper.UIInvoke(() =>
+            {
+                this.Categories = Categories;
+            });
+            //esrinzou end
         }
 
         /// <summary>

@@ -25,10 +25,12 @@ using MahApps.Metro.Controls.Dialogs;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Forms;
+using System.Windows.Threading;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Items.Interfaces;
@@ -47,9 +49,22 @@ namespace FFXIV_TexTools
     {
         private SysTimer.Timer searchTimer = new SysTimer.Timer(300);
         private string _startupArgs;
-
+        private bool _isMainWindowOK = false;
         public MainWindow(string[] args)
         {
+            //esrinzou for quick UI
+            var pbar_window = new ProgressBarWindow();
+            pbar_window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            pbar_window.UpdateProcessAction = () =>
+            {
+                while (!_isMainWindowOK)
+                {
+                    Task.Delay(1);
+                    UIHelper.RefreshUI();
+                }
+            };
+            pbar_window.Show();
+            //esrinzou end
             CheckForUpdates();
             CheckForSettingsUpdate();
 
@@ -64,8 +79,14 @@ namespace FFXIV_TexTools
             try
             {
                 InitializeComponent();
+                //esrinzou for chinese UI
+                if (System.Globalization.CultureInfo.CurrentUICulture.Name == "zh-CN")
+                {
+                    this.ChinaDiscordButton.Visibility = Visibility.Visible;
+                }
+                //esrinzou end      
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 System.Windows.MessageBox.Show(
                     "TexTools was unable to locate dependency files.\nPlease make sure you are running TexTools in the folder it came in.\n\nIf you continue to receive this error," +
@@ -166,7 +187,13 @@ namespace FFXIV_TexTools
         /// </summary>
         private void TreeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-            UpdateViews(e.NewValue as Category);
+            //esrinzou for quick UI
+            //UpdateViews(e.NewValue as Category);
+            //esrinzou begin
+            App.Current.Dispatcher.InvokeAsync(() => {
+                UpdateViews(e.NewValue as Category);
+            });
+            //esrinzou end
         }
 
         /// <summary>
@@ -177,8 +204,8 @@ namespace FFXIV_TexTools
         {
             if (selectedItem?.Item != null)
             {
-                var textureView = TextureTabItem.Content as TextureView;
-                var textureViewModel = textureView.DataContext as TextureViewModel;
+                TextureView textureView = TextureTabItem.Content as TextureView; ;
+                TextureViewModel textureViewModel = textureView.DataContext as TextureViewModel;
 
                 textureViewModel.UpdateTexture(selectedItem.Item);
 
@@ -516,11 +543,19 @@ namespace FFXIV_TexTools
                 return;
             }
 
+            //esrinzou for chinese UI
+            /*
             var result = FlexibleMessageBox.Show("Starting over will:\n\n" +
                                                  "Restore index files to their original state.\n" +
                                                  "Delete all mod dat files from game folder.\n" +
                                                  "Delete all mod list file entries.\n\n" +
                                                  "Do you want to start over?", "Start Over", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+
+             */
+            //esrinzou begin
+            var result = FlexibleMessageBox.Show(UIStrings.Start_Over_Info, UIStrings.Start_Over, MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+
+            //esrinzou end
 
             if (result == System.Windows.Forms.DialogResult.Yes)
             {
@@ -680,11 +715,35 @@ namespace FFXIV_TexTools
                 await this.ShowMessageAsync("Backup Complete", "The index files have been successfully backed up");
             }
         }
-
         private void ItemTreeView_Loaded(object sender, RoutedEventArgs e)
         {
-            var view = (CollectionView) CollectionViewSource.GetDefaultView(ItemTreeView.ItemsSource);
-            view.Filter = SearchFilter;
+            //esrinzou for quick UI
+            //var view = (CollectionView)CollectionViewSource.GetDefaultView(ItemTreeView.ItemsSource);
+            //view.Filter = SearchFilter;
+            //esrinzou begin            
+            App.Current.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                var pbar_window = new ProgressBarWindow();
+                pbar_window.Owner = this;
+                var vm = this.DataContext as MainViewModel;
+                pbar_window.UpdateProcessAction = () =>
+                {
+                    try
+                    {
+                        vm.FillTree();
+                    }
+                    catch (Exception ex)
+                    {
+                        FlexibleMessageBox.Show($"There was an error getting the Items List\n\n{ex.Message}", $"Items List Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                    App.Current.Dispatcher.Invoke(() => { 
+                        var view = (CollectionView)CollectionViewSource.GetDefaultView(ItemTreeView.ItemsSource);
+                        view.Filter = SearchFilter;
+                    });
+                };
+                pbar_window.ShowDialog();
+            }),DispatcherPriority.Background);
+            //esrinzou end
         }
 
         private bool SearchFilter(object item)
@@ -733,11 +792,17 @@ namespace FFXIV_TexTools
             var fileVersion = FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location).FileVersion;
 
             Title += $" {fileVersion.Substring(0, fileVersion.LastIndexOf("."))}";
+            _isMainWindowOK = true;
         }
 
         private void GithubButton_Click(object sender, RoutedEventArgs e)
         {
             Process.Start(WebUrl.Github_Website);
+        }
+
+        private void ChinaDiscordButton_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start("http://149.129.96.215:8989");
         }
     }
 }
