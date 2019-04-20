@@ -262,7 +262,7 @@ namespace FFXIV_TexTools.ViewModels
         {
             var folderSelect = new FolderSelectDialog
             {
-                Title = "Select ffxiv folder"
+                Title = UIMessages.SelectffxivFolderTitle
             };
 
             if (folderSelect.ShowDialog())
@@ -284,14 +284,14 @@ namespace FFXIV_TexTools.ViewModels
             var oldSaveLocation = Save_Directory;
             var folderSelect = new FolderSelectDialog
             {
-                Title = "Select new location for Saved folder",
+                Title = UIMessages.NewSaveLocationTitle,
                 InitialDirectory = oldSaveLocation
             };
 
             if (folderSelect.ShowDialog())
             {
-                if (FlexibleMessageBox.Show("Would you like to move the existing data to the new location?",
-                        "Move Data?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                if (FlexibleMessageBox.Show(UIMessages.MoveDataMessage,
+                        UIMessages.MoveDataTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
                     try
                     {
@@ -320,8 +320,7 @@ namespace FFXIV_TexTools.ViewModels
                 Settings.Default.Save_Directory = folderSelect.FileName;
                 Settings.Default.Save();
 
-                FlexibleMessageBox.Show("Location of Saved folder changed.\n\n" +
-                                        "New Location: " + folderSelect.FileName, "New Directory", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                FlexibleMessageBox.Show(string.Format(UIMessages.SavedLocationChangedMessage, folderSelect.FileName), UIMessages.NewDirectoryTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                 Save_Directory = Settings.Default.Backup_Directory;
             }
@@ -335,14 +334,14 @@ namespace FFXIV_TexTools.ViewModels
             var oldIndexBackupLocation = Backups_Directory;
             var folderSelect = new FolderSelectDialog
             {
-                Title = "Select new location of Index_Backups folder",
+                Title = UIMessages.NewBackupLocationTitle,
                 InitialDirectory = oldIndexBackupLocation
             };
 
             if (folderSelect.ShowDialog())
             {
-                if (FlexibleMessageBox.Show("Would you like to move the existing data to the new location?", 
-                        "Move Data?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                if (FlexibleMessageBox.Show(UIMessages.MoveDataMessage, 
+                        UIMessages.MoveDataTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
                     try
                     {
@@ -369,8 +368,7 @@ namespace FFXIV_TexTools.ViewModels
                 Settings.Default.Backup_Directory = folderSelect.FileName;
                 Settings.Default.Save();
 
-                FlexibleMessageBox.Show("Location of Index Backup folder changed.\n\n" +
-                                        "New Location: " + folderSelect.FileName, "New Directory", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                FlexibleMessageBox.Show(string.Format(UIMessages.IndexBackupLocationChangedMessage, folderSelect.FileName), UIMessages.NewDirectoryTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                 Backups_Directory = Settings.Default.Backup_Directory;
             }
@@ -384,14 +382,14 @@ namespace FFXIV_TexTools.ViewModels
             var oldModPackLocation = ModPack_Directory;
             var folderSelect = new FolderSelectDialog
             {
-                Title = "Select new location of ModPacks folder",
+                Title = UIMessages.newModpacksLocationTitle,
                 InitialDirectory = oldModPackLocation
             };
 
             if (folderSelect.ShowDialog())
             {
-                if (FlexibleMessageBox.Show("Would you like to move the existing data to the new location?", 
-                        "Move Data?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                if (FlexibleMessageBox.Show(UIMessages.MoveDataMessage, 
+                        UIMessages.MoveDataTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
                     try
                     {
@@ -418,8 +416,7 @@ namespace FFXIV_TexTools.ViewModels
                 Settings.Default.ModPack_Directory = folderSelect.FileName;
                 Settings.Default.Save();
 
-                FlexibleMessageBox.Show("Location of ModPacks folder changed.\n\n" +
-                                        "New Location: " + folderSelect.FileName, "New Directory", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                FlexibleMessageBox.Show(string.Format(UIMessages.ModPacksLocationChangedMessage, folderSelect.FileName), UIMessages.NewDirectoryTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                 ModPack_Directory = Settings.Default.ModPack_Directory;
             }

@@ -18,6 +18,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Windows.Input;
 using FFXIV_TexTools.Helpers;
+using FFXIV_TexTools.Resources;
 using FFXIV_TexTools.Views;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Helpers;
@@ -99,13 +100,13 @@ namespace FFXIV_TexTools.ViewModels
                 else
                 {
                     IconText = string.Empty;
-                    IconStatusLabel = "Icon values have a maximum of 6 digits, try again.";
+                    IconStatusLabel = UIStrings.UI_SearchStatus_Max;
                 }
             }
             catch
             {
                 IconText = string.Empty;
-                IconStatusLabel = "Input can only be numbers, try again.";
+                IconStatusLabel = UIStrings.UI_SearchStatus_Numeric;
             }
 
             if (iconInt > -1)
@@ -124,9 +125,9 @@ namespace FFXIV_TexTools.ViewModels
                     var xivUI = new XivUi
                     {
                         Name = Path.GetFileNameWithoutExtension(iconFileString),
-                        Category = "UI",
-                        ItemCategory = "Icon",
-                        ItemSubCategory = "Icon",
+                        Category = XivStrings.UI,
+                        ItemCategory = XivStrings.Icon,
+                        ItemSubCategory = XivStrings.Icon,
                         IconNumber = iconInt,
                         DataFile = XivDataFile._06_Ui,
                         UiPath = $"{iconFolderString}/{iconFileString}"
@@ -146,9 +147,9 @@ namespace FFXIV_TexTools.ViewModels
                         var xivUI = new XivUi
                         {
                             Name = Path.GetFileNameWithoutExtension(iconFileString),
-                            Category = "UI",
-                            ItemCategory = "Icon",
-                            ItemSubCategory = "Icon",
+                            Category = XivStrings.UI,
+                            ItemCategory = XivStrings.Icon,
+                            ItemSubCategory = XivStrings.Icon,
                             IconNumber = iconInt,
                             DataFile = XivDataFile._06_Ui,
                             UiPath = $"{iconFolderString}/{iconFileString}"
@@ -159,7 +160,7 @@ namespace FFXIV_TexTools.ViewModels
                     else
                     {
                         IconText = string.Empty;
-                        IconStatusLabel = $"No data found for icon {iconInt}, try another.";
+                        IconStatusLabel = string.Format(UIStrings.UI_Search_NothingFound, iconInt);
                     }
                 }
             }

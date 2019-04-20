@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using FFXIV_TexTools.Helpers;
+using FFXIV_TexTools.Properties;
 using FFXIV_TexTools.Resources;
 using FFXIV_TexTools.Textures;
 using FFXIV_TexTools.Views;
@@ -27,10 +28,10 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Input;
-using FFXIV_TexTools.Properties;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Items.Categories;
@@ -46,7 +47,6 @@ using xivModdingFramework.Textures.DataContainers;
 using xivModdingFramework.Textures.Enums;
 using xivModdingFramework.Textures.FileTypes;
 using BitmapSource = System.Windows.Media.Imaging.BitmapSource;
-using System.Threading.Tasks;
 
 namespace FFXIV_TexTools.ViewModels
 {
@@ -309,11 +309,11 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     var xivGear = _item as XivGear;
 
-                    Parts.Add(new ComboBoxData { Name = "Primary" });
+                    Parts.Add(new ComboBoxData { Name = XivStrings.Primary });
 
                     if (xivGear.SecondaryModelInfo != null && xivGear.SecondaryModelInfo.ModelID > 0)
                     {
-                        Parts.Add(new ComboBoxData{Name = "Secondary"});
+                        Parts.Add(new ComboBoxData{Name = XivStrings.Secondary});
                     }
                     else
                     {
@@ -763,7 +763,7 @@ namespace FFXIV_TexTools.ViewModels
 
                         ttpList = new List<TexTypePath> { new TexTypePath { DataFile = _uiItem.DataFile, Path = path, Type = XivTexType.Mask } };
                     }
-                    else if (_uiItem.ItemCategory.Equals(XivStrings.LoadingScreen))
+                    else if (_uiItem.ItemCategory.Equals(XivStrings.Loading_Screen))
                     {
                         path = $"{_uiItem.UiPath}/{_uiItem.Name.ToLower()}.tex";
 
@@ -1298,10 +1298,8 @@ namespace FFXIV_TexTools.ViewModels
 
             if (index.IsIndexLocked(XivDataFile._0A_Exd))
             {
-                FlexibleMessageBox.Show("Error Accessing Index File\n\n" +
-                                        "Please exit the game before proceeding.\n" +
-                                        "-----------------------------------------------------\n\n",
-                    "Index Access Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                FlexibleMessageBox.Show(UIMessages.IndexLockedErrorMessage,
+                    UIMessages.IndexLockedErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                 return;
             }
@@ -1342,7 +1340,7 @@ namespace FFXIV_TexTools.ViewModels
                     catch(Exception ex)
                     {
                         FlexibleMessageBox.Show(
-                            $"There was an error Importing the Texture.\n\nError Message:\n{ex.Message}", "Error Importing Texture",
+                            string.Format(UIMessages.TextureImportErrorMessage, ex.Message), UIMessages.TextureImportErrorTitle,
                             MessageBoxButtons.OK, MessageBoxIcon.Error);
                         return;
                     }
@@ -1377,10 +1375,8 @@ namespace FFXIV_TexTools.ViewModels
 
             if (index.IsIndexLocked(XivDataFile._0A_Exd))
             {
-                FlexibleMessageBox.Show("Error Accessing Index File\n\n" +
-                                        "Please exit the game before proceeding.\n" +
-                                        "-----------------------------------------------------\n\n",
-                    "Index Access Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                FlexibleMessageBox.Show(UIMessages.IndexLockedErrorMessage,
+                    UIMessages.IndexLockedErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                 return;
             }
@@ -1423,7 +1419,7 @@ namespace FFXIV_TexTools.ViewModels
                         catch (Exception ex)
                         {
                             FlexibleMessageBox.Show(
-                                $"There was an error Importing the Texture.\n\nError Message:\n{ex.Message}", "Error Importing Texture",
+                                string.Format(UIMessages.TextureImportErrorMessage, ex.Message), UIMessages.TextureImportErrorTitle,
                                 MessageBoxButtons.OK, MessageBoxIcon.Error);
                             return;
                         }
@@ -1454,7 +1450,7 @@ namespace FFXIV_TexTools.ViewModels
                         catch (Exception ex)
                         {
                             FlexibleMessageBox.Show(
-                                $"There was an error Importing the Texture.\n\nError Message:\n{ex.Message}", "Error Importing Texture",
+                                string.Format(UIMessages.TextureImportErrorMessage, ex.Message), UIMessages.TextureImportErrorTitle,
                                 MessageBoxButtons.OK, MessageBoxIcon.Error);
                             return;
                         }
@@ -1462,7 +1458,7 @@ namespace FFXIV_TexTools.ViewModels
                     else
                     {
                         FlexibleMessageBox.Show(
-                            $"ColorSet BMP import is not supported.", "Error Importing Texture",
+                            UIMessages.ColorSetBMPNotSupportedMessage, UIMessages.TextureImportErrorTitle,
                             MessageBoxButtons.OK, MessageBoxIcon.Error);
                         return;
                     }
@@ -1486,10 +1482,8 @@ namespace FFXIV_TexTools.ViewModels
 
             if (index.IsIndexLocked(XivDataFile._0A_Exd))
             {
-                FlexibleMessageBox.Show("Error Accessing Index File\n\n" +
-                                        "Please exit the game before proceeding.\n" +
-                                        "-----------------------------------------------------\n\n",
-                    "Index Access Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                FlexibleMessageBox.Show(UIMessages.IndexLockedErrorMessage,
+                    UIMessages.IndexLockedErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                 return;
             }
@@ -1528,7 +1522,7 @@ namespace FFXIV_TexTools.ViewModels
                     catch (Exception ex)
                     {
                         FlexibleMessageBox.Show(
-                            $"There was an error Importing the Texture.\n\nError Message:\n{ex.Message}", "Error Importing Texture",
+                            string.Format(UIMessages.TextureImportErrorMessage, ex.Message), UIMessages.TextureImportErrorTitle,
                             MessageBoxButtons.OK, MessageBoxIcon.Error);
                         return;
                     }
@@ -1538,7 +1532,7 @@ namespace FFXIV_TexTools.ViewModels
             else
             {
                 FlexibleMessageBox.Show(
-                    $"ColorSet BMP import is not supported.", "Error Importing Texture",
+                    UIMessages.ColorSetBMPNotSupportedMessage, UIMessages.TextureImportErrorTitle,
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
@@ -1580,7 +1574,7 @@ namespace FFXIV_TexTools.ViewModels
             else
             {
                 FlexibleMessageBox.Show(
-                    $"There was an error attempting to toggle mod status.", "Error Toggling Mod",
+                    UIMessages.ModToggleErrorMessage, UIMessages.ModToggleErrorTitle,
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
@@ -1733,7 +1727,7 @@ namespace FFXIV_TexTools.ViewModels
             catch (Exception ex)
             {
                 FlexibleMessageBox.Show(
-                    $"There was an error attempting to toggle translucency\n\n{ex.Message}", "Error Toggling Translucency",
+                    string.Format(UIMessages.TranslucencyToggleErrorMessage, ex.Message), UIMessages.TranslucencyToggleErrorTitle,
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 

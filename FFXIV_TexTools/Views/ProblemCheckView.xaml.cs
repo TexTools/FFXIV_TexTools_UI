@@ -59,35 +59,35 @@ namespace FFXIV_TexTools.Views
 
             var index = new Index(_gameDirectory);
 
-            AddText("Initializing Problem Check....\n\n", textColor);
+            AddText($"{UIStrings.ProblemCheck_Initialize}\n\n", textColor);
 
-            AddText("Checking Index Dat Values....\n", "Blue");
+            AddText($"{UIStrings.ProblemCheck_IndexDat}\n", "Blue");
 
             if (CheckIndexDatCounts())
             {
-                AddText("\nErrors found attempting to repair....\n", "Blue");
+                AddText($"\n{UIStrings.ProblemCheck_ErrorsFound}\n", "Blue");
                 if (!index.IsIndexLocked(XivDataFile._0A_Exd))
                 {
                     FixIndexDatCounts();
-                    AddText("Repairs Complete\n", "Green");
+                    AddText($"{UIStrings.ProblemCheck_RepairComplete}\n", "Green");
                     CheckIndexDatCounts();
                 }
                 else
                 {
-                    AddText("\nCannot run repairs with game open. Please exit the game and run Check For Problems again. \n", "Red");
+                    AddText($"\n{UIStrings.ProblemCheck_IndexLocked} \n", "Red");
                 }
             }
 
-            AddText("\nChecking Index Backups....\n", "Blue");
+            AddText($"\n{UIStrings.ProblemCheck_IndexBackups}\n", "Blue");
             CheckBackups();
 
-            AddText("\nChecking Dat....\n", "Blue");
+            AddText($"\n{UIStrings.ProblemCheck_Dat}\n", "Blue");
             CheckDat();
 
-            AddText("\nChecking Modlist....\n", "Blue");
+            AddText($"\n{UIStrings.ProblemCheck_ModList}\n", "Blue");
             CheckMods();
 
-            AddText("\nChecking LoD settings....\n", "Blue");
+            AddText($"\n{UIStrings.ProblemCheck_LoD}\n", "Blue");
             CheckLoD();
         }
 
@@ -124,7 +124,7 @@ namespace FFXIV_TexTools.Views
 
                     if (result)
                     {
-                        AddText("\t\u2716\nExtra Dat files found, recommend Start Over\n", "Red");
+                        AddText($"\t\u2716\n{UIStrings.ProblemCheck_ExtraDats}\n", "Red");
                         problemFound = true;
                     }
                     else
@@ -135,7 +135,7 @@ namespace FFXIV_TexTools.Views
                 catch (Exception ex)
                 {
                     FlexibleMessageBox.Show(
-                        $"There was an issue checking Index Dat Counts\n{ex.Message}", "Problem Check Error",
+                        $"{UIMessages.ProblemCheckDatIssueMessage}\n{ex.Message}", UIMessages.ProblemCheckErrorTitle,
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
@@ -169,7 +169,7 @@ namespace FFXIV_TexTools.Views
                 //esrinzou end
                 {
                     AddText("\t\u2716\n", "Red");
-                    AddText("\tThe Dat File ( 060000.win32.dat1 ) is missing data. \n", "Red");
+                    AddText($"\t{UIStrings.ProblemCheck_MissingData} \n", "Red");
                 }
                 else
                 {
@@ -179,7 +179,7 @@ namespace FFXIV_TexTools.Views
             else
             {
                 AddText("\t\u2716\n", "Red");
-                AddText("\tThe Dat File ( 060000.win32.dat1 ) could not be found. \n", "Red");
+                AddText($"\t{UIStrings.ProblemCheck_DatMissing} \n", "Red");
             }
 
 
@@ -219,12 +219,12 @@ namespace FFXIV_TexTools.Views
                     if (mod.data.originalOffset == 0)
                     {
                         AddText("\t\u2716\n", "Red");
-                        AddText("\tOriginal Offset was 0, you will be unable to revert to original, consider starting over. \n", "Red");
+                        AddText($"\t{UIStrings.ProblemCheck_OriginalZero} \n", "Red");
                     }
                     else if (mod.data.modOffset == 0)
                     {
                         AddText("\t\u2716\n", "Red");
-                        AddText("\tMod Offset was 0, Disable from File > Modlist and reimport.\n", "Red");
+                        AddText($"\t{UIStrings.ProblemCheck_ModZero}\n", "Red");
                     }
                     else
                     {
@@ -246,7 +246,7 @@ namespace FFXIV_TexTools.Views
                     if (fileType != 2 && fileType != 3 && fileType != 4)
                     {
                         AddText("\t\u2716\n", "Red");
-                        AddText($"\tFound unknown file type ( {fileType} ) offset is most likely corrupt.\n", "Red");
+                        AddText($"\t{string.Format(UIStrings.ProblemCheck_UnkType, fileType)}\n", "Red");
                     }
                     else
                     {
@@ -256,7 +256,7 @@ namespace FFXIV_TexTools.Views
             }
             else
             {
-                AddText("\tNo entries found in modlist.\n", "Orange");
+                AddText($"\t{UIStrings.ProblemCheck_NoEntries}\n", "Orange");
             }
         }
 
@@ -309,8 +309,8 @@ namespace FFXIV_TexTools.Views
                                     AddText($"\t{line.Substring(0, line.IndexOf("\t"))} ON\t", textColor);
                                     AddText("\u2716\n", "Red");
 
-                                    AddText("\nCertain mods have issues with LoD ON.\n", "Orange");
-                                    AddText("\tTurning off LoD...\n", textColor);
+                                    AddText($"\n{UIStrings.ProblemCheck_LoDIssue}\n", "Orange");
+                                    AddText($"\t{UIStrings.ProblemCheck_LoDOff}\n", textColor);
                                     tmpLine = lineNum;
                                     problem = true;
 
@@ -351,7 +351,7 @@ namespace FFXIV_TexTools.Views
 
                         File.WriteAllLines($"{dir}\\FFXIV.cfg", lines);
 
-                        AddText("\tLoD OFF, running check...\n\n", textColor);
+                        AddText($"\t{UIStrings.ProblemCheck_LoDOffDone}\n\n", textColor);
                         CheckLoD();
                     }
                 }
@@ -374,7 +374,7 @@ namespace FFXIV_TexTools.Views
 
                     if (!File.Exists(backupFile.FullName))
                     {
-                        AddText("\t\u2716\nNo Backup Found.\n", "Red");
+                        AddText($"\t\u2716\n{UIStrings.ProblemCheck_NoBackup}\n", "Red");
                         continue;
                     }
 
@@ -382,7 +382,7 @@ namespace FFXIV_TexTools.Views
 
                     if (!result)
                     {
-                        AddText("\t\u2716 index out of date.\n", "Red");
+                        AddText($"\t\u2716 {UIStrings.ProblemCheck_OutOfDate}\n", "Red");
                     }
                     else
                     {
@@ -392,7 +392,7 @@ namespace FFXIV_TexTools.Views
                 catch (Exception ex)
                 {
                     FlexibleMessageBox.Show(
-                        $"There was an issue checking Backup Index Files\n{ex.Message}", "Problem Check Error",
+                        $"{UIStrings.ProblemCheck_BackupError}\n{ex.Message}", "Problem Check Error",
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }

@@ -382,8 +382,8 @@ namespace FFXIV_TexTools.Views
             if (ModPackName.Text.Equals(string.Empty))
             {
                 if (FlexibleMessageBox.Show(new Wpf32Window(this),
-                        $"Nothing was entered for ModPack Name\n\nModPack Name will default to \"ModPack\"",
-                        "No Name Found", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) ==
+                        UIMessages.DefaultModPackNameMessage,
+                        UIMessages.NoNameFoundTitle, MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) ==
                     System.Windows.Forms.DialogResult.OK)
                 {
                     ModPackName.Text = "ModPack";
@@ -407,8 +407,8 @@ namespace FFXIV_TexTools.Views
             if (versionNumber.ToString().Equals("0.0.0"))
             {
                 if (FlexibleMessageBox.Show(new Wpf32Window(this),
-                        $"Nothing was entered for ModPack Version\n\nVersion will default to \"1.0.0\"",
-                        "No Version Found", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) ==
+                        UIMessages.DefaultModPackVersionMessage,
+                        UIMessages.NoVersionFoundTitle, MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) ==
                     System.Windows.Forms.DialogResult.OK)
                 {
                     versionNumber = new Version(1, 0, 0);
@@ -422,8 +422,8 @@ namespace FFXIV_TexTools.Views
             if (ModPackAuthor.Text.Equals(string.Empty))
             {
                 if (FlexibleMessageBox.Show(new Wpf32Window(this),
-                        $"Nothing was entered for ModPack Author\n\nAuthor will default to \"TexTools User\"",
-                        "No Author Found", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) ==
+                        UIMessages.DefaultModPackAuthorMessage,
+                        UIMessages.NoAuthorFoundTitle, MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) ==
                     System.Windows.Forms.DialogResult.OK)
                 {
                     ModPackAuthor.Text = "TexTools User";
@@ -434,7 +434,7 @@ namespace FFXIV_TexTools.Views
                 }
             }
 
-            _progressController = await this.ShowProgressAsync("Creating ModPack", "Please Stand By...");
+            _progressController = await this.ShowProgressAsync(UIMessages.ModPackCreationMessage, UIMessages.PleaseStandByMessage);
             ModPackFileName = ModPackName.Text;
 
             var texToolsModPack = new TTMP(new DirectoryInfo(Properties.Settings.Default.ModPack_Directory), XivStrings.TexTools);

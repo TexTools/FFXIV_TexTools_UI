@@ -131,7 +131,7 @@ namespace FFXIV_TexTools.ViewModels
                     catch (Exception e)
                     {
                         FlexibleMessageBox.Show(
-                            $"{e.Message}", "Error Reading DAE Data",
+                            UIMessages.DAEReadErrorMessage, UIMessages.DAEReadErrorTitle,
                             MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                         DaeLocationText = string.Empty;
@@ -874,7 +874,7 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     var extraCount = meshCount - _lod.MeshDataList.Count;
                     AddText($"{extraCount}", "Green", true);
-                    AddText($" added mesh(es)\nChange material for new mesh(es) if necessary.\n\n", _textColor, false);
+                    AddText($" {UIStrings.Added_Mesh}\n\n", _textColor, false);
 
                     // Update mesh number list
                     var meshNumberList = new List<int>();
@@ -890,7 +890,7 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     var removedCount = meshCount - _lod.MeshDataList.Count;
                     AddText($"{Math.Abs(removedCount)}", "Red", true);
-                    AddText($" removed mesh(es)\nRemoved Mesh Number(s): ", _textColor, false);
+                    AddText($" {UIStrings.Removed_Mesh} ", _textColor, false);
 
                     foreach (var meshNumber in MeshNumbers)
                     {
@@ -900,13 +900,13 @@ namespace FFXIV_TexTools.ViewModels
                         }
                     }
 
-                    AddText("\nChanges to these removed meshes above will have no effect\n\n", _textColor, true);
+                    AddText($"\n{UIStrings.Removed_Mesh_Note}\n\n", _textColor, true);
 
                     _meshDiff = removedCount;
                 }
                 else
                 {
-                    AddText("No difference in mesh counts.\n\n\n", _textColor, false);
+                    AddText($"{UIStrings.Mesh_No_Difference}\n\n\n", _textColor, false);
 
                     _meshDiff = 0;
                 }
@@ -915,17 +915,17 @@ namespace FFXIV_TexTools.ViewModels
             {
                 if (_meshDiff == 0)
                 {
-                    AddText("No difference in mesh counts.\n\n\n", _textColor, false);
+                    AddText($"{UIStrings.Mesh_No_Difference}\n\n\n", _textColor, false);
                 }
                 else if (_meshDiff > 0)
                 {
                     AddText($"{_meshDiff}", "Green", true);
-                    AddText($" added mesh(es)\nChange material for new mesh(es) if necessary.\n\n", _textColor, false);
+                    AddText($" {UIStrings.Added_Mesh}\n\n", _textColor, false);
                 }
                 else
                 {
                     AddText($"{Math.Abs(_meshDiff.Value)}", "Red", true);
-                    AddText($" removed mesh(es)\nRemoved Mesh Number(s): ", _textColor, false);
+                    AddText($" {UIStrings.Removed_Mesh} ", _textColor, false);
                 }
             }
 
@@ -940,13 +940,13 @@ namespace FFXIV_TexTools.ViewModels
                     {
                         var extraCount = meshPartList.Count - _lod.MeshDataList[SelectedMeshNumber].MeshPartList.Count;
                         AddText($"{extraCount}", "Green", true);
-                        AddText(" added mesh part(s) for this mesh\nChange attributes for new part(s) below if necessary", _textColor, false);
+                        AddText($" {UIStrings.Added_MeshParts}", _textColor, false);
                     }
                     else if (meshPartList.Count < _lod.MeshDataList[SelectedMeshNumber].MeshPartList.Count)
                     {
                         var removedCount = _lod.MeshDataList[SelectedMeshNumber].MeshPartList.Count - meshPartList.Count;
                         AddText($"{removedCount}", "Red", true);
-                        AddText(" removed mesh part(s) for this mesh\nRemoved Part Number(s): ", _textColor, false);
+                        AddText($" {UIStrings.Removed_MeshParts} ", _textColor, false);
 
                         foreach (var partNumber in PartNumbers)
                         {
@@ -956,16 +956,16 @@ namespace FFXIV_TexTools.ViewModels
                             }
                         }
 
-                        AddText("\nChanges to these removed parts below will have no effect", _textColor, false);
+                        AddText($"\n{UIStrings.Removed_MeshParts_Note}", _textColor, false);
                     }
                     else
                     {
-                        AddText("No difference in mesh part counts for this mesh.", _textColor, false);
+                        AddText($"{UIStrings.MeshPart_No_Difference}", _textColor, false);
                     }
                 }
                 else
                 {
-                    AddText($"This is a new mesh containing {meshPartList.Count} parts.", _textColor, false);
+                    AddText($"{string.Format(UIStrings.New_Mesh_MeshPart_Count, meshPartList.Count)}", _textColor, false);
                 }
             }
         }
@@ -1144,7 +1144,7 @@ namespace FFXIV_TexTools.ViewModels
             catch (Exception ex)
             {
                 FlexibleMessageBox.Show(
-                    $"There was an error attempting to import the model.\n\n{ex.Message}", "Error Importing Dae",
+                    string.Format(UIMessages.ModelImportErrorMessage, ex.Message), UIMessages.ModelImportErrorTitle,
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
@@ -1325,7 +1325,7 @@ namespace FFXIV_TexTools.ViewModels
                 catch (Exception e)
                 {
                     FlexibleMessageBox.Show(
-                        $"{e.Message}", "Error Reading DAE Data",
+                        string.Format(UIMessages.DAEReadErrorMessage, e.Message), UIMessages.DAEReadErrorTitle,
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                     DaeLocationText = string.Empty;

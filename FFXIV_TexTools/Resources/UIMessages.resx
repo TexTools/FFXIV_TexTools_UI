@@ -1,0 +1,616 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AdvancedImportErrorTitle" xml:space="preserve">
+    <value>Advanced Import Error</value>
+  </data>
+  <data name="AdvancedImportWindowErrorMessage" xml:space="preserve">
+    <value>There was an error building Advanced Import Window.
+
+{0}</value>
+  </data>
+  <data name="BackupCompleteMessage" xml:space="preserve">
+    <value>The index files have been successfully backed up.</value>
+  </data>
+  <data name="BackupCompleteTitle" xml:space="preserve">
+    <value>Backup Complete</value>
+  </data>
+  <data name="BackupFailedErrorMessage" xml:space="preserve">
+    <value>Unable to create backup files.
+
+Error Message:
+{0}</value>
+  </data>
+  <data name="BackupFailedTitle" xml:space="preserve">
+    <value>Backup Creation Failed</value>
+  </data>
+  <data name="BackupFilesMissingTitle" xml:space="preserve">
+    <value>Backup Files Missing</value>
+  </data>
+  <data name="BackupFolderAccessErrorMessage" xml:space="preserve">
+    <value>Error Accessing Index Backups Folder
+
+Please set your Index Backups directory in Options &gt; Customize and try again.
+</value>
+  </data>
+  <data name="BackupsDirectoryErrorMessage" xml:space="preserve">
+    <value>Unable to find backup directory</value>
+  </data>
+  <data name="ColorSetBMPNotSupportedMessage" xml:space="preserve">
+    <value>ColorSet BMP import is not supported.</value>
+  </data>
+  <data name="CreateBackupsMessage" xml:space="preserve">
+    <value>This will create a backup of the commonly modified index files (0a, 01, 04, 06)
+
+
+Do you want to Backup Now?
+
+
+Warning:
+In order to create a clean backup, all active modifications will be set to disabled, they will have to be re-enabled manually.</value>
+  </data>
+  <data name="CreateBackupsTitle" xml:space="preserve">
+    <value>Backup Index Files</value>
+  </data>
+  <data name="CreateBackupTitle" xml:space="preserve">
+    <value>Create Backup?</value>
+  </data>
+  <data name="DAEExportErrorMessage" xml:space="preserve">
+    <value>There was an error attempting to export the model as a dae.
+
+{0}</value>
+  </data>
+  <data name="DAEExportErrorTitle" xml:space="preserve">
+    <value>Error exporting DAE</value>
+  </data>
+  <data name="DAEImportErrorMessage" xml:space="preserve">
+    <value>There was an error attempting to import the model.
+
+{0}</value>
+  </data>
+  <data name="DAEImportErrorTitle" xml:space="preserve">
+    <value>Error Importing DAE</value>
+  </data>
+  <data name="DAEReadErrorMessage" xml:space="preserve">
+    <value>There was an error attempting to read the DAE file.
+
+Error: {0}</value>
+  </data>
+  <data name="DAEReadErrorTitle" xml:space="preserve">
+    <value>Error Reading DAE</value>
+  </data>
+  <data name="DependencyErrorMessage" xml:space="preserve">
+    <value>TexTools was unable to locate dependency files.
+Please make sure you are running TexTools in the folder it came in.
+
+If you continue to receive this error,
+Please make sure your Anti-Virus is not blocking TexTools.
+
+Error: {0}
+
+Exception:{1}</value>
+  </data>
+  <data name="DependencyErrorTitle" xml:space="preserve">
+    <value>Dependencies Error v{0}</value>
+  </data>
+  <data name="DisableAllModsMessage" xml:space="preserve">
+    <value>This will Disable all mods located in the modlist.
+
+Are you sure you want to proceed?</value>
+  </data>
+  <data name="DisableAllModsTitle" xml:space="preserve">
+    <value>Disable All Mods</value>
+  </data>
+  <data name="DisablingModsTitle" xml:space="preserve">
+    <value>Disabling Mods</value>
+  </data>
+  <data name="EmptyTTMPFileErrorMessage" xml:space="preserve">
+    <value>TTMP file [ {0} ] is empty.
+
+Importing Canceled.</value>
+  </data>
+  <data name="EnableAllModsMessage" xml:space="preserve">
+    <value>This will Enable all mods located in the modlist.
+
+Are you sure you want to proceed?</value>
+  </data>
+  <data name="EnableAllModsTitle" xml:space="preserve">
+    <value>Enable All Mods</value>
+  </data>
+  <data name="EnablingModsTitle" xml:space="preserve">
+    <value>Enabling Mods</value>
+  </data>
+  <data name="GameVersionErrorMessage" xml:space="preserve">
+    <value>TexTools was unable to determine the game version.</value>
+  </data>
+  <data name="GameVersionErrorTitle" xml:space="preserve">
+    <value>Version Check Error {0}</value>
+  </data>
+  <data name="ImportCompleteTitle" xml:space="preserve">
+    <value>Import Complete</value>
+  </data>
+  <data name="ImportErrorTitle" xml:space="preserve">
+    <value>Import Error</value>
+  </data>
+  <data name="IndexBackupLocationChangedMessage" xml:space="preserve">
+    <value>Location of Index Backup folder changed.
+
+New Location: {0}</value>
+  </data>
+  <data name="IndexBackupsErrorTitle" xml:space="preserve">
+    <value>Index Backups Error</value>
+  </data>
+  <data name="IndexLockedBackupFailedMessage" xml:space="preserve">
+    <value>Unable to create backup while game is running.</value>
+  </data>
+  <data name="IndexLockedErrorMessage" xml:space="preserve">
+    <value>Error Accessing Index File
+
+
+Please exit the game before proceeding.
+-----------------------------------------------------</value>
+  </data>
+  <data name="IndexLockedErrorTitle" xml:space="preserve">
+    <value>Index Access Error</value>
+  </data>
+  <data name="InstallDirectoryFoundMessage" xml:space="preserve">
+    <value>FFXIV install directory found at
+
+{0}
+
+Use this directory?</value>
+  </data>
+  <data name="InstallDirectoryFoundTitle" xml:space="preserve">
+    <value>Install Directory Found</value>
+  </data>
+  <data name="InstallDirectoryNotFoundMessage" xml:space="preserve">
+    <value>Please locate the following directory.
+
+.../FINAL FANTASY XIV - A Realm Reborn/game/sqpack/ffxiv</value>
+  </data>
+  <data name="InstallDirectoryNotFoundTitle" xml:space="preserve">
+    <value>Install Directory Not Found</value>
+  </data>
+  <data name="ItemsListErrorMessage" xml:space="preserve">
+    <value>There was an error getting the Items List
+
+{0}</value>
+  </data>
+  <data name="ItemsListErrorTitle" xml:space="preserve">
+    <value>Items List Error</value>
+  </data>
+  <data name="MaterialDataReadErrorTitle" xml:space="preserve">
+    <value>Error Reading Material Data</value>
+  </data>
+  <data name="MaterialFileReadErrorMessage" xml:space="preserve">
+    <value>There was an error reading the material file {0}
+
+{1}</value>
+  </data>
+  <data name="MDLReadErrorMessage" xml:space="preserve">
+    <value>There was an error reading the MDL file.
+
+{0}
+
+If this error appeared after importing, please submit a bug report with the DAE file attached.</value>
+  </data>
+  <data name="MDLReadErrorTitle" xml:space="preserve">
+    <value>Error Reading Model Data</value>
+  </data>
+  <data name="ModelDataErrorMessage" xml:space="preserve">
+    <value>There was an error getting the model data for {0} | {1}</value>
+  </data>
+  <data name="ModelImportErrorMessage" xml:space="preserve">
+    <value>There was an error attempting to import the model.
+
+{0}</value>
+  </data>
+  <data name="ModelImportErrorTitle" xml:space="preserve">
+    <value>Error Importing DAE</value>
+  </data>
+  <data name="ModListDisableFailedTitle" xml:space="preserve">
+    <value>ModList Disable Failed</value>
+  </data>
+  <data name="ModListIndexLockedErrorMessage" xml:space="preserve">
+    <value>Unable to continue while game is running.
+
+Please exit the game and try again.</value>
+  </data>
+  <data name="ModPackCreationCompleteMessage" xml:space="preserve">
+    <value>The ModPack ({0}.ttmp2) has been successfully Created.</value>
+  </data>
+  <data name="ModPackCreationCompleteTitle" xml:space="preserve">
+    <value>Mod Pack Creation Complete</value>
+  </data>
+  <data name="ModPackCreationFailedErrorTitle" xml:space="preserve">
+    <value>Error: Mod Pack Creation Failed</value>
+  </data>
+  <data name="ModPackImportErrorMessage" xml:space="preserve">
+    <value>There was an error importing the mod pack at {0}
+
+Message: {1}</value>
+  </data>
+  <data name="ModPackImportErrorTitle" xml:space="preserve">
+    <value>ModPack Import Error</value>
+  </data>
+  <data name="ModPacksLocationChangedMessage" xml:space="preserve">
+    <value>Location of ModPacks folder changed.
+
+
+New Location: {0}</value>
+  </data>
+  <data name="ModsDisabledSuccessMessage" xml:space="preserve">
+    <value>All Mods were Disabled Successfully</value>
+  </data>
+  <data name="ModsEnabledSuccessMessage" xml:space="preserve">
+    <value>All Mods were Enabled Successfully</value>
+  </data>
+  <data name="ModToggleErrorMessage" xml:space="preserve">
+    <value>There was an error attempting to toggle mod status.</value>
+  </data>
+  <data name="ModToggleErrorTitle" xml:space="preserve">
+    <value>Error Toggling Mod</value>
+  </data>
+  <data name="MoveDataMessage" xml:space="preserve">
+    <value>Would you like to move the existing data to the new location?</value>
+  </data>
+  <data name="MoveDataTitle" xml:space="preserve">
+    <value>Move Data?</value>
+  </data>
+  <data name="NewBackupLocationTitle" xml:space="preserve">
+    <value>Select new location of Index_Backups folder</value>
+  </data>
+  <data name="NewDirectoryTitle" xml:space="preserve">
+    <value>New Directory</value>
+  </data>
+  <data name="NewerVersionDetectedBackupMessage" xml:space="preserve">
+    <value>A newer version of FFXIV was detected.
+Would you like to create a new backup of your index files now? (Recommended)
+
+Warning:
+In order to create a clean backup, all active modifications will be set to disabled, they will have to be re-enabled manually.</value>
+  </data>
+  <data name="NewInstallDetectedBackupMessage" xml:space="preserve">
+    <value>New TexTools Install Detected.
+
+Would you like to create a new backup of your index files now? (Recommended)</value>
+  </data>
+  <data name="newModpacksLocationTitle" xml:space="preserve">
+    <value>Select new location of ModPacks folder</value>
+  </data>
+  <data name="NewSaveLocationTitle" xml:space="preserve">
+    <value>Select new location for Saved folder</value>
+  </data>
+  <data name="NoBackupsFoundErrorMessage" xml:space="preserve">
+    <value>No backup files found in the following directory:
+{0}
+
+
+Index entries will be put back to original offsets instead
+-----------------------------------------------------</value>
+  </data>
+  <data name="NoBackupsFoundMessage" xml:space="preserve">
+    <value>No Index Backups were found. 
+Would you like to create a new backup of your index files now? (Recommended) 
+
+Warning:
+In order to create a clean backup, all active modifications will be set to disabled, they will have to be re-enabled manually.</value>
+  </data>
+  <data name="NoModsDetectedErrorMessage" xml:space="preserve">
+    <value>No mods were detected in the options list.</value>
+  </data>
+  <data name="OldModListDisableFailedMessage" xml:space="preserve">
+    <value>There was an error attempting to disable a mod from previous version.
+
+Error Message:
+{0}
+
+It is recommended to do a Start Over from the previous version first.</value>
+  </data>
+  <data name="OldModListFoundTitle" xml:space="preserve">
+    <value>Older ModList Found</value>
+  </data>
+  <data name="OldTexToolsFoundMessage" xml:space="preserve">
+    <value>Older TexTools ModList Found.
+
+The Older ModList is incompatible with this version.
+
+In order to use this version, all previous mods will be disabled, and the previous ModList erased.
+
+
+If you would like to retain your mods, it is recommended that you create a backup ModPack in the older TexTools Version, then import it into this one.
+
+Would you like to continue?</value>
+  </data>
+  <data name="OutdatedBackupsErrorMessage" xml:space="preserve">
+    <value>Index Backups are outdated.
+
+
+Please create a new backup from Help &gt; Backup Index Files
+
+
+TexTools will attempt to start over without using backups.</value>
+  </data>
+  <data name="OutOfDateInstallMessage" xml:space="preserve">
+    <value>The install location chosen is out of date
+
+Please locate the following directory.
+
+.../FINAL FANTASY XIV - A Realm Reborn/game/sqpack/ffxiv</value>
+  </data>
+  <data name="OutOfDateInstallTitle" xml:space="preserve">
+    <value>Install Directory Out Of Date</value>
+  </data>
+  <data name="PleaseWaitMessage" xml:space="preserve">
+    <value>Please Wait...</value>
+  </data>
+  <data name="PreviousVersionErrorTitle" xml:space="preserve">
+    <value>Previous Version Error</value>
+  </data>
+  <data name="SavedLocationChangedMessage" xml:space="preserve">
+    <value>Location of Saved folder changed.
+
+
+New Location: {0}</value>
+  </data>
+  <data name="SelectffxivFolderTitle" xml:space="preserve">
+    <value>Select sqpack/ffxiv Folder</value>
+  </data>
+  <data name="StartOverCompleteMessage" xml:space="preserve">
+    <value>The start over process has been completed.</value>
+  </data>
+  <data name="StartOverCompleteTitle" xml:space="preserve">
+    <value>Start Over Complete</value>
+  </data>
+  <data name="StartOverMessage" xml:space="preserve">
+    <value>Starting over will:
+
+Restore index files to their original state.
+Delete all mod dat files from game folder.
+Delete all mod list file entries.
+
+Do you want to start over?</value>
+  </data>
+  <data name="StartOverTitle" xml:space="preserve">
+    <value>Start Over</value>
+  </data>
+  <data name="SuccessfulImportCountMessage" xml:space="preserve">
+    <value>{0} mod(s) successfully imported.</value>
+  </data>
+  <data name="SuccessTitle" xml:space="preserve">
+    <value>Success</value>
+  </data>
+  <data name="TextureDataReadErrorTitle" xml:space="preserve">
+    <value>Error Reading Texture Data</value>
+  </data>
+  <data name="TextureFileReadErrorMessage" xml:space="preserve">
+    <value>There was an error reading the texture file {0}.
+
+{1}</value>
+  </data>
+  <data name="TextureImportErrorMessage" xml:space="preserve">
+    <value>There was an error Importing the Texture.
+
+Error Message:
+{0}</value>
+  </data>
+  <data name="TextureImportErrorTitle" xml:space="preserve">
+    <value>Error Importing Texture</value>
+  </data>
+  <data name="TranslucencyToggleErrorMessage" xml:space="preserve">
+    <value>There was an error attempting to toggle translucency
+
+{0}</value>
+  </data>
+  <data name="TranslucencyToggleErrorTitle" xml:space="preserve">
+    <value>Error Toggling Translucency</value>
+  </data>
+  <data name="DefaultDescriptionMessage" xml:space="preserve">
+    <value>Nothing was entered for ModPack Description
+
+Description will be left empty.</value>
+  </data>
+  <data name="DefaultModPackAuthorMessage" xml:space="preserve">
+    <value>Nothing was entered for ModPack Author
+
+Author will default to "TexTools User"</value>
+  </data>
+  <data name="DefaultModPackNameMessage" xml:space="preserve">
+    <value>Nothing was entered for ModPack Name
+
+ModPack Name will default to "ModPack"</value>
+  </data>
+  <data name="DefaultModPackVersionMessage" xml:space="preserve">
+    <value>Nothing was entered for ModPack Version
+
+Version will default to "1.0.0"</value>
+  </data>
+  <data name="DeleteGroupMessage" xml:space="preserve">
+    <value>This will delete the entire group, and all the options in it.</value>
+  </data>
+  <data name="DeleteGroupTitle" xml:space="preserve">
+    <value>Group Deletion Warning</value>
+  </data>
+  <data name="ErrorImportingModsMessage" xml:space="preserve">
+    <value>There were errors importing some mods.</value>
+  </data>
+  <data name="ErrorImportingModsTitle" xml:space="preserve">
+    <value>Error Importing Mods</value>
+  </data>
+  <data name="ExistingGroupMessage" xml:space="preserve">
+    <value>group already exists, please rename the group.
+
+If you would like to add to that group instead, go back and click the edit button.</value>
+  </data>
+  <data name="ExistingGroupTitle" xml:space="preserve">
+    <value>Group Name already exists.</value>
+  </data>
+  <data name="ExistingOption" xml:space="preserve">
+    <value>This Option already includes {0}
+
+Would you like to overwrite the existing mod for this option?</value>
+  </data>
+  <data name="ModDataReadErrorTitle" xml:space="preserve">
+    <value>Error Reading Mod Data</value>
+  </data>
+  <data name="ModPackCreationMessage" xml:space="preserve">
+    <value>Creating ModPack</value>
+  </data>
+  <data name="ModPackImportTitle" xml:space="preserve">
+    <value>Importing ModPack</value>
+  </data>
+  <data name="NoAuthorFoundTitle" xml:space="preserve">
+    <value>No Author Found</value>
+  </data>
+  <data name="NoDescriptionFoundTitle" xml:space="preserve">
+    <value>No Description Found</value>
+  </data>
+  <data name="NoNameFoundTitle" xml:space="preserve">
+    <value>No Name Found</value>
+  </data>
+  <data name="NoVersionFoundTitle" xml:space="preserve">
+    <value>No Version Found</value>
+  </data>
+  <data name="OverwriteTitle" xml:space="preserve">
+    <value>Overwrite?</value>
+  </data>
+  <data name="PleaseStandByMessage" xml:space="preserve">
+    <value>Please Stand By...</value>
+  </data>
+  <data name="RawDataErrorMessage" xml:space="preserve">
+    <value>There was an issue obtaining the Raw Data for the mod.
+
+Offset: {0}
+Data File: {1}</value>
+  </data>
+  <data name="DeleteModPackMessage" xml:space="preserve">
+    <value>Caution: This will delete all the mods for the currently selected Mod Pack.
+
+This process is not reversible, do you want to continue?</value>
+  </data>
+  <data name="DeleteModPackTitle" xml:space="preserve">
+    <value>Mod Pack Deletion Warning.</value>
+  </data>
+  <data name="ProblemCheckDatIssueMessage" xml:space="preserve">
+    <value>There was an issue checking Index Dat Counts</value>
+  </data>
+  <data name="ProblemCheckErrorTitle" xml:space="preserve">
+    <value>Problem Check Error</value>
+  </data>
+</root>

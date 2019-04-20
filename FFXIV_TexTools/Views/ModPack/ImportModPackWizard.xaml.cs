@@ -151,7 +151,7 @@ namespace FFXIV_TexTools.Views
         /// </summary>
         private async void FinalizeImport()
         {
-            _progressController = await this.ShowProgressAsync("Importing ModPack", "Please Stand By...");
+            _progressController = await this.ShowProgressAsync(UIMessages.ModPackImportTitle, UIMessages.PleaseStandByMessage);
 
             var texToolsModPack = new TTMP(new DirectoryInfo(Properties.Settings.Default.ModPack_Directory), XivStrings.TexTools);
 
@@ -195,14 +195,14 @@ namespace FFXIV_TexTools.Views
                 if (!string.IsNullOrEmpty(importResults.Errors))
                 {
                     FlexibleMessageBox.Show(
-                        $"There were errors importing some mods.\n\n{importResults.Errors}", "Errors during import",
+                        $"{UIMessages.ErrorImportingModsMessage}\n\n{importResults.Errors}", UIMessages.ErrorImportingModsTitle,
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
             catch (Exception ex)
             {
                 FlexibleMessageBox.Show(
-                    $"There was an error attempting to import mods\n\n{ex.Message}", "Error Importing Mods",
+                    $"{UIMessages.ErrorImportingModsMessage}\n\n{ex.Message}", UIMessages.ErrorImportingModsTitle,
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
@@ -210,8 +210,8 @@ namespace FFXIV_TexTools.Views
 
             if (_messageInImport)
             {
-                await this.ShowMessageAsync("Import Complete",
-                    $"{TotalModsImported} mod(s) successfully imported.");
+                await this.ShowMessageAsync(UIMessages.ImportCompleteTitle,
+                    string.Format(UIMessages.SuccessfulImportCountMessage, TotalModsImported));
             }
 
             DialogResult = true;

@@ -437,7 +437,7 @@ namespace FFXIV_TexTools.ViewModels
             }
             catch (Exception ex)
             {
-                throw new Exception($"There was an error getting the model data for {modItem.name} | {modItem.fullPath}");
+                throw new Exception(string.Format(UIMessages.ModelDataErrorMessage, modItem.name, modItem.fullPath));
             }
 
             return item;
@@ -662,7 +662,7 @@ namespace FFXIV_TexTools.ViewModels
                     catch (Exception ex)
                     {
                         FlexibleMessageBox.Show(
-                            $"There was an error reading the material file {modItem.fullPath}\n\n{ex.Message}", "Error Reading Material Data",
+                             string.Format(UIMessages.MaterialFileReadErrorMessage, modItem.fullPath, ex.Message), UIMessages.MaterialDataReadErrorTitle,
                             MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
 
@@ -689,10 +689,7 @@ namespace FFXIV_TexTools.ViewModels
                     }
                     catch (Exception ex)
                     {
-                        var message =
-                            $"There was an error reading the texture file {ttp.Path}.\n\n{ex.Message}";
-                        FlexibleMessageBox.Show(
-                            message, "Error Reading Texture Data",
+                        FlexibleMessageBox.Show(string.Format(UIMessages.TextureFileReadErrorMessage, ttp.Path, ex.Message), UIMessages.TextureDataReadErrorTitle,
                             MessageBoxButtons.OK, MessageBoxIcon.Error);
                         continue;
                     }
@@ -1080,7 +1077,7 @@ namespace FFXIV_TexTools.ViewModels
                 set
                 {
                     _active = value;
-                    OnPropertyChanged("Active");
+                    OnPropertyChanged(nameof(Active));
                 }
             }
 
@@ -1094,7 +1091,7 @@ namespace FFXIV_TexTools.ViewModels
                 set
                 {
                     _opacity = value;
-                    OnPropertyChanged("ActiveOpacity");
+                    OnPropertyChanged(nameof(ActiveOpacity));
                 }
             }
 
@@ -1107,7 +1104,7 @@ namespace FFXIV_TexTools.ViewModels
                 set
                 {
                     _activeBorder = value;
-                    OnPropertyChanged("ActiveBorder");
+                    OnPropertyChanged(nameof(ActiveBorder));
                 }
             }
 

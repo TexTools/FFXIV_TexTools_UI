@@ -19,6 +19,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Forms;
+using FFXIV_TexTools.Resources;
 using xivModdingFramework.Mods.DataContainers;
 using UserControl = System.Windows.Controls.UserControl;
 
@@ -109,7 +110,7 @@ namespace FFXIV_TexTools.Views
             var wizardAddGroupWindow = new WizardAddGroupWindow(ModGroupNames)
             {
                 Owner = Window.GetWindow(this),
-                Title = "Edit Group"
+                Title = UIStrings.Edit_Group
             };
             wizardAddGroupWindow.EditMode(editModGroup);
 
@@ -158,8 +159,8 @@ namespace FFXIV_TexTools.Views
         private void DeleteGroupButton_Click(object sender, RoutedEventArgs e)
         {
             if (FlexibleMessageBox.Show(
-                    "This will delete the entire group, and all the options in it.",
-                    "Group Deletion Warning", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) == DialogResult.OK)
+                    UIMessages.DeleteGroupMessage,
+                    UIMessages.DeleteGroupTitle, MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) == DialogResult.OK)
             {
                 var option = OptionsList.SelectedItem as ModOption;
 

@@ -117,40 +117,16 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="BugReport_Website" xml:space="preserve">
-    <value>https://project.dualwield.net/bug_report_page.php</value>
+  <data name="StartOverMessage" xml:space="preserve">
+    <value>初始化将：
+
+1.将游戏文件还原。
+2.删除所有mod及数据。
+3.清除所有mod记录。
+
+是否初始化？</value>
   </data>
-  <data name="Discord_China" xml:space="preserve">
-    <value>http://149.129.96.215:8989</value>
-  </data>
-  <data name="Discord_Invite" xml:space="preserve">
-    <value>https://discord.gg/VKhNB5g</value>
-  </data>
-  <data name="Donate_Website" xml:space="preserve">
-    <value>https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&amp;hosted_button_id=B78KX56JPQFMJ&amp;source=url</value>
-  </data>
-  <data name="FFXIV_Donate" xml:space="preserve">
-    <value>https://textools.dualwield.net/donate/</value>
-  </data>
-  <data name="Github_Website" xml:space="preserve">
-    <value>https://github.com/liinko/FFXIV_TexTools_UI</value>
-  </data>
-  <data name="NexusMods_Website" xml:space="preserve">
-    <value>https://www.nexusmods.com/finalfantasy14</value>
-  </data>
-  <data name="PKEmporium_Website" xml:space="preserve">
-    <value>https://prettykittyemporium.blogspot.com/</value>
-  </data>
-  <data name="TexTools_Update_Url" xml:space="preserve">
-    <value>https://raw.githubusercontent.com/liinko/FFXIVTexToolsWeb/master/updater.xml</value>
-  </data>
-  <data name="TexTools_Website" xml:space="preserve">
-    <value>https://textools.dualwield.net/</value>
-  </data>
-  <data name="Tutorials_Website" xml:space="preserve">
-    <value>https://textools.dualwield.net/tutorials/</value>
-  </data>
-  <data name="XivModArchive_Website" xml:space="preserve">
-    <value>https://www.xivmodarchive.com/</value>
+  <data name="StartOverTitle" xml:space="preserve">
+    <value>初始化</value>
   </data>
 </root>

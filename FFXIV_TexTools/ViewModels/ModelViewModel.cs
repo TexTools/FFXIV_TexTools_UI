@@ -185,7 +185,7 @@ namespace FFXIV_TexTools.ViewModels
 
             CullModeToggle = Settings.Default.Cull_Mode == "None";
 
-            ShowModelStatus("Model Loaded Successfully");
+            ShowModelStatus(UIStrings.ModelStatus_Success);
         }
 
         #region Race
@@ -352,18 +352,18 @@ namespace FFXIV_TexTools.ViewModels
             {
                 var xivGear = _item as XivGear;
 
-                if (xivGear.ItemCategory.Equals("Rings"))
+                if (xivGear.ItemCategory.Equals(XivStrings.Rings))
                 {
-                    Parts.Add(new ComboBoxData { Name = "Right" });
-                    Parts.Add(new ComboBoxData { Name = "Left" });
+                    Parts.Add(new ComboBoxData { Name = XivStrings.Right });
+                    Parts.Add(new ComboBoxData { Name = XivStrings.Left });
                 }
                 else
                 {
-                    Parts.Add(new ComboBoxData { Name = "Primary" });
+                    Parts.Add(new ComboBoxData { Name = XivStrings.Primary });
 
                     if (xivGear.SecondaryModelInfo != null && xivGear.SecondaryModelInfo.ModelID > 0)
                     {
-                        Parts.Add(new ComboBoxData { Name = "Secondary" });
+                        Parts.Add(new ComboBoxData { Name = XivStrings.Secondary });
                     }
                 }
 
@@ -500,11 +500,11 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     var xivGear = _item as XivGear;
 
-                    if (SelectedPart.Name.Equals("Primary"))
+                    if (SelectedPart.Name.Equals(XivStrings.Primary))
                     {
                         _mdlData = _mdl.GetMdlData(xivGear, SelectedRace.XivRace);
                     }
-                    else if (SelectedPart.Name.Equals("Secondary"))
+                    else if (SelectedPart.Name.Equals(XivStrings.Secondary))
                     {
                         _mdlData = _mdl.GetMdlData(xivGear, SelectedRace.XivRace, xivGear.SecondaryModelInfo);
                     }
@@ -542,10 +542,8 @@ namespace FFXIV_TexTools.ViewModels
             }
             catch(Exception ex)
             {
-                var message =
-                    $"There was an error reading the MDL file.\n\n{ex.Message}\n\nIf this error appeared after importing, please submit a bug report with the DAE file attached.";
                 FlexibleMessageBox.Show(
-                    message, "Error Reading Model Data",
+                    string.Format(UIMessages.MDLReadErrorMessage, ex.Message), UIMessages.MDLReadErrorTitle,
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
@@ -1238,7 +1236,7 @@ namespace FFXIV_TexTools.ViewModels
             else
             {
                 FlexibleMessageBox.Show(
-                    $"There was an error attempting to toggle mod status.", "Error Toggling Mod",
+                    UIMessages.ModToggleErrorMessage, UIMessages.ModToggleErrorTitle,
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
@@ -1270,7 +1268,7 @@ namespace FFXIV_TexTools.ViewModels
             catch (Exception e)
             {
                 FlexibleMessageBox.Show(
-                    $"There was an error attempting to export the model as a dae.\n\n{e.Message}", "Error exporting Dae",
+                    string.Format(UIMessages.DAEExportErrorMessage, e.Message), UIMessages.DAEExportErrorTitle,
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
@@ -1359,7 +1357,7 @@ namespace FFXIV_TexTools.ViewModels
             catch (Exception e)
             {
                 FlexibleMessageBox.Show(
-                    $"There was an error attempting to export the model as a dae.\n\n{e.Message}", "Error Exporting Dae",
+                    string.Format(UIMessages.DAEExportErrorMessage, e.Message), UIMessages.DAEExportErrorTitle,
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
@@ -1397,10 +1395,8 @@ namespace FFXIV_TexTools.ViewModels
 
             if (index.IsIndexLocked(XivDataFile._0A_Exd))
             {
-                FlexibleMessageBox.Show("Error Accessing Index File\n\n" +
-                                        "Please exit the game before proceeding.\n" +
-                                        "-----------------------------------------------------\n\n",
-                    "Index Access Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                FlexibleMessageBox.Show(UIMessages.IndexLockedErrorMessage,
+                    UIMessages.IndexLockedErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                 return;
             }
@@ -1436,7 +1432,7 @@ namespace FFXIV_TexTools.ViewModels
             catch (Exception ex)
             {
                 FlexibleMessageBox.Show(
-                    $"There was an error attempting to import the model.\n\n{ex.Message}", "Error Importing Dae",
+                    string.Format(UIMessages.DAEImportErrorMessage, ex.Message), UIMessages.DAEImportErrorMessage,
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
@@ -1470,10 +1466,8 @@ namespace FFXIV_TexTools.ViewModels
 
             if (index.IsIndexLocked(XivDataFile._0A_Exd))
             {
-                FlexibleMessageBox.Show("Error Accessing Index File\n\n" +
-                                        "Please exit the game before proceeding.\n" +
-                                        "-----------------------------------------------------\n\n",
-                    "Index Access Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                FlexibleMessageBox.Show(UIMessages.IndexLockedErrorMessage,
+                    UIMessages.IndexLockedErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                 return;
             }
@@ -1512,7 +1506,7 @@ namespace FFXIV_TexTools.ViewModels
                 catch (Exception ex)
                 {
                     FlexibleMessageBox.Show(
-                        $"There was an error attempting to import the model.\n\n{ex.Message}", "Error Importing Dae",
+                        string.Format(UIMessages.DAEImportErrorMessage, ex.Message), UIMessages.DAEImportErrorMessage,
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
@@ -1546,10 +1540,8 @@ namespace FFXIV_TexTools.ViewModels
 
             if (index.IsIndexLocked(XivDataFile._0A_Exd))
             {
-                FlexibleMessageBox.Show("Error Accessing Index File\n\n" +
-                                        "Please exit the game before proceeding.\n" +
-                                        "-----------------------------------------------------\n\n",
-                    "Index Access Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                FlexibleMessageBox.Show(UIMessages.IndexLockedErrorMessage,
+                    UIMessages.IndexLockedErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                 return;
             }
@@ -1582,7 +1574,7 @@ namespace FFXIV_TexTools.ViewModels
             catch (Exception ex)
             {
                 FlexibleMessageBox.Show(
-                    $"There was an error building Advanced Import Window.\n\n{ex.Message}", "Advanced Import Error",
+                    string.Format(UIMessages.AdvancedImportWindowErrorMessage, ex.Message), UIMessages.AdvancedImportErrorTitle,
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
@@ -1703,7 +1695,7 @@ namespace FFXIV_TexTools.ViewModels
             ImportEnabled = true;
             UpdateTexEnabled = true;
 
-            ShowModelStatus("Model Updated Successfully");
+            ShowModelStatus(UIStrings.ModelStatus_UpdateSuccess);
             //esrinzou end
         }
         #endregion

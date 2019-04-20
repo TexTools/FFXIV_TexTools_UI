@@ -225,9 +225,6 @@
   <data name="Simple_ModPack" xml:space="preserve">
     <value>Simple ModPack</value>
   </data>
-  <data name="Start_Over" xml:space="preserve">
-    <value>Start Over</value>
-  </data>
   <data name="Texture" xml:space="preserve">
     <value>Texture</value>
   </data>
@@ -570,15 +567,6 @@
   <data name="Standalone_Non_ModPack" xml:space="preserve">
     <value>Standalone (Non-ModPack)</value>
   </data>
-  <data name="Start_Over_Info" xml:space="preserve">
-    <value>Starting over will:
-
-Restore index files to their original state.
-Delete all mod dat files from game folder.
-Delete all mod list file entries.
-
-Do you want to start over?</value>
-  </data>
   <data name="This_will_only_affect_shared_races" xml:space="preserve">
     <value>This will only affect shared races</value>
   </data>
@@ -737,5 +725,156 @@ Do you want to start over?</value>
   </data>
   <data name="Keep_Camera_Position" xml:space="preserve">
     <value>Keep Camera Position</value>
+  </data>
+  <data name="Added_Mesh" xml:space="preserve">
+    <value>added mesh(es)
+Change material for new mesh(es) if necessary.</value>
+  </data>
+  <data name="Added_MeshParts" xml:space="preserve">
+    <value>added mesh part(s) for this mesh
+Change attributes for new part(s) below if necessary</value>
+  </data>
+  <data name="MeshPart_No_Difference" xml:space="preserve">
+    <value>No difference in mesh part counts for this mesh.</value>
+  </data>
+  <data name="Mesh_No_Difference" xml:space="preserve">
+    <value>No difference in mesh counts.</value>
+  </data>
+  <data name="ModelSearch_EnterID" xml:space="preserve">
+    <value>Enter a Model ID...</value>
+  </data>
+  <data name="ModelSearch_ItemsFound" xml:space="preserve">
+    <value>{0} Items Found.</value>
+  </data>
+  <data name="ModelSearch_NoItemsFound" xml:space="preserve">
+    <value>No Items Found.</value>
+  </data>
+  <data name="ModelSearch_Numeric" xml:space="preserve">
+    <value>Must be a number</value>
+  </data>
+  <data name="ModelStatus_Success" xml:space="preserve">
+    <value>Model Loaded Successfully</value>
+  </data>
+  <data name="ModelStatus_UpdateSuccess" xml:space="preserve">
+    <value>Model Updated Successfully</value>
+  </data>
+  <data name="New_Mesh_MeshPart_Count" xml:space="preserve">
+    <value>This is a new mesh containing {0} parts.</value>
+  </data>
+  <data name="Removed_Mesh" xml:space="preserve">
+    <value>removed mesh(es)
+Removed Mesh Number(s):</value>
+  </data>
+  <data name="Removed_MeshParts" xml:space="preserve">
+    <value>removed mesh part(s) for this mesh
+Removed Part Number(s):</value>
+  </data>
+  <data name="Removed_MeshParts_Note" xml:space="preserve">
+    <value>Changes to these removed parts below will have no effect</value>
+  </data>
+  <data name="Removed_Mesh_Note" xml:space="preserve">
+    <value>Changes to these removed meshes above will have no effect</value>
+  </data>
+  <data name="Start_Over" xml:space="preserve">
+    <value>Start Over</value>
+  </data>
+  <data name="UI_SearchStatus_Max" xml:space="preserve">
+    <value>Icon values have a maximum of 6 digits, try again.</value>
+  </data>
+  <data name="UI_SearchStatus_Numeric" xml:space="preserve">
+    <value>Input can only be numbers, try again.</value>
+  </data>
+  <data name="UI_Search_NothingFound" xml:space="preserve">
+    <value>No data found for icon {0}, try another.</value>
+  </data>
+  <data name="Edit_Group" xml:space="preserve">
+    <value>Edit Group</value>
+  </data>
+  <data name="Index_Locked" xml:space="preserve">
+    <value>Unable to import while game is running.</value>
+  </data>
+  <data name="No_3D_Mods" xml:space="preserve">
+    <value>There are no 3D Model mods present.
+
+If you would like to enable this, first import a model for the selected item.</value>
+  </data>
+  <data name="No_Material_Mods" xml:space="preserve">
+    <value>There are no Material mods present.
+
+If you would like to enable this, first import a Material for the selected item.</value>
+  </data>
+  <data name="No_Texture_Mods" xml:space="preserve">
+    <value>There are no Texture mods present.
+
+If you would like to enable this, first import a texture for the selected item.</value>
+  </data>
+  <data name="Customize_DefaultRace" xml:space="preserve">
+    <value>TexTools will choose the selected race by default if available when viewing Textures and Models.</value>
+  </data>
+  <data name="ProblemCheck_BackupError" xml:space="preserve">
+    <value>There was an issue checking Backup Index Files</value>
+  </data>
+  <data name="ProblemCheck_Dat" xml:space="preserve">
+    <value>Checking Dat....</value>
+  </data>
+  <data name="ProblemCheck_DatMissing" xml:space="preserve">
+    <value>The Dat File ( 060000.win32.dat1 ) could not be found.</value>
+  </data>
+  <data name="ProblemCheck_ErrorsFound" xml:space="preserve">
+    <value>Errors found attempting to repair....</value>
+  </data>
+  <data name="ProblemCheck_ExtraDats" xml:space="preserve">
+    <value>Extra Dat files found, recommend Start Over</value>
+  </data>
+  <data name="ProblemCheck_IndexBackups" xml:space="preserve">
+    <value>Checking Index Backups....</value>
+  </data>
+  <data name="ProblemCheck_IndexDat" xml:space="preserve">
+    <value>Checking Index Dat Values....</value>
+  </data>
+  <data name="ProblemCheck_IndexLocked" xml:space="preserve">
+    <value>Cannot run repairs with game open. Please exit the game and run Check For Problems again.</value>
+  </data>
+  <data name="ProblemCheck_Initialize" xml:space="preserve">
+    <value>Initializing Problem Check....</value>
+  </data>
+  <data name="ProblemCheck_LoD" xml:space="preserve">
+    <value>Checking LoD settings....</value>
+  </data>
+  <data name="ProblemCheck_LoDIssue" xml:space="preserve">
+    <value>Certain mods have issues with LoD ON.</value>
+  </data>
+  <data name="ProblemCheck_LoDOff" xml:space="preserve">
+    <value>Turning off LoD...</value>
+  </data>
+  <data name="ProblemCheck_LoDOffDone" xml:space="preserve">
+    <value>LoD OFF, running check...</value>
+  </data>
+  <data name="ProblemCheck_MissingData" xml:space="preserve">
+    <value>The Dat File ( 060000.win32.dat1 ) is missing data.</value>
+  </data>
+  <data name="ProblemCheck_ModList" xml:space="preserve">
+    <value>Checking Modlist....</value>
+  </data>
+  <data name="ProblemCheck_ModZero" xml:space="preserve">
+    <value>Mod Offset was 0, Disable from File &gt; Modlist and reimport.</value>
+  </data>
+  <data name="ProblemCheck_NoBackup" xml:space="preserve">
+    <value>No Backup Found.</value>
+  </data>
+  <data name="ProblemCheck_NoEntries" xml:space="preserve">
+    <value>No entries found in modlist.</value>
+  </data>
+  <data name="ProblemCheck_OriginalZero" xml:space="preserve">
+    <value>Original Offset was 0, you will be unable to revert to original, consider starting over.</value>
+  </data>
+  <data name="ProblemCheck_OutOfDate" xml:space="preserve">
+    <value>index out of date.</value>
+  </data>
+  <data name="ProblemCheck_RepairComplete" xml:space="preserve">
+    <value>Repairs Complete</value>
+  </data>
+  <data name="ProblemCheck_UnkType" xml:space="preserve">
+    <value>Found unknown file type ( {0} ) offset is most likely corrupt.</value>
   </data>
 </root>

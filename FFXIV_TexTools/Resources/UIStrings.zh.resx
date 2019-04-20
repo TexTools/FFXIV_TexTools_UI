@@ -225,9 +225,6 @@
   <data name="Simple_ModPack" xml:space="preserve">
     <value>简单Mod包</value>
   </data>
-  <data name="Start_Over" xml:space="preserve">
-    <value>初始化</value>
-  </data>
   <data name="Texture" xml:space="preserve">
     <value>纹理</value>
   </data>
@@ -570,9 +567,6 @@
   <data name="Standalone_Non_ModPack" xml:space="preserve">
     <value>孤立(非Mod包)</value>
   </data>
-  <data name="Start_Over_Info" xml:space="preserve">
-    <value>初始化将：1.将游戏文件还原。2.删除所有mod及数据。3.清除所有mod记录。是否初始化？</value>
-  </data>
   <data name="This_will_only_affect_shared_races" xml:space="preserve">
     <value>这只会影响共享种族</value>
   </data>
@@ -731,5 +725,8 @@
   </data>
   <data name="Keep_Camera_Position" xml:space="preserve">
     <value>保持摄影机位置</value>
+  </data>
+  <data name="Start_Over" xml:space="preserve">
+    <value>初始化</value>
   </data>
 </root>

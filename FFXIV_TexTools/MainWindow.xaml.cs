@@ -25,7 +25,6 @@ using MahApps.Metro.Controls.Dialogs;
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
@@ -88,10 +87,8 @@ namespace FFXIV_TexTools
             }
             catch (Exception e)
             {
-                System.Windows.MessageBox.Show(
-                    "TexTools was unable to locate dependency files.\nPlease make sure you are running TexTools in the folder it came in.\n\nIf you continue to receive this error," +
-                    $"\nPlease make sure your Anti-Virus is not blocking TexTools.\n\nError: {e.Message}\n\n Exception:{e.InnerException}",
-                    "Dependencies Error v" + fileVersion);
+                System.Windows.MessageBox.Show(string.Format(UIMessages.DependencyErrorMessage, e.Message, e.InnerException),
+                    string.Format(UIMessages.DependencyErrorTitle, fileVersion));
                 Environment.Exit(-1);
                 return;
             }
@@ -112,7 +109,7 @@ namespace FFXIV_TexTools
 
         private void CheckForUpdates()
         {
-            AutoUpdater.Start("https://raw.githubusercontent.com/liinko/FFXIVTexToolsWeb/master/updater.xml");
+            AutoUpdater.Start(WebUrl.TexTools_Update_Url);
         }
 
         private void CheckForSettingsUpdate()
@@ -132,10 +129,7 @@ namespace FFXIV_TexTools
 
             if (index.IsIndexLocked(XivDataFile._0A_Exd))
             {
-                FlexibleMessageBox.Show("Error Accessing Index File\n\n" +
-                                        "Please exit the game before proceeding.\n" +
-                                        "-----------------------------------------------------\n\n",
-                    "Index Access Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                FlexibleMessageBox.Show(UIMessages.IndexLockedErrorMessage, UIMessages.IndexLockedErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             else
             {
@@ -346,11 +340,11 @@ namespace FFXIV_TexTools
             {
                 if (wizard.ModPackFileName.Equals("NoData"))
                 {
-                    await this.ShowMessageAsync("Error: Mod Pack Creation Failed", "No mods were detected in the options list.");
+                    await this.ShowMessageAsync(UIMessages.ModPackCreationFailedErrorTitle, UIMessages.NoModsDetectedErrorMessage);
                 }
                 else
                 {
-                    await this.ShowMessageAsync("Mod Pack Creation Complete", $"The ModPack ({wizard.ModPackFileName}.ttmp2) has been successfully Created.");
+                    await this.ShowMessageAsync(UIMessages.ModPackCreationCompleteTitle, string.Format(UIMessages.ModPackCreationCompleteMessage, wizard.ModPackFileName));
                 }
             }
         }
@@ -377,7 +371,7 @@ namespace FFXIV_TexTools
 
                 if (fileInfo.Length == 0)
                 {
-                    FlexibleMessageBox.Show($"TTMP file [ {Path.GetFileNameWithoutExtension(fileName)} ] is empty.\n\nImporting Canceled.", $"Import Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    FlexibleMessageBox.Show(string.Format(UIMessages.EmptyTTMPFileErrorMessage, Path.GetFileNameWithoutExtension(fileName)), UIMessages.ImportErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     continue;
                 }
 
@@ -386,8 +380,7 @@ namespace FFXIV_TexTools
 
             if (modsImported > 0)
             {
-                await this.ShowMessageAsync("Import Complete",
-                    $"{modsImported} mod(s) successfully imported.");
+                await this.ShowMessageAsync(UIMessages.ImportCompleteTitle, string.Format(UIMessages.SuccessfulImportCountMessage, modsImported));
             }
         }
 
@@ -414,10 +407,7 @@ namespace FFXIV_TexTools
 
                     if (index.IsIndexLocked(XivDataFile._0A_Exd))
                     {
-                        FlexibleMessageBox.Show("Error Accessing Index File\n\n" +
-                                                "Please exit the game before proceeding.\n" +
-                                                "-----------------------------------------------------\n\n",
-                            "Index Access Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        FlexibleMessageBox.Show(UIMessages.IndexLockedErrorMessage, UIMessages.IndexLockedErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                         return 0;
                     }
@@ -501,7 +491,7 @@ namespace FFXIV_TexTools
                 }
                 else
                 {
-                    FlexibleMessageBox.Show($"There was an error importing the mod pack at {path.FullName}\n\nMessage: {ex.Message}", $"ModPack Import Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    FlexibleMessageBox.Show(string.Format(UIMessages.ModPackImportErrorMessage, path.FullName, ex.Message), UIMessages.ModPackImportErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return 0;
                 }
             }
@@ -519,7 +509,7 @@ namespace FFXIV_TexTools
 
             if (result == true)
             {
-                await this.ShowMessageAsync("Mod Pack Creation Complete", $"The ModPack ({simpleCreator.ModPackFileName}.ttmp2) has been successfully Created.");
+                await this.ShowMessageAsync(UIMessages.ModPackCreationCompleteTitle, string.Format(UIMessages.ModPackCreationCompleteMessage, simpleCreator.ModPackFileName));
             }
         }
 
@@ -535,26 +525,13 @@ namespace FFXIV_TexTools
 
             if (index.IsIndexLocked(XivDataFile._0A_Exd))
             {
-                FlexibleMessageBox.Show("Error Accessing Index File\n\n" +
-                                        "Please exit the game before proceeding.\n" +
-                                        "-----------------------------------------------------\n\n", 
-                    "Index Access Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                FlexibleMessageBox.Show(UIMessages.IndexLockedErrorMessage, UIMessages.IndexLockedErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                 return;
             }
 
-            //esrinzou for chinese UI
-            /*
-            var result = FlexibleMessageBox.Show("Starting over will:\n\n" +
-                                                 "Restore index files to their original state.\n" +
-                                                 "Delete all mod dat files from game folder.\n" +
-                                                 "Delete all mod list file entries.\n\n" +
-                                                 "Do you want to start over?", "Start Over", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
-
-             */
             //esrinzou begin
-            var result = FlexibleMessageBox.Show(UIStrings.Start_Over_Info, UIStrings.Start_Over, MessageBoxButtons.YesNo, MessageBoxIcon.Information);
-
+            var result = FlexibleMessageBox.Show(UIMessages.StartOverMessage, UIMessages.StartOverTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Information);
             //esrinzou end
 
             if (result == System.Windows.Forms.DialogResult.Yes)
@@ -563,9 +540,8 @@ namespace FFXIV_TexTools
 
                 if (!Directory.Exists(indexBackupsDirectory.FullName))
                 {
-                    FlexibleMessageBox.Show("Error Accessing Index Backups Folder\n\n" +
-                                            "Please set your Index Backups directory in Options > Customize and try again.\n",
-                        "Index Backups Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    FlexibleMessageBox.Show(UIMessages.BackupFolderAccessErrorMessage,
+                        UIMessages.IndexBackupsErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
 
@@ -583,10 +559,7 @@ namespace FFXIV_TexTools
 
                     if (!outdatedCheck)
                     {
-                        FlexibleMessageBox.Show("Index Backups are outdated.\n\n" +
-                                                "Please create a new backup from Help > Backup Index Files\n\n" +
-                                                "TexTools will attempt to start over without using backups.",
-                            "Index Backups Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        FlexibleMessageBox.Show(UIMessages.OutdatedBackupsErrorMessage, UIMessages.IndexBackupsErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                         outdated = true;
                     }
@@ -604,10 +577,8 @@ namespace FFXIV_TexTools
                     // Make sure backups exist
                     if (backupFiles.Length == 0)
                     {
-                        FlexibleMessageBox.Show($"No backup files found in the following directory:\n{indexBackupsDirectory.FullName}\n\n" +
-                                                $"Index entries will be put back to original offsets instead.\n" +
-                                                "-----------------------------------------------------\n\n",
-                            "Backup Files Missing", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        FlexibleMessageBox.Show(string.Format(UIMessages.NoBackupsFoundErrorMessage, indexBackupsDirectory.FullName),
+                            UIMessages.BackupFilesMissingTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
                         // Toggle off all mods
                         modding.ToggleAllMods(false);
@@ -656,7 +627,7 @@ namespace FFXIV_TexTools
 
                 UpdateViews(ItemTreeView.SelectedItem as Category);
 
-                await this.ShowMessageAsync("Start Over Complete", "The start over process has been completed.");
+                await this.ShowMessageAsync(UIMessages.StartOverCompleteTitle, UIMessages.StartOverCompleteMessage);
             }
         }
 
@@ -667,10 +638,7 @@ namespace FFXIV_TexTools
 
         private async void Menu_Backup_Click(object sender, RoutedEventArgs e)
         {
-            var result = FlexibleMessageBox.Show("This will create a backup of the index files TexTools can modify (01, 04, 06)\n\n" +
-                                                 "Do you want to Backup Now?" +
-                                                 "\n\nWarning:\nIn order to create a clean backup, all active modifications will be set to disabled, they will have to be re-enabled manually.",
-                "Backup Index Files", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+            var result = FlexibleMessageBox.Show(UIMessages.CreateBackupsMessage, UIMessages.CreateBackupsTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Information);
 
             if (result == System.Windows.Forms.DialogResult.Yes)
             {
@@ -682,7 +650,7 @@ namespace FFXIV_TexTools
 
                 if (index.IsIndexLocked(XivDataFile._0A_Exd))
                 {
-                    FlexibleMessageBox.Show("Unable to create backup while game is running.", $"Backup Creation Failed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    FlexibleMessageBox.Show(UIMessages.IndexLockedBackupFailedMessage, UIMessages.BackupFailedTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
@@ -693,7 +661,7 @@ namespace FFXIV_TexTools
                 }
                 catch (Exception ex)
                 {
-                    FlexibleMessageBox.Show($"Unable to create backup files.\n\nError Message:\n{ex.Message}", $"Backup Creation Failed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    FlexibleMessageBox.Show(string.Format(UIMessages.BackupFailedErrorMessage, ex.Message), UIMessages.BackupFailedTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
@@ -708,11 +676,11 @@ namespace FFXIV_TexTools
                     }
                     catch (Exception ex)
                     {
-                        FlexibleMessageBox.Show($"Unable to create backups.\n\nError: {ex.Message}", $"Backup Creation Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        FlexibleMessageBox.Show(string.Format(UIMessages.BackupFailedErrorMessage, ex.Message), UIMessages.BackupFailedTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
 
-                await this.ShowMessageAsync("Backup Complete", "The index files have been successfully backed up");
+                await this.ShowMessageAsync(UIMessages.BackupCompleteTitle, UIMessages.BackupCompleteMessage);
             }
         }
         private void ItemTreeView_Loaded(object sender, RoutedEventArgs e)
@@ -734,7 +702,7 @@ namespace FFXIV_TexTools
                     }
                     catch (Exception ex)
                     {
-                        FlexibleMessageBox.Show($"There was an error getting the Items List\n\n{ex.Message}", $"Items List Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        FlexibleMessageBox.Show(string.Format(UIMessages.ItemsListErrorMessage, ex.Message), UIMessages.ItemsListErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                     App.Current.Dispatcher.Invoke(() => { 
                         var view = (CollectionView)CollectionViewSource.GetDefaultView(ItemTreeView.ItemsSource);
@@ -802,7 +770,7 @@ namespace FFXIV_TexTools
 
         private void ChinaDiscordButton_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start("http://149.129.96.215:8989");
+            Process.Start(WebUrl.Discord_China);
         }
     }
 }

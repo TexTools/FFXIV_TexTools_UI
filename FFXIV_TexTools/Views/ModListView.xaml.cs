@@ -24,6 +24,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Media;
+using FFXIV_TexTools.Resources;
 using xivModdingFramework.Items.DataContainers;
 using xivModdingFramework.Mods;
 using ListBox = System.Windows.Controls.ListBox;
@@ -170,8 +171,8 @@ namespace FFXIV_TexTools.Views
             if ((ModListTreeView.SelectedItem as Category).ParentCategory.Name.Equals("ModPacks"))
             {
                 if (FlexibleMessageBox.Show(
-                        "Caution: This will delete all the mods for the currently selected Mod Pack.\n\nThis process is not reversible, do you want to continue?", 
-                        "Mod Pack Deletion Warning.",
+                        UIMessages.DeleteModPackMessage, 
+                        UIMessages.DeleteModPackTitle,
                         MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == System.Windows.Forms.DialogResult.Yes)
                 {
                     modding.DeleteModPack((ModListTreeView.SelectedItem as Category).Name);

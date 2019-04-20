@@ -80,8 +80,8 @@
     <Reference Include="HelixToolkit.Wpf.SharpDX, Version=2.6.1.0, Culture=neutral, PublicKeyToken=52aa3500039caf0d, processorArchitecture=MSIL">
       <HintPath>..\packages\HelixToolkit.Wpf.SharpDX.2.6.1\lib\net45\HelixToolkit.Wpf.SharpDX.dll</HintPath>
     </Reference>
-    <Reference Include="Magick.NET-Q8-AnyCPU, Version=7.11.0.0, Culture=neutral, PublicKeyToken=2004825badfa91ec, processorArchitecture=MSIL">
-      <HintPath>..\packages\Magick.NET-Q8-AnyCPU.7.11.0\lib\net40\Magick.NET-Q8-AnyCPU.dll</HintPath>
+    <Reference Include="Magick.NET-Q8-AnyCPU, Version=7.12.0.0, Culture=neutral, PublicKeyToken=2004825badfa91ec, processorArchitecture=MSIL">
+      <HintPath>..\packages\Magick.NET-Q8-AnyCPU.7.12.0\lib\net40\Magick.NET-Q8-AnyCPU.dll</HintPath>
     </Reference>
     <Reference Include="MahApps.Metro, Version=1.6.5.1, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MahApps.Metro.1.6.5\lib\net46\MahApps.Metro.dll</HintPath>
@@ -178,6 +178,11 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>CommonInstallDirectories.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Resources\UIMessages.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>UIMessages.resx</DependentUpon>
     </Compile>
     <Compile Include="Resources\UIStrings.zh.Designer.cs">
       <DependentUpon>UIStrings.zh.resx</DependentUpon>
@@ -436,6 +441,19 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>CommonInstallDirectories.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Include="Resources\UIMessages.de.resx" />
+    <EmbeddedResource Include="Resources\UIMessages.fr.resx" />
+    <EmbeddedResource Include="Resources\UIMessages.ja.resx" />
+    <EmbeddedResource Include="Resources\UIMessages.ko.resx" />
+    <EmbeddedResource Include="Resources\UIMessages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>UIMessages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\UIMessages.zh.resx" />
+    <EmbeddedResource Include="Resources\UIStrings.de.resx" />
+    <EmbeddedResource Include="Resources\UIStrings.fr.resx" />
+    <EmbeddedResource Include="Resources\UIStrings.ja.resx" />
+    <EmbeddedResource Include="Resources\UIStrings.ko.resx" />
     <EmbeddedResource Include="Resources\UIStrings.zh.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>UIStrings.zh.Designer.cs</LastGenOutput>
@@ -444,6 +462,7 @@
     <EmbeddedResource Include="Resources\UIStrings.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>UIStrings.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Resources\WebUrl.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -457,6 +476,10 @@
       <LastGenOutput>XivStringRaces.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="Resources\XivStrings.de.resx" />
+    <EmbeddedResource Include="Resources\XivStrings.fr.resx" />
+    <EmbeddedResource Include="Resources\XivStrings.ja.resx" />
+    <EmbeddedResource Include="Resources\XivStrings.ko.resx" />
     <EmbeddedResource Include="Resources\XivStrings.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>XivStrings.Designer.cs</LastGenOutput>
