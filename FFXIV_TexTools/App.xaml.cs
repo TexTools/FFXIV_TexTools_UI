@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Threading;
+using HelixToolkit.Wpf.SharpDX.Utilities;
 using Application = System.Windows.Application;
 using Clipboard = System.Windows.Clipboard;
 
@@ -17,6 +18,8 @@ namespace FFXIV_TexTools
     /// </summary>
     public partial class App : Application
     {
+        static NVOptimusEnabler nvEnabler = new NVOptimusEnabler();
+
         protected override void OnStartup(StartupEventArgs e)
         {
             var appStyle = ThemeManager.DetectAppStyle(Application.Current);
