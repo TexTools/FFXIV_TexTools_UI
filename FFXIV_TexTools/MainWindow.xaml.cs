@@ -198,8 +198,8 @@ namespace FFXIV_TexTools
         {
             if (selectedItem?.Item != null)
             {
-                TextureView textureView = TextureTabItem.Content as TextureView; ;
-                TextureViewModel textureViewModel = textureView.DataContext as TextureViewModel;
+                var textureView = TextureTabItem.Content as TextureView; ;
+                var textureViewModel = textureView.DataContext as TextureViewModel;
 
                 textureViewModel.UpdateTexture(selectedItem.Item);
 
