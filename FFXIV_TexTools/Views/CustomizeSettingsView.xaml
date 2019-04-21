@@ -53,7 +53,7 @@
                         <RowDefinition/>
                     </Grid.RowDefinitions>
                     <ComboBox VerticalAlignment="Top" HorizontalAlignment="Left" mah:TextBoxHelper.UseFloatingWatermark="True" mah:TextBoxHelper.Watermark="Race" ItemsSource="{Binding DefaultRaces}" SelectedItem="{Binding SelectedDefaultRace}"/>
-                    <TextBox Grid.Row="1" Text="{Binding Source={x:Static resx:UIStrings.Customize_DefaultRace}}" IsReadOnly="True" TextWrapping="Wrap" BorderThickness="0"/>
+                    <TextBox Grid.Row="1" Text="{Binding Source={x:Static resx:UIStrings.Customize_DefaultRace}, Mode=OneWay}" IsReadOnly="True" TextWrapping="Wrap" BorderThickness="0"/>
                 </Grid>
             </GroupBox>
         </Grid>
