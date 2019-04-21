@@ -447,4 +447,7 @@
   <data name="Titan_Egi" xml:space="preserve">
     <value>Titan-Egi</value>
   </data>
+  <data name="Paintings" xml:space="preserve">
+    <value>Paintings</value>
+  </data>
 </root>

@@ -187,7 +187,21 @@ namespace FFXIV_TexTools.ViewModels
             {
                 Races.Add(new ComboBoxData { Name = XivRace.All_Races.GetDisplayName(), XivRace = XivRace.All_Races });
 
-                _item = item as IItemModel;
+                if (item.ItemCategory.Equals(XivStrings.Paintings))
+                {
+                    _uiItem = new XivUi
+                    {
+                        Name = item.Name,
+                        Category = item.Category,
+                        ItemCategory = item.ItemCategory,
+                        IconNumber = ((IItemModel)item).ModelInfo.ModelID,
+                        DataFile = XivDataFile._06_Ui
+                    };
+                }
+                else
+                {
+                    _item = item as IItemModel;
+                }
             }
 
             _raceCount = Races.Count;
