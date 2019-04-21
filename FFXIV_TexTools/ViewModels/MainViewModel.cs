@@ -127,8 +127,6 @@ namespace FFXIV_TexTools.ViewModels
                             catch (Exception ex)
                             {
                                 error = true;
-                                var message =
-                                    $"";
                                 FlexibleMessageBox.Show(string.Format(UIMessages.OldModListDisableFailedMessage, ex.Message), UIMessages.PreviousVersionErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
                             }
                         }
