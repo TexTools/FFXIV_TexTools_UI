@@ -247,7 +247,8 @@ namespace FFXIV_TexTools.ViewModels
                     {
                         Name = mainCategory,
                         Categories = new ObservableCollection<Category>(),
-                        CategoryList = new List<string>()
+                        CategoryList = new List<string>(),
+                        ParentCategory = modPackCategory.Value
                     };
 
                     var modItems =
@@ -447,19 +448,52 @@ namespace FFXIV_TexTools.ViewModels
         /// Update the mod list entries
         /// </summary>
         /// <param name="selectedItem">The selected item to update the entries for</param>
-        public void UpdateList(XivGenericItemModel selectedItem)
+        public void UpdateList(Category category)
         {
             ListVisibility = Visibility.Visible;
             InfoGridVisibility = Visibility.Collapsed;
+            ModListPreviewList.Clear();
+
+            var selectedItem = category.Item as XivGenericItemModel;
+            if (selectedItem == null) return;
 
             var modList = JsonConvert.DeserializeObject<ModList>(File.ReadAllText(_modListDirectory.FullName));
 
-            var modItems =
-                from mod in modList.Mods
-                where mod.name.Equals(selectedItem.Name)
-                select mod;
+            var modItems = new List<Mod>();
 
-            ModListPreviewList.Clear();
+            if (ModPackFilter)
+            {
+                var modPackCategory = category;
+
+                while (!modPackCategory.ParentCategory.Name.Equals("ModPacks") )
+                {
+                    modPackCategory = modPackCategory.ParentCategory;
+                }
+
+                foreach (var mod in modList.Mods)
+                {
+                    if(!mod.name.Equals(selectedItem.Name)) continue;
+                    
+                    if (mod.modPack != null)
+                    {
+                        if (mod.modPack.name == modPackCategory.Name)
+                        {
+                            modItems.Add(mod);
+                        }
+                    }
+                    else
+                    {
+                        modItems.Add(mod);
+                    }
+                }
+            }
+            else
+            {
+                modItems =
+                    (from mod in modList.Mods
+                    where mod.name.Equals(selectedItem.Name)
+                    select mod).ToList();
+            }
 
             foreach (var modItem in modItems)
             {

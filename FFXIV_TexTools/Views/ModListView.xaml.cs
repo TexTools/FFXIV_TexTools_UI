@@ -58,7 +58,7 @@ namespace FFXIV_TexTools.Views
                 }
                 else
                 {
-                    (DataContext as ModListViewModel).UpdateList(selectedItem.Item as XivGenericItemModel);
+                    (DataContext as ModListViewModel).UpdateList(selectedItem);
                 }
             }
             else
