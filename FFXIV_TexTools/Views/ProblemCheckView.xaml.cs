@@ -21,6 +21,8 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Forms;
@@ -42,6 +44,7 @@ namespace FFXIV_TexTools.Views
         private DirectoryInfo _gameDirectory;
         private List<XivDataFile> _indexDatRepairList = new List<XivDataFile>();
         private string textColor = "Black";
+        private CancellationTokenSource cts = new CancellationTokenSource();
 
         public ProblemCheckView()
         {
@@ -57,20 +60,31 @@ namespace FFXIV_TexTools.Views
 
             _problemChecker = new ProblemChecker(_gameDirectory);
 
+            RunChecks();
+        }
+
+        private async void RunChecks()
+        {
             var index = new Index(_gameDirectory);
+
+            IProgress<(int current, int total)> progress = new Progress<(int current, int total)>((update) =>
+            {
+                ProgressBar.Value = (((float)update.current / (float)update.total) * 100);
+                ProgressLabel.Content = $"{update.current} / {update.total}";
+            });
 
             AddText($"{UIStrings.ProblemCheck_Initialize}\n\n", textColor);
 
             AddText($"{UIStrings.ProblemCheck_IndexDat}\n", "Blue");
 
-            if (CheckIndexDatCounts())
+            if (await CheckIndexDatCounts())
             {
                 AddText($"\n{UIStrings.ProblemCheck_ErrorsFound}\n", "Blue");
                 if (!index.IsIndexLocked(XivDataFile._0A_Exd))
                 {
-                    FixIndexDatCounts();
+                    await FixIndexDatCounts();
                     AddText($"{UIStrings.ProblemCheck_RepairComplete}\n", "Green");
-                    CheckIndexDatCounts();
+                    await CheckIndexDatCounts();
                 }
                 else
                 {
@@ -79,23 +93,27 @@ namespace FFXIV_TexTools.Views
             }
 
             AddText($"\n{UIStrings.ProblemCheck_IndexBackups}\n", "Blue");
-            CheckBackups();
+            await CheckBackups();
 
             AddText($"\n{UIStrings.ProblemCheck_Dat}\n", "Blue");
             CheckDat();
 
             AddText($"\n{UIStrings.ProblemCheck_ModList}\n", "Blue");
-            CheckMods();
+            await CheckMods(progress);
+
+            ProgressBar.Value = 0;
+            ProgressLabel.Content = UIStrings.Done;
 
             AddText($"\n{UIStrings.ProblemCheck_LoD}\n", "Blue");
-            CheckLoD();
+            await CheckLoD();
+
         }
 
         /// <summary>
         /// Checks the dat counts in the index file
         /// </summary>
         /// <returns>Flag for problem found</returns>
-        private bool CheckIndexDatCounts()
+        private async Task<bool> CheckIndexDatCounts()
         {
             var problemFound = false;
 
@@ -107,7 +125,7 @@ namespace FFXIV_TexTools.Views
 
                 try
                 {
-                    var result = _problemChecker.CheckIndexDatCounts(file);
+                    var result = await _problemChecker.CheckIndexDatCounts(file);
 
                     if (result)
                     {
@@ -120,7 +138,7 @@ namespace FFXIV_TexTools.Views
                         AddText("\t\u2714\t", "Green");
                     }
 
-                    result = _problemChecker.CheckForLargeDats(file);
+                    result = await _problemChecker.CheckForLargeDats(file);
 
                     if (result)
                     {
@@ -146,11 +164,11 @@ namespace FFXIV_TexTools.Views
         /// <summary>
         /// Fixes the dat counts in the index files
         /// </summary>
-        private void FixIndexDatCounts()
+        private async Task FixIndexDatCounts()
         {
             foreach (var xivDataFile in _indexDatRepairList)
             {
-                _problemChecker.RepairIndexDatCounts(xivDataFile);
+                await _problemChecker.RepairIndexDatCounts(xivDataFile);
             }
         }
 
@@ -181,115 +199,130 @@ namespace FFXIV_TexTools.Views
                 AddText("\t\u2716\n", "Red");
                 AddText($"\t{UIStrings.ProblemCheck_DatMissing} \n", "Red");
             }
-
-
         }
 
         /// <summary>
         /// Checks the mods for any problems
         /// </summary>
-        private void CheckMods()
+        private Task CheckMods(IProgress<(int current, int total)> progress)
         {
-            var modListDirectory = new DirectoryInfo(Path.Combine(_gameDirectory.Parent.Parent.FullName, XivStrings.ModlistFilePath));
-
-            var modList = JsonConvert.DeserializeObject<ModList>(File.ReadAllText(modListDirectory.FullName));
-
-            var dat = new Dat(_gameDirectory);
-
-            if (modList.modCount > 0)
+            return Task.Run(() =>
             {
-                foreach (var mod in modList.Mods)
+                var modListDirectory = new DirectoryInfo(Path.Combine(_gameDirectory.Parent.Parent.FullName, XivStrings.ModlistFilePath));
+
+                var modList = JsonConvert.DeserializeObject<ModList>(File.ReadAllText(modListDirectory.FullName));
+
+                var dat = new Dat(_gameDirectory);
+
+                if (modList.modCount > 0)
                 {
-                    if (mod.name.Equals(string.Empty)) continue;
+                    var modNum = 0;
 
-                    var fileName = Path.GetFileName(mod.fullPath);
+                    foreach (var mod in modList.Mods)
+                    {
+                        progress.Report((modNum, modList.modCount));
 
-                    var tabs = "";
-                    if (fileName.Length < 21 && fileName.Length > 12)
-                    {
-                        tabs = "\t";
-                    }
-                    else if (fileName.Length < 12)
-                    {
-                        tabs = "\t\t";
-                    }
+                        if (mod.name.Equals(string.Empty)) continue;
 
-                    AddText($"\t{fileName}{tabs}", textColor);
+                        var fileName = Path.GetFileName(mod.fullPath);
 
-                    if (mod.data.originalOffset == 0)
-                    {
-                        AddText("\t\u2716\n", "Red");
-                        AddText($"\t{UIStrings.ProblemCheck_OriginalZero} \n", "Red");
-                    }
-                    else if (mod.data.modOffset == 0)
-                    {
-                        AddText("\t\u2716\n", "Red");
-                        AddText($"\t{UIStrings.ProblemCheck_ModZero}\n", "Red");
-                    }
-                    else
-                    {
-                        AddText("\t\u2714", "Green");
-                    }
+                        var tabs = "";
+                        if (fileName.Length < 21 && fileName.Length > 12)
+                        {
+                            tabs = "\t";
+                        }
+                        else if (fileName.Length < 12)
+                        {
+                            tabs = "\t\t";
+                        }
 
-                    var fileType = 0;
-                    try
-                    {
-                        fileType = dat.GetFileType(mod.data.modOffset, XivDataFiles.GetXivDataFile(mod.datFile));
-                    }
-                    catch(Exception ex)
-                    {
-                        AddText("\t\u2716\n", "Red");
-                        AddText($"\tError: {ex.Message}\n", "Red");
-                    }
+                        Dispatcher.Invoke(() => AddText($"\t{fileName}{tabs}", textColor));
 
+                        if (mod.data.originalOffset == 0)
+                        {
+                            Dispatcher.Invoke(() => AddText("\t\u2716\n", "Red"));
+                            Dispatcher.Invoke(() => AddText($"\t{UIStrings.ProblemCheck_OriginalZero} \n", "Red"));
+                        }
+                        else if (mod.data.modOffset == 0)
+                        {
+                            Dispatcher.Invoke(() => AddText("\t\u2716\n", "Red"));
+                            Dispatcher.Invoke(() => AddText($"\t{UIStrings.ProblemCheck_ModZero}\n", "Red"));
+                        }
+                        else
+                        {
+                            Dispatcher.Invoke(() => AddText("\t\u2714", "Green"));
+                        }
 
-                    if (fileType != 2 && fileType != 3 && fileType != 4)
-                    {
-                        AddText("\t\u2716\n", "Red");
-                        AddText($"\t{string.Format(UIStrings.ProblemCheck_UnkType, fileType)}\n", "Red");
-                    }
-                    else
-                    {
-                        AddText("\t\u2714\n", "Green");
+                        var fileType = 0;
+                        try
+                        {
+                            fileType = dat.GetFileType(mod.data.modOffset, XivDataFiles.GetXivDataFile(mod.datFile));
+                        }
+                        catch (Exception ex)
+                        {
+                            Dispatcher.Invoke(() => AddText("\t\u2716\n", "Red"));
+                            Dispatcher.Invoke(() => AddText($"\tError: {ex.Message}\n", "Red"));
+                        }
+
+                        if (fileType != 2 && fileType != 3 && fileType != 4)
+                        {
+                            Dispatcher.Invoke(() => AddText("\t\u2716\n", "Red"));
+                            Dispatcher.Invoke(() => AddText($"\t{string.Format(UIStrings.ProblemCheck_UnkType, fileType)}\n", "Red"));
+                        }
+                        else
+                        {
+                            Dispatcher.Invoke(() => AddText("\t\u2714\n", "Green"));
+                        }
+
+                        modNum++;
+
+                        Dispatcher.Invoke(() => cfpTextBox.ScrollToEnd());
                     }
                 }
-            }
-            else
-            {
-                AddText($"\t{UIStrings.ProblemCheck_NoEntries}\n", "Orange");
-            }
+                else
+                {
+                    Dispatcher.Invoke(() => AddText($"\t{UIStrings.ProblemCheck_NoEntries}\n", "Orange"));
+                }
+            }, cts.Token);
         }
 
         /// <summary>
         /// Checks if LoD is on or off, and turns off if it is enabled
         /// </summary>
-        private void CheckLoD()
+        private async Task CheckLoD()
         {
             var dir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\My Games\\FINAL FANTASY XIV - A Realm Reborn";
 
             var problem = false;
-            var DX11 = false;
 
             if (Directory.Exists(dir))
             {
-                if (File.Exists($"{dir}\\FFXIV_BOOT.cfg"))
+                var DX11 = await Task.Run(() =>
                 {
-                    var lines = File.ReadAllLines($"{dir}\\FFXIV_BOOT.cfg");
+                    var dx = false;
 
-                    foreach (var line in lines)
+                    if (File.Exists($"{dir}\\FFXIV_BOOT.cfg"))
                     {
-                        if (line.Contains("DX11Enabled"))
-                        {
-                            var val = line.Substring(line.Length - 1, 1);
-                            if (val.Equals("1"))
-                            {
-                                DX11 = true;
-                            }
+                        var lines = File.ReadAllLines($"{dir}\\FFXIV_BOOT.cfg");
 
-                            break;
+                        foreach (var line in lines)
+                        {
+                            if (line.Contains("DX11Enabled"))
+                            {
+                                var val = line.Substring(line.Length - 1, 1);
+                                if (val.Equals("1"))
+                                {
+                                    dx = true;
+                                }
+  
+                                break;
+                            }
                         }
                     }
-                }
+
+                    return dx;
+                }, cts.Token);
+
 
                 if (File.Exists($"{dir}\\FFXIV.cfg"))
                 {
@@ -352,13 +385,13 @@ namespace FFXIV_TexTools.Views
                         File.WriteAllLines($"{dir}\\FFXIV.cfg", lines);
 
                         AddText($"\t{UIStrings.ProblemCheck_LoDOffDone}\n\n", textColor);
-                        CheckLoD();
+                        await CheckLoD();
                     }
                 }
             }
         }
 
-        private void CheckBackups()
+        private async Task CheckBackups()
         {
             var filesToCheck = new XivDataFile[] { XivDataFile._01_Bgcommon, XivDataFile._04_Chara, XivDataFile._06_Ui };
 
@@ -378,7 +411,7 @@ namespace FFXIV_TexTools.Views
                         continue;
                     }
 
-                    var result = _problemChecker.CheckForOutdatedBackups(file, backupDirectory);
+                    var result = await _problemChecker.CheckForOutdatedBackups(file, backupDirectory);
 
                     if (!result)
                     {
@@ -420,6 +453,12 @@ namespace FFXIV_TexTools.Views
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
             Close();
+        }
+
+        private void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            cts?.Cancel();
+            cts?.Dispose();
         }
     }
 }

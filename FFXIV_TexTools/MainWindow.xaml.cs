@@ -556,7 +556,7 @@ namespace FFXIV_TexTools
 
                     if(!File.Exists(backupFile.FullName)) continue;
 
-                    var outdatedCheck = problemChecker.CheckForOutdatedBackups(xivDataFile, indexBackupsDirectory);
+                    var outdatedCheck = await problemChecker.CheckForOutdatedBackups(xivDataFile, indexBackupsDirectory);
 
                     if (!outdatedCheck)
                     {

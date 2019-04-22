@@ -159,14 +159,14 @@ namespace FFXIV_TexTools.ViewModels
             }
         }
 
-        private void CheckIndexFiles()
+        private async void CheckIndexFiles()
         {
             var xivDataFiles = new XivDataFile[] { XivDataFile._0A_Exd, XivDataFile._01_Bgcommon, XivDataFile._04_Chara, XivDataFile._06_Ui };
             var problemChecker = new ProblemChecker(_gameDirectory);
 
             foreach (var xivDataFile in xivDataFiles)
             {
-                var errorFound = problemChecker.CheckIndexDatCounts(xivDataFile);
+                var errorFound = await problemChecker.CheckIndexDatCounts(xivDataFile);
 
                 if (errorFound)
                 {
