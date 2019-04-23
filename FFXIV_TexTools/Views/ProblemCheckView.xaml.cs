@@ -20,6 +20,7 @@ using MahApps.Metro;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -51,7 +52,7 @@ namespace FFXIV_TexTools.Views
             InitializeComponent();
 
             var appStyle = ThemeManager.DetectAppStyle(Application.Current);
-            if (((AppTheme)appStyle.Item1).Name.Equals("BaseDark"))
+            if (((AppTheme) appStyle.Item1).Name.Equals("BaseDark"))
             {
                 textColor = "White";
             }
@@ -69,7 +70,7 @@ namespace FFXIV_TexTools.Views
 
             IProgress<(int current, int total)> progress = new Progress<(int current, int total)>((update) =>
             {
-                ProgressBar.Value = (((float)update.current / (float)update.total) * 100);
+                ProgressBar.Value = (((float) update.current / (float) update.total) * 100);
                 ProgressLabel.Content = $"{update.current} / {update.total}";
             });
 
@@ -98,14 +99,29 @@ namespace FFXIV_TexTools.Views
             AddText($"\n{UIStrings.ProblemCheck_Dat}\n", "Blue");
             CheckDat();
 
-            AddText($"\n{UIStrings.ProblemCheck_ModList}\n", "Blue");
-            await CheckMods(progress);
+            try
+            {
+                AddText($"\n{UIStrings.ProblemCheck_ModList}\n", "Blue");
+                await CheckMods(progress);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Loading Canceled\n\n{ex.Message}");
+            }
+
 
             ProgressBar.Value = 0;
             ProgressLabel.Content = UIStrings.Done;
 
-            AddText($"\n{UIStrings.ProblemCheck_LoD}\n", "Blue");
-            await CheckLoD();
+            try
+            {
+                AddText($"\n{UIStrings.ProblemCheck_LoD}\n", "Blue");
+                await CheckLoD();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Loading Canceled\n\n{ex.Message}");
+            }
 
         }
 
@@ -117,7 +133,8 @@ namespace FFXIV_TexTools.Views
         {
             var problemFound = false;
 
-            var filesToCheck = new XivDataFile[] {XivDataFile._0A_Exd, XivDataFile._01_Bgcommon, XivDataFile._04_Chara, XivDataFile._06_Ui};
+            var filesToCheck = new XivDataFile[]
+                {XivDataFile._0A_Exd, XivDataFile._01_Bgcommon, XivDataFile._04_Chara, XivDataFile._06_Ui};
 
             foreach (var file in filesToCheck)
             {
@@ -183,8 +200,8 @@ namespace FFXIV_TexTools.Views
                 //esrinzou for fix checkdat error
                 //if (fileInfo.Length < 10000000)
                 //esrinzou begin
-                if (fileInfo.Length < 1024*10)
-                //esrinzou end
+                if (fileInfo.Length < 1024 * 10)
+                    //esrinzou end
                 {
                     AddText("\t\u2716\n", "Red");
                     AddText($"\t{UIStrings.ProblemCheck_MissingData} \n", "Red");
@@ -208,7 +225,8 @@ namespace FFXIV_TexTools.Views
         {
             return Task.Run(() =>
             {
-                var modListDirectory = new DirectoryInfo(Path.Combine(_gameDirectory.Parent.Parent.FullName, XivStrings.ModlistFilePath));
+                var modListDirectory =
+                    new DirectoryInfo(Path.Combine(_gameDirectory.Parent.Parent.FullName, XivStrings.ModlistFilePath));
 
                 var modList = JsonConvert.DeserializeObject<ModList>(File.ReadAllText(modListDirectory.FullName));
 
@@ -220,6 +238,12 @@ namespace FFXIV_TexTools.Views
 
                     foreach (var mod in modList.Mods)
                     {
+                        if (cts.IsCancellationRequested)
+                        {
+                            cts.Token.ThrowIfCancellationRequested();
+                            return;
+                        }
+
                         progress.Report((modNum, modList.modCount));
 
                         if (mod.name.Equals(string.Empty)) continue;
@@ -267,7 +291,8 @@ namespace FFXIV_TexTools.Views
                         if (fileType != 2 && fileType != 3 && fileType != 4)
                         {
                             Dispatcher.Invoke(() => AddText("\t\u2716\n", "Red"));
-                            Dispatcher.Invoke(() => AddText($"\t{string.Format(UIStrings.ProblemCheck_UnkType, fileType)}\n", "Red"));
+                            Dispatcher.Invoke(() =>
+                                AddText($"\t{string.Format(UIStrings.ProblemCheck_UnkType, fileType)}\n", "Red"));
                         }
                         else
                         {
@@ -291,7 +316,8 @@ namespace FFXIV_TexTools.Views
         /// </summary>
         private async Task CheckLoD()
         {
-            var dir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\My Games\\FINAL FANTASY XIV - A Realm Reborn";
+            var dir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) +
+                      "\\My Games\\FINAL FANTASY XIV - A Realm Reborn";
 
             var problem = false;
 
@@ -307,6 +333,12 @@ namespace FFXIV_TexTools.Views
 
                         foreach (var line in lines)
                         {
+                            if (cts.IsCancellationRequested)
+                            {
+                                cts.Token.ThrowIfCancellationRequested();
+                                return dx;
+                            }
+
                             if (line.Contains("DX11Enabled"))
                             {
                                 var val = line.Substring(line.Length - 1, 1);
@@ -314,7 +346,7 @@ namespace FFXIV_TexTools.Views
                                 {
                                     dx = true;
                                 }
-  
+
                                 break;
                             }
                         }
@@ -393,7 +425,7 @@ namespace FFXIV_TexTools.Views
 
         private async Task CheckBackups()
         {
-            var filesToCheck = new XivDataFile[] { XivDataFile._01_Bgcommon, XivDataFile._04_Chara, XivDataFile._06_Ui };
+            var filesToCheck = new XivDataFile[] {XivDataFile._01_Bgcommon, XivDataFile._04_Chara, XivDataFile._06_Ui};
 
             var backupDirectory = new DirectoryInfo(Properties.Settings.Default.Backup_Directory);
 
@@ -403,7 +435,8 @@ namespace FFXIV_TexTools.Views
 
                 try
                 {
-                    var backupFile = new DirectoryInfo($"{backupDirectory.FullName}\\{file.GetDataFileName()}.win32.index");
+                    var backupFile =
+                        new DirectoryInfo($"{backupDirectory.FullName}\\{file.GetDataFileName()}.win32.index");
 
                     if (!File.Exists(backupFile.FullName))
                     {
@@ -444,7 +477,9 @@ namespace FFXIV_TexTools.Views
             {
                 tr.ApplyPropertyValue(TextElement.ForegroundProperty, bc.ConvertFromString(color));
             }
-            catch (FormatException) { }
+            catch (FormatException)
+            {
+            }
         }
 
         /// <summary>
@@ -458,7 +493,7 @@ namespace FFXIV_TexTools.Views
         private void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             cts?.Cancel();
-            cts?.Dispose();
+
         }
     }
 }
