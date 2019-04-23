@@ -16,16 +16,18 @@
 
 using FFXIV_TexTools.Helpers;
 using FFXIV_TexTools.Models;
+using FFXIV_TexTools.Resources;
 using FFXIV_TexTools.ViewModels;
+using System;
 using System.Collections;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Media;
-using FFXIV_TexTools.Resources;
-using xivModdingFramework.Items.DataContainers;
 using xivModdingFramework.Mods;
 using ListBox = System.Windows.Controls.ListBox;
 
@@ -36,6 +38,8 @@ namespace FFXIV_TexTools.Views
     /// </summary>
     public partial class ModListView
     {
+        private CancellationTokenSource _cts;
+
         public ModListView()
         {
             InitializeComponent();
@@ -44,29 +48,45 @@ namespace FFXIV_TexTools.Views
         /// <summary>
         /// Event handler for treeview item changed
         /// </summary>
-        private void TreeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        private async void TreeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
             var selectedItem = e.NewValue as Category;
 
-            if (selectedItem?.ParentCategory != null)
+            if (e.OldValue != null)
             {
-                if (selectedItem.ParentCategory.Name.Equals("ModPacks"))
+                _cts.Cancel();
+                _cts.Dispose();
+            }
+
+            try
+            {
+                _cts = new CancellationTokenSource();
+
+                if (selectedItem?.ParentCategory != null)
                 {
-                    (DataContext as ModListViewModel).UpdateInfoGrid(selectedItem);
-                    modToggleButton.IsEnabled = true;
-                    modDeleteButton.IsEnabled = true;
+                    if (selectedItem.ParentCategory.Name.Equals("ModPacks"))
+                    {
+                        (DataContext as ModListViewModel).UpdateInfoGrid(selectedItem);
+                        modToggleButton.IsEnabled = true;
+                        modDeleteButton.IsEnabled = true;
+                    }
+                    else
+                    {
+                        await (DataContext as ModListViewModel).UpdateList(selectedItem, _cts);
+                    }
                 }
                 else
                 {
-                    (DataContext as ModListViewModel).UpdateList(selectedItem);
+                    (DataContext as ModListViewModel).ClearList();
+                    modToggleButton.IsEnabled = false;
+                    modDeleteButton.IsEnabled = false;
                 }
             }
-            else
+            catch(Exception ex)
             {
-                (DataContext as ModListViewModel).ClearList();
-                modToggleButton.IsEnabled = false;
-                modDeleteButton.IsEnabled = false;
+                Debug.WriteLine($"Loading Canceled\n\n{ex.Message}");
             }
+
         }
 
         /// <summary>
@@ -191,6 +211,12 @@ namespace FFXIV_TexTools.Views
                     (DataContext as ModListViewModel).RemoveItem(selectedModItem, (Category)ModListTreeView.SelectedItem);
                 }
             }
+        }
+
+        private void MetroWindow_Closed(object sender, EventArgs e)
+        {
+            (DataContext as ModListViewModel).Dispose();
+            _cts?.Dispose();
         }
     }
 }
