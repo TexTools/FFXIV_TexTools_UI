@@ -28,7 +28,6 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Input;
@@ -80,11 +79,7 @@ namespace FFXIV_TexTools.ViewModels
         private string _pathString, _textureFormat, _textureDimensions, _category;
         private string _partWatermark = XivStrings.Part, _typeWatermark = XivStrings.Type, _raceWatermark = XivStrings.Race,
             _typePartWatermark = XivStrings.TypePart, _textureMapWatermark = XivStrings.Texture_Map;
-        //esrinzou for chinese UI
-        //private string _modToggleText = "Enable/Disable";
-        //esrinzou begin
         private string _modToggleText = UIStrings.Enable_Disable;
-        //esrinzou end
 
         private bool _raceEnabled, _partEnabled, _typeEnabled, _typePartEnabled, _mapEnabled, _channelsEnabled;
         private bool _exportEnabled, _importEnabled, _ddsImportEnabled, _bmpImportEnabled, _modStatusEnabled, _moreOptionsEnabled, _translucencyEnabled, _translucencyCheck;
@@ -103,7 +98,7 @@ namespace FFXIV_TexTools.ViewModels
         /// Updates the texture
         /// </summary>
         /// <param name="item">The item to update the texture for</param>
-        public void UpdateTexture(IItem item)
+        public async void UpdateTexture(IItem item)
         {
             ClearAll();
 
@@ -121,7 +116,7 @@ namespace FFXIV_TexTools.ViewModels
 
                 var gearItem = item as XivGear;
 
-                var raceList = _gear.GetRacesForTextures(gearItem, item.DataFile);
+                var raceList = await _gear.GetRacesForTextures(gearItem, item.DataFile);
 
                 foreach (var xivRace in raceList)
                 {
@@ -152,24 +147,7 @@ namespace FFXIV_TexTools.ViewModels
                 }
                 else
                 {
-                    //esrinzou for quick U                    
-                    //_charaRaceAndNumberDictionary = _character.GetRacesAndNumbersForTextures(item as XivCharacter);
-                    //esrinzou begin
-                    var pbar_window = new ProgressBarWindow();
-                    pbar_window.Owner = Window.GetWindow(this._textureView);
-                    pbar_window.UpdateProcessAction = () =>
-                    {
-                        var task=Task.Factory.StartNew(() =>
-                        {
-                            _charaRaceAndNumberDictionary = _character.GetRacesAndNumbersForTextures(item as XivCharacter);
-                        });
-                        while (!task.IsCompleted)
-                        {
-                            UIHelper.RefreshUI();
-                        }
-                    };
-                    pbar_window.ShowDialog();
-                    //esrinzou end
+                    _charaRaceAndNumberDictionary = await _character.GetRacesAndNumbersForTextures(item as XivCharacter);
 
                     foreach (var racesAndNumber in _charaRaceAndNumberDictionary)
                     {
@@ -277,7 +255,7 @@ namespace FFXIV_TexTools.ViewModels
         /// <summary>
         /// Gets the parts for the selected item
         /// </summary>
-        private void GetParts()
+        private async void GetParts()
         {
             if (_item != null)
             {
@@ -289,7 +267,7 @@ namespace FFXIV_TexTools.ViewModels
                     if (_item.ItemCategory.Equals(XivStrings.Face_Paint) ||
                         _item.ItemCategory.Equals(XivStrings.Equip_Decals))
                     {
-                        partList = _character.GetDecalNums(_item).Select(part => part.ToString()).ToList();
+                        partList = (await _character.GetDecalNums(_item)).Select(part => part.ToString()).ToList();
 
                         if (_item.ItemCategory.Equals(XivStrings.Equip_Decals))
                         {
@@ -310,7 +288,7 @@ namespace FFXIV_TexTools.ViewModels
                 }
                 else if ((_item.ItemCategory.Equals(XivStrings.Mounts) || _item.ItemCategory.Equals(XivStrings.Monster)) && _item.ModelInfo.ModelType == XivItemType.demihuman)
                 {
-                    var equipParts = _companions.GetDemiHumanMountTextureEquipPartList(_item);
+                    var equipParts = await _companions.GetDemiHumanMountTextureEquipPartList(_item);
 
                     foreach (var equipPart in equipParts)
                     {
@@ -338,7 +316,7 @@ namespace FFXIV_TexTools.ViewModels
                 }
                 else
                 {
-                    partList = _tex.GetTexturePartList(_item, SelectedRace.XivRace, _item.DataFile);
+                    partList = await _tex.GetTexturePartList(_item, SelectedRace.XivRace, _item.DataFile);
 
                     foreach (var part in partList)
                     {
@@ -428,7 +406,7 @@ namespace FFXIV_TexTools.ViewModels
         /// <summary>
         /// Gets the type for the selected item
         /// </summary>
-        private void GetTexType()
+        private async void GetTexType()
         {
             if (_item.Category.Equals(XivStrings.Character))
             {
@@ -445,7 +423,7 @@ namespace FFXIV_TexTools.ViewModels
                 if (_item.ItemCategory.Equals(XivStrings.Hair) || _item.ItemCategory.Equals(XivStrings.Face))
                 {
                     TypePartVisibility = Visibility.Visible;
-                    var charaTypeParts = _character.GetTypePartForTextures(_item as XivCharacter, SelectedRace.XivRace,
+                    var charaTypeParts = await _character.GetTypePartForTextures(_item as XivCharacter, SelectedRace.XivRace,
                         int.Parse(SelectedPart.Name));
 
                     _typeCount = charaTypeParts.Count;
@@ -457,7 +435,7 @@ namespace FFXIV_TexTools.ViewModels
                 // For Body and Tail we use the type as a part list
                 else if (_item.ItemCategory.Equals(XivStrings.Body) || _item.ItemCategory.Equals(XivStrings.Tail))
                 {
-                    var parts = _character.GetPartForTextures(_item as XivCharacter, SelectedRace.XivRace, int.Parse(SelectedPart.Name));
+                    var parts = await _character.GetPartForTextures(_item as XivCharacter, SelectedRace.XivRace, int.Parse(SelectedPart.Name));
 
                     _typeCount = parts.Length;
                     foreach (var part in parts)
@@ -502,7 +480,7 @@ namespace FFXIV_TexTools.ViewModels
             {
                 TypeVisibility = Visibility.Visible;
 
-                var typesList = _tex.GetTexturePartList(_item, SelectedRace.XivRace, _item.DataFile, SelectedPart.Name);
+                var typesList = await _tex.GetTexturePartList(_item, SelectedRace.XivRace, _item.DataFile, SelectedPart.Name);
 
                 foreach (var type in typesList)
                 {
@@ -679,7 +657,7 @@ namespace FFXIV_TexTools.ViewModels
         /// <summary>
         /// Gets the texture maps for the given item
         /// </summary>
-        private void GetMaps()
+        private async void GetMaps()
         {
             var dxVersion = int.Parse(Properties.Settings.Default.DX_Version);
 
@@ -709,17 +687,17 @@ namespace FFXIV_TexTools.ViewModels
                     {
                         if (TypePartVisibility == Visibility.Visible)
                         {
-                            _xivMtrl = _mtrl.GetMtrlData(_item, SelectedRace.XivRace, SelectedTypePart.Name[0], dxVersion);
+                            _xivMtrl = await _mtrl.GetMtrlData(_item, SelectedRace.XivRace, SelectedTypePart.Name[0], dxVersion);
                         }
                         else
                         {
-                            _xivMtrl = _mtrl.GetMtrlData(_item, SelectedRace.XivRace, SelectedType.Name[0], dxVersion);
+                            _xivMtrl = await _mtrl.GetMtrlData(_item, SelectedRace.XivRace, SelectedType.Name[0], dxVersion);
                         }
 
                         ttpList = _xivMtrl.TextureTypePathList;
 
                         // Removes the type if there is no texture maps for it.
-                        // This specifically was added because Miqote hair 104 and 109 have an mtrl that points to non existant textures and
+                        // This specifically was added because Miqote hair 104 and 109 have an mtrl that points to non existent textures and
                         // there may be others that do the same.
                         if (ttpList.Count == 0)
                         {
@@ -733,15 +711,15 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     if ((_item.ItemCategory.Equals(XivStrings.Mounts) || _item.ItemCategory.Equals(XivStrings.Monster)) && _item.ModelInfo.ModelType == XivItemType.demihuman)
                     {
-                        _xivMtrl = _mtrl.GetMtrlData(_item, SelectedRace.XivRace, SelectedType.Name[0], dxVersion);
+                        _xivMtrl = await _mtrl.GetMtrlData(_item, SelectedRace.XivRace, SelectedType.Name[0], dxVersion);
                     }
                     else if (_item.Category.Equals(XivStrings.Gear))
                     {
-                        _xivMtrl = _mtrl.GetMtrlData(_item, SelectedRace.XivRace, SelectedType.Name[0], dxVersion, SelectedPart.Name);
+                        _xivMtrl = await _mtrl.GetMtrlData(_item, SelectedRace.XivRace, SelectedType.Name[0], dxVersion, SelectedPart.Name);
                     }
                     else
                     {
-                        _xivMtrl = _mtrl.GetMtrlData(_item, SelectedRace.XivRace, SelectedPart.Name[0], dxVersion);
+                        _xivMtrl = await _mtrl.GetMtrlData(_item, SelectedRace.XivRace, SelectedPart.Name[0], dxVersion);
                     }
 
                     ttpList = _xivMtrl.TextureTypePathList;
@@ -754,7 +732,7 @@ namespace FFXIV_TexTools.ViewModels
                     string path;
                     if (_uiItem.ItemCategory.Equals(XivStrings.Maps))
                     {
-                        var mapNamePaths = _tex.GetMapAvailableTex(_uiItem.UiPath);
+                        var mapNamePaths = await _tex.GetMapAvailableTex(_uiItem.UiPath);
 
                         ttpList = new List<TexTypePath>();
 
@@ -915,16 +893,16 @@ namespace FFXIV_TexTools.ViewModels
         /// <summary>
         /// Updates the texture image for the selected item
         /// </summary>
-        public void UpdateImage()
+        public async void UpdateImage()
         {
             ImageDisplay = null;
             ChannelsEnabled = true;
 
             if (SelectedMap.TexType.Type != XivTexType.ColorSet)
             {
-                var texData = _tex.GetTexData(SelectedMap.TexType);
+                var texData = await _tex.GetTexData(SelectedMap.TexType);
 
-                var mapBytes = _tex.GetImageData(texData);
+                var mapBytes = await _tex.GetImageData(texData);
 
                 var pixelSettings =
                     new PixelReadSettings(texData.Width, texData.Height, StorageType.Char, PixelMapping.RGBA);
@@ -956,28 +934,27 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     if (TypePartVisibility == Visibility.Visible)
                     {
-                        _xivMtrl = _mtrl.GetMtrlData(_item, SelectedRace.XivRace, SelectedTypePart.Name[0], dxVersion);
+                        _xivMtrl = await _mtrl.GetMtrlData(_item, SelectedRace.XivRace, SelectedTypePart.Name[0], dxVersion);
                     }
                     else
                     {
-                        _xivMtrl = _mtrl.GetMtrlData(_item, SelectedRace.XivRace, SelectedType.Name[0], dxVersion);
+                        _xivMtrl = await _mtrl.GetMtrlData(_item, SelectedRace.XivRace, SelectedType.Name[0], dxVersion);
                     }
                 }
                 else
                 {
                     if ((_item.ItemCategory.Equals(XivStrings.Mounts) || _item.ItemCategory.Equals(XivStrings.Monster)) && _item.ModelInfo.ModelType == XivItemType.demihuman)
                     {
-                        _xivMtrl = _mtrl.GetMtrlData(_item, SelectedRace.XivRace, SelectedType.Name[0], dxVersion);
+                        _xivMtrl = await _mtrl.GetMtrlData(_item, SelectedRace.XivRace, SelectedType.Name[0], dxVersion);
                     }
                     else if (_item.Category.Equals(XivStrings.Gear))
                     {
-                        _xivMtrl = _mtrl.GetMtrlData(_item, SelectedRace.XivRace, SelectedType.Name[0], dxVersion, SelectedPart.Name);
+                        _xivMtrl = await _mtrl.GetMtrlData(_item, SelectedRace.XivRace, SelectedType.Name[0], dxVersion, SelectedPart.Name);
                     }
                     else
                     {
-                        _xivMtrl = _mtrl.GetMtrlData(_item, SelectedRace.XivRace, SelectedPart.Name[0], dxVersion);
+                        _xivMtrl = await _mtrl.GetMtrlData(_item, SelectedRace.XivRace, SelectedPart.Name[0], dxVersion);
                     }
-
                 }
 
                 var floats = Half.ConvertToFloat(_xivMtrl.ColorSetData.ToArray());
@@ -1007,34 +984,22 @@ namespace FFXIV_TexTools.ViewModels
                 TextureDimensions = "4 x 16";
             }
 
-            var modStatus = _modList.IsModEnabled(PathString, false);
+            var modStatus = await _modList.IsModEnabled(PathString, false);
 
             switch (modStatus)
             {
                 case XivModStatus.Enabled:
                     ModStatusToggleEnabled = true;
-                    //esrinzou for chinese UI
-                    //ModToggleText = "Disable";
-                    //esrinzou begin
                     ModToggleText = UIStrings.Disable;
-                    //esrinzou end
                     break;
                 case XivModStatus.Disabled:
                     ModStatusToggleEnabled = true;
-                    //esrinzou for chinese UI
-                    //ModToggleText = "Enable";
-                    //esrinzou begin
                     ModToggleText = UIStrings.Enable;
-                    //esrinzou end
                     break;
                 case XivModStatus.Original:
                 default:
                     ModStatusToggleEnabled = false;
-                    //esrinzou for chinese UI
-                    //ModToggleText = "Enable/Disable";
-                    //esrinzou begin
                     ModToggleText = UIStrings.Enable_Disable;
-                    //esrinzou end
                     break;
             }
 
@@ -1186,22 +1151,20 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         public ICommand ExportDDS => new RelayCommand(SaveDDS);
 
-        private void SaveDDS(object obj)
+        private async void SaveDDS(object obj)
         {
             XivTex texData;
             var savePath = new DirectoryInfo(Settings.Default.Save_Directory);
 
-
             if (SelectedMap.TexType.Type == XivTexType.ColorSet)
             {
-                texData = _mtrl.MtrlToXivTex(_xivMtrl, SelectedMap.TexType);
+                texData = await _mtrl.MtrlToXivTex(_xivMtrl, SelectedMap.TexType);
                 _mtrl.SaveColorSetExtraData(_item, _xivMtrl, savePath, SelectedRace.XivRace);
             }
             else
             {
-                texData = _tex.GetTexData(SelectedMap.TexType);
+                texData = await _tex.GetTexData(SelectedMap.TexType);
             }
-
 
             if (_uiItem != null)
             {
@@ -1215,7 +1178,6 @@ namespace FFXIV_TexTools.ViewModels
             DDSImportEnabled = DDSFileExists();
             _textureView.BottomFlyout.IsOpen = false;
         }
-
 
         /// <summary>
         /// Command for the Export Bmp Button
@@ -1241,9 +1203,9 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         public ICommand ExportAll => new RelayCommand(SaveAll);
 
-        private void SaveAll(object obj)
+        private async void SaveAll(object obj)
         {
-            var texData = _tex.GetTexData(SelectedMap.TexType);
+            var texData = await _tex.GetTexData(SelectedMap.TexType);
 
             var savePath = new DirectoryInfo(Settings.Default.Save_Directory);
 
@@ -1305,7 +1267,7 @@ namespace FFXIV_TexTools.ViewModels
         /// <summary>
         /// Imports a DDS file
         /// </summary>
-        private void ImportDDS(object obj)
+        private async void ImportDDS(object obj)
         {
             var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
             var index = new Index(gameDirectory);
@@ -1336,7 +1298,7 @@ namespace FFXIV_TexTools.ViewModels
 
             if (SelectedMap.TexType.Type != XivTexType.ColorSet)
             {
-                var texData = _tex.GetTexData(SelectedMap.TexType);
+                var texData = await _tex.GetTexData(SelectedMap.TexType);
 
                 if (File.Exists(fullPath.FullName))
                 {
@@ -1364,7 +1326,7 @@ namespace FFXIV_TexTools.ViewModels
             else
             {
                 var newColorSetOffset = _tex.TexColorImporter(_xivMtrl, fullPath, _item, XivStrings.TexTools);
-                _xivMtrl = _mtrl.GetMtrlData(newColorSetOffset, _xivMtrl.MTRLPath, dxVersion);
+                _xivMtrl = await _mtrl.GetMtrlData(newColorSetOffset, _xivMtrl.MTRLPath, dxVersion);
             }
 
             _textureView.BottomFlyout.IsOpen = false;
@@ -1382,7 +1344,7 @@ namespace FFXIV_TexTools.ViewModels
         /// <remarks>
         /// Import a texture file from any location
         /// </remarks>
-        private void ImportFrom(object obj)
+        private async void ImportFrom(object obj)
         {
             var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
             var index = new Index(gameDirectory);
@@ -1417,7 +1379,7 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     if (SelectedMap.TexType.Type != XivTexType.ColorSet)
                     {
-                        var texData = _tex.GetTexData(SelectedMap.TexType);
+                        var texData = await _tex.GetTexData(SelectedMap.TexType);
 
                         try
                         {
@@ -1441,14 +1403,14 @@ namespace FFXIV_TexTools.ViewModels
                     else
                     {
                         var newColorSetOffset = _tex.TexColorImporter(_xivMtrl, fileDir, _item, XivStrings.TexTools);
-                        _xivMtrl = _mtrl.GetMtrlData(newColorSetOffset, _xivMtrl.MTRLPath, dxVersion);
+                        _xivMtrl = await _mtrl.GetMtrlData(newColorSetOffset, _xivMtrl.MTRLPath, dxVersion);
                     }
                 }
                 else
                 {
                     if (SelectedMap.TexType.Type != XivTexType.ColorSet)
                     {
-                        var texData = _tex.GetTexData(SelectedMap.TexType);
+                        var texData = await _tex.GetTexData(SelectedMap.TexType);
 
                         try
                         {
@@ -1489,7 +1451,7 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         public ICommand ImportBMPButton => new RelayCommand(ImportBMP);
 
-        private void ImportBMP(object obj)
+        private async void ImportBMP(object obj)
         {
             var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
             var index = new Index(gameDirectory);
@@ -1518,7 +1480,7 @@ namespace FFXIV_TexTools.ViewModels
 
             if (SelectedMap.TexType.Type != XivTexType.ColorSet)
             {
-                var texData = _tex.GetTexData(SelectedMap.TexType);
+                var texData = await _tex.GetTexData(SelectedMap.TexType);
 
                 if (File.Exists(fullPath.FullName))
                 {
@@ -1569,19 +1531,11 @@ namespace FFXIV_TexTools.ViewModels
             var gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
             var modlist = new Modding(gameDirectory);
 
-            //esrinzou for chinese UI
-            //if (ModToggleText.Equals("Enable"))
-            //esrinzou begin
             if (ModToggleText.Equals(UIStrings.Enable))
-            //esrinzou end
             {
                 modlist.ToggleModStatus(SelectedMap.TexType.Path, true);
             }
-            //esrinzou for chinese UI
-            //else if (ModToggleText.Equals("Disable"))
-            //esrinzou begin
             else if (ModToggleText.Equals(UIStrings.Disable))
-            //esrinzou end           
             {
                 modlist.ToggleModStatus(SelectedMap.TexType.Path, false);
             }
