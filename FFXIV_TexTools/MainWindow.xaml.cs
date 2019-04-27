@@ -48,22 +48,9 @@ namespace FFXIV_TexTools
     {
         private SysTimer.Timer searchTimer = new SysTimer.Timer(300);
         private string _startupArgs;
-        private bool _isMainWindowOK = false;
+
         public MainWindow(string[] args)
         {
-            //esrinzou for quick UI
-            var pbar_window = new ProgressBarWindow();
-            pbar_window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-            pbar_window.UpdateProcessAction = () =>
-            {
-                while (!_isMainWindowOK)
-                {
-                    Task.Delay(1);
-                    UIHelper.RefreshUI();
-                }
-            };
-            pbar_window.Show();
-            //esrinzou end
             CheckForUpdates();
             CheckForSettingsUpdate();
 
@@ -78,12 +65,11 @@ namespace FFXIV_TexTools
             try
             {
                 InitializeComponent();
-                //esrinzou for chinese UI
+
                 if (System.Globalization.CultureInfo.CurrentUICulture.Name == "zh-CN")
                 {
                     this.ChinaDiscordButton.Visibility = Visibility.Visible;
                 }
-                //esrinzou end      
             }
             catch (Exception e)
             {
@@ -181,13 +167,7 @@ namespace FFXIV_TexTools
         /// </summary>
         private void TreeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-            //esrinzou for quick UI
-            //UpdateViews(e.NewValue as Category);
-            //esrinzou begin
-            App.Current.Dispatcher.InvokeAsync(() => {
-                UpdateViews(e.NewValue as Category);
-            });
-            //esrinzou end
+            UpdateViews(e.NewValue as Category);
         }
 
         /// <summary>
@@ -531,9 +511,7 @@ namespace FFXIV_TexTools
                 return;
             }
 
-            //esrinzou begin
             var result = FlexibleMessageBox.Show(UIMessages.StartOverMessage, UIMessages.StartOverTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Information);
-            //esrinzou end
 
             if (result == System.Windows.Forms.DialogResult.Yes)
             {
@@ -684,35 +662,11 @@ namespace FFXIV_TexTools
                 await this.ShowMessageAsync(UIMessages.BackupCompleteTitle, UIMessages.BackupCompleteMessage);
             }
         }
-        private void ItemTreeView_Loaded(object sender, RoutedEventArgs e)
+
+        public void SetFilter()
         {
-            //esrinzou for quick UI
-            //var view = (CollectionView)CollectionViewSource.GetDefaultView(ItemTreeView.ItemsSource);
-            //view.Filter = SearchFilter;
-            //esrinzou begin            
-            App.Current.Dispatcher.BeginInvoke(new Action(() =>
-            {
-                var pbar_window = new ProgressBarWindow();
-                pbar_window.Owner = this;
-                var vm = this.DataContext as MainViewModel;
-                pbar_window.UpdateProcessAction = () =>
-                {
-                    try
-                    {
-                        vm.FillTree();
-                    }
-                    catch (Exception ex)
-                    {
-                        FlexibleMessageBox.Show(string.Format(UIMessages.ItemsListErrorMessage, ex.Message), UIMessages.ItemsListErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                    App.Current.Dispatcher.Invoke(() => { 
-                        var view = (CollectionView)CollectionViewSource.GetDefaultView(ItemTreeView.ItemsSource);
-                        view.Filter = SearchFilter;
-                    });
-                };
-                pbar_window.ShowDialog();
-            }),DispatcherPriority.Background);
-            //esrinzou end
+            var view = (CollectionView)CollectionViewSource.GetDefaultView(ItemTreeView.ItemsSource);
+            view.Filter = SearchFilter;
         }
 
         private bool SearchFilter(object item)
@@ -761,7 +715,6 @@ namespace FFXIV_TexTools
             var fileVersion = FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location).FileVersion;
 
             Title += $" {fileVersion.Substring(0, fileVersion.LastIndexOf("."))}";
-            _isMainWindowOK = true;
         }
 
         private void GithubButton_Click(object sender, RoutedEventArgs e)

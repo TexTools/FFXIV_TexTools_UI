@@ -31,65 +31,85 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Input;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Mods;
 using xivModdingFramework.SqPack.FileTypes;
+using MessageBox = System.Windows.Forms.MessageBox;
 
 namespace FFXIV_TexTools.ViewModels
 {
     public class MainViewModel : INotifyPropertyChanged
     {
-        private readonly DirectoryInfo _gameDirectory;
+        private DirectoryInfo _gameDirectory;
         private MainWindow _mainWindow;
 
-        private List<Category> _categories = new List<Category>();
+        private ObservableCollection<Category> _categories = new ObservableCollection<Category>();
 
-        private string _searchText;
+        private string _searchText, _progressLabel;
         private string _dxVersionText = $"DX: {Properties.Settings.Default.DX_Version}";
+        private int _progressValue;
+        private Visibility _progressBarVisible, _progressLabelVisible;
 
         public MainViewModel(MainWindow mainWindow)
         {
+            _mainWindow = mainWindow;
+
             var ci = new CultureInfo(Properties.Settings.Default.Application_Language)
             {
                 NumberFormat = {NumberDecimalSeparator = "."}
             };
-            //esrinzou for china ffxiv
-            if (CultureInfo.CurrentUICulture.Name == "zh-CN")
-            {
-                Properties.Settings.Default.Application_Language = "zh";
-                ci = new CultureInfo(Properties.Settings.Default.Application_Language)
-                {
-                    NumberFormat = { NumberDecimalSeparator = "." }
-                };
-            }
-            //esrinzou end
+
             CultureInfo.DefaultThreadCurrentCulture = ci;
             CultureInfo.DefaultThreadCurrentUICulture = ci;
             CultureInfo.CurrentCulture = ci;
             CultureInfo.CurrentUICulture = ci;
 
-            SetDirectories(true);
+            try
+            {
+                Initialize();
+            }
+            catch (Exception ex)
+            {
+                FlexibleMessageBox.Show($"There was an error getting the Items List\n\n{ex.Message}", $"Items List Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
 
-            _mainWindow = mainWindow;
+        private async void Initialize()
+        {
+            SetDirectories(true);
             _gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
 
+            ProgressLabel = "Checking for old installs...";
             CheckForOldModList();
-            CheckGameVersion();
-			CheckIndexFiles();
-            //esrinzou for quick UI
-            //try
-            //{
-            //    FillTree();
-            //}
-            //catch (Exception ex)
-            //{
-            //    FlexibleMessageBox.Show($"There was an error getting the Items List\n\n{ex.Message}", $"Items List Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            //}
-            //esrinzou end
-			SetDefaults();
+            ProgressLabel = "Checking Game Version...";
+            await CheckGameVersion();
+            ProgressLabel = "Checking Index Files...";
+            await CheckIndexFiles();
+
+            IProgress<(int current, string category)> progress = new Progress<(int current, string category)>((prog) =>
+            {
+                if (prog.category == "Done")
+                {
+                    ProgressBarVisible = Visibility.Collapsed;
+                    ProgressLabelVisible = Visibility.Collapsed;
+                }
+                else
+                {
+                    ProgressValue = prog.current;
+                    ProgressLabel = $"Loading {prog.category} List";
+                }
+            });
+
+            _mainWindow.ItemSearchTextBox.IsEnabled = false;
+            await FillTree(progress);
+            _mainWindow.ItemSearchTextBox.IsEnabled = true;
+            _mainWindow.SetFilter();
+
+            SetDefaults();
         }
 
         /// <summary>
@@ -97,7 +117,9 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         private void CheckForOldModList()
         {
-            var oldModListFileDirectory = new DirectoryInfo($"{Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)}/TexTools/TexTools.modlist");
+            var oldModListFileDirectory =
+                new DirectoryInfo(
+                    $"{Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)}/TexTools/TexTools.modlist");
 
             if (File.Exists(oldModListFileDirectory.FullName))
             {
@@ -106,7 +128,8 @@ namespace FFXIV_TexTools.ViewModels
                 if (modListContent.Length > 0)
                 {
                     if (FlexibleMessageBox.Show(
-                            UIMessages.OldTexToolsFoundMessage, UIMessages.OldModListFoundTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                            UIMessages.OldTexToolsFoundMessage, UIMessages.OldModListFoundTitle,
+                            MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                     {
                         var modding = new Modding(_gameDirectory);
                         var index = new Index(_gameDirectory);
@@ -115,7 +138,8 @@ namespace FFXIV_TexTools.ViewModels
 
                         if (index.IsIndexLocked(XivDataFile._0A_Exd))
                         {
-                            FlexibleMessageBox.Show(UIMessages.ModListIndexLockedErrorMessage, UIMessages.ModListDisableFailedTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            FlexibleMessageBox.Show(UIMessages.ModListIndexLockedErrorMessage,
+                                UIMessages.ModListDisableFailedTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                             error = true;
                         }
                         else
@@ -127,7 +151,10 @@ namespace FFXIV_TexTools.ViewModels
                             catch (Exception ex)
                             {
                                 error = true;
-                                FlexibleMessageBox.Show(string.Format(UIMessages.OldModListDisableFailedMessage, ex.Message), UIMessages.PreviousVersionErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                FlexibleMessageBox.Show(
+                                    string.Format(UIMessages.OldModListDisableFailedMessage, ex.Message),
+                                    UIMessages.PreviousVersionErrorTitle, MessageBoxButtons.OK,
+                                    MessageBoxIcon.Error);
                             }
                         }
 
@@ -136,7 +163,7 @@ namespace FFXIV_TexTools.ViewModels
                             File.Delete(oldModListFileDirectory.FullName);
 
                             // Delete modded dat files
-                            foreach (var xivDataFile in (XivDataFile[]) Enum.GetValues(typeof(XivDataFile)))
+                            foreach (var xivDataFile in (XivDataFile[])Enum.GetValues(typeof(XivDataFile)))
                             {
                                 var datFiles = dat.GetModdedDatList(xivDataFile);
 
@@ -159,7 +186,7 @@ namespace FFXIV_TexTools.ViewModels
             }
         }
 
-        private async void CheckIndexFiles()
+        private async Task CheckIndexFiles()
         {
             var xivDataFiles = new XivDataFile[] { XivDataFile._0A_Exd, XivDataFile._01_Bgcommon, XivDataFile._04_Chara, XivDataFile._06_Ui };
             var problemChecker = new ProblemChecker(_gameDirectory);
@@ -170,7 +197,7 @@ namespace FFXIV_TexTools.ViewModels
 
                 if (errorFound)
                 {
-                    problemChecker.RepairIndexDatCounts(xivDataFile);
+                    await problemChecker.RepairIndexDatCounts(xivDataFile);
                 }
             }
         }
@@ -357,119 +384,124 @@ namespace FFXIV_TexTools.ViewModels
             }
         }
 
-        private void CheckGameVersion()
+        private Task CheckGameVersion()
         {
-            var applicationVersion = FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location).FileVersion;
-
-            Version ffxivVersion = null;
-            var needsNewBackup = false;
-            var backupMessage = "";
-
-            var modding = new Modding(_gameDirectory);
-            var backupDirectory = new DirectoryInfo(Properties.Settings.Default.Backup_Directory);
-
-            var versionFile = $"{_gameDirectory.Parent.Parent.FullName}\\ffxivgame.ver";
-
-            if (File.Exists(versionFile))
+            return Task.Run(() =>
             {
-                var versionData = File.ReadAllLines(versionFile);
-                ffxivVersion = new Version(versionData[0].Substring(0, versionData[0].LastIndexOf(".")));
-            }
-            else
-            {
-                FlexibleMessageBox.Show(UIMessages.GameVersionErrorMessage, string.Format(UIMessages.GameVersionErrorTitle, applicationVersion), MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
+                var applicationVersion = FileVersionInfo
+                    .GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location).FileVersion;
 
-            if (string.IsNullOrEmpty(Properties.Settings.Default.FFXIV_Version))
-            {
-                Properties.Settings.Default.FFXIV_Version = ffxivVersion.ToString();
-                Properties.Settings.Default.Save();
+                Version ffxivVersion = null;
+                var needsNewBackup = false;
+                var backupMessage = "";
 
-                needsNewBackup = true;
-                backupMessage = UIMessages.NewInstallDetectedBackupMessage;
-            }
-            else
-            {
-                var versionCheck = new Version(Properties.Settings.Default.FFXIV_Version);
+                var modding = new Modding(_gameDirectory);
+                var backupDirectory = new DirectoryInfo(Properties.Settings.Default.Backup_Directory);
 
-                if (ffxivVersion > versionCheck)
+                var versionFile = $"{_gameDirectory.Parent.Parent.FullName}\\ffxivgame.ver";
+
+                if (File.Exists(versionFile))
                 {
-                    needsNewBackup = true;
-                    backupMessage = UIMessages.NewerVersionDetectedBackupMessage;
+                    var versionData = File.ReadAllLines(versionFile);
+                    ffxivVersion = new Version(versionData[0].Substring(0, versionData[0].LastIndexOf(".")));
                 }
-            }
-
-            if (!Directory.Exists(backupDirectory.FullName))
-            {
-                FlexibleMessageBox.Show(UIMessages.BackupsDirectoryErrorMessage, UIMessages.BackupFailedTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            if (Directory.GetFiles(backupDirectory.FullName).Length == 0)
-            {
-                needsNewBackup = true;
-                backupMessage = UIMessages.NoBackupsFoundMessage;
-            }
-
-            if (needsNewBackup)
-            {
-                var indexFiles = new XivDataFile[] {XivDataFile._04_Chara, XivDataFile._06_Ui, XivDataFile._01_Bgcommon};
-                var index = new Index(_gameDirectory);
-
-                if (MessageBox.Show(backupMessage, UIMessages.CreateBackupTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+                else
                 {
-                    if (index.IsIndexLocked(XivDataFile._0A_Exd))
-                    {
-                        FlexibleMessageBox.Show(UIMessages.IndexLockedBackupFailedMessage, UIMessages.BackupFailedTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        return;
-                    }
+                    FlexibleMessageBox.Show(UIMessages.GameVersionErrorMessage,
+                        string.Format(UIMessages.GameVersionErrorTitle, applicationVersion), MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
+                    return;
+                }
 
-                    try
-                    {
-                        // Toggle off all mods
-                        modding.ToggleAllMods(false);
-                    }
-                    catch (Exception ex)
-                    {
-                        FlexibleMessageBox.Show(string.Format(UIMessages.BackupFailedErrorMessage, ex.Message), UIMessages.BackupFailedTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        return;
-                    }
-
-                    foreach (var xivDataFile in indexFiles)
-                    {
-                        try
-                        {
-                            File.Copy($"{_gameDirectory.FullName}\\{xivDataFile.GetDataFileName()}.win32.index",
-                                $"{backupDirectory}\\{xivDataFile.GetDataFileName()}.win32.index", true);
-                            File.Copy($"{_gameDirectory.FullName}\\{xivDataFile.GetDataFileName()}.win32.index2",
-                                $"{backupDirectory}\\{xivDataFile.GetDataFileName()}.win32.index2", true);
-                        }
-                        catch(Exception e)
-                        {
-                            FlexibleMessageBox.Show(string.Format(UIMessages.BackupFailedErrorMessage, e.Message), UIMessages.BackupFailedTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        }
-                    }
-
+                if (string.IsNullOrEmpty(Properties.Settings.Default.FFXIV_Version))
+                {
                     Properties.Settings.Default.FFXIV_Version = ffxivVersion.ToString();
                     Properties.Settings.Default.Save();
+
+                    needsNewBackup = true;
+                    backupMessage = UIMessages.NewInstallDetectedBackupMessage;
                 }
-            }
+                else
+                {
+                    var versionCheck = new Version(Properties.Settings.Default.FFXIV_Version);
+
+                    if (ffxivVersion > versionCheck)
+                    {
+                        needsNewBackup = true;
+                        backupMessage = UIMessages.NewerVersionDetectedBackupMessage;
+                    }
+                }
+
+                if (!Directory.Exists(backupDirectory.FullName))
+                {
+                    FlexibleMessageBox.Show(UIMessages.BackupsDirectoryErrorMessage, UIMessages.BackupFailedTitle,
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                if (Directory.GetFiles(backupDirectory.FullName).Length == 0)
+                {
+                    needsNewBackup = true;
+                    backupMessage = UIMessages.NoBackupsFoundMessage;
+                }
+
+                if (needsNewBackup)
+                {
+                    var indexFiles = new XivDataFile[]
+                        {XivDataFile._04_Chara, XivDataFile._06_Ui, XivDataFile._01_Bgcommon};
+                    var index = new Index(_gameDirectory);
+
+                    if (MessageBox.Show(backupMessage, UIMessages.CreateBackupTitle, MessageBoxButtons.YesNo,
+                            MessageBoxIcon.Warning) == DialogResult.Yes)
+                    {
+                        if (index.IsIndexLocked(XivDataFile._0A_Exd))
+                        {
+                            FlexibleMessageBox.Show(UIMessages.IndexLockedBackupFailedMessage,
+                                UIMessages.BackupFailedTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
+
+                        try
+                        {
+                            // Toggle off all mods
+                            modding.ToggleAllMods(false);
+                        }
+                        catch (Exception ex)
+                        {
+                            FlexibleMessageBox.Show(string.Format(UIMessages.BackupFailedErrorMessage, ex.Message),
+                                UIMessages.BackupFailedTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
+
+                        foreach (var xivDataFile in indexFiles)
+                        {
+                            try
+                            {
+                                File.Copy($"{_gameDirectory.FullName}\\{xivDataFile.GetDataFileName()}.win32.index",
+                                    $"{backupDirectory}\\{xivDataFile.GetDataFileName()}.win32.index", true);
+                                File.Copy($"{_gameDirectory.FullName}\\{xivDataFile.GetDataFileName()}.win32.index2",
+                                    $"{backupDirectory}\\{xivDataFile.GetDataFileName()}.win32.index2", true);
+                            }
+                            catch (Exception e)
+                            {
+                                FlexibleMessageBox.Show(string.Format(UIMessages.BackupFailedErrorMessage, e.Message),
+                                    UIMessages.BackupFailedTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            }
+                        }
+
+                        Properties.Settings.Default.FFXIV_Version = ffxivVersion.ToString();
+                        Properties.Settings.Default.Save();
+                    }
+                }
+            });
         }
 
         /// <summary>
         /// Fills the tree view with items
         /// </summary>
-        //esrinzou for quick UI
-        //private void FillTree()
-        //esrinzou begin
-        public void FillTree()
-        //esrinzou end
+        public async Task FillTree(IProgress<(int current, string total)> progress)
         {
-            //esrinzou for quick UI
-            List<Category> Categories = new List<Category>();
-            //esrinzou end
-            Categories.Add(new Category{Name = XivStrings.Gear, Categories = new ObservableCollection<Category>(), CategoryList = new List<string>()});
+            Categories.Add(new Category{Name = XivStrings.Gear, Categories = new ObservableCollection<Category>(), CategoryList = new List<string>() });
             Categories.Add(new Category{Name = XivStrings.Character, Categories = new ObservableCollection<Category>(), CategoryList = new List<string>() });
             Categories.Add(new Category{Name = XivStrings.Companions, Categories = new ObservableCollection<Category>(), CategoryList = new List<string>() });
             Categories.Add(new Category{Name = XivStrings.UI, Categories = new ObservableCollection<Category>(), CategoryList = new List<string>() });
@@ -477,15 +509,23 @@ namespace FFXIV_TexTools.ViewModels
 
             var itemList = new ItemsList(_gameDirectory);
 
-            // Gear List
-            var gearList = itemList.GetGearList();
-
             foreach (var categoryOrder in _categoryOrderList)
             {
                 var category = new Category { Name = categoryOrder, Categories = new ObservableCollection<Category>(), CategoryList = new List<string>() };
                 Categories[0].Categories.Add(category);
                 Categories[0].CategoryList.Add(categoryOrder);
             }
+
+            //var gearListTask      = itemList.GetGearList();
+            //var characterListTask = itemList.GetCharacterList();
+            //var companionListTask = itemList.GetCompanionList();
+            //var uiListTask        = itemList.GetUIList();
+            //var housingListTask   = itemList.GetHousingList();
+
+            // Gear List
+            progress.Report((0, "Gear"));
+            var gearList = await itemList.GetGearList();
+//            var gearList = await gearListTask;
 
             foreach (var xivGear in gearList)
             {
@@ -508,7 +548,9 @@ namespace FFXIV_TexTools.ViewModels
             }
 
             // Character List
-            var characterList = itemList.GetCharacterList();
+            progress.Report((20, "Character"));
+            var characterList = await itemList.GetCharacterList();
+            //var characterList = await characterListTask;
 
             foreach (var xivCharacter in characterList)
             {
@@ -517,7 +559,9 @@ namespace FFXIV_TexTools.ViewModels
             }
 
             // Companion List
-            var companionList = itemList.GetCompanionList();
+            progress.Report((40, "Companion"));
+            var companionList = await itemList.GetCompanionList();
+            //var companionList = await companionListTask;
 
             var minionCategory = new Category { Name = XivStrings.Minions, Categories = new ObservableCollection<Category>()};
             Categories[2].Categories.Add(minionCategory);
@@ -541,7 +585,9 @@ namespace FFXIV_TexTools.ViewModels
             }
 
             // UI List
-            var uiList = itemList.GetUIList();
+            progress.Report((60, "UI"));
+            var uiList = await itemList.GetUIList();
+            //var uiList = await uiListTask;
 
             foreach (var xivUi in uiList)
             {
@@ -604,7 +650,9 @@ namespace FFXIV_TexTools.ViewModels
             }
 
             // Housing List
-            var housingList = itemList.GetHousingList();
+            progress.Report((80, "Housing"));
+            var housingList = await itemList.GetHousingList();
+            //var housingList = await housingListTask;
 
             foreach (var xivFurniture in housingList)
             {
@@ -625,12 +673,8 @@ namespace FFXIV_TexTools.ViewModels
                     Categories[4].CategoryList.Add(xivFurniture.ItemCategory);
                 }
             }
-            //esrinzou for quick UI
-            UIHelper.UIInvoke(() =>
-            {
-                this.Categories = Categories;
-            });
-            //esrinzou end
+
+            progress.Report((100, "Done"));
         }
 
         /// <summary>
@@ -649,7 +693,7 @@ namespace FFXIV_TexTools.ViewModels
         /// <summary>
         /// The list of categories
         /// </summary>
-        public List<Category> Categories
+        public ObservableCollection<Category> Categories
         {
             get => _categories;
             set
@@ -669,6 +713,52 @@ namespace FFXIV_TexTools.ViewModels
             {
                 _searchText = value;
                 NotifyPropertyChanged(nameof(SearchText));
+            }
+        }
+
+        /// <summary>
+        /// The value for the progressbar
+        /// </summary>
+        public int ProgressValue
+        {
+            get => _progressValue;
+            set
+            {
+                _progressValue = value;
+                NotifyPropertyChanged(nameof(ProgressValue));
+            }
+        }
+
+        /// <summary>
+        /// The text for the progress label
+        /// </summary>
+        public string ProgressLabel
+        {
+            get => _progressLabel;
+            set
+            {
+                _progressLabel = value;
+                NotifyPropertyChanged(nameof(ProgressLabel));
+            }
+        }
+
+        public Visibility ProgressBarVisible
+        {
+            get => _progressBarVisible;
+            set
+            {
+                _progressBarVisible = value;
+                NotifyPropertyChanged(nameof(ProgressBarVisible));
+            }
+        }
+
+        public Visibility ProgressLabelVisible
+        {
+            get => _progressLabelVisible;
+            set
+            {
+                _progressLabelVisible = value;
+                NotifyPropertyChanged(nameof(ProgressLabelVisible));
             }
         }
 
