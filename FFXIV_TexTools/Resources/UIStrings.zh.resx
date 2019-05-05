@@ -729,4 +729,7 @@
   <data name="Start_Over" xml:space="preserve">
     <value>初始化</value>
   </data>
+  <data name="ModelStatus_Loading" xml:space="preserve">
+    <value>Loading Model...</value>
+  </data>
 </root>

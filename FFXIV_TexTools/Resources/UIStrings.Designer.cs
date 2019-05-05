@@ -1269,6 +1269,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Loading Model....
+        /// </summary>
+        public static string ModelStatus_Loading {
+            get {
+                return ResourceManager.GetString("ModelStatus_Loading", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Model Loaded Successfully.
         /// </summary>
         public static string ModelStatus_Success {
