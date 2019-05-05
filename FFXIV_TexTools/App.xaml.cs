@@ -1,5 +1,6 @@
 ﻿using FFXIV_TexTools.Helpers;
 using FFXIV_TexTools.Properties;
+using HelixToolkit.Wpf.SharpDX.Utilities;
 using MahApps.Metro;
 using System;
 using System.Diagnostics;
@@ -7,7 +8,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Threading;
-using HelixToolkit.Wpf.SharpDX.Utilities;
 using Application = System.Windows.Application;
 using Clipboard = System.Windows.Clipboard;
 
