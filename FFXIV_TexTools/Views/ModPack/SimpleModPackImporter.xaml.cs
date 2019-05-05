@@ -564,9 +564,21 @@ namespace FFXIV_TexTools.Views
         /// Updates the progress bar
         /// </summary>
         /// <param name="value">The progress value</param>
-        private void ReportProgress(double value)
+        private void ReportProgress((int current, int total, string message) report)
         {
-            _progressController.SetProgress(value);
+            if (!report.message.Equals(string.Empty))
+            {
+                _progressController.SetMessage(report.message);
+                _progressController.SetIndeterminate();
+            }
+            else
+            {
+                _progressController.SetMessage(
+                    $"{UIMessages.PleaseStandByMessage} ({report.current} / {report.total})");
+
+                var value = (double)report.current / (double)report.total;
+                _progressController.SetProgress(value);
+            }
         }
 
         /// <summary>
@@ -580,7 +592,7 @@ namespace FFXIV_TexTools.Views
 
             var modListDirectory = new DirectoryInfo(Path.Combine(_gameDirectory.Parent.Parent.FullName, XivStrings.ModlistFilePath));
 
-            var progressIndicator = new Progress<double>(ReportProgress);
+            var progressIndicator = new Progress<(int current, int total, string message)>(ReportProgress);
 
             try
             {
