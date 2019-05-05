@@ -8,10 +8,10 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace FFXIV_TexTools.Resources
-{
-
-
+namespace FFXIV_TexTools.Resources {
+    using System;
+    
+    
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>
@@ -1273,6 +1273,15 @@ namespace FFXIV_TexTools.Resources
         internal static string TranslucencyToggleErrorTitle {
             get {
                 return ResourceManager.GetString("TranslucencyToggleErrorTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Getting Data....
+        /// </summary>
+        internal static string TTMPGettingData {
+            get {
+                return ResourceManager.GetString("TTMPGettingData", resourceCulture);
             }
         }
     }

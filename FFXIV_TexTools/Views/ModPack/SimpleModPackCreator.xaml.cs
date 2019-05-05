@@ -424,9 +424,21 @@ namespace FFXIV_TexTools.Views
         /// Updates the progress bar
         /// </summary>
         /// <param name="value">The progress value</param>
-        private void ReportProgress(double value)
+        private void ReportProgress((int current, int total, string message) report)
         {
-            _progressController.SetProgress(value);
+            if (!report.message.Equals(string.Empty))
+            {
+                _progressController.SetMessage(report.message);
+                _progressController.SetIndeterminate();
+            }
+            else
+            {
+                _progressController.SetMessage(
+                    $"{UIMessages.TTMPGettingData} ({report.current} / {report.total})");
+
+                var value = (double)report.current / (double)report.total;
+                _progressController.SetProgress(value);
+            }
         }
 
         #endregion
@@ -548,7 +560,7 @@ namespace FFXIV_TexTools.Views
                 simpleModPackData.SimpleModDataList.Add(simpleData);
             }
 
-            var progressIndicator = new Progress<double>(ReportProgress);
+            var progressIndicator = new Progress<(int current, int total, string message)>(ReportProgress);
 
             await texToolsModPack.CreateSimpleModPack(simpleModPackData, _gameDirectory, progressIndicator);
 
