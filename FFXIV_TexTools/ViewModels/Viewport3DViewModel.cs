@@ -15,7 +15,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using FFXIV_TexTools.Custom;
-using FFXIV_TexTools.Helpers;
 using FFXIV_TexTools.Resources;
 using HelixToolkit.Wpf.SharpDX;
 using HelixToolkit.Wpf.SharpDX.Cameras;
@@ -25,7 +24,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.Windows;
 using System.Windows.Media.Media3D;
 using xivModdingFramework.Models.DataContainers;
 using MeshBuilder = HelixToolkit.Wpf.SharpDX.MeshBuilder;
@@ -44,12 +42,7 @@ namespace FFXIV_TexTools.ViewModels
         private bool _renderLight3;
         private readonly ModelViewModel _modelViewModel;
 
-        //esrinzou for quick UI
-        //public ObservableElement3DCollection Models { get; } = new ObservableElement3DCollection();
-        //esrinzou begin
-        public bool Rendered { get; set; } = false;
-        public ObservableElement3DCollection Models { get; private set; } = new ObservableElement3DCollection();
-        //esrinzou end
+        public ObservableElement3DCollection Models { get; } = new ObservableElement3DCollection();
 
         public Viewport3DViewModel(ModelViewModel mvm)
         {
@@ -71,9 +64,6 @@ namespace FFXIV_TexTools.ViewModels
         /// <param name="textureDataDictionary">The texture dictionary for the model</param>
         public void UpdateModel(XivMdl mdlData, Dictionary<int, ModelTextureData> textureDataDictionary)
         {
-            //esrinzou for quick UI
-            ObservableElement3DCollection Models = new ObservableElement3DCollection();
-            //esrinzou end
             SharpDX.BoundingBox? boundingBox = null;
 
             var totalMeshCount = mdlData.LoDList[0].MeshCount + mdlData.LoDList[0].ExtraMeshCount;
@@ -84,11 +74,11 @@ namespace FFXIV_TexTools.ViewModels
 
                 var meshGeometry3D = new MeshGeometry3D
                 {
-                    Positions = meshData.Positions,
-                    Normals = meshData.Normals,
-                    Indices = meshData.Indices,
-                    Colors = meshData.Colors4,
-                    TextureCoordinates = meshData.TextureCoordinates0,
+                    Positions = new Vector3Collection(meshData.Positions),
+                    Normals = new Vector3Collection(meshData.Normals),
+                    Indices = new IntCollection(meshData.Indices),
+                    Colors = new Color4Collection(meshData.Colors4),
+                    TextureCoordinates = new Vector2Collection(meshData.TextureCoordinates0),
                 };
 
                 try
@@ -102,7 +92,7 @@ namespace FFXIV_TexTools.ViewModels
 
                 if (meshData.BiNormals != null && meshData.BiNormals.Count > 0)
                 {
-                    meshGeometry3D.BiTangents = meshData.BiNormals;
+                    meshGeometry3D.BiTangents = new Vector3Collection(meshData.BiNormals);
                 }
 
                 var textureData = textureDataDictionary[mdlData.LoDList[0].MeshDataList[i].MeshInfo.MaterialIndex];
@@ -178,22 +168,7 @@ namespace FFXIV_TexTools.ViewModels
 
                 Models.Add(mgm3d);
             }
-            //esrinzou for quick UI
-            var pbar_window = new ProgressBarWindow();
-            pbar_window.Owner = Window.GetWindow(_modelViewModel.ModelView);
-            pbar_window.UpdateProcessAction = () =>
-            {
-                foreach (var model in Models)
-                {
-                    UIHelper.UIInvoke(() =>
-                    {
-                        this.Models.Add(model);
-                        UIHelper.RefreshUI();
-                    });
-                }
-            };
-            pbar_window.ShowDialog();
-            //esrinzou end
+
             SpecularShine = 1;
 
             var center = boundingBox.GetValueOrDefault().Center;
