@@ -318,7 +318,6 @@ namespace FFXIV_TexTools.Views
             {
                 item.Category = XivStrings.Character;
 
-
                 if (item.Name.Equals(XivStrings.Body))
                 {
                     item.ModelInfo = new XivModelInfo
@@ -720,7 +719,35 @@ namespace FFXIV_TexTools.Views
                     }
                     else
                     {
-                        modCB.Name = $"{((IItemModel)selectedItem.Item).ModelInfo.ModelID} ({Path.GetFileNameWithoutExtension(itemPath)})";
+                        var modelId = ((IItemModel)selectedItem.Item).ModelInfo.ModelID;
+
+                        if (selectedItem.Item.Category.Equals(XivStrings.Character))
+                        {
+                            var item = selectedItem.Item;
+
+                            if (item.Name.Equals(XivStrings.Body))
+                            {
+                                modelId = int.Parse(
+                                    itemPath.Substring(itemPath.IndexOf("/body", StringComparison.Ordinal) + 7, 4));
+                            }
+                            else if (item.Name.Equals(XivStrings.Hair))
+                            {
+                                modelId = int.Parse(
+                                    itemPath.Substring(itemPath.IndexOf("/hair", StringComparison.Ordinal) + 7, 4));
+                            }
+                            else if (item.Name.Equals(XivStrings.Face))
+                            {
+                                modelId = int.Parse(
+                                    itemPath.Substring(itemPath.IndexOf("/face", StringComparison.Ordinal) + 7, 4));
+                            }
+                            else if (item.Name.Equals(XivStrings.Tail))
+                            {
+                                modelId = int.Parse(
+                                    itemPath.Substring(itemPath.IndexOf("/tail", StringComparison.Ordinal) + 7, 4));
+                            }
+                        }
+
+                        modCB.Name = $"{modelId} ({Path.GetFileNameWithoutExtension(itemPath)})";
                     }
                     //esrinzou end
                     modCB.SelectedMod = modItem;
