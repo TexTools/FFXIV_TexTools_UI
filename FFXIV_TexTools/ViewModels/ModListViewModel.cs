@@ -47,11 +47,7 @@ namespace FFXIV_TexTools.ViewModels
     {
         private readonly DirectoryInfo _modListDirectory;
         private readonly DirectoryInfo _gameDirectory;
-        //esrinzou for chinese UI
-        //private string _modToggleText = "Enable/Disable";
-        //esrinzou begin
         private string _modToggleText = UIStrings.Enable_Disable;
-        //esrinzou end
         private Visibility _listVisibility = Visibility.Visible, _infoGridVisibility = Visibility.Collapsed;
         private string _modPackTitle, _modPackModAuthorLabel, _modPackModCountLabel, _modPackModVersionLabel, _modPackContentList, _progressText;
         private bool _itemFilter, _modPackFilter;
@@ -110,11 +106,7 @@ namespace FFXIV_TexTools.ViewModels
 
                 var categoryItem = new Category
                 {
-                    //esrinzou for chinese UI
-                    //Name = "Standalone (Non-ModPack)",
-                    //esrinzou begin
                     Name = UIStrings.Standalone_Non_ModPack,
-                    //esrinzou end
                     ParentCategory = category
                 };
 
@@ -171,7 +163,6 @@ namespace FFXIV_TexTools.ViewModels
 
                         category.Categories.Add(categoryItem);
                         category.CategoryList.Add(modItem.name);
-
                     }
 
                     Application.Current.Dispatcher.Invoke(() => Categories.Add(category));
@@ -203,11 +194,7 @@ namespace FFXIV_TexTools.ViewModels
 
                 var category = new Category
                 {
-                    //esrinzou for chinese UI
-                    //Name = "Standalone (Non-ModPack)",
-                    //esrinzou begin
                     Name = UIStrings.Standalone_Non_ModPack,
-                    //esrinzou end
                     Categories = new ObservableCollection<Category>(),
                     CategoryList = new List<string>(),
                     ParentCategory = modPacksParent
@@ -232,11 +219,7 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     List<Mod> modsInModpack;
 
-                    //esrinzou for chinese UI
-                    //if (!modPackCategory.Key.Equals("Standalone (Non-ModPack)"))
-                    //esrinzou begin
                     if (!modPackCategory.Key.Equals(UIStrings.Standalone_Non_ModPack))
-                        //esrinzou end
                     {
                         modsInModpack = (from mod in modList.Mods
                             where mod.modPack != null && mod.modPack.name.Equals(modPackCategory.Key)
@@ -469,18 +452,21 @@ namespace FFXIV_TexTools.ViewModels
         /// <param name="selectedItem">The selected item to update the entries for</param>
         public Task UpdateList(Category category, CancellationTokenSource cts)
         {
+            var updateLock = new object();
             ListVisibility = Visibility.Visible;
             InfoGridVisibility = Visibility.Collapsed;
             ModListPreviewList.Clear();
 
             ProgressValue = 0;
             ProgressText = string.Empty;
+            Tex tex;
 
-            return Task.Run(() =>
+            return Task.Run(async () =>
             {
                 var selectedItem = category.Item as XivGenericItemModel;
                 if (selectedItem == null) return;
 
+                var mtrl = new Mtrl(_gameDirectory, selectedItem.DataFile);
                 var modList = JsonConvert.DeserializeObject<ModList>(File.ReadAllText(_modListDirectory.FullName));
 
                 var modItems = new List<Mod>();
@@ -515,296 +501,314 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     modItems =
                         (from mod in modList.Mods
-                            where mod.name.Equals(selectedItem.Name)
-                            select mod).ToList();
+                         where mod.name.Equals(selectedItem.Name)
+                         select mod).ToList();
                 }
 
-                var modNum = 1;
-                foreach (var modItem in modItems)
+                if (modItems.Count > 10)
                 {
-                    if (cts.IsCancellationRequested)
+                    tex = new Tex(_gameDirectory, selectedItem.DataFile);
+                    await tex.GetIndexFileDictionary();
+                }
+                else
+                {
+                    tex = new Tex(_gameDirectory);
+                }
+
+                var modNum = 0;
+
+                await Task.Run(async () =>
+                {
+                    foreach (var modItem in modItems)
                     {
-                        cts.Token.ThrowIfCancellationRequested();
-                        return;
-                    }
+                        var itemPath = modItem.fullPath;
 
-                    progress.Report((modNum, modItems.Count));
-
-                    var itemPath = modItem.fullPath;
-
-                    var modListModel = new ModListModel
-                    {
-                        ModItem = modItem
-                    };
-
-                    // Race
-                    if (selectedItem.Category.Equals(XivStrings.Gear))
-                    {
-                        if (modItem.fullPath.Contains("equipment"))
+                        var modListModel = new ModListModel
                         {
-                            string raceCode;
-                            if (itemPath.Contains("/v"))
+                            ModItem = modItem
+                        };
+
+                        // Race
+                        if (selectedItem.Category.Equals(XivStrings.Gear))
+                        {
+                            if (modItem.fullPath.Contains("equipment"))
                             {
-                                raceCode = itemPath.Substring(itemPath.LastIndexOf("_c") + 2, 4);
+                                string raceCode;
+                                if (itemPath.Contains("/v"))
+                                {
+                                    raceCode = itemPath.Substring(itemPath.LastIndexOf("_c") + 2, 4);
+                                }
+                                else
+                                {
+                                    raceCode = itemPath.Substring(itemPath.LastIndexOf("/c") + 2, 4);
+                                }
+
+                                modListModel.Race = XivRaces.GetXivRace(raceCode).GetDisplayName();
                             }
                             else
                             {
-                                raceCode = itemPath.Substring(itemPath.LastIndexOf("/c") + 2, 4);
+                                modListModel.Race = XivStrings.All;
+                            }
+                        }
+                        else if (selectedItem.Category.Equals(XivStrings.Character))
+                        {
+                            if (!modItem.fullPath.Contains("chara/common"))
+                            {
+                                var raceCode = itemPath.Substring(itemPath.IndexOf("n/c") + 3, 4);
+                                modListModel.Race = XivRaces.GetXivRace(raceCode).GetDisplayName();
+                            }
+                            else
+                            {
+                                modListModel.Race = XivStrings.All;
                             }
 
-                            modListModel.Race = XivRaces.GetXivRace(raceCode).GetDisplayName();
                         }
-                        else
+                        else if (selectedItem.Category.Equals(XivStrings.Companions))
+                        {
+                            modListModel.Race = XivStrings.Monster;
+                        }
+                        else if (selectedItem.Category.Equals(XivStrings.UI))
                         {
                             modListModel.Race = XivStrings.All;
                         }
-                    }
-                    else if (selectedItem.Category.Equals(XivStrings.Character))
-                    {
-                        if (!modItem.fullPath.Contains("chara/common"))
-                        {
-                            var raceCode = itemPath.Substring(itemPath.IndexOf("n/c") + 3, 4);
-                            modListModel.Race = XivRaces.GetXivRace(raceCode).GetDisplayName();
-                        }
-                        else
+                        else if (selectedItem.Category.Equals(XivStrings.Housing))
                         {
                             modListModel.Race = XivStrings.All;
                         }
 
-                    }
-                    else if (selectedItem.Category.Equals(XivStrings.Companions))
-                    {
-                        modListModel.Race = XivStrings.Monster;
-                    }
-                    else if (selectedItem.Category.Equals(XivStrings.UI))
-                    {
-                        modListModel.Race = XivStrings.All;
-                    }
-                    else if (selectedItem.Category.Equals(XivStrings.Housing))
-                    {
-                        modListModel.Race = XivStrings.All;
-                    }
-
-                    XivTexType? xivTexType = null;
-                    // Map
-                    if (itemPath.Contains("_d."))
-                    {
-                        xivTexType = XivTexType.Diffuse;
-                        modListModel.Map = xivTexType.ToString();
-                    }
-                    else if (itemPath.Contains("_n."))
-                    {
-                        xivTexType = XivTexType.Normal;
-                        modListModel.Map = xivTexType.ToString();
-                    }
-                    else if (itemPath.Contains("_s."))
-                    {
-                        xivTexType = XivTexType.Specular;
-                        modListModel.Map = xivTexType.ToString();
-                    }
-                    else if (itemPath.Contains("_m."))
-                    {
-                        xivTexType = XivTexType.Multi;
-                        modListModel.Map = xivTexType.ToString();
-                    }
-                    else if (itemPath.Contains("material"))
-                    {
-                        xivTexType = XivTexType.ColorSet;
-                        modListModel.Map = xivTexType.ToString();
-                    }
-                    else if (itemPath.Contains("decal"))
-                    {
-                        xivTexType = XivTexType.Mask;
-                        modListModel.Map = xivTexType.ToString();
-                    }
-                    else if (itemPath.Contains("vfx"))
-                    {
-                        xivTexType = XivTexType.Vfx;
-                        modListModel.Map = xivTexType.ToString();
-                    }
-                    else if (itemPath.Contains("ui/"))
-                    {
-                        if (itemPath.Contains("icon"))
+                        XivTexType? xivTexType = null;
+                        // Map
+                        if (itemPath.Contains("_d."))
                         {
-                            xivTexType = XivTexType.Icon;
+                            xivTexType = XivTexType.Diffuse;
                             modListModel.Map = xivTexType.ToString();
                         }
-                        else if (itemPath.Contains("map"))
+                        else if (itemPath.Contains("_n."))
                         {
-                            xivTexType = XivTexType.Map;
+                            xivTexType = XivTexType.Normal;
                             modListModel.Map = xivTexType.ToString();
+                        }
+                        else if (itemPath.Contains("_s."))
+                        {
+                            xivTexType = XivTexType.Specular;
+                            modListModel.Map = xivTexType.ToString();
+                        }
+                        else if (itemPath.Contains("_m."))
+                        {
+                            xivTexType = XivTexType.Multi;
+                            modListModel.Map = xivTexType.ToString();
+                        }
+                        else if (itemPath.Contains("material"))
+                        {
+                            xivTexType = XivTexType.ColorSet;
+                            modListModel.Map = xivTexType.ToString();
+                        }
+                        else if (itemPath.Contains("decal"))
+                        {
+                            xivTexType = XivTexType.Mask;
+                            modListModel.Map = xivTexType.ToString();
+                        }
+                        else if (itemPath.Contains("vfx"))
+                        {
+                            xivTexType = XivTexType.Vfx;
+                            modListModel.Map = xivTexType.ToString();
+                        }
+                        else if (itemPath.Contains("ui/"))
+                        {
+                            if (itemPath.Contains("icon"))
+                            {
+                                xivTexType = XivTexType.Icon;
+                                modListModel.Map = xivTexType.ToString();
+                            }
+                            else if (itemPath.Contains("map"))
+                            {
+                                xivTexType = XivTexType.Map;
+                                modListModel.Map = xivTexType.ToString();
+                            }
+                            else
+                            {
+                                modListModel.Map = "UI";
+                            }
+                        }
+                        else if (itemPath.Contains(".mdl"))
+                        {
+                            modListModel.Map = "3D";
                         }
                         else
                         {
-                            modListModel.Map = "UI";
+                            modListModel.Map = "--";
                         }
-                    }
-                    else if (itemPath.Contains(".mdl"))
-                    {
-                        modListModel.Map = "3D";
-                    }
-                    else
-                    {
-                        modListModel.Map = "--";
-                    }
 
-                    // Part
-                    if (itemPath.Contains("_b_"))
-                    {
-                        modListModel.Part = "b";
-                    }
-                    else if (itemPath.Contains("_c_"))
-                    {
-                        modListModel.Part = "c";
-                    }
-                    else if (itemPath.Contains("_d_"))
-                    {
-                        modListModel.Part = "d";
-                    }
-                    else if (itemPath.Contains("decal"))
-                    {
-                        modListModel.Part = itemPath.Substring(itemPath.LastIndexOf('_') + 1,
-                            itemPath.LastIndexOf('.') - (itemPath.LastIndexOf('_') + 1));
-                    }
-                    else
-                    {
-                        modListModel.Part = "a";
-                    }
-
-                    // Type
-                    if (itemPath.Contains("_iri_"))
-                    {
-                        modListModel.Type = XivStrings.Iris;
-                    }
-                    else if (itemPath.Contains("_etc_"))
-                    {
-                        modListModel.Type = XivStrings.Etc;
-                    }
-                    else if (itemPath.Contains("_fac_"))
-                    {
-                        modListModel.Type = XivStrings.Face;
-                    }
-                    else if (itemPath.Contains("_hir_"))
-                    {
-                        modListModel.Type = XivStrings.Hair;
-                    }
-                    else if (itemPath.Contains("_acc_"))
-                    {
-                        modListModel.Type = XivStrings.Accessory;
-                    }
-                    else if (itemPath.Contains("demihuman"))
-                    {
-                        modListModel.Type = itemPath.Substring(itemPath.LastIndexOf('_') - 3, 3);
-                    }
-                    else
-                    {
-                        modListModel.Type = "--";
-                    }
-
-                    // Image
-                    if (itemPath.Contains("material"))
-                    {
-                        var dxVersion = int.Parse(Properties.Settings.Default.DX_Version);
-
-                        var mtrl = new Mtrl(_gameDirectory, selectedItem.DataFile);
-
-                        var offset = modItem.enabled ? modItem.data.modOffset : modItem.data.originalOffset;
-
-                        try
+                        // Part
+                        if (itemPath.Contains("_b_"))
                         {
-                            var mtrlData = mtrl.GetMtrlData(offset, modItem.fullPath, dxVersion);
+                            modListModel.Part = "b";
+                        }
+                        else if (itemPath.Contains("_c_"))
+                        {
+                            modListModel.Part = "c";
+                        }
+                        else if (itemPath.Contains("_d_"))
+                        {
+                            modListModel.Part = "d";
+                        }
+                        else if (itemPath.Contains("decal"))
+                        {
+                            modListModel.Part = itemPath.Substring(itemPath.LastIndexOf('_') + 1,
+                                itemPath.LastIndexOf('.') - (itemPath.LastIndexOf('_') + 1));
+                        }
+                        else
+                        {
+                            modListModel.Part = "a";
+                        }
 
-                            var floats = Half.ConvertToFloat(mtrlData.ColorSetData.ToArray());
+                        // Type
+                        if (itemPath.Contains("_iri_"))
+                        {
+                            modListModel.Type = XivStrings.Iris;
+                        }
+                        else if (itemPath.Contains("_etc_"))
+                        {
+                            modListModel.Type = XivStrings.Etc;
+                        }
+                        else if (itemPath.Contains("_fac_"))
+                        {
+                            modListModel.Type = XivStrings.Face;
+                        }
+                        else if (itemPath.Contains("_hir_"))
+                        {
+                            modListModel.Type = XivStrings.Hair;
+                        }
+                        else if (itemPath.Contains("_acc_"))
+                        {
+                            modListModel.Type = XivStrings.Accessory;
+                        }
+                        else if (itemPath.Contains("demihuman"))
+                        {
+                            modListModel.Type = itemPath.Substring(itemPath.LastIndexOf('_') - 3, 3);
+                        }
+                        else
+                        {
+                            modListModel.Type = "--";
+                        }
 
-                            var floatArray = Utilities.ToByteArray(floats);
+                        // Image
+                        if (itemPath.Contains("material"))
+                        {
+                            var dxVersion = int.Parse(Properties.Settings.Default.DX_Version);
+
+                            var offset = modItem.enabled ? modItem.data.modOffset : modItem.data.originalOffset;
+
+                            try
+                            {
+                                var mtrlData = await mtrl.GetMtrlData(offset, modItem.fullPath, dxVersion);
+
+                                var floats = Half.ConvertToFloat(mtrlData.ColorSetData.ToArray());
+
+                                var floatArray = Utilities.ToByteArray(floats);
+
+                                var pixelSettings =
+                                    new PixelReadSettings(4, 16, StorageType.Float, PixelMapping.RGBA);
+
+                                using (var magickImage = new MagickImage(floatArray, pixelSettings))
+                                {
+                                    magickImage.Alpha(AlphaOption.Opaque);
+                                    modListModel.Image =
+                                        Application.Current.Dispatcher.Invoke(() => magickImage.ToBitmapSource());
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                FlexibleMessageBox.Show(
+                                    string.Format(UIMessages.MaterialFileReadErrorMessage, modItem.fullPath,
+                                        ex.Message),
+                                    UIMessages.MaterialDataReadErrorTitle,
+                                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            }
+
+                        }
+                        else if (itemPath.Contains(".mdl"))
+                        {
+                            modListModel.Image = Application.Current.Dispatcher.Invoke(() => new BitmapImage(
+                                new Uri("pack://application:,,,/FFXIV_TexTools;component/Resources/3DModel.png")));
+                        }
+                        else
+                        {
+                            var ttp = new TexTypePath
+                            {
+                                Type = xivTexType.GetValueOrDefault(),
+                                DataFile = selectedItem.DataFile,
+                                Path = modItem.fullPath
+                            };
+
+                            XivTex texData;
+                            try
+                            {
+                                if (modItems.Count > 10)
+                                {
+                                    texData = await tex.GetTexDataPreFetchedIndex(ttp);
+                                }
+                                else
+                                {
+                                    texData = await tex.GetTexData(ttp);
+                                }
+
+                            }
+                            catch (Exception ex)
+                            {
+                                FlexibleMessageBox.Show(
+                                    string.Format(UIMessages.TextureFileReadErrorMessage, ttp.Path, ex.Message),
+                                    UIMessages.TextureDataReadErrorTitle,
+                                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                return;
+                            }
+
+                            var mapBytes = await tex.GetImageData(texData);
 
                             var pixelSettings =
-                                new PixelReadSettings(4, 16, StorageType.Float, PixelMapping.RGBA);
+                                new PixelReadSettings(texData.Width, texData.Height, StorageType.Char,
+                                    PixelMapping.RGBA);
 
-                            using (var magickImage = new MagickImage(floatArray, pixelSettings))
+                            using (var magickImage = new MagickImage(mapBytes, pixelSettings))
                             {
-                                magickImage.Alpha(AlphaOption.Opaque);
-                                modListModel.Image = Application.Current.Dispatcher.Invoke(() => magickImage.ToBitmapSource());
+                                if (!modItem.fullPath.Contains("ui/"))
+                                {
+                                    magickImage.Alpha(AlphaOption.Opaque);
+                                }
+
+                                magickImage.Thumbnail(256, 256);
+                                modListModel.Image =
+                                    Application.Current.Dispatcher.Invoke(() => magickImage.ToBitmapSource());
                             }
                         }
-                        catch (Exception ex)
+
+                        // Status
+                        if (modItem.enabled)
                         {
-                            FlexibleMessageBox.Show(
-                                string.Format(UIMessages.MaterialFileReadErrorMessage, modItem.fullPath, ex.Message),
-                                UIMessages.MaterialDataReadErrorTitle,
-                                MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            modListModel.ActiveBorder = Brushes.Green;
+                            modListModel.Active = Brushes.Transparent;
+                            modListModel.ActiveOpacity = 1;
+                        }
+                        else
+                        {
+                            modListModel.ActiveBorder = Brushes.Red;
+                            modListModel.Active = Brushes.Gray;
+                            modListModel.ActiveOpacity = 0.5f;
                         }
 
-                    }
-                    else if (itemPath.Contains(".mdl"))
-                    {
-                        modListModel.Image = Application.Current.Dispatcher.Invoke(() => new BitmapImage(
-                            new Uri("pack://application:,,,/FFXIV_TexTools;component/Resources/3DModel.png")));
-;
-                    }
-                    else
-                    {
-                        var tex = new Tex(_gameDirectory);
+                        cts.Token.ThrowIfCancellationRequested();
 
-                        var ttp = new TexTypePath
+                        lock (updateLock)
                         {
-                            Type = xivTexType.GetValueOrDefault(),
-                            DataFile = selectedItem.DataFile,
-                            Path = modItem.fullPath
-                        };
-
-                        XivTex texData;
-                        try
-                        {
-                            texData = tex.GetTexData(ttp);
-                        }
-                        catch (Exception ex)
-                        {
-                            FlexibleMessageBox.Show(
-                                string.Format(UIMessages.TextureFileReadErrorMessage, ttp.Path, ex.Message),
-                                UIMessages.TextureDataReadErrorTitle,
-                                MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            continue;
+                            progress.Report((++modNum, modItems.Count));
                         }
 
-                        var mapBytes = tex.GetImageData(texData);
-
-                        var pixelSettings =
-                            new PixelReadSettings(texData.Width, texData.Height, StorageType.Char, PixelMapping.RGBA);
-
-                        using (var magickImage = new MagickImage(mapBytes, pixelSettings))
+                        if (!cts.IsCancellationRequested)
                         {
-                            if (!modItem.fullPath.Contains("ui/"))
-                            {
-                                magickImage.Alpha(AlphaOption.Opaque);
-                            }
-
-                            magickImage.Thumbnail(256, 256);
-                            modListModel.Image = Application.Current.Dispatcher.Invoke(() => magickImage.ToBitmapSource());
+                            Application.Current.Dispatcher.Invoke(() => ModListPreviewList.Add(modListModel));
                         }
                     }
-
-                    // Status
-                    if (modItem.enabled)
-                    {
-                        modListModel.ActiveBorder = Brushes.Green;
-                        modListModel.Active = Brushes.Transparent;
-                        modListModel.ActiveOpacity = 1;
-                    }
-                    else
-                    {
-                        modListModel.ActiveBorder = Brushes.Red;
-                        modListModel.Active = Brushes.Gray;
-                        modListModel.ActiveOpacity = 0.5f;
-                    }
-
-                    if (!cts.IsCancellationRequested)
-                    {
-                        Application.Current.Dispatcher.Invoke(() => ModListPreviewList.Add(modListModel));
-                    }
-
-                    modNum++;
-                }
+                }, cts.Token);
             }, cts.Token);
         }
 
@@ -829,11 +833,7 @@ namespace FFXIV_TexTools.ViewModels
             var modList = JsonConvert.DeserializeObject<ModList>(File.ReadAllText(_modListDirectory.FullName));
             List<Mod> modPackModList = null;
 
-            //esrinzou for chinese UI
-            //if (category.Name.Equals("Standalone (Non-ModPack)"))
-            //esrinzou begin
             if (category.Name.Equals(UIStrings.Standalone_Non_ModPack))
-            //esrinzou end
             {
                 modPackModList = (from items in modList.Mods
                     where !items.name.Equals(string.Empty) && items.modPack == null
@@ -887,11 +887,7 @@ namespace FFXIV_TexTools.ViewModels
                 ModPackContentList += $"[{ mod.Value}] {mod.Key}\n";
             }
 
-            //esrinzou for chinese UI
-            //ModToggleText = enabledCount > disabledCount ? "Disable" : "Enable";
-            //esrinzou begin
             ModToggleText = enabledCount > disabledCount ? UIStrings.Disable : UIStrings.Enable;
-            //esrinzou end
         }
 
         /// <summary>

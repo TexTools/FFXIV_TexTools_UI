@@ -91,6 +91,36 @@ namespace FFXIV_TexTools
             searchTimer.Enabled = true;
             searchTimer.AutoReset = false;
             searchTimer.Elapsed += SearchTimerOnElapsed;
+
+            var textureView = TextureTabItem.Content as TextureView;
+            var textureViewModel = textureView.DataContext as TextureViewModel;
+
+            textureViewModel.LoadingComplete += TextureViewModelOnLoadingComplete;
+
+            var modelView = ModelTabItem.Content as ModelView;
+            var modelViewModel = modelView.DataContext as ModelViewModel;
+
+            modelViewModel.LoadingComplete += ModelViewModelOnLoadingComplete;
+        }
+
+        private void ModelViewModelOnLoadingComplete(object sender, EventArgs e)
+        {
+            ItemTreeView.IsEnabled = true;
+        }
+
+        private void TextureViewModelOnLoadingComplete(object sender, EventArgs e)
+        {
+            var selectedItem = ItemTreeView.SelectedItem as Category;
+
+            if(selectedItem?.Item == null) return;
+
+            if (selectedItem.Item.Category.Equals(XivStrings.UI) ||
+                selectedItem.Item.ItemCategory.Equals(XivStrings.Face_Paint) ||
+                selectedItem.Item.ItemCategory.Equals(XivStrings.Equip_Decals) ||
+                selectedItem.Item.ItemCategory.Equals(XivStrings.Paintings))
+            {
+                ItemTreeView.IsEnabled = true;
+            }
         }
 
         private void CheckForUpdates()
@@ -174,14 +204,15 @@ namespace FFXIV_TexTools
         /// Updates the texture and model views with the selected item
         /// </summary>
         /// <param name="selectedItem">The selected item</param>
-        private void UpdateViews(Category selectedItem)
+        private async void UpdateViews(Category selectedItem)
         {
             if (selectedItem?.Item != null)
             {
-                var textureView = TextureTabItem.Content as TextureView; ;
+                ItemTreeView.IsEnabled = false;
+                var textureView = TextureTabItem.Content as TextureView;
                 var textureViewModel = textureView.DataContext as TextureViewModel;
 
-                textureViewModel.UpdateTexture(selectedItem.Item);
+                await textureViewModel.UpdateTexture(selectedItem.Item);
 
                 if (selectedItem.Item.Category.Equals(XivStrings.UI) ||
                     selectedItem.Item.ItemCategory.Equals(XivStrings.Face_Paint) ||
@@ -202,7 +233,7 @@ namespace FFXIV_TexTools
                     var modelView = ModelTabItem.Content as ModelView;
                     var modelViewModel = modelView.DataContext as ModelViewModel;
 
-                    modelViewModel.UpdateModel(selectedItem.Item as IItemModel);
+                    await modelViewModel.UpdateModel(selectedItem.Item as IItemModel);
                 }
             }
         }
@@ -378,7 +409,7 @@ namespace FFXIV_TexTools
             try
             {
                 var ttmp = new TTMP(modPackDirectory, XivStrings.TexTools);
-                var ttmpData = ttmp.GetModPackJsonData(path);
+                var ttmpData = await ttmp.GetModPackJsonData(path);
 
                 if (ttmpData.ModPackJson.TTMPVersion.Contains("w"))
                 {
@@ -544,7 +575,7 @@ namespace FFXIV_TexTools
                     }
                 }
 
-                var task = Task.Run((() =>
+                await Task.Run(async () =>
                 {
                     var modding = new Modding(gameDirectory);
                     var dat = new Dat(gameDirectory);
@@ -560,12 +591,12 @@ namespace FFXIV_TexTools
                             UIMessages.BackupFilesMissingTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
                         // Toggle off all mods
-                        modding.ToggleAllMods(false);
+                        await modding.ToggleAllMods(false);
                     }
                     else if (outdated)
                     {
                         // Toggle off all mods
-                        modding.ToggleAllMods(false);
+                        await modding.ToggleAllMods(false);
                     }
                     else
                     {
@@ -582,7 +613,7 @@ namespace FFXIV_TexTools
                     // Delete modded dat files
                     foreach (var xivDataFile in (XivDataFile[])Enum.GetValues(typeof(XivDataFile)))
                     {
-                        var datFiles = dat.GetModdedDatList(xivDataFile);
+                        var datFiles = await dat.GetModdedDatList(xivDataFile);
 
                         foreach (var datFile in datFiles)
                         {
@@ -591,7 +622,7 @@ namespace FFXIV_TexTools
 
                         if (datFiles.Count > 0)
                         {
-                            problemChecker.RepairIndexDatCounts(xivDataFile);
+                            await problemChecker.RepairIndexDatCounts(xivDataFile);
                         }
                     }
 
@@ -600,9 +631,7 @@ namespace FFXIV_TexTools
 
                     modding.CreateModlist();
 
-                }));
-
-                task.Wait();
+                });
 
                 UpdateViews(ItemTreeView.SelectedItem as Category);
 
@@ -636,7 +665,7 @@ namespace FFXIV_TexTools
                 try
                 {
                     // Toggle off all mods
-                    modding.ToggleAllMods(false);
+                    await modding.ToggleAllMods(false);
                 }
                 catch (Exception ex)
                 {

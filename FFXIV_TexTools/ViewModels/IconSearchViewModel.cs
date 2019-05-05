@@ -14,12 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using System.ComponentModel;
-using System.IO;
-using System.Windows.Input;
 using FFXIV_TexTools.Helpers;
 using FFXIV_TexTools.Resources;
 using FFXIV_TexTools.Views;
+using System.ComponentModel;
+using System.IO;
+using System.Windows.Data;
+using System.Windows.Input;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Items.DataContainers;
@@ -87,8 +88,17 @@ namespace FFXIV_TexTools.ViewModels
         /// <summary>
         /// Attempts to open the icon
         /// </summary>
-        private void OpenIcon()
+        private async void OpenIcon()
         {
+            if (_mainView.TabsControl.SelectedIndex == 1)
+            {
+                _mainView.TabsControl.SelectedIndex = 0;
+            }
+
+            _mainView.ModelTabItem.IsEnabled = false;
+
+            CollectionViewSource.GetDefaultView(_mainView.ItemTreeView.ItemsSource).Refresh();
+
             var iconInt = -1;
             try
             {
@@ -117,7 +127,7 @@ namespace FFXIV_TexTools.ViewModels
                 var iconFolderInt = (iconInt / 1000) * 1000;
                 var iconFolderString = $"ui/icon/{iconFolderInt.ToString().PadLeft(6, '0')}";
 
-                if (index.FileExists(HashGenerator.GetHash(iconFileString), HashGenerator.GetHash(iconFolderString), XivDataFile._06_Ui))
+                if (await index.FileExists(HashGenerator.GetHash(iconFileString), HashGenerator.GetHash(iconFolderString), XivDataFile._06_Ui))
                 {
                     var textureView = _mainView.TextureTabItem.Content as TextureView;
                     var textureViewModel = textureView.DataContext as TextureViewModel;
@@ -133,12 +143,12 @@ namespace FFXIV_TexTools.ViewModels
                         UiPath = $"{iconFolderString}/{iconFileString}"
                     };
 
-                    textureViewModel.UpdateTexture(xivUI);
+                    await textureViewModel.UpdateTexture(xivUI);
                 }
                 else
                 {
                     var iconLangFolderString = $"ui/icon/{iconFolderInt.ToString().PadLeft(6, '0')}/en";
-                    if (index.FileExists(HashGenerator.GetHash(iconFileString), HashGenerator.GetHash(iconLangFolderString),
+                    if (await index.FileExists(HashGenerator.GetHash(iconFileString), HashGenerator.GetHash(iconLangFolderString),
                         XivDataFile._06_Ui))
                     {
                         var textureView = _mainView.TextureTabItem.Content as TextureView;
@@ -155,7 +165,7 @@ namespace FFXIV_TexTools.ViewModels
                             UiPath = $"{iconFolderString}/{iconFileString}"
                         };
 
-                        textureViewModel.UpdateTexture(xivUI);
+                        await textureViewModel.UpdateTexture(xivUI);
                     }
                     else
                     {

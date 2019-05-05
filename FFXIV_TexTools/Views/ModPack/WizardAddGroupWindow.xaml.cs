@@ -898,7 +898,7 @@ namespace FFXIV_TexTools.Views
         /// <summary>
         /// The event handler for the add custom texture button clicked
         /// </summary>
-        private void AddCustomTextureButton_Click(object sender, RoutedEventArgs e)
+        private async void AddCustomTextureButton_Click(object sender, RoutedEventArgs e)
         {
             var selectedItem = TextureMapComboBox.SelectedItem as ModComboBox;
 
@@ -922,15 +922,15 @@ namespace FFXIV_TexTools.Views
             {
                 var mtrl = new Mtrl(_gameDirectory, XivDataFiles.GetXivDataFile(mod.datFile));
 
-                var xivMtrl = mtrl.GetMtrlData(mod.data.modOffset, mod.fullPath, int.Parse(Settings.Default.DX_Version));
+                var xivMtrl = await mtrl.GetMtrlData(mod.data.modOffset, mod.fullPath, int.Parse(Settings.Default.DX_Version));
 
                 modData = tex.DDStoMtrlData(xivMtrl, ddsDirectory, ((Category) ModListTreeView.SelectedItem).Item);
             }
             else
             {
-                var texData = tex.GetTexData(selectedItem.TexTypePath);
+                var texData = await tex.GetTexData(selectedItem.TexTypePath);
 
-                modData = tex.DDStoTexData(texData, ((Category)ModListTreeView.SelectedItem).Item, ddsDirectory);
+                modData = await tex.DDStoTexData(texData, ((Category)ModListTreeView.SelectedItem).Item, ddsDirectory);
             }
 
             if (includedModsList.Any(item => item.Name.Equals(includedMod.Name)))
@@ -1087,7 +1087,7 @@ namespace FFXIV_TexTools.Views
         /// <summary>
         /// The event handler for the advanced options button clicked
         /// </summary>
-        private void AdvOptionsButton_Click(object sender, RoutedEventArgs e)
+        private async void AdvOptionsButton_Click(object sender, RoutedEventArgs e)
         {
             var selectedItem = ModelTypeComboBox.SelectedItem as ModComboBox;
 
@@ -1104,7 +1104,7 @@ namespace FFXIV_TexTools.Views
             var includedModsList = IncludedModsList.Items.Cast<IncludedMods>().ToList();
             var mdl = new Mdl(_gameDirectory, XivDataFiles.GetXivDataFile(mod.datFile));
 
-            var xivMdl = mdl.GetMdlData(itemModel, GetRace(mod.fullPath), null, null, mod.data.originalOffset);
+            var xivMdl = await mdl.GetMdlData(itemModel, GetRace(mod.fullPath), null, null, mod.data.originalOffset);
 
             var advancedImportView = new AdvancedModelImportView(xivMdl, itemModel, GetRace(mod.fullPath), true);
             var result = advancedImportView.ShowDialog();
@@ -1139,7 +1139,7 @@ namespace FFXIV_TexTools.Views
         /// <summary>
         /// The event handler for the custom model button clicked
         /// </summary>
-        private void AddCustomModelButton_Click(object sender, RoutedEventArgs e)
+        private async void AddCustomModelButton_Click(object sender, RoutedEventArgs e)
         {
             var selectedItem = ModelTypeComboBox.SelectedItem as ModComboBox;
 
@@ -1155,8 +1155,8 @@ namespace FFXIV_TexTools.Views
 
             var includedModsList = IncludedModsList.Items.Cast<IncludedMods>().ToList();
             var mdl = new Mdl(_gameDirectory, XivDataFiles.GetXivDataFile(mod.datFile));
-            var xivMdl = mdl.GetMdlData(itemModel, GetRace(mod.fullPath), null, null, mod.data.originalOffset);
-            var warnings = mdl.ImportModel(itemModel, xivMdl, new DirectoryInfo(CustomModelTextBox.Text), null, XivStrings.TexTools, 
+            var xivMdl = await mdl.GetMdlData(itemModel, GetRace(mod.fullPath), null, null, mod.data.originalOffset);
+            var warnings = await mdl.ImportModel(itemModel, xivMdl, new DirectoryInfo(CustomModelTextBox.Text), null, XivStrings.TexTools, 
                 Settings.Default.DAE_Plugin_Target, true);
 
             if (warnings.Count > 0)

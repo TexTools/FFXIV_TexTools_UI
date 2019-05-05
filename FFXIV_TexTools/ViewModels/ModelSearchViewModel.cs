@@ -21,6 +21,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Windows.Data;
 using System.Windows.Input;
 using xivModdingFramework.General.DataContainers;
 using xivModdingFramework.General.Enums;
@@ -147,7 +148,7 @@ namespace FFXIV_TexTools.ViewModels
         /// <summary>
         /// Initiates a search for a given ID
         /// </summary>
-        private void Search(object obj)
+        private async void Search(object obj)
         {
             var id = 0;
 
@@ -156,7 +157,7 @@ namespace FFXIV_TexTools.ViewModels
                 id = int.Parse(ModelSearchID);
                 if(_currentID == id && _currentCategory == SelectedCategory) return;
                 _currentID = id;
-                _selectedCategory = SelectedCategory;
+                _currentCategory = SelectedCategory;
             }
             catch (Exception e)
             {
@@ -171,22 +172,22 @@ namespace FFXIV_TexTools.ViewModels
                 SelectedCategory.Equals(XivStrings.Weapon))
             {
                 var gear = new Gear(gameDirectory, GetLanguage());
-                ResultList = gear.SearchGearByModelID(id, SelectedCategory);
+                ResultList = await gear.SearchGearByModelID(id, SelectedCategory);
             }
             else if (SelectedCategory.Equals(XivStrings.Monster))
             {
                 var companion = new Companions(gameDirectory, GetLanguage());
-                ResultList = companion.SearchMonstersByModelID(id, XivItemType.monster);
+                ResultList = await companion.SearchMonstersByModelID(id, XivItemType.monster);
             }
             else if (SelectedCategory.Equals(XivStrings.DemiHuman))
             {
                 var demiH = new Companions(gameDirectory, GetLanguage());
-                ResultList = demiH.SearchMonstersByModelID(id, XivItemType.demihuman);
+                ResultList = await demiH.SearchMonstersByModelID(id, XivItemType.demihuman);
             }
             else if (SelectedCategory.Equals(XivStrings.Furniture))
             {
                 var furniture = new Housing(gameDirectory, GetLanguage());
-                ResultList = furniture.SearchHousingByModelID(id, XivItemType.furniture);
+                ResultList = await furniture.SearchHousingByModelID(id, XivItemType.furniture);
             }
 
             StatusLabel = ResultList.Count > 0 ? string.Format(UIStrings.ModelSearch_ItemsFound, ResultList.Count) : UIStrings.ModelSearch_NoItemsFound;
@@ -198,8 +199,12 @@ namespace FFXIV_TexTools.ViewModels
         /// Opens the currently selected item
         /// </summary>
         /// <param name="obj"></param>
-        private void OpenItem(object obj)
+        private async void OpenItem(object obj)
         {
+            _mainView.ModelTabItem.IsEnabled = true;
+
+            CollectionViewSource.GetDefaultView(_mainView.ItemTreeView.ItemsSource).Refresh();
+
             var textureView = _mainView.TextureTabItem.Content as TextureView;
             var textureViewModel = textureView.DataContext as TextureViewModel;
 
@@ -228,8 +233,8 @@ namespace FFXIV_TexTools.ViewModels
                     }
                 };
 
-                textureViewModel.UpdateTexture(xivGear);
-                modelViewModel.UpdateModel(xivGear);
+                await textureViewModel.UpdateTexture(xivGear);
+                await modelViewModel.UpdateModel(xivGear);
             }
             else if (SelectedCategory.Equals(XivStrings.Monster))
             {
@@ -248,8 +253,8 @@ namespace FFXIV_TexTools.ViewModels
                     }
                 };
 
-                textureViewModel.UpdateTexture(xivMonster);
-                modelViewModel.UpdateModel(xivMonster);
+                await textureViewModel.UpdateTexture(xivMonster);
+                await modelViewModel.UpdateModel(xivMonster);
             }
             else if (SelectedCategory.Equals(XivStrings.DemiHuman))
             {
@@ -268,8 +273,8 @@ namespace FFXIV_TexTools.ViewModels
                     }
                 };
 
-                textureViewModel.UpdateTexture(xivDemiHuman);
-                modelViewModel.UpdateModel(xivDemiHuman);
+                await textureViewModel.UpdateTexture(xivDemiHuman);
+                await modelViewModel.UpdateModel(xivDemiHuman);
             }
             else if (SelectedCategory.Equals(XivStrings.Furniture))
             {
@@ -277,7 +282,7 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     Name = $"{SelectedCategory.ToLower()[0]}{_currentID.ToString().PadLeft(4, '0')}",
                     Category = XivStrings.Housing,
-                    ItemCategory = XivStrings.Furniture,
+                    ItemCategory = SelectedItem.Slot,
                     DataFile = XivDataFile._01_Bgcommon,
                     ModelInfo = new XivModelInfo
                     {
@@ -285,8 +290,8 @@ namespace FFXIV_TexTools.ViewModels
                     }
                 };
 
-                textureViewModel.UpdateTexture(xivFurniture);
-                modelViewModel.UpdateModel(xivFurniture);
+                await textureViewModel.UpdateTexture(xivFurniture);
+                await modelViewModel.UpdateModel(xivFurniture);
             }
         }
 

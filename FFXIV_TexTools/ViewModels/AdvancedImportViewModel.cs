@@ -25,6 +25,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Forms;
@@ -131,7 +132,7 @@ namespace FFXIV_TexTools.ViewModels
                     catch (Exception e)
                     {
                         FlexibleMessageBox.Show(
-                            UIMessages.DAEReadErrorMessage, UIMessages.DAEReadErrorTitle,
+                            string.Format(UIMessages.DAEReadErrorMessage, e.Message), UIMessages.DAEReadErrorTitle,
                             MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                         DaeLocationText = string.Empty;
@@ -140,13 +141,12 @@ namespace FFXIV_TexTools.ViewModels
                 }
             }
 
-            var extraBoneCount = 0;
             var extraBoneCountString = "";
             if (_colladaBoneList != null)
             {
                 if (_colladaBoneList.Count > BoneList.Count)
                 {
-                    extraBoneCount = _colladaBoneList.Count - BoneList.Count;
+                    var extraBoneCount = _colladaBoneList.Count - BoneList.Count;
                     extraBoneCountString = $"+ { extraBoneCount}";
                 }
 
@@ -160,15 +160,9 @@ namespace FFXIV_TexTools.ViewModels
                 }
             }
 
-            //esrinzou for chinese UI
-            //MaterialsGroupHeader = $"Materials (Count: {MaterialsList.Count})";
-            //AttributesGroupHeader = $"Attributes (Count: {AttributeList.Count})";
-            //BonesGroupHeader = $"Bones (Count: {_xivMdl.PathData.BoneList.Count} {extraBoneCountString})";
-            //esrinzou begin
             MaterialsGroupHeader = $"{UIStrings.Materials} ({UIStrings.Count}: {MaterialsList.Count})";
             AttributesGroupHeader = $"{UIStrings.Attributes} ({UIStrings.Count}: {AttributeList.Count})";
             BonesGroupHeader = $"{UIStrings.Bones} ({UIStrings.Count}: {_xivMdl.PathData.BoneList.Count} {extraBoneCountString})";
-            //esrinzou end
 
             if (_daeMeshPartDictionary != null)
             {
@@ -696,11 +690,7 @@ namespace FFXIV_TexTools.ViewModels
             }
 
             PartNumbers = partNumberList;
-            //esrinzou for chinese UI
-            //PartCountLabel = $"Part Count: {partCount} {partDiff}";
-            //esrinzou begin
             PartCountLabel = $"{UIStrings.Part_Count}: {partCount} {partDiff}";
-            //esrinzou end
             SelectedPartNumberIndex = 0;
 
             CheckForDaeDiscrepancy();
@@ -767,11 +757,7 @@ namespace FFXIV_TexTools.ViewModels
 
             PartAttributes = new ObservableCollection<string>(attributeNameList);
 
-            //esrinzou for chinese UI
-            //PartAttributesLabel = $"Part Attributes (Count: {PartAttributes.Count})";
-            //esrinzou begin
             PartAttributesLabel = $"{UIStrings.Part_Attributes} ({UIStrings.Count}: {PartAttributes.Count})";
-            //esrinzou end
         }
 
         /// <summary>
@@ -810,41 +796,23 @@ namespace FFXIV_TexTools.ViewModels
                     ShapeDataCheckBoxEnabled = false;
                 }
 
-                //esrinzou for chinese UI
-                /*ShapeDescription =
-                                "This will disable all shape data for this meshes.\n" +
-                                "This option is used when holes appear upon equipping other items\n\n" +
-                                "More options for shape data will be available in a later version.";*/
-                //esrinzou begin
                 ShapeDescription =
                             $"{UIStrings.ShapeDescription1_line1}\n" +
                             $"{UIStrings.ShapeDescription1_line2}\n\n" +
                             $"{UIStrings.ShapeDescription1_line3}";
-                //esrinzou end
             }
             else
             {
                 DisableShapeDataChecked = false;
                 ShapeDataCheckBoxEnabled = false;
 
-                //esrinzou for chinese UI
-                /*
-                 ShapeDescription = "There is no Shape Data for this mesh.\n\n" +
-                                    "Options are disabled.";
-                 */
-                //esrinzou begin
                 ShapeDescription = $"{UIStrings.ShapeDescription2_line1}\n\n" +
                                    $"{UIStrings.ShapeDescription2_line2}";
-                //esrinzou end
             }
 
             ShapesList = shapePathList;
 
-            //esrinzou for chinese UI
-            //ShapesHeader = $"Shapes (Count: {ShapesList.Count})";
-            //esrinzou begin
             ShapesHeader = $"{UIStrings.Shapes} ({UIStrings.Count}: {ShapesList.Count})";
-            //esrinzou end
         }
 
         /// <summary>
@@ -998,11 +966,7 @@ namespace FFXIV_TexTools.ViewModels
                 }
             }
 
-            //esrinzou for chinese UI
-            //MaterialsGroupHeader = $"Materials (Count: {MaterialsList.Count})";
-            //esrinzou begin
             MaterialsGroupHeader = $"{UIStrings.Materials} ({UIStrings.Count}: {MaterialsList.Count})";
-            //esrinzou end
         }
 
         /// <summary>
@@ -1037,11 +1001,7 @@ namespace FFXIV_TexTools.ViewModels
 
             AttributeList = new ObservableCollection<string>(MakeAttributeNameDictionary());
 
-            //esrinzou for chinese UI
-            //AttributesGroupHeader = $"Attributes (Count: {AttributeList.Count})";
-            //esrinzou begin
             AttributesGroupHeader = $"{UIStrings.Attributes} ({UIStrings.Count}: {AttributeList.Count})";
-            //esrinzou end
         }
 
         /// <summary>
@@ -1120,7 +1080,7 @@ namespace FFXIV_TexTools.ViewModels
         /// <summary>
         /// Event Handler for Import
         /// </summary>
-        private void Import(object obj)
+        public async void Import(object obj)
         {
             Dictionary<string, string> warnings;
 
@@ -1130,14 +1090,54 @@ namespace FFXIV_TexTools.ViewModels
             {
                 if (_fromWizard)
                 {
-                    warnings = mdl.ImportModel(_itemModel, _xivMdl, new DirectoryInfo(DaeLocationText), _importDictionary,
+                    warnings = await mdl.ImportModel(_itemModel, _xivMdl, new DirectoryInfo(DaeLocationText), _importDictionary,
                         XivStrings.TexTools, Settings.Default.DAE_Plugin_Target, true);
 
                     RawModelData = mdl.MDLRawData;
                 }
                 else
                 {
-                    warnings = mdl.ImportModel(_itemModel, _xivMdl, new DirectoryInfo(DaeLocationText), _importDictionary,
+                    warnings = await mdl.ImportModel(_itemModel, _xivMdl, new DirectoryInfo(DaeLocationText), _importDictionary,
+                        XivStrings.TexTools, Settings.Default.DAE_Plugin_Target);
+                }
+            }
+            catch (Exception ex)
+            {
+                FlexibleMessageBox.Show(
+                    string.Format(UIMessages.ModelImportErrorMessage, ex.Message), UIMessages.ModelImportErrorTitle,
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            if (warnings.Count > 0)
+            {
+                foreach (var warning in warnings)
+                {
+                    FlexibleMessageBox.Show(
+                        $"{warning.Value}", $"{warning.Key}",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+            }
+        }
+
+        public async Task ImportAsync()
+        {
+            Dictionary<string, string> warnings;
+
+            var mdl = new Mdl(new DirectoryInfo(Settings.Default.FFXIV_Directory), _itemModel.DataFile);
+
+            try
+            {
+                if (_fromWizard)
+                {
+                    warnings = await mdl.ImportModel(_itemModel, _xivMdl, new DirectoryInfo(DaeLocationText), _importDictionary,
+                        XivStrings.TexTools, Settings.Default.DAE_Plugin_Target, true);
+
+                    RawModelData = mdl.MDLRawData;
+                }
+                else
+                {
+                    warnings = await mdl.ImportModel(_itemModel, _xivMdl, new DirectoryInfo(DaeLocationText), _importDictionary,
                         XivStrings.TexTools, Settings.Default.DAE_Plugin_Target);
                 }
             }

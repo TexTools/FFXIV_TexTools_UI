@@ -197,11 +197,7 @@ namespace FFXIV_TexTools.Views
 
             if (fileInfo.Exists)
             {
-                //esrinzou for fix checkdat error
-                //if (fileInfo.Length < 10000000)
-                //esrinzou begin
                 if (fileInfo.Length < 1024 * 10)
-                    //esrinzou end
                 {
                     AddText("\t\u2716\n", "Red");
                     AddText($"\t{UIStrings.ProblemCheck_MissingData} \n", "Red");
@@ -223,20 +219,22 @@ namespace FFXIV_TexTools.Views
         /// </summary>
         private Task CheckMods(IProgress<(int current, int total)> progress)
         {
+            var checkModsLock = new object();
+            var addTextLock = new object();
+            var modListDirectory =
+                new DirectoryInfo(Path.Combine(_gameDirectory.Parent.Parent.FullName, XivStrings.ModlistFilePath));
+
+            var modList = JsonConvert.DeserializeObject<ModList>(File.ReadAllText(modListDirectory.FullName));
+
+            var dat = new Dat(_gameDirectory);
+
             return Task.Run(() =>
             {
-                var modListDirectory =
-                    new DirectoryInfo(Path.Combine(_gameDirectory.Parent.Parent.FullName, XivStrings.ModlistFilePath));
-
-                var modList = JsonConvert.DeserializeObject<ModList>(File.ReadAllText(modListDirectory.FullName));
-
-                var dat = new Dat(_gameDirectory);
-
                 if (modList.modCount > 0)
                 {
                     var modNum = 0;
 
-                    foreach (var mod in modList.Mods)
+                    Parallel.ForEach(modList.Mods, (mod) =>
                     {
                         if (cts.IsCancellationRequested)
                         {
@@ -244,9 +242,12 @@ namespace FFXIV_TexTools.Views
                             return;
                         }
 
-                        progress.Report((modNum, modList.modCount));
+                        lock (checkModsLock)
+                        {
+                            progress.Report((++modNum, modList.modCount));
+                        }
 
-                        if (mod.name.Equals(string.Empty)) continue;
+                        if (mod.name.Equals(string.Empty)) return;
 
                         var fileName = Path.GetFileName(mod.fullPath);
 
@@ -260,49 +261,51 @@ namespace FFXIV_TexTools.Views
                             tabs = "\t\t";
                         }
 
-                        Dispatcher.Invoke(() => AddText($"\t{fileName}{tabs}", textColor));
+                        lock (addTextLock)
+                        {
+                            Dispatcher.Invoke(() => AddText($"\t{fileName}{tabs}", textColor));
 
-                        if (mod.data.originalOffset == 0)
-                        {
-                            Dispatcher.Invoke(() => AddText("\t\u2716\n", "Red"));
-                            Dispatcher.Invoke(() => AddText($"\t{UIStrings.ProblemCheck_OriginalZero} \n", "Red"));
-                        }
-                        else if (mod.data.modOffset == 0)
-                        {
-                            Dispatcher.Invoke(() => AddText("\t\u2716\n", "Red"));
-                            Dispatcher.Invoke(() => AddText($"\t{UIStrings.ProblemCheck_ModZero}\n", "Red"));
-                        }
-                        else
-                        {
-                            Dispatcher.Invoke(() => AddText("\t\u2714", "Green"));
-                        }
+                            if (mod.data.originalOffset == 0)
+                            {
+                                Dispatcher.Invoke(() => AddText("\t\u2716\n", "Red"));
+                                Dispatcher.Invoke(() => AddText($"\t{UIStrings.ProblemCheck_OriginalZero} \n", "Red"));
+                            }
+                            else if (mod.data.modOffset == 0)
+                            {
+                                Dispatcher.Invoke(() => AddText("\t\u2716\n", "Red"));
+                                Dispatcher.Invoke(() => AddText($"\t{UIStrings.ProblemCheck_ModZero}\n", "Red"));
+                            }
+                            else
+                            {
+                                Dispatcher.Invoke(() => AddText("\t\u2714", "Green"));
+                            }
 
-                        var fileType = 0;
-                        try
-                        {
-                            fileType = dat.GetFileType(mod.data.modOffset, XivDataFiles.GetXivDataFile(mod.datFile));
-                        }
-                        catch (Exception ex)
-                        {
-                            Dispatcher.Invoke(() => AddText("\t\u2716\n", "Red"));
-                            Dispatcher.Invoke(() => AddText($"\tError: {ex.Message}\n", "Red"));
-                        }
+                            var fileType = 0;
+                            try
+                            {
+                                fileType = dat.GetFileType(mod.data.modOffset,
+                                    XivDataFiles.GetXivDataFile(mod.datFile));
+                            }
+                            catch (Exception ex)
+                            {
+                                Dispatcher.Invoke(() => AddText("\t\u2716\n", "Red"));
+                                Dispatcher.Invoke(() => AddText($"\tError: {ex.Message}\n", "Red"));
+                            }
 
-                        if (fileType != 2 && fileType != 3 && fileType != 4)
-                        {
-                            Dispatcher.Invoke(() => AddText("\t\u2716\n", "Red"));
-                            Dispatcher.Invoke(() =>
-                                AddText($"\t{string.Format(UIStrings.ProblemCheck_UnkType, fileType)}\n", "Red"));
-                        }
-                        else
-                        {
-                            Dispatcher.Invoke(() => AddText("\t\u2714\n", "Green"));
-                        }
+                            if (fileType != 2 && fileType != 3 && fileType != 4)
+                            {
+                                Dispatcher.Invoke(() => AddText("\t\u2716\n", "Red"));
+                                Dispatcher.Invoke(() =>
+                                    AddText($"\t{string.Format(UIStrings.ProblemCheck_UnkType, fileType)} [{mod.data.modOffset}, {((mod.data.modOffset / 8) & 0x0F) / 2}]\n", "Red"));
+                            }
+                            else
+                            {
+                                Dispatcher.Invoke(() => AddText("\t\u2714\n", "Green"));
+                            }
 
-                        modNum++;
-
-                        Dispatcher.Invoke(() => cfpTextBox.ScrollToEnd());
-                    }
+                            Dispatcher.Invoke(() => cfpTextBox.ScrollToEnd());
+                        }
+                    });
                 }
                 else
                 {

@@ -28,6 +28,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Input;
@@ -87,6 +88,7 @@ namespace FFXIV_TexTools.ViewModels
 
         private int _raceIndex, _partIndex, _typeIndex, _typePartIndex, _mapIndex, _partCount, _typeCount, _typePartCount, _mapCount, _raceCount;
 
+        public event EventHandler LoadingComplete;
 
         public TextureViewModel(TextureView textureView)
         {
@@ -98,7 +100,7 @@ namespace FFXIV_TexTools.ViewModels
         /// Updates the texture
         /// </summary>
         /// <param name="item">The item to update the texture for</param>
-        public async void UpdateTexture(IItem item)
+        public async Task UpdateTexture(IItem item)
         {
             ClearAll();
 
@@ -772,7 +774,7 @@ namespace FFXIV_TexTools.ViewModels
 
                             ttpList = new List<TexTypePath>();
 
-                            if (index.FileExists(HashGenerator.GetHash(iconFile), HashGenerator.GetHash(iconFolder), XivDataFile._06_Ui))
+                            if (await index.FileExists(HashGenerator.GetHash(iconFile), HashGenerator.GetHash(iconFolder), XivDataFile._06_Ui))
                             {
                                 var ttp = new TexTypePath { DataFile = _uiItem.DataFile, Path = _uiItem.UiPath, Type = XivTexType.Icon };
                                 ttpList.Add(ttp);
@@ -782,7 +784,7 @@ namespace FFXIV_TexTools.ViewModels
                             {
                                 var iconLangFolder = $"{iconFolder}/{language}";
 
-                                if (index.FileExists(HashGenerator.GetHash(iconFile), HashGenerator.GetHash(iconLangFolder), XivDataFile._06_Ui))
+                                if (await index.FileExists(HashGenerator.GetHash(iconFile), HashGenerator.GetHash(iconLangFolder), XivDataFile._06_Ui))
                                 {
                                     var ttp = new TexTypePath { DataFile = _uiItem.DataFile, Path = $"{iconLangFolder}/{iconFile}", Type = XivTexType.Icon, Name = $"Icon {language}"};
                                     ttpList.Add(ttp);
@@ -791,7 +793,7 @@ namespace FFXIV_TexTools.ViewModels
 
                             var iconHQFolder = $"{iconFolder}/hq";
 
-                            if (index.FileExists(HashGenerator.GetHash(iconFile), HashGenerator.GetHash(iconHQFolder), XivDataFile._06_Ui))
+                            if (await index.FileExists(HashGenerator.GetHash(iconFile), HashGenerator.GetHash(iconHQFolder), XivDataFile._06_Ui))
                             {
                                 var ttp = new TexTypePath { DataFile = _uiItem.DataFile, Path = $"{iconHQFolder}/{iconFile}", Type = XivTexType.Icon, Name = "Icon HQ"};
                                 ttpList.Add(ttp);
@@ -1031,6 +1033,8 @@ namespace FFXIV_TexTools.ViewModels
                 TranslucencyCheck = false;
                 TranslucencyEnabled = false;
             }
+
+            OnLoadingComplete();
         }
 
         /// <summary>
@@ -1306,11 +1310,11 @@ namespace FFXIV_TexTools.ViewModels
                     {
                         if (_item != null)
                         {
-                            _tex.TexDDSImporter(texData, _item, fullPath, XivStrings.TexTools);
+                            await _tex.TexDDSImporter(texData, _item, fullPath, XivStrings.TexTools);
                         }
                         else if (_uiItem != null)
                         {
-                            _tex.TexDDSImporter(texData, _uiItem, fullPath, XivStrings.TexTools);
+                            await _tex.TexDDSImporter(texData, _uiItem, fullPath, XivStrings.TexTools);
                         }
                     }
                     catch(Exception ex)
@@ -1325,7 +1329,7 @@ namespace FFXIV_TexTools.ViewModels
             }
             else
             {
-                var newColorSetOffset = _tex.TexColorImporter(_xivMtrl, fullPath, _item, XivStrings.TexTools);
+                var newColorSetOffset = await _tex.TexColorImporter(_xivMtrl, fullPath, _item, XivStrings.TexTools);
                 _xivMtrl = await _mtrl.GetMtrlData(newColorSetOffset, _xivMtrl.MTRLPath, dxVersion);
             }
 
@@ -1385,11 +1389,11 @@ namespace FFXIV_TexTools.ViewModels
                         {
                             if (_item != null)
                             {
-                                _tex.TexDDSImporter(texData, _item, fileDir, XivStrings.TexTools);
+                                await _tex.TexDDSImporter(texData, _item, fileDir, XivStrings.TexTools);
                             }
                             else if (_uiItem != null)
                             {
-                                _tex.TexDDSImporter(texData, _uiItem, fileDir, XivStrings.TexTools);
+                                await _tex.TexDDSImporter(texData, _uiItem, fileDir, XivStrings.TexTools);
                             }
                         }
                         catch (Exception ex)
@@ -1402,7 +1406,7 @@ namespace FFXIV_TexTools.ViewModels
                     }
                     else
                     {
-                        var newColorSetOffset = _tex.TexColorImporter(_xivMtrl, fileDir, _item, XivStrings.TexTools);
+                        var newColorSetOffset = await _tex.TexColorImporter(_xivMtrl, fileDir, _item, XivStrings.TexTools);
                         _xivMtrl = await _mtrl.GetMtrlData(newColorSetOffset, _xivMtrl.MTRLPath, dxVersion);
                     }
                 }
@@ -1416,11 +1420,11 @@ namespace FFXIV_TexTools.ViewModels
                         {
                             if (_item != null)
                             {
-                                _tex.TexBMPImporter(texData, _item, fileDir, XivStrings.TexTools);
+                                await _tex.TexBMPImporter(texData, _item, fileDir, XivStrings.TexTools);
                             }
                             else if (_uiItem != null)
                             {
-                                _tex.TexBMPImporter(texData, _uiItem, fileDir, XivStrings.TexTools);
+                                await _tex.TexBMPImporter(texData, _uiItem, fileDir, XivStrings.TexTools);
                             }
                         }
                         catch (Exception ex)
@@ -1488,11 +1492,11 @@ namespace FFXIV_TexTools.ViewModels
                     {
                         if (_item != null)
                         {
-                            _tex.TexBMPImporter(texData, _item, fullPath, XivStrings.TexTools);
+                            await _tex.TexBMPImporter(texData, _item, fullPath, XivStrings.TexTools);
                         }
                         else if (_uiItem != null)
                         {
-                            _tex.TexBMPImporter(texData, _uiItem, fullPath, XivStrings.TexTools);
+                            await _tex.TexBMPImporter(texData, _uiItem, fullPath, XivStrings.TexTools);
                         }
                     }
                     catch (Exception ex)
@@ -1526,18 +1530,18 @@ namespace FFXIV_TexTools.ViewModels
         /// <summary>
         /// Toggles the mod ON or OFF
         /// </summary>
-        private void ModStatusToggle(object obj)
+        private async void ModStatusToggle(object obj)
         {
             var gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
             var modlist = new Modding(gameDirectory);
 
             if (ModToggleText.Equals(UIStrings.Enable))
             {
-                modlist.ToggleModStatus(SelectedMap.TexType.Path, true);
+                await modlist.ToggleModStatus(SelectedMap.TexType.Path, true);
             }
             else if (ModToggleText.Equals(UIStrings.Disable))
             {
-                modlist.ToggleModStatus(SelectedMap.TexType.Path, false);
+                await modlist.ToggleModStatus(SelectedMap.TexType.Path, false);
             }
             else
             {
@@ -1671,7 +1675,7 @@ namespace FFXIV_TexTools.ViewModels
         /// <summary>
         /// Modifies the material file when the translucency toggle is changed
         /// </summary>
-        private void TranslucencyChanged()
+        private async void TranslucencyChanged()
         {
             if (_xivMtrl == null) return;
 
@@ -1681,14 +1685,14 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     if (_xivMtrl.ShaderNumber == 0x0D)
                     {
-                        _mtrl.ToggleTranslucency(_xivMtrl, _item, TranslucencyCheck, XivStrings.TexTools);
+                        await _mtrl.ToggleTranslucency(_xivMtrl, _item, TranslucencyCheck, XivStrings.TexTools);
                     }
                 }
                 else
                 {
                     if (_xivMtrl.ShaderNumber == 0x1D)
                     {
-                        _mtrl.ToggleTranslucency(_xivMtrl, _item, TranslucencyCheck, XivStrings.TexTools);
+                        await _mtrl.ToggleTranslucency(_xivMtrl, _item, TranslucencyCheck, XivStrings.TexTools);
                     }
                 }
             }
@@ -1936,6 +1940,11 @@ namespace FFXIV_TexTools.ViewModels
             public TexTypePath TexType { get; set; }
 
             public char[] TypeParts { get; set; }
+        }
+
+        protected virtual void OnLoadingComplete()
+        {
+            LoadingComplete?.Invoke(this, EventArgs.Empty);
         }
     }
 }
