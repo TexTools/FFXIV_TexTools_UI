@@ -8,11 +8,11 @@ using System.Windows.Forms;
 
 namespace FolderSelect
 {
-	/// <summary>
-	/// Wraps System.Windows.Forms.OpenFileDialog to make it present
-	/// a vista-style dialog.
-	/// </summary>
-	public class FolderSelectDialog
+    /// <summary>
+    /// Wraps System.Windows.Forms.OpenFileDialog to make it present
+    /// a vista-style dialog.
+    /// </summary>
+    public class FolderSelectDialog
 	{
 		// Wrapped dialog
 		System.Windows.Forms.OpenFileDialog ofd = null;

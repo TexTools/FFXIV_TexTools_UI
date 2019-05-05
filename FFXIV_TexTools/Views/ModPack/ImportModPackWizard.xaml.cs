@@ -39,8 +39,8 @@ namespace FFXIV_TexTools.Views
         private readonly DirectoryInfo _modPackDirectory;
         private ProgressDialogController _progressController;
         private readonly Dictionary<string, MagickImage> _imageDictionary;
-        private ModPack _modPackEntry;
-        private bool _messageInImport;
+        private readonly ModPack _modPackEntry;
+        private readonly bool _messageInImport;
 
         public ImportModPackWizard(ModPackJson modPackJson, Dictionary<string, MagickImage> imageDictionary, DirectoryInfo modPackDirectory, bool messageInImport = false)
         {

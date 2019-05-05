@@ -14,12 +14,12 @@
 // You should have received a copy of the GNU General Public License
 
 using FFXIV_TexTools.Helpers;
+using FFXIV_TexTools.Resources;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Forms;
-using FFXIV_TexTools.Resources;
 using xivModdingFramework.Mods.DataContainers;
 using UserControl = System.Windows.Controls.UserControl;
 

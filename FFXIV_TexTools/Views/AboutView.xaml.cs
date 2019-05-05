@@ -14,10 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using System;
+using FFXIV_TexTools.Resources;
 using System.Diagnostics;
 using System.Windows;
-using FFXIV_TexTools.Resources;
 
 namespace FFXIV_TexTools.Views
 {

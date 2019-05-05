@@ -299,7 +299,7 @@ namespace FFXIV_TexTools.ViewModels
                     }
                     catch
                     {
-                        var newLoc = folderSelect.FileName; ;
+                        var newLoc = folderSelect.FileName;
 
                         foreach (var dirPath in Directory.GetDirectories(oldSaveLocation, "*",
                             SearchOption.AllDirectories))

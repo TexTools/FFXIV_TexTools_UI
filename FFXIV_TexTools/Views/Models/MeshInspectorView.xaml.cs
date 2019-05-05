@@ -43,11 +43,7 @@ namespace FFXIV_TexTools.Views.Models
                 _textColor = "White";
             }
 
-            //esrinzou for chinese UI
-            //Title = $"Mesh Inspector (LoD {LodNum})";
-            //esrinzou begin
             Title = $"{FFXIV_TexTools.Resources.UIStrings.Mesh_Inspector} (LoD {LodNum})";
-            //esrinzou end
 
             _meshDataList = meshDataList;
 
