@@ -720,6 +720,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Finalizing....
+        /// </summary>
+        public static string Finalizing {
+            get {
+                return ResourceManager.GetString("Finalizing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Finish.
         /// </summary>
         public static string Finish {

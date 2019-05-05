@@ -880,4 +880,7 @@ If you would like to enable this, first import a texture for the selected item.<
   <data name="ModelStatus_Loading" xml:space="preserve">
     <value>Loading Model...</value>
   </data>
+  <data name="Finalizing" xml:space="preserve">
+    <value>Finalizing...</value>
+  </data>
 </root>

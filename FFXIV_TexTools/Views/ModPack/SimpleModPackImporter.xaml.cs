@@ -97,6 +97,12 @@ namespace FFXIV_TexTools.Views
             var progress = new Progress<(int count, int total)>(prog =>
             {
                 LockedStatusLabel.Content = $"{UIStrings.Loading} ({prog.count}, {prog.total})";
+
+                if (prog.count == prog.total)
+                {
+                    LockedStatusLabel.Content = UIStrings.Finalizing;
+
+                }
             });
 
             if (modPackJson != null)
