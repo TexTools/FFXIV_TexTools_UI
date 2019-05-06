@@ -56,6 +56,7 @@ namespace FFXIV_TexTools.ViewModels
         private Visibility _progressBarVisible, _progressLabelVisible;
         private Index _index;
         private System.Windows.Forms.IWin32Window _win32Window;
+        private ProgressDialogController _progressController;
 
         public MainViewModel(MainWindow mainWindow)
         {
@@ -813,21 +814,22 @@ namespace FFXIV_TexTools.ViewModels
                 return;
             }
 
-            var progressController = await _mainWindow.ShowProgressAsync(UIMessages.EnablingModsTitle, UIMessages.PleaseWaitMessage);
+            _progressController = await _mainWindow.ShowProgressAsync(UIMessages.EnablingModsTitle, UIMessages.PleaseWaitMessage);
+            var progressIndicator = new Progress<(int current, int total, string message)>(ReportProgress);
 
             if (FlexibleMessageBox.Show(
                     UIMessages.EnableAllModsMessage, UIMessages.EnablingModsTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
                 var modding = new Modding(_gameDirectory);
-                await modding.ToggleAllMods(true);
+                await modding.ToggleAllMods(true, progressIndicator);
 
-                await progressController.CloseAsync();
+                await _progressController.CloseAsync();
 
                 await _mainWindow.ShowMessageAsync(UIMessages.SuccessTitle, UIMessages.ModsEnabledSuccessMessage);
             }
             else
             {
-                await progressController.CloseAsync();
+                await _progressController.CloseAsync();
             }
         }
 
@@ -843,23 +845,45 @@ namespace FFXIV_TexTools.ViewModels
                 return;
             }
 
-            var progressController = await _mainWindow.ShowProgressAsync(UIMessages.DisablingModsTitle, UIMessages.PleaseWaitMessage);
+            _progressController = await _mainWindow.ShowProgressAsync(UIMessages.DisablingModsTitle, UIMessages.PleaseWaitMessage);
+            var progressIndicator = new Progress<(int current, int total, string message)>(ReportProgress);
 
             if (FlexibleMessageBox.Show(
                     UIMessages.DisableAllModsMessage, UIMessages.DisableAllModsTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
                 var modding = new Modding(_gameDirectory);
-                await modding.ToggleAllMods(false);
+                await modding.ToggleAllMods(false, progressIndicator);
 
-                await progressController.CloseAsync();
+                await _progressController.CloseAsync();
 
                 await _mainWindow.ShowMessageAsync(UIMessages.SuccessTitle, UIMessages.ModsDisabledSuccessMessage);
             }
             else
             {
-                await progressController.CloseAsync();
+                await _progressController.CloseAsync();
             }
 
+        }
+
+        /// <summary>
+        /// Updates the progress bar
+        /// </summary>
+        /// <param name="value">The progress value</param>
+        private void ReportProgress((int current, int total, string message) report)
+        {
+            if (!report.message.Equals(string.Empty))
+            {
+                _progressController.SetMessage(report.message);
+                _progressController.SetIndeterminate();
+            }
+            else
+            {
+                _progressController.SetMessage(
+                    $"{UIMessages.PleaseStandByMessage} ({report.current} / {report.total})");
+
+                var value = (double)report.current / (double)report.total;
+                _progressController.SetProgress(value);
+            }
         }
 
         #endregion
