@@ -701,6 +701,8 @@ namespace FFXIV_TexTools.ViewModels
 
                             try
                             {
+                                mtrl.DataFile = XivDataFiles.GetXivDataFile(modItem.datFile);
+
                                 var mtrlData = await mtrl.GetMtrlData(offset, modItem.fullPath, dxVersion);
 
                                 var floats = Half.ConvertToFloat(mtrlData.ColorSetData.ToArray());
@@ -737,7 +739,7 @@ namespace FFXIV_TexTools.ViewModels
                             var ttp = new TexTypePath
                             {
                                 Type = xivTexType.GetValueOrDefault(),
-                                DataFile = selectedItem.DataFile,
+                                DataFile = XivDataFiles.GetXivDataFile(modItem.datFile),
                                 Path = modItem.fullPath
                             };
 

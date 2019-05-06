@@ -718,6 +718,13 @@ namespace FFXIV_TexTools.ViewModels
                     else if (_item.Category.Equals(XivStrings.Gear))
                     {
                         _xivMtrl = await _mtrl.GetMtrlData(_item, SelectedRace.XivRace, SelectedType.Name[0], dxVersion, SelectedPart.Name);
+
+                        var xivGear = _item as XivGear;
+
+                        if (xivGear.IconNumber != 0)
+                        {
+                            _xivMtrl.TextureTypePathList.AddRange(await _gear.GetIconInfo(xivGear));
+                        }
                     }
                     else
                     {
