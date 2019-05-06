@@ -113,7 +113,7 @@ namespace FFXIV_TexTools.Views
         /// <summary>
         /// Event handler for mod toggle button changed
         /// </summary>
-        private void modToggleButton_Click(object sender, RoutedEventArgs e)
+        private async void modToggleButton_Click(object sender, RoutedEventArgs e)
         {
             var gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
             var modding = new Modding(gameDirectory);
@@ -127,7 +127,7 @@ namespace FFXIV_TexTools.Views
                 if ((DataContext as ModListViewModel).ModToggleText == FFXIV_TexTools.Resources.UIStrings.Enable)
                 //esrinzou end
                 {
-                    modding.ToggleModPackStatus(selectedItem.Name, true);
+                    await modding.ToggleModPackStatus(selectedItem.Name, true);
                     //esrinzou for chinese UI
                     //(DataContext as ModListViewModel).ModToggleText = "Disable";
                     //esrinzou begin
@@ -136,7 +136,7 @@ namespace FFXIV_TexTools.Views
                 }
                 else
                 {
-                    modding.ToggleModPackStatus(selectedItem.Name, false);
+                    await modding.ToggleModPackStatus(selectedItem.Name, false);
                     //esrinzou for chinese UI
                     //(DataContext as ModListViewModel).ModToggleText = "Enable";
                     //esrinzou begin
@@ -152,7 +152,7 @@ namespace FFXIV_TexTools.Views
                 {
                     if (selectedModItem.ModItem.enabled)
                     {
-                        modding.ToggleModStatus(selectedModItem.ModItem.fullPath, false);
+                        await modding.ToggleModStatus(selectedModItem.ModItem.fullPath, false);
                         //esrinzou for chinese UI
                         //(DataContext as ModListViewModel).ModToggleText = "Enable";
                         //esrinzou begin
@@ -165,7 +165,7 @@ namespace FFXIV_TexTools.Views
                     }
                     else
                     {
-                        modding.ToggleModStatus(selectedModItem.ModItem.fullPath, true);
+                        await modding.ToggleModStatus(selectedModItem.ModItem.fullPath, true);
                         //esrinzou for chinese UI
                         //(DataContext as ModListViewModel).ModToggleText = "Disable";
                         //esrinzou begin
@@ -183,7 +183,7 @@ namespace FFXIV_TexTools.Views
         /// <summary>
         /// Event handler for mod delete button
         /// </summary>
-        private void modDeleteButton_Click(object sender, RoutedEventArgs e)
+        private async void modDeleteButton_Click(object sender, RoutedEventArgs e)
         {
             var gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
             var modding = new Modding(gameDirectory);
@@ -195,7 +195,7 @@ namespace FFXIV_TexTools.Views
                         UIMessages.DeleteModPackTitle,
                         MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == System.Windows.Forms.DialogResult.Yes)
                 {
-                    modding.DeleteModPack((ModListTreeView.SelectedItem as Category).Name);
+                    await modding.DeleteModPack((ModListTreeView.SelectedItem as Category).Name);
                     (DataContext as ModListViewModel).RemoveModPack();
                 }
 
@@ -207,7 +207,7 @@ namespace FFXIV_TexTools.Views
 
                 foreach (var selectedModItem in selectedItems)
                 {
-                    modding.DeleteMod(selectedModItem.ModItem.fullPath);
+                    await modding.DeleteMod(selectedModItem.ModItem.fullPath);
                     (DataContext as ModListViewModel).RemoveItem(selectedModItem, (Category)ModListTreeView.SelectedItem);
                 }
             }
