@@ -102,9 +102,15 @@ namespace FFXIV_TexTools.Views
         /// </summary>
         private void MetroWindow_Closing(object sender, CancelEventArgs e)
         {
-            foreach (var magickImage in _imageDictionary.Values)
+            if (_imageDictionary != null && _imageDictionary.Count > 0)
             {
-                magickImage.Dispose();
+                foreach (var magickImage in _imageDictionary.Values)
+                {
+                    if (magickImage != null)
+                    {
+                        magickImage.Dispose();
+                    }
+                }
             }
 
             if (_messageInImport)
