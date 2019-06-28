@@ -120,6 +120,9 @@
   <data name="BugReport_Website" xml:space="preserve">
     <value>https://project.dualwield.net/bug_report_page.php</value>
   </data>
+  <data name="Discord_China" xml:space="preserve">
+    <value>http://149.129.96.215:8989</value>
+  </data>
   <data name="Discord_Invite" xml:space="preserve">
     <value>https://discord.gg/VKhNB5g</value>
   </data>
@@ -137,6 +140,9 @@
   </data>
   <data name="PKEmporium_Website" xml:space="preserve">
     <value>https://prettykittyemporium.blogspot.com/</value>
+  </data>
+  <data name="TexTools_Update_Url" xml:space="preserve">
+    <value>https://raw.githubusercontent.com/liinko/FFXIVTexToolsWeb/master/updater.xml</value>
   </data>
   <data name="TexTools_Website" xml:space="preserve">
     <value>https://textools.dualwield.net/</value>

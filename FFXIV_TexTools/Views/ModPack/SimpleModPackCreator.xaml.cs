@@ -22,8 +22,10 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -44,7 +46,7 @@ namespace FFXIV_TexTools.Views
     /// </summary>
     public partial class SimpleModPackCreator
     {
-        private readonly List<SimpleModPackEntries> _simpleDataList = new List<SimpleModPackEntries>();
+        private readonly ObservableCollection<SimpleModPackEntries> _simpleDataList = new ObservableCollection<SimpleModPackEntries>();
         private ListSortDirection _lastDirection = ListSortDirection.Ascending;
         private ProgressDialogController _progressController;
         private readonly DirectoryInfo _gameDirectory;
@@ -59,47 +61,9 @@ namespace FFXIV_TexTools.Views
             InitializeComponent();
 
             _gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
-            var modListDirectory = new DirectoryInfo(Path.Combine(_gameDirectory.Parent.Parent.FullName, XivStrings.ModlistFilePath));
-            var modding = new Modding(_gameDirectory);
+            ModListView.ItemsSource = _simpleDataList;
 
-            var modList = JsonConvert.DeserializeObject<ModList>(File.ReadAllText(modListDirectory.FullName));
-
-            foreach (var mod in modList.Mods)
-            {
-                if(mod.fullPath.Equals(string.Empty)) continue;
-
-                var race = GetRace(mod.fullPath);
-
-                var number = GetNumber(mod.fullPath);
-
-                var type = GetType(mod.fullPath);
-
-                var map = GetMap(mod.fullPath);
-
-                var active = false;
-                var isActive = modding.IsModEnabled(mod.fullPath, false);
-
-                if (isActive == XivModStatus.Enabled)
-                {
-                    active = true;
-                }
-
-                _simpleDataList.Add(new SimpleModPackEntries
-                {
-                    Name = mod.name,
-                    Category = mod.category,
-                    Race = race.ToString(),
-                    Part = type,
-                    Num = number,
-                    Map = map,
-                    Active = active,
-                    ModEntry = mod
-                });
-            }
-
-            _simpleDataList.Sort();
-
-            ModListView.ItemsSource = new ObservableCollection<SimpleModPackEntries>(_simpleDataList);
+            Initialize();
         }
 
         #region Public Properties
@@ -113,54 +77,171 @@ namespace FFXIV_TexTools.Views
 
 
         #region Private Methods
+        /// <summary>
+        /// Initializes the Mod List view
+        /// </summary>
+        private async void Initialize()
+        {
+            ModListView.IsEnabled = false;
+            var progress = new Progress<(int current, int total)>((prog) =>
+                {
+                    ModSizeLabel.Content = $"0 |  {UIStrings.Loading} ({prog.current} / {prog.total})";
+                });
+
+            await MakeSimpleDataList(progress);
+
+            var cv = (CollectionView)CollectionViewSource.GetDefaultView(ModListView.ItemsSource);
+            cv.SortDescriptions.Clear();
+            cv.SortDescriptions.Add(new SortDescription(nameof(SimpleModPackEntries.Name), _lastDirection));
+
+            ModSizeLabel.Content = "0";
+            ModListView.IsEnabled = true;
+        }
+
+        /// <summary>
+        /// Creates the simple mod pack data list
+        /// </summary>
+        /// <param name="progress">loading progress</param>
+        /// <returns>Task</returns>
+        private Task MakeSimpleDataList(IProgress<(int current, int total)> progress)
+        {
+            var simpleListLock = new object();
+            var progressLock = new object();
+            var modListDirectory = new DirectoryInfo(Path.Combine(_gameDirectory.Parent.Parent.FullName, XivStrings.ModlistFilePath));
+            var modding = new Modding(_gameDirectory);
+
+            var modList = JsonConvert.DeserializeObject<ModList>(File.ReadAllText(modListDirectory.FullName));
+            var modNum = 0;
+
+            return Task.Run(async () =>
+            {
+                foreach (var mod in modList.Mods)
+                {
+                    lock (progressLock)
+                    {
+                        progress.Report((++modNum, modList.Mods.Count));
+                    }
+
+                    if (mod.fullPath.Equals(string.Empty)) continue;
+
+                    var raceTask = GetRace(mod.fullPath);
+
+                    var numberTask = GetNumber(mod.fullPath);
+
+                    var typeTask = GetType(mod.fullPath);
+
+                    var mapTask = GetMap(mod.fullPath);
+
+                    var active = false;
+                    var isActiveTask = modding.IsModEnabled(mod.fullPath, false);
+
+                    var taskList = new List<Task> { raceTask, numberTask, typeTask, mapTask, isActiveTask };
+
+                    var race = XivRace.All_Races;
+                    string number = string.Empty, type = string.Empty, map = string.Empty;
+                    var isActive = XivModStatus.Disabled;
+
+                    while (taskList.Any())
+                    {
+                        var finished = await Task.WhenAny(taskList);
+
+                        if (finished == raceTask)
+                        {
+                            taskList.Remove(raceTask);
+                            race = await raceTask;
+                        }
+                        else if (finished == numberTask)
+                        {
+                            taskList.Remove(numberTask);
+                            number = await numberTask;
+                        }
+                        else if (finished == typeTask)
+                        {
+                            taskList.Remove(typeTask);
+                            type = await typeTask;
+                        }
+                        else if (finished == mapTask)
+                        {
+                            taskList.Remove(mapTask);
+                            map = await mapTask;
+                        }
+                        else if (finished == isActiveTask)
+                        {
+                            taskList.Remove(isActiveTask);
+                            isActive = await isActiveTask;
+                        }
+                    }
+
+                    if (isActive == XivModStatus.Enabled)
+                    {
+                        active = true;
+                    }
+
+                    System.Windows.Application.Current.Dispatcher.Invoke(() => _simpleDataList.Add(new SimpleModPackEntries
+                    {
+                        Name = mod.name,
+                        Category = mod.category,
+                        Race = race.GetDisplayName(),
+                        Part = type,
+                        Num = number,
+                        Map = map,
+                        Active = active,
+                        ModEntry = mod
+                    }));
+                }
+            });
+        }
 
         /// <summary>
         /// Gets the race from the path
         /// </summary>
         /// <param name="modPath">The mod path</param>
         /// <returns>The race as XivRace</returns>
-        private XivRace GetRace(string modPath)
+        private Task<XivRace> GetRace(string modPath)
         {
-            var xivRace = XivRace.All_Races;
+            return Task.Run(() =>
+            {
+                var xivRace = XivRace.All_Races;
 
-            if (modPath.Contains("ui/") || modPath.Contains(".avfx"))
-            {
-                xivRace = XivRace.All_Races;
-            }
-            else if (modPath.Contains("monster"))
-            {
-                xivRace = XivRace.Monster;
-            }
-            else if (modPath.Contains("bgcommon"))
-            {
-                xivRace = XivRace.All_Races;
-            }
-            else if (modPath.Contains(".tex") || modPath.Contains(".mdl") || modPath.Contains(".atex"))
-            {
-                if (modPath.Contains("accessory") || modPath.Contains("weapon") || modPath.Contains("/common/"))
+                if (modPath.Contains("ui/") || modPath.Contains(".avfx"))
                 {
                     xivRace = XivRace.All_Races;
                 }
-                else
+                else if (modPath.Contains("monster"))
                 {
-                    if (modPath.Contains("demihuman"))
+                    xivRace = XivRace.Monster;
+                }
+                else if (modPath.Contains("bgcommon"))
+                {
+                    xivRace = XivRace.All_Races;
+                }
+                else if (modPath.Contains(".tex") || modPath.Contains(".mdl") || modPath.Contains(".atex"))
+                {
+                    if (modPath.Contains("accessory") || modPath.Contains("weapon") || modPath.Contains("/common/"))
                     {
-                        xivRace = XivRace.DemiHuman;
-                    }
-                    else if (modPath.Contains("/v"))
-                    {
-                        var raceCode = modPath.Substring(modPath.IndexOf("_c") + 2, 4);
-                        xivRace = XivRaces.GetXivRace(raceCode);
+                        xivRace = XivRace.All_Races;
                     }
                     else
                     {
-                        var raceCode = modPath.Substring(modPath.IndexOf("/c") + 2, 4);
-                        xivRace = XivRaces.GetXivRace(raceCode);
+                        if (modPath.Contains("demihuman"))
+                        {
+                            xivRace = XivRace.DemiHuman;
+                        }
+                        else if (modPath.Contains("/v"))
+                        {
+                            var raceCode = modPath.Substring(modPath.IndexOf("_c") + 2, 4);
+                            xivRace = XivRaces.GetXivRace(raceCode);
+                        }
+                        else
+                        {
+                            var raceCode = modPath.Substring(modPath.IndexOf("/c") + 2, 4);
+                            xivRace = XivRaces.GetXivRace(raceCode);
+                        }
                     }
                 }
-            }
 
-            return xivRace;
+                return xivRace;
+            });
         }
 
 
@@ -169,64 +250,67 @@ namespace FFXIV_TexTools.Views
         /// </summary>
         /// <param name="modPath">The mod path</param>
         /// <returns>The number</returns>
-        private string GetNumber(string modPath)
+        private Task<string> GetNumber(string modPath)
         {
-            var number = "-";
-
-            if (modPath.Contains("/human/") && modPath.Contains("/body/"))
+            return Task.Run(() =>
             {
-                var subString = modPath.Substring(modPath.LastIndexOf("/b") + 2, 4);
-                number = int.Parse(subString).ToString();
-            }
+                var number = "-";
 
-            if (modPath.Contains("/face/"))
-            {
-                var subString = modPath.Substring(modPath.LastIndexOf("/f") + 2, 4);
-                number = int.Parse(subString).ToString();
-            }
-
-            if (modPath.Contains("decal_face"))
-            {
-                var length = modPath.LastIndexOf(".") - (modPath.LastIndexOf("_") + 1);
-                var subString = modPath.Substring(modPath.LastIndexOf("_") + 1, length);
-
-                number = int.Parse(subString).ToString();
-            }
-
-            if (modPath.Contains("decal_equip"))
-            {
-                var subString = modPath.Substring(modPath.LastIndexOf("_") + 1, 3);
-
-                try
+                if (modPath.Contains("/human/") && modPath.Contains("/body/"))
                 {
+                    var subString = modPath.Substring(modPath.LastIndexOf("/b") + 2, 4);
                     number = int.Parse(subString).ToString();
                 }
-                catch
+
+                if (modPath.Contains("/face/"))
                 {
-                    if (modPath.Contains("stigma"))
+                    var subString = modPath.Substring(modPath.LastIndexOf("/f") + 2, 4);
+                    number = int.Parse(subString).ToString();
+                }
+
+                if (modPath.Contains("decal_face"))
+                {
+                    var length = modPath.LastIndexOf(".") - (modPath.LastIndexOf("_") + 1);
+                    var subString = modPath.Substring(modPath.LastIndexOf("_") + 1, length);
+
+                    number = int.Parse(subString).ToString();
+                }
+
+                if (modPath.Contains("decal_equip"))
+                {
+                    var subString = modPath.Substring(modPath.LastIndexOf("_") + 1, 3);
+
+                    try
                     {
-                        number = "stigma";
+                        number = int.Parse(subString).ToString();
                     }
-                    else
+                    catch
                     {
-                        number = "Error";
+                        if (modPath.Contains("stigma"))
+                        {
+                            number = "stigma";
+                        }
+                        else
+                        {
+                            number = "Error";
+                        }
                     }
                 }
-            }
 
-            if (modPath.Contains("/hair/"))
-            {
-                var t = modPath.Substring(modPath.LastIndexOf("/h") + 2, 4);
-                number = int.Parse(t).ToString();
-            }
+                if (modPath.Contains("/hair/"))
+                {
+                    var t = modPath.Substring(modPath.LastIndexOf("/h") + 2, 4);
+                    number = int.Parse(t).ToString();
+                }
 
-            if (modPath.Contains("/tail/"))
-            {
-                var t = modPath.Substring(modPath.LastIndexOf("l/t") + 3, 4);
-                number = int.Parse(t).ToString();
-            }
+                if (modPath.Contains("/tail/"))
+                {
+                    var t = modPath.Substring(modPath.LastIndexOf("l/t") + 3, 4);
+                    number = int.Parse(t).ToString();
+                }
 
-            return number;
+                return number;
+            });
         }
 
         /// <summary>
@@ -234,45 +318,48 @@ namespace FFXIV_TexTools.Views
         /// </summary>
         /// <param name="modPath">The mod path</param>
         /// <returns>The type</returns>
-        private string GetType(string modPath)
+        private Task<string> GetType(string modPath)
         {
-            var type = "-";
-
-            if (modPath.Contains(".tex") || modPath.Contains(".mdl") || modPath.Contains(".atex"))
+            return Task.Run(() =>
             {
-                if (modPath.Contains("demihuman"))
-                {
-                    type = slotAbr[modPath.Substring(modPath.LastIndexOf("_") - 3, 3)];
-                }
+                var type = "-";
 
-                if (modPath.Contains("/face/"))
+                if (modPath.Contains(".tex") || modPath.Contains(".mdl") || modPath.Contains(".atex"))
                 {
-                    if (modPath.Contains(".tex"))
+                    if (modPath.Contains("demihuman"))
                     {
-                        type = FaceTypes[modPath.Substring(modPath.LastIndexOf("_") - 3, 3)];
+                        type = slotAbr[modPath.Substring(modPath.LastIndexOf("_") - 3, 3)];
                     }
-                }
 
-                if (modPath.Contains("/hair/"))
-                {
-                    if (modPath.Contains(".tex"))
+                    if (modPath.Contains("/face/"))
                     {
-                        type = HairTypes[modPath.Substring(modPath.LastIndexOf("_") - 3, 3)];
+                        if (modPath.Contains(".tex"))
+                        {
+                            type = FaceTypes[modPath.Substring(modPath.LastIndexOf("_") - 3, 3)];
+                        }
                     }
-                }
 
-                if (modPath.Contains("/vfx/"))
+                    if (modPath.Contains("/hair/"))
+                    {
+                        if (modPath.Contains(".tex"))
+                        {
+                            type = HairTypes[modPath.Substring(modPath.LastIndexOf("_") - 3, 3)];
+                        }
+                    }
+
+                    if (modPath.Contains("/vfx/"))
+                    {
+                        type = "VFX";
+                    }
+
+                }
+                else if (modPath.Contains(".avfx"))
                 {
-                    type = "VFX";
+                    type = "AVFX";
                 }
 
-            }
-            else if (modPath.Contains(".avfx"))
-            {
-                type = "AVFX";
-            }
-
-            return type;
+                return type;
+            });
         }
 
 
@@ -281,62 +368,77 @@ namespace FFXIV_TexTools.Views
         /// </summary>
         /// <param name="modPath">The mod path</param>
         /// <returns>The map</returns>
-        private string GetMap(string modPath)
+        private Task<string> GetMap(string modPath)
         {
-            var xivTexType = XivTexType.Other;
+            return Task.Run(() =>
+            {
+                var xivTexType = XivTexType.Other;
 
-            if (modPath.Contains(".mdl"))
-            {
-                return "3D";
-            }
+                if (modPath.Contains(".mdl"))
+                {
+                    return "3D";
+                }
 
-            if (modPath.Contains(".mtrl"))
-            {
-                return "ColorSet";
-            }
+                if (modPath.Contains(".mtrl"))
+                {
+                    return "ColorSet";
+                }
 
-            if (modPath.Contains("ui/"))
-            {
-                var subString = modPath.Substring(modPath.IndexOf("/") + 1);
-                return subString.Substring(0, subString.IndexOf("/"));
-            }
+                if (modPath.Contains("ui/"))
+                {
+                    var subString = modPath.Substring(modPath.IndexOf("/") + 1);
+                    return subString.Substring(0, subString.IndexOf("/"));
+                }
 
-            if (modPath.Contains("_s.tex") || modPath.Contains("skin_m"))
-            {
-                xivTexType = XivTexType.Specular;
-            }
-            else if (modPath.Contains("_d.tex"))
-            {
-                xivTexType = XivTexType.Diffuse;
-            }
-            else if (modPath.Contains("_n.tex"))
-            {
-                xivTexType = XivTexType.Normal;
-            }
-            else if (modPath.Contains("_m.tex"))
-            {
-                xivTexType = XivTexType.Multi;
-            }
-            else if (modPath.Contains(".atex"))
-            {
-                var atex = Path.GetFileNameWithoutExtension(modPath);
-                return atex.Substring(0, 4);
-            }
-            else if (modPath.Contains("decal"))
-            {
-                xivTexType = XivTexType.Mask;
-            }
+                if (modPath.Contains("_s.tex") || modPath.Contains("skin_m"))
+                {
+                    xivTexType = XivTexType.Specular;
+                }
+                else if (modPath.Contains("_d.tex"))
+                {
+                    xivTexType = XivTexType.Diffuse;
+                }
+                else if (modPath.Contains("_n.tex"))
+                {
+                    xivTexType = XivTexType.Normal;
+                }
+                else if (modPath.Contains("_m.tex"))
+                {
+                    xivTexType = XivTexType.Multi;
+                }
+                else if (modPath.Contains(".atex"))
+                {
+                    var atex = Path.GetFileNameWithoutExtension(modPath);
+                    return atex.Substring(0, 4);
+                }
+                else if (modPath.Contains("decal"))
+                {
+                    xivTexType = XivTexType.Mask;
+                }
 
-            return xivTexType.ToString();
+                return xivTexType.ToString();
+            });
         }
 
         /// <summary>
         /// Updates the progress bar
         /// </summary>
         /// <param name="value">The progress value</param>
-        private void ReportProgress(double value)
+        private void ReportProgress((int current, int total, string message) report)
         {
-            _progressController.SetProgress(value);
+            if (!report.message.Equals(string.Empty))
+            {
+                _progressController.SetMessage(report.message);
+                _progressController.SetIndeterminate();
+            }
+            else
+            {
+                _progressController.SetMessage(
+                    $"{UIMessages.TTMPGettingData} ({report.current} / {report.total})");
+
+                var value = (double)report.current / (double)report.total;
+                _progressController.SetProgress(value);
+            }
         }
 
         #endregion
@@ -378,8 +480,8 @@ namespace FFXIV_TexTools.Views
             if (ModPackName.Text.Equals(string.Empty))
             {
                 if (FlexibleMessageBox.Show(new Wpf32Window(this),
-                        $"Nothing was entered for ModPack Name\n\nModPack Name will default to \"ModPack\"",
-                        "No Name Found", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) ==
+                        UIMessages.DefaultModPackNameMessage,
+                        UIMessages.NoNameFoundTitle, MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) ==
                     System.Windows.Forms.DialogResult.OK)
                 {
                     ModPackName.Text = "ModPack";
@@ -403,8 +505,8 @@ namespace FFXIV_TexTools.Views
             if (versionNumber.ToString().Equals("0.0.0"))
             {
                 if (FlexibleMessageBox.Show(new Wpf32Window(this),
-                        $"Nothing was entered for ModPack Version\n\nVersion will default to \"1.0.0\"",
-                        "No Version Found", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) ==
+                        UIMessages.DefaultModPackVersionMessage,
+                        UIMessages.NoVersionFoundTitle, MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) ==
                     System.Windows.Forms.DialogResult.OK)
                 {
                     versionNumber = new Version(1, 0, 0);
@@ -418,8 +520,8 @@ namespace FFXIV_TexTools.Views
             if (ModPackAuthor.Text.Equals(string.Empty))
             {
                 if (FlexibleMessageBox.Show(new Wpf32Window(this),
-                        $"Nothing was entered for ModPack Author\n\nAuthor will default to \"TexTools User\"",
-                        "No Author Found", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) ==
+                        UIMessages.DefaultModPackAuthorMessage,
+                        UIMessages.NoAuthorFoundTitle, MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) ==
                     System.Windows.Forms.DialogResult.OK)
                 {
                     ModPackAuthor.Text = "TexTools User";
@@ -430,7 +532,7 @@ namespace FFXIV_TexTools.Views
                 }
             }
 
-            _progressController = await this.ShowProgressAsync("Creating ModPack", "Please Stand By...");
+            _progressController = await this.ShowProgressAsync(UIMessages.ModPackCreationMessage, UIMessages.PleaseStandByMessage);
             ModPackFileName = ModPackName.Text;
 
             var texToolsModPack = new TTMP(new DirectoryInfo(Properties.Settings.Default.ModPack_Directory), XivStrings.TexTools);
@@ -458,7 +560,7 @@ namespace FFXIV_TexTools.Views
                 simpleModPackData.SimpleModDataList.Add(simpleData);
             }
 
-            var progressIndicator = new Progress<double>(ReportProgress);
+            var progressIndicator = new Progress<(int current, int total, string message)>(ReportProgress);
 
             await texToolsModPack.CreateSimpleModPack(simpleModPackData, _gameDirectory, progressIndicator);
 

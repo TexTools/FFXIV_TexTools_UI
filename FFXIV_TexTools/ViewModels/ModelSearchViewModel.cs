@@ -21,6 +21,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Windows.Data;
 using System.Windows.Input;
 using xivModdingFramework.General.DataContainers;
 using xivModdingFramework.General.Enums;
@@ -33,7 +34,7 @@ namespace FFXIV_TexTools.ViewModels
     public class ModelSearchViewModel: INotifyPropertyChanged
     {
         private string _selectedCategory, _modelSearchID, _statusLabel, _currentCategory;
-        private string _modelSearchWaterMark = "Enter a Model ID...";
+        private string _modelSearchWaterMark = UIStrings.Enter_a_Model_ID_dot;
         private int _selectedCategoryIndex, _currentID;
         private List<SearchResults> _resultList;
         private SearchResults _searchResult;
@@ -143,7 +144,7 @@ namespace FFXIV_TexTools.ViewModels
         /// <summary>
         /// Initiates a search for a given ID
         /// </summary>
-        private void Search(object obj)
+        private async void Search(object obj)
         {
             var id = 0;
 
@@ -152,52 +153,54 @@ namespace FFXIV_TexTools.ViewModels
                 id = int.Parse(ModelSearchID);
                 if(_currentID == id && _currentCategory == SelectedCategory) return;
                 _currentID = id;
-                _selectedCategory = SelectedCategory;
+                _currentCategory = SelectedCategory;
             }
             catch (Exception e)
             {
                 ModelSearchID = string.Empty;
-                ModelSearchWaterMark = "Must be a number";
+                ModelSearchWaterMark = UIStrings.ModelSearch_Numeric;
                 return;
             }
 
             var gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
 
-            switch (SelectedCategory)
+            if (SelectedCategory.Equals(XivStrings.Equipment) || SelectedCategory.Equals(XivStrings.Accessory) ||
+                SelectedCategory.Equals(XivStrings.Weapon))
             {
-                case "Equipment":
-                case "Accessory":
-                case "Weapon":
-                    var gear = new Gear(gameDirectory, GetLanguage());
-                    ResultList = gear.SearchGearByModelID(id, SelectedCategory);
-                    break;
-                case "Monster":
-                    var companion = new Companions(gameDirectory, GetLanguage());
-                    ResultList = companion.SearchMonstersByModelID(id, XivItemType.monster);
-                    break;
-                case "DemiHuman":
-                    var demiH = new Companions(gameDirectory, GetLanguage());
-                    ResultList = demiH.SearchMonstersByModelID(id, XivItemType.demihuman);
-                    break;
-                case "Furniture":
-                    var furniture = new Housing(gameDirectory, GetLanguage());
-                    ResultList = furniture.SearchHousingByModelID(id, XivItemType.furniture);
-                    break;
+                var gear = new Gear(gameDirectory, GetLanguage());
+                ResultList = await gear.SearchGearByModelID(id, SelectedCategory);
+            }
+            else if (SelectedCategory.Equals(XivStrings.Monster))
+            {
+                var companion = new Companions(gameDirectory, GetLanguage());
+                ResultList = await companion.SearchMonstersByModelID(id, XivItemType.monster);
+            }
+            else if (SelectedCategory.Equals(XivStrings.DemiHuman))
+            {
+                var demiH = new Companions(gameDirectory, GetLanguage());
+                ResultList = await demiH.SearchMonstersByModelID(id, XivItemType.demihuman);
+            }
+            else if (SelectedCategory.Equals(XivStrings.Furniture))
+            {
+                var furniture = new Housing(gameDirectory, GetLanguage());
+                ResultList = await furniture.SearchHousingByModelID(id, XivItemType.furniture);
             }
 
-            StatusLabel = ResultList.Count > 0 ? $"{ResultList.Count} Items Found." : "No Items Found.";
+            StatusLabel = ResultList.Count > 0 ? string.Format(UIStrings.ModelSearch_ItemsFound, ResultList.Count) : UIStrings.ModelSearch_NoItemsFound;
 
-            ModelSearchWaterMark = "Enter a Model ID...";
-
-
+            ModelSearchWaterMark = UIStrings.ModelSearch_EnterID;
         }
 
         /// <summary>
         /// Opens the currently selected item
         /// </summary>
         /// <param name="obj"></param>
-        private void OpenItem(object obj)
+        private async void OpenItem(object obj)
         {
+            _mainView.ModelTabItem.IsEnabled = true;
+
+            CollectionViewSource.GetDefaultView(_mainView.ItemTreeView.ItemsSource).Refresh();
+
             var textureView = _mainView.TextureTabItem.Content as TextureView;
             var textureViewModel = textureView.DataContext as TextureViewModel;
 
@@ -209,93 +212,93 @@ namespace FFXIV_TexTools.ViewModels
             int.TryParse(SelectedItem.Body, out var body);
             var variant = SelectedItem.Variant;
 
-            switch (SelectedCategory)
+            if (SelectedCategory.Equals(XivStrings.Equipment) || SelectedCategory.Equals(XivStrings.Accessory) ||
+                SelectedCategory.Equals(XivStrings.Weapon))
             {
-                case "Equipment":
-                case "Accessory":
-                case "Weapon":
-                    var xivGear = new XivGear
+                var xivGear = new XivGear
+                {
+                    Name = $"{SelectedCategory.ToLower()[0]}{_currentID.ToString().PadLeft(4, '0')}",
+                    Category = XivStrings.Gear,
+                    ItemCategory = SelectedItem.Slot,
+                    DataFile = XivDataFile._04_Chara,
+                    ModelInfo = new XivModelInfo
                     {
-                        Name = $"{SelectedCategory.ToLower()[0]}{_currentID.ToString().PadLeft(4, '0')}",
-                        Category = "Gear",
-                        ItemCategory = SelectedItem.Slot,
-                        DataFile = XivDataFile._04_Chara,
-                        ModelInfo = new XivModelInfo
-                        {
-                            ModelID = _currentID,
-                            Body = body,
-                            Variant = variant
-                        }
-                    };
+                        ModelID = _currentID,
+                        Body = body,
+                        Variant = variant
+                    }
+                };
 
-                    textureViewModel.UpdateTexture(xivGear);
-                    modelViewModel.UpdateModel(xivGear);
-                    break;
-                case "Monster":
-                    var xivMonster = new XivGenericItemModel
+                await textureViewModel.UpdateTexture(xivGear);
+                await modelViewModel.UpdateModel(xivGear);
+            }
+            else if (SelectedCategory.Equals(XivStrings.Monster))
+            {
+                var xivMonster = new XivGenericItemModel
+                {
+                    Name = $"{SelectedCategory.ToLower()[0]}{_currentID.ToString().PadLeft(4, '0')}",
+                    Category = XivStrings.Companions,
+                    ItemCategory = XivStrings.Monster,
+                    DataFile = XivDataFile._04_Chara,
+                    ModelInfo = new XivModelInfo
                     {
-                        Name = $"{SelectedCategory.ToLower()[0]}{_currentID.ToString().PadLeft(4, '0')}",
-                        Category = XivStrings.Companions,
-                        ItemCategory = "Monster",
-                        DataFile = XivDataFile._04_Chara,
-                        ModelInfo = new XivModelInfo
-                        {
-                            ModelID = _currentID,
-                            Body = body,
-                            Variant = variant,
-                            ModelType = XivItemType.monster
-                        }
-                    };
+                        ModelID = _currentID,
+                        Body = body,
+                        Variant = variant,
+                        ModelType = XivItemType.monster
+                    }
+                };
 
-                    textureViewModel.UpdateTexture(xivMonster);
-                    modelViewModel.UpdateModel(xivMonster);
-                    break;
-                case "DemiHuman":
-                    var xivDemiHuman= new XivMount
+                await textureViewModel.UpdateTexture(xivMonster);
+                await modelViewModel.UpdateModel(xivMonster);
+            }
+            else if (SelectedCategory.Equals(XivStrings.DemiHuman))
+            {
+                var xivDemiHuman = new XivMount
+                {
+                    Name = $"{SelectedCategory.ToLower()[0]}{_currentID.ToString().PadLeft(4, '0')}",
+                    Category = XivStrings.Companions,
+                    ItemCategory = XivStrings.Monster,
+                    DataFile = XivDataFile._04_Chara,
+                    ModelInfo = new XivModelInfo
                     {
-                        Name = $"{SelectedCategory.ToLower()[0]}{_currentID.ToString().PadLeft(4, '0')}",
-                        Category = XivStrings.Companions,
-                        ItemCategory = "Monster",
-                        DataFile = XivDataFile._04_Chara,
-                        ModelInfo = new XivModelInfo
-                        {
-                            ModelID = _currentID,
-                            Body = body,
-                            Variant = variant,
-                            ModelType = XivItemType.demihuman
-                        }
-                    };
+                        ModelID = _currentID,
+                        Body = body,
+                        Variant = variant,
+                        ModelType = XivItemType.demihuman
+                    }
+                };
 
-                    textureViewModel.UpdateTexture(xivDemiHuman);
-                    modelViewModel.UpdateModel(xivDemiHuman);
-                    break;
-                case "Furniture":
-                    var xivFurniture = new XivFurniture
+                await textureViewModel.UpdateTexture(xivDemiHuman);
+                await modelViewModel.UpdateModel(xivDemiHuman);
+            }
+            else if (SelectedCategory.Equals(XivStrings.Furniture))
+            {
+                var xivFurniture = new XivFurniture
+                {
+                    Name = $"{SelectedCategory.ToLower()[0]}{_currentID.ToString().PadLeft(4, '0')}",
+                    Category = XivStrings.Housing,
+                    ItemCategory = SelectedItem.Slot,
+                    DataFile = XivDataFile._01_Bgcommon,
+                    ModelInfo = new XivModelInfo
                     {
-                        Name = $"{SelectedCategory.ToLower()[0]}{_currentID.ToString().PadLeft(4, '0')}",
-                        Category = XivStrings.Housing,
-                        ItemCategory = XivStrings.Furniture,
-                        DataFile = XivDataFile._01_Bgcommon,
-                        ModelInfo = new XivModelInfo
-                        {
-                            ModelID = _currentID
-                        }
-                    };
+                        ModelID = _currentID
+                    }
+                };
 
-                    textureViewModel.UpdateTexture(xivFurniture);
-                    modelViewModel.UpdateModel(xivFurniture);
-                    break;
+                await textureViewModel.UpdateTexture(xivFurniture);
+                await modelViewModel.UpdateModel(xivFurniture);
             }
         }
 
         private static readonly List<string> SearchCategoriesList = new List<string>()
         {
-            "Equipment",
-            "Accessory",
-            "Weapon",
-            "Monster",
-            "DemiHuman",
-            "Furniture"
+            XivStrings.Equipment,
+            XivStrings.Accessory,
+            XivStrings.Weapon,
+            XivStrings.Monster,
+            XivStrings.DemiHuman,
+            XivStrings.Furniture
         };
 
         private static XivLanguage GetLanguage()

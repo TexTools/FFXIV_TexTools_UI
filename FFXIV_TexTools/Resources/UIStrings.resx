@@ -1,0 +1,886 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="About" xml:space="preserve">
+    <value>About</value>
+  </data>
+  <data name="About_TexTools" xml:space="preserve">
+    <value>About TexTools</value>
+  </data>
+  <data name="Backup_Index_Files" xml:space="preserve">
+    <value>Backup Index Files</value>
+  </data>
+  <data name="Batch" xml:space="preserve">
+    <value>Batch</value>
+  </data>
+  <data name="Check_For_Problems" xml:space="preserve">
+    <value>Check For Problems</value>
+  </data>
+  <data name="Create_Modpack" xml:space="preserve">
+    <value>Create Modpack</value>
+  </data>
+  <data name="Customize" xml:space="preserve">
+    <value>Customize</value>
+  </data>
+  <data name="Disable" xml:space="preserve">
+    <value>Disable</value>
+  </data>
+  <data name="Disable_All_Mods" xml:space="preserve">
+    <value>Disable All Mods</value>
+  </data>
+  <data name="Donate" xml:space="preserve">
+    <value>Donate</value>
+  </data>
+  <data name="Enable" xml:space="preserve">
+    <value>Enable</value>
+  </data>
+  <data name="Enable_All_Mods" xml:space="preserve">
+    <value>Enable All Mods</value>
+  </data>
+  <data name="Enable_Disable" xml:space="preserve">
+    <value>Enable/Disable</value>
+  </data>
+  <data name="Export" xml:space="preserve">
+    <value>Export</value>
+  </data>
+  <data name="Help" xml:space="preserve">
+    <value>Help</value>
+  </data>
+  <data name="Icon_ID" xml:space="preserve">
+    <value>Icon ID</value>
+  </data>
+  <data name="Import" xml:space="preserve">
+    <value>Import</value>
+  </data>
+  <data name="Import_ModPacks" xml:space="preserve">
+    <value>Import ModPacks</value>
+  </data>
+  <data name="Item_List" xml:space="preserve">
+    <value>Item List</value>
+  </data>
+  <data name="Join_us_on_Discord" xml:space="preserve">
+    <value>Join us on Discord</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="Model" xml:space="preserve">
+    <value>Model</value>
+  </data>
+  <data name="Model_ID" xml:space="preserve">
+    <value>Model ID</value>
+  </data>
+  <data name="ModPack_Wizard" xml:space="preserve">
+    <value>ModPack Wizard</value>
+  </data>
+  <data name="Mods" xml:space="preserve">
+    <value>Mods</value>
+  </data>
+  <data name="Mod_List" xml:space="preserve">
+    <value>Mod List</value>
+  </data>
+  <data name="Mod_Repos" xml:space="preserve">
+    <value>Mod Repos</value>
+  </data>
+  <data name="More_Options" xml:space="preserve">
+    <value>More Options</value>
+  </data>
+  <data name="Nexus_Mods" xml:space="preserve">
+    <value>Nexus Mods</value>
+  </data>
+  <data name="Options" xml:space="preserve">
+    <value>Options</value>
+  </data>
+  <data name="PrettyKitty_Emporium" xml:space="preserve">
+    <value>PrettyKitty Emporium</value>
+  </data>
+  <data name="Report_Bug" xml:space="preserve">
+    <value>Report Bug</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="Search_dot" xml:space="preserve">
+    <value>Search...</value>
+  </data>
+  <data name="Select_Language" xml:space="preserve">
+    <value>Select Language</value>
+  </data>
+  <data name="Simple_ModPack" xml:space="preserve">
+    <value>Simple ModPack</value>
+  </data>
+  <data name="Texture" xml:space="preserve">
+    <value>Texture</value>
+  </data>
+  <data name="Theme" xml:space="preserve">
+    <value>Theme</value>
+  </data>
+  <data name="Tutorials" xml:space="preserve">
+    <value>Tutorials</value>
+  </data>
+  <data name="View_Github_Repo" xml:space="preserve">
+    <value>View Github Repo</value>
+  </data>
+  <data name="XIV_Mod_Archive" xml:space="preserve">
+    <value>XIV Mod Archive</value>
+  </data>
+  <data name="Active" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="Add" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  <data name="Add_Remove" xml:space="preserve">
+    <value>Add/Remove</value>
+  </data>
+  <data name="Add_To_Part_Attribute" xml:space="preserve">
+    <value>Add To Part Attribute</value>
+  </data>
+  <data name="Advanced_Import" xml:space="preserve">
+    <value>Advanced Import</value>
+  </data>
+  <data name="Advanced_Model_Import" xml:space="preserve">
+    <value>Advanced Model Import</value>
+  </data>
+  <data name="Advanced_Model_Options" xml:space="preserve">
+    <value>Advanced Model Options</value>
+  </data>
+  <data name="Attributes" xml:space="preserve">
+    <value>Attributes</value>
+  </data>
+  <data name="Author_colon" xml:space="preserve">
+    <value>Author:</value>
+  </data>
+  <data name="Available_Attributes" xml:space="preserve">
+    <value>Available Attributes</value>
+  </data>
+  <data name="Back" xml:space="preserve">
+    <value>Back</value>
+  </data>
+  <data name="Backups_Directory" xml:space="preserve">
+    <value>Backups Directory</value>
+  </data>
+  <data name="BG_Color" xml:space="preserve">
+    <value>BG Color</value>
+  </data>
+  <data name="Body" xml:space="preserve">
+    <value>Body</value>
+  </data>
+  <data name="Bones" xml:space="preserve">
+    <value>Bones</value>
+  </data>
+  <data name="Bone_addition_is_automatic" xml:space="preserve">
+    <value>Bone addition is automatic</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Clear_Selected" xml:space="preserve">
+    <value>Clear Selected</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="Colors_Skins" xml:space="preserve">
+    <value>Colors &amp;amp; Skins</value>
+  </data>
+  <data name="Count" xml:space="preserve">
+    <value>Count</value>
+  </data>
+  <data name="Count_colon" xml:space="preserve">
+    <value>Count:</value>
+  </data>
+  <data name="Create_ModPack_Wizard" xml:space="preserve">
+    <value>Create ModPack Wizard</value>
+  </data>
+  <data name="Cull_Mode" xml:space="preserve">
+    <value>Cull Mode</value>
+  </data>
+  <data name="Current_Language_colon" xml:space="preserve">
+    <value>Current Language:</value>
+  </data>
+  <data name="DAE_file_to_import" xml:space="preserve">
+    <value>DAE file to import</value>
+  </data>
+  <data name="DAE_Info" xml:space="preserve">
+    <value>DAE Info</value>
+  </data>
+  <data name="Default_Skin" xml:space="preserve">
+    <value>Default Skin</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="Directories" xml:space="preserve">
+    <value>Directories</value>
+  </data>
+  <data name="Disabled" xml:space="preserve">
+    <value>Disabled</value>
+  </data>
+  <data name="Disable_Shape_Data" xml:space="preserve">
+    <value>Disable Shape Data</value>
+  </data>
+  <data name="Enabled" xml:space="preserve">
+    <value>Enabled</value>
+  </data>
+  <data name="Enter_a_brief_description_of_your_Mod_Pack" xml:space="preserve">
+    <value>Enter a brief description of your Mod Pack.</value>
+  </data>
+  <data name="Enter_a_Model_ID_dot" xml:space="preserve">
+    <value>Enter a Model ID...</value>
+  </data>
+  <data name="Etc_Color" xml:space="preserve">
+    <value>Etc Color</value>
+  </data>
+  <data name="Export_BMP" xml:space="preserve">
+    <value>Export BMP</value>
+  </data>
+  <data name="Export_Both" xml:space="preserve">
+    <value>Export Both</value>
+  </data>
+  <data name="Export_DAE_file" xml:space="preserve">
+    <value>Export DAE file</value>
+  </data>
+  <data name="Export_DAE_Materials" xml:space="preserve">
+    <value>Export DAE + Materials</value>
+  </data>
+  <data name="Export_DDS" xml:space="preserve">
+    <value>Export DDS</value>
+  </data>
+  <data name="Export_OBJ_files" xml:space="preserve">
+    <value>Export OBJ files</value>
+  </data>
+  <data name="Export_Settings" xml:space="preserve">
+    <value>Export Settings</value>
+  </data>
+  <data name="FFXIV_Directory" xml:space="preserve">
+    <value>FFXIV Directory</value>
+  </data>
+  <data name="Filter_By_colon" xml:space="preserve">
+    <value>Filter By:</value>
+  </data>
+  <data name="Flip_Alpha" xml:space="preserve">
+    <value>Flip Alpha</value>
+  </data>
+  <data name="Hair_Color" xml:space="preserve">
+    <value>Hair Color</value>
+  </data>
+  <data name="Icon_Search" xml:space="preserve">
+    <value>Icon Search</value>
+  </data>
+  <data name="Import_BMP" xml:space="preserve">
+    <value>Import BMP</value>
+  </data>
+  <data name="Import_DDS" xml:space="preserve">
+    <value>Import DDS</value>
+  </data>
+  <data name="Import_From_dot" xml:space="preserve">
+    <value>Import From...</value>
+  </data>
+  <data name="Iris_Color" xml:space="preserve">
+    <value>Iris Color</value>
+  </data>
+  <data name="Item" xml:space="preserve">
+    <value>Item</value>
+  </data>
+  <data name="Level_Of_Detail" xml:space="preserve">
+    <value>Level Of Detail</value>
+  </data>
+  <data name="Lights" xml:space="preserve">
+    <value>Lights</value>
+  </data>
+  <data name="Map" xml:space="preserve">
+    <value>Map</value>
+  </data>
+  <data name="Materials" xml:space="preserve">
+    <value>Materials</value>
+  </data>
+  <data name="Mesh_Data" xml:space="preserve">
+    <value>Mesh Data</value>
+  </data>
+  <data name="Mesh_Inspector" xml:space="preserve">
+    <value>Mesh Inspector</value>
+  </data>
+  <data name="Mesh_MetaData" xml:space="preserve">
+    <value>Mesh MetaData</value>
+  </data>
+  <data name="Mesh_Parts" xml:space="preserve">
+    <value>Mesh_Parts</value>
+  </data>
+  <data name="Modded_Items" xml:space="preserve">
+    <value>Modded Items</value>
+  </data>
+  <data name="Model_Inspector" xml:space="preserve">
+    <value>Model Inspector</value>
+  </data>
+  <data name="Model_MetaData" xml:space="preserve">
+    <value>Model MetaData</value>
+  </data>
+  <data name="Model_Search" xml:space="preserve">
+    <value>Model Search</value>
+  </data>
+  <data name="ModPackDescription" xml:space="preserve">
+    <value>(e.g., This Mod Pack modifies blah blah blah, it replaces blah, and comes with several options for blah.)</value>
+  </data>
+  <data name="ModPackGeneralInfo" xml:space="preserve">
+    <value>Please fill out the general information for the Mod Pack you are creating.</value>
+  </data>
+  <data name="Mod_Count_colon" xml:space="preserve">
+    <value>Mod Count:</value>
+  </data>
+  <data name="Mod_Pack" xml:space="preserve">
+    <value>Mod Pack</value>
+  </data>
+  <data name="Mod_Pack_Author" xml:space="preserve">
+    <value>Mod Pack Author</value>
+  </data>
+  <data name="Mod_Pack_Content" xml:space="preserve">
+    <value>Mod Pack Content</value>
+  </data>
+  <data name="Mod_Pack_Directory" xml:space="preserve">
+    <value>Mod Pack Directory</value>
+  </data>
+  <data name="Mod_Pack_General_Info" xml:space="preserve">
+    <value>Mod Pack General Info</value>
+  </data>
+  <data name="Mod_Pack_Name" xml:space="preserve">
+    <value>Mod Pack Name</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Name_colon" xml:space="preserve">
+    <value>Name:</value>
+  </data>
+  <data name="New_Page" xml:space="preserve">
+    <value>New Page &gt;</value>
+  </data>
+  <data name="None" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="Num" xml:space="preserve">
+    <value>Num</value>
+  </data>
+  <data name="Open" xml:space="preserve">
+    <value>Open</value>
+  </data>
+  <data name="Open_Mesh_Inspector" xml:space="preserve">
+    <value>Open Mesh Inspector</value>
+  </data>
+  <data name="Other_Data" xml:space="preserve">
+    <value>Other Data</value>
+  </data>
+  <data name="Part" xml:space="preserve">
+    <value>Part</value>
+  </data>
+  <data name="Part_Attributes" xml:space="preserve">
+    <value>Part Attributes</value>
+  </data>
+  <data name="Part_Count" xml:space="preserve">
+    <value>Part Count</value>
+  </data>
+  <data name="Part_Data" xml:space="preserve">
+    <value>Part Data</value>
+  </data>
+  <data name="Paths" xml:space="preserve">
+    <value>Paths</value>
+  </data>
+  <data name="Previe_List" xml:space="preserve">
+    <value>Preview List</value>
+  </data>
+  <data name="Previous_Page" xml:space="preserve">
+    <value>&lt; Previous Page</value>
+  </data>
+  <data name="Problem_Checker" xml:space="preserve">
+    <value>Problem Checker</value>
+  </data>
+  <data name="Race" xml:space="preserve">
+    <value>Race</value>
+  </data>
+  <data name="Reflection" xml:space="preserve">
+    <value>Reflection</value>
+  </data>
+  <data name="Remove_Part_Attribute" xml:space="preserve">
+    <value>Remove Part Attribute</value>
+  </data>
+  <data name="Reset_to_Default" xml:space="preserve">
+    <value>Reset to Default</value>
+  </data>
+  <data name="Save_Directory" xml:space="preserve">
+    <value>Save Directory</value>
+  </data>
+  <data name="Select_Active" xml:space="preserve">
+    <value>Select Active</value>
+  </data>
+  <data name="Select_All" xml:space="preserve">
+    <value>Select All</value>
+  </data>
+  <data name="ShapeDescription1_line1" xml:space="preserve">
+    <value>This will disable all shape data for this meshes.</value>
+  </data>
+  <data name="ShapeDescription1_line2" xml:space="preserve">
+    <value>This option is used when holes appear upon equipping other items</value>
+  </data>
+  <data name="ShapeDescription1_line3" xml:space="preserve">
+    <value>More options for shape data will be available in a later version.</value>
+  </data>
+  <data name="ShapeDescription2_line1" xml:space="preserve">
+    <value>There is no Shape Data for this mesh.</value>
+  </data>
+  <data name="ShapeDescription2_line2" xml:space="preserve">
+    <value>Options are disabled.</value>
+  </data>
+  <data name="Shapes" xml:space="preserve">
+    <value>Shapes</value>
+  </data>
+  <data name="Simple_ModPack_Creator" xml:space="preserve">
+    <value>Simple ModPack Creator</value>
+  </data>
+  <data name="Size_colon" xml:space="preserve">
+    <value>Size:</value>
+  </data>
+  <data name="Skin_Color" xml:space="preserve">
+    <value>Skin Color</value>
+  </data>
+  <data name="Skin_Color_Note_Info" xml:space="preserve">
+    <value>Note: The Skin Color is mixed with the default skin color from the texture. All others are direct colors.</value>
+  </data>
+  <data name="Slot" xml:space="preserve">
+    <value>Slot</value>
+  </data>
+  <data name="Standalone_Non_ModPack" xml:space="preserve">
+    <value>Standalone (Non-ModPack)</value>
+  </data>
+  <data name="This_will_only_affect_shared_races" xml:space="preserve">
+    <value>This will only affect shared races</value>
+  </data>
+  <data name="Translucency" xml:space="preserve">
+    <value>Translucency</value>
+  </data>
+  <data name="Type" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="Update_TEX" xml:space="preserve">
+    <value>Update TEX</value>
+  </data>
+  <data name="Variant" xml:space="preserve">
+    <value>Variant</value>
+  </data>
+  <data name="Version_colon" xml:space="preserve">
+    <value>Version:</value>
+  </data>
+  <data name="Vertex_Colors" xml:space="preserve">
+    <value>Vertex Colors</value>
+  </data>
+  <data name="Vertex_Data_Structure" xml:space="preserve">
+    <value>Vertex Data Structure</value>
+  </data>
+  <data name="Viewer_Options" xml:space="preserve">
+    <value>Viewer Options</value>
+  </data>
+  <data name="Visit_Website" xml:space="preserve">
+    <value>Visit Website</value>
+  </data>
+  <data name="Add_a_Model_using_advanced_options" xml:space="preserve">
+    <value>Add a Model using advanced options</value>
+  </data>
+  <data name="Add_Group" xml:space="preserve">
+    <value>Add Group</value>
+  </data>
+  <data name="Add_w_Adv_Options" xml:space="preserve">
+    <value>Add w/ Adv. Options</value>
+  </data>
+  <data name="Clic_here_to_add_a_preview_image" xml:space="preserve">
+    <value>Click here to add a preview image</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="Done" xml:space="preserve">
+    <value>Done</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="Enter_a_description_for_the_selected_option_here_dot" xml:space="preserve">
+    <value>Enter a description for the selected option here...</value>
+  </data>
+  <data name="Enter_a_Name_for_the_Group_here" xml:space="preserve">
+    <value>Enter a Name for the Group here</value>
+  </data>
+  <data name="Finish" xml:space="preserve">
+    <value>Finish</value>
+  </data>
+  <data name="For_Translucency_or_ColorSet" xml:space="preserve">
+    <value>(For Translucency or ColorSet)</value>
+  </data>
+  <data name="Go_through_the_wizard_and_select_relevant_options_to_import_mod_pack" xml:space="preserve">
+    <value>Go through the wizard and select relevant options to import mod pack</value>
+  </data>
+  <data name="Group_Options" xml:space="preserve">
+    <value>Group Options</value>
+  </data>
+  <data name="Group_Settings" xml:space="preserve">
+    <value>Group Settings</value>
+  </data>
+  <data name="Group_Title_colon" xml:space="preserve">
+    <value>Group Title:</value>
+  </data>
+  <data name="Import_ModPack" xml:space="preserve">
+    <value>Import ModPack</value>
+  </data>
+  <data name="Import_ModPack_Wizard" xml:space="preserve">
+    <value>Import ModPack Wizard</value>
+  </data>
+  <data name="Included_Mods_in_Option" xml:space="preserve">
+    <value>Included Mods in Option</value>
+  </data>
+  <data name="Material" xml:space="preserve">
+    <value>Material</value>
+  </data>
+  <data name="Material_Options" xml:space="preserve">
+    <value>Material Options</value>
+  </data>
+  <data name="Model_Options" xml:space="preserve">
+    <value>Model Options</value>
+  </data>
+  <data name="Model_Type" xml:space="preserve">
+    <value>Model Type</value>
+  </data>
+  <data name="Mod_Pack_Importer" xml:space="preserve">
+    <value>Mod Pack Importer</value>
+  </data>
+  <data name="Multi_Selection" xml:space="preserve">
+    <value>Multi-Selection</value>
+  </data>
+  <data name="Options_List" xml:space="preserve">
+    <value>Options List</value>
+  </data>
+  <data name="Option_Description" xml:space="preserve">
+    <value>Option Description</value>
+  </data>
+  <data name="Option_List" xml:space="preserve">
+    <value>Option List</value>
+  </data>
+  <data name="Option_Name" xml:space="preserve">
+    <value>Option Name</value>
+  </data>
+  <data name="Option_Preview_Image" xml:space="preserve">
+    <value>Option Preview Image</value>
+  </data>
+  <data name="Preview" xml:space="preserve">
+    <value>Preview</value>
+  </data>
+  <data name="Remove" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="Select_a_file_dot" xml:space="preserve">
+    <value>Select a file...</value>
+  </data>
+  <data name="Select_Mod" xml:space="preserve">
+    <value>Select Mod</value>
+  </data>
+  <data name="Simple_ModPack_Importer" xml:space="preserve">
+    <value>Simple ModPack Importer</value>
+  </data>
+  <data name="Single_Selection" xml:space="preserve">
+    <value>Single-Selection</value>
+  </data>
+  <data name="TD_Model" xml:space="preserve">
+    <value>3D Model</value>
+  </data>
+  <data name="Textures" xml:space="preserve">
+    <value>Textures</value>
+  </data>
+  <data name="Texture_Map" xml:space="preserve">
+    <value>Texture Map</value>
+  </data>
+  <data name="Texture_Options" xml:space="preserve">
+    <value>Texture Options</value>
+  </data>
+  <data name="Use_Currently_Modded_Item" xml:space="preserve">
+    <value>Use Currently Modded Item</value>
+  </data>
+  <data name="ChinaDiscord" xml:space="preserve">
+    <value>China Discord</value>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>Loading</value>
+  </data>
+  <data name="Keep_Camera_Position" xml:space="preserve">
+    <value>Keep Camera Position</value>
+  </data>
+  <data name="Added_Mesh" xml:space="preserve">
+    <value>added mesh(es)
+Change material for new mesh(es) if necessary.</value>
+  </data>
+  <data name="Added_MeshParts" xml:space="preserve">
+    <value>added mesh part(s) for this mesh
+Change attributes for new part(s) below if necessary</value>
+  </data>
+  <data name="MeshPart_No_Difference" xml:space="preserve">
+    <value>No difference in mesh part counts for this mesh.</value>
+  </data>
+  <data name="Mesh_No_Difference" xml:space="preserve">
+    <value>No difference in mesh counts.</value>
+  </data>
+  <data name="ModelSearch_EnterID" xml:space="preserve">
+    <value>Enter a Model ID...</value>
+  </data>
+  <data name="ModelSearch_ItemsFound" xml:space="preserve">
+    <value>{0} Items Found.</value>
+  </data>
+  <data name="ModelSearch_NoItemsFound" xml:space="preserve">
+    <value>No Items Found.</value>
+  </data>
+  <data name="ModelSearch_Numeric" xml:space="preserve">
+    <value>Must be a number</value>
+  </data>
+  <data name="ModelStatus_Success" xml:space="preserve">
+    <value>Model Loaded Successfully</value>
+  </data>
+  <data name="ModelStatus_UpdateSuccess" xml:space="preserve">
+    <value>Model Updated Successfully</value>
+  </data>
+  <data name="New_Mesh_MeshPart_Count" xml:space="preserve">
+    <value>This is a new mesh containing {0} parts.</value>
+  </data>
+  <data name="Removed_Mesh" xml:space="preserve">
+    <value>removed mesh(es)
+Removed Mesh Number(s):</value>
+  </data>
+  <data name="Removed_MeshParts" xml:space="preserve">
+    <value>removed mesh part(s) for this mesh
+Removed Part Number(s):</value>
+  </data>
+  <data name="Removed_MeshParts_Note" xml:space="preserve">
+    <value>Changes to these removed parts below will have no effect</value>
+  </data>
+  <data name="Removed_Mesh_Note" xml:space="preserve">
+    <value>Changes to these removed meshes above will have no effect</value>
+  </data>
+  <data name="Start_Over" xml:space="preserve">
+    <value>Start Over</value>
+  </data>
+  <data name="UI_SearchStatus_Max" xml:space="preserve">
+    <value>Icon values have a maximum of 6 digits, try again.</value>
+  </data>
+  <data name="UI_SearchStatus_Numeric" xml:space="preserve">
+    <value>Input can only be numbers, try again.</value>
+  </data>
+  <data name="UI_Search_NothingFound" xml:space="preserve">
+    <value>No data found for icon {0}, try another.</value>
+  </data>
+  <data name="Edit_Group" xml:space="preserve">
+    <value>Edit Group</value>
+  </data>
+  <data name="Index_Locked" xml:space="preserve">
+    <value>Unable to import while game is running.</value>
+  </data>
+  <data name="No_3D_Mods" xml:space="preserve">
+    <value>There are no 3D Model mods present.
+
+If you would like to enable this, first import a model for the selected item.</value>
+  </data>
+  <data name="No_Material_Mods" xml:space="preserve">
+    <value>There are no Material mods present.
+
+If you would like to enable this, first import a Material for the selected item.</value>
+  </data>
+  <data name="No_Texture_Mods" xml:space="preserve">
+    <value>There are no Texture mods present.
+
+If you would like to enable this, first import a texture for the selected item.</value>
+  </data>
+  <data name="Customize_DefaultRace" xml:space="preserve">
+    <value>TexTools will choose the selected race by default if available when viewing Textures and Models.</value>
+  </data>
+  <data name="ProblemCheck_BackupError" xml:space="preserve">
+    <value>There was an issue checking Backup Index Files</value>
+  </data>
+  <data name="ProblemCheck_Dat" xml:space="preserve">
+    <value>Checking Dat....</value>
+  </data>
+  <data name="ProblemCheck_DatMissing" xml:space="preserve">
+    <value>The Dat File ( 060000.win32.dat1 ) could not be found.</value>
+  </data>
+  <data name="ProblemCheck_ErrorsFound" xml:space="preserve">
+    <value>Errors found attempting to repair....</value>
+  </data>
+  <data name="ProblemCheck_ExtraDats" xml:space="preserve">
+    <value>Extra Dat files found, recommend Start Over</value>
+  </data>
+  <data name="ProblemCheck_IndexBackups" xml:space="preserve">
+    <value>Checking Index Backups....</value>
+  </data>
+  <data name="ProblemCheck_IndexDat" xml:space="preserve">
+    <value>Checking Index Dat Values....</value>
+  </data>
+  <data name="ProblemCheck_IndexLocked" xml:space="preserve">
+    <value>Cannot run repairs with game open. Please exit the game and run Check For Problems again.</value>
+  </data>
+  <data name="ProblemCheck_Initialize" xml:space="preserve">
+    <value>Initializing Problem Check....</value>
+  </data>
+  <data name="ProblemCheck_LoD" xml:space="preserve">
+    <value>Checking LoD settings....</value>
+  </data>
+  <data name="ProblemCheck_LoDIssue" xml:space="preserve">
+    <value>Certain mods have issues with LoD ON.</value>
+  </data>
+  <data name="ProblemCheck_LoDOff" xml:space="preserve">
+    <value>Turning off LoD...</value>
+  </data>
+  <data name="ProblemCheck_LoDOffDone" xml:space="preserve">
+    <value>LoD OFF, running check...</value>
+  </data>
+  <data name="ProblemCheck_MissingData" xml:space="preserve">
+    <value>The Dat File ( 060000.win32.dat1 ) is missing data.</value>
+  </data>
+  <data name="ProblemCheck_ModList" xml:space="preserve">
+    <value>Checking Modlist....</value>
+  </data>
+  <data name="ProblemCheck_ModZero" xml:space="preserve">
+    <value>Mod Offset was 0, Disable from File &gt; Modlist and reimport.</value>
+  </data>
+  <data name="ProblemCheck_NoBackup" xml:space="preserve">
+    <value>No Backup Found.</value>
+  </data>
+  <data name="ProblemCheck_NoEntries" xml:space="preserve">
+    <value>No entries found in modlist.</value>
+  </data>
+  <data name="ProblemCheck_OriginalZero" xml:space="preserve">
+    <value>Original Offset was 0, you will be unable to revert to original, consider starting over.</value>
+  </data>
+  <data name="ProblemCheck_OutOfDate" xml:space="preserve">
+    <value>index out of date.</value>
+  </data>
+  <data name="ProblemCheck_RepairComplete" xml:space="preserve">
+    <value>Repairs Complete</value>
+  </data>
+  <data name="ProblemCheck_UnkType" xml:space="preserve">
+    <value>Found unknown file type ( {0} ) offset is most likely corrupt.</value>
+  </data>
+  <data name="ModelStatus_Loading" xml:space="preserve">
+    <value>Loading Model...</value>
+  </data>
+  <data name="Finalizing" xml:space="preserve">
+    <value>Finalizing...</value>
+  </data>
+</root>

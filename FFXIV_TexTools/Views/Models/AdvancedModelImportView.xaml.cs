@@ -39,8 +39,8 @@ namespace FFXIV_TexTools.Views.Models
 
             if (fromWizard)
             {
-                Title = "Advanced Model Options";
-                ImportButton.Content = "Add";
+                Title = FFXIV_TexTools.Resources.UIStrings.Advanced_Model_Options;
+                ImportButton.Content = FFXIV_TexTools.Resources.UIStrings.Add;
             }
         }
 
@@ -58,8 +58,10 @@ namespace FFXIV_TexTools.Views.Models
         /// <summary>
         /// Event Handler for Import Button Click
         /// </summary>
-        private void ImportButton_Click(object sender, System.Windows.RoutedEventArgs e)
+        private async void ImportButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
+            await _viewModel.ImportAsync();
+
             DialogResult = true;
 
             if (_fromWizard)

@@ -7,8 +7,9 @@
         xmlns:vms="clr-namespace:FFXIV_TexTools.ViewModels"
         xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:models="clr-namespace:FFXIV_TexTools.Models"
+        xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
         mc:Ignorable="d"
-        Title="Mod List" Height="500" Width="800" ShowMaxRestoreButton="False" ShowMinButton="False" WindowStartupLocation="CenterOwner">
+        Title="{Binding Source={x:Static resx:UIStrings.Mod_List}}" Height="500" Width="800" ShowMaxRestoreButton="False" ShowMinButton="False" WindowStartupLocation="CenterOwner" Closed="MetroWindow_Closed">
     <mah:MetroWindow.DataContext>
         <vms:ModListViewModel/>
     </mah:MetroWindow.DataContext>
@@ -17,7 +18,7 @@
             <ColumnDefinition/>
             <ColumnDefinition Width="2*"/>
         </Grid.ColumnDefinitions>
-        <GroupBox Grid.Column="0" Header="Modded Items" Margin="5">
+        <GroupBox Grid.Column="0" Header="{Binding Source={x:Static resx:UIStrings.Modded_Items}}" Margin="5">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -29,9 +30,9 @@
                         <ColumnDefinition/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <Label Content="Filter By:"></Label>
-                    <RadioButton Grid.Column="1" Content="Item" GroupName="Lights" Margin="5" IsChecked="{Binding ItemFilter}"/>
-                    <RadioButton Grid.Column="2" Content="Mod Pack" GroupName="Lights" Margin="5" IsChecked="{Binding ModPackFilter}"/>
+                    <Label Content="{Binding Source={x:Static resx:UIStrings.Filter_By_colon}}"></Label>
+                    <RadioButton Grid.Column="1" Content="{Binding Source={x:Static resx:UIStrings.Item}}" GroupName="Lights" Margin="5" IsChecked="{Binding ItemFilter}"/>
+                    <RadioButton Grid.Column="2" Content="{Binding Source={x:Static resx:UIStrings.Mod_Pack}}" GroupName="Lights" Margin="5" IsChecked="{Binding ModPackFilter}"/>
                 </Grid>
                 <TreeView x:Name="ModListTreeView" Grid.Row="1" ItemsSource="{Binding Categories}" SelectedItemChanged="TreeView_SelectedItemChanged" Style="{StaticResource VirtualisedMetroTreeView}">
                     <TreeView.ItemContainerStyle>
@@ -55,7 +56,7 @@
                 <RowDefinition Height="9*"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <GroupBox Grid.Row="0" Header="Preview List" Margin="5">
+            <GroupBox Grid.Row="0" Header="{Binding Source={x:Static resx:UIStrings.Previe_List}}" Margin="5">
                 <Grid>
                     <ListView x:Name="ModItemList" ItemsSource="{Binding ModListPreviewList}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="ListBox_SelectionChanged" BorderThickness="0" BorderBrush="{x:Null}" Visibility="{Binding ListVisibility}">
                         <ListView.ItemsPanel>
@@ -109,25 +110,25 @@
 
                                             <Border Background="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}">
                                                 <Viewbox StretchDirection="DownOnly">
-                                                    <Label Content="Race"  VerticalContentAlignment="Top" Padding="0" HorizontalContentAlignment="Center"/>
+                                                    <Label Content="{Binding Source={x:Static resx:UIStrings.Race}}"  VerticalContentAlignment="Top" Padding="0" HorizontalContentAlignment="Center"/>
                                                 </Viewbox>
                                             </Border>
 
                                             <Border Background="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Grid.Row="2">
                                                 <Viewbox StretchDirection="DownOnly">
-                                                    <Label Content="Map" VerticalContentAlignment="Top" HorizontalContentAlignment="Center" Padding="0" />
+                                                    <Label Content="{Binding Source={x:Static resx:UIStrings.Map}}" VerticalContentAlignment="Top" HorizontalContentAlignment="Center" Padding="0" />
                                                 </Viewbox>
                                             </Border>
 
                                             <Border Background="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Grid.Column="1">
                                                 <Viewbox StretchDirection="DownOnly">
-                                                    <Label Content="Part" VerticalContentAlignment="Top" HorizontalContentAlignment="Center" Padding="0"/>
+                                                    <Label Content="{Binding Source={x:Static resx:UIStrings.Part}}" VerticalContentAlignment="Top" HorizontalContentAlignment="Center" Padding="0"/>
                                                 </Viewbox>
                                             </Border>
 
                                             <Border Background="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Grid.Row="2" Grid.Column="1">
                                                 <Viewbox StretchDirection="DownOnly">
-                                                    <Label Content="Type" VerticalContentAlignment="Top" HorizontalContentAlignment="Center" Padding="0"/>
+                                                    <Label Content="{Binding Source={x:Static resx:UIStrings.Type}}" VerticalContentAlignment="Top" HorizontalContentAlignment="Center" Padding="0"/>
                                                 </Viewbox>
                                             </Border>
                                         </Grid>
@@ -146,15 +147,15 @@
                             <StackPanel>
                                 <Label Content="{Binding ModPackTitle, FallbackValue='ModPack Title'}" MinWidth="80" HorizontalAlignment="Left" FontWeight="Bold"/>
                                 <StackPanel Orientation="Horizontal">
-                                    <Label Content="Author: " MinWidth="80"/>
+                                    <Label Content="{Binding Source={x:Static resx:UIStrings.Author_colon}}" MinWidth="80"/>
                                     <Label Content="{Binding ModPackModAuthorLabel, FallbackValue='0'}" FontWeight="Bold"/>
                                 </StackPanel>
                                 <StackPanel Orientation="Horizontal">
-                                    <Label Content="Mod Count: " MinWidth="80"/>
+                                    <Label Content="{Binding Source={x:Static resx:UIStrings.Mod_Count_colon}}" MinWidth="80"/>
                                     <Label Content="{Binding ModPackModCountLabel, FallbackValue='0'}" FontWeight="Bold"/>
                                 </StackPanel>
                                 <StackPanel Orientation="Horizontal">
-                                    <Label Content="Version: " MinWidth="80"/>
+                                    <Label Content="{Binding Source={x:Static resx:UIStrings.Version_colon}}" MinWidth="80"/>
                                     <Label Content="{Binding ModPackModVersionLabel, FallbackValue='1.0'}" FontWeight="Bold"/>
                                 </StackPanel>
                             </StackPanel>
@@ -166,20 +167,22 @@
                                     <RowDefinition/>
                                     <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
-                                <Label Grid.Row="0" Content="Mod Pack Content"/>
+                                <Label Grid.Row="0" Content="{Binding Source={x:Static resx:UIStrings.Mod_Pack_Content}}"/>
                                 <TextBox Grid.Row="1" TextWrapping="NoWrap" Text="{Binding ModPackContentList}" HorizontalScrollBarVisibility="Visible" IsReadOnly="True"/>
                             </Grid>
                         </Grid>
                     </Grid>
                 </Grid>
             </GroupBox>
+            <mah:MetroProgressBar Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="7" Width="100" Height="20" Value="{Binding ProgressValue}"/>
+            <Label Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="7" Width="100" Height="20" Content="{Binding ProgressText}" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontWeight="Bold"/>
             <Grid Margin="10" Grid.Row="1">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
                 <Button x:Name="modToggleButton" Content="{Binding ModToggleText}" Margin="10,0" IsEnabled="False" Click="modToggleButton_Click"/>
-                <Button x:Name="modDeleteButton" Content="Delete" Grid.Column="1" Margin="10,0" IsEnabled="False" Click="modDeleteButton_Click"/>
+                <Button x:Name="modDeleteButton" Content="{Binding Source={x:Static resx:UIStrings.Delete}}" Grid.Column="1" Margin="10,0" IsEnabled="False" Click="modDeleteButton_Click"/>
             </Grid>
         </Grid>
     </Grid>

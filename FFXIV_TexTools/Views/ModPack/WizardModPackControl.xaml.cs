@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 
 using FFXIV_TexTools.Helpers;
+using FFXIV_TexTools.Resources;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
@@ -109,7 +110,7 @@ namespace FFXIV_TexTools.Views
             var wizardAddGroupWindow = new WizardAddGroupWindow(ModGroupNames)
             {
                 Owner = Window.GetWindow(this),
-                Title = "Edit Group"
+                Title = UIStrings.Edit_Group
             };
             wizardAddGroupWindow.EditMode(editModGroup);
 
@@ -158,8 +159,8 @@ namespace FFXIV_TexTools.Views
         private void DeleteGroupButton_Click(object sender, RoutedEventArgs e)
         {
             if (FlexibleMessageBox.Show(
-                    "This will delete the entire group, and all the options in it.",
-                    "Group Deletion Warning", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) == DialogResult.OK)
+                    UIMessages.DeleteGroupMessage,
+                    UIMessages.DeleteGroupTitle, MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) == DialogResult.OK)
             {
                 var option = OptionsList.SelectedItem as ModOption;
 

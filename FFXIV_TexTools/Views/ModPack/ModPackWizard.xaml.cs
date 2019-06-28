@@ -79,8 +79,8 @@ namespace FFXIV_TexTools.Views
             if (VersionNumber.ToString().Equals("0.0.0"))
             {
                 if (FlexibleMessageBox.Show(new Wpf32Window(this),
-                        $"Nothing was entered for ModPack Version\n\nVersion will default to \"1.0.0\"",
-                        "No Version Found", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) ==
+                        UIMessages.DefaultModPackVersionMessage,
+                        UIMessages.NoVersionFoundTitle, MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) ==
                     System.Windows.Forms.DialogResult.OK)
                 {
                     VersionNumber = new Version(1, 0, 0);
@@ -95,8 +95,8 @@ namespace FFXIV_TexTools.Views
             if (ModPackAuthor.Text.Equals(string.Empty))
             {
                 if (FlexibleMessageBox.Show(new Wpf32Window(this),
-                        $"Nothing was entered for ModPack Author\n\nAuthor will default to \"TexTools User\"",
-                        "No Author Found", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) ==
+                        UIMessages.DefaultModPackAuthorMessage,
+                        UIMessages.NoAuthorFoundTitle, MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) ==
                     System.Windows.Forms.DialogResult.OK)
                 {
                     ModPackAuthor.Text = "TexTools User";
@@ -111,8 +111,8 @@ namespace FFXIV_TexTools.Views
             if (ModPackDescription.Text.Equals(string.Empty))
             {
                 if (FlexibleMessageBox.Show(new Wpf32Window(this),
-                        $"Nothing was entered for ModPack Description\n\nDescription will be left empty.",
-                        "No Description Found", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) ==
+                        UIMessages.DefaultDescriptionMessage,
+                        UIMessages.NoDescriptionFoundTitle, MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) ==
                     System.Windows.Forms.DialogResult.Cancel)
                 {
                     e.Cancel = true;
@@ -161,7 +161,7 @@ namespace FFXIV_TexTools.Views
         /// </remarks>
         private async void ModPackWizard_CreateModPack(object sender, System.Windows.RoutedEventArgs e)
         {
-            _progressController = await this.ShowProgressAsync("Creating ModPack", "Please Stand By...");
+            _progressController = await this.ShowProgressAsync(UIMessages.ModPackCreationMessage, UIMessages.PleaseStandByMessage);
 
             var wizPages = modPackWizard.Items;
 

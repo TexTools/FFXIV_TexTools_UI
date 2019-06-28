@@ -318,7 +318,6 @@ namespace FFXIV_TexTools.Views
             {
                 item.Category = XivStrings.Character;
 
-
                 if (item.Name.Equals(XivStrings.Body))
                 {
                     item.ModelInfo = new XivModelInfo
@@ -711,7 +710,46 @@ namespace FFXIV_TexTools.Views
                 // Models
                 if (itemPath.Contains(".mdl"))
                 {
-                    modCB.Name = $"{((IItemModel)selectedItem.Item).ModelInfo.ModelID} ({Path.GetFileNameWithoutExtension(itemPath)})";
+                    //esrinzou for Repair program crash when selecting [character/Body] item
+                    //modCB.Name = $"{((IItemModel)selectedItem.Item).ModelInfo.ModelID} ({Path.GetFileNameWithoutExtension(itemPath)})";
+                    //esrinzou begin
+                    if (((IItemModel)selectedItem.Item).ModelInfo == null)
+                    {
+                        modCB.Name = $"{((IItemModel)selectedItem.Item).Name} ({Path.GetFileNameWithoutExtension(itemPath)})";
+                    }
+                    else
+                    {
+                        var modelId = ((IItemModel)selectedItem.Item).ModelInfo.ModelID;
+
+                        if (selectedItem.Item.Category.Equals(XivStrings.Character))
+                        {
+                            var item = selectedItem.Item;
+
+                            if (item.Name.Equals(XivStrings.Body))
+                            {
+                                modelId = int.Parse(
+                                    itemPath.Substring(itemPath.IndexOf("/body", StringComparison.Ordinal) + 7, 4));
+                            }
+                            else if (item.Name.Equals(XivStrings.Hair))
+                            {
+                                modelId = int.Parse(
+                                    itemPath.Substring(itemPath.IndexOf("/hair", StringComparison.Ordinal) + 7, 4));
+                            }
+                            else if (item.Name.Equals(XivStrings.Face))
+                            {
+                                modelId = int.Parse(
+                                    itemPath.Substring(itemPath.IndexOf("/face", StringComparison.Ordinal) + 7, 4));
+                            }
+                            else if (item.Name.Equals(XivStrings.Tail))
+                            {
+                                modelId = int.Parse(
+                                    itemPath.Substring(itemPath.IndexOf("/tail", StringComparison.Ordinal) + 7, 4));
+                            }
+                        }
+
+                        modCB.Name = $"{modelId} ({Path.GetFileNameWithoutExtension(itemPath)})";
+                    }
+                    //esrinzou end
                     modCB.SelectedMod = modItem;
                     modCB.TexTypePath = null;
 
@@ -748,7 +786,7 @@ namespace FFXIV_TexTools.Views
                 GetCustomTextureButton.IsEnabled = false;
                 CustomTextureTextBox.IsEnabled = false;
                 AddCustomTextureButton.IsEnabled = false;
-                NoTextureModsLabel.Content = "There are no Texture mods present.\n\nIf you would like to enable this, first import a texture for the selected item.";
+                NoTextureModsLabel.Content = UIStrings.No_Texture_Mods;
             }
 
             if (ModelTypeComboBox.Items.Count > 0)
@@ -769,7 +807,7 @@ namespace FFXIV_TexTools.Views
                 CustomModelTextBox.IsEnabled = false;
                 AdvOptionsButton.IsEnabled = false;
                 AddCustomModelButton.IsEnabled = false;
-                NoModelModsLabel.Content = "There are no 3D Model mods present.\n\nIf you would like to enable this, first import a model for the selected item.";
+                NoModelModsLabel.Content = UIStrings.No_3D_Mods;
             }
 
             if (MaterialComboBox.Items.Count > 0)
@@ -781,7 +819,7 @@ namespace FFXIV_TexTools.Views
             else
             {
                 AddCurrentMaterialButton.IsEnabled = false;
-                NoMaterialsModsLabel.Content = "There are no Material mods present.\n\nIf you would like to enable this, first import a Material for the selected item.";
+                NoMaterialsModsLabel.Content = UIStrings.No_Material_Mods;
             }
 
             SelectModGroup.IsEnabled = true;
@@ -842,8 +880,8 @@ namespace FFXIV_TexTools.Views
             if (includedModsList.Any(item => item.Name.Equals(includedMod.Name)))
             {
                 if (FlexibleMessageBox.Show(
-                        $"This Option already includes {includedMod.Name}  \n\n Would you like to overwrite the existing mod for this option?",
-                        "Overwrite?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) ==
+                        string.Format(UIMessages.ExistingOption, includedMod.Name),
+                        UIMessages.OverwriteTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Question) ==
                     System.Windows.Forms.DialogResult.Yes)
                 {
                     var rawData = dat.GetRawData(mod.data.modOffset, XivDataFiles.GetXivDataFile(mod.datFile), mod.data.modSize);
@@ -851,8 +889,8 @@ namespace FFXIV_TexTools.Views
                     if (rawData == null)
                     {
                         FlexibleMessageBox.Show(
-                            $"There was an issue obtaining the Raw Data for the mod.\n\nOffset: {mod.data.modOffset}\nData File: {mod.datFile}",
-                            "Error Reading Mod Data", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            string.Format(UIMessages.RawDataErrorMessage, mod.data.modOffset, mod.datFile),
+                            UIMessages.ModDataReadErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
                         return;
                     }
 
@@ -866,8 +904,8 @@ namespace FFXIV_TexTools.Views
                 if (rawData == null)
                 {
                     FlexibleMessageBox.Show(
-                        $"There was an issue obtaining the Raw Data for the mod.\n\nOffset: {mod.data.modOffset}\nData File: {mod.datFile}",
-                        "Error Reading Mod Data", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        string.Format(UIMessages.RawDataErrorMessage, mod.data.modOffset, mod.datFile),
+                        UIMessages.ModDataReadErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
 
@@ -887,7 +925,7 @@ namespace FFXIV_TexTools.Views
         /// <summary>
         /// The event handler for the add custom texture button clicked
         /// </summary>
-        private void AddCustomTextureButton_Click(object sender, RoutedEventArgs e)
+        private async void AddCustomTextureButton_Click(object sender, RoutedEventArgs e)
         {
             var selectedItem = TextureMapComboBox.SelectedItem as ModComboBox;
 
@@ -909,24 +947,24 @@ namespace FFXIV_TexTools.Views
 
             if (selectedItem.TexTypePath.Type == XivTexType.ColorSet)
             {
-                var mtrl = new Mtrl(_gameDirectory, XivDataFiles.GetXivDataFile(mod.datFile));
+                var mtrl = new Mtrl(_gameDirectory, XivDataFiles.GetXivDataFile(mod.datFile), GetLanguage());
 
-                var xivMtrl = mtrl.GetMtrlData(mod.data.modOffset, mod.fullPath, int.Parse(Settings.Default.DX_Version));
+                var xivMtrl = await mtrl.GetMtrlData(mod.data.modOffset, mod.fullPath, int.Parse(Settings.Default.DX_Version));
 
-                modData = tex.DDStoMtrlData(xivMtrl, ddsDirectory, ((Category) ModListTreeView.SelectedItem).Item);
+                modData = tex.DDStoMtrlData(xivMtrl, ddsDirectory, ((Category) ModListTreeView.SelectedItem).Item, GetLanguage());
             }
             else
             {
-                var texData = tex.GetTexData(selectedItem.TexTypePath);
+                var texData = await tex.GetTexData(selectedItem.TexTypePath);
 
-                modData = tex.DDStoTexData(texData, ((Category)ModListTreeView.SelectedItem).Item, ddsDirectory);
+                modData = await tex.DDStoTexData(texData, ((Category)ModListTreeView.SelectedItem).Item, ddsDirectory);
             }
 
             if (includedModsList.Any(item => item.Name.Equals(includedMod.Name)))
             {
                 if (FlexibleMessageBox.Show(
-                        $"This Option already includes {includedMod.Name}  \n\n Would you like to overwrite the existing mod for this option?",
-                        "Overwrite?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) ==
+                        string.Format(UIMessages.ExistingOption, includedMod.Name),
+                        UIMessages.OverwriteTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Question) ==
                     System.Windows.Forms.DialogResult.Yes)
                 {
                     _selectedModOption.Mods[mod.fullPath].ModDataBytes = modData;
@@ -967,8 +1005,8 @@ namespace FFXIV_TexTools.Views
             if (includedModsList.Any(item => item.Name.Equals(includedMod.Name)))
             {
                 if (FlexibleMessageBox.Show(
-                        $"This Option already includes {includedMod.Name}  \n\n Would you like to overwrite the existing mod for this option?",
-                        "Overwrite?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) ==
+                        string.Format(UIMessages.ExistingOption, includedMod.Name),
+                        UIMessages.OverwriteTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Question) ==
                     System.Windows.Forms.DialogResult.Yes)
                 {
                     var rawData = dat.GetRawData(mod.data.modOffset, XivDataFiles.GetXivDataFile(mod.datFile), mod.data.modSize);
@@ -976,8 +1014,8 @@ namespace FFXIV_TexTools.Views
                     if (rawData == null)
                     {
                         FlexibleMessageBox.Show(
-                            $"There was an issue obtaining the Raw Data for the mod.\n\nOffset: {mod.data.modOffset}\nData File: {mod.datFile}",
-                            "Error Reading Mod Data", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            string.Format(UIMessages.RawDataErrorMessage, mod.data.modOffset, mod.datFile),
+                            UIMessages.ModDataReadErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
                         return;
                     }
 
@@ -991,8 +1029,8 @@ namespace FFXIV_TexTools.Views
                 if (rawData == null)
                 {
                     FlexibleMessageBox.Show(
-                        $"There was an issue obtaining the Raw Data for the mod.\n\nOffset: {mod.data.modOffset}\nData File: {mod.datFile}",
-                        "Error Reading Mod Data", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        string.Format(UIMessages.RawDataErrorMessage, mod.data.modOffset, mod.datFile),
+                        UIMessages.ModDataReadErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
 
@@ -1031,8 +1069,8 @@ namespace FFXIV_TexTools.Views
             if (includedModsList.Any(item => item.Name.Equals(includedMod.Name)))
             {
                 if (FlexibleMessageBox.Show(
-                        $"This Option already includes {includedMod.Name}  \n\n Would you like to overwrite the existing mod for this option?",
-                        "Overwrite?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) ==
+                        string.Format(UIMessages.ExistingOption, includedMod.Name),
+                        UIMessages.OverwriteTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Question) ==
                     System.Windows.Forms.DialogResult.Yes)
                 {
                     var rawData = dat.GetRawData(mod.data.modOffset, XivDataFiles.GetXivDataFile(mod.datFile), mod.data.modSize);
@@ -1040,8 +1078,8 @@ namespace FFXIV_TexTools.Views
                     if (rawData == null)
                     {
                         FlexibleMessageBox.Show(
-                            $"There was an issue obtaining the Raw Data for the mod.\n\nOffset: {mod.data.modOffset}\nData File: {mod.datFile}",
-                            "Error Reading Mod Data", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            string.Format(UIMessages.RawDataErrorMessage, mod.data.modOffset, mod.datFile),
+                            UIMessages.ModDataReadErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
                         return;
                     }
 
@@ -1055,8 +1093,8 @@ namespace FFXIV_TexTools.Views
                 if (rawData == null)
                 {
                     FlexibleMessageBox.Show(
-                        $"There was an issue obtaining the Raw Data for the mod.\n\nOffset: {mod.data.modOffset}\nData File: {mod.datFile}",
-                        "Error Reading Mod Data", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        string.Format(UIMessages.RawDataErrorMessage, mod.data.modOffset, mod.datFile),
+                        UIMessages.ModDataReadErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
 
@@ -1076,7 +1114,7 @@ namespace FFXIV_TexTools.Views
         /// <summary>
         /// The event handler for the advanced options button clicked
         /// </summary>
-        private void AdvOptionsButton_Click(object sender, RoutedEventArgs e)
+        private async void AdvOptionsButton_Click(object sender, RoutedEventArgs e)
         {
             var selectedItem = ModelTypeComboBox.SelectedItem as ModComboBox;
 
@@ -1093,7 +1131,7 @@ namespace FFXIV_TexTools.Views
             var includedModsList = IncludedModsList.Items.Cast<IncludedMods>().ToList();
             var mdl = new Mdl(_gameDirectory, XivDataFiles.GetXivDataFile(mod.datFile));
 
-            var xivMdl = mdl.GetMdlData(itemModel, GetRace(mod.fullPath), null, null, mod.data.originalOffset);
+            var xivMdl = await mdl.GetMdlData(itemModel, GetRace(mod.fullPath), null, null, mod.data.originalOffset);
 
             var advancedImportView = new AdvancedModelImportView(xivMdl, itemModel, GetRace(mod.fullPath), true);
             var result = advancedImportView.ShowDialog();
@@ -1103,8 +1141,8 @@ namespace FFXIV_TexTools.Views
                 if (includedModsList.Any(item => item.Name.Equals(includedMod.Name)))
                 {
                     if (FlexibleMessageBox.Show(
-                            $"This Option already includes {includedMod.Name}  \n\n Would you like to overwrite the existing mod for this option?",
-                            "Overwrite?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) ==
+                            string.Format(UIMessages.ExistingOption, includedMod.Name),
+                            UIMessages.OverwriteTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Question) ==
                         System.Windows.Forms.DialogResult.Yes)
                     {
                         _selectedModOption.Mods[mod.fullPath].ModDataBytes = advancedImportView.RawModelData;
@@ -1128,7 +1166,7 @@ namespace FFXIV_TexTools.Views
         /// <summary>
         /// The event handler for the custom model button clicked
         /// </summary>
-        private void AddCustomModelButton_Click(object sender, RoutedEventArgs e)
+        private async void AddCustomModelButton_Click(object sender, RoutedEventArgs e)
         {
             var selectedItem = ModelTypeComboBox.SelectedItem as ModComboBox;
 
@@ -1144,8 +1182,8 @@ namespace FFXIV_TexTools.Views
 
             var includedModsList = IncludedModsList.Items.Cast<IncludedMods>().ToList();
             var mdl = new Mdl(_gameDirectory, XivDataFiles.GetXivDataFile(mod.datFile));
-            var xivMdl = mdl.GetMdlData(itemModel, GetRace(mod.fullPath), null, null, mod.data.originalOffset);
-            var warnings = mdl.ImportModel(itemModel, xivMdl, new DirectoryInfo(CustomModelTextBox.Text), null, XivStrings.TexTools, 
+            var xivMdl = await mdl.GetMdlData(itemModel, GetRace(mod.fullPath), null, null, mod.data.originalOffset);
+            var warnings = await mdl.ImportModel(itemModel, xivMdl, new DirectoryInfo(CustomModelTextBox.Text), null, XivStrings.TexTools, 
                 Settings.Default.DAE_Plugin_Target, true);
 
             if (warnings.Count > 0)
@@ -1163,8 +1201,8 @@ namespace FFXIV_TexTools.Views
             if (includedModsList.Any(item => item.Name.Equals(includedMod.Name)))
             {
                 if (FlexibleMessageBox.Show(
-                        $"This Option already includes {includedMod.Name}  \n\n Would you like to overwrite the existing mod for this option?",
-                        "Overwrite?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) ==
+                        string.Format(UIMessages.ExistingOption, includedMod.Name),
+                        UIMessages.OverwriteTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Question) ==
                     System.Windows.Forms.DialogResult.Yes)
                 {
                     _selectedModOption.Mods[mod.fullPath].ModDataBytes = mdlData;
@@ -1218,8 +1256,8 @@ namespace FFXIV_TexTools.Views
                 ControlsHelper.SetFocusBorderBrush(ModGroupTitle, Brushes.Red);
 
                 FlexibleMessageBox.Show(
-                    $"\"{ModGroupTitle.Text}\" group already exists, please rename the group.\n\nIf you would like to add to that group instead, go back and click the edit button.",
-                    "Group Name already exists.", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    $"\"{ModGroupTitle.Text}\" {UIMessages.ExistingGroupMessage}",
+                    UIMessages.ExistingGroupTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
             else
             {
@@ -1293,6 +1331,15 @@ namespace FFXIV_TexTools.Views
                 AddOption(OptionNameTextBox.Text);
                 e.Handled = true;
             }
+        }
+
+        /// <summary>
+        /// Gets the language for the application
+        /// </summary>
+        /// <returns>The application language as XivLanguage</returns>
+        private static XivLanguage GetLanguage()
+        {
+            return XivLanguages.GetXivLanguage(Properties.Settings.Default.Application_Language);
         }
     }
 }

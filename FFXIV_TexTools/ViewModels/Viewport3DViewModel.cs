@@ -74,11 +74,11 @@ namespace FFXIV_TexTools.ViewModels
 
                 var meshGeometry3D = new MeshGeometry3D
                 {
-                    Positions = meshData.Positions,
-                    Normals = meshData.Normals,
-                    Indices = meshData.Indices,
-                    Colors = meshData.Colors4,
-                    TextureCoordinates = meshData.TextureCoordinates0,
+                    Positions = new Vector3Collection(meshData.Positions),
+                    Normals = new Vector3Collection(meshData.Normals),
+                    Indices = new IntCollection(meshData.Indices),
+                    Colors = new Color4Collection(meshData.Colors4),
+                    TextureCoordinates = new Vector2Collection(meshData.TextureCoordinates0),
                 };
 
                 try
@@ -92,7 +92,7 @@ namespace FFXIV_TexTools.ViewModels
 
                 if (meshData.BiNormals != null && meshData.BiNormals.Count > 0)
                 {
-                    meshGeometry3D.BiTangents = meshData.BiNormals;
+                    meshGeometry3D.BiTangents = new Vector3Collection(meshData.BiNormals);
                 }
 
                 var textureData = textureDataDictionary[mdlData.LoDList[0].MeshDataList[i].MeshInfo.MaterialIndex];
@@ -168,7 +168,7 @@ namespace FFXIV_TexTools.ViewModels
 
                 Models.Add(mgm3d);
             }
-            
+
             SpecularShine = 1;
 
             var center = boundingBox.GetValueOrDefault().Center;
@@ -178,7 +178,6 @@ namespace FFXIV_TexTools.ViewModels
             _lightZ = center.Z;
 
             Light3Direction = new Vector3D(_lightX, _lightY, _lightZ);
-
             Camera.UpDirection = new Vector3D(0, 1, 0);
             Camera.CameraInternal.PropertyChanged += CameraInternal_PropertyChanged;
         }
@@ -281,7 +280,7 @@ namespace FFXIV_TexTools.ViewModels
         /// <summary>
         /// The amount of specular shine applied
         /// </summary>
-        public int SpecularShine{ get; set; }
+        public int SpecularShine { get; set; }
 
         #endregion
 
@@ -385,29 +384,29 @@ namespace FFXIV_TexTools.ViewModels
             switch (lightNumber)
             {
                 case 0:
-                {
-                    var x = Light1Direction.X - _light1X;
-                    var y = Light1Direction.Y - _light1Y;
-                    var z = Light1Direction.Z - _light1Z;
+                    {
+                        var x = Light1Direction.X - _light1X;
+                        var y = Light1Direction.Y - _light1Y;
+                        var z = Light1Direction.Z - _light1Z;
 
-                    return (x, y, z);
-                }
+                        return (x, y, z);
+                    }
                 case 1:
-                {
-                    var x = Light2Direction.X - _light2X;
-                    var y = Light2Direction.Y - _light2Y;
-                    var z = Light2Direction.Z - _light2Z;
+                    {
+                        var x = Light2Direction.X - _light2X;
+                        var y = Light2Direction.Y - _light2Y;
+                        var z = Light2Direction.Z - _light2Z;
 
-                    return (x, y, z);
-                }
+                        return (x, y, z);
+                    }
                 case 2:
-                {
-                    var x = Light3Direction.X - _lightX;
-                    var y = Light3Direction.Y - _lightY;
-                    var z = Light3Direction.Z - _lightZ;
+                    {
+                        var x = Light3Direction.X - _lightX;
+                        var y = Light3Direction.Y - _lightY;
+                        var z = Light3Direction.Z - _lightZ;
 
-                    return (x, y, z);
-                }
+                        return (x, y, z);
+                    }
                 default:
                     return (0, 0, 0);
             }
@@ -421,7 +420,7 @@ namespace FFXIV_TexTools.ViewModels
         {
             foreach (var model in Models)
             {
-                var material = ((CustomMeshGeometryModel3D) model).Material as PhongMaterial;
+                var material = ((CustomMeshGeometryModel3D)model).Material as PhongMaterial;
 
                 material.SpecularShininess = value;
             }
@@ -441,7 +440,7 @@ namespace FFXIV_TexTools.ViewModels
         {
             foreach (var model in Models)
             {
-                var isBody = ((CustomMeshGeometryModel3D) model).IsBody;
+                var isBody = ((CustomMeshGeometryModel3D)model).IsBody;
 
                 if (isBody) continue;
 
@@ -471,10 +470,10 @@ namespace FFXIV_TexTools.ViewModels
         {
             foreach (var model in Models)
             {
-                ((CustomMeshGeometryModel3D) model).CullMode = noneCullMode ? CullMode.None : CullMode.Back;
+                ((CustomMeshGeometryModel3D)model).CullMode = noneCullMode ? CullMode.None : CullMode.Back;
             }
         }
-        
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected void NotifyPropertyChanged(string propertyName)

@@ -9,7 +9,7 @@
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="Application_Language" Type="System.String" Scope="User">
-      <Value Profile="(Default)">en</Value>
+      <Value Profile="(Default)" />
     </Setting>
     <Setting Name="Application_Theme" Type="System.String" Scope="User">
       <Value Profile="(Default)">BaseLight</Value>

@@ -8,10 +8,10 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace FFXIV_TexTools.Resources {
-    using System;
-    
-    
+namespace FFXIV_TexTools.Resources
+{
+
+
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>
@@ -70,6 +70,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to http://149.129.96.215:8989.
+        /// </summary>
+        internal static string Discord_China {
+            get {
+                return ResourceManager.GetString("Discord_China", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to https://discord.gg/VKhNB5g.
         /// </summary>
         internal static string Discord_Invite {
@@ -120,6 +129,15 @@ namespace FFXIV_TexTools.Resources {
         internal static string PKEmporium_Website {
             get {
                 return ResourceManager.GetString("PKEmporium_Website", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to https://raw.githubusercontent.com/liinko/FFXIVTexToolsWeb/master/updater.xml.
+        /// </summary>
+        internal static string TexTools_Update_Url {
+            get {
+                return ResourceManager.GetString("TexTools_Update_Url", resourceCulture);
             }
         }
         

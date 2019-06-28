@@ -14,11 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+using FFXIV_TexTools.Helpers;
+using FFXIV_TexTools.Resources;
+using FFXIV_TexTools.Views;
 using System.ComponentModel;
 using System.IO;
+using System.Windows.Data;
 using System.Windows.Input;
-using FFXIV_TexTools.Helpers;
-using FFXIV_TexTools.Views;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Items.DataContainers;
@@ -86,8 +88,17 @@ namespace FFXIV_TexTools.ViewModels
         /// <summary>
         /// Attempts to open the icon
         /// </summary>
-        private void OpenIcon()
+        private async void OpenIcon()
         {
+            if (_mainView.TabsControl.SelectedIndex == 1)
+            {
+                _mainView.TabsControl.SelectedIndex = 0;
+            }
+
+            _mainView.ModelTabItem.IsEnabled = false;
+
+            CollectionViewSource.GetDefaultView(_mainView.ItemTreeView.ItemsSource).Refresh();
+
             var iconInt = -1;
             try
             {
@@ -99,13 +110,13 @@ namespace FFXIV_TexTools.ViewModels
                 else
                 {
                     IconText = string.Empty;
-                    IconStatusLabel = "Icon values have a maximum of 6 digits, try again.";
+                    IconStatusLabel = UIStrings.UI_SearchStatus_Max;
                 }
             }
             catch
             {
                 IconText = string.Empty;
-                IconStatusLabel = "Input can only be numbers, try again.";
+                IconStatusLabel = UIStrings.UI_SearchStatus_Numeric;
             }
 
             if (iconInt > -1)
@@ -116,7 +127,7 @@ namespace FFXIV_TexTools.ViewModels
                 var iconFolderInt = (iconInt / 1000) * 1000;
                 var iconFolderString = $"ui/icon/{iconFolderInt.ToString().PadLeft(6, '0')}";
 
-                if (index.FileExists(HashGenerator.GetHash(iconFileString), HashGenerator.GetHash(iconFolderString), XivDataFile._06_Ui))
+                if (await index.FileExists(HashGenerator.GetHash(iconFileString), HashGenerator.GetHash(iconFolderString), XivDataFile._06_Ui))
                 {
                     var textureView = _mainView.TextureTabItem.Content as TextureView;
                     var textureViewModel = textureView.DataContext as TextureViewModel;
@@ -124,20 +135,20 @@ namespace FFXIV_TexTools.ViewModels
                     var xivUI = new XivUi
                     {
                         Name = Path.GetFileNameWithoutExtension(iconFileString),
-                        Category = "UI",
-                        ItemCategory = "Icon",
-                        ItemSubCategory = "Icon",
+                        Category = XivStrings.UI,
+                        ItemCategory = XivStrings.Icon,
+                        ItemSubCategory = XivStrings.Icon,
                         IconNumber = iconInt,
                         DataFile = XivDataFile._06_Ui,
                         UiPath = $"{iconFolderString}/{iconFileString}"
                     };
 
-                    textureViewModel.UpdateTexture(xivUI);
+                    await textureViewModel.UpdateTexture(xivUI);
                 }
                 else
                 {
                     var iconLangFolderString = $"ui/icon/{iconFolderInt.ToString().PadLeft(6, '0')}/en";
-                    if (index.FileExists(HashGenerator.GetHash(iconFileString), HashGenerator.GetHash(iconLangFolderString),
+                    if (await index.FileExists(HashGenerator.GetHash(iconFileString), HashGenerator.GetHash(iconLangFolderString),
                         XivDataFile._06_Ui))
                     {
                         var textureView = _mainView.TextureTabItem.Content as TextureView;
@@ -146,20 +157,20 @@ namespace FFXIV_TexTools.ViewModels
                         var xivUI = new XivUi
                         {
                             Name = Path.GetFileNameWithoutExtension(iconFileString),
-                            Category = "UI",
-                            ItemCategory = "Icon",
-                            ItemSubCategory = "Icon",
+                            Category = XivStrings.UI,
+                            ItemCategory = XivStrings.Icon,
+                            ItemSubCategory = XivStrings.Icon,
                             IconNumber = iconInt,
                             DataFile = XivDataFile._06_Ui,
                             UiPath = $"{iconFolderString}/{iconFileString}"
                         };
 
-                        textureViewModel.UpdateTexture(xivUI);
+                        await textureViewModel.UpdateTexture(xivUI);
                     }
                     else
                     {
                         IconText = string.Empty;
-                        IconStatusLabel = $"No data found for icon {iconInt}, try another.";
+                        IconStatusLabel = string.Format(UIStrings.UI_Search_NothingFound, iconInt);
                     }
                 }
             }

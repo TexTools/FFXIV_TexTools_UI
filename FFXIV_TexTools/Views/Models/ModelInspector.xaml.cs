@@ -13,13 +13,13 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+using MahApps.Metro;
 using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
-using MahApps.Metro;
 using xivModdingFramework.Models.DataContainers;
 
 namespace FFXIV_TexTools.Views.Models

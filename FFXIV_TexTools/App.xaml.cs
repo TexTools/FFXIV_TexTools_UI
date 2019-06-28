@@ -1,5 +1,6 @@
 ﻿using FFXIV_TexTools.Helpers;
 using FFXIV_TexTools.Properties;
+using HelixToolkit.Wpf.SharpDX.Utilities;
 using MahApps.Metro;
 using System;
 using System.Diagnostics;
@@ -17,6 +18,8 @@ namespace FFXIV_TexTools
     /// </summary>
     public partial class App : Application
     {
+        static NVOptimusEnabler nvEnabler = new NVOptimusEnabler();
+
         protected override void OnStartup(StartupEventArgs e)
         {
             var appStyle = ThemeManager.DetectAppStyle(Application.Current);

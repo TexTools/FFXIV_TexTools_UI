@@ -15,7 +15,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System.Windows.Controls;
-using xivModdingFramework.General.Enums;
 
 namespace FFXIV_TexTools.Views
 {
@@ -28,7 +27,7 @@ namespace FFXIV_TexTools.Views
         {
             InitializeComponent();
 
-            CurrentLanguageLabel.Content = $"{XivLanguages.GetXivLanguage(Properties.Settings.Default.Application_Language)}";
+            CurrentLanguageLabel.Content = System.Globalization.CultureInfo.CurrentUICulture.NativeName;
         }
 
         /// <summary>

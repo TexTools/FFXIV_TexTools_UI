@@ -1,0 +1,735 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="About" xml:space="preserve">
+    <value>关于</value>
+  </data>
+  <data name="About_TexTools" xml:space="preserve">
+    <value>关于TexTools</value>
+  </data>
+  <data name="Backup_Index_Files" xml:space="preserve">
+    <value>备份索引文件</value>
+  </data>
+  <data name="Batch" xml:space="preserve">
+    <value>批处理</value>
+  </data>
+  <data name="Check_For_Problems" xml:space="preserve">
+    <value>数据检查</value>
+  </data>
+  <data name="Create_Modpack" xml:space="preserve">
+    <value>创建Mod包</value>
+  </data>
+  <data name="Customize" xml:space="preserve">
+    <value>自定义</value>
+  </data>
+  <data name="Disable" xml:space="preserve">
+    <value>禁用</value>
+  </data>
+  <data name="Disable_All_Mods" xml:space="preserve">
+    <value>禁用所有Mod</value>
+  </data>
+  <data name="Donate" xml:space="preserve">
+    <value>捐助</value>
+  </data>
+  <data name="Enable" xml:space="preserve">
+    <value>启用</value>
+  </data>
+  <data name="Enable_All_Mods" xml:space="preserve">
+    <value>启用所有Mod</value>
+  </data>
+  <data name="Enable_Disable" xml:space="preserve">
+    <value>启用/禁用</value>
+  </data>
+  <data name="Export" xml:space="preserve">
+    <value>导出</value>
+  </data>
+  <data name="Help" xml:space="preserve">
+    <value>帮助</value>
+  </data>
+  <data name="Icon_ID" xml:space="preserve">
+    <value>图标ID</value>
+  </data>
+  <data name="Import" xml:space="preserve">
+    <value>导入</value>
+  </data>
+  <data name="Import_ModPacks" xml:space="preserve">
+    <value>导入Mod包</value>
+  </data>
+  <data name="Item_List" xml:space="preserve">
+    <value>道具列表</value>
+  </data>
+  <data name="Join_us_on_Discord" xml:space="preserve">
+    <value>加入我们的Discord交流群</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>语言</value>
+  </data>
+  <data name="Model" xml:space="preserve">
+    <value>模型</value>
+  </data>
+  <data name="Model_ID" xml:space="preserve">
+    <value>模型ID</value>
+  </data>
+  <data name="ModPack_Wizard" xml:space="preserve">
+    <value>Mod包向导</value>
+  </data>
+  <data name="Mods" xml:space="preserve">
+    <value>Mods</value>
+  </data>
+  <data name="Mod_List" xml:space="preserve">
+    <value>Mod列表</value>
+  </data>
+  <data name="Mod_Repos" xml:space="preserve">
+    <value>Mod仓库</value>
+  </data>
+  <data name="More_Options" xml:space="preserve">
+    <value>更多选项</value>
+  </data>
+  <data name="Nexus_Mods" xml:space="preserve">
+    <value>Nexus Mods</value>
+  </data>
+  <data name="Options" xml:space="preserve">
+    <value>选项</value>
+  </data>
+  <data name="PrettyKitty_Emporium" xml:space="preserve">
+    <value>PrettyKitty Emporium</value>
+  </data>
+  <data name="Report_Bug" xml:space="preserve">
+    <value>报告Bug</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>搜索</value>
+  </data>
+  <data name="Search_dot" xml:space="preserve">
+    <value>搜索...</value>
+  </data>
+  <data name="Select_Language" xml:space="preserve">
+    <value>选择语言</value>
+  </data>
+  <data name="Simple_ModPack" xml:space="preserve">
+    <value>简单Mod包</value>
+  </data>
+  <data name="Texture" xml:space="preserve">
+    <value>纹理</value>
+  </data>
+  <data name="Theme" xml:space="preserve">
+    <value>主题</value>
+  </data>
+  <data name="Tutorials" xml:space="preserve">
+    <value>指南</value>
+  </data>
+  <data name="View_Github_Repo" xml:space="preserve">
+    <value>显示Github上的源代码</value>
+  </data>
+  <data name="XIV_Mod_Archive" xml:space="preserve">
+    <value>XIV Mod Archive</value>
+  </data>
+  <data name="Active" xml:space="preserve">
+    <value>激活</value>
+  </data>
+  <data name="Add" xml:space="preserve">
+    <value>添加</value>
+  </data>
+  <data name="Add_Remove" xml:space="preserve">
+    <value>添加/移除</value>
+  </data>
+  <data name="Add_To_Part_Attribute" xml:space="preserve">
+    <value>添加部件属性</value>
+  </data>
+  <data name="Advanced_Import" xml:space="preserve">
+    <value>高级导入</value>
+  </data>
+  <data name="Advanced_Model_Import" xml:space="preserve">
+    <value>高级模型导入</value>
+  </data>
+  <data name="Advanced_Model_Options" xml:space="preserve">
+    <value>高级模型选项</value>
+  </data>
+  <data name="Attributes" xml:space="preserve">
+    <value>属性</value>
+  </data>
+  <data name="Author_colon" xml:space="preserve">
+    <value>作者：</value>
+  </data>
+  <data name="Available_Attributes" xml:space="preserve">
+    <value>可用属性</value>
+  </data>
+  <data name="Back" xml:space="preserve">
+    <value>背面</value>
+  </data>
+  <data name="Backups_Directory" xml:space="preserve">
+    <value>游戏索引文件备份文件夹</value>
+  </data>
+  <data name="BG_Color" xml:space="preserve">
+    <value>背景颜色</value>
+  </data>
+  <data name="Body" xml:space="preserve">
+    <value>身体</value>
+  </data>
+  <data name="Bones" xml:space="preserve">
+    <value>骨骼</value>
+  </data>
+  <data name="Bone_addition_is_automatic" xml:space="preserve">
+    <value>骨骼添加是自动的</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>取消</value>
+  </data>
+  <data name="Clear_Selected" xml:space="preserve">
+    <value>清除选择</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>关闭</value>
+  </data>
+  <data name="Colors_Skins" xml:space="preserve">
+    <value>颜色和皮肤</value>
+  </data>
+  <data name="Count" xml:space="preserve">
+    <value>数量</value>
+  </data>
+  <data name="Count_colon" xml:space="preserve">
+    <value>数量：</value>
+  </data>
+  <data name="Create_ModPack_Wizard" xml:space="preserve">
+    <value>Mod包创建向导</value>
+  </data>
+  <data name="Cull_Mode" xml:space="preserve">
+    <value>遮挡模式</value>
+  </data>
+  <data name="Current_Language_colon" xml:space="preserve">
+    <value>当前语言：</value>
+  </data>
+  <data name="DAE_file_to_import" xml:space="preserve">
+    <value>被导入的DAE文件</value>
+  </data>
+  <data name="DAE_Info" xml:space="preserve">
+    <value>DAE信息</value>
+  </data>
+  <data name="Default_Skin" xml:space="preserve">
+    <value>默认皮肤</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>删除</value>
+  </data>
+  <data name="Directories" xml:space="preserve">
+    <value>文件夹</value>
+  </data>
+  <data name="Disabled" xml:space="preserve">
+    <value>已禁用</value>
+  </data>
+  <data name="Disable_Shape_Data" xml:space="preserve">
+    <value>禁用形状数据</value>
+  </data>
+  <data name="Enabled" xml:space="preserve">
+    <value>已启用</value>
+  </data>
+  <data name="Enter_a_brief_description_of_your_Mod_Pack" xml:space="preserve">
+    <value>输入mod包的简要说明。</value>
+  </data>
+  <data name="Enter_a_Model_ID_dot" xml:space="preserve">
+    <value>请输入一个模型ID...</value>
+  </data>
+  <data name="Etc_Color" xml:space="preserve">
+    <value>Etc颜色</value>
+  </data>
+  <data name="Export_BMP" xml:space="preserve">
+    <value>导出BMP</value>
+  </data>
+  <data name="Export_Both" xml:space="preserve">
+    <value>导出两种</value>
+  </data>
+  <data name="Export_DAE_file" xml:space="preserve">
+    <value>导出DAE文件</value>
+  </data>
+  <data name="Export_DAE_Materials" xml:space="preserve">
+    <value>导出DAE和材质</value>
+  </data>
+  <data name="Export_DDS" xml:space="preserve">
+    <value>导出DDS</value>
+  </data>
+  <data name="Export_OBJ_files" xml:space="preserve">
+    <value>导出OBJ文件</value>
+  </data>
+  <data name="Export_Settings" xml:space="preserve">
+    <value>导出设置</value>
+  </data>
+  <data name="FFXIV_Directory" xml:space="preserve">
+    <value>FFXIV文件夹</value>
+  </data>
+  <data name="Filter_By_colon" xml:space="preserve">
+    <value>过滤：</value>
+  </data>
+  <data name="Flip_Alpha" xml:space="preserve">
+    <value>翻转Alpha</value>
+  </data>
+  <data name="Hair_Color" xml:space="preserve">
+    <value>头发颜色</value>
+  </data>
+  <data name="Icon_Search" xml:space="preserve">
+    <value>图标搜索</value>
+  </data>
+  <data name="Import_BMP" xml:space="preserve">
+    <value>导入BMP</value>
+  </data>
+  <data name="Import_DDS" xml:space="preserve">
+    <value>导入DDS</value>
+  </data>
+  <data name="Import_From_dot" xml:space="preserve">
+    <value>从其他位置导入</value>
+  </data>
+  <data name="Iris_Color" xml:space="preserve">
+    <value>瞳孔颜色</value>
+  </data>
+  <data name="Item" xml:space="preserve">
+    <value>道具</value>
+  </data>
+  <data name="Level_Of_Detail" xml:space="preserve">
+    <value>默认级别</value>
+  </data>
+  <data name="Lights" xml:space="preserve">
+    <value>灯光</value>
+  </data>
+  <data name="Map" xml:space="preserve">
+    <value>Map</value>
+  </data>
+  <data name="Materials" xml:space="preserve">
+    <value>材质</value>
+  </data>
+  <data name="Mesh_Data" xml:space="preserve">
+    <value>网格数据</value>
+  </data>
+  <data name="Mesh_Inspector" xml:space="preserve">
+    <value>网格检查器</value>
+  </data>
+  <data name="Mesh_MetaData" xml:space="preserve">
+    <value>网格元数据</value>
+  </data>
+  <data name="Mesh_Parts" xml:space="preserve">
+    <value>网格部件</value>
+  </data>
+  <data name="Modded_Items" xml:space="preserve">
+    <value>已打Mod项</value>
+  </data>
+  <data name="Model_Inspector" xml:space="preserve">
+    <value>模型检查器</value>
+  </data>
+  <data name="Model_MetaData" xml:space="preserve">
+    <value>模型元数据</value>
+  </data>
+  <data name="Model_Search" xml:space="preserve">
+    <value>模型搜索</value>
+  </data>
+  <data name="ModPackDescription" xml:space="preserve">
+    <value>（例如，这个mod包修改了blah blah blah，它取代了blah，并为blah提供了几个选项。）</value>
+  </data>
+  <data name="ModPackGeneralInfo" xml:space="preserve">
+    <value>请填写您正在创建的mod pack的一般信息。</value>
+  </data>
+  <data name="Mod_Count_colon" xml:space="preserve">
+    <value>Mod数量：</value>
+  </data>
+  <data name="Mod_Pack" xml:space="preserve">
+    <value>Mod包</value>
+  </data>
+  <data name="Mod_Pack_Author" xml:space="preserve">
+    <value>Mod包作者</value>
+  </data>
+  <data name="Mod_Pack_Content" xml:space="preserve">
+    <value>Mod包内容</value>
+  </data>
+  <data name="Mod_Pack_Directory" xml:space="preserve">
+    <value>Mod包文件夹</value>
+  </data>
+  <data name="Mod_Pack_General_Info" xml:space="preserve">
+    <value>Mod包一般信息</value>
+  </data>
+  <data name="Mod_Pack_Name" xml:space="preserve">
+    <value>Mod包名称</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>名称</value>
+  </data>
+  <data name="Name_colon" xml:space="preserve">
+    <value>名称：</value>
+  </data>
+  <data name="New_Page" xml:space="preserve">
+    <value>下一页&gt;</value>
+  </data>
+  <data name="None" xml:space="preserve">
+    <value>无</value>
+  </data>
+  <data name="Num" xml:space="preserve">
+    <value>序号</value>
+  </data>
+  <data name="Open" xml:space="preserve">
+    <value>打开</value>
+  </data>
+  <data name="Open_Mesh_Inspector" xml:space="preserve">
+    <value>打开网格检查器</value>
+  </data>
+  <data name="Other_Data" xml:space="preserve">
+    <value>其他数据</value>
+  </data>
+  <data name="Part" xml:space="preserve">
+    <value>部件</value>
+  </data>
+  <data name="Part_Attributes" xml:space="preserve">
+    <value>部件属性</value>
+  </data>
+  <data name="Part_Count" xml:space="preserve">
+    <value>部件数量</value>
+  </data>
+  <data name="Part_Data" xml:space="preserve">
+    <value>部件数据</value>
+  </data>
+  <data name="Paths" xml:space="preserve">
+    <value>路径</value>
+  </data>
+  <data name="Previe_List" xml:space="preserve">
+    <value>预览列表</value>
+  </data>
+  <data name="Previous_Page" xml:space="preserve">
+    <value>&lt;前一页</value>
+  </data>
+  <data name="Problem_Checker" xml:space="preserve">
+    <value>数据检查器</value>
+  </data>
+  <data name="Race" xml:space="preserve">
+    <value>种族</value>
+  </data>
+  <data name="Reflection" xml:space="preserve">
+    <value>反光</value>
+  </data>
+  <data name="Remove_Part_Attribute" xml:space="preserve">
+    <value>移除部件属性</value>
+  </data>
+  <data name="Reset_to_Default" xml:space="preserve">
+    <value>默认</value>
+  </data>
+  <data name="Save_Directory" xml:space="preserve">
+    <value>Mod导出资源保存文件夹</value>
+  </data>
+  <data name="Select_Active" xml:space="preserve">
+    <value>选择激活的</value>
+  </data>
+  <data name="Select_All" xml:space="preserve">
+    <value>选择所有</value>
+  </data>
+  <data name="ShapeDescription1_line1" xml:space="preserve">
+    <value>这将禁用此网格的所有形状数据。</value>
+  </data>
+  <data name="ShapeDescription1_line2" xml:space="preserve">
+    <value>如果道具与其他道具组合时出现镂空，请使用这些选项。</value>
+  </data>
+  <data name="ShapeDescription1_line3" xml:space="preserve">
+    <value>以后的版本将提供更多形状数据选项。</value>
+  </data>
+  <data name="ShapeDescription2_line1" xml:space="preserve">
+    <value>此网格没有形状数据。</value>
+  </data>
+  <data name="ShapeDescription2_line2" xml:space="preserve">
+    <value>选项被禁用。</value>
+  </data>
+  <data name="Shapes" xml:space="preserve">
+    <value>形状</value>
+  </data>
+  <data name="Simple_ModPack_Creator" xml:space="preserve">
+    <value>简单Mod创建器</value>
+  </data>
+  <data name="Size_colon" xml:space="preserve">
+    <value>大小：</value>
+  </data>
+  <data name="Skin_Color" xml:space="preserve">
+    <value>皮肤颜色</value>
+  </data>
+  <data name="Skin_Color_Note_Info" xml:space="preserve">
+    <value>注意：皮肤颜色与纹理中的默认皮肤颜色混合。其他的都是直接的颜色。</value>
+  </data>
+  <data name="Slot" xml:space="preserve">
+    <value>部位</value>
+  </data>
+  <data name="Standalone_Non_ModPack" xml:space="preserve">
+    <value>孤立(非Mod包)</value>
+  </data>
+  <data name="This_will_only_affect_shared_races" xml:space="preserve">
+    <value>这只会影响共享种族</value>
+  </data>
+  <data name="Translucency" xml:space="preserve">
+    <value>半透明性</value>
+  </data>
+  <data name="Type" xml:space="preserve">
+    <value>类型</value>
+  </data>
+  <data name="Update_TEX" xml:space="preserve">
+    <value>刷新纹理</value>
+  </data>
+  <data name="Variant" xml:space="preserve">
+    <value>变量</value>
+  </data>
+  <data name="Version_colon" xml:space="preserve">
+    <value>版本：</value>
+  </data>
+  <data name="Vertex_Colors" xml:space="preserve">
+    <value>顶点颜色</value>
+  </data>
+  <data name="Vertex_Data_Structure" xml:space="preserve">
+    <value>顶点数据结构</value>
+  </data>
+  <data name="Viewer_Options" xml:space="preserve">
+    <value>视图选项</value>
+  </data>
+  <data name="Visit_Website" xml:space="preserve">
+    <value>官网</value>
+  </data>
+  <data name="Add_a_Model_using_advanced_options" xml:space="preserve">
+    <value>使用高级选项添加一个模型</value>
+  </data>
+  <data name="Add_Group" xml:space="preserve">
+    <value>添加组</value>
+  </data>
+  <data name="Add_w_Adv_Options" xml:space="preserve">
+    <value>高级选项</value>
+  </data>
+  <data name="Clic_here_to_add_a_preview_image" xml:space="preserve">
+    <value>单击此处添加一个预览图</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>描述</value>
+  </data>
+  <data name="Done" xml:space="preserve">
+    <value>确定</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>编辑</value>
+  </data>
+  <data name="Enter_a_description_for_the_selected_option_here_dot" xml:space="preserve">
+    <value>为选择的选项输入一个描述</value>
+  </data>
+  <data name="Enter_a_Name_for_the_Group_here" xml:space="preserve">
+    <value>为组输入一个名称</value>
+  </data>
+  <data name="Finish" xml:space="preserve">
+    <value>完成</value>
+  </data>
+  <data name="For_Translucency_or_ColorSet" xml:space="preserve">
+    <value>(用于半透明或ColorSet)</value>
+  </data>
+  <data name="Go_through_the_wizard_and_select_relevant_options_to_import_mod_pack" xml:space="preserve">
+    <value>通过向导选择相关选项以导入Mod包</value>
+  </data>
+  <data name="Group_Options" xml:space="preserve">
+    <value>组选项</value>
+  </data>
+  <data name="Group_Settings" xml:space="preserve">
+    <value>组设置</value>
+  </data>
+  <data name="Group_Title_colon" xml:space="preserve">
+    <value>组标题：</value>
+  </data>
+  <data name="Import_ModPack" xml:space="preserve">
+    <value>导入Mod包</value>
+  </data>
+  <data name="Import_ModPack_Wizard" xml:space="preserve">
+    <value>Mod包导入向导</value>
+  </data>
+  <data name="Included_Mods_in_Option" xml:space="preserve">
+    <value>选项中包含的Mod</value>
+  </data>
+  <data name="Material" xml:space="preserve">
+    <value>材质</value>
+  </data>
+  <data name="Material_Options" xml:space="preserve">
+    <value>材质选项</value>
+  </data>
+  <data name="Model_Options" xml:space="preserve">
+    <value>模型选项</value>
+  </data>
+  <data name="Model_Type" xml:space="preserve">
+    <value>模型类型</value>
+  </data>
+  <data name="Mod_Pack_Importer" xml:space="preserve">
+    <value>Mod包导入器</value>
+  </data>
+  <data name="Multi_Selection" xml:space="preserve">
+    <value>多选</value>
+  </data>
+  <data name="Options_List" xml:space="preserve">
+    <value>选项列表</value>
+  </data>
+  <data name="Option_Description" xml:space="preserve">
+    <value>选项描述</value>
+  </data>
+  <data name="Option_List" xml:space="preserve">
+    <value>选项列表</value>
+  </data>
+  <data name="Option_Name" xml:space="preserve">
+    <value>选项名</value>
+  </data>
+  <data name="Option_Preview_Image" xml:space="preserve">
+    <value>选项预览图</value>
+  </data>
+  <data name="Preview" xml:space="preserve">
+    <value>预览</value>
+  </data>
+  <data name="Remove" xml:space="preserve">
+    <value>移除</value>
+  </data>
+  <data name="Select_a_file_dot" xml:space="preserve">
+    <value>选择一个文件...</value>
+  </data>
+  <data name="Select_Mod" xml:space="preserve">
+    <value>选择Mod</value>
+  </data>
+  <data name="Simple_ModPack_Importer" xml:space="preserve">
+    <value>简单Mod包导入器</value>
+  </data>
+  <data name="Single_Selection" xml:space="preserve">
+    <value>单选</value>
+  </data>
+  <data name="TD_Model" xml:space="preserve">
+    <value>3D模型</value>
+  </data>
+  <data name="Textures" xml:space="preserve">
+    <value>纹理</value>
+  </data>
+  <data name="Texture_Map" xml:space="preserve">
+    <value>纹理Map</value>
+  </data>
+  <data name="Texture_Options" xml:space="preserve">
+    <value>纹理选项</value>
+  </data>
+  <data name="Use_Currently_Modded_Item" xml:space="preserve">
+    <value>使用现有的的Mod道具</value>
+  </data>
+  <data name="ChinaDiscord" xml:space="preserve">
+    <value>国服Mod交流群</value>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>加载中</value>
+  </data>
+  <data name="Keep_Camera_Position" xml:space="preserve">
+    <value>保持摄影机位置</value>
+  </data>
+  <data name="Start_Over" xml:space="preserve">
+    <value>初始化</value>
+  </data>
+  <data name="ModelStatus_Loading" xml:space="preserve">
+    <value>Loading Model...</value>
+  </data>
+</root>

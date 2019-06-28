@@ -1,0 +1,450 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Accessory" xml:space="preserve">
+    <value>アクセサリ</value>
+  </data>
+  <data name="All" xml:space="preserve">
+    <value>すべて</value>
+  </data>
+  <data name="AuRa_Female" xml:space="preserve">
+    <value>アウラ♀</value>
+  </data>
+  <data name="AuRa_Male" xml:space="preserve">
+    <value>アウラ♂</value>
+  </data>
+  <data name="AutodeskCollada" xml:space="preserve">
+    <value>Autodesk Collada</value>
+  </data>
+  <data name="Au_Ra" xml:space="preserve">
+    <value>アウラ</value>
+  </data>
+  <data name="Bishop_Autoturret" xml:space="preserve">
+    <value>オートタレット・ビショップ</value>
+  </data>
+  <data name="Body" xml:space="preserve">
+    <value>胴</value>
+  </data>
+  <data name="Body_Hands" xml:space="preserve">
+    <value>胴 + 手</value>
+  </data>
+  <data name="Body_Hands_Legs" xml:space="preserve">
+    <value>胴 + 手 + 脚</value>
+  </data>
+  <data name="Body_Hands_Legs_Feet" xml:space="preserve">
+    <value>胴 + 手 + 脚 + 足</value>
+  </data>
+  <data name="Body_Legs_Feet" xml:space="preserve">
+    <value>胴 + 脚 + 足</value>
+  </data>
+  <data name="Carbuncle" xml:space="preserve">
+    <value>カーバンクル</value>
+  </data>
+  <data name="Character" xml:space="preserve">
+    <value>キャラクター</value>
+  </data>
+  <data name="ColorSet" xml:space="preserve">
+    <value>ColorSet</value>
+  </data>
+  <data name="Companions" xml:space="preserve">
+    <value>バディ</value>
+  </data>
+  <data name="DemiHuman" xml:space="preserve">
+    <value>DemiHuman</value>
+  </data>
+  <data name="Diffuse" xml:space="preserve">
+    <value>Diffuse</value>
+  </data>
+  <data name="Ears" xml:space="preserve">
+    <value>耳</value>
+  </data>
+  <data name="Elezen" xml:space="preserve">
+    <value>エレゼン</value>
+  </data>
+  <data name="Elezen_Female" xml:space="preserve">
+    <value>エレゼン♀</value>
+  </data>
+  <data name="Elezen_Male" xml:space="preserve">
+    <value>エレゼン♂</value>
+  </data>
+  <data name="Eos" xml:space="preserve">
+    <value>フェアリー・エオス</value>
+  </data>
+  <data name="EquipDecalFile" xml:space="preserve">
+    <value>-decal_{0}.tex</value>
+  </data>
+  <data name="EquipDecalFolder" xml:space="preserve">
+    <value>chara/common/texture/decal_equip</value>
+  </data>
+  <data name="Equipment" xml:space="preserve">
+    <value>Equipment</value>
+  </data>
+  <data name="Equip_Decals" xml:space="preserve">
+    <value>クレスト</value>
+  </data>
+  <data name="Error_DirectoryError" xml:space="preserve">
+    <value>Directory Error</value>
+  </data>
+  <data name="Error_FileNotFound" xml:space="preserve">
+    <value>Unable to find file, please check your directories under settings</value>
+  </data>
+  <data name="Etc" xml:space="preserve">
+    <value>その他</value>
+  </data>
+  <data name="Face" xml:space="preserve">
+    <value>顔</value>
+  </data>
+  <data name="FacePaintFile" xml:space="preserve">
+    <value>_decal_{0}.tex</value>
+  </data>
+  <data name="FacePaintFolder" xml:space="preserve">
+    <value>chara/common/texture/decal_face</value>
+  </data>
+  <data name="Face_Paint" xml:space="preserve">
+    <value>フェイスペイント</value>
+  </data>
+  <data name="Feet" xml:space="preserve">
+    <value>足</value>
+  </data>
+  <data name="Female" xml:space="preserve">
+    <value>女性</value>
+  </data>
+  <data name="Food" xml:space="preserve">
+    <value>調理品</value>
+  </data>
+  <data name="Furniture" xml:space="preserve">
+    <value>調度品</value>
+  </data>
+  <data name="Garuda_Egi" xml:space="preserve">
+    <value>ガルーダ・エギ</value>
+  </data>
+  <data name="Gear" xml:space="preserve">
+    <value>装備</value>
+  </data>
+  <data name="Hair" xml:space="preserve">
+    <value>髪</value>
+  </data>
+  <data name="Hands" xml:space="preserve">
+    <value>手</value>
+  </data>
+  <data name="Head" xml:space="preserve">
+    <value>頭</value>
+  </data>
+  <data name="Head_Body" xml:space="preserve">
+    <value>頭 + 胴</value>
+  </data>
+  <data name="Housing" xml:space="preserve">
+    <value>ハウジング</value>
+  </data>
+  <data name="HUD" xml:space="preserve">
+    <value>HUD</value>
+  </data>
+  <data name="Hyur_H" xml:space="preserve">
+    <value>ヒューラン・ハイランダ</value>
+  </data>
+  <data name="Hyur_Highlander_Female" xml:space="preserve">
+    <value>ヒューラン・ハイランダ♀</value>
+  </data>
+  <data name="Hyur_Highlander_Male" xml:space="preserve">
+    <value>ヒューラン・ハイランダ♂</value>
+  </data>
+  <data name="Hyur_M" xml:space="preserve">
+    <value>ヒューラン・ミッドランダ</value>
+  </data>
+  <data name="Hyur_Midlander_Female" xml:space="preserve">
+    <value>ヒューラン・ミッドランダ♀</value>
+  </data>
+  <data name="Hyur_Midlander_Male" xml:space="preserve">
+    <value>ヒューラン・ミッドランダ♂</value>
+  </data>
+  <data name="Icon" xml:space="preserve">
+    <value>アイコン</value>
+  </data>
+  <data name="Ifrit_Egi" xml:space="preserve">
+    <value>イフリート・エギ</value>
+  </data>
+  <data name="Iris" xml:space="preserve">
+    <value>瞳</value>
+  </data>
+  <data name="Lalafell" xml:space="preserve">
+    <value>ララフェル</value>
+  </data>
+  <data name="Lalafell_Female" xml:space="preserve">
+    <value>ララフェル♀</value>
+  </data>
+  <data name="Lalafell_Male" xml:space="preserve">
+    <value>ララフェル♂</value>
+  </data>
+  <data name="Left" xml:space="preserve">
+    <value>左</value>
+  </data>
+  <data name="Legs" xml:space="preserve">
+    <value>脚</value>
+  </data>
+  <data name="Legs_Feet" xml:space="preserve">
+    <value>脚 + 足</value>
+  </data>
+  <data name="Loading_Screen" xml:space="preserve">
+    <value>Loading Screen</value>
+  </data>
+  <data name="Main_Hand" xml:space="preserve">
+    <value>メインアーム</value>
+  </data>
+  <data name="Main_Off" xml:space="preserve">
+    <value>メインアーム + サブアーム</value>
+  </data>
+  <data name="Male" xml:space="preserve">
+    <value>男性</value>
+  </data>
+  <data name="Maps" xml:space="preserve">
+    <value>マップ</value>
+  </data>
+  <data name="Mask" xml:space="preserve">
+    <value>Mask</value>
+  </data>
+  <data name="Mesh" xml:space="preserve">
+    <value>メッシュ</value>
+  </data>
+  <data name="Minions" xml:space="preserve">
+    <value>ミニオン</value>
+  </data>
+  <data name="Miqote" xml:space="preserve">
+    <value>ミコッテ</value>
+  </data>
+  <data name="Miqote_Female" xml:space="preserve">
+    <value>ミコッテ♀</value>
+  </data>
+  <data name="Miqote_Male" xml:space="preserve">
+    <value>ミコッテ♂</value>
+  </data>
+  <data name="ModlistFilePath" xml:space="preserve">
+    <value>XivMods.json</value>
+  </data>
+  <data name="Monster" xml:space="preserve">
+    <value>モンスター</value>
+  </data>
+  <data name="Mounts" xml:space="preserve">
+    <value>マウント</value>
+  </data>
+  <data name="Neck" xml:space="preserve">
+    <value>首</value>
+  </data>
+  <data name="Normal" xml:space="preserve">
+    <value>Normal</value>
+  </data>
+  <data name="Number" xml:space="preserve">
+    <value>数</value>
+  </data>
+  <data name="Off_Hand" xml:space="preserve">
+    <value>サブアーム</value>
+  </data>
+  <data name="OpenCollada" xml:space="preserve">
+    <value>OpenCOLLADA</value>
+  </data>
+  <data name="Part" xml:space="preserve">
+    <value>パート</value>
+  </data>
+  <data name="Pets" xml:space="preserve">
+    <value>ペット</value>
+  </data>
+  <data name="Primary" xml:space="preserve">
+    <value>プライマリ</value>
+  </data>
+  <data name="Race" xml:space="preserve">
+    <value>種族</value>
+  </data>
+  <data name="Ramuh_Egi" xml:space="preserve">
+    <value>ラムウ・エギ</value>
+  </data>
+  <data name="Right" xml:space="preserve">
+    <value>右</value>
+  </data>
+  <data name="Rings" xml:space="preserve">
+    <value>指</value>
+  </data>
+  <data name="Ring_Left" xml:space="preserve">
+    <value>左指</value>
+  </data>
+  <data name="Ring_Right" xml:space="preserve">
+    <value>右指</value>
+  </data>
+  <data name="Roegadyn" xml:space="preserve">
+    <value>ルガディン</value>
+  </data>
+  <data name="Roegadyn_Female" xml:space="preserve">
+    <value>ルガディン♀</value>
+  </data>
+  <data name="Roegadyn_Male" xml:space="preserve">
+    <value>ルガディン♂</value>
+  </data>
+  <data name="Rook_Autoturret" xml:space="preserve">
+    <value>オートタレット・ルーク</value>
+  </data>
+  <data name="SearchBox" xml:space="preserve">
+    <value>Search Textures</value>
+  </data>
+  <data name="Secondary" xml:space="preserve">
+    <value>セカンダリー</value>
+  </data>
+  <data name="Selene" xml:space="preserve">
+    <value>フェアリー・セレネ</value>
+  </data>
+  <data name="Soul_Crystal" xml:space="preserve">
+    <value>ソウルクリスタル</value>
+  </data>
+  <data name="Specular" xml:space="preserve">
+    <value>Specular</value>
+  </data>
+  <data name="Tail" xml:space="preserve">
+    <value>尾</value>
+  </data>
+  <data name="TexTools" xml:space="preserve">
+    <value>TexTools</value>
+  </data>
+  <data name="Texture_Map" xml:space="preserve">
+    <value>テクスチャマップ</value>
+  </data>
+  <data name="Titan_Egi" xml:space="preserve">
+    <value>タイタン・エギ</value>
+  </data>
+  <data name="Two_Handed" xml:space="preserve">
+    <value>両手</value>
+  </data>
+  <data name="Type" xml:space="preserve">
+    <value>タイプ</value>
+  </data>
+  <data name="TypePart" xml:space="preserve">
+    <value>タイプパート</value>
+  </data>
+  <data name="UI" xml:space="preserve">
+    <value>UI</value>
+  </data>
+  <data name="ULD" xml:space="preserve">
+    <value>ULD</value>
+  </data>
+  <data name="Waist" xml:space="preserve">
+    <value>帯</value>
+  </data>
+  <data name="Weapon" xml:space="preserve">
+    <value>武器</value>
+  </data>
+  <data name="Wrists" xml:space="preserve">
+    <value>腕</value>
+  </data>
+</root>
