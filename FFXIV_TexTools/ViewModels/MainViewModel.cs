@@ -35,6 +35,7 @@ using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Interop;
+using FFXIV_TexTools.Views;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Mods;
@@ -60,6 +61,8 @@ namespace FFXIV_TexTools.ViewModels
 
         public MainViewModel(MainWindow mainWindow)
         {
+            LanguageSelection();
+
             _mainWindow = mainWindow;
             _win32Window = new WindowWrapper(new WindowInteropHelper(_mainWindow).Handle);
 
@@ -111,11 +114,49 @@ namespace FFXIV_TexTools.ViewModels
             });
 
             _mainWindow.ItemSearchTextBox.IsEnabled = false;
-            await FillTree(progress);
+            try
+            {
+                await FillTree(progress);
+            }
+            catch(Exception e)
+            {
+                var lang = Properties.Settings.Default.Application_Language;
+
+                if (lang.Equals("zh") || lang.Equals("ko"))
+                {
+                    if (FlexibleMessageBox.Show(UIMessages.LanguageError,
+                            UIMessages.LanguageErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error) ==
+                        DialogResult.OK)
+                    {
+                        Properties.Settings.Default.Application_Language = "en";
+                        Properties.Settings.Default.Save();
+
+                        System.Windows.Forms.Application.Restart();
+                        System.Windows.Application.Current.Shutdown();
+                    }
+                }
+            }
+
             _mainWindow.ItemSearchTextBox.IsEnabled = true;
             _mainWindow.SetFilter();
 
             SetDefaults();
+        }
+
+        private void LanguageSelection()
+        {
+            var lang = Properties.Settings.Default.Application_Language;
+
+            if (lang.Equals(string.Empty))
+            {
+                var langSelectView = new LanguageSelectView();
+                langSelectView.ShowDialog();
+
+                var langCode = langSelectView.LanguageCode;
+
+                Properties.Settings.Default.Application_Language = langCode;
+                Properties.Settings.Default.Save();
+            }
         }
 
         /// <summary>
@@ -456,7 +497,7 @@ namespace FFXIV_TexTools.ViewModels
                     var indexFiles = new XivDataFile[]
                         {XivDataFile._04_Chara, XivDataFile._06_Ui, XivDataFile._01_Bgcommon};
 
-                    if (MessageBox.Show(_win32Window, backupMessage, UIMessages.CreateBackupTitle, MessageBoxButtons.YesNo,
+                    if (FlexibleMessageBox.Show(_win32Window, backupMessage, UIMessages.CreateBackupTitle, MessageBoxButtons.YesNo,
                             MessageBoxIcon.Warning) == DialogResult.Yes)
                     {
                         if (_index.IsIndexLocked(XivDataFile._0A_Exd))

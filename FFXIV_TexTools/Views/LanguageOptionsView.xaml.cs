@@ -27,11 +27,7 @@ namespace FFXIV_TexTools.Views
         {
             InitializeComponent();
 
-            //esrinzou for chinese UI
-            //CurrentLanguageLabel.Content = $"{XivLanguages.GetXivLanguage(Properties.Settings.Default.Application_Language)}";
-            //esrinzou begin
             CurrentLanguageLabel.Content = System.Globalization.CultureInfo.CurrentUICulture.NativeName;
-            //esrinzou end
         }
 
         /// <summary>

@@ -17,10 +17,10 @@
             <Label Grid.Column="1" x:Name="CurrentLanguageLabel" Margin="10" FontWeight="Bold"/>
         </Grid>
         <Button x:Name="EnglishBtn" Content="English" Margin="10" Click="EnglishBtn_Click"/>
-        <Button x:Name="JapaneseBtn" Content="Japanese" Margin="10" Click="JapaneseBtn_Click"/>
-        <Button x:Name="GermanBtn" Content="German" Margin="10" Click="GermanBtn_Click"/>
-        <Button x:Name="FrenchBtn" Content="French" Margin="10" Click="FrenchBtn_Click"/>
-        <Button x:Name="KoreanBtn" Content="Korean" Margin="10" Click="KoreanBtn_Click"/>
-        <Button x:Name="ChineseBtn" Content="Chinese" Margin="10" Click="ChineseBtn_Click"/>
+        <Button x:Name="JapaneseBtn" Content="日本語 (Japanese)" Margin="10" Click="JapaneseBtn_Click"/>
+        <Button x:Name="GermanBtn" Content="Deutsch (German)" Margin="10" Click="GermanBtn_Click"/>
+        <Button x:Name="FrenchBtn" Content="Français (French)" Margin="10" Click="FrenchBtn_Click"/>
+        <Button x:Name="KoreanBtn" Content="한국어 (Korean)" Margin="10" Click="KoreanBtn_Click"/>
+        <Button x:Name="ChineseBtn" Content="汉语 (Chinese)" Margin="10" Click="ChineseBtn_Click"/>
     </StackPanel>
 </UserControl>

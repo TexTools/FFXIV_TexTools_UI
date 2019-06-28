@@ -34,11 +34,7 @@ namespace FFXIV_TexTools.ViewModels
     public class ModelSearchViewModel: INotifyPropertyChanged
     {
         private string _selectedCategory, _modelSearchID, _statusLabel, _currentCategory;
-        //esrinzou for chinese UI
-        //private string _modelSearchWaterMark = "Enter a Model ID...";
-        //esrinzou begin
         private string _modelSearchWaterMark = UIStrings.Enter_a_Model_ID_dot;
-        //esrinzou end
         private int _selectedCategoryIndex, _currentID;
         private List<SearchResults> _resultList;
         private SearchResults _searchResult;
