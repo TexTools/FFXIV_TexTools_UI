@@ -628,6 +628,26 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There was an error reading data for the selected language, would you like to revert to English? 
+        ///
+        ///Language may be changed again later from the Language menu..
+        /// </summary>
+        internal static string LanguageError {
+            get {
+                return ResourceManager.GetString("LanguageError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Language Data Error.
+        /// </summary>
+        internal static string LanguageErrorTitle {
+            get {
+                return ResourceManager.GetString("LanguageErrorTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Error Reading Material Data.
         /// </summary>
         internal static string MaterialDataReadErrorTitle {

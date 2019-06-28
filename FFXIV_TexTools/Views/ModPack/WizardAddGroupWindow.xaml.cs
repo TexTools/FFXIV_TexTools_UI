@@ -947,11 +947,11 @@ namespace FFXIV_TexTools.Views
 
             if (selectedItem.TexTypePath.Type == XivTexType.ColorSet)
             {
-                var mtrl = new Mtrl(_gameDirectory, XivDataFiles.GetXivDataFile(mod.datFile));
+                var mtrl = new Mtrl(_gameDirectory, XivDataFiles.GetXivDataFile(mod.datFile), GetLanguage());
 
                 var xivMtrl = await mtrl.GetMtrlData(mod.data.modOffset, mod.fullPath, int.Parse(Settings.Default.DX_Version));
 
-                modData = tex.DDStoMtrlData(xivMtrl, ddsDirectory, ((Category) ModListTreeView.SelectedItem).Item);
+                modData = tex.DDStoMtrlData(xivMtrl, ddsDirectory, ((Category) ModListTreeView.SelectedItem).Item, GetLanguage());
             }
             else
             {
@@ -1331,6 +1331,15 @@ namespace FFXIV_TexTools.Views
                 AddOption(OptionNameTextBox.Text);
                 e.Handled = true;
             }
+        }
+
+        /// <summary>
+        /// Gets the language for the application
+        /// </summary>
+        /// <returns>The application language as XivLanguage</returns>
+        private static XivLanguage GetLanguage()
+        {
+            return XivLanguages.GetXivLanguage(Properties.Settings.Default.Application_Language);
         }
     }
 }

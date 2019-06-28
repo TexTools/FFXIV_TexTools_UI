@@ -118,16 +118,16 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Accessory" xml:space="preserve">
-    <value>Accessory</value>
+    <value>악세사리</value>
   </data>
   <data name="All" xml:space="preserve">
-    <value>모두</value>
+    <value>전체</value>
   </data>
   <data name="AuRa_Female" xml:space="preserve">
-    <value>AuRa Female</value>
+    <value>아우라 여성</value>
   </data>
   <data name="AuRa_Male" xml:space="preserve">
-    <value>AuRa Male</value>
+    <value>아우라 남성</value>
   </data>
   <data name="AutodeskCollada" xml:space="preserve">
     <value>Autodesk Collada</value>
@@ -136,7 +136,7 @@
     <value>아우라</value>
   </data>
   <data name="Bishop_Autoturret" xml:space="preserve">
-    <value>Bishop Autoturret</value>
+    <value>자동포탑 비숍</value>
   </data>
   <data name="Body" xml:space="preserve">
     <value>몸통</value>
@@ -163,10 +163,10 @@
     <value>ColorSet</value>
   </data>
   <data name="Companions" xml:space="preserve">
-    <value>Companions</value>
+    <value>버디</value>
   </data>
   <data name="DemiHuman" xml:space="preserve">
-    <value>DemiHuman</value>
+    <value>논 플레이어블</value>
   </data>
   <data name="Diffuse" xml:space="preserve">
     <value>Diffuse</value>
@@ -178,13 +178,13 @@
     <value>엘레젠</value>
   </data>
   <data name="Elezen_Female" xml:space="preserve">
-    <value>Elezen Female</value>
+    <value>엘레젠 여성</value>
   </data>
   <data name="Elezen_Male" xml:space="preserve">
-    <value>Elezen Male</value>
+    <value>엘레젠 남성</value>
   </data>
   <data name="Eos" xml:space="preserve">
-    <value>Eos</value>
+    <value>요정 에오스</value>
   </data>
   <data name="EquipDecalFile" xml:space="preserve">
     <value>-decal_{0}.tex</value>
@@ -193,19 +193,19 @@
     <value>chara/common/texture/decal_equip</value>
   </data>
   <data name="Equipment" xml:space="preserve">
-    <value>Equipment</value>
+    <value>장비</value>
   </data>
   <data name="Equip_Decals" xml:space="preserve">
-    <value>Equipment Decals</value>
+    <value>장비 문장</value>
   </data>
   <data name="Error_DirectoryError" xml:space="preserve">
-    <value>Directory Error</value>
+    <value>경로 오류</value>
   </data>
   <data name="Error_FileNotFound" xml:space="preserve">
-    <value>Unable to find file, please check your directories under settings</value>
+    <value>파일을 찾을 수 없습니다. 파일 경로를 다시 확인하십시오.</value>
   </data>
   <data name="Etc" xml:space="preserve">
-    <value>Etc</value>
+    <value>기타</value>
   </data>
   <data name="Face" xml:space="preserve">
     <value>얼굴</value>
@@ -229,13 +229,13 @@
     <value>요리</value>
   </data>
   <data name="Furniture" xml:space="preserve">
-    <value>Furniture</value>
+    <value>가구</value>
   </data>
   <data name="Garuda_Egi" xml:space="preserve">
-    <value>Garuda-Egi</value>
+    <value>가루다 에기</value>
   </data>
   <data name="Gear" xml:space="preserve">
-    <value>Gear</value>
+    <value>장비</value>
   </data>
   <data name="Hair" xml:space="preserve">
     <value>머리 모양</value>
@@ -250,34 +250,34 @@
     <value>머리 + 몸통</value>
   </data>
   <data name="Housing" xml:space="preserve">
-    <value>Housing</value>
+    <value>하우징</value>
   </data>
   <data name="HUD" xml:space="preserve">
     <value>HUD</value>
   </data>
   <data name="Hyur_H" xml:space="preserve">
-    <value>Hyur Highlander</value>
+    <value>고원 휴런</value>
   </data>
   <data name="Hyur_Highlander_Female" xml:space="preserve">
-    <value>Hyur Highlander Female</value>
+    <value>고원 휴런 여성</value>
   </data>
   <data name="Hyur_Highlander_Male" xml:space="preserve">
-    <value>Hyur Highlander Male</value>
+    <value>고원 휴런 남성</value>
   </data>
   <data name="Hyur_M" xml:space="preserve">
-    <value>Hyur Midlander</value>
+    <value>중원 휴런</value>
   </data>
   <data name="Hyur_Midlander_Female" xml:space="preserve">
-    <value>Hyur Midlander Female</value>
+    <value>중원 휴런 여성</value>
   </data>
   <data name="Hyur_Midlander_Male" xml:space="preserve">
-    <value>Hyur Midlander Male</value>
+    <value>중원 휴런 남성</value>
   </data>
   <data name="Icon" xml:space="preserve">
-    <value>Icon</value>
+    <value>아이콘</value>
   </data>
   <data name="Ifrit_Egi" xml:space="preserve">
-    <value>Ifrit-Egi</value>
+    <value>이프리트 에기</value>
   </data>
   <data name="Iris" xml:space="preserve">
     <value>눈동자</value>
@@ -286,13 +286,13 @@
     <value>라라펠</value>
   </data>
   <data name="Lalafell_Female" xml:space="preserve">
-    <value>Lalafell Female</value>
+    <value>라라펠 여성</value>
   </data>
   <data name="Lalafell_Male" xml:space="preserve">
-    <value>Lalafell Male</value>
+    <value>라라펠 남성</value>
   </data>
   <data name="Left" xml:space="preserve">
-    <value>Left</value>
+    <value>왼쪽</value>
   </data>
   <data name="Legs" xml:space="preserve">
     <value>다리</value>
@@ -301,7 +301,7 @@
     <value>다리 + 발</value>
   </data>
   <data name="Loading_Screen" xml:space="preserve">
-    <value>Loading Screen</value>
+    <value>로딩 화면</value>
   </data>
   <data name="Main_Hand" xml:space="preserve">
     <value>주 무기</value>
@@ -313,13 +313,13 @@
     <value>남성</value>
   </data>
   <data name="Maps" xml:space="preserve">
-    <value>Maps</value>
+    <value>지도</value>
   </data>
   <data name="Mask" xml:space="preserve">
     <value>Mask</value>
   </data>
   <data name="Mesh" xml:space="preserve">
-    <value>Mesh</value>
+    <value>메쉬</value>
   </data>
   <data name="Minions" xml:space="preserve">
     <value>꼬마 친구</value>
@@ -328,10 +328,10 @@
     <value>미코테</value>
   </data>
   <data name="Miqote_Female" xml:space="preserve">
-    <value>Miqote Female</value>
+    <value>미코테 여성</value>
   </data>
   <data name="Miqote_Male" xml:space="preserve">
-    <value>Miqote Male</value>
+    <value>미코테 남성</value>
   </data>
   <data name="ModlistFilePath" xml:space="preserve">
     <value>XivMods.json</value>
@@ -349,7 +349,7 @@
     <value>Normal</value>
   </data>
   <data name="Number" xml:space="preserve">
-    <value>Number</value>
+    <value>숫자</value>
   </data>
   <data name="Off_Hand" xml:space="preserve">
     <value>보조 무기</value>
@@ -358,52 +358,52 @@
     <value>OpenCOLLADA</value>
   </data>
   <data name="Part" xml:space="preserve">
-    <value>Part</value>
+    <value>파츠</value>
   </data>
   <data name="Pets" xml:space="preserve">
     <value>소환수</value>
   </data>
   <data name="Primary" xml:space="preserve">
-    <value>Primary</value>
+    <value>주 무기</value>
   </data>
   <data name="Race" xml:space="preserve">
-    <value>Race</value>
+    <value>종족</value>
   </data>
   <data name="Ramuh_Egi" xml:space="preserve">
-    <value>Ramuh Egi</value>
+    <value>라무 에기</value>
   </data>
   <data name="Right" xml:space="preserve">
-    <value>Right</value>
+    <value>오른쪽</value>
   </data>
   <data name="Rings" xml:space="preserve">
-    <value>손가락</value>
+    <value>반지</value>
   </data>
   <data name="Ring_Left" xml:space="preserve">
-    <value>Ring Left</value>
+    <value>왼쪽 반지</value>
   </data>
   <data name="Ring_Right" xml:space="preserve">
-    <value>Ring Right</value>
+    <value>오른쪽 반지</value>
   </data>
   <data name="Roegadyn" xml:space="preserve">
     <value>루가딘</value>
   </data>
   <data name="Roegadyn_Female" xml:space="preserve">
-    <value>Roegadyn Female</value>
+    <value>루가딘 여성</value>
   </data>
   <data name="Roegadyn_Male" xml:space="preserve">
-    <value>Roegadyn Male</value>
+    <value>루가딘 남성</value>
   </data>
   <data name="Rook_Autoturret" xml:space="preserve">
-    <value>Rook Autoturret</value>
+    <value>자동포탑 룩</value>
   </data>
   <data name="SearchBox" xml:space="preserve">
-    <value>검색 Textures</value>
+    <value>텍스쳐 검색</value>
   </data>
   <data name="Secondary" xml:space="preserve">
-    <value>Secondary</value>
+    <value>보조 무기</value>
   </data>
   <data name="Selene" xml:space="preserve">
-    <value>Selene</value>
+    <value>요정 셀레네</value>
   </data>
   <data name="Soul_Crystal" xml:space="preserve">
     <value>소울 크리스탈</value>
@@ -418,19 +418,19 @@
     <value>TexTools</value>
   </data>
   <data name="Texture_Map" xml:space="preserve">
-    <value>Texture Map</value>
+    <value>텍스쳐 맵</value>
   </data>
   <data name="Titan_Egi" xml:space="preserve">
-    <value>Titan-Egi</value>
+    <value>타이탄 에기</value>
   </data>
   <data name="Two_Handed" xml:space="preserve">
     <value>양손</value>
   </data>
   <data name="Type" xml:space="preserve">
-    <value>Type</value>
+    <value>유형</value>
   </data>
   <data name="TypePart" xml:space="preserve">
-    <value>Type Part</value>
+    <value>부분 유형</value>
   </data>
   <data name="UI" xml:space="preserve">
     <value>UI</value>

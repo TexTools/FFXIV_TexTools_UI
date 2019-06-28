@@ -616,4 +616,12 @@ This process is not reversible, do you want to continue?</value>
   <data name="TTMPGettingData" xml:space="preserve">
     <value>Getting Data...</value>
   </data>
+  <data name="LanguageError" xml:space="preserve">
+    <value>There was an error reading data for the selected language, would you like to revert to English? 
+
+Language may be changed again later from the Language menu.</value>
+  </data>
+  <data name="LanguageErrorTitle" xml:space="preserve">
+    <value>Language Data Error</value>
+  </data>
 </root>

@@ -8,10 +8,9 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace FFXIV_TexTools.Properties
-{
-
-
+namespace FFXIV_TexTools.Properties {
+    
+    
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.1.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
@@ -50,7 +49,7 @@ namespace FFXIV_TexTools.Properties
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("en")]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string Application_Language {
             get {
                 return ((string)(this["Application_Language"]));

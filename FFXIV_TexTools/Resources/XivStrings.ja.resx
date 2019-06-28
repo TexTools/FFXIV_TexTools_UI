@@ -124,10 +124,10 @@
     <value>すべて</value>
   </data>
   <data name="AuRa_Female" xml:space="preserve">
-    <value>AuRa Female</value>
+    <value>アウラ♀</value>
   </data>
   <data name="AuRa_Male" xml:space="preserve">
-    <value>AuRa Male</value>
+    <value>アウラ♂</value>
   </data>
   <data name="AutodeskCollada" xml:space="preserve">
     <value>Autodesk Collada</value>
@@ -178,10 +178,10 @@
     <value>エレゼン</value>
   </data>
   <data name="Elezen_Female" xml:space="preserve">
-    <value>Elezen Female</value>
+    <value>エレゼン♀</value>
   </data>
   <data name="Elezen_Male" xml:space="preserve">
-    <value>Elezen Male</value>
+    <value>エレゼン♂</value>
   </data>
   <data name="Eos" xml:space="preserve">
     <value>フェアリー・エオス</value>
@@ -205,7 +205,7 @@
     <value>Unable to find file, please check your directories under settings</value>
   </data>
   <data name="Etc" xml:space="preserve">
-    <value>Etc</value>
+    <value>その他</value>
   </data>
   <data name="Face" xml:space="preserve">
     <value>顔</value>
@@ -229,7 +229,7 @@
     <value>調理品</value>
   </data>
   <data name="Furniture" xml:space="preserve">
-    <value>Furniture</value>
+    <value>調度品</value>
   </data>
   <data name="Garuda_Egi" xml:space="preserve">
     <value>ガルーダ・エギ</value>
@@ -250,49 +250,49 @@
     <value>頭 + 胴</value>
   </data>
   <data name="Housing" xml:space="preserve">
-    <value>Housing</value>
+    <value>ハウジング</value>
   </data>
   <data name="HUD" xml:space="preserve">
     <value>HUD</value>
   </data>
   <data name="Hyur_H" xml:space="preserve">
-    <value>Hyur Highlander</value>
+    <value>ヒューラン・ハイランダ</value>
   </data>
   <data name="Hyur_Highlander_Female" xml:space="preserve">
-    <value>Hyur Highlander Female</value>
+    <value>ヒューラン・ハイランダ♀</value>
   </data>
   <data name="Hyur_Highlander_Male" xml:space="preserve">
-    <value>Hyur Highlander Male</value>
+    <value>ヒューラン・ハイランダ♂</value>
   </data>
   <data name="Hyur_M" xml:space="preserve">
-    <value>Hyur Midlander</value>
+    <value>ヒューラン・ミッドランダ</value>
   </data>
   <data name="Hyur_Midlander_Female" xml:space="preserve">
-    <value>Hyur Midlander Female</value>
+    <value>ヒューラン・ミッドランダ♀</value>
   </data>
   <data name="Hyur_Midlander_Male" xml:space="preserve">
-    <value>Hyur Midlander Male</value>
+    <value>ヒューラン・ミッドランダ♂</value>
   </data>
   <data name="Icon" xml:space="preserve">
-    <value>Icon</value>
+    <value>アイコン</value>
   </data>
   <data name="Ifrit_Egi" xml:space="preserve">
     <value>イフリート・エギ</value>
   </data>
   <data name="Iris" xml:space="preserve">
-    <value>Iris</value>
+    <value>瞳</value>
   </data>
   <data name="Lalafell" xml:space="preserve">
     <value>ララフェル</value>
   </data>
   <data name="Lalafell_Female" xml:space="preserve">
-    <value>Lalafell Female</value>
+    <value>ララフェル♀</value>
   </data>
   <data name="Lalafell_Male" xml:space="preserve">
-    <value>Lalafell Male</value>
+    <value>ララフェル♂</value>
   </data>
   <data name="Left" xml:space="preserve">
-    <value>Left</value>
+    <value>左</value>
   </data>
   <data name="Legs" xml:space="preserve">
     <value>脚</value>
@@ -319,7 +319,7 @@
     <value>Mask</value>
   </data>
   <data name="Mesh" xml:space="preserve">
-    <value>Mesh</value>
+    <value>メッシュ</value>
   </data>
   <data name="Minions" xml:space="preserve">
     <value>ミニオン</value>
@@ -328,16 +328,16 @@
     <value>ミコッテ</value>
   </data>
   <data name="Miqote_Female" xml:space="preserve">
-    <value>Miqote Female</value>
+    <value>ミコッテ♀</value>
   </data>
   <data name="Miqote_Male" xml:space="preserve">
-    <value>Miqote Male</value>
+    <value>ミコッテ♂</value>
   </data>
   <data name="ModlistFilePath" xml:space="preserve">
     <value>XivMods.json</value>
   </data>
   <data name="Monster" xml:space="preserve">
-    <value>Monster</value>
+    <value>モンスター</value>
   </data>
   <data name="Mounts" xml:space="preserve">
     <value>マウント</value>
@@ -349,7 +349,7 @@
     <value>Normal</value>
   </data>
   <data name="Number" xml:space="preserve">
-    <value>Number</value>
+    <value>数</value>
   </data>
   <data name="Off_Hand" xml:space="preserve">
     <value>サブアーム</value>
@@ -358,40 +358,40 @@
     <value>OpenCOLLADA</value>
   </data>
   <data name="Part" xml:space="preserve">
-    <value>Part</value>
+    <value>パート</value>
   </data>
   <data name="Pets" xml:space="preserve">
     <value>ペット</value>
   </data>
   <data name="Primary" xml:space="preserve">
-    <value>Primary</value>
+    <value>プライマリ</value>
   </data>
   <data name="Race" xml:space="preserve">
-    <value>Race</value>
+    <value>種族</value>
   </data>
   <data name="Ramuh_Egi" xml:space="preserve">
     <value>ラムウ・エギ</value>
   </data>
   <data name="Right" xml:space="preserve">
-    <value>Right</value>
+    <value>右</value>
   </data>
   <data name="Rings" xml:space="preserve">
     <value>指</value>
   </data>
   <data name="Ring_Left" xml:space="preserve">
-    <value>Ring Left</value>
+    <value>左指</value>
   </data>
   <data name="Ring_Right" xml:space="preserve">
-    <value>Ring Right</value>
+    <value>右指</value>
   </data>
   <data name="Roegadyn" xml:space="preserve">
     <value>ルガディン</value>
   </data>
   <data name="Roegadyn_Female" xml:space="preserve">
-    <value>Roegadyn Female</value>
+    <value>ルガディン♀</value>
   </data>
   <data name="Roegadyn_Male" xml:space="preserve">
-    <value>Roegadyn Male</value>
+    <value>ルガディン♂</value>
   </data>
   <data name="Rook_Autoturret" xml:space="preserve">
     <value>オートタレット・ルーク</value>
@@ -400,7 +400,7 @@
     <value>Search Textures</value>
   </data>
   <data name="Secondary" xml:space="preserve">
-    <value>Secondary</value>
+    <value>セカンダリー</value>
   </data>
   <data name="Selene" xml:space="preserve">
     <value>フェアリー・セレネ</value>
@@ -418,7 +418,7 @@
     <value>TexTools</value>
   </data>
   <data name="Texture_Map" xml:space="preserve">
-    <value>Texture Map</value>
+    <value>テクスチャマップ</value>
   </data>
   <data name="Titan_Egi" xml:space="preserve">
     <value>タイタン・エギ</value>
@@ -427,10 +427,10 @@
     <value>両手</value>
   </data>
   <data name="Type" xml:space="preserve">
-    <value>Type</value>
+    <value>タイプ</value>
   </data>
   <data name="TypePart" xml:space="preserve">
-    <value>Type Part</value>
+    <value>タイプパート</value>
   </data>
   <data name="UI" xml:space="preserve">
     <value>UI</value>

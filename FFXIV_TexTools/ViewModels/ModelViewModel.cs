@@ -132,7 +132,7 @@ namespace FFXIV_TexTools.ViewModels
             }
             else if (itemModel.Category.Equals(XivStrings.Character))
             {
-                var character = new Character(_gameDirectory);
+                var character = new Character(_gameDirectory, GetLanguage());
 
                 _charaRaceAndNumberDictionary = await character.GetRacesAndNumbersForModels(_item as XivCharacter);
 
@@ -351,7 +351,7 @@ namespace FFXIV_TexTools.ViewModels
             }
             else if (_item.Category.Equals(XivStrings.Character))
             {
-                var character = new Character(_gameDirectory);
+                var character = new Character(_gameDirectory, GetLanguage());
 
                 var parts = await character.GetTypeForModels(_item as XivCharacter, SelectedRace.XivRace,
                     int.Parse(SelectedNumber.Name));
@@ -1635,7 +1635,7 @@ namespace FFXIV_TexTools.ViewModels
         {
             var textureDataDictionary = new Dictionary<int, ModelTextureData>();
             var mtrlDictionary = new Dictionary<int, XivMtrl>();
-            var mtrl = new Mtrl(_gameDirectory, _item.DataFile);
+            var mtrl = new Mtrl(_gameDirectory, _item.DataFile, GetLanguage());
             var mtrlFilePaths = _mdlData.PathData.MaterialList;
             var hasColorChangeShader = false;
             Color? customColor = null;

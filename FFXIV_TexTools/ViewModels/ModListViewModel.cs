@@ -466,7 +466,7 @@ namespace FFXIV_TexTools.ViewModels
                 var selectedItem = category.Item as XivGenericItemModel;
                 if (selectedItem == null) return;
 
-                var mtrl = new Mtrl(_gameDirectory, selectedItem.DataFile);
+                var mtrl = new Mtrl(_gameDirectory, selectedItem.DataFile, GetLanguage());
                 var modList = JsonConvert.DeserializeObject<ModList>(File.ReadAllText(_modListDirectory.FullName));
 
                 var modItems = new List<Mod>();
@@ -1230,6 +1230,15 @@ namespace FFXIV_TexTools.ViewModels
             {
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
             }
+        }
+
+        /// <summary>
+        /// Gets the language for the application
+        /// </summary>
+        /// <returns>The application language as XivLanguage</returns>
+        private static XivLanguage GetLanguage()
+        {
+            return XivLanguages.GetXivLanguage(Properties.Settings.Default.Application_Language);
         }
     }
 }

@@ -50,7 +50,7 @@ namespace FFXIV_TexTools.Models
         /// <returns>A list containing character data</returns>
         public async Task<List<XivCharacter>> GetCharacterList()
         {
-            var character = new Character(_gameDirectory);
+            var character = new Character(_gameDirectory, GetLanguage());
 
             return await character.GetCharacterList();
         }

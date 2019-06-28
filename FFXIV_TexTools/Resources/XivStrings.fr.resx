@@ -124,10 +124,10 @@
     <value>Tous</value>
   </data>
   <data name="AuRa_Female" xml:space="preserve">
-    <value>AuRa Female</value>
+    <value>Ao Ra Femme</value>
   </data>
   <data name="AuRa_Male" xml:space="preserve">
-    <value>AuRa Male</value>
+    <value>Ao Ra Homme</value>
   </data>
   <data name="AutodeskCollada" xml:space="preserve">
     <value>Autodesk Collada</value>
@@ -178,10 +178,10 @@
     <value>Élézen</value>
   </data>
   <data name="Elezen_Female" xml:space="preserve">
-    <value>Elezen Female</value>
+    <value>Elezen Femme</value>
   </data>
   <data name="Elezen_Male" xml:space="preserve">
-    <value>Elezen Male</value>
+    <value>Elezen Homme</value>
   </data>
   <data name="Eos" xml:space="preserve">
     <value>Eos</value>
@@ -193,16 +193,16 @@
     <value>chara/common/texture/decal_equip</value>
   </data>
   <data name="Equipment" xml:space="preserve">
-    <value>Equipment</value>
+    <value>Equipement</value>
   </data>
   <data name="Equip_Decals" xml:space="preserve">
     <value>Blason</value>
   </data>
   <data name="Error_DirectoryError" xml:space="preserve">
-    <value>Directory Error</value>
+    <value>Erreur de répertoire</value>
   </data>
   <data name="Error_FileNotFound" xml:space="preserve">
-    <value>Unable to find file, please check your directories under settings</value>
+    <value>Impossible de trouver le fichier, veuillez vérifier les répertoires dans les Réglages.</value>
   </data>
   <data name="Etc" xml:space="preserve">
     <value>Etc</value>
@@ -229,7 +229,7 @@
     <value>Plat ou boisson</value>
   </data>
   <data name="Furniture" xml:space="preserve">
-    <value>Furniture</value>
+    <value>Ameublement</value>
   </data>
   <data name="Garuda_Egi" xml:space="preserve">
     <value>Garuda-Egi</value>
@@ -250,31 +250,31 @@
     <value>Tête + Torse</value>
   </data>
   <data name="Housing" xml:space="preserve">
-    <value>Housing</value>
+    <value>Logement</value>
   </data>
   <data name="HUD" xml:space="preserve">
     <value>HUD</value>
   </data>
   <data name="Hyur_H" xml:space="preserve">
-    <value>Hyur Highlander</value>
+    <value>Hyurgoth</value>
   </data>
   <data name="Hyur_Highlander_Female" xml:space="preserve">
-    <value>Hyur Highlander Female</value>
+    <value>Hyurgoth Femme</value>
   </data>
   <data name="Hyur_Highlander_Male" xml:space="preserve">
-    <value>Hyur Highlander Male</value>
+    <value>Hyurgoth Homme</value>
   </data>
   <data name="Hyur_M" xml:space="preserve">
-    <value>Hyur Midlander</value>
+    <value>Hyurois</value>
   </data>
   <data name="Hyur_Midlander_Female" xml:space="preserve">
-    <value>Hyur Midlander Female</value>
+    <value>Hyurois Femme</value>
   </data>
   <data name="Hyur_Midlander_Male" xml:space="preserve">
-    <value>Hyur Midlander Male</value>
+    <value>Hyurois Homme</value>
   </data>
   <data name="Icon" xml:space="preserve">
-    <value>Icon</value>
+    <value>Icône</value>
   </data>
   <data name="Ifrit_Egi" xml:space="preserve">
     <value>Ifrit-Egi</value>
@@ -286,13 +286,13 @@
     <value>Lalafell</value>
   </data>
   <data name="Lalafell_Female" xml:space="preserve">
-    <value>Lalafell Female</value>
+    <value>Lalafell Femme</value>
   </data>
   <data name="Lalafell_Male" xml:space="preserve">
-    <value>Lalafell Male</value>
+    <value>Lalafell Homme</value>
   </data>
   <data name="Left" xml:space="preserve">
-    <value>Left</value>
+    <value>Gauche</value>
   </data>
   <data name="Legs" xml:space="preserve">
     <value>Jambes</value>
@@ -301,7 +301,7 @@
     <value>Jambes + Pieds</value>
   </data>
   <data name="Loading_Screen" xml:space="preserve">
-    <value>Loading Screen</value>
+    <value>Ecran de chargement</value>
   </data>
   <data name="Main_Hand" xml:space="preserve">
     <value>Main directrice</value>
@@ -328,16 +328,16 @@
     <value>Miqote</value>
   </data>
   <data name="Miqote_Female" xml:space="preserve">
-    <value>Miqote Female</value>
+    <value>Miqo'te Femme</value>
   </data>
   <data name="Miqote_Male" xml:space="preserve">
-    <value>Miqote Male</value>
+    <value>Miqo'te Homme</value>
   </data>
   <data name="ModlistFilePath" xml:space="preserve">
     <value>XivMods.json</value>
   </data>
   <data name="Monster" xml:space="preserve">
-    <value>Monster</value>
+    <value>Monstre</value>
   </data>
   <data name="Mounts" xml:space="preserve">
     <value>Montures</value>
@@ -349,7 +349,7 @@
     <value>Normal</value>
   </data>
   <data name="Number" xml:space="preserve">
-    <value>Number</value>
+    <value>Nombre</value>
   </data>
   <data name="Off_Hand" xml:space="preserve">
     <value>Main non directrice</value>
@@ -358,13 +358,13 @@
     <value>OpenCOLLADA</value>
   </data>
   <data name="Part" xml:space="preserve">
-    <value>Part</value>
+    <value>Partie</value>
   </data>
   <data name="Pets" xml:space="preserve">
     <value>Familiers</value>
   </data>
   <data name="Primary" xml:space="preserve">
-    <value>Primary</value>
+    <value>Primaire</value>
   </data>
   <data name="Race" xml:space="preserve">
     <value>Race</value>
@@ -373,34 +373,34 @@
     <value>Ramuh Egi</value>
   </data>
   <data name="Right" xml:space="preserve">
-    <value>Right</value>
+    <value>Droite</value>
   </data>
   <data name="Rings" xml:space="preserve">
     <value>Bagues</value>
   </data>
   <data name="Ring_Left" xml:space="preserve">
-    <value>Ring Left</value>
+    <value>Anneau Gauche</value>
   </data>
   <data name="Ring_Right" xml:space="preserve">
-    <value>Ring Right</value>
+    <value>Anneau Droit</value>
   </data>
   <data name="Roegadyn" xml:space="preserve">
     <value>Roegadyn</value>
   </data>
   <data name="Roegadyn_Female" xml:space="preserve">
-    <value>Roegadyn Female</value>
+    <value>Roegadyn Femme</value>
   </data>
   <data name="Roegadyn_Male" xml:space="preserve">
-    <value>Roegadyn Male</value>
+    <value>Roegadyn Homme</value>
   </data>
   <data name="Rook_Autoturret" xml:space="preserve">
     <value>Auto-tourelle Tour</value>
   </data>
   <data name="SearchBox" xml:space="preserve">
-    <value>Search Textures</value>
+    <value>Rechercher des textures</value>
   </data>
   <data name="Secondary" xml:space="preserve">
-    <value>Secondary</value>
+    <value>Secondaire</value>
   </data>
   <data name="Selene" xml:space="preserve">
     <value>Selene</value>
@@ -430,7 +430,7 @@
     <value>Type</value>
   </data>
   <data name="TypePart" xml:space="preserve">
-    <value>Type Part</value>
+    <value>Partie de type</value>
   </data>
   <data name="UI" xml:space="preserve">
     <value>UI</value>

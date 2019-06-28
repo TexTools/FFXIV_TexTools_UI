@@ -277,6 +277,9 @@
     <Compile Include="Views\IconSearchView.xaml.cs">
       <DependentUpon>IconSearchView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\LanguageSelectView.xaml.cs">
+      <DependentUpon>LanguageSelectView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Models\AdvancedModelImportView.xaml.cs">
       <DependentUpon>AdvancedModelImportView.xaml</DependentUpon>
     </Compile>
@@ -368,6 +371,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\IconSearchView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\LanguageSelectView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

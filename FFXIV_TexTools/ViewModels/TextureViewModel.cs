@@ -105,7 +105,7 @@ namespace FFXIV_TexTools.ViewModels
             ClearAll();
 
             var gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
-            _mtrl = new Mtrl(gameDirectory, item.DataFile);
+            _mtrl = new Mtrl(gameDirectory, item.DataFile, GetLanguage());
             _tex = new Tex(gameDirectory);
             _modList = new Modding(gameDirectory);
 
@@ -139,7 +139,7 @@ namespace FFXIV_TexTools.ViewModels
             }
             else if (item.Category.Equals(XivStrings.Character))
             {
-                _character = new Character(gameDirectory);
+                _character = new Character(gameDirectory, GetLanguage());
                 _item = item as IItemModel;
 
                 if (_item.ItemCategory.Equals(XivStrings.Face_Paint) ||
@@ -1336,7 +1336,7 @@ namespace FFXIV_TexTools.ViewModels
             }
             else
             {
-                var newColorSetOffset = await _tex.TexColorImporter(_xivMtrl, fullPath, _item, XivStrings.TexTools);
+                var newColorSetOffset = await _tex.TexColorImporter(_xivMtrl, fullPath, _item, XivStrings.TexTools, GetLanguage());
                 _xivMtrl = await _mtrl.GetMtrlData(newColorSetOffset, _xivMtrl.MTRLPath, dxVersion);
             }
 
@@ -1413,7 +1413,7 @@ namespace FFXIV_TexTools.ViewModels
                     }
                     else
                     {
-                        var newColorSetOffset = await _tex.TexColorImporter(_xivMtrl, fileDir, _item, XivStrings.TexTools);
+                        var newColorSetOffset = await _tex.TexColorImporter(_xivMtrl, fileDir, _item, XivStrings.TexTools, GetLanguage());
                         _xivMtrl = await _mtrl.GetMtrlData(newColorSetOffset, _xivMtrl.MTRLPath, dxVersion);
                     }
                 }
