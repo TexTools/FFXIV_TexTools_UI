@@ -1681,7 +1681,7 @@ namespace FFXIV_TexTools.ViewModels
                         raceString = mtrlFilePath.Substring(mtrlFilePath.IndexOf("c") + 1, 4);
                         race = XivRaces.GetXivRace(raceString);
 
-                        if (!raceString.Equals("0901") && !raceString.Equals("1001") && !raceString.Equals("1101"))
+                        if (!raceString.Equals("0901") && !raceString.Equals("1001") && !raceString.Equals("1101") && !raceString.Equals("1501"))
                         {
                             var gender = 0;
                             if (int.Parse(raceString.Substring(0, 2)) % 2 == 0)
