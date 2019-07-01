@@ -581,7 +581,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\lib\xivModdingFramework\xivModdingFramework\xivModdingFramework.csproj">
-      <Project>{CDC45CC3-60E7-4CB1-A267-BE1CB3BDE340}</Project>
+      <Project>{cdc45cc3-60e7-4cb1-a267-be1cb3bde340}</Project>
       <Name>xivModdingFramework</Name>
     </ProjectReference>
   </ItemGroup>

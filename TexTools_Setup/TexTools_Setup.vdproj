@@ -63,8 +63,14 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_0963160A53E84DC2A5F0685162BE0181"
+        "MsmKey" = "8:_05F9D48C5CCC4296A591C0D8DC8D28B2"
         "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_066793CF69EFA8C497C74C514A9E2D45"
+        "OwnerKey" = "8:_87E1AD6B3BD72DE72FD4B332C73B2ECF"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -101,12 +107,6 @@
         {
         "MsmKey" = "8:_1029D55B935BBA88409933318444168E"
         "OwnerKey" = "8:_011F309E78BD4309B14FAA65C6BE4F00"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_1135F8DCF982E7076DFC920B552A5A82"
-        "OwnerKey" = "8:_87E1AD6B3BD72DE72FD4B332C73B2ECF"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -153,6 +153,18 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_198136DF561A0D8CD0CB88DF2E47CEAB"
+        "OwnerKey" = "8:_87E1AD6B3BD72DE72FD4B332C73B2ECF"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_198136DF561A0D8CD0CB88DF2E47CEAB"
+        "OwnerKey" = "8:_330A53328994C78C053BB77EF4506C77"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_1A2E4867C1E2A52D7287ABB299C604D7"
         "OwnerKey" = "8:_011F309E78BD4309B14FAA65C6BE4F00"
         "MsmSig" = "8:_UNDEFINED"
@@ -171,14 +183,20 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_1FAC02EC2890248E882D5551E40F352E"
-        "OwnerKey" = "8:_011F309E78BD4309B14FAA65C6BE4F00"
+        "MsmKey" = "8:_1F2F6D4DF1164EC7996ECCBC5D3B06AF"
+        "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_22186E19542B2483894F502B887853D1"
-        "OwnerKey" = "8:_87E1AD6B3BD72DE72FD4B332C73B2ECF"
+        "MsmKey" = "8:_1F8CE4AC556D458BBA0C1ACE8F91629D"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_1FAC02EC2890248E882D5551E40F352E"
+        "OwnerKey" = "8:_011F309E78BD4309B14FAA65C6BE4F00"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -238,13 +256,13 @@
         "Entry"
         {
         "MsmKey" = "8:_29D399836006A1ADF845AF62C8EA75C1"
-        "OwnerKey" = "8:_87E1AD6B3BD72DE72FD4B332C73B2ECF"
+        "OwnerKey" = "8:_011F309E78BD4309B14FAA65C6BE4F00"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_29D399836006A1ADF845AF62C8EA75C1"
-        "OwnerKey" = "8:_011F309E78BD4309B14FAA65C6BE4F00"
+        "MsmKey" = "8:_2B2899BCD6394F4B999A10DB9195F471"
+        "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -345,12 +363,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_3FB7AA3C21504207AC01E94F1D0DFB6F"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_42BC6FDE126856863B4AE98F6E1E1A07"
         "OwnerKey" = "8:_011F309E78BD4309B14FAA65C6BE4F00"
         "MsmSig" = "8:_UNDEFINED"
@@ -365,36 +377,6 @@
         {
         "MsmKey" = "8:_46CA1F12E47F13D1215AEB6AF661AFA0"
         "OwnerKey" = "8:_011F309E78BD4309B14FAA65C6BE4F00"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_48DC80A10E394FF198FCB3643EAD6F8E"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_49E797EBC0A0CD989316B757A04BEEBD"
-        "OwnerKey" = "8:_87E1AD6B3BD72DE72FD4B332C73B2ECF"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_49E797EBC0A0CD989316B757A04BEEBD"
-        "OwnerKey" = "8:_E90DE7A1B162C9CD12C669311828AB67"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_49E797EBC0A0CD989316B757A04BEEBD"
-        "OwnerKey" = "8:_91F4ED64C20380650C9A68BD5B64E340"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_49E797EBC0A0CD989316B757A04BEEBD"
-        "OwnerKey" = "8:_330A53328994C78C053BB77EF4506C77"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -418,18 +400,12 @@
         "Entry"
         {
         "MsmKey" = "8:_4F3FA3CC8DC715E5160C8F437D289BF6"
-        "OwnerKey" = "8:_87E1AD6B3BD72DE72FD4B332C73B2ECF"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_4F3FA3CC8DC715E5160C8F437D289BF6"
         "OwnerKey" = "8:_011F309E78BD4309B14FAA65C6BE4F00"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_51D9E77FEBD94CF8A9B8E3216E570E95"
+        "MsmKey" = "8:_4F7BA725FE734D1C887027BE1BBB6DB1"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -543,18 +519,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_5A3CA1CFCFA44444A977A492C6853E4D"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_5F591615FE2404E219BE906009AA6715"
-        "OwnerKey" = "8:_87E1AD6B3BD72DE72FD4B332C73B2ECF"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_5F591615FE2404E219BE906009AA6715"
         "OwnerKey" = "8:_011F309E78BD4309B14FAA65C6BE4F00"
         "MsmSig" = "8:_UNDEFINED"
@@ -603,6 +567,18 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_6749C6AC268F45C8ACF8349ECAE2F5F7"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_6864822B08674D44A49D3FA8A43911DF"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_692D89BAB0EF452BB0E5851592FC51A9"
         "OwnerKey" = "8:_011F309E78BD4309B14FAA65C6BE4F00"
         "MsmSig" = "8:_UNDEFINED"
@@ -633,32 +609,26 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_6F10D2EBF3734C618AAE13C7F7ED1D78"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_70E1FAE61BA1B874EF24EA68D0E3C6D4"
         "OwnerKey" = "8:_AA85BF738D319F5C3A827FC38FE2E2A7"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
+        "MsmKey" = "8:_72C88EF4C31443148C60578A79F68E25"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_74DE357E5FB50016FCCC048CFAE461D3"
         "OwnerKey" = "8:_011F309E78BD4309B14FAA65C6BE4F00"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_757595CEE4E803230CD7016E2A6E5D88"
-        "OwnerKey" = "8:_87E1AD6B3BD72DE72FD4B332C73B2ECF"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_757595CEE4E803230CD7016E2A6E5D88"
-        "OwnerKey" = "8:_31B136E34C61CCD285B12CD7089CC5B7"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_757595CEE4E803230CD7016E2A6E5D88"
-        "OwnerKey" = "8:_330A53328994C78C053BB77EF4506C77"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -701,18 +671,6 @@
         {
         "MsmKey" = "8:_7E26843045DA6DA28E24B006DAC2C71F"
         "OwnerKey" = "8:_1A2E4867C1E2A52D7287ABB299C604D7"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_81B760A57BD74BF0BE89438A6E8F9976"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_83570287419B871CEF02442DBB3C710D"
-        "OwnerKey" = "8:_87E1AD6B3BD72DE72FD4B332C73B2ECF"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -777,12 +735,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_90DBC50713D74B19A706942DFDF1556F"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_910AE2C57B17248581BC21CC26CF6009"
         "OwnerKey" = "8:_011F309E78BD4309B14FAA65C6BE4F00"
         "MsmSig" = "8:_UNDEFINED"
@@ -831,6 +783,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_94AA0FAD48814CCDA4C3DBF7F14A383E"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_954FDB2852827D9D06DC54B1AFAEDD33"
         "OwnerKey" = "8:_011F309E78BD4309B14FAA65C6BE4F00"
         "MsmSig" = "8:_UNDEFINED"
@@ -839,18 +797,6 @@
         {
         "MsmKey" = "8:_9574EFF5EEED52225EEEB3AECA0F7439"
         "OwnerKey" = "8:_011F309E78BD4309B14FAA65C6BE4F00"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_96A446A721EC4755930A075DBFC0B32F"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_9A185EF74726CD6FBB7E3C17AA3506E6"
-        "OwnerKey" = "8:_87E1AD6B3BD72DE72FD4B332C73B2ECF"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -891,8 +837,32 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_A5831B826B71A35DEE3BC63D09103404"
+        "OwnerKey" = "8:_87E1AD6B3BD72DE72FD4B332C73B2ECF"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_A5831B826B71A35DEE3BC63D09103404"
+        "OwnerKey" = "8:_31B136E34C61CCD285B12CD7089CC5B7"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_A5831B826B71A35DEE3BC63D09103404"
+        "OwnerKey" = "8:_330A53328994C78C053BB77EF4506C77"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_A7ED32C3AD5CD5CC5BAC36ED94501516"
         "OwnerKey" = "8:_011F309E78BD4309B14FAA65C6BE4F00"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_A86233E99AC447D9F97467D1483FF1F9"
+        "OwnerKey" = "8:_87E1AD6B3BD72DE72FD4B332C73B2ECF"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -957,14 +927,8 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_B751BC56953D0145EDE3049E7065F4F3"
-        "OwnerKey" = "8:_87E1AD6B3BD72DE72FD4B332C73B2ECF"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_B751BC56953D0145EDE3049E7065F4F3"
-        "OwnerKey" = "8:_330A53328994C78C053BB77EF4506C77"
+        "MsmKey" = "8:_B6E92D723697416AB24C9CC83E23AA40"
+        "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -1143,7 +1107,7 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_D5DFB2EE6A0B4F7682A81893C6C83E04"
+        "MsmKey" = "8:_D4AB071A64524B468B32431F282AF443"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -1161,18 +1125,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_D8665C4EA1AF40EAAADFC023D734A787"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_D940466D9CA4488EAAAB857F75BD0F9B"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_D96ED832EA91D401DDBC5316B9F1DD7A"
         "OwnerKey" = "8:_011F309E78BD4309B14FAA65C6BE4F00"
         "MsmSig" = "8:_UNDEFINED"
@@ -1185,12 +1137,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_DEE2F3EFF96140069EF78C476592BA50"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_E0C49316926112301B119E67AB17465B"
         "OwnerKey" = "8:_011F309E78BD4309B14FAA65C6BE4F00"
         "MsmSig" = "8:_UNDEFINED"
@@ -1199,12 +1145,6 @@
         {
         "MsmKey" = "8:_E118048F3407830133AE6760A02E37C2"
         "OwnerKey" = "8:_011F309E78BD4309B14FAA65C6BE4F00"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_E28C71797DEC3AF6D6CBA50BD2140B04"
-        "OwnerKey" = "8:_87E1AD6B3BD72DE72FD4B332C73B2ECF"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -1239,12 +1179,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_E769A84F4EBD4CDEB47B73D7840BC5DC"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_E7E1D1A74AFA1319CAB08F106499CB7E"
         "OwnerKey" = "8:_011F309E78BD4309B14FAA65C6BE4F00"
         "MsmSig" = "8:_UNDEFINED"
@@ -1269,8 +1203,20 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_E96390096D294D1FB74F336CB7B06E1F"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_EAB82A67942AAD757060FF0498086B93"
         "OwnerKey" = "8:_011F309E78BD4309B14FAA65C6BE4F00"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_EE7AFF0068B34158A4B1AA4352894FE9"
+        "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -1281,7 +1227,7 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_EEFD605C4F724DE18E4E31986B81EC43"
+        "MsmKey" = "8:_F0B1853E664D4B90B5CCFBD300F19856"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -1409,6 +1355,12 @@
         {
         "MsmKey" = "8:_FB2BF2544AFDE3DFA74C46E4C472AE8B"
         "OwnerKey" = "8:_011F309E78BD4309B14FAA65C6BE4F00"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_FCC65ED4F7BA45BDA015D121C528C509"
+        "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -2224,12 +2176,6 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_0DE5DB27F6C2F90895AAF9165D880574"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_83570287419B871CEF02442DBB3C710D"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -2249,12 +2195,6 @@
         {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_29D399836006A1ADF845AF62C8EA75C1"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_2F24386FC439ACC8BD058BCA581121D2"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -2302,7 +2242,37 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_066793CF69EFA8C497C74C514A9E2D45"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_A86233E99AC447D9F97467D1483FF1F9"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_0DE5DB27F6C2F90895AAF9165D880574"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_A5831B826B71A35DEE3BC63D09103404"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_198136DF561A0D8CD0CB88DF2E47CEAB"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_2F24386FC439ACC8BD058BCA581121D2"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -2555,10 +2525,10 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_0963160A53E84DC2A5F0685162BE0181"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_05F9D48C5CCC4296A591C0D8DC8D28B2"
             {
-            "SourcePath" = "8:E:\\PC Backup\\FFXIV\\Release tests\\2.0 Beta3\\FFXIV TexTools 2.0 Beta3\\Skeletons\\c0201.skel"
-            "TargetName" = "8:c0201.skel"
+            "SourcePath" = "8:E:\\PC Backup\\FFXIV\\Release tests\\Skeletons\\c0101.skel"
+            "TargetName" = "8:c0101.skel"
             "Tag" = "8:"
             "Folder" = "8:_F6B9B25752884C8FB54B291B3396B6BF"
             "Condition" = "8:"
@@ -2573,6 +2543,37 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_066793CF69EFA8C497C74C514A9E2D45"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:TRUE"
+            "AssemblyAsmDisplayName" = "8:System.Security.SecureString, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_066793CF69EFA8C497C74C514A9E2D45"
+                    {
+                    "Name" = "8:System.Security.SecureString.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:System.Security.SecureString.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_77CAF92D06434A3E99D7BC6E60A833D2"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_096B28A2AA981123B040DA25479EBA2F"
@@ -2947,6 +2948,37 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_198136DF561A0D8CD0CB88DF2E47CEAB"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:TRUE"
+            "AssemblyAsmDisplayName" = "8:System.Diagnostics.Tracing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_198136DF561A0D8CD0CB88DF2E47CEAB"
+                    {
+                    "Name" = "8:System.Diagnostics.Tracing.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:System.Diagnostics.Tracing.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_77CAF92D06434A3E99D7BC6E60A833D2"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_1A2E4867C1E2A52D7287ABB299C604D7"
             {
             "AssemblyRegister" = "3:1"
@@ -3038,6 +3070,46 @@
             "Register" = "3:1"
             "Exclude" = "11:TRUE"
             "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_1F2F6D4DF1164EC7996ECCBC5D3B06AF"
+            {
+            "SourcePath" = "8:E:\\PC Backup\\FFXIV\\Release tests\\Skeletons\\c0901.skel"
+            "TargetName" = "8:c0901.skel"
+            "Tag" = "8:"
+            "Folder" = "8:_F6B9B25752884C8FB54B291B3396B6BF"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_1F8CE4AC556D458BBA0C1ACE8F91629D"
+            {
+            "SourcePath" = "8:E:\\PC Backup\\FFXIV\\Release tests\\Skeletons\\c0201.skel"
+            "TargetName" = "8:c0201.skel"
+            "Tag" = "8:"
+            "Folder" = "8:_F6B9B25752884C8FB54B291B3396B6BF"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_1FAC02EC2890248E882D5551E40F352E"
@@ -3224,6 +3296,26 @@
             "Register" = "3:1"
             "Exclude" = "11:TRUE"
             "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_2B2899BCD6394F4B999A10DB9195F471"
+            {
+            "SourcePath" = "8:E:\\PC Backup\\FFXIV\\Release tests\\Skeletons\\c0801.skel"
+            "TargetName" = "8:c0801.skel"
+            "Tag" = "8:"
+            "Folder" = "8:_F6B9B25752884C8FB54B291B3396B6BF"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_2F24386FC439ACC8BD058BCA581121D2"
@@ -3536,26 +3628,6 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_3FB7AA3C21504207AC01E94F1D0DFB6F"
-            {
-            "SourcePath" = "8:E:\\PC Backup\\FFXIV\\Release tests\\2.0 Beta3\\FFXIV TexTools 2.0 Beta3\\Skeletons\\c0901.skel"
-            "TargetName" = "8:c0901.skel"
-            "Tag" = "8:"
-            "Folder" = "8:_F6B9B25752884C8FB54B291B3396B6BF"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_42BC6FDE126856863B4AE98F6E1E1A07"
             {
             "AssemblyRegister" = "3:1"
@@ -3636,26 +3708,6 @@
             "Register" = "3:1"
             "Exclude" = "11:TRUE"
             "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_48DC80A10E394FF198FCB3643EAD6F8E"
-            {
-            "SourcePath" = "8:E:\\PC Backup\\FFXIV\\Release tests\\2.0 Beta3\\FFXIV TexTools 2.0 Beta3\\Skeletons\\c0801.skel"
-            "TargetName" = "8:c0801.skel"
-            "Tag" = "8:"
-            "Folder" = "8:_F6B9B25752884C8FB54B291B3396B6BF"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_49E797EBC0A0CD989316B757A04BEEBD"
@@ -3782,10 +3834,10 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_51D9E77FEBD94CF8A9B8E3216E570E95"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_4F7BA725FE734D1C887027BE1BBB6DB1"
             {
-            "SourcePath" = "8:E:\\PC Backup\\FFXIV\\Release tests\\2.0 Beta3\\FFXIV TexTools 2.0 Beta3\\Skeletons\\c1101.skel"
-            "TargetName" = "8:c1101.skel"
+            "SourcePath" = "8:E:\\PC Backup\\FFXIV\\Release tests\\Skeletons\\c1801.skel"
+            "TargetName" = "8:c1801.skel"
             "Tag" = "8:"
             "Folder" = "8:_F6B9B25752884C8FB54B291B3396B6BF"
             "Condition" = "8:"
@@ -4143,26 +4195,6 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_5A3CA1CFCFA44444A977A492C6853E4D"
-            {
-            "SourcePath" = "8:E:\\PC Backup\\FFXIV\\Release tests\\2.0 Beta3\\FFXIV TexTools 2.0 Beta3\\Skeletons\\c1001.skel"
-            "TargetName" = "8:c1001.skel"
-            "Tag" = "8:"
-            "Folder" = "8:_F6B9B25752884C8FB54B291B3396B6BF"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_5F591615FE2404E219BE906009AA6715"
             {
             "AssemblyRegister" = "3:1"
@@ -4285,6 +4317,46 @@
             "Register" = "3:1"
             "Exclude" = "11:TRUE"
             "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_6749C6AC268F45C8ACF8349ECAE2F5F7"
+            {
+            "SourcePath" = "8:E:\\PC Backup\\FFXIV\\Release tests\\Skeletons\\c1301.skel"
+            "TargetName" = "8:c1301.skel"
+            "Tag" = "8:"
+            "Folder" = "8:_F6B9B25752884C8FB54B291B3396B6BF"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_6864822B08674D44A49D3FA8A43911DF"
+            {
+            "SourcePath" = "8:E:\\PC Backup\\FFXIV\\Release tests\\Skeletons\\c1201.skel"
+            "TargetName" = "8:c1201.skel"
+            "Tag" = "8:"
+            "Folder" = "8:_F6B9B25752884C8FB54B291B3396B6BF"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_692D89BAB0EF452BB0E5851592FC51A9"
@@ -4411,6 +4483,26 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_6F10D2EBF3734C618AAE13C7F7ED1D78"
+            {
+            "SourcePath" = "8:E:\\PC Backup\\FFXIV\\Release tests\\Skeletons\\c0701.skel"
+            "TargetName" = "8:c0701.skel"
+            "Tag" = "8:"
+            "Folder" = "8:_F6B9B25752884C8FB54B291B3396B6BF"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_70E1FAE61BA1B874EF24EA68D0E3C6D4"
             {
             "AssemblyRegister" = "3:1"
@@ -4440,6 +4532,26 @@
             "Register" = "3:1"
             "Exclude" = "11:TRUE"
             "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_72C88EF4C31443148C60578A79F68E25"
+            {
+            "SourcePath" = "8:E:\\PC Backup\\FFXIV\\Release tests\\Skeletons\\c1101.skel"
+            "TargetName" = "8:c1101.skel"
+            "Tag" = "8:"
+            "Folder" = "8:_F6B9B25752884C8FB54B291B3396B6BF"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_74DE357E5FB50016FCCC048CFAE461D3"
@@ -4615,26 +4727,6 @@
             "Register" = "3:1"
             "Exclude" = "11:TRUE"
             "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_81B760A57BD74BF0BE89438A6E8F9976"
-            {
-            "SourcePath" = "8:E:\\PC Backup\\FFXIV\\Release tests\\2.0 Beta3\\FFXIV TexTools 2.0 Beta3\\Skeletons\\c0101.skel"
-            "TargetName" = "8:c0101.skel"
-            "Tag" = "8:"
-            "Folder" = "8:_F6B9B25752884C8FB54B291B3396B6BF"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_83570287419B871CEF02442DBB3C710D"
@@ -4947,26 +5039,6 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_90DBC50713D74B19A706942DFDF1556F"
-            {
-            "SourcePath" = "8:E:\\PC Backup\\FFXIV\\Release tests\\2.0 Beta3\\FFXIV TexTools 2.0 Beta3\\Skeletons\\c0601.skel"
-            "TargetName" = "8:c0601.skel"
-            "Tag" = "8:"
-            "Folder" = "8:_F6B9B25752884C8FB54B291B3396B6BF"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_910AE2C57B17248581BC21CC26CF6009"
             {
             "AssemblyRegister" = "3:1"
@@ -5091,6 +5163,26 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_94AA0FAD48814CCDA4C3DBF7F14A383E"
+            {
+            "SourcePath" = "8:E:\\PC Backup\\FFXIV\\Release tests\\Skeletons\\c0301.skel"
+            "TargetName" = "8:c0301.skel"
+            "Tag" = "8:"
+            "Folder" = "8:_F6B9B25752884C8FB54B291B3396B6BF"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_954FDB2852827D9D06DC54B1AFAEDD33"
             {
             "AssemblyRegister" = "3:1"
@@ -5151,26 +5243,6 @@
             "Register" = "3:1"
             "Exclude" = "11:TRUE"
             "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_96A446A721EC4755930A075DBFC0B32F"
-            {
-            "SourcePath" = "8:E:\\PC Backup\\FFXIV\\Release tests\\2.0 Beta3\\FFXIV TexTools 2.0 Beta3\\Skeletons\\c1201.skel"
-            "TargetName" = "8:c1201.skel"
-            "Tag" = "8:"
-            "Folder" = "8:_F6B9B25752884C8FB54B291B3396B6BF"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_9A185EF74726CD6FBB7E3C17AA3506E6"
@@ -5359,6 +5431,37 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_A5831B826B71A35DEE3BC63D09103404"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:TRUE"
+            "AssemblyAsmDisplayName" = "8:System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_A5831B826B71A35DEE3BC63D09103404"
+                    {
+                    "Name" = "8:System.Net.Http.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:System.Net.Http.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_77CAF92D06434A3E99D7BC6E60A833D2"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_A7ED32C3AD5CD5CC5BAC36ED94501516"
             {
             "AssemblyRegister" = "3:1"
@@ -5373,6 +5476,37 @@
                     }
                 }
             "SourcePath" = "8:System.Runtime.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_77CAF92D06434A3E99D7BC6E60A833D2"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_A86233E99AC447D9F97467D1483FF1F9"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:TRUE"
+            "AssemblyAsmDisplayName" = "8:System.Security.Cryptography.Algorithms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_A86233E99AC447D9F97467D1483FF1F9"
+                    {
+                    "Name" = "8:System.Security.Cryptography.Algorithms.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:System.Security.Cryptography.Algorithms.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_77CAF92D06434A3E99D7BC6E60A833D2"
@@ -5656,6 +5790,26 @@
             "Register" = "3:1"
             "Exclude" = "11:TRUE"
             "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_B6E92D723697416AB24C9CC83E23AA40"
+            {
+            "SourcePath" = "8:E:\\PC Backup\\FFXIV\\Release tests\\Skeletons\\c1501.skel"
+            "TargetName" = "8:c1501.skel"
+            "Tag" = "8:"
+            "Folder" = "8:_F6B9B25752884C8FB54B291B3396B6BF"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_B751BC56953D0145EDE3049E7065F4F3"
@@ -6340,10 +6494,10 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D5DFB2EE6A0B4F7682A81893C6C83E04"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D4AB071A64524B468B32431F282AF443"
             {
-            "SourcePath" = "8:E:\\PC Backup\\FFXIV\\Release tests\\2.0 Beta3\\FFXIV TexTools 2.0 Beta3\\Skeletons\\c0701.skel"
-            "TargetName" = "8:c0701.skel"
+            "SourcePath" = "8:E:\\PC Backup\\FFXIV\\Release tests\\Skeletons\\c0601.skel"
+            "TargetName" = "8:c0601.skel"
             "Tag" = "8:"
             "Folder" = "8:_F6B9B25752884C8FB54B291B3396B6BF"
             "Condition" = "8:"
@@ -6422,46 +6576,6 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D8665C4EA1AF40EAAADFC023D734A787"
-            {
-            "SourcePath" = "8:E:\\PC Backup\\FFXIV\\Release tests\\2.0 Beta3\\FFXIV TexTools 2.0 Beta3\\Skeletons\\c0301.skel"
-            "TargetName" = "8:c0301.skel"
-            "Tag" = "8:"
-            "Folder" = "8:_F6B9B25752884C8FB54B291B3396B6BF"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D940466D9CA4488EAAAB857F75BD0F9B"
-            {
-            "SourcePath" = "8:E:\\PC Backup\\FFXIV\\Release tests\\2.0 Beta3\\FFXIV TexTools 2.0 Beta3\\Skeletons\\c1301.skel"
-            "TargetName" = "8:c1301.skel"
-            "Tag" = "8:"
-            "Folder" = "8:_F6B9B25752884C8FB54B291B3396B6BF"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_D96ED832EA91D401DDBC5316B9F1DD7A"
             {
             "AssemblyRegister" = "3:1"
@@ -6522,26 +6636,6 @@
             "Register" = "3:1"
             "Exclude" = "11:TRUE"
             "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_DEE2F3EFF96140069EF78C476592BA50"
-            {
-            "SourcePath" = "8:E:\\PC Backup\\FFXIV\\Release tests\\2.0 Beta3\\FFXIV TexTools 2.0 Beta3\\Skeletons\\c0501.skel"
-            "TargetName" = "8:c0501.skel"
-            "Tag" = "8:"
-            "Folder" = "8:_F6B9B25752884C8FB54B291B3396B6BF"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_E0C49316926112301B119E67AB17465B"
@@ -6761,31 +6855,11 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E769A84F4EBD4CDEB47B73D7840BC5DC"
-            {
-            "SourcePath" = "8:E:\\PC Backup\\FFXIV\\Release tests\\2.0 Beta3\\FFXIV TexTools 2.0 Beta3\\Skeletons\\c0401.skel"
-            "TargetName" = "8:c0401.skel"
-            "Tag" = "8:"
-            "Folder" = "8:_F6B9B25752884C8FB54B291B3396B6BF"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_E7E1D1A74AFA1319CAB08F106499CB7E"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:xivModdingFramework, Version=1.0.4.0, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:xivModdingFramework, Version=1.0.5.0, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_E7E1D1A74AFA1319CAB08F106499CB7E"
@@ -6874,6 +6948,26 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E96390096D294D1FB74F336CB7B06E1F"
+            {
+            "SourcePath" = "8:E:\\PC Backup\\FFXIV\\Release tests\\Skeletons\\c0501.skel"
+            "TargetName" = "8:c0501.skel"
+            "Tag" = "8:"
+            "Folder" = "8:_F6B9B25752884C8FB54B291B3396B6BF"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_EAB82A67942AAD757060FF0498086B93"
             {
             "AssemblyRegister" = "3:1"
@@ -6903,6 +6997,26 @@
             "Register" = "3:1"
             "Exclude" = "11:TRUE"
             "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_EE7AFF0068B34158A4B1AA4352894FE9"
+            {
+            "SourcePath" = "8:E:\\PC Backup\\FFXIV\\Release tests\\Skeletons\\c0401.skel"
+            "TargetName" = "8:c0401.skel"
+            "Tag" = "8:"
+            "Folder" = "8:_F6B9B25752884C8FB54B291B3396B6BF"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_EEE9C7A1C3376136F857779C4A46A524"
@@ -6936,10 +7050,10 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_EEFD605C4F724DE18E4E31986B81EC43"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_F0B1853E664D4B90B5CCFBD300F19856"
             {
-            "SourcePath" = "8:E:\\PC Backup\\FFXIV\\Release tests\\2.0 Beta3\\FFXIV TexTools 2.0 Beta3\\Skeletons\\c1401.skel"
-            "TargetName" = "8:c1401.skel"
+            "SourcePath" = "8:E:\\PC Backup\\FFXIV\\Release tests\\Skeletons\\c1001.skel"
+            "TargetName" = "8:c1001.skel"
             "Tag" = "8:"
             "Folder" = "8:_F6B9B25752884C8FB54B291B3396B6BF"
             "Condition" = "8:"
@@ -7286,6 +7400,26 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_FCC65ED4F7BA45BDA015D121C528C509"
+            {
+            "SourcePath" = "8:E:\\PC Backup\\FFXIV\\Release tests\\Skeletons\\c1401.skel"
+            "TargetName" = "8:c1401.skel"
+            "Tag" = "8:"
+            "Folder" = "8:_F6B9B25752884C8FB54B291B3396B6BF"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_FE4EB4618D1360D84E071FE15A95D755"
             {
             "AssemblyRegister" = "3:1"
@@ -7514,15 +7648,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:FFXIV TexTools"
-        "ProductCode" = "8:{E9ECA26F-5F46-4249-A5FC-7D8FB9831E29}"
-        "PackageCode" = "8:{E25DCC3D-F51A-4F25-9F45-A3E6D8892933}"
+        "ProductCode" = "8:{110A5A6E-FC61-4C5F-BC7F-4AAED45FB59D}"
+        "PackageCode" = "8:{DB592E26-2459-43D9-B942-FCB001B19E4A}"
         "UpgradeCode" = "8:{97CAD3BC-216F-48B8-A5D3-640372D11C94}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:2.0.4"
+        "ProductVersion" = "8:2.0.7"
         "Manufacturer" = "8:FFXIV TexTools"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
@@ -8205,7 +8339,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_011F309E78BD4309B14FAA65C6BE4F00"
             {
-            "SourcePath" = "8:..\\FFXIV_TexTools\\obj\\Debug\\FFXIV_TexTools.exe"
+            "SourcePath" = "8:..\\FFXIV_TexTools\\obj\\Release\\FFXIV_TexTools.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_77CAF92D06434A3E99D7BC6E60A833D2"
