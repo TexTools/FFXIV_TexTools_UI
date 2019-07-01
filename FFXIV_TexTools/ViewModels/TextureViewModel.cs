@@ -422,7 +422,7 @@ namespace FFXIV_TexTools.ViewModels
                 }
 
                 // For hair and face we get the type (Hair, Accessory, Face, Iris, Etc)
-                if (_item.ItemCategory.Equals(XivStrings.Hair) || _item.ItemCategory.Equals(XivStrings.Face))
+                if (_item.ItemCategory.Equals(XivStrings.Hair) || _item.ItemCategory.Equals(XivStrings.Face) || _item.ItemCategory.Equals(XivStrings.Ears))
                 {
                     TypePartVisibility = Visibility.Visible;
                     var charaTypeParts = await _character.GetTypePartForTextures(_item as XivCharacter, SelectedRace.XivRace,
@@ -435,7 +435,7 @@ namespace FFXIV_TexTools.ViewModels
                     }
                 }
                 // For Body and Tail we use the type as a part list
-                else if (_item.ItemCategory.Equals(XivStrings.Body) || _item.ItemCategory.Equals(XivStrings.Tail) || _item.ItemCategory.Equals(XivStrings.Ears))
+                else if (_item.ItemCategory.Equals(XivStrings.Body) || _item.ItemCategory.Equals(XivStrings.Tail))
                 {
                     var parts = await _character.GetPartForTextures(_item as XivCharacter, SelectedRace.XivRace, int.Parse(SelectedPart.Name));
 
@@ -523,7 +523,7 @@ namespace FFXIV_TexTools.ViewModels
                 if (SelectedTypeIndex > -1)
                 {
                     Maps.Clear();
-                    if (_item.ItemCategory.Equals(XivStrings.Hair) || _item.ItemCategory.Equals(XivStrings.Face))
+                    if (_item.ItemCategory.Equals(XivStrings.Hair) || _item.ItemCategory.Equals(XivStrings.Face) || _item.ItemCategory.Equals(XivStrings.Ears))
                     {
                         TypeParts.Clear();
                         GetTypeParts();
