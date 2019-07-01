@@ -96,6 +96,9 @@ namespace FFXIV_TexTools.Views
             AddText($"\n{UIStrings.ProblemCheck_IndexBackups}\n", "Blue");
             await CheckBackups();
 
+            AddText($"\n{UIStrings.ProblemCheck_DatSize}\n", "Blue");
+            await CheckDatSizes();
+
             AddText($"\n{UIStrings.ProblemCheck_Dat}\n", "Blue");
             CheckDat();
 
@@ -211,6 +214,45 @@ namespace FFXIV_TexTools.Views
             {
                 AddText("\t\u2716\n", "Red");
                 AddText($"\t{UIStrings.ProblemCheck_DatMissing} \n", "Red");
+            }
+        }
+
+        private async Task CheckDatSizes()
+        {
+            var filesToCheck = new XivDataFile[]
+                {XivDataFile._0A_Exd, XivDataFile._01_Bgcommon, XivDataFile._04_Chara, XivDataFile._06_Ui};
+
+            foreach (var file in filesToCheck)
+            {
+                AddText($"\t{file.GetDataFileName()} Dat Files", textColor);
+
+                try
+                {
+                    var result = await _problemChecker.CheckForEmptyDatFiles(file);
+
+                    if (result.Count > 0)
+                    {
+                        foreach (var datNum in result)
+                        {
+                            AddText($"\n\t{datNum} \t\u2716\t", "Red");
+                            AddText($"\nFixing...", "Black");
+
+                            File.Delete($"{_gameDirectory}\\{file.GetDataFileName()}.win32.dat{datNum}");
+
+                            AddText($"\t\u2714\n", "Green");
+                        }
+                    }
+                    else
+                    {
+                        AddText("\t\u2714\n", "Green");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    FlexibleMessageBox.Show(
+                        $"{UIMessages.ProblemCheckDatIssueMessage}\n{ex.Message}", UIMessages.ProblemCheckErrorTitle,
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
 

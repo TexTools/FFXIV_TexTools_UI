@@ -1653,6 +1653,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Checking For Empty Dat Files.....
+        /// </summary>
+        public static string ProblemCheck_DatSize {
+            get {
+                return ResourceManager.GetString("ProblemCheck_DatSize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Errors found attempting to repair.....
         /// </summary>
         public static string ProblemCheck_ErrorsFound {
