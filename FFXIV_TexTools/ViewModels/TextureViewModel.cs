@@ -435,7 +435,7 @@ namespace FFXIV_TexTools.ViewModels
                     }
                 }
                 // For Body and Tail we use the type as a part list
-                else if (_item.ItemCategory.Equals(XivStrings.Body) || _item.ItemCategory.Equals(XivStrings.Tail))
+                else if (_item.ItemCategory.Equals(XivStrings.Body) || _item.ItemCategory.Equals(XivStrings.Tail) || _item.ItemCategory.Equals(XivStrings.Ears))
                 {
                     var parts = await _character.GetPartForTextures(_item as XivCharacter, SelectedRace.XivRace, int.Parse(SelectedPart.Name));
 

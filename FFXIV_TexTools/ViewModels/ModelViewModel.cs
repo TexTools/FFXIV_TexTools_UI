@@ -1775,6 +1775,28 @@ namespace FFXIV_TexTools.ViewModels
                         customColor = new Color(winColor.R, winColor.G, winColor.B, winColor.A);
 
                         break;
+                    // Ears
+                    case "cz":
+                        var tPath = mtrlFilePath.Substring(4);
+                        bodyID = int.Parse(tPath.Substring(tPath.IndexOf("z") + 1, 4));
+                        raceString = mtrlFilePath.Substring(mtrlFilePath.IndexOf("c") + 1, 4);
+                        race = XivRaces.GetXivRace(raceString);
+
+                        mtrlItem = new XivGenericItemModel
+                        {
+                            Category = XivStrings.Character,
+                            ItemCategory = XivStrings.Ears,
+                            Name = XivStrings.Ears,
+                            ModelInfo = new XivModelInfo
+                            {
+                                Body = bodyID
+                            }
+                        };
+
+                        winColor = (WinColor)ColorConverter.ConvertFromString(Settings.Default.Hair_Color);
+                        customColor = new Color(winColor.R, winColor.G, winColor.B, winColor.A);
+
+                        break;
                     // Equipment
                     case "ce":
                         modelID = int.Parse(mtrlFilePath.Substring(mtrlFilePath.IndexOf("e") + 1, 4));
