@@ -8,10 +8,10 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace FFXIV_TexTools.Resources
-{
-
-
+namespace FFXIV_TexTools.Resources {
+    using System;
+    
+    
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>
@@ -1029,6 +1029,15 @@ namespace FFXIV_TexTools.Resources
         internal static string ULD {
             get {
                 return ResourceManager.GetString("ULD", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Variant.
+        /// </summary>
+        internal static string Variant {
+            get {
+                return ResourceManager.GetString("Variant", resourceCulture);
             }
         }
         

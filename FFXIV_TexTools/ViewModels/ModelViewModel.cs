@@ -1681,7 +1681,7 @@ namespace FFXIV_TexTools.ViewModels
                         raceString = mtrlFilePath.Substring(mtrlFilePath.IndexOf("c") + 1, 4);
                         race = XivRaces.GetXivRace(raceString);
 
-                        if (!raceString.Equals("0901") && !raceString.Equals("1001") && !raceString.Equals("1101"))
+                        if (!raceString.Equals("0901") && !raceString.Equals("1001") && !raceString.Equals("1101") && !raceString.Equals("1501"))
                         {
                             var gender = 0;
                             if (int.Parse(raceString.Substring(0, 2)) % 2 == 0)
@@ -1765,6 +1765,28 @@ namespace FFXIV_TexTools.ViewModels
                             Category = XivStrings.Character,
                             ItemCategory = XivStrings.Tail,
                             Name = XivStrings.Tail,
+                            ModelInfo = new XivModelInfo
+                            {
+                                Body = bodyID
+                            }
+                        };
+
+                        winColor = (WinColor)ColorConverter.ConvertFromString(Settings.Default.Hair_Color);
+                        customColor = new Color(winColor.R, winColor.G, winColor.B, winColor.A);
+
+                        break;
+                    // Ears
+                    case "cz":
+                        var tPath = mtrlFilePath.Substring(4);
+                        bodyID = int.Parse(tPath.Substring(tPath.IndexOf("z") + 1, 4));
+                        raceString = mtrlFilePath.Substring(mtrlFilePath.IndexOf("c") + 1, 4);
+                        race = XivRaces.GetXivRace(raceString);
+
+                        mtrlItem = new XivGenericItemModel
+                        {
+                            Category = XivStrings.Character,
+                            ItemCategory = XivStrings.Ears,
+                            Name = XivStrings.Ears,
                             ModelInfo = new XivModelInfo
                             {
                                 Body = bodyID
