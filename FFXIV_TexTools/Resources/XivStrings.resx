@@ -450,4 +450,7 @@
   <data name="Paintings" xml:space="preserve">
     <value>Paintings</value>
   </data>
+  <data name="Variant" xml:space="preserve">
+    <value>Variant</value>
+  </data>
 </root>

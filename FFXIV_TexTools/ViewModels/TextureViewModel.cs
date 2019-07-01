@@ -434,15 +434,15 @@ namespace FFXIV_TexTools.ViewModels
                         Types.Add(new ComboBoxData{Name = charaTypePart.Key, TypeParts = charaTypePart.Value});
                     }
                 }
-                // For Body and Tail we use the type as a part list
                 else if (_item.ItemCategory.Equals(XivStrings.Body) || _item.ItemCategory.Equals(XivStrings.Tail))
                 {
-                    var parts = await _character.GetPartForTextures(_item as XivCharacter, SelectedRace.XivRace, int.Parse(SelectedPart.Name));
+                    TypePartVisibility = Visibility.Visible;
+                    var parts = await _character.GetVariantsForTextures(_item as XivCharacter, SelectedRace.XivRace, int.Parse(SelectedPart.Name));
 
-                    _typeCount = parts.Length;
+                    _typeCount = parts.Count;
                     foreach (var part in parts)
                     {
-                        Types.Add(new ComboBoxData{Name = part.ToString()});
+                        Types.Add(new ComboBoxData { Name = part.ToString() });
                     }
                 }
                 else
@@ -523,7 +523,8 @@ namespace FFXIV_TexTools.ViewModels
                 if (SelectedTypeIndex > -1)
                 {
                     Maps.Clear();
-                    if (_item.ItemCategory.Equals(XivStrings.Hair) || _item.ItemCategory.Equals(XivStrings.Face) || _item.ItemCategory.Equals(XivStrings.Ears))
+                    if (_item.Category.Equals(XivStrings.Character) && (_item.ItemCategory.Equals(XivStrings.Hair) || _item.ItemCategory.Equals(XivStrings.Face) ||
+                        _item.ItemCategory.Equals(XivStrings.Ears) || _item.ItemCategory.Equals(XivStrings.Body) || _item.ItemCategory.Equals(XivStrings.Tail)))
                     {
                         TypeParts.Clear();
                         GetTypeParts();
@@ -574,12 +575,17 @@ namespace FFXIV_TexTools.ViewModels
         /// <summary>
         /// Gets the type parts for the selected item
         /// </summary>
-        private void GetTypeParts()
+        private async void GetTypeParts()
         {
             var typeParts = SelectedType.TypeParts;
 
             if (_item.Category.Equals(XivStrings.Character))
             {
+                if (_item.ItemCategory.Equals(XivStrings.Body) || _item.ItemCategory.Equals(XivStrings.Tail))
+                {
+                    typeParts = await _character.GetPartForTextures(_item as XivCharacter, SelectedRace.XivRace, int.Parse(SelectedPart.Name), int.Parse(SelectedType.Name));
+                }
+
                 ((XivCharacter)_item).ItemSubCategory = SelectedType.Name;
             }
 
@@ -689,7 +695,7 @@ namespace FFXIV_TexTools.ViewModels
                     {
                         if (TypePartVisibility == Visibility.Visible)
                         {
-                            _xivMtrl = await _mtrl.GetMtrlData(_item, SelectedRace.XivRace, SelectedTypePart.Name[0], dxVersion);
+                            _xivMtrl = await _mtrl.GetMtrlData(_item, SelectedRace.XivRace, SelectedTypePart.Name[0], dxVersion, SelectedType.Name);
                         }
                         else
                         {
@@ -1755,11 +1761,19 @@ namespace FFXIV_TexTools.ViewModels
             {
                 PartWatermark = $"{XivStrings.Number}  |  {_partCount}";
 
-                TypeWatermark = TypePartVisibility == Visibility.Visible ? $"{XivStrings.Type}  |  {_typeCount}" : $"{XivStrings.Part}  |  {_typeCount}";
-
-                if (TypePartVisibility == Visibility.Visible)
+                if (_item.ItemCategory.Equals(XivStrings.Body))
                 {
-                    TypePartWatermark = $"{XivStrings.TypePart}  |  {_typePartCount}";
+                    TypeWatermark = XivStrings.Variant;
+                    TypePartWatermark = XivStrings.Part;
+                }
+                else
+                {
+                    TypeWatermark = TypePartVisibility == Visibility.Visible ? $"{XivStrings.Type}  |  {_typeCount}" : $"{XivStrings.Part}  |  {_typeCount}";
+
+                    if (TypePartVisibility == Visibility.Visible)
+                    {
+                        TypePartWatermark = $"{XivStrings.TypePart}  |  {_typePartCount}";
+                    }
                 }
             }
             else if (_item.ItemCategory.Equals(XivStrings.Mounts) && _item.ModelInfo.ModelType == XivItemType.demihuman)
