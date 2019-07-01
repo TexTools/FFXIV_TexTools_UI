@@ -35,12 +35,10 @@ using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Interop;
-using FFXIV_TexTools.Views;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Mods;
 using xivModdingFramework.SqPack.FileTypes;
-using MessageBox = System.Windows.Forms.MessageBox;
 
 namespace FFXIV_TexTools.ViewModels
 {
@@ -61,20 +59,8 @@ namespace FFXIV_TexTools.ViewModels
 
         public MainViewModel(MainWindow mainWindow)
         {
-            LanguageSelection();
-
             _mainWindow = mainWindow;
             _win32Window = new WindowWrapper(new WindowInteropHelper(_mainWindow).Handle);
-
-            var ci = new CultureInfo(Properties.Settings.Default.Application_Language)
-            {
-                NumberFormat = {NumberDecimalSeparator = "."}
-            };
-
-            CultureInfo.DefaultThreadCurrentCulture = ci;
-            CultureInfo.DefaultThreadCurrentUICulture = ci;
-            CultureInfo.CurrentCulture = ci;
-            CultureInfo.CurrentUICulture = ci;
 
             try
             {
@@ -141,22 +127,6 @@ namespace FFXIV_TexTools.ViewModels
             _mainWindow.SetFilter();
 
             SetDefaults();
-        }
-
-        private void LanguageSelection()
-        {
-            var lang = Properties.Settings.Default.Application_Language;
-
-            if (lang.Equals(string.Empty))
-            {
-                var langSelectView = new LanguageSelectView();
-                langSelectView.ShowDialog();
-
-                var langCode = langSelectView.LanguageCode;
-
-                Properties.Settings.Default.Application_Language = langCode;
-                Properties.Settings.Default.Save();
-            }
         }
 
         /// <summary>

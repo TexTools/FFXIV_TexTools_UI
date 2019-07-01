@@ -24,6 +24,7 @@ using MahApps.Metro;
 using MahApps.Metro.Controls.Dialogs;
 using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
@@ -51,6 +52,18 @@ namespace FFXIV_TexTools
 
         public MainWindow(string[] args)
         {
+            LanguageSelection();
+
+            var ci = new CultureInfo(Properties.Settings.Default.Application_Language)
+            {
+                NumberFormat = { NumberDecimalSeparator = "." }
+            };
+
+            CultureInfo.DefaultThreadCurrentCulture = ci;
+            CultureInfo.DefaultThreadCurrentUICulture = ci;
+            CultureInfo.CurrentCulture = ci;
+            CultureInfo.CurrentUICulture = ci;
+
             CheckForUpdates();
             CheckForSettingsUpdate();
 
@@ -101,6 +114,22 @@ namespace FFXIV_TexTools
             var modelViewModel = modelView.DataContext as ModelViewModel;
 
             modelViewModel.LoadingComplete += ModelViewModelOnLoadingComplete;
+        }
+
+        private void LanguageSelection()
+        {
+            var lang = Properties.Settings.Default.Application_Language;
+
+            if (lang.Equals(string.Empty))
+            {
+                var langSelectView = new LanguageSelectView();
+                langSelectView.ShowDialog();
+
+                var langCode = langSelectView.LanguageCode;
+
+                Properties.Settings.Default.Application_Language = langCode;
+                Properties.Settings.Default.Save();
+            }
         }
 
         private void ModelViewModelOnLoadingComplete(object sender, EventArgs e)
