@@ -79,7 +79,7 @@ namespace FFXIV_TexTools
             {
                 InitializeComponent();
 
-                if (System.Globalization.CultureInfo.CurrentUICulture.Name == "zh-CN")
+                if (System.Globalization.CultureInfo.CurrentUICulture.Name == "zh")
                 {
                     this.ChinaDiscordButton.Visibility = Visibility.Visible;
                 }
