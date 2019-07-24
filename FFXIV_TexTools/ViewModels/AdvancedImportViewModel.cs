@@ -947,12 +947,12 @@ namespace FFXIV_TexTools.ViewModels
             {
                 var materialIndex = MaterialsList.IndexOf(MaterialStringText);
                 var materialMdlIndex = _xivMdl.PathData.MaterialList.IndexOf(MaterialStringText);
-
+                var materialStringTextLength = MaterialStringText.Length;
                 MaterialsList.RemoveAt(materialIndex);
                 _xivMdl.PathData.MaterialList.RemoveAt(materialMdlIndex);
                 _xivMdl.ModelData.MaterialCount -= 1;
                 _xivMdl.PathData.PathCount -= 1;
-                _xivMdl.PathData.PathBlockSize -= MaterialStringText.Length + 1;
+                _xivMdl.PathData.PathBlockSize -= materialStringTextLength + 1;
             }
             else
             {
