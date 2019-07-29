@@ -732,4 +732,7 @@
   <data name="ModelStatus_Loading" xml:space="preserve">
     <value>Loading Model...</value>
   </data>
+  <data name="Add_NewTexturePart" xml:space="preserve">
+    <value>添加新的贴图组</value>
+  </data>
 </root>

@@ -607,6 +607,8 @@ namespace FFXIV_TexTools
                 await Task.Run(async () =>
                 {
                     var modding = new Modding(gameDirectory);
+                    await modding.DeleteAllFilesAddedByTexTools();
+
                     var dat = new Dat(gameDirectory);
 
                     var modListDirectory = new DirectoryInfo(Path.Combine(gameDirectory.Parent.Parent.FullName, XivStrings.ModlistFilePath));

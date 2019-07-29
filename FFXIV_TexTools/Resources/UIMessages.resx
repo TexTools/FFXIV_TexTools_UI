@@ -624,4 +624,10 @@ Language may be changed again later from the Language menu.</value>
   <data name="LanguageErrorTitle" xml:space="preserve">
     <value>Language Data Error</value>
   </data>
+  <data name="AddNewTexturePartErrorMessage" xml:space="preserve">
+    <value>Can't add more texture part</value>
+  </data>
+  <data name="AddNewTexturePartErrorTitle" xml:space="preserve">
+    <value>Error Add New Texture Part</value>
+  </data>
 </root>

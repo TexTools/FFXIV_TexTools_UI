@@ -914,7 +914,8 @@ namespace FFXIV_TexTools.Views
                     Name = mod.name,
                     Category = mod.category,
                     FullPath = mod.fullPath,
-                    ModDataBytes = rawData
+                    ModDataBytes = rawData,
+                    Source=mod.source
                 };
 
                 IncludedModsList.Items.Add(includedMod);
@@ -978,7 +979,8 @@ namespace FFXIV_TexTools.Views
                     Name = mod.name,
                     Category = mod.category,
                     FullPath = mod.fullPath,
-                    ModDataBytes = modData
+                    ModDataBytes = modData,
+                    Source=mod.source
                 });
             }
         }
@@ -1039,7 +1041,8 @@ namespace FFXIV_TexTools.Views
                     Name = mod.name,
                     Category = mod.category,
                     FullPath = mod.fullPath,
-                    ModDataBytes = rawData
+                    ModDataBytes = rawData,
+                    Source=mod.source
                 };
 
                 IncludedModsList.Items.Add(includedMod);
@@ -1103,7 +1106,8 @@ namespace FFXIV_TexTools.Views
                     Name = mod.name,
                     Category = mod.category,
                     FullPath = mod.fullPath,
-                    ModDataBytes = rawData
+                    ModDataBytes = rawData,
+                    Source=mod.source
                 };
 
                 IncludedModsList.Items.Add(includedMod);
@@ -1156,7 +1160,8 @@ namespace FFXIV_TexTools.Views
                         Name = mod.name,
                         Category = mod.category,
                         FullPath = mod.fullPath,
-                        ModDataBytes = advancedImportView.RawModelData
+                        ModDataBytes = advancedImportView.RawModelData,
+                        Source=mod.source
                     });
                 }
             }
@@ -1216,7 +1221,8 @@ namespace FFXIV_TexTools.Views
                     Name = mod.name,
                     Category = mod.category,
                     FullPath = mod.fullPath,
-                    ModDataBytes = mdlData
+                    ModDataBytes = mdlData,
+                    Source=mod.source
                 });
             }
         }

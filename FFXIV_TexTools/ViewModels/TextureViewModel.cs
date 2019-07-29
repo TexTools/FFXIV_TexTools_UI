@@ -83,7 +83,7 @@ namespace FFXIV_TexTools.ViewModels
         private string _modToggleText = UIStrings.Enable_Disable;
 
         private bool _raceEnabled, _partEnabled, _typeEnabled, _typePartEnabled, _mapEnabled, _channelsEnabled;
-        private bool _exportEnabled, _importEnabled, _ddsImportEnabled, _bmpImportEnabled, _modStatusEnabled, _moreOptionsEnabled, _translucencyEnabled, _translucencyCheck;
+        private bool _exportEnabled, _importEnabled, _ddsImportEnabled, _bmpImportEnabled, _modStatusEnabled, _moreOptionsEnabled, _translucencyEnabled, _translucencyCheck, _addNewTexturePartEnabled=true;
         private bool _redChecked = true, _greenChecked = true, _blueChecked = true, _alphaChecked;
 
         private int _raceIndex, _partIndex, _typeIndex, _typePartIndex, _mapIndex, _partCount, _typeCount, _typePartCount, _mapCount, _raceCount;
@@ -404,7 +404,6 @@ namespace FFXIV_TexTools.ViewModels
                 NotifyPropertyChanged(nameof(PartVisibility));
             }
         }
-
         /// <summary>
         /// Gets the type for the selected item
         /// </summary>
@@ -662,6 +661,7 @@ namespace FFXIV_TexTools.ViewModels
             }
         }
 
+        object _mapsLock=new Object();
         /// <summary>
         /// Gets the texture maps for the given item
         /// </summary>
@@ -836,16 +836,18 @@ namespace FFXIV_TexTools.ViewModels
 
                 PartVisibility = Visibility.Collapsed;
             }
-
-            foreach (var texTypePath in ttpList)
+            lock (_mapsLock)
             {
-                if (texTypePath.Name != null)
+                foreach (var texTypePath in ttpList)
                 {
-                    Maps.Add(new ComboBoxData { Name = texTypePath.Name, TexType = texTypePath });
-                }
-                else
-                {
-                    Maps.Add(new ComboBoxData { Name = texTypePath.Type.ToString(), TexType = texTypePath });
+                    if (texTypePath.Name != null)
+                    {
+                        Maps.Add(new ComboBoxData { Name = texTypePath.Name, TexType = texTypePath });
+                    }
+                    else
+                    {
+                        Maps.Add(new ComboBoxData { Name = texTypePath.Type.ToString(), TexType = texTypePath });
+                    }
                 }
             }
 
@@ -910,6 +912,8 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         public async void UpdateImage()
         {
+            if (!CheckMapIsOK())
+                return;
             ImageDisplay = null;
             ChannelsEnabled = true;
 
@@ -1170,6 +1174,8 @@ namespace FFXIV_TexTools.ViewModels
 
         private async void SaveDDS(object obj)
         {
+            if (!CheckMtrlIsOK())
+                return;
             XivTex texData;
             var savePath = new DirectoryInfo(Settings.Default.Save_Directory);
 
@@ -1203,6 +1209,8 @@ namespace FFXIV_TexTools.ViewModels
 
         private void SaveBmp(object obj)
         {
+            if (!CheckMtrlIsOK())
+                return;
             var savePath = new DirectoryInfo(Settings.Default.Save_Directory);
 
             var path = _uiItem != null ? IOUtil.MakeItemSavePath(_uiItem, savePath) : IOUtil.MakeItemSavePath(_item, savePath, SelectedRace.XivRace);
@@ -1222,6 +1230,8 @@ namespace FFXIV_TexTools.ViewModels
 
         private async void SaveAll(object obj)
         {
+            if (!CheckMtrlIsOK())
+                return;
             var texData = await _tex.GetTexData(SelectedMap.TexType);
 
             var savePath = new DirectoryInfo(Settings.Default.Save_Directory);
@@ -1286,6 +1296,8 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         private async void ImportDDS(object obj)
         {
+            if (!CheckMtrlIsOK())
+                return;
             var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
             var index = new Index(gameDirectory);
 
@@ -1363,6 +1375,8 @@ namespace FFXIV_TexTools.ViewModels
         /// </remarks>
         private async void ImportFrom(object obj)
         {
+            if (!CheckMtrlIsOK())
+                return;
             var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
             var index = new Index(gameDirectory);
 
@@ -1470,6 +1484,8 @@ namespace FFXIV_TexTools.ViewModels
 
         private async void ImportBMP(object obj)
         {
+            if (!CheckMtrlIsOK())
+                return;
             var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
             var index = new Index(gameDirectory);
 
@@ -1545,6 +1561,8 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         private async void ModStatusToggle(object obj)
         {
+            if (!CheckMtrlIsOK())
+                return;
             var gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
             var modlist = new Modding(gameDirectory);
 
@@ -1565,6 +1583,136 @@ namespace FFXIV_TexTools.ViewModels
             }
 
             UpdateImage();
+        }
+
+        /// <summary>
+        /// Command for the AddNewTexturePart Button
+        /// </summary>
+        public ICommand AddNewTexturePartButton => new RelayCommand(AddNewTexturePart);
+
+        /// <summary>
+        /// Add New Texture Part
+        /// </summary>
+        private async void AddNewTexturePart(object obj)
+        {
+            if (!CheckMtrlIsOK())
+                return;
+            //Legitimacy check
+            var partChars = new char[] { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
+            if (Types.Count >= partChars.Length)
+            {
+                FlexibleMessageBox.Show(UIMessages.AddNewTexturePartErrorTitle,
+                    UIMessages.AddNewTexturePartErrorMessage, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                //AddNewTexturePartEnabled = false;
+                return;
+            }
+            //Get the new part name
+            var newPartName = '\0';
+            for (var i = 1;i<partChars.Length;i++)
+            {
+                newPartName = partChars[i];
+                if (!Types.Any(it => it.Name == newPartName.ToString()))
+                {
+                    break;
+                }
+            }
+            if (newPartName=='\0')
+            {
+                FlexibleMessageBox.Show(UIMessages.AddNewTexturePartErrorTitle,
+                    UIMessages.AddNewTexturePartErrorMessage, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                //AddNewTexturePartEnabled = false;
+                return;
+            }
+            //Update the new part path;
+            var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
+            var index = new Index(gameDirectory);
+            if (index.IsIndexLocked(XivDataFile._0A_Exd))
+            {
+                FlexibleMessageBox.Show(UIMessages.IndexLockedErrorMessage,
+                    UIMessages.IndexLockedErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                return;
+            }
+            var mtrlOffset = await index.GetDataOffset(HashGenerator.GetHash(Path.GetDirectoryName(_xivMtrl.MTRLPath).Replace("\\","/")),HashGenerator.GetHash(Path.GetFileName(_xivMtrl.MTRLPath)),_item.DataFile);
+            var xivMtrl = await _mtrl.GetMtrlData(mtrlOffset,_xivMtrl.MTRLPath, 11);
+            for (var i = xivMtrl.TextureTypePathList.Count; i < _xivMtrl.TextureTypePathList.Count; i++) {
+                xivMtrl.TextureTypePathList.Add(_xivMtrl.TextureTypePathList[i]);
+            }
+            
+            var oldTexturePathSize = xivMtrl.TexturePathList.Sum(it => it.Length) + xivMtrl.TexturePathList.Count;
+            for (var i = 0; i < xivMtrl.TexturePathList.Count; i++)
+            {
+                var tmps = xivMtrl.TexturePathList[i].Split('_');
+                var typeName = tmps[tmps.Length - 1];
+                var oldPartName = tmps[tmps.Length - 2];
+                if (partChars.Any(it => it.ToString() == oldPartName))
+                {
+                    xivMtrl.TexturePathList[i] = xivMtrl.TexturePathList[i].Replace($"_{oldPartName}_{typeName}", $"_{newPartName}_{typeName}");                    
+                }
+                else
+                {
+                    xivMtrl.TexturePathList[i] = xivMtrl.TexturePathList[i].Replace($"_{typeName}", $"_{newPartName}_{typeName}");
+                }
+                xivMtrl.TexturePathOffsetList[i] = 0;
+                if (i > 0)
+                {
+                    xivMtrl.TexturePathOffsetList[i] = xivMtrl.TexturePathList[i - 1].Length + 1;
+                }
+            }
+            //Adjust data size
+            var newTexturePathSize= xivMtrl.TexturePathList.Sum(it => it.Length) + xivMtrl.TexturePathList.Count;
+            var valueOfSizeChange = newTexturePathSize - oldTexturePathSize;
+            xivMtrl.FileSize += (short)valueOfSizeChange;
+            if (valueOfSizeChange > 0)
+            {
+                xivMtrl.MaterialDataSize += (ushort)valueOfSizeChange;
+                xivMtrl.TexturePathsDataSize += (ushort)valueOfSizeChange;
+            }
+            else
+            {
+                xivMtrl.MaterialDataSize -= (ushort)(valueOfSizeChange * -1);
+                xivMtrl.TexturePathsDataSize -= (ushort)(valueOfSizeChange * -1);
+            }
+            for (var i = 0; i < xivMtrl.ColorSetPathOffsetList.Count; i++)
+            {
+                xivMtrl.ColorSetPathOffsetList[i] += valueOfSizeChange;
+            }
+            for (var i = 0; i < xivMtrl.MapPathOffsetList.Count; i++)
+            {
+                xivMtrl.MapPathOffsetList[i] += valueOfSizeChange;
+            }
+            //add new mtrl            
+            var tmps2 = xivMtrl.MTRLPath.Split('_');
+            xivMtrl.MTRLPath = xivMtrl.MTRLPath.Replace($"_{tmps2[tmps2.Length - 1]}", $"_{newPartName}.mtrl");
+
+            var newMtrlOffset = await _mtrl.ImportMtrl(xivMtrl, _item, "AddNewTexturePart");
+            //add new tex
+            if (Directory.Exists("AddNewTexturePartTexTmps"))
+            {
+                Directory.Delete("AddNewTexturePartTexTmps", true);
+            }
+            var dirInfo=Directory.CreateDirectory("AddNewTexturePartTexTmps");
+            for (var i = 0; i < xivMtrl.TexturePathList.Count; i++)
+            {                
+                var xivTex = await _tex.GetTexData(xivMtrl.TextureTypePathList[i]);
+                _tex.SaveTexAsDDS(_item, xivTex, dirInfo, SelectedRace.XivRace);
+                var oldPath = xivMtrl.TextureTypePathList[i].Path;
+                xivTex.TextureTypeAndPath.Path = xivMtrl.TexturePathList[i];
+                var newOffset = await _tex.TexDDSImporter(xivTex, _item, new DirectoryInfo(Directory.GetFiles("AddNewTexturePartTexTmps", $"{Path.GetFileNameWithoutExtension(oldPath)}.dds", SearchOption.AllDirectories)[0]), "AddNewTexturePart");
+            }
+            if (Directory.Exists("AddNewTexturePartTexTmps"))
+            {
+                Directory.Delete("AddNewTexturePartTexTmps", true);
+            }
+            //update ui    
+            void SetToNewTexturePart(object sender, EventArgs e)
+            {
+                LoadingComplete -= SetToNewTexturePart;
+                SelectedType = Types[Types.Count - 1];
+            }
+            LoadingComplete += SetToNewTexturePart;
+            SelectedPart = SelectedPart;
+            _textureView.BottomFlyout.IsOpen = false;
         }
 
         /// <summary>
@@ -1667,6 +1815,19 @@ namespace FFXIV_TexTools.ViewModels
             {
                 _translucencyEnabled = value;
                 NotifyPropertyChanged(nameof(TranslucencyEnabled));
+            }
+        }
+
+        /// <summary>
+        /// The enabled status of the add new texture part button        
+        /// </summary>
+        public bool AddNewTexturePartEnabled
+        {
+            get => _addNewTexturePartEnabled;
+            set
+            {
+                _addNewTexturePartEnabled = value;
+                NotifyPropertyChanged(nameof(AddNewTexturePartEnabled));
             }
         }
 
@@ -1966,6 +2127,34 @@ namespace FFXIV_TexTools.ViewModels
         protected virtual void OnLoadingComplete()
         {
             LoadingComplete?.Invoke(this, EventArgs.Empty);
+        }
+        private bool CheckMtrlIsOK()
+        {
+            _textureView.BottomFlyout.IsOpen = false;
+            var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
+            var index = new Index(gameDirectory);
+            var offset = index.GetDataOffset(HashGenerator.GetHash(Path.GetDirectoryName(_xivMtrl.MTRLPath).Replace("\\", "/")), HashGenerator.GetHash(Path.GetFileName(_xivMtrl.MTRLPath)), _item.DataFile).GetAwaiter().GetResult();
+            if (offset == 0)
+            {
+                SelectedPart = SelectedPart;
+                return false;
+            }
+            return CheckMapIsOK();
+        }
+        private bool CheckMapIsOK()
+        {
+            var path = SelectedMap.TexType.Path;
+            _textureView.BottomFlyout.IsOpen = false;
+            var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
+            var index = new Index(gameDirectory);
+
+            var offset = index.GetDataOffset(HashGenerator.GetHash(Path.GetDirectoryName(path).Replace("\\", "/")), HashGenerator.GetHash(Path.GetFileName(path)), _item.DataFile).GetAwaiter().GetResult();
+            if (offset == 0)
+            {
+                SelectedPart = SelectedPart;
+                return false;
+            }
+            return true;
         }
     }
 }

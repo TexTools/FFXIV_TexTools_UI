@@ -886,4 +886,7 @@ If you would like to enable this, first import a texture for the selected item.<
   <data name="ProblemCheck_DatSize" xml:space="preserve">
     <value>Checking For Empty Dat Files....</value>
   </data>
+  <data name="Add_NewTexturePart" xml:space="preserve">
+    <value>Add New Texture Part</value>
+  </data>
 </root>
