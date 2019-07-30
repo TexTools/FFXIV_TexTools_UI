@@ -187,7 +187,6 @@ namespace FFXIV_TexTools.Views
                         Map = map,
                         Active = active,
                         ModEntry = mod,
-                        Source=mod.source
                     }));
                 }
             });
@@ -556,7 +555,6 @@ namespace FFXIV_TexTools.Views
                     ModOffset = simpleEntry.ModEntry.data.modOffset,
                     ModSize = simpleEntry.ModEntry.data.modSize,
                     DatFile = simpleEntry.ModEntry.datFile,
-                    Source = simpleEntry.ModEntry.source
                     
                 };
 

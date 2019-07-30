@@ -915,7 +915,6 @@ namespace FFXIV_TexTools.Views
                     Category = mod.category,
                     FullPath = mod.fullPath,
                     ModDataBytes = rawData,
-                    Source=mod.source
                 };
 
                 IncludedModsList.Items.Add(includedMod);
@@ -980,7 +979,6 @@ namespace FFXIV_TexTools.Views
                     Category = mod.category,
                     FullPath = mod.fullPath,
                     ModDataBytes = modData,
-                    Source=mod.source
                 });
             }
         }
@@ -1042,7 +1040,6 @@ namespace FFXIV_TexTools.Views
                     Category = mod.category,
                     FullPath = mod.fullPath,
                     ModDataBytes = rawData,
-                    Source=mod.source
                 };
 
                 IncludedModsList.Items.Add(includedMod);
@@ -1107,7 +1104,6 @@ namespace FFXIV_TexTools.Views
                     Category = mod.category,
                     FullPath = mod.fullPath,
                     ModDataBytes = rawData,
-                    Source=mod.source
                 };
 
                 IncludedModsList.Items.Add(includedMod);
@@ -1161,7 +1157,6 @@ namespace FFXIV_TexTools.Views
                         Category = mod.category,
                         FullPath = mod.fullPath,
                         ModDataBytes = advancedImportView.RawModelData,
-                        Source=mod.source
                     });
                 }
             }
@@ -1222,7 +1217,6 @@ namespace FFXIV_TexTools.Views
                     Category = mod.category,
                     FullPath = mod.fullPath,
                     ModDataBytes = mdlData,
-                    Source=mod.source
                 });
             }
         }

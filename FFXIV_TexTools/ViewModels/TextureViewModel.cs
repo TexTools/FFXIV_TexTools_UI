@@ -660,8 +660,6 @@ namespace FFXIV_TexTools.ViewModels
                 NotifyPropertyChanged(nameof(TypePartVisibility));
             }
         }
-
-        object _mapsLock=new Object();
         /// <summary>
         /// Gets the texture maps for the given item
         /// </summary>
@@ -836,18 +834,15 @@ namespace FFXIV_TexTools.ViewModels
 
                 PartVisibility = Visibility.Collapsed;
             }
-            lock (_mapsLock)
+            foreach (var texTypePath in ttpList)
             {
-                foreach (var texTypePath in ttpList)
+                if (texTypePath.Name != null)
                 {
-                    if (texTypePath.Name != null)
-                    {
-                        Maps.Add(new ComboBoxData { Name = texTypePath.Name, TexType = texTypePath });
-                    }
-                    else
-                    {
-                        Maps.Add(new ComboBoxData { Name = texTypePath.Type.ToString(), TexType = texTypePath });
-                    }
+                    Maps.Add(new ComboBoxData { Name = texTypePath.Name, TexType = texTypePath });
+                }
+                else
+                {
+                    Maps.Add(new ComboBoxData { Name = texTypePath.Type.ToString(), TexType = texTypePath });
                 }
             }
 
@@ -1599,7 +1594,7 @@ namespace FFXIV_TexTools.ViewModels
                 return;
             //Legitimacy check
             var partChars = new char[] { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
-            if (Types.Count >= partChars.Length)
+            if (Types.Count >= 6)
             {
                 FlexibleMessageBox.Show(UIMessages.AddNewTexturePartErrorTitle,
                     UIMessages.AddNewTexturePartErrorMessage, MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1685,7 +1680,7 @@ namespace FFXIV_TexTools.ViewModels
             var tmps2 = xivMtrl.MTRLPath.Split('_');
             xivMtrl.MTRLPath = xivMtrl.MTRLPath.Replace($"_{tmps2[tmps2.Length - 1]}", $"_{newPartName}.mtrl");
 
-            var newMtrlOffset = await _mtrl.ImportMtrl(xivMtrl, _item, "AddNewTexturePart");
+            var newMtrlOffset = await _mtrl.ImportMtrl(xivMtrl, _item, "FilesAddedByTexTools");
             //add new tex
             if (Directory.Exists("AddNewTexturePartTexTmps"))
             {
