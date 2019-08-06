@@ -630,4 +630,10 @@ Language may be changed again later from the Language menu.</value>
   <data name="AddNewTexturePartErrorTitle" xml:space="preserve">
     <value>Error Add New Texture Part</value>
   </data>
+  <data name="AddNewTexturePartQuestionMessage" xml:space="preserve">
+    <value>Whether to add diffuse mapping?</value>
+  </data>
+  <data name="AddNewTexturePartQuestionTitle" xml:space="preserve">
+    <value>Add Diffuse Mapping</value>
+  </data>
 </root>

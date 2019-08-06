@@ -79,6 +79,24 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   查找类似 Whether to add diffuse mapping? 的本地化字符串。
+        /// </summary>
+        internal static string AddNewTexturePartQuestionMessage {
+            get {
+                return ResourceManager.GetString("AddNewTexturePartQuestionMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Add Diffuse Mapping 的本地化字符串。
+        /// </summary>
+        internal static string AddNewTexturePartQuestionTitle {
+            get {
+                return ResourceManager.GetString("AddNewTexturePartQuestionTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Advanced Import Error 的本地化字符串。
         /// </summary>
         internal static string AdvancedImportErrorTitle {

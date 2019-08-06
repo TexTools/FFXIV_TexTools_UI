@@ -1630,11 +1630,58 @@ namespace FFXIV_TexTools.ViewModels
             }
             var mtrlOffset = await index.GetDataOffset(HashGenerator.GetHash(Path.GetDirectoryName(_xivMtrl.MTRLPath).Replace("\\","/")),HashGenerator.GetHash(Path.GetFileName(_xivMtrl.MTRLPath)),_item.DataFile);
             var xivMtrl = await _mtrl.GetMtrlData(mtrlOffset,_xivMtrl.MTRLPath, 11);
-            for (var i = xivMtrl.TextureTypePathList.Count; i < _xivMtrl.TextureTypePathList.Count; i++) {
-                xivMtrl.TextureTypePathList.Add(_xivMtrl.TextureTypePathList[i]);
-            }
-            
             var oldTexturePathSize = xivMtrl.TexturePathList.Sum(it => it.Length) + xivMtrl.TexturePathList.Count;
+            var oldTexturePathOffsetDataSize = xivMtrl.TexturePathOffsetList.Count * 4;
+            var oldStructSize = xivMtrl.DataStruct1Count * 8 + xivMtrl.DataStruct2Count * 8 + xivMtrl.ParameterStructCount * 12;
+            for (var i = xivMtrl.TextureTypePathList.Count; i < _xivMtrl.TextureTypePathList.Count; i++) {
+                var tmpTypePath = _xivMtrl.TextureTypePathList[i];
+                xivMtrl.TextureTypePathList.Add(new TexTypePath() { DataFile=tmpTypePath.DataFile,Name=tmpTypePath.Name,Path=tmpTypePath.Path,Type=tmpTypePath.Type});
+            }
+            var textureTypePathListBak = new List<TexTypePath>();
+            for (var i = 0; i < xivMtrl.TextureTypePathList.Count; i++)
+            {
+                var tmpTypePath = xivMtrl.TextureTypePathList[i];
+                textureTypePathListBak.Add(new TexTypePath() { DataFile = tmpTypePath.DataFile, Name = tmpTypePath.Name, Path = tmpTypePath.Path, Type = tmpTypePath.Type });
+            }
+            bool tplNeedAdd = xivMtrl.TexturePathList.Count == 2 && xivMtrl.TexturePathList[0].EndsWith("_n.tex") && xivMtrl.TexturePathList[1].EndsWith("_m.tex");
+            if(tplNeedAdd
+                &&FlexibleMessageBox.Show(UIMessages.AddNewTexturePartQuestionMessage,
+                    UIMessages.AddNewTexturePartQuestionTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Question)!=DialogResult.Yes
+            )
+            {
+                tplNeedAdd = false;
+            }
+            if (tplNeedAdd)
+            {
+                var tmpTpl = xivMtrl.TexturePathList[0];
+                xivMtrl.TexturePathList.Insert(0, tmpTpl.Replace("_n.tex", "_d.tex"));
+                xivMtrl.TexturePathOffsetList.Add(0);
+                xivMtrl.TexturePathUnknownList.Add(0);
+                xivMtrl.TexturePathList[2] = xivMtrl.TexturePathList[2].Replace("_m.tex", "_s.tex");
+                var tmpTexTypePath = xivMtrl.TextureTypePathList[0];
+                xivMtrl.TextureTypePathList.Insert(0, new TexTypePath() { DataFile = tmpTexTypePath.DataFile, Path = tmpTexTypePath.Path.Replace("_n.tex", "_d.tex"), Type = XivTexType.Diffuse });
+                xivMtrl.TextureTypePathList[2].Path = xivMtrl.TextureTypePathList[2].Path.Replace("_m.tex", "_s.tex");
+                xivMtrl.TextureTypePathList[2].Type = XivTexType.Specular;
+
+                xivMtrl.DataStruct1Count = 3;
+                xivMtrl.DataStruct1List.Clear();
+                xivMtrl.DataStruct1List.Add(new DataStruct1(){ID= 0xf52ccf05, Unknown1= 0xa7d2ff60 });
+                xivMtrl.DataStruct1List.Add(new DataStruct1() { ID = 0xb616dc5a, Unknown1 = 0x600ef9df });
+                xivMtrl.DataStruct1List.Add(new DataStruct1() { ID = 0xd2777173, Unknown1 = 0xf35f5131 });
+
+                xivMtrl.DataStruct2Count = 3;
+                xivMtrl.DataStruct2List.Clear();
+                xivMtrl.DataStruct2List.Add(new DataStruct2() { ID = 0x29ac0223, Offset = 0x0000, Size= 0x0004 });
+                xivMtrl.DataStruct2List.Add(new DataStruct2() { ID = 0x575abfb2, Offset = 0x0004, Size = 0x0004 });
+                xivMtrl.DataStruct2List.Add(new DataStruct2() { ID = 0x15b70e35, Offset = 0x0008, Size = 0x0004 });
+
+
+                xivMtrl.ParameterStructCount = 3;
+                xivMtrl.ParameterStructList.Clear();
+                xivMtrl.ParameterStructList.Add(new ParameterStruct() { ID = 0x115306be, TextureIndex = 0x00000000, Unknown1 = -31936, Unknown2 = 0x000f });
+                xivMtrl.ParameterStructList.Add(new ParameterStruct() { ID = 0x0c5ec1f1, TextureIndex = 0x00000001, Unknown1 = -32768, Unknown2 = 0x000f });
+                xivMtrl.ParameterStructList.Add(new ParameterStruct() { ID = 0x2b99e025, TextureIndex = 0x00000002, Unknown1 = -31936, Unknown2 = 0x000f });
+            }
             for (var i = 0; i < xivMtrl.TexturePathList.Count; i++)
             {
                 var tmps = xivMtrl.TexturePathList[i].Split('_');
@@ -1651,13 +1698,16 @@ namespace FFXIV_TexTools.ViewModels
                 xivMtrl.TexturePathOffsetList[i] = 0;
                 if (i > 0)
                 {
-                    xivMtrl.TexturePathOffsetList[i] = xivMtrl.TexturePathList[i - 1].Length + 1;
+                    xivMtrl.TexturePathOffsetList[i] = xivMtrl.TexturePathOffsetList[i-1]+xivMtrl.TexturePathList[i - 1].Length + 1;
                 }
             }
             //Adjust data size
             var newTexturePathSize= xivMtrl.TexturePathList.Sum(it => it.Length) + xivMtrl.TexturePathList.Count;
             var valueOfSizeChange = newTexturePathSize - oldTexturePathSize;
-            xivMtrl.FileSize += (short)valueOfSizeChange;
+            xivMtrl.FileSize += (short)(valueOfSizeChange+xivMtrl.TexturePathOffsetList.Count*4- oldTexturePathOffsetDataSize);
+            var newStructSize = xivMtrl.DataStruct1Count * 8 + xivMtrl.DataStruct2Count * 8 + xivMtrl.ParameterStructCount * 12;
+            xivMtrl.FileSize += (short)(newStructSize - oldStructSize);
+            xivMtrl.TextureCount = (byte)xivMtrl.TexturePathList.Count;
             if (valueOfSizeChange > 0)
             {
                 xivMtrl.MaterialDataSize += (ushort)valueOfSizeChange;
@@ -1688,11 +1738,28 @@ namespace FFXIV_TexTools.ViewModels
             }
             var dirInfo=Directory.CreateDirectory("AddNewTexturePartTexTmps");
             for (var i = 0; i < xivMtrl.TexturePathList.Count; i++)
-            {                
-                var xivTex = await _tex.GetTexData(xivMtrl.TextureTypePathList[i]);
-                _tex.SaveTexAsDDS(_item, xivTex, dirInfo, SelectedRace.XivRace);
-                var oldPath = xivMtrl.TextureTypePathList[i].Path;
+            {
+                var typePathIndex = i;
+                if(tplNeedAdd)
+                {
+                    switch (i)
+                    {
+                        case 0:
+                            typePathIndex = 1;
+                            break;
+                        case 1:
+                            typePathIndex = 0;
+                            break;
+                        case 2:
+                            typePathIndex = 1;
+                            break;
+                    }
+                }
+                var xivTex = await _tex.GetTexData(textureTypePathListBak[typePathIndex]);
+                _tex.SaveTexAsDDS(_item, xivTex, dirInfo, SelectedRace.XivRace);                
+                var oldPath = textureTypePathListBak[typePathIndex].Path;
                 xivTex.TextureTypeAndPath.Path = xivMtrl.TexturePathList[i];
+                xivTex.TextureTypeAndPath.Type = xivMtrl.TextureTypePathList[i].Type;
                 var newOffset = await _tex.TexDDSImporter(xivTex, _item, new DirectoryInfo(Directory.GetFiles("AddNewTexturePartTexTmps", $"{Path.GetFileNameWithoutExtension(oldPath)}.dds", SearchOption.AllDirectories)[0]), "AddNewTexturePart");
             }
             if (Directory.Exists("AddNewTexturePartTexTmps"))
