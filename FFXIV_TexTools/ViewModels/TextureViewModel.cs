@@ -1727,10 +1727,26 @@ namespace FFXIV_TexTools.ViewModels
                 xivMtrl.MapPathOffsetList[i] += valueOfSizeChange;
             }
             //add new mtrl            
-            var tmps2 = xivMtrl.MTRLPath.Split('_');
-            xivMtrl.MTRLPath = xivMtrl.MTRLPath.Replace($"_{tmps2[tmps2.Length - 1]}", $"_{newPartName}.mtrl");
-
-            var newMtrlOffset = await _mtrl.ImportMtrl(xivMtrl, _item, "FilesAddedByTexTools");
+            List<string> searchCategoriesList = new List<string>()
+            {
+                XivStrings.Equipment,
+                XivStrings.Accessory,
+                XivStrings.Weapon,
+                XivStrings.Monster,
+                XivStrings.DemiHuman,
+                XivStrings.Furniture
+            };
+            var gear = new Gear(gameDirectory, GetLanguage());
+            var sameModelItems = (await gear.GetGearList()).Where(it => it.ModelInfo.ModelID == _item.ModelInfo.ModelID);
+            var oldVersionStr = $"/v{_item.ModelInfo.Variant.ToString().PadLeft(4, '0')}/";
+            foreach (var item in sameModelItems)
+            {
+                var tmps2 = xivMtrl.MTRLPath.Split('_');
+                xivMtrl.MTRLPath = xivMtrl.MTRLPath.Replace($"_{tmps2[tmps2.Length - 1]}", $"_{newPartName}.mtrl");
+                xivMtrl.MTRLPath = xivMtrl.MTRLPath.Replace(oldVersionStr, $"/v{item.ModelInfo.Variant.ToString().PadLeft(4,'0')}/");
+                oldVersionStr = $"/v{item.ModelInfo.Variant.ToString().PadLeft(4, '0')}/";
+                var newMtrlOffset = await _mtrl.ImportMtrl(xivMtrl, item, "FilesAddedByTexTools");
+            }
             //add new tex
             if (Directory.Exists("AddNewTexturePartTexTmps"))
             {
@@ -2210,13 +2226,16 @@ namespace FFXIV_TexTools.ViewModels
             var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
             var index = new Index(gameDirectory);
 
-            var offset = index.GetDataOffset(HashGenerator.GetHash(Path.GetDirectoryName(path).Replace("\\", "/")), HashGenerator.GetHash(Path.GetFileName(path)), _item.DataFile).GetAwaiter().GetResult();
-            if (offset == 0)
+            var dataFile = _item.DataFile;
+            if (path.StartsWith("ui/"))
+                dataFile = XivDataFile._06_Ui;
+            var offset = index.GetDataOffset(HashGenerator.GetHash(Path.GetDirectoryName(path).Replace("\\", "/")), HashGenerator.GetHash(Path.GetFileName(path)),dataFile).GetAwaiter().GetResult();
+            if (offset>0)
             {
-                SelectedPart = SelectedPart;
-                return false;
+                return true;
             }
-            return true;
+            SelectedPart = SelectedPart;
+            return false;
         }
     }
 }
