@@ -79,7 +79,8 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
-        ///   查找类似 Whether to add diffuse mapping? 的本地化字符串。
+        ///   查找类似 Whether to add diffuse mapping?
+        ///Selecting Yes will add a diffuse map, and selecting No will add a default map. 的本地化字符串。
         /// </summary>
         internal static string AddNewTexturePartQuestionMessage {
             get {
