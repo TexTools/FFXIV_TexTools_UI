@@ -40,6 +40,7 @@ using xivModdingFramework.Items.Enums;
 using xivModdingFramework.Items.Interfaces;
 using xivModdingFramework.Materials.DataContainers;
 using xivModdingFramework.Materials.FileTypes;
+using xivModdingFramework.Models.FileTypes;
 using xivModdingFramework.Mods;
 using xivModdingFramework.Mods.Enums;
 using xivModdingFramework.SqPack.FileTypes;
@@ -1727,26 +1728,28 @@ namespace FFXIV_TexTools.ViewModels
                 xivMtrl.MapPathOffsetList[i] += valueOfSizeChange;
             }
             //add new mtrl            
-            List<string> searchCategoriesList = new List<string>()
-            {
-                XivStrings.Equipment,
-                XivStrings.Accessory,
-                XivStrings.Weapon,
-                XivStrings.Monster,
-                XivStrings.DemiHuman,
-                XivStrings.Furniture
-            };
             var gear = new Gear(gameDirectory, GetLanguage());
-            var sameModelItems = (await gear.GetGearList()).Where(it => it.ModelInfo.ModelID == _item.ModelInfo.ModelID);
+            var mdl = new Mdl(gameDirectory, _item.DataFile);
+            var mdlData=await mdl.GetMdlData(_item, SelectedRace.XivRace);
+            var sameModelItems = (await gear.GetGearList())
+                .Where(it =>
+                it.ModelInfo.ModelID == _item.ModelInfo.ModelID
+                && it.ItemCategory == _item.ItemCategory);
             var oldVersionStr = $"/v{_item.ModelInfo.Variant.ToString().PadLeft(4, '0')}/";
             foreach (var item in sameModelItems)
             {
+                var itemMdlData= await mdl.GetMdlData(item, SelectedRace.XivRace);
+                if (mdlData.MdlPath != itemMdlData.MdlPath)
+                {
+                    continue;
+                }
                 var tmps2 = xivMtrl.MTRLPath.Split('_');
                 xivMtrl.MTRLPath = xivMtrl.MTRLPath.Replace($"_{tmps2[tmps2.Length - 1]}", $"_{newPartName}.mtrl");
-                xivMtrl.MTRLPath = xivMtrl.MTRLPath.Replace(oldVersionStr, $"/v{item.ModelInfo.Variant.ToString().PadLeft(4,'0')}/");
+                xivMtrl.MTRLPath = xivMtrl.MTRLPath.Replace(oldVersionStr, $"/v{item.ModelInfo.Variant.ToString().PadLeft(4, '0')}/");
                 oldVersionStr = $"/v{item.ModelInfo.Variant.ToString().PadLeft(4, '0')}/";
                 var newMtrlOffset = await _mtrl.ImportMtrl(xivMtrl, item, "FilesAddedByTexTools");
             }
+
             //add new tex
             if (Directory.Exists("AddNewTexturePartTexTmps"))
             {
