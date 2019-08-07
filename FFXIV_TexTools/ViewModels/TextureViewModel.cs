@@ -1736,6 +1736,7 @@ namespace FFXIV_TexTools.ViewModels
                 it.ModelInfo.ModelID == _item.ModelInfo.ModelID
                 && it.ItemCategory == _item.ItemCategory);
             var oldVersionStr = $"/v{_item.ModelInfo.Variant.ToString().PadLeft(4, '0')}/";
+            var oldMTRLPath = xivMtrl.MTRLPath;
             foreach (var item in sameModelItems)
             {
                 var itemMdlData= await mdl.GetMdlData(item, SelectedRace.XivRace);
@@ -1743,9 +1744,13 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     continue;
                 }
+                var dxVersion = int.Parse(Properties.Settings.Default.DX_Version);
+                var itemXivMtrl = await _mtrl.GetMtrlData(item, SelectedRace.XivRace, Path.GetFileName(oldMTRLPath), dxVersion);
                 var tmps2 = xivMtrl.MTRLPath.Split('_');
                 xivMtrl.MTRLPath = xivMtrl.MTRLPath.Replace($"_{tmps2[tmps2.Length - 1]}", $"_{newPartName}.mtrl");
                 xivMtrl.MTRLPath = xivMtrl.MTRLPath.Replace(oldVersionStr, $"/v{item.ModelInfo.Variant.ToString().PadLeft(4, '0')}/");
+                xivMtrl.ColorSetData = itemXivMtrl.ColorSetData;
+                xivMtrl.ColorSetExtraData = itemXivMtrl.ColorSetExtraData;
                 oldVersionStr = $"/v{item.ModelInfo.Variant.ToString().PadLeft(4, '0')}/";
                 var newMtrlOffset = await _mtrl.ImportMtrl(xivMtrl, item, "FilesAddedByTexTools");
             }
