@@ -952,14 +952,24 @@ namespace FFXIV_TexTools.Views
                 var xivMtrl = await mtrl.GetMtrlData(mod.data.modOffset, mod.fullPath, int.Parse(Settings.Default.DX_Version));
 
                 modData = tex.DDStoMtrlData(xivMtrl, ddsDirectory, ((Category) ModListTreeView.SelectedItem).Item, GetLanguage());
+                var dat = new Dat(_gameDirectory);
+                modData = await dat.CreateType2Data(modData);
             }
             else
             {
-                var texData = await tex.GetTexData(selectedItem.TexTypePath);
+                try
+                {
+                    var texData = await tex.GetTexData(selectedItem.TexTypePath);
 
-                modData = await tex.DDStoTexData(texData, ((Category)ModListTreeView.SelectedItem).Item, ddsDirectory);
+                    modData = await tex.DDStoTexData(texData, ((Category)ModListTreeView.SelectedItem).Item, ddsDirectory);
+                }
+                catch(Exception ex)
+                {
+                    FlexibleMessageBox.Show(ex.Message);
+                    return;
+                }
             }
-
+            
             if (includedModsList.Any(item => item.Name.Equals(includedMod.Name)))
             {
                 if (FlexibleMessageBox.Show(

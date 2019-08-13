@@ -640,15 +640,15 @@ namespace FFXIV_TexTools.ViewModels
                         }
 
                         // Part
-                        if (itemPath.Contains("_b_"))
+                        if (itemPath.Contains("_b_")|| itemPath.Contains("_b."))
                         {
                             modListModel.Part = "b";
                         }
-                        else if (itemPath.Contains("_c_"))
+                        else if (itemPath.Contains("_c_")|| itemPath.Contains("_c."))
                         {
                             modListModel.Part = "c";
                         }
-                        else if (itemPath.Contains("_d_"))
+                        else if (itemPath.Contains("_d_")|| itemPath.Contains("_d."))
                         {
                             modListModel.Part = "d";
                         }
