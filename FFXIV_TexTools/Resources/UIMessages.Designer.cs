@@ -850,6 +850,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   查找类似 Loading ModPack 的本地化字符串。
+        /// </summary>
+        internal static string ModPackLoadingTitle {
+            get {
+                return ResourceManager.GetString("ModPackLoadingTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Location of ModPacks folder changed.
         ///
         ///
@@ -1035,6 +1044,15 @@ namespace FFXIV_TexTools.Resources {
         internal static string NoNameFoundTitle {
             get {
                 return ResourceManager.GetString("NoNameFoundTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 This is not a wizard modPack 的本地化字符串。
+        /// </summary>
+        internal static string NotWizardModPack {
+            get {
+                return ResourceManager.GetString("NotWizardModPack", resourceCulture);
             }
         }
         

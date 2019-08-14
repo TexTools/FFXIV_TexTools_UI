@@ -124,6 +124,12 @@
   <data name="AddNewTexturePartQuestionTitle" xml:space="preserve">
     <value>添加漫反射贴图</value>
   </data>
+  <data name="ModPackLoadingTitle" xml:space="preserve">
+    <value>加载Mod包</value>
+  </data>
+  <data name="NotWizardModPack" xml:space="preserve">
+    <value>这不是一个向导型Mod包</value>
+  </data>
   <data name="StartOverMessage" xml:space="preserve">
     <value>初始化将：
 

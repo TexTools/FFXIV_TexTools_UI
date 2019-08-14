@@ -889,4 +889,7 @@ If you would like to enable this, first import a texture for the selected item.<
   <data name="Add_NewTexturePart" xml:space="preserve">
     <value>Add New Texture Part</value>
   </data>
+  <data name="Load_From" xml:space="preserve">
+    <value>Load From...</value>
+  </data>
 </root>

@@ -990,6 +990,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   查找类似 Load From... 的本地化字符串。
+        /// </summary>
+        public static string Load_From {
+            get {
+                return ResourceManager.GetString("Load_From", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Loading 的本地化字符串。
         /// </summary>
         public static string Loading {
