@@ -758,6 +758,10 @@ namespace FFXIV_TexTools.ViewModels
             else
             {
                 var importDictMesh = _importDictionary[SelectedMeshNumber.ToString()];
+                if (!importDictMesh.PartAttributeDictionary.ContainsKey(SelectedPartNumber))
+                {
+                    importDictMesh.PartAttributeDictionary.Add(SelectedPartNumber, 0);
+                }
                 attributeMask = importDictMesh.PartAttributeDictionary[SelectedPartNumber];
             }
             for (var i = 0; i < AttributeList.Count; i++)
