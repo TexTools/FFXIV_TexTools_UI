@@ -29,6 +29,7 @@ using xivModdingFramework.Mods.FileTypes;
 using System.IO.Compression;
 using SharpDX.Text;
 using System.Windows.Data;
+using System.Linq;
 
 namespace FFXIV_TexTools.Views
 {
@@ -278,8 +279,9 @@ namespace FFXIV_TexTools.Views
             }
             this.ModPackAuthor.Text = ttmpData.ModPackJson.Author;
             this.ModPackName.Text = ttmpData.ModPackJson.Name;
+            this.ModPackVersion.Mask = "0.0.0";
             this.ModPackVersion.Mask = ttmpData.ModPackJson.Version;
-            this.ModPackVersion.Text = ttmpData.ModPackJson.Version;
+            this.ModPackVersion.Text= ttmpData.ModPackJson.Version;
             this.ModPackDescription.Text = ttmpData.ModPackJson.Description;
             for (var i = modPackWizard.Items.Count - 1; i > 0; i--)
             {
@@ -347,7 +349,7 @@ namespace FFXIV_TexTools.Views
                         view.GroupDescriptions.Clear();
                         view.GroupDescriptions.Add(groupDescription);
                     }
-                    if (modGroup.OptionList.Count > 0) modGroup.OptionList[0].IsChecked = true;
+                    if (modGroup.OptionList.Count > 0&&modGroup.OptionList.Count(it=>it.IsChecked)==0) modGroup.OptionList[0].IsChecked = true;
                 }
 
                 modPackWizard.Items.Add(wizPage);
