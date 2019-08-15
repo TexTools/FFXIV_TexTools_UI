@@ -737,21 +737,35 @@ namespace FFXIV_TexTools.ViewModels
         private void UpdateAttributesUsed()
         {
             var attributeNameList = new List<string>();
+            var attributeMask = 0;
 
             if (_lod.MeshDataList.Count > SelectedMeshNumber)
             {
                 if (_lod.MeshDataList[SelectedMeshNumber].MeshPartList.Count > SelectedPartNumber)
                 {
-                    var attributeMask = _lod.MeshDataList[SelectedMeshNumber].MeshPartList[SelectedPartNumber].AttributeIndex;
-
-                    for (var i = 0; i < AttributeList.Count; i++)
+                    attributeMask = _lod.MeshDataList[SelectedMeshNumber].MeshPartList[SelectedPartNumber].AttributeIndex;                    
+                }
+                else
+                {
+                    var importDictMesh = _importDictionary[SelectedMeshNumber.ToString()];
+                    if (!importDictMesh.PartAttributeDictionary.ContainsKey(SelectedPartNumber))
                     {
-                        var value = 1 << i;
-                        if ((attributeMask & value) > 0)
-                        {
-                            attributeNameList.Add($"{AttributeList[i]}");
-                        }
+                        importDictMesh.PartAttributeDictionary.Add(SelectedPartNumber, 0);
                     }
+                    attributeMask = importDictMesh.PartAttributeDictionary[SelectedPartNumber];
+                }
+            }
+            else
+            {
+                var importDictMesh = _importDictionary[SelectedMeshNumber.ToString()];
+                attributeMask = importDictMesh.PartAttributeDictionary[SelectedPartNumber];
+            }
+            for (var i = 0; i < AttributeList.Count; i++)
+            {
+                var value = 1 << i;
+                if ((attributeMask & value) > 0)
+                {
+                    attributeNameList.Add($"{AttributeList[i]}");
                 }
             }
 
