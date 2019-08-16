@@ -1749,6 +1749,7 @@ namespace FFXIV_TexTools.ViewModels
                 var tmps2 = xivMtrl.MTRLPath.Split('_');
                 xivMtrl.MTRLPath = xivMtrl.MTRLPath.Replace($"_{tmps2[tmps2.Length - 1]}", $"_{newPartName}.mtrl");
                 xivMtrl.MTRLPath = xivMtrl.MTRLPath.Replace(oldVersionStr, $"/v{item.ModelInfo.Variant.ToString().PadLeft(4, '0')}/");
+                xivMtrl.ColorSetDataSize = itemXivMtrl.ColorSetDataSize;
                 xivMtrl.ColorSetData = itemXivMtrl.ColorSetData;
                 xivMtrl.ColorSetExtraData = itemXivMtrl.ColorSetExtraData;
                 oldVersionStr = $"/v{item.ModelInfo.Variant.ToString().PadLeft(4, '0')}/";
