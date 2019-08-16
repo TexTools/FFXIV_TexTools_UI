@@ -19,6 +19,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using xivModdingFramework.Mods.DataContainers;
+using System.Linq;
 
 namespace FFXIV_TexTools.Views
 {
@@ -41,7 +42,11 @@ namespace FFXIV_TexTools.Views
             {
                 if (modGroupJson.SelectionType.Equals("Single"))
                 {
-                    modGroupJson.OptionList[0].IsChecked = true;
+                    var checkedOption = modGroupJson.OptionList.SingleOrDefault(it => it.IsChecked);
+                    if (checkedOption==null)
+                    {
+                        modGroupJson.OptionList[0].IsChecked = true;
+                    }
                 }
 
                 ((List<ModOptionJson>)OptionsList.ItemsSource).AddRange(modGroupJson.OptionList);

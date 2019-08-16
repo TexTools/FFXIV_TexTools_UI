@@ -79,7 +79,7 @@ namespace FFXIV_TexTools
             {
                 InitializeComponent();
 
-                if (System.Globalization.CultureInfo.CurrentUICulture.Name == "zh-CN")
+                if (System.Globalization.CultureInfo.CurrentUICulture.Name == "zh")
                 {
                     this.ChinaDiscordButton.Visibility = Visibility.Visible;
                 }
@@ -607,6 +607,8 @@ namespace FFXIV_TexTools
                 await Task.Run(async () =>
                 {
                     var modding = new Modding(gameDirectory);
+                    await modding.DeleteAllFilesAddedByTexTools();
+
                     var dat = new Dat(gameDirectory);
 
                     var modListDirectory = new DirectoryInfo(Path.Combine(gameDirectory.Parent.Parent.FullName, XivStrings.ModlistFilePath));
