@@ -914,7 +914,7 @@ namespace FFXIV_TexTools.Views
                     Name = mod.name,
                     Category = mod.category,
                     FullPath = mod.fullPath,
-                    ModDataBytes = rawData
+                    ModDataBytes = rawData,
                 };
 
                 IncludedModsList.Items.Add(includedMod);
@@ -952,14 +952,24 @@ namespace FFXIV_TexTools.Views
                 var xivMtrl = await mtrl.GetMtrlData(mod.data.modOffset, mod.fullPath, int.Parse(Settings.Default.DX_Version));
 
                 modData = tex.DDStoMtrlData(xivMtrl, ddsDirectory, ((Category) ModListTreeView.SelectedItem).Item, GetLanguage());
+                var dat = new Dat(_gameDirectory);
+                modData = await dat.CreateType2Data(modData);
             }
             else
             {
-                var texData = await tex.GetTexData(selectedItem.TexTypePath);
+                try
+                {
+                    var texData = await tex.GetTexData(selectedItem.TexTypePath);
 
-                modData = await tex.DDStoTexData(texData, ((Category)ModListTreeView.SelectedItem).Item, ddsDirectory);
+                    modData = await tex.DDStoTexData(texData, ((Category)ModListTreeView.SelectedItem).Item, ddsDirectory);
+                }
+                catch(Exception ex)
+                {
+                    FlexibleMessageBox.Show(ex.Message);
+                    return;
+                }
             }
-
+            
             if (includedModsList.Any(item => item.Name.Equals(includedMod.Name)))
             {
                 if (FlexibleMessageBox.Show(
@@ -978,7 +988,7 @@ namespace FFXIV_TexTools.Views
                     Name = mod.name,
                     Category = mod.category,
                     FullPath = mod.fullPath,
-                    ModDataBytes = modData
+                    ModDataBytes = modData,
                 });
             }
         }
@@ -1039,7 +1049,7 @@ namespace FFXIV_TexTools.Views
                     Name = mod.name,
                     Category = mod.category,
                     FullPath = mod.fullPath,
-                    ModDataBytes = rawData
+                    ModDataBytes = rawData,
                 };
 
                 IncludedModsList.Items.Add(includedMod);
@@ -1103,7 +1113,7 @@ namespace FFXIV_TexTools.Views
                     Name = mod.name,
                     Category = mod.category,
                     FullPath = mod.fullPath,
-                    ModDataBytes = rawData
+                    ModDataBytes = rawData,
                 };
 
                 IncludedModsList.Items.Add(includedMod);
@@ -1132,8 +1142,9 @@ namespace FFXIV_TexTools.Views
             var mdl = new Mdl(_gameDirectory, XivDataFiles.GetXivDataFile(mod.datFile));
 
             var xivMdl = await mdl.GetMdlData(itemModel, GetRace(mod.fullPath), null, null, mod.data.originalOffset);
+            var modMdl = await mdl.GetMdlData(itemModel, GetRace(mod.fullPath), null, null, mod.data.modOffset);
 
-            var advancedImportView = new AdvancedModelImportView(xivMdl, itemModel, GetRace(mod.fullPath), true);
+            var advancedImportView = new AdvancedModelImportView(xivMdl, modMdl, itemModel, GetRace(mod.fullPath), true);
             var result = advancedImportView.ShowDialog();
 
             if (result == true)
@@ -1156,7 +1167,7 @@ namespace FFXIV_TexTools.Views
                         Name = mod.name,
                         Category = mod.category,
                         FullPath = mod.fullPath,
-                        ModDataBytes = advancedImportView.RawModelData
+                        ModDataBytes = advancedImportView.RawModelData,
                     });
                 }
             }
@@ -1216,7 +1227,7 @@ namespace FFXIV_TexTools.Views
                     Name = mod.name,
                     Category = mod.category,
                     FullPath = mod.fullPath,
-                    ModDataBytes = mdlData
+                    ModDataBytes = mdlData,
                 });
             }
         }

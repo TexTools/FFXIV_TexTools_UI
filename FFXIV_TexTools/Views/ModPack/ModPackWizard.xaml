@@ -48,6 +48,7 @@
                             </Grid.ColumnDefinitions>
                             <Label Content="{Binding Source={x:Static resx:UIStrings.Author_colon}}" Grid.Column="0" VerticalAlignment="Center"/>
                             <TextBox x:Name="ModPackAuthor" Text="{Binding ModPackAuthor}" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.Mod_Pack_Author}}" Grid.Column="1" Margin="5" TabIndex="1"/>
+                            <Button x:Name="LoadFromButton" Click="LoadFromButton_Click" Content="{Binding Source={x:Static resx:UIStrings.Load_From}}" Grid.Column="1" Margin="5" Grid.Row="1"></Button>
                         </Grid>
                     </Grid>
                 </Grid>

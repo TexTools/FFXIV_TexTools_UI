@@ -186,7 +186,7 @@ namespace FFXIV_TexTools.Views
                         Num = number,
                         Map = map,
                         Active = active,
-                        ModEntry = mod
+                        ModEntry = mod,
                     }));
                 }
             });
@@ -554,7 +554,8 @@ namespace FFXIV_TexTools.Views
                     FullPath = simpleEntry.ModEntry.fullPath,
                     ModOffset = simpleEntry.ModEntry.data.modOffset,
                     ModSize = simpleEntry.ModEntry.data.modSize,
-                    DatFile = simpleEntry.ModEntry.datFile
+                    DatFile = simpleEntry.ModEntry.datFile,
+                    
                 };
 
                 simpleModPackData.SimpleModDataList.Add(simpleData);
