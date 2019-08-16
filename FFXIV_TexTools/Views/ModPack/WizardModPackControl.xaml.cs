@@ -176,6 +176,7 @@ namespace FFXIV_TexTools.Views
                 }
 
                 ModGroupList.Remove(modGroupToDelete);
+                ModGroupNames.Remove(option.GroupName);
 
                 OptionsList.ItemsSource = new List<ModOption>();
 

@@ -1142,8 +1142,9 @@ namespace FFXIV_TexTools.Views
             var mdl = new Mdl(_gameDirectory, XivDataFiles.GetXivDataFile(mod.datFile));
 
             var xivMdl = await mdl.GetMdlData(itemModel, GetRace(mod.fullPath), null, null, mod.data.originalOffset);
+            var modMdl = await mdl.GetMdlData(itemModel, GetRace(mod.fullPath), null, null, mod.data.modOffset);
 
-            var advancedImportView = new AdvancedModelImportView(xivMdl, itemModel, GetRace(mod.fullPath), true);
+            var advancedImportView = new AdvancedModelImportView(xivMdl, modMdl, itemModel, GetRace(mod.fullPath), true);
             var result = advancedImportView.ShowDialog();
 
             if (result == true)

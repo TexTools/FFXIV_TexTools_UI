@@ -1511,16 +1511,18 @@ namespace FFXIV_TexTools.ViewModels
                 // pass in the original mdl if the current one is modded
                 if (modData != null && modData.enabled)
                 {
-                    var mdl = await _mdl.GetMdlData(_item, SelectedRace.XivRace, null, modData.fullPath,
+                    var originalMdl = await _mdl.GetMdlData(_item, SelectedRace.XivRace, null, modData.fullPath,
+                        modData.data.originalOffset);
+                    var modMdl = await _mdl.GetMdlData(_item, SelectedRace.XivRace, null, modData.fullPath,
                         modData.data.modOffset);
 
-                    var advImportedView = new AdvancedModelImportView(mdl, _item, SelectedRace.XivRace, false)
+                    var advImportedView = new AdvancedModelImportView(originalMdl, modMdl, _item, SelectedRace.XivRace, false)
                         { Owner = Window.GetWindow(_modelView) };
                     result = advImportedView.ShowDialog();
                 }
                 else
                 {
-                    var advImportedView = new AdvancedModelImportView(_mdlData, _item, SelectedRace.XivRace, false)
+                    var advImportedView = new AdvancedModelImportView(_mdlData,null, _item, SelectedRace.XivRace, false)
                         { Owner = Window.GetWindow(_modelView) };
                     result = advImportedView.ShowDialog();
                 }
