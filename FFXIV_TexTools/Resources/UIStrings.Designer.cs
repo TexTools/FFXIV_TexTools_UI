@@ -360,6 +360,24 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   查找类似 Convert 的本地化字符串。
+        /// </summary>
+        public static string Convert {
+            get {
+                return ResourceManager.GetString("Convert", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Convert To 的本地化字符串。
+        /// </summary>
+        public static string Convert_To {
+            get {
+                return ResourceManager.GetString("Convert_To", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Count 的本地化字符串。
         /// </summary>
         public static string Count {
