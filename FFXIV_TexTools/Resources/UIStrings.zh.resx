@@ -738,4 +738,7 @@
   <data name="Load_From" xml:space="preserve">
     <value>从外部加载</value>
   </data>
+  <data name="Mod_Converter" xml:space="preserve">
+    <value>MOD转换器</value>
+  </data>
 </root>

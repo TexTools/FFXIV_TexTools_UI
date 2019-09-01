@@ -20,9 +20,12 @@ using FFXIV_TexTools.Properties;
 using FFXIV_TexTools.Resources;
 using FFXIV_TexTools.ViewModels;
 using FFXIV_TexTools.Views;
+using ImageMagick;
 using MahApps.Metro;
 using MahApps.Metro.Controls.Dialogs;
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -35,6 +38,7 @@ using xivModdingFramework.General.Enums;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Items.Interfaces;
 using xivModdingFramework.Mods;
+using xivModdingFramework.Mods.DataContainers;
 using xivModdingFramework.Mods.FileTypes;
 using xivModdingFramework.SqPack.FileTypes;
 using Application = System.Windows.Application;
@@ -154,7 +158,22 @@ namespace FFXIV_TexTools
 
         private void CheckForUpdates()
         {
+            AutoUpdater.CheckForUpdateEvent += AutoUpdater_CheckForUpdateEvent;
             AutoUpdater.Start(WebUrl.TexTools_Update_Url);
+        }
+
+        private void AutoUpdater_CheckForUpdateEvent(UpdateInfoEventArgs args)
+        {
+            AutoUpdater.CheckForUpdateEvent -= AutoUpdater_CheckForUpdateEvent;
+            if (!args.IsUpdateAvailable)
+            {            
+                Task.Run(() => {
+                    AutoUpdater.Start(WebUrl.TexToolsPre_Update_Url);
+                });
+            }
+            else {
+                AutoUpdater.ShowUpdateForm();
+            }
         }
 
         private void CheckForSettingsUpdate()
@@ -785,6 +804,63 @@ namespace FFXIV_TexTools
         private void ChinaDiscordButton_Click(object sender, RoutedEventArgs e)
         {
             Process.Start(WebUrl.Discord_China);
+        }
+
+        private async void Menu_ModConverter_Click(object sender, RoutedEventArgs e)
+        {
+            var modPackDirectory = new DirectoryInfo(Settings.Default.ModPack_Directory);
+            var openFileDialog = new OpenFileDialog { InitialDirectory = modPackDirectory.FullName, Filter = "TexToolsModPack TTMP (*.ttmp;*.ttmp2)|*.ttmp;*.ttmp2" };
+            if (openFileDialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+                return;
+            var ttmpFileName = openFileDialog.FileName;
+            var ttmp = new TTMP(modPackDirectory, XivStrings.TexTools);
+            (ModPackJson ModPackJson, Dictionary<string, MagickImage> ImageDictionary) ttmpData;
+            var progressController = await this.ShowProgressAsync(UIStrings.Mod_Converter, UIMessages.PleaseStandByMessage);
+            try
+            {
+                ttmpData = await ttmp.GetModPackJsonData(new DirectoryInfo(ttmpFileName));
+            }
+            catch
+            {
+                ttmpData = (ModPackJson:new ModPackJson(), ImageDictionary:new Dictionary<string, MagickImage>());
+                ttmpData.ModPackJson.Author = "Mod Converter";
+                ttmpData.ModPackJson.Version = "1.0.0";
+                ttmpData.ModPackJson.Name = Path.GetFileNameWithoutExtension(ttmpFileName);
+                ttmpData.ModPackJson.TTMPVersion = "s";
+                ttmpData.ModPackJson.SimpleModsList = new List<ModsJson>();
+                var modsJsonList=await ttmp.GetOriginalModPackJsonData(new DirectoryInfo(ttmpFileName));
+                foreach(var mod in modsJsonList)
+                {
+                    var modsJson = new ModsJson();
+                    modsJson.Category = mod.Category;
+                    modsJson.DatFile = mod.DatFile;
+                    modsJson.FullPath = mod.FullPath;
+                    modsJson.ModOffset = mod.ModOffset;
+                    modsJson.ModPackEntry = null;
+                    modsJson.ModSize = mod.ModSize;
+                    modsJson.Name = mod.Name;
+                    ttmpData.ModPackJson.SimpleModsList.Add(modsJson);
+                }
+            }
+            var categorys = ItemTreeView.ItemsSource as ObservableCollection<Category>;
+            var list= new List<xivModdingFramework.Items.Interfaces.IItem>();
+            var ctgs1 = categorys[0];
+            foreach (var ctgs2 in ctgs1.Categories)
+            {
+                if (ctgs2.Item != null)
+                {
+                    list.Add(ctgs2.Item);
+                    continue;
+                }
+                foreach (var ctgs3 in ctgs2.Categories)
+                {
+                    if (ctgs3.Item != null)
+                        list.Add(ctgs3.Item);
+                }
+            }
+            var modConverterView = new ModConverterView(list,ttmpFileName, ttmpData) { Owner = this,WindowStartupLocation=WindowStartupLocation.CenterOwner };
+            await progressController.CloseAsync();
+            modConverterView.ShowDialog();
         }
     }
 }

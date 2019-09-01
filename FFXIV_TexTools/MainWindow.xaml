@@ -51,6 +51,7 @@
                     <MenuItem x:Name="Menu_DisableAll" Header="{Binding Source={x:Static resx:UIStrings.Disable_All_Mods}}" Command="{Binding DisableAllModsCommand}"/>
                     <MenuItem x:Name="Menu_EnableAll" Header="{Binding Source={x:Static resx:UIStrings.Enable_All_Mods}}" Command="{Binding EnableAllModsCommand}"/>
                 </MenuItem>
+                <MenuItem x:Name="Menu_ModConverter" IsEnabled="False" Header="{Binding Source={x:Static resx:UIStrings.Mod_Converter}}" Click="Menu_ModConverter_Click"/>
             </MenuItem>
             <MenuItem Header="{Binding Source={x:Static resx:UIStrings.Search}}" StaysOpenOnClick="True">
                 <MenuItem x:Name="Menu_ModelIDSearch" Header="{Binding Source={x:Static resx:UIStrings.Model_ID}}" Click="Menu_ModelIDSearch_Click"/>

@@ -1098,6 +1098,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   查找类似 Mod Converter 的本地化字符串。
+        /// </summary>
+        public static string Mod_Converter {
+            get {
+                return ResourceManager.GetString("Mod_Converter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Mod Count: 的本地化字符串。
         /// </summary>
         public static string Mod_Count_colon {
