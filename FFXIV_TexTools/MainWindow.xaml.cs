@@ -792,8 +792,9 @@ namespace FFXIV_TexTools
         private void MetroWindow_Loaded(object sender, RoutedEventArgs e)
         {
             var fileVersion = FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location).FileVersion;
-
-            Title += $" {fileVersion.Substring(0, fileVersion.LastIndexOf("."))}";
+            var tmps = fileVersion.Split('.');
+            var pre = tmps[tmps.Length - 1] == "0" ? "" : $".{tmps[tmps.Length - 1]} (This is a preview version)";
+            Title += $" {fileVersion.Substring(0, fileVersion.LastIndexOf("."))}{pre}";
         }
 
         private void GithubButton_Click(object sender, RoutedEventArgs e)
