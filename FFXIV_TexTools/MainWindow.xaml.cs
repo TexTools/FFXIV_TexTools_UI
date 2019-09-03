@@ -167,7 +167,7 @@ namespace FFXIV_TexTools
             AutoUpdater.CheckForUpdateEvent -= AutoUpdater_CheckForUpdateEvent;
             if (!args.IsUpdateAvailable)
             {            
-                Task.Run(() => {
+                Dispatcher.InvokeAsync(() => {
                     AutoUpdater.Start(WebUrl.TexToolsPre_Update_Url);
                 });
             }
