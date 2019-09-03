@@ -1716,20 +1716,20 @@ namespace FFXIV_TexTools.ViewModels
                     var oldPartName = tmps[tmps.Length - 2];
                     if (partChars.Any(it => it.ToString() == oldPartName))
                     {
-                        xivMtrl.TexturePathList[i] = xivMtrl.TexturePathList[i].Replace($"_{oldPartName}_{typeName}", $"_{newPartName}_{typeName}").Replace("--", "");
+                        xivMtrl.TexturePathList[i] = xivMtrl.TexturePathList[i].Replace($"_{oldPartName}_{typeName}", $"_{newPartName}_{typeName}");
                     }
                     else
                     {
-                        xivMtrl.TexturePathList[i] = xivMtrl.TexturePathList[i].Replace($"_{typeName}", $"_{newPartName}_{typeName}").Replace("--", "");
+                        xivMtrl.TexturePathList[i] = xivMtrl.TexturePathList[i].Replace($"_{typeName}", $"_{newPartName}_{typeName}");
                     }
                     xivMtrl.TexturePathOffsetList[i] = 0;
                     if (i > 0)
                     {
-                        xivMtrl.TexturePathOffsetList[i] = xivMtrl.TexturePathOffsetList[i - 1] + xivMtrl.TexturePathList[i - 1].Length + 1;
+                        xivMtrl.TexturePathOffsetList[i] = xivMtrl.TexturePathOffsetList[i - 1] + xivMtrl.TexturePathList[i - 1].Replace("--","").Length + 1;
                     }
                 }
                 //Adjust data size
-                var newTexturePathSize = xivMtrl.TexturePathList.Sum(it => it.Length) + xivMtrl.TexturePathList.Count;
+                var newTexturePathSize = xivMtrl.TexturePathList.Select(it=>it.Replace("--","")).Sum(it => it.Length) + xivMtrl.TexturePathList.Count;
                 var valueOfSizeChange = newTexturePathSize - oldTexturePathSize;
                 xivMtrl.FileSize += (short)(valueOfSizeChange + xivMtrl.TexturePathOffsetList.Count * 4 - oldTexturePathOffsetDataSize);
                 var newStructSize = xivMtrl.DataStruct1Count * 8 + xivMtrl.DataStruct2Count * 8 + xivMtrl.ParameterStructCount * 12;
