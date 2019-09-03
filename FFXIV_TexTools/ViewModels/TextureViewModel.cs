@@ -1767,7 +1767,7 @@ namespace FFXIV_TexTools.ViewModels
                     }
                     else
                     {
-                        itemXivMtrl = await _mtrl.GetMtrlData(item, SelectedRace.XivRace, SelectedTypePart.Name[0], dxVersion);
+                        itemXivMtrl = await _mtrl.GetMtrlData(item, SelectedRace.XivRace, SelectedType.Name[0], dxVersion);
                     }
                     var tmps2 = xivMtrl.MTRLPath.Split('_');
                     xivMtrl.MTRLPath = xivMtrl.MTRLPath.Replace($"_{tmps2[tmps2.Length - 1]}", $"_{newPartName}.mtrl");
