@@ -371,7 +371,7 @@ namespace FFXIV_TexTools.ViewModels
                                 fullPath.Substring(fullPath.LastIndexOf("_", StringComparison.Ordinal) + 1, 1))
                         };
                     }
-                    else if (item.Name.Equals(XivStrings.Equip_Decals))
+                    else if (item.Name.Equals(XivStrings.Equipment_Decals))
                     {
                         item.ModelInfo = new XivModelInfo();
 
@@ -711,12 +711,14 @@ namespace FFXIV_TexTools.ViewModels
 
                                 var pixelSettings =
                                     new PixelReadSettings(4, 16, StorageType.Float, PixelMapping.RGBA);
-
-                                using (var magickImage = new MagickImage(floatArray, pixelSettings))
+                                if (floatArray.Length > 0)
                                 {
-                                    magickImage.Alpha(AlphaOption.Opaque);
-                                    modListModel.Image =
-                                        Application.Current.Dispatcher.Invoke(() => magickImage.ToBitmapSource());
+                                    using (var magickImage = new MagickImage(floatArray, pixelSettings))
+                                    {
+                                        magickImage.Alpha(AlphaOption.Opaque);
+                                        modListModel.Image =
+                                            Application.Current.Dispatcher.Invoke(() => magickImage.ToBitmapSource());
+                                    }
                                 }
                             }
                             catch (Exception ex)

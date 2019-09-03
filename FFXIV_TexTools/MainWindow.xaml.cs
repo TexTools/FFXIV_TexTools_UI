@@ -149,7 +149,7 @@ namespace FFXIV_TexTools
 
             if (selectedItem.Item.Category.Equals(XivStrings.UI) ||
                 selectedItem.Item.ItemCategory.Equals(XivStrings.Face_Paint) ||
-                selectedItem.Item.ItemCategory.Equals(XivStrings.Equip_Decals) ||
+                selectedItem.Item.ItemCategory.Equals(XivStrings.Equipment_Decals) ||
                 selectedItem.Item.ItemCategory.Equals(XivStrings.Paintings))
             {
                 ItemTreeView.IsEnabled = true;
@@ -264,7 +264,7 @@ namespace FFXIV_TexTools
 
                 if (selectedItem.Item.Category.Equals(XivStrings.UI) ||
                     selectedItem.Item.ItemCategory.Equals(XivStrings.Face_Paint) ||
-                    selectedItem.Item.ItemCategory.Equals(XivStrings.Equip_Decals) ||
+                    selectedItem.Item.ItemCategory.Equals(XivStrings.Equipment_Decals) ||
                     selectedItem.Item.ItemCategory.Equals(XivStrings.Paintings))
                 {
                     if (TabsControl.SelectedIndex == 1)
