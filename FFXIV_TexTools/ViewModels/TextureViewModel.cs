@@ -837,6 +837,8 @@ namespace FFXIV_TexTools.ViewModels
 
                 PartVisibility = Visibility.Collapsed;
             }
+            if (ttpList == null)
+                ttpList = new List<TexTypePath>();
             foreach (var texTypePath in ttpList)
             {
                 if (texTypePath.Name != null)
@@ -2343,10 +2345,14 @@ namespace FFXIV_TexTools.ViewModels
             var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
             var index = new Index(gameDirectory);
 
-            var dataFile = _item.DataFile;
+            XivDataFile? dataFile = null;
             if (path.StartsWith("ui/"))
                 dataFile = XivDataFile._06_Ui;
-            var offset = index.GetDataOffset(HashGenerator.GetHash(Path.GetDirectoryName(path).Replace("\\", "/")), HashGenerator.GetHash(Path.GetFileName(path)),dataFile).GetAwaiter().GetResult();
+            else if (_item != null)
+                dataFile = _item.DataFile;
+            if (dataFile == null)
+                return true;
+            var offset = index.GetDataOffset(HashGenerator.GetHash(Path.GetDirectoryName(path).Replace("\\", "/")), HashGenerator.GetHash(Path.GetFileName(path)),dataFile.Value).GetAwaiter().GetResult();
             if (offset>0)
             {
                 return true;
