@@ -280,7 +280,7 @@ namespace FFXIV_TexTools.ViewModels
                     sex = sex - 1;
                 else
                     sex = sex + 1;
-                race = $"{fromRace[0]}{sex}{fromRace.Substring(3,2)}";
+                race = $"{fromRace[0]}{sex.ToString().PadLeft(2,'0')}{fromRace.Substring(3,2)}";
                 if (!targetRaceList.Exists(it => it.GetRaceCode() == race.Substring(1, 4)))
                 {
                     throw new Exception("not found race");
