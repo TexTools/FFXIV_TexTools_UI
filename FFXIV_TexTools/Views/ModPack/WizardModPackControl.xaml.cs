@@ -21,6 +21,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Forms;
 using xivModdingFramework.Mods.DataContainers;
+using System.Linq;
 using UserControl = System.Windows.Controls.UserControl;
 
 namespace FFXIV_TexTools.Views
@@ -61,7 +62,7 @@ namespace FFXIV_TexTools.Views
                     ModGroupList.Add(results);
                     ModGroupNames.Add(results.GroupName);
 
-                    if (results.SelectionType.Equals("Single"))
+                    if (results.SelectionType.Equals("Single")&&optionsList.Count(it=>it.IsChecked)==0)
                     {
                         optionsList[0].IsChecked = true;
                     }
@@ -124,7 +125,7 @@ namespace FFXIV_TexTools.Views
 
                 foreach (var modGroup in ModGroupList)
                 {
-                    if (modGroup.SelectionType.Equals("Single"))
+                    if (modGroup.SelectionType.Equals("Single") && modGroup.OptionList.Count(it => it.IsChecked) == 0)
                     {
                         modGroup.OptionList[0].IsChecked = true;
                     }
@@ -182,7 +183,7 @@ namespace FFXIV_TexTools.Views
 
                 foreach (var modGroup in ModGroupList)
                 {
-                    if (modGroup.SelectionType.Equals("Single"))
+                    if (modGroup.SelectionType.Equals("Single")&& modGroup.OptionList.Count(it=>it.IsChecked)==0)
                     {
                         modGroup.OptionList[0].IsChecked = true;
                     }
