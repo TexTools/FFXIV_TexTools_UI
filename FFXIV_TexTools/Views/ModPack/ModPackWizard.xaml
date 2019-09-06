@@ -60,7 +60,7 @@
                             <RowDefinition/>
                         </Grid.RowDefinitions>
                         <Label Content="{Binding Source={x:Static resx:UIStrings.Enter_a_brief_description_of_your_Mod_Pack}}" Grid.ColumnSpan="2"/>
-                        <TextBox x:Name="ModPackDescription" Text="{Binding ModPackDescription}" Grid.Row="1" TextWrapping="Wrap" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.ModPackDescription}}" Grid.ColumnSpan="2"/>
+                        <TextBox x:Name="ModPackDescription" Text="{Binding ModPackDescription}" Grid.Row="1" AcceptsReturn="True"  VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.ModPackDescription}}" Grid.ColumnSpan="2"/>
                     </Grid>
                 </Grid>
             </Grid>
