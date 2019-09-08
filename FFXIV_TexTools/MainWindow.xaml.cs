@@ -164,8 +164,8 @@ namespace FFXIV_TexTools
 
         private void AutoUpdater_CheckForUpdateEvent(UpdateInfoEventArgs args)
         {
-            AutoUpdater.CheckForUpdateEvent -= AutoUpdater_CheckForUpdateEvent;
-            if (!args.IsUpdateAvailable)
+            AutoUpdater.CheckForUpdateEvent -= AutoUpdater_CheckForUpdateEvent; 
+            if (args==null||!args.IsUpdateAvailable)
             {            
                 Dispatcher.InvokeAsync(() => {
                     AutoUpdater.Start(WebUrl.TexToolsPre_Update_Url);
@@ -817,20 +817,20 @@ namespace FFXIV_TexTools
             var ttmp = new TTMP(modPackDirectory, XivStrings.TexTools);
             (ModPackJson ModPackJson, Dictionary<string, MagickImage> ImageDictionary) ttmpData;
             var progressController = await this.ShowProgressAsync(UIStrings.Mod_Converter, UIMessages.PleaseStandByMessage);
-            try
+            var modsJsonList = await ttmp.GetOriginalModPackJsonData(new DirectoryInfo(ttmpFileName));
+            if (modsJsonList == null)
             {
                 ttmpData = await ttmp.GetModPackJsonData(new DirectoryInfo(ttmpFileName));
             }
-            catch
+            else
             {
-                ttmpData = (ModPackJson:new ModPackJson(), ImageDictionary:new Dictionary<string, MagickImage>());
+                ttmpData = (ModPackJson: new ModPackJson(), ImageDictionary: new Dictionary<string, MagickImage>());
                 ttmpData.ModPackJson.Author = "Mod Converter";
                 ttmpData.ModPackJson.Version = "1.0.0";
                 ttmpData.ModPackJson.Name = Path.GetFileNameWithoutExtension(ttmpFileName);
                 ttmpData.ModPackJson.TTMPVersion = "s";
                 ttmpData.ModPackJson.SimpleModsList = new List<ModsJson>();
-                var modsJsonList=await ttmp.GetOriginalModPackJsonData(new DirectoryInfo(ttmpFileName));
-                foreach(var mod in modsJsonList)
+                foreach (var mod in modsJsonList)
                 {
                     var modsJson = new ModsJson();
                     modsJson.Category = mod.Category;
@@ -842,6 +842,7 @@ namespace FFXIV_TexTools
                     modsJson.Name = mod.Name;
                     ttmpData.ModPackJson.SimpleModsList.Add(modsJson);
                 }
+
             }
             var categorys = ItemTreeView.ItemsSource as ObservableCollection<Category>;
             var list= new List<xivModdingFramework.Items.Interfaces.IItem>();

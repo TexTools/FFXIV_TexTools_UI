@@ -49,6 +49,10 @@ namespace FFXIV_TexTools.Views
             {
                 await _progressController.CloseAsync();
             };
+            vm.Close = () =>
+            {
+                this.Close();
+            };
             vm.ReportProgress = ReportProgress;
             this.DataContext = vm;
             InitializeComponent();

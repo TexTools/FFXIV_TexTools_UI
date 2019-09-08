@@ -48,6 +48,7 @@ namespace FFXIV_TexTools.ViewModels
         public Func<Task> ShowProgress { get; set; }
         public Func<Task> CloseProgress { get; set; }
         public Func<(int current, int total, string message), Task> ReportProgress { get; set; }
+        public Action Close { get; set; }
         Dictionary<string, string> _convertDic = new Dictionary<string, string>();
         public (ModPackJson ModPackJson, Dictionary<string, MagickImage> ImageDictionary) TTMPData { get; private set; }
         public event PropertyChangedEventHandler PropertyChanged;
@@ -104,12 +105,22 @@ namespace FFXIV_TexTools.ViewModels
                 return;
             if (!ItemList.Exists(it => it.Name == TargetItemName))
                 return;
-            var fromItem = ItemList.Single(it => it.Name == SelectedFromItemText);
-            var targetItem = ItemList.Single(it => it.Name == TargetItemName);
-            if (fromItem.ItemCategory != targetItem.ItemCategory)
-                return;
-            if ((fromItem as IItemModel).ModelInfo.ModelID == (targetItem as IItemModel).ModelInfo.ModelID)
-                return;
+            var jsons = GetModsJsonList(TTMPData.ModPackJson);
+            ModsJson fromItem=null;
+            foreach(var list in jsons)
+            {
+                fromItem = list.FirstOrDefault(it => it.Name == SelectedFromItemText);
+                if (fromItem != null)
+                    break;
+            }
+            if (fromItem != null)
+            {
+                var targetItem = ItemList.Single(it => it.Name == TargetItemName);
+                if (XivCategorys.GetDisplayName(fromItem.Category) != XivCategorys.GetDisplayName(targetItem.ItemCategory))
+                    return;
+                //if ((fromItem as IItemModel).ModelInfo.ModelID == (targetItem as IItemModel).ModelInfo.ModelID)
+                //    return;
+            }
             ConvertList.Add(SelectedFromItemText + "=>" + TargetItemName);
             _convertDic.Add(SelectedFromItemText, TargetItemName);
         }
@@ -130,7 +141,26 @@ namespace FFXIV_TexTools.ViewModels
             IEnumerable<string> query;
             if (fromItem == null)
             {
-                query = ItemList.Select(it => it.Name);
+                var jsons = GetModsJsonList(TTMPData.ModPackJson);
+                ModsJson fromItem2 = null;
+                foreach (var list in jsons)
+                {
+                    fromItem2 = list.FirstOrDefault(it => it.Name == SelectedFromItemText);
+                    if (fromItem2 != null)
+                        break;
+                }
+                if (fromItem2 == null)
+                {
+                    query = ItemList.Select(it => it.Name);
+                }
+                else
+                {
+                    var fromCategory = XivCategorys.GetDisplayName(fromItem2.Category);
+                    query = ItemList.Where(
+                        it => it.ItemCategory == fromCategory
+                        && it.Name != fromItem2.Name
+                    ).Select(it => it.Name);
+                }
             }
             else
             {
@@ -178,6 +208,7 @@ namespace FFXIV_TexTools.ViewModels
 
                 var targetId = $"{fromId[0]}{targetItemModel.ModelInfo.ModelID.ToString().PadLeft(4, '0')}";
                 var targetMdlRace = GetTargetRace(fromMdlRace, raceListForMdl);
+                var targetVersion = $"v{targetItemModel.ModelInfo.Variant.ToString().PadLeft(4,'0')}";
 
                 var sameModelList = ItemList.Where(
                     it => it.ItemCategory == targetItemModel.ItemCategory
@@ -190,14 +221,15 @@ namespace FFXIV_TexTools.ViewModels
                 var pv = 1;
                 foreach(var fromItem in fromQuery)
                 {
-                    await this.ReportProgress((pv, count, $"{fromItem.Name}:{fromItem.FullPath}"));                   
+                    await this.ReportProgress((pv, count, $"{fromItem.Name}:{fromItem.FullPath}"));
                     if (fromItem.FullPath.EndsWith(".tex"))
                     {
                         var texInfo = GetTexInfo(fromItem.FullPath);
                         var race = GetTargetRace(texInfo.Race, raceListForTex);
+                        var oldPath = fromItem.FullPath;
                         fromItem.FullPath=fromItem.FullPath.Replace(fromId, targetId).Replace(texInfo.Race, race);
                         fromItem.Name = item.Value;
-                        var fromTexList = jsonslist.Where(it => it.Exists(it2 => it2.FullPath == fromItem.FullPath));
+                        var fromTexList = jsonslist.Where(it => it.Exists(it2 => it2.FullPath == oldPath || it2.FullPath == fromItem.FullPath));
                         foreach (var sameTex in sameModelList)
                         {
                             foreach (var texList in fromTexList)
@@ -217,9 +249,10 @@ namespace FFXIV_TexTools.ViewModels
                     else if(fromItem.FullPath.EndsWith(".mtrl")){
                         var mtrlInfo = GetMtrlInfo(fromItem.FullPath);
                         var race = GetTargetRace(mtrlInfo.Race, raceListForTex);
-                        fromItem.FullPath=fromItem.FullPath.Replace(fromId, targetId).Replace(mtrlInfo.Race, race);
+                        var oldPath = fromItem.FullPath;
+                        fromItem.FullPath=fromItem.FullPath.Replace(fromId, targetId).Replace(mtrlInfo.Race, race).Replace(mtrlInfo.Version, targetVersion);
                         fromItem.Name = item.Value;
-                        var fromMtrlList = jsonslist.Where(it => it.Exists(it2 => it2.FullPath == fromItem.FullPath));
+                        var fromMtrlList = jsonslist.Where(it => it.Exists(it2 => it2.FullPath == oldPath|| it2.FullPath ==fromItem.FullPath));
                         foreach (var sameMtrl in sameModelList)
                         {
                             foreach (var mtrlList in fromMtrlList)
@@ -240,7 +273,7 @@ namespace FFXIV_TexTools.ViewModels
                     }
                     else if (fromItem.FullPath.EndsWith(".mdl"))
                     {
-                        var newMdlData= await ConvertMdlData(fromQuery, fromId, targetId, fromMdlRace, targetMdlRace, modDataList[fromItem]);
+                        var newMdlData = await ConvertMdlData(fromQuery, fromId, targetId, fromMdlRace, targetMdlRace, modDataList[fromItem]);
                         modDataList[fromItem] = await CreateType3Data(modDataList[fromItem], newMdlData.Data);
                         fromItem.FullPath = fromItem.FullPath.Replace(fromId, targetId).Replace(fromMdlRace, targetMdlRace);
                         fromItem.Name = item.Value;
@@ -249,6 +282,7 @@ namespace FFXIV_TexTools.ViewModels
             }
             await CreateNewTTMP(newModPackPath,modDataList, TTMPData.ModPackJson);
             await this.CloseProgress();
+            this.Close();
         }
         (string Id,string Race) GetModelInfo(string fullPath)
         {
@@ -712,13 +746,13 @@ namespace FFXIV_TexTools.ViewModels
                 return newDataList.ToArray();
             });
         }
-        async Task<(int MeshCount, int MaterialCount, byte[] Data)> ConvertMdlData(IEnumerable<ModsJson> list,string oldIdStr, string idStr, string oldRaceStr, string raceStr, byte[] data)
+        async Task<(List<string> OldTextureList, List<string> NewTextureList, byte[] Data)> ConvertMdlData(IEnumerable<ModsJson> list,string oldIdStr, string idStr, string oldRaceStr, string raceStr, byte[] data)
         {
             return await Task.Run(async () => {
                 var mdlData = await GetType3Data(data);
                 var tmpData = new byte[mdlData.Data.Length];
                 mdlData.Data.CopyTo(tmpData, 0);
-                var newMdlData = (MeshCount:mdlData.MeshCount, MaterialCount:mdlData.MaterialCount, Data:tmpData);
+                var newMdlData = (OldTextureList: new List<string>(), NewTextureList: new List<string>(), Data:tmpData);
                 using (var bw = new BinaryWriter(new MemoryStream(newMdlData.Data)))
                 {
                     using (var br = new BinaryReader(new MemoryStream(mdlData.Data)))
@@ -758,7 +792,9 @@ namespace FFXIV_TexTools.ViewModels
                                 pathBytes.Add(b);
                             }
                             var oldPath = Encoding.UTF8.GetString(pathBytes.ToArray());
+                            newMdlData.OldTextureList.Add(oldPath);
                             var newPath = oldPath.Replace(oldIdStr, idStr).Replace(oldRaceStr, raceStr);
+                            newMdlData.NewTextureList.Add(newPath);
                             if (list.Count(it => it.FullPath.Contains(oldPath.TrimEnd('\0'))) > 0 || list.Count(it => it.FullPath.Contains(newPath.TrimEnd('\0'))) > 0)
                             {
                                 var newPathData = Encoding.UTF8.GetBytes(newPath);
