@@ -217,6 +217,7 @@ namespace FFXIV_TexTools.ViewModels
                 );
                 
                 var fromQuery = list.Where(it => it.Name == item.Key).ToList();
+                var fromQueryBak = fromQuery.Select(it => it.FullPath).ToList();
                 var count = fromQuery.Count;
                 var pv = 1;
                 foreach(var fromItem in fromQuery)
@@ -273,7 +274,16 @@ namespace FFXIV_TexTools.ViewModels
                     }
                     else if (fromItem.FullPath.EndsWith(".mdl"))
                     {
-                        var newMdlData = await ConvertMdlData(fromQuery, fromId, targetId, fromMdlRace, targetMdlRace, modDataList[fromItem]);
+                        var race = targetMdlRace;
+                        var oldRace = fromMdlRace;
+                        var mtrlItem = fromQueryBak.FirstOrDefault(it => it.EndsWith(".mtrl"));
+                        if (mtrlItem != null)
+                        {
+                            var mtrlInfo = GetMtrlInfo(mtrlItem);
+                            race = GetTargetRace(mtrlInfo.Race, raceListForTex);
+                            oldRace = mtrlInfo.Race;
+                        }
+                        var newMdlData = await ConvertMdlData(fromQuery, fromId, targetId, oldRace, race, modDataList[fromItem]);
                         modDataList[fromItem] = await CreateType3Data(modDataList[fromItem], newMdlData.Data);
                         fromItem.FullPath = fromItem.FullPath.Replace(fromId, targetId).Replace(fromMdlRace, targetMdlRace);
                         fromItem.Name = item.Value;
