@@ -359,7 +359,7 @@ namespace FFXIV_TexTools.Views
                         ModelID = int.Parse(fullPath.Substring(fullPath.LastIndexOf("_", StringComparison.Ordinal) + 1, 1))
                     };
                 }
-                else if (item.Name.Equals(XivStrings.Equip_Decals))
+                else if (item.Name.Equals(XivStrings.Equipment_Decals))
                 {
                     if (!fullPath.Contains("_stigma"))
                     {

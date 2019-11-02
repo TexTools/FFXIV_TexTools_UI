@@ -279,8 +279,6 @@ namespace FFXIV_TexTools.Views
             }
             this.ModPackAuthor.Text = ttmpData.ModPackJson.Author;
             this.ModPackName.Text = ttmpData.ModPackJson.Name;
-            this.ModPackVersion.Mask = "0.0.0";
-            this.ModPackVersion.Mask = ttmpData.ModPackJson.Version;
             this.ModPackVersion.Text= ttmpData.ModPackJson.Version;
             this.ModPackDescription.Text = ttmpData.ModPackJson.Description;
             for (var i = modPackWizard.Items.Count - 1; i > 0; i--)

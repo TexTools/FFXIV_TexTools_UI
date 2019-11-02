@@ -643,4 +643,10 @@ Selecting Yes will add a diffuse map, and selecting No will add a default map.</
   <data name="NotWizardModPack" xml:space="preserve">
     <value>This is not a wizard modPack</value>
   </data>
+  <data name="AddNewTexturePartErrorMessageWrongCategoryOfItem" xml:space="preserve">
+    <value>Currently only supports "Gear", "Character", please contact esrin if necessary.</value>
+  </data>
+  <data name="AddNewTexturePartErrorMessageWrongItemCategoryOfItem" xml:space="preserve">
+    <value>"Face Paint","Equipment Decals" Unsupported.</value>
+  </data>
 </root>

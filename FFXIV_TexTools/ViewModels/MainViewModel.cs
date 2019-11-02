@@ -122,10 +122,9 @@ namespace FFXIV_TexTools.ViewModels
                     }
                 }
             }
-
+            _mainWindow.Menu_ModConverter.IsEnabled = true;
             _mainWindow.ItemSearchTextBox.IsEnabled = true;
             _mainWindow.SetFilter();
-
             SetDefaults();
         }
 

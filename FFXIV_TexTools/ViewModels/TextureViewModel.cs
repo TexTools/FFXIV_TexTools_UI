@@ -40,6 +40,7 @@ using xivModdingFramework.Items.Enums;
 using xivModdingFramework.Items.Interfaces;
 using xivModdingFramework.Materials.DataContainers;
 using xivModdingFramework.Materials.FileTypes;
+using xivModdingFramework.Models.DataContainers;
 using xivModdingFramework.Models.FileTypes;
 using xivModdingFramework.Mods;
 using xivModdingFramework.Mods.Enums;
@@ -144,7 +145,7 @@ namespace FFXIV_TexTools.ViewModels
                 _item = item as IItemModel;
 
                 if (_item.ItemCategory.Equals(XivStrings.Face_Paint) ||
-                    _item.ItemCategory.Equals(XivStrings.Equip_Decals))
+                    _item.ItemCategory.Equals(XivStrings.Equipment_Decals))
                 {
                     Races.Add(new ComboBoxData{Name = XivRace.All_Races.GetDisplayName(), XivRace = XivRace.All_Races});
                 }
@@ -268,11 +269,11 @@ namespace FFXIV_TexTools.ViewModels
                 if (_item.Category.Equals(XivStrings.Character))
                 {
                     if (_item.ItemCategory.Equals(XivStrings.Face_Paint) ||
-                        _item.ItemCategory.Equals(XivStrings.Equip_Decals))
+                        _item.ItemCategory.Equals(XivStrings.Equipment_Decals))
                     {
                         partList = (await _character.GetDecalNums(_item)).Select(part => part.ToString()).ToList();
 
-                        if (_item.ItemCategory.Equals(XivStrings.Equip_Decals))
+                        if (_item.ItemCategory.Equals(XivStrings.Equipment_Decals))
                         {
                             partList.Add("_stigma");
                         }
@@ -622,6 +623,7 @@ namespace FFXIV_TexTools.ViewModels
                 NotifyPropertyChanged(nameof(SelectedTypePart));
                 if (SelectedTypePartIndex > -1)
                 {
+                    Maps.Clear();
                     GetMaps();
                 }
             }
@@ -679,7 +681,7 @@ namespace FFXIV_TexTools.ViewModels
 
                         ttpList = new List<TexTypePath> { new TexTypePath { DataFile = _item.DataFile, Path = path, Type = XivTexType.Mask } };
                     }
-                    else if (_item.ItemCategory.Equals(XivStrings.Equip_Decals))
+                    else if (_item.ItemCategory.Equals(XivStrings.Equipment_Decals))
                     {
                         var path = $"{XivStrings.EquipDecalFolder}/{string.Format(XivStrings.EquipDecalFile, SelectedPart.Name)}";
 
@@ -835,6 +837,8 @@ namespace FFXIV_TexTools.ViewModels
 
                 PartVisibility = Visibility.Collapsed;
             }
+            if (ttpList == null)
+                ttpList = new List<TexTypePath>();
             foreach (var texTypePath in ttpList)
             {
                 if (texTypePath.Name != null)
@@ -1591,215 +1595,318 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         private async void AddNewTexturePart(object obj)
         {
-            if (!CheckMtrlIsOK())
-                return;
-            //Legitimacy check
-            var partChars = new char[] { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
-            if (Types.Count >= 6)
+            try
             {
-                FlexibleMessageBox.Show(UIMessages.AddNewTexturePartErrorTitle,
-                    UIMessages.AddNewTexturePartErrorMessage, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                //AddNewTexturePartEnabled = false;
-                return;
-            }
-            //Get the new part name
-            var newPartName = '\0';
-            for (var i = 1;i<partChars.Length;i++)
-            {
-                newPartName = partChars[i];
-                if (!Types.Any(it => it.Name == newPartName.ToString()))
+                if (!CheckMtrlIsOK())
+                    return;
+                if (_item.Category != XivStrings.Gear && _item.Category != XivStrings.Character)
                 {
-                    break;
+                    FlexibleMessageBox.Show(UIMessages.AddNewTexturePartErrorMessageWrongCategoryOfItem,
+                        UIMessages.AddNewTexturePartErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
                 }
-            }
-            if (newPartName=='\0')
-            {
-                FlexibleMessageBox.Show(UIMessages.AddNewTexturePartErrorTitle,
-                    UIMessages.AddNewTexturePartErrorMessage, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                //AddNewTexturePartEnabled = false;
-                return;
-            }
-            //Update the new part path;
-            var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
-            var index = new Index(gameDirectory);
-            if (index.IsIndexLocked(XivDataFile._0A_Exd))
-            {
-                FlexibleMessageBox.Show(UIMessages.IndexLockedErrorMessage,
-                    UIMessages.IndexLockedErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                return;
-            }
-            var mtrlOffset = await index.GetDataOffset(HashGenerator.GetHash(Path.GetDirectoryName(_xivMtrl.MTRLPath).Replace("\\","/")),HashGenerator.GetHash(Path.GetFileName(_xivMtrl.MTRLPath)),_item.DataFile);
-            var xivMtrl = await _mtrl.GetMtrlData(mtrlOffset,_xivMtrl.MTRLPath, 11);
-            var oldTexturePathSize = xivMtrl.TexturePathList.Sum(it => it.Length) + xivMtrl.TexturePathList.Count;
-            var oldTexturePathOffsetDataSize = xivMtrl.TexturePathOffsetList.Count * 4;
-            var oldStructSize = xivMtrl.DataStruct1Count * 8 + xivMtrl.DataStruct2Count * 8 + xivMtrl.ParameterStructCount * 12;
-            for (var i = xivMtrl.TextureTypePathList.Count; i < _xivMtrl.TextureTypePathList.Count; i++) {
-                var tmpTypePath = _xivMtrl.TextureTypePathList[i];
-                xivMtrl.TextureTypePathList.Add(new TexTypePath() { DataFile=tmpTypePath.DataFile,Name=tmpTypePath.Name,Path=tmpTypePath.Path,Type=tmpTypePath.Type});
-            }
-            var textureTypePathListBak = new List<TexTypePath>();
-            for (var i = 0; i < xivMtrl.TextureTypePathList.Count; i++)
-            {
-                var tmpTypePath = xivMtrl.TextureTypePathList[i];
-                textureTypePathListBak.Add(new TexTypePath() { DataFile = tmpTypePath.DataFile, Name = tmpTypePath.Name, Path = tmpTypePath.Path, Type = tmpTypePath.Type });
-            }
-            bool tplNeedAdd = xivMtrl.TexturePathList.Count == 2 && xivMtrl.TexturePathList[0].EndsWith("_n.tex") && xivMtrl.TexturePathList[1].EndsWith("_m.tex");
-            if(tplNeedAdd
-                &&FlexibleMessageBox.Show(UIMessages.AddNewTexturePartQuestionMessage,
-                    UIMessages.AddNewTexturePartQuestionTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Question)!=DialogResult.Yes
-            )
-            {
-                tplNeedAdd = false;
-            }
-            if (tplNeedAdd)
-            {
-                var tmpTpl = xivMtrl.TexturePathList[0];
-                xivMtrl.TexturePathList.Insert(0, tmpTpl.Replace("_n.tex", "_d.tex"));
-                xivMtrl.TexturePathOffsetList.Add(0);
-                xivMtrl.TexturePathUnknownList.Add(0);
-                xivMtrl.TexturePathList[2] = xivMtrl.TexturePathList[2].Replace("_m.tex", "_s.tex");
-                var tmpTexTypePath = xivMtrl.TextureTypePathList[0];
-                xivMtrl.TextureTypePathList.Insert(0, new TexTypePath() { DataFile = tmpTexTypePath.DataFile, Path = tmpTexTypePath.Path.Replace("_n.tex", "_d.tex"), Type = XivTexType.Diffuse });
-                xivMtrl.TextureTypePathList[2].Path = xivMtrl.TextureTypePathList[2].Path.Replace("_m.tex", "_s.tex");
-                xivMtrl.TextureTypePathList[2].Type = XivTexType.Specular;
-
-                xivMtrl.DataStruct1Count = 3;
-                xivMtrl.DataStruct1List.Clear();
-                xivMtrl.DataStruct1List.Add(new DataStruct1(){ID= 0xf52ccf05, Unknown1= 0xa7d2ff60 });
-                xivMtrl.DataStruct1List.Add(new DataStruct1() { ID = 0xb616dc5a, Unknown1 = 0x600ef9df });
-                xivMtrl.DataStruct1List.Add(new DataStruct1() { ID = 0xd2777173, Unknown1 = 0xf35f5131 });
-
-                xivMtrl.DataStruct2Count = 3;
-                xivMtrl.DataStruct2List.Clear();
-                xivMtrl.DataStruct2List.Add(new DataStruct2() { ID = 0x29ac0223, Offset = 0x0000, Size= 0x0004 });
-                xivMtrl.DataStruct2List.Add(new DataStruct2() { ID = 0x575abfb2, Offset = 0x0004, Size = 0x0004 });
-                xivMtrl.DataStruct2List.Add(new DataStruct2() { ID = 0x15b70e35, Offset = 0x0008, Size = 0x0004 });
-
-
-                xivMtrl.ParameterStructCount = 3;
-                xivMtrl.ParameterStructList.Clear();
-                xivMtrl.ParameterStructList.Add(new ParameterStruct() { ID = 0x115306be, TextureIndex = 0x00000000, Unknown1 = -31936, Unknown2 = 0x000f });
-                xivMtrl.ParameterStructList.Add(new ParameterStruct() { ID = 0x0c5ec1f1, TextureIndex = 0x00000001, Unknown1 = -32768, Unknown2 = 0x000f });
-                xivMtrl.ParameterStructList.Add(new ParameterStruct() { ID = 0x2b99e025, TextureIndex = 0x00000002, Unknown1 = -31936, Unknown2 = 0x000f });
-            }
-            for (var i = 0; i < xivMtrl.TexturePathList.Count; i++)
-            {
-                var tmps = xivMtrl.TexturePathList[i].Split('_');
-                var typeName = tmps[tmps.Length - 1];
-                var oldPartName = tmps[tmps.Length - 2];
-                if (partChars.Any(it => it.ToString() == oldPartName))
+                if (_item.ItemCategory == XivStrings.Face_Paint || _item.ItemCategory == XivStrings.Equipment_Decals)
                 {
-                    xivMtrl.TexturePathList[i] = xivMtrl.TexturePathList[i].Replace($"_{oldPartName}_{typeName}", $"_{newPartName}_{typeName}");                    
+                    FlexibleMessageBox.Show(UIMessages.AddNewTexturePartErrorMessageWrongItemCategoryOfItem,
+                        UIMessages.AddNewTexturePartErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+                //Legitimacy check
+                var partChars = new char[] { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
+                List<string> partList = new List<string>();
+                if (_item.Category.Equals(XivStrings.Gear))
+                {
+                    partList = Types.Select(it => it.Name).ToList();
+                }
+                else if (_item.Category.Equals(XivStrings.Character))
+                {
+                    partList = TypeParts.Select(it => it.Name).ToList();
+                }
+                if (partList.Count >= 6)
+                {
+                    FlexibleMessageBox.Show(UIMessages.AddNewTexturePartErrorMessage,
+                        UIMessages.AddNewTexturePartErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    //AddNewTexturePartEnabled = false;
+                    return;
+                }
+                //Get the new part name
+                var newPartName = '\0';
+                for (var i = 1; i < partChars.Length; i++)
+                {
+                    newPartName = partChars[i];
+                    if (!partList.Any(it => it == newPartName.ToString()))
+                    {
+                        break;
+                    }
+                }
+                if (newPartName == '\0')
+                {
+                    FlexibleMessageBox.Show(UIMessages.AddNewTexturePartErrorMessage,
+                        UIMessages.AddNewTexturePartErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    //AddNewTexturePartEnabled = false;
+                    return;
+                }
+                //Update the new part path;
+                var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
+                var index = new Index(gameDirectory);
+                if (index.IsIndexLocked(XivDataFile._0A_Exd))
+                {
+                    FlexibleMessageBox.Show(UIMessages.IndexLockedErrorMessage,
+                        UIMessages.IndexLockedErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                    return;
+                }
+                var mtrlOffset = await index.GetDataOffset(HashGenerator.GetHash(Path.GetDirectoryName(_xivMtrl.MTRLPath).Replace("\\", "/")), HashGenerator.GetHash(Path.GetFileName(_xivMtrl.MTRLPath)), _item.DataFile);
+                var xivMtrl = await _mtrl.GetMtrlData(mtrlOffset, _xivMtrl.MTRLPath, 11);
+                var oldTexturePathSize = xivMtrl.TexturePathList.Select(it => it.Replace("--", String.Empty)).Sum(it => it.Length) + xivMtrl.TexturePathList.Count;
+                var oldTexturePathOffsetDataSize = xivMtrl.TexturePathOffsetList.Count * 4;
+                var oldStructSize = xivMtrl.DataStruct1Count * 8 + xivMtrl.DataStruct2Count * 8 + xivMtrl.ParameterStructCount * 12;
+                for (var i = xivMtrl.TextureTypePathList.Count; i < _xivMtrl.TextureTypePathList.Count; i++)
+                {
+                    var tmpTypePath = _xivMtrl.TextureTypePathList[i];
+                    xivMtrl.TextureTypePathList.Add(new TexTypePath() { DataFile = tmpTypePath.DataFile, Name = tmpTypePath.Name, Path = tmpTypePath.Path, Type = tmpTypePath.Type });
+                }
+                var textureTypePathListBak = new List<TexTypePath>();
+                for (var i = 0; i < xivMtrl.TextureTypePathList.Count; i++)
+                {
+                    var tmpTypePath = xivMtrl.TextureTypePathList[i];
+                    textureTypePathListBak.Add(new TexTypePath() { DataFile = tmpTypePath.DataFile, Name = tmpTypePath.Name, Path = tmpTypePath.Path, Type = tmpTypePath.Type });
+                }
+                bool tplNeedAdd = xivMtrl.TexturePathList.Count == 2 && xivMtrl.TexturePathList[0].EndsWith("_n.tex") && xivMtrl.TexturePathList[1].EndsWith("_m.tex");
+                if (tplNeedAdd
+                    && FlexibleMessageBox.Show(UIMessages.AddNewTexturePartQuestionMessage,
+                        UIMessages.AddNewTexturePartQuestionTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes
+                )
+                {
+                    tplNeedAdd = false;
+                }
+                if (tplNeedAdd)
+                {
+                    var tmpTpl = xivMtrl.TexturePathList[0];
+                    xivMtrl.TexturePathList.Insert(0, tmpTpl.Replace("_n.tex", "_d.tex"));
+                    xivMtrl.TexturePathOffsetList.Add(0);
+                    xivMtrl.TexturePathUnknownList.Add(0);
+                    xivMtrl.TexturePathList[2] = xivMtrl.TexturePathList[2].Replace("_m.tex", "_s.tex");
+                    var tmpTexTypePath = xivMtrl.TextureTypePathList[0];
+                    xivMtrl.TextureTypePathList.Insert(0, new TexTypePath() { DataFile = tmpTexTypePath.DataFile, Path = tmpTexTypePath.Path.Replace("_n.tex", "_d.tex"), Type = XivTexType.Diffuse });
+                    xivMtrl.TextureTypePathList[2].Path = xivMtrl.TextureTypePathList[2].Path.Replace("_m.tex", "_s.tex");
+                    xivMtrl.TextureTypePathList[2].Type = XivTexType.Specular;
+
+                    xivMtrl.DataStruct1Count = 3;
+                    xivMtrl.DataStruct1List.Clear();
+                    xivMtrl.DataStruct1List.Add(new DataStruct1() { ID = 0xf52ccf05, Unknown1 = 0xa7d2ff60 });
+                    xivMtrl.DataStruct1List.Add(new DataStruct1() { ID = 0xb616dc5a, Unknown1 = 0x600ef9df });
+                    xivMtrl.DataStruct1List.Add(new DataStruct1() { ID = 0xd2777173, Unknown1 = 0xf35f5131 });
+
+                    xivMtrl.DataStruct2Count = 3;
+                    xivMtrl.DataStruct2List.Clear();
+                    xivMtrl.DataStruct2List.Add(new DataStruct2() { ID = 0x29ac0223, Offset = 0x0000, Size = 0x0004 });
+                    xivMtrl.DataStruct2List.Add(new DataStruct2() { ID = 0x575abfb2, Offset = 0x0004, Size = 0x0004 });
+                    xivMtrl.DataStruct2List.Add(new DataStruct2() { ID = 0x15b70e35, Offset = 0x0008, Size = 0x0004 });
+
+
+                    xivMtrl.ParameterStructCount = 3;
+                    xivMtrl.ParameterStructList.Clear();
+                    xivMtrl.ParameterStructList.Add(new ParameterStruct() { ID = 0x115306be, TextureIndex = 0x00000000, Unknown1 = -31936, Unknown2 = 0x000f });
+                    xivMtrl.ParameterStructList.Add(new ParameterStruct() { ID = 0x0c5ec1f1, TextureIndex = 0x00000001, Unknown1 = -32768, Unknown2 = 0x000f });
+                    xivMtrl.ParameterStructList.Add(new ParameterStruct() { ID = 0x2b99e025, TextureIndex = 0x00000002, Unknown1 = -31936, Unknown2 = 0x000f });
+                }
+                for (var i = 0; i < xivMtrl.TexturePathList.Count; i++)
+                {
+                    var tmps = xivMtrl.TexturePathList[i].Split('_');
+                    var typeName = tmps[tmps.Length - 1];
+                    var oldPartName = tmps[tmps.Length - 2];
+                    if (partChars.Any(it => it.ToString() == oldPartName))
+                    {
+                        xivMtrl.TexturePathList[i] = xivMtrl.TexturePathList[i].Replace($"_{oldPartName}_{typeName}", $"_{newPartName}_{typeName}");
+                    }
+                    else
+                    {
+                        xivMtrl.TexturePathList[i] = xivMtrl.TexturePathList[i].Replace($"_{typeName}", $"_{newPartName}_{typeName}");
+                    }
+                    xivMtrl.TexturePathOffsetList[i] = 0;
+                    if (i > 0)
+                    {
+                        xivMtrl.TexturePathOffsetList[i] = xivMtrl.TexturePathOffsetList[i - 1] + xivMtrl.TexturePathList[i - 1].Replace("--","").Length + 1;
+                    }
+                }
+                //Adjust data size
+                var newTexturePathSize = xivMtrl.TexturePathList.Select(it=>it.Replace("--","")).Sum(it => it.Length) + xivMtrl.TexturePathList.Count;
+                var valueOfSizeChange = newTexturePathSize - oldTexturePathSize;
+                xivMtrl.FileSize += (short)(valueOfSizeChange + xivMtrl.TexturePathOffsetList.Count * 4 - oldTexturePathOffsetDataSize);
+                var newStructSize = xivMtrl.DataStruct1Count * 8 + xivMtrl.DataStruct2Count * 8 + xivMtrl.ParameterStructCount * 12;
+                xivMtrl.FileSize += (short)(newStructSize - oldStructSize);
+                xivMtrl.TextureCount = (byte)xivMtrl.TexturePathList.Count;
+                if (valueOfSizeChange > 0)
+                {
+                    xivMtrl.MaterialDataSize += (ushort)valueOfSizeChange;
+                    xivMtrl.TexturePathsDataSize += (ushort)valueOfSizeChange;
                 }
                 else
                 {
-                    xivMtrl.TexturePathList[i] = xivMtrl.TexturePathList[i].Replace($"_{typeName}", $"_{newPartName}_{typeName}");
+                    xivMtrl.MaterialDataSize -= (ushort)(valueOfSizeChange * -1);
+                    xivMtrl.TexturePathsDataSize -= (ushort)(valueOfSizeChange * -1);
                 }
-                xivMtrl.TexturePathOffsetList[i] = 0;
-                if (i > 0)
+                for (var i = 0; i < xivMtrl.ColorSetPathOffsetList.Count; i++)
                 {
-                    xivMtrl.TexturePathOffsetList[i] = xivMtrl.TexturePathOffsetList[i-1]+xivMtrl.TexturePathList[i - 1].Length + 1;
+                    xivMtrl.ColorSetPathOffsetList[i] += valueOfSizeChange;
                 }
-            }
-            //Adjust data size
-            var newTexturePathSize= xivMtrl.TexturePathList.Sum(it => it.Length) + xivMtrl.TexturePathList.Count;
-            var valueOfSizeChange = newTexturePathSize - oldTexturePathSize;
-            xivMtrl.FileSize += (short)(valueOfSizeChange+xivMtrl.TexturePathOffsetList.Count*4- oldTexturePathOffsetDataSize);
-            var newStructSize = xivMtrl.DataStruct1Count * 8 + xivMtrl.DataStruct2Count * 8 + xivMtrl.ParameterStructCount * 12;
-            xivMtrl.FileSize += (short)(newStructSize - oldStructSize);
-            xivMtrl.TextureCount = (byte)xivMtrl.TexturePathList.Count;
-            if (valueOfSizeChange > 0)
-            {
-                xivMtrl.MaterialDataSize += (ushort)valueOfSizeChange;
-                xivMtrl.TexturePathsDataSize += (ushort)valueOfSizeChange;
-            }
-            else
-            {
-                xivMtrl.MaterialDataSize -= (ushort)(valueOfSizeChange * -1);
-                xivMtrl.TexturePathsDataSize -= (ushort)(valueOfSizeChange * -1);
-            }
-            for (var i = 0; i < xivMtrl.ColorSetPathOffsetList.Count; i++)
-            {
-                xivMtrl.ColorSetPathOffsetList[i] += valueOfSizeChange;
-            }
-            for (var i = 0; i < xivMtrl.MapPathOffsetList.Count; i++)
-            {
-                xivMtrl.MapPathOffsetList[i] += valueOfSizeChange;
-            }
-            //add new mtrl            
-            var gear = new Gear(gameDirectory, GetLanguage());
-            var mdl = new Mdl(gameDirectory, _item.DataFile);
-            var mdlData=await mdl.GetMdlData(_item, SelectedRace.XivRace);
-            var sameModelItems = (await gear.GetGearList())
-                .Where(it =>
-                it.ModelInfo.ModelID == _item.ModelInfo.ModelID
-                && it.ItemCategory == _item.ItemCategory);
-            var oldVersionStr = $"/v{_item.ModelInfo.Variant.ToString().PadLeft(4, '0')}/";
-            var oldMTRLPath = xivMtrl.MTRLPath;
-            foreach (var item in sameModelItems)
-            {
-                var itemMdlData= await mdl.GetMdlData(item, SelectedRace.XivRace);
-                if (mdlData.MdlPath != itemMdlData.MdlPath)
+                for (var i = 0; i < xivMtrl.MapPathOffsetList.Count; i++)
                 {
-                    continue;
+                    xivMtrl.MapPathOffsetList[i] += valueOfSizeChange;
                 }
-                var dxVersion = int.Parse(Properties.Settings.Default.DX_Version);
-                var itemXivMtrl = await _mtrl.GetMtrlData(item, SelectedRace.XivRace, Path.GetFileName(oldMTRLPath), dxVersion);
-                var tmps2 = xivMtrl.MTRLPath.Split('_');
-                xivMtrl.MTRLPath = xivMtrl.MTRLPath.Replace($"_{tmps2[tmps2.Length - 1]}", $"_{newPartName}.mtrl");
-                xivMtrl.MTRLPath = xivMtrl.MTRLPath.Replace(oldVersionStr, $"/v{item.ModelInfo.Variant.ToString().PadLeft(4, '0')}/");
-                xivMtrl.ColorSetDataSize = itemXivMtrl.ColorSetDataSize;
-                xivMtrl.ColorSetData = itemXivMtrl.ColorSetData;
-                xivMtrl.ColorSetExtraData = itemXivMtrl.ColorSetExtraData;
-                oldVersionStr = $"/v{item.ModelInfo.Variant.ToString().PadLeft(4, '0')}/";
-                var newMtrlOffset = await _mtrl.ImportMtrl(xivMtrl, item, "FilesAddedByTexTools");
-            }
-
-            //add new tex
-            if (Directory.Exists("AddNewTexturePartTexTmps"))
-            {
-                Directory.Delete("AddNewTexturePartTexTmps", true);
-            }
-            var dirInfo=Directory.CreateDirectory("AddNewTexturePartTexTmps");
-            for (var i = 0; i < xivMtrl.TexturePathList.Count; i++)
-            {
-                var typePathIndex = i;
-                if(tplNeedAdd)
+                //add new mtrl                       
+                var sameModelItems = await GetSameModelList();
+                var oldVersionStr = $"/v{_item.ModelInfo.Variant.ToString().PadLeft(4, '0')}/";
+                var oldMTRLPath = xivMtrl.MTRLPath;
+                foreach (var item in sameModelItems)
                 {
-                    switch (i)
+                    var dxVersion = int.Parse(Properties.Settings.Default.DX_Version);
+                    XivMtrl itemXivMtrl;
+                    if (TypePartVisibility == Visibility.Visible)
                     {
-                        case 0:
-                            typePathIndex = 1;
-                            break;
-                        case 1:
-                            typePathIndex = 0;
-                            break;
-                        case 2:
-                            typePathIndex = 1;
-                            break;
+                        itemXivMtrl = await _mtrl.GetMtrlData(item, SelectedRace.XivRace, SelectedTypePart.Name[0], dxVersion, SelectedType.Name);
+                    }
+                    else
+                    {
+                        itemXivMtrl = await _mtrl.GetMtrlData(item, SelectedRace.XivRace, SelectedType.Name[0], dxVersion);
+                    }
+                    var tmps2 = xivMtrl.MTRLPath.Split('_');
+                    xivMtrl.MTRLPath = xivMtrl.MTRLPath.Replace($"_{tmps2[tmps2.Length - 1]}", $"_{newPartName}.mtrl");
+                    xivMtrl.MTRLPath = xivMtrl.MTRLPath.Replace(oldVersionStr, $"/v{item.ModelInfo.Variant.ToString().PadLeft(4, '0')}/");
+                    xivMtrl.ColorSetDataSize = itemXivMtrl.ColorSetDataSize;
+                    xivMtrl.ColorSetData = itemXivMtrl.ColorSetData == null ? new List<Half>() : itemXivMtrl.ColorSetData;
+                    xivMtrl.ColorSetExtraData = itemXivMtrl.ColorSetExtraData == null ? new byte[0] : itemXivMtrl.ColorSetExtraData;
+                    oldVersionStr = $"/v{item.ModelInfo.Variant.ToString().PadLeft(4, '0')}/";
+                    var newMtrlOffset = await _mtrl.ImportMtrl(xivMtrl, item, "FilesAddedByTexTools");
+                }
+
+                //add new tex
+                if (Directory.Exists("AddNewTexturePartTexTmps"))
+                {
+                    Directory.Delete("AddNewTexturePartTexTmps", true);
+                }
+                var dirInfo = Directory.CreateDirectory("AddNewTexturePartTexTmps");
+                for (var i = 0; i < xivMtrl.TexturePathList.Count; i++)
+                {
+                    var typePathIndex = i;
+                    if (tplNeedAdd)
+                    {
+                        switch (i)
+                        {
+                            case 0:
+                                typePathIndex = 1;
+                                break;
+                            case 1:
+                                typePathIndex = 0;
+                                break;
+                            case 2:
+                                typePathIndex = 1;
+                                break;
+                        }
+                    }
+                    var xivTex = await _tex.GetTexData(textureTypePathListBak[typePathIndex]);
+                    _tex.SaveTexAsDDS(_item, xivTex, dirInfo, SelectedRace.XivRace);
+                    var oldPath = textureTypePathListBak[typePathIndex].Path;
+                    xivTex.TextureTypeAndPath.Path = xivMtrl.TexturePathList[i];
+                    xivTex.TextureTypeAndPath.Type = xivMtrl.TextureTypePathList[i].Type;
+                    var newOffset = await _tex.TexDDSImporter(xivTex, _item, new DirectoryInfo(Directory.GetFiles("AddNewTexturePartTexTmps", $"{Path.GetFileNameWithoutExtension(oldPath)}.dds", SearchOption.AllDirectories)[0]), "AddNewTexturePart");
+                }
+                if (Directory.Exists("AddNewTexturePartTexTmps"))
+                {
+                    Directory.Delete("AddNewTexturePartTexTmps", true);
+                }
+                //update ui    
+                void SetToNewTexturePart(object sender, EventArgs e)
+                {
+                    LoadingComplete -= SetToNewTexturePart;
+                    if (_item.Category.Equals(XivStrings.Gear))
+                    {
+                        SelectedType = Types[Types.Count - 1];
+                    }
+                    else if (_item.Category.Equals(XivStrings.Character))
+                    {
+                        SelectedTypePart = TypeParts[TypeParts.Count - 1];
                     }
                 }
-                var xivTex = await _tex.GetTexData(textureTypePathListBak[typePathIndex]);
-                _tex.SaveTexAsDDS(_item, xivTex, dirInfo, SelectedRace.XivRace);                
-                var oldPath = textureTypePathListBak[typePathIndex].Path;
-                xivTex.TextureTypeAndPath.Path = xivMtrl.TexturePathList[i];
-                xivTex.TextureTypeAndPath.Type = xivMtrl.TextureTypePathList[i].Type;
-                var newOffset = await _tex.TexDDSImporter(xivTex, _item, new DirectoryInfo(Directory.GetFiles("AddNewTexturePartTexTmps", $"{Path.GetFileNameWithoutExtension(oldPath)}.dds", SearchOption.AllDirectories)[0]), "AddNewTexturePart");
+                LoadingComplete += SetToNewTexturePart;
+                SelectedRace = SelectedRace;
+                _textureView.BottomFlyout.IsOpen = false;
             }
-            if (Directory.Exists("AddNewTexturePartTexTmps"))
+            catch(Exception ex)
             {
-                Directory.Delete("AddNewTexturePartTexTmps", true);
+                FlexibleMessageBox.Show($"{UIMessages.AddNewTexturePartErrorTitle}:{ex.Message}",
+                        UIMessages.AddNewTexturePartErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
             }
-            //update ui    
-            void SetToNewTexturePart(object sender, EventArgs e)
+        }
+        async Task<List<IItemModel>> GetSameModelList()
+        {
+            var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
+            var sameModelItems=new List<IItemModel>();
+            var gear = new Gear(gameDirectory, GetLanguage());
+            var character = new Character(gameDirectory, GetLanguage());
+            var companions = new Companions(gameDirectory, GetLanguage());
+            var ui = new UI(gameDirectory, GetLanguage());
+            var housing = new Housing(gameDirectory, GetLanguage());
+            //gear
+            if (_item.Category.Equals(XivStrings.Gear))
             {
-                LoadingComplete -= SetToNewTexturePart;
-                SelectedType = Types[Types.Count - 1];
+                sameModelItems.AddRange(
+                    (await gear.GetGearList())
+                    .Where(it =>
+                    it.ModelInfo.ModelID == _item.ModelInfo.ModelID
+                    && it.ItemCategory == _item.ItemCategory).Select(it => it as IItemModel).ToList()
+                );
             }
-            LoadingComplete += SetToNewTexturePart;
-            SelectedPart = SelectedPart;
-            _textureView.BottomFlyout.IsOpen = false;
+            else if (_item.Category.Equals(XivStrings.Character))
+            {
+                //character
+                sameModelItems.Add(
+                    new XivGenericItemModel
+                    {
+                        Category = _item.Category,
+                        ItemCategory = _item.ItemCategory,
+                        ItemSubCategory = _item.ItemSubCategory,
+                        ModelInfo = new XivModelInfo
+                        {
+                            Body = _item.ModelInfo.Body,
+                            ModelID = _item.ModelInfo.ModelID,
+                            ModelType = _item.ModelInfo.ModelType,
+                            Variant = _item.ModelInfo.Variant
+                        },
+                        Name = _item.Name
+                    }
+                    as IItemModel
+                );
+            }
+            //companions
+            //sameModelItems.AddRange(
+            //    (await companions.GetMinionList())
+            //    .Where(it =>
+            //    it.ModelInfo.ModelID == _item.ModelInfo.ModelID
+            //    && it.ItemCategory == _item.ItemCategory).Select(it => it as IItemModel).ToList()
+            //);
+            //sameModelItems.AddRange(
+            //    (await companions.GetMountList())
+            //    .Where(it =>
+            //    it.ModelInfo.ModelID == _item.ModelInfo.ModelID
+            //    && it.ItemCategory == _item.ItemCategory).Select(it => it as IItemModel).ToList()
+            //);
+            //sameModelItems.AddRange(
+            //    (await companions.GetPetList())
+            //    .Where(it =>
+            //    it.ModelInfo.ModelID == _item.ModelInfo.ModelID
+            //    && it.ItemCategory == _item.ItemCategory).Select(it => it as IItemModel).ToList()
+            //);
+            //housing
+            //sameModelItems.AddRange(
+            //    (await housing.GetFurnitureList())
+            //    .Where(it =>
+            //    it.ModelInfo.ModelID == _item.ModelInfo.ModelID
+            //    && it.ItemCategory == _item.ItemCategory).Select(it => it as IItemModel).ToList()
+            //);
+            return sameModelItems;
         }
 
         /// <summary>
@@ -2218,13 +2325,16 @@ namespace FFXIV_TexTools.ViewModels
         private bool CheckMtrlIsOK()
         {
             _textureView.BottomFlyout.IsOpen = false;
-            var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
-            var index = new Index(gameDirectory);
-            var offset = index.GetDataOffset(HashGenerator.GetHash(Path.GetDirectoryName(_xivMtrl.MTRLPath).Replace("\\", "/")), HashGenerator.GetHash(Path.GetFileName(_xivMtrl.MTRLPath)), _item.DataFile).GetAwaiter().GetResult();
-            if (offset == 0)
+            if (_xivMtrl != null)
             {
-                SelectedPart = SelectedPart;
-                return false;
+                var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
+                var index = new Index(gameDirectory);
+                var offset = index.GetDataOffset(HashGenerator.GetHash(Path.GetDirectoryName(_xivMtrl.MTRLPath).Replace("\\", "/")), HashGenerator.GetHash(Path.GetFileName(_xivMtrl.MTRLPath)), _item.DataFile).GetAwaiter().GetResult();
+                if (offset == 0)
+                {
+                    SelectedPart = SelectedPart;
+                    return false;
+                }
             }
             return CheckMapIsOK();
         }
@@ -2235,10 +2345,14 @@ namespace FFXIV_TexTools.ViewModels
             var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
             var index = new Index(gameDirectory);
 
-            var dataFile = _item.DataFile;
+            XivDataFile? dataFile = null;
             if (path.StartsWith("ui/"))
                 dataFile = XivDataFile._06_Ui;
-            var offset = index.GetDataOffset(HashGenerator.GetHash(Path.GetDirectoryName(path).Replace("\\", "/")), HashGenerator.GetHash(Path.GetFileName(path)),dataFile).GetAwaiter().GetResult();
+            else if (_item != null)
+                dataFile = _item.DataFile;
+            if (dataFile == null)
+                return true;
+            var offset = index.GetDataOffset(HashGenerator.GetHash(Path.GetDirectoryName(path).Replace("\\", "/")), HashGenerator.GetHash(Path.GetFileName(path)),dataFile.Value).GetAwaiter().GetResult();
             if (offset>0)
             {
                 return true;

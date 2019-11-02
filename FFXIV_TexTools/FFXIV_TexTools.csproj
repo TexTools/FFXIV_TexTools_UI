@@ -263,6 +263,7 @@
     <Compile Include="ViewModels\CustomizeViewModel.cs" />
     <Compile Include="ViewModels\IconSearchViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
+    <Compile Include="ViewModels\ModConverterViewModel.cs" />
     <Compile Include="ViewModels\ModelSearchViewModel.cs" />
     <Compile Include="ViewModels\ModelViewModel.cs" />
     <Compile Include="ViewModels\ModListViewModel.cs" />
@@ -270,6 +271,10 @@
     <Compile Include="ViewModels\Viewport3DViewModel.cs" />
     <Compile Include="Views\AboutView.xaml.cs">
       <DependentUpon>AboutView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\AutoCompleteEntry.cs" />
+    <Compile Include="Views\AutoCompleteTextBox.xaml.cs">
+      <DependentUpon>AutoCompleteTextBox.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\CustomizeSettingsView.xaml.cs">
       <DependentUpon>CustomizeSettingsView.xaml</DependentUpon>
@@ -279,6 +284,9 @@
     </Compile>
     <Compile Include="Views\LanguageSelectView.xaml.cs">
       <DependentUpon>LanguageSelectView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ModConverterView.xaml.cs">
+      <DependentUpon>ModConverterView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Models\AdvancedModelImportView.xaml.cs">
       <DependentUpon>AdvancedModelImportView.xaml</DependentUpon>
@@ -366,6 +374,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\AutoCompleteTextBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\CustomizeSettingsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -375,6 +387,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\LanguageSelectView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ModConverterView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

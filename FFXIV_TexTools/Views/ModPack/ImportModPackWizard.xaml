@@ -44,7 +44,7 @@
                             <RowDefinition/>
                         </Grid.RowDefinitions>
                         <Label Content="{Binding Source={x:Static resx:UIStrings.Description}}"/>
-                        <TextBox x:Name="ModPackDescription" Grid.Row="1" TextWrapping="Wrap" IsReadOnly="True"/>
+                        <TextBox x:Name="ModPackDescription" Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" IsReadOnly="True"/>
                     </Grid>
                 </Grid>
             </Grid>
