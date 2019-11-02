@@ -70,6 +70,24 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   查找类似 Currently only supports &quot;Gear&quot;, &quot;Character&quot;, please contact esrin if necessary. 的本地化字符串。
+        /// </summary>
+        internal static string AddNewTexturePartErrorMessageWrongCategoryOfItem {
+            get {
+                return ResourceManager.GetString("AddNewTexturePartErrorMessageWrongCategoryOfItem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 &quot;Face Paint&quot;,&quot;Equipment Decals&quot; Unsupported. 的本地化字符串。
+        /// </summary>
+        internal static string AddNewTexturePartErrorMessageWrongItemCategoryOfItem {
+            get {
+                return ResourceManager.GetString("AddNewTexturePartErrorMessageWrongItemCategoryOfItem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Error Add New Texture Part 的本地化字符串。
         /// </summary>
         internal static string AddNewTexturePartErrorTitle {

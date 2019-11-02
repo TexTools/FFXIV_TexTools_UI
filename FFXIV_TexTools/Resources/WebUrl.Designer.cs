@@ -151,6 +151,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   查找类似 https://raw.githubusercontent.com/esrinzou/FFXIV_TexTools_Preview/master/updater.xml 的本地化字符串。
+        /// </summary>
+        internal static string TexToolsPre_Update_Url {
+            get {
+                return ResourceManager.GetString("TexToolsPre_Update_Url", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 https://textools.dualwield.net/tutorials/ 的本地化字符串。
         /// </summary>
         internal static string Tutorials_Website {
