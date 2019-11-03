@@ -714,7 +714,7 @@ namespace FFXIV_TexTools.ViewModels
 
                                 if (floatArray.Length > 0)
                                 {
-                                    using (var img = Image.LoadPixelData<Rgba32>(floatArray, 4, 16))
+                                    using (var img = Image.LoadPixelData<RgbaVector>(floatArray, 4, 16))
                                     {
                                         img.Mutate(x => x.Opacity(1));
 
