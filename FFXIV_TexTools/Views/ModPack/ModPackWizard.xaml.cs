@@ -15,21 +15,21 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using FFXIV_TexTools.Helpers;
-using FFXIV_TexTools.Resources;
 using FFXIV_TexTools.Properties;
+using FFXIV_TexTools.Resources;
 using MahApps.Metro.Controls.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
+using System.Linq;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Forms;
 using Xceed.Wpf.Toolkit;
 using xivModdingFramework.Mods.DataContainers;
 using xivModdingFramework.Mods.FileTypes;
-using System.IO.Compression;
-using SharpDX.Text;
-using System.Windows.Data;
-using System.Linq;
+using Image = SixLabors.ImageSharp.Image;
 
 namespace FFXIV_TexTools.Views
 {
@@ -323,7 +323,8 @@ namespace FFXIV_TexTools.Views
                                     }
                                     var fileNameBak = openFileDialog.FileName;
                                     openFileDialog.FileName = tmpImage;
-                                    modOption.Image = new ImageMagick.MagickImage(openFileDialog.FileName);
+                                    modOption.Image = Image.Load(openFileDialog.FileName);
+                                    modOption.ImageFileName = openFileDialog.FileName;
                                     openFileDialog.FileName = fileNameBak;
                                 }
                             }

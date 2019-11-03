@@ -13,13 +13,16 @@
 // 
 // You should have received a copy of the GNU General Public License
 
-using ImageMagick;
+using SixLabors.ImageSharp.Formats.Png;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Media.Imaging;
 using xivModdingFramework.Mods.DataContainers;
-using System.Linq;
+using Image = SixLabors.ImageSharp.Image;
 
 namespace FFXIV_TexTools.Views
 {
@@ -28,9 +31,9 @@ namespace FFXIV_TexTools.Views
     /// </summary>
     public partial class ImportWizardModPackControl : UserControl
     {
-        private readonly Dictionary<string, MagickImage> _imageDictionary;
+        private readonly Dictionary<string, Image> _imageDictionary;
 
-        public ImportWizardModPackControl(ModPackPageJson modPackPage, Dictionary<string, MagickImage> imageDictionary)
+        public ImportWizardModPackControl(ModPackPageJson modPackPage, Dictionary<string, Image> imageDictionary)
         {
             InitializeComponent();
 
@@ -69,7 +72,28 @@ namespace FFXIV_TexTools.Views
             {
                 OptionDescriptionTextBox.Text = option.Description ?? string.Empty;
 
-                OptionPreviewImage.Source = !option.ImagePath.Equals(string.Empty) ? _imageDictionary[option.ImagePath].ToBitmapSource() : null;
+                if (!option.ImagePath.Equals(string.Empty))
+                {
+                    BitmapImage bmp;
+
+                    using (var ms = new MemoryStream())
+                    {
+                        _imageDictionary[option.ImagePath].Save(ms, new PngEncoder());
+
+                        bmp = new BitmapImage();
+                        bmp.BeginInit();
+                        bmp.StreamSource = ms;
+                        bmp.CacheOption = BitmapCacheOption.OnLoad;
+                        bmp.EndInit();
+                        bmp.Freeze();
+                    }
+
+                    OptionPreviewImage.Source = bmp;
+                }
+                else
+                {
+                    OptionPreviewImage.Source = null;
+                }
             }
         }
     }

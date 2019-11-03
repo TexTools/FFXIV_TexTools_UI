@@ -19,8 +19,12 @@ using FFXIV_TexTools.Properties;
 using FFXIV_TexTools.Resources;
 using FFXIV_TexTools.Textures;
 using FFXIV_TexTools.Views;
-using ImageMagick;
 using SharpDX;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats;
+using SixLabors.ImageSharp.Formats.Bmp;
+using SixLabors.ImageSharp.Formats.Png;
+using SixLabors.ImageSharp.PixelFormats;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -32,6 +36,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Input;
+using System.Windows.Media.Imaging;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Items.Categories;
@@ -40,8 +45,6 @@ using xivModdingFramework.Items.Enums;
 using xivModdingFramework.Items.Interfaces;
 using xivModdingFramework.Materials.DataContainers;
 using xivModdingFramework.Materials.FileTypes;
-using xivModdingFramework.Models.DataContainers;
-using xivModdingFramework.Models.FileTypes;
 using xivModdingFramework.Mods;
 using xivModdingFramework.Mods.Enums;
 using xivModdingFramework.SqPack.FileTypes;
@@ -71,8 +74,8 @@ namespace FFXIV_TexTools.ViewModels
         private XivUi _uiItem;
         private BitmapSource _imageDisplay;
         private ColorChannels _imageEffect;
-        private MagickImage _magickImage;
         private readonly TextureView _textureView;
+        private MapData _mapData;
 
         private Dictionary<XivRace, int[]> _charaRaceAndNumberDictionary;
 
@@ -923,20 +926,19 @@ namespace FFXIV_TexTools.ViewModels
 
                 var mapBytes = await _tex.GetImageData(texData);
 
-                var pixelSettings =
-                    new PixelReadSettings(texData.Width, texData.Height, StorageType.Char, PixelMapping.RGBA);
-
-                using (var magickImage = new MagickImage(mapBytes, pixelSettings))
+                _mapData = new MapData
                 {
-                    _magickImage = new MagickImage(magickImage);
+                    MapBytes = mapBytes,
+                    Height = texData.Height,
+                    Width = texData.Width
+                };
 
-                    ImageEffect = new ColorChannels
-                    {
-                        Channel = new System.Windows.Media.Media3D.Point4D(1.0f, 1.0f, 1.0f, 0.0f)
-                    };
+                ImageEffect = new ColorChannels
+                {
+                    Channel = new System.Windows.Media.Media3D.Point4D(1.0f, 1.0f, 1.0f, 0.0f)
+                };
 
-                    SetColorChannelFilter();
-                }            
+                SetColorChannelFilter();
 
                 _textureView.ImageZoombox.CenterContent();
                 _textureView.ImageZoombox.FitToBounds();
@@ -980,20 +982,20 @@ namespace FFXIV_TexTools.ViewModels
 
                 var floatArray = Utilities.ToByteArray(floats);
 
-                var pixelSettings =
-                    new PixelReadSettings(4, 16, StorageType.Float, PixelMapping.RGBA);
-
-                using (var magickImage = new MagickImage(floatArray, pixelSettings))
+                _mapData = new MapData
                 {
-                    _magickImage = new MagickImage(magickImage);
+                    MapBytes = floatArray,
+                    Height = 16,
+                    Width = 4,
+                    IsColorSet = true
+                };
 
-                    ImageEffect = new ColorChannels
-                    {
-                        Channel = new System.Windows.Media.Media3D.Point4D(1.0f, 1.0f, 1.0f, 0.0f)
-                    };
+                ImageEffect = new ColorChannels
+                {
+                    Channel = new System.Windows.Media.Media3D.Point4D(1.0f, 1.0f, 1.0f, 0.0f)
+                };
 
-                    SetColorChannelFilter();
-                }
+                SetColorChannelFilter();
 
                 _textureView.ImageZoombox.CenterContent();
                 _textureView.ImageZoombox.FitToBounds();
@@ -1217,7 +1219,29 @@ namespace FFXIV_TexTools.ViewModels
 
             Directory.CreateDirectory(path);
 
-            _magickImage.Write($"{path}/{Path.GetFileNameWithoutExtension(SelectedMap.TexType.Path)}.bmp", MagickFormat.Bmp);
+            if (!_mapData.IsColorSet)
+            {
+                using (var img = Image.LoadPixelData<Rgba32>(_mapData.MapBytes, _mapData.Width, _mapData.Height))
+                {
+                    img.Save($"{path}/{Path.GetFileNameWithoutExtension(SelectedMap.TexType.Path)}.bmp", new BmpEncoder
+                    {
+                        SupportTransparency = true,
+                        BitsPerPixel = BmpBitsPerPixel.Pixel32
+                    });
+                }
+            }
+            else
+            {
+                using (var img = Image.LoadPixelData<RgbaVector>(_mapData.MapBytes, _mapData.Width, _mapData.Height))
+                {
+                    img.Save($"{path}/{Path.GetFileNameWithoutExtension(SelectedMap.TexType.Path)}.bmp", new BmpEncoder
+                    {
+                        SupportTransparency = true,
+                        BitsPerPixel = BmpBitsPerPixel.Pixel32
+                    });
+                }
+            }
+
             _textureView.BottomFlyout.IsOpen = false;
 
             BMPImportEnabled = BMPFileExists();
@@ -1249,7 +1273,14 @@ namespace FFXIV_TexTools.ViewModels
 
             Directory.CreateDirectory(path);
 
-            _magickImage.Write($"{path}/{Path.GetFileNameWithoutExtension(SelectedMap.TexType.Path)}.bmp", MagickFormat.Bmp);
+            using (var img = Image.LoadPixelData<Rgba32>(_mapData.MapBytes, _mapData.Width, _mapData.Height))
+            {
+                img.Save($"{path}/{Path.GetFileNameWithoutExtension(SelectedMap.TexType.Path)}.bmp", new BmpEncoder
+                {
+                    SupportTransparency = true,
+                    BitsPerPixel = BmpBitsPerPixel.Pixel32
+                });
+            }
 
             _textureView.BottomFlyout.IsOpen = false;
 
@@ -2095,11 +2126,6 @@ namespace FFXIV_TexTools.ViewModels
             TypePartVisibility = Visibility.Collapsed;
             TypeVisibility = Visibility.Collapsed;
             PartVisibility = Visibility.Visible;
-
-            if (_magickImage != null)
-            {
-                _magickImage.Dispose();
-            }
         }
 
         /// <summary>
@@ -2289,9 +2315,55 @@ namespace FFXIV_TexTools.ViewModels
 
             ImageEffect.Channel = new System.Windows.Media.Media3D.Point4D(r, g, b, a);
 
-            _magickImage.Alpha(AlphaChecked ? AlphaOption.Activate : AlphaOption.Deactivate);
+            IImageEncoder imageEncoder;
 
-            ImageDisplay = _magickImage.ToBitmapSource();
+            if (AlphaChecked)
+            {
+                imageEncoder = new PngEncoder();
+            }
+            else
+            {
+                imageEncoder = new BmpEncoder();
+            }
+
+            if (!_mapData.IsColorSet)
+            {
+                using (var img = Image.LoadPixelData<Rgba32>(_mapData.MapBytes, _mapData.Width, _mapData.Height))
+                {
+                    using (var ms = new MemoryStream())
+                    {
+                        img.Save(ms, imageEncoder);
+
+                        var bmp = new BitmapImage();
+                        bmp.BeginInit();
+                        bmp.StreamSource = ms;
+                        bmp.CacheOption = BitmapCacheOption.OnLoad;
+                        bmp.EndInit();
+                        bmp.Freeze();
+
+                        ImageDisplay = bmp;
+                    }
+                }
+            }
+            else
+            {
+                using (var img = Image.LoadPixelData<RgbaVector>(_mapData.MapBytes, _mapData.Width, _mapData.Height))
+                {
+                    using (var ms = new MemoryStream())
+                    {
+                        img.Save(ms, imageEncoder);
+
+                        var bmp = new BitmapImage();
+                        bmp.BeginInit();
+                        bmp.StreamSource = ms;
+                        bmp.CacheOption = BitmapCacheOption.OnLoad;
+                        bmp.EndInit();
+                        bmp.Freeze();
+
+                        ImageDisplay = bmp;
+                    }
+                }
+            }
         }
         #endregion
 
@@ -2359,6 +2431,14 @@ namespace FFXIV_TexTools.ViewModels
             }
             SelectedPart = SelectedPart;
             return false;
+        }
+
+        private class MapData
+        {
+            public byte[] MapBytes;
+            public int Width;
+            public int Height;
+            public bool IsColorSet = false;
         }
     }
 }

@@ -1,9 +1,8 @@
 ﻿using FFXIV_TexTools.Helpers;
 using FFXIV_TexTools.Properties;
-using FFXIV_TexTools.Resources;
 using FFXIV_TexTools.Views;
-using ImageMagick;
 using Newtonsoft.Json;
+using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -19,17 +18,13 @@ using xivModdingFramework.Helpers;
 using xivModdingFramework.Items.Categories;
 using xivModdingFramework.Items.DataContainers;
 using xivModdingFramework.Items.Interfaces;
-using xivModdingFramework.Materials.DataContainers;
-using xivModdingFramework.Models.FileTypes;
 using xivModdingFramework.Mods.DataContainers;
-using xivModdingFramework.Textures.DataContainers;
-using xivModdingFramework.Textures.Enums;
 
 namespace FFXIV_TexTools.ViewModels
 {
     class ModConverterViewModel
     {
-        public ModConverterViewModel((ModPackJson ModPackJson, Dictionary<string, MagickImage> ImageDictionary) data) {
+        public ModConverterViewModel((ModPackJson ModPackJson, Dictionary<string, Image> ImageDictionary) data) {
             this.TTMPData = data;
             LoadFromItemList();
         }
@@ -50,7 +45,7 @@ namespace FFXIV_TexTools.ViewModels
         public Func<(int current, int total, string message), Task> ReportProgress { get; set; }
         public Action Close { get; set; }
         Dictionary<string, string> _convertDic = new Dictionary<string, string>();
-        public (ModPackJson ModPackJson, Dictionary<string, MagickImage> ImageDictionary) TTMPData { get; private set; }
+        public (ModPackJson ModPackJson, Dictionary<string, Image> ImageDictionary) TTMPData { get; private set; }
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected virtual void NotifyPropertyChanged(string propertyName)

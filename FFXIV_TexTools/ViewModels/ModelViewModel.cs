@@ -19,7 +19,9 @@ using FFXIV_TexTools.Properties;
 using FFXIV_TexTools.Resources;
 using FFXIV_TexTools.Views;
 using FFXIV_TexTools.Views.Models;
-using ImageMagick;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Bmp;
+using SixLabors.ImageSharp.PixelFormats;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -1244,53 +1246,43 @@ namespace FFXIV_TexTools.ViewModels
 
                 var path = $"{IOUtil.MakeItemSavePath(_item, saveDir, SelectedRace.XivRace)}\\3D";
 
-                var pixelSettings =
-                    new PixelReadSettings(modelMaps.Width, modelMaps.Height, StorageType.Char, PixelMapping.RGBA);
-
                 if (modelMaps.Diffuse != null && modelMaps.Diffuse.Length > 0)
                 {
-                    using (var magickImage = new MagickImage(modelMaps.Diffuse, pixelSettings))
+                    using (var img = Image.LoadPixelData<Rgba32>(modelMaps.Diffuse, modelMaps.Width, modelMaps.Height))
                     {
-                        magickImage.Settings.SetDefine("bmp3:alpha", "true");
-                        magickImage.Format = MagickFormat.Bmp3;
-                        magickImage.Write($"{path}\\{modelName}_{matNum}_Diffuse.bmp");
+                        img.Save($"{path}\\{modelName}_{matNum}_Diffuse.bmp", new BmpEncoder());
                     }
                 }
 
                 if (modelMaps.Normal != null && modelMaps.Normal.Length > 0)
                 {
-                    using (var magickImage = new MagickImage(modelMaps.Normal, pixelSettings))
+                    using (var img = Image.LoadPixelData<Rgba32>(modelMaps.Normal, modelMaps.Width, modelMaps.Height))
                     {
-                        magickImage.Settings.SetDefine("bmp3:alpha", "true");
-                        magickImage.Format = MagickFormat.Bmp3;
-                        magickImage.Write($"{path}\\{modelName}_{matNum}_Normal.bmp");
+                        img.Save($"{path}\\{modelName}_{matNum}_Normal.bmp", new BmpEncoder());
                     }
                 }
 
                 if (modelMaps.Specular != null && modelMaps.Specular.Length > 0)
                 {
-                    using (var magickImage = new MagickImage(modelMaps.Specular, pixelSettings))
+                    using (var img = Image.LoadPixelData<Rgba32>(modelMaps.Specular, modelMaps.Width, modelMaps.Height))
                     {
-                        magickImage.Format = MagickFormat.Bmp3;
-                        magickImage.Write($"{path}\\{modelName}_{matNum}_Specular.bmp");
+                        img.Save($"{path}\\{modelName}_{matNum}_Specular.bmp", new BmpEncoder());
                     }
                 }
 
                 if (modelMaps.Alpha != null && modelMaps.Alpha.Length > 0)
                 {
-                    using (var magickImage = new MagickImage(modelMaps.Alpha, pixelSettings))
+                    using (var img = Image.LoadPixelData<Rgba32>(modelMaps.Alpha, modelMaps.Width, modelMaps.Height))
                     {
-                        magickImage.Format = MagickFormat.Bmp3;
-                        magickImage.Write($"{path}\\{modelName}_{matNum}_Alpha.bmp");
+                        img.Save($"{path}\\{modelName}_{matNum}_Alpha.bmp", new BmpEncoder());
                     }
                 }
 
                 if (modelMaps.Emissive != null && modelMaps.Emissive.Length > 0)
                 {
-                    using (var magickImage = new MagickImage(modelMaps.Emissive, pixelSettings))
+                    using (var img = Image.LoadPixelData<Rgba32>(modelMaps.Emissive, modelMaps.Width, modelMaps.Height))
                     {
-                        magickImage.Format = MagickFormat.Bmp3;
-                        magickImage.Write($"{path}\\{modelName}_{matNum}_Emissive.bmp");
+                        img.Save($"{path}\\{modelName}_{matNum}_Emissive.bmp", new BmpEncoder());
                     }
                 }
             }

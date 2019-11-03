@@ -18,8 +18,10 @@ using FFXIV_TexTools.Custom;
 using FFXIV_TexTools.Resources;
 using HelixToolkit.Wpf.SharpDX;
 using HelixToolkit.Wpf.SharpDX.Cameras;
-using ImageMagick;
 using SharpDX.Direct3D11;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Png;
+using SixLabors.ImageSharp.PixelFormats;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -41,6 +43,7 @@ namespace FFXIV_TexTools.ViewModels
         private double _lightX, _light1X, _light2X, _lightY, _light1Y, _light2Y, _lightZ, _light1Z, _light2Z;
         private bool _renderLight3;
         private readonly ModelViewModel _modelViewModel;
+        private List<Stream> streamList = new List<Stream>();
 
         public ObservableElement3DCollection Models { get; } = new ObservableElement3DCollection();
 
@@ -99,49 +102,60 @@ namespace FFXIV_TexTools.ViewModels
 
                 Stream diffuse = null, specular = null, normal = null, alpha = null, emissive = null;
 
-                var pixelSettings =
-                    new PixelReadSettings(textureData.Width, textureData.Height, StorageType.Char, PixelMapping.RGBA);
-
                 if (textureData.Diffuse != null && textureData.Diffuse.Length > 0)
                 {
-                    using (var image = new MagickImage(textureData.Diffuse, pixelSettings))
+                    using (var img = Image.LoadPixelData<Rgba32>(textureData.Diffuse, textureData.Width, textureData.Height))
                     {
-                        diffuse = new MemoryStream(image.ToByteArray(MagickFormat.Bmp));
+                        diffuse = new MemoryStream();
+                        img.Save(diffuse, new PngEncoder());
                     }
+
+                    streamList.Add(diffuse);
                 }
 
                 if (textureData.Specular != null && textureData.Specular.Length > 0)
                 {
-                    using (var image = new MagickImage(textureData.Specular, pixelSettings))
+                    using (var img = Image.LoadPixelData<Rgba32>(textureData.Specular, textureData.Width, textureData.Height))
                     {
-                        specular = new MemoryStream(image.ToByteArray(MagickFormat.Bmp));
+                        specular = new MemoryStream();
+                        img.Save(specular, new PngEncoder());
                     }
+
+                    streamList.Add(specular);
                 }
 
                 if (textureData.Normal != null && textureData.Normal.Length > 0)
                 {
-                    using (var image = new MagickImage(textureData.Normal, pixelSettings))
+                    using (var img = Image.LoadPixelData<Rgba32>(textureData.Normal, textureData.Width, textureData.Height))
                     {
-                        normal = new MemoryStream(image.ToByteArray(MagickFormat.Bmp));
+                        normal = new MemoryStream();
+                        img.Save(normal, new PngEncoder());
                     }
+
+                    streamList.Add(normal);
                 }
 
                 if (textureData.Alpha != null && textureData.Alpha.Length > 0)
                 {
-                    using (var image = new MagickImage(textureData.Alpha, pixelSettings))
+                    using (var img = Image.LoadPixelData<Rgba32>(textureData.Alpha, textureData.Width, textureData.Height))
                     {
-                        alpha = new MemoryStream(image.ToByteArray(MagickFormat.Bmp));
+                        alpha = new MemoryStream();
+                        img.Save(alpha, new PngEncoder());
                     }
+
+                    streamList.Add(alpha);
                 }
 
                 if (textureData.Emissive != null && textureData.Emissive.Length > 0)
                 {
-                    using (var image = new MagickImage(textureData.Emissive, pixelSettings))
+                    using (var img = Image.LoadPixelData<Rgba32>(textureData.Emissive, textureData.Width, textureData.Height))
                     {
-                        emissive = new MemoryStream(image.ToByteArray(MagickFormat.Bmp));
+                        emissive = new MemoryStream();
+                        img.Save(emissive, new PngEncoder());
                     }
-                }
 
+                    streamList.Add(emissive);
+                }
 
                 var material = new PhongMaterial
                 {
@@ -164,7 +178,6 @@ namespace FFXIV_TexTools.ViewModels
                 boundingBox = meshGeometry3D.Bound;
 
                 mgm3d.CullMode = Properties.Settings.Default.Cull_Mode.Equals("None") ? CullMode.None : CullMode.Back;
-
 
                 Models.Add(mgm3d);
             }
@@ -314,6 +327,12 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         public void ClearModels()
         {
+            foreach (var stream in streamList)
+            {
+                stream.Dispose();
+            }
+
+            streamList.Clear();
             Models.Clear();
         }
 
