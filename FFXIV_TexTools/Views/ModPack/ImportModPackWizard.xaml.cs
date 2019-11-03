@@ -106,16 +106,30 @@ namespace FFXIV_TexTools.Views
             {
                 foreach (var magickImage in _imageDictionary.Values)
                 {
-                    if (magickImage != null)
+                    try
                     {
-                        magickImage.Dispose();
+                        if (magickImage != null)
+                        {
+                            magickImage.Dispose();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        
                     }
                 }
             }
 
-            if (_messageInImport)
+            try
             {
-                Owner.Activate();
+                if (_messageInImport)
+                {
+                    Owner.Activate();
+                }
+            }
+            catch (Exception ex)
+            {
+
             }
         }
 
