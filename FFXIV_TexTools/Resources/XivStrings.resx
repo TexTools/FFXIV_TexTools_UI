@@ -135,7 +135,7 @@
   <data name="EquipDecalFolder" xml:space="preserve">
     <value>chara/common/texture/decal_equip</value>
   </data>
-  <data name="Equip_Decals" xml:space="preserve">
+  <data name="Equipment_Decals" xml:space="preserve">
     <value>Equipment Decals</value>
   </data>
   <data name="Face" xml:space="preserve">

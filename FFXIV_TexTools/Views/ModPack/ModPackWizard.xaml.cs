@@ -15,16 +15,21 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using FFXIV_TexTools.Helpers;
+using FFXIV_TexTools.Properties;
 using FFXIV_TexTools.Resources;
 using MahApps.Metro.Controls.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
+using System.Linq;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Forms;
 using Xceed.Wpf.Toolkit;
 using xivModdingFramework.Mods.DataContainers;
 using xivModdingFramework.Mods.FileTypes;
+using Image = SixLabors.ImageSharp.Image;
 
 namespace FFXIV_TexTools.Views
 {
@@ -120,11 +125,16 @@ namespace FFXIV_TexTools.Views
                 }
             }
 
-            wizPages.Add(new WizardPage
+            var index = wizPages.IndexOf(modPackWizard.CurrentPage);
+            if (index == wizPages.Count - 2)
             {
-                Content = new WizardModPackControl(),
-                PageType = WizardPageType.Blank
-            });
+                var newPage = new WizardPage
+                {
+                    Content = new WizardModPackControl(),
+                    PageType = WizardPageType.Blank,
+                };
+                wizPages.Add(newPage);
+            }
 
             modPackWizard.CanHelp = true;
         }
@@ -239,5 +249,116 @@ namespace FFXIV_TexTools.Views
         }
 
         #endregion
+
+        private async void LoadFromButton_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            var openFileDialog = new OpenFileDialog { Filter = "Texture Files(*.ttmp2)|*.ttmp2", InitialDirectory = Settings.Default.ModPack_Directory };
+            if (openFileDialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+            {
+                return;
+            }
+            var ttmp = new TTMP(new DirectoryInfo(Settings.Default.ModPack_Directory), XivStrings.TexTools);
+            var ttmpData = await ttmp.GetModPackJsonData(new DirectoryInfo(openFileDialog.FileName));
+            if (!ttmpData.ModPackJson.TTMPVersion.Contains("w"))
+            {
+                FlexibleMessageBox.Show(new Wpf32Window(this),
+                        UIMessages.NotWizardModPack,
+                        UIMessages.ModPackLoadingTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            var tempMPD = Path.GetTempFileName();
+            using (var archive = ZipFile.OpenRead(openFileDialog.FileName))
+            {
+                using (var zipStream = archive.GetEntry("TTMPD.mpd").Open())
+                {
+                    using (var fileStream = new FileStream(tempMPD, FileMode.OpenOrCreate))
+                    {
+                        await zipStream.CopyToAsync(fileStream);
+                    }
+                }
+            }
+            this.ModPackAuthor.Text = ttmpData.ModPackJson.Author;
+            this.ModPackName.Text = ttmpData.ModPackJson.Name;
+            this.ModPackVersion.Text= ttmpData.ModPackJson.Version;
+            this.ModPackDescription.Text = ttmpData.ModPackJson.Description;
+            for (var i = modPackWizard.Items.Count - 1; i > 0; i--)
+            {
+                modPackWizard.Items.RemoveAt(i);
+            }
+            //var previousPage = modPackWizard.CurrentPage;
+            foreach (var wizPageItemJson in ttmpData.ModPackJson.ModPackPages)
+            {
+                var wizPage = new WizardPage();
+                var wizModPackControl = new WizardModPackControl();
+                wizPage.Content = wizModPackControl;
+                wizPage.PageType = WizardPageType.Blank;
+                foreach (var groupJson in wizPageItemJson.ModGroups)
+                {
+                    var modGroup = new ModGroup();
+                    modGroup.OptionList = new List<ModOption>();
+                    modGroup.GroupName = groupJson.GroupName;
+                    modGroup.SelectionType = groupJson.SelectionType;
+                    wizModPackControl.ModGroupList.Add(modGroup);
+                    wizModPackControl.ModGroupNames.Add(modGroup.GroupName);
+                    foreach (var optionJson in groupJson.OptionList) {
+                        var modOption = new ModOption();
+                        modGroup.OptionList.Add(modOption);
+                        modOption.Name = optionJson.Name;
+                        modOption.GroupName = optionJson.GroupName;
+                        modOption.IsChecked = optionJson.IsChecked;
+                        modOption.SelectionType = optionJson.SelectionType;
+                        modOption.Description = optionJson.Description;
+                        if (optionJson.ImagePath.Length > 0)
+                        {
+                            
+                            using (var zipFile = ZipFile.OpenRead(openFileDialog.FileName))
+                            {
+                                using (var stream = zipFile.GetEntry(optionJson.ImagePath).Open())
+                                {
+                                    var tmpImage = Path.GetTempFileName();                                    
+                                    using (var imageStream = File.Open(tmpImage,FileMode.OpenOrCreate))
+                                    {
+                                        await stream.CopyToAsync(imageStream);
+                                        imageStream.Position = 0;
+                                    }
+                                    var fileNameBak = openFileDialog.FileName;
+                                    openFileDialog.FileName = tmpImage;
+                                    modOption.Image = Image.Load(openFileDialog.FileName);
+                                    modOption.ImageFileName = openFileDialog.FileName;
+                                    openFileDialog.FileName = fileNameBak;
+                                }
+                            }
+                        }
+                        foreach (var modJson in optionJson.ModsJsons)
+                        {
+                            var modData = new ModData();
+                            modData.Category = modJson.Category;
+                            modData.FullPath = modJson.FullPath;
+                            modData.Name = modJson.Name;
+                            using (var br = new BinaryReader(File.OpenRead(tempMPD)))
+                            {
+                                br.BaseStream.Seek(modJson.ModOffset, SeekOrigin.Begin);
+                                modData.ModDataBytes = br.ReadBytes(modJson.ModSize);
+                            }
+                            modOption.Mods.Add(modData.FullPath, modData);
+                        }
+                        ((List<ModOption>)wizModPackControl.OptionsList.ItemsSource).Add(modOption);
+                        var view = (CollectionView)CollectionViewSource.GetDefaultView(wizModPackControl.OptionsList.ItemsSource);
+                        var groupDescription = new PropertyGroupDescription("GroupName");
+                        view.GroupDescriptions.Clear();
+                        view.GroupDescriptions.Add(groupDescription);
+                    }
+                    if (modGroup.OptionList.Count > 0&&modGroup.OptionList.Count(it=>it.IsChecked)==0) modGroup.OptionList[0].IsChecked = true;
+                }
+
+                modPackWizard.Items.Add(wizPage);
+                modPackWizard.CanHelp = true;
+            }
+            modPackWizard.Items.Add(new WizardPage()
+            {
+                Content = new WizardModPackControl(),
+                PageType = WizardPageType.Blank,
+            });
+        }
     }
 }

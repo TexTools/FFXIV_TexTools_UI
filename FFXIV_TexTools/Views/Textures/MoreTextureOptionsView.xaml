@@ -11,5 +11,6 @@
     <UniformGrid Rows="1" VerticalAlignment="Center">
         <mah:ToggleSwitch Header="{Binding Source={x:Static resx:UIStrings.Translucency}}" Style="{StaticResource MahApps.Metro.Styles.ToggleSwitch.Win10}" IsChecked="{Binding TranslucencyCheck}"
                           OffLabel="{Binding Source={x:Static resx:UIStrings.Disabled}}" OnLabel="{Binding Source={x:Static resx:UIStrings.Enabled}}" Margin="5" IsEnabled="{Binding TranslucencyEnabled}"/>
+        <Button Content="{Binding Source={x:Static resx:UIStrings.Add_NewTexturePart}}" VerticalAlignment="Center" Margin="10" Command="{Binding AddNewTexturePartButton}" IsEnabled="{Binding AddNewTexturePartEnabled}"/>
     </UniformGrid>
 </UserControl>

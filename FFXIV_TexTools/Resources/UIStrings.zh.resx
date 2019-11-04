@@ -732,4 +732,19 @@
   <data name="ModelStatus_Loading" xml:space="preserve">
     <value>Loading Model...</value>
   </data>
+  <data name="Add_NewTexturePart" xml:space="preserve">
+    <value>添加新的贴图组</value>
+  </data>
+  <data name="Load_From" xml:space="preserve">
+    <value>从外部加载</value>
+  </data>
+  <data name="Mod_Converter" xml:space="preserve">
+    <value>MOD转换器</value>
+  </data>
+  <data name="Convert" xml:space="preserve">
+    <value>转换</value>
+  </data>
+  <data name="Convert_To" xml:space="preserve">
+    <value>转换到</value>
+  </data>
 </root>

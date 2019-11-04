@@ -22,7 +22,10 @@ using FFXIV_TexTools.ViewModels;
 using FFXIV_TexTools.Views;
 using MahApps.Metro;
 using MahApps.Metro.Controls.Dialogs;
+using SixLabors.ImageSharp;
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -35,6 +38,7 @@ using xivModdingFramework.General.Enums;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Items.Interfaces;
 using xivModdingFramework.Mods;
+using xivModdingFramework.Mods.DataContainers;
 using xivModdingFramework.Mods.FileTypes;
 using xivModdingFramework.SqPack.FileTypes;
 using Application = System.Windows.Application;
@@ -79,7 +83,7 @@ namespace FFXIV_TexTools
             {
                 InitializeComponent();
 
-                if (System.Globalization.CultureInfo.CurrentUICulture.Name == "zh-CN")
+                if (System.Globalization.CultureInfo.CurrentUICulture.Name == "zh")
                 {
                     this.ChinaDiscordButton.Visibility = Visibility.Visible;
                 }
@@ -145,7 +149,7 @@ namespace FFXIV_TexTools
 
             if (selectedItem.Item.Category.Equals(XivStrings.UI) ||
                 selectedItem.Item.ItemCategory.Equals(XivStrings.Face_Paint) ||
-                selectedItem.Item.ItemCategory.Equals(XivStrings.Equip_Decals) ||
+                selectedItem.Item.ItemCategory.Equals(XivStrings.Equipment_Decals) ||
                 selectedItem.Item.ItemCategory.Equals(XivStrings.Paintings))
             {
                 ItemTreeView.IsEnabled = true;
@@ -154,7 +158,22 @@ namespace FFXIV_TexTools
 
         private void CheckForUpdates()
         {
+            AutoUpdater.CheckForUpdateEvent += AutoUpdater_CheckForUpdateEvent;
             AutoUpdater.Start(WebUrl.TexTools_Update_Url);
+        }
+
+        private void AutoUpdater_CheckForUpdateEvent(UpdateInfoEventArgs args)
+        {
+            AutoUpdater.CheckForUpdateEvent -= AutoUpdater_CheckForUpdateEvent; 
+            if (args==null||!args.IsUpdateAvailable)
+            {            
+                Dispatcher.InvokeAsync(() => {
+                    AutoUpdater.Start(WebUrl.TexToolsPre_Update_Url);
+                });
+            }
+            else {
+                AutoUpdater.ShowUpdateForm();
+            }
         }
 
         private void CheckForSettingsUpdate()
@@ -245,7 +264,7 @@ namespace FFXIV_TexTools
 
                 if (selectedItem.Item.Category.Equals(XivStrings.UI) ||
                     selectedItem.Item.ItemCategory.Equals(XivStrings.Face_Paint) ||
-                    selectedItem.Item.ItemCategory.Equals(XivStrings.Equip_Decals) ||
+                    selectedItem.Item.ItemCategory.Equals(XivStrings.Equipment_Decals) ||
                     selectedItem.Item.ItemCategory.Equals(XivStrings.Paintings))
                 {
                     if (TabsControl.SelectedIndex == 1)
@@ -607,6 +626,8 @@ namespace FFXIV_TexTools
                 await Task.Run(async () =>
                 {
                     var modding = new Modding(gameDirectory);
+                    await modding.DeleteAllFilesAddedByTexTools();
+
                     var dat = new Dat(gameDirectory);
 
                     var modListDirectory = new DirectoryInfo(Path.Combine(gameDirectory.Parent.Parent.FullName, XivStrings.ModlistFilePath));
@@ -771,8 +792,9 @@ namespace FFXIV_TexTools
         private void MetroWindow_Loaded(object sender, RoutedEventArgs e)
         {
             var fileVersion = FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location).FileVersion;
-
-            Title += $" {fileVersion.Substring(0, fileVersion.LastIndexOf("."))}";
+            var tmps = fileVersion.Split('.');
+            var pre = tmps[tmps.Length - 1] == "0" ? "" : $".{tmps[tmps.Length - 1]}";
+            Title += $" {fileVersion.Substring(0, fileVersion.LastIndexOf("."))}{pre}";
         }
 
         private void GithubButton_Click(object sender, RoutedEventArgs e)
@@ -783,6 +805,64 @@ namespace FFXIV_TexTools
         private void ChinaDiscordButton_Click(object sender, RoutedEventArgs e)
         {
             Process.Start(WebUrl.Discord_China);
+        }
+
+        private async void Menu_ModConverter_Click(object sender, RoutedEventArgs e)
+        {
+            var modPackDirectory = new DirectoryInfo(Settings.Default.ModPack_Directory);
+            var openFileDialog = new OpenFileDialog { InitialDirectory = modPackDirectory.FullName, Filter = "TexToolsModPack TTMP (*.ttmp;*.ttmp2)|*.ttmp;*.ttmp2" };
+            if (openFileDialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+                return;
+            var ttmpFileName = openFileDialog.FileName;
+            var ttmp = new TTMP(modPackDirectory, XivStrings.TexTools);
+            (ModPackJson ModPackJson, Dictionary<string, Image> ImageDictionary) ttmpData;
+            var progressController = await this.ShowProgressAsync(UIStrings.Mod_Converter, UIMessages.PleaseStandByMessage);
+            var modsJsonList = await ttmp.GetOriginalModPackJsonData(new DirectoryInfo(ttmpFileName));
+            if (modsJsonList == null)
+            {
+                ttmpData = await ttmp.GetModPackJsonData(new DirectoryInfo(ttmpFileName));
+            }
+            else
+            {
+                ttmpData = (ModPackJson: new ModPackJson(), ImageDictionary: new Dictionary<string, Image>());
+                ttmpData.ModPackJson.Author = "Mod Converter";
+                ttmpData.ModPackJson.Version = "1.0.0";
+                ttmpData.ModPackJson.Name = Path.GetFileNameWithoutExtension(ttmpFileName);
+                ttmpData.ModPackJson.TTMPVersion = "s";
+                ttmpData.ModPackJson.SimpleModsList = new List<ModsJson>();
+                foreach (var mod in modsJsonList)
+                {
+                    var modsJson = new ModsJson();
+                    modsJson.Category = mod.Category;
+                    modsJson.DatFile = mod.DatFile;
+                    modsJson.FullPath = mod.FullPath;
+                    modsJson.ModOffset = mod.ModOffset;
+                    modsJson.ModPackEntry = null;
+                    modsJson.ModSize = mod.ModSize;
+                    modsJson.Name = mod.Name;
+                    ttmpData.ModPackJson.SimpleModsList.Add(modsJson);
+                }
+
+            }
+            var categorys = ItemTreeView.ItemsSource as ObservableCollection<Category>;
+            var list= new List<xivModdingFramework.Items.Interfaces.IItem>();
+            var ctgs1 = categorys[0];
+            foreach (var ctgs2 in ctgs1.Categories)
+            {
+                if (ctgs2.Item != null)
+                {
+                    list.Add(ctgs2.Item);
+                    continue;
+                }
+                foreach (var ctgs3 in ctgs2.Categories)
+                {
+                    if (ctgs3.Item != null)
+                        list.Add(ctgs3.Item);
+                }
+            }
+            var modConverterView = new ModConverterView(list,ttmpFileName, ttmpData) { Owner = this,WindowStartupLocation=WindowStartupLocation.CenterOwner };
+            await progressController.CloseAsync();
+            modConverterView.ShowDialog();
         }
     }
 }

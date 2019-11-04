@@ -96,8 +96,31 @@ namespace FFXIV_TexTools.Views
 
             ModSizeLabel.Content = "0";
             ModListView.IsEnabled = true;
-        }
 
+            CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(ModListView.ItemsSource);
+            view.Filter = NameFilter;
+        }
+        /// <summary>
+        /// filtering ModListView
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        private bool NameFilter(object item)
+        {
+            if (String.IsNullOrEmpty(SearchTextBox.Text.Trim()))
+                return true;
+            else
+                return ((item as SimpleModPackEntries).Name.IndexOf(SearchTextBox.Text.Trim(), StringComparison.OrdinalIgnoreCase) >= 0);
+        }
+        /// <summary>
+        /// Filtering Text
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SearchTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            CollectionViewSource.GetDefaultView(ModListView.ItemsSource).Refresh();
+        }
         /// <summary>
         /// Creates the simple mod pack data list
         /// </summary>
@@ -186,7 +209,7 @@ namespace FFXIV_TexTools.Views
                         Num = number,
                         Map = map,
                         Active = active,
-                        ModEntry = mod
+                        ModEntry = mod,
                     }));
                 }
             });
@@ -554,7 +577,8 @@ namespace FFXIV_TexTools.Views
                     FullPath = simpleEntry.ModEntry.fullPath,
                     ModOffset = simpleEntry.ModEntry.data.modOffset,
                     ModSize = simpleEntry.ModEntry.data.modSize,
-                    DatFile = simpleEntry.ModEntry.datFile
+                    DatFile = simpleEntry.ModEntry.datFile,
+                    
                 };
 
                 simpleModPackData.SimpleModDataList.Add(simpleData);

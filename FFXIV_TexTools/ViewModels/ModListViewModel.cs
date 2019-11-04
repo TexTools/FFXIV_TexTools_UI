@@ -17,9 +17,12 @@
 using FFXIV_TexTools.Helpers;
 using FFXIV_TexTools.Models;
 using FFXIV_TexTools.Resources;
-using ImageMagick;
 using Newtonsoft.Json;
 using SharpDX;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Bmp;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -371,7 +374,7 @@ namespace FFXIV_TexTools.ViewModels
                                 fullPath.Substring(fullPath.LastIndexOf("_", StringComparison.Ordinal) + 1, 1))
                         };
                     }
-                    else if (item.Name.Equals(XivStrings.Equip_Decals))
+                    else if (item.Name.Equals(XivStrings.Equipment_Decals))
                     {
                         item.ModelInfo = new XivModelInfo();
 
@@ -640,15 +643,15 @@ namespace FFXIV_TexTools.ViewModels
                         }
 
                         // Part
-                        if (itemPath.Contains("_b_"))
+                        if (itemPath.Contains("_b_")|| itemPath.Contains("_b."))
                         {
                             modListModel.Part = "b";
                         }
-                        else if (itemPath.Contains("_c_"))
+                        else if (itemPath.Contains("_c_")|| itemPath.Contains("_c."))
                         {
                             modListModel.Part = "c";
                         }
-                        else if (itemPath.Contains("_d_"))
+                        else if (itemPath.Contains("_d_")|| itemPath.Contains("_d."))
                         {
                             modListModel.Part = "d";
                         }
@@ -709,14 +712,29 @@ namespace FFXIV_TexTools.ViewModels
 
                                 var floatArray = Utilities.ToByteArray(floats);
 
-                                var pixelSettings =
-                                    new PixelReadSettings(4, 16, StorageType.Float, PixelMapping.RGBA);
-
-                                using (var magickImage = new MagickImage(floatArray, pixelSettings))
+                                if (floatArray.Length > 0)
                                 {
-                                    magickImage.Alpha(AlphaOption.Opaque);
-                                    modListModel.Image =
-                                        Application.Current.Dispatcher.Invoke(() => magickImage.ToBitmapSource());
+                                    using (var img = Image.LoadPixelData<RgbaVector>(floatArray, 4, 16))
+                                    {
+                                        img.Mutate(x => x.Opacity(1));
+
+                                        BitmapImage bmp;
+
+                                        using (var ms = new MemoryStream())
+                                        {
+                                            img.Save(ms, new BmpEncoder());
+
+                                            bmp = new BitmapImage();
+                                            bmp.BeginInit();
+                                            bmp.StreamSource = ms;
+                                            bmp.CacheOption = BitmapCacheOption.OnLoad;
+                                            bmp.EndInit();
+                                            bmp.Freeze();
+                                        }
+
+                                        modListModel.Image =
+                                            Application.Current.Dispatcher.Invoke(() => bmp);
+                                    }
                                 }
                             }
                             catch (Exception ex)
@@ -767,20 +785,26 @@ namespace FFXIV_TexTools.ViewModels
 
                             var mapBytes = await tex.GetImageData(texData);
 
-                            var pixelSettings =
-                                new PixelReadSettings(texData.Width, texData.Height, StorageType.Char,
-                                    PixelMapping.RGBA);
-
-                            using (var magickImage = new MagickImage(mapBytes, pixelSettings))
+                            using (var img = Image.LoadPixelData<Rgba32>(mapBytes, texData.Width, texData.Height))
                             {
-                                if (!modItem.fullPath.Contains("ui/"))
+                                img.Mutate(x => x.Opacity(1));
+
+                                BitmapImage bmp;
+
+                                using (var ms = new MemoryStream())
                                 {
-                                    magickImage.Alpha(AlphaOption.Opaque);
+                                    img.Save(ms, new BmpEncoder());
+
+                                    bmp = new BitmapImage();
+                                    bmp.BeginInit();
+                                    bmp.StreamSource = ms;
+                                    bmp.CacheOption = BitmapCacheOption.OnLoad;
+                                    bmp.EndInit();
+                                    bmp.Freeze();
                                 }
 
-                                magickImage.Thumbnail(256, 256);
                                 modListModel.Image =
-                                    Application.Current.Dispatcher.Invoke(() => magickImage.ToBitmapSource());
+                                    Application.Current.Dispatcher.Invoke(() => bmp);
                             }
                         }
 

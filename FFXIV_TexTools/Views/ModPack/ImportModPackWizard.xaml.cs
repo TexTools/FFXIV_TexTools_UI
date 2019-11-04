@@ -15,8 +15,8 @@
 
 using FFXIV_TexTools.Helpers;
 using FFXIV_TexTools.Resources;
-using ImageMagick;
 using MahApps.Metro.Controls.Dialogs;
+using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -38,11 +38,11 @@ namespace FFXIV_TexTools.Views
         private readonly int _pageCount;
         private readonly DirectoryInfo _modPackDirectory;
         private ProgressDialogController _progressController;
-        private readonly Dictionary<string, MagickImage> _imageDictionary;
+        private readonly Dictionary<string, Image> _imageDictionary;
         private readonly ModPack _modPackEntry;
         private readonly bool _messageInImport;
 
-        public ImportModPackWizard(ModPackJson modPackJson, Dictionary<string, MagickImage> imageDictionary, DirectoryInfo modPackDirectory, bool messageInImport = false)
+        public ImportModPackWizard(ModPackJson modPackJson, Dictionary<string, Image> imageDictionary, DirectoryInfo modPackDirectory, bool messageInImport = false)
         {
             InitializeComponent();
 
@@ -106,16 +106,30 @@ namespace FFXIV_TexTools.Views
             {
                 foreach (var magickImage in _imageDictionary.Values)
                 {
-                    if (magickImage != null)
+                    try
                     {
-                        magickImage.Dispose();
+                        if (magickImage != null)
+                        {
+                            magickImage.Dispose();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        
                     }
                 }
             }
 
-            if (_messageInImport)
+            try
             {
-                Owner.Activate();
+                if (_messageInImport)
+                {
+                    Owner.Activate();
+                }
+            }
+            catch (Exception ex)
+            {
+
             }
         }
 

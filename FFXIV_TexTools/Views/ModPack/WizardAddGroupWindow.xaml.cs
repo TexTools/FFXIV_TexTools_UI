@@ -18,9 +18,9 @@ using FFXIV_TexTools.Models;
 using FFXIV_TexTools.Properties;
 using FFXIV_TexTools.Resources;
 using FFXIV_TexTools.Views.Models;
-using ImageMagick;
 using MahApps.Metro.Controls;
 using Newtonsoft.Json;
+using SixLabors.ImageSharp.Formats.Png;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -31,6 +31,7 @@ using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Items.DataContainers;
 using xivModdingFramework.Items.Interfaces;
@@ -41,6 +42,7 @@ using xivModdingFramework.SqPack.FileTypes;
 using xivModdingFramework.Textures.DataContainers;
 using xivModdingFramework.Textures.Enums;
 using xivModdingFramework.Textures.FileTypes;
+using Image = SixLabors.ImageSharp.Image;
 
 namespace FFXIV_TexTools.Views
 {
@@ -359,7 +361,7 @@ namespace FFXIV_TexTools.Views
                         ModelID = int.Parse(fullPath.Substring(fullPath.LastIndexOf("_", StringComparison.Ordinal) + 1, 1))
                     };
                 }
-                else if (item.Name.Equals(XivStrings.Equip_Decals))
+                else if (item.Name.Equals(XivStrings.Equipment_Decals))
                 {
                     if (!fullPath.Contains("_stigma"))
                     {
@@ -542,7 +544,21 @@ namespace FFXIV_TexTools.Views
 
                 if (_selectedModOption.Image != null)
                 {
-                    OptionImage.Source = _selectedModOption.Image.ToBitmapSource();
+                    BitmapImage bmp;
+
+                    using (var ms = new MemoryStream())
+                    {
+                        _selectedModOption.Image.Save(ms, new PngEncoder());
+
+                        bmp = new BitmapImage();
+                        bmp.BeginInit();
+                        bmp.StreamSource = ms;
+                        bmp.CacheOption = BitmapCacheOption.OnLoad;
+                        bmp.EndInit();
+                        bmp.Freeze();
+                    }
+
+                    OptionImage.Source = bmp;
                 }
                 else
                 {
@@ -600,9 +616,9 @@ namespace FFXIV_TexTools.Views
 
             if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                var magickImage = new MagickImage(openFileDialog.FileName);
-                _selectedModOption.Image = magickImage;
-                OptionImage.Source = magickImage.ToBitmapSource();
+                _selectedModOption.Image = Image.Load(openFileDialog.FileName);
+                _selectedModOption.ImageFileName = openFileDialog.FileName;
+                OptionImage.Source = new BitmapImage(new Uri(openFileDialog.FileName));
             }
         }
 
@@ -914,7 +930,7 @@ namespace FFXIV_TexTools.Views
                     Name = mod.name,
                     Category = mod.category,
                     FullPath = mod.fullPath,
-                    ModDataBytes = rawData
+                    ModDataBytes = rawData,
                 };
 
                 IncludedModsList.Items.Add(includedMod);
@@ -952,14 +968,24 @@ namespace FFXIV_TexTools.Views
                 var xivMtrl = await mtrl.GetMtrlData(mod.data.modOffset, mod.fullPath, int.Parse(Settings.Default.DX_Version));
 
                 modData = tex.DDStoMtrlData(xivMtrl, ddsDirectory, ((Category) ModListTreeView.SelectedItem).Item, GetLanguage());
+                var dat = new Dat(_gameDirectory);
+                modData = await dat.CreateType2Data(modData);
             }
             else
             {
-                var texData = await tex.GetTexData(selectedItem.TexTypePath);
+                try
+                {
+                    var texData = await tex.GetTexData(selectedItem.TexTypePath);
 
-                modData = await tex.DDStoTexData(texData, ((Category)ModListTreeView.SelectedItem).Item, ddsDirectory);
+                    modData = await tex.DDStoTexData(texData, ((Category)ModListTreeView.SelectedItem).Item, ddsDirectory);
+                }
+                catch(Exception ex)
+                {
+                    FlexibleMessageBox.Show(ex.Message);
+                    return;
+                }
             }
-
+            
             if (includedModsList.Any(item => item.Name.Equals(includedMod.Name)))
             {
                 if (FlexibleMessageBox.Show(
@@ -978,7 +1004,7 @@ namespace FFXIV_TexTools.Views
                     Name = mod.name,
                     Category = mod.category,
                     FullPath = mod.fullPath,
-                    ModDataBytes = modData
+                    ModDataBytes = modData,
                 });
             }
         }
@@ -1039,7 +1065,7 @@ namespace FFXIV_TexTools.Views
                     Name = mod.name,
                     Category = mod.category,
                     FullPath = mod.fullPath,
-                    ModDataBytes = rawData
+                    ModDataBytes = rawData,
                 };
 
                 IncludedModsList.Items.Add(includedMod);
@@ -1103,7 +1129,7 @@ namespace FFXIV_TexTools.Views
                     Name = mod.name,
                     Category = mod.category,
                     FullPath = mod.fullPath,
-                    ModDataBytes = rawData
+                    ModDataBytes = rawData,
                 };
 
                 IncludedModsList.Items.Add(includedMod);
@@ -1132,8 +1158,9 @@ namespace FFXIV_TexTools.Views
             var mdl = new Mdl(_gameDirectory, XivDataFiles.GetXivDataFile(mod.datFile));
 
             var xivMdl = await mdl.GetMdlData(itemModel, GetRace(mod.fullPath), null, null, mod.data.originalOffset);
+            var modMdl = await mdl.GetMdlData(itemModel, GetRace(mod.fullPath), null, null, mod.data.modOffset);
 
-            var advancedImportView = new AdvancedModelImportView(xivMdl, itemModel, GetRace(mod.fullPath), true);
+            var advancedImportView = new AdvancedModelImportView(xivMdl, modMdl, itemModel, GetRace(mod.fullPath), true);
             var result = advancedImportView.ShowDialog();
 
             if (result == true)
@@ -1156,7 +1183,7 @@ namespace FFXIV_TexTools.Views
                         Name = mod.name,
                         Category = mod.category,
                         FullPath = mod.fullPath,
-                        ModDataBytes = advancedImportView.RawModelData
+                        ModDataBytes = advancedImportView.RawModelData,
                     });
                 }
             }
@@ -1216,7 +1243,7 @@ namespace FFXIV_TexTools.Views
                     Name = mod.name,
                     Category = mod.category,
                     FullPath = mod.fullPath,
-                    ModDataBytes = mdlData
+                    ModDataBytes = mdlData,
                 });
             }
         }

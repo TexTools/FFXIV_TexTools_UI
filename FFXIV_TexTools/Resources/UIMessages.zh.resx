@@ -117,6 +117,25 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AddNewTexturePartErrorMessageWrongCategoryOfItem" xml:space="preserve">
+    <value>目前只支持“装备”,"角色“,有需要请联系萌小新。</value>
+  </data>
+  <data name="AddNewTexturePartErrorMessageWrongItemCategoryOfItem" xml:space="preserve">
+    <value>"面妆","Equipment Decals" 不受支持。</value>
+  </data>
+  <data name="AddNewTexturePartQuestionMessage" xml:space="preserve">
+    <value>是否添加漫反射贴图？
+选择“是”将添加漫反射贴图，选择“否”将添加默认贴图。</value>
+  </data>
+  <data name="AddNewTexturePartQuestionTitle" xml:space="preserve">
+    <value>添加漫反射贴图</value>
+  </data>
+  <data name="ModPackLoadingTitle" xml:space="preserve">
+    <value>加载Mod包</value>
+  </data>
+  <data name="NotWizardModPack" xml:space="preserve">
+    <value>这不是一个向导型Mod包</value>
+  </data>
   <data name="StartOverMessage" xml:space="preserve">
     <value>初始化将：
 
