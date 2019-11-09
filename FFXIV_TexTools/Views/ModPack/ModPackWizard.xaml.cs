@@ -132,6 +132,8 @@ namespace FFXIV_TexTools.Views
                 {
                     Content = new WizardModPackControl(),
                     PageType = WizardPageType.Blank,
+                    Background = null,
+                    HeaderBackground = null
                 };
                 wizPages.Add(newPage);
             }
@@ -289,6 +291,8 @@ namespace FFXIV_TexTools.Views
             foreach (var wizPageItemJson in ttmpData.ModPackJson.ModPackPages)
             {
                 var wizPage = new WizardPage();
+                wizPage.Background = null;
+                wizPage.HeaderBackground = null;
                 var wizModPackControl = new WizardModPackControl();
                 wizPage.Content = wizModPackControl;
                 wizPage.PageType = WizardPageType.Blank;
@@ -358,6 +362,8 @@ namespace FFXIV_TexTools.Views
             {
                 Content = new WizardModPackControl(),
                 PageType = WizardPageType.Blank,
+                Background = null,
+                HeaderBackground = null
             });
         }
     }

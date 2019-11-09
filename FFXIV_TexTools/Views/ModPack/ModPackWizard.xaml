@@ -11,8 +11,8 @@
         xmlns:input="clr-namespace:System.Windows.Input;assembly=PresentationCore"
         mc:Ignorable="d"
         Title="{Binding Source={x:Static resx:UIStrings.Create_ModPack_Wizard}}" Height="600" Width="800" ShowMaxRestoreButton="False" ShowMinButton="False" WindowStartupLocation="CenterOwner" Closing="MetroWindow_Closing">
-    <xctk:Wizard x:Name="modPackWizard" Next="modPackWizard_Next" NextButtonContent="{Binding Source={x:Static resx:UIStrings.New_Page}}" BackButtonContent="{Binding Source={x:Static resx:UIStrings.Previous_Page}}" HelpButtonContent="{Binding Source={x:Static resx:UIStrings.Create_Modpack}}" Help="ModPackWizard_CreateModPack" CancelButtonContent="{Binding Source={x:Static resx:UIStrings.Cancel}}" IsTabStop="False">
-        <xctk:WizardPage Title="{Binding Source={x:Static resx:UIStrings.Mod_Pack_General_Info}}" Description="{Binding Source={x:Static resx:UIStrings.ModPackGeneralInfo}}" PageType="Interior" IsTabStop="False">
+    <xctk:Wizard x:Name="modPackWizard" Next="modPackWizard_Next" NextButtonContent="{Binding Source={x:Static resx:UIStrings.New_Page}}" BackButtonContent="{Binding Source={x:Static resx:UIStrings.Previous_Page}}" HelpButtonContent="{Binding Source={x:Static resx:UIStrings.Create_Modpack}}" Help="ModPackWizard_CreateModPack" CancelButtonContent="{Binding Source={x:Static resx:UIStrings.Cancel}}" IsTabStop="False" Background="{x:Null}">
+        <xctk:WizardPage Title="{Binding Source={x:Static resx:UIStrings.Mod_Pack_General_Info}}" Description="{Binding Source={x:Static resx:UIStrings.ModPackGeneralInfo}}" PageType="Interior" IsTabStop="False" Background="{x:Null}" HeaderBackground="{x:Null}">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -65,7 +65,7 @@
                 </Grid>
             </Grid>
         </xctk:WizardPage>
-        <xctk:WizardPage PageType="Blank">
+        <xctk:WizardPage PageType="Blank" Background="{x:Null}" HeaderBackground="{x:Null}">
             <local:WizardModPackControl/>
         </xctk:WizardPage>
     </xctk:Wizard>

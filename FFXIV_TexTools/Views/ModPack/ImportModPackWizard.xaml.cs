@@ -66,7 +66,9 @@ namespace FFXIV_TexTools.Views
                 wizPages.Add(new WizardPage
                 {
                     Content = new ImportWizardModPackControl(modPackJson.ModPackPages[i], imageDictionary),
-                    PageType = WizardPageType.Blank
+                    PageType = WizardPageType.Blank,
+                    Background = null,
+                    HeaderBackground = null
                 });
             }
         }
