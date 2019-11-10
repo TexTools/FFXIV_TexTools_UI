@@ -649,4 +649,7 @@ Selecting Yes will add a diffuse map, and selecting No will add a default map.</
   <data name="AddNewTexturePartErrorMessageWrongItemCategoryOfItem" xml:space="preserve">
     <value>"Face Paint","Equipment Decals" Unsupported.</value>
   </data>
+  <data name="ModPack_Delete" xml:space="preserve">
+    <value>Deleting ModPack</value>
+  </data>
 </root>

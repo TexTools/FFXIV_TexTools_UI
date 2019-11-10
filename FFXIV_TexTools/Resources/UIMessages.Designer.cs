@@ -803,6 +803,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Deleting ModPack.
+        /// </summary>
+        internal static string ModPack_Delete {
+            get {
+                return ResourceManager.GetString("ModPack_Delete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The ModPack ({0}.ttmp2) has been successfully Created..
         /// </summary>
         internal static string ModPackCreationCompleteMessage {
