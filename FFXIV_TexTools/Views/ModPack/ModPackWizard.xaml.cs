@@ -46,6 +46,8 @@ namespace FFXIV_TexTools.Views
             modPackWizard.CanSelectNextPage = false;
             modPackWizard.CanHelp = false;
             ModPackName.Focus();
+
+            ModPackAuthor.Text = Settings.Default.Default_Author;
         }
 
         #region Private Properties

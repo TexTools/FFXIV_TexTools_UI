@@ -44,7 +44,14 @@
                 </Grid>
             </GroupBox>
             <GroupBox Grid.Row="1" Header="{Binding Source={x:Static resx:UIStrings.Export_Settings}}">
-                <ComboBox VerticalAlignment="Top" HorizontalAlignment="Left" mah:TextBoxHelper.UseFloatingWatermark="True" mah:TextBoxHelper.Watermark="DAE Plugin Target" ItemsSource="{Binding TargetImporters}" SelectedItem="{Binding SelectedImporter}"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <ComboBox VerticalAlignment="Top" Grid.Column="0" mah:TextBoxHelper.UseFloatingWatermark="True" mah:TextBoxHelper.Watermark="DAE Plugin Target" ItemsSource="{Binding TargetImporters}" SelectedItem="{Binding SelectedImporter}" Margin="5"/>
+                    <TextBox x:Name="AuthorTextBox" Grid.Column="1" Text="{Binding DefaultAuthor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.Mod_Pack_Author}}" mah:TextBoxHelper.UseFloatingWatermark="True" Margin="5" VerticalContentAlignment="Center"/>
+                </Grid>
             </GroupBox>
             <GroupBox Grid.Row="2" Header="Default Race">
                 <Grid>
@@ -101,7 +108,7 @@
                     <TextBlock Grid.Row="5" Grid.ColumnSpan="3" TextWrapping="WrapWithOverflow" Text="{Binding Source={x:Static resx:UIStrings.Skin_Color_Note_Info}}" VerticalAlignment="Top" Margin="0,10,0,0"/>
 
                     <Button x:Name="DefaultButton" Content="{Binding Source={x:Static resx:UIStrings.Reset_to_Default}}" Command="{Binding Customize_Reset}" Grid.Row="6" Grid.Column="0" Margin="5"/>
-                    <Button x:Name="CloseButton" Grid.Row="6" Grid.Column="2" Content="{Binding Source={x:Static resx:UIStrings.Close}}" Margin="5" Click="CloseButton_Click" />
+                    <Button x:Name="CloseButton" Grid.Row="6" Grid.Column="2" Content="{Binding Source={x:Static resx:UIStrings.Close}}" Command="{Binding CloseCustomize}" Margin="5" Click="CloseButton_Click" />
                 </Grid>
             </Grid>
         </GroupBox>

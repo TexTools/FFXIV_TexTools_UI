@@ -238,5 +238,17 @@ namespace FFXIV_TexTools.Properties {
                 this["Default_Race_Selection"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string Default_Author {
+            get {
+                return ((string)(this["Default_Author"]));
+            }
+            set {
+                this["Default_Author"] = value;
+            }
+        }
     }
 }

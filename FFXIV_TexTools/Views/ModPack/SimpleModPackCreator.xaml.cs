@@ -31,6 +31,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Forms;
 using System.Windows.Input;
+using FFXIV_TexTools.Properties;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Mods;
 using xivModdingFramework.Mods.DataContainers;
@@ -110,6 +111,8 @@ namespace FFXIV_TexTools.Views
 
             CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(ModListView.ItemsSource);
             view.Filter = NameFilter;
+
+            ModPackAuthor.Text = Settings.Default.Default_Author;
         }
         /// <summary>
         /// filtering ModListView
