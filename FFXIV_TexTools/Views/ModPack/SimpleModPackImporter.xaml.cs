@@ -482,7 +482,9 @@ namespace FFXIV_TexTools.Views
                     {
                         if (modPath.Contains(".tex"))
                         {
-                            type = FaceTypes[modPath.Substring(modPath.LastIndexOf("_") - 3, 3)];
+                            var fileName = Path.GetFileNameWithoutExtension(modPath);
+
+                            type = FaceTypes[fileName.Substring(fileName.IndexOf("_") + 1, 3)];
                         }
                     }
 
@@ -490,7 +492,9 @@ namespace FFXIV_TexTools.Views
                     {
                         if (modPath.Contains(".tex"))
                         {
-                            type = HairTypes[modPath.Substring(modPath.LastIndexOf("_") - 3, 3)];
+                            var fileName = Path.GetFileNameWithoutExtension(modPath);
+
+                            type = HairTypes[fileName.Substring(fileName.IndexOf("_") + 1, 3)];
                         }
                     }
 
