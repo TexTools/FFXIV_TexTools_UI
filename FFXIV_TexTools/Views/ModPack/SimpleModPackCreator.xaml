@@ -71,7 +71,7 @@
                     </ItemsPanelTemplate>
                 </ListView.ItemsPanel>
                 <ListView.View>
-                    <GridView>
+                    <GridView x:Name="GridViewCol">
                         <GridViewColumn Header="_">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>

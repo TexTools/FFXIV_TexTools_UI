@@ -114,6 +114,17 @@ namespace FFXIV_TexTools.Views
                 await ImportOldModPack(progress);
             }
 
+            // Resize columns to fit content
+            foreach (var column in GridViewCol.Columns)
+            {
+                if (double.IsNaN(column.Width))
+                {
+                    column.Width = column.ActualWidth;
+                }
+
+                column.Width = double.NaN;
+            }
+
             LockedStatusLabel.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Right;
             LockedStatusLabel.Foreground = Brushes.Red;
             LockedStatusLabel.Content = string.Empty;

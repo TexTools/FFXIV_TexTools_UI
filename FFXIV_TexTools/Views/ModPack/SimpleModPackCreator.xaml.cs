@@ -90,6 +90,17 @@ namespace FFXIV_TexTools.Views
 
             await MakeSimpleDataList(progress);
 
+            // Resize columns to fit content
+            foreach (var column in GridViewCol.Columns)
+            {
+                if (double.IsNaN(column.Width))
+                {
+                    column.Width = column.ActualWidth;
+                }
+
+                column.Width = double.NaN;
+            }
+
             var cv = (CollectionView)CollectionViewSource.GetDefaultView(ModListView.ItemsSource);
             cv.SortDescriptions.Clear();
             cv.SortDescriptions.Add(new SortDescription(nameof(SimpleModPackEntries.Name), _lastDirection));
