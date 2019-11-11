@@ -33,6 +33,8 @@ namespace FFXIV_TexTools.ViewModels
         private readonly string _skinDefault = "#FFFFFFFF";
         private readonly string _brownDefault = "#FF603913";
         private readonly string _bgColorDefault = "#FF777777";
+        private string _defaultAuthor = Settings.Default.Default_Author;
+
 
         public CustomizeViewModel()
         {
@@ -108,6 +110,19 @@ namespace FFXIV_TexTools.ViewModels
         {
             get => Path.GetFullPath(Settings.Default.ModPack_Directory);
             set => NotifyPropertyChanged(nameof(ModPack_Directory));
+        }
+
+        /// <summary>
+        /// The default author
+        /// </summary>
+        public string DefaultAuthor
+        {
+            get => _defaultAuthor;
+            set
+            {
+                _defaultAuthor = value;
+                NotifyPropertyChanged(nameof(DefaultAuthor));
+            }
         }
 
         /// <summary>
@@ -256,6 +271,16 @@ namespace FFXIV_TexTools.ViewModels
         public ICommand Backup_SelectDir => new RelayCommand(BackupSelectDir);
         public ICommand ModPack_SelectDir => new RelayCommand(ModPackSelectDir);
         public ICommand Customize_Reset => new RelayCommand(ResetToDefault);
+        public ICommand CloseCustomize => new RelayCommand(CustomizeClose);
+
+        private void CustomizeClose(object obj)
+        {
+            if (!Settings.Default.Default_Author.Equals(DefaultAuthor))
+            {
+                Settings.Default.Default_Author = DefaultAuthor;
+                Settings.Default.Save();
+            }
+        }
 
         /// <summary>
         /// The select ffxiv directory command

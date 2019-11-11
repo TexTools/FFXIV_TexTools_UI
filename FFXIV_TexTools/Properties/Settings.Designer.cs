@@ -12,7 +12,7 @@ namespace FFXIV_TexTools.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.1.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.4.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -205,7 +205,7 @@ namespace FFXIV_TexTools.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("OpenCOLLADA")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Autodesk Collada")]
         public string DAE_Plugin_Target {
             get {
                 return ((string)(this["DAE_Plugin_Target"]));
@@ -236,6 +236,18 @@ namespace FFXIV_TexTools.Properties {
             }
             set {
                 this["Default_Race_Selection"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string Default_Author {
+            get {
+                return ((string)(this["Default_Author"]));
+            }
+            set {
+                this["Default_Author"] = value;
             }
         }
     }

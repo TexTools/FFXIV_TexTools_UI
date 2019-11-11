@@ -28,6 +28,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Media;
+using MahApps.Metro.Controls.Dialogs;
 using xivModdingFramework.Mods;
 using ListBox = System.Windows.Controls.ListBox;
 
@@ -172,8 +173,12 @@ namespace FFXIV_TexTools.Views
                         UIMessages.DeleteModPackTitle,
                         MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == System.Windows.Forms.DialogResult.Yes)
                 {
+                    var progress = await this.ShowProgressAsync(UIMessages.ModPack_Delete, UIMessages.PleaseStandByMessage);
+
                     await modding.DeleteModPack((ModListTreeView.SelectedItem as Category).Name);
                     (DataContext as ModListViewModel).RemoveModPack();
+
+                    await progress.CloseAsync();
                 }
 
             }
