@@ -46,7 +46,7 @@ namespace FFXIV_TexTools.Views
     /// </summary>
     public partial class SimpleModPackImporter
     {
-        private readonly ObservableCollection<SimpleModPackEntries> _simpleDataList = new ObservableCollection<SimpleModPackEntries>();
+        private readonly List<SimpleModPackEntries> _simpleDataList = new List<SimpleModPackEntries>();
         private ListSortDirection _lastDirection = ListSortDirection.Ascending;
         private readonly DirectoryInfo _gameDirectory, _modPackDirectory;
         private ProgressDialogController _progressController;
@@ -213,18 +213,17 @@ namespace FFXIV_TexTools.Views
                     modsJson.ModPackEntry = new ModPack
                         {name = modPackJson.Name, author = modPackJson.Author, version = modPackJson.Version};
 
-                    System.Windows.Application.Current.Dispatcher.Invoke(() =>
-                        _simpleDataList.Add(new SimpleModPackEntries
-                        {
-                            Name = modsJson.Name,
-                            Category = modsJson.Category,
-                            Race = race.ToString(),
-                            Part = type,
-                            Num = number,
-                            Map = map,
-                            Active = active,
-                            JsonEntry = modsJson,
-                        }));
+                    _simpleDataList.Add(new SimpleModPackEntries
+                    {
+                        Name = modsJson.Name,
+                        Category = modsJson.Category,
+                        Race = race.ToString(),
+                        Part = type,
+                        Num = number,
+                        Map = map,
+                        Active = active,
+                        JsonEntry = modsJson,
+                    });
                 }
             });
 
@@ -249,6 +248,9 @@ namespace FFXIV_TexTools.Views
             var modding = new Modding(_gameDirectory);
 
             var originalModPackData = await _texToolsModPack.GetOriginalModPackJsonData(_modPackDirectory);
+
+            var authorDefault = "N/A";
+            var versionDefault = "1.0.0";
 
             await Task.Run(async () =>
             {
@@ -309,39 +311,38 @@ namespace FFXIV_TexTools.Views
                         active = true;
                     }
 
-                    System.Windows.Application.Current.Dispatcher.Invoke(() =>
-                        _simpleDataList.Add(new SimpleModPackEntries
+                    _simpleDataList.Add(new SimpleModPackEntries
+                    {
+                        Name = modsJson.Name,
+                        Category = modsJson.Category,
+                        Race = race.GetDisplayName(),
+                        Part = type,
+                        Num = number,
+                        Map = map,
+                        Active = active,
+                        JsonEntry = new ModsJson
                         {
                             Name = modsJson.Name,
-                            Category = modsJson.Category,
-                            Race = race.GetDisplayName(),
-                            Part = type,
-                            Num = number,
-                            Map = map,
-                            Active = active,
-                            JsonEntry = new ModsJson
+                            Category = modsJson.Category.GetDisplayName(),
+                            FullPath = modsJson.FullPath,
+                            DatFile = modsJson.DatFile,
+                            ModOffset = modsJson.ModOffset,
+                            ModSize = modsJson.ModSize,
+                            ModPackEntry = new ModPack
                             {
-                                Name = modsJson.Name,
-                                Category = modsJson.Category.GetDisplayName(),
-                                FullPath = modsJson.FullPath,
-                                DatFile = modsJson.DatFile,
-                                ModOffset = modsJson.ModOffset,
-                                ModSize = modsJson.ModSize,
-                                ModPackEntry = new ModPack
-                                {
-                                    name = Path.GetFileNameWithoutExtension(_modPackDirectory.FullName),
-                                    author = "N/A",
-                                    version = "1.0.0"
-                                }
+                                name = Path.GetFileNameWithoutExtension(_modPackDirectory.FullName),
+                                author = authorDefault,
+                                version = versionDefault
                             }
-                        }));
+                        }
+                    });
 
                 }
             });
 
             ModPackName.Content = Path.GetFileNameWithoutExtension(_modPackDirectory.FullName);
-            ModPackAuthor.Content = "N/A";
-            ModPackVersion.Content = "1.0.0";
+            ModPackAuthor.Content = authorDefault;
+            ModPackVersion.Content = versionDefault;
 
             var cv = (CollectionView)CollectionViewSource.GetDefaultView(ModListView.ItemsSource);
             cv.SortDescriptions.Clear();
