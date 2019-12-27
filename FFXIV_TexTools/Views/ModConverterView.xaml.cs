@@ -1,25 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Forms;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using FFXIV_TexTools.Properties;
+﻿using FFXIV_TexTools.Properties;
 using FFXIV_TexTools.Resources;
 using FFXIV_TexTools.ViewModels;
-using ImageMagick;
 using MahApps.Metro.Controls.Dialogs;
+using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
+using System.Windows.Controls;
+using System.Windows.Forms;
 using xivModdingFramework.Items.Interfaces;
 using xivModdingFramework.Mods.DataContainers;
+using Image = SixLabors.ImageSharp.Image;
 
 namespace FFXIV_TexTools.Views
 {
@@ -29,7 +19,7 @@ namespace FFXIV_TexTools.Views
     public partial class ModConverterView
     {
         ProgressDialogController _progressController;
-        public ModConverterView(List<IItem> itemList,string ttmpPath, (ModPackJson ModPackJson, Dictionary<string, MagickImage> ImageDictionary) ttmpData)
+        public ModConverterView(List<IItem> itemList,string ttmpPath, (ModPackJson ModPackJson, Dictionary<string, Image> ImageDictionary) ttmpData)
         {
             var vm = new ModConverterViewModel(ttmpData);
             vm.ItemList = itemList;

@@ -20,9 +20,9 @@ using FFXIV_TexTools.Properties;
 using FFXIV_TexTools.Resources;
 using FFXIV_TexTools.ViewModels;
 using FFXIV_TexTools.Views;
-using ImageMagick;
 using MahApps.Metro;
 using MahApps.Metro.Controls.Dialogs;
+using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -793,7 +793,7 @@ namespace FFXIV_TexTools
         {
             var fileVersion = FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location).FileVersion;
             var tmps = fileVersion.Split('.');
-            var pre = tmps[tmps.Length - 1] == "0" ? "" : $".{tmps[tmps.Length - 1]} (This is a preview version)";
+            var pre = tmps[tmps.Length - 1] == "0" ? "" : $".{tmps[tmps.Length - 1]}";
             Title += $" {fileVersion.Substring(0, fileVersion.LastIndexOf("."))}{pre}";
         }
 
@@ -815,7 +815,7 @@ namespace FFXIV_TexTools
                 return;
             var ttmpFileName = openFileDialog.FileName;
             var ttmp = new TTMP(modPackDirectory, XivStrings.TexTools);
-            (ModPackJson ModPackJson, Dictionary<string, MagickImage> ImageDictionary) ttmpData;
+            (ModPackJson ModPackJson, Dictionary<string, Image> ImageDictionary) ttmpData;
             var progressController = await this.ShowProgressAsync(UIStrings.Mod_Converter, UIMessages.PleaseStandByMessage);
             var modsJsonList = await ttmp.GetOriginalModPackJsonData(new DirectoryInfo(ttmpFileName));
             if (modsJsonList == null)
@@ -824,7 +824,7 @@ namespace FFXIV_TexTools
             }
             else
             {
-                ttmpData = (ModPackJson: new ModPackJson(), ImageDictionary: new Dictionary<string, MagickImage>());
+                ttmpData = (ModPackJson: new ModPackJson(), ImageDictionary: new Dictionary<string, Image>());
                 ttmpData.ModPackJson.Author = "Mod Converter";
                 ttmpData.ModPackJson.Version = "1.0.0";
                 ttmpData.ModPackJson.Name = Path.GetFileNameWithoutExtension(ttmpFileName);

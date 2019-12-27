@@ -18,9 +18,9 @@ using FFXIV_TexTools.Models;
 using FFXIV_TexTools.Properties;
 using FFXIV_TexTools.Resources;
 using FFXIV_TexTools.Views.Models;
-using ImageMagick;
 using MahApps.Metro.Controls;
 using Newtonsoft.Json;
+using SixLabors.ImageSharp.Formats.Png;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -31,6 +31,7 @@ using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Items.DataContainers;
 using xivModdingFramework.Items.Interfaces;
@@ -41,6 +42,7 @@ using xivModdingFramework.SqPack.FileTypes;
 using xivModdingFramework.Textures.DataContainers;
 using xivModdingFramework.Textures.Enums;
 using xivModdingFramework.Textures.FileTypes;
+using Image = SixLabors.ImageSharp.Image;
 
 namespace FFXIV_TexTools.Views
 {
@@ -542,7 +544,21 @@ namespace FFXIV_TexTools.Views
 
                 if (_selectedModOption.Image != null)
                 {
-                    OptionImage.Source = _selectedModOption.Image.ToBitmapSource();
+                    BitmapImage bmp;
+
+                    using (var ms = new MemoryStream())
+                    {
+                        _selectedModOption.Image.Save(ms, new PngEncoder());
+
+                        bmp = new BitmapImage();
+                        bmp.BeginInit();
+                        bmp.StreamSource = ms;
+                        bmp.CacheOption = BitmapCacheOption.OnLoad;
+                        bmp.EndInit();
+                        bmp.Freeze();
+                    }
+
+                    OptionImage.Source = bmp;
                 }
                 else
                 {
@@ -600,9 +616,9 @@ namespace FFXIV_TexTools.Views
 
             if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                var magickImage = new MagickImage(openFileDialog.FileName);
-                _selectedModOption.Image = magickImage;
-                OptionImage.Source = magickImage.ToBitmapSource();
+                _selectedModOption.Image = Image.Load(openFileDialog.FileName);
+                _selectedModOption.ImageFileName = openFileDialog.FileName;
+                OptionImage.Source = new BitmapImage(new Uri(openFileDialog.FileName));
             }
         }
 

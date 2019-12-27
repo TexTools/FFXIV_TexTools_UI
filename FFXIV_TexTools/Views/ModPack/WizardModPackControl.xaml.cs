@@ -15,13 +15,16 @@
 
 using FFXIV_TexTools.Helpers;
 using FFXIV_TexTools.Resources;
+using SixLabors.ImageSharp.Formats.Png;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Forms;
+using System.Windows.Media.Imaging;
 using xivModdingFramework.Mods.DataContainers;
-using System.Linq;
 using UserControl = System.Windows.Controls.UserControl;
 
 namespace FFXIV_TexTools.Views
@@ -218,7 +221,28 @@ namespace FFXIV_TexTools.Views
             {
                 OptionDescriptionTextBox.Text = option.Description ?? string.Empty;
 
-                OptionPreviewImage.Source = option.Image != null ? option.Image.ToBitmapSource() : null;
+                if (option.Image != null)
+                {
+                    BitmapImage bmp;
+
+                    using (var ms = new MemoryStream())
+                    {
+                        option.Image.Save(ms, new PngEncoder());
+
+                        bmp = new BitmapImage();
+                        bmp.BeginInit();
+                        bmp.StreamSource = ms;
+                        bmp.CacheOption = BitmapCacheOption.OnLoad;
+                        bmp.EndInit();
+                        bmp.Freeze();
+                    }
+
+                    OptionPreviewImage.Source = bmp;
+                }
+                else
+                {
+                    OptionPreviewImage.Source = null;
+                }
 
                 EditGroupButton.IsEnabled = true;
                 DeleteGroupButton.IsEnabled = true;

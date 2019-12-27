@@ -48,12 +48,15 @@
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="DAE_Plugin_Target" Type="System.String" Scope="User">
-      <Value Profile="(Default)">OpenCOLLADA</Value>
+      <Value Profile="(Default)">Autodesk Collada</Value>
     </Setting>
     <Setting Name="UpgradeRequired" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="Default_Race_Selection" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="Default_Author" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
   </Settings>
