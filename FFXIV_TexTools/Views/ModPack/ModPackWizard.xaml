@@ -8,10 +8,11 @@
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
         xmlns:s="clr-namespace:System;assembly=mscorlib"
+        xmlns:input="clr-namespace:System.Windows.Input;assembly=PresentationCore"
         mc:Ignorable="d"
         Title="{Binding Source={x:Static resx:UIStrings.Create_ModPack_Wizard}}" Height="600" Width="800" ShowMaxRestoreButton="False" ShowMinButton="False" WindowStartupLocation="CenterOwner" Closing="MetroWindow_Closing">
-    <xctk:Wizard x:Name="modPackWizard" Next="modPackWizard_Next" NextButtonContent="{Binding Source={x:Static resx:UIStrings.New_Page}}" BackButtonContent="{Binding Source={x:Static resx:UIStrings.Previous_Page}}" HelpButtonContent="{Binding Source={x:Static resx:UIStrings.Create_Modpack}}" Help="ModPackWizard_CreateModPack" CancelButtonContent="{Binding Source={x:Static resx:UIStrings.Cancel}}" IsTabStop="False">
-        <xctk:WizardPage Title="{Binding Source={x:Static resx:UIStrings.Mod_Pack_General_Info}}" Description="{Binding Source={x:Static resx:UIStrings.ModPackGeneralInfo}}" PageType="Interior" IsTabStop="False">
+    <xctk:Wizard x:Name="modPackWizard" Next="modPackWizard_Next" NextButtonContent="{Binding Source={x:Static resx:UIStrings.New_Page}}" BackButtonContent="{Binding Source={x:Static resx:UIStrings.Previous_Page}}" HelpButtonContent="{Binding Source={x:Static resx:UIStrings.Create_Modpack}}" Help="ModPackWizard_CreateModPack" CancelButtonContent="{Binding Source={x:Static resx:UIStrings.Cancel}}" IsTabStop="False" Background="{x:Null}">
+        <xctk:WizardPage Title="{Binding Source={x:Static resx:UIStrings.Mod_Pack_General_Info}}" Description="{Binding Source={x:Static resx:UIStrings.ModPackGeneralInfo}}" PageType="Interior" IsTabStop="False" Background="{x:Null}" HeaderBackground="{x:Null}">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -33,8 +34,8 @@
                         </Grid.ColumnDefinitions>
                         <Label Content="{Binding Source={x:Static resx:UIStrings.Name_colon}}" Grid.Column="0" Grid.Row="0" VerticalAlignment="Center"/>
                         <Label Content="{Binding Source={x:Static resx:UIStrings.Version_colon}}" Grid.Column="0" Grid.Row="1" VerticalAlignment="Center"/>
-                        <TextBox x:Name="ModPackName" Text="{Binding ModPackName}" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.Mod_Pack_Name}}" Grid.Column="1" Grid.Row="0" Margin="5" TextChanged="ModPackName_TextChanged" TabIndex="0"/>
-                        <xctk:MaskedTextBox x:Name="ModPackVersion" Text="{Binding ModPackVersion}" Grid.Column="1" Grid.Row="1" Margin="5" Mask="0 . 9 . 9" MinHeight="26"  TabIndex="2"  PreviewMouseUp="ModPackVersion_PreviewMouseUp" InsertKeyMode="Overwrite" VerticalContentAlignment="Bottom" Padding="0,0,0,2" />
+                        <TextBox x:Name="ModPackName" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.Mod_Pack_Name}}" Grid.Column="1" Grid.Row="0" Margin="5" TextChanged="ModPackName_TextChanged" TabIndex="0"/>
+                        <xctk:MaskedTextBox x:Name="ModPackVersion" input:InputMethod.IsInputMethodEnabled="False" Mask="0.9.9" Text="{Binding ModPackVersion}" Grid.Column="1" Grid.Row="1" Margin="5" MinHeight="26"  TabIndex="2"  PreviewMouseUp="ModPackVersion_PreviewMouseUp" InsertKeyMode="Overwrite" VerticalContentAlignment="Bottom" Padding="0,0,0,2" />
                     </Grid>
                     <Grid Grid.Column="1">
                         <Grid>
@@ -47,7 +48,8 @@
                                 <ColumnDefinition/>
                             </Grid.ColumnDefinitions>
                             <Label Content="{Binding Source={x:Static resx:UIStrings.Author_colon}}" Grid.Column="0" VerticalAlignment="Center"/>
-                            <TextBox x:Name="ModPackAuthor" Text="{Binding ModPackAuthor}" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.Mod_Pack_Author}}" Grid.Column="1" Margin="5" TabIndex="1"/>
+                            <TextBox x:Name="ModPackAuthor" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.Mod_Pack_Author}}" Grid.Column="1" Margin="5" TabIndex="1"/>
+                            <Button x:Name="LoadFromButton" Click="LoadFromButton_Click" Content="{Binding Source={x:Static resx:UIStrings.Load_From}}" Grid.Column="1" Margin="5" Grid.Row="1"></Button>
                         </Grid>
                     </Grid>
                 </Grid>
@@ -58,12 +60,12 @@
                             <RowDefinition/>
                         </Grid.RowDefinitions>
                         <Label Content="{Binding Source={x:Static resx:UIStrings.Enter_a_brief_description_of_your_Mod_Pack}}" Grid.ColumnSpan="2"/>
-                        <TextBox x:Name="ModPackDescription" Text="{Binding ModPackDescription}" Grid.Row="1" TextWrapping="Wrap" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.ModPackDescription}}" Grid.ColumnSpan="2"/>
+                        <TextBox x:Name="ModPackDescription" Text="{Binding ModPackDescription}" Grid.Row="1" AcceptsReturn="True"  VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.ModPackDescription}}" Grid.ColumnSpan="2"/>
                     </Grid>
                 </Grid>
             </Grid>
         </xctk:WizardPage>
-        <xctk:WizardPage PageType="Blank">
+        <xctk:WizardPage PageType="Blank" Background="{x:Null}" HeaderBackground="{x:Null}">
             <local:WizardModPackControl/>
         </xctk:WizardPage>
     </xctk:Wizard>

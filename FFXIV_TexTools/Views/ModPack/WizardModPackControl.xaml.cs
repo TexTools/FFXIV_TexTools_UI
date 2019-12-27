@@ -15,11 +15,15 @@
 
 using FFXIV_TexTools.Helpers;
 using FFXIV_TexTools.Resources;
+using SixLabors.ImageSharp.Formats.Png;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Forms;
+using System.Windows.Media.Imaging;
 using xivModdingFramework.Mods.DataContainers;
 using UserControl = System.Windows.Controls.UserControl;
 
@@ -61,7 +65,7 @@ namespace FFXIV_TexTools.Views
                     ModGroupList.Add(results);
                     ModGroupNames.Add(results.GroupName);
 
-                    if (results.SelectionType.Equals("Single"))
+                    if (results.SelectionType.Equals("Single")&&optionsList.Count(it=>it.IsChecked)==0)
                     {
                         optionsList[0].IsChecked = true;
                     }
@@ -124,7 +128,7 @@ namespace FFXIV_TexTools.Views
 
                 foreach (var modGroup in ModGroupList)
                 {
-                    if (modGroup.SelectionType.Equals("Single"))
+                    if (modGroup.SelectionType.Equals("Single") && modGroup.OptionList.Count(it => it.IsChecked) == 0)
                     {
                         modGroup.OptionList[0].IsChecked = true;
                     }
@@ -176,12 +180,13 @@ namespace FFXIV_TexTools.Views
                 }
 
                 ModGroupList.Remove(modGroupToDelete);
+                ModGroupNames.Remove(option.GroupName);
 
                 OptionsList.ItemsSource = new List<ModOption>();
 
                 foreach (var modGroup in ModGroupList)
                 {
-                    if (modGroup.SelectionType.Equals("Single"))
+                    if (modGroup.SelectionType.Equals("Single")&& modGroup.OptionList.Count(it=>it.IsChecked)==0)
                     {
                         modGroup.OptionList[0].IsChecked = true;
                     }
@@ -216,7 +221,28 @@ namespace FFXIV_TexTools.Views
             {
                 OptionDescriptionTextBox.Text = option.Description ?? string.Empty;
 
-                OptionPreviewImage.Source = option.Image != null ? option.Image.ToBitmapSource() : null;
+                if (option.Image != null)
+                {
+                    BitmapImage bmp;
+
+                    using (var ms = new MemoryStream())
+                    {
+                        option.Image.Save(ms, new PngEncoder());
+
+                        bmp = new BitmapImage();
+                        bmp.BeginInit();
+                        bmp.StreamSource = ms;
+                        bmp.CacheOption = BitmapCacheOption.OnLoad;
+                        bmp.EndInit();
+                        bmp.Freeze();
+                    }
+
+                    OptionPreviewImage.Source = bmp;
+                }
+                else
+                {
+                    OptionPreviewImage.Source = null;
+                }
 
                 EditGroupButton.IsEnabled = true;
                 DeleteGroupButton.IsEnabled = true;

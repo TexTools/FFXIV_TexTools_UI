@@ -7,12 +7,14 @@
         xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
+        xmlns:input="clr-namespace:System.Windows.Input;assembly=PresentationCore"
         mc:Ignorable="d"
         Title="{Binding Source={x:Static resx:UIStrings.Simple_ModPack_Creator}}" Height="600" Width="800" IsMinButtonEnabled="False" IsMaxRestoreButtonEnabled="False" WindowStartupLocation="CenterOwner">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition/>
+            <RowDefinition Height="38"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid Grid.Row="0">
@@ -43,7 +45,7 @@
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
                 <Label Grid.Column="0" Content="{Binding Source={x:Static resx:UIStrings.Version_colon}}" VerticalAlignment="Center"/>
-                <xctk:MaskedTextBox x:Name="ModPackVersion" Grid.Column="1" Grid.Row="1" Margin="5" Mask="0 . 9 . 9" MinHeight="26"  TabIndex="2"  PreviewMouseUp="ModPackVersion_PreviewMouseUp" InsertKeyMode="Overwrite" VerticalContentAlignment="Bottom" Padding="0,0,0,2"/>
+                <xctk:MaskedTextBox x:Name="ModPackVersion" input:InputMethod.IsInputMethodEnabled="False" Grid.Column="1" Grid.Row="1" Margin="5" Mask="0 . 9 . 9" MinHeight="26"  TabIndex="2"  PreviewMouseUp="ModPackVersion_PreviewMouseUp" InsertKeyMode="Overwrite" VerticalContentAlignment="Bottom" Padding="0,0,0,2"/>
             </Grid>
         </Grid>
         <Grid Grid.Row="1">
@@ -69,7 +71,7 @@
                     </ItemsPanelTemplate>
                 </ListView.ItemsPanel>
                 <ListView.View>
-                    <GridView>
+                    <GridView x:Name="GridViewCol">
                         <GridViewColumn Header="_">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
@@ -87,7 +89,16 @@
                 </ListView.View>
             </ListView>
         </Grid>
-        <Grid Grid.Row="2">
+        <Grid Grid.Row="2" Margin="4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="40"></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Label Content="{Binding Source={x:Static resx:UIStrings.Search}}" Grid.Column="0"/>
+            <TextBox x:Name="SearchTextBox" Grid.Column="1" TextChanged="SearchTextBox_TextChanged"/>
+        </Grid>
+        
+        <Grid Grid.Row="3">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition/>

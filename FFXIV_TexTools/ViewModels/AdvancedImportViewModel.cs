@@ -62,9 +62,9 @@ namespace FFXIV_TexTools.ViewModels
         private readonly AdvancedModelImportView _view;
         private Dictionary<string, ModelImportSettings> _importDictionary = new Dictionary<string, ModelImportSettings>();
         private int? _meshDiff;
+        private XivMdl _modMdl;
 
-
-        public AdvancedImportViewModel(XivMdl xivMdl, IItemModel itemModel, XivRace selectedRace, AdvancedModelImportView view, bool fromWizard)
+        public AdvancedImportViewModel(XivMdl xivMdl,XivMdl modMdl, IItemModel itemModel, XivRace selectedRace, AdvancedModelImportView view, bool fromWizard)
         {
             var appStyle = ThemeManager.DetectAppStyle(System.Windows.Application.Current);
             if (appStyle.Item1.Name.Equals("BaseDark"))
@@ -79,6 +79,29 @@ namespace FFXIV_TexTools.ViewModels
             _selectedRace = selectedRace;
             _fromWizard = fromWizard;
             _dae = new Dae(new DirectoryInfo(Settings.Default.FFXIV_Directory), itemModel.DataFile, Settings.Default.DAE_Plugin_Target);
+            _modMdl = modMdl;
+            if (_modMdl != null) {
+                var oldMaterialPathSize = _xivMdl.PathData.MaterialList.Sum(it => it.Length) + _xivMdl.PathData.MaterialList.Count;
+                var newMaterialPathSize=_modMdl.PathData.MaterialList.Sum(it => it.Length) + _modMdl.PathData.MaterialList.Count;
+                _xivMdl.ModelData.MaterialCount=_modMdl.ModelData.MaterialCount;
+                _xivMdl.PathData.PathCount -= _xivMdl.PathData.MaterialList.Count;
+                _xivMdl.PathData.PathCount += _modMdl.PathData.MaterialList.Count;
+                _xivMdl.PathData.PathBlockSize -= oldMaterialPathSize;
+                _xivMdl.PathData.PathBlockSize += newMaterialPathSize;
+                _xivMdl.PathData.MaterialList.Clear();
+                _xivMdl.PathData.MaterialList.AddRange(_modMdl.PathData.MaterialList);
+
+                var oldAttributeSize = _xivMdl.PathData.AttributeList.Sum(it => it.Length) + _xivMdl.PathData.AttributeList.Count;
+                var newAttributeSize = _modMdl.PathData.AttributeList.Sum(it => it.Length) + _modMdl.PathData.AttributeList.Count;
+                _xivMdl.ModelData.AttributeCount = _modMdl.ModelData.AttributeCount;
+                _xivMdl.PathData.PathCount -= _xivMdl.PathData.AttributeList.Count;
+                _xivMdl.PathData.PathCount += _modMdl.PathData.AttributeList.Count;
+                _xivMdl.PathData.PathBlockSize -= oldAttributeSize;
+                _xivMdl.PathData.PathBlockSize += newAttributeSize;
+                _xivMdl.PathData.AttributeList.Clear();
+                _xivMdl.PathData.AttributeList.AddRange(_modMdl.PathData.AttributeList);
+            }
+
             Initialize(false);
         }
 
@@ -169,6 +192,44 @@ namespace FFXIV_TexTools.ViewModels
                 foreach (var meshNum in _daeMeshPartDictionary.Keys)
                 {
                     _importDictionary.Add(meshNum.ToString(), new ModelImportSettings { PartList = _daeMeshPartDictionary[meshNum], ExtraBones = extraBoneList});
+                    if (_modMdl != null)
+                    {
+                        var modLod = _modMdl.LoDList[0];
+                        var materiaIndex= modLod.MeshDataList[modLod.MeshDataList.Count-1].MeshInfo.MaterialIndex;
+                        if(modLod.MeshDataList.Count > meshNum)
+                                materiaIndex = modLod.MeshDataList[meshNum].MeshInfo.MaterialIndex;
+                        if (meshNum >= _lod.MeshDataList.Count)
+                        {
+                            _importDictionary[meshNum.ToString()].MaterialIndex = materiaIndex;
+                        }
+                        else
+                        {
+                            _lod.MeshDataList[meshNum].MeshInfo.MaterialIndex = modLod.MeshDataList[meshNum].MeshInfo.MaterialIndex;
+                        }
+                        foreach (var partNum in _daeMeshPartDictionary[meshNum])
+                        {
+                            var attributeIndex = 0;
+                            if(modLod.MeshDataList.Count>meshNum&&modLod.MeshDataList[meshNum].MeshPartList.Count>partNum)
+                                    attributeIndex=modLod.MeshDataList[meshNum].MeshPartList[partNum].AttributeIndex;
+                            if (_lod.MeshDataList.Count > meshNum && _lod.MeshDataList[meshNum].MeshPartList.Count > partNum)
+                            {
+                                _lod.MeshDataList[meshNum].MeshPartList[partNum].AttributeIndex = attributeIndex;
+                            }
+                            else
+                            {
+                                var importDictMesh = _importDictionary[meshNum.ToString()];
+
+                                if (importDictMesh.PartAttributeDictionary.ContainsKey(partNum))
+                                {
+                                    importDictMesh.PartAttributeDictionary[partNum] = attributeIndex;
+                                }
+                                else
+                                {
+                                    importDictMesh.PartAttributeDictionary.Add(partNum, attributeIndex);
+                                }
+                            }
+                        }
+                    }
                 }
             }
 
@@ -737,21 +798,39 @@ namespace FFXIV_TexTools.ViewModels
         private void UpdateAttributesUsed()
         {
             var attributeNameList = new List<string>();
+            var attributeMask = 0;
 
             if (_lod.MeshDataList.Count > SelectedMeshNumber)
             {
                 if (_lod.MeshDataList[SelectedMeshNumber].MeshPartList.Count > SelectedPartNumber)
                 {
-                    var attributeMask = _lod.MeshDataList[SelectedMeshNumber].MeshPartList[SelectedPartNumber].AttributeIndex;
-
-                    for (var i = 0; i < AttributeList.Count; i++)
+                    attributeMask = _lod.MeshDataList[SelectedMeshNumber].MeshPartList[SelectedPartNumber].AttributeIndex;                    
+                }
+                else
+                {
+                    var importDictMesh = _importDictionary[SelectedMeshNumber.ToString()];
+                    if (!importDictMesh.PartAttributeDictionary.ContainsKey(SelectedPartNumber))
                     {
-                        var value = 1 << i;
-                        if ((attributeMask & value) > 0)
-                        {
-                            attributeNameList.Add($"{AttributeList[i]}");
-                        }
+                        importDictMesh.PartAttributeDictionary.Add(SelectedPartNumber, 0);
                     }
+                    attributeMask = importDictMesh.PartAttributeDictionary[SelectedPartNumber];
+                }
+            }
+            else
+            {
+                var importDictMesh = _importDictionary[SelectedMeshNumber.ToString()];
+                if (!importDictMesh.PartAttributeDictionary.ContainsKey(SelectedPartNumber))
+                {
+                    importDictMesh.PartAttributeDictionary.Add(SelectedPartNumber, 0);
+                }
+                attributeMask = importDictMesh.PartAttributeDictionary[SelectedPartNumber];
+            }
+            for (var i = 0; i < AttributeList.Count; i++)
+            {
+                var value = 1 << i;
+                if ((attributeMask & value) > 0)
+                {
+                    attributeNameList.Add($"{AttributeList[i]}");
                 }
             }
 
@@ -947,12 +1026,12 @@ namespace FFXIV_TexTools.ViewModels
             {
                 var materialIndex = MaterialsList.IndexOf(MaterialStringText);
                 var materialMdlIndex = _xivMdl.PathData.MaterialList.IndexOf(MaterialStringText);
-
+                var materialStringTextLength = MaterialStringText.Length;
                 MaterialsList.RemoveAt(materialIndex);
                 _xivMdl.PathData.MaterialList.RemoveAt(materialMdlIndex);
                 _xivMdl.ModelData.MaterialCount -= 1;
                 _xivMdl.PathData.PathCount -= 1;
-                _xivMdl.PathData.PathBlockSize -= MaterialStringText.Length + 1;
+                _xivMdl.PathData.PathBlockSize -= materialStringTextLength + 1;
             }
             else
             {

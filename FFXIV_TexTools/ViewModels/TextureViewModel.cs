@@ -19,8 +19,12 @@ using FFXIV_TexTools.Properties;
 using FFXIV_TexTools.Resources;
 using FFXIV_TexTools.Textures;
 using FFXIV_TexTools.Views;
-using ImageMagick;
 using SharpDX;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats;
+using SixLabors.ImageSharp.Formats.Bmp;
+using SixLabors.ImageSharp.Formats.Png;
+using SixLabors.ImageSharp.PixelFormats;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -32,6 +36,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Input;
+using System.Windows.Media.Imaging;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Items.Categories;
@@ -69,8 +74,8 @@ namespace FFXIV_TexTools.ViewModels
         private XivUi _uiItem;
         private BitmapSource _imageDisplay;
         private ColorChannels _imageEffect;
-        private MagickImage _magickImage;
         private readonly TextureView _textureView;
+        private MapData _mapData;
 
         private Dictionary<XivRace, int[]> _charaRaceAndNumberDictionary;
 
@@ -83,7 +88,7 @@ namespace FFXIV_TexTools.ViewModels
         private string _modToggleText = UIStrings.Enable_Disable;
 
         private bool _raceEnabled, _partEnabled, _typeEnabled, _typePartEnabled, _mapEnabled, _channelsEnabled;
-        private bool _exportEnabled, _importEnabled, _ddsImportEnabled, _bmpImportEnabled, _modStatusEnabled, _moreOptionsEnabled, _translucencyEnabled, _translucencyCheck;
+        private bool _exportEnabled, _importEnabled, _ddsImportEnabled, _bmpImportEnabled, _modStatusEnabled, _moreOptionsEnabled, _translucencyEnabled, _translucencyCheck, _addNewTexturePartEnabled=true;
         private bool _redChecked = true, _greenChecked = true, _blueChecked = true, _alphaChecked;
 
         private int _raceIndex, _partIndex, _typeIndex, _typePartIndex, _mapIndex, _partCount, _typeCount, _typePartCount, _mapCount, _raceCount;
@@ -143,7 +148,7 @@ namespace FFXIV_TexTools.ViewModels
                 _item = item as IItemModel;
 
                 if (_item.ItemCategory.Equals(XivStrings.Face_Paint) ||
-                    _item.ItemCategory.Equals(XivStrings.Equip_Decals))
+                    _item.ItemCategory.Equals(XivStrings.Equipment_Decals))
                 {
                     Races.Add(new ComboBoxData{Name = XivRace.All_Races.GetDisplayName(), XivRace = XivRace.All_Races});
                 }
@@ -267,11 +272,11 @@ namespace FFXIV_TexTools.ViewModels
                 if (_item.Category.Equals(XivStrings.Character))
                 {
                     if (_item.ItemCategory.Equals(XivStrings.Face_Paint) ||
-                        _item.ItemCategory.Equals(XivStrings.Equip_Decals))
+                        _item.ItemCategory.Equals(XivStrings.Equipment_Decals))
                     {
                         partList = (await _character.GetDecalNums(_item)).Select(part => part.ToString()).ToList();
 
-                        if (_item.ItemCategory.Equals(XivStrings.Equip_Decals))
+                        if (_item.ItemCategory.Equals(XivStrings.Equipment_Decals))
                         {
                             partList.Add("_stigma");
                         }
@@ -404,7 +409,6 @@ namespace FFXIV_TexTools.ViewModels
                 NotifyPropertyChanged(nameof(PartVisibility));
             }
         }
-
         /// <summary>
         /// Gets the type for the selected item
         /// </summary>
@@ -622,6 +626,7 @@ namespace FFXIV_TexTools.ViewModels
                 NotifyPropertyChanged(nameof(SelectedTypePart));
                 if (SelectedTypePartIndex > -1)
                 {
+                    Maps.Clear();
                     GetMaps();
                 }
             }
@@ -661,7 +666,6 @@ namespace FFXIV_TexTools.ViewModels
                 NotifyPropertyChanged(nameof(TypePartVisibility));
             }
         }
-
         /// <summary>
         /// Gets the texture maps for the given item
         /// </summary>
@@ -680,7 +684,7 @@ namespace FFXIV_TexTools.ViewModels
 
                         ttpList = new List<TexTypePath> { new TexTypePath { DataFile = _item.DataFile, Path = path, Type = XivTexType.Mask } };
                     }
-                    else if (_item.ItemCategory.Equals(XivStrings.Equip_Decals))
+                    else if (_item.ItemCategory.Equals(XivStrings.Equipment_Decals))
                     {
                         var path = $"{XivStrings.EquipDecalFolder}/{string.Format(XivStrings.EquipDecalFile, SelectedPart.Name)}";
 
@@ -836,7 +840,8 @@ namespace FFXIV_TexTools.ViewModels
 
                 PartVisibility = Visibility.Collapsed;
             }
-
+            if (ttpList == null)
+                ttpList = new List<TexTypePath>();
             foreach (var texTypePath in ttpList)
             {
                 if (texTypePath.Name != null)
@@ -910,6 +915,8 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         public async void UpdateImage()
         {
+            if (!CheckMapIsOK())
+                return;
             ImageDisplay = null;
             ChannelsEnabled = true;
 
@@ -919,20 +926,19 @@ namespace FFXIV_TexTools.ViewModels
 
                 var mapBytes = await _tex.GetImageData(texData);
 
-                var pixelSettings =
-                    new PixelReadSettings(texData.Width, texData.Height, StorageType.Char, PixelMapping.RGBA);
-
-                using (var magickImage = new MagickImage(mapBytes, pixelSettings))
+                _mapData = new MapData
                 {
-                    _magickImage = new MagickImage(magickImage);
+                    MapBytes = mapBytes,
+                    Height = texData.Height,
+                    Width = texData.Width
+                };
 
-                    ImageEffect = new ColorChannels
-                    {
-                        Channel = new System.Windows.Media.Media3D.Point4D(1.0f, 1.0f, 1.0f, 0.0f)
-                    };
+                ImageEffect = new ColorChannels
+                {
+                    Channel = new System.Windows.Media.Media3D.Point4D(1.0f, 1.0f, 1.0f, 0.0f)
+                };
 
-                    SetColorChannelFilter();
-                }            
+                SetColorChannelFilter();
 
                 _textureView.ImageZoombox.CenterContent();
                 _textureView.ImageZoombox.FitToBounds();
@@ -976,20 +982,20 @@ namespace FFXIV_TexTools.ViewModels
 
                 var floatArray = Utilities.ToByteArray(floats);
 
-                var pixelSettings =
-                    new PixelReadSettings(4, 16, StorageType.Float, PixelMapping.RGBA);
-
-                using (var magickImage = new MagickImage(floatArray, pixelSettings))
+                _mapData = new MapData
                 {
-                    _magickImage = new MagickImage(magickImage);
+                    MapBytes = floatArray,
+                    Height = 16,
+                    Width = 4,
+                    IsColorSet = true
+                };
 
-                    ImageEffect = new ColorChannels
-                    {
-                        Channel = new System.Windows.Media.Media3D.Point4D(1.0f, 1.0f, 1.0f, 0.0f)
-                    };
+                ImageEffect = new ColorChannels
+                {
+                    Channel = new System.Windows.Media.Media3D.Point4D(1.0f, 1.0f, 1.0f, 0.0f)
+                };
 
-                    SetColorChannelFilter();
-                }
+                SetColorChannelFilter();
 
                 _textureView.ImageZoombox.CenterContent();
                 _textureView.ImageZoombox.FitToBounds();
@@ -1170,6 +1176,8 @@ namespace FFXIV_TexTools.ViewModels
 
         private async void SaveDDS(object obj)
         {
+            if (!CheckMtrlIsOK())
+                return;
             XivTex texData;
             var savePath = new DirectoryInfo(Settings.Default.Save_Directory);
 
@@ -1203,13 +1211,37 @@ namespace FFXIV_TexTools.ViewModels
 
         private void SaveBmp(object obj)
         {
+            if (!CheckMtrlIsOK())
+                return;
             var savePath = new DirectoryInfo(Settings.Default.Save_Directory);
 
             var path = _uiItem != null ? IOUtil.MakeItemSavePath(_uiItem, savePath) : IOUtil.MakeItemSavePath(_item, savePath, SelectedRace.XivRace);
 
             Directory.CreateDirectory(path);
 
-            _magickImage.Write($"{path}/{Path.GetFileNameWithoutExtension(SelectedMap.TexType.Path)}.bmp", MagickFormat.Bmp);
+            if (!_mapData.IsColorSet)
+            {
+                using (var img = Image.LoadPixelData<Rgba32>(_mapData.MapBytes, _mapData.Width, _mapData.Height))
+                {
+                    img.Save($"{path}/{Path.GetFileNameWithoutExtension(SelectedMap.TexType.Path)}.bmp", new BmpEncoder
+                    {
+                        SupportTransparency = true,
+                        BitsPerPixel = BmpBitsPerPixel.Pixel32
+                    });
+                }
+            }
+            else
+            {
+                using (var img = Image.LoadPixelData<RgbaVector>(_mapData.MapBytes, _mapData.Width, _mapData.Height))
+                {
+                    img.Save($"{path}/{Path.GetFileNameWithoutExtension(SelectedMap.TexType.Path)}.bmp", new BmpEncoder
+                    {
+                        SupportTransparency = true,
+                        BitsPerPixel = BmpBitsPerPixel.Pixel32
+                    });
+                }
+            }
+
             _textureView.BottomFlyout.IsOpen = false;
 
             BMPImportEnabled = BMPFileExists();
@@ -1222,6 +1254,8 @@ namespace FFXIV_TexTools.ViewModels
 
         private async void SaveAll(object obj)
         {
+            if (!CheckMtrlIsOK())
+                return;
             var texData = await _tex.GetTexData(SelectedMap.TexType);
 
             var savePath = new DirectoryInfo(Settings.Default.Save_Directory);
@@ -1239,7 +1273,14 @@ namespace FFXIV_TexTools.ViewModels
 
             Directory.CreateDirectory(path);
 
-            _magickImage.Write($"{path}/{Path.GetFileNameWithoutExtension(SelectedMap.TexType.Path)}.bmp", MagickFormat.Bmp);
+            using (var img = Image.LoadPixelData<Rgba32>(_mapData.MapBytes, _mapData.Width, _mapData.Height))
+            {
+                img.Save($"{path}/{Path.GetFileNameWithoutExtension(SelectedMap.TexType.Path)}.bmp", new BmpEncoder
+                {
+                    SupportTransparency = true,
+                    BitsPerPixel = BmpBitsPerPixel.Pixel32
+                });
+            }
 
             _textureView.BottomFlyout.IsOpen = false;
 
@@ -1286,6 +1327,8 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         private async void ImportDDS(object obj)
         {
+            if (!CheckMtrlIsOK())
+                return;
             var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
             var index = new Index(gameDirectory);
 
@@ -1363,6 +1406,8 @@ namespace FFXIV_TexTools.ViewModels
         /// </remarks>
         private async void ImportFrom(object obj)
         {
+            if (!CheckMtrlIsOK())
+                return;
             var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
             var index = new Index(gameDirectory);
 
@@ -1470,6 +1515,8 @@ namespace FFXIV_TexTools.ViewModels
 
         private async void ImportBMP(object obj)
         {
+            if (!CheckMtrlIsOK())
+                return;
             var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
             var index = new Index(gameDirectory);
 
@@ -1545,6 +1592,8 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         private async void ModStatusToggle(object obj)
         {
+            if (!CheckMtrlIsOK())
+                return;
             var gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
             var modlist = new Modding(gameDirectory);
 
@@ -1565,6 +1614,330 @@ namespace FFXIV_TexTools.ViewModels
             }
 
             UpdateImage();
+        }
+
+        /// <summary>
+        /// Command for the AddNewTexturePart Button
+        /// </summary>
+        public ICommand AddNewTexturePartButton => new RelayCommand(AddNewTexturePart);
+
+        /// <summary>
+        /// Add New Texture Part
+        /// </summary>
+        private async void AddNewTexturePart(object obj)
+        {
+            try
+            {
+                if (!CheckMtrlIsOK())
+                    return;
+                if (_item.Category != XivStrings.Gear && _item.Category != XivStrings.Character)
+                {
+                    FlexibleMessageBox.Show(UIMessages.AddNewTexturePartErrorMessageWrongCategoryOfItem,
+                        UIMessages.AddNewTexturePartErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+                if (_item.ItemCategory == XivStrings.Face_Paint || _item.ItemCategory == XivStrings.Equipment_Decals)
+                {
+                    FlexibleMessageBox.Show(UIMessages.AddNewTexturePartErrorMessageWrongItemCategoryOfItem,
+                        UIMessages.AddNewTexturePartErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+                //Legitimacy check
+                var partChars = new char[] { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
+                List<string> partList = new List<string>();
+                if (_item.Category.Equals(XivStrings.Gear))
+                {
+                    partList = Types.Select(it => it.Name).ToList();
+                }
+                else if (_item.Category.Equals(XivStrings.Character))
+                {
+                    partList = TypeParts.Select(it => it.Name).ToList();
+                }
+                if (partList.Count >= 6)
+                {
+                    FlexibleMessageBox.Show(UIMessages.AddNewTexturePartErrorMessage,
+                        UIMessages.AddNewTexturePartErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    //AddNewTexturePartEnabled = false;
+                    return;
+                }
+                //Get the new part name
+                var newPartName = '\0';
+                for (var i = 1; i < partChars.Length; i++)
+                {
+                    newPartName = partChars[i];
+                    if (!partList.Any(it => it == newPartName.ToString()))
+                    {
+                        break;
+                    }
+                }
+                if (newPartName == '\0')
+                {
+                    FlexibleMessageBox.Show(UIMessages.AddNewTexturePartErrorMessage,
+                        UIMessages.AddNewTexturePartErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    //AddNewTexturePartEnabled = false;
+                    return;
+                }
+                //Update the new part path;
+                var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
+                var index = new Index(gameDirectory);
+                if (index.IsIndexLocked(XivDataFile._0A_Exd))
+                {
+                    FlexibleMessageBox.Show(UIMessages.IndexLockedErrorMessage,
+                        UIMessages.IndexLockedErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                    return;
+                }
+                var mtrlOffset = await index.GetDataOffset(HashGenerator.GetHash(Path.GetDirectoryName(_xivMtrl.MTRLPath).Replace("\\", "/")), HashGenerator.GetHash(Path.GetFileName(_xivMtrl.MTRLPath)), _item.DataFile);
+                var xivMtrl = await _mtrl.GetMtrlData(mtrlOffset, _xivMtrl.MTRLPath, 11);
+                var oldTexturePathSize = xivMtrl.TexturePathList.Select(it => it.Replace("--", String.Empty)).Sum(it => it.Length) + xivMtrl.TexturePathList.Count;
+                var oldTexturePathOffsetDataSize = xivMtrl.TexturePathOffsetList.Count * 4;
+                var oldStructSize = xivMtrl.DataStruct1Count * 8 + xivMtrl.DataStruct2Count * 8 + xivMtrl.ParameterStructCount * 12;
+                for (var i = xivMtrl.TextureTypePathList.Count; i < _xivMtrl.TextureTypePathList.Count; i++)
+                {
+                    var tmpTypePath = _xivMtrl.TextureTypePathList[i];
+                    xivMtrl.TextureTypePathList.Add(new TexTypePath() { DataFile = tmpTypePath.DataFile, Name = tmpTypePath.Name, Path = tmpTypePath.Path, Type = tmpTypePath.Type });
+                }
+                var textureTypePathListBak = new List<TexTypePath>();
+                for (var i = 0; i < xivMtrl.TextureTypePathList.Count; i++)
+                {
+                    var tmpTypePath = xivMtrl.TextureTypePathList[i];
+                    textureTypePathListBak.Add(new TexTypePath() { DataFile = tmpTypePath.DataFile, Name = tmpTypePath.Name, Path = tmpTypePath.Path, Type = tmpTypePath.Type });
+                }
+                bool tplNeedAdd = xivMtrl.TexturePathList.Count == 2 && xivMtrl.TexturePathList[0].EndsWith("_n.tex") && xivMtrl.TexturePathList[1].EndsWith("_m.tex");
+                if (tplNeedAdd
+                    && FlexibleMessageBox.Show(UIMessages.AddNewTexturePartQuestionMessage,
+                        UIMessages.AddNewTexturePartQuestionTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes
+                )
+                {
+                    tplNeedAdd = false;
+                }
+                if (tplNeedAdd)
+                {
+                    var tmpTpl = xivMtrl.TexturePathList[0];
+                    xivMtrl.TexturePathList.Insert(0, tmpTpl.Replace("_n.tex", "_d.tex"));
+                    xivMtrl.TexturePathOffsetList.Add(0);
+                    xivMtrl.TexturePathUnknownList.Add(0);
+                    xivMtrl.TexturePathList[2] = xivMtrl.TexturePathList[2].Replace("_m.tex", "_s.tex");
+                    var tmpTexTypePath = xivMtrl.TextureTypePathList[0];
+                    xivMtrl.TextureTypePathList.Insert(0, new TexTypePath() { DataFile = tmpTexTypePath.DataFile, Path = tmpTexTypePath.Path.Replace("_n.tex", "_d.tex"), Type = XivTexType.Diffuse });
+                    xivMtrl.TextureTypePathList[2].Path = xivMtrl.TextureTypePathList[2].Path.Replace("_m.tex", "_s.tex");
+                    xivMtrl.TextureTypePathList[2].Type = XivTexType.Specular;
+
+                    xivMtrl.DataStruct1Count = 3;
+                    xivMtrl.DataStruct1List.Clear();
+                    xivMtrl.DataStruct1List.Add(new DataStruct1() { ID = 0xf52ccf05, Unknown1 = 0xa7d2ff60 });
+                    xivMtrl.DataStruct1List.Add(new DataStruct1() { ID = 0xb616dc5a, Unknown1 = 0x600ef9df });
+                    xivMtrl.DataStruct1List.Add(new DataStruct1() { ID = 0xd2777173, Unknown1 = 0xf35f5131 });
+
+                    xivMtrl.DataStruct2Count = 3;
+                    xivMtrl.DataStruct2List.Clear();
+                    xivMtrl.DataStruct2List.Add(new DataStruct2() { ID = 0x29ac0223, Offset = 0x0000, Size = 0x0004 });
+                    xivMtrl.DataStruct2List.Add(new DataStruct2() { ID = 0x575abfb2, Offset = 0x0004, Size = 0x0004 });
+                    xivMtrl.DataStruct2List.Add(new DataStruct2() { ID = 0x15b70e35, Offset = 0x0008, Size = 0x0004 });
+
+
+                    xivMtrl.ParameterStructCount = 3;
+                    xivMtrl.ParameterStructList.Clear();
+                    xivMtrl.ParameterStructList.Add(new ParameterStruct() { ID = 0x115306be, TextureIndex = 0x00000000, Unknown1 = -31936, Unknown2 = 0x000f });
+                    xivMtrl.ParameterStructList.Add(new ParameterStruct() { ID = 0x0c5ec1f1, TextureIndex = 0x00000001, Unknown1 = -32768, Unknown2 = 0x000f });
+                    xivMtrl.ParameterStructList.Add(new ParameterStruct() { ID = 0x2b99e025, TextureIndex = 0x00000002, Unknown1 = -31936, Unknown2 = 0x000f });
+                }
+                for (var i = 0; i < xivMtrl.TexturePathList.Count; i++)
+                {
+                    var tmps = xivMtrl.TexturePathList[i].Split('_');
+                    var typeName = tmps[tmps.Length - 1];
+                    var oldPartName = tmps[tmps.Length - 2];
+                    if (partChars.Any(it => it.ToString() == oldPartName))
+                    {
+                        xivMtrl.TexturePathList[i] = xivMtrl.TexturePathList[i].Replace($"_{oldPartName}_{typeName}", $"_{newPartName}_{typeName}");
+                    }
+                    else
+                    {
+                        xivMtrl.TexturePathList[i] = xivMtrl.TexturePathList[i].Replace($"_{typeName}", $"_{newPartName}_{typeName}");
+                    }
+                    xivMtrl.TexturePathOffsetList[i] = 0;
+                    if (i > 0)
+                    {
+                        xivMtrl.TexturePathOffsetList[i] = xivMtrl.TexturePathOffsetList[i - 1] + xivMtrl.TexturePathList[i - 1].Replace("--","").Length + 1;
+                    }
+                }
+                //Adjust data size
+                var newTexturePathSize = xivMtrl.TexturePathList.Select(it=>it.Replace("--","")).Sum(it => it.Length) + xivMtrl.TexturePathList.Count;
+                var valueOfSizeChange = newTexturePathSize - oldTexturePathSize;
+                xivMtrl.FileSize += (short)(valueOfSizeChange + xivMtrl.TexturePathOffsetList.Count * 4 - oldTexturePathOffsetDataSize);
+                var newStructSize = xivMtrl.DataStruct1Count * 8 + xivMtrl.DataStruct2Count * 8 + xivMtrl.ParameterStructCount * 12;
+                xivMtrl.FileSize += (short)(newStructSize - oldStructSize);
+                xivMtrl.TextureCount = (byte)xivMtrl.TexturePathList.Count;
+                if (valueOfSizeChange > 0)
+                {
+                    xivMtrl.MaterialDataSize += (ushort)valueOfSizeChange;
+                    xivMtrl.TexturePathsDataSize += (ushort)valueOfSizeChange;
+                }
+                else
+                {
+                    xivMtrl.MaterialDataSize -= (ushort)(valueOfSizeChange * -1);
+                    xivMtrl.TexturePathsDataSize -= (ushort)(valueOfSizeChange * -1);
+                }
+                for (var i = 0; i < xivMtrl.ColorSetPathOffsetList.Count; i++)
+                {
+                    xivMtrl.ColorSetPathOffsetList[i] += valueOfSizeChange;
+                }
+                for (var i = 0; i < xivMtrl.MapPathOffsetList.Count; i++)
+                {
+                    xivMtrl.MapPathOffsetList[i] += valueOfSizeChange;
+                }
+                //add new mtrl                       
+                var sameModelItems = await GetSameModelList();
+                var oldVersionStr = $"/v{_item.ModelInfo.Variant.ToString().PadLeft(4, '0')}/";
+                var oldMTRLPath = xivMtrl.MTRLPath;
+                foreach (var item in sameModelItems)
+                {
+                    var dxVersion = int.Parse(Properties.Settings.Default.DX_Version);
+                    XivMtrl itemXivMtrl;
+                    if (TypePartVisibility == Visibility.Visible)
+                    {
+                        itemXivMtrl = await _mtrl.GetMtrlData(item, SelectedRace.XivRace, SelectedTypePart.Name[0], dxVersion, SelectedType.Name);
+                    }
+                    else
+                    {
+                        itemXivMtrl = await _mtrl.GetMtrlData(item, SelectedRace.XivRace, SelectedType.Name[0], dxVersion);
+                    }
+                    var tmps2 = xivMtrl.MTRLPath.Split('_');
+                    xivMtrl.MTRLPath = xivMtrl.MTRLPath.Replace($"_{tmps2[tmps2.Length - 1]}", $"_{newPartName}.mtrl");
+                    xivMtrl.MTRLPath = xivMtrl.MTRLPath.Replace(oldVersionStr, $"/v{item.ModelInfo.Variant.ToString().PadLeft(4, '0')}/");
+                    xivMtrl.ColorSetDataSize = itemXivMtrl.ColorSetDataSize;
+                    xivMtrl.ColorSetData = itemXivMtrl.ColorSetData == null ? new List<Half>() : itemXivMtrl.ColorSetData;
+                    xivMtrl.ColorSetExtraData = itemXivMtrl.ColorSetExtraData == null ? new byte[0] : itemXivMtrl.ColorSetExtraData;
+                    oldVersionStr = $"/v{item.ModelInfo.Variant.ToString().PadLeft(4, '0')}/";
+                    var newMtrlOffset = await _mtrl.ImportMtrl(xivMtrl, item, "FilesAddedByTexTools");
+                }
+
+                //add new tex
+                if (Directory.Exists("AddNewTexturePartTexTmps"))
+                {
+                    Directory.Delete("AddNewTexturePartTexTmps", true);
+                }
+                var dirInfo = Directory.CreateDirectory("AddNewTexturePartTexTmps");
+                for (var i = 0; i < xivMtrl.TexturePathList.Count; i++)
+                {
+                    var typePathIndex = i;
+                    if (tplNeedAdd)
+                    {
+                        switch (i)
+                        {
+                            case 0:
+                                typePathIndex = 1;
+                                break;
+                            case 1:
+                                typePathIndex = 0;
+                                break;
+                            case 2:
+                                typePathIndex = 1;
+                                break;
+                        }
+                    }
+                    var xivTex = await _tex.GetTexData(textureTypePathListBak[typePathIndex]);
+                    _tex.SaveTexAsDDS(_item, xivTex, dirInfo, SelectedRace.XivRace);
+                    var oldPath = textureTypePathListBak[typePathIndex].Path;
+                    xivTex.TextureTypeAndPath.Path = xivMtrl.TexturePathList[i];
+                    xivTex.TextureTypeAndPath.Type = xivMtrl.TextureTypePathList[i].Type;
+                    var newOffset = await _tex.TexDDSImporter(xivTex, _item, new DirectoryInfo(Directory.GetFiles("AddNewTexturePartTexTmps", $"{Path.GetFileNameWithoutExtension(oldPath)}.dds", SearchOption.AllDirectories)[0]), "AddNewTexturePart");
+                }
+                if (Directory.Exists("AddNewTexturePartTexTmps"))
+                {
+                    Directory.Delete("AddNewTexturePartTexTmps", true);
+                }
+                //update ui    
+                void SetToNewTexturePart(object sender, EventArgs e)
+                {
+                    LoadingComplete -= SetToNewTexturePart;
+                    if (_item.Category.Equals(XivStrings.Gear))
+                    {
+                        SelectedType = Types[Types.Count - 1];
+                    }
+                    else if (_item.Category.Equals(XivStrings.Character))
+                    {
+                        SelectedTypePart = TypeParts[TypeParts.Count - 1];
+                    }
+                }
+                LoadingComplete += SetToNewTexturePart;
+                SelectedRace = SelectedRace;
+                _textureView.BottomFlyout.IsOpen = false;
+            }
+            catch(Exception ex)
+            {
+                FlexibleMessageBox.Show($"{UIMessages.AddNewTexturePartErrorTitle}:{ex.Message}",
+                        UIMessages.AddNewTexturePartErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+        }
+        async Task<List<IItemModel>> GetSameModelList()
+        {
+            var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
+            var sameModelItems=new List<IItemModel>();
+            var gear = new Gear(gameDirectory, GetLanguage());
+            var character = new Character(gameDirectory, GetLanguage());
+            var companions = new Companions(gameDirectory, GetLanguage());
+            var ui = new UI(gameDirectory, GetLanguage());
+            var housing = new Housing(gameDirectory, GetLanguage());
+            //gear
+            if (_item.Category.Equals(XivStrings.Gear))
+            {
+                sameModelItems.AddRange(
+                    (await gear.GetGearList())
+                    .Where(it =>
+                    it.ModelInfo.ModelID == _item.ModelInfo.ModelID
+                    && it.ItemCategory == _item.ItemCategory).Select(it => it as IItemModel).ToList()
+                );
+            }
+            else if (_item.Category.Equals(XivStrings.Character))
+            {
+                //character
+                sameModelItems.Add(
+                    new XivGenericItemModel
+                    {
+                        Category = _item.Category,
+                        ItemCategory = _item.ItemCategory,
+                        ItemSubCategory = _item.ItemSubCategory,
+                        ModelInfo = new XivModelInfo
+                        {
+                            Body = _item.ModelInfo.Body,
+                            ModelID = _item.ModelInfo.ModelID,
+                            ModelType = _item.ModelInfo.ModelType,
+                            Variant = _item.ModelInfo.Variant
+                        },
+                        Name = _item.Name
+                    }
+                    as IItemModel
+                );
+            }
+            //companions
+            //sameModelItems.AddRange(
+            //    (await companions.GetMinionList())
+            //    .Where(it =>
+            //    it.ModelInfo.ModelID == _item.ModelInfo.ModelID
+            //    && it.ItemCategory == _item.ItemCategory).Select(it => it as IItemModel).ToList()
+            //);
+            //sameModelItems.AddRange(
+            //    (await companions.GetMountList())
+            //    .Where(it =>
+            //    it.ModelInfo.ModelID == _item.ModelInfo.ModelID
+            //    && it.ItemCategory == _item.ItemCategory).Select(it => it as IItemModel).ToList()
+            //);
+            //sameModelItems.AddRange(
+            //    (await companions.GetPetList())
+            //    .Where(it =>
+            //    it.ModelInfo.ModelID == _item.ModelInfo.ModelID
+            //    && it.ItemCategory == _item.ItemCategory).Select(it => it as IItemModel).ToList()
+            //);
+            //housing
+            //sameModelItems.AddRange(
+            //    (await housing.GetFurnitureList())
+            //    .Where(it =>
+            //    it.ModelInfo.ModelID == _item.ModelInfo.ModelID
+            //    && it.ItemCategory == _item.ItemCategory).Select(it => it as IItemModel).ToList()
+            //);
+            return sameModelItems;
         }
 
         /// <summary>
@@ -1671,6 +2044,19 @@ namespace FFXIV_TexTools.ViewModels
         }
 
         /// <summary>
+        /// The enabled status of the add new texture part button        
+        /// </summary>
+        public bool AddNewTexturePartEnabled
+        {
+            get => _addNewTexturePartEnabled;
+            set
+            {
+                _addNewTexturePartEnabled = value;
+                NotifyPropertyChanged(nameof(AddNewTexturePartEnabled));
+            }
+        }
+
+        /// <summary>
         /// The checked status of the translucency toggle 
         /// </summary>
         public bool TranslucencyCheck
@@ -1740,11 +2126,6 @@ namespace FFXIV_TexTools.ViewModels
             TypePartVisibility = Visibility.Collapsed;
             TypeVisibility = Visibility.Collapsed;
             PartVisibility = Visibility.Visible;
-
-            if (_magickImage != null)
-            {
-                _magickImage.Dispose();
-            }
         }
 
         /// <summary>
@@ -1934,9 +2315,55 @@ namespace FFXIV_TexTools.ViewModels
 
             ImageEffect.Channel = new System.Windows.Media.Media3D.Point4D(r, g, b, a);
 
-            _magickImage.Alpha(AlphaChecked ? AlphaOption.Activate : AlphaOption.Deactivate);
+            IImageEncoder imageEncoder;
 
-            ImageDisplay = _magickImage.ToBitmapSource();
+            if (AlphaChecked)
+            {
+                imageEncoder = new PngEncoder();
+            }
+            else
+            {
+                imageEncoder = new BmpEncoder();
+            }
+
+            if (!_mapData.IsColorSet)
+            {
+                using (var img = Image.LoadPixelData<Rgba32>(_mapData.MapBytes, _mapData.Width, _mapData.Height))
+                {
+                    using (var ms = new MemoryStream())
+                    {
+                        img.Save(ms, imageEncoder);
+
+                        var bmp = new BitmapImage();
+                        bmp.BeginInit();
+                        bmp.StreamSource = ms;
+                        bmp.CacheOption = BitmapCacheOption.OnLoad;
+                        bmp.EndInit();
+                        bmp.Freeze();
+
+                        ImageDisplay = bmp;
+                    }
+                }
+            }
+            else
+            {
+                using (var img = Image.LoadPixelData<RgbaVector>(_mapData.MapBytes, _mapData.Width, _mapData.Height))
+                {
+                    using (var ms = new MemoryStream())
+                    {
+                        img.Save(ms, imageEncoder);
+
+                        var bmp = new BitmapImage();
+                        bmp.BeginInit();
+                        bmp.StreamSource = ms;
+                        bmp.CacheOption = BitmapCacheOption.OnLoad;
+                        bmp.EndInit();
+                        bmp.Freeze();
+
+                        ImageDisplay = bmp;
+                    }
+                }
+            }
         }
         #endregion
 
@@ -1966,6 +2393,52 @@ namespace FFXIV_TexTools.ViewModels
         protected virtual void OnLoadingComplete()
         {
             LoadingComplete?.Invoke(this, EventArgs.Empty);
+        }
+        private bool CheckMtrlIsOK()
+        {
+            _textureView.BottomFlyout.IsOpen = false;
+            if (_xivMtrl != null)
+            {
+                var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
+                var index = new Index(gameDirectory);
+                var offset = index.GetDataOffset(HashGenerator.GetHash(Path.GetDirectoryName(_xivMtrl.MTRLPath).Replace("\\", "/")), HashGenerator.GetHash(Path.GetFileName(_xivMtrl.MTRLPath)), _item.DataFile).GetAwaiter().GetResult();
+                if (offset == 0)
+                {
+                    SelectedPart = SelectedPart;
+                    return false;
+                }
+            }
+            return CheckMapIsOK();
+        }
+        private bool CheckMapIsOK()
+        {
+            var path = SelectedMap.TexType.Path;
+            _textureView.BottomFlyout.IsOpen = false;
+            var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
+            var index = new Index(gameDirectory);
+
+            XivDataFile? dataFile = null;
+            if (path.StartsWith("ui/"))
+                dataFile = XivDataFile._06_Ui;
+            else if (_item != null)
+                dataFile = _item.DataFile;
+            if (dataFile == null)
+                return true;
+            var offset = index.GetDataOffset(HashGenerator.GetHash(Path.GetDirectoryName(path).Replace("\\", "/")), HashGenerator.GetHash(Path.GetFileName(path)),dataFile.Value).GetAwaiter().GetResult();
+            if (offset>0)
+            {
+                return true;
+            }
+            SelectedPart = SelectedPart;
+            return false;
+        }
+
+        private class MapData
+        {
+            public byte[] MapBytes;
+            public int Width;
+            public int Height;
+            public bool IsColorSet = false;
         }
     }
 }

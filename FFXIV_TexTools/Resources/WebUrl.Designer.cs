@@ -8,10 +8,10 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace FFXIV_TexTools.Resources
-{
-
-
+namespace FFXIV_TexTools.Resources {
+    using System;
+    
+    
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>
@@ -70,7 +70,7 @@ namespace FFXIV_TexTools.Resources
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to http://149.129.96.215:8989.
+        ///   Looks up a localized string similar to http://FF14ChinaDiscord.esrin.tk.
         /// </summary>
         internal static string Discord_China {
             get {
@@ -147,6 +147,15 @@ namespace FFXIV_TexTools.Resources
         internal static string TexTools_Website {
             get {
                 return ResourceManager.GetString("TexTools_Website", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to https://raw.githubusercontent.com/esrinzou/FFXIV_TexTools_Preview/master/updater.xml.
+        /// </summary>
+        internal static string TexToolsPre_Update_Url {
+            get {
+                return ResourceManager.GetString("TexToolsPre_Update_Url", resourceCulture);
             }
         }
         

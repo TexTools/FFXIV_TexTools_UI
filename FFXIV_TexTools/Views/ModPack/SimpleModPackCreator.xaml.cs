@@ -31,6 +31,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Forms;
 using System.Windows.Input;
+using FFXIV_TexTools.Properties;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Mods;
 using xivModdingFramework.Mods.DataContainers;
@@ -90,14 +91,50 @@ namespace FFXIV_TexTools.Views
 
             await MakeSimpleDataList(progress);
 
+            // Resize columns to fit content
+            foreach (var column in GridViewCol.Columns)
+            {
+                if (double.IsNaN(column.Width))
+                {
+                    column.Width = column.ActualWidth;
+                }
+
+                column.Width = double.NaN;
+            }
+
             var cv = (CollectionView)CollectionViewSource.GetDefaultView(ModListView.ItemsSource);
             cv.SortDescriptions.Clear();
             cv.SortDescriptions.Add(new SortDescription(nameof(SimpleModPackEntries.Name), _lastDirection));
 
             ModSizeLabel.Content = "0";
             ModListView.IsEnabled = true;
-        }
 
+            CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(ModListView.ItemsSource);
+            view.Filter = NameFilter;
+
+            ModPackAuthor.Text = Settings.Default.Default_Author;
+        }
+        /// <summary>
+        /// filtering ModListView
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        private bool NameFilter(object item)
+        {
+            if (String.IsNullOrEmpty(SearchTextBox.Text.Trim()))
+                return true;
+            else
+                return ((item as SimpleModPackEntries).Name.IndexOf(SearchTextBox.Text.Trim(), StringComparison.OrdinalIgnoreCase) >= 0);
+        }
+        /// <summary>
+        /// Filtering Text
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SearchTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            CollectionViewSource.GetDefaultView(ModListView.ItemsSource).Refresh();
+        }
         /// <summary>
         /// Creates the simple mod pack data list
         /// </summary>
@@ -186,7 +223,7 @@ namespace FFXIV_TexTools.Views
                         Num = number,
                         Map = map,
                         Active = active,
-                        ModEntry = mod
+                        ModEntry = mod,
                     }));
                 }
             });
@@ -335,7 +372,9 @@ namespace FFXIV_TexTools.Views
                     {
                         if (modPath.Contains(".tex"))
                         {
-                            type = FaceTypes[modPath.Substring(modPath.LastIndexOf("_") - 3, 3)];
+                            var fileName = Path.GetFileNameWithoutExtension(modPath);
+
+                            type = FaceTypes[fileName.Substring(fileName.IndexOf("_") + 1, 3)];
                         }
                     }
 
@@ -343,7 +382,9 @@ namespace FFXIV_TexTools.Views
                     {
                         if (modPath.Contains(".tex"))
                         {
-                            type = HairTypes[modPath.Substring(modPath.LastIndexOf("_") - 3, 3)];
+                            var fileName = Path.GetFileNameWithoutExtension(modPath);
+
+                            type = HairTypes[fileName.Substring(fileName.IndexOf("_") + 1, 3)];
                         }
                     }
 
@@ -554,7 +595,8 @@ namespace FFXIV_TexTools.Views
                     FullPath = simpleEntry.ModEntry.fullPath,
                     ModOffset = simpleEntry.ModEntry.data.modOffset,
                     ModSize = simpleEntry.ModEntry.data.modSize,
-                    DatFile = simpleEntry.ModEntry.datFile
+                    DatFile = simpleEntry.ModEntry.datFile,
+                    
                 };
 
                 simpleModPackData.SimpleModDataList.Add(simpleData);

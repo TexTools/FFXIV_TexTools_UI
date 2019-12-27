@@ -61,6 +61,61 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Can&apos;t add more texture part.
+        /// </summary>
+        internal static string AddNewTexturePartErrorMessage {
+            get {
+                return ResourceManager.GetString("AddNewTexturePartErrorMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Currently only supports &quot;Gear&quot;, &quot;Character&quot;, please contact esrin if necessary..
+        /// </summary>
+        internal static string AddNewTexturePartErrorMessageWrongCategoryOfItem {
+            get {
+                return ResourceManager.GetString("AddNewTexturePartErrorMessageWrongCategoryOfItem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &quot;Face Paint&quot;,&quot;Equipment Decals&quot; Unsupported..
+        /// </summary>
+        internal static string AddNewTexturePartErrorMessageWrongItemCategoryOfItem {
+            get {
+                return ResourceManager.GetString("AddNewTexturePartErrorMessageWrongItemCategoryOfItem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error Add New Texture Part.
+        /// </summary>
+        internal static string AddNewTexturePartErrorTitle {
+            get {
+                return ResourceManager.GetString("AddNewTexturePartErrorTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Whether to add diffuse mapping?
+        ///Selecting Yes will add a diffuse map, and selecting No will add a default map..
+        /// </summary>
+        internal static string AddNewTexturePartQuestionMessage {
+            get {
+                return ResourceManager.GetString("AddNewTexturePartQuestionMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add Diffuse Mapping.
+        /// </summary>
+        internal static string AddNewTexturePartQuestionTitle {
+            get {
+                return ResourceManager.GetString("AddNewTexturePartQuestionTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Advanced Import Error.
         /// </summary>
         internal static string AdvancedImportErrorTitle {
@@ -748,6 +803,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Deleting ModPack.
+        /// </summary>
+        internal static string ModPack_Delete {
+            get {
+                return ResourceManager.GetString("ModPack_Delete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The ModPack ({0}.ttmp2) has been successfully Created..
         /// </summary>
         internal static string ModPackCreationCompleteMessage {
@@ -809,6 +873,15 @@ namespace FFXIV_TexTools.Resources {
         internal static string ModPackImportTitle {
             get {
                 return ResourceManager.GetString("ModPackImportTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Loading ModPack.
+        /// </summary>
+        internal static string ModPackLoadingTitle {
+            get {
+                return ResourceManager.GetString("ModPackLoadingTitle", resourceCulture);
             }
         }
         
@@ -998,6 +1071,15 @@ namespace FFXIV_TexTools.Resources {
         internal static string NoNameFoundTitle {
             get {
                 return ResourceManager.GetString("NoNameFoundTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This is not a wizard modPack.
+        /// </summary>
+        internal static string NotWizardModPack {
+            get {
+                return ResourceManager.GetString("NotWizardModPack", resourceCulture);
             }
         }
         

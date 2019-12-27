@@ -268,15 +268,6 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Equipment Decals.
-        /// </summary>
-        internal static string Equip_Decals {
-            get {
-                return ResourceManager.GetString("Equip_Decals", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to -decal_{0}.tex.
         /// </summary>
         internal static string EquipDecalFile {
@@ -300,6 +291,15 @@ namespace FFXIV_TexTools.Resources {
         internal static string Equipment {
             get {
                 return ResourceManager.GetString("Equipment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Equipment Decals.
+        /// </summary>
+        internal static string Equipment_Decals {
+            get {
+                return ResourceManager.GetString("Equipment_Decals", resourceCulture);
             }
         }
         

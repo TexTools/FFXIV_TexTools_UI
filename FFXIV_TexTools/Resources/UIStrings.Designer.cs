@@ -115,6 +115,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add New Texture Part.
+        /// </summary>
+        public static string Add_NewTexturePart {
+            get {
+                return ResourceManager.GetString("Add_NewTexturePart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Add/Remove.
         /// </summary>
         public static string Add_Remove {
@@ -347,6 +356,24 @@ namespace FFXIV_TexTools.Resources {
         public static string Colors_Skins {
             get {
                 return ResourceManager.GetString("Colors_Skins", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Convert.
+        /// </summary>
+        public static string Convert {
+            get {
+                return ResourceManager.GetString("Convert", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Convert To.
+        /// </summary>
+        public static string Convert_To {
+            get {
+                return ResourceManager.GetString("Convert_To", resourceCulture);
             }
         }
         
@@ -981,6 +1008,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Load From....
+        /// </summary>
+        public static string Load_From {
+            get {
+                return ResourceManager.GetString("Load_From", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Loading.
         /// </summary>
         public static string Loading {
@@ -1076,6 +1112,15 @@ namespace FFXIV_TexTools.Resources {
         public static string MeshPart_No_Difference {
             get {
                 return ResourceManager.GetString("MeshPart_No_Difference", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mod Converter.
+        /// </summary>
+        public static string Mod_Converter {
+            get {
+                return ResourceManager.GetString("Mod_Converter", resourceCulture);
             }
         }
         
