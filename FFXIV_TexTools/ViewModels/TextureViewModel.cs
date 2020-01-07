@@ -1385,8 +1385,18 @@ namespace FFXIV_TexTools.ViewModels
             }
             else
             {
-                var newColorSetOffset = await _tex.TexColorImporter(_xivMtrl, fullPath, _item, XivStrings.TexTools, GetLanguage());
-                _xivMtrl = await _mtrl.GetMtrlData(newColorSetOffset, _xivMtrl.MTRLPath, dxVersion);
+                try
+                {
+                    var newColorSetOffset = await _tex.TexColorImporter(_xivMtrl, fullPath, _item, XivStrings.TexTools, GetLanguage());
+                    _xivMtrl = await _mtrl.GetMtrlData(newColorSetOffset, _xivMtrl.MTRLPath, dxVersion);
+                }
+                catch(Exception ex)
+                {
+                    FlexibleMessageBox.Show(
+                        string.Format(UIMessages.TextureImportErrorMessage, ex.Message), UIMessages.TextureImportErrorTitle,
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }               
             }
 
             _textureView.BottomFlyout.IsOpen = false;
@@ -1464,8 +1474,18 @@ namespace FFXIV_TexTools.ViewModels
                     }
                     else
                     {
-                        var newColorSetOffset = await _tex.TexColorImporter(_xivMtrl, fileDir, _item, XivStrings.TexTools, GetLanguage());
-                        _xivMtrl = await _mtrl.GetMtrlData(newColorSetOffset, _xivMtrl.MTRLPath, dxVersion);
+                        try
+                        {
+                            var newColorSetOffset = await _tex.TexColorImporter(_xivMtrl, fileDir, _item, XivStrings.TexTools, GetLanguage());
+                            _xivMtrl = await _mtrl.GetMtrlData(newColorSetOffset, _xivMtrl.MTRLPath, dxVersion);
+                        }
+                        catch (Exception ex)
+                        {
+                            FlexibleMessageBox.Show(
+                                string.Format(UIMessages.TextureImportErrorMessage, ex.Message), UIMessages.TextureImportErrorTitle,
+                                MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
+                        }                        
                     }
                 }
                 else
