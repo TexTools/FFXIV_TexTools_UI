@@ -366,7 +366,12 @@ namespace FFXIV_TexTools
         /// </summary>
         private void Menu_ModList_Click(object sender, RoutedEventArgs e)
         {
-            var modListView = new ModListView {Owner = this};
+            var textureView = TextureTabItem.Content as TextureView;
+            var textureViewModel = textureView.DataContext as TextureViewModel;
+            var modelView = ModelTabItem.Content as ModelView;
+            var modelViewModel = modelView.DataContext as ModelViewModel;
+
+            var modListView = new ModListView(textureViewModel, modelViewModel) {Owner = this};
             modListView.Show();
         }
 
