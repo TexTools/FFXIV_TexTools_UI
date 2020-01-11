@@ -458,7 +458,11 @@ namespace FFXIV_TexTools
         private async Task<int> ImportModpack(DirectoryInfo path, DirectoryInfo modPackDirectory, bool silent = false, bool messageInImport = false)
         {
             var importError = false;
-            
+            var textureView = TextureTabItem.Content as TextureView;
+            var textureViewModel = textureView.DataContext as TextureViewModel;
+            var modelView = ModelTabItem.Content as ModelView;
+            var modelViewModel = modelView.DataContext as ModelViewModel;
+
             try
             {
                 var ttmp = new TTMP(modPackDirectory, XivStrings.TexTools);
@@ -480,7 +484,7 @@ namespace FFXIV_TexTools
                     try
                     {
                         var importWizard = new ImportModPackWizard(ttmpData.ModPackJson, ttmpData.ImageDictionary,
-                            path, messageInImport);
+                            path, textureViewModel, modelViewModel, messageInImport);
 
                         if (messageInImport)
                         {
@@ -508,7 +512,7 @@ namespace FFXIV_TexTools
                     try
                     {
                         var simpleImport = new SimpleModPackImporter(path,
-                            ttmpData.ModPackJson, silent, messageInImport);
+                            ttmpData.ModPackJson, textureViewModel, modelViewModel, silent, messageInImport);
 
                         if (messageInImport)
                         {
@@ -536,7 +540,7 @@ namespace FFXIV_TexTools
             {
                 if (!importError)
                 {
-                    var simpleImport = new SimpleModPackImporter(path, null, silent, messageInImport);
+                    var simpleImport = new SimpleModPackImporter(path, null, textureViewModel, modelViewModel, silent, messageInImport);
 
                     if (messageInImport)
                     {
