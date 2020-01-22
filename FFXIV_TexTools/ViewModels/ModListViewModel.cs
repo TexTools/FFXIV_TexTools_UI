@@ -125,7 +125,7 @@ namespace FFXIV_TexTools.ViewModels
 
                     category.Categories.Add(categoryItem);
                 }
-
+                category.Categories = new ObservableCollection<Category>(category.Categories.OrderBy(i => i.Name));
                 Application.Current.Dispatcher.Invoke(() => Categories.Add(category));
 
                 // Mods
@@ -167,7 +167,7 @@ namespace FFXIV_TexTools.ViewModels
                         category.Categories.Add(categoryItem);
                         category.CategoryList.Add(modItem.name);
                     }
-
+                    category.Categories = new ObservableCollection<Category>(category.Categories.OrderBy(i => i.Name));
                     Application.Current.Dispatcher.Invoke(() => Categories.Add(category));
                 }
             });
@@ -218,7 +218,9 @@ namespace FFXIV_TexTools.ViewModels
                     modPackCatDict.Add(category.Name, category);
                 }
 
-                foreach (var modPackCategory in modPackCatDict)
+                var sortedModPackCatDict = modPackCatDict.OrderBy(i => i.Value.Name);
+
+                foreach (var modPackCategory in sortedModPackCatDict)
                 {
                     List<Mod> modsInModpack;
 
@@ -275,7 +277,7 @@ namespace FFXIV_TexTools.ViewModels
                             category.CategoryList.Add(modItem.name);
 
                         }
-
+                        category.Categories = new ObservableCollection<Category>(category.Categories.OrderBy(i => i.Name));
                         modPackCategory.Value.Categories.Add(category);
                     }
 
