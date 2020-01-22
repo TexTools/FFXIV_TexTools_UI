@@ -15,6 +15,7 @@
 
 using FFXIV_TexTools.Helpers;
 using FFXIV_TexTools.Resources;
+using FFXIV_TexTools.ViewModels;
 using MahApps.Metro.Controls.Dialogs;
 using System;
 using System.Collections.Generic;
@@ -54,12 +55,14 @@ namespace FFXIV_TexTools.Views
         private int _modCount;
         private long _modSize;
         private bool _messageInImport, _indexLockStatus;
+        private TextureViewModel _textureViewModel;
+        private ModelViewModel _modelViewModel;
 
         [DllImport("Shlwapi.dll", CharSet = CharSet.Auto)]
         public static extern long StrFormatByteSize(long fileSize, [MarshalAs(UnmanagedType.LPTStr)] StringBuilder buffer, int bufferSize);
 
 
-        public SimpleModPackImporter(DirectoryInfo modPackDirectory, ModPackJson modPackJson, bool silent = false, bool messageInImport = false)
+        public SimpleModPackImporter(DirectoryInfo modPackDirectory, ModPackJson modPackJson, TextureViewModel textureViewModel, ModelViewModel modelViewModel, bool silent = false, bool messageInImport = false)
         {
             InitializeComponent();
 
@@ -68,6 +71,8 @@ namespace FFXIV_TexTools.Views
             _texToolsModPack = new TTMP(new DirectoryInfo(Properties.Settings.Default.ModPack_Directory),
                 XivStrings.TexTools);
             _messageInImport = messageInImport;
+            _textureViewModel = textureViewModel;
+            _modelViewModel = modelViewModel;
 
             var index = new Index(_gameDirectory);
 
@@ -642,6 +647,16 @@ namespace FFXIV_TexTools.Views
             {
                 await this.ShowMessageAsync(UIMessages.ImportCompleteTitle,
                     string.Format(UIMessages.SuccessfulImportCountMessage, TotalModsImported));
+            }
+
+            // When the import is done force an update of the Texture/Model tabs by setting the selected parts
+            if (_textureViewModel.SelectedPart != null)
+            {
+                _textureViewModel.SelectedPart = _textureViewModel.SelectedPart;
+            }
+            if (_modelViewModel.SelectedPart != null)
+            {
+                _modelViewModel.SelectedPart = _modelViewModel.SelectedPart;
             }
 
             DialogResult = true;

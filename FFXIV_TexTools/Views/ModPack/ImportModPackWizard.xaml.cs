@@ -15,6 +15,7 @@
 
 using FFXIV_TexTools.Helpers;
 using FFXIV_TexTools.Resources;
+using FFXIV_TexTools.ViewModels;
 using MahApps.Metro.Controls.Dialogs;
 using SixLabors.ImageSharp;
 using System;
@@ -41,14 +42,18 @@ namespace FFXIV_TexTools.Views
         private readonly Dictionary<string, Image> _imageDictionary;
         private readonly ModPack _modPackEntry;
         private readonly bool _messageInImport;
+        private TextureViewModel _textureViewModel;
+        private ModelViewModel _modelViewModel;
 
-        public ImportModPackWizard(ModPackJson modPackJson, Dictionary<string, Image> imageDictionary, DirectoryInfo modPackDirectory, bool messageInImport = false)
+        public ImportModPackWizard(ModPackJson modPackJson, Dictionary<string, Image> imageDictionary, DirectoryInfo modPackDirectory, TextureViewModel textureViewModel, ModelViewModel modelViewModel, bool messageInImport = false)
         {
             InitializeComponent();
 
             _imageDictionary = imageDictionary;
             _modPackDirectory = modPackDirectory;
             _messageInImport = messageInImport;
+            _textureViewModel = textureViewModel;
+            _modelViewModel = modelViewModel;
 
             ModPackNameLabel.Content = modPackJson.Name;
             ModPackAuthorLabel.Content = modPackJson.Author;
@@ -132,6 +137,16 @@ namespace FFXIV_TexTools.Views
             catch (Exception ex)
             {
 
+            }
+
+            // When the window is closed force an update of the Texture/Model tabs by setting the selected parts
+            if (_textureViewModel.SelectedPart != null)
+            {
+                _textureViewModel.SelectedPart = _textureViewModel.SelectedPart;
+            }
+            if (_modelViewModel.SelectedPart != null)
+            {
+                _modelViewModel.SelectedPart = _modelViewModel.SelectedPart;
             }
         }
 

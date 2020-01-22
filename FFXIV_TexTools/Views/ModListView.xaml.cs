@@ -40,9 +40,14 @@ namespace FFXIV_TexTools.Views
     public partial class ModListView
     {
         private CancellationTokenSource _cts;
+        private TextureViewModel _textureViewModel;
+        private ModelViewModel _modelViewModel;
 
-        public ModListView()
+        public ModListView(TextureViewModel textureViewModel, ModelViewModel modelViewModel)
         {
+            _textureViewModel = textureViewModel;
+            _modelViewModel = modelViewModel;
+
             InitializeComponent();
         }
 
@@ -199,6 +204,14 @@ namespace FFXIV_TexTools.Views
         {
             (DataContext as ModListViewModel).Dispose();
             _cts?.Dispose();
+            if (_textureViewModel.SelectedPart != null)
+            {
+                _textureViewModel.SelectedPart = _textureViewModel.SelectedPart;
+            }
+            if(_modelViewModel.SelectedPart != null)
+            {
+                _modelViewModel.SelectedPart = _modelViewModel.SelectedPart;
+            }         
         }
     }
 }
