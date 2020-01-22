@@ -121,10 +121,15 @@ namespace FFXIV_TexTools.Views
         /// <returns></returns>
         private bool NameFilter(object item)
         {
-            if (String.IsNullOrEmpty(SearchTextBox.Text.Trim()))
-                return true;
-            else
-                return ((item as SimpleModPackEntries).Name.IndexOf(SearchTextBox.Text.Trim(), StringComparison.OrdinalIgnoreCase) >= 0);
+            if (String.IsNullOrEmpty(SearchTextBox.Text.Trim())) return true;                
+
+            var searchTerms = SearchTextBox.Text.Split('|');
+
+            foreach (var searchTerm in searchTerms)
+            {
+                if ((item as SimpleModPackEntries).Name.IndexOf(searchTerm.Trim(), StringComparison.OrdinalIgnoreCase) >= 0) return true;
+            }
+            return false;
         }
         /// <summary>
         /// Filtering Text
