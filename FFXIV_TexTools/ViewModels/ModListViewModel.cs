@@ -655,44 +655,43 @@ namespace FFXIV_TexTools.ViewModels
                         {
                             modListModel.Part = "d";
                         }
-                        else if (itemPath.Contains("decal"))
-                        {
-                            modListModel.Part = itemPath.Substring(itemPath.LastIndexOf('_') + 1,
-                                itemPath.LastIndexOf('.') - (itemPath.LastIndexOf('_') + 1));
-                        }
                         else
                         {
                             modListModel.Part = "a";
                         }
 
-                        // Type
-                        if (itemPath.Contains("_iri_"))
+                        // Number
+                        if (itemPath.Contains("/hair"))
                         {
-                            modListModel.Type = XivStrings.Iris;
+                            modListModel.Number = itemPath.Substring(itemPath.IndexOf("/hair") + 8, 3).TrimStart('0');
                         }
-                        else if (itemPath.Contains("_etc_"))
+                        else if (itemPath.Contains("/body"))
                         {
-                            modListModel.Type = XivStrings.Etc;
+                            modListModel.Number = itemPath.Substring(itemPath.IndexOf("/body") + 8, 3).TrimStart('0');
                         }
-                        else if (itemPath.Contains("_fac_"))
+                        else if (itemPath.Contains("/face"))
                         {
-                            modListModel.Type = XivStrings.Face;
+                            modListModel.Number = itemPath.Substring(itemPath.IndexOf("/face") + 8, 3).TrimStart('0');
                         }
-                        else if (itemPath.Contains("_hir_"))
+                        else if (itemPath.Contains("/tail"))
                         {
-                            modListModel.Type = XivStrings.Hair;
+                            modListModel.Number = itemPath.Substring(itemPath.IndexOf("/tail") + 8, 3).TrimStart('0');
                         }
-                        else if (itemPath.Contains("_acc_"))
+                        else if (itemPath.Contains("/zear"))
                         {
-                            modListModel.Type = XivStrings.Accessory;
+                            modListModel.Number = itemPath.Substring(itemPath.IndexOf("/zear") + 8, 3).TrimStart('0');
                         }
-                        else if (itemPath.Contains("demihuman"))
+                        else if (itemPath.Contains("/decal_face"))
                         {
-                            modListModel.Type = itemPath.Substring(itemPath.LastIndexOf('_') - 3, 3);
+                            modListModel.Number = itemPath.Substring(itemPath.IndexOf("/decal_face") + 19, 2).TrimEnd('.');                            
+                        }
+                        else if (itemPath.Contains("/decal_equip") && !itemPath.Contains("stigma"))
+                        {
+                            modListModel.Number = itemPath.Substring(itemPath.IndexOf("/decal_equip") + 20, 3);
                         }
                         else
                         {
-                            modListModel.Type = "--";
+                            modListModel.Number = "--";
                         }
 
                         // Image
@@ -1193,9 +1192,9 @@ namespace FFXIV_TexTools.ViewModels
             public string Part { get; set; }
 
             /// <summary>
-            /// The type of the modded item
+            /// The number of the modded item
             /// </summary>
-            public string Type { get; set; }
+            public string Number { get; set; }
 
             /// <summary>
             /// The brush color reflecting the active status of the modded item
