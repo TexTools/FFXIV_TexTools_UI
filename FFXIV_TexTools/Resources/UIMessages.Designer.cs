@@ -886,6 +886,17 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to A ModPack with this name already exists.
+        ///
+        ///Would you like to overwrite the existing ModPack?.
+        /// </summary>
+        internal static string ModPackOverwriteMessage {
+            get {
+                return ResourceManager.GetString("ModPackOverwriteMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Location of ModPacks folder changed.
         ///
         ///
