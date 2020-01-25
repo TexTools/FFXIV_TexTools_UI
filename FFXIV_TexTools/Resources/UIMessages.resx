@@ -652,4 +652,9 @@ Selecting Yes will add a diffuse map, and selecting No will add a default map.</
   <data name="ModPack_Delete" xml:space="preserve">
     <value>Deleting ModPack</value>
   </data>
+  <data name="ModPackOverwriteMessage" xml:space="preserve">
+    <value>A ModPack with this name already exists.
+
+Would you like to overwrite the existing ModPack?</value>
+  </data>
 </root>
