@@ -163,15 +163,17 @@ namespace FFXIV_TexTools.Views
 
                     var typeTask = GetType(modsJson.FullPath);
 
+                    var partTask = GetPart(modsJson.FullPath);
+
                     var mapTask = GetMap(modsJson.FullPath);
 
                     var active = false;
                     var isActiveTask = modding.IsModEnabled(modsJson.FullPath, false);
 
-                    var taskList = new List<Task> {raceTask, numberTask, typeTask, mapTask, isActiveTask};
+                    var taskList = new List<Task> {raceTask, numberTask, typeTask, partTask, mapTask, isActiveTask};
 
                     var race = XivRace.All_Races;
-                    string number = string.Empty, type = string.Empty, map = string.Empty;
+                    string number = string.Empty, type = string.Empty, part = string.Empty, map = string.Empty;
                     var isActive = XivModStatus.Disabled;
 
                     while (taskList.Any())
@@ -192,6 +194,11 @@ namespace FFXIV_TexTools.Views
                         {
                             taskList.Remove(typeTask);
                             type = await typeTask;
+                        }
+                        else if (finished == partTask)
+                        {
+                            taskList.Remove(partTask);
+                            part = await partTask;
                         }
                         else if (finished == mapTask)
                         {
@@ -219,7 +226,8 @@ namespace FFXIV_TexTools.Views
                             Name = modsJson.Name,
                             Category = modsJson.Category,
                             Race = race.ToString(),
-                            Part = type,
+                            Type = type,
+                            Part = part,
                             Num = number,
                             Map = map,
                             Active = active,
@@ -262,15 +270,17 @@ namespace FFXIV_TexTools.Views
 
                     var typeTask = GetType(modsJson.FullPath);
 
+                    var partTask = GetPart(modsJson.FullPath);
+
                     var mapTask = GetMap(modsJson.FullPath);
 
                     var active = false;
                     var isActiveTask = modding.IsModEnabled(modsJson.FullPath, false);
 
-                    var taskList = new List<Task> {raceTask, numberTask, typeTask, mapTask, isActiveTask};
+                    var taskList = new List<Task> {raceTask, numberTask, typeTask, partTask, mapTask, isActiveTask};
 
                     XivRace race = XivRace.All_Races;
-                    string number = string.Empty, type = string.Empty, map = string.Empty;
+                    string number = string.Empty, type = string.Empty, part = string.Empty, map = string.Empty;
                     XivModStatus isActive = XivModStatus.Disabled;
 
                     while (taskList.Any())
@@ -291,6 +301,11 @@ namespace FFXIV_TexTools.Views
                         {
                             taskList.Remove(typeTask);
                             type = await typeTask;
+                        }
+                        else if (finished == partTask)
+                        {
+                            taskList.Remove(partTask);
+                            part = await partTask;
                         }
                         else if (finished == mapTask)
                         {
@@ -315,7 +330,8 @@ namespace FFXIV_TexTools.Views
                             Name = modsJson.Name,
                             Category = modsJson.Category,
                             Race = race.GetDisplayName(),
-                            Part = type,
+                            Type = type,
+                            Part = part,
                             Num = number,
                             Map = map,
                             Active = active,
@@ -521,6 +537,40 @@ namespace FFXIV_TexTools.Views
                 }
 
                 return type;
+            });
+        }
+
+        /// <summary>
+        /// Gets the part from the path
+        /// </summary>
+        /// <param name="modPath">The mod path</param>
+        /// <returns>The part</returns>
+        private Task<string> GetPart(string modPath)
+        {
+            return Task.Run(() =>
+            {
+                var part = "-";
+                var parts = new[] { "a", "b", "c", "d", "e", "f" };
+
+                if (modPath.Contains("/equipment/"))
+                {
+                    if (modPath.Contains("/texture/"))
+                    {
+                        part = modPath.Substring(modPath.LastIndexOf("_") - 1, 1);
+                        foreach (var letter in parts)
+                        {
+                            if (part == letter) return part;
+                        }
+                        return "a";
+                    }
+
+                    if (modPath.Contains("/material/"))
+                    {
+                        return modPath.Substring(modPath.LastIndexOf("_") + 1, 1);
+                    }
+                }
+
+                return part;
             });
         }
 
