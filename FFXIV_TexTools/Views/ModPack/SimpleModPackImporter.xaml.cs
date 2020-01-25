@@ -210,7 +210,7 @@ namespace FFXIV_TexTools.Views
                         }
                     }
 
-                    if (isActive == XivModStatus.Enabled)
+                    if (isActive == XivModStatus.Enabled || isActive == XivModStatus.MatAdd)
                     {
                         active = true;
                     }
