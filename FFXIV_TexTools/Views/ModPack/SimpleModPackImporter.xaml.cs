@@ -700,13 +700,16 @@ namespace FFXIV_TexTools.Views
             }
 
             // When the import is done force an update of the Texture/Model tabs by setting the selected parts
-            if (_textureViewModel.SelectedPart != null)
+            if (_textureViewModel != null && _modelViewModel != null)
             {
-                _textureViewModel.SelectedPart = _textureViewModel.SelectedPart;
-            }
-            if (_modelViewModel.SelectedPart != null)
-            {
-                _modelViewModel.SelectedPart = _modelViewModel.SelectedPart;
+                if (_textureViewModel.SelectedPart != null)
+                {
+                    _textureViewModel.SelectedPart = _textureViewModel.SelectedPart;
+                }
+                if (_modelViewModel.SelectedPart != null)
+                {
+                    _modelViewModel.SelectedPart = _modelViewModel.SelectedPart;
+                }
             }
 
             DialogResult = true;

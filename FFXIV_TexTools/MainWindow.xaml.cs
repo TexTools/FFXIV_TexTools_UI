@@ -458,10 +458,18 @@ namespace FFXIV_TexTools
         private async Task<int> ImportModpack(DirectoryInfo path, DirectoryInfo modPackDirectory, bool silent = false, bool messageInImport = false)
         {
             var importError = false;
-            var textureView = TextureTabItem.Content as TextureView;
-            var textureViewModel = textureView.DataContext as TextureViewModel;
-            var modelView = ModelTabItem.Content as ModelView;
-            var modelViewModel = modelView.DataContext as ModelViewModel;
+            TextureView textureView = null;
+            TextureViewModel textureViewModel = null;
+            ModelView modelView = null;
+            ModelViewModel modelViewModel = null;
+
+            if(TextureTabItem != null && ModelTabItem != null)
+            {
+                textureView = TextureTabItem.Content as TextureView;
+                textureViewModel = textureView.DataContext as TextureViewModel;
+                modelView = ModelTabItem.Content as ModelView;
+                modelViewModel = modelView.DataContext as ModelViewModel;
+            }
 
             try
             {
