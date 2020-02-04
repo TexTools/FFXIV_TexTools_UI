@@ -121,10 +121,15 @@ namespace FFXIV_TexTools.Views
         /// <returns></returns>
         private bool NameFilter(object item)
         {
-            if (String.IsNullOrEmpty(SearchTextBox.Text.Trim()))
-                return true;
-            else
-                return ((item as SimpleModPackEntries).Name.IndexOf(SearchTextBox.Text.Trim(), StringComparison.OrdinalIgnoreCase) >= 0);
+            if (String.IsNullOrEmpty(SearchTextBox.Text.Trim())) return true;                
+
+            var searchTerms = SearchTextBox.Text.Split('|');
+
+            foreach (var searchTerm in searchTerms)
+            {
+                if ((item as SimpleModPackEntries).Name.IndexOf(searchTerm.Trim(), StringComparison.OrdinalIgnoreCase) >= 0) return true;
+            }
+            return false;
         }
         /// <summary>
         /// Filtering Text
@@ -167,15 +172,17 @@ namespace FFXIV_TexTools.Views
 
                     var typeTask = GetType(mod.fullPath);
 
+                    var partTask = GetPart(mod.fullPath);
+
                     var mapTask = GetMap(mod.fullPath);
 
                     var active = false;
                     var isActiveTask = modding.IsModEnabled(mod.fullPath, false);
 
-                    var taskList = new List<Task> { raceTask, numberTask, typeTask, mapTask, isActiveTask };
+                    var taskList = new List<Task> { raceTask, numberTask, typeTask, partTask, mapTask, isActiveTask };
 
                     var race = XivRace.All_Races;
-                    string number = string.Empty, type = string.Empty, map = string.Empty;
+                    string number = string.Empty, type = string.Empty, part = string.Empty, map = string.Empty;
                     var isActive = XivModStatus.Disabled;
 
                     while (taskList.Any())
@@ -197,6 +204,11 @@ namespace FFXIV_TexTools.Views
                             taskList.Remove(typeTask);
                             type = await typeTask;
                         }
+                        else if (finished == partTask)
+                        {
+                            taskList.Remove(partTask);
+                            part = await partTask;
+                        }
                         else if (finished == mapTask)
                         {
                             taskList.Remove(mapTask);
@@ -209,7 +221,7 @@ namespace FFXIV_TexTools.Views
                         }
                     }
 
-                    if (isActive == XivModStatus.Enabled)
+                    if (isActive == XivModStatus.Enabled || isActive == XivModStatus.MatAdd)
                     {
                         active = true;
                     }
@@ -219,7 +231,8 @@ namespace FFXIV_TexTools.Views
                         Name = mod.name,
                         Category = mod.category,
                         Race = race.GetDisplayName(),
-                        Part = type,
+                        Type = type,
+                        Part = part,
                         Num = number,
                         Map = map,
                         Active = active,
@@ -400,6 +413,40 @@ namespace FFXIV_TexTools.Views
                 }
 
                 return type;
+            });
+        }
+
+        /// <summary>
+        /// Gets the part from the path
+        /// </summary>
+        /// <param name="modPath">The mod path</param>
+        /// <returns>The part</returns>
+        private Task<string> GetPart(string modPath)
+        {
+            return Task.Run(() =>
+            {
+                var part = "-";
+                var parts = new[] { "a", "b", "c", "d", "e", "f" };
+
+                if (modPath.Contains("/equipment/"))
+                {
+                    if(modPath.Contains("/texture/"))
+                    {
+                        part = modPath.Substring(modPath.LastIndexOf("_") - 1, 1);
+                        foreach(var letter in parts)
+                        {
+                            if (part == letter) return part;
+                        }
+                        return "a";
+                    }
+
+                    if(modPath.Contains("/material/"))
+                    {
+                        return modPath.Substring(modPath.LastIndexOf("_") + 1, 1);
+                    }
+                }
+
+                return part;
             });
         }
 
@@ -604,7 +651,25 @@ namespace FFXIV_TexTools.Views
 
             var progressIndicator = new Progress<(int current, int total, string message)>(ReportProgress);
 
-            await texToolsModPack.CreateSimpleModPack(simpleModPackData, _gameDirectory, progressIndicator);
+            var modPackPath = Path.Combine(Properties.Settings.Default.ModPack_Directory, $"{simpleModPackData.Name}.ttmp2");
+            var overwriteModpack = false;
+
+            if (File.Exists(modPackPath))
+            {
+                var overwriteDialogResult = FlexibleMessageBox.Show(new Wpf32Window(this), UIMessages.ModPackOverwriteMessage,
+                                            UIMessages.OverwriteTitle, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
+                if (overwriteDialogResult == System.Windows.Forms.DialogResult.Yes)
+                {
+                    overwriteModpack = true;
+                }
+                else if (overwriteDialogResult == System.Windows.Forms.DialogResult.Cancel)
+                {
+                    await _progressController.CloseAsync();
+                    return;
+                }
+            }
+
+            await texToolsModPack.CreateSimpleModPack(simpleModPackData, _gameDirectory, progressIndicator, overwriteModpack);
 
             await _progressController.CloseAsync();
 

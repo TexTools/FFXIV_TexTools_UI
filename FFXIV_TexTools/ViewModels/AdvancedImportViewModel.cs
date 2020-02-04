@@ -227,6 +227,78 @@ namespace FFXIV_TexTools.ViewModels
                                 {
                                     importDictMesh.PartAttributeDictionary.Add(partNum, attributeIndex);
                                 }
+                            }                        
+                        }
+
+                        if (_xivMdl.HasShapeData)
+                        {
+                            //Dictionary containing <index data offset, mesh number>
+                            var indexMeshNum = new Dictionary<int, int>();
+
+                            var shapeData = _xivMdl.MeshShapeData.ShapeDataList;
+
+                            // Get the index data offsets in each mesh
+                            for (var i = 0; i < _xivMdl.LoDList[0].MeshCount; i++)
+                            {
+                                var indexDataOffset = _xivMdl.LoDList[0].MeshDataList[i].MeshInfo.IndexDataOffset;
+
+                                if (!indexMeshNum.ContainsKey(indexDataOffset))
+                                {
+                                    indexMeshNum.Add(indexDataOffset, i);
+                                }
+                            }
+
+                            // Shape info list of both the mod and the original mdl
+                            var originalShapeInfoList = _xivMdl.MeshShapeData.ShapeInfoList;
+                            var moddedShapeInfoList = _modMdl.MeshShapeData.ShapeInfoList;
+
+                            // Number of shape info in each mesh
+                            var perMeshCount = _xivMdl.ModelData.ShapeCount;
+
+                            for (var i = 0; i < perMeshCount; i++)
+                            {
+                                var originalShapeInfo = originalShapeInfoList[i];
+                                var moddedShapeInfo = moddedShapeInfoList[i];
+
+                                var originalIndexPart = originalShapeInfo.ShapeIndexParts[0];
+                                var moddedIndexPart = moddedShapeInfo.ShapeIndexParts[0];
+
+                                // The part count
+                                var infoPartCount = originalIndexPart.PartCount;
+
+                                for (var j = 0; j < infoPartCount; j++)
+                                {
+                                    // Gets the data info for the part
+                                    var shapeDataInfo = _modMdl.MeshShapeData.ShapeDataInfoList[originalIndexPart.DataInfoIndex + j];
+
+                                    // The offset in the shape data 
+                                    var indexDataOffset = shapeDataInfo.IndexDataOffset;
+
+                                    var indexMeshLocation = 0;
+
+                                    // Determine which mesh the shape info belongs to
+                                    if (indexMeshNum.ContainsKey(indexDataOffset))
+                                    {
+                                        indexMeshLocation = indexMeshNum[indexDataOffset];
+                                    }
+
+                                    // Get the shape data for the mesh the shape info belonged to
+                                    var shapeDataForMesh = shapeData.GetRange(shapeDataInfo.DataIndexOffset, shapeDataInfo.IndexCount);
+
+                                    foreach (var data in shapeDataForMesh)
+                                    {
+                                        // Check if the shape data has been disabled on the modded mdl
+                                        if (moddedIndexPart.DataInfoIndex == 0 && moddedIndexPart.PartCount == 0)
+                                        {
+                                            // Check if the mesh's import settings has been initialized yet
+                                            if (_importDictionary.ContainsKey(indexMeshLocation.ToString()))
+                                            {
+                                                // If so, set it to disabled in the advanced import window
+                                                _importDictionary[indexMeshLocation.ToString()].Disable = true;
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                     }

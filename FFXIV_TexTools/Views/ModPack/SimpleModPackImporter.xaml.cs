@@ -15,6 +15,7 @@
 
 using FFXIV_TexTools.Helpers;
 using FFXIV_TexTools.Resources;
+using FFXIV_TexTools.ViewModels;
 using MahApps.Metro.Controls.Dialogs;
 using System;
 using System.Collections.Generic;
@@ -54,12 +55,14 @@ namespace FFXIV_TexTools.Views
         private int _modCount;
         private long _modSize;
         private bool _messageInImport, _indexLockStatus;
+        private TextureViewModel _textureViewModel;
+        private ModelViewModel _modelViewModel;
 
         [DllImport("Shlwapi.dll", CharSet = CharSet.Auto)]
         public static extern long StrFormatByteSize(long fileSize, [MarshalAs(UnmanagedType.LPTStr)] StringBuilder buffer, int bufferSize);
 
 
-        public SimpleModPackImporter(DirectoryInfo modPackDirectory, ModPackJson modPackJson, bool silent = false, bool messageInImport = false)
+        public SimpleModPackImporter(DirectoryInfo modPackDirectory, ModPackJson modPackJson, TextureViewModel textureViewModel, ModelViewModel modelViewModel, bool silent = false, bool messageInImport = false)
         {
             InitializeComponent();
 
@@ -68,6 +71,8 @@ namespace FFXIV_TexTools.Views
             _texToolsModPack = new TTMP(new DirectoryInfo(Properties.Settings.Default.ModPack_Directory),
                 XivStrings.TexTools);
             _messageInImport = messageInImport;
+            _textureViewModel = textureViewModel;
+            _modelViewModel = modelViewModel;
 
             var index = new Index(_gameDirectory);
 
@@ -163,15 +168,17 @@ namespace FFXIV_TexTools.Views
 
                     var typeTask = GetType(modsJson.FullPath);
 
+                    var partTask = GetPart(modsJson.FullPath);
+
                     var mapTask = GetMap(modsJson.FullPath);
 
                     var active = false;
                     var isActiveTask = modding.IsModEnabled(modsJson.FullPath, false);
 
-                    var taskList = new List<Task> {raceTask, numberTask, typeTask, mapTask, isActiveTask};
+                    var taskList = new List<Task> {raceTask, numberTask, typeTask, partTask, mapTask, isActiveTask};
 
                     var race = XivRace.All_Races;
-                    string number = string.Empty, type = string.Empty, map = string.Empty;
+                    string number = string.Empty, type = string.Empty, part = string.Empty, map = string.Empty;
                     var isActive = XivModStatus.Disabled;
 
                     while (taskList.Any())
@@ -193,6 +200,11 @@ namespace FFXIV_TexTools.Views
                             taskList.Remove(typeTask);
                             type = await typeTask;
                         }
+                        else if (finished == partTask)
+                        {
+                            taskList.Remove(partTask);
+                            part = await partTask;
+                        }
                         else if (finished == mapTask)
                         {
                             taskList.Remove(mapTask);
@@ -205,7 +217,7 @@ namespace FFXIV_TexTools.Views
                         }
                     }
 
-                    if (isActive == XivModStatus.Enabled)
+                    if (isActive == XivModStatus.Enabled || isActive == XivModStatus.MatAdd)
                     {
                         active = true;
                     }
@@ -219,7 +231,8 @@ namespace FFXIV_TexTools.Views
                             Name = modsJson.Name,
                             Category = modsJson.Category,
                             Race = race.ToString(),
-                            Part = type,
+                            Type = type,
+                            Part = part,
                             Num = number,
                             Map = map,
                             Active = active,
@@ -262,15 +275,17 @@ namespace FFXIV_TexTools.Views
 
                     var typeTask = GetType(modsJson.FullPath);
 
+                    var partTask = GetPart(modsJson.FullPath);
+
                     var mapTask = GetMap(modsJson.FullPath);
 
                     var active = false;
                     var isActiveTask = modding.IsModEnabled(modsJson.FullPath, false);
 
-                    var taskList = new List<Task> {raceTask, numberTask, typeTask, mapTask, isActiveTask};
+                    var taskList = new List<Task> {raceTask, numberTask, typeTask, partTask, mapTask, isActiveTask};
 
                     XivRace race = XivRace.All_Races;
-                    string number = string.Empty, type = string.Empty, map = string.Empty;
+                    string number = string.Empty, type = string.Empty, part = string.Empty, map = string.Empty;
                     XivModStatus isActive = XivModStatus.Disabled;
 
                     while (taskList.Any())
@@ -291,6 +306,11 @@ namespace FFXIV_TexTools.Views
                         {
                             taskList.Remove(typeTask);
                             type = await typeTask;
+                        }
+                        else if (finished == partTask)
+                        {
+                            taskList.Remove(partTask);
+                            part = await partTask;
                         }
                         else if (finished == mapTask)
                         {
@@ -315,7 +335,8 @@ namespace FFXIV_TexTools.Views
                             Name = modsJson.Name,
                             Category = modsJson.Category,
                             Race = race.GetDisplayName(),
-                            Part = type,
+                            Type = type,
+                            Part = part,
                             Num = number,
                             Map = map,
                             Active = active,
@@ -525,6 +546,40 @@ namespace FFXIV_TexTools.Views
         }
 
         /// <summary>
+        /// Gets the part from the path
+        /// </summary>
+        /// <param name="modPath">The mod path</param>
+        /// <returns>The part</returns>
+        private Task<string> GetPart(string modPath)
+        {
+            return Task.Run(() =>
+            {
+                var part = "-";
+                var parts = new[] { "a", "b", "c", "d", "e", "f" };
+
+                if (modPath.Contains("/equipment/"))
+                {
+                    if (modPath.Contains("/texture/"))
+                    {
+                        part = modPath.Substring(modPath.LastIndexOf("_") - 1, 1);
+                        foreach (var letter in parts)
+                        {
+                            if (part == letter) return part;
+                        }
+                        return "a";
+                    }
+
+                    if (modPath.Contains("/material/"))
+                    {
+                        return modPath.Substring(modPath.LastIndexOf("_") + 1, 1);
+                    }
+                }
+
+                return part;
+            });
+        }
+
+        /// <summary>
         /// Gets the map from the path
         /// </summary>
         /// <param name="modPath">The mod path</param>
@@ -642,6 +697,16 @@ namespace FFXIV_TexTools.Views
             {
                 await this.ShowMessageAsync(UIMessages.ImportCompleteTitle,
                     string.Format(UIMessages.SuccessfulImportCountMessage, TotalModsImported));
+            }
+
+            // When the import is done force an update of the Texture/Model tabs by setting the selected parts
+            if (_textureViewModel.SelectedPart != null)
+            {
+                _textureViewModel.SelectedPart = _textureViewModel.SelectedPart;
+            }
+            if (_modelViewModel.SelectedPart != null)
+            {
+                _modelViewModel.SelectedPart = _modelViewModel.SelectedPart;
             }
 
             DialogResult = true;

@@ -104,7 +104,7 @@
 
                                             <Border BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" BorderThickness="1" Grid.Column="1" Grid.Row="3">
                                                 <Viewbox StretchDirection="DownOnly">
-                                                    <Label Content="{Binding Type}"/>
+                                                    <Label Content="{Binding Number}"/>
                                                 </Viewbox>
                                             </Border>
 
@@ -128,7 +128,7 @@
 
                                             <Border Background="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Grid.Row="2" Grid.Column="1">
                                                 <Viewbox StretchDirection="DownOnly">
-                                                    <Label Content="{Binding Source={x:Static resx:UIStrings.Type}}" VerticalContentAlignment="Top" HorizontalContentAlignment="Center" Padding="0"/>
+                                                    <Label Content="{Binding Source={x:Static resx:UIStrings.Num}}" VerticalContentAlignment="Top" HorizontalContentAlignment="Center" Padding="0"/>
                                                 </Viewbox>
                                             </Border>
                                         </Grid>

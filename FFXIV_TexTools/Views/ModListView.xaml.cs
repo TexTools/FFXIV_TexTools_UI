@@ -40,9 +40,14 @@ namespace FFXIV_TexTools.Views
     public partial class ModListView
     {
         private CancellationTokenSource _cts;
+        private TextureViewModel _textureViewModel;
+        private ModelViewModel _modelViewModel;
 
-        public ModListView()
+        public ModListView(TextureViewModel textureViewModel, ModelViewModel modelViewModel)
         {
+            _textureViewModel = textureViewModel;
+            _modelViewModel = modelViewModel;
+
             InitializeComponent();
         }
 
@@ -101,7 +106,16 @@ namespace FFXIV_TexTools.Views
             {
                 (DataContext as ModListViewModel).ModToggleText = selectedModItem.ModItem.enabled ? FFXIV_TexTools.Resources.UIStrings.Disable : FFXIV_TexTools.Resources.UIStrings.Enable;
 
-                modToggleButton.IsEnabled = true;
+                // If mod offset and original offset are the same then it's a matadded texture
+                if(selectedModItem.ModItem.data.modOffset == selectedModItem.ModItem.data.originalOffset)
+                {
+                    // Disable toggle button since toggling does nothing with equal offsets
+                    modToggleButton.IsEnabled = false;
+                }
+                else
+                {
+                    modToggleButton.IsEnabled = true;
+                }                
                 modDeleteButton.IsEnabled = true;
             }
 
@@ -136,6 +150,8 @@ namespace FFXIV_TexTools.Views
             {
                 foreach (ModListViewModel.ModListModel selectedModItem in ModItemList.SelectedItems)
                 {
+                    // If mod offset is equal to original offset there is no point in toggling as is the case for matadd textures
+                    if (selectedModItem.ModItem.data.modOffset == selectedModItem.ModItem.data.originalOffset) continue;
                     if (selectedModItem.ModItem.enabled)
                     {
                         await modding.ToggleModStatus(selectedModItem.ModItem.fullPath, false);
@@ -199,6 +215,14 @@ namespace FFXIV_TexTools.Views
         {
             (DataContext as ModListViewModel).Dispose();
             _cts?.Dispose();
+            if (_textureViewModel.SelectedPart != null)
+            {
+                _textureViewModel.SelectedPart = _textureViewModel.SelectedPart;
+            }
+            if(_modelViewModel.SelectedPart != null)
+            {
+                _modelViewModel.SelectedPart = _modelViewModel.SelectedPart;
+            }         
         }
     }
 }
