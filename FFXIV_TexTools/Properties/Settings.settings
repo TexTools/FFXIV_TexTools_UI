@@ -59,5 +59,11 @@
     <Setting Name="Default_Author" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
+    <Setting Name="ModList_Sorting" Type="System.String" Scope="User">
+      <Value Profile="(Default)">NameSort</Value>
+    </Setting>
+    <Setting Name="ModList_Filter" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Item</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

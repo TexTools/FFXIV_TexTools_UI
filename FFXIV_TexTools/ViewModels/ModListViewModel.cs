@@ -53,7 +53,7 @@ namespace FFXIV_TexTools.ViewModels
         private string _modToggleText = UIStrings.Enable_Disable;
         private Visibility _listVisibility = Visibility.Visible, _infoGridVisibility = Visibility.Collapsed;
         private string _modPackTitle, _modPackModAuthorLabel, _modPackModCountLabel, _modPackModVersionLabel, _modPackContentList, _progressText;
-        private bool _itemFilter, _modPackFilter;
+        private bool _itemFilter, _modPackFilter, _nameSort, _dateSort;
         private int _progressValue;
         private ObservableCollection<Category> _categories;
         private IProgress<(int current, int total)> progress;
@@ -70,7 +70,19 @@ namespace FFXIV_TexTools.ViewModels
                 ProgressText = $"{result.current} / {result.total}";
             });
 
-            ItemFilter = true;
+            if (Properties.Settings.Default.ModList_Sorting.Equals("NameSort")) _nameSort = true;
+            else _dateSort = true;
+
+            if (Properties.Settings.Default.ModList_Filter.Equals("Item"))
+            {
+                _itemFilter = true;
+                SetFilter("ItemFilter");
+            }                
+            else
+            {
+                _modPackFilter = true;
+                SetFilter("ModPackFilter");
+            }
         }
 
         /// <summary>
@@ -125,7 +137,12 @@ namespace FFXIV_TexTools.ViewModels
 
                     category.Categories.Add(categoryItem);
                 }
-                category.Categories = new ObservableCollection<Category>(category.Categories.OrderBy(i => i.Name));
+
+                if(_nameSort)
+                {
+                    category.Categories = new ObservableCollection<Category>(category.Categories.OrderBy(i => i.Name));
+                }
+                
                 Application.Current.Dispatcher.Invoke(() => Categories.Add(category));
 
                 // Mods
@@ -167,7 +184,12 @@ namespace FFXIV_TexTools.ViewModels
                         category.Categories.Add(categoryItem);
                         category.CategoryList.Add(modItem.name);
                     }
-                    category.Categories = new ObservableCollection<Category>(category.Categories.OrderBy(i => i.Name));
+
+                    if (_nameSort)
+                    {
+                        category.Categories = new ObservableCollection<Category>(category.Categories.OrderBy(i => i.Name));
+                    }
+
                     Application.Current.Dispatcher.Invoke(() => Categories.Add(category));
                 }
             });
@@ -218,7 +240,16 @@ namespace FFXIV_TexTools.ViewModels
                     modPackCatDict.Add(category.Name, category);
                 }
 
-                var sortedModPackCatDict = modPackCatDict.OrderBy(i => i.Value.Name);
+                var sortedModPackCatDict = new Dictionary<string, Category>();
+
+                if (_nameSort)
+                {
+                    sortedModPackCatDict = modPackCatDict.OrderBy(i => i.Value.Name).ToDictionary(pair => pair.Key, pair => pair.Value);
+                }
+                else
+                {
+                    sortedModPackCatDict = modPackCatDict;
+                }
 
                 foreach (var modPackCategory in sortedModPackCatDict)
                 {
@@ -277,7 +308,12 @@ namespace FFXIV_TexTools.ViewModels
                             category.CategoryList.Add(modItem.name);
 
                         }
-                        category.Categories = new ObservableCollection<Category>(category.Categories.OrderBy(i => i.Name));
+
+                        if(_nameSort)
+                        {
+                            category.Categories = new ObservableCollection<Category>(category.Categories.OrderBy(i => i.Name));
+                        }
+                        
                         modPackCategory.Value.Categories.Add(category);
                     }
 
@@ -1097,12 +1133,12 @@ namespace FFXIV_TexTools.ViewModels
         {
             get => _itemFilter;
             set
-            {
-                _itemFilter = value;
-                if (value)
+            {                
+                if (value && !_itemFilter)
                 {
                     SetFilter("ItemFilter");
                 }
+                _itemFilter = value;
                 OnPropertyChanged(nameof(ItemFilter));
             }
         }
@@ -1114,13 +1150,49 @@ namespace FFXIV_TexTools.ViewModels
         {
             get => _modPackFilter;
             set
-            {
-                _modPackFilter = value;
-                if (value)
+            {                
+                if (value && !_modPackFilter)
                 {
                     SetFilter("ModPackFilter");
                 }
+                _modPackFilter = value;
                 OnPropertyChanged(nameof(ModPackFilter));
+            }
+        }
+
+        /// <summary>
+        /// The status of the name sort
+        /// </summary>
+        public bool NameSort
+        {
+            get => _nameSort;
+            set
+            {                
+                if (value && !_nameSort)
+                {
+                    if (_modPackFilter) SetFilter("ModPackFilter");
+                    if (_itemFilter) SetFilter("ItemFilter");
+                }
+                _nameSort = value;
+                OnPropertyChanged(nameof(NameSort));
+            }
+        }
+
+        /// <summary>
+        /// The status of the date sort
+        /// </summary>
+        public bool DateSort
+        {
+            get => _dateSort;
+            set
+            {               
+                if (value && !_dateSort)
+                {
+                    if (_modPackFilter) SetFilter("ModPackFilter");
+                    if (_itemFilter) SetFilter("ItemFilter");
+                }
+                _dateSort = value;
+                OnPropertyChanged(nameof(DateSort));
             }
         }
 
@@ -1164,6 +1236,22 @@ namespace FFXIV_TexTools.ViewModels
         {
             Categories = null;
             ModListPreviewList = null;
+
+            string sortMethod;
+            if (_nameSort)
+                sortMethod = "NameSort";
+            else
+                sortMethod = "DateSort";
+
+            string filter;
+            if (_modPackFilter)
+                filter = "ModPack";
+            else
+                filter = "Item";
+
+            Properties.Settings.Default.ModList_Filter = filter;
+            Properties.Settings.Default.ModList_Sorting = sortMethod;
+            Properties.Settings.Default.Save();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

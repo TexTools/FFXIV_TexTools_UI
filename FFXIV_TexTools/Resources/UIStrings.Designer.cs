@@ -468,6 +468,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Date.
+        /// </summary>
+        public static string Date {
+            get {
+                return ResourceManager.GetString("Date", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Default Skin.
         /// </summary>
         public static string Default_Skin {
@@ -2164,6 +2173,15 @@ namespace FFXIV_TexTools.Resources {
         public static string Slot {
             get {
                 return ResourceManager.GetString("Slot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sort By:.
+        /// </summary>
+        public static string Sort_By_colon {
+            get {
+                return ResourceManager.GetString("Sort_By_colon", resourceCulture);
             }
         }
         

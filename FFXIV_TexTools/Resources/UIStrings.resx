@@ -901,4 +901,10 @@ If you would like to enable this, first import a texture for the selected item.<
   <data name="Convert_To" xml:space="preserve">
     <value>Convert To</value>
   </data>
+  <data name="Sort_By_colon" xml:space="preserve">
+    <value>Sort By:</value>
+  </data>
+  <data name="Date" xml:space="preserve">
+    <value>Date</value>
+  </data>
 </root>
