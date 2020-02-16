@@ -1210,8 +1210,18 @@ namespace FFXIV_TexTools.Views
             var includedModsList = IncludedModsList.Items.Cast<IncludedMods>().ToList();
             var mdl = new Mdl(_gameDirectory, XivDataFiles.GetXivDataFile(mod.datFile));
             var xivMdl = await mdl.GetMdlData(itemModel, GetRace(mod.fullPath), null, null, mod.data.originalOffset);
-            var warnings = await mdl.ImportModel(itemModel, xivMdl, new DirectoryInfo(CustomModelTextBox.Text), null, XivStrings.TexTools, 
-                Settings.Default.DAE_Plugin_Target, true);
+            var warnings = new Dictionary<string, string>();
+            try
+            {
+                warnings = await mdl.ImportModel(itemModel, xivMdl, new DirectoryInfo(CustomModelTextBox.Text), null, XivStrings.TexTools, 
+                    Settings.Default.DAE_Plugin_Target, true);
+            }
+            catch(Exception ex)
+            {
+                FlexibleMessageBox.Show(ex.Message, UIMessages.AdvancedImportErrorTitle,
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
 
             if (warnings.Count > 0)
             {
