@@ -58,7 +58,9 @@ namespace FFXIV_TexTools.Views
             controls.Add(comboBox);
             controls.Add(textBox);
         }
+
         public static readonly DependencyProperty TextProperty = DependencyProperty.Register("Text", typeof(string), typeof(AutoCompleteTextBox),new PropertyMetadata(""));
+
         public string Text
         {
             get { return (string)GetValue(TextProperty); }
@@ -75,6 +77,7 @@ namespace FFXIV_TexTools.Views
         }
 
         public static readonly DependencyProperty ItemsSourceProperty = DependencyProperty.Register("ItemsSource", typeof(ObservableCollection<AutoCompleteEntry>), typeof(AutoCompleteTextBox));
+
         public ObservableCollection<AutoCompleteEntry> ItemsSource
         {
             get => (ObservableCollection<AutoCompleteEntry>)GetValue(ItemsSourceProperty);
@@ -82,6 +85,7 @@ namespace FFXIV_TexTools.Views
                 SetValue(ItemsSourceProperty,value);
             }
         }
+
         private void comboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (null != comboBox.SelectedItem)
@@ -91,13 +95,14 @@ namespace FFXIV_TexTools.Views
                 comboBox.IsDropDownOpen = false;
             }
         }
+
         private void TextChanged()
         {
             this.comboBox.Items.Clear();
             var name = this.textBox.Text.Trim();
             if (name.Length >= searchThreshold)
             {
-                var result = this.ItemsSource.Where(it => it.DisplayName.Contains(name)).OrderBy(it => it.DisplayName).Take(20);
+                var result = this.ItemsSource.Where(it => it.DisplayName.IndexOf(name, StringComparison.OrdinalIgnoreCase) >= 0).OrderBy(it => it.DisplayName).Take(20);
                 foreach (var item in result)
                 {
                     this.comboBox.Items.Add(item);
