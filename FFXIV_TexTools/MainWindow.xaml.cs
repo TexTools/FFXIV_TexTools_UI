@@ -646,14 +646,22 @@ namespace FFXIV_TexTools
                     }
                 }
 
+                var progressController = await this.ShowProgressAsync(UIStrings.Start_Over, UIMessages.PleaseStandByMessage);
+                progressController.SetIndeterminate();
+
                 await Task.Run(async () =>
                 {
                     var modding = new Modding(gameDirectory);
+
+                    progressController.SetMessage("Deleting all mod entries and restoring original indices...");
+
                     await modding.DeleteAllFilesAddedByTexTools();
 
                     var dat = new Dat(gameDirectory);
 
                     var modListDirectory = new DirectoryInfo(Path.Combine(gameDirectory.Parent.Parent.FullName, XivStrings.ModlistFilePath));
+
+                    progressController.SetMessage("Checking index file backups...");
 
                     var backupFiles = Directory.GetFiles(indexBackupsDirectory.FullName);
 
@@ -673,6 +681,8 @@ namespace FFXIV_TexTools
                     }
                     else
                     {
+                        progressController.SetMessage("Restoring index files...");
+
                         // Copy backups to ffxiv folder
                         foreach (var backupFile in backupFiles)
                         {
@@ -682,6 +692,8 @@ namespace FFXIV_TexTools
                             }
                         }
                     }
+
+                    progressController.SetMessage("Deleting modded dat files...");
 
                     // Delete modded dat files
                     foreach (var xivDataFile in (XivDataFile[])Enum.GetValues(typeof(XivDataFile)))
@@ -705,6 +717,8 @@ namespace FFXIV_TexTools
                     modding.CreateModlist();
 
                 });
+
+                await progressController.CloseAsync();
 
                 UpdateViews(ItemTreeView.SelectedItem as Category);
 
