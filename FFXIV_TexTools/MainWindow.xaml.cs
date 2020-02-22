@@ -56,6 +56,7 @@ namespace FFXIV_TexTools
 
         public MainWindow(string[] args)
         {
+            CheckForSettingsUpdate();
             LanguageSelection();
 
             var ci = new CultureInfo(Properties.Settings.Default.Application_Language)
@@ -69,15 +70,8 @@ namespace FFXIV_TexTools
             CultureInfo.CurrentUICulture = ci;
 
             CheckForUpdates();
-            CheckForSettingsUpdate();
 
             var fileVersion = FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location).FileVersion;
-
-            if (args != null && args.Length > 0)
-            {
-                _startupArgs = args[0];
-                OnlyImport();
-            }
 
             try
             {
@@ -96,28 +90,36 @@ namespace FFXIV_TexTools
                 return;
             }
 
-            ItemSearchTextBox.Focus();
-            var mainViewModel = new MainViewModel(this);
-            this.DataContext = mainViewModel;
-
-            if (searchTimer == null)
+            if (args != null && args.Length > 0)
             {
-                searchTimer = new SysTimer.Timer(300);
+                _startupArgs = args[0];
+                OnlyImport();
             }
+            else
+            {
+                ItemSearchTextBox.Focus();
+                var mainViewModel = new MainViewModel(this);
+                this.DataContext = mainViewModel;
 
-            searchTimer.Enabled = true;
-            searchTimer.AutoReset = false;
-            searchTimer.Elapsed += SearchTimerOnElapsed;
+                if (searchTimer == null)
+                {
+                    searchTimer = new SysTimer.Timer(300);
+                }
 
-            var textureView = TextureTabItem.Content as TextureView;
-            var textureViewModel = textureView.DataContext as TextureViewModel;
+                searchTimer.Enabled = true;
+                searchTimer.AutoReset = false;
+                searchTimer.Elapsed += SearchTimerOnElapsed;
 
-            textureViewModel.LoadingComplete += TextureViewModelOnLoadingComplete;
+                var textureView = TextureTabItem.Content as TextureView;
+                var textureViewModel = textureView.DataContext as TextureViewModel;
 
-            var modelView = ModelTabItem.Content as ModelView;
-            var modelViewModel = modelView.DataContext as ModelViewModel;
+                textureViewModel.LoadingComplete += TextureViewModelOnLoadingComplete;
 
-            modelViewModel.LoadingComplete += ModelViewModelOnLoadingComplete;
+                var modelView = ModelTabItem.Content as ModelView;
+                var modelViewModel = modelView.DataContext as ModelViewModel;
+
+                modelViewModel.LoadingComplete += ModelViewModelOnLoadingComplete;
+            }
         }
 
         private void LanguageSelection()
@@ -183,6 +185,10 @@ namespace FFXIV_TexTools
                 Settings.Default.Upgrade();
                 Settings.Default.UpgradeRequired = false;
                 Settings.Default.Save();
+                
+                // Set theme according to settings now that the settings have been upgraded to the new version
+                var appStyle = ThemeManager.DetectAppStyle(Application.Current);
+                ThemeManager.ChangeAppStyle(Application.Current, ThemeManager.GetAccent(appStyle.Item2.Name), ThemeManager.GetAppTheme(Settings.Default.Application_Theme));
             }
         }
 
