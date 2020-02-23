@@ -739,7 +739,7 @@ namespace FFXIV_TexTools
             {
                 var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
                 var backupDirectory = new DirectoryInfo(Properties.Settings.Default.Backup_Directory);
-                var indexFiles = new XivDataFile[] { XivDataFile._04_Chara, XivDataFile._06_Ui, XivDataFile._01_Bgcommon };
+                var indexFiles = new XivDataFile[] { XivDataFile._0A_Exd, XivDataFile._04_Chara, XivDataFile._06_Ui, XivDataFile._01_Bgcommon };
                 var index = new Index(gameDirectory);
                 var modding = new Modding(gameDirectory);
 

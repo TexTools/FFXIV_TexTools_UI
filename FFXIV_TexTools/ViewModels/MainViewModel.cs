@@ -464,7 +464,7 @@ namespace FFXIV_TexTools.ViewModels
                 if (needsNewBackup)
                 {
                     var indexFiles = new XivDataFile[]
-                        {XivDataFile._04_Chara, XivDataFile._06_Ui, XivDataFile._01_Bgcommon};
+                        { XivDataFile._0A_Exd, XivDataFile._04_Chara, XivDataFile._06_Ui, XivDataFile._01_Bgcommon };
 
                     if (FlexibleMessageBox.Show(_win32Window, backupMessage, UIMessages.CreateBackupTitle, MessageBoxButtons.YesNo,
                             MessageBoxIcon.Warning) == DialogResult.Yes)
