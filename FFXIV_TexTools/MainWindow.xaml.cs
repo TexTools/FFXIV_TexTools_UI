@@ -24,6 +24,7 @@ using MahApps.Metro;
 using MahApps.Metro.Controls.Dialogs;
 using SixLabors.ImageSharp;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -702,7 +703,9 @@ namespace FFXIV_TexTools
                 return !subItems.IsEmpty;
             }
 
-            return ((Category)item).Name.ToLower().Contains(ItemSearchTextBox.Text.ToLower());
+            var searchTerms = ItemSearchTextBox.Text.Split(' ');
+
+            return searchTerms.All(term => ((Category)item).Name.ToLower().Contains(term.Trim()));
         }
 
         private void ItemSearchTextBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)

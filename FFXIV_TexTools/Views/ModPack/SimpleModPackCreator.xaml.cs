@@ -39,6 +39,7 @@ using xivModdingFramework.Mods.Enums;
 using xivModdingFramework.Mods.FileTypes;
 using xivModdingFramework.Textures.Enums;
 using ListViewItem = System.Windows.Controls.ListViewItem;
+using SysTimer = System.Timers;
 
 namespace FFXIV_TexTools.Views
 {
@@ -53,6 +54,7 @@ namespace FFXIV_TexTools.Views
         private readonly DirectoryInfo _gameDirectory;
         private int _modCount;
         private long _modSize;
+        private SysTimer.Timer searchTimer = new SysTimer.Timer(300);
 
         [DllImport("Shlwapi.dll", CharSet = CharSet.Auto)]
         public static extern long StrFormatByteSize(long fileSize, [MarshalAs(UnmanagedType.LPTStr)] StringBuilder buffer, int bufferSize);
@@ -63,6 +65,15 @@ namespace FFXIV_TexTools.Views
 
             _gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
             ModListView.ItemsSource = _simpleDataList;
+
+            if (searchTimer == null)
+            {
+                searchTimer = new SysTimer.Timer(300);
+            }
+
+            searchTimer.Enabled = true;
+            searchTimer.AutoReset = false;
+            searchTimer.Elapsed += SearchTimerOnElapsed;
 
             Initialize();
         }
@@ -131,6 +142,7 @@ namespace FFXIV_TexTools.Views
             }
             return false;
         }
+
         /// <summary>
         /// Filtering Text
         /// </summary>
@@ -138,8 +150,20 @@ namespace FFXIV_TexTools.Views
         /// <param name="e"></param>
         private void SearchTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
+            searchTimer.Stop();
+            searchTimer.Start();
+        }
+
+        private void SearchTimerOnElapsed(object sender, SysTimer.ElapsedEventArgs e)
+        {
+            Dispatcher.Invoke(UpdateFilter);
+        }
+
+        private void UpdateFilter()
+        {
             CollectionViewSource.GetDefaultView(ModListView.ItemsSource).Refresh();
         }
+
         /// <summary>
         /// Creates the simple mod pack data list
         /// </summary>
