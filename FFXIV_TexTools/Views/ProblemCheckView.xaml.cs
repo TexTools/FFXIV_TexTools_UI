@@ -503,7 +503,7 @@ namespace FFXIV_TexTools.Views
 
         private async Task CheckBackups()
         {
-            var filesToCheck = new XivDataFile[] {XivDataFile._01_Bgcommon, XivDataFile._04_Chara, XivDataFile._06_Ui};
+            var filesToCheck = new XivDataFile[] { XivDataFile._0A_Exd, XivDataFile._01_Bgcommon, XivDataFile._04_Chara, XivDataFile._06_Ui};
 
             var backupDirectory = new DirectoryInfo(Properties.Settings.Default.Backup_Directory);
 
