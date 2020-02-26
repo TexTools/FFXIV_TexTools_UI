@@ -81,6 +81,23 @@ namespace FFXIV_TexTools.Views
                 verString = verString.Replace(",", ".");
             }
 
+            if (ModPackName.Text.Contains('/') || ModPackName.Text.Contains('\\'))
+            {
+                if (FlexibleMessageBox.Show(new Wpf32Window(this),
+                        UIMessages.InvalidCharacterModpackNameMessage,
+                        UIMessages.InvalidCharacterModpackNameTitle, MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) ==
+                    System.Windows.Forms.DialogResult.OK)
+                {
+                    ModPackName.Text = ModPackName.Text.Replace('/', '_');
+                    ModPackName.Text = ModPackName.Text.Replace('\\', '_');
+                }
+                else
+                {
+                    e.Cancel = true;
+                    return;
+                }
+            }
+
             VersionNumber = Version.Parse(verString);
 
             if (VersionNumber.ToString().Equals("0.0.0"))
@@ -126,6 +143,7 @@ namespace FFXIV_TexTools.Views
                     return;
                 }
             }
+
 
             var index = wizPages.IndexOf(modPackWizard.CurrentPage);
             if (index == wizPages.Count - 2)

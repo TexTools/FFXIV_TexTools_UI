@@ -604,6 +604,22 @@ namespace FFXIV_TexTools.Views
                 }
             }
 
+            if (ModPackName.Text.Contains('/') || ModPackName.Text.Contains('\\'))
+            {
+                if (FlexibleMessageBox.Show(new Wpf32Window(this),
+                        UIMessages.InvalidCharacterModpackNameMessage,
+                        UIMessages.InvalidCharacterModpackNameTitle, MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) ==
+                    System.Windows.Forms.DialogResult.OK)
+                {
+                    ModPackName.Text = ModPackName.Text.Replace('/', '_');
+                    ModPackName.Text = ModPackName.Text.Replace('\\', '_');               
+                }
+                else
+                {
+                    return;
+                }
+            }
+
             var verString = ModPackVersion.Text.Replace("_", "0");
 
             // Replace commas with periods for different culture formats such as FR

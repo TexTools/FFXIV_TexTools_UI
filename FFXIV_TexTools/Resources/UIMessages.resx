@@ -665,4 +665,10 @@ Please check for problems by selecting Help -&gt; Check For Problems.</value>
   <data name="StartOverErrorTitle" xml:space="preserve">
     <value>Error Starting Over</value>
   </data>
+  <data name="InvalidCharacterModpackNameMessage" xml:space="preserve">
+    <value>Name cannot contain / or \ characters. These characters will be replaced with an underscore.</value>
+  </data>
+  <data name="InvalidCharacterModpackNameTitle" xml:space="preserve">
+    <value>ModPack Name Contains Invalid Character</value>
+  </data>
 </root>

@@ -663,6 +663,24 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Name cannot contain / or \ characters. These characters will be replaced with an underscore..
+        /// </summary>
+        internal static string InvalidCharacterModpackNameMessage {
+            get {
+                return ResourceManager.GetString("InvalidCharacterModpackNameMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ModPack Name Contains Invalid Character.
+        /// </summary>
+        internal static string InvalidCharacterModpackNameTitle {
+            get {
+                return ResourceManager.GetString("InvalidCharacterModpackNameTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There was an error getting the Items List
         ///
         ///{0}.
