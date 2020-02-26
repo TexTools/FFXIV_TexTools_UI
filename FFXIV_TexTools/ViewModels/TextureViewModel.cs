@@ -916,7 +916,10 @@ namespace FFXIV_TexTools.ViewModels
         public async void UpdateImage()
         {
             if (!CheckMapIsOK())
+            {
+                OnLoadingComplete();
                 return;
+            }
             ImageDisplay = null;
             ChannelsEnabled = true;
 
