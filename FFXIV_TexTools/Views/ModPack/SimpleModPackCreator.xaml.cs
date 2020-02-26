@@ -604,17 +604,14 @@ namespace FFXIV_TexTools.Views
                 }
             }
 
-            if (ModPackName.Text.Contains('/') || ModPackName.Text.Contains('\\'))
+            char[] invalidChars = { '/', '\\', ':', '*', '?', '"', '<', '>', '|' };
+
+            if (ModPackName.Text.IndexOfAny(invalidChars) >= 0)
             {
                 if (FlexibleMessageBox.Show(new Wpf32Window(this),
                         UIMessages.InvalidCharacterModpackNameMessage,
                         UIMessages.InvalidCharacterModpackNameTitle, MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) ==
                     System.Windows.Forms.DialogResult.OK)
-                {
-                    ModPackName.Text = ModPackName.Text.Replace('/', '_');
-                    ModPackName.Text = ModPackName.Text.Replace('\\', '_');               
-                }
-                else
                 {
                     return;
                 }

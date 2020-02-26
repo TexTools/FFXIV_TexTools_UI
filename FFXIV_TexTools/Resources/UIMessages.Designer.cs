@@ -663,7 +663,7 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Name cannot contain / or \ characters. These characters will be replaced with an underscore..
+        ///   Looks up a localized string similar to Name cannot contain any of the following characters: \ / : * ? &quot; &lt; &gt;|.
         /// </summary>
         internal static string InvalidCharacterModpackNameMessage {
             get {
@@ -672,7 +672,7 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ModPack Name Contains Invalid Character.
+        ///   Looks up a localized string similar to ModPack Name Invalid.
         /// </summary>
         internal static string InvalidCharacterModpackNameTitle {
             get {
