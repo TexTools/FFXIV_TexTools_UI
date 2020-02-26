@@ -657,4 +657,12 @@ Selecting Yes will add a diffuse map, and selecting No will add a default map.</
 
 Would you like to overwrite the existing ModPack?</value>
   </data>
+  <data name="StartOverErrorMessage" xml:space="preserve">
+    <value>There was an error while starting over.
+
+Please check for problems by selecting Help -&gt; Check For Problems.</value>
+  </data>
+  <data name="StartOverErrorTitle" xml:space="preserve">
+    <value>Error Starting Over</value>
+  </data>
 </root>

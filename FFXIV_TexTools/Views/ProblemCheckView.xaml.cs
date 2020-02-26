@@ -16,6 +16,7 @@
 
 using FFXIV_TexTools.Helpers;
 using FFXIV_TexTools.Resources;
+using FFXIV_TexTools.Properties;
 using MahApps.Metro;
 using Newtonsoft.Json;
 using System;
@@ -265,8 +266,40 @@ namespace FFXIV_TexTools.Views
             var addTextLock = new object();
             var modListDirectory =
                 new DirectoryInfo(Path.Combine(_gameDirectory.Parent.Parent.FullName, XivStrings.ModlistFilePath));
+            var modList = new ModList();
 
-            var modList = JsonConvert.DeserializeObject<ModList>(File.ReadAllText(modListDirectory.FullName));
+            try
+            {
+                modList = JsonConvert.DeserializeObject<ModList>(File.ReadAllText(modListDirectory.FullName));
+            }
+            catch
+            {
+                FlexibleMessageBox.Show(
+                    $"{UIStrings.ProblemCheck_ErrorsFound}\n", "Corrupted ModList Detected",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                return Task.Run( async () =>
+                {
+                    var problemChecker = new ProblemChecker(_gameDirectory);
+                    var indexBackupsDirectory = new DirectoryInfo(Settings.Default.Backup_Directory);
+                    try
+                    {
+                        await problemChecker.PerformStartOver(indexBackupsDirectory);
+
+                        Dispatcher.Invoke(() => AddText("\t\u2714", "Green"));
+                        Dispatcher.Invoke(() => AddText("\tModList restored", "Green"));
+                    }
+                    catch
+                    {
+                        Dispatcher.Invoke(() => AddText("\t\u2716", "Red"));
+                        Dispatcher.Invoke(() => AddText($"\tModList Corrupted\n", "Red"));
+
+                        FlexibleMessageBox.Show("Unable to repair TexTools\n\n" +
+                            "Please manually update your index backups.", "Repair Failed",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                });                    
+            }
 
             var dat = new Dat(_gameDirectory);
 

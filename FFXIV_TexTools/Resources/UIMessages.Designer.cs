@@ -1287,6 +1287,26 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There was an error while starting over.
+        ///
+        ///Please check for problems by selecting Help -&gt; Check For Problems..
+        /// </summary>
+        internal static string StartOverErrorMessage {
+            get {
+                return ResourceManager.GetString("StartOverErrorMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error Starting Over.
+        /// </summary>
+        internal static string StartOverErrorTitle {
+            get {
+                return ResourceManager.GetString("StartOverErrorTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Starting over will:
         ///
         ///Restore index files to their original state.
