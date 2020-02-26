@@ -610,7 +610,7 @@ namespace FFXIV_TexTools.Views
             {
                 if (FlexibleMessageBox.Show(new Wpf32Window(this),
                         UIMessages.InvalidCharacterModpackNameMessage,
-                        UIMessages.InvalidCharacterModpackNameTitle, MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) ==
+                        UIMessages.InvalidCharacterModpackNameTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning) ==
                     System.Windows.Forms.DialogResult.OK)
                 {
                     return;
