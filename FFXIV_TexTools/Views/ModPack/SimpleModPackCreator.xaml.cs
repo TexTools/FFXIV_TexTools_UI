@@ -402,7 +402,7 @@ namespace FFXIV_TexTools.Views
                 {
                     if (modPath.Contains("demihuman"))
                     {
-                        type = slotAbr[modPath.Substring(modPath.LastIndexOf("_") - 3, 3)];
+                        type = slotAbr[modPath.Substring(modPath.LastIndexOf("/") + 16, 3)];
                     }
 
                     if (modPath.Contains("/face/"))
