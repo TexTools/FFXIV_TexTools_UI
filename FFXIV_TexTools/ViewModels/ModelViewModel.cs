@@ -1613,9 +1613,10 @@ namespace FFXIV_TexTools.ViewModels
 
                 ShowModelStatus(UIStrings.ModelStatus_UpdateSuccess);
             }
-            catch
+            catch (Exception ex)
             {
-                FlexibleMessageBox.Show(UIMessages.ViewportErrorMessage, UIMessages.ViewportErrorTitle,
+                FlexibleMessageBox.Show(
+                     string.Format(UIMessages.ViewportErrorMessage, ex.Message), UIMessages.ViewportErrorTitle,
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                 var modlist = new Modding(_gameDirectory);

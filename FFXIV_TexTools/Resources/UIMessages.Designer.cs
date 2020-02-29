@@ -1437,7 +1437,11 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to update the viewport. Any mod on the 3D model will be disabled....
+        ///   Looks up a localized string similar to Failed to update the viewport. 
+        ///
+        ///{0}.
+        ///
+        ///Any mod on the 3D model will be disabled..
         /// </summary>
         internal static string ViewportErrorMessage {
             get {

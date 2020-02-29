@@ -672,7 +672,11 @@ Please check for problems by selecting Help -&gt; Check For Problems.</value>
     <value>ModPack Name Invalid</value>
   </data>
   <data name="ViewportErrorMessage" xml:space="preserve">
-    <value>Failed to update the viewport. Any mod on the 3D model will be disabled...</value>
+    <value>Failed to update the viewport. 
+
+{0}.
+
+Any mod on the 3D model will be disabled.</value>
   </data>
   <data name="ViewportErrorTitle" xml:space="preserve">
     <value>Error Updating Viewport</value>
