@@ -342,6 +342,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Clone UV1 to UV2.
+        /// </summary>
+        public static string Clone_UV1_to_UV2 {
+            get {
+                return ResourceManager.GetString("Clone_UV1_to_UV2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Close.
         /// </summary>
         public static string Close {
@@ -738,6 +747,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Extra Import Settings.
+        /// </summary>
+        public static string Extra_Import_Settings {
+            get {
+                return ResourceManager.GetString("Extra_Import_Settings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to FFXIV Directory.
         /// </summary>
         public static string FFXIV_Directory {
@@ -774,7 +792,7 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Flip Alpha.
+        ///   Looks up a localized string similar to Flip Vertex Alpha.
         /// </summary>
         public static string Flip_Alpha {
             get {
@@ -788,6 +806,15 @@ namespace FFXIV_TexTools.Resources {
         public static string For_Translucency_or_ColorSet {
             get {
                 return ResourceManager.GetString("For_Translucency_or_ColorSet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Force UV1 to U1V-1.
+        /// </summary>
+        public static string Force_UV_Quadrant {
+            get {
+                return ResourceManager.GetString("Force_UV_Quadrant", resourceCulture);
             }
         }
         

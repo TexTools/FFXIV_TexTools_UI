@@ -274,5 +274,29 @@ namespace FFXIV_TexTools.Properties {
                 this["ModList_Filter"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ForceUV1Quadrant {
+            get {
+                return ((bool)(this["ForceUV1Quadrant"]));
+            }
+            set {
+                this["ForceUV1Quadrant"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool CloneUV1toUV2 {
+            get {
+                return ((bool)(this["CloneUV1toUV2"]));
+            }
+            set {
+                this["CloneUV1toUV2"] = value;
+            }
+        }
     }
 }

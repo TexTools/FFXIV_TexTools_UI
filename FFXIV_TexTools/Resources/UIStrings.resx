@@ -376,7 +376,7 @@
     <value>Filter By:</value>
   </data>
   <data name="Flip_Alpha" xml:space="preserve">
-    <value>Flip Alpha</value>
+    <value>Flip Vertex Alpha</value>
   </data>
   <data name="Hair_Color" xml:space="preserve">
     <value>Hair Color</value>
@@ -906,5 +906,14 @@ If you would like to enable this, first import a texture for the selected item.<
   </data>
   <data name="Date" xml:space="preserve">
     <value>Date</value>
+  </data>
+  <data name="Clone_UV1_to_UV2" xml:space="preserve">
+    <value>Clone UV1 to UV2</value>
+  </data>
+  <data name="Extra_Import_Settings" xml:space="preserve">
+    <value>Extra Import Settings</value>
+  </data>
+  <data name="Force_UV_Quadrant" xml:space="preserve">
+    <value>Force UV1 to U1V-1</value>
   </data>
 </root>

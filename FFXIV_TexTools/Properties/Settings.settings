@@ -65,5 +65,11 @@
     <Setting Name="ModList_Filter" Type="System.String" Scope="User">
       <Value Profile="(Default)">Item</Value>
     </Setting>
+    <Setting Name="ForceUV1Quadrant" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="CloneUV1toUV2" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

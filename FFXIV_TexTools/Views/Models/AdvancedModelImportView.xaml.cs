@@ -28,11 +28,13 @@ namespace FFXIV_TexTools.Views.Models
     {
         private AdvancedImportViewModel _viewModel;
         private bool _fromWizard;
+        private IItemModel _itemModel;
 
         public AdvancedModelImportView(XivMdl xivMdl,XivMdl modMdl, IItemModel itemModel, XivRace selectedRace, bool fromWizard)
         {
             InitializeComponent();
 
+            _itemModel = itemModel;
             _fromWizard = fromWizard;
             _viewModel = new AdvancedImportViewModel(xivMdl,modMdl, itemModel, selectedRace, this, fromWizard);
             this.DataContext = _viewModel;
@@ -70,6 +72,30 @@ namespace FFXIV_TexTools.Views.Models
             }
 
             Close();
+        }
+
+        /// <summary>
+        /// Event Handler for ForceUV1Quadrant Checkbox Click
+        /// </summary>
+        private void ForceUV1Quadrant_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            if (_itemModel.Category.Equals(FFXIV_TexTools.Resources.XivStrings.Gear))
+            {
+                Properties.Settings.Default.ForceUV1Quadrant = _viewModel.ForceUV1QuadrantChecked;
+                Properties.Settings.Default.Save();
+            }
+        }
+
+        /// <summary>
+        /// Event Handler for CloneUV1toUV2 Checkbox Click
+        /// </summary>
+        private void CloneUV1toUV2_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            if (_itemModel.ItemCategory.Equals(FFXIV_TexTools.Resources.XivStrings.Hair))
+            {
+                Properties.Settings.Default.CloneUV1toUV2 = _viewModel.CloneUV1toUV2Checked;
+                Properties.Settings.Default.Save();
+            }
         }
     }
 }

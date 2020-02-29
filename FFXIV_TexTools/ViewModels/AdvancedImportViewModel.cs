@@ -54,7 +54,7 @@ namespace FFXIV_TexTools.ViewModels
         private string _selectedMaterial, _selectedAttribute, _selectedMaterialUsed, _selectedPartAttribute, _selectedAvailablePartAttribute;
         private string _materialText, _attributeText, _partCountLabel, _partAttributesLabel, _daeLocationText;
         private int _selectedMeshNumber, _selectedMeshNumberIndex, _selectedPartNumber, _selectedPartNumberIndex, _selectedMaterialUsedIndex;
-        private bool _shapeDataCheckBoxEnabled, _disableShapeDataChecked, _fromWizard, _flipAlphaChecked, _importButtonEnabled;
+        private bool _shapeDataCheckBoxEnabled, _disableShapeDataChecked, _fromWizard, _flipAlphaChecked, _importButtonEnabled, _forceUV1QuadrantChecked, _cloneUV1toUV2Checked;
         private readonly string _textColor = "Black";
         private Dictionary<string, string> _attributeDictionary, _shapeDictionary;
         private Dictionary<string, int> _attributeMaskDictionary;
@@ -128,9 +128,19 @@ namespace FFXIV_TexTools.ViewModels
 
             MeshNumbers = meshNumberList;
 
-            if (_itemModel.Category.Equals("Character"))
+            if (_itemModel.Category.Equals(XivStrings.Character))
             {
                 FlipAlphaChecked = true;
+            }
+
+            if (_itemModel.Category.Equals(XivStrings.Gear) && Settings.Default.ForceUV1Quadrant)
+            {
+                ForceUV1QuadrantChecked = true;
+            }
+
+            if (_itemModel.ItemCategory.Equals(XivStrings.Hair) && Settings.Default.CloneUV1toUV2)
+            {
+                CloneUV1toUV2Checked = true;
             }
 
             if (!refresh)
@@ -746,6 +756,34 @@ namespace FFXIV_TexTools.ViewModels
             {
                 _importButtonEnabled = value;
                 NotifyPropertyChanged(nameof(ImportButtonEnabled));
+            }
+        }
+
+        public bool ForceUV1QuadrantChecked
+        {
+            get => _forceUV1QuadrantChecked;
+            set
+            {
+                _forceUV1QuadrantChecked = value;
+                foreach (var importDictionaryValue in _importDictionary.Values)
+                {
+                    importDictionaryValue.ForceUV1Quadrant = value;
+                }
+                NotifyPropertyChanged(nameof(ForceUV1QuadrantChecked));
+            }
+        }
+
+        public bool CloneUV1toUV2Checked
+        {
+            get => _cloneUV1toUV2Checked;
+            set
+            {
+                _cloneUV1toUV2Checked = value;
+                foreach (var importDictionaryValue in _importDictionary.Values)
+                {
+                    importDictionaryValue.CloneUV1toUV2 = value;
+                }
+                NotifyPropertyChanged(nameof(CloneUV1toUV2Checked));
             }
         }
 
