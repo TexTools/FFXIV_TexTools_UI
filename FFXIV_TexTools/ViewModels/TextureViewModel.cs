@@ -1035,6 +1035,15 @@ namespace FFXIV_TexTools.ViewModels
             BMPImportEnabled = BMPFileExists();
             MoreOptionsEnabled = true;
 
+            if (_item.ItemCategory.Equals(XivStrings.Hair) || _item.ItemCategory.Equals(XivStrings.Equipment_Decals) || _item.ItemCategory.Equals(XivStrings.Face_Paint))
+            {
+                AddNewTexturePartEnabled = false;
+            }
+            else
+            {
+                AddNewTexturePartEnabled = true;
+            }
+
             if (_xivMtrl != null)
             {
                 TranslucencyEnabled = true;
@@ -1674,7 +1683,7 @@ namespace FFXIV_TexTools.ViewModels
                         UIMessages.AddNewTexturePartErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
-                if (_item.ItemCategory == XivStrings.Face_Paint || _item.ItemCategory == XivStrings.Equipment_Decals)
+                if (_item.ItemCategory == XivStrings.Face_Paint || _item.ItemCategory == XivStrings.Equipment_Decals || _item.ItemCategory == XivStrings.Hair)
                 {
                     FlexibleMessageBox.Show(UIMessages.AddNewTexturePartErrorMessageWrongItemCategoryOfItem,
                         UIMessages.AddNewTexturePartErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
