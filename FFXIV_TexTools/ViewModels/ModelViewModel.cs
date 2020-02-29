@@ -1613,6 +1613,18 @@ namespace FFXIV_TexTools.ViewModels
 
                 ShowModelStatus(UIStrings.ModelStatus_UpdateSuccess);
             }
+            catch
+            {
+                FlexibleMessageBox.Show(UIMessages.ViewportErrorMessage, UIMessages.ViewportErrorTitle,
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                var modlist = new Modding(_gameDirectory);
+
+                await modlist.ToggleModStatus(PathString, false);
+                GetMeshes();
+
+                return;
+            }
             finally
             {
                 OnLoadingComplete();

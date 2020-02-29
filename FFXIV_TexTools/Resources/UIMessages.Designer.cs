@@ -1435,5 +1435,23 @@ namespace FFXIV_TexTools.Resources {
                 return ResourceManager.GetString("TTMPGettingData", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to update the viewport. Any mod on the 3D model will be disabled....
+        /// </summary>
+        internal static string ViewportErrorMessage {
+            get {
+                return ResourceManager.GetString("ViewportErrorMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error Updating Viewport.
+        /// </summary>
+        internal static string ViewportErrorTitle {
+            get {
+                return ResourceManager.GetString("ViewportErrorTitle", resourceCulture);
+            }
+        }
     }
 }
