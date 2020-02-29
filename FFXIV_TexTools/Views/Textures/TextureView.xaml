@@ -109,6 +109,7 @@
                 </Grid>
                 <Label x:Name="TexTypeLabel" Content="{Binding TextureFormat}" Background="#66FFFFFF" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold"/>
                 <Label x:Name="TexDimensionLabel" Content="{Binding TextureDimensions}" Background="#66FFFFFF" HorizontalAlignment="Left" VerticalAlignment="Bottom" FontWeight="Bold"/>
+                <Label x:Name="MipMapLabel" Content="{Binding MipMapInfo}" Background="#66FFFFFF" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold" Margin="0,26,0,0"/>
             </Grid>
         </Border>
 

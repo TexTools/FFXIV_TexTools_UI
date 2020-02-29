@@ -82,7 +82,7 @@ namespace FFXIV_TexTools.ViewModels
         private Visibility _typePartVisibility, _typeVisibility, _partVisibility;
         private IItemModel _item;
 
-        private string _pathString, _textureFormat, _textureDimensions, _category;
+        private string _pathString, _textureFormat, _textureDimensions, _category, _mipMapInfo;
         private string _partWatermark = XivStrings.Part, _typeWatermark = XivStrings.Type, _raceWatermark = XivStrings.Race,
             _typePartWatermark = XivStrings.TypePart, _textureMapWatermark = XivStrings.Texture_Map;
         private string _modToggleText = UIStrings.Enable_Disable;
@@ -949,6 +949,7 @@ namespace FFXIV_TexTools.ViewModels
                 PathString = texData.TextureTypeAndPath.Path;
                 TextureFormat = texData.TextureFormat.GetTexDisplayName();
                 TextureDimensions = $"{texData.Height} x {texData.Width}";
+                MipMapInfo = texData.MipMapCount != 0 ? $"Yes ({texData.MipMapCount})" : "No";
             }
             else
             {
@@ -1138,6 +1139,19 @@ namespace FFXIV_TexTools.ViewModels
             {
                 _textureDimensions = value;
                 NotifyPropertyChanged(nameof(TextureDimensions));
+            }
+        }
+
+        /// <summary>
+        /// The string for the current textures mipmaps
+        /// </summary>
+        public string MipMapInfo
+        {
+            get => _mipMapInfo;
+            set
+            {
+                _mipMapInfo = "MipMaps: " + value;
+                NotifyPropertyChanged(nameof(MipMapInfo));
             }
         }
 
