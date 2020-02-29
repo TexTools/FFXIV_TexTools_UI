@@ -705,7 +705,7 @@ namespace FFXIV_TexTools
 
             var searchTerms = ItemSearchTextBox.Text.Split(' ');
 
-            return searchTerms.All(term => ((Category)item).Name.ToLower().Contains(term.Trim()));
+            return searchTerms.All(term => ((Category)item).Name.ToLower().Contains(term.Trim().ToLower()));
         }
 
         private void ItemSearchTextBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
