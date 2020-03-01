@@ -1035,14 +1035,22 @@ namespace FFXIV_TexTools.ViewModels
             BMPImportEnabled = BMPFileExists();
             MoreOptionsEnabled = true;
 
-            if (_item.ItemCategory.Equals(XivStrings.Hair) || _item.ItemCategory.Equals(XivStrings.Equipment_Decals) || _item.ItemCategory.Equals(XivStrings.Face_Paint))
+            if (_item != null)
             {
-                AddNewTexturePartEnabled = false;
+                if (_item.ItemCategory.Equals(XivStrings.Hair) || _item.ItemCategory.Equals(XivStrings.Equipment_Decals) || _item.ItemCategory.Equals(XivStrings.Face_Paint))
+                {
+                    AddNewTexturePartEnabled = false;
+                }
+                else
+                {
+                    AddNewTexturePartEnabled = true;
+                }
             }
             else
             {
-                AddNewTexturePartEnabled = true;
+                AddNewTexturePartEnabled = false;
             }
+
 
             if (_xivMtrl != null)
             {
