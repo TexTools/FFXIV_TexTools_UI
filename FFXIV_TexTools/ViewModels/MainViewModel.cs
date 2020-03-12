@@ -599,6 +599,13 @@ namespace FFXIV_TexTools.ViewModels
                 petCategory.Categories.Add(new Category { Name = xivPet.Name, Item = xivPet });
             }
 
+            var ornamentCategory = new Category { Name = "Ornaments", Categories = new ObservableCollection<Category>() };
+            Categories[2].Categories.Add(ornamentCategory);
+            foreach (var xivOrnament in companionList.OrnamentList)
+            {
+                ornamentCategory.Categories.Add(new Category { Name = xivOrnament.Name, Item = xivOrnament });
+            }
+
             // UI List
             progress.Report((60, "UI"));
             var uiList = await itemList.GetUIList();
