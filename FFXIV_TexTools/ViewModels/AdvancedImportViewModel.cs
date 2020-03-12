@@ -25,6 +25,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Documents;
@@ -160,21 +161,36 @@ namespace FFXIV_TexTools.ViewModels
             }
 
             var extraBoneCountString = "";
+            var extraBoneCount = 0;
             if (_colladaBoneList != null)
             {
                 if (_colladaBoneList.Count > BoneList.Count)
                 {
-                    var extraBoneCount = _colladaBoneList.Count - BoneList.Count;
-                    extraBoneCountString = $"+ { extraBoneCount}";
+                    extraBoneCount = _colladaBoneList.Count - BoneList.Count;                    
                 }
 
                 foreach (var bone in _colladaBoneList)
                 {
                     if (!BoneList.Contains(bone))
                     {
-                        BoneList.Add($"+ {bone}");
-                        extraBoneList.Add(bone);
+                        // Filter out any numbers in the bone names when there's duplicate skeletons
+                        var boneName = Regex.Replace(bone, "[0-9]+$", string.Empty);
+                        // If it's not an extra bone after all, subtract one from the extra bone count
+                        if(!BoneList.Contains(boneName))
+                        {
+                            BoneList.Add($"+ {bone}");
+                            extraBoneList.Add(bone);
+                        }
+                        else
+                        {
+                            extraBoneCount -= 1;
+                        }                        
                     }
+                }
+                // If there are still extra bones after checking possible duplicates set the extra bone count string
+                if (extraBoneCount > 0)
+                {
+                    extraBoneCountString = $"+ { extraBoneCount}";
                 }
             }
 
