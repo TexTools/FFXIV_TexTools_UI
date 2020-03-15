@@ -12,6 +12,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using System.Windows.Input;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Helpers;
@@ -188,7 +189,7 @@ namespace FFXIV_TexTools.ViewModels
             var newModPackPath = GetNewModPackPath();
             if (newModPackPath == null)
                 return;
-            await this.ShowProgress();
+            await ShowProgress();
             var modDataList = await GetModData(TTMPPath,TTMPData.ModPackJson);
             var gear = new Gear(new DirectoryInfo(Settings.Default.FFXIV_Directory), GetLanguage());
 
@@ -212,7 +213,19 @@ namespace FFXIV_TexTools.ViewModels
                 var fromMdlRace = fromInfo.Race;
 
                 var targetId = $"{fromId[0]}{targetItemModel.ModelInfo.ModelID.ToString().PadLeft(4, '0')}";
-                var targetMdlRace = GetTargetRace(fromMdlRace, raceListForMdl);
+                var targetMdlRace = "";
+                try
+                {
+                    targetMdlRace = GetTargetRace(fromMdlRace, raceListForMdl);
+                }
+                catch (Exception e)
+                {
+                    FlexibleMessageBox.Show( e.Message, "Incompatible Target Item",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    await CloseProgress();
+                    return;
+                }
+                
                 var targetVersion = $"v{targetItemModel.ModelInfo.Variant.ToString().PadLeft(4,'0')}";
 
                 var sameModelList = ItemList.Where(
@@ -296,8 +309,8 @@ namespace FFXIV_TexTools.ViewModels
                 }
             }
             await CreateNewTTMP(newModPackPath,modDataList, TTMPData.ModPackJson);
-            await this.CloseProgress();
-            this.Close();
+            await CloseProgress();
+            Close();
         }
 
         (string Id,string Race) GetModelInfo(string fullPath)
@@ -327,8 +340,8 @@ namespace FFXIV_TexTools.ViewModels
             if (!targetRaceList.Exists(it => it.GetRaceCode() == fromRace.Substring(1, 4)))
             {
                 var sex = int.Parse(fromRace.Substring(1, 2));
-                if (sex > 14)
-                    throw new Exception("race sex error");
+                if (sex > 18)
+                    throw new Exception("An error occurred while trying to determine the target race.");
                 if (sex % 2 == 0)
                     sex = sex - 1;
                 else
@@ -336,7 +349,8 @@ namespace FFXIV_TexTools.ViewModels
                 race = $"{fromRace[0]}{sex.ToString().PadLeft(2,'0')}{fromRace.Substring(3,2)}";
                 if (!targetRaceList.Exists(it => it.GetRaceCode() == race.Substring(1, 4)))
                 {
-                    throw new Exception("not found race");
+                    throw new Exception("The item you're trying to convert to does not have the necessary race specific textures/model.\n\n" +
+                        "Please try a different item.");
                 }
             }
             return race;
@@ -821,11 +835,8 @@ namespace FFXIV_TexTools.ViewModels
                             newMdlData.OldTextureList.Add(oldPath);
                             var newPath = oldPath.Replace(oldIdStr, idStr).Replace(oldRaceStr, raceStr);
                             newMdlData.NewTextureList.Add(newPath);
-                            if (list.Count(it => it.FullPath.Contains(oldPath.TrimEnd('\0'))) > 0 || list.Count(it => it.FullPath.Contains(newPath.TrimEnd('\0'))) > 0)
-                            {
-                                var newPathData = Encoding.UTF8.GetBytes(newPath);
-                                bw.Write(newPathData);
-                            }
+                            var newPathData = Encoding.UTF8.GetBytes(newPath);
+                            bw.Write(newPathData);
                         }
                     }
                 }
