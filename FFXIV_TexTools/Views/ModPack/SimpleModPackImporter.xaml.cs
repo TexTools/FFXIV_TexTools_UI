@@ -99,6 +99,8 @@ namespace FFXIV_TexTools.Views
             ModListView.IsEnabled = false;
             LockedStatusLabel.Foreground = Brushes.Black;
             LockedStatusLabel.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Left;
+            LockedStatusLabel.Content = UIStrings.Loading;
+
             var progress = new Progress<(int count, int total)>(prog =>
             {
                 LockedStatusLabel.Content = $"{UIStrings.Loading} ({prog.count}, {prog.total})";
@@ -112,7 +114,7 @@ namespace FFXIV_TexTools.Views
 
             if (modPackJson != null)
             {
-                await ImportSimpleModPack(modPackJson, progress);
+                await ImportSimpleModPack(modPackJson);
             }
             else
             {
@@ -150,96 +152,13 @@ namespace FFXIV_TexTools.Views
         /// Imports a simple mod pack
         /// </summary>
         /// <param name="modPackJson">The mod pack json</param>
-        private async Task ImportSimpleModPack(ModPackJson modPackJson, IProgress<(int count, int total)> progress)
+        private async Task ImportSimpleModPack(ModPackJson modPackJson)
         {
             var modding = new Modding(_gameDirectory);
 
-            await Task.Run(async () =>
-            {
-                var modNum = 0;
+            var tasks = modPackJson.SimpleModsList.Select(modsJson => AddToList(modsJson, modding, modPackJson));
 
-                foreach (var modsJson in modPackJson.SimpleModsList)
-                {
-                    progress.Report((++modNum, modPackJson.SimpleModsList.Count));
-
-                    var raceTask = GetRace(modsJson.FullPath);
-
-                    var numberTask = GetNumber(modsJson.FullPath);
-
-                    var typeTask = GetType(modsJson.FullPath);
-
-                    var partTask = GetPart(modsJson.FullPath);
-
-                    var mapTask = GetMap(modsJson.FullPath);
-
-                    var active = false;
-                    var isActiveTask = modding.IsModEnabled(modsJson.FullPath, false);
-
-                    var taskList = new List<Task> {raceTask, numberTask, typeTask, partTask, mapTask, isActiveTask};
-
-                    var race = XivRace.All_Races;
-                    string number = string.Empty, type = string.Empty, part = string.Empty, map = string.Empty;
-                    var isActive = XivModStatus.Disabled;
-
-                    while (taskList.Any())
-                    {
-                        var finished = await Task.WhenAny(taskList);
-
-                        if (finished == raceTask)
-                        {
-                            taskList.Remove(raceTask);
-                            race = await raceTask;
-                        }
-                        else if (finished == numberTask)
-                        {
-                            taskList.Remove(numberTask);
-                            number = await numberTask;
-                        }
-                        else if (finished == typeTask)
-                        {
-                            taskList.Remove(typeTask);
-                            type = await typeTask;
-                        }
-                        else if (finished == partTask)
-                        {
-                            taskList.Remove(partTask);
-                            part = await partTask;
-                        }
-                        else if (finished == mapTask)
-                        {
-                            taskList.Remove(mapTask);
-                            map = await mapTask;
-                        }
-                        else if (finished == isActiveTask)
-                        {
-                            taskList.Remove(isActiveTask);
-                            isActive = await isActiveTask;
-                        }
-                    }
-
-                    if (isActive == XivModStatus.Enabled || isActive == XivModStatus.MatAdd)
-                    {
-                        active = true;
-                    }
-
-                    modsJson.ModPackEntry = new ModPack
-                        {name = modPackJson.Name, author = modPackJson.Author, version = modPackJson.Version};
-
-                    System.Windows.Application.Current.Dispatcher.Invoke(() =>
-                        _simpleDataList.Add(new SimpleModPackEntries
-                        {
-                            Name = modsJson.Name,
-                            Category = modsJson.Category,
-                            Race = race.ToString(),
-                            Type = type,
-                            Part = part,
-                            Num = number,
-                            Map = map,
-                            Active = active,
-                            JsonEntry = modsJson,
-                        }));
-                }
-            });
+            await Task.WhenAll(tasks);            
 
             ModPackName.Content = modPackJson.Name;
             ModPackAuthor.Content = modPackJson.Author;
@@ -250,6 +169,92 @@ namespace FFXIV_TexTools.Views
             cv.SortDescriptions.Add(new SortDescription(nameof(SimpleModPackEntries.Name), _lastDirection));
 
             ModListView.SelectAll();
+        }
+
+        /// <summary>
+        /// Adds the given mod entry to the simple mod pack data list
+        /// </summary>
+        /// <param name="modsJson">The JSON describing the mod to be added to the list</param>
+        /// <param name="modding"></param>
+        /// <param name="modPackJson">The JSON describing the entire modpack</param>
+        /// <returns>Task</returns>
+        private async Task AddToList(ModsJson modsJson, Modding modding, ModPackJson modPackJson)
+        {
+            var raceTask = GetRace(modsJson.FullPath);
+
+            var numberTask = GetNumber(modsJson.FullPath);
+
+            var typeTask = GetType(modsJson.FullPath);
+
+            var partTask = GetPart(modsJson.FullPath);
+
+            var mapTask = GetMap(modsJson.FullPath);
+
+            var active = false;
+            var isActiveTask = modding.IsModEnabled(modsJson.FullPath, false);
+
+            var taskList = new List<Task> { raceTask, numberTask, typeTask, partTask, mapTask, isActiveTask };
+
+            var race = XivRace.All_Races;
+            string number = string.Empty, type = string.Empty, part = string.Empty, map = string.Empty;
+            var isActive = XivModStatus.Disabled;
+
+            while (taskList.Any())
+            {
+                var finished = await Task.WhenAny(taskList);
+
+                if (finished == raceTask)
+                {
+                    taskList.Remove(raceTask);
+                    race = await raceTask;
+                }
+                else if (finished == numberTask)
+                {
+                    taskList.Remove(numberTask);
+                    number = await numberTask;
+                }
+                else if (finished == typeTask)
+                {
+                    taskList.Remove(typeTask);
+                    type = await typeTask;
+                }
+                else if (finished == partTask)
+                {
+                    taskList.Remove(partTask);
+                    part = await partTask;
+                }
+                else if (finished == mapTask)
+                {
+                    taskList.Remove(mapTask);
+                    map = await mapTask;
+                }
+                else if (finished == isActiveTask)
+                {
+                    taskList.Remove(isActiveTask);
+                    isActive = await isActiveTask;
+                }
+            }
+
+            if (isActive == XivModStatus.Enabled || isActive == XivModStatus.MatAdd)
+            {
+                active = true;
+            }
+
+            modsJson.ModPackEntry = new ModPack
+            { name = modPackJson.Name, author = modPackJson.Author, version = modPackJson.Version };
+
+            System.Windows.Application.Current.Dispatcher.Invoke(() => _simpleDataList.Add(new SimpleModPackEntries
+            {
+                Name = modsJson.Name,
+                Category = modsJson.Category,
+                Race = race.ToString(),
+                Type = type,
+                Part = part,
+                Num = number,
+                Map = map,
+                Active = active,
+                JsonEntry = modsJson,
+            }));            
         }
 
 
@@ -324,7 +329,7 @@ namespace FFXIV_TexTools.Views
                         }
                     }
 
-                    if (isActive == XivModStatus.Enabled)
+                    if (isActive == XivModStatus.Enabled || isActive == XivModStatus.MatAdd)
                     {
                         active = true;
                     }

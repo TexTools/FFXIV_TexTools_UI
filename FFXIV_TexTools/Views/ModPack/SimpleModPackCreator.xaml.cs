@@ -95,12 +95,10 @@ namespace FFXIV_TexTools.Views
         private async void Initialize()
         {
             ModListView.IsEnabled = false;
-            var progress = new Progress<(int current, int total)>((prog) =>
-                {
-                    ModSizeLabel.Content = $"0 |  {UIStrings.Loading} ({prog.current} / {prog.total})";
-                });
 
-            await MakeSimpleDataList(progress);
+            ModSizeLabel.Content = UIStrings.Loading;
+
+            await MakeSimpleDataList();
 
             // Resize columns to fit content
             foreach (var column in GridViewCol.Columns)
@@ -167,103 +165,101 @@ namespace FFXIV_TexTools.Views
         /// <summary>
         /// Creates the simple mod pack data list
         /// </summary>
-        /// <param name="progress">loading progress</param>
         /// <returns>Task</returns>
-        private Task MakeSimpleDataList(IProgress<(int current, int total)> progress)
+        private async Task MakeSimpleDataList()
         {
-            var simpleListLock = new object();
-            var progressLock = new object();
             var modListDirectory = new DirectoryInfo(Path.Combine(_gameDirectory.Parent.Parent.FullName, XivStrings.ModlistFilePath));
             var modding = new Modding(_gameDirectory);
 
             var modList = JsonConvert.DeserializeObject<ModList>(File.ReadAllText(modListDirectory.FullName));
-            var modNum = 0;
 
-            return Task.Run(async () =>
+            var tasks = modList.Mods.Select(mod => AddToList(mod, modding));
+
+            await Task.WhenAll(tasks);
+        }
+
+        /// <summary>
+        /// Adds the given mod entry to the simple mod pack data list
+        /// </summary>
+        /// <param name="mod">The mod to be added to the list</param>
+        /// <param name="modding"></param>
+        /// <returns>Task</returns>
+        private async Task AddToList(Mod mod, Modding modding)
+        {
+            if (mod.fullPath.Equals(string.Empty)) return;
+
+            var raceTask = GetRace(mod.fullPath);
+
+            var numberTask = GetNumber(mod.fullPath);
+
+            var typeTask = GetType(mod.fullPath);
+
+            var partTask = GetPart(mod.fullPath);
+
+            var mapTask = GetMap(mod.fullPath);
+
+            var active = false;
+            var isActiveTask = modding.IsModEnabled(mod.fullPath, false);
+
+            var taskList = new List<Task> { raceTask, numberTask, typeTask, partTask, mapTask, isActiveTask };
+
+            var race = XivRace.All_Races;
+            string number = string.Empty, type = string.Empty, part = string.Empty, map = string.Empty;
+            var isActive = XivModStatus.Disabled;
+
+            while (taskList.Any())
             {
-                foreach (var mod in modList.Mods)
+                var finished = await Task.WhenAny(taskList);
+
+                if (finished == raceTask)
                 {
-                    lock (progressLock)
-                    {
-                        progress.Report((++modNum, modList.Mods.Count));
-                    }
-
-                    if (mod.fullPath.Equals(string.Empty)) continue;
-
-                    var raceTask = GetRace(mod.fullPath);
-
-                    var numberTask = GetNumber(mod.fullPath);
-
-                    var typeTask = GetType(mod.fullPath);
-
-                    var partTask = GetPart(mod.fullPath);
-
-                    var mapTask = GetMap(mod.fullPath);
-
-                    var active = false;
-                    var isActiveTask = modding.IsModEnabled(mod.fullPath, false);
-
-                    var taskList = new List<Task> { raceTask, numberTask, typeTask, partTask, mapTask, isActiveTask };
-
-                    var race = XivRace.All_Races;
-                    string number = string.Empty, type = string.Empty, part = string.Empty, map = string.Empty;
-                    var isActive = XivModStatus.Disabled;
-
-                    while (taskList.Any())
-                    {
-                        var finished = await Task.WhenAny(taskList);
-
-                        if (finished == raceTask)
-                        {
-                            taskList.Remove(raceTask);
-                            race = await raceTask;
-                        }
-                        else if (finished == numberTask)
-                        {
-                            taskList.Remove(numberTask);
-                            number = await numberTask;
-                        }
-                        else if (finished == typeTask)
-                        {
-                            taskList.Remove(typeTask);
-                            type = await typeTask;
-                        }
-                        else if (finished == partTask)
-                        {
-                            taskList.Remove(partTask);
-                            part = await partTask;
-                        }
-                        else if (finished == mapTask)
-                        {
-                            taskList.Remove(mapTask);
-                            map = await mapTask;
-                        }
-                        else if (finished == isActiveTask)
-                        {
-                            taskList.Remove(isActiveTask);
-                            isActive = await isActiveTask;
-                        }
-                    }
-
-                    if (isActive == XivModStatus.Enabled || isActive == XivModStatus.MatAdd)
-                    {
-                        active = true;
-                    }
-
-                    System.Windows.Application.Current.Dispatcher.Invoke(() => _simpleDataList.Add(new SimpleModPackEntries
-                    {
-                        Name = mod.name,
-                        Category = mod.category,
-                        Race = race.GetDisplayName(),
-                        Type = type,
-                        Part = part,
-                        Num = number,
-                        Map = map,
-                        Active = active,
-                        ModEntry = mod,
-                    }));
+                    taskList.Remove(raceTask);
+                    race = await raceTask;
                 }
-            });
+                else if (finished == numberTask)
+                {
+                    taskList.Remove(numberTask);
+                    number = await numberTask;
+                }
+                else if (finished == typeTask)
+                {
+                    taskList.Remove(typeTask);
+                    type = await typeTask;
+                }
+                else if (finished == partTask)
+                {
+                    taskList.Remove(partTask);
+                    part = await partTask;
+                }
+                else if (finished == mapTask)
+                {
+                    taskList.Remove(mapTask);
+                    map = await mapTask;
+                }
+                else if (finished == isActiveTask)
+                {
+                    taskList.Remove(isActiveTask);
+                    isActive = await isActiveTask;
+                }
+            }
+
+            if (isActive == XivModStatus.Enabled || isActive == XivModStatus.MatAdd)
+            {
+                active = true;
+            }
+
+            System.Windows.Application.Current.Dispatcher.Invoke(() => _simpleDataList.Add(new SimpleModPackEntries
+            {
+                Name = mod.name,
+                Category = mod.category,
+                Race = race.GetDisplayName(),
+                Type = type,
+                Part = part,
+                Num = number,
+                Map = map,
+                Active = active,
+                ModEntry = mod,
+            }));
         }
 
         /// <summary>
