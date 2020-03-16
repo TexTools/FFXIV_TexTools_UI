@@ -92,7 +92,7 @@
         </Grid>
         <Grid Grid.Row="2" Margin="4">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="40"></ColumnDefinition>
+                <ColumnDefinition Width="45"></ColumnDefinition>
                 <ColumnDefinition></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <Label Content="{Binding Source={x:Static resx:UIStrings.Search}}" Grid.Column="0"/>
