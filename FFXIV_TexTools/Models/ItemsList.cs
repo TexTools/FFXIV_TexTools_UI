@@ -62,7 +62,10 @@ namespace FFXIV_TexTools.Models
         public async Task<(List<XivMinion> MinionList, List<XivMount> MountList, List<XivPet> PetList, List<XivMount> OrnamentList)> GetCompanionList()
         {
             var companions = new Companions(_gameDirectory, GetLanguage());
-
+            if (GetLanguage() == XivLanguage.Chinese)
+            {
+                return (await companions.GetMinionList(), await companions.GetMountList(), await companions.GetPetList(),new List<XivMount>());
+            }
             return (await companions.GetMinionList(), await companions.GetMountList(), await companions.GetPetList(), await companions.GetOrnamentList());
         }
 
