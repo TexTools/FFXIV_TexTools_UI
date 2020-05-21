@@ -24,6 +24,7 @@ using MahApps.Metro;
 using MahApps.Metro.Controls.Dialogs;
 using SixLabors.ImageSharp;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -56,6 +57,7 @@ namespace FFXIV_TexTools
 
         public MainWindow(string[] args)
         {
+            CheckForSettingsUpdate();
             LanguageSelection();
 
             var ci = new CultureInfo(Properties.Settings.Default.Application_Language)
@@ -69,15 +71,8 @@ namespace FFXIV_TexTools
             CultureInfo.CurrentUICulture = ci;
 
             CheckForUpdates();
-            CheckForSettingsUpdate();
 
             var fileVersion = FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location).FileVersion;
-
-            if (args != null && args.Length > 0)
-            {
-                _startupArgs = args[0];
-                OnlyImport();
-            }
 
             try
             {
@@ -96,28 +91,36 @@ namespace FFXIV_TexTools
                 return;
             }
 
-            ItemSearchTextBox.Focus();
-            var mainViewModel = new MainViewModel(this);
-            this.DataContext = mainViewModel;
-
-            if (searchTimer == null)
+            if (args != null && args.Length > 0)
             {
-                searchTimer = new SysTimer.Timer(300);
+                _startupArgs = args[0];
+                OnlyImport();
             }
+            else
+            {
+                ItemSearchTextBox.Focus();
+                var mainViewModel = new MainViewModel(this);
+                this.DataContext = mainViewModel;
 
-            searchTimer.Enabled = true;
-            searchTimer.AutoReset = false;
-            searchTimer.Elapsed += SearchTimerOnElapsed;
+                if (searchTimer == null)
+                {
+                    searchTimer = new SysTimer.Timer(300);
+                }
 
-            var textureView = TextureTabItem.Content as TextureView;
-            var textureViewModel = textureView.DataContext as TextureViewModel;
+                searchTimer.Enabled = true;
+                searchTimer.AutoReset = false;
+                searchTimer.Elapsed += SearchTimerOnElapsed;
 
-            textureViewModel.LoadingComplete += TextureViewModelOnLoadingComplete;
+                var textureView = TextureTabItem.Content as TextureView;
+                var textureViewModel = textureView.DataContext as TextureViewModel;
 
-            var modelView = ModelTabItem.Content as ModelView;
-            var modelViewModel = modelView.DataContext as ModelViewModel;
+                textureViewModel.LoadingComplete += TextureViewModelOnLoadingComplete;
 
-            modelViewModel.LoadingComplete += ModelViewModelOnLoadingComplete;
+                var modelView = ModelTabItem.Content as ModelView;
+                var modelViewModel = modelView.DataContext as ModelViewModel;
+
+                modelViewModel.LoadingComplete += ModelViewModelOnLoadingComplete;
+            }
         }
 
         private void LanguageSelection()
@@ -183,6 +186,10 @@ namespace FFXIV_TexTools
                 Settings.Default.Upgrade();
                 Settings.Default.UpgradeRequired = false;
                 Settings.Default.Save();
+                
+                // Set theme according to settings now that the settings have been upgraded to the new version
+                var appStyle = ThemeManager.DetectAppStyle(Application.Current);
+                ThemeManager.ChangeAppStyle(Application.Current, ThemeManager.GetAccent(appStyle.Item2.Name), ThemeManager.GetAppTheme(Settings.Default.Application_Theme));
             }
         }
 
@@ -366,7 +373,12 @@ namespace FFXIV_TexTools
         /// </summary>
         private void Menu_ModList_Click(object sender, RoutedEventArgs e)
         {
-            var modListView = new ModListView {Owner = this};
+            var textureView = TextureTabItem.Content as TextureView;
+            var textureViewModel = textureView.DataContext as TextureViewModel;
+            var modelView = ModelTabItem.Content as ModelView;
+            var modelViewModel = modelView.DataContext as ModelViewModel;
+
+            var modListView = new ModListView(textureViewModel, modelViewModel) {Owner = this};
             modListView.Show();
         }
 
@@ -453,7 +465,19 @@ namespace FFXIV_TexTools
         private async Task<int> ImportModpack(DirectoryInfo path, DirectoryInfo modPackDirectory, bool silent = false, bool messageInImport = false)
         {
             var importError = false;
-            
+            TextureView textureView = null;
+            TextureViewModel textureViewModel = null;
+            ModelView modelView = null;
+            ModelViewModel modelViewModel = null;
+
+            if(TextureTabItem != null && ModelTabItem != null)
+            {
+                textureView = TextureTabItem.Content as TextureView;
+                textureViewModel = textureView.DataContext as TextureViewModel;
+                modelView = ModelTabItem.Content as ModelView;
+                modelViewModel = modelView.DataContext as ModelViewModel;
+            }
+
             try
             {
                 var ttmp = new TTMP(modPackDirectory, XivStrings.TexTools);
@@ -475,7 +499,7 @@ namespace FFXIV_TexTools
                     try
                     {
                         var importWizard = new ImportModPackWizard(ttmpData.ModPackJson, ttmpData.ImageDictionary,
-                            path, messageInImport);
+                            path, textureViewModel, modelViewModel, messageInImport);
 
                         if (messageInImport)
                         {
@@ -503,7 +527,7 @@ namespace FFXIV_TexTools
                     try
                     {
                         var simpleImport = new SimpleModPackImporter(path,
-                            ttmpData.ModPackJson, silent, messageInImport);
+                            ttmpData.ModPackJson, textureViewModel, modelViewModel, silent, messageInImport);
 
                         if (messageInImport)
                         {
@@ -531,7 +555,7 @@ namespace FFXIV_TexTools
             {
                 if (!importError)
                 {
-                    var simpleImport = new SimpleModPackImporter(path, null, silent, messageInImport);
+                    var simpleImport = new SimpleModPackImporter(path, null, textureViewModel, modelViewModel, silent, messageInImport);
 
                     if (messageInImport)
                     {
@@ -581,7 +605,6 @@ namespace FFXIV_TexTools
             var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
 
             var index = new Index(gameDirectory);
-            var outdated = false;
 
             if (index.IsIndexLocked(XivDataFile._0A_Exd))
             {
@@ -603,85 +626,30 @@ namespace FFXIV_TexTools
                     return;
                 }
 
-                var filesToCheck = new XivDataFile[] { XivDataFile._01_Bgcommon, XivDataFile._04_Chara, XivDataFile._06_Ui };
-
                 var problemChecker = new ProblemChecker(gameDirectory);
 
-                foreach (var xivDataFile in filesToCheck)
+                var progressController = await this.ShowProgressAsync(UIStrings.Start_Over, UIMessages.PleaseStandByMessage);
+
+                progressController.SetIndeterminate();
+
+                IProgress<string> progress = new Progress<string>((update) =>
                 {
-                    var backupFile = new DirectoryInfo($"{indexBackupsDirectory.FullName}\\{xivDataFile.GetDataFileName()}.win32.index");
-
-                    if(!File.Exists(backupFile.FullName)) continue;
-
-                    var outdatedCheck = await problemChecker.CheckForOutdatedBackups(xivDataFile, indexBackupsDirectory);
-
-                    if (!outdatedCheck)
-                    {
-                        FlexibleMessageBox.Show(UIMessages.OutdatedBackupsErrorMessage, UIMessages.IndexBackupsErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                        outdated = true;
-                    }
-                }
-
-                await Task.Run(async () =>
-                {
-                    var modding = new Modding(gameDirectory);
-                    await modding.DeleteAllFilesAddedByTexTools();
-
-                    var dat = new Dat(gameDirectory);
-
-                    var modListDirectory = new DirectoryInfo(Path.Combine(gameDirectory.Parent.Parent.FullName, XivStrings.ModlistFilePath));
-
-                    var backupFiles = Directory.GetFiles(indexBackupsDirectory.FullName);
-
-                    // Make sure backups exist
-                    if (backupFiles.Length == 0)
-                    {
-                        FlexibleMessageBox.Show(string.Format(UIMessages.NoBackupsFoundErrorMessage, indexBackupsDirectory.FullName),
-                            UIMessages.BackupFilesMissingTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-
-                        // Toggle off all mods
-                        await modding.ToggleAllMods(false);
-                    }
-                    else if (outdated)
-                    {
-                        // Toggle off all mods
-                        await modding.ToggleAllMods(false);
-                    }
-                    else
-                    {
-                        // Copy backups to ffxiv folder
-                        foreach (var backupFile in backupFiles)
-                        {
-                            if (backupFile.Contains(".win32.index"))
-                            {
-                                File.Copy(backupFile, $"{gameDirectory}/{Path.GetFileName(backupFile)}", true);
-                            }
-                        }
-                    }
-
-                    // Delete modded dat files
-                    foreach (var xivDataFile in (XivDataFile[])Enum.GetValues(typeof(XivDataFile)))
-                    {
-                        var datFiles = await dat.GetModdedDatList(xivDataFile);
-
-                        foreach (var datFile in datFiles)
-                        {
-                            File.Delete(datFile);
-                        }
-
-                        if (datFiles.Count > 0)
-                        {
-                            await problemChecker.RepairIndexDatCounts(xivDataFile);
-                        }
-                    }
-
-                    // Delete mod list
-                    File.Delete(modListDirectory.FullName);
-
-                    modding.CreateModlist();
-
+                    progressController.SetMessage(update);
                 });
+
+                try
+                {
+                    await problemChecker.PerformStartOver(indexBackupsDirectory, progress);
+                }
+                catch
+                {
+                    FlexibleMessageBox.Show(UIMessages.StartOverErrorMessage,
+                        UIMessages.StartOverErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    await progressController.CloseAsync();
+                    return;
+                }                
+
+                await progressController.CloseAsync();
 
                 UpdateViews(ItemTreeView.SelectedItem as Category);
 
@@ -700,43 +668,17 @@ namespace FFXIV_TexTools
 
             if (result == System.Windows.Forms.DialogResult.Yes)
             {
-                var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
-                var backupDirectory = new DirectoryInfo(Properties.Settings.Default.Backup_Directory);
-                var indexFiles = new XivDataFile[] { XivDataFile._04_Chara, XivDataFile._06_Ui, XivDataFile._01_Bgcommon };
-                var index = new Index(gameDirectory);
-                var modding = new Modding(gameDirectory);
-
-                if (index.IsIndexLocked(XivDataFile._0A_Exd))
-                {
-                    FlexibleMessageBox.Show(UIMessages.IndexLockedBackupFailedMessage, UIMessages.BackupFailedTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
-
+                var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);                
+                var problemChecker = new ProblemChecker(gameDirectory);
+                var backupsDirectory = new DirectoryInfo(Properties.Settings.Default.Backup_Directory);
                 try
                 {
-                    // Toggle off all mods
-                    await modding.ToggleAllMods(false);
+                    await problemChecker.BackupIndexFiles(backupsDirectory);
                 }
-                catch (Exception ex)
+                catch(Exception ex)
                 {
                     FlexibleMessageBox.Show(string.Format(UIMessages.BackupFailedErrorMessage, ex.Message), UIMessages.BackupFailedTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
-
-                foreach (var xivDataFile in indexFiles)
-                {
-                    try
-                    {
-                        File.Copy($"{gameDirectory.FullName}\\{xivDataFile.GetDataFileName()}.win32.index",
-                            $"{backupDirectory}\\{xivDataFile.GetDataFileName()}.win32.index", true);
-                        File.Copy($"{gameDirectory.FullName}\\{xivDataFile.GetDataFileName()}.win32.index2",
-                            $"{backupDirectory}\\{xivDataFile.GetDataFileName()}.win32.index2", true);
-                    }
-                    catch (Exception ex)
-                    {
-                        FlexibleMessageBox.Show(string.Format(UIMessages.BackupFailedErrorMessage, ex.Message), UIMessages.BackupFailedTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                }
+                }                
 
                 await this.ShowMessageAsync(UIMessages.BackupCompleteTitle, UIMessages.BackupCompleteMessage);
             }
@@ -761,7 +703,9 @@ namespace FFXIV_TexTools
                 return !subItems.IsEmpty;
             }
 
-            return ((Category)item).Name.ToLower().Contains(ItemSearchTextBox.Text.ToLower());
+            var searchTerms = ItemSearchTextBox.Text.Split(' ');
+
+            return searchTerms.All(term => ((Category)item).Name.ToLower().Contains(term.Trim().ToLower()));
         }
 
         private void ItemSearchTextBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)

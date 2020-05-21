@@ -195,7 +195,7 @@
   <data name="Equipment" xml:space="preserve">
     <value>Equipment</value>
   </data>
-  <data name="Equip_Decals" xml:space="preserve">
+  <data name="Equipment_Decals" xml:space="preserve">
     <value>Wappen</value>
   </data>
   <data name="Error_DirectoryError" xml:space="preserve">

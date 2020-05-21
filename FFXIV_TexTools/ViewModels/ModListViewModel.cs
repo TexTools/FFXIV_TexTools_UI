@@ -53,7 +53,7 @@ namespace FFXIV_TexTools.ViewModels
         private string _modToggleText = UIStrings.Enable_Disable;
         private Visibility _listVisibility = Visibility.Visible, _infoGridVisibility = Visibility.Collapsed;
         private string _modPackTitle, _modPackModAuthorLabel, _modPackModCountLabel, _modPackModVersionLabel, _modPackContentList, _progressText;
-        private bool _itemFilter, _modPackFilter;
+        private bool _itemFilter, _modPackFilter, _nameSort, _dateSort;
         private int _progressValue;
         private ObservableCollection<Category> _categories;
         private IProgress<(int current, int total)> progress;
@@ -70,7 +70,19 @@ namespace FFXIV_TexTools.ViewModels
                 ProgressText = $"{result.current} / {result.total}";
             });
 
-            ItemFilter = true;
+            if (Properties.Settings.Default.ModList_Sorting.Equals("NameSort")) _nameSort = true;
+            else _dateSort = true;
+
+            if (Properties.Settings.Default.ModList_Filter.Equals("Item"))
+            {
+                _itemFilter = true;
+                SetFilter("ItemFilter");
+            }                
+            else
+            {
+                _modPackFilter = true;
+                SetFilter("ModPackFilter");
+            }
         }
 
         /// <summary>
@@ -126,6 +138,11 @@ namespace FFXIV_TexTools.ViewModels
                     category.Categories.Add(categoryItem);
                 }
 
+                if(_nameSort)
+                {
+                    category.Categories = new ObservableCollection<Category>(category.Categories.OrderBy(i => i.Name));
+                }
+                
                 Application.Current.Dispatcher.Invoke(() => Categories.Add(category));
 
                 // Mods
@@ -166,6 +183,11 @@ namespace FFXIV_TexTools.ViewModels
 
                         category.Categories.Add(categoryItem);
                         category.CategoryList.Add(modItem.name);
+                    }
+
+                    if (_nameSort)
+                    {
+                        category.Categories = new ObservableCollection<Category>(category.Categories.OrderBy(i => i.Name));
                     }
 
                     Application.Current.Dispatcher.Invoke(() => Categories.Add(category));
@@ -218,7 +240,18 @@ namespace FFXIV_TexTools.ViewModels
                     modPackCatDict.Add(category.Name, category);
                 }
 
-                foreach (var modPackCategory in modPackCatDict)
+                var sortedModPackCatDict = new Dictionary<string, Category>();
+
+                if (_nameSort)
+                {
+                    sortedModPackCatDict = modPackCatDict.OrderBy(i => i.Value.Name).ToDictionary(pair => pair.Key, pair => pair.Value);
+                }
+                else
+                {
+                    sortedModPackCatDict = modPackCatDict;
+                }
+
+                foreach (var modPackCategory in sortedModPackCatDict)
                 {
                     List<Mod> modsInModpack;
 
@@ -276,6 +309,11 @@ namespace FFXIV_TexTools.ViewModels
 
                         }
 
+                        if(_nameSort)
+                        {
+                            category.Categories = new ObservableCollection<Category>(category.Categories.OrderBy(i => i.Name));
+                        }
+                        
                         modPackCategory.Value.Categories.Add(category);
                     }
 
@@ -655,44 +693,43 @@ namespace FFXIV_TexTools.ViewModels
                         {
                             modListModel.Part = "d";
                         }
-                        else if (itemPath.Contains("decal"))
-                        {
-                            modListModel.Part = itemPath.Substring(itemPath.LastIndexOf('_') + 1,
-                                itemPath.LastIndexOf('.') - (itemPath.LastIndexOf('_') + 1));
-                        }
                         else
                         {
                             modListModel.Part = "a";
                         }
 
-                        // Type
-                        if (itemPath.Contains("_iri_"))
+                        // Number
+                        if (itemPath.Contains("/hair"))
                         {
-                            modListModel.Type = XivStrings.Iris;
+                            modListModel.Number = itemPath.Substring(itemPath.IndexOf("/hair") + 8, 3).TrimStart('0');
                         }
-                        else if (itemPath.Contains("_etc_"))
+                        else if (itemPath.Contains("/body"))
                         {
-                            modListModel.Type = XivStrings.Etc;
+                            modListModel.Number = itemPath.Substring(itemPath.IndexOf("/body") + 8, 3).TrimStart('0');
                         }
-                        else if (itemPath.Contains("_fac_"))
+                        else if (itemPath.Contains("/face"))
                         {
-                            modListModel.Type = XivStrings.Face;
+                            modListModel.Number = itemPath.Substring(itemPath.IndexOf("/face") + 8, 3).TrimStart('0');
                         }
-                        else if (itemPath.Contains("_hir_"))
+                        else if (itemPath.Contains("/tail"))
                         {
-                            modListModel.Type = XivStrings.Hair;
+                            modListModel.Number = itemPath.Substring(itemPath.IndexOf("/tail") + 8, 3).TrimStart('0');
                         }
-                        else if (itemPath.Contains("_acc_"))
+                        else if (itemPath.Contains("/zear"))
                         {
-                            modListModel.Type = XivStrings.Accessory;
+                            modListModel.Number = itemPath.Substring(itemPath.IndexOf("/zear") + 8, 3).TrimStart('0');
                         }
-                        else if (itemPath.Contains("demihuman"))
+                        else if (itemPath.Contains("/decal_face"))
                         {
-                            modListModel.Type = itemPath.Substring(itemPath.LastIndexOf('_') - 3, 3);
+                            modListModel.Number = itemPath.Substring(itemPath.IndexOf("/decal_face") + 19, 2).TrimEnd('.');                            
+                        }
+                        else if (itemPath.Contains("/decal_equip") && !itemPath.Contains("stigma"))
+                        {
+                            modListModel.Number = itemPath.Substring(itemPath.IndexOf("/decal_equip") + 20, 3);
                         }
                         else
                         {
-                            modListModel.Type = "--";
+                            modListModel.Number = "--";
                         }
 
                         // Image
@@ -1096,12 +1133,12 @@ namespace FFXIV_TexTools.ViewModels
         {
             get => _itemFilter;
             set
-            {
-                _itemFilter = value;
-                if (value)
+            {                
+                if (value && !_itemFilter)
                 {
                     SetFilter("ItemFilter");
                 }
+                _itemFilter = value;
                 OnPropertyChanged(nameof(ItemFilter));
             }
         }
@@ -1113,13 +1150,49 @@ namespace FFXIV_TexTools.ViewModels
         {
             get => _modPackFilter;
             set
-            {
-                _modPackFilter = value;
-                if (value)
+            {                
+                if (value && !_modPackFilter)
                 {
                     SetFilter("ModPackFilter");
                 }
+                _modPackFilter = value;
                 OnPropertyChanged(nameof(ModPackFilter));
+            }
+        }
+
+        /// <summary>
+        /// The status of the name sort
+        /// </summary>
+        public bool NameSort
+        {
+            get => _nameSort;
+            set
+            {                
+                if (value && !_nameSort)
+                {
+                    if (_modPackFilter) SetFilter("ModPackFilter");
+                    if (_itemFilter) SetFilter("ItemFilter");
+                }
+                _nameSort = value;
+                OnPropertyChanged(nameof(NameSort));
+            }
+        }
+
+        /// <summary>
+        /// The status of the date sort
+        /// </summary>
+        public bool DateSort
+        {
+            get => _dateSort;
+            set
+            {               
+                if (value && !_dateSort)
+                {
+                    if (_modPackFilter) SetFilter("ModPackFilter");
+                    if (_itemFilter) SetFilter("ItemFilter");
+                }
+                _dateSort = value;
+                OnPropertyChanged(nameof(DateSort));
             }
         }
 
@@ -1163,6 +1236,22 @@ namespace FFXIV_TexTools.ViewModels
         {
             Categories = null;
             ModListPreviewList = null;
+
+            string sortMethod;
+            if (_nameSort)
+                sortMethod = "NameSort";
+            else
+                sortMethod = "DateSort";
+
+            string filter;
+            if (_modPackFilter)
+                filter = "ModPack";
+            else
+                filter = "Item";
+
+            Properties.Settings.Default.ModList_Filter = filter;
+            Properties.Settings.Default.ModList_Sorting = sortMethod;
+            Properties.Settings.Default.Save();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -1193,9 +1282,9 @@ namespace FFXIV_TexTools.ViewModels
             public string Part { get; set; }
 
             /// <summary>
-            /// The type of the modded item
+            /// The number of the modded item
             /// </summary>
-            public string Type { get; set; }
+            public string Number { get; set; }
 
             /// <summary>
             /// The brush color reflecting the active status of the modded item

@@ -81,6 +81,20 @@ namespace FFXIV_TexTools.Views
                 verString = verString.Replace(",", ".");
             }
 
+            char[] invalidChars = { '/', '\\', ':', '*', '?', '"', '<', '>', '|' };
+
+            if (ModPackName.Text.IndexOfAny(invalidChars) >= 0)
+            {
+                if (FlexibleMessageBox.Show(new Wpf32Window(this),
+                        UIMessages.InvalidCharacterModpackNameMessage,
+                        UIMessages.InvalidCharacterModpackNameTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning) ==
+                    System.Windows.Forms.DialogResult.OK)
+                {
+                    e.Cancel = true;
+                    return;
+                }
+            }
+
             VersionNumber = Version.Parse(verString);
 
             if (VersionNumber.ToString().Equals("0.0.0"))
@@ -126,6 +140,7 @@ namespace FFXIV_TexTools.Views
                     return;
                 }
             }
+
 
             var index = wizPages.IndexOf(modPackWizard.CurrentPage);
             if (index == wizPages.Count - 2)
@@ -211,7 +226,26 @@ namespace FFXIV_TexTools.Views
             {
                 var progressIndicator = new Progress<double>(ReportProgress);
                 var texToolsModPack = new TTMP(new DirectoryInfo(Properties.Settings.Default.ModPack_Directory), XivStrings.TexTools);
-                await texToolsModPack.CreateWizardModPack(modPackData, progressIndicator);
+
+                var modPackPath = Path.Combine(Properties.Settings.Default.ModPack_Directory, $"{modPackData.Name}.ttmp2");
+                var overwriteModpack = false;
+
+                if (File.Exists(modPackPath))
+                {
+                    var overwriteDialogResult = FlexibleMessageBox.Show(new Wpf32Window(this), UIMessages.ModPackOverwriteMessage,
+                                                UIMessages.OverwriteTitle, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
+                    if (overwriteDialogResult == System.Windows.Forms.DialogResult.Yes)
+                    {
+                        overwriteModpack = true;
+                    }
+                    else if (overwriteDialogResult == System.Windows.Forms.DialogResult.Cancel)
+                    {
+                        await _progressController.CloseAsync();
+                        return;
+                    }
+                }
+
+                await texToolsModPack.CreateWizardModPack(modPackData, progressIndicator, overwriteModpack);
 
                 ModPackFileName = $"{ModPackName.Text}";
             }

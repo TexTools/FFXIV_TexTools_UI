@@ -12,7 +12,7 @@ namespace FFXIV_TexTools.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.4.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "15.9.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -248,6 +248,54 @@ namespace FFXIV_TexTools.Properties {
             }
             set {
                 this["Default_Author"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("NameSort")]
+        public string ModList_Sorting {
+            get {
+                return ((string)(this["ModList_Sorting"]));
+            }
+            set {
+                this["ModList_Sorting"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Item")]
+        public string ModList_Filter {
+            get {
+                return ((string)(this["ModList_Filter"]));
+            }
+            set {
+                this["ModList_Filter"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ForceUV1Quadrant {
+            get {
+                return ((bool)(this["ForceUV1Quadrant"]));
+            }
+            set {
+                this["ForceUV1Quadrant"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool CloneUV1toUV2 {
+            get {
+                return ((bool)(this["CloneUV1toUV2"]));
+            }
+            set {
+                this["CloneUV1toUV2"] = value;
             }
         }
     }

@@ -663,6 +663,24 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Name cannot contain any of the following characters: \ / : * ? &quot; &lt; &gt;|.
+        /// </summary>
+        internal static string InvalidCharacterModpackNameMessage {
+            get {
+                return ResourceManager.GetString("InvalidCharacterModpackNameMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ModPack Name Invalid.
+        /// </summary>
+        internal static string InvalidCharacterModpackNameTitle {
+            get {
+                return ResourceManager.GetString("InvalidCharacterModpackNameTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There was an error getting the Items List
         ///
         ///{0}.
@@ -882,6 +900,17 @@ namespace FFXIV_TexTools.Resources {
         internal static string ModPackLoadingTitle {
             get {
                 return ResourceManager.GetString("ModPackLoadingTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A ModPack with this name already exists.
+        ///
+        ///Would you like to overwrite the existing ModPack?.
+        /// </summary>
+        internal static string ModPackOverwriteMessage {
+            get {
+                return ResourceManager.GetString("ModPackOverwriteMessage", resourceCulture);
             }
         }
         
@@ -1276,6 +1305,26 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There was an error while starting over.
+        ///
+        ///Please check for problems by selecting Help -&gt; Check For Problems..
+        /// </summary>
+        internal static string StartOverErrorMessage {
+            get {
+                return ResourceManager.GetString("StartOverErrorMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error Starting Over.
+        /// </summary>
+        internal static string StartOverErrorTitle {
+            get {
+                return ResourceManager.GetString("StartOverErrorTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Starting over will:
         ///
         ///Restore index files to their original state.
@@ -1384,6 +1433,28 @@ namespace FFXIV_TexTools.Resources {
         internal static string TTMPGettingData {
             get {
                 return ResourceManager.GetString("TTMPGettingData", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to update the viewport. 
+        ///
+        ///{0}.
+        ///
+        ///Any mod on the 3D model will be disabled..
+        /// </summary>
+        internal static string ViewportErrorMessage {
+            get {
+                return ResourceManager.GetString("ViewportErrorMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error Updating Viewport.
+        /// </summary>
+        internal static string ViewportErrorTitle {
+            get {
+                return ResourceManager.GetString("ViewportErrorTitle", resourceCulture);
             }
         }
     }

@@ -559,6 +559,7 @@ namespace FFXIV_TexTools.ViewModels
                     ModStatusToggleEnabled = true;
                     ModToggleText = UIStrings.Enable;
                     break;
+                case XivModStatus.MatAdd:
                 case XivModStatus.Original:
                 default:
                     ModStatusToggleEnabled = false;
@@ -1611,6 +1612,19 @@ namespace FFXIV_TexTools.ViewModels
                 }
 
                 ShowModelStatus(UIStrings.ModelStatus_UpdateSuccess);
+            }
+            catch (Exception ex)
+            {
+                FlexibleMessageBox.Show(
+                     string.Format(UIMessages.ViewportErrorMessage, ex.Message), UIMessages.ViewportErrorTitle,
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                var modlist = new Modding(_gameDirectory);
+
+                await modlist.ToggleModStatus(PathString, false);
+                GetMeshes();
+
+                return;
             }
             finally
             {

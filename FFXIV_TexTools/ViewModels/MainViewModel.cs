@@ -464,7 +464,7 @@ namespace FFXIV_TexTools.ViewModels
                 if (needsNewBackup)
                 {
                     var indexFiles = new XivDataFile[]
-                        {XivDataFile._04_Chara, XivDataFile._06_Ui, XivDataFile._01_Bgcommon};
+                        { XivDataFile._0A_Exd, XivDataFile._04_Chara, XivDataFile._06_Ui, XivDataFile._01_Bgcommon };
 
                     if (FlexibleMessageBox.Show(_win32Window, backupMessage, UIMessages.CreateBackupTitle, MessageBoxButtons.YesNo,
                             MessageBoxIcon.Warning) == DialogResult.Yes)
@@ -597,6 +597,13 @@ namespace FFXIV_TexTools.ViewModels
             foreach (var xivPet in companionList.PetList)
             {
                 petCategory.Categories.Add(new Category { Name = xivPet.Name, Item = xivPet });
+            }
+
+            var ornamentCategory = new Category { Name = "Ornaments", Categories = new ObservableCollection<Category>() };
+            Categories[2].Categories.Add(ornamentCategory);
+            foreach (var xivOrnament in companionList.OrnamentList)
+            {
+                ornamentCategory.Categories.Add(new Category { Name = xivOrnament.Name, Item = xivOrnament });
             }
 
             // UI List

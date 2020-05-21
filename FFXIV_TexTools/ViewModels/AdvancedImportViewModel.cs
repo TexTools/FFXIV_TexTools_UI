@@ -25,6 +25,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Documents;
@@ -54,7 +55,7 @@ namespace FFXIV_TexTools.ViewModels
         private string _selectedMaterial, _selectedAttribute, _selectedMaterialUsed, _selectedPartAttribute, _selectedAvailablePartAttribute;
         private string _materialText, _attributeText, _partCountLabel, _partAttributesLabel, _daeLocationText;
         private int _selectedMeshNumber, _selectedMeshNumberIndex, _selectedPartNumber, _selectedPartNumberIndex, _selectedMaterialUsedIndex;
-        private bool _shapeDataCheckBoxEnabled, _disableShapeDataChecked, _fromWizard, _flipAlphaChecked, _importButtonEnabled;
+        private bool _shapeDataCheckBoxEnabled, _disableShapeDataChecked, _fromWizard, _flipAlphaChecked, _importButtonEnabled, _forceUV1QuadrantChecked, _cloneUV1toUV2Checked;
         private readonly string _textColor = "Black";
         private Dictionary<string, string> _attributeDictionary, _shapeDictionary;
         private Dictionary<string, int> _attributeMaskDictionary;
@@ -128,11 +129,6 @@ namespace FFXIV_TexTools.ViewModels
 
             MeshNumbers = meshNumberList;
 
-            if (_itemModel.Category.Equals("Character"))
-            {
-                FlipAlphaChecked = true;
-            }
-
             if (!refresh)
             {
                 var saveDir = new DirectoryInfo(Settings.Default.Save_Directory);
@@ -165,21 +161,36 @@ namespace FFXIV_TexTools.ViewModels
             }
 
             var extraBoneCountString = "";
+            var extraBoneCount = 0;
             if (_colladaBoneList != null)
             {
                 if (_colladaBoneList.Count > BoneList.Count)
                 {
-                    var extraBoneCount = _colladaBoneList.Count - BoneList.Count;
-                    extraBoneCountString = $"+ { extraBoneCount}";
+                    extraBoneCount = _colladaBoneList.Count - BoneList.Count;                    
                 }
 
                 foreach (var bone in _colladaBoneList)
                 {
                     if (!BoneList.Contains(bone))
                     {
-                        BoneList.Add($"+ {bone}");
-                        extraBoneList.Add(bone);
+                        // Filter out any numbers in the bone names when there's duplicate skeletons
+                        var boneName = Regex.Replace(bone, "[0-9]+$", string.Empty);
+                        // If it's not an extra bone after all, subtract one from the extra bone count
+                        if(!BoneList.Contains(boneName))
+                        {
+                            BoneList.Add($"+ {bone}");
+                            extraBoneList.Add(bone);
+                        }
+                        else
+                        {
+                            extraBoneCount -= 1;
+                        }                        
                     }
+                }
+                // If there are still extra bones after checking possible duplicates set the extra bone count string
+                if (extraBoneCount > 0)
+                {
+                    extraBoneCountString = $"+ { extraBoneCount}";
                 }
             }
 
@@ -227,10 +238,97 @@ namespace FFXIV_TexTools.ViewModels
                                 {
                                     importDictMesh.PartAttributeDictionary.Add(partNum, attributeIndex);
                                 }
+                            }                        
+                        }
+
+                        if (_xivMdl.HasShapeData)
+                        {
+                            //Dictionary containing <index data offset, mesh number>
+                            var indexMeshNum = new Dictionary<int, int>();
+
+                            var shapeData = _xivMdl.MeshShapeData.ShapeDataList;
+
+                            // Get the index data offsets in each mesh
+                            for (var i = 0; i < _xivMdl.LoDList[0].MeshCount; i++)
+                            {
+                                var indexDataOffset = _xivMdl.LoDList[0].MeshDataList[i].MeshInfo.IndexDataOffset;
+
+                                if (!indexMeshNum.ContainsKey(indexDataOffset))
+                                {
+                                    indexMeshNum.Add(indexDataOffset, i);
+                                }
+                            }
+
+                            // Shape info list of both the mod and the original mdl
+                            var originalShapeInfoList = _xivMdl.MeshShapeData.ShapeInfoList;
+                            var moddedShapeInfoList = _modMdl.MeshShapeData.ShapeInfoList;
+
+                            // Number of shape info in each mesh
+                            var perMeshCount = _xivMdl.ModelData.ShapeCount;
+
+                            for (var i = 0; i < perMeshCount; i++)
+                            {
+                                var originalShapeInfo = originalShapeInfoList[i];
+                                var moddedShapeInfo = moddedShapeInfoList[i];
+
+                                var originalIndexPart = originalShapeInfo.ShapeIndexParts[0];
+                                var moddedIndexPart = moddedShapeInfo.ShapeIndexParts[0];
+
+                                // The part count
+                                var infoPartCount = originalIndexPart.PartCount;
+
+                                for (var j = 0; j < infoPartCount; j++)
+                                {
+                                    // Gets the data info for the part
+                                    var shapeDataInfo = _modMdl.MeshShapeData.ShapeDataInfoList[originalIndexPart.DataInfoIndex + j];
+
+                                    // The offset in the shape data 
+                                    var indexDataOffset = shapeDataInfo.IndexDataOffset;
+
+                                    var indexMeshLocation = 0;
+
+                                    // Determine which mesh the shape info belongs to
+                                    if (indexMeshNum.ContainsKey(indexDataOffset))
+                                    {
+                                        indexMeshLocation = indexMeshNum[indexDataOffset];
+                                    }
+
+                                    // Get the shape data for the mesh the shape info belonged to
+                                    var shapeDataForMesh = shapeData.GetRange(shapeDataInfo.DataIndexOffset, shapeDataInfo.IndexCount);
+
+                                    foreach (var data in shapeDataForMesh)
+                                    {
+                                        // Check if the shape data has been disabled on the modded mdl
+                                        if (moddedIndexPart.DataInfoIndex == 0 && moddedIndexPart.PartCount == 0)
+                                        {
+                                            // Check if the mesh's import settings has been initialized yet
+                                            if (_importDictionary.ContainsKey(indexMeshLocation.ToString()))
+                                            {
+                                                // If so, set it to disabled in the advanced import window
+                                                _importDictionary[indexMeshLocation.ToString()].Disable = true;
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
                 }
+            }
+
+            if (_itemModel.Category.Equals(XivStrings.Character))
+            {
+                FlipAlphaChecked = true;
+            }
+
+            if (_itemModel.Category.Equals(XivStrings.Gear) && Settings.Default.ForceUV1Quadrant)
+            {
+                ForceUV1QuadrantChecked = true;
+            }
+
+            if (_itemModel.ItemCategory.Equals(XivStrings.Hair) && Settings.Default.CloneUV1toUV2)
+            {
+                CloneUV1toUV2Checked = true;
             }
 
             SelectedMeshNumberIndex = 0;
@@ -674,6 +772,34 @@ namespace FFXIV_TexTools.ViewModels
             {
                 _importButtonEnabled = value;
                 NotifyPropertyChanged(nameof(ImportButtonEnabled));
+            }
+        }
+
+        public bool ForceUV1QuadrantChecked
+        {
+            get => _forceUV1QuadrantChecked;
+            set
+            {
+                _forceUV1QuadrantChecked = value;
+                foreach (var importDictionaryValue in _importDictionary.Values)
+                {
+                    importDictionaryValue.ForceUV1Quadrant = value;
+                }
+                NotifyPropertyChanged(nameof(ForceUV1QuadrantChecked));
+            }
+        }
+
+        public bool CloneUV1toUV2Checked
+        {
+            get => _cloneUV1toUV2Checked;
+            set
+            {
+                _cloneUV1toUV2Checked = value;
+                foreach (var importDictionaryValue in _importDictionary.Values)
+                {
+                    importDictionaryValue.CloneUV1toUV2 = value;
+                }
+                NotifyPropertyChanged(nameof(CloneUV1toUV2Checked));
             }
         }
 

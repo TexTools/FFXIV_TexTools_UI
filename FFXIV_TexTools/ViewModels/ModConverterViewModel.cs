@@ -12,6 +12,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using System.Windows.Input;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Helpers;
@@ -52,6 +53,7 @@ namespace FFXIV_TexTools.ViewModels
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
         List<List<ModsJson>> GetModsJsonList(ModPackJson json)
         {
             List<List<ModsJson>> modsJsonsList = new List<List<ModsJson>>();
@@ -74,6 +76,7 @@ namespace FFXIV_TexTools.ViewModels
             }
             return modsJsonsList;
         }
+
         void LoadFromItemList()
         {
             var modsJsonsList = GetModsJsonList(this.TTMPData.ModPackJson);
@@ -89,7 +92,9 @@ namespace FFXIV_TexTools.ViewModels
                 FromItemList.Add(item);
             }
         }
+
         public ICommand AddToConvertListCommand => new RelayCommand(AddToConvertList);
+
         private void AddToConvertList(object obj)
         {
             if (SelectedFromItemText==null|| SelectedFromItemText.Trim().Length == 0)
@@ -119,7 +124,9 @@ namespace FFXIV_TexTools.ViewModels
             ConvertList.Add(SelectedFromItemText + "=>" + TargetItemName);
             _convertDic.Add(SelectedFromItemText, TargetItemName);
         }
+
         public ICommand RemoveFromConvertListCommand => new RelayCommand(RemoveFromConvertList);
+
         private void RemoveFromConvertList(object obj)
         {
             if (SelectedConvertToItem != null)
@@ -128,7 +135,9 @@ namespace FFXIV_TexTools.ViewModels
                 ConvertList.Remove(SelectedConvertToItem);
             }
         }
+
         public ICommand SetToConverterItemListCommand => new RelayCommand(SetToConverterItemList);
+
         private void SetToConverterItemList(object obj)
         {
             ToConverterItemList.Clear();
@@ -170,7 +179,9 @@ namespace FFXIV_TexTools.ViewModels
                 ToConverterItemList.Add(new AutoCompleteEntry(item, item));
             }
         }
+
         public ICommand ConvertCommand => new RelayCommand(Convert);
+
         async void Convert(object obj)
         {
             if (_convertDic.Count == 0)
@@ -178,7 +189,7 @@ namespace FFXIV_TexTools.ViewModels
             var newModPackPath = GetNewModPackPath();
             if (newModPackPath == null)
                 return;
-            await this.ShowProgress();
+            await ShowProgress();
             var modDataList = await GetModData(TTMPPath,TTMPData.ModPackJson);
             var gear = new Gear(new DirectoryInfo(Settings.Default.FFXIV_Directory), GetLanguage());
 
@@ -202,7 +213,19 @@ namespace FFXIV_TexTools.ViewModels
                 var fromMdlRace = fromInfo.Race;
 
                 var targetId = $"{fromId[0]}{targetItemModel.ModelInfo.ModelID.ToString().PadLeft(4, '0')}";
-                var targetMdlRace = GetTargetRace(fromMdlRace, raceListForMdl);
+                var targetMdlRace = "";
+                try
+                {
+                    targetMdlRace = GetTargetRace(fromMdlRace, raceListForMdl);
+                }
+                catch (Exception e)
+                {
+                    FlexibleMessageBox.Show( e.Message, "Incompatible Target Item",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    await CloseProgress();
+                    return;
+                }
+                
                 var targetVersion = $"v{targetItemModel.ModelInfo.Variant.ToString().PadLeft(4,'0')}";
 
                 var sameModelList = ItemList.Where(
@@ -286,35 +309,39 @@ namespace FFXIV_TexTools.ViewModels
                 }
             }
             await CreateNewTTMP(newModPackPath,modDataList, TTMPData.ModPackJson);
-            await this.CloseProgress();
-            this.Close();
+            await CloseProgress();
+            Close();
         }
+
         (string Id,string Race) GetModelInfo(string fullPath)
         {
             var name = Path.GetFileNameWithoutExtension(fullPath);
             var tmps = fullPath.Split('/');
             return (Id:tmps[2],Race:name.Substring(0, 5));
         }
+
         (string Id, string Race) GetTexInfo(string fullPath)
         {
             var name = Path.GetFileNameWithoutExtension(fullPath);
             var tmps = fullPath.Split('/');
             return (Id: tmps[2], Race: name.Split('_')[1].Substring(0, 5));
         }
+
         (string Id, string Race,string Version) GetMtrlInfo(string fullPath)
         {
             var name = Path.GetFileNameWithoutExtension(fullPath);
             var tmps = fullPath.Split('/');
             return (Id: tmps[2], Race: name.Split('_')[1].Substring(0, 5),Version:tmps[tmps.Length-2]);
         }
+
         string GetTargetRace(string fromRace,List<XivRace> targetRaceList)
         {
             var race = fromRace;
             if (!targetRaceList.Exists(it => it.GetRaceCode() == fromRace.Substring(1, 4)))
             {
                 var sex = int.Parse(fromRace.Substring(1, 2));
-                if (sex > 14)
-                    throw new Exception("race sex error");
+                if (sex > 18)
+                    throw new Exception("An error occurred while trying to determine the target race.");
                 if (sex % 2 == 0)
                     sex = sex - 1;
                 else
@@ -322,11 +349,13 @@ namespace FFXIV_TexTools.ViewModels
                 race = $"{fromRace[0]}{sex.ToString().PadLeft(2,'0')}{fromRace.Substring(3,2)}";
                 if (!targetRaceList.Exists(it => it.GetRaceCode() == race.Substring(1, 4)))
                 {
-                    throw new Exception("not found race");
+                    throw new Exception("The item you're trying to convert to does not have the necessary race specific textures/model.\n\n" +
+                        "Please try a different item.");
                 }
             }
             return race;
         }
+
         async Task<Dictionary<ModsJson,byte[]>> GetModData(string ttmpPath, ModPackJson modPackJson)
         {
             var result = new Dictionary<ModsJson,byte[]>();
@@ -373,6 +402,7 @@ namespace FFXIV_TexTools.ViewModels
             }
             return result;
         }
+
         async Task<byte[]> GetType2Data(byte[] datas)
         {
             var type2Bytes = new List<byte>();
@@ -421,6 +451,7 @@ namespace FFXIV_TexTools.ViewModels
 
             return type2Bytes.ToArray();
         }
+
         async Task<byte[]> CreateType2Data(byte[] dataToCreate)
         {
             var newData = new List<byte>();
@@ -507,6 +538,7 @@ namespace FFXIV_TexTools.ViewModels
             newData.AddRange(dataBlocks);
             return newData.ToArray();
         }
+
         async Task<byte[]> ConvertMtrlData(string oldIdStr,string idStr,string oldRaceStr,string raceStr,byte[] mtrlData)
         {
             return await Task.Run(() => { 
@@ -542,6 +574,7 @@ namespace FFXIV_TexTools.ViewModels
                 return newMtrlData;
             });
         }
+
         async Task<(int MeshCount, int MaterialCount, byte[] Data)> GetType3Data(byte[] data)
         {
             var byteList = new List<byte>();
@@ -643,6 +676,7 @@ namespace FFXIV_TexTools.ViewModels
 
             return (meshCount, materialCount, byteList.ToArray());
         }
+
         async Task<byte[]> CreateType3Data(byte[] oldDatas,byte[] dataToCreate)
         {
             return await Task.Run(async () =>
@@ -751,6 +785,7 @@ namespace FFXIV_TexTools.ViewModels
                 return newDataList.ToArray();
             });
         }
+
         async Task<(List<string> OldTextureList, List<string> NewTextureList, byte[] Data)> ConvertMdlData(IEnumerable<ModsJson> list,string oldIdStr, string idStr, string oldRaceStr, string raceStr, byte[] data)
         {
             return await Task.Run(async () => {
@@ -800,17 +835,15 @@ namespace FFXIV_TexTools.ViewModels
                             newMdlData.OldTextureList.Add(oldPath);
                             var newPath = oldPath.Replace(oldIdStr, idStr).Replace(oldRaceStr, raceStr);
                             newMdlData.NewTextureList.Add(newPath);
-                            if (list.Count(it => it.FullPath.Contains(oldPath.TrimEnd('\0'))) > 0 || list.Count(it => it.FullPath.Contains(newPath.TrimEnd('\0'))) > 0)
-                            {
-                                var newPathData = Encoding.UTF8.GetBytes(newPath);
-                                bw.Write(newPathData);
-                            }
+                            var newPathData = Encoding.UTF8.GetBytes(newPath);
+                            bw.Write(newPathData);
                         }
                     }
                 }
                 return newMdlData;
             });
         }
+
         async Task CreateNewTTMP(string newModPackPath,Dictionary<ModsJson,byte[]> modDataList,ModPackJson modPackJson)
         {
             await Task.Run(async () =>
@@ -853,6 +886,7 @@ namespace FFXIV_TexTools.ViewModels
                 }
             });
         }
+
         private static XivLanguage GetLanguage()
         {
             return XivLanguages.GetXivLanguage(Properties.Settings.Default.Application_Language);

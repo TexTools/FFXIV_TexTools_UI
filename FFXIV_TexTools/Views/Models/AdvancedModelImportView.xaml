@@ -73,7 +73,7 @@
                     <RowDefinition/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                <GroupBox Grid.Row="0" Header="{Binding BonesGroupHeader, FallbackValue='Bones'}">
+                <GroupBox Grid.Row="0" Header="{Binding BonesGroupHeader, FallbackValue='Bones'}" Margin="0,0,0,82">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition/>
@@ -83,8 +83,16 @@
                         <Label Grid.Row="1" Margin="5" Content="{Binding Source={x:Static resx:UIStrings.Bone_addition_is_automatic}}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     </Grid>
                 </GroupBox>
-                <GroupBox Grid.Row="1" Header="{Binding Source={x:Static resx:UIStrings.Vertex_Colors}}">
-                    <CheckBox Content="{Binding Source={x:Static resx:UIStrings.Flip_Alpha}}" IsChecked="{Binding FlipAlphaChecked}"/>
+                <GroupBox Header="{Binding Source={x:Static resx:UIStrings.Extra_Import_Settings}}" Height="82" VerticalAlignment="Bottom">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <CheckBox Grid.Row="0" Content="{Binding Source={x:Static resx:UIStrings.Flip_Alpha}}" IsChecked="{Binding FlipAlphaChecked}" Margin="140,0,0,0"/>
+                        <CheckBox Grid.Row="0" Content="{Binding Source={x:Static resx:UIStrings.Force_UV_Quadrant}}" IsChecked="{Binding ForceUV1QuadrantChecked}" Click="ForceUV1Quadrant_Click" Margin="0,0,119,0" />
+                        <CheckBox Grid.Row="1" Content="{Binding Source={x:Static resx:UIStrings.Clone_UV1_to_UV2}}" IsChecked="{Binding CloneUV1toUV2Checked}" Click="CloneUV1toUV2_Click" Margin="0,0,119,0" />
+                    </Grid>
                 </GroupBox>
             </Grid>
         </Grid>

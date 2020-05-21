@@ -82,7 +82,7 @@ namespace FFXIV_TexTools.ViewModels
         private Visibility _typePartVisibility, _typeVisibility, _partVisibility;
         private IItemModel _item;
 
-        private string _pathString, _textureFormat, _textureDimensions, _category;
+        private string _pathString, _textureFormat, _textureDimensions, _category, _mipMapInfo;
         private string _partWatermark = XivStrings.Part, _typeWatermark = XivStrings.Type, _raceWatermark = XivStrings.Race,
             _typePartWatermark = XivStrings.TypePart, _textureMapWatermark = XivStrings.Texture_Map;
         private string _modToggleText = UIStrings.Enable_Disable;
@@ -916,7 +916,10 @@ namespace FFXIV_TexTools.ViewModels
         public async void UpdateImage()
         {
             if (!CheckMapIsOK())
+            {
+                OnLoadingComplete();
                 return;
+            }
             ImageDisplay = null;
             ChannelsEnabled = true;
 
@@ -946,6 +949,7 @@ namespace FFXIV_TexTools.ViewModels
                 PathString = texData.TextureTypeAndPath.Path;
                 TextureFormat = texData.TextureFormat.GetTexDisplayName();
                 TextureDimensions = $"{texData.Height} x {texData.Width}";
+                MipMapInfo = texData.MipMapCount != 0 ? $"Yes ({texData.MipMapCount})" : "No";
             }
             else
             {
@@ -1017,6 +1021,7 @@ namespace FFXIV_TexTools.ViewModels
                     ModStatusToggleEnabled = true;
                     ModToggleText = UIStrings.Enable;
                     break;
+                case XivModStatus.MatAdd:
                 case XivModStatus.Original:
                 default:
                     ModStatusToggleEnabled = false;
@@ -1029,6 +1034,23 @@ namespace FFXIV_TexTools.ViewModels
             DDSImportEnabled = DDSFileExists();
             BMPImportEnabled = BMPFileExists();
             MoreOptionsEnabled = true;
+
+            if (_item != null)
+            {
+                if (_item.ItemCategory.Equals(XivStrings.Hair) || _item.ItemCategory.Equals(XivStrings.Equipment_Decals) || _item.ItemCategory.Equals(XivStrings.Face_Paint))
+                {
+                    AddNewTexturePartEnabled = false;
+                }
+                else
+                {
+                    AddNewTexturePartEnabled = true;
+                }
+            }
+            else
+            {
+                AddNewTexturePartEnabled = false;
+            }
+
 
             if (_xivMtrl != null)
             {
@@ -1134,6 +1156,19 @@ namespace FFXIV_TexTools.ViewModels
             {
                 _textureDimensions = value;
                 NotifyPropertyChanged(nameof(TextureDimensions));
+            }
+        }
+
+        /// <summary>
+        /// The string for the current textures mipmaps
+        /// </summary>
+        public string MipMapInfo
+        {
+            get => _mipMapInfo;
+            set
+            {
+                _mipMapInfo = "MipMaps: " + value;
+                NotifyPropertyChanged(nameof(MipMapInfo));
             }
         }
 
@@ -1385,8 +1420,18 @@ namespace FFXIV_TexTools.ViewModels
             }
             else
             {
-                var newColorSetOffset = await _tex.TexColorImporter(_xivMtrl, fullPath, _item, XivStrings.TexTools, GetLanguage());
-                _xivMtrl = await _mtrl.GetMtrlData(newColorSetOffset, _xivMtrl.MTRLPath, dxVersion);
+                try
+                {
+                    var newColorSetOffset = await _tex.TexColorImporter(_xivMtrl, fullPath, _item, XivStrings.TexTools, GetLanguage());
+                    _xivMtrl = await _mtrl.GetMtrlData(newColorSetOffset, _xivMtrl.MTRLPath, dxVersion);
+                }
+                catch(Exception ex)
+                {
+                    FlexibleMessageBox.Show(
+                        string.Format(UIMessages.TextureImportErrorMessage, ex.Message), UIMessages.TextureImportErrorTitle,
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }               
             }
 
             _textureView.BottomFlyout.IsOpen = false;
@@ -1464,8 +1509,18 @@ namespace FFXIV_TexTools.ViewModels
                     }
                     else
                     {
-                        var newColorSetOffset = await _tex.TexColorImporter(_xivMtrl, fileDir, _item, XivStrings.TexTools, GetLanguage());
-                        _xivMtrl = await _mtrl.GetMtrlData(newColorSetOffset, _xivMtrl.MTRLPath, dxVersion);
+                        try
+                        {
+                            var newColorSetOffset = await _tex.TexColorImporter(_xivMtrl, fileDir, _item, XivStrings.TexTools, GetLanguage());
+                            _xivMtrl = await _mtrl.GetMtrlData(newColorSetOffset, _xivMtrl.MTRLPath, dxVersion);
+                        }
+                        catch (Exception ex)
+                        {
+                            FlexibleMessageBox.Show(
+                                string.Format(UIMessages.TextureImportErrorMessage, ex.Message), UIMessages.TextureImportErrorTitle,
+                                MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
+                        }                        
                     }
                 }
                 else
@@ -1636,7 +1691,7 @@ namespace FFXIV_TexTools.ViewModels
                         UIMessages.AddNewTexturePartErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
-                if (_item.ItemCategory == XivStrings.Face_Paint || _item.ItemCategory == XivStrings.Equipment_Decals)
+                if (_item.ItemCategory == XivStrings.Face_Paint || _item.ItemCategory == XivStrings.Equipment_Decals || _item.ItemCategory == XivStrings.Hair)
                 {
                     FlexibleMessageBox.Show(UIMessages.AddNewTexturePartErrorMessageWrongItemCategoryOfItem,
                         UIMessages.AddNewTexturePartErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);

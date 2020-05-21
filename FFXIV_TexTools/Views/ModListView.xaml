@@ -33,8 +33,11 @@
                     <Label Content="{Binding Source={x:Static resx:UIStrings.Filter_By_colon}}"></Label>
                     <RadioButton Grid.Column="1" Content="{Binding Source={x:Static resx:UIStrings.Item}}" GroupName="Lights" Margin="5" IsChecked="{Binding ItemFilter}"/>
                     <RadioButton Grid.Column="2" Content="{Binding Source={x:Static resx:UIStrings.Mod_Pack}}" GroupName="Lights" Margin="5" IsChecked="{Binding ModPackFilter}"/>
+                    <Label Content="{Binding Source={x:Static resx:UIStrings.Sort_By_colon}}" Margin="0,22,0,-22"></Label>
+                    <RadioButton Grid.Column="1" Content="{Binding Source={x:Static resx:UIStrings.Name}}" GroupName="Sort" Margin="5,28,5,-18" IsChecked="{Binding NameSort}"/>
+                    <RadioButton Grid.Column="2" Content="{Binding Source={x:Static resx:UIStrings.Date}}" GroupName="Sort" Margin="5,28,5,-18" IsChecked="{Binding DateSort}"/>
                 </Grid>
-                <TreeView x:Name="ModListTreeView" Grid.Row="1" ItemsSource="{Binding Categories}" SelectedItemChanged="TreeView_SelectedItemChanged" Style="{StaticResource VirtualisedMetroTreeView}">
+                <TreeView x:Name="ModListTreeView" Grid.Row="1" ItemsSource="{Binding Categories}" SelectedItemChanged="TreeView_SelectedItemChanged" Style="{StaticResource VirtualisedMetroTreeView}" Margin="0,28,0,0">
                     <TreeView.ItemContainerStyle>
                         <Style TargetType="{x:Type TreeViewItem}">
                             <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}"/>
@@ -104,7 +107,7 @@
 
                                             <Border BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" BorderThickness="1" Grid.Column="1" Grid.Row="3">
                                                 <Viewbox StretchDirection="DownOnly">
-                                                    <Label Content="{Binding Type}"/>
+                                                    <Label Content="{Binding Number}"/>
                                                 </Viewbox>
                                             </Border>
 
@@ -128,7 +131,7 @@
 
                                             <Border Background="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Grid.Row="2" Grid.Column="1">
                                                 <Viewbox StretchDirection="DownOnly">
-                                                    <Label Content="{Binding Source={x:Static resx:UIStrings.Type}}" VerticalContentAlignment="Top" HorizontalContentAlignment="Center" Padding="0"/>
+                                                    <Label Content="{Binding Source={x:Static resx:UIStrings.Num}}" VerticalContentAlignment="Top" HorizontalContentAlignment="Center" Padding="0"/>
                                                 </Viewbox>
                                             </Border>
                                         </Grid>
