@@ -316,11 +316,6 @@ namespace FFXIV_TexTools.ViewModels
                 }
             }
 
-            if (_itemModel.Category.Equals(XivStrings.Character))
-            {
-                FlipAlphaChecked = true;
-            }
-
             if (_itemModel.Category.Equals(XivStrings.Gear) && Settings.Default.ForceUV1Quadrant)
             {
                 ForceUV1QuadrantChecked = true;
