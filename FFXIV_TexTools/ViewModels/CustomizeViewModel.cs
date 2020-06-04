@@ -270,6 +270,7 @@ namespace FFXIV_TexTools.ViewModels
                 Settings.Default.Save();
                 NotifyPropertyChanged(nameof(ExportTextureAsDDS));
                 NotifyPropertyChanged(nameof(ExportTexDisplay));
+                EnsureValidExportFormat();
             }
         }
 
@@ -282,6 +283,7 @@ namespace FFXIV_TexTools.ViewModels
                 Settings.Default.Save();
                 NotifyPropertyChanged(nameof(ExportTextureAsBMP));
                 NotifyPropertyChanged(nameof(ExportTexDisplay));
+                EnsureValidExportFormat();
             }
         }
 
@@ -294,6 +296,17 @@ namespace FFXIV_TexTools.ViewModels
                 Settings.Default.Save();
                 NotifyPropertyChanged(nameof(ExportTextureAsPNG));
                 NotifyPropertyChanged(nameof(ExportTexDisplay));
+                EnsureValidExportFormat();
+            }
+        }
+
+        private void EnsureValidExportFormat()
+        {
+            if (!Settings.Default.ExportTexPNG &&
+                !Settings.Default.ExportTexBMP &&
+                !Settings.Default.ExportTexDDS)
+            {
+                this.ExportTextureAsDDS = true;
             }
         }
 
