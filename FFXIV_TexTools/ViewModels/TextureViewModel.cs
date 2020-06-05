@@ -938,7 +938,7 @@ namespace FFXIV_TexTools.ViewModels
                     Width = texData.Width
                 };
 
-                _imageEffect = new ColorChannels
+                ImageEffect = new ColorChannels
                 {
                     Channel = new System.Windows.Media.Media3D.Point4D(1.0f, 1.0f, 1.0f, 0.0f)
                 };
@@ -996,7 +996,7 @@ namespace FFXIV_TexTools.ViewModels
                     IsColorSet = true
                 };
 
-                _imageEffect = new ColorChannels
+                ImageEffect = new ColorChannels
                 {
                     Channel = new System.Windows.Media.Media3D.Point4D(1.0f, 1.0f, 1.0f, 0.0f)
                 };
@@ -1150,13 +1150,7 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         public ColorChannels ImageEffect
         {
-            get
-            {
-                if (this.RedChecked && this.GreenChecked && this.BlueChecked && this.AlphaChecked)
-                    return null;
-
-                return _imageEffect;
-            }
+            get => _imageEffect;
             set
             {
                 _imageEffect = value;
@@ -2149,8 +2143,7 @@ namespace FFXIV_TexTools.ViewModels
             var b = BlueChecked  ? 1.0f : 0.0f;
             var a = AlphaChecked ? 1.0f : 0.0f;
 
-            _imageEffect.Channel = new System.Windows.Media.Media3D.Point4D(r, g, b, a);
-            NotifyPropertyChanged(nameof(ImageEffect));
+            ImageEffect.Channel = new System.Windows.Media.Media3D.Point4D(r, g, b, a);
 
             IImageEncoder imageEncoder;
 
