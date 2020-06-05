@@ -122,10 +122,5 @@ namespace FFXIV_TexTools.Views
             this.ExportContextMenu.PlacementTarget = this.ExportTextureButton;
             this.ExportContextMenu.IsOpen = true;
         }
-
-        private void MenuItem_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
     }
 }
