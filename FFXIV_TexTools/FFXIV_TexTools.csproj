@@ -323,9 +323,6 @@
     <Compile Include="Views\Models\ModelInspector.xaml.cs">
       <DependentUpon>ModelInspector.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Textures\ExportTextureOptionsView.xaml.cs">
-      <DependentUpon>ExportTextureOptionsView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\Models\ImportModelOptionsView.xaml.cs">
       <DependentUpon>ImportModelOptionsView.xaml</DependentUpon>
     </Compile>
@@ -430,10 +427,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Models\ModelInspector.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Textures\ExportTextureOptionsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

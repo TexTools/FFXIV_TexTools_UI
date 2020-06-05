@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+using ControlzEx.Standard;
 using FFXIV_TexTools.Helpers;
 using FFXIV_TexTools.Properties;
 using FFXIV_TexTools.Resources;
@@ -37,6 +38,7 @@ using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
+using xivModdingFramework.Exd.FileTypes;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Items.Categories;
@@ -88,7 +90,7 @@ namespace FFXIV_TexTools.ViewModels
         private string _modToggleText = UIStrings.Enable_Disable;
 
         private bool _raceEnabled, _partEnabled, _typeEnabled, _typePartEnabled, _mapEnabled, _channelsEnabled;
-        private bool _exportEnabled, _importEnabled, _ddsImportEnabled, _bmpImportEnabled, _modStatusEnabled, _moreOptionsEnabled, _translucencyEnabled, _translucencyCheck, _addNewTexturePartEnabled=true;
+        private bool _exportEnabled, _importEnabled, _modStatusEnabled, _moreOptionsEnabled, _translucencyEnabled, _translucencyCheck, _addNewTexturePartEnabled=true;
         private bool _redChecked = true, _greenChecked = true, _blueChecked = true, _alphaChecked;
 
         private int _raceIndex, _partIndex, _typeIndex, _typePartIndex, _mapIndex, _partCount, _typeCount, _typePartCount, _mapCount, _raceCount;
@@ -1031,8 +1033,6 @@ namespace FFXIV_TexTools.ViewModels
 
             ExportEnabled = true;
             ImportEnabled = true;
-            DDSImportEnabled = DDSFileExists();
-            BMPImportEnabled = BMPFileExists();
             MoreOptionsEnabled = true;
 
             if (_item != null)
@@ -1076,48 +1076,6 @@ namespace FFXIV_TexTools.ViewModels
             }
 
             OnLoadingComplete();
-        }
-
-        /// <summary>
-        /// Checks whether a DDS file exists
-        /// </summary>
-        /// <returns>The status of the DDS files existence</returns>
-        private bool DDSFileExists()
-        {
-            var savePath = new DirectoryInfo(Settings.Default.Save_Directory);
-
-            if (_item != null)
-            {
-                return IOUtil.DDSFileExists(_item, savePath, Path.GetFileNameWithoutExtension(SelectedMap.TexType.Path), SelectedRace.XivRace);
-            }
-
-            if (_uiItem != null)
-            {
-                return IOUtil.DDSFileExists(_uiItem, savePath, Path.GetFileNameWithoutExtension(SelectedMap.TexType.Path));
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// Checks whether a BMP file exists
-        /// </summary>
-        /// <returns>The status of the BMP files existence</returns>
-        private bool BMPFileExists()
-        {
-            var savePath = new DirectoryInfo(Settings.Default.Save_Directory);
-
-            if (_item != null)
-            {
-                return IOUtil.BMPFileExists(_item, savePath, Path.GetFileNameWithoutExtension(SelectedMap.TexType.Path), SelectedRace.XivRace);
-            }
-
-            if (_uiItem != null)
-            {
-                return IOUtil.BMPFileExists(_uiItem, savePath, Path.GetFileNameWithoutExtension(SelectedMap.TexType.Path));
-            }
-
-            return false;
         }
 
         /// <summary>
@@ -1204,122 +1162,83 @@ namespace FFXIV_TexTools.ViewModels
 
         #region Buttons
 
-        /// <summary>
-        /// Command for the Export DDS Button
-        /// </summary>
-        public ICommand ExportDDS => new RelayCommand(SaveDDS);
-
-        private async void SaveDDS(object obj)
+        public enum TextureFormats
         {
-            if (!CheckMtrlIsOK())
-                return;
-            XivTex texData;
-            var savePath = new DirectoryInfo(Settings.Default.Save_Directory);
-
-            if (SelectedMap.TexType.Type == XivTexType.ColorSet)
-            {
-                texData = await _mtrl.MtrlToXivTex(_xivMtrl, SelectedMap.TexType);
-                _mtrl.SaveColorSetExtraData(_item, _xivMtrl, savePath, SelectedRace.XivRace);
-            }
-            else
-            {
-                texData = await _tex.GetTexData(SelectedMap.TexType);
-            }
-
-            if (_uiItem != null)
-            {
-                _tex.SaveTexAsDDS(_uiItem, texData, savePath);
-            }
-            else
-            {
-                _tex.SaveTexAsDDS(_item, texData, savePath, SelectedRace.XivRace);
-            }
-
-            DDSImportEnabled = DDSFileExists();
-            _textureView.BottomFlyout.IsOpen = false;
+            DDS,
+            BMP,
+            PNG
         }
 
-        /// <summary>
-        /// Command for the Export Bmp Button
-        /// </summary>
-        public ICommand ExportBmp => new RelayCommand(SaveBmp);
-
-        private void SaveBmp(object obj)
+        public async Task Export(TextureFormats format)
         {
             if (!CheckMtrlIsOK())
                 return;
-            var savePath = new DirectoryInfo(Settings.Default.Save_Directory);
 
-            var path = _uiItem != null ? IOUtil.MakeItemSavePath(_uiItem, savePath) : IOUtil.MakeItemSavePath(_item, savePath, SelectedRace.XivRace);
-
-            Directory.CreateDirectory(path);
-
-            if (!_mapData.IsColorSet)
+            if (format == TextureFormats.DDS)
             {
-                using (var img = Image.LoadPixelData<Rgba32>(_mapData.MapBytes, _mapData.Width, _mapData.Height))
+                DirectoryInfo savePath = new DirectoryInfo(Settings.Default.Save_Directory);
+                XivTex texData;
+
+                if (SelectedMap.TexType.Type == XivTexType.ColorSet)
                 {
-                    img.Save($"{path}/{Path.GetFileNameWithoutExtension(SelectedMap.TexType.Path)}.bmp", new BmpEncoder
-                    {
-                        SupportTransparency = true,
-                        BitsPerPixel = BmpBitsPerPixel.Pixel32
-                    });
+                    texData = await _mtrl.MtrlToXivTex(_xivMtrl, SelectedMap.TexType);
+                    _mtrl.SaveColorSetExtraData(_item, _xivMtrl, savePath, SelectedRace.XivRace);
+                }
+                else
+                {
+                    texData = await _tex.GetTexData(SelectedMap.TexType);
+                }
+
+                if (_uiItem != null)
+                {
+                    _tex.SaveTexAsDDS(_uiItem, texData, savePath);
+                }
+                else
+                {
+                    _tex.SaveTexAsDDS(_item, texData, savePath, SelectedRace.XivRace);
                 }
             }
             else
             {
-                using (var img = Image.LoadPixelData<RgbaVector>(_mapData.MapBytes, _mapData.Width, _mapData.Height))
+                IImageEncoder encoder;
+                if (format == TextureFormats.BMP)
                 {
-                    img.Save($"{path}/{Path.GetFileNameWithoutExtension(SelectedMap.TexType.Path)}.bmp", new BmpEncoder
+                    encoder = new BmpEncoder()
                     {
                         SupportTransparency = true,
                         BitsPerPixel = BmpBitsPerPixel.Pixel32
-                    });
+                    };
                 }
-            }
-
-            _textureView.BottomFlyout.IsOpen = false;
-
-            BMPImportEnabled = BMPFileExists();
-        }
-
-        /// <summary>
-        /// Command for the Export All Button
-        /// </summary>
-        public ICommand ExportAll => new RelayCommand(SaveAll);
-
-        private async void SaveAll(object obj)
-        {
-            if (!CheckMtrlIsOK())
-                return;
-            var texData = await _tex.GetTexData(SelectedMap.TexType);
-
-            var savePath = new DirectoryInfo(Settings.Default.Save_Directory);
-
-            if (_uiItem != null)
-            {
-                _tex.SaveTexAsDDS(_uiItem, texData, savePath);
-            }
-            else
-            {
-                _tex.SaveTexAsDDS(_item, texData, savePath, SelectedRace.XivRace);
-            }
-
-            var path = _uiItem != null ? IOUtil.MakeItemSavePath(_uiItem, savePath) : IOUtil.MakeItemSavePath(_item, savePath, SelectedRace.XivRace);
-
-            Directory.CreateDirectory(path);
-
-            using (var img = Image.LoadPixelData<Rgba32>(_mapData.MapBytes, _mapData.Width, _mapData.Height))
-            {
-                img.Save($"{path}/{Path.GetFileNameWithoutExtension(SelectedMap.TexType.Path)}.bmp", new BmpEncoder
+                else if (format == TextureFormats.PNG)
                 {
-                    SupportTransparency = true,
-                    BitsPerPixel = BmpBitsPerPixel.Pixel32
-                });
+                    encoder = new PngEncoder()
+                    {
+                        BitDepth = PngBitDepth.Bit16
+                    };
+                }
+                else
+                {
+                    throw new Exception($"Texture format not supported: {format}");
+                }
+
+                Image img;
+                if (_mapData.IsColorSet)
+                {
+                    img = Image.LoadPixelData<RgbaVector>(_mapData.MapBytes, _mapData.Width, _mapData.Height);
+                }
+                else
+                {
+                    img = Image.LoadPixelData<Rgba32>(_mapData.MapBytes, _mapData.Width, _mapData.Height);
+                }
+
+                DirectoryInfo path = GetDefaultPath(format);
+
+                if (!path.Parent.Exists)
+                    path.Parent.Create();
+
+                img.Save(path.FullName, encoder);
+                img.Dispose();
             }
-
-            _textureView.BottomFlyout.IsOpen = false;
-
-            DDSImportEnabled = true;
         }
 
         /// <summary>
@@ -1353,265 +1272,107 @@ namespace FFXIV_TexTools.ViewModels
         }
 
         /// <summary>
-        /// Command for the Open Folder Button
-        /// </summary>
-        public ICommand ImportDDSButton => new RelayCommand(ImportDDS);
-
-        /// <summary>
-        /// Imports a DDS file
-        /// </summary>
-        private async void ImportDDS(object obj)
-        {
-            if (!CheckMtrlIsOK())
-                return;
-            var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
-            var index = new Index(gameDirectory);
-
-            if (index.IsIndexLocked(XivDataFile._0A_Exd))
-            {
-                FlexibleMessageBox.Show(UIMessages.IndexLockedErrorMessage,
-                    UIMessages.IndexLockedErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                return;
-            }
-
-            var dxVersion = int.Parse(Settings.Default.DX_Version);
-
-            var savePath = new DirectoryInfo(Settings.Default.Save_Directory);
-            var path = savePath.FullName;
-
-            if (_item != null)
-            {
-                path = IOUtil.MakeItemSavePath(_item, savePath, SelectedRace.XivRace);
-            }
-            else if (_uiItem != null)
-            {
-                path = IOUtil.MakeItemSavePath(_uiItem, savePath);
-            }
-
-            var fullPath = new DirectoryInfo($"{path}\\{Path.GetFileNameWithoutExtension(SelectedMap.TexType.Path)}.dds");
-
-            if (SelectedMap.TexType.Type != XivTexType.ColorSet)
-            {
-                var texData = await _tex.GetTexData(SelectedMap.TexType);
-
-                if (File.Exists(fullPath.FullName))
-                {
-                    try
-                    {
-                        if (_item != null)
-                        {
-                            await _tex.TexDDSImporter(texData, _item, fullPath, XivStrings.TexTools);
-                        }
-                        else if (_uiItem != null)
-                        {
-                            await _tex.TexDDSImporter(texData, _uiItem, fullPath, XivStrings.TexTools);
-                        }
-                    }
-                    catch(Exception ex)
-                    {
-                        FlexibleMessageBox.Show(
-                            string.Format(UIMessages.TextureImportErrorMessage, ex.Message), UIMessages.TextureImportErrorTitle,
-                            MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
-
-                }
-            }
-            else
-            {
-                try
-                {
-                    var newColorSetOffset = await _tex.TexColorImporter(_xivMtrl, fullPath, _item, XivStrings.TexTools, GetLanguage());
-                    _xivMtrl = await _mtrl.GetMtrlData(newColorSetOffset, _xivMtrl.MTRLPath, dxVersion);
-                }
-                catch(Exception ex)
-                {
-                    FlexibleMessageBox.Show(
-                        string.Format(UIMessages.TextureImportErrorMessage, ex.Message), UIMessages.TextureImportErrorTitle,
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }               
-            }
-
-            _textureView.BottomFlyout.IsOpen = false;
-            UpdateImage();
-        }
-
-        /// <summary>
-        /// Command for the Import From Button
-        /// </summary>
-        public ICommand ImportFromButton => new RelayCommand(ImportFrom);
-
-        /// <summary>
         /// Imports a texture file 
         /// </summary>
         /// <remarks>
         /// Import a texture file from any location
         /// </remarks>
-        private async void ImportFrom(object obj)
+        public async Task ImportFrom()
         {
             if (!CheckMtrlIsOK())
                 return;
-            var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
-            var index = new Index(gameDirectory);
 
-            if (index.IsIndexLocked(XivDataFile._0A_Exd))
-            {
-                FlexibleMessageBox.Show(UIMessages.IndexLockedErrorMessage,
-                    UIMessages.IndexLockedErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
-
+            DirectoryInfo path = this.GetDefaultPath();
+            if (path == null)
                 return;
-            }
 
-            var path = new DirectoryInfo(Settings.Default.Save_Directory);
+            var openFileDialog = new OpenFileDialog { InitialDirectory = path.FullName, Filter = "Texture Files(*.DDS;*.BMP;*.PNG) |*.DDS;*.BMP;*.PNG" };
 
-            if (_item != null)
-            {
-                path = new DirectoryInfo(IOUtil.MakeItemSavePath(_item, path, SelectedRace.XivRace));
-            }
-            else if (_uiItem != null)
-            {
-                path = new DirectoryInfo(IOUtil.MakeItemSavePath(_uiItem, path));
-            }
+            if (openFileDialog.ShowDialog() != DialogResult.OK)
+                return;
 
-            var openFileDialog = new OpenFileDialog {InitialDirectory = path.FullName, Filter = "Texture Files(*.DDS;*.BMP) |*.DDS;*.BMP"};
-
-            if (openFileDialog.ShowDialog() == DialogResult.OK)
-            {
-                var fileDir = new DirectoryInfo(openFileDialog.FileName);
-                var dxVersion = int.Parse(Settings.Default.DX_Version);
-
-                if (fileDir.FullName.ToLower().Contains(".dds"))
-                {
-                    if (SelectedMap.TexType.Type != XivTexType.ColorSet)
-                    {
-                        var texData = await _tex.GetTexData(SelectedMap.TexType);
-
-                        try
-                        {
-                            if (_item != null)
-                            {
-                                await _tex.TexDDSImporter(texData, _item, fileDir, XivStrings.TexTools);
-                            }
-                            else if (_uiItem != null)
-                            {
-                                await _tex.TexDDSImporter(texData, _uiItem, fileDir, XivStrings.TexTools);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            FlexibleMessageBox.Show(
-                                string.Format(UIMessages.TextureImportErrorMessage, ex.Message), UIMessages.TextureImportErrorTitle,
-                                MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            return;
-                        }
-                    }
-                    else
-                    {
-                        try
-                        {
-                            var newColorSetOffset = await _tex.TexColorImporter(_xivMtrl, fileDir, _item, XivStrings.TexTools, GetLanguage());
-                            _xivMtrl = await _mtrl.GetMtrlData(newColorSetOffset, _xivMtrl.MTRLPath, dxVersion);
-                        }
-                        catch (Exception ex)
-                        {
-                            FlexibleMessageBox.Show(
-                                string.Format(UIMessages.TextureImportErrorMessage, ex.Message), UIMessages.TextureImportErrorTitle,
-                                MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            return;
-                        }                        
-                    }
-                }
-                else
-                {
-                    if (SelectedMap.TexType.Type != XivTexType.ColorSet)
-                    {
-                        var texData = await _tex.GetTexData(SelectedMap.TexType);
-
-                        try
-                        {
-                            if (_item != null)
-                            {
-                                await _tex.TexBMPImporter(texData, _item, fileDir, XivStrings.TexTools);
-                            }
-                            else if (_uiItem != null)
-                            {
-                                await _tex.TexBMPImporter(texData, _uiItem, fileDir, XivStrings.TexTools);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            FlexibleMessageBox.Show(
-                                string.Format(UIMessages.TextureImportErrorMessage, ex.Message), UIMessages.TextureImportErrorTitle,
-                                MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            return;
-                        }
-                    }
-                    else
-                    {
-                        FlexibleMessageBox.Show(
-                            UIMessages.ColorSetBMPNotSupportedMessage, UIMessages.TextureImportErrorTitle,
-                            MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
-                }
-
-                UpdateImage();
-            }
-
-            _textureView.BottomFlyout.IsOpen = false;
+            await this.Import(openFileDialog.FileName);
         }
 
-        /// <summary>
-        /// Command for the Import From Button
-        /// </summary>
-        public ICommand ImportBMPButton => new RelayCommand(ImportBMP);
-
-        private async void ImportBMP(object obj)
+        public async Task Import(TextureFormats format)
         {
-            if (!CheckMtrlIsOK())
-                return;
-            var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
-            var index = new Index(gameDirectory);
+            DirectoryInfo path = GetDefaultPath(format);
+            await this.Import(path.FullName);
+        }
+
+        public bool GetDefaultFileExists(TextureFormats format)
+        {
+            DirectoryInfo path = GetDefaultPath(format);
+            return File.Exists(path.FullName);
+        }
+
+        private DirectoryInfo GetDefaultPath(TextureFormats format)
+        {
+            DirectoryInfo path = this.GetDefaultPath();
+            if (path == null)
+                return null;
+
+            string extension = "dds";
+            if (format == TextureFormats.BMP)
+                extension = "bmp";
+
+            if (format == TextureFormats.PNG)
+                extension = "png";
+
+            DirectoryInfo fullPath = new DirectoryInfo($"{path}\\{Path.GetFileNameWithoutExtension(SelectedMap.TexType.Path)}.{extension}");
+            return fullPath;
+        }
+
+        private DirectoryInfo GetDefaultPath()
+        {
+            DirectoryInfo gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
+            Index index = new Index(gameDirectory);
 
             if (index.IsIndexLocked(XivDataFile._0A_Exd))
             {
-                FlexibleMessageBox.Show(UIMessages.IndexLockedErrorMessage,
-                    UIMessages.IndexLockedErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                return;
+                FlexibleMessageBox.Show(UIMessages.IndexLockedErrorMessage, UIMessages.IndexLockedErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return null;
             }
 
-            var savePath = new DirectoryInfo(Settings.Default.Save_Directory);
-            var path = savePath.FullName;
+            DirectoryInfo savePath = new DirectoryInfo(Settings.Default.Save_Directory);
+            DirectoryInfo path;
 
             if (_item != null)
             {
-                path = IOUtil.MakeItemSavePath(_item, savePath, SelectedRace.XivRace);
+                path = new DirectoryInfo(IOUtil.MakeItemSavePath(_item, savePath, SelectedRace.XivRace));
             }
             else if (_uiItem != null)
             {
-                path = IOUtil.MakeItemSavePath(_uiItem, savePath);
+                path = new DirectoryInfo(IOUtil.MakeItemSavePath(_uiItem, savePath));
+            }
+            else
+            {
+                throw new Exception("Unsupported item type");
             }
 
-            var fullPath = new DirectoryInfo($"{path}\\{Path.GetFileNameWithoutExtension(SelectedMap.TexType.Path)}.bmp");
+            return path;
+        }
 
-            if (SelectedMap.TexType.Type != XivTexType.ColorSet)
+        public async Task Import(string fileName)
+        {
+            var fileDir = new DirectoryInfo(fileName);
+            var dxVersion = int.Parse(Settings.Default.DX_Version);
+
+            if (fileDir.FullName.ToLower().Contains(".dds"))
             {
-                var texData = await _tex.GetTexData(SelectedMap.TexType);
-
-                if (File.Exists(fullPath.FullName))
+                if (SelectedMap.TexType.Type != XivTexType.ColorSet)
                 {
+                    var texData = await _tex.GetTexData(SelectedMap.TexType);
+
                     try
                     {
                         if (_item != null)
                         {
-                            await _tex.TexBMPImporter(texData, _item, fullPath, XivStrings.TexTools);
+                            await _tex.TexDDSImporter(texData, _item, fileDir, XivStrings.TexTools);
                         }
                         else if (_uiItem != null)
                         {
-                            await _tex.TexBMPImporter(texData, _uiItem, fullPath, XivStrings.TexTools);
+                            await _tex.TexDDSImporter(texData, _uiItem, fileDir, XivStrings.TexTools);
                         }
                     }
                     catch (Exception ex)
@@ -1621,19 +1382,59 @@ namespace FFXIV_TexTools.ViewModels
                             MessageBoxButtons.OK, MessageBoxIcon.Error);
                         return;
                     }
-
+                }
+                else
+                {
+                    try
+                    {
+                        var newColorSetOffset = await _tex.TexColorImporter(_xivMtrl, fileDir, _item, XivStrings.TexTools, GetLanguage());
+                        _xivMtrl = await _mtrl.GetMtrlData(newColorSetOffset, _xivMtrl.MTRLPath, dxVersion);
+                    }
+                    catch (Exception ex)
+                    {
+                        FlexibleMessageBox.Show(
+                            string.Format(UIMessages.TextureImportErrorMessage, ex.Message), UIMessages.TextureImportErrorTitle,
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }                        
                 }
             }
             else
             {
-                FlexibleMessageBox.Show(
-                    UIMessages.ColorSetBMPNotSupportedMessage, UIMessages.TextureImportErrorTitle,
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
+                if (SelectedMap.TexType.Type != XivTexType.ColorSet)
+                {
+                    var texData = await _tex.GetTexData(SelectedMap.TexType);
+
+                    try
+                    {
+                        if (_item != null)
+                        {
+                            await _tex.TexImporter(texData, _item, fileDir, XivStrings.TexTools);
+                        }
+                        else if (_uiItem != null)
+                        {
+                            await _tex.TexImporter(texData, _uiItem, fileDir, XivStrings.TexTools);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        FlexibleMessageBox.Show(
+                            string.Format(UIMessages.TextureImportErrorMessage, ex.Message), UIMessages.TextureImportErrorTitle,
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                }
+                else
+                {
+                    FlexibleMessageBox.Show(
+                        UIMessages.ColorSetBMPNotSupportedMessage, UIMessages.TextureImportErrorTitle,
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
             }
 
-            _textureView.BottomFlyout.IsOpen = false;
             UpdateImage();
+            
         }
 
 
@@ -1917,7 +1718,6 @@ namespace FFXIV_TexTools.ViewModels
                 }
                 LoadingComplete += SetToNewTexturePart;
                 SelectedRace = SelectedRace;
-                _textureView.BottomFlyout.IsOpen = false;
             }
             catch(Exception ex)
             {
@@ -2021,31 +1821,6 @@ namespace FFXIV_TexTools.ViewModels
             }
         }
 
-        /// <summary>
-        /// The enabled status for the BMP import button
-        /// </summary>
-        public bool BMPImportEnabled
-        {
-            get => _bmpImportEnabled;
-            set
-            {
-                _bmpImportEnabled = value;
-                NotifyPropertyChanged(nameof(BMPImportEnabled));
-            }
-        }
-
-        /// <summary>
-        /// The enabled status for the DDS import button
-        /// </summary>
-        public bool DDSImportEnabled
-        {
-            get => _ddsImportEnabled;
-            set
-            {
-                _ddsImportEnabled = value;
-                NotifyPropertyChanged(nameof(DDSImportEnabled));
-            }
-        }
         /// <summary>
         /// The enabled status for the mod status button
         /// </summary>
@@ -2451,7 +2226,6 @@ namespace FFXIV_TexTools.ViewModels
         }
         private bool CheckMtrlIsOK()
         {
-            _textureView.BottomFlyout.IsOpen = false;
             if (_xivMtrl != null)
             {
                 var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
@@ -2468,7 +2242,6 @@ namespace FFXIV_TexTools.ViewModels
         private bool CheckMapIsOK()
         {
             var path = SelectedMap.TexType.Path;
-            _textureView.BottomFlyout.IsOpen = false;
             var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
             var index = new Index(gameDirectory);
 
