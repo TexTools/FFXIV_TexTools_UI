@@ -14,7 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+using FFXIV_TexTools.Properties;
 using FFXIV_TexTools.ViewModels;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -25,29 +27,85 @@ namespace FFXIV_TexTools.Views
     /// </summary>
     public partial class TextureView : UserControl
     {
+        private TextureViewModel textureViewModel;
+
         public TextureView()
         {
             InitializeComponent();
 
-            this.DataContext = new TextureViewModel(this);
+            this.textureViewModel = new TextureViewModel(this);
+            this.DataContext = this.textureViewModel;
+
+            CustomizeViewModel customizeViewModel = new CustomizeViewModel();
+            this.ExportContextMenu.DataContext = customizeViewModel;
+            this.ExportFormatLabel.DataContext = customizeViewModel;
         }
 
         /// <summary>
         /// Event handler for export button
         /// </summary>
-        private void ExportTextureButton_Click(object sender, RoutedEventArgs e)
+        private async void ExportTextureButton_Click(object sender, RoutedEventArgs e)
         {
-            BottomFlyout.Content = new ExportTextureOptionsView();
-            BottomFlyout.IsOpen = true;
+            if (Settings.Default.ExportTexDDS)
+                await this.textureViewModel.Export(TextureViewModel.TextureFormats.DDS);
+
+            if (Settings.Default.ExportTexPNG)
+                await this.textureViewModel.Export(TextureViewModel.TextureFormats.PNG);
+
+            if (Settings.Default.ExportTexBMP)
+                await this.textureViewModel.Export(TextureViewModel.TextureFormats.BMP);
+
+            // update import button visibility...
         }
 
         /// <summary>
         /// Event handler for import button
         /// </summary>
-        private void ImportTextureButton_Click(object sender, RoutedEventArgs e)
+        private async void ImportTextureButton_Click(object sender, RoutedEventArgs e)
         {
-            BottomFlyout.Content = new ImportTextureOptionsView();
-            BottomFlyout.IsOpen = true;
+            this.ImportContextMenu.Items.Clear();
+
+            TextureViewModel.TextureFormats defaultFormat = TextureViewModel.TextureFormats.DDS;
+
+            foreach (TextureViewModel.TextureFormats format in Enum.GetValues(typeof(TextureViewModel.TextureFormats)))
+            {
+                bool exists = this.textureViewModel.GetDefaultFileExists(format);
+
+                if (exists)
+                {
+                    defaultFormat = format;
+
+                    MenuItem item = new MenuItem();
+                    item.Header = format.ToString();
+                    item.Click += async (s, a) =>
+                    {
+                        await this.textureViewModel.Import(format);
+                    };
+
+                    this.ImportContextMenu.Items.Add(item);
+                }
+            }
+
+            if (this.ImportContextMenu.Items.Count == 0)
+            {
+                await this.textureViewModel.ImportFrom();
+            }
+            else if (this.ImportContextMenu.Items.Count == 1)
+            {
+                // if there is only one item, just do it directly.
+                await this.textureViewModel.Import(defaultFormat);
+            }
+            else if (this.ImportContextMenu.Items.Count > 1)
+            {
+                // if there is more than one item, show the menu.
+                this.ImportContextMenu.PlacementTarget = this.ImportTextureButton;
+                this.ImportContextMenu.IsOpen = true;
+            }
+        }
+
+        private async void ImportTextureFromButton_Click(object sender, RoutedEventArgs e)
+        {
+            await this.textureViewModel.ImportFrom();
         }
 
         /// <summary>
@@ -57,6 +115,12 @@ namespace FFXIV_TexTools.Views
         {
             BottomFlyout.Content = new MoreTextureOptionsView();
             BottomFlyout.IsOpen = true;
+        }
+
+        private void ExportFormatDropdown_Click(object sender, RoutedEventArgs e)
+        {
+            this.ExportContextMenu.PlacementTarget = this.ExportTextureButton;
+            this.ExportContextMenu.IsOpen = true;
         }
     }
 }

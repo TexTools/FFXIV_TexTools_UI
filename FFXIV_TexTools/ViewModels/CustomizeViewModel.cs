@@ -261,6 +261,74 @@ namespace FFXIV_TexTools.ViewModels
             }
         }
 
+        public bool ExportTextureAsDDS
+        {
+            get => Settings.Default.ExportTexDDS;
+            set
+            {
+                Settings.Default.ExportTexDDS = value;
+                Settings.Default.Save();
+                NotifyPropertyChanged(nameof(ExportTextureAsDDS));
+                NotifyPropertyChanged(nameof(ExportTexDisplay));
+                EnsureValidExportFormat();
+            }
+        }
+
+        public bool ExportTextureAsBMP
+        {
+            get => Settings.Default.ExportTexBMP;
+            set
+            {
+                Settings.Default.ExportTexBMP = value;
+                Settings.Default.Save();
+                NotifyPropertyChanged(nameof(ExportTextureAsBMP));
+                NotifyPropertyChanged(nameof(ExportTexDisplay));
+                EnsureValidExportFormat();
+            }
+        }
+
+        public bool ExportTextureAsPNG
+        {
+            get => Settings.Default.ExportTexPNG;
+            set
+            {
+                Settings.Default.ExportTexPNG = value;
+                Settings.Default.Save();
+                NotifyPropertyChanged(nameof(ExportTextureAsPNG));
+                NotifyPropertyChanged(nameof(ExportTexDisplay));
+                EnsureValidExportFormat();
+            }
+        }
+
+        private void EnsureValidExportFormat()
+        {
+            if (!Settings.Default.ExportTexPNG &&
+                !Settings.Default.ExportTexBMP &&
+                !Settings.Default.ExportTexDDS)
+            {
+                this.ExportTextureAsDDS = true;
+            }
+        }
+
+        public string ExportTexDisplay
+        {
+            get
+            {
+                string val = string.Empty;
+
+                if (this.ExportTextureAsDDS)
+                    val += "DDS";
+
+                if (this.ExportTextureAsBMP)
+                    val += string.IsNullOrEmpty(val) ? "BMP" : ", BMP";
+
+                 if (this.ExportTextureAsPNG)
+                    val += string.IsNullOrEmpty(val) ? "PNG" : ", PNG";
+
+                return val;
+            }
+        }
+
         #endregion
 
         #region Commands
