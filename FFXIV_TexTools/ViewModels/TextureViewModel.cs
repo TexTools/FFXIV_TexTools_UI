@@ -1232,6 +1232,10 @@ namespace FFXIV_TexTools.ViewModels
                 }
 
                 DirectoryInfo path = GetDefaultPath(format);
+
+                if (!path.Parent.Exists)
+                    path.Parent.Create();
+
                 img.Save(path.FullName, encoder);
                 img.Dispose();
             }
