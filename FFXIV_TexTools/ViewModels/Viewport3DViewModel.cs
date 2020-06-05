@@ -18,6 +18,7 @@ using FFXIV_TexTools.Custom;
 using FFXIV_TexTools.Resources;
 using HelixToolkit.Wpf.SharpDX;
 using HelixToolkit.Wpf.SharpDX.Cameras;
+using SharpDX;
 using SharpDX.Direct3D11;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Png;
@@ -26,8 +27,10 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Windows.Media.Media3D;
 using xivModdingFramework.Models.DataContainers;
+using xivModdingFramework.Models.FileTypes;
 using MeshBuilder = HelixToolkit.Wpf.SharpDX.MeshBuilder;
 using MeshGeometry3D = HelixToolkit.Wpf.SharpDX.MeshGeometry3D;
 using PerspectiveCamera = HelixToolkit.Wpf.SharpDX.PerspectiveCamera;
@@ -82,21 +85,13 @@ namespace FFXIV_TexTools.ViewModels
                     Indices = new IntCollection(meshData.Indices),
                     Colors = new Color4Collection(meshData.Colors4),
                     TextureCoordinates = new Vector2Collection(meshData.TextureCoordinates0),
+                    BiTangents = new Vector3Collection(meshData.BiNormals)
                 };
 
-                try
-                {
-                    MeshBuilder.ComputeTangents(meshGeometry3D);
-                }
-                catch
-                {
-                    Debug.WriteLine($"Unable to compute tangents for mesh {i}");
-                }
-
-                if (meshData.BiNormals != null && meshData.BiNormals.Count > 0)
-                {
-                    meshGeometry3D.BiTangents = new Vector3Collection(meshData.BiNormals);
-                }
+                // Calculate the missing Tangent data by making use of the Normal, Binormal and Handedness data.
+                // This is significantly less expensive than recalculating everything, and more accurate.
+                var tangents = Mdl.CalculateTangentsFromBinormals(meshData.Normals, meshData.BiNormals, meshData.BiNormalHandedness);
+                meshGeometry3D.Tangents = new Vector3Collection(tangents);
 
                 var textureData = textureDataDictionary[mdlData.LoDList[0].MeshDataList[i].MeshInfo.MaterialIndex];
 
