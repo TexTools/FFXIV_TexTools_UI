@@ -10,7 +10,7 @@
         xmlns:input="clr-namespace:System.Windows.Input;assembly=PresentationCore"
         mc:Ignorable="d"
         Title="{Binding Source={x:Static resx:UIStrings.Simple_ModPack_Creator}}" Height="600" Width="800" IsMinButtonEnabled="False" IsMaxRestoreButtonEnabled="False" WindowStartupLocation="CenterOwner">
-    <Grid>
+    <Grid x:Name="ContentArea">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition/>
@@ -63,28 +63,24 @@
                 <Button x:Name="SelectActiveButton" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="1" Content="{Binding Source={x:Static resx:UIStrings.Select_Active}}" Click="SelectActiveButton_Click" Margin="5"/>
                 <Button x:Name="ClearSelectedButton" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="2" Content="{Binding Source={x:Static resx:UIStrings.Clear_Selected}}" Click="ClearSelectedButton_Click" Margin="5"/>
             </Grid>
-            <ListView x:Name="ModListView" Grid.Row="1" SelectionChanged="ModListView_SelectionChanged" SelectionMode="Multiple"
-                      BorderBrush="Black" BorderThickness="0,1" AlternationCount="2" GridViewColumnHeader.Click="Header_Click">
-                <ListView.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <StackPanel></StackPanel>
-                    </ItemsPanelTemplate>
-                </ListView.ItemsPanel>
+            <ListView Style="{x:Null}" x:Name="ModListView" Grid.Row="1" SelectionChanged="ModListView_SelectionChanged" SelectionMode="Multiple"
+                      BorderBrush="Black" BorderThickness="0,1" AlternationCount="2" GridViewColumnHeader.Click="Header_Click"
+                      ItemsSource="{Binding Entries}">
                 <ListView.View>
                     <GridView x:Name="GridViewCol">
-                        <GridViewColumn Header="_">
+                        <GridViewColumn Width="32">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <CheckBox IsChecked="{Binding RelativeSource={RelativeSource AncestorType={x:Type ListViewItem}}, Path=IsSelected}"/>
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
-                        <GridViewColumn Header="{Binding Source={x:Static resx:UIStrings.Name}}" DisplayMemberBinding="{Binding Name}"/>
-                        <GridViewColumn Header="{Binding Source={x:Static resx:UIStrings.Map}}" DisplayMemberBinding="{Binding Map}"/>
-                        <GridViewColumn Header="{Binding Source={x:Static resx:UIStrings.Race}}" DisplayMemberBinding="{Binding Race}"/>
-                        <GridViewColumn Header="{Binding Source={x:Static resx:UIStrings.Type}}" DisplayMemberBinding="{Binding Type}"/>
-                        <GridViewColumn Header="{Binding Source={x:Static resx:UIStrings.Num}}" DisplayMemberBinding="{Binding Num}"/>
-                        <GridViewColumn Header="{Binding Source={x:Static resx:UIStrings.Part}}" DisplayMemberBinding="{Binding Part}"/>
+                        <GridViewColumn Header="{Binding Source={x:Static resx:UIStrings.Name}}" DisplayMemberBinding="{Binding Name}" Width="250"/>
+                        <GridViewColumn Header="{Binding Source={x:Static resx:UIStrings.Map}}" DisplayMemberBinding="{Binding Map}" Width="100"/>
+                        <GridViewColumn Header="{Binding Source={x:Static resx:UIStrings.Race}}" DisplayMemberBinding="{Binding Race}" Width="180"/>
+                        <GridViewColumn Header="{Binding Source={x:Static resx:UIStrings.Type}}" DisplayMemberBinding="{Binding Type}" Width="50"/>
+                        <GridViewColumn Header="{Binding Source={x:Static resx:UIStrings.Num}}" DisplayMemberBinding="{Binding Num}" Width="50"/>
+                        <GridViewColumn Header="{Binding Source={x:Static resx:UIStrings.Part}}" DisplayMemberBinding="{Binding Part}" Width="50"/>
                         <GridViewColumn Header="{Binding Source={x:Static resx:UIStrings.Active}}" DisplayMemberBinding="{Binding Active}"/>
                     </GridView>
                 </ListView.View>
