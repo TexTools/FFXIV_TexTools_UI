@@ -234,6 +234,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Controls\FeedbackControl.xaml.cs">
+      <DependentUpon>FeedbackControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Custom\CustomEffectsManager.cs" />
     <Compile Include="Custom\CustomMeshGeometryModel3D.cs" />
     <Compile Include="Helpers\FlexibleMessageBox.cs" />
@@ -374,6 +377,10 @@
     <Compile Include="Views\ModPack\WizardModPackControl.xaml.cs">
       <DependentUpon>WizardModPackControl.xaml</DependentUpon>
     </Compile>
+    <Page Include="Controls\FeedbackControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
