@@ -28,12 +28,14 @@ namespace FFXIV_TexTools.Controls
 	/// </summary>
 	public partial class FeedbackControl : UserControl
 	{
+		private bool isOpen = false;
+
 		public FeedbackControl()
 		{
 			InitializeComponent();
 		}
 
-		public void Show(PackIconFontAwesomeKind icon, double progress = -1)
+		public async Task Show(PackIconFontAwesomeKind icon, double progress = -1)
 		{
 			this.Area.Visibility = Visibility.Visible;
 			this.Icon.Kind = icon;
@@ -48,16 +50,29 @@ namespace FFXIV_TexTools.Controls
 				this.Progress.Value = progress * 100;
 			}
 
-			Storyboard storyboard;
-			if (this.Area.Opacity <= 0)
+			if (!this.isOpen)
 			{
-				storyboard = this.Resources["FadeInOut"] as Storyboard;
-			}
-			else
-			{
-				storyboard = this.Resources["FadeOut"] as Storyboard;
-			}
+				this.isOpen = true;
+				Storyboard storyboard = this.Resources["FadeIn"] as Storyboard;
+				storyboard.Begin();
 
+				bool complete = false;
+				storyboard.Completed += (s, e) => { complete = true; };
+
+				while (!complete)
+				{
+					await Task.Delay(32);
+				}
+			}
+		}
+
+		public void Hide()
+		{
+			this.Progress.IsIndeterminate = false;
+			this.Progress.Value = 100;
+
+			this.isOpen = false;
+			Storyboard storyboard = this.Resources["FadeOut"] as Storyboard;
 			storyboard.Begin();
 		}
 	}

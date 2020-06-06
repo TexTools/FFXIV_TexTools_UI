@@ -47,7 +47,7 @@ namespace FFXIV_TexTools.Views
         /// </summary>
         private async void ExportTextureButton_Click(object sender, RoutedEventArgs e)
         {
-            this.Feedback.Show(PackIconFontAwesomeKind.FileExportSolid);
+            await this.Feedback.Show(PackIconFontAwesomeKind.FileExportSolid);
 
             if (Settings.Default.ExportTexDDS)
                 await this.textureViewModel.Export(TextureViewModel.TextureFormats.DDS);
@@ -58,7 +58,7 @@ namespace FFXIV_TexTools.Views
             if (Settings.Default.ExportTexBMP)
                 await this.textureViewModel.Export(TextureViewModel.TextureFormats.BMP);
 
-            this.Feedback.Show(PackIconFontAwesomeKind.FileExportSolid, 1);
+            this.Feedback.Hide();
         }
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace FFXIV_TexTools.Views
         /// </summary>
         private async void ImportTextureButton_Click(object sender, RoutedEventArgs e)
         {
-            this.Feedback.Show(PackIconFontAwesomeKind.FileImportSolid);
+            await this.Feedback.Show(PackIconFontAwesomeKind.FileImportSolid);
 
             this.ImportContextMenu.Items.Clear();
 
@@ -107,14 +107,14 @@ namespace FFXIV_TexTools.Views
                 this.ImportContextMenu.IsOpen = true;
             }
 
-            this.Feedback.Show(PackIconFontAwesomeKind.FileImportSolid, 1);
+            this.Feedback.Hide();
         }
 
         private async void ImportTextureFromButton_Click(object sender, RoutedEventArgs e)
         {
-            this.Feedback.Show(PackIconFontAwesomeKind.FileImportSolid);
+            await this.Feedback.Show(PackIconFontAwesomeKind.FileImportSolid);
             await this.textureViewModel.ImportFrom();
-            this.Feedback.Show(PackIconFontAwesomeKind.FileImportSolid, 1);
+            this.Feedback.Hide();
         }
 
         /// <summary>
