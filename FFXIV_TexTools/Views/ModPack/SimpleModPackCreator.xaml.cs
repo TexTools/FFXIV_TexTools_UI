@@ -173,14 +173,14 @@ namespace FFXIV_TexTools.Views
             List<SimpleModPackEntries> entries = new List<SimpleModPackEntries>();
             foreach (Mod mod in modList.Mods)
             {
-                SimpleModPackEntries entry = await GetEntry(mod, modding);
+                SimpleModPackEntries entry = GetEntry(mod, modding);
                 if (entry == null)
                     continue;
 
                 entries.Add(entry);
             }
 
-            System.Windows.Application.Current.Dispatcher.Invoke(() =>
+            await System.Windows.Application.Current.Dispatcher.InvokeAsync(() =>
             {
                 foreach (SimpleModPackEntries entry in entries)
                 {
@@ -189,7 +189,7 @@ namespace FFXIV_TexTools.Views
             });
         }
 
-        private async Task<SimpleModPackEntries> GetEntry(Mod mod, Modding modding)
+        private SimpleModPackEntries GetEntry(Mod mod, Modding modding)
         {
             if (mod.fullPath.Equals(string.Empty))
                 return null;
@@ -206,10 +206,7 @@ namespace FFXIV_TexTools.Views
             entry.Part = GetPart(mod.fullPath);
             entry.Num = GetNumber(mod.fullPath);
             entry.Map = GetMap(mod.fullPath);
-
-            ////XivModStatus status = await modding.IsModEnabled(mod.fullPath, false);
-            ////entry.Active = status == XivModStatus.Enabled || status == XivModStatus.MatAdd;
-
+            entry.Active = mod.enabled || mod.data.modOffset == mod.data.originalOffset;
             entry.ModEntry = mod;
 
             return entry;
