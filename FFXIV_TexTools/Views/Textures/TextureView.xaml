@@ -7,7 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
     xmlns:local="clr-namespace:FFXIV_TexTools.Views"
-    xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
+    xmlns:resx="clr-namespace:FFXIV_TexTools.Resources" xmlns:controls="clr-namespace:FFXIV_TexTools.Controls"
     x:Class="FFXIV_TexTools.Views.TextureView"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
@@ -43,10 +43,10 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
             <RowDefinition/>
-			<RowDefinition Height="Auto"/>
-			<RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-		<UniformGrid Rows="1" Grid.Row="0" VerticalAlignment="Center" Margin="0, 5">
+        <UniformGrid Rows="1" Grid.Row="0" VerticalAlignment="Center" Margin="0, 5">
             <ComboBox Margin="5,0" mah:TextBoxHelper.UseFloatingWatermark="True" mah:TextBoxHelper.Watermark="{Binding RaceWatermark, FallbackValue='Race'}" 
                       ItemsSource="{Binding Races}" DisplayMemberPath="Name" SelectedValuePath="XivRace" SelectedItem="{Binding SelectedRace}" SelectedIndex="{Binding SelectedRaceIndex}"
                       IsEnabled="{Binding RaceComboboxEnabled}"/>
@@ -132,10 +132,10 @@
                         <TextBlock x:Name="ExportFormatLabel" Text="{Binding ExportTexDisplay}" Margin="5, 0, 0, 0"/>
                     </StackPanel>
                 </Button>
-				<Button Width="32" HorizontalAlignment="Right" BorderThickness="3" BorderBrush="Transparent" Click="ExportFormatDropdown_Click">
-					<iconPacks:PackIconFontAwesome Kind="CaretDownSolid" Height="4"/>
-				</Button>
-				<Line Y1="0" Y2="1" StrokeThickness="1" Stroke="Black" Stretch="Fill" Margin="0, 6, 32, 6" HorizontalAlignment="Right" Opacity="0.25"/>
+                <Button Width="32" HorizontalAlignment="Right" BorderThickness="3" BorderBrush="Transparent" Click="ExportFormatDropdown_Click">
+                    <iconPacks:PackIconFontAwesome Kind="CaretDownSolid" Height="4"/>
+                </Button>
+                <Line Y1="0" Y2="1" StrokeThickness="1" Stroke="Black" Stretch="Fill" Margin="0, 6, 32, 6" HorizontalAlignment="Right" Opacity="0.25"/>
 
                 <Grid.ContextMenu>
                     <ContextMenu x:Name="ExportContextMenu">
@@ -148,20 +148,20 @@
             </Grid>
 
             <Grid IsEnabled="{Binding ImportEnabled, FallbackValue=false}" Grid.Column="1" Margin="5">
-				<Button x:Name="ImportTextureButton" Click="ImportTextureButton_Click">
-					<StackPanel Orientation="Horizontal">
-						<TextBlock Text="{Binding Source={x:Static resx:UIStrings.Import}}"/>
-						<TextBlock x:Name="ImportFormatLabel" Text="{Binding ImportTexDisplay}" Margin="5, 0, 0, 0"/>
-					</StackPanel>
-				</Button>
+                <Button x:Name="ImportTextureButton" Click="ImportTextureButton_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding Source={x:Static resx:UIStrings.Import}}"/>
+                        <TextBlock x:Name="ImportFormatLabel" Text="{Binding ImportTexDisplay}" Margin="5, 0, 0, 0"/>
+                    </StackPanel>
+                </Button>
 
-				<Button Width="32" HorizontalAlignment="Right" BorderThickness="3" BorderBrush="Transparent" Click="ImportTextureFromButton_Click" Content="..."/>
-				<Line Y1="0" Y2="1" StrokeThickness="1" Stroke="Black" Stretch="Fill" Margin="0, 6, 32, 6" HorizontalAlignment="Right" Opacity="0.25"/>
+                <Button Width="32" HorizontalAlignment="Right" BorderThickness="3" BorderBrush="Transparent" Click="ImportTextureFromButton_Click" Content="..."/>
+                <Line Y1="0" Y2="1" StrokeThickness="1" Stroke="Black" Stretch="Fill" Margin="0, 6, 32, 6" HorizontalAlignment="Right" Opacity="0.25"/>
 
-				<Grid.ContextMenu>
-					<ContextMenu x:Name="ImportContextMenu"/>
-				</Grid.ContextMenu>
-			</Grid>
+                <Grid.ContextMenu>
+                    <ContextMenu x:Name="ImportContextMenu"/>
+                </Grid.ContextMenu>
+            </Grid>
 
             
             <Button x:Name="ModStatusToggleButton" Grid.Column="2" Content="{Binding ModToggleText, FallbackValue=Enable/Disable}" Margin="5" Command="{Binding ModStatusToggleButton}"  IsEnabled="{Binding ModStatusToggleEnabled, FallbackValue=false}"/>
@@ -172,10 +172,12 @@
             </Button>
         </Grid>
 
+        <controls:FeedbackControl x:Name="Feedback" Grid.RowSpan="3"/>
+
 
         <mah:FlyoutsControl Grid.Row="2" Grid.RowSpan="2" VerticalAlignment="Bottom">
-			<mah:Flyout x:Name="BottomFlyout" Position="Bottom"/>
-		</mah:FlyoutsControl>
+            <mah:Flyout x:Name="BottomFlyout" Position="Bottom"/>
+        </mah:FlyoutsControl>
 
     </Grid>
 </UserControl>
