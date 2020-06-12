@@ -56,13 +56,7 @@ namespace FFXIV_TexTools.Controls
 				Storyboard storyboard = this.Resources["FadeIn"] as Storyboard;
 				storyboard.Begin();
 
-				bool complete = false;
-				storyboard.Completed += (s, e) => { complete = true; };
-
-				while (!complete)
-				{
-					await Task.Delay(32);
-				}
+				await Task.Delay(160);
 			}
 		}
 
