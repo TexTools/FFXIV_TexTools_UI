@@ -716,6 +716,13 @@ namespace FFXIV_TexTools.Views
                         ttp.Type = XivTexType.Other;
                     }
                 }
+                else if (itemPath.Contains(".tex"))
+                {
+                    modCB.Name = $"{XivTexType.Other} ({Path.GetFileNameWithoutExtension(itemPath)})";
+                    modCB.SelectedMod = modItem;
+                    ttp.Type = XivTexType.Other;
+
+                }
 
                 if (modCB.Name != null)
                 {

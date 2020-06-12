@@ -22,7 +22,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -35,12 +34,10 @@ using FFXIV_TexTools.Properties;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Mods;
 using xivModdingFramework.Mods.DataContainers;
-using xivModdingFramework.Mods.Enums;
 using xivModdingFramework.Mods.FileTypes;
 using xivModdingFramework.Textures.Enums;
-using ListViewItem = System.Windows.Controls.ListViewItem;
 using SysTimer = System.Timers;
-using AutoUpdaterDotNET;
+using System.Diagnostics;
 
 namespace FFXIV_TexTools.Views
 {
@@ -669,17 +666,11 @@ namespace FFXIV_TexTools.Views
         /// </summary>
         private void SelectActiveButton_Click(object sender, RoutedEventArgs e)
         {
-            for (int i = 0; i < ModListView.Items.Count; i++)
+            foreach(SimpleModPackEntries entry in this.Entries)
             {
-                ListViewItem item = (ListViewItem)ModListView.ItemContainerGenerator.ContainerFromIndex(i);
-                SimpleModPackEntries mpi = (SimpleModPackEntries)ModListView.Items[i];
-                bool isActive = mpi.Active;
-
-                if (item != null)
-                {
-                    item.IsSelected = isActive;
-                }
+                entry.IsSelected = entry.Active;
             }
+
             ModListView.Focus();
         }
 
@@ -690,6 +681,13 @@ namespace FFXIV_TexTools.Views
         private void ClearSelectedButton_Click(object sender, RoutedEventArgs e)
         {
             ModListView.UnselectAll();
+
+            foreach (SimpleModPackEntries entry in this.Entries)
+            {
+                entry.IsSelected = false;
+            }
+
+            ModListView.Focus();
         }
 
         /// <summary>

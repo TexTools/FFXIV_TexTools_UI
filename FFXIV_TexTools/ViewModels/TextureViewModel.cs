@@ -1729,8 +1729,9 @@ namespace FFXIV_TexTools.ViewModels
             {
                 FlexibleMessageBox.Show($"{UIMessages.AddNewTexturePartErrorTitle}:{ex.Message}",
                         UIMessages.AddNewTexturePartErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
             }
+
+            this._textureView.BottomFlyout.IsOpen = false;
         }
         async Task<List<IItemModel>> GetSameModelList()
         {
