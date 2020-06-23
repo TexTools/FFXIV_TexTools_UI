@@ -1575,28 +1575,27 @@ namespace FFXIV_TexTools.ViewModels
                     xivMtrl.TexturePathUnknownList.Add(0);
                     xivMtrl.TexturePathList[2] = xivMtrl.TexturePathList[2].Replace("_m.tex", "_s.tex");
                     var tmpTexTypePath = xivMtrl.TextureTypePathList[0];
+
+
                     xivMtrl.TextureTypePathList.Insert(0, new TexTypePath() { DataFile = tmpTexTypePath.DataFile, Path = tmpTexTypePath.Path.Replace("_n.tex", "_d.tex"), Type = XivTexType.Diffuse });
                     xivMtrl.TextureTypePathList[2].Path = xivMtrl.TextureTypePathList[2].Path.Replace("_m.tex", "_s.tex");
                     xivMtrl.TextureTypePathList[2].Type = XivTexType.Specular;
 
-                    xivMtrl.DataStruct1Count = 3;
                     xivMtrl.DataStruct1List.Clear();
-                    xivMtrl.DataStruct1List.Add(new DataStruct1() { ID = 0xf52ccf05, Unknown1 = 0xa7d2ff60 });
-                    xivMtrl.DataStruct1List.Add(new DataStruct1() { ID = 0xb616dc5a, Unknown1 = 0x600ef9df });
-                    xivMtrl.DataStruct1List.Add(new DataStruct1() { ID = 0xd2777173, Unknown1 = 0xf35f5131 });
+                    xivMtrl.DataStruct1List.AddRange(Mtrl._MtrlStruct1Data[Mtrl.MtrlType.DiffuseSpec]);
+                    xivMtrl.DataStruct1Count = (ushort)xivMtrl.DataStruct1List.Count;
 
-                    xivMtrl.DataStruct2Count = 3;
                     xivMtrl.DataStruct2List.Clear();
-                    xivMtrl.DataStruct2List.Add(new DataStruct2() { ID = 0x29ac0223, Offset = 0x0000, Size = 0x0004 });
-                    xivMtrl.DataStruct2List.Add(new DataStruct2() { ID = 0x575abfb2, Offset = 0x0004, Size = 0x0004 });
-                    xivMtrl.DataStruct2List.Add(new DataStruct2() { ID = 0x15b70e35, Offset = 0x0008, Size = 0x0004 });
+                    xivMtrl.DataStruct2List.AddRange(Mtrl._MtrlStruct2Data[Mtrl.MtrlType.DiffuseSpec]);
+                    xivMtrl.DataStruct2Count = (ushort)xivMtrl.DataStruct2List.Count;
 
 
-                    xivMtrl.ParameterStructCount = 3;
                     xivMtrl.ParameterStructList.Clear();
-                    xivMtrl.ParameterStructList.Add(new ParameterStruct() { ID = 0x115306be, TextureIndex = 0x00000000, Unknown1 = -31936, Unknown2 = 0x000f });
-                    xivMtrl.ParameterStructList.Add(new ParameterStruct() { ID = 0x0c5ec1f1, TextureIndex = 0x00000001, Unknown1 = -32768, Unknown2 = 0x000f });
-                    xivMtrl.ParameterStructList.Add(new ParameterStruct() { ID = 0x2b99e025, TextureIndex = 0x00000002, Unknown1 = -31936, Unknown2 = 0x000f });
+                    xivMtrl.ParameterStructList.Add(new ParameterStruct() { ID = Mtrl._MtrlParamUsage[XivTexType.Diffuse], TextureIndex = 0, Unknown1 = Mtrl._MtrlParamFormat[XivTexFormat.DXT1], Unknown2 = 15 });
+                    xivMtrl.ParameterStructList.Add(new ParameterStruct() { ID = Mtrl._MtrlParamUsage[XivTexType.Normal], TextureIndex = 1, Unknown1 = Mtrl._MtrlParamFormat[XivTexFormat.DXT5], Unknown2 = 15 });
+                    xivMtrl.ParameterStructList.Add(new ParameterStruct() { ID = Mtrl._MtrlParamUsage[XivTexType.Specular], TextureIndex = 2, Unknown1 = Mtrl._MtrlParamFormat[XivTexFormat.DXT1], Unknown2 = 15 });
+                    xivMtrl.ParameterStructCount = (ushort)xivMtrl.ParameterStructList.Count;
+
                 }
                 for (var i = 0; i < xivMtrl.TexturePathList.Count; i++)
                 {
@@ -1726,6 +1725,20 @@ namespace FFXIV_TexTools.ViewModels
                 return;
             }
         }
+
+
+        /// <summary>
+        /// Command for the AddNewTexturePart Button
+        /// </summary>
+        public ICommand OpenMaterialEditorButton => new RelayCommand(OpenMaterialEditor);
+        private async void OpenMaterialEditor(object obj)
+        {
+
+            var editor = new Views.Textures.MaterialEditor(){ Owner = Window.GetWindow(_textureView) };
+            var result = editor.ShowDialog();
+
+        }
+
         async Task<List<IItemModel>> GetSameModelList()
         {
             var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
