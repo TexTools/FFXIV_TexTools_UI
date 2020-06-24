@@ -1098,6 +1098,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Material Editor Help.
+        /// </summary>
+        public static string MaterialEditorHelp {
+            get {
+                return ResourceManager.GetString("MaterialEditorHelp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Materials.
         /// </summary>
         public static string Materials {

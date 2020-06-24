@@ -93,6 +93,7 @@ namespace FFXIV_TexTools.ViewModels
 
         private bool _raceEnabled, _partEnabled, _typeEnabled, _typePartEnabled, _mapEnabled, _channelsEnabled;
         private bool _exportEnabled, _importEnabled, _modStatusEnabled, _moreOptionsEnabled, _translucencyEnabled, _translucencyCheck, _addNewTexturePartEnabled=true;
+        private bool _materialEditorEnabled = false;
         private bool _redChecked = true, _greenChecked = true, _blueChecked = true, _alphaChecked;
 
         private int _raceIndex, _partIndex, _typeIndex, _typePartIndex, _mapIndex, _partCount, _typeCount, _typePartCount, _mapCount, _raceCount;
@@ -115,6 +116,8 @@ namespace FFXIV_TexTools.ViewModels
 
             var gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
             _mtrl = new Mtrl(gameDirectory, item.DataFile, GetLanguage());
+            _materialEditorEnabled = false;
+
             _tex = new Tex(gameDirectory);
             _modList = new Modding(gameDirectory);
 
@@ -864,6 +867,8 @@ namespace FFXIV_TexTools.ViewModels
 
             SetComboBoxWatermarks();
             SelectedMapIndex = 0;
+
+            _materialEditorEnabled = _xivMtrl != null;
         }
 
         /// <summary>
@@ -1828,6 +1833,19 @@ namespace FFXIV_TexTools.ViewModels
             {
                 _addNewTexturePartEnabled = value;
                 NotifyPropertyChanged(nameof(AddNewTexturePartEnabled));
+            }
+        }
+
+        /// <summary>
+        /// The enabled status of the add new texture part button        
+        /// </summary>
+        public bool MaterialEditorEnabled
+        {
+            get => _materialEditorEnabled;
+            set
+            {
+                _materialEditorEnabled = value;
+                NotifyPropertyChanged(nameof(MaterialEditorEnabled));
             }
         }
 

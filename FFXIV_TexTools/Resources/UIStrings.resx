@@ -919,4 +919,7 @@ If you would like to enable this, first import a texture for the selected item.<
   <data name="Material_Editor" xml:space="preserve">
     <value>Material Editor</value>
   </data>
+  <data name="MaterialEditorHelp" xml:space="preserve">
+    <value>Material Editor Help</value>
+  </data>
 </root>

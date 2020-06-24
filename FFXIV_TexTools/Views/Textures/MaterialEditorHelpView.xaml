@@ -1,0 +1,41 @@
+﻿<mah:MetroWindow x:Name="Material_Editor_Help" x:Class="FFXIV_TexTools.Views.Textures.MaterialEditorHelpView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FFXIV_TexTools.Views"
+        xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
+        xmlns:input="clr-namespace:System.Windows.Input;assembly=PresentationCore"
+        mc:Ignorable="d"
+        Title="{Binding Source={x:Static resx:UIStrings.MaterialEditorHelp}}" Height="482.773" IsMinButtonEnabled="False" IsMaxRestoreButtonEnabled="False" WindowStartupLocation="CenterOwner" FontSize="14" Width="526.5">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="109*"/>
+            <ColumnDefinition Width="389*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30*"/>
+            <RowDefinition Height="50*"/>
+            <RowDefinition Height="30*"/>
+            <RowDefinition Height="50*"/>
+            <RowDefinition Height="50*"/>
+            <RowDefinition Height="50*"/>
+            <RowDefinition Height="50*"/>
+            <RowDefinition Height="50*"/>
+        </Grid.RowDefinitions>
+        <Label Content="Material Editor Path Reference" Margin="0" RenderTransformOrigin="-4.178,0.109" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.ColumnSpan="2"/>
+        <TextBox Margin="10" Grid.Row="7" TextWrapping="Wrap" Text="Blank paths will automatically be replaced with the defualt path for the item/material/texture." Grid.ColumnSpan="2"/>
+        <TextBox Margin="10" Grid.Row="1" TextWrapping="Wrap" Text="Texture paths may be explicit paths to a texture file in FFXIV's File System, Tokenized Paths, or combinations of the two." Grid.ColumnSpan="2"/>
+        <TextBox Margin="10,5" Grid.Row="2" TextWrapping="Wrap" Text="The following (case sensitive) tokens are available for use:" Grid.ColumnSpan="2"/>
+        <Label Content="{}{ItemPath}" Margin="10" Grid.Row="3" HorizontalContentAlignment="Right" FontSize="12" VerticalContentAlignment="Center"/>
+        <TextBox Margin="10" Grid.Row="3" TextWrapping="Wrap" Text="The internal path to the item's base texture directory (including trailing slash).  Shared by all items with the same 3D Model." Grid.Column="1"/>
+        <Label Content="{}{CommonPath}" Margin="10" Grid.Row="4" HorizontalContentAlignment="Right" FontSize="12" VerticalContentAlignment="Center"/>
+        <TextBox Margin="10" Grid.Row="4" TextWrapping="Wrap" Text="The internal path to the globally shared common texture directory (including trailing slash).  Shared by all items." Grid.Column="1"/>
+        <TextBox Margin="10" Grid.Row="5" TextWrapping="Wrap" Text="The file prefix for the version number of an FFXIV Item ex [v03_]." Grid.Column="1"/>
+        <Label Content="{}{Version}" Margin="10" Grid.Row="5" HorizontalContentAlignment="Right" FontSize="12" VerticalContentAlignment="Center"/>
+        <Label Content="{}{TextureName}" Margin="10" Grid.Row="6" HorizontalContentAlignment="Right" FontSize="12" VerticalContentAlignment="Center"/>
+        <TextBox Margin="10" Grid.Row="6" TextWrapping="Wrap" Text="The default texture name for a texture.  Unique per Item/Material/Texture." Grid.Column="1"/>
+    </Grid>
+</mah:MetroWindow>

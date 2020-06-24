@@ -357,6 +357,9 @@
     <Compile Include="Views\ModPack\ModPackWizard.xaml.cs">
       <DependentUpon>ModPackWizard.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Textures\MaterialEditorHelpView.xaml.cs">
+      <DependentUpon>MaterialEditorHelpView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Textures\MaterialEditorView.xaml.cs">
       <DependentUpon>MaterialEditorView.xaml</DependentUpon>
     </Compile>
@@ -478,6 +481,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\ModPack\ModPackWizard.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Textures\MaterialEditorHelpView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

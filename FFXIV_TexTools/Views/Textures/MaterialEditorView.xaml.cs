@@ -1,23 +1,9 @@
 ﻿using FFXIV_TexTools.ViewModels;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using xivModdingFramework.Items.Enums;
 using xivModdingFramework.Items.Interfaces;
 using xivModdingFramework.Materials.DataContainers;
-using xivModdingFramework.Textures.Enums;
 
 namespace FFXIV_TexTools.Views.Textures
 {
@@ -45,9 +31,9 @@ namespace FFXIV_TexTools.Views.Textures
             ShaderComboBox.DisplayMemberPath = "Value";
             ShaderComboBox.SelectedValuePath = "Key";
 
-            Dictionary<MtrlMapFormat, string> NormalSource = new Dictionary<MtrlMapFormat, string>();
-            NormalSource.Add(MtrlMapFormat.WithAlpha, "With Alpha");
-            NormalSource.Add(MtrlMapFormat.WithoutAlpha, "Without Alpha");
+            Dictionary<MtrlTextureDescriptorFormat, string> NormalSource = new Dictionary<MtrlTextureDescriptorFormat, string>();
+            NormalSource.Add(MtrlTextureDescriptorFormat.WithAlpha, "With Alpha");
+            NormalSource.Add(MtrlTextureDescriptorFormat.WithoutAlpha, "Without Alpha");
             NormalComboBox.ItemsSource = NormalSource;
             NormalComboBox.DisplayMemberPath = "Value";
             NormalComboBox.SelectedValuePath = "Key";
@@ -133,6 +119,12 @@ namespace FFXIV_TexTools.Views.Textures
             {
                 TransparencyComboBox.IsEnabled = true;
             }
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            var help = new Views.Textures.MaterialEditorHelpView();
+            help.ShowDialog();
         }
     }
 }
