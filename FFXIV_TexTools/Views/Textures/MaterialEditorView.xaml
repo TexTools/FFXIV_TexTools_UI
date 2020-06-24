@@ -34,7 +34,7 @@
         <ComboBox x:Name="DiffuseComboBox" Margin="10,13,10,0" VerticalAlignment="Top" Height="26" Grid.Column="1" Grid.Row="5" SelectionChanged="DiffuseComboBox_SelectionChanged" />
         <Label Content="Transparency:" Margin="0,10,10,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14" Height="29" Grid.Row="2" RenderTransformOrigin="0.164,0.793" HorizontalAlignment="Right" Width="100" HorizontalContentAlignment="Right"/>
         <ComboBox x:Name="TransparencyComboBox" Margin="10,13,10,0" VerticalAlignment="Top" Height="26" Grid.Column="1" Grid.Row="2" />
-        <Button x:Name="SaveButton" Content="Save" Grid.Column="2" Margin="0,0,10,10" Grid.Row="6" FontSize="12" Click="SaveButton_Click" HorizontalAlignment="Right" Width="135" Height="30" VerticalAlignment="Bottom"/>
+        <Button x:Name="SaveButton" Content="Save" Grid.Column="2" Margin="0,0,10,10" Grid.Row="6" FontSize="12" HorizontalAlignment="Right" Width="135" Height="30" VerticalAlignment="Bottom"/>
         <Label Content="Shader:" Margin="0,10,10,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14" Height="29" RenderTransformOrigin="0.164,0.793" HorizontalAlignment="Right" Width="63" Grid.Row="1" HorizontalContentAlignment="Right"/>
         <TextBox x:Name="NormalTextBox" Grid.Column="2" Height="26" Margin="10,13,10,0" TextWrapping="Wrap" Text="Content" VerticalAlignment="Top" RenderTransformOrigin="0.802,0.545" FontWeight="Bold" Grid.Row="3"/>
         <TextBox x:Name="SpecularTextBox" Grid.Column="2" Height="26" Margin="10,13,10,0" TextWrapping="Wrap" Text="Content" VerticalAlignment="Top" RenderTransformOrigin="0.802,0.545" FontWeight="Bold" Grid.Row="4"/>

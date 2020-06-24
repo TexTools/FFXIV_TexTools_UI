@@ -1628,41 +1628,8 @@ namespace FFXIV_TexTools.ViewModels
 
                 foreach(var keyValue in newMtrls)
                 {
-                    // Write the new MTRLs
+                    // Write the new MTRLs - ImportMtrl automatically generates any missing textures.
                     var newMtrlOffset = await _mtrl.ImportMtrl(keyValue.Value, newItems[keyValue.Key], "FilesAddedByTexTools");
-                }
-
-                // Create new textures by exporting old ones and copying them into new ones.
-                if (Directory.Exists("AddNewTexturePartTexTmps"))
-                {
-                    Directory.Delete("AddNewTexturePartTexTmps", true);
-                }
-                var dirInfo = Directory.CreateDirectory("AddNewTexturePartTexTmps");
-                foreach( var keyValue in texturesToCreate )
-                {
-                    var oldTexPath = keyValue.Key;
-                    var newTexPath = keyValue.Value;
-                    var item = textureItems[keyValue.Key];
-
-                    var oldTtp = new TexTypePath() { DataFile = XivDataFile._04_Chara, Path = oldTexPath };
-                    //var newTtp = new TexTypePath() { DataFile = XivDataFile._04_Chara, Path = newPath };
-
-                    // Attempt to get existing data.
-                    var xivTex = await _tex.GetTexData(oldTtp);
-
-                    // Save the data
-                    _tex.SaveTexAsDDS(item, xivTex, dirInfo, SelectedRace.XivRace);
-
-                    xivTex.TextureTypeAndPath.Path = newTexPath;
-                    xivTex.TextureTypeAndPath.Type = XivTexType.Other; // This setting is irrelevant here, as it will be regenerated later anyways.
-
-                    var newOffset = await _tex.TexDDSImporter(xivTex, item, new DirectoryInfo(Directory.GetFiles("AddNewTexturePartTexTmps", $"{Path.GetFileNameWithoutExtension(oldTexPath)}.dds", SearchOption.AllDirectories)[0]), "AddNewTexturePart");
-                }
-
-
-                if (Directory.Exists("AddNewTexturePartTexTmps"))
-                {
-                    Directory.Delete("AddNewTexturePartTexTmps", true);
                 }
 
                 //update ui    
@@ -1697,11 +1664,11 @@ namespace FFXIV_TexTools.ViewModels
         public ICommand OpenMaterialEditorButton => new RelayCommand(OpenMaterialEditor);
         private async void OpenMaterialEditor(object obj)
         {
-
+            
             var editor = new Views.Textures.MaterialEditorView(){ Owner = Window.GetWindow(_textureView) };
-            editor.SetMaterial(_xivMtrl);
+            editor.SetMaterial(_xivMtrl, _item);
             var result = editor.ShowDialog();
-
+            await UpdateTexture(_item);
         }
 
         async Task<List<IItemModel>> GetSameModelList()

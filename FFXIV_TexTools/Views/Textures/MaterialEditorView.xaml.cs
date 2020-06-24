@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -13,6 +14,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using xivModdingFramework.Items.Enums;
+using xivModdingFramework.Items.Interfaces;
 using xivModdingFramework.Materials.DataContainers;
 using xivModdingFramework.Textures.Enums;
 
@@ -71,12 +74,12 @@ namespace FFXIV_TexTools.Views.Textures
             TransparencyComboBox.DisplayMemberPath = "Value";
             TransparencyComboBox.SelectedValuePath = "Key";
 
-
+            SaveButton.Click += SaveButton_Click;
         }
 
-        public void SetMaterial(XivMtrl material)
+        public void SetMaterial(XivMtrl material, IItemModel item)
         {
-            viewModel.SetMaterial(material);
+            viewModel.SetMaterial(material, item);
 
         }
 
@@ -85,14 +88,15 @@ namespace FFXIV_TexTools.Views.Textures
             return viewModel.GetMaterial();
         }
 
-        private void SaveButton_Click(object sender, RoutedEventArgs e)
+        private async void SaveButton_Click(object sender, RoutedEventArgs e)
         {
-            viewModel.SaveChanges();
+            await viewModel.SaveChanges();
+            Close();
         }
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
-            this.Close();
+            Close();
         }
 
         private void DiffuseComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)

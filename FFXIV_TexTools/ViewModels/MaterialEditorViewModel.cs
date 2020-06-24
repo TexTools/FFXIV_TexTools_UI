@@ -3,9 +3,13 @@ using HelixToolkit.Wpf;
 using HelixToolkit.Wpf.SharpDX;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
+using xivModdingFramework.General.Enums;
+using xivModdingFramework.Items.Interfaces;
 using xivModdingFramework.Materials.DataContainers;
 using xivModdingFramework.Materials.FileTypes;
 using xivModdingFramework.Textures.DataContainers;
@@ -30,15 +34,21 @@ namespace FFXIV_TexTools.ViewModels
     class MaterialEditorViewModel
     {
         private MaterialEditorView _view;
+        private Mtrl _mtrl;
         private XivMtrl _material;
+        private IItemModel _item;
         public MaterialEditorViewModel(MaterialEditorView view)
         {
             _view = view;
         }
 
-        public void SetMaterial(XivMtrl material)
+        public void SetMaterial(XivMtrl material, IItemModel item)
         {
+            var gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
+            _mtrl = new Mtrl(gameDirectory, item.DataFile, GetLanguage());
+
             _material = material;
+            _item = item;
 
             _view.MaterialPathLabel.Content = _material.MTRLPath;
 
@@ -88,7 +98,7 @@ namespace FFXIV_TexTools.ViewModels
         /// <summary>
         /// Updates the XivMtrl with the selected changes.
         /// </summary>
-        public void SaveChanges()
+        public async Task<int> SaveChanges()
         {
             // Old Data
             var oldShader = _material.GetShaderInfo();
@@ -127,6 +137,14 @@ namespace FFXIV_TexTools.ViewModels
             _material.SetMapInfo(XivTexType.Multi, newMulti);
             _material.SetMapInfo(XivTexType.Diffuse, newDiffuse);
 
+
+            // Write the new MTRLs - ImportMtrl automatically generates any missing textures.
+            var newMtrlOffset = await _mtrl.ImportMtrl(_material, _item, "FilesAddedByTexTools");
+            return newMtrlOffset;
+        }
+        private static XivLanguage GetLanguage()
+        {
+            return XivLanguages.GetXivLanguage(Properties.Settings.Default.Application_Language);
         }
     }
 }
