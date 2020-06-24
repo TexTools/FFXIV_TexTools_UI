@@ -33,6 +33,8 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
@@ -1504,6 +1506,7 @@ namespace FFXIV_TexTools.ViewModels
                         UIMessages.AddNewTexturePartErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
+
                 //Legitimacy check
                 var partChars = new char[] { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
                 List<string> partList = new List<string>();
@@ -1522,6 +1525,7 @@ namespace FFXIV_TexTools.ViewModels
                     //AddNewTexturePartEnabled = false;
                     return;
                 }
+
                 //Get the new part name
                 var newPartName = '\0';
                 for (var i = 1; i < partChars.Length; i++)
@@ -1532,6 +1536,9 @@ namespace FFXIV_TexTools.ViewModels
                         break;
                     }
                 }
+
+                // No empty material names left.
+                // Note - This can be fixed.  Materials don't need to be named a-z, but realisitcally is anyone going to have more than 26 materials?
                 if (newPartName == '\0')
                 {
                     FlexibleMessageBox.Show(UIMessages.AddNewTexturePartErrorMessage,
@@ -1539,118 +1546,41 @@ namespace FFXIV_TexTools.ViewModels
                     //AddNewTexturePartEnabled = false;
                     return;
                 }
-                //Update the new part path;
+
+                var mtrlReplacementRegex = "_[a-z].mtrl";
+                var mtrlReplacementRegexResult = "_" + newPartName + ".mtrl";
+                var texReplacementRegex = "_([a-z])\\.tex";
+                var texReplacementRegexResult = "_" + newPartName + "_$1.tex";
+
+                // Make sure we have access to write the data files.
                 var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
                 var index = new Index(gameDirectory);
-                if (index.IsIndexLocked(XivDataFile._0A_Exd))
+                if (index.IsIndexLocked(XivDataFile._04_Chara))
                 {
                     FlexibleMessageBox.Show(UIMessages.IndexLockedErrorMessage,
                         UIMessages.IndexLockedErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                     return;
                 }
+
+                // oldpath -> newpath
+
+                // Get existing Material
                 var mtrlOffset = await index.GetDataOffset(HashGenerator.GetHash(Path.GetDirectoryName(_xivMtrl.MTRLPath).Replace("\\", "/")), HashGenerator.GetHash(Path.GetFileName(_xivMtrl.MTRLPath)), _item.DataFile);
                 var xivMtrl = await _mtrl.GetMtrlData(mtrlOffset, _xivMtrl.MTRLPath, 11);
-                var oldTexturePathSize = xivMtrl.TexturePathList.Select(it => it.Replace("--", String.Empty)).Sum(it => it.Length) + xivMtrl.TexturePathList.Count;
-                var oldTexturePathOffsetDataSize = xivMtrl.TexturePathOffsetList.Count * 4;
-                var oldStructSize = xivMtrl.DataStruct1Count * 8 + xivMtrl.DataStruct2Count * 8 + xivMtrl.ParameterStructCount * 12;
-                for (var i = xivMtrl.TextureTypePathList.Count; i < _xivMtrl.TextureTypePathList.Count; i++)
-                {
-                    var tmpTypePath = _xivMtrl.TextureTypePathList[i];
-                    xivMtrl.TextureTypePathList.Add(new TexTypePath() { DataFile = tmpTypePath.DataFile, Name = tmpTypePath.Name, Path = tmpTypePath.Path, Type = tmpTypePath.Type });
-                }
-                var textureTypePathListBak = new List<TexTypePath>();
-                for (var i = 0; i < xivMtrl.TextureTypePathList.Count; i++)
-                {
-                    var tmpTypePath = xivMtrl.TextureTypePathList[i];
-                    textureTypePathListBak.Add(new TexTypePath() { DataFile = tmpTypePath.DataFile, Name = tmpTypePath.Name, Path = tmpTypePath.Path, Type = tmpTypePath.Type });
-                }
-                bool tplNeedAdd = xivMtrl.TexturePathList.Count == 2 && xivMtrl.TexturePathList[0].EndsWith("_n.tex") && xivMtrl.TexturePathList[1].EndsWith("_m.tex");
-                if (tplNeedAdd
-                    && FlexibleMessageBox.Show(UIMessages.AddNewTexturePartQuestionMessage,
-                        UIMessages.AddNewTexturePartQuestionTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes
-                )
-                {
-                    tplNeedAdd = false;
-                }
-                if (tplNeedAdd)
-                {
-                    var tmpTpl = xivMtrl.TexturePathList[0];
-                    xivMtrl.TexturePathList.Insert(0, tmpTpl.Replace("_n.tex", "_d.tex"));
-                    xivMtrl.TexturePathOffsetList.Add(0);
-                    xivMtrl.TexturePathUnknownList.Add(0);
-                    xivMtrl.TexturePathList[2] = xivMtrl.TexturePathList[2].Replace("_m.tex", "_s.tex");
-                    var tmpTexTypePath = xivMtrl.TextureTypePathList[0];
 
 
-                    xivMtrl.TextureTypePathList.Insert(0, new TexTypePath() { DataFile = tmpTexTypePath.DataFile, Path = tmpTexTypePath.Path.Replace("_n.tex", "_d.tex"), Type = XivTexType.Diffuse });
-                    xivMtrl.TextureTypePathList[2].Path = xivMtrl.TextureTypePathList[2].Path.Replace("_m.tex", "_s.tex");
-                    xivMtrl.TextureTypePathList[2].Type = XivTexType.Specular;
 
-                    xivMtrl.DataStruct1List.Clear();
-                    xivMtrl.DataStruct1List.AddRange(Mtrl._MtrlStruct1Data[Mtrl.MtrlType.DiffuseSpec]);
-                    xivMtrl.DataStruct1Count = (ushort)xivMtrl.DataStruct1List.Count;
-
-                    xivMtrl.DataStruct2List.Clear();
-                    xivMtrl.DataStruct2List.AddRange(Mtrl._MtrlStruct2Data[Mtrl.MtrlType.DiffuseSpec]);
-                    xivMtrl.DataStruct2Count = (ushort)xivMtrl.DataStruct2List.Count;
-
-
-                    xivMtrl.ParameterStructList.Clear();
-                    xivMtrl.ParameterStructList.Add(new ParameterStruct() { ID = Mtrl._MtrlParamUsage[XivTexType.Diffuse], TextureIndex = 0, Unknown1 = Mtrl._MtrlParamFormat[XivTexFormat.DXT1], Unknown2 = 15 });
-                    xivMtrl.ParameterStructList.Add(new ParameterStruct() { ID = Mtrl._MtrlParamUsage[XivTexType.Normal], TextureIndex = 1, Unknown1 = Mtrl._MtrlParamFormat[XivTexFormat.DXT5], Unknown2 = 15 });
-                    xivMtrl.ParameterStructList.Add(new ParameterStruct() { ID = Mtrl._MtrlParamUsage[XivTexType.Specular], TextureIndex = 2, Unknown1 = Mtrl._MtrlParamFormat[XivTexFormat.DXT1], Unknown2 = 15 });
-                    xivMtrl.ParameterStructCount = (ushort)xivMtrl.ParameterStructList.Count;
-
-                }
-                for (var i = 0; i < xivMtrl.TexturePathList.Count; i++)
-                {
-                    var tmps = xivMtrl.TexturePathList[i].Split('_');
-                    var typeName = tmps[tmps.Length - 1];
-                    var oldPartName = tmps[tmps.Length - 2];
-                    if (partChars.Any(it => it.ToString() == oldPartName))
-                    {
-                        xivMtrl.TexturePathList[i] = xivMtrl.TexturePathList[i].Replace($"_{oldPartName}_{typeName}", $"_{newPartName}_{typeName}");
-                    }
-                    else
-                    {
-                        xivMtrl.TexturePathList[i] = xivMtrl.TexturePathList[i].Replace($"_{typeName}", $"_{newPartName}_{typeName}");
-                    }
-                    xivMtrl.TexturePathOffsetList[i] = 0;
-                    if (i > 0)
-                    {
-                        xivMtrl.TexturePathOffsetList[i] = xivMtrl.TexturePathOffsetList[i - 1] + xivMtrl.TexturePathList[i - 1].Replace("--","").Length + 1;
-                    }
-                }
-                //Adjust data size
-                var newTexturePathSize = xivMtrl.TexturePathList.Select(it=>it.Replace("--","")).Sum(it => it.Length) + xivMtrl.TexturePathList.Count;
-                var valueOfSizeChange = newTexturePathSize - oldTexturePathSize;
-                xivMtrl.FileSize += (short)(valueOfSizeChange + xivMtrl.TexturePathOffsetList.Count * 4 - oldTexturePathOffsetDataSize);
-                var newStructSize = xivMtrl.DataStruct1Count * 8 + xivMtrl.DataStruct2Count * 8 + xivMtrl.ParameterStructCount * 12;
-                xivMtrl.FileSize += (short)(newStructSize - oldStructSize);
-                xivMtrl.TextureCount = (byte)xivMtrl.TexturePathList.Count;
-                if (valueOfSizeChange > 0)
-                {
-                    xivMtrl.MaterialDataSize += (ushort)valueOfSizeChange;
-                    xivMtrl.TexturePathsDataSize += (ushort)valueOfSizeChange;
-                }
-                else
-                {
-                    xivMtrl.MaterialDataSize -= (ushort)(valueOfSizeChange * -1);
-                    xivMtrl.TexturePathsDataSize -= (ushort)(valueOfSizeChange * -1);
-                }
-                for (var i = 0; i < xivMtrl.ColorSetPathOffsetList.Count; i++)
-                {
-                    xivMtrl.ColorSetPathOffsetList[i] += valueOfSizeChange;
-                }
-                for (var i = 0; i < xivMtrl.MapPathOffsetList.Count; i++)
-                {
-                    xivMtrl.MapPathOffsetList[i] += valueOfSizeChange;
-                }
-                //add new mtrl                       
+                // Add new Materials for shared model items.    
                 var sameModelItems = await GetSameModelList();
                 var oldVersionStr = $"/v{_item.ModelInfo.Variant.ToString().PadLeft(4, '0')}/";
                 var oldMTRLPath = xivMtrl.MTRLPath;
+                var newMtrls = new Dictionary<string, XivMtrl>();
+                var newItems = new Dictionary<string, IItemModel>();
+                var texturesToCreate = new Dictionary<string, string>();
+                var textureItems = new Dictionary<string, IItemModel>();
+
+                // Load and modify all the MTRLs.
                 foreach (var item in sameModelItems)
                 {
                     var dxVersion = int.Parse(Properties.Settings.Default.DX_Version);
@@ -1663,51 +1593,78 @@ namespace FFXIV_TexTools.ViewModels
                     {
                         itemXivMtrl = await _mtrl.GetMtrlData(item, SelectedRace.XivRace, SelectedType.Name[0], dxVersion);
                     }
-                    var tmps2 = xivMtrl.MTRLPath.Split('_');
-                    xivMtrl.MTRLPath = xivMtrl.MTRLPath.Replace($"_{tmps2[tmps2.Length - 1]}", $"_{newPartName}.mtrl");
-                    xivMtrl.MTRLPath = xivMtrl.MTRLPath.Replace(oldVersionStr, $"/v{item.ModelInfo.Variant.ToString().PadLeft(4, '0')}/");
-                    xivMtrl.ColorSetDataSize = itemXivMtrl.ColorSetDataSize;
-                    xivMtrl.ColorSetData = itemXivMtrl.ColorSetData == null ? new List<Half>() : itemXivMtrl.ColorSetData;
-                    xivMtrl.ColorSetExtraData = itemXivMtrl.ColorSetExtraData == null ? new byte[0] : itemXivMtrl.ColorSetExtraData;
-                    oldVersionStr = $"/v{item.ModelInfo.Variant.ToString().PadLeft(4, '0')}/";
-                    var newMtrlOffset = await _mtrl.ImportMtrl(xivMtrl, item, "FilesAddedByTexTools");
+
+                    var oldMtrlPath = itemXivMtrl.MTRLPath;
+
+                    // If we've already modified this material, skip it.
+                    if(newMtrls.ContainsKey(oldMtrlPath))
+                    {
+                        continue;
+                    }
+
+                    // Update Mtrl Paths
+                    itemXivMtrl.MTRLPath = Regex.Replace(itemXivMtrl.MTRLPath, mtrlReplacementRegex, mtrlReplacementRegexResult);
+
+                    // Update Tex Paths
+                    for (var i = 0; i < itemXivMtrl.TexturePathList.Count; i++)
+                    {
+                        var oldTexPath = itemXivMtrl.TexturePathList[i];
+                        var newTexPath = Regex.Replace(oldTexPath, texReplacementRegex, texReplacementRegexResult);
+                        itemXivMtrl.TexturePathList[i] = newTexPath;
+
+                        // Add to list to create as needed.
+                        if (!texturesToCreate.ContainsKey(oldTexPath))
+                        {
+                            texturesToCreate[oldTexPath] = newTexPath;
+                            textureItems[oldTexPath] = item;
+                        }
+                    }
+
+                    // Add the new Mtrls by path, so we don't repeatedly re-write them.
+                    newMtrls[oldMtrlPath] = itemXivMtrl;
+                    newItems[oldMtrlPath] = item;
                 }
 
-                //add new tex
+
+                foreach(var keyValue in newMtrls)
+                {
+                    // Write the new MTRLs
+                    var newMtrlOffset = await _mtrl.ImportMtrl(keyValue.Value, newItems[keyValue.Key], "FilesAddedByTexTools");
+                }
+
+                // Create new textures by exporting old ones and copying them into new ones.
                 if (Directory.Exists("AddNewTexturePartTexTmps"))
                 {
                     Directory.Delete("AddNewTexturePartTexTmps", true);
                 }
                 var dirInfo = Directory.CreateDirectory("AddNewTexturePartTexTmps");
-                for (var i = 0; i < xivMtrl.TexturePathList.Count; i++)
+                foreach( var keyValue in texturesToCreate )
                 {
-                    var typePathIndex = i;
-                    if (tplNeedAdd)
-                    {
-                        switch (i)
-                        {
-                            case 0:
-                                typePathIndex = 1;
-                                break;
-                            case 1:
-                                typePathIndex = 0;
-                                break;
-                            case 2:
-                                typePathIndex = 1;
-                                break;
-                        }
-                    }
-                    var xivTex = await _tex.GetTexData(textureTypePathListBak[typePathIndex]);
-                    _tex.SaveTexAsDDS(_item, xivTex, dirInfo, SelectedRace.XivRace);
-                    var oldPath = textureTypePathListBak[typePathIndex].Path;
-                    xivTex.TextureTypeAndPath.Path = xivMtrl.TexturePathList[i];
-                    xivTex.TextureTypeAndPath.Type = xivMtrl.TextureTypePathList[i].Type;
-                    var newOffset = await _tex.TexDDSImporter(xivTex, _item, new DirectoryInfo(Directory.GetFiles("AddNewTexturePartTexTmps", $"{Path.GetFileNameWithoutExtension(oldPath)}.dds", SearchOption.AllDirectories)[0]), "AddNewTexturePart");
+                    var oldTexPath = keyValue.Key;
+                    var newTexPath = keyValue.Value;
+                    var item = textureItems[keyValue.Key];
+
+                    var oldTtp = new TexTypePath() { DataFile = XivDataFile._04_Chara, Path = oldTexPath };
+                    //var newTtp = new TexTypePath() { DataFile = XivDataFile._04_Chara, Path = newPath };
+
+                    // Attempt to get existing data.
+                    var xivTex = await _tex.GetTexData(oldTtp);
+
+                    // Save the data
+                    _tex.SaveTexAsDDS(item, xivTex, dirInfo, SelectedRace.XivRace);
+
+                    xivTex.TextureTypeAndPath.Path = newTexPath;
+                    xivTex.TextureTypeAndPath.Type = XivTexType.Other; // This setting is irrelevant here, as it will be regenerated later anyways.
+
+                    var newOffset = await _tex.TexDDSImporter(xivTex, item, new DirectoryInfo(Directory.GetFiles("AddNewTexturePartTexTmps", $"{Path.GetFileNameWithoutExtension(oldTexPath)}.dds", SearchOption.AllDirectories)[0]), "AddNewTexturePart");
                 }
+
+
                 if (Directory.Exists("AddNewTexturePartTexTmps"))
                 {
                     Directory.Delete("AddNewTexturePartTexTmps", true);
                 }
+
                 //update ui    
                 void SetToNewTexturePart(object sender, EventArgs e)
                 {
@@ -1741,7 +1698,8 @@ namespace FFXIV_TexTools.ViewModels
         private async void OpenMaterialEditor(object obj)
         {
 
-            var editor = new Views.Textures.MaterialEditor(){ Owner = Window.GetWindow(_textureView) };
+            var editor = new Views.Textures.MaterialEditorView(){ Owner = Window.GetWindow(_textureView) };
+            editor.SetMaterial(_xivMtrl);
             var result = editor.ShowDialog();
 
         }
