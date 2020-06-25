@@ -46,6 +46,6 @@
             <TextBlock Text="{}{texture_name}" TextAlignment="Right" FontWeight="Bold" FontSize="14" FontStyle="Italic" />
         </Label>
         <TextBlock Margin="10" Grid.Row="6" TextWrapping="Wrap" Text="The default texture name for a texture.  Unique per Item/Material/Texture." Grid.Column="1"/>
-        <TextBlock Margin="10" Grid.Row="8" TextWrapping="Wrap" Text="Paths may only contain lowercase characters, numbers, tokens and &#xD;&#xA;the following special characters: /-_" Grid.ColumnSpan="2" TextAlignment="Center"/>
+        <TextBlock Margin="10" Grid.Row="8" TextWrapping="Wrap" Text="Paths may only contain lowercase characters, numbers, tokens and &#xA;the following special characters: /.-_" Grid.ColumnSpan="2" TextAlignment="Center"/>
     </Grid>
 </mah:MetroWindow>
