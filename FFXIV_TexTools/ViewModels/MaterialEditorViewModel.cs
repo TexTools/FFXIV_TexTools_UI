@@ -152,7 +152,7 @@ namespace FFXIV_TexTools.ViewModels
         private string SanitizePath(string path)
         {
             path = path.ToLower();
-            path = Regex.Replace(path, "[^a-z-_/]", "");
+            path = Regex.Replace(path, "[^a-z0-9-_/{}]", "");
             return path;
         }
 
@@ -188,17 +188,17 @@ namespace FFXIV_TexTools.ViewModels
             // Specular
             if((MaterialSpecularMode) _view.SpecularComboBox.SelectedValue == MaterialSpecularMode.FullColor)
             {
-                newSpecular = new MapInfo() { Usage = XivTexType.Specular, Format = MtrlTextureDescriptorFormat.WithoutAlpha, path = _view.SpecularTextBox.Text };
+                newSpecular = new MapInfo() { Usage = XivTexType.Specular, Format = MtrlTextureDescriptorFormat.NoColorset, path = _view.SpecularTextBox.Text };
             } 
             else if((MaterialSpecularMode)_view.SpecularComboBox.SelectedValue == MaterialSpecularMode.MultiMap)
             {
-                newMulti = new MapInfo() { Usage = XivTexType.Multi, Format = MtrlTextureDescriptorFormat.WithoutAlpha, path = _view.SpecularTextBox.Text };
+                newMulti = new MapInfo() { Usage = XivTexType.Multi, Format = MtrlTextureDescriptorFormat.NoColorset, path = _view.SpecularTextBox.Text };
             }
 
             // Diffuse
             if ((MaterialDiffuseMode)_view.DiffuseComboBox.SelectedValue == MaterialDiffuseMode.FullColor)
             {
-                newDiffuse = new MapInfo() { Usage = XivTexType.Diffuse, Format = MtrlTextureDescriptorFormat.WithoutAlpha, path = _view.DiffuseTextBox.Text };
+                newDiffuse = new MapInfo() { Usage = XivTexType.Diffuse, Format = MtrlTextureDescriptorFormat.NoColorset, path = _view.DiffuseTextBox.Text };
             }
 
             _material.SetShaderInfo(newShader);

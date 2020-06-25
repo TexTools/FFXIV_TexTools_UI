@@ -9,11 +9,11 @@
         xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
         xmlns:input="clr-namespace:System.Windows.Input;assembly=PresentationCore"
         mc:Ignorable="d"
-        Title="{Binding Source={x:Static resx:UIStrings.MaterialEditorHelp}}" Height="555.872" IsMinButtonEnabled="False" IsMaxRestoreButtonEnabled="False" WindowStartupLocation="CenterOwner" FontSize="14" Width="526.5">
+        Title="{Binding Source={x:Static resx:UIStrings.MaterialEditorHelp}}" Height="555.872" IsMinButtonEnabled="False" IsMaxRestoreButtonEnabled="False" WindowStartupLocation="CenterOwner" FontSize="14" Width="635.747">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="109*"/>
-            <ColumnDefinition Width="389*"/>
+            <ColumnDefinition Width="141*"/>
+            <ColumnDefinition Width="487*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="30*"/>
@@ -26,18 +26,26 @@
             <RowDefinition Height="50*"/>
             <RowDefinition Height="50*"/>
         </Grid.RowDefinitions>
-        <Label Content="Material Editor Path Reference" Margin="0" RenderTransformOrigin="-4.178,0.109" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.ColumnSpan="2"/>
-        <TextBox Margin="10" Grid.Row="7" TextWrapping="Wrap" Text="Blank paths will automatically be replaced with the defualt path for the item/material/texture." Grid.ColumnSpan="2"/>
-        <TextBox Margin="10" Grid.Row="1" TextWrapping="Wrap" Text="Texture paths may be explicit paths to a texture file in FFXIV's File System, Tokenized Paths, or combinations of the two." Grid.ColumnSpan="2"/>
-        <TextBox Margin="10,5" Grid.Row="2" TextWrapping="Wrap" Text="The following (case sensitive) tokens are available for use:" Grid.ColumnSpan="2"/>
-        <Label Content="{}{ItemPath}" Margin="10" Grid.Row="3" HorizontalContentAlignment="Right" FontSize="12" VerticalContentAlignment="Center"/>
-        <TextBox Margin="10" Grid.Row="3" TextWrapping="Wrap" Text="The internal path to the item's base texture directory (including trailing slash).  Shared by all items with the same 3D Model." Grid.Column="1"/>
-        <Label Content="{}{CommonPath}" Margin="10" Grid.Row="4" HorizontalContentAlignment="Right" FontSize="12" VerticalContentAlignment="Center"/>
-        <TextBox Margin="10" Grid.Row="4" TextWrapping="Wrap" Text="The internal path to the globally shared common texture directory (including trailing slash).  Shared by all items." Grid.Column="1"/>
-        <TextBox Margin="10" Grid.Row="5" TextWrapping="Wrap" Text="The file prefix for the variant number of an FFXIV Item ex [v03_]." Grid.Column="1"/>
-        <Label Content="{}{Variant}" Margin="10" Grid.Row="5" HorizontalContentAlignment="Right" FontSize="12" VerticalContentAlignment="Center"/>
-        <Label Content="{}{TextureName}" Margin="10" Grid.Row="6" HorizontalContentAlignment="Right" FontSize="12" VerticalContentAlignment="Center"/>
-        <TextBox Margin="10" Grid.Row="6" TextWrapping="Wrap" Text="The default texture name for a texture.  Unique per Item/Material/Texture." Grid.Column="1"/>
-        <TextBox Margin="10" Grid.Row="8" TextWrapping="Wrap" Text="Paths may only contain lowercase characters and the following special characters: /-_" Grid.ColumnSpan="2"/>
+        <Label Content="Texture Path Reference" Margin="0" RenderTransformOrigin="-4.178,0.109" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.ColumnSpan="2" FontSize="18" FontWeight="Bold"/>
+        <TextBlock Margin="10" Grid.Row="7" TextWrapping="Wrap" Grid.ColumnSpan="2" TextAlignment="Center"><Run Text="Blank paths will automatically be replaced with the "/><LineBreak/><Run Text="default path for the item/material/texture."/></TextBlock>
+        <TextBlock Margin="10" Grid.Row="1" TextWrapping="Wrap" Grid.ColumnSpan="2" TextAlignment="Center"><Run Text="Texture paths may be explicit paths to a texture file in FFXIV's File System,"/><LineBreak/><Run Text=" Tokenized Paths, or combinations of the two."/></TextBlock>
+        <TextBlock Margin="10,5" Grid.Row="2" TextWrapping="Wrap" Text="The following tokens are available for use:" Grid.ColumnSpan="2" TextAlignment="Center"/>
+        <Label Margin="10" Grid.Row="3" HorizontalContentAlignment="Right" FontSize="12" VerticalContentAlignment="Center">
+            <TextBlock Text="{}{item_path}" FontSize="14" FontWeight="Bold" TextAlignment="Right" FontStyle="Italic"/>
+        </Label>
+        <TextBlock Margin="10" Grid.Row="3" TextWrapping="Wrap" Text="The internal path to the item's base texture directory (including trailing slash).  Shared by all items with the same 3D Model." Grid.Column="1"/>
+        <Label Margin="10" Grid.Row="4" HorizontalContentAlignment="Right" FontSize="12" VerticalContentAlignment="Center">
+            <TextBlock Text="{}{common_path}" TextAlignment="Right" FontWeight="Bold" FontSize="14" FontStyle="Italic" />
+        </Label>
+        <TextBlock Margin="10" Grid.Row="4" TextWrapping="Wrap" Text="The internal path to the globally shared common texture directory (including trailing slash).  Shared by all items." Grid.Column="1"/>
+        <TextBlock Margin="10" Grid.Row="5" TextWrapping="Wrap" Text="The file prefix for the variant number of an FFXIV Item ex [v03_]." Grid.Column="1" />
+        <Label Margin="10" Grid.Row="5" HorizontalContentAlignment="Right" FontSize="12" VerticalContentAlignment="Center">
+            <TextBlock Text="{}{variant}" TextAlignment="Right" FontWeight="Bold" FontSize="14" FontStyle="Italic" />
+        </Label>
+        <Label Margin="10" Grid.Row="6" HorizontalContentAlignment="Right" FontSize="12" VerticalContentAlignment="Center">
+            <TextBlock Text="{}{texture_name}" TextAlignment="Right" FontWeight="Bold" FontSize="14" FontStyle="Italic" />
+        </Label>
+        <TextBlock Margin="10" Grid.Row="6" TextWrapping="Wrap" Text="The default texture name for a texture.  Unique per Item/Material/Texture." Grid.Column="1"/>
+        <TextBlock Margin="10" Grid.Row="8" TextWrapping="Wrap" Text="Paths may only contain lowercase characters, numbers, tokens and &#xD;&#xA;the following special characters: /-_" Grid.ColumnSpan="2" TextAlignment="Center"/>
     </Grid>
 </mah:MetroWindow>

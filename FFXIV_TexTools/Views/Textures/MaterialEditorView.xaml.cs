@@ -41,8 +41,8 @@ namespace FFXIV_TexTools.Views.Textures
             ShaderComboBox.SelectedValuePath = "Key";
 
             Dictionary<MtrlTextureDescriptorFormat, string> NormalSource = new Dictionary<MtrlTextureDescriptorFormat, string>();
-            NormalSource.Add(MtrlTextureDescriptorFormat.WithAlpha, "With Alpha");
-            NormalSource.Add(MtrlTextureDescriptorFormat.WithoutAlpha, "Without Alpha");
+            NormalSource.Add(MtrlTextureDescriptorFormat.UsesColorset, "Use Colorset");
+            NormalSource.Add(MtrlTextureDescriptorFormat.NoColorset, "Do Not Use Colorset");
             NormalComboBox.ItemsSource = NormalSource;
             NormalComboBox.DisplayMemberPath = "Value";
             NormalComboBox.SelectedValuePath = "Key";
@@ -123,7 +123,11 @@ namespace FFXIV_TexTools.Views.Textures
 
         private void ShaderComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if((MtrlShader) ShaderComboBox.SelectedValue == MtrlShader.Glass)
+            // Changing this value around doesn't seem to actually do a ton right now,
+            // So better to leave it locked off.
+            NormalComboBox.IsEnabled = false;
+
+            if ((MtrlShader) ShaderComboBox.SelectedValue == MtrlShader.Glass)
             {
                 TransparencyComboBox.SelectedValue = true;
                 TransparencyComboBox.IsEnabled = false;
@@ -138,7 +142,6 @@ namespace FFXIV_TexTools.Views.Textures
                 // totally unknown.
                 ShaderComboBox.IsEnabled = false;
                 TransparencyComboBox.IsEnabled = true;
-                NormalComboBox.IsEnabled = false;
                 NormalTextBox.IsEnabled = false;
                 SpecularComboBox.IsEnabled = false;
                 SpecularTextBox.IsEnabled = false;
@@ -149,7 +152,6 @@ namespace FFXIV_TexTools.Views.Textures
             {
                 ShaderComboBox.IsEnabled = true;
                 TransparencyComboBox.IsEnabled = true;
-                NormalComboBox.IsEnabled = true;
                 NormalTextBox.IsEnabled = true;
                 SpecularComboBox.IsEnabled = true;
                 SpecularTextBox.IsEnabled = true;

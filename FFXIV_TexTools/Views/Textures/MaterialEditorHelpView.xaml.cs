@@ -16,5 +16,6 @@ namespace FFXIV_TexTools.Views.Textures
         {
             InitializeComponent();
         }
+
     }
 }

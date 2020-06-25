@@ -1629,11 +1629,19 @@ namespace FFXIV_TexTools.ViewModels
         public ICommand OpenMaterialEditorButton => new RelayCommand(OpenMaterialEditor);
         private async void OpenMaterialEditor(object obj)
         {
-            
-            var editor = new Views.Textures.MaterialEditorView(){ Owner = Window.GetWindow(_textureView) };
-            editor.SetMaterial(_xivMtrl, _item);
-            var result = editor.ShowDialog();
-            await UpdateTexture(_item);
+
+            try
+            {
+                var editor = new Views.Textures.MaterialEditorView() { Owner = Window.GetWindow(_textureView) };
+                editor.SetMaterial(_xivMtrl, _item);
+                var result = editor.ShowDialog();
+                await UpdateTexture(_item);
+            } catch(Exception ex)
+            {
+                FlexibleMessageBox.Show("Material Editor Error",
+                        "An error occured when attempting to edit the Material.", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+            }
         }
 
         async Task<List<IItemModel>> GetSameModelList()
