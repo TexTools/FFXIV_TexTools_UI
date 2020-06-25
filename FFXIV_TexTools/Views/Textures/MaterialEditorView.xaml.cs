@@ -74,7 +74,7 @@ namespace FFXIV_TexTools.Views.Textures
 
         public void SetMaterial(XivMtrl material, IItemModel item, bool writeFile = true)
         {
-            _material = Material;
+            _material = material;
             viewModel.SetMaterial(material, item, writeFile);
 
         }

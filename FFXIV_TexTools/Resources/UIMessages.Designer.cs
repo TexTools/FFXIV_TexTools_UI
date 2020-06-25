@@ -728,6 +728,24 @@ namespace FFXIV_TexTools.Resources {
                 return ResourceManager.GetString("MaterialDataReadErrorTitle", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to An error occurred when trying to modify the material..
+        /// </summary>
+        internal static string MaterialEditorErrorMessage {
+            get {
+                return ResourceManager.GetString("MaterialEditorErrorMessage", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Material Editor Error.
+        /// </summary>
+        internal static string MaterialEditorErrorTitle {
+            get {
+                return ResourceManager.GetString("MaterialEditorErrorTitle", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to There was an error reading the material file {0}

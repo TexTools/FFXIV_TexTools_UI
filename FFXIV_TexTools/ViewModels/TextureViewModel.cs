@@ -1525,13 +1525,22 @@ namespace FFXIV_TexTools.ViewModels
                 var xivMtrl = await _mtrl.GetMtrlData(mtrlOffset, _xivMtrl.MTRLPath, 11);
 
 
-                // Ship it to the editor for user modification
-                var editor = new Views.Textures.MaterialEditorView() { Owner = Window.GetWindow(_textureView) };
-                editor.SetMaterial(xivMtrl, _item, false);
-                var result = editor.ShowDialog();
-                if(result != true)
+                try
                 {
-                    // User cancelled the process.
+                    // Ship it to the editor for user modification
+                    var editor = new Views.Textures.MaterialEditorView() { Owner = Window.GetWindow(_textureView) };
+                    editor.SetMaterial(xivMtrl, _item, false);
+                    var result = editor.ShowDialog();
+                    if (result != true)
+                    {
+                        // User cancelled the process.
+                        await UpdateTexture(_item);
+                        return;
+                    }
+                } catch (Exception ex)
+                {
+                    FlexibleMessageBox.Show(UIMessages.MaterialEditorErrorTitle,
+                            UIMessages.MaterialEditorErrorMessage, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     await UpdateTexture(_item);
                     return;
                 }
@@ -1638,8 +1647,8 @@ namespace FFXIV_TexTools.ViewModels
                 await UpdateTexture(_item);
             } catch(Exception ex)
             {
-                FlexibleMessageBox.Show("Material Editor Error",
-                        "An error occured when attempting to edit the Material.", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                FlexibleMessageBox.Show(UIMessages.MaterialEditorErrorTitle,
+                        UIMessages.MaterialEditorErrorMessage, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
             }
         }

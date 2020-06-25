@@ -1,4 +1,5 @@
-﻿using FFXIV_TexTools.Views.Textures;
+﻿using FFXIV_TexTools.Resources;
+using FFXIV_TexTools.Views.Textures;
 using HelixToolkit.Wpf;
 using HelixToolkit.Wpf.SharpDX;
 using Newtonsoft.Json;
@@ -83,10 +84,10 @@ namespace FFXIV_TexTools.ViewModels
             // Update to new material name
             if (WriteFile)
             {
-                _view.MaterialPathLabel.Content = _material.MTRLPath;
+                _view.MaterialPathLabel.Text = _material.MTRLPath;
             } else
             {
-                _view.MaterialPathLabel.Content = "New Material(s)";
+                _view.MaterialPathLabel.Text = "New Material(s)";
             }
 
             var shader = _material.GetShaderInfo();
