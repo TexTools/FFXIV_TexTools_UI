@@ -289,6 +289,7 @@
     <Compile Include="ViewModels\CustomizeViewModel.cs" />
     <Compile Include="ViewModels\IconSearchViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
+    <Compile Include="ViewModels\MaterialEditorViewModel.cs" />
     <Compile Include="ViewModels\ModConverterViewModel.cs" />
     <Compile Include="ViewModels\ModelSearchViewModel.cs" />
     <Compile Include="ViewModels\ModelViewModel.cs" />
@@ -355,6 +356,12 @@
     </Compile>
     <Compile Include="Views\ModPack\ModPackWizard.xaml.cs">
       <DependentUpon>ModPackWizard.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Textures\MaterialEditorHelpView.xaml.cs">
+      <DependentUpon>MaterialEditorHelpView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Textures\MaterialEditorView.xaml.cs">
+      <DependentUpon>MaterialEditorView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Textures\MoreTextureOptionsView.xaml.cs">
       <DependentUpon>MoreTextureOptionsView.xaml</DependentUpon>
@@ -476,6 +483,14 @@
     <Page Include="Views\ModPack\ModPackWizard.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Textures\MaterialEditorHelpView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Textures\MaterialEditorView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Textures\MoreTextureOptionsView.xaml">
       <SubType>Designer</SubType>
@@ -619,8 +634,8 @@
     <Content Include="Resources\Shaders\psCommon.hlsl" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\lib\xivModdingFramework\xivModdingFramework\xivModdingFramework.csproj">
-      <Project>{cdc45cc3-60e7-4cb1-a267-be1cb3bde340}</Project>
+    <ProjectReference Include="..\..\xivModdingFramework\xivModdingFramework\xivModdingFramework.csproj">
+      <Project>{92aac6a8-3a14-45db-b0b5-120a74270c90}</Project>
       <Name>xivModdingFramework</Name>
     </ProjectReference>
   </ItemGroup>

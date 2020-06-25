@@ -122,7 +122,7 @@ namespace FFXIV_TexTools.Views
         /// </summary>
         private void MoreTextureOptionsButton_Click(object sender, RoutedEventArgs e)
         {
-            BottomFlyout.Content = new MoreTextureOptionsView();
+            BottomFlyout.Content = new MoreTextureOptionsView(this);
             BottomFlyout.IsOpen = true;
         }
 

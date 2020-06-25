@@ -855,7 +855,7 @@ namespace FFXIV_TexTools.Views
         /// </summary>
         private void GetCustomTextureButton_Click(object sender, RoutedEventArgs e)
         {
-            var openFileDialog = new OpenFileDialog { Filter = "Texture Files(*.DDS)|*.DDS" };
+            var openFileDialog = new OpenFileDialog { Filter = "Texture Files(*.DDS;*.BMP;*.PNG) |*.DDS;*.BMP;*.PNG" };
 
 
             if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)

@@ -916,4 +916,10 @@ If you would like to enable this, first import a texture for the selected item.<
   <data name="Force_UV_Quadrant" xml:space="preserve">
     <value>Force UV1 to U1V-1</value>
   </data>
+  <data name="Material_Editor" xml:space="preserve">
+    <value>Material Editor</value>
+  </data>
+  <data name="MaterialEditorHelp" xml:space="preserve">
+    <value>Material Editor Help</value>
+  </data>
 </root>
