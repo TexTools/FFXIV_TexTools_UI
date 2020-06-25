@@ -1059,29 +1059,6 @@ namespace FFXIV_TexTools.ViewModels
             }
 
 
-            if (_xivMtrl != null)
-            {
-                TranslucencyEnabled = true;
-                if (_xivMtrl.ShaderNumber == 0x0D)
-                {
-                    TranslucencyCheck = false;
-                }
-                else if (_xivMtrl.ShaderNumber == 0x1D)
-                {
-                    TranslucencyCheck = true;
-                }
-                else
-                {
-                    TranslucencyCheck = false;
-                    TranslucencyEnabled = false;
-                }
-            }
-            else
-            {
-                TranslucencyCheck = false;
-                TranslucencyEnabled = false;
-            }
-
             OnLoadingComplete();
         }
 
@@ -1499,39 +1476,19 @@ namespace FFXIV_TexTools.ViewModels
             {
                 if (!CheckMtrlIsOK())
                     return;
-                if (_item.Category != XivStrings.Gear && _item.Category != XivStrings.Character)
-                {
-                    FlexibleMessageBox.Show(UIMessages.AddNewTexturePartErrorMessageWrongCategoryOfItem,
-                        UIMessages.AddNewTexturePartErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-                if (_item.ItemCategory == XivStrings.Face_Paint || _item.ItemCategory == XivStrings.Equipment_Decals || _item.ItemCategory == XivStrings.Hair)
-                {
-                    FlexibleMessageBox.Show(UIMessages.AddNewTexturePartErrorMessageWrongItemCategoryOfItem,
-                        UIMessages.AddNewTexturePartErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
 
-                //Legitimacy check
+                // Get new Material Identifier
                 var partChars = new char[] { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
                 List<string> partList = new List<string>();
-                if (_item.Category.Equals(XivStrings.Gear))
+
+                if (_item.Category.Equals(XivStrings.Character))
+                {
+                    partList = TypeParts.Select(it => it.Name).ToList();
+                } else
                 {
                     partList = Types.Select(it => it.Name).ToList();
                 }
-                else if (_item.Category.Equals(XivStrings.Character))
-                {
-                    partList = TypeParts.Select(it => it.Name).ToList();
-                }
-                if (partList.Count >= 6)
-                {
-                    FlexibleMessageBox.Show(UIMessages.AddNewTexturePartErrorMessage,
-                        UIMessages.AddNewTexturePartErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    //AddNewTexturePartEnabled = false;
-                    return;
-                }
 
-                //Get the new part name
                 var newPartName = '\0';
                 for (var i = 1; i < partChars.Length; i++)
                 {
@@ -1548,14 +1505,8 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     FlexibleMessageBox.Show(UIMessages.AddNewTexturePartErrorMessage,
                         UIMessages.AddNewTexturePartErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    //AddNewTexturePartEnabled = false;
                     return;
                 }
-
-                var mtrlReplacementRegex = "_[a-z].mtrl";
-                var mtrlReplacementRegexResult = "_" + newPartName + ".mtrl";
-                var texReplacementRegex = "_([a-z])\\.tex";
-                var texReplacementRegexResult = "_" + newPartName + "_$1.tex";
 
                 // Make sure we have access to write the data files.
                 var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
@@ -1568,76 +1519,85 @@ namespace FFXIV_TexTools.ViewModels
                     return;
                 }
 
-                // oldpath -> newpath
 
                 // Get existing Material
                 var mtrlOffset = await index.GetDataOffset(HashGenerator.GetHash(Path.GetDirectoryName(_xivMtrl.MTRLPath).Replace("\\", "/")), HashGenerator.GetHash(Path.GetFileName(_xivMtrl.MTRLPath)), _item.DataFile);
                 var xivMtrl = await _mtrl.GetMtrlData(mtrlOffset, _xivMtrl.MTRLPath, 11);
 
 
+                // Ship it to the editor for user modification
+                var editor = new Views.Textures.MaterialEditorView() { Owner = Window.GetWindow(_textureView) };
+                editor.SetMaterial(xivMtrl, _item, false);
+                var result = editor.ShowDialog();
+                if(result != true)
+                {
+                    // User cancelled the process.
+                    await UpdateTexture(_item);
+                    return;
+                }
+
+
+                // Get tokenized map info structs.
+                // This will let us set them in the new Materials and
+                // Detokenize them using the new paths.
+                var mapInfos = xivMtrl.GetAllMapInfos(true);
+
+                // Shader info likewise will be pumped into each new material.
+                var shaderInfo = xivMtrl.GetShaderInfo();
+
 
                 // Add new Materials for shared model items.    
+                var oldMaterialIdentifier = xivMtrl.GetMaterialIdentifier();
                 var sameModelItems = await GetSameModelList();
-                var oldVersionStr = $"/v{_item.ModelInfo.Variant.ToString().PadLeft(4, '0')}/";
-                var oldMTRLPath = xivMtrl.MTRLPath;
-                var newMtrls = new Dictionary<string, XivMtrl>();
-                var newItems = new Dictionary<string, IItemModel>();
-                var texturesToCreate = new Dictionary<string, string>();
-                var textureItems = new Dictionary<string, IItemModel>();
+                var oldVariantString = $"/v{_item.ModelInfo.Variant.ToString().PadLeft(4, '0')}/";
+                var modifiedVariants = new List<int>();
+
+
+                var mtrlReplacementRegex = "_" + oldMaterialIdentifier + ".mtrl";
+                var mtrlReplacementRegexResult = "_" + newPartName + ".mtrl";
 
                 // Load and modify all the MTRLs.
                 foreach (var item in sameModelItems)
                 {
-                    var dxVersion = int.Parse(Properties.Settings.Default.DX_Version);
-                    XivMtrl itemXivMtrl;
-                    if (TypePartVisibility == Visibility.Visible)
-                    {
-                        itemXivMtrl = await _mtrl.GetMtrlData(item, SelectedRace.XivRace, SelectedTypePart.Name[0], dxVersion, SelectedType.Name);
-                    }
-                    else
-                    {
-                        itemXivMtrl = await _mtrl.GetMtrlData(item, SelectedRace.XivRace, SelectedType.Name[0], dxVersion);
-                    }
-
-                    var oldMtrlPath = itemXivMtrl.MTRLPath;
-
-                    // If we've already modified this material, skip it.
-                    if(newMtrls.ContainsKey(oldMtrlPath))
+                    // Only modify each Variant once.
+                    if(modifiedVariants.Contains(item.ModelInfo.Variant))
                     {
                         continue;
                     }
 
-                    // Update Mtrl Paths
-                    itemXivMtrl.MTRLPath = Regex.Replace(itemXivMtrl.MTRLPath, mtrlReplacementRegex, mtrlReplacementRegexResult);
+                    var dxVersion = 11;
+                    XivMtrl itemXivMtrl;
 
-                    // Update Tex Paths
-                    for (var i = 0; i < itemXivMtrl.TexturePathList.Count; i++)
+                    // Reload a fresh copy of the MTRL we just modified.
+                    if (TypePartVisibility == Visibility.Visible)
                     {
-                        var oldTexPath = itemXivMtrl.TexturePathList[i];
-                        var newTexPath = Regex.Replace(oldTexPath, texReplacementRegex, texReplacementRegexResult);
-                        itemXivMtrl.TexturePathList[i] = newTexPath;
-
-                        // Add to list to create as needed.
-                        if (!texturesToCreate.ContainsKey(oldTexPath))
-                        {
-                            texturesToCreate[oldTexPath] = newTexPath;
-                            textureItems[oldTexPath] = item;
-                        }
+                        itemXivMtrl = await _mtrl.GetMtrlData(_item, SelectedRace.XivRace, oldMaterialIdentifier, dxVersion, SelectedType.Name);
+                    }
+                    else
+                    {
+                        itemXivMtrl = await _mtrl.GetMtrlData(_item, SelectedRace.XivRace, oldMaterialIdentifier, dxVersion);
                     }
 
-                    // Add the new Mtrls by path, so we don't repeatedly re-write them.
-                    newMtrls[oldMtrlPath] = itemXivMtrl;
-                    newItems[oldMtrlPath] = item;
+                    // Shift the MTRL to the new variant folder.
+                    itemXivMtrl.MTRLPath = Regex.Replace(itemXivMtrl.MTRLPath, oldVariantString, "/v" + item.ModelInfo.Variant.ToString().PadLeft(4, '0') + "/");
+
+                    // Change the MTRL part identifier.
+                    itemXivMtrl.MTRLPath = Regex.Replace(itemXivMtrl.MTRLPath, mtrlReplacementRegex, mtrlReplacementRegexResult);
+
+                    // Loop our tokenized map infos and pump them back in
+                    // using the new modified material to detokenize them.
+                    foreach (var info in mapInfos)
+                    {
+                        itemXivMtrl.SetMapInfo(info.Usage, info);
+                    }
+
+                    // Write the new Material
+                    await _mtrl.ImportMtrl(itemXivMtrl, item, "FilesAddedByTexTools");
+                    modifiedVariants.Add(item.ModelInfo.Variant);
                 }
 
 
-                foreach(var keyValue in newMtrls)
-                {
-                    // Write the new MTRLs - ImportMtrl automatically generates any missing textures.
-                    var newMtrlOffset = await _mtrl.ImportMtrl(keyValue.Value, newItems[keyValue.Key], "FilesAddedByTexTools");
-                }
-
-                //update ui    
+                // Reload UI and then switch to new texture part.
                 void SetToNewTexturePart(object sender, EventArgs e)
                 {
                     LoadingComplete -= SetToNewTexturePart;
@@ -1811,19 +1771,6 @@ namespace FFXIV_TexTools.ViewModels
         }
 
         /// <summary>
-        /// The enabled status of the translucency toggle
-        /// </summary>
-        public bool TranslucencyEnabled
-        {
-            get => _translucencyEnabled;
-            set
-            {
-                _translucencyEnabled = value;
-                NotifyPropertyChanged(nameof(TranslucencyEnabled));
-            }
-        }
-
-        /// <summary>
         /// The enabled status of the add new texture part button        
         /// </summary>
         public bool AddNewTexturePartEnabled
@@ -1848,54 +1795,8 @@ namespace FFXIV_TexTools.ViewModels
                 NotifyPropertyChanged(nameof(MaterialEditorEnabled));
             }
         }
-
-        /// <summary>
-        /// The checked status of the translucency toggle 
-        /// </summary>
-        public bool TranslucencyCheck
-        {
-            get => _translucencyCheck;
-            set
-            {
-                _translucencyCheck = value;
-                NotifyPropertyChanged(nameof(TranslucencyCheck));
-                TranslucencyChanged();
-            }
-        }
         #endregion
 
-        /// <summary>
-        /// Modifies the material file when the translucency toggle is changed
-        /// </summary>
-        private async void TranslucencyChanged()
-        {
-            if (_xivMtrl == null) return;
-
-            try
-            {
-                if (TranslucencyCheck)
-                {
-                    if (_xivMtrl.ShaderNumber == 0x0D)
-                    {
-                        await _mtrl.ToggleTranslucency(_xivMtrl, _item, TranslucencyCheck, XivStrings.TexTools);
-                    }
-                }
-                else
-                {
-                    if (_xivMtrl.ShaderNumber == 0x1D)
-                    {
-                        await _mtrl.ToggleTranslucency(_xivMtrl, _item, TranslucencyCheck, XivStrings.TexTools);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                FlexibleMessageBox.Show(
-                    string.Format(UIMessages.TranslucencyToggleErrorMessage, ex.Message), UIMessages.TranslucencyToggleErrorTitle,
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-
-        }
 
         /// <summary>
         /// Clears All the UI elements

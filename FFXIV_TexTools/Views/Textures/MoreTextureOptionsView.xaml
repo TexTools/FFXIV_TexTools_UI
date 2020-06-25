@@ -9,7 +9,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UniformGrid Rows="1" VerticalAlignment="Center">
-        <Button Content="{Binding Source={x:Static resx:UIStrings.Add_NewTexturePart}}" VerticalAlignment="Center" Margin="0,10,10,10" Command="{Binding AddNewTexturePartButton}" IsEnabled="{Binding AddNewTexturePartEnabled}" HorizontalAlignment="Right" Width="380"/>
+        <Button Content="ADD NEW MATERIAL" VerticalAlignment="Center" Margin="0,10,10,10" Command="{Binding AddNewTexturePartButton}" IsEnabled="{Binding AddNewTexturePartEnabled}" HorizontalAlignment="Right" Width="380"/>
         <Button Content="{Binding Source={x:Static resx:UIStrings.Material_Editor}}" VerticalAlignment="Center" Margin="10" Command="{Binding OpenMaterialEditorButton}" IsEnabled="{Binding MaterialEditorEnabled}" />
     </UniformGrid>
 </UserControl>

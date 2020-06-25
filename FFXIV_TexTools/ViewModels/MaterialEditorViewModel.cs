@@ -1,11 +1,14 @@
 ﻿using FFXIV_TexTools.Views.Textures;
 using HelixToolkit.Wpf;
 using HelixToolkit.Wpf.SharpDX;
+using Newtonsoft.Json;
+using SharpDX.D3DCompiler;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 using xivModdingFramework.General.Enums;
@@ -33,6 +36,8 @@ namespace FFXIV_TexTools.ViewModels
 
     class MaterialEditorViewModel
     {
+        public bool WriteFile = false;
+
         private MaterialEditorView _view;
         private Mtrl _mtrl;
         private XivMtrl _material;
@@ -42,15 +47,47 @@ namespace FFXIV_TexTools.ViewModels
             _view = view;
         }
 
-        public void SetMaterial(XivMtrl material, IItemModel item)
+        public void SetMaterial(XivMtrl material, IItemModel item, bool writeFile = true)
         {
+            if (material == null)
+            {
+                return;
+            }
+
+            WriteFile = writeFile;
+
             var gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
             _mtrl = new Mtrl(gameDirectory, item.DataFile, GetLanguage());
+
+
+            /*
+            // Debug code for finding unknown Shader Parameters.
+            var unknowns = new List<ShaderParameterStruct>();
+            foreach(var sp in material.ShaderParameterList)
+            {
+                if (!Enum.IsDefined(typeof(MtrlShaderParameterId), sp.ParameterID))
+                {
+                    unknowns.Add(sp);
+                }
+            }
+            if(unknowns.Count > 0)
+            {
+                // Debug line
+                var json = JsonConvert.SerializeObject(unknowns.ToArray());
+            }
+            */
 
             _material = material;
             _item = item;
 
-            _view.MaterialPathLabel.Content = _material.MTRLPath;
+            // Update to new material name
+            if (WriteFile)
+            {
+                _view.MaterialPathLabel.Content = _material.MTRLPath;
+            } else
+            {
+                _view.MaterialPathLabel.Content = "New Material(s)";
+            }
 
             var shader = _material.GetShaderInfo();
             var normal = _material.GetMapInfo(XivTexType.Normal);
@@ -58,7 +95,18 @@ namespace FFXIV_TexTools.ViewModels
             var specular = _material.GetMapInfo(XivTexType.Specular);
             var multi = _material.GetMapInfo(XivTexType.Multi);
 
-            _view.NormalTextBox.Text = normal.path;
+            if (normal != null)
+            {
+                _view.NormalComboBox.IsEnabled = true;
+                _view.NormalTextBox.IsEnabled = true;
+                _view.NormalTextBox.Text = normal.path;
+                _view.NormalComboBox.SelectedValue = normal.Format;
+            } else
+            {
+                _view.NormalComboBox.IsEnabled = false;
+                _view.NormalTextBox.IsEnabled = false;
+                _view.NormalTextBox.Text = "";
+            }
 
             _view.DiffuseComboBox.SelectedValue = MaterialDiffuseMode.None;
             _view.DiffuseTextBox.Text = "";
@@ -85,39 +133,7 @@ namespace FFXIV_TexTools.ViewModels
 
             _view.TransparencyComboBox.SelectedValue = shader.TransparencyEnabled;
             _view.ShaderComboBox.SelectedValue = shader.Shader;
-            _view.NormalComboBox.SelectedValue = normal.Format;
 
-
-            // Handle tokenizing the paths with placeholders for human readability.
-            var path = _material.GetTextureRootDirectoy();
-            _view.DiffuseTextBox.Text = _view.DiffuseTextBox.Text.Replace(path, XivMtrl.ItemPathToken);
-            _view.SpecularTextBox.Text = _view.SpecularTextBox.Text.Replace(path, XivMtrl.ItemPathToken);
-            _view.NormalTextBox.Text = _view.NormalTextBox.Text.Replace(path, XivMtrl.ItemPathToken);
-
-            var commonPath = XivMtrl.GetCommonTextureDirectory();
-            _view.DiffuseTextBox.Text = _view.DiffuseTextBox.Text.Replace(commonPath, XivMtrl.CommonPathToken);
-            _view.SpecularTextBox.Text = _view.SpecularTextBox.Text.Replace(commonPath, XivMtrl.CommonPathToken);
-            _view.NormalTextBox.Text = _view.NormalTextBox.Text.Replace(commonPath, XivMtrl.CommonPathToken);
-
-
-            var version = _material.GetVersionString();
-            if(version != "")
-            {
-                _view.DiffuseTextBox.Text = _view.DiffuseTextBox.Text.Replace(version, XivMtrl.VersionToken);
-                _view.SpecularTextBox.Text = _view.SpecularTextBox.Text.Replace(version, XivMtrl.VersionToken);
-                _view.NormalTextBox.Text = _view.NormalTextBox.Text.Replace(version, XivMtrl.VersionToken);
-            }
-
-            var normalName = _material.GetDefaultTexureName(XivTexType.Normal, false);
-            var multiName = _material.GetDefaultTexureName(XivTexType.Multi, false);
-            var specName= _material.GetDefaultTexureName(XivTexType.Specular, false);
-            var diffuseName = _material.GetDefaultTexureName(XivTexType.Diffuse, false);
-
-
-            _view.NormalTextBox.Text = _view.NormalTextBox.Text.Replace(normalName, XivMtrl.TextureNameToken);
-            _view.SpecularTextBox.Text = _view.SpecularTextBox.Text.Replace(multiName, XivMtrl.TextureNameToken);
-            _view.SpecularTextBox.Text = _view.SpecularTextBox.Text.Replace(specName, XivMtrl.TextureNameToken);
-            _view.DiffuseTextBox.Text = _view.DiffuseTextBox.Text.Replace(diffuseName, XivMtrl.TextureNameToken);
 
 
         }
@@ -129,9 +145,21 @@ namespace FFXIV_TexTools.ViewModels
         }
 
         /// <summary>
+        /// Sanitizes a path string
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        private string SanitizePath(string path)
+        {
+            path = path.ToLower();
+            path = Regex.Replace(path, "[^a-z-_/]", "");
+            return path;
+        }
+
+        /// <summary>
         /// Updates the XivMtrl with the selected changes.
         /// </summary>
-        public async Task<int> SaveChanges()
+        public async Task<XivMtrl> SaveChanges()
         {
             // Old Data
             var oldShader = _material.GetShaderInfo();
@@ -141,18 +169,21 @@ namespace FFXIV_TexTools.ViewModels
             var oldMulti = _material.GetMapInfo(XivTexType.Multi);
 
 
-            if(_view.NormalTextBox.Text == "")
-            {
-                
-            }
+            _view.NormalTextBox.Text = SanitizePath(_view.NormalTextBox.Text);
+            _view.DiffuseTextBox.Text = SanitizePath(_view.DiffuseTextBox.Text);
+            _view.SpecularTextBox.Text = SanitizePath(_view.SpecularTextBox.Text);
 
             // New Data
             var newShader = new ShaderInfo() { Shader = (MtrlShader) _view.ShaderComboBox.SelectedValue, TransparencyEnabled = (bool) _view.TransparencyComboBox.SelectedValue };
-            MapInfo newNormal = new MapInfo() { Usage = XivTexType.Normal, Format = (MtrlTextureDescriptorFormat) _view.NormalComboBox.SelectedValue, path = _view.NormalTextBox.Text };
+            MapInfo newNormal = null;
             MapInfo newDiffuse = null;
             MapInfo newSpecular = null;
             MapInfo newMulti = null;
 
+            // Nomral
+            if(_view.NormalComboBox.SelectedValue != null) {
+                newNormal = new MapInfo() { Usage = XivTexType.Normal, Format = (MtrlTextureDescriptorFormat)_view.NormalComboBox.SelectedValue, path = _view.NormalTextBox.Text };
+            }
 
             // Specular
             if((MaterialSpecularMode) _view.SpecularComboBox.SelectedValue == MaterialSpecularMode.FullColor)
@@ -177,9 +208,12 @@ namespace FFXIV_TexTools.ViewModels
             _material.SetMapInfo(XivTexType.Diffuse, newDiffuse);
 
 
-            // Write the new MTRLs - ImportMtrl automatically generates any missing textures.
-            var newMtrlOffset = await _mtrl.ImportMtrl(_material, _item, "FilesAddedByTexTools");
-            return newMtrlOffset;
+            if (WriteFile)
+            {
+                // Write the new MTRLs - ImportMtrl automatically generates any missing textures.
+                var newMtrlOffset = await _mtrl.ImportMtrl(_material, _item, "FilesAddedByTexTools");
+            }
+            return _material;
         }
         private static XivLanguage GetLanguage()
         {

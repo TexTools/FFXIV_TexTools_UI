@@ -13,6 +13,14 @@ namespace FFXIV_TexTools.Views.Textures
     public partial class MaterialEditorView
     {
         private MaterialEditorViewModel viewModel;
+        private XivMtrl _material;
+        public XivMtrl Material
+        {
+            get
+            {
+                return _material;
+            }
+        }
 
         public MaterialEditorView()
         {
@@ -26,6 +34,7 @@ namespace FFXIV_TexTools.Views.Textures
             ShaderSource.Add(MtrlShader.Skin, "Skin");
             ShaderSource.Add(MtrlShader.Hair, "Hair");
             ShaderSource.Add(MtrlShader.Iris, "Iris");
+            ShaderSource.Add(MtrlShader.Furniture, "Furniture");
             ShaderSource.Add(MtrlShader.Other, "Other");
             ShaderComboBox.ItemsSource = ShaderSource;
             ShaderComboBox.DisplayMemberPath = "Value";
@@ -54,8 +63,8 @@ namespace FFXIV_TexTools.Views.Textures
             DiffuseComboBox.SelectedValuePath = "Key";
 
             Dictionary<bool, string> TransparencySource = new Dictionary<bool, string>();
-            TransparencySource.Add(false, "Disabled");
             TransparencySource.Add(true, "Enabled");
+            TransparencySource.Add(false, "Disabled");
             TransparencyComboBox.ItemsSource = TransparencySource;
             TransparencyComboBox.DisplayMemberPath = "Value";
             TransparencyComboBox.SelectedValuePath = "Key";
@@ -63,9 +72,10 @@ namespace FFXIV_TexTools.Views.Textures
             SaveButton.Click += SaveButton_Click;
         }
 
-        public void SetMaterial(XivMtrl material, IItemModel item)
+        public void SetMaterial(XivMtrl material, IItemModel item, bool writeFile = true)
         {
-            viewModel.SetMaterial(material, item);
+            _material = Material;
+            viewModel.SetMaterial(material, item, writeFile);
 
         }
 
@@ -76,12 +86,14 @@ namespace FFXIV_TexTools.Views.Textures
 
         private async void SaveButton_Click(object sender, RoutedEventArgs e)
         {
-            await viewModel.SaveChanges();
+            _material = await viewModel.SaveChanges();
+            DialogResult = true;
             Close();
         }
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
+            DialogResult = false;
             Close();
         }
 
@@ -115,10 +127,36 @@ namespace FFXIV_TexTools.Views.Textures
             {
                 TransparencyComboBox.SelectedValue = true;
                 TransparencyComboBox.IsEnabled = false;
+            } else if ((MtrlShader)ShaderComboBox.SelectedValue == MtrlShader.Furniture)
+            {
+                // Disable everything for furniture shader items.
+                // Haven't done enough research here yet to be able to 
+                // sanely allow them to be edited this way.
+
+                // Furniture items also completely lack usage structs, so 
+                // how their actual maps are connected to the shader is currently
+                // totally unknown.
+                ShaderComboBox.IsEnabled = false;
+                TransparencyComboBox.IsEnabled = true;
+                NormalComboBox.IsEnabled = false;
+                NormalTextBox.IsEnabled = false;
+                SpecularComboBox.IsEnabled = false;
+                SpecularTextBox.IsEnabled = false;
+                DiffuseComboBox.IsEnabled = false;
+                DiffuseTextBox.IsEnabled = false;
+
             } else
             {
+                ShaderComboBox.IsEnabled = true;
                 TransparencyComboBox.IsEnabled = true;
+                NormalComboBox.IsEnabled = true;
+                NormalTextBox.IsEnabled = true;
+                SpecularComboBox.IsEnabled = true;
+                SpecularTextBox.IsEnabled = true;
+                DiffuseComboBox.IsEnabled = true;
+                DiffuseTextBox.IsEnabled = true;
             }
+
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
