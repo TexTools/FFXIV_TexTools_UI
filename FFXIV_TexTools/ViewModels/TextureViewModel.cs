@@ -1592,7 +1592,7 @@ namespace FFXIV_TexTools.ViewModels
                     }
 
                     // Write the new Material
-                    await _mtrl.ImportMtrl(itemXivMtrl, item, "FilesAddedByTexTools");
+                    await _mtrl.ImportMtrl(itemXivMtrl, item, XivStrings.TexTools);
                     modifiedVariants.Add(item.ModelInfo.Variant);
                 }
 

@@ -211,7 +211,7 @@ namespace FFXIV_TexTools.ViewModels
             if (WriteFile)
             {
                 // Write the new MTRLs - ImportMtrl automatically generates any missing textures.
-                var newMtrlOffset = await _mtrl.ImportMtrl(_material, _item, "FilesAddedByTexTools");
+                var newMtrlOffset = await _mtrl.ImportMtrl(_material, _item, XivStrings.TexTools);
             }
             return _material;
         }
