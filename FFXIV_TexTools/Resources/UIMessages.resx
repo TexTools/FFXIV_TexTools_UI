@@ -681,4 +681,10 @@ Any mod on the 3D model will be disabled.</value>
   <data name="ViewportErrorTitle" xml:space="preserve">
     <value>Error Updating Viewport</value>
   </data>
+  <data name="MaterialEditorErrorMessage" xml:space="preserve">
+    <value>An error occurred when trying to modify the material.</value>
+  </data>
+  <data name="MaterialEditorErrorTitle" xml:space="preserve">
+    <value>Material Editor Error</value>
+  </data>
 </root>

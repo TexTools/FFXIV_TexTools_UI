@@ -23,8 +23,10 @@ namespace FFXIV_TexTools.Views
     /// </summary>
     public partial class MoreTextureOptionsView : UserControl
     {
-        public MoreTextureOptionsView()
+        private TextureView _parent;
+        public MoreTextureOptionsView(TextureView parent)
         {
+            _parent = parent;
             InitializeComponent();
         }
     }
