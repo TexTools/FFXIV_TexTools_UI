@@ -43,6 +43,7 @@ using System.Windows.Media.Imaging;
 using xivModdingFramework.Exd.FileTypes;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Helpers;
+using xivModdingFramework.Items;
 using xivModdingFramework.Items.Categories;
 using xivModdingFramework.Items.DataContainers;
 using xivModdingFramework.Items.Enums;
@@ -1573,7 +1574,7 @@ namespace FFXIV_TexTools.ViewModels
                 // Add new Materials for shared model items.    
                 var oldMaterialIdentifier = xivMtrl.GetMaterialIdentifier();
                 var sameModelItems = await GetSameModelList();
-                var oldVariantString = $"/v{_item.ModelInfo.Variant.ToString().PadLeft(4, '0')}/";
+                var oldVariantString = "/v" + xivMtrl.GetVariant().ToString().PadLeft(4,'0')  + '/';
                 var modifiedVariants = new List<int>();
 
 
@@ -1584,8 +1585,34 @@ namespace FFXIV_TexTools.ViewModels
                 // Load and modify all the MTRLs.
                 foreach (var item in sameModelItems)
                 {
+
+                    // Resolve this item's material variant.
+                    // - This isn't always the same as the item model variant, for some reason.
+                    // - So it has to be resolved manually.
+                    var variantMtrlPath = "";
+                    var itemType = ItemType.GetItemType(_item);
+
+
+                    if (TypePartVisibility == Visibility.Visible)
+                    {
+
+                        // Get mtrl path
+                        variantMtrlPath = (await _mtrl.GetMtrlPath(item, SelectedRace.XivRace, oldMaterialIdentifier, itemType, SelectedType.Name)).Folder;
+                    }
+                    else
+                    {
+                        variantMtrlPath = (await _mtrl.GetMtrlPath(item, SelectedRace.XivRace, oldMaterialIdentifier, itemType, SelectedType.Name)).Folder;
+                    }
+
+                    var match = Regex.Match(variantMtrlPath, "/v([0-9]+)");
+                    var variant = 0;
+                    if (match.Success)
+                    {
+                        variant = Int32.Parse(match.Groups[1].Value);
+                    }
+
                     // Only modify each Variant once.
-                    if(modifiedVariants.Contains(item.ModelInfo.Variant))
+                    if (modifiedVariants.Contains(variant))
                     {
                         continue;
                     }
@@ -1596,6 +1623,8 @@ namespace FFXIV_TexTools.ViewModels
                     // Reload a fresh copy of the MTRL we just modified.
                     if (TypePartVisibility == Visibility.Visible)
                     {
+
+                        // Get mtrl path
                         itemXivMtrl = await _mtrl.GetMtrlData(_item, SelectedRace.XivRace, oldMaterialIdentifier, dxVersion, SelectedType.Name);
                     }
                     else
@@ -1603,8 +1632,10 @@ namespace FFXIV_TexTools.ViewModels
                         itemXivMtrl = await _mtrl.GetMtrlData(_item, SelectedRace.XivRace, oldMaterialIdentifier, dxVersion);
                     }
 
+
+
                     // Shift the MTRL to the new variant folder.
-                    itemXivMtrl.MTRLPath = Regex.Replace(itemXivMtrl.MTRLPath, oldVariantString, "/v" + item.ModelInfo.Variant.ToString().PadLeft(4, '0') + "/");
+                    itemXivMtrl.MTRLPath = Regex.Replace(itemXivMtrl.MTRLPath, oldVariantString, "/v" + variant.ToString().PadLeft(4, '0') + "/");
 
                     // Change the MTRL part identifier.
                     itemXivMtrl.MTRLPath = Regex.Replace(itemXivMtrl.MTRLPath, mtrlReplacementRegex, mtrlReplacementRegexResult);
@@ -1625,7 +1656,7 @@ namespace FFXIV_TexTools.ViewModels
 
                     // Write the new Material
                     await _mtrl.ImportMtrl(itemXivMtrl, item, XivStrings.TexTools);
-                    modifiedVariants.Add(item.ModelInfo.Variant);
+                    modifiedVariants.Add(variant);
                 }
 
 
