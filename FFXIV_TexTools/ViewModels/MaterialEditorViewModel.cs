@@ -153,7 +153,7 @@ namespace FFXIV_TexTools.ViewModels
         private string SanitizePath(string path)
         {
             path = path.ToLower();
-            path = Regex.Replace(path, "[^a-z0-9-_/{}]", "");
+            path = Regex.Replace(path, "[^a-z0-9-_/\\.{}]", "");
             return path;
         }
 

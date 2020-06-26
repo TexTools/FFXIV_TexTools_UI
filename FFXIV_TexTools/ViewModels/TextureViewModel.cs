@@ -1554,6 +1554,21 @@ namespace FFXIV_TexTools.ViewModels
                 // Shader info likewise will be pumped into each new material.
                 var shaderInfo = xivMtrl.GetShaderInfo();
 
+                // Get Blank Colorset Data
+                List<Half> colorSetData = new List<Half>();
+                byte[] colorSetExtraData = null;
+
+                // Set our blank colorset info.
+                if (xivMtrl.ColorSetData != null && xivMtrl.ColorSetData.Count > 0)
+                {
+                    colorSetData = _tex.GetColorsetDataFromDDS(Tex.GetDefaultTexturePath(XivTexType.ColorSet));
+                }
+                if (xivMtrl.ColorSetDataSize == 544)
+                {
+                    colorSetExtraData = _tex.GetColorsetExtraDataFromDDS(Tex.GetDefaultTexturePath(XivTexType.ColorSet));
+                }
+
+
 
                 // Add new Materials for shared model items.    
                 var oldMaterialIdentifier = xivMtrl.GetMaterialIdentifier();
@@ -1564,6 +1579,7 @@ namespace FFXIV_TexTools.ViewModels
 
                 var mtrlReplacementRegex = "_" + oldMaterialIdentifier + ".mtrl";
                 var mtrlReplacementRegexResult = "_" + newPartName + ".mtrl";
+
 
                 // Load and modify all the MTRLs.
                 foreach (var item in sameModelItems)
@@ -1599,6 +1615,13 @@ namespace FFXIV_TexTools.ViewModels
                     {
                         itemXivMtrl.SetMapInfo(info.Usage, info);
                     }
+
+                    // Load the Shader Settings
+                    itemXivMtrl.SetShaderInfo(shaderInfo);
+
+                    // Load Colorset Data
+                    itemXivMtrl.ColorSetData = colorSetData;
+                    itemXivMtrl.ColorSetExtraData = colorSetExtraData;
 
                     // Write the new Material
                     await _mtrl.ImportMtrl(itemXivMtrl, item, XivStrings.TexTools);
