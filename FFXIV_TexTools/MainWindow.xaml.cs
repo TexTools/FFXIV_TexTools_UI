@@ -377,21 +377,19 @@ namespace FFXIV_TexTools
                 var sharedItemsViewModel = sharedItemsView.DataContext as SharedItemsViewModel;
 
                 await textureViewModel.UpdateTexture(item);
-                await sharedItemsViewModel.SetItem(item, this);
-
-                try
+                var showSharedItems = await sharedItemsViewModel.SetItem(item, this);
+                if(showSharedItems) { 
+                    SharedItemsTab.IsEnabled = true;
+                    SharedItemsTab.Visibility = Visibility.Visible;
+                } else
                 {
-                    var im = (IItemModel)category.Item;
-                    if (im != null)
+                    if(SharedItemsTab.IsSelected)
                     {
-                        SharedItemsTab.IsEnabled = true;
-                    } else
-                    {
-                        SharedItemsTab.IsEnabled = false;
+                        SharedItemsTab.IsSelected = false;
+                        TextureTabItem.IsSelected = true;
                     }
-                } catch(Exception ex)
-                {
                     SharedItemsTab.IsEnabled = false;
+                    SharedItemsTab.Visibility = Visibility.Hidden;
                 }
 
 
@@ -406,10 +404,12 @@ namespace FFXIV_TexTools
                     }
 
                     ModelTabItem.IsEnabled = false;
+                    ModelTabItem.Visibility = Visibility.Hidden;
                 }
                 else
                 {
                     ModelTabItem.IsEnabled = true;
+                    ModelTabItem.Visibility = Visibility.Visible;
 
                     var modelView = ModelTabItem.Content as ModelView;
                     var modelViewModel = modelView.DataContext as ModelViewModel;

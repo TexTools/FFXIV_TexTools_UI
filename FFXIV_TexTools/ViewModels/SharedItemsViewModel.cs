@@ -51,7 +51,7 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
-        public async Task SetItem(IItem item, MainWindow mainWindow = null)
+        public async Task<bool> SetItem(IItem item, MainWindow mainWindow = null)
         {
             if (mainWindow != null)
             {
@@ -68,12 +68,12 @@ namespace FFXIV_TexTools.ViewModels
                 im = (IItemModel)item;
             } catch(Exception ex)
             {
-                return;
+                return false;
             }
 
             if(im == null || im.ModelInfo == null)
             {
-                return;
+                return false;
             }
 
             var topLevelItem = new TreeViewItem();
@@ -123,7 +123,9 @@ namespace FFXIV_TexTools.ViewModels
                 nextParent.IsExpanded = true;
                 nextNode.IsSelected = true;
                 nextParent = nextNode;
-                return;
+
+                // No shared items for things without IMC files, so just hide the view entirely?
+                return false;
 
             }
             var sharedList = await _gear.GetSameModelList(im);
@@ -205,15 +207,7 @@ namespace FFXIV_TexTools.ViewModels
                 myNode.IsSelected = true;
             }
 
-
-
-
-            //var topLevelItem = treeItem;
-
-
-
-            
-            //PrimaryTree.Clear
+            return true;
         }
 
         private void ItemNode_Activated(object sender, System.Windows.Input.MouseButtonEventArgs e)
