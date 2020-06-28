@@ -2,6 +2,7 @@
 using SharpDX.Toolkit.Graphics;
 using SharpDX.Win32;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -153,6 +154,17 @@ namespace FFXIV_TexTools.ViewModels
                     variantHeaders.Add(info.Variant, new TreeViewItem());
                     variantHeaders[info.Variant].Header = "Variant #" + info.Variant;
                     variantHeaders[info.Variant].DataContext = info.Variant;
+
+                    var hiddenParts = MaskToHidenParts(info.Mask);
+                    variantHeaders[info.Variant].Header += " - Hidden Parts: ";
+                    if (hiddenParts.Count > 0)
+                    {
+                        variantHeaders[info.Variant].Header += String.Join(",", hiddenParts);
+                    } else
+                    {
+                        variantHeaders[info.Variant].Header += "None";
+                    }
+
                 }
 
                 sharedItems[info.Variant].Add(i);
@@ -219,6 +231,33 @@ namespace FFXIV_TexTools.ViewModels
         private string CapFirst(string s)
         {
             return s[0].ToString().ToUpper() + s.Substring(1);
+        }
+
+        private List<char> MaskToHidenParts(ushort mask)
+        {
+            var ret = new List<char>();
+            BitArray bits = new BitArray(System.BitConverter.GetBytes(mask));
+
+
+            var idx = 0;
+            foreach(var b in bits)
+            {
+                // The Mask only uses the first 10 bits.
+                if(idx > 9)
+                {
+                    break;
+                }
+
+                var visible = (bool)b;
+                if(!visible)
+                {
+                    var letter = xivModdingFramework.Helpers.Constants.Alphabet[idx];
+                    ret.Add(letter);
+                }
+                idx++;
+            }
+
+            return ret;
         }
     }
 }
