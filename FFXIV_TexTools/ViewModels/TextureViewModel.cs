@@ -1552,6 +1552,26 @@ namespace FFXIV_TexTools.ViewModels
                 // Detokenize them using the new paths.
                 var mapInfos = xivMtrl.GetAllMapInfos(true);
 
+
+                var hasDiffuse = false;
+                var hasMulti = false;
+                var hasSpecular = false;
+                foreach(var info in mapInfos)
+                {
+                    if(info.Usage == XivTexType.Diffuse)
+                    {
+                        hasDiffuse = true;
+                    } else if(info.Usage == XivTexType.Multi)
+                    {
+                        hasMulti = true;
+                    } else if(info.Usage == XivTexType.Specular)
+                    {
+                        hasSpecular = true;
+                    }
+                }
+
+
+
                 // Shader info likewise will be pumped into each new material.
                 var shaderInfo = xivMtrl.GetShaderInfo();
 
@@ -1645,6 +1665,20 @@ namespace FFXIV_TexTools.ViewModels
                     foreach (var info in mapInfos)
                     {
                         itemXivMtrl.SetMapInfo(info.Usage, info);
+                    }
+
+                    // Clear any unused maps.
+                    if (!hasDiffuse)
+                    {
+                        itemXivMtrl.SetMapInfo(XivTexType.Diffuse, null);
+                    }
+                    if (!hasMulti)
+                    {
+                        itemXivMtrl.SetMapInfo(XivTexType.Multi, null);
+                    }
+                    if (!hasSpecular)
+                    {
+                        itemXivMtrl.SetMapInfo(XivTexType.Specular, null);
                     }
 
                     // Load the Shader Settings
