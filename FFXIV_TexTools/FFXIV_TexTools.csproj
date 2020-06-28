@@ -294,6 +294,7 @@
     <Compile Include="ViewModels\ModelSearchViewModel.cs" />
     <Compile Include="ViewModels\ModelViewModel.cs" />
     <Compile Include="ViewModels\ModListViewModel.cs" />
+    <Compile Include="ViewModels\SharedItemsViewModel.cs" />
     <Compile Include="ViewModels\TextureViewModel.cs" />
     <Compile Include="ViewModels\Viewport3DViewModel.cs" />
     <Compile Include="Views\AboutView.xaml.cs">
@@ -374,6 +375,9 @@
     </Compile>
     <Compile Include="Views\ModPack\SimpleModPackImporter.xaml.cs">
       <DependentUpon>SimpleModPackImporter.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SharedItems\SharedItemsView.xaml.cs">
+      <DependentUpon>SharedItemsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Textures\TextureView.xaml.cs">
       <DependentUpon>TextureView.xaml</DependentUpon>
@@ -505,6 +509,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\ModPack\SimpleModPackImporter.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SharedItems\SharedItemsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

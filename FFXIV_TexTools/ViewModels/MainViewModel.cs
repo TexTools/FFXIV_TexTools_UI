@@ -526,7 +526,7 @@ namespace FFXIV_TexTools.ViewModels
 
             foreach (var categoryOrder in _categoryOrderList)
             {
-                var category = new Category { Name = categoryOrder, Categories = new ObservableCollection<Category>(), CategoryList = new List<string>() };
+                var category = new Category { Name = categoryOrder, Categories = new ObservableCollection<Category>(), CategoryList = new List<string>(), ParentCategory = Categories[0] };
                 Categories[0].Categories.Add(category);
                 Categories[0].CategoryList.Add(categoryOrder);
             }
@@ -550,11 +550,11 @@ namespace FFXIV_TexTools.ViewModels
                         where category1.Name == xivGear.SecondaryCategory
                         select category1).FirstOrDefault();
 
-                    cat.Categories.Add(new Category{Name = xivGear.Name, Item = xivGear});
+                    cat.Categories.Add(new Category{Name = xivGear.Name, Item = xivGear, ParentCategory = cat });
                 }
                 else
                 {
-                    var category = new Category {Name = xivGear.SecondaryCategory, Categories = new ObservableCollection<Category>(), CategoryList = new List<string>()};
+                    var category = new Category {Name = xivGear.SecondaryCategory, Categories = new ObservableCollection<Category>(), CategoryList = new List<string>(), ParentCategory = Categories[0]};
                     category.Categories.Add(new Category{Name = xivGear.Name, Item = xivGear});
                     category.CategoryList.Add(xivGear.Name);
                     Categories[0].Categories.Add(category);

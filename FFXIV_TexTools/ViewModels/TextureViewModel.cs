@@ -1479,7 +1479,7 @@ namespace FFXIV_TexTools.ViewModels
                     return;
 
                 // Get new Material Identifier
-                var partChars = new char[] { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
+                var partChars = Constants.Alphabet;
                 List<string> partList = new List<string>();
 
                 if (_item.PrimaryCategory.Equals(XivStrings.Character))
@@ -1593,7 +1593,7 @@ namespace FFXIV_TexTools.ViewModels
 
                 // Add new Materials for shared model items.    
                 var oldMaterialIdentifier = xivMtrl.GetMaterialIdentifier();
-                var sameModelItems = await GetSameModelList();
+                var sameModelItems = await _gear.GetSameModelList(_item);
                 var oldVariantString = "/v" + xivMtrl.GetVariant().ToString().PadLeft(4,'0')  + '/';
                 var modifiedVariants = new List<int>();
 
@@ -1741,58 +1741,6 @@ namespace FFXIV_TexTools.ViewModels
             }
         }
 
-        async Task<List<IItemModel>> GetSameModelList()
-        {
-            var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
-            var sameModelItems=new List<IItemModel>();
-            var gear = new Gear(gameDirectory, GetLanguage());
-            var character = new Character(gameDirectory, GetLanguage());
-            var companions = new Companions(gameDirectory, GetLanguage());
-            var ui = new UI(gameDirectory, GetLanguage());
-            var housing = new Housing(gameDirectory, GetLanguage());
-            //gear
-            if (_item.PrimaryCategory.Equals(XivStrings.Gear))
-            {
-                sameModelItems.AddRange(
-                    (await gear.GetGearList())
-                    .Where(it =>
-                    it.ModelInfo.PrimaryID == _item.ModelInfo.PrimaryID
-                    && it.SecondaryCategory == _item.SecondaryCategory).Select(it => it as IItemModel).ToList()
-                );
-            }
-            else if (_item.PrimaryCategory.Equals(XivStrings.Character))
-            {
-                //character
-                sameModelItems.Add((IItemModel)_item.Clone()) ;
-            }
-            //companions
-            //sameModelItems.AddRange(
-            //    (await companions.GetMinionList())
-            //    .Where(it =>
-            //    it.ModelInfo.ModelID == _item.ModelInfo.ModelID
-            //    && it.ItemCategory == _item.ItemCategory).Select(it => it as IItemModel).ToList()
-            //);
-            //sameModelItems.AddRange(
-            //    (await companions.GetMountList())
-            //    .Where(it =>
-            //    it.ModelInfo.ModelID == _item.ModelInfo.ModelID
-            //    && it.ItemCategory == _item.ItemCategory).Select(it => it as IItemModel).ToList()
-            //);
-            //sameModelItems.AddRange(
-            //    (await companions.GetPetList())
-            //    .Where(it =>
-            //    it.ModelInfo.ModelID == _item.ModelInfo.ModelID
-            //    && it.ItemCategory == _item.ItemCategory).Select(it => it as IItemModel).ToList()
-            //);
-            //housing
-            //sameModelItems.AddRange(
-            //    (await housing.GetFurnitureList())
-            //    .Where(it =>
-            //    it.ModelInfo.ModelID == _item.ModelInfo.ModelID
-            //    && it.ItemCategory == _item.ItemCategory).Select(it => it as IItemModel).ToList()
-            //);
-            return sameModelItems;
-        }
 
         /// <summary>
         /// The enabled status for the export button

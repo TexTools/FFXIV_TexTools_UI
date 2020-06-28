@@ -229,8 +229,7 @@ namespace FFXIV_TexTools.ViewModels
                     }
                 };
 
-                await textureViewModel.UpdateTexture(xivGear);
-                await modelViewModel.UpdateModel(xivGear);
+                _mainView.SelectItem(xivGear, false);
             }
             else if (SelectedCategory.Equals(XivStrings.Monster))
             {
@@ -249,8 +248,7 @@ namespace FFXIV_TexTools.ViewModels
                     }
                 };
 
-                await textureViewModel.UpdateTexture(xivMonster);
-                await modelViewModel.UpdateModel(xivMonster);
+                _mainView.SelectItem(xivMonster, false);
             }
             else if (SelectedCategory.Equals(XivStrings.DemiHuman))
             {
@@ -269,8 +267,7 @@ namespace FFXIV_TexTools.ViewModels
                     }
                 };
 
-                await textureViewModel.UpdateTexture(xivDemiHuman);
-                await modelViewModel.UpdateModel(xivDemiHuman);
+                _mainView.SelectItem(xivDemiHuman, false);
             }
             else if (SelectedCategory.Equals(XivStrings.Furniture))
             {
@@ -286,8 +283,7 @@ namespace FFXIV_TexTools.ViewModels
                     }
                 };
 
-                await textureViewModel.UpdateTexture(xivFurniture);
-                await modelViewModel.UpdateModel(xivFurniture);
+                _mainView.SelectItem(xivFurniture, false);
             }
         }
 

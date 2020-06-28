@@ -54,6 +54,7 @@ namespace FFXIV_TexTools
     {
         private SysTimer.Timer searchTimer = new SysTimer.Timer(300);
         private string _startupArgs;
+        private Category _selectedCategory;
 
         public MainWindow(string[] args)
         {
@@ -252,27 +253,152 @@ namespace FFXIV_TexTools
         /// </summary>
         private void TreeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-            UpdateViews(e.NewValue as Category);
+            var c = (e.NewValue as Category);
+            UpdateViews(c);
+        }
+
+        /// <summary>
+        /// Select an item in the tree view (and switch to that item)
+        /// </summary>
+        /// <param name="item"></param>
+        public void SelectItem(IItem item, bool selectInTree = true)
+        {
+            Category c = null;
+            if (selectInTree)
+            {
+                c = FindInTree(item);
+                if (c != null)
+                {
+
+                    var p = c.ParentCategory;
+                    var cats = new List<Category>();
+                    while (p != null)
+                    {
+                        cats.Add(p);
+                        p = p.ParentCategory;
+                    }
+                    cats.Reverse();
+
+                    // Expand from top down.
+                    foreach (var cat in cats)
+                    {
+                        cat.IsExpanded = true;
+                    }
+                    c.IsSelected = true;
+                }
+            }
+
+            if(c == null)
+            {
+                c = new Category { IsSelected = true, Item = item };
+            }
+
+            UpdateViews(c);
+        }
+
+        /// <summary>
+        /// Finds an item in the tree.
+        /// This is not efficient by any means, and is a straight O(n) scan of the tree.
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="parent"></param>
+        /// <returns></returns>
+        private Category FindInTree(IItem item, Category parent = null) {
+            if(parent == null)
+            {
+                var treeItems = ItemTreeView.Items;
+                foreach (var ti in treeItems)
+                {
+                    var c = (Category)ti;
+                    var result = FindInTree(item, c);
+                    if (result != null)
+                    {
+                        // Apparently the ParentCategory field is not
+                        // always populated correctly.
+                        if (result.ParentCategory == null)
+                        {
+                            result.ParentCategory = c;
+                        }
+                    }
+                    return result;
+                }
+            } else
+            {
+                foreach(var c in parent.Categories)
+                {
+                    if(c.Item != null)
+                    {
+
+                        if(c.Item.Name == item.Name)
+                        {
+                            return c;
+                        }
+                    } else
+                    {
+                        var r = FindInTree(item, c);
+                        if(r != null)
+                        {
+                            // Apparently the ParentCategory field is not
+                            // always populated correctly.
+                            if(r.ParentCategory == null)
+                            {
+                                r.ParentCategory = c;
+                            }
+                            return r;
+                        }
+                    }
+                }
+            }
+            return null;
         }
 
         /// <summary>
         /// Updates the texture and model views with the selected item
         /// </summary>
         /// <param name="selectedItem">The selected item</param>
-        private async void UpdateViews(Category selectedItem)
+        private async void UpdateViews(Category category)
         {
-            if (selectedItem?.Item != null)
+            if ((category != null && category.Item != null) // Thing we're selecting has a valid item.
+                && (_selectedCategory == null || _selectedCategory.Item == null // And either we have no item selected
+                    || (!_selectedCategory.Item.Equals(category.Item))))        // Or a different item selected.
             {
+                // De-select the previous category.
+                if(_selectedCategory != null && _selectedCategory.IsSelected)
+                {
+                    _selectedCategory.IsSelected = false;
+                }
+
+                var item = category.Item;
+                _selectedCategory = category;
                 ItemTreeView.IsEnabled = false;
                 var textureView = TextureTabItem.Content as TextureView;
                 var textureViewModel = textureView.DataContext as TextureViewModel;
+                var sharedItemsView = SharedItemsTab.Content as SharedItemsView;
+                var sharedItemsViewModel = sharedItemsView.DataContext as SharedItemsViewModel;
 
-                await textureViewModel.UpdateTexture(selectedItem.Item);
+                await textureViewModel.UpdateTexture(item);
+                await sharedItemsViewModel.SetItem(item, this);
 
-                if (selectedItem.Item.PrimaryCategory.Equals(XivStrings.UI) ||
-                    selectedItem.Item.SecondaryCategory.Equals(XivStrings.Face_Paint) ||
-                    selectedItem.Item.SecondaryCategory.Equals(XivStrings.Equipment_Decals) ||
-                    selectedItem.Item.SecondaryCategory.Equals(XivStrings.Paintings))
+                try
+                {
+                    var im = (IItemModel)category.Item;
+                    if (im != null)
+                    {
+                        SharedItemsTab.IsEnabled = true;
+                    } else
+                    {
+                        SharedItemsTab.IsEnabled = false;
+                    }
+                } catch(Exception ex)
+                {
+                    SharedItemsTab.IsEnabled = false;
+                }
+
+
+                if (item.PrimaryCategory.Equals(XivStrings.UI) ||
+                    item.SecondaryCategory.Equals(XivStrings.Face_Paint) ||
+                    item.SecondaryCategory.Equals(XivStrings.Equipment_Decals) ||
+                    item.SecondaryCategory.Equals(XivStrings.Paintings))
                 {
                     if (TabsControl.SelectedIndex == 1)
                     {
@@ -288,7 +414,7 @@ namespace FFXIV_TexTools
                     var modelView = ModelTabItem.Content as ModelView;
                     var modelViewModel = modelView.DataContext as ModelViewModel;
 
-                    await modelViewModel.UpdateModel(selectedItem.Item as IItemModel);
+                    await modelViewModel.UpdateModel(item as IItemModel);
                 }
             }
         }
@@ -651,7 +777,9 @@ namespace FFXIV_TexTools
 
                 await progressController.CloseAsync();
 
-                UpdateViews(ItemTreeView.SelectedItem as Category);
+
+                var c = (ItemTreeView.SelectedItem as Category);
+                UpdateViews(c);
 
                 await this.ShowMessageAsync(UIMessages.StartOverCompleteTitle, UIMessages.StartOverCompleteMessage);
             }
