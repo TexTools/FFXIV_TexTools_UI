@@ -135,9 +135,9 @@ namespace FFXIV_TexTools.ViewModels
                     var xivUI = new XivUi
                     {
                         Name = Path.GetFileNameWithoutExtension(iconFileString),
-                        Category = XivStrings.UI,
-                        ItemCategory = XivStrings.Icon,
-                        ItemSubCategory = XivStrings.Icon,
+                        PrimaryCategory = XivStrings.UI,
+                        SecondaryCategory = XivStrings.Icon,
+                        TertiaryCategory = XivStrings.Icon,
                         IconNumber = iconInt,
                         DataFile = XivDataFile._06_Ui,
                         UiPath = $"{iconFolderString}/{iconFileString}"
@@ -157,9 +157,9 @@ namespace FFXIV_TexTools.ViewModels
                         var xivUI = new XivUi
                         {
                             Name = Path.GetFileNameWithoutExtension(iconFileString),
-                            Category = XivStrings.UI,
-                            ItemCategory = XivStrings.Icon,
-                            ItemSubCategory = XivStrings.Icon,
+                            PrimaryCategory = XivStrings.UI,
+                            SecondaryCategory = XivStrings.Icon,
+                            TertiaryCategory = XivStrings.Icon,
                             IconNumber = iconInt,
                             DataFile = XivDataFile._06_Ui,
                             UiPath = $"{iconFolderString}/{iconFileString}"

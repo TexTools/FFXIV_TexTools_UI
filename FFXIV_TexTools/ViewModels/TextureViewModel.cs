@@ -122,7 +122,7 @@ namespace FFXIV_TexTools.ViewModels
             _tex = new Tex(gameDirectory);
             _modList = new Modding(gameDirectory);
 
-            if (item.Category.Equals(XivStrings.Gear))
+            if (item.PrimaryCategory.Equals(XivStrings.Gear))
             {
                 _category = XivStrings.Gear;
                 _item = item as IItemModel;
@@ -140,23 +140,23 @@ namespace FFXIV_TexTools.ViewModels
                     Races.Add(raceCBD);
                 }
             }
-            else if (item.Category.Equals(XivStrings.Companions))
+            else if (item.PrimaryCategory.Equals(XivStrings.Companions))
             {
                 _companions = new Companions(gameDirectory, GetLanguage());
                 _category = XivStrings.Companions;
                 _item = item as IItemModel;
 
-                Races.Add(_item.ModelInfo.ModelType == XivItemType.demihuman
+                Races.Add(_item.GetPrimaryItemType() == XivItemType.demihuman
                     ? new ComboBoxData {Name = XivRace.DemiHuman.GetDisplayName(), XivRace = XivRace.DemiHuman}
                     : new ComboBoxData {Name = XivRace.Monster.GetDisplayName(), XivRace = XivRace.Monster});
             }
-            else if (item.Category.Equals(XivStrings.Character))
+            else if (item.PrimaryCategory.Equals(XivStrings.Character))
             {
                 _character = new Character(gameDirectory, GetLanguage());
                 _item = item as IItemModel;
 
-                if (_item.ItemCategory.Equals(XivStrings.Face_Paint) ||
-                    _item.ItemCategory.Equals(XivStrings.Equipment_Decals))
+                if (_item.SecondaryCategory.Equals(XivStrings.Face_Paint) ||
+                    _item.SecondaryCategory.Equals(XivStrings.Equipment_Decals))
                 {
                     Races.Add(new ComboBoxData{Name = XivRace.All_Races.GetDisplayName(), XivRace = XivRace.All_Races});
                 }
@@ -170,24 +170,24 @@ namespace FFXIV_TexTools.ViewModels
                     }
                 }
             }
-            else if (item.Category.Equals(XivStrings.UI))
+            else if (item.PrimaryCategory.Equals(XivStrings.UI))
             {
                 Races.Add(new ComboBoxData { Name = XivRace.All_Races.GetDisplayName(), XivRace = XivRace.All_Races });
 
                 _uiItem = item as XivUi;
             }
-            else if (item.Category.Equals(XivStrings.Housing))
+            else if (item.PrimaryCategory.Equals(XivStrings.Housing))
             {
                 Races.Add(new ComboBoxData { Name = XivRace.All_Races.GetDisplayName(), XivRace = XivRace.All_Races });
 
-                if (item.ItemCategory.Equals(XivStrings.Paintings))
+                if (item.SecondaryCategory.Equals(XivStrings.Paintings))
                 {
                     _uiItem = new XivUi
                     {
                         Name = item.Name,
-                        Category = item.Category,
-                        ItemCategory = item.ItemCategory,
-                        IconNumber = ((IItemModel)item).ModelInfo.ModelID,
+                        PrimaryCategory = item.PrimaryCategory,
+                        SecondaryCategory = item.SecondaryCategory,
+                        IconNumber = ((IItemModel)item).ModelInfo.PrimaryID,
                         DataFile = XivDataFile._06_Ui
                     };
                 }
@@ -277,14 +277,14 @@ namespace FFXIV_TexTools.ViewModels
                 // For character, the part list is used as a number list
                 List<string> partList;
 
-                if (_item.Category.Equals(XivStrings.Character))
+                if (_item.PrimaryCategory.Equals(XivStrings.Character))
                 {
-                    if (_item.ItemCategory.Equals(XivStrings.Face_Paint) ||
-                        _item.ItemCategory.Equals(XivStrings.Equipment_Decals))
+                    if (_item.SecondaryCategory.Equals(XivStrings.Face_Paint) ||
+                        _item.SecondaryCategory.Equals(XivStrings.Equipment_Decals))
                     {
                         partList = (await _character.GetDecalNums(_item)).Select(part => part.ToString()).ToList();
 
-                        if (_item.ItemCategory.Equals(XivStrings.Equipment_Decals))
+                        if (_item.SecondaryCategory.Equals(XivStrings.Equipment_Decals))
                         {
                             partList.Add("_stigma");
                         }
@@ -301,7 +301,7 @@ namespace FFXIV_TexTools.ViewModels
 
                     _partCount = partList.Count;
                 }
-                else if ((_item.ItemCategory.Equals(XivStrings.Mounts) || _item.ItemCategory.Equals(XivStrings.Monster)) && _item.ModelInfo.ModelType == XivItemType.demihuman)
+                else if ((_item.SecondaryCategory.Equals(XivStrings.Mounts) || _item.SecondaryCategory.Equals(XivStrings.Monster)) && _item.GetPrimaryItemType() == XivItemType.demihuman)
                 {
                     var equipParts = await _companions.GetDemiHumanMountTextureEquipPartList(_item);
 
@@ -312,13 +312,13 @@ namespace FFXIV_TexTools.ViewModels
 
                     _partCount = equipParts.Count;
                 }
-                else if (_item.Category.Equals(XivStrings.Gear))
+                else if (_item.PrimaryCategory.Equals(XivStrings.Gear))
                 {
                     var xivGear = _item as XivGear;
 
                     Parts.Add(new ComboBoxData { Name = XivStrings.Primary });
 
-                    if (xivGear.SecondaryModelInfo != null && xivGear.SecondaryModelInfo.ModelID > 0)
+                    if (xivGear.SecondaryModelInfo != null && xivGear.SecondaryModelInfo.PrimaryID > 0)
                     {
                         Parts.Add(new ComboBoxData{Name = XivStrings.Secondary});
                     }
@@ -422,7 +422,7 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         private async void GetTexType()
         {
-            if (_item.Category.Equals(XivStrings.Character))
+            if (_item.PrimaryCategory.Equals(XivStrings.Character))
             {
                 TypeVisibility = Visibility.Visible;
                 // Create the model info for character
@@ -430,11 +430,11 @@ namespace FFXIV_TexTools.ViewModels
 
                 if (!SelectedPart.Name.Equals("_stigma"))
                 {
-                    _item.ModelInfo.Body = int.Parse(SelectedPart.Name);
+                    _item.ModelInfo.SecondaryID = int.Parse(SelectedPart.Name);
                 }
 
                 // For hair and face we get the type (Hair, Accessory, Face, Iris, Etc)
-                if (_item.ItemCategory.Equals(XivStrings.Hair) || _item.ItemCategory.Equals(XivStrings.Face) || _item.ItemCategory.Equals(XivStrings.Ears))
+                if (_item.SecondaryCategory.Equals(XivStrings.Hair) || _item.SecondaryCategory.Equals(XivStrings.Face) || _item.SecondaryCategory.Equals(XivStrings.Ears))
                 {
                     TypePartVisibility = Visibility.Visible;
                     var charaTypeParts = await _character.GetTypePartForTextures(_item as XivCharacter, SelectedRace.XivRace,
@@ -446,7 +446,7 @@ namespace FFXIV_TexTools.ViewModels
                         Types.Add(new ComboBoxData{Name = charaTypePart.Key, TypeParts = charaTypePart.Value});
                     }
                 }
-                else if (_item.ItemCategory.Equals(XivStrings.Body) || _item.ItemCategory.Equals(XivStrings.Tail))
+                else if (_item.SecondaryCategory.Equals(XivStrings.Body) || _item.SecondaryCategory.Equals(XivStrings.Tail))
                 {
                     TypePartVisibility = Visibility.Visible;
                     var parts = await _character.GetVariantsForTextures(_item as XivCharacter, SelectedRace.XivRace, int.Parse(SelectedPart.Name));
@@ -470,11 +470,11 @@ namespace FFXIV_TexTools.ViewModels
 
                 SelectedTypeIndex = 0;
             }
-            else if ((_item.ItemCategory.Equals(XivStrings.Mounts) || _item.ItemCategory.Equals(XivStrings.Monster)) && _item.ModelInfo.ModelType == XivItemType.demihuman)
+            else if ((_item.SecondaryCategory.Equals(XivStrings.Mounts) || _item.SecondaryCategory.Equals(XivStrings.Monster)) && _item.GetPrimaryItemType() == XivItemType.demihuman)
             {
                 TypeVisibility = Visibility.Visible;
 
-                ((XivMount)_item).ItemSubCategory = SelectedPart.Name;
+                ((XivMount)_item).TertiaryCategory = SelectedPart.Name;
 
                 var parts = SelectedPart.TypeParts;
                 _typeCount = parts.Length;
@@ -490,7 +490,7 @@ namespace FFXIV_TexTools.ViewModels
 
                 SelectedTypeIndex = 0;
             }
-            else if(_item.Category.Equals(XivStrings.Gear))
+            else if(_item.PrimaryCategory.Equals(XivStrings.Gear))
             {
                 TypeVisibility = Visibility.Visible;
 
@@ -535,8 +535,8 @@ namespace FFXIV_TexTools.ViewModels
                 if (SelectedTypeIndex > -1)
                 {
                     Maps.Clear();
-                    if (_item.Category.Equals(XivStrings.Character) && (_item.ItemCategory.Equals(XivStrings.Hair) || _item.ItemCategory.Equals(XivStrings.Face) ||
-                        _item.ItemCategory.Equals(XivStrings.Ears) || _item.ItemCategory.Equals(XivStrings.Body) || _item.ItemCategory.Equals(XivStrings.Tail)))
+                    if (_item.PrimaryCategory.Equals(XivStrings.Character) && (_item.SecondaryCategory.Equals(XivStrings.Hair) || _item.SecondaryCategory.Equals(XivStrings.Face) ||
+                        _item.SecondaryCategory.Equals(XivStrings.Ears) || _item.SecondaryCategory.Equals(XivStrings.Body) || _item.SecondaryCategory.Equals(XivStrings.Tail)))
                     {
                         TypeParts.Clear();
                         GetTypeParts();
@@ -591,14 +591,14 @@ namespace FFXIV_TexTools.ViewModels
         {
             var typeParts = SelectedType.TypeParts;
 
-            if (_item.Category.Equals(XivStrings.Character))
+            if (_item.PrimaryCategory.Equals(XivStrings.Character))
             {
-                if (_item.ItemCategory.Equals(XivStrings.Body) || _item.ItemCategory.Equals(XivStrings.Tail))
+                if (_item.SecondaryCategory.Equals(XivStrings.Body) || _item.SecondaryCategory.Equals(XivStrings.Tail))
                 {
                     typeParts = await _character.GetPartForTextures(_item as XivCharacter, SelectedRace.XivRace, int.Parse(SelectedPart.Name), int.Parse(SelectedType.Name));
                 }
 
-                ((XivCharacter)_item).ItemSubCategory = SelectedType.Name;
+                ((XivCharacter)_item).TertiaryCategory = SelectedType.Name;
             }
 
             foreach (var typePart in typeParts)
@@ -684,15 +684,15 @@ namespace FFXIV_TexTools.ViewModels
             List<TexTypePath> ttpList;
             if (_item != null)
             {
-                if (_item.Category.Equals(XivStrings.Character))
+                if (_item.PrimaryCategory.Equals(XivStrings.Character))
                 {
-                    if (_item.ItemCategory.Equals(XivStrings.Face_Paint))
+                    if (_item.SecondaryCategory.Equals(XivStrings.Face_Paint))
                     {
                         var path = $"{XivStrings.FacePaintFolder}/{string.Format(XivStrings.FacePaintFile, SelectedPart.Name)}";
 
                         ttpList = new List<TexTypePath> { new TexTypePath { DataFile = _item.DataFile, Path = path, Type = XivTexType.Mask } };
                     }
-                    else if (_item.ItemCategory.Equals(XivStrings.Equipment_Decals))
+                    else if (_item.SecondaryCategory.Equals(XivStrings.Equipment_Decals))
                     {
                         var path = $"{XivStrings.EquipDecalFolder}/{string.Format(XivStrings.EquipDecalFile, SelectedPart.Name)}";
 
@@ -729,11 +729,11 @@ namespace FFXIV_TexTools.ViewModels
                 }
                 else
                 {
-                    if ((_item.ItemCategory.Equals(XivStrings.Mounts) || _item.ItemCategory.Equals(XivStrings.Monster)) && _item.ModelInfo.ModelType == XivItemType.demihuman)
+                    if ((_item.SecondaryCategory.Equals(XivStrings.Mounts) || _item.SecondaryCategory.Equals(XivStrings.Monster)) && _item.GetPrimaryItemType() == XivItemType.demihuman)
                     {
                         _xivMtrl = await _mtrl.GetMtrlData(_item, SelectedRace.XivRace, SelectedType.Name[0], dxVersion);
                     }
-                    else if (_item.Category.Equals(XivStrings.Gear))
+                    else if (_item.PrimaryCategory.Equals(XivStrings.Gear))
                     {
                         _xivMtrl = await _mtrl.GetMtrlData(_item, SelectedRace.XivRace, SelectedType.Name[0], dxVersion, SelectedPart.Name);
 
@@ -757,7 +757,7 @@ namespace FFXIV_TexTools.ViewModels
                 if (_uiItem.UiPath != null)
                 {
                     string path;
-                    if (_uiItem.ItemCategory.Equals(XivStrings.Maps))
+                    if (_uiItem.SecondaryCategory.Equals(XivStrings.Maps))
                     {
                         var mapNamePaths = await _tex.GetMapAvailableTex(_uiItem.UiPath);
 
@@ -776,13 +776,13 @@ namespace FFXIV_TexTools.ViewModels
                             ttpList.Add(ttp);
                         }
                     }
-                    else if(_uiItem.ItemCategory.Equals(XivStrings.HUD))
+                    else if(_uiItem.SecondaryCategory.Equals(XivStrings.HUD))
                     {
                         path = $"{_uiItem.UiPath}/{_uiItem.Name.ToLower()}.tex";
 
                         ttpList = new List<TexTypePath> { new TexTypePath { DataFile = _uiItem.DataFile, Path = path, Type = XivTexType.Mask } };
                     }
-                    else if (_uiItem.ItemCategory.Equals(XivStrings.Loading_Screen))
+                    else if (_uiItem.SecondaryCategory.Equals(XivStrings.Loading_Screen))
                     {
                         path = $"{_uiItem.UiPath}/{_uiItem.Name.ToLower()}.tex";
 
@@ -790,7 +790,7 @@ namespace FFXIV_TexTools.ViewModels
                     }
                     else
                     {
-                        if (_uiItem.ItemCategory.Equals("Icon"))
+                        if (_uiItem.SecondaryCategory.Equals("Icon"))
                         {
                             var index = new Index(new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory));
                             var languages = new[] {"en", "ja", "fr", "de"};
@@ -965,7 +965,7 @@ namespace FFXIV_TexTools.ViewModels
             {
                 var dxVersion = int.Parse(Properties.Settings.Default.DX_Version);
 
-                if (_item.Category.Equals(XivStrings.Character))
+                if (_item.PrimaryCategory.Equals(XivStrings.Character))
                 {
                     if (TypePartVisibility == Visibility.Visible)
                     {
@@ -978,11 +978,11 @@ namespace FFXIV_TexTools.ViewModels
                 }
                 else
                 {
-                    if ((_item.ItemCategory.Equals(XivStrings.Mounts) || _item.ItemCategory.Equals(XivStrings.Monster)) && _item.ModelInfo.ModelType == XivItemType.demihuman)
+                    if ((_item.SecondaryCategory.Equals(XivStrings.Mounts) || _item.SecondaryCategory.Equals(XivStrings.Monster)) && _item.GetPrimaryItemType() == XivItemType.demihuman)
                     {
                         _xivMtrl = await _mtrl.GetMtrlData(_item, SelectedRace.XivRace, SelectedType.Name[0], dxVersion);
                     }
-                    else if (_item.Category.Equals(XivStrings.Gear))
+                    else if (_item.PrimaryCategory.Equals(XivStrings.Gear))
                     {
                         _xivMtrl = await _mtrl.GetMtrlData(_item, SelectedRace.XivRace, SelectedType.Name[0], dxVersion, SelectedPart.Name);
                     }
@@ -1045,7 +1045,7 @@ namespace FFXIV_TexTools.ViewModels
 
             if (_item != null)
             {
-                if (_item.ItemCategory.Equals(XivStrings.Hair) || _item.ItemCategory.Equals(XivStrings.Equipment_Decals) || _item.ItemCategory.Equals(XivStrings.Face_Paint))
+                if (_item.SecondaryCategory.Equals(XivStrings.Hair) || _item.SecondaryCategory.Equals(XivStrings.Equipment_Decals) || _item.SecondaryCategory.Equals(XivStrings.Face_Paint))
                 {
                     AddNewTexturePartEnabled = false;
                 }
@@ -1482,7 +1482,7 @@ namespace FFXIV_TexTools.ViewModels
                 var partChars = new char[] { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
                 List<string> partList = new List<string>();
 
-                if (_item.Category.Equals(XivStrings.Character))
+                if (_item.PrimaryCategory.Equals(XivStrings.Character))
                 {
                     partList = TypeParts.Select(it => it.Name).ToList();
                 } else
@@ -1590,7 +1590,7 @@ namespace FFXIV_TexTools.ViewModels
                     // - This isn't always the same as the item model variant, for some reason.
                     // - So it has to be resolved manually.
                     var variantMtrlPath = "";
-                    var itemType = ItemType.GetItemType(_item);
+                    var itemType = ItemType.GetPrimaryItemType(_item);
 
 
                     if (TypePartVisibility == Visibility.Visible)
@@ -1664,11 +1664,11 @@ namespace FFXIV_TexTools.ViewModels
                 void SetToNewTexturePart(object sender, EventArgs e)
                 {
                     LoadingComplete -= SetToNewTexturePart;
-                    if (_item.Category.Equals(XivStrings.Gear))
+                    if (_item.PrimaryCategory.Equals(XivStrings.Gear))
                     {
                         SelectedType = Types[Types.Count - 1];
                     }
-                    else if (_item.Category.Equals(XivStrings.Character))
+                    else if (_item.PrimaryCategory.Equals(XivStrings.Character))
                     {
                         SelectedTypePart = TypeParts[TypeParts.Count - 1];
                     }
@@ -1717,35 +1717,19 @@ namespace FFXIV_TexTools.ViewModels
             var ui = new UI(gameDirectory, GetLanguage());
             var housing = new Housing(gameDirectory, GetLanguage());
             //gear
-            if (_item.Category.Equals(XivStrings.Gear))
+            if (_item.PrimaryCategory.Equals(XivStrings.Gear))
             {
                 sameModelItems.AddRange(
                     (await gear.GetGearList())
                     .Where(it =>
-                    it.ModelInfo.ModelID == _item.ModelInfo.ModelID
-                    && it.ItemCategory == _item.ItemCategory).Select(it => it as IItemModel).ToList()
+                    it.ModelInfo.PrimaryID == _item.ModelInfo.PrimaryID
+                    && it.SecondaryCategory == _item.SecondaryCategory).Select(it => it as IItemModel).ToList()
                 );
             }
-            else if (_item.Category.Equals(XivStrings.Character))
+            else if (_item.PrimaryCategory.Equals(XivStrings.Character))
             {
                 //character
-                sameModelItems.Add(
-                    new XivGenericItemModel
-                    {
-                        Category = _item.Category,
-                        ItemCategory = _item.ItemCategory,
-                        ItemSubCategory = _item.ItemSubCategory,
-                        ModelInfo = new XivModelInfo
-                        {
-                            Body = _item.ModelInfo.Body,
-                            ModelID = _item.ModelInfo.ModelID,
-                            ModelType = _item.ModelInfo.ModelType,
-                            Variant = _item.ModelInfo.Variant
-                        },
-                        Name = _item.Name
-                    }
-                    as IItemModel
-                );
+                sameModelItems.Add((IItemModel)_item.Clone()) ;
             }
             //companions
             //sameModelItems.AddRange(
@@ -1903,11 +1887,11 @@ namespace FFXIV_TexTools.ViewModels
             RaceWatermark = $"{XivStrings.Race}  |  {_raceCount}";
             TextureMapWatermark = $"{XivStrings.Texture_Map}  |  {_mapCount}";
 
-            if (_item.Category.Equals(XivStrings.Character))
+            if (_item.PrimaryCategory.Equals(XivStrings.Character))
             {
                 PartWatermark = $"{XivStrings.Number}  |  {_partCount}";
 
-                if (_item.ItemCategory.Equals(XivStrings.Body))
+                if (_item.SecondaryCategory.Equals(XivStrings.Body))
                 {
                     TypeWatermark = XivStrings.Variant;
                     TypePartWatermark = XivStrings.Part;
@@ -1922,7 +1906,7 @@ namespace FFXIV_TexTools.ViewModels
                     }
                 }
             }
-            else if (_item.ItemCategory.Equals(XivStrings.Mounts) && _item.ModelInfo.ModelType == XivItemType.demihuman)
+            else if (_item.SecondaryCategory.Equals(XivStrings.Mounts) && _item.GetPrimaryItemType() == XivItemType.demihuman)
             {
                 PartWatermark = $"{XivStrings.Type}  |  {_partCount}";
                 TypeWatermark = $"{XivStrings.Part}  |  {_typeCount}";

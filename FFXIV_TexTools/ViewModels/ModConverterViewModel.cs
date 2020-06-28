@@ -116,7 +116,7 @@ namespace FFXIV_TexTools.ViewModels
             if (fromItem != null)
             {
                 var targetItem = ItemList.Single(it => it.Name == TargetItemName);
-                if (XivCategorys.GetDisplayName(fromItem.Category) != XivCategorys.GetDisplayName(targetItem.ItemCategory))
+                if (XivCategories.GetDisplayName(fromItem.Category) != XivCategories.GetDisplayName(targetItem.SecondaryCategory))
                     return;
                 //if ((fromItem as IItemModel).ModelInfo.ModelID == (targetItem as IItemModel).ModelInfo.ModelID)
                 //    return;
@@ -159,9 +159,9 @@ namespace FFXIV_TexTools.ViewModels
                 }
                 else
                 {
-                    var fromCategory = XivCategorys.GetDisplayName(fromItem2.Category);
+                    var fromCategory = XivCategories.GetDisplayName(fromItem2.Category);
                     query = ItemList.Where(
-                        it => it.ItemCategory == fromCategory
+                        it => it.SecondaryCategory == fromCategory
                         && it.Name != fromItem2.Name
                     ).Select(it => it.Name);
                 }
@@ -169,9 +169,9 @@ namespace FFXIV_TexTools.ViewModels
             else
             {
                 query = ItemList.Where(
-                    it => it.ItemCategory == fromItem.ItemCategory
+                    it => it.SecondaryCategory == fromItem.SecondaryCategory
                     &&it.Name!=fromItem.Name
-                    &&(it as IItemModel).ModelInfo.ModelID!= (fromItem as IItemModel).ModelInfo.ModelID
+                    &&(it as IItemModel).ModelInfo.PrimaryID!= (fromItem as IItemModel).ModelInfo.PrimaryID
                 ).Select(it => it.Name);
             }
             foreach (var item in query)
@@ -212,7 +212,7 @@ namespace FFXIV_TexTools.ViewModels
                 var fromId = fromInfo.Id;
                 var fromMdlRace = fromInfo.Race;
 
-                var targetId = $"{fromId[0]}{targetItemModel.ModelInfo.ModelID.ToString().PadLeft(4, '0')}";
+                var targetId = $"{fromId[0]}{targetItemModel.ModelInfo.PrimaryID.ToString().PadLeft(4, '0')}";
                 var targetMdlRace = "";
                 try
                 {
@@ -226,12 +226,12 @@ namespace FFXIV_TexTools.ViewModels
                     return;
                 }
                 
-                var targetVersion = $"v{targetItemModel.ModelInfo.Variant.ToString().PadLeft(4,'0')}";
+                var targetVersion = $"v{targetItemModel.ModelInfo.ImcSubsetID.ToString().PadLeft(4,'0')}";
 
                 var sameModelList = ItemList.Where(
-                    it => it.ItemCategory == targetItemModel.ItemCategory
-                    && (it as IItemModel).ModelInfo.ModelID == targetItemModel.ModelInfo.ModelID
-                    && (it as IItemModel).ModelInfo.Variant != targetItemModel.ModelInfo.Variant
+                    it => it.SecondaryCategory == targetItemModel.SecondaryCategory
+                    && (it as IItemModel).ModelInfo.PrimaryID == targetItemModel.ModelInfo.PrimaryID
+                    && (it as IItemModel).ModelInfo.ImcSubsetID != targetItemModel.ModelInfo.ImcSubsetID
                 );
                 
                 var fromQuery = list.Where(it => it.Name == item.Key).ToList();

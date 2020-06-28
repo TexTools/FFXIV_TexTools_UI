@@ -150,10 +150,10 @@ namespace FFXIV_TexTools
 
             if(selectedItem?.Item == null) return;
 
-            if (selectedItem.Item.Category.Equals(XivStrings.UI) ||
-                selectedItem.Item.ItemCategory.Equals(XivStrings.Face_Paint) ||
-                selectedItem.Item.ItemCategory.Equals(XivStrings.Equipment_Decals) ||
-                selectedItem.Item.ItemCategory.Equals(XivStrings.Paintings))
+            if (selectedItem.Item.PrimaryCategory.Equals(XivStrings.UI) ||
+                selectedItem.Item.SecondaryCategory.Equals(XivStrings.Face_Paint) ||
+                selectedItem.Item.SecondaryCategory.Equals(XivStrings.Equipment_Decals) ||
+                selectedItem.Item.SecondaryCategory.Equals(XivStrings.Paintings))
             {
                 ItemTreeView.IsEnabled = true;
             }
@@ -269,10 +269,10 @@ namespace FFXIV_TexTools
 
                 await textureViewModel.UpdateTexture(selectedItem.Item);
 
-                if (selectedItem.Item.Category.Equals(XivStrings.UI) ||
-                    selectedItem.Item.ItemCategory.Equals(XivStrings.Face_Paint) ||
-                    selectedItem.Item.ItemCategory.Equals(XivStrings.Equipment_Decals) ||
-                    selectedItem.Item.ItemCategory.Equals(XivStrings.Paintings))
+                if (selectedItem.Item.PrimaryCategory.Equals(XivStrings.UI) ||
+                    selectedItem.Item.SecondaryCategory.Equals(XivStrings.Face_Paint) ||
+                    selectedItem.Item.SecondaryCategory.Equals(XivStrings.Equipment_Decals) ||
+                    selectedItem.Item.SecondaryCategory.Equals(XivStrings.Paintings))
                 {
                     if (TabsControl.SelectedIndex == 1)
                     {

@@ -544,21 +544,21 @@ namespace FFXIV_TexTools.ViewModels
 
             foreach (var xivGear in gearList)
             {
-                if (Categories[0].CategoryList.Contains(xivGear.ItemCategory))
+                if (Categories[0].CategoryList.Contains(xivGear.SecondaryCategory))
                 {
                     var cat = (from category1 in Categories[0].Categories
-                        where category1.Name == xivGear.ItemCategory
+                        where category1.Name == xivGear.SecondaryCategory
                         select category1).FirstOrDefault();
 
                     cat.Categories.Add(new Category{Name = xivGear.Name, Item = xivGear});
                 }
                 else
                 {
-                    var category = new Category {Name = xivGear.ItemCategory, Categories = new ObservableCollection<Category>(), CategoryList = new List<string>()};
+                    var category = new Category {Name = xivGear.SecondaryCategory, Categories = new ObservableCollection<Category>(), CategoryList = new List<string>()};
                     category.Categories.Add(new Category{Name = xivGear.Name, Item = xivGear});
                     category.CategoryList.Add(xivGear.Name);
                     Categories[0].Categories.Add(category);
-                    Categories[0].CategoryList.Add(xivGear.ItemCategory);
+                    Categories[0].CategoryList.Add(xivGear.SecondaryCategory);
                 }
             }
 
@@ -613,60 +613,60 @@ namespace FFXIV_TexTools.ViewModels
 
             foreach (var xivUi in uiList)
             {
-                if (xivUi.ItemSubCategory != null)
+                if (xivUi.TertiaryCategory != null)
                 {
-                    if (Categories[3].CategoryList.Contains(xivUi.ItemCategory))
+                    if (Categories[3].CategoryList.Contains(xivUi.SecondaryCategory))
                     {
                         var cat = (from category1 in Categories[3].Categories
-                            where category1.Name == xivUi.ItemCategory
+                            where category1.Name == xivUi.SecondaryCategory
                             select category1).FirstOrDefault();
 
-                        if (cat.CategoryList.Contains(xivUi.ItemSubCategory))
+                        if (cat.CategoryList.Contains(xivUi.TertiaryCategory))
                         {
                             var subcat = (from category1 in cat.Categories
-                                where category1.Name == xivUi.ItemSubCategory
+                                where category1.Name == xivUi.TertiaryCategory
                                 select category1).FirstOrDefault();
 
                             subcat.Categories.Add(new Category { Name = xivUi.Name, Item = xivUi });
                         }
                         else
                         {
-                            var subCategory = new Category { Name = xivUi.ItemSubCategory, Categories = new ObservableCollection<Category>() };
+                            var subCategory = new Category { Name = xivUi.TertiaryCategory, Categories = new ObservableCollection<Category>() };
                             subCategory.Categories.Add(new Category { Name = xivUi.Name, Item = xivUi });
 
                             cat.Categories.Add(subCategory);
-                            cat.CategoryList.Add(xivUi.ItemSubCategory);
+                            cat.CategoryList.Add(xivUi.TertiaryCategory);
                         }
                     }
                     else
                     {
-                        var category = new Category { Name = xivUi.ItemCategory, Categories = new ObservableCollection<Category>(), CategoryList = new List<string>()};
-                        var subCategory = new Category { Name = xivUi.ItemSubCategory, Categories = new ObservableCollection<Category>()};
+                        var category = new Category { Name = xivUi.SecondaryCategory, Categories = new ObservableCollection<Category>(), CategoryList = new List<string>()};
+                        var subCategory = new Category { Name = xivUi.TertiaryCategory, Categories = new ObservableCollection<Category>()};
                         subCategory.Categories.Add(new Category { Name = xivUi.Name, Item = xivUi });
                  
                         category.Categories.Add(subCategory);
-                        category.CategoryList.Add(xivUi.ItemSubCategory);
+                        category.CategoryList.Add(xivUi.TertiaryCategory);
 
                         Categories[3].Categories.Add(category);
-                        Categories[3].CategoryList.Add(xivUi.ItemCategory);
+                        Categories[3].CategoryList.Add(xivUi.SecondaryCategory);
                     }
                 }
                 else
                 {
-                    if (Categories[3].CategoryList.Contains(xivUi.ItemCategory))
+                    if (Categories[3].CategoryList.Contains(xivUi.SecondaryCategory))
                     {
                         var cat = (from category1 in Categories[3].Categories
-                            where category1.Name == xivUi.ItemCategory
+                            where category1.Name == xivUi.SecondaryCategory
                             select category1).FirstOrDefault();
 
                         cat.Categories.Add(new Category { Name = xivUi.Name, Item = xivUi });
                     }
                     else
                     {
-                        var category = new Category { Name = xivUi.ItemCategory, Categories = new ObservableCollection<Category>() };
+                        var category = new Category { Name = xivUi.SecondaryCategory, Categories = new ObservableCollection<Category>() };
                         category.Categories.Add(new Category { Name = xivUi.Name, Item = xivUi });
                         Categories[3].Categories.Add(category);
-                        Categories[3].CategoryList.Add(xivUi.ItemCategory);
+                        Categories[3].CategoryList.Add(xivUi.SecondaryCategory);
                     }
                 }
             }
@@ -678,21 +678,21 @@ namespace FFXIV_TexTools.ViewModels
 
             foreach (var xivFurniture in housingList)
             {
-                if (Categories[4].CategoryList.Contains(xivFurniture.ItemCategory))
+                if (Categories[4].CategoryList.Contains(xivFurniture.SecondaryCategory))
                 {
                     var cat = (from category1 in Categories[4].Categories
-                        where category1.Name == xivFurniture.ItemCategory
+                        where category1.Name == xivFurniture.SecondaryCategory
                         select category1).FirstOrDefault();
 
                     cat.Categories.Add(new Category{Name = xivFurniture.Name, Item = xivFurniture});
                 }
                 else
                 {
-                    var category = new Category { Name = xivFurniture.ItemCategory, Categories = new ObservableCollection<Category>(), CategoryList = new List<string>() };
+                    var category = new Category { Name = xivFurniture.SecondaryCategory, Categories = new ObservableCollection<Category>(), CategoryList = new List<string>() };
                     category.Categories.Add(new Category { Name = xivFurniture.Name, Item = xivFurniture });
                     category.CategoryList.Add(xivFurniture.Name);
                     Categories[4].Categories.Add(category);
-                    Categories[4].CategoryList.Add(xivFurniture.ItemCategory);
+                    Categories[4].CategoryList.Add(xivFurniture.SecondaryCategory);
                 }
             }
 

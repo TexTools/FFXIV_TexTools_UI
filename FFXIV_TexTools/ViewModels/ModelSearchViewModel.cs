@@ -218,14 +218,14 @@ namespace FFXIV_TexTools.ViewModels
                 var xivGear = new XivGear
                 {
                     Name = $"{SelectedCategory.ToLower()[0]}{_currentID.ToString().PadLeft(4, '0')}",
-                    Category = XivStrings.Gear,
-                    ItemCategory = SelectedItem.Slot,
+                    PrimaryCategory = XivStrings.Gear,
+                    SecondaryCategory = SelectedItem.Slot,
                     DataFile = XivDataFile._04_Chara,
                     ModelInfo = new XivModelInfo
                     {
-                        ModelID = _currentID,
-                        Body = body,
-                        Variant = variant
+                        PrimaryID = _currentID,
+                        SecondaryID = body,
+                        ImcSubsetID = variant
                     }
                 };
 
@@ -237,14 +237,14 @@ namespace FFXIV_TexTools.ViewModels
                 var xivMonster = new XivGenericItemModel
                 {
                     Name = $"{SelectedCategory.ToLower()[0]}{_currentID.ToString().PadLeft(4, '0')}",
-                    Category = XivStrings.Companions,
-                    ItemCategory = XivStrings.Monster,
+                    PrimaryCategory = XivStrings.Companions,
+                    SecondaryCategory = XivStrings.Monster,
                     DataFile = XivDataFile._04_Chara,
-                    ModelInfo = new XivModelInfo
+                    ModelInfo = new XivMonsterModelInfo
                     {
-                        ModelID = _currentID,
-                        Body = body,
-                        Variant = variant,
+                        PrimaryID = _currentID,
+                        SecondaryID = body,
+                        ImcSubsetID = variant,
                         ModelType = XivItemType.monster
                     }
                 };
@@ -257,14 +257,14 @@ namespace FFXIV_TexTools.ViewModels
                 var xivDemiHuman = new XivMount
                 {
                     Name = $"{SelectedCategory.ToLower()[0]}{_currentID.ToString().PadLeft(4, '0')}",
-                    Category = XivStrings.Companions,
-                    ItemCategory = XivStrings.Monster,
+                    PrimaryCategory = XivStrings.Companions,
+                    SecondaryCategory = XivStrings.Monster,
                     DataFile = XivDataFile._04_Chara,
-                    ModelInfo = new XivModelInfo
+                    ModelInfo = new XivMonsterModelInfo
                     {
-                        ModelID = _currentID,
-                        Body = body,
-                        Variant = variant,
+                        PrimaryID = _currentID,
+                        SecondaryID = body,
+                        ImcSubsetID = variant,
                         ModelType = XivItemType.demihuman
                     }
                 };
@@ -277,12 +277,12 @@ namespace FFXIV_TexTools.ViewModels
                 var xivFurniture = new XivFurniture
                 {
                     Name = $"{SelectedCategory.ToLower()[0]}{_currentID.ToString().PadLeft(4, '0')}",
-                    Category = XivStrings.Housing,
-                    ItemCategory = SelectedItem.Slot,
+                    PrimaryCategory = XivStrings.Housing,
+                    SecondaryCategory = SelectedItem.Slot,
                     DataFile = XivDataFile._01_Bgcommon,
                     ModelInfo = new XivModelInfo
                     {
-                        ModelID = _currentID
+                        PrimaryID = _currentID
                     }
                 };
 
