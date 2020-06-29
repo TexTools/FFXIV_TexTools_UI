@@ -1610,7 +1610,10 @@ namespace FFXIV_TexTools.ViewModels
 
                 // Add new Materials for shared model items.    
                 var oldMaterialIdentifier = xivMtrl.GetMaterialIdentifier();
-                var sameModelItems = await _gear.GetSameModelList(_item);
+
+                // Ordering these by name ensures that we create textures for the new variants in the first
+                // item alphabetically, just for consistency's sake.
+                var sameModelItems = (await _gear.GetSameModelList(_item)).OrderBy(x => x.Name);
                 var oldVariantString = "/v" + xivMtrl.GetVariant().ToString().PadLeft(4,'0')  + '/';
                 var modifiedVariants = new List<int>();
 
