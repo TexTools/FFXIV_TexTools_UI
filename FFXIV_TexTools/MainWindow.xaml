@@ -122,13 +122,13 @@
                 </GridSplitter.Background>
             </GridSplitter>
             <Controls:MetroTabControl x:Name="TabsControl" Grid.Column="2" Controls:TabControlHelper.Underlined="TabPanel">
-                <TabItem x:Name="TextureTabItem" Header="{Binding Source={x:Static resx:UIStrings.Texture}}">
+                <TabItem x:Name="TextureTabItem" Header="{Binding Source={x:Static resx:UIStrings.Textures}}">
                     <views:TextureView/>
                 </TabItem>
-                <TabItem x:Name="ModelTabItem" Header="{Binding Source={x:Static resx:UIStrings.Model}}">
+                <TabItem x:Name="ModelTabItem" Header="{Binding Source={x:Static resx:UIStrings.Models}}">
                     <views:ModelView/>
                 </TabItem>
-                <TabItem x:Name="SharedItemsTab" Header="Shared Items">
+                <TabItem x:Name="SharedItemsTab" Header="{Binding Source={x:Static resx:UIStrings.Variants}}">
                     <views:SharedItemsView/>
                 </TabItem>
             </Controls:MetroTabControl>

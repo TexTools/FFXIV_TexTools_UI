@@ -1341,6 +1341,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Models.
+        /// </summary>
+        public static string Models {
+            get {
+                return ResourceManager.GetString("Models", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Enter a Model ID....
         /// </summary>
         public static string ModelSearch_EnterID {
@@ -2389,6 +2398,15 @@ namespace FFXIV_TexTools.Resources {
         public static string Variant {
             get {
                 return ResourceManager.GetString("Variant", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Variants.
+        /// </summary>
+        public static string Variants {
+            get {
+                return ResourceManager.GetString("Variants", resourceCulture);
             }
         }
         
