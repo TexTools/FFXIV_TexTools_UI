@@ -79,7 +79,7 @@ namespace FFXIV_TexTools.Views.Models
         /// </summary>
         private void ForceUV1Quadrant_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            if (_itemModel.Category.Equals(FFXIV_TexTools.Resources.XivStrings.Gear))
+            if (_itemModel.PrimaryCategory.Equals(FFXIV_TexTools.Resources.XivStrings.Gear))
             {
                 Properties.Settings.Default.ForceUV1Quadrant = _viewModel.ForceUV1QuadrantChecked;
                 Properties.Settings.Default.Save();
@@ -91,7 +91,7 @@ namespace FFXIV_TexTools.Views.Models
         /// </summary>
         private void CloneUV1toUV2_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            if (_itemModel.ItemCategory.Equals(FFXIV_TexTools.Resources.XivStrings.Hair))
+            if (_itemModel.SecondaryCategory.Equals(FFXIV_TexTools.Resources.XivStrings.Hair))
             {
                 Properties.Settings.Default.CloneUV1toUV2 = _viewModel.CloneUV1toUV2Checked;
                 Properties.Settings.Default.Save();

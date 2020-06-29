@@ -337,7 +337,7 @@ namespace FFXIV_TexTools.ViewModels
             var item = new XivGenericItemModel
             {
                 Name = modItem.name,
-                ItemCategory = modItem.category,
+                SecondaryCategory = modItem.category,
                 DataFile = XivDataFiles.GetXivDataFile(modItem.datFile)
             };
 
@@ -345,32 +345,32 @@ namespace FFXIV_TexTools.ViewModels
             {
                 if (modItem.fullPath.Contains("chara/equipment") || modItem.fullPath.Contains("chara/accessory"))
                 {
-                    item.Category = XivStrings.Gear;
+                    item.PrimaryCategory = XivStrings.Gear;
                     item.ModelInfo = new XivModelInfo
                     {
-                        ModelID = int.Parse(fullPath.Substring(17, 4))
+                        PrimaryID = int.Parse(fullPath.Substring(17, 4))
                     };
                 }
 
                 if (modItem.fullPath.Contains("chara/weapon"))
                 {
-                    item.Category = XivStrings.Gear;
+                    item.PrimaryCategory = XivStrings.Gear;
                     item.ModelInfo = new XivModelInfo
                     {
-                        ModelID = int.Parse(fullPath.Substring(14, 4))
+                        PrimaryID = int.Parse(fullPath.Substring(14, 4))
                     };
                 }
 
                 if (modItem.fullPath.Contains("chara/human"))
                 {
-                    item.Category = XivStrings.Character;
+                    item.PrimaryCategory = XivStrings.Character;
 
 
                     if (item.Name.Equals(XivStrings.Body))
                     {
                         item.ModelInfo = new XivModelInfo
                         {
-                            ModelID = int.Parse(
+                            PrimaryID = int.Parse(
                                 fullPath.Substring(fullPath.IndexOf("/body", StringComparison.Ordinal) + 7, 4))
                         };
                     }
@@ -378,7 +378,7 @@ namespace FFXIV_TexTools.ViewModels
                     {
                         item.ModelInfo = new XivModelInfo
                         {
-                            ModelID = int.Parse(
+                            PrimaryID = int.Parse(
                                 fullPath.Substring(fullPath.IndexOf("/hair", StringComparison.Ordinal) + 7, 4))
                         };
                     }
@@ -386,7 +386,7 @@ namespace FFXIV_TexTools.ViewModels
                     {
                         item.ModelInfo = new XivModelInfo
                         {
-                            ModelID = int.Parse(
+                            PrimaryID = int.Parse(
                                 fullPath.Substring(fullPath.IndexOf("/face", StringComparison.Ordinal) + 7, 4))
                         };
                     }
@@ -394,7 +394,7 @@ namespace FFXIV_TexTools.ViewModels
                     {
                         item.ModelInfo = new XivModelInfo
                         {
-                            ModelID = int.Parse(
+                            PrimaryID = int.Parse(
                                 fullPath.Substring(fullPath.IndexOf("/tail", StringComparison.Ordinal) + 7, 4))
                         };
                     }
@@ -402,13 +402,13 @@ namespace FFXIV_TexTools.ViewModels
 
                 if (modItem.fullPath.Contains("chara/common"))
                 {
-                    item.Category = XivStrings.Character;
+                    item.PrimaryCategory = XivStrings.Character;
 
                     if (item.Name.Equals(XivStrings.Face_Paint))
                     {
                         item.ModelInfo = new XivModelInfo
                         {
-                            ModelID = int.Parse(
+                            PrimaryID = int.Parse(
                                 fullPath.Substring(fullPath.LastIndexOf("_", StringComparison.Ordinal) + 1, 1))
                         };
                     }
@@ -418,7 +418,7 @@ namespace FFXIV_TexTools.ViewModels
 
                         if (!fullPath.Contains("_stigma"))
                         {
-                            item.ModelInfo.ModelID = int.Parse(
+                            item.ModelInfo.PrimaryID = int.Parse(
                                 fullPath.Substring(fullPath.LastIndexOf("_", StringComparison.Ordinal) + 1, 3));
                         }
                     }
@@ -426,43 +426,43 @@ namespace FFXIV_TexTools.ViewModels
 
                 if (modItem.fullPath.Contains("chara/monster"))
                 {
-                    item.Category = XivStrings.Companions;
+                    item.PrimaryCategory = XivStrings.Companions;
 
                     item.ModelInfo = new XivModelInfo
                     {
-                        ModelID = int.Parse(fullPath.Substring(15, 4)),
-                        Body = int.Parse(fullPath.Substring(fullPath.IndexOf("/body", StringComparison.Ordinal) + 7, 4))
+                        PrimaryID = int.Parse(fullPath.Substring(15, 4)),
+                        SecondaryID = int.Parse(fullPath.Substring(fullPath.IndexOf("/body", StringComparison.Ordinal) + 7, 4))
                     };
                 }
 
                 if (modItem.fullPath.Contains("chara/demihuman"))
                 {
-                    item.Category = XivStrings.Companions;
+                    item.PrimaryCategory = XivStrings.Companions;
 
                     item.ModelInfo = new XivModelInfo
                     {
-                        Body = int.Parse(fullPath.Substring(17, 4)),
-                        ModelID = int.Parse(
+                        SecondaryID = int.Parse(fullPath.Substring(17, 4)),
+                        PrimaryID = int.Parse(
                             fullPath.Substring(fullPath.IndexOf("t/e", StringComparison.Ordinal) + 3, 4))
                     };
                 }
 
                 if (modItem.fullPath.Contains("ui/"))
                 {
-                    item.Category = XivStrings.UI;
+                    item.PrimaryCategory = XivStrings.UI;
 
                     if (modItem.fullPath.Contains("ui/uld") || modItem.fullPath.Contains("ui/map") || modItem.fullPath.Contains("ui/loadingimage"))
                     {
                         item.ModelInfo = new XivModelInfo
                         {
-                            ModelID = 0
+                            PrimaryID = 0
                         };
                     }
                     else
                     {
                         item.ModelInfo = new XivModelInfo
                         {
-                            ModelID = int.Parse(fullPath.Substring(fullPath.LastIndexOf("/", StringComparison.Ordinal) + 1,
+                            PrimaryID = int.Parse(fullPath.Substring(fullPath.LastIndexOf("/", StringComparison.Ordinal) + 1,
                                 6))
                         };
                     }
@@ -470,11 +470,11 @@ namespace FFXIV_TexTools.ViewModels
 
                 if (modItem.fullPath.Contains("/hou/"))
                 {
-                    item.Category = XivStrings.Housing;
+                    item.PrimaryCategory = XivStrings.Housing;
 
                     item.ModelInfo = new XivModelInfo
                     {
-                        ModelID = int.Parse(fullPath.Substring(fullPath.LastIndexOf("_m", StringComparison.Ordinal) + 2,
+                        PrimaryID = int.Parse(fullPath.Substring(fullPath.LastIndexOf("_m", StringComparison.Ordinal) + 2,
                             4))
                     };
                 }
@@ -570,7 +570,7 @@ namespace FFXIV_TexTools.ViewModels
                         };
 
                         // Race
-                        if (selectedItem.Category.Equals(XivStrings.Gear))
+                        if (selectedItem.PrimaryCategory.Equals(XivStrings.Gear))
                         {
                             if (modItem.fullPath.Contains("equipment"))
                             {
@@ -591,7 +591,7 @@ namespace FFXIV_TexTools.ViewModels
                                 modListModel.Race = XivStrings.All;
                             }
                         }
-                        else if (selectedItem.Category.Equals(XivStrings.Character))
+                        else if (selectedItem.PrimaryCategory.Equals(XivStrings.Character))
                         {
                             if (!modItem.fullPath.Contains("chara/common"))
                             {
@@ -604,15 +604,15 @@ namespace FFXIV_TexTools.ViewModels
                             }
 
                         }
-                        else if (selectedItem.Category.Equals(XivStrings.Companions))
+                        else if (selectedItem.PrimaryCategory.Equals(XivStrings.Companions))
                         {
                             modListModel.Race = XivStrings.Monster;
                         }
-                        else if (selectedItem.Category.Equals(XivStrings.UI))
+                        else if (selectedItem.PrimaryCategory.Equals(XivStrings.UI))
                         {
                             modListModel.Race = XivStrings.All;
                         }
-                        else if (selectedItem.Category.Equals(XivStrings.Housing))
+                        else if (selectedItem.PrimaryCategory.Equals(XivStrings.Housing))
                         {
                             modListModel.Race = XivStrings.All;
                         }
