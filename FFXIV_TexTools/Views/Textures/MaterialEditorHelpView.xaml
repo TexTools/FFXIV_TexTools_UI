@@ -9,7 +9,7 @@
         xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
         xmlns:input="clr-namespace:System.Windows.Input;assembly=PresentationCore"
         mc:Ignorable="d"
-        Title="{Binding Source={x:Static resx:UIStrings.MaterialEditorHelp}}" Height="555.872" IsMinButtonEnabled="False" IsMaxRestoreButtonEnabled="False" WindowStartupLocation="CenterOwner" FontSize="14" Width="635.747">
+        Title="{Binding Source={x:Static resx:UIStrings.MaterialEditorHelp}}" Height="627.364" IsMinButtonEnabled="False" IsMaxRestoreButtonEnabled="False" WindowStartupLocation="CenterOwner" FontSize="14" Width="635.747">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="141*"/>
@@ -19,6 +19,7 @@
             <RowDefinition Height="30*"/>
             <RowDefinition Height="50*"/>
             <RowDefinition Height="30*"/>
+            <RowDefinition Height="50*"/>
             <RowDefinition Height="50*"/>
             <RowDefinition Height="50*"/>
             <RowDefinition Height="50*"/>
@@ -47,5 +48,11 @@
         </Label>
         <TextBlock Margin="10" Grid.Row="6" TextWrapping="Wrap" Text="The default texture name for a texture.  Unique per Item/Material/Texture." Grid.Column="1"/>
         <TextBlock Margin="10" Grid.Row="8" TextWrapping="Wrap" Text="Paths may only contain lowercase characters, numbers, tokens and &#xA;the following special characters: /.-_" Grid.ColumnSpan="2" TextAlignment="Center"/>
+        <TextBlock Margin="10,10,10,9" Grid.Row="9" TextWrapping="Wrap" Grid.ColumnSpan="2" TextAlignment="Center">
+
+            <Hyperlink NavigateUri="https://docs.google.com/document/d/1bRW48y20n9eqkA7HdSlbP0Hr4lNV1S5t9-3zVfhwJbg/edit?usp=sharing" RequestNavigate="Hyperlink_RequestNavigate">
+                Click here for the full Material Editor Guide.
+            </Hyperlink>
+        </TextBlock>
     </Grid>
 </mah:MetroWindow>
