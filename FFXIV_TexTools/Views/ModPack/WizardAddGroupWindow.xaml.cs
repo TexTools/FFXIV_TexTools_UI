@@ -627,13 +627,18 @@ namespace FFXIV_TexTools.Views
         /// </summary>
         private void TreeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
+            var selectedItem = e.NewValue as Category;
+            if (selectedItem == null || selectedItem.Item == null)
+            {
+                return;
+            }
+
             TextureMapComboBox.Items.Clear();
             ModelTypeComboBox.Items.Clear();
             MaterialComboBox.Items.Clear();
             CustomTextureTextBox.Text = string.Empty;
             CustomModelTextBox.Text = string.Empty;
 
-            var selectedItem = e.NewValue as Category;
 
             var modList = JsonConvert.DeserializeObject<ModList>(File.ReadAllText(_modListDirectory.FullName));
 
