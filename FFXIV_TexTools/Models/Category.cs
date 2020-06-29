@@ -26,7 +26,12 @@ namespace FFXIV_TexTools.Models
         /// <summary>
         /// The expanded status of the category
         /// </summary>
-        private bool _isExpanded;
+        private bool _isExpanded = false;
+
+        /// <summary>
+        /// The selected status of the category
+        /// </summary>
+        private bool _isSelected = false;
 
         /// <summary>
         /// The Name of the category
@@ -58,6 +63,19 @@ namespace FFXIV_TexTools.Models
             {
                 _isExpanded = value;
                 NotifyPropertyChanged(nameof(IsExpanded));
+            }
+        }
+
+        /// <summary>
+        /// The selected status of the category
+        /// </summary>
+        public bool IsSelected
+        {
+            get => _isSelected;
+            set
+            {
+                _isSelected = value;
+                NotifyPropertyChanged(nameof(IsSelected));
             }
         }
 

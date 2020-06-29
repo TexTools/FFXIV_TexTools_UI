@@ -316,12 +316,12 @@ namespace FFXIV_TexTools.ViewModels
                 }
             }
 
-            if (_itemModel.Category.Equals(XivStrings.Gear) && Settings.Default.ForceUV1Quadrant)
+            if (_itemModel.PrimaryCategory.Equals(XivStrings.Gear) && Settings.Default.ForceUV1Quadrant)
             {
                 ForceUV1QuadrantChecked = true;
             }
 
-            if (_itemModel.ItemCategory.Equals(XivStrings.Hair) && Settings.Default.CloneUV1toUV2)
+            if (_itemModel.SecondaryCategory.Equals(XivStrings.Hair) && Settings.Default.CloneUV1toUV2)
             {
                 CloneUV1toUV2Checked = true;
             }

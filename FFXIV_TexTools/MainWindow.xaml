@@ -96,6 +96,7 @@
                         <TreeView.ItemContainerStyle>
                             <Style BasedOn="{StaticResource MetroTreeViewItem}" TargetType="{x:Type TreeViewItem}">
                                 <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}"/>
+                                <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}"/>
                             </Style>
                         </TreeView.ItemContainerStyle>
                         <TreeView.Resources>
@@ -121,11 +122,14 @@
                 </GridSplitter.Background>
             </GridSplitter>
             <Controls:MetroTabControl x:Name="TabsControl" Grid.Column="2" Controls:TabControlHelper.Underlined="TabPanel">
-                <TabItem x:Name="TextureTabItem" Header="{Binding Source={x:Static resx:UIStrings.Texture}}">
+                <TabItem x:Name="TextureTabItem" Header="{Binding Source={x:Static resx:UIStrings.Textures}}">
                     <views:TextureView/>
                 </TabItem>
-                <TabItem x:Name="ModelTabItem" Header="{Binding Source={x:Static resx:UIStrings.Model}}">
+                <TabItem x:Name="ModelTabItem" Header="{Binding Source={x:Static resx:UIStrings.Models}}" IsEnabled="False" Visibility="Hidden">
                     <views:ModelView/>
+                </TabItem>
+                <TabItem x:Name="SharedItemsTab" Header="{Binding Source={x:Static resx:UIStrings.Variants}}" IsEnabled="False" Visibility="Hidden">
+                    <views:SharedItemsView/>
                 </TabItem>
             </Controls:MetroTabControl>
         </Grid>

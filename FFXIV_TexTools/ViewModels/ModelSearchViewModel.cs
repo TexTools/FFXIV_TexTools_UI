@@ -218,76 +218,72 @@ namespace FFXIV_TexTools.ViewModels
                 var xivGear = new XivGear
                 {
                     Name = $"{SelectedCategory.ToLower()[0]}{_currentID.ToString().PadLeft(4, '0')}",
-                    Category = XivStrings.Gear,
-                    ItemCategory = SelectedItem.Slot,
+                    PrimaryCategory = XivStrings.Gear,
+                    SecondaryCategory = SelectedItem.Slot,
                     DataFile = XivDataFile._04_Chara,
                     ModelInfo = new XivModelInfo
                     {
-                        ModelID = _currentID,
-                        Body = body,
-                        Variant = variant
+                        PrimaryID = _currentID,
+                        SecondaryID = body,
+                        ImcSubsetID = variant
                     }
                 };
 
-                await textureViewModel.UpdateTexture(xivGear);
-                await modelViewModel.UpdateModel(xivGear);
+                _mainView.SelectItem(xivGear, false);
             }
             else if (SelectedCategory.Equals(XivStrings.Monster))
             {
                 var xivMonster = new XivGenericItemModel
                 {
                     Name = $"{SelectedCategory.ToLower()[0]}{_currentID.ToString().PadLeft(4, '0')}",
-                    Category = XivStrings.Companions,
-                    ItemCategory = XivStrings.Monster,
+                    PrimaryCategory = XivStrings.Companions,
+                    SecondaryCategory = XivStrings.Monster,
                     DataFile = XivDataFile._04_Chara,
-                    ModelInfo = new XivModelInfo
+                    ModelInfo = new XivMonsterModelInfo
                     {
-                        ModelID = _currentID,
-                        Body = body,
-                        Variant = variant,
+                        PrimaryID = _currentID,
+                        SecondaryID = body,
+                        ImcSubsetID = variant,
                         ModelType = XivItemType.monster
                     }
                 };
 
-                await textureViewModel.UpdateTexture(xivMonster);
-                await modelViewModel.UpdateModel(xivMonster);
+                _mainView.SelectItem(xivMonster, false);
             }
             else if (SelectedCategory.Equals(XivStrings.DemiHuman))
             {
                 var xivDemiHuman = new XivMount
                 {
                     Name = $"{SelectedCategory.ToLower()[0]}{_currentID.ToString().PadLeft(4, '0')}",
-                    Category = XivStrings.Companions,
-                    ItemCategory = XivStrings.Monster,
+                    PrimaryCategory = XivStrings.Companions,
+                    SecondaryCategory = XivStrings.Monster,
                     DataFile = XivDataFile._04_Chara,
-                    ModelInfo = new XivModelInfo
+                    ModelInfo = new XivMonsterModelInfo
                     {
-                        ModelID = _currentID,
-                        Body = body,
-                        Variant = variant,
+                        PrimaryID = _currentID,
+                        SecondaryID = body,
+                        ImcSubsetID = variant,
                         ModelType = XivItemType.demihuman
                     }
                 };
 
-                await textureViewModel.UpdateTexture(xivDemiHuman);
-                await modelViewModel.UpdateModel(xivDemiHuman);
+                _mainView.SelectItem(xivDemiHuman, false);
             }
             else if (SelectedCategory.Equals(XivStrings.Furniture))
             {
                 var xivFurniture = new XivFurniture
                 {
                     Name = $"{SelectedCategory.ToLower()[0]}{_currentID.ToString().PadLeft(4, '0')}",
-                    Category = XivStrings.Housing,
-                    ItemCategory = SelectedItem.Slot,
+                    PrimaryCategory = XivStrings.Housing,
+                    SecondaryCategory = SelectedItem.Slot,
                     DataFile = XivDataFile._01_Bgcommon,
                     ModelInfo = new XivModelInfo
                     {
-                        ModelID = _currentID
+                        PrimaryID = _currentID
                     }
                 };
 
-                await textureViewModel.UpdateTexture(xivFurniture);
-                await modelViewModel.UpdateModel(xivFurniture);
+                _mainView.SelectItem(xivFurniture, false);
             }
         }
 
