@@ -125,10 +125,10 @@
                 <TabItem x:Name="TextureTabItem" Header="{Binding Source={x:Static resx:UIStrings.Textures}}">
                     <views:TextureView/>
                 </TabItem>
-                <TabItem x:Name="ModelTabItem" Header="{Binding Source={x:Static resx:UIStrings.Models}}">
+                <TabItem x:Name="ModelTabItem" Header="{Binding Source={x:Static resx:UIStrings.Models}}" IsEnabled="False" Visibility="Hidden">
                     <views:ModelView/>
                 </TabItem>
-                <TabItem x:Name="SharedItemsTab" Header="{Binding Source={x:Static resx:UIStrings.Variants}}">
+                <TabItem x:Name="SharedItemsTab" Header="{Binding Source={x:Static resx:UIStrings.Variants}}" IsEnabled="False" Visibility="Hidden">
                     <views:SharedItemsView/>
                 </TabItem>
             </Controls:MetroTabControl>
