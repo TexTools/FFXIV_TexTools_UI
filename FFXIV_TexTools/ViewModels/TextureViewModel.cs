@@ -732,24 +732,25 @@ namespace FFXIV_TexTools.ViewModels
                     if ((_item.SecondaryCategory.Equals(XivStrings.Mounts) || _item.SecondaryCategory.Equals(XivStrings.Monster)) && _item.GetPrimaryItemType() == XivItemType.demihuman)
                     {
                         _xivMtrl = await _mtrl.GetMtrlData(_item, SelectedRace.XivRace, SelectedType.Name[0], dxVersion);
+                        ttpList = _xivMtrl.GetTextureTypePathList();
                     }
                     else if (_item.PrimaryCategory.Equals(XivStrings.Gear))
                     {
                         _xivMtrl = await _mtrl.GetMtrlData(_item, SelectedRace.XivRace, SelectedType.Name[0], dxVersion, SelectedPart.Name);
+                        ttpList = _xivMtrl.GetTextureTypePathList();
 
                         var xivGear = _item as XivGear;
 
                         if (xivGear.IconNumber != 0)
                         {
-                            _xivMtrl.TextureTypePathList.AddRange(await _gear.GetIconInfo(xivGear));
+                            ttpList.AddRange(await _gear.GetIconInfo(xivGear));
                         }
                     }
                     else
                     {
                         _xivMtrl = await _mtrl.GetMtrlData(_item, SelectedRace.XivRace, SelectedPart.Name[0], dxVersion);
+                        ttpList = _xivMtrl.GetTextureTypePathList();
                     }
-
-                    ttpList = _xivMtrl.TextureTypePathList;
                 }
             }
             else
@@ -850,6 +851,22 @@ namespace FFXIV_TexTools.ViewModels
             }
             if (ttpList == null)
                 ttpList = new List<TexTypePath>();
+
+
+            // If the MTRL has VFX, retrieve those VFX textures as well.
+            if(_xivMtrl != null && _xivMtrl.hasVfx)
+            {
+                DirectoryInfo gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
+                var atex = new ATex(gameDirectory, _xivMtrl.GetDataFile());
+                try
+                {
+                    ttpList.AddRange(await atex.GetAtexPaths(_item));
+                }
+                catch
+                {
+                }
+            }
+
             foreach (var texTypePath in ttpList)
             {
                 if (texTypePath.Name != null)
