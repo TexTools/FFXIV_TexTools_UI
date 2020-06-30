@@ -40,9 +40,6 @@ namespace FFXIV_TexTools.ViewModels
         {
             _view = view;
             _tree = _view.PrimaryTree;
-            var gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
-            _imc = new Imc(gameDirectory, XivDataFile._04_Chara);
-            _gear = new Gear(gameDirectory, XivLanguages.GetXivLanguage(Properties.Settings.Default.Application_Language));
         }
 
 
@@ -53,13 +50,14 @@ namespace FFXIV_TexTools.ViewModels
         /// <returns></returns>
         public async Task<bool> SetItem(IItem item, MainWindow mainWindow = null)
         {
+            var gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
+            _imc = new Imc(gameDirectory, item.DataFile);
+            _gear = new Gear(gameDirectory, XivLanguages.GetXivLanguage(Properties.Settings.Default.Application_Language));
+
             if (mainWindow != null)
             {
                 _mainWindow = mainWindow;
             }
-
-            var gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
-            _imc = new Imc(gameDirectory, item.DataFile);
             _item = item;
             _tree.Items.Clear();
             IItemModel im = null;

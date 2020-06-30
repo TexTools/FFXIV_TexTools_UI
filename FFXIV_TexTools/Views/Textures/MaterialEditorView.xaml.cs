@@ -35,6 +35,7 @@ namespace FFXIV_TexTools.Views.Textures
             ShaderSource.Add(MtrlShader.Hair, "Hair");
             ShaderSource.Add(MtrlShader.Iris, "Iris");
             ShaderSource.Add(MtrlShader.Furniture, "Furniture");
+            ShaderSource.Add(MtrlShader.DyeableFurniture, "Dyeable Furniture");
             ShaderSource.Add(MtrlShader.Other, "Other");
             ShaderComboBox.ItemsSource = ShaderSource;
             ShaderComboBox.DisplayMemberPath = "Value";
@@ -131,7 +132,7 @@ namespace FFXIV_TexTools.Views.Textures
             {
                 TransparencyComboBox.SelectedValue = true;
                 TransparencyComboBox.IsEnabled = false;
-            } else if ((MtrlShader)ShaderComboBox.SelectedValue == MtrlShader.Furniture)
+            } else if ((MtrlShader)ShaderComboBox.SelectedValue == MtrlShader.Furniture || (MtrlShader)ShaderComboBox.SelectedValue == MtrlShader.DyeableFurniture)
             {
                 // Disable everything for furniture shader items.
                 // Haven't done enough research here yet to be able to 
