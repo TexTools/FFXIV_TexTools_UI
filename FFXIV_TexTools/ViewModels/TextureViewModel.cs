@@ -1680,6 +1680,9 @@ namespace FFXIV_TexTools.ViewModels
                     // Change the MTRL part identifier.
                     itemXivMtrl.MTRLPath = Regex.Replace(itemXivMtrl.MTRLPath, mtrlReplacementRegex, mtrlReplacementRegexResult);
 
+                    // Load the Shader Settings
+                    itemXivMtrl.SetShaderInfo(shaderInfo, true);
+
                     // Loop our tokenized map infos and pump them back in
                     // using the new modified material to detokenize them.
                     foreach (var info in mapInfos)
@@ -1687,22 +1690,7 @@ namespace FFXIV_TexTools.ViewModels
                         itemXivMtrl.SetMapInfo(info.Usage, info);
                     }
 
-                    // Clear any unused maps.
-                    if (!hasDiffuse)
-                    {
-                        itemXivMtrl.SetMapInfo(XivTexType.Diffuse, null);
-                    }
-                    if (!hasMulti)
-                    {
-                        itemXivMtrl.SetMapInfo(XivTexType.Multi, null);
-                    }
-                    if (!hasSpecular)
-                    {
-                        itemXivMtrl.SetMapInfo(XivTexType.Specular, null);
-                    }
 
-                    // Load the Shader Settings
-                    itemXivMtrl.SetShaderInfo(shaderInfo);
 
                     // Load Colorset Data
                     itemXivMtrl.ColorSetData = colorSetData;

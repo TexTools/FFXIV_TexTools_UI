@@ -95,45 +95,26 @@ namespace FFXIV_TexTools.ViewModels
             var diffuse = _material.GetMapInfo(XivTexType.Diffuse);
             var specular = _material.GetMapInfo(XivTexType.Specular);
             var multi = _material.GetMapInfo(XivTexType.Multi);
+            var reflection = _material.GetMapInfo(XivTexType.Reflection);
 
-            if (normal != null)
+            // Show Paths
+            _view.NormalTextBox.Text = normal == null ? "" : normal.path;
+            _view.SpecularTextBox.Text = specular == null ? "" : specular.path;
+            _view.SpecularTextBox.Text = multi == null ? _view.SpecularTextBox.Text : multi.path;
+            _view.DiffuseTextBox.Text = diffuse == null ? "" : diffuse.path;
+            _view.DiffuseTextBox.Text = reflection == null ? _view.DiffuseTextBox.Text : reflection.path;
+
+            // Add Other option if needed.
+            if (shader.Shader == MtrlShader.Other)
             {
-                _view.NormalComboBox.IsEnabled = true;
-                _view.NormalTextBox.IsEnabled = true;
-                _view.NormalTextBox.Text = normal.path;
-                _view.NormalComboBox.SelectedValue = normal.Format;
-            } else
-            {
-                _view.NormalComboBox.IsEnabled = false;
-                _view.NormalTextBox.IsEnabled = false;
-                _view.NormalTextBox.Text = "";
+                _view.ShaderSource.Add(new KeyValuePair<MtrlShader, string>(MtrlShader.Other, "Other"));
             }
 
-            _view.DiffuseComboBox.SelectedValue = MaterialDiffuseMode.None;
-            _view.DiffuseTextBox.Text = "";
-            if (diffuse != null)
-            {
-                _view.DiffuseComboBox.SelectedValue = MaterialDiffuseMode.FullColor;
-                _view.DiffuseTextBox.Text = diffuse.path;
-            }
-
-
-            _view.SpecularComboBox.SelectedValue = MaterialSpecularMode.None;
-            _view.SpecularTextBox.Text = "";
-
-            if (multi != null)
-            {
-                _view.SpecularComboBox.SelectedValue = MaterialSpecularMode.MultiMap;
-                _view.SpecularTextBox.Text = multi.path;
-            }
-            else if (specular != null)
-            {
-                _view.SpecularComboBox.SelectedValue = MaterialSpecularMode.FullColor;
-                _view.SpecularTextBox.Text = specular.path;
-            }
-
+            // Show Settings
             _view.TransparencyComboBox.SelectedValue = shader.TransparencyEnabled;
+            _view.ColorsetComboBox.SelectedValue = shader.HasColorset;
             _view.ShaderComboBox.SelectedValue = shader.Shader;
+            _view.PresetComboBox.SelectedValue = shader.Preset;
 
 
 
@@ -162,51 +143,52 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         public async Task<XivMtrl> SaveChanges()
         {
-            // Old Data
-            var oldShader = _material.GetShaderInfo();
-            var oldNormal = _material.GetMapInfo(XivTexType.Normal);
-            var oldDiffuse = _material.GetMapInfo(XivTexType.Diffuse);
-            var oldSpecular = _material.GetMapInfo(XivTexType.Specular);
-            var oldMulti = _material.GetMapInfo(XivTexType.Multi);
-
-
             _view.NormalTextBox.Text = SanitizePath(_view.NormalTextBox.Text);
             _view.DiffuseTextBox.Text = SanitizePath(_view.DiffuseTextBox.Text);
             _view.SpecularTextBox.Text = SanitizePath(_view.SpecularTextBox.Text);
 
             // New Data
-            var newShader = new ShaderInfo() { Shader = (MtrlShader) _view.ShaderComboBox.SelectedValue, TransparencyEnabled = (bool) _view.TransparencyComboBox.SelectedValue };
+            var newShader = new ShaderInfo() { 
+                Shader = (MtrlShader) _view.ShaderComboBox.SelectedValue,
+                Preset = (MtrlShaderPreset) _view.PresetComboBox.SelectedValue,
+                TransparencyEnabled = (bool) _view.TransparencyComboBox.SelectedValue 
+            };
+
             MapInfo newNormal = null;
             MapInfo newDiffuse = null;
             MapInfo newSpecular = null;
             MapInfo newMulti = null;
+            MapInfo newReflection = null;
 
-            // Nomral
-            if(_view.NormalComboBox.SelectedValue != null) {
-                newNormal = new MapInfo() { Usage = XivTexType.Normal, Format = (MtrlTextureDescriptorFormat)_view.NormalComboBox.SelectedValue, path = _view.NormalTextBox.Text };
-            }
+            // Normal
+            newNormal = new MapInfo() { Usage = XivTexType.Normal, Format = MtrlTextureDescriptorFormat.UsesColorset, path = _view.NormalTextBox.Text };
 
-            // Specular
-            if((MaterialSpecularMode) _view.SpecularComboBox.SelectedValue == MaterialSpecularMode.FullColor)
-            {
-                newSpecular = new MapInfo() { Usage = XivTexType.Specular, Format = MtrlTextureDescriptorFormat.NoColorset, path = _view.SpecularTextBox.Text };
-            } 
-            else if((MaterialSpecularMode)_view.SpecularComboBox.SelectedValue == MaterialSpecularMode.MultiMap)
+            // Specular / Multi
+            if (newShader.HasMulti)
             {
                 newMulti = new MapInfo() { Usage = XivTexType.Multi, Format = MtrlTextureDescriptorFormat.NoColorset, path = _view.SpecularTextBox.Text };
             }
+            else
+            {
+                newSpecular = new MapInfo() { Usage = XivTexType.Specular, Format = MtrlTextureDescriptorFormat.NoColorset, path = _view.SpecularTextBox.Text };
+            }
 
-            // Diffuse
-            if ((MaterialDiffuseMode)_view.DiffuseComboBox.SelectedValue == MaterialDiffuseMode.FullColor)
+            // Diffuse / Reflection
+            if (newShader.HasDiffuse)
             {
                 newDiffuse = new MapInfo() { Usage = XivTexType.Diffuse, Format = MtrlTextureDescriptorFormat.NoColorset, path = _view.DiffuseTextBox.Text };
             }
+            else if (newShader.HasReflection)
+            { 
+                newReflection = new MapInfo() { Usage = XivTexType.Reflection, Format = MtrlTextureDescriptorFormat.NoColorset, path = _view.DiffuseTextBox.Text };
+            }
 
-            _material.SetShaderInfo(newShader);
+            _material.SetShaderInfo(newShader); // This should be set BEFORE changing the maps over.
             _material.SetMapInfo(XivTexType.Normal, newNormal);
             _material.SetMapInfo(XivTexType.Specular, newSpecular);
             _material.SetMapInfo(XivTexType.Multi, newMulti);
             _material.SetMapInfo(XivTexType.Diffuse, newDiffuse);
+            _material.SetMapInfo(XivTexType.Reflection, newReflection);
 
 
             if (WriteFile)
