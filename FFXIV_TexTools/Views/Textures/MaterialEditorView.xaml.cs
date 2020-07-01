@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -11,6 +12,13 @@ using xivModdingFramework.Mods;
 
 namespace FFXIV_TexTools.Views.Textures
 {
+    public enum MaterialEditorMode
+    {
+        EditSingle,
+        EditMulti,
+        NewSingle,
+        NewMulti
+    }
     /// <summary>
     /// Interaction logic for MaterialEditor.xaml
     /// </summary>
@@ -19,7 +27,7 @@ namespace FFXIV_TexTools.Views.Textures
         private MaterialEditorViewModel viewModel;
         private XivMtrl _material;
         private IItemModel _item;
-        private bool _writeFile;
+        private MaterialEditorMode _mode;
 
         public ObservableCollection<KeyValuePair<MtrlShader, string>> ShaderSource;
         public ObservableCollection<KeyValuePair<MtrlShaderPreset, string>> PresetSource;
@@ -80,12 +88,12 @@ namespace FFXIV_TexTools.Views.Textures
             SaveButton.Click += SaveButton_Click;
         }
 
-        public void SetMaterial(XivMtrl material, IItemModel item, bool writeFile = true)
+        public async Task<bool> SetMaterial(XivMtrl material, IItemModel item, MaterialEditorMode mode = MaterialEditorMode.EditSingle)
         {
             _material = material;
             _item = item;
-            _writeFile = writeFile;
-            viewModel.SetMaterial(material, item, writeFile);
+            _mode = mode;
+            return await viewModel.SetMaterial(material, item, mode);
         }
 
         public XivMtrl GetMaterial()
@@ -246,13 +254,13 @@ namespace FFXIV_TexTools.Views.Textures
             PasteMaterialButton.IsEnabled = true;
         }
 
-        private void PasteMaterialButton_Click(object sender, RoutedEventArgs e)
+        private async void PasteMaterialButton_Click(object sender, RoutedEventArgs e)
         {
             if (_copiedMaterial != null)
             {
                 // Paste the copied Material into the editor using our current path and item.
                 _copiedMaterial.MTRLPath = _material.MTRLPath;
-                SetMaterial(_copiedMaterial, _item, _writeFile);
+                await SetMaterial(_copiedMaterial, _item, _mode);
             }
         }
 

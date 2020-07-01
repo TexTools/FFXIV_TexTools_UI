@@ -20,6 +20,8 @@ using FFXIV_TexTools.Properties;
 using FFXIV_TexTools.Resources;
 using FFXIV_TexTools.Textures;
 using FFXIV_TexTools.Views;
+using FFXIV_TexTools.Views.Textures;
+using HelixToolkit.Wpf.SharpDX;
 using SharpDX;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats;
@@ -599,6 +601,11 @@ namespace FFXIV_TexTools.ViewModels
                 }
 
                 ((XivCharacter)_item).TertiaryCategory = SelectedType.Name;
+            }
+
+            if (typeParts == null) {
+                // Swapping items too fast and we didn't properly load the things.
+                return;
             }
 
             foreach (var typePart in typeParts)
@@ -1490,264 +1497,115 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         private async void AddNewTexturePart(object obj)
         {
-            try
-            {
-                if (!CheckMtrlIsOK())
-                    return;
+            await OpenMaterialEditor(_xivMtrl, _item, MaterialEditorMode.NewMulti);
 
-                // Get new Material Identifier
-                var partChars = Constants.Alphabet;
-                List<string> partList = new List<string>();
-
-                if (_item.PrimaryCategory.Equals(XivStrings.Character))
-                {
-                    partList = TypeParts.Select(it => it.Name).ToList();
-                } else
-                {
-                    partList = Types.Select(it => it.Name).ToList();
-                }
-
-                var newPartName = '\0';
-                for (var i = 1; i < partChars.Length; i++)
-                {
-                    newPartName = partChars[i];
-                    if (!partList.Any(it => it == newPartName.ToString()))
-                    {
-                        break;
-                    }
-                }
-
-                // No empty material names left.
-                // Note - This can be fixed.  Materials don't need to be named a-z, but realisitcally is anyone going to have more than 26 materials?
-                if (newPartName == '\0')
-                {
-                    FlexibleMessageBox.Show(UIMessages.AddNewTexturePartErrorMessage,
-                        UIMessages.AddNewTexturePartErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-
-                // Make sure we have access to write the data files.
-                var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
-                var index = new Index(gameDirectory);
-                _gear = new Gear(gameDirectory, GetLanguage());
-                if (index.IsIndexLocked(XivDataFile._04_Chara))
-                {
-                    FlexibleMessageBox.Show(UIMessages.IndexLockedErrorMessage,
-                        UIMessages.IndexLockedErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                    return;
-                }
-
-
-                // Get existing Material
-                var mtrlOffset = await index.GetDataOffset(HashGenerator.GetHash(Path.GetDirectoryName(_xivMtrl.MTRLPath).Replace("\\", "/")), HashGenerator.GetHash(Path.GetFileName(_xivMtrl.MTRLPath)), _item.DataFile);
-                var xivMtrl = await _mtrl.GetMtrlData(mtrlOffset, _xivMtrl.MTRLPath, 11);
-
-
-                try
-                {
-                    // Ship it to the editor for user modification
-                    var editor = new Views.Textures.MaterialEditorView() { Owner = Window.GetWindow(_textureView) };
-                    editor.SetMaterial(xivMtrl, _item, false);
-                    var result = editor.ShowDialog();
-                    if (result != true)
-                    {
-                        // User cancelled the process.
-                        await UpdateTexture(_item);
-                        return;
-                    }
-                } catch (Exception ex)
-                {
-                    FlexibleMessageBox.Show(UIMessages.MaterialEditorErrorTitle,
-                            UIMessages.MaterialEditorErrorMessage, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    await UpdateTexture(_item);
-                    return;
-                }
-
-
-                // Get tokenized map info structs.
-                // This will let us set them in the new Materials and
-                // Detokenize them using the new paths.
-                var mapInfos = xivMtrl.GetAllMapInfos(true);
-
-
-                var hasDiffuse = false;
-                var hasMulti = false;
-                var hasSpecular = false;
-                foreach(var info in mapInfos)
-                {
-                    if(info.Usage == XivTexType.Diffuse)
-                    {
-                        hasDiffuse = true;
-                    } else if(info.Usage == XivTexType.Multi)
-                    {
-                        hasMulti = true;
-                    } else if(info.Usage == XivTexType.Specular)
-                    {
-                        hasSpecular = true;
-                    }
-                }
-
-
-
-                // Shader info likewise will be pumped into each new material.
-                var shaderInfo = xivMtrl.GetShaderInfo();
-
-                // Get Blank Colorset Data
-                List<Half> colorSetData = new List<Half>();
-                byte[] colorSetExtraData = null;
-
-                // Set our blank colorset info.
-                if (xivMtrl.ColorSetData != null && xivMtrl.ColorSetData.Count > 0)
-                {
-                    colorSetData = Tex.GetColorsetDataFromDDS(Tex.GetDefaultTexturePath(XivTexType.ColorSet));
-                }
-                if (xivMtrl.ColorSetDataSize == 544)
-                {
-                    colorSetExtraData = Tex.GetColorsetExtraDataFromDDS(Tex.GetDefaultTexturePath(XivTexType.ColorSet));
-                }
-
-
-
-                // Add new Materials for shared model items.    
-                var oldMaterialIdentifier = xivMtrl.GetMaterialIdentifier();
-
-                // Ordering these by name ensures that we create textures for the new variants in the first
-                // item alphabetically, just for consistency's sake.
-                var sameModelItems = (await _gear.GetSameModelList(_item)).OrderBy(x => x.Name);
-                var oldVariantString = "/v" + xivMtrl.GetVariant().ToString().PadLeft(4,'0')  + '/';
-                var modifiedVariants = new List<int>();
-
-
-                var mtrlReplacementRegex = "_" + oldMaterialIdentifier + ".mtrl";
-                var mtrlReplacementRegexResult = "_" + newPartName + ".mtrl";
-
-
-                // Load and modify all the MTRLs.
-                foreach (var item in sameModelItems)
-                {
-
-                    // Resolve this item's material variant.
-                    // - This isn't always the same as the item model variant, for some reason.
-                    // - So it has to be resolved manually.
-                    var variantMtrlPath = "";
-                    var itemType = ItemType.GetPrimaryItemType(_item);
-
-
-                    if (TypePartVisibility == Visibility.Visible)
-                    {
-
-                        // Get mtrl path
-                        variantMtrlPath = (await _mtrl.GetMtrlPath(item, SelectedRace.XivRace, oldMaterialIdentifier, itemType, SelectedType.Name)).Folder;
-                    }
-                    else
-                    {
-                        variantMtrlPath = (await _mtrl.GetMtrlPath(item, SelectedRace.XivRace, oldMaterialIdentifier, itemType, SelectedType.Name)).Folder;
-                    }
-
-                    var match = Regex.Match(variantMtrlPath, "/v([0-9]+)");
-                    var variant = 0;
-                    if (match.Success)
-                    {
-                        variant = Int32.Parse(match.Groups[1].Value);
-                    }
-
-                    // Only modify each Variant once.
-                    if (modifiedVariants.Contains(variant))
-                    {
-                        continue;
-                    }
-
-                    var dxVersion = 11;
-                    XivMtrl itemXivMtrl;
-
-                    // Reload a fresh copy of the MTRL we just modified.
-                    if (TypePartVisibility == Visibility.Visible)
-                    {
-
-                        // Get mtrl path
-                        itemXivMtrl = await _mtrl.GetMtrlData(_item, SelectedRace.XivRace, oldMaterialIdentifier, dxVersion, SelectedType.Name);
-                    }
-                    else
-                    {
-                        itemXivMtrl = await _mtrl.GetMtrlData(_item, SelectedRace.XivRace, oldMaterialIdentifier, dxVersion);
-                    }
-
-
-
-                    // Shift the MTRL to the new variant folder.
-                    itemXivMtrl.MTRLPath = Regex.Replace(itemXivMtrl.MTRLPath, oldVariantString, "/v" + variant.ToString().PadLeft(4, '0') + "/");
-
-                    // Change the MTRL part identifier.
-                    itemXivMtrl.MTRLPath = Regex.Replace(itemXivMtrl.MTRLPath, mtrlReplacementRegex, mtrlReplacementRegexResult);
-
-                    // Load the Shader Settings
-                    itemXivMtrl.SetShaderInfo(shaderInfo, true);
-
-                    // Loop our tokenized map infos and pump them back in
-                    // using the new modified material to detokenize them.
-                    foreach (var info in mapInfos)
-                    {
-                        itemXivMtrl.SetMapInfo(info.Usage, info);
-                    }
-
-
-
-                    // Load Colorset Data
-                    itemXivMtrl.ColorSetData = colorSetData;
-                    itemXivMtrl.ColorSetExtraData = colorSetExtraData;
-
-                    // Write the new Material
-                    await _mtrl.ImportMtrl(itemXivMtrl, item, XivStrings.TexTools);
-                    modifiedVariants.Add(variant);
-                }
-
-
-                // Reload UI and then switch to new texture part.
-                void SetToNewTexturePart(object sender, EventArgs e)
-                {
-                    LoadingComplete -= SetToNewTexturePart;
-                    if (_item.PrimaryCategory.Equals(XivStrings.Gear))
-                    {
-                        SelectedType = Types[Types.Count - 1];
-                    }
-                    else if (_item.PrimaryCategory.Equals(XivStrings.Character))
-                    {
-                        SelectedTypePart = TypeParts[TypeParts.Count - 1];
-                    }
-                }
-                LoadingComplete += SetToNewTexturePart;
-                SelectedRace = SelectedRace;
-            }
-            catch(Exception ex)
-            {
-                FlexibleMessageBox.Show($"{UIMessages.AddNewTexturePartErrorTitle}:{ex.Message}",
-                        UIMessages.AddNewTexturePartErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-
-            this._textureView.BottomFlyout.IsOpen = false;
         }
 
 
         /// <summary>
-        /// Command for the AddNewTexturePart Button
+        /// Command for the Material Editor Button
         /// </summary>
         public ICommand OpenMaterialEditorButton => new RelayCommand(OpenMaterialEditor);
         private async void OpenMaterialEditor(object obj)
         {
+            await OpenMaterialEditor(_xivMtrl, _item, MaterialEditorMode.EditSingle);
+        }
 
+
+        /// <summary>
+        /// Command for the Shaderd Material Editor Button
+        /// </summary>
+        public ICommand OpenSharedMaterialEditorButton => new RelayCommand(OpenSharedMaterialEditor);
+        private async void OpenSharedMaterialEditor(object obj)
+        {
+            await OpenMaterialEditor(_xivMtrl, _item, MaterialEditorMode.EditMulti);
+        }
+
+        /// <summary>
+        /// Opens the Material Editor with the given material/item in the given mode.
+        /// </summary>
+        /// <param name="material"></param>
+        /// <param name="item"></param>
+        /// <param name="mode"></param>
+        /// <returns></returns>
+        public async Task OpenMaterialEditor(XivMtrl material, IItemModel item, MaterialEditorMode mode = MaterialEditorMode.EditSingle)
+        {
             try
             {
                 var editor = new Views.Textures.MaterialEditorView() { Owner = Window.GetWindow(_textureView) };
-                editor.SetMaterial(_xivMtrl, _item);
-                var result = editor.ShowDialog();
-                await UpdateTexture(_item);
-            } catch(Exception ex)
+                var open = await editor.SetMaterial(material, item, mode);
+                if (open)
+                {
+                    var result = editor.ShowDialog();
+                }
+
+                var newMaterial = editor.Material;
+                LoadingComplete += SetToNewTexturePart;
+                if (TypeParts.Count > 0)
+                {
+                    SelectedType = SelectedType;
+                }
+                else
+                {
+                    SelectedRace = SelectedRace;
+                }
+
+                // Reload UI and then switch to material.
+                void SetToNewTexturePart(object sender, EventArgs e)
+                {
+                    LoadingComplete -= SetToNewTexturePart;
+                    SelectMaterial(newMaterial.GetMaterialIdentifier());
+                }
+
+            }
+            catch (Exception ex)
             {
                 FlexibleMessageBox.Show(UIMessages.MaterialEditorErrorTitle,
                         UIMessages.MaterialEditorErrorMessage, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                await UpdateTexture(_item);
 
             }
+        }
+
+        /// <summary>
+        /// Attempts to show a given material in the viewport.
+        /// </summary>
+        /// <param name="materialIdentifier"></param>
+        private void SelectMaterial(char materialIdentifier)
+        {
+
+            var search = Types;
+            if (_item.PrimaryCategory.Equals(XivStrings.Character))
+            {
+                search = TypeParts;
+            }
+
+            ComboBoxData selectedItem = null;
+            for (var idx = 0; idx < search.Count; idx++)
+            {
+                var elem = search[idx];
+                if (elem.Name == materialIdentifier.ToString())
+                {
+                    selectedItem = elem;
+                    break;
+                }
+            }
+
+            if (selectedItem != null)
+            {
+                if (_item.PrimaryCategory.Equals(XivStrings.Character))
+                {
+                    //SelectedTypePartIndex = selectedIdx;
+                    SelectedTypePart = selectedItem;
+                }
+                else
+                {
+                    //SelectedTypeIndex = selectedIdx;
+                    SelectedType = selectedItem;
+                }
+            }
+
+
         }
 
 
