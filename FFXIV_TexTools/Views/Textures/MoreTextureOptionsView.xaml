@@ -11,6 +11,6 @@
     <UniformGrid Rows="1" VerticalAlignment="Center">
         <Button Content="ADD NEW MATERIAL" Margin="10" Command="{Binding AddNewTexturePartButton}" IsEnabled="{Binding AddNewTexturePartEnabled}"/>
         <Button Content="EDIT ALL MATERIAL VARIANTS" Margin="10" Command="{Binding OpenSharedMaterialEditorButton}" IsEnabled="{Binding AddNewTexturePartEnabled}"/>
-        <Button Content="{Binding Source={x:Static resx:UIStrings.Material_Editor}}" Margin="10" Command="{Binding OpenMaterialEditorButton}" IsEnabled="{Binding MaterialEditorEnabled}" />
+        <Button Content="EDIT MATERIAL" Margin="10" Command="{Binding OpenMaterialEditorButton}" IsEnabled="{Binding MaterialEditorEnabled}" IsCancel="True" />
     </UniformGrid>
 </UserControl>
