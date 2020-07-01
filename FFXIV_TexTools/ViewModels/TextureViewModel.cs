@@ -1534,15 +1534,39 @@ namespace FFXIV_TexTools.ViewModels
             {
                 var editor = new Views.Textures.MaterialEditorView() { Owner = Window.GetWindow(_textureView) };
                 var open = await editor.SetMaterial(material, item, mode);
-                if (open)
+                
+                // If we failed to open the dialog, just cancel entirely.
+                // We probably weren't done loading.
+                if(!open)
                 {
-                    var result = editor.ShowDialog();
+                    return;
+                }
+
+                var result = editor.ShowDialog();
+
+                if(result != true)
+                {
+                    // User cancelled the process or deleted/removed the material.
+                    // Just reset us back to the top level and reload the UI.
+                    SelectedRace = SelectedRace;
+                    return;
                 }
 
                 var newMaterial = editor.Material;
                 LoadingComplete += SetToNewTexturePart;
                 if (TypeParts.Count > 0)
                 {
+                    // The TypeParts menu doesn't update these when you change SelectedType,
+                    // So we need to add to it manually to get the new material to show up
+                    // without refreshing the entire view (which is a cascading async mess)
+                    var parts = SelectedType.TypeParts.ToList();
+                    var identifier = newMaterial.GetMaterialIdentifier();
+                    if (!parts.Contains(identifier))
+                    {
+                        parts.Add(identifier);
+                        SelectedType.TypeParts = parts.ToArray();
+                    }
+
                     SelectedType = SelectedType;
                 }
                 else
