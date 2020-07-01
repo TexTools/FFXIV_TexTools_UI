@@ -1529,6 +1529,7 @@ namespace FFXIV_TexTools.ViewModels
                 // Make sure we have access to write the data files.
                 var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
                 var index = new Index(gameDirectory);
+                _gear = new Gear(gameDirectory, GetLanguage());
                 if (index.IsIndexLocked(XivDataFile._04_Chara))
                 {
                     FlexibleMessageBox.Show(UIMessages.IndexLockedErrorMessage,
@@ -1599,11 +1600,11 @@ namespace FFXIV_TexTools.ViewModels
                 // Set our blank colorset info.
                 if (xivMtrl.ColorSetData != null && xivMtrl.ColorSetData.Count > 0)
                 {
-                    colorSetData = _tex.GetColorsetDataFromDDS(Tex.GetDefaultTexturePath(XivTexType.ColorSet));
+                    colorSetData = Tex.GetColorsetDataFromDDS(Tex.GetDefaultTexturePath(XivTexType.ColorSet));
                 }
                 if (xivMtrl.ColorSetDataSize == 544)
                 {
-                    colorSetExtraData = _tex.GetColorsetExtraDataFromDDS(Tex.GetDefaultTexturePath(XivTexType.ColorSet));
+                    colorSetExtraData = Tex.GetColorsetExtraDataFromDDS(Tex.GetDefaultTexturePath(XivTexType.ColorSet));
                 }
 
 

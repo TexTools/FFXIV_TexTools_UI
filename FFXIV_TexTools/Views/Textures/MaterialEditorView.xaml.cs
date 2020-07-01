@@ -7,6 +7,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using xivModdingFramework.Items.Interfaces;
 using xivModdingFramework.Materials.DataContainers;
+using xivModdingFramework.Mods;
 
 namespace FFXIV_TexTools.Views.Textures
 {
@@ -73,6 +74,9 @@ namespace FFXIV_TexTools.Views.Textures
             ColorsetComboBox.SelectedValuePath = "Key";
             ColorsetComboBox.IsEnabled = false;
 
+            DisableButton.IsEnabled = false;
+            DisableButton.Visibility = Visibility.Hidden;
+
             SaveButton.Click += SaveButton_Click;
         }
 
@@ -89,17 +93,21 @@ namespace FFXIV_TexTools.Views.Textures
             return viewModel.GetMaterial();
         }
 
+        public void Close(bool result)
+        {
+            DialogResult = result;
+            Close();
+
+        }
         private async void SaveButton_Click(object sender, RoutedEventArgs e)
         {
             _material = await viewModel.SaveChanges();
-            DialogResult = true;
-            Close();
+            Close(true);
         }
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
-            DialogResult = false;
-            Close();
+            Close(false);
         }
 
 
@@ -246,6 +254,11 @@ namespace FFXIV_TexTools.Views.Textures
                 _copiedMaterial.MTRLPath = _material.MTRLPath;
                 SetMaterial(_copiedMaterial, _item, _writeFile);
             }
+        }
+
+        private async void DisableButton_Click(object sender, RoutedEventArgs e)
+        {
+            await viewModel.DisableMod();
         }
     }
 }

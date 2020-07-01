@@ -16,6 +16,8 @@ using xivModdingFramework.General.Enums;
 using xivModdingFramework.Items.Interfaces;
 using xivModdingFramework.Materials.DataContainers;
 using xivModdingFramework.Materials.FileTypes;
+using xivModdingFramework.Mods;
+using xivModdingFramework.Mods.DataContainers;
 using xivModdingFramework.Textures.DataContainers;
 using xivModdingFramework.Textures.Enums;
 
@@ -118,6 +120,17 @@ namespace FFXIV_TexTools.ViewModels
 
 
 
+            var modding = new Modding(gameDirectory);
+
+            // Asyncrhonously get the mod entry.
+            var task = modding.TryGetModEntry(_material.MTRLPath);
+            task.Wait();
+            var mod = task.Result;
+            if (mod != null && mod.enabled)
+            {
+                _view.DisableButton.IsEnabled = true;
+                _view.DisableButton.Visibility = System.Windows.Visibility.Visible;
+            }
         }
 
         public XivMtrl GetMaterial()
@@ -197,6 +210,30 @@ namespace FFXIV_TexTools.ViewModels
                 var newMtrlOffset = await _mtrl.ImportMtrl(_material, _item, XivStrings.TexTools);
             }
             return _material;
+        }
+
+        public async Task DisableMod()
+        {
+            var gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
+            var modding = new Modding(gameDirectory);
+            var modEntry = await modding.TryGetModEntry(_material.MTRLPath);
+
+            if (!modEntry.enabled)
+            {
+                _view.Close(false);
+                return;
+            }
+
+            // If the file is a custom addition, and not a modification.
+            if (modEntry.source != XivStrings.TexTools)
+            {
+                await modding.DeleteMod(_material.MTRLPath);
+            }
+            else
+            {
+                await modding.ToggleModStatus(_material.MTRLPath, false);
+            }
+            _view.Close(false);
         }
         private static XivLanguage GetLanguage()
         {
