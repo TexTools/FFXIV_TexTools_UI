@@ -905,7 +905,7 @@ namespace FFXIV_TexTools.Views
 
             var includedModsList = IncludedModsList.Items.Cast<IncludedMods>().ToList();
 
-            if (includedModsList.Any(item => item.Name.Equals(includedMod.Name)))
+            if (includedModsList.Any(item => item.FullPath.Equals(includedMod.FullPath)))
             {
                 if (FlexibleMessageBox.Show(
                         string.Format(UIMessages.ExistingOption, includedMod.Name),
