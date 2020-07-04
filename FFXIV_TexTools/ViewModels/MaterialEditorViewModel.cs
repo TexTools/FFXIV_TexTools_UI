@@ -257,13 +257,9 @@ namespace FFXIV_TexTools.ViewModels
 
             try
             {
-                if (_mode == MaterialEditorMode.EditSingle)
+                if (_mode == MaterialEditorMode.NewSingle || _mode == MaterialEditorMode.EditSingle)
                 {
-                    // Just save the existing MTRL.
-                    await _mtrl.ImportMtrl(_material, _item, XivStrings.TexTools);
-                } else if(_mode == MaterialEditorMode.NewSingle)
-                {
-                    // Update the existing MTRL to a new path and save it.
+                    // Save the existing MTRL.
                     await _mtrl.ImportMtrl(_material, _item, XivStrings.TexTools);
                 }
                 else if (_mode == MaterialEditorMode.NewMulti || _mode == MaterialEditorMode.EditMulti)
