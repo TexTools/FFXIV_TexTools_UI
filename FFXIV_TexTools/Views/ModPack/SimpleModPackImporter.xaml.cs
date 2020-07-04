@@ -521,7 +521,13 @@ namespace FFXIV_TexTools.Views
                         {
                             var fileName = Path.GetFileNameWithoutExtension(modPath);
 
-                            type = FaceTypes[fileName.Substring(fileName.IndexOf("_") + 1, 3)];
+                            try
+                            {
+                                type = FaceTypes[fileName.Substring(fileName.IndexOf("_") + 1, 3)];
+                            } catch
+                            {
+                                type = "Unknown";
+                            }
                         }
                     }
 
@@ -530,9 +536,13 @@ namespace FFXIV_TexTools.Views
                         if (modPath.Contains(".tex"))
                         {
                             var fileName = Path.GetFileNameWithoutExtension(modPath);
-
-                            type = HairTypes[fileName.Substring(fileName.IndexOf("_") + 1, 3)];
-                        }
+                            try {
+                                type = HairTypes[fileName.Substring(fileName.IndexOf("_") + 1, 3)];
+                            } catch
+                            {
+                                type = "Unknown";
+                            }
+                    }
                     }
 
                     if (modPath.Contains("/vfx/"))

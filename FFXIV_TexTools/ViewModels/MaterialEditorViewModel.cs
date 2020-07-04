@@ -241,6 +241,12 @@ namespace FFXIV_TexTools.ViewModels
                 newReflection = new MapInfo() { Usage = XivTexType.Reflection, Format = MtrlTextureDescriptorFormat.NoColorset, path = _view.DiffuseTextBox.Text };
             }
 
+            if(_mode == MaterialEditorMode.NewSingle)
+            {
+                // This needs to be updated BEFORE setting texture paths.
+                _material.MTRLPath = Regex.Replace(_material.MTRLPath, "_([a-z0-9])\\.mtrl", "_" + _newMaterialIdentifier + ".mtrl");
+            }
+
             _material.SetShaderInfo(newShader); // This should be set BEFORE changing the maps over.
             _material.SetMapInfo(XivTexType.Normal, newNormal);
             _material.SetMapInfo(XivTexType.Specular, newSpecular);
@@ -251,14 +257,9 @@ namespace FFXIV_TexTools.ViewModels
 
             try
             {
-                if (_mode == MaterialEditorMode.EditSingle)
+                if (_mode == MaterialEditorMode.NewSingle || _mode == MaterialEditorMode.EditSingle)
                 {
-                    // Just save the existing MTRL.
-                    await _mtrl.ImportMtrl(_material, _item, XivStrings.TexTools);
-                } else if(_mode == MaterialEditorMode.NewSingle)
-                {
-                    // Update the existing MTRL to a new path and save it.
-                    _material.MTRLPath = Regex.Replace(_material.MTRLPath, "_([a-z0-9])\\.mtrl", "_" + _newMaterialIdentifier + ".mtrl");
+                    // Save the existing MTRL.
                     await _mtrl.ImportMtrl(_material, _item, XivStrings.TexTools);
                 }
                 else if (_mode == MaterialEditorMode.NewMulti || _mode == MaterialEditorMode.EditMulti)
