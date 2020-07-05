@@ -44,6 +44,7 @@ using xivModdingFramework.Mods.FileTypes;
 using xivModdingFramework.SqPack.FileTypes;
 using Application = System.Windows.Application;
 using SysTimer = System.Timers;
+using xivModdingFramework.Cache;
 
 namespace FFXIV_TexTools
 {
@@ -72,6 +73,12 @@ namespace FFXIV_TexTools
             CultureInfo.CurrentUICulture = ci;
 
             CheckForUpdates();
+
+            // Settings are valid, application is updated, initialize the
+            // Cache once so it can test if it needs to be updated as well.
+            var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
+            var lang = XivLanguages.GetXivLanguage(Settings.Default.Application_Language);
+            var _cache = new XivCache(gameDirectory, lang);
 
             var fileVersion = FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location).FileVersion;
 
@@ -765,7 +772,7 @@ namespace FFXIV_TexTools
 
                 try
                 {
-                    await problemChecker.PerformStartOver(indexBackupsDirectory, progress);
+                    await problemChecker.PerformStartOver(indexBackupsDirectory, progress, XivLanguages.GetXivLanguage(Settings.Default.Application_Language));
                 }
                 catch
                 {

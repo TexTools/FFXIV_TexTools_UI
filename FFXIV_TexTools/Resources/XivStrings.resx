@@ -453,4 +453,7 @@
   <data name="Variant" xml:space="preserve">
     <value>Variant</value>
   </data>
+  <data name="Ornaments" xml:space="preserve">
+    <value>Ornaments</value>
+  </data>
 </root>
