@@ -597,7 +597,7 @@ namespace FFXIV_TexTools.ViewModels
             {
                 if (_item.SecondaryCategory.Equals(XivStrings.Body) || _item.SecondaryCategory.Equals(XivStrings.Tail))
                 {
-                    typeParts = await _character.GetPartForTextures(_item as XivCharacter, SelectedRace.XivRace, int.Parse(SelectedPart.Name), int.Parse(SelectedType.Name));
+                    typeParts = SelectedType.TypeParts = await _character.GetPartForTextures(_item as XivCharacter, SelectedRace.XivRace, int.Parse(SelectedPart.Name), int.Parse(SelectedType.Name));
                 }
 
                 ((XivCharacter)_item).TertiaryCategory = SelectedType.Name;
