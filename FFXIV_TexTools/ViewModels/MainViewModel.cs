@@ -101,21 +101,24 @@ namespace FFXIV_TexTools.ViewModels
                 }
             });
 
-            // Settings are valid, application is updated, initialize the
-            // Cache once so it can test if it needs to be updated as well.
+            _mainWindow.ItemSearchTextBox.IsEnabled = false;
+
             var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
             var lang = XivLanguages.GetXivLanguage(Settings.Default.Application_Language);
-            var _cache = new XivCache(gameDirectory, lang);
-
-            _mainWindow.ItemSearchTextBox.IsEnabled = false;
 
             try
             {
+                // Settings are valid, application is updated, initialize the
+                // Cache once so it can test if it needs to be updated as well.
+                var _cache = new XivCache(gameDirectory, lang);
+
                 await FillTree(progress);
             }
             catch(Exception e)
             {
-                if (lang.Equals("zh") || lang.Equals("ko"))
+                // Revert to English when there were errors while loading the item tree/cache
+                // and the game language was set to Chinese or Korean (they have separate clients)
+                if (lang == XivLanguage.Chinese || lang == XivLanguage.Korean)
                 {
                     if (FlexibleMessageBox.Show(UIMessages.LanguageError,
                             UIMessages.LanguageErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error) ==
