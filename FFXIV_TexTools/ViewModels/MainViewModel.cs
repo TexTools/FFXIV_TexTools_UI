@@ -18,6 +18,7 @@ using FFXIV_TexTools.Annotations;
 using FFXIV_TexTools.Helpers;
 using FFXIV_TexTools.Models;
 using FFXIV_TexTools.Resources;
+using FFXIV_TexTools.Properties;
 using FolderSelect;
 using MahApps.Metro.Controls.Dialogs;
 using System;
@@ -39,6 +40,7 @@ using xivModdingFramework.General.Enums;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Mods;
 using xivModdingFramework.SqPack.FileTypes;
+using xivModdingFramework.Cache;
 
 namespace FFXIV_TexTools.ViewModels
 {
@@ -99,15 +101,20 @@ namespace FFXIV_TexTools.ViewModels
                 }
             });
 
+            // Settings are valid, application is updated, initialize the
+            // Cache once so it can test if it needs to be updated as well.
+            var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
+            var lang = XivLanguages.GetXivLanguage(Settings.Default.Application_Language);
+            var _cache = new XivCache(gameDirectory, lang);
+
             _mainWindow.ItemSearchTextBox.IsEnabled = false;
+
             try
             {
                 await FillTree(progress);
             }
             catch(Exception e)
             {
-                var lang = Properties.Settings.Default.Application_Language;
-
                 if (lang.Equals("zh") || lang.Equals("ko"))
                 {
                     if (FlexibleMessageBox.Show(UIMessages.LanguageError,
