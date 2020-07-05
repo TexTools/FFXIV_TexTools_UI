@@ -781,6 +781,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Ornaments.
+        /// </summary>
+        internal static string Ornaments {
+            get {
+                return ResourceManager.GetString("Ornaments", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Paintings.
         /// </summary>
         internal static string Paintings {

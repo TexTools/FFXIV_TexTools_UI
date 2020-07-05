@@ -34,6 +34,7 @@ using xivModdingFramework.Helpers;
 using xivModdingFramework.Mods.DataContainers;
 using xivModdingFramework.SqPack.FileTypes;
 using Application = System.Windows.Application;
+using xivModdingFramework.Cache;
 
 namespace FFXIV_TexTools.Views
 {
@@ -127,6 +128,16 @@ namespace FFXIV_TexTools.Views
                 Debug.WriteLine($"Loading Canceled\n\n{ex.Message}");
             }
 
+            try
+            {
+                AddText($"\nRebuilding Cache...\n", "Blue");
+                await CheckCache();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Cache Rebuild Failed.\n\n{ex.Message}");
+            }
+
         }
 
         /// <summary>
@@ -217,6 +228,19 @@ namespace FFXIV_TexTools.Views
                 AddText($"\t{UIStrings.ProblemCheck_DatMissing} \n", "Red");
             }
         }
+        private async Task CheckCache()
+        {
+
+            var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
+            var lang = XivLanguages.GetXivLanguage(Settings.Default.Application_Language);
+            await Task.Run(async () =>
+            {
+                var _cache = new XivCache(gameDirectory, lang);
+                _cache.RebuildCache();
+            });
+            AddText("\tCache Rebuilt Successfully.", textColor);
+            AddText("\t\u2714\n", "Green");
+        }
 
         private async Task CheckDatSizes()
         {
@@ -284,7 +308,7 @@ namespace FFXIV_TexTools.Views
                     var indexBackupsDirectory = new DirectoryInfo(Settings.Default.Backup_Directory);
                     try
                     {
-                        await problemChecker.PerformStartOver(indexBackupsDirectory);
+                        await problemChecker.PerformStartOver(indexBackupsDirectory, null, XivLanguages.GetXivLanguage(Properties.Settings.Default.Application_Language));
 
                         Dispatcher.Invoke(() => AddText("\t\u2714", "Green"));
                         Dispatcher.Invoke(() => AddText("\tModList restored", "Green"));

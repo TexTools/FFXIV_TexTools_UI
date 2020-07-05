@@ -765,7 +765,7 @@ namespace FFXIV_TexTools
 
                 try
                 {
-                    await problemChecker.PerformStartOver(indexBackupsDirectory, progress);
+                    await problemChecker.PerformStartOver(indexBackupsDirectory, progress, XivLanguages.GetXivLanguage(Settings.Default.Application_Language));
                 }
                 catch
                 {
