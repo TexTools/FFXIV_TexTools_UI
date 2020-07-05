@@ -42,7 +42,7 @@
             <TextBlock x:Name="MaterialPathLabel"  Text="Material Path" TextAlignment="Right" FontWeight="Bold" FontSize="14" FontStyle="Italic" />
         </Label>
         <Button x:Name="CancelButton" Content="Cancel" Margin="10,0,0,10" Grid.Row="7" FontSize="12" Click="CancelButton_Click" HorizontalAlignment="Left" Width="150" Height="30" VerticalAlignment="Bottom" Grid.ColumnSpan="2" Cursor="" RenderTransformOrigin="0.415,1.067"/>
-        <Label Content="Texture Paths" Margin="0" Grid.Row="3" HorizontalContentAlignment="Center" VerticalContentAlignment="Bottom" Cursor="Arrow" Grid.ColumnSpan="4" FontWeight="Bold" FontStyle="Italic"/>
+        <Label Content="Textures" Margin="0" Grid.Row="3" HorizontalContentAlignment="Center" VerticalContentAlignment="Bottom" Cursor="Arrow" Grid.ColumnSpan="4" FontWeight="Bold" FontStyle="Italic"/>
         <Button Content="Help" Grid.Column="3" HorizontalAlignment="Left" Margin="243,16,0,0" Grid.Row="3" VerticalAlignment="Top" Width="102" Click="HelpButton_Click"/>
         <ComboBox x:Name="PresetComboBox" Margin="10,13,136,0" VerticalAlignment="Top" Height="26" Grid.Column="3" Grid.Row="1" SelectionChanged="PresetComboBox_SelectionChanged" />
         <Label Content="Preset:" Margin="0,10,10,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14" Height="29" RenderTransformOrigin="0.164,0.793" HorizontalAlignment="Right" Width="86" Grid.Row="1" HorizontalContentAlignment="Right" Grid.Column="2"/>
