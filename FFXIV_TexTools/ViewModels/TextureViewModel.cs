@@ -1542,6 +1542,8 @@ namespace FFXIV_TexTools.ViewModels
                     return;
                 }
 
+
+                _textureView.BottomFlyout.IsOpen = false;
                 var result = editor.ShowDialog();
 
                 if(result != true)
@@ -1551,6 +1553,7 @@ namespace FFXIV_TexTools.ViewModels
                     SelectedRace = SelectedRace;
                     return;
                 }
+
 
                 var newMaterial = editor.Material;
                 LoadingComplete += SetToNewTexturePart;
