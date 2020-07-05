@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+using FFXIV_TexTools.Resources;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -37,11 +38,11 @@ namespace FFXIV_TexTools.Models
         /// Gets the gear list 
         /// </summary>
         /// <returns>A list containing gear data</returns>
-        public async Task<List<XivGear>> GetGearList()
+        public async Task<List<XivGear>> GetGearList(string substring = null)
         {
             var gear = new Gear(_gameDirectory, GetLanguage());
 
-            return await gear.GetGearList();
+            return await gear.GetGearList(substring);
         }
 
         /// <summary>
@@ -66,7 +67,7 @@ namespace FFXIV_TexTools.Models
             {
                 return (await companions.GetMinionList(), await companions.GetMountList(), await companions.GetPetList(),new List<XivMount>());
             }
-            return (await companions.GetMinionList(), await companions.GetMountList(), await companions.GetPetList(), await companions.GetOrnamentList());
+            return (await companions.GetMinionList(), await companions.GetMountList(null, XivStrings.Mounts), await companions.GetPetList(), await companions.GetMountList(null, XivStrings.Ornaments));
         }
 
         /// <summary>
@@ -77,9 +78,7 @@ namespace FFXIV_TexTools.Models
         {
             var ui = new UI(_gameDirectory, GetLanguage());
 
-            var uiMasterList = (await ui.GetActionList()).Concat(await ui.GetLoadingImageList()).Concat(await ui.GetMapList())
-                .Concat(await ui.GetMapSymbolList()).Concat(await ui.GetOnlineStatusList()).Concat(await ui.GetStatusList())
-                .Concat(await ui.GetUldList()).Concat(await ui.GetWeatherList());
+            var uiMasterList = await ui.GetUIList();
 
             return uiMasterList;
         }
