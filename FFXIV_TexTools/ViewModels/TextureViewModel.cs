@@ -320,14 +320,7 @@ namespace FFXIV_TexTools.ViewModels
 
                     Parts.Add(new ComboBoxData { Name = XivStrings.Primary });
 
-                    if (xivGear.SecondaryModelInfo != null && xivGear.SecondaryModelInfo.PrimaryID > 0)
-                    {
-                        Parts.Add(new ComboBoxData{Name = XivStrings.Secondary});
-                    }
-                    else
-                    {
-                        PartVisibility = Visibility.Collapsed;
-                    }
+                    PartVisibility = Visibility.Collapsed;
 
                     _partCount = Parts.Count;
                 }
@@ -496,7 +489,7 @@ namespace FFXIV_TexTools.ViewModels
             {
                 TypeVisibility = Visibility.Visible;
 
-                var typesList = await _tex.GetTexturePartList(_item, SelectedRace.XivRace, _item.DataFile, SelectedPart.Name);
+                var typesList = await _tex.GetTexturePartList(_item, SelectedRace.XivRace, _item.DataFile);
 
                 foreach (var type in typesList)
                 {
@@ -597,7 +590,7 @@ namespace FFXIV_TexTools.ViewModels
             {
                 if (_item.SecondaryCategory.Equals(XivStrings.Body) || _item.SecondaryCategory.Equals(XivStrings.Tail))
                 {
-                    typeParts = await _character.GetPartForTextures(_item as XivCharacter, SelectedRace.XivRace, int.Parse(SelectedPart.Name), int.Parse(SelectedType.Name));
+                    typeParts = SelectedType.TypeParts = await _character.GetPartForTextures(_item as XivCharacter, SelectedRace.XivRace, int.Parse(SelectedPart.Name), int.Parse(SelectedType.Name));
                 }
 
                 ((XivCharacter)_item).TertiaryCategory = SelectedType.Name;
@@ -714,7 +707,7 @@ namespace FFXIV_TexTools.ViewModels
                     {
                         if (TypePartVisibility == Visibility.Visible)
                         {
-                            _xivMtrl = await _mtrl.GetMtrlData(_item, SelectedRace.XivRace, SelectedTypePart.Name[0], dxVersion, SelectedType.Name);
+                            _xivMtrl = await _mtrl.GetMtrlData(_item, SelectedRace.XivRace, SelectedTypePart.Name[0], dxVersion);
                         }
                         else
                         {
@@ -743,7 +736,7 @@ namespace FFXIV_TexTools.ViewModels
                     }
                     else if (_item.PrimaryCategory.Equals(XivStrings.Gear))
                     {
-                        _xivMtrl = await _mtrl.GetMtrlData(_item, SelectedRace.XivRace, SelectedType.Name[0], dxVersion, SelectedPart.Name);
+                        _xivMtrl = await _mtrl.GetMtrlData(_item, SelectedRace.XivRace, SelectedType.Name[0], dxVersion);
                         ttpList = _xivMtrl.GetTextureTypePathList();
 
                         var xivGear = _item as XivGear;
@@ -1008,7 +1001,7 @@ namespace FFXIV_TexTools.ViewModels
                     }
                     else if (_item.PrimaryCategory.Equals(XivStrings.Gear))
                     {
-                        _xivMtrl = await _mtrl.GetMtrlData(_item, SelectedRace.XivRace, SelectedType.Name[0], dxVersion, SelectedPart.Name);
+                        _xivMtrl = await _mtrl.GetMtrlData(_item, SelectedRace.XivRace, SelectedType.Name[0], dxVersion);
                     }
                     else
                     {
@@ -1069,7 +1062,7 @@ namespace FFXIV_TexTools.ViewModels
 
             if (_item != null)
             {
-                if (_item.SecondaryCategory.Equals(XivStrings.Hair) || _item.SecondaryCategory.Equals(XivStrings.Equipment_Decals) || _item.SecondaryCategory.Equals(XivStrings.Face_Paint))
+                if ( _item.SecondaryCategory.Equals(XivStrings.Equipment_Decals) || _item.SecondaryCategory.Equals(XivStrings.Face_Paint))
                 {
                     AddNewTexturePartEnabled = false;
                 }
@@ -1542,6 +1535,8 @@ namespace FFXIV_TexTools.ViewModels
                     return;
                 }
 
+
+                _textureView.BottomFlyout.IsOpen = false;
                 var result = editor.ShowDialog();
 
                 if(result != true)
@@ -1551,6 +1546,7 @@ namespace FFXIV_TexTools.ViewModels
                     SelectedRace = SelectedRace;
                     return;
                 }
+
 
                 var newMaterial = editor.Material;
                 LoadingComplete += SetToNewTexturePart;

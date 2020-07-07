@@ -115,9 +115,6 @@ namespace FFXIV_TexTools.Views
             }
 
 
-            ProgressBar.Value = 0;
-            ProgressLabel.Content = UIStrings.Done;
-
             try
             {
                 AddText($"\n{UIStrings.ProblemCheck_LoD}\n", "Blue");
@@ -137,6 +134,9 @@ namespace FFXIV_TexTools.Views
             {
                 Debug.WriteLine($"Cache Rebuild Failed.\n\n{ex.Message}");
             }
+
+            ProgressBar.Value = 0;
+            ProgressLabel.Content = UIStrings.Done;
 
         }
 

@@ -343,11 +343,6 @@ namespace FFXIV_TexTools.ViewModels
                 else
                 {
                     Parts.Add(new ComboBoxData { Name = XivStrings.Primary });
-
-                    if (xivGear.SecondaryModelInfo != null && xivGear.SecondaryModelInfo.PrimaryID > 0)
-                    {
-                        Parts.Add(new ComboBoxData { Name = XivStrings.Secondary });
-                    }
                 }
 
                 PartVisibility = Visibility.Visible;
@@ -486,10 +481,6 @@ namespace FFXIV_TexTools.ViewModels
                     if (SelectedPart.Name.Equals(XivStrings.Primary))
                     {
                         _mdlData = await _mdl.GetMdlData(xivGear, SelectedRace.XivRace);
-                    }
-                    else if (SelectedPart.Name.Equals(XivStrings.Secondary))
-                    {
-                        _mdlData = await _mdl.GetMdlData(xivGear, SelectedRace.XivRace, xivGear.SecondaryModelInfo);
                     }
                     else
                     {
