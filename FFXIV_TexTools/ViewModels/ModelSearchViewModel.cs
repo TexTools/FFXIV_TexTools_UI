@@ -215,17 +215,20 @@ namespace FFXIV_TexTools.ViewModels
             if (SelectedCategory.Equals(XivStrings.Equipment) || SelectedCategory.Equals(XivStrings.Accessory) ||
                 SelectedCategory.Equals(XivStrings.Weapon))
             {
+                var isWeapon = SelectedCategory.Equals(XivStrings.Weapon);
+
                 var xivGear = new XivGear
                 {
                     Name = $"{SelectedCategory.ToLower()[0]}{_currentID.ToString().PadLeft(4, '0')}",
                     PrimaryCategory = XivStrings.Gear,
                     SecondaryCategory = SelectedItem.Slot,
                     DataFile = XivDataFile._04_Chara,
-                    ModelInfo = new XivModelInfo
+                    ModelInfo = new XivGearModelInfo
                     {
                         PrimaryID = _currentID,
                         SecondaryID = body,
-                        ImcSubsetID = variant
+                        ImcSubsetID = variant,
+                        IsWeapon = isWeapon
                     }
                 };
 
