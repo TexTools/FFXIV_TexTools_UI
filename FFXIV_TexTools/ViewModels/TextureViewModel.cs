@@ -1062,7 +1062,7 @@ namespace FFXIV_TexTools.ViewModels
 
             if (_item != null)
             {
-                if (_item.SecondaryCategory.Equals(XivStrings.Hair) || _item.SecondaryCategory.Equals(XivStrings.Equipment_Decals) || _item.SecondaryCategory.Equals(XivStrings.Face_Paint))
+                if ( _item.SecondaryCategory.Equals(XivStrings.Equipment_Decals) || _item.SecondaryCategory.Equals(XivStrings.Face_Paint))
                 {
                     AddNewTexturePartEnabled = false;
                 }
