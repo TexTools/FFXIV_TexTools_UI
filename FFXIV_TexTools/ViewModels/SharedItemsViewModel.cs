@@ -128,7 +128,7 @@ namespace FFXIV_TexTools.ViewModels
             }
             var sharedList = await _gear.GetSameModelList(im);
 
-            var myVariantNumber = fullInfo.GetImcInfo(im.ModelInfo.ImcSubsetID, im.SecondaryCategory).Variant;
+            var myVariantNumber = fullInfo.GetEntry(im.ModelInfo.ImcSubsetID, im.GetItemSlotAbbreviation()).Variant;
             var myImcNumber = im.ModelInfo.ImcSubsetID;
 
             var materialVariantHeaders = new Dictionary<int, TreeViewItem>();
@@ -143,7 +143,7 @@ namespace FFXIV_TexTools.ViewModels
             foreach(var i in sharedList)
             {
                 // Get the Variant # information
-                var info = fullInfo.GetImcInfo(i.ModelInfo.ImcSubsetID, i.SecondaryCategory);
+                var info = fullInfo.GetEntry(i.ModelInfo.ImcSubsetID, i.GetItemSlotAbbreviation());
                 if(info == null)
                 {
                     // Invalid IMC Set ID for the item.

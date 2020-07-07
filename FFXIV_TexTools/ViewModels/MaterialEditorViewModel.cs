@@ -348,7 +348,7 @@ namespace FFXIV_TexTools.ViewModels
                 var itemType = ItemType.GetPrimaryItemType(_item);
 
                 
-                variantMtrlPath = (await _mtrl.GetMtrlPath(item, _material.GetRace(), oldMaterialIdentifier, itemType, XivStrings.Primary)).Folder;
+                variantMtrlPath = (await _mtrl.GetMtrlPath(item, _material.GetRace(), oldMaterialIdentifier, itemType)).Folder;
 
                 var match = Regex.Match(variantMtrlPath, "/v([0-9]+)");
                 var variant = 0;
@@ -368,7 +368,7 @@ namespace FFXIV_TexTools.ViewModels
 
                 // Get mtrl path -- TODO: Need support here for offhand item materials.
                 // But Offhand support is basically completely broken anyways, so this can wait.
-                itemXivMtrl = await _mtrl.GetMtrlData(_item, _material.GetRace(), oldMaterialIdentifier, dxVersion, XivStrings.Primary);
+                itemXivMtrl = await _mtrl.GetMtrlData(_item, _material.GetRace(), oldMaterialIdentifier, dxVersion);
 
                 // Shift the MTRL to the new variant folder.
                 itemXivMtrl.MTRLPath = Regex.Replace(itemXivMtrl.MTRLPath, oldVariantString, "/v" + variant.ToString().PadLeft(4, '0') + "/");
@@ -412,7 +412,7 @@ namespace FFXIV_TexTools.ViewModels
                 // Find all the variant materials 
                 foreach (var item in sameModelItems)
                 {
-                    var variantPath = await _mtrl.GetMtrlPath(item, _material.GetRace(), _material.GetMaterialIdentifier(), itemType, XivStrings.Primary);
+                    var variantPath = await _mtrl.GetMtrlPath(item, _material.GetRace(), _material.GetMaterialIdentifier(), itemType);
                     files.Add(variantPath.Folder + "/" + variantPath.File);
                 }
             } else {

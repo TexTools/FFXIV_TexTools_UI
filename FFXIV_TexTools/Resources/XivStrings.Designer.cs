@@ -223,6 +223,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Dual Wield.
+        /// </summary>
+        internal static string Dual_Wield {
+            get {
+                return ResourceManager.GetString("Dual_Wield", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Ears.
         /// </summary>
         internal static string Ears {
