@@ -789,6 +789,11 @@ namespace FFXIV_TexTools.ViewModels
                             modListModel.Image = Application.Current.Dispatcher.Invoke(() => new BitmapImage(
                                 new Uri("pack://application:,,,/FFXIV_TexTools;component/Resources/3DModel.png")));
                         }
+                        else if (itemPath.Contains(".imc"))
+                        {
+                            modListModel.Image = Application.Current.Dispatcher.Invoke(() => new BitmapImage(
+                                new Uri("pack://application:,,,/FFXIV_TexTools;component/Resources/Metadata.png")));
+                        }
                         else
                         {
                             var ttp = new TexTypePath

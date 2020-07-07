@@ -933,6 +933,7 @@ namespace FFXIV_TexTools.ViewModels
             {XivStrings.Feet },
             {XivStrings.Main_Hand },
             {XivStrings.Off_Hand },
+            {XivStrings.Dual_Wield },
             {XivStrings.Two_Handed },
             {XivStrings.Main_Off },
             {XivStrings.Ears },

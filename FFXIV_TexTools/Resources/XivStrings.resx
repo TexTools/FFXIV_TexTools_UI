@@ -456,4 +456,7 @@
   <data name="Ornaments" xml:space="preserve">
     <value>Ornaments</value>
   </data>
+  <data name="Dual_Wield" xml:space="preserve">
+    <value>Dual Wield</value>
+  </data>
 </root>
