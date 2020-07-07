@@ -74,6 +74,13 @@ namespace FFXIV_TexTools.Views.Textures
             TransparencyComboBox.DisplayMemberPath = "Value";
             TransparencyComboBox.SelectedValuePath = "Key";
 
+            Dictionary<bool, string> BackfacesSource = new Dictionary<bool, string>();
+            BackfacesSource.Add(true, "Show Backfaces");
+            BackfacesSource.Add(false, "Hide Backfaces");
+            BackfacesComboBox.ItemsSource = BackfacesSource;
+            BackfacesComboBox.DisplayMemberPath = "Value";
+            BackfacesComboBox.SelectedValuePath = "Key";
+
             Dictionary<bool, string> ColorsetSource = new Dictionary<bool, string>();
             ColorsetSource.Add(true, "Enabled");
             ColorsetSource.Add(false, "Disabled");
