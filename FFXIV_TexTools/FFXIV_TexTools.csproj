@@ -639,6 +639,7 @@
   <ItemGroup>
     <Resource Include="Resources\PaypalDonateButton.png" />
     <Resource Include="Resources\loading.gif" />
+    <Resource Include="Resources\Metadata.png" />
     <Content Include="Resources\Shaders\Common.hlsl" />
     <Content Include="Resources\Shaders\CommonBuffers.hlsl" />
     <Content Include="Resources\Shaders\DataStructs.hlsl" />
