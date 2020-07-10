@@ -68,7 +68,7 @@
                 </ListView.ItemsPanel>
                 <ListView.View>
                     <GridView  x:Name="GridViewCol">
-                        <GridViewColumn Header="_">
+                        <GridViewColumn Width="32">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <CheckBox IsChecked="{Binding RelativeSource={RelativeSource AncestorType={x:Type ListViewItem}}, Path=IsSelected}"/>
