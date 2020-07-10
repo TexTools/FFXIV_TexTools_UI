@@ -1174,18 +1174,21 @@ namespace FFXIV_TexTools.ViewModels
         {
             var modlist = new Modding(_gameDirectory);
 
-            if (ModToggleText.Equals(UIStrings.Enable))
+            try
             {
-                await modlist.ToggleModStatus(PathString, true);
+                if (ModToggleText.Equals(UIStrings.Enable))
+                {
+                    await modlist.ToggleModStatus(PathString, true);
+                }
+                else if (ModToggleText.Equals(UIStrings.Disable))
+                {
+                    await modlist.ToggleModStatus(PathString, false);
+                }
             }
-            else if (ModToggleText.Equals(UIStrings.Disable))
-            {
-                await modlist.ToggleModStatus(PathString, false);
-            }
-            else
+            catch (Exception ex)
             {
                 FlexibleMessageBox.Show(
-                    UIMessages.ModToggleErrorMessage, UIMessages.ModToggleErrorTitle,
+                    string.Format(UIMessages.ModToggleErrorMessage, ex.Message), UIMessages.ModToggleErrorTitle,
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
@@ -1613,8 +1616,17 @@ namespace FFXIV_TexTools.ViewModels
 
                 var modlist = new Modding(_gameDirectory);
 
-                await modlist.ToggleModStatus(PathString, false);
-                GetMeshes();
+                try
+                {
+                    await modlist.ToggleModStatus(PathString, false);
+                    GetMeshes();
+                }
+                catch (Exception e)
+                {
+                    FlexibleMessageBox.Show(
+                        string.Format(UIMessages.ModToggleErrorMessage, e.Message), UIMessages.ModToggleErrorTitle,
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }                
 
                 return;
             }
