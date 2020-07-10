@@ -55,9 +55,23 @@ namespace FFXIV_TexTools
         private SysTimer.Timer searchTimer = new SysTimer.Timer(300);
         private string _startupArgs;
         private Category _selectedCategory;
+        private static MainWindow _mainWindow;
+
+
+        /// <summary>
+        /// Static accessor, since we should only ever have one instance of this class anyways.
+        /// </summary>
+        /// <returns></returns>
+        public static MainWindow GetMainWindow()
+        {
+            return _mainWindow;
+        }
+
+        public event EventHandler TreeRefreshRequested;
 
         public MainWindow(string[] args)
         {
+            _mainWindow = this;
             CheckForSettingsUpdate();
             LanguageSelection();
 
@@ -104,7 +118,7 @@ namespace FFXIV_TexTools
                 ItemSearchTextBox.Focus();
                 var mainViewModel = new MainViewModel(this);
                 this.DataContext = mainViewModel;
-
+                
                 if (searchTimer == null)
                 {
                     searchTimer = new SysTimer.Timer(300);
@@ -160,6 +174,15 @@ namespace FFXIV_TexTools
             {
                 ItemTreeView.IsEnabled = true;
             }
+        }
+
+        /// <summary>
+        /// Triggers the MainWindow's thread to refresh the tree view.
+        /// </summary>
+        /// <param name="requestor"></param>
+        public void RefreshTree(object requestor = null)
+        {
+            TreeRefreshRequested.Invoke(requestor, null);
         }
 
         private void CheckForUpdates()
@@ -783,7 +806,9 @@ namespace FFXIV_TexTools
                         UIMessages.StartOverErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     await progressController.CloseAsync();
                     return;
-                }                
+                }
+
+                MainWindow.GetMainWindow().RefreshTree(this);
 
                 await progressController.CloseAsync();
 
