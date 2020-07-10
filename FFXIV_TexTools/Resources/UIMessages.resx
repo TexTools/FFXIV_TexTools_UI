@@ -687,4 +687,12 @@ Any mod on the 3D model will be disabled.</value>
   <data name="MaterialEditorErrorTitle" xml:space="preserve">
     <value>Material Editor Error</value>
   </data>
+  <data name="UnsupportedFileExtensionErrorMessage" xml:space="preserve">
+    <value>Unsupported file extension detected: {0}. 
+
+TexTools only supports importing *.ttmp and *.ttmp2 ModPacks. </value>
+  </data>
+  <data name="UnsupportedFileExtensionErrorTitle" xml:space="preserve">
+    <value>File Extension Error</value>
+  </data>
 </root>
