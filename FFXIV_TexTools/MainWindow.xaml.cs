@@ -99,6 +99,8 @@ namespace FFXIV_TexTools
             }
             else
             {
+                this.Show();
+
                 ItemSearchTextBox.Focus();
                 var mainViewModel = new MainViewModel(this);
                 this.DataContext = mainViewModel;
@@ -602,6 +604,14 @@ namespace FFXIV_TexTools
                 textureViewModel = textureView.DataContext as TextureViewModel;
                 modelView = ModelTabItem.Content as ModelView;
                 modelViewModel = modelView.DataContext as ModelViewModel;
+            }
+
+            if (!path.Extension.Contains("ttmp"))
+            {
+                FlexibleMessageBox.Show(string.Format(UIMessages.UnsupportedFileExtensionErrorMessage, path.Extension), 
+                    UIMessages.UnsupportedFileExtensionErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                return 0;
             }
 
             try

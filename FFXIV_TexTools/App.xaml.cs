@@ -37,7 +37,6 @@ namespace FFXIV_TexTools
             base.OnStartup(e);
 
             var mainWindow = new MainWindow(e.Args);
-            mainWindow.Show();
         }
 
         private void TaskSchedulerOnUnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)
