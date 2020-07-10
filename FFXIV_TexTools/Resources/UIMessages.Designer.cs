@@ -963,7 +963,9 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There was an error attempting to toggle mod status..
+        ///   Looks up a localized string similar to There was an error attempting to toggle mod status.
+        ///
+        ///{0}.
         /// </summary>
         internal static string ModToggleErrorMessage {
             get {

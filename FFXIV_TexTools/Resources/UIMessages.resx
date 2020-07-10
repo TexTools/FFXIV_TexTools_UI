@@ -362,7 +362,9 @@ New Location: {0}</value>
     <value>All Mods were Enabled Successfully</value>
   </data>
   <data name="ModToggleErrorMessage" xml:space="preserve">
-    <value>There was an error attempting to toggle mod status.</value>
+    <value>There was an error attempting to toggle mod status.
+
+{0}</value>
   </data>
   <data name="ModToggleErrorTitle" xml:space="preserve">
     <value>Error Toggling Mod</value>

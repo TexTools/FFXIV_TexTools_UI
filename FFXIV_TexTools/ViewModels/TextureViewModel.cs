@@ -1461,18 +1461,21 @@ namespace FFXIV_TexTools.ViewModels
             var gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
             var modlist = new Modding(gameDirectory);
 
-            if (ModToggleText.Equals(UIStrings.Enable))
+            try
             {
-                await modlist.ToggleModStatus(SelectedMap.TexType.Path, true);
+                if (ModToggleText.Equals(UIStrings.Enable))
+                {
+                    await modlist.ToggleModStatus(SelectedMap.TexType.Path, true);
+                }
+                else if (ModToggleText.Equals(UIStrings.Disable))
+                {
+                    await modlist.ToggleModStatus(SelectedMap.TexType.Path, false);
+                }
             }
-            else if (ModToggleText.Equals(UIStrings.Disable))
-            {
-                await modlist.ToggleModStatus(SelectedMap.TexType.Path, false);
-            }
-            else
+            catch (Exception ex)
             {
                 FlexibleMessageBox.Show(
-                    UIMessages.ModToggleErrorMessage, UIMessages.ModToggleErrorTitle,
+                    string.Format(UIMessages.ModToggleErrorMessage, ex.Message), UIMessages.ModToggleErrorTitle,
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
