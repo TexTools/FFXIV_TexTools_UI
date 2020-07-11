@@ -1064,8 +1064,6 @@ namespace FFXIV_TexTools.ViewModels
         public ICommand UpdateTexButton => new RelayCommand(UpdateTex);
 
         public ICommand ImportCommand => new RelayCommand(Import);
-        public ICommand ImportFromCommand => new RelayCommand(ImportFrom);
-        public ICommand AdvancedImportCommand => new RelayCommand(AdvancedImport);
         public ICommand OpenFolder => new RelayCommand(OpenSavedFolder);
         public ICommand ModelInspector => new RelayCommand(OpenModelInspector);
 
@@ -1327,7 +1325,7 @@ namespace FFXIV_TexTools.ViewModels
         /// <remarks>
         /// This will import the DAE file with the same name and location as the exported model
         /// </remarks>
-        private async void Import(object obj)
+        public async void Import(object obj)
         {
             var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
             var index = new Index(gameDirectory);
@@ -1340,22 +1338,13 @@ namespace FFXIV_TexTools.ViewModels
                 return;
             }
 
-            var saveDir = new DirectoryInfo(Settings.Default.Save_Directory);
-            var path = $"{IOUtil.MakeItemSavePath(_item, saveDir, SelectedRace.XivRace)}\\3D";
-            var modelName = Path.GetFileNameWithoutExtension(_mdlData.MdlPath.File);
-            var savePath = new DirectoryInfo(Path.Combine(path, modelName) + ".dae");
-
-            var modlist = new Modding(_gameDirectory);
-
-            var mdlPath = Path.Combine(_mdlData.MdlPath.Folder, _mdlData.MdlPath.File);
-
-            Dictionary<string, string> warnings;
-
-            var modData = await modlist.TryGetModEntry(mdlPath);
-
             try
             {
-                warnings = await _mdl.ImportModel(_item, _mdlData, savePath, XivStrings.TexTools);
+                bool success = await ImportModelView.ImportModel(_item, _mdlData);
+                if (!success)
+                {
+                    return;
+                }
             }
             catch (Exception ex)
             {
@@ -1365,127 +1354,11 @@ namespace FFXIV_TexTools.ViewModels
                 return;
             }
 
-            if (warnings.Count > 0)
-            {
-                foreach (var warning in warnings)
-                {
-                    FlexibleMessageBox.Show(
-                        $"{warning.Value}", $"{warning.Key}",
-                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                }
-            }
-
             ModStatusToggleEnabled = true;
 
             _modelView.BottomFlyout.IsOpen = false;
             GetMeshes();
         }
-
-        /// <summary>
-        /// Imports a DAE for the model
-        /// </summary>
-        /// <remarks>
-        /// This will import a DAE file from any location
-        /// </remarks>
-        private async void ImportFrom(object obj)
-        {
-            var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
-            var index = new Index(gameDirectory);
-
-            if (index.IsIndexLocked(XivDataFile._0A_Exd))
-            {
-                FlexibleMessageBox.Show(UIMessages.IndexLockedErrorMessage,
-                    UIMessages.IndexLockedErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                return;
-            }
-
-            var saveDir = new DirectoryInfo(Settings.Default.Save_Directory);
-            var path = new DirectoryInfo($"{IOUtil.MakeItemSavePath(_item, saveDir, SelectedRace.XivRace)}\\3D");
-
-            var modlist = new Modding(_gameDirectory);
-            var mdlPath = Path.Combine(_mdlData.MdlPath.Folder, _mdlData.MdlPath.File);
-            var modData = await modlist.TryGetModEntry(mdlPath);
-
-            var openFileDialog = new OpenFileDialog();
-            openFileDialog.InitialDirectory = path.FullName;
-            openFileDialog.Filter = "Collada DAE (*.dae)|*.dae";
-
-            if (openFileDialog.ShowDialog() == DialogResult.OK)
-            {
-                Dictionary<string, string> warnings;
-
-                try
-                {
-                    warnings = await _mdl.ImportModel(_item, _mdlData, new DirectoryInfo(openFileDialog.FileName), XivStrings.TexTools);
-                }
-                catch (Exception ex)
-                {
-                    FlexibleMessageBox.Show(
-                        string.Format(UIMessages.DAEImportErrorMessage, ex.Message), UIMessages.DAEImportErrorTitle,
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-
-                if (warnings.Count > 0)
-                {
-                    foreach (var warning in warnings)
-                    {
-                        FlexibleMessageBox.Show(
-                            $"{warning.Value}", $"{warning.Key}",
-                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    }
-                }
-
-                ModStatusToggleEnabled = true;
-
-                GetMeshes();
-            }
-
-            _modelView.BottomFlyout.IsOpen = false;
-        }
-
-        /// <summary>
-        /// Opens the advanced model import options
-        /// </summary>
-        /// <param name="obj"></param>
-        private async void AdvancedImport(object obj)
-        {
-            var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
-            var index = new Index(gameDirectory);
-
-            if (index.IsIndexLocked(XivDataFile._0A_Exd))
-            {
-                FlexibleMessageBox.Show(UIMessages.IndexLockedErrorMessage,
-                    UIMessages.IndexLockedErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                return;
-            }
-
-            var modlist = new Modding(_gameDirectory);
-            var mdlPath = Path.Combine(_mdlData.MdlPath.Folder, _mdlData.MdlPath.File);
-            bool? result = false;
-
-            var modData = await modlist.TryGetModEntry(mdlPath);
-
-            try
-            {
-            }
-            catch (Exception ex)
-            {
-                FlexibleMessageBox.Show(
-                    string.Format(UIMessages.AdvancedImportWindowErrorMessage, ex.Message), UIMessages.AdvancedImportErrorTitle,
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-
-            if (result == true)
-            {
-                GetMeshes();
-            }
-
-            _modelView.BottomFlyout.IsOpen = false;
-        }
-
         #endregion
 
         #region Text

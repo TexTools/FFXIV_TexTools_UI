@@ -290,6 +290,7 @@
     <Compile Include="ViewModels\BaseViewPortViewModel.cs" />
     <Compile Include="ViewModels\CustomizeViewModel.cs" />
     <Compile Include="ViewModels\IconSearchViewModel.cs" />
+    <Compile Include="ViewModels\ImportModelViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\MaterialEditorViewModel.cs" />
     <Compile Include="ViewModels\ModConverterViewModel.cs" />
@@ -321,14 +322,14 @@
     <Compile Include="Views\Models\ExportModelOptionsView.xaml.cs">
       <DependentUpon>ExportModelOptionsView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Models\ImportModelView.xaml.cs">
+      <DependentUpon>ImportModelView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Models\MeshInspectorView.xaml.cs">
       <DependentUpon>MeshInspectorView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Models\ModelInspector.xaml.cs">
       <DependentUpon>ModelInspector.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Models\ImportModelOptionsView.xaml.cs">
-      <DependentUpon>ImportModelOptionsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ModPack\ImportModPackWizard.xaml.cs">
       <DependentUpon>ImportModPackWizard.xaml</DependentUpon>
@@ -435,15 +436,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\Models\ImportModelView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\Models\MeshInspectorView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Models\ModelInspector.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Models\ImportModelOptionsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

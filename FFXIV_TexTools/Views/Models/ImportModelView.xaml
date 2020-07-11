@@ -1,14 +1,34 @@
-﻿<mah:MetroWindow x:Name="ImportModel" x:Class="FFXIV_TexTools.Views.Models.ImportModelView"
+﻿<mah:MetroWindow x:Name="ImportModelWindow" x:Class="FFXIV_TexTools.Views.Models.ImportModelView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
         mc:Ignorable="d"
-        Title="" Height="147.364" IsMinButtonEnabled="False" IsMaxRestoreButtonEnabled="False" WindowStartupLocation="CenterOwner" FontSize="14" Width="635.747" ResizeMode="NoResize">
+        Title="" Height="210" IsMinButtonEnabled="False" IsMaxRestoreButtonEnabled="False" WindowStartupLocation="CenterOwner" FontSize="14" Width="640" ResizeMode="NoResize">
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
-        </Grid.ColumnDefinitions>
+        <Grid Height="54" VerticalAlignment="Top">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="73*"/>
+                <ColumnDefinition Width="17*"/>
+            </Grid.ColumnDefinitions>
+            <TextBox x:Name="FileNameTextBox" Text="Some File Path" Grid.ColumnSpan="1" Margin="10" VerticalAlignment="Center" VerticalContentAlignment="Center" FontStyle="Italic" />
+            <Button x:Name="SelectFileButton" Content="..." Grid.ColumnSpan="1" Grid.Column="1" Margin="10" VerticalAlignment="Center" />
+
+        </Grid>
+        <UniformGrid Margin="10,59,10,0" Columns="3" Rows="2" Height="72" VerticalAlignment="Top">
+            <CheckBox x:Name="EnableShapeDataButton" Content="Enable Shape Data" Style="{DynamicResource SimpleCheckBox}" VerticalContentAlignment="Center" VerticalAlignment="Top" />
+            <CheckBox x:Name="ClearUV2Button" Content="Clear UV2" Style="{DynamicResource SimpleCheckBox}" VerticalContentAlignment="Center" VerticalAlignment="Top"/>
+            <CheckBox x:Name="ClearVColorButton" Content="Clear Vertex Color" Style="{DynamicResource SimpleCheckBox}" VerticalContentAlignment="Center" VerticalAlignment="Top"/>
+            <CheckBox x:Name="ForceUVsButton" Content="Force UV1 to [1,-1]" Style="{DynamicResource SimpleCheckBox}" VerticalContentAlignment="Center" VerticalAlignment="Top" />
+            <CheckBox x:Name="CloneUV1Button" Content="Clone UV1 to UV2" Style="{DynamicResource SimpleCheckBox}" VerticalContentAlignment="Center" VerticalAlignment="Top" />
+            <CheckBox x:Name="ClearVAlphaButton" Content="Clear Vertex Alpha" Style="{DynamicResource SimpleCheckBox}" VerticalContentAlignment="Center" VerticalAlignment="Top"/>
+        </UniformGrid>
+        <UniformGrid Margin="10,135,10,0" Columns="3" Height="30" VerticalAlignment="Top">
+            <Button x:Name="CancelButton" Content="Cancel" Margin="0,0,10,0" Click="CancelButton_Click"  />
+            <Button x:Name="EditButton" Content="Edit Details" Margin="0" />
+            <Button x:Name="ImportButton" Content="Import" Margin="10,0,0,0" />
+        </UniformGrid>
+        <TextBox x:Name="LogTextBox" Height="418" Margin="8,183,8,0" TextWrapping="Wrap" Text="Warnings, etc." VerticalAlignment="Top" IsEnabled="False" Background="#FFACACAC" Foreground="Black" Style="{DynamicResource SimpleTextBox}" FontFamily="Courier New" VerticalScrollBarVisibility="Visible" Padding="5"/>
     </Grid>
 </mah:MetroWindow>

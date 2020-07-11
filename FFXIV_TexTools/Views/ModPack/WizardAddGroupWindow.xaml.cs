@@ -33,6 +33,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using xivModdingFramework.General.Enums;
+using xivModdingFramework.Helpers;
 using xivModdingFramework.Items.DataContainers;
 using xivModdingFramework.Items.Interfaces;
 using xivModdingFramework.Materials.FileTypes;
@@ -430,51 +431,6 @@ namespace FFXIV_TexTools.Views
         }
 
 
-        /// <summary>
-        /// Gets the race from the path
-        /// </summary>
-        /// <param name="modPath">The mod path</param>
-        /// <returns>The race as XivRace</returns>
-        private XivRace GetRace(string modPath)
-        {
-            var xivRace = XivRace.All_Races;
-
-            if (modPath.Contains("ui/") || modPath.Contains(".avfx"))
-            {
-                xivRace = XivRace.All_Races;
-            }
-            else if (modPath.Contains("monster"))
-            {
-                xivRace = XivRace.Monster;
-            }
-            else if (modPath.Contains(".tex") || modPath.Contains(".mdl") || modPath.Contains(".atex"))
-            {
-                if (modPath.Contains("accessory") || modPath.Contains("weapon") || modPath.Contains("/common/"))
-                {
-                    xivRace = XivRace.All_Races;
-                }
-                else
-                {
-                    if (modPath.Contains("demihuman"))
-                    {
-                        xivRace = XivRace.DemiHuman;
-                    }
-                    else if (modPath.Contains("/v"))
-                    {
-                        var raceCode = modPath.Substring(modPath.IndexOf("_c") + 2, 4);
-                        xivRace = XivRaces.GetXivRace(raceCode);
-                    }
-                    else
-                    {
-                        var raceCode = modPath.Substring(modPath.IndexOf("/c") + 2, 4);
-                        xivRace = XivRaces.GetXivRace(raceCode);
-                    }
-                }
-
-            }
-
-            return xivRace;
-        }
 
         #endregion
 
@@ -1169,8 +1125,8 @@ namespace FFXIV_TexTools.Views
             var includedModsList = IncludedModsList.Items.Cast<IncludedMods>().ToList();
             var mdl = new Mdl(_gameDirectory, XivDataFiles.GetXivDataFile(mod.datFile));
 
-            var xivMdl = await mdl.GetMdlData(itemModel, GetRace(mod.fullPath), null, null, mod.data.originalOffset);
-            var modMdl = await mdl.GetMdlData(itemModel, GetRace(mod.fullPath), null, null, mod.data.modOffset);
+            var xivMdl = await mdl.GetMdlData(itemModel, IOUtil.GetRaceFromPath(mod.fullPath), null, null, mod.data.originalOffset);
+            var modMdl = await mdl.GetMdlData(itemModel, IOUtil.GetRaceFromPath(mod.fullPath), null, null, mod.data.modOffset);
 
             //TODO - FIXFIX - Show Advanced Import View for Wizard Dialog
         }
@@ -1195,27 +1151,19 @@ namespace FFXIV_TexTools.Views
 
             var includedModsList = IncludedModsList.Items.Cast<IncludedMods>().ToList();
             var mdl = new Mdl(_gameDirectory, XivDataFiles.GetXivDataFile(mod.datFile));
-            var xivMdl = await mdl.GetMdlData(itemModel, GetRace(mod.fullPath), null, null, mod.data.originalOffset);
-            var warnings = new Dictionary<string, string>();
             try
             {
-                warnings = await mdl.ImportModel(itemModel, xivMdl, new DirectoryInfo(CustomModelTextBox.Text), XivStrings.TexTools, null, true);
+                bool success = await ImportModelView.ImportModel(itemModel, IOUtil.GetRaceFromPath(mod.fullPath), this);
+                if (!success)
+                {
+                    return;
+                }
             }
             catch(Exception ex)
             {
                 FlexibleMessageBox.Show(ex.Message, UIMessages.AdvancedImportErrorTitle,
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
-            }
-
-            if (warnings.Count > 0)
-            {
-                foreach (var warning in warnings)
-                {
-                    FlexibleMessageBox.Show(
-                        $"{warning.Value}", $"{warning.Key}",
-                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                }
             }
 
             var mdlData = mdl.GetRawData();
