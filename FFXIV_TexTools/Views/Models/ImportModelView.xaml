@@ -17,12 +17,12 @@
 
         </Grid>
         <UniformGrid Margin="10,59,10,0" Columns="3" Rows="2" Height="72" VerticalAlignment="Top">
-            <CheckBox x:Name="EnableShapeDataButton" Content="Enable Shape Data" Style="{DynamicResource SimpleCheckBox}" VerticalContentAlignment="Center" VerticalAlignment="Top" />
-            <CheckBox x:Name="ClearUV2Button" Content="Clear UV2" Style="{DynamicResource SimpleCheckBox}" VerticalContentAlignment="Center" VerticalAlignment="Top"/>
-            <CheckBox x:Name="ClearVColorButton" Content="Clear Vertex Color" Style="{DynamicResource SimpleCheckBox}" VerticalContentAlignment="Center" VerticalAlignment="Top"/>
-            <CheckBox x:Name="ForceUVsButton" Content="Force UV1 to [1,-1]" Style="{DynamicResource SimpleCheckBox}" VerticalContentAlignment="Center" VerticalAlignment="Top" />
-            <CheckBox x:Name="CloneUV1Button" Content="Clone UV1 to UV2" Style="{DynamicResource SimpleCheckBox}" VerticalContentAlignment="Center" VerticalAlignment="Top" />
-            <CheckBox x:Name="ClearVAlphaButton" Content="Clear Vertex Alpha" Style="{DynamicResource SimpleCheckBox}" VerticalContentAlignment="Center" VerticalAlignment="Top"/>
+            <CheckBox x:Name="EnableShapeDataButton" Content="Enable Shape Data" Style="{DynamicResource SimpleCheckBox}" VerticalContentAlignment="Center" VerticalAlignment="Top" ToolTipService.ShowOnDisabled="True" ToolTip="Enable the model's original shape data. (Should be ON for Faces)" />
+            <CheckBox x:Name="ClearUV2Button" Content="Clear UV2" Style="{DynamicResource SimpleCheckBox}" VerticalContentAlignment="Center" VerticalAlignment="Top" ToolTipService.ShowOnDisabled="True" ToolTip="Reset the second UV layer to [0,0]" />
+            <CheckBox x:Name="ClearVColorButton" Content="Clear Vertex Color" Style="{DynamicResource SimpleCheckBox}" VerticalContentAlignment="Center" VerticalAlignment="Top" ToolTipService.ShowOnDisabled="True" ToolTip="Reset the Vertex Color to [255,255,255]" />
+            <CheckBox x:Name="ForceUVsButton" Content="Force UV1 to [1,-1]" Style="{DynamicResource SimpleCheckBox}" VerticalContentAlignment="Center" VerticalAlignment="Top" ToolTipService.ShowOnDisabled="True" ToolTip="Move all UV Coordinates into the [1,-1] quadrant."  />
+            <CheckBox x:Name="CloneUV1Button" Content="Clone UV1 to UV2" Style="{DynamicResource SimpleCheckBox}" VerticalContentAlignment="Center" VerticalAlignment="Top" ToolTipService.ShowOnDisabled="True" ToolTip="Copy UV1 into UV2. (Useful for Hair shader items)"  />
+            <CheckBox x:Name="ClearVAlphaButton" Content="Clear Vertex Alpha" Style="{DynamicResource SimpleCheckBox}" VerticalContentAlignment="Center" VerticalAlignment="Top" ToolTipService.ShowOnDisabled="True" ToolTip="Reset the Vertex Alpha to [255]" />
         </UniformGrid>
         <UniformGrid Margin="10,135,10,0" Columns="3" Height="30" VerticalAlignment="Top">
             <Button x:Name="CancelButton" Content="Cancel" Margin="0,0,10,0" Click="CancelButton_Click"  />

@@ -1,4 +1,5 @@
-﻿using FFXIV_TexTools.Helpers;
+﻿using AutoUpdaterDotNET;
+using FFXIV_TexTools.Helpers;
 using FFXIV_TexTools.Properties;
 using FFXIV_TexTools.Resources;
 using FFXIV_TexTools.Views.Models;
@@ -38,6 +39,8 @@ namespace FFXIV_TexTools.ViewModels
 
         private bool _showEditor;
 
+        bool enableShapeData;
+
         public ImportModelViewModel(ImportModelView view, IItemModel item, XivMdl ogMdl)
         {
             _view = view;
@@ -62,6 +65,16 @@ namespace FFXIV_TexTools.ViewModels
             _mdl = new Mdl(gameDirectory, dataFile);
             _importers = _mdl.GetAvailableImporters();
 
+            if(!ogMdl.HasShapeData)
+            {
+                _view.EnableShapeDataButton.ToolTip = "This model has no shape data to enable.";
+                _view.EnableShapeDataButton.IsEnabled = false;
+                _view.EnableShapeDataButton.IsChecked = false;
+            }
+
+
+
+            // Event Handlers
             _view.SelectFileButton.Click += SelectFileButton_Click;
             _view.ImportButton.Click += ImportButton_Click;
             _view.EditButton.Click += EditButton_Click;
@@ -86,6 +99,9 @@ namespace FFXIV_TexTools.ViewModels
 
             // Clear log.
             _view.LogTextBox.Text = "";
+
+            // Assigned here so they're read-accessible on other threads.
+            enableShapeData = _view.EnableShapeDataButton.IsChecked == true ? true : false;
 
             // Asynchronously call ImportModel.
             Task.Run( async () =>
@@ -122,6 +138,7 @@ namespace FFXIV_TexTools.ViewModels
         /// <returns></returns>
         private async Task<bool> IntermediateStep(TTModel model)
         {
+            model.EnableShapeData = enableShapeData;
 
             // TODO - Handle Options Processing Here, then show Advanced Import Dialog.
             return true;
@@ -149,6 +166,7 @@ namespace FFXIV_TexTools.ViewModels
             _view.Dispatcher.BeginInvoke((ThreadStart)delegate ()
             {
                 _view.EnableAll(true);
+                _view.DialogResult = true;
             });
         }
 

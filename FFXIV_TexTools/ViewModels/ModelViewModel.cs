@@ -1353,6 +1353,7 @@ namespace FFXIV_TexTools.ViewModels
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
+            
 
             ModStatusToggleEnabled = true;
 
