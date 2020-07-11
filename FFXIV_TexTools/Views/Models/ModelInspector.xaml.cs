@@ -235,12 +235,12 @@ namespace FFXIV_TexTools.Views.Models
             otherList.Add("Unknown");
             otherList.Add("Data Blocks");
 
-            for (var i = 0; i < _xivMdl.BoneIndexMeshList.Count; i++)
+            for (var i = 0; i < _xivMdl.MeshBoneSets.Count; i++)
             {
                 otherList.Add($"Bone Index (Mesh) {i}");
             }
 
-            if (_xivMdl.BoneIndexPart != null && _xivMdl.BoneIndexPart.BoneIndexCount > 0)
+            if (_xivMdl.PartBoneSets != null && _xivMdl.PartBoneSets.BoneIndexCount > 0)
             {
                 otherList.Add($"Bone Index (Part)");
             }
@@ -336,10 +336,10 @@ namespace FFXIV_TexTools.Views.Models
                     AddText(textBox, $"{_xivMdl.MatDataBlock.MaterialPathOffsetList.Count}\n\n", _textColor, true);
                 }
 
-                if (_xivMdl.BonDataBlock?.BonePathOffsetList != null)
+                if (_xivMdl.BoneDataBlock?.BonePathOffsetList != null)
                 {
                     AddText(textBox, "Bone Offset Count:\t", _textColor, false);
-                    AddText(textBox, $"{_xivMdl.BonDataBlock.BonePathOffsetList.Count}\n\n", _textColor, true);
+                    AddText(textBox, $"{_xivMdl.BoneDataBlock.BonePathOffsetList.Count}\n\n", _textColor, true);
                 }
             }
 
@@ -347,7 +347,7 @@ namespace FFXIV_TexTools.Views.Models
             {
                 var num = int.Parse(selectedItem.Substring(selectedItem.Length - 1));
 
-                var boneIndex = _xivMdl.BoneIndexMeshList[num];
+                var boneIndex = _xivMdl.MeshBoneSets[num];
 
                 AddText(textBox, "Index Count:\t", _textColor, false);
                 AddText(textBox, $"{boneIndex.BoneIndexCount}\n\n", _textColor, true);
@@ -362,15 +362,15 @@ namespace FFXIV_TexTools.Views.Models
 
             if (selectedItem.Equals("Bone Index (Part)"))
             {
-                var boneIndex = _xivMdl.BoneIndexPart;
+                var boneIndex = _xivMdl.PartBoneSets;
 
                 AddText(textBox, "Index Count:\t", _textColor, false);
                 AddText(textBox, $"{boneIndex.BoneIndexCount / 2}\n\n", _textColor, true);
 
-                for (var i = 0; i < boneIndex.BoneIndexList.Count; i++)
+                for (var i = 0; i < boneIndex.BoneIndices.Count; i++)
                 {
                     AddText(textBox, $"{i}:\t", _textColor, false);
-                    AddText(textBox, $"{boneIndex.BoneIndexList[i]}\n\n", _textColor, true);
+                    AddText(textBox, $"{boneIndex.BoneIndices[i]}\n\n", _textColor, true);
                 }
             }
 

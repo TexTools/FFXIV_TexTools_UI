@@ -1172,33 +1172,7 @@ namespace FFXIV_TexTools.Views
             var xivMdl = await mdl.GetMdlData(itemModel, GetRace(mod.fullPath), null, null, mod.data.originalOffset);
             var modMdl = await mdl.GetMdlData(itemModel, GetRace(mod.fullPath), null, null, mod.data.modOffset);
 
-            var advancedImportView = new AdvancedModelImportView(xivMdl, modMdl, itemModel, GetRace(mod.fullPath), true);
-            var result = advancedImportView.ShowDialog();
-
-            if (result == true)
-            {
-                if (includedModsList.Any(item => item.Name.Equals(includedMod.Name)))
-                {
-                    if (FlexibleMessageBox.Show(
-                            string.Format(UIMessages.ExistingOption, includedMod.Name),
-                            UIMessages.OverwriteTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Question) ==
-                        System.Windows.Forms.DialogResult.Yes)
-                    {
-                        _selectedModOption.Mods[mod.fullPath].ModDataBytes = advancedImportView.RawModelData;
-                    }
-                }
-                else
-                {
-                    IncludedModsList.Items.Add(includedMod);
-                    _selectedModOption.Mods.Add(mod.fullPath, new ModData
-                    {
-                        Name = mod.name,
-                        Category = mod.category,
-                        FullPath = mod.fullPath,
-                        ModDataBytes = advancedImportView.RawModelData,
-                    });
-                }
-            }
+            //TODO - FIXFIX - Show Advanced Import View for Wizard Dialog
         }
 
 
@@ -1225,8 +1199,7 @@ namespace FFXIV_TexTools.Views
             var warnings = new Dictionary<string, string>();
             try
             {
-                warnings = await mdl.ImportModel(itemModel, xivMdl, new DirectoryInfo(CustomModelTextBox.Text), null, XivStrings.TexTools, 
-                    Settings.Default.DAE_Plugin_Target, true);
+                warnings = await mdl.ImportModel(itemModel, xivMdl, new DirectoryInfo(CustomModelTextBox.Text), XivStrings.TexTools, null, true);
             }
             catch(Exception ex)
             {
@@ -1245,7 +1218,7 @@ namespace FFXIV_TexTools.Views
                 }
             }
 
-            var mdlData = mdl.MDLRawData;
+            var mdlData = mdl.GetRawData();
 
             if (includedModsList.Any(item => item.Name.Equals(includedMod.Name)))
             {

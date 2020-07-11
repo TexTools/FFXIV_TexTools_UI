@@ -287,7 +287,6 @@
       <DependentUpon>XivStrings.resx</DependentUpon>
     </Compile>
     <Compile Include="Textures\ColorChannels.cs" />
-    <Compile Include="ViewModels\AdvancedImportViewModel.cs" />
     <Compile Include="ViewModels\BaseViewPortViewModel.cs" />
     <Compile Include="ViewModels\CustomizeViewModel.cs" />
     <Compile Include="ViewModels\IconSearchViewModel.cs" />
@@ -318,9 +317,6 @@
     </Compile>
     <Compile Include="Views\ModConverterView.xaml.cs">
       <DependentUpon>ModConverterView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Models\AdvancedModelImportView.xaml.cs">
-      <DependentUpon>AdvancedModelImportView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Models\ExportModelOptionsView.xaml.cs">
       <DependentUpon>ExportModelOptionsView.xaml</DependentUpon>
@@ -432,10 +428,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\ModConverterView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Models\AdvancedModelImportView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -1355,18 +1355,7 @@ namespace FFXIV_TexTools.ViewModels
 
             try
             {
-                // pass in the original mdl if the current one is modded
-                if (modData != null && modData.enabled)
-                {
-                    var originalMdl = await _mdl.GetMdlData(_item, SelectedRace.XivRace, null, modData.fullPath,
-                        modData.data.originalOffset);
-
-                    warnings = await _mdl.ImportModel(_item, originalMdl, savePath, null, XivStrings.TexTools, Settings.Default.DAE_Plugin_Target);
-                }
-                else
-                {
-                    warnings = await _mdl.ImportModel(_item, _mdlData, savePath, null, XivStrings.TexTools, Settings.Default.DAE_Plugin_Target);
-                }
+                warnings = await _mdl.ImportModel(_item, _mdlData, savePath, XivStrings.TexTools);
             }
             catch (Exception ex)
             {
@@ -1428,19 +1417,7 @@ namespace FFXIV_TexTools.ViewModels
 
                 try
                 {
-                    if (modData != null && modData.enabled)
-                    {
-                        var originalMdl = await _mdl.GetMdlData(_item, SelectedRace.XivRace, null, modData.fullPath,
-                            modData.data.originalOffset);
-
-                        warnings = await _mdl.ImportModel(_item, originalMdl, new DirectoryInfo(openFileDialog.FileName), null,
-                            XivStrings.TexTools, Settings.Default.DAE_Plugin_Target);
-                    }
-                    else
-                    {
-                        warnings = await _mdl.ImportModel(_item, _mdlData, new DirectoryInfo(openFileDialog.FileName), null,
-                            XivStrings.TexTools, Settings.Default.DAE_Plugin_Target);
-                    }
+                    warnings = await _mdl.ImportModel(_item, _mdlData, new DirectoryInfo(openFileDialog.FileName), XivStrings.TexTools);
                 }
                 catch (Exception ex)
                 {
@@ -1493,24 +1470,6 @@ namespace FFXIV_TexTools.ViewModels
 
             try
             {
-                // pass in the original mdl if the current one is modded
-                if (modData != null && modData.enabled)
-                {
-                    var originalMdl = await _mdl.GetMdlData(_item, SelectedRace.XivRace, null, modData.fullPath,
-                        modData.data.originalOffset);
-                    var modMdl = await _mdl.GetMdlData(_item, SelectedRace.XivRace, null, modData.fullPath,
-                        modData.data.modOffset);
-
-                    var advImportedView = new AdvancedModelImportView(originalMdl, modMdl, _item, SelectedRace.XivRace, false)
-                        { Owner = Window.GetWindow(_modelView) };
-                    result = advImportedView.ShowDialog();
-                }
-                else
-                {
-                    var advImportedView = new AdvancedModelImportView(_mdlData,null, _item, SelectedRace.XivRace, false)
-                        { Owner = Window.GetWindow(_modelView) };
-                    result = advImportedView.ShowDialog();
-                }
             }
             catch (Exception ex)
             {
