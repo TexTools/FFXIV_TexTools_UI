@@ -329,6 +329,9 @@ namespace FFXIV_TexTools.Views
 
             var dat = new Dat(_gameDirectory);
 
+            // Filter out empty entries in the mod list
+            modList.Mods.RemoveAll(mod => mod.name.Equals(string.Empty));
+
             return Task.Run(() =>
             {
                 if (modList.modCount > 0)
@@ -347,8 +350,6 @@ namespace FFXIV_TexTools.Views
                         {
                             progress.Report((++modNum, modList.modCount));
                         }
-
-                        if (mod.name.Equals(string.Empty)) return;
 
                         var fileName = Path.GetFileName(mod.fullPath);
 
