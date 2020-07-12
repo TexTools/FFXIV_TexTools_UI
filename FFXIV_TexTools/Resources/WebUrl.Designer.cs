@@ -133,7 +133,7 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to https://raw.githubusercontent.com/liinko/FFXIVTexToolsWeb/master/updater.xml.
+        ///   Looks up a localized string similar to https://raw.githubusercontent.com/TexTools/FFXIV_TexTools_Updater/master/updater.xml.
         /// </summary>
         internal static string TexTools_Update_Url {
             get {
@@ -147,15 +147,6 @@ namespace FFXIV_TexTools.Resources {
         internal static string TexTools_Website {
             get {
                 return ResourceManager.GetString("TexTools_Website", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to https://raw.githubusercontent.com/esrinzou/FFXIV_TexTools_Preview/master/updater.xml.
-        /// </summary>
-        internal static string TexToolsPre_Update_Url {
-            get {
-                return ResourceManager.GetString("TexToolsPre_Update_Url", resourceCulture);
             }
         }
         

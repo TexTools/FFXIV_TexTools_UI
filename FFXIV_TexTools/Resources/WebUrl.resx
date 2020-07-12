@@ -141,11 +141,8 @@
   <data name="PKEmporium_Website" xml:space="preserve">
     <value>https://prettykittyemporium.blogspot.com/</value>
   </data>
-  <data name="TexToolsPre_Update_Url" xml:space="preserve">
-    <value>https://raw.githubusercontent.com/esrinzou/FFXIV_TexTools_Preview/master/updater.xml</value>
-  </data>
   <data name="TexTools_Update_Url" xml:space="preserve">
-    <value>https://raw.githubusercontent.com/liinko/FFXIVTexToolsWeb/master/updater.xml</value>
+    <value>https://raw.githubusercontent.com/TexTools/FFXIV_TexTools_Updater/master/updater.xml</value>
   </data>
   <data name="TexTools_Website" xml:space="preserve">
     <value>https://textools.dualwield.net/</value>
