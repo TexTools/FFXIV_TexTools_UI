@@ -19,7 +19,7 @@ namespace FFXIV_TexTools.Resources {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class UIMessages {
@@ -728,7 +728,7 @@ namespace FFXIV_TexTools.Resources {
                 return ResourceManager.GetString("MaterialDataReadErrorTitle", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to An error occurred when trying to modify the material..
         /// </summary>
@@ -737,7 +737,7 @@ namespace FFXIV_TexTools.Resources {
                 return ResourceManager.GetString("MaterialEditorErrorMessage", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Material Editor Error.
         /// </summary>
@@ -963,7 +963,9 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There was an error attempting to toggle mod status..
+        ///   Looks up a localized string similar to There was an error attempting to toggle mod status.
+        ///
+        ///{0}.
         /// </summary>
         internal static string ModToggleErrorMessage {
             get {
@@ -1451,6 +1453,26 @@ namespace FFXIV_TexTools.Resources {
         internal static string TTMPGettingData {
             get {
                 return ResourceManager.GetString("TTMPGettingData", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unsupported file extension detected: {0}. 
+        ///
+        ///TexTools only supports importing *.ttmp and *.ttmp2 ModPacks. .
+        /// </summary>
+        internal static string UnsupportedFileExtensionErrorMessage {
+            get {
+                return ResourceManager.GetString("UnsupportedFileExtensionErrorMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File Extension Error.
+        /// </summary>
+        internal static string UnsupportedFileExtensionErrorTitle {
+            get {
+                return ResourceManager.GetString("UnsupportedFileExtensionErrorTitle", resourceCulture);
             }
         }
         

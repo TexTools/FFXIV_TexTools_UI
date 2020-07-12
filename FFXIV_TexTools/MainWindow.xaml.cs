@@ -55,9 +55,23 @@ namespace FFXIV_TexTools
         private SysTimer.Timer searchTimer = new SysTimer.Timer(300);
         private string _startupArgs;
         private Category _selectedCategory;
+        private static MainWindow _mainWindow;
+
+
+        /// <summary>
+        /// Static accessor, since we should only ever have one instance of this class anyways.
+        /// </summary>
+        /// <returns></returns>
+        public static MainWindow GetMainWindow()
+        {
+            return _mainWindow;
+        }
+
+        public event EventHandler TreeRefreshRequested;
 
         public MainWindow(string[] args)
         {
+            _mainWindow = this;
             CheckForSettingsUpdate();
             LanguageSelection();
 
@@ -99,10 +113,12 @@ namespace FFXIV_TexTools
             }
             else
             {
+                this.Show();
+
                 ItemSearchTextBox.Focus();
                 var mainViewModel = new MainViewModel(this);
                 this.DataContext = mainViewModel;
-
+                
                 if (searchTimer == null)
                 {
                     searchTimer = new SysTimer.Timer(300);
@@ -160,24 +176,18 @@ namespace FFXIV_TexTools
             }
         }
 
-        private void CheckForUpdates()
+        /// <summary>
+        /// Triggers the MainWindow's thread to refresh the tree view.
+        /// </summary>
+        /// <param name="requestor"></param>
+        public void RefreshTree(object requestor = null)
         {
-            AutoUpdater.CheckForUpdateEvent += AutoUpdater_CheckForUpdateEvent;
-            AutoUpdater.Start(WebUrl.TexTools_Update_Url);
+            TreeRefreshRequested.Invoke(requestor, null);
         }
 
-        private void AutoUpdater_CheckForUpdateEvent(UpdateInfoEventArgs args)
+        private void CheckForUpdates()
         {
-            AutoUpdater.CheckForUpdateEvent -= AutoUpdater_CheckForUpdateEvent; 
-            if (args==null||!args.IsUpdateAvailable)
-            {            
-                Dispatcher.InvokeAsync(() => {
-                    AutoUpdater.Start(WebUrl.TexToolsPre_Update_Url);
-                });
-            }
-            else {
-                AutoUpdater.ShowUpdateForm();
-            }
+            AutoUpdater.Start(WebUrl.TexTools_Update_Url);
         }
 
         private void CheckForSettingsUpdate()
@@ -604,6 +614,14 @@ namespace FFXIV_TexTools
                 modelViewModel = modelView.DataContext as ModelViewModel;
             }
 
+            if (!path.Extension.Contains("ttmp"))
+            {
+                FlexibleMessageBox.Show(string.Format(UIMessages.UnsupportedFileExtensionErrorMessage, path.Extension), 
+                    UIMessages.UnsupportedFileExtensionErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                return 0;
+            }
+
             try
             {
                 var ttmp = new TTMP(modPackDirectory, XivStrings.TexTools);
@@ -773,7 +791,9 @@ namespace FFXIV_TexTools
                         UIMessages.StartOverErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     await progressController.CloseAsync();
                     return;
-                }                
+                }
+
+                MainWindow.GetMainWindow().RefreshTree(this);
 
                 await progressController.CloseAsync();
 

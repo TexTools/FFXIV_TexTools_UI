@@ -716,7 +716,7 @@ namespace FFXIV_TexTools.Views
         {
             _lastDirection = _lastDirection == ListSortDirection.Ascending ? ListSortDirection.Descending : ListSortDirection.Ascending;
 
-            if (e.OriginalSource is GridViewColumnHeader h && !h.Content.ToString().Equals("_"))
+            if (e.OriginalSource is GridViewColumnHeader h && h.Content != null)
             {
                 CollectionView cv = (CollectionView)CollectionViewSource.GetDefaultView(ModListView.ItemsSource);
                 cv.SortDescriptions.Clear();

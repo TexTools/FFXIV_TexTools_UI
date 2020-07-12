@@ -362,7 +362,9 @@ New Location: {0}</value>
     <value>All Mods were Enabled Successfully</value>
   </data>
   <data name="ModToggleErrorMessage" xml:space="preserve">
-    <value>There was an error attempting to toggle mod status.</value>
+    <value>There was an error attempting to toggle mod status.
+
+{0}</value>
   </data>
   <data name="ModToggleErrorTitle" xml:space="preserve">
     <value>Error Toggling Mod</value>
@@ -686,5 +688,13 @@ Any mod on the 3D model will be disabled.</value>
   </data>
   <data name="MaterialEditorErrorTitle" xml:space="preserve">
     <value>Material Editor Error</value>
+  </data>
+  <data name="UnsupportedFileExtensionErrorMessage" xml:space="preserve">
+    <value>Unsupported file extension detected: {0}. 
+
+TexTools only supports importing *.ttmp and *.ttmp2 ModPacks. </value>
+  </data>
+  <data name="UnsupportedFileExtensionErrorTitle" xml:space="preserve">
+    <value>File Extension Error</value>
   </data>
 </root>

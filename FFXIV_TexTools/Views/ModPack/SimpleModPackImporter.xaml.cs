@@ -572,7 +572,7 @@ namespace FFXIV_TexTools.Views
                 var part = "-";
                 var parts = new[] { "a", "b", "c", "d", "e", "f" };
 
-                if (modPath.Contains("/equipment/"))
+                if (modPath.Contains("/equipment/") || modPath.Contains("/hair/"))
                 {
                     if (modPath.Contains("/texture/"))
                     {
@@ -780,7 +780,7 @@ namespace FFXIV_TexTools.Views
         {
             _lastDirection = _lastDirection == ListSortDirection.Ascending ? ListSortDirection.Descending : ListSortDirection.Ascending;
 
-            if (e.OriginalSource is GridViewColumnHeader h && !h.Content.ToString().Equals("_"))
+            if (e.OriginalSource is GridViewColumnHeader h && h.Content != null)
             {
                 var cv = (CollectionView)CollectionViewSource.GetDefaultView(ModListView.ItemsSource);
                 cv.SortDescriptions.Clear();

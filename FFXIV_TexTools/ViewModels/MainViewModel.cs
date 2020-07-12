@@ -74,6 +74,7 @@ namespace FFXIV_TexTools.ViewModels
             }
         }
 
+
         private async void Initialize()
         {
             SetDirectories(true);
@@ -87,6 +88,11 @@ namespace FFXIV_TexTools.ViewModels
             ProgressLabel = "Checking Index Files...";
             await CheckIndexFiles();
 
+            _mainWindow.TreeRefreshRequested += TreeRefreshRequested;
+            _mainWindow.RefreshTree(this);
+        }
+        private void TreeRefreshRequested(object sender, EventArgs e)
+        {
             IProgress<(int current, string category)> progress = new Progress<(int current, string category)>((prog) =>
             {
                 if (prog.category == "Done")
@@ -111,10 +117,9 @@ namespace FFXIV_TexTools.ViewModels
                 // Settings are valid, application is updated, initialize the
                 // Cache once so it can test if it needs to be updated as well.
                 var _cache = new XivCache(gameDirectory, lang);
-
-                await FillTree(progress);
+                FillTree(progress).GetAwaiter().OnCompleted(OnTreeRefreshCompleted);
             }
-            catch(Exception e)
+            catch (Exception ex)
             {
                 // Revert to English when there were errors while loading the item tree/cache
                 // and the game language was set to Chinese or Korean (they have separate clients)
@@ -130,8 +135,17 @@ namespace FFXIV_TexTools.ViewModels
                         System.Windows.Forms.Application.Restart();
                         System.Windows.Application.Current.Shutdown();
                     }
+                } else
+                {
+                    // Make this error not totally silent at least.
+                    FlexibleMessageBox.Show("An error occurred while trying to populate the item list.",
+                               "Item list Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
+        }
+
+        private void OnTreeRefreshCompleted()
+        {
             _mainWindow.Menu_ModConverter.IsEnabled = true;
             _mainWindow.ItemSearchTextBox.IsEnabled = true;
             _mainWindow.SetFilter();
@@ -526,6 +540,7 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         public async Task FillTree(IProgress<(int current, string total)> progress)
         {
+            Categories.Clear();
             Categories.Add(new Category{Name = XivStrings.Gear, Categories = new ObservableCollection<Category>(), CategoryList = new List<string>() });
             Categories.Add(new Category{Name = XivStrings.Character, Categories = new ObservableCollection<Category>(), CategoryList = new List<string>() });
             Categories.Add(new Category{Name = XivStrings.Companions, Categories = new ObservableCollection<Category>(), CategoryList = new List<string>() });
