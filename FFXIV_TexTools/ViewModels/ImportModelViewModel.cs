@@ -23,6 +23,8 @@ using xivModdingFramework.Items;
 using xivModdingFramework.Items.Interfaces;
 using xivModdingFramework.Models.DataContainers;
 using xivModdingFramework.Models.FileTypes;
+using xivModdingFramework.Models.Helpers;
+using xivModdingFramework.Mods.DataContainers;
 
 namespace FFXIV_TexTools.ViewModels
 {
@@ -33,51 +35,84 @@ namespace FFXIV_TexTools.ViewModels
         private ImportModelView _view;
         private IItemModel _item;
         private XivRace _race;
-        private XivMdl _ogMdl;
         private Mdl _mdl;
         private List<string> _importers;
+        private bool _dataOnly;
+        private string _internalPath;
+
+        private bool _success = false;
+        public bool Success { get
+            {
+                return _success;
+            } 
+        }
 
         private bool _showEditor;
 
-        bool enableShapeData;
 
-        public ImportModelViewModel(ImportModelView view, IItemModel item, XivMdl ogMdl)
+        public ImportModelViewModel(ImportModelView view, IItemModel item, XivRace race, bool dataOnly)
         {
             _view = view;
             _item = item;
-            _ogMdl = ogMdl;
+            _race = race;
+            _dataOnly = dataOnly;
 
             var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
             var saveDirectory = new DirectoryInfo(Settings.Default.Save_Directory);
             var dataFile = IOUtil.GetDataFileFromPath(_item.GetItemRootFolder());
-            var path = _ogMdl.MdlPath.Folder + "/" + _ogMdl.MdlPath.File;
-
-            _race = IOUtil.GetRaceFromPath(path);
-
-            var defaultPath = $"{IOUtil.MakeItemSavePath(_item, saveDirectory, _race)}\\3D";
-            defaultPath = defaultPath.Replace("/", "\\");
-            var modelName = Path.GetFileNameWithoutExtension(_ogMdl.MdlPath.File);
-            defaultPath = Path.Combine(defaultPath, modelName) + ".fbx";
-
-            _view.FileNameTextBox.Text = defaultPath;
-
-
             _mdl = new Mdl(gameDirectory, dataFile);
             _importers = _mdl.GetAvailableImporters();
 
-            if(!ogMdl.HasShapeData)
+
+            var dir = _mdl.GetMdlPath(item, race, item.GetPrimaryItemType(), null, null, null);
+            _internalPath = dir.Folder + "/" + dir.File;
+
+            var defaultPath = $"{IOUtil.MakeItemSavePath(_item, saveDirectory, _race)}\\3D";
+            defaultPath = defaultPath.Replace("/", "\\");
+            var modelName = Path.GetFileNameWithoutExtension(_internalPath);
+
+
+            // Scan to see which file type(s) actually exist.
+            bool foundValidFile = false;
+            string startingPath = "";
+            foreach (var suffix in _importers)
             {
-                _view.EnableShapeDataButton.ToolTip = "This model has no shape data to enable.";
-                _view.EnableShapeDataButton.IsEnabled = false;
-                _view.EnableShapeDataButton.IsChecked = false;
+                startingPath = Path.Combine(defaultPath, modelName) + "." + suffix;
+                if(File.Exists(defaultPath))
+                {
+                    foundValidFile = true;
+                    break;
+                }
+            }
+
+            if(!foundValidFile)
+            {
+                startingPath = Path.Combine(defaultPath, modelName) + ".dae";
             }
 
 
+            _view.FileNameTextBox.Text = startingPath;
 
             // Event Handlers
             _view.SelectFileButton.Click += SelectFileButton_Click;
             _view.ImportButton.Click += ImportButton_Click;
             _view.EditButton.Click += EditButton_Click;
+            _view.Closing += _view_Closing;
+
+            // Default Settings for specific categories.
+            if(item.SecondaryCategory == XivStrings.Face)
+            {
+                _view.EnableShapeDataButton.IsChecked = true;
+            }
+            if(item.SecondaryCategory == XivStrings.Hair)
+            {
+                _view.CloneUV1Button.IsChecked = true;
+            }
+        }
+
+        private void _view_Closing(object sender, CancelEventArgs e)
+        {
+            _view.DialogResult = Success;
         }
 
         private void ImportButton_Click(object sender, System.Windows.RoutedEventArgs e)
@@ -100,15 +135,20 @@ namespace FFXIV_TexTools.ViewModels
             // Clear log.
             _view.LogTextBox.Text = "";
 
-            // Assigned here so they're read-accessible on other threads.
-            enableShapeData = _view.EnableShapeDataButton.IsChecked == true ? true : false;
+            var options = new ModelModifierOptions();
+            options.EnableShapeData = _view.EnableShapeDataButton.IsChecked == true ? true : false;
+            options.ForceUVQuadrant = _view.ForceUVsButton.IsChecked == true ? true : false;
+            options.ClearUV2 = _view.ClearUV2Button.IsChecked == true ? true : false;
+            options.CloneUV2 = _view.CloneUV1Button.IsChecked == true ? true : false;
+            options.ClearVAlpha = _view.ClearVAlphaButton.IsChecked == true ? true : false;
+            options.ClearVColor = _view.ClearVColorButton.IsChecked == true ? true : false;
 
             // Asynchronously call ImportModel.
             Task.Run( async () =>
             {
                 try
                 {
-                    await _mdl.ImportModel(_item, _ogMdl, d, UIStrings.About_TexTools, IntermediateStep, LogMessageReceived);
+                    await _mdl.ImportModel(_item, _race, d.FullName, options, LogMessageReceived, IntermediateStep, XivStrings.TexTools, _dataOnly);
                     OnImportComplete();
                 } catch(Exception ex)
                 {
@@ -119,7 +159,12 @@ namespace FFXIV_TexTools.ViewModels
                     {
                         if (ex.Message != "cancel")
                         {
+                            _view.LogTextBox.AppendText("> [ERR ]" + ex.Message + "\n");
                             FlexibleMessageBox.Show("An error occurred during import:\n" + ex.Message + "\n\nThe import has been cancelled.", "Import Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        } else
+                        {
+
+                            _view.LogTextBox.AppendText("> [INFO] User cancelled import process.\n");
                         }
 
                         _view.EnableAll(true);
@@ -138,8 +183,6 @@ namespace FFXIV_TexTools.ViewModels
         /// <returns></returns>
         private async Task<bool> IntermediateStep(TTModel model)
         {
-            model.EnableShapeData = enableShapeData;
-
             // TODO - Handle Options Processing Here, then show Advanced Import Dialog.
             return true;
         }
@@ -152,6 +195,7 @@ namespace FFXIV_TexTools.ViewModels
         private void LogMessageReceived(bool isWarning, string message)
         {
             if(message == null || message.Trim() == "") return;
+            message = (isWarning ? "> [WARN] " : "> [INFO] ") + message;
             _view.Dispatcher.BeginInvoke((ThreadStart) delegate()
             {
                 _view.LogTextBox.AppendText(message + "\n");
@@ -166,7 +210,7 @@ namespace FFXIV_TexTools.ViewModels
             _view.Dispatcher.BeginInvoke((ThreadStart)delegate ()
             {
                 _view.EnableAll(true);
-                _view.DialogResult = true;
+                _success = true;
             });
         }
 

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
         mc:Ignorable="d"
-        Title="" Height="210" IsMinButtonEnabled="False" IsMaxRestoreButtonEnabled="False" WindowStartupLocation="CenterOwner" FontSize="14" Width="640" ResizeMode="NoResize">
+        Title="Model Importer" Height="210" IsMinButtonEnabled="False" IsMaxRestoreButtonEnabled="False" WindowStartupLocation="CenterOwner" FontSize="14" Width="640" ResizeMode="NoResize">
     <Grid>
         <Grid Height="54" VerticalAlignment="Top">
             <Grid.ColumnDefinitions>

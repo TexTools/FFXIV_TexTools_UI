@@ -1340,7 +1340,8 @@ namespace FFXIV_TexTools.ViewModels
 
             try
             {
-                bool success = await ImportModelView.ImportModel(_item, _mdlData);
+                
+                bool success = await ImportModelView.ImportModel(_item, SelectedRace.XivRace);
                 if (!success)
                 {
                     return;

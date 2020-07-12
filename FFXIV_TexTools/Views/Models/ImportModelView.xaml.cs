@@ -34,10 +34,10 @@ namespace FFXIV_TexTools.Views.Models
 
         // Height to expand to when opening the log window.
 
-        public ImportModelView(IItemModel item, XivMdl ogMdl)
+        public ImportModelView(IItemModel item, XivRace race, bool dataOnly = false)
         {
             InitializeComponent();
-            _viewModel = new ImportModelViewModel(this, item, ogMdl);
+            _viewModel = new ImportModelViewModel(this, item, race, dataOnly);
             DataContext = _viewModel;
         }
 
@@ -52,29 +52,10 @@ namespace FFXIV_TexTools.Views.Models
         /// with user interaction.
         /// </summary>
         /// <param name="item"></param>
-        /// <param name="race"></param>
-        /// <param name="windowOwner"></param>
-        /// <returns></returns>
-        public static async Task<bool> ImportModel(IItemModel item, XivRace race, Window windowOwner = null)
-        {
-            // This just resolves the Mdl then passes it on to the next overload.
-            var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
-            var dataFile = IOUtil.GetDataFileFromPath(item.GetItemRootFolder());
-
-            var mdl = new Mdl(gameDirectory, dataFile);
-            var xivMdl = await mdl.GetMdlData(item, race);
-            return await ImportModel(item, xivMdl, windowOwner);
-        }
-
-        /// <summary>
-        /// Spawns the import model dialog and walks through the full steps to import a model,
-        /// with user interaction.
-        /// </summary>
-        /// <param name="item"></param>
         /// <param name="xivMdl"></param>
         /// <param name="windowOwner"></param>
         /// <returns></returns>
-        public static async Task<bool> ImportModel(IItemModel item, XivMdl xivMdl, Window windowOwner = null)
+        public static async Task<bool> ImportModel(IItemModel item, XivRace race, Window windowOwner = null, bool dataOnly = false)
         {
 
             if (windowOwner == null)
@@ -83,13 +64,13 @@ namespace FFXIV_TexTools.Views.Models
                 windowOwner = MainWindow.GetMainWindow();
             }
 
-            var imView = new ImportModelView(item, xivMdl) { Owner = windowOwner };
+            var imView = new ImportModelView(item, race) { Owner = windowOwner };
 
-            // This blocks until the other dialog closes.
+            // This blocks until the dialog closes.
             var result = imView.ShowDialog();
 
             // Coalesce
-            bool ret = result == true ? true: false;
+            bool ret = result == true ? true : false;
 
             return ret;
         }
