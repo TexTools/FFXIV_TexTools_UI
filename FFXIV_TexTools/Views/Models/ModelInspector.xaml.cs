@@ -96,8 +96,8 @@ namespace FFXIV_TexTools.Views.Models
             AddText(textBox, $"{modelData.ShapeCount.ToString()}\n\n", _textColor, true);
 
             // Mesh Shape Data Count
-            AddText(textBox, "Shape Data Count:\t", _textColor, false);
-            AddText(textBox, $"{modelData.ShapeDataCount.ToString()}\n\n", _textColor, true);
+            //AddText(textBox, "Shape Data Count:\t", _textColor, false);
+            //AddText(textBox, $"{modelData.ShapePartCount.ToString()}\n\n", _textColor, true);
 
             // Unknown 1
             AddText(textBox, "Unknown 1:\t\t", _textColor, false);

@@ -57,7 +57,7 @@ namespace FFXIV_TexTools.ViewModels
             var defaultPath = $"{IOUtil.MakeItemSavePath(_item, saveDirectory, _race)}\\3D";
             defaultPath = defaultPath.Replace("/", "\\");
             var modelName = Path.GetFileNameWithoutExtension(_ogMdl.MdlPath.File);
-            defaultPath = Path.Combine(defaultPath, modelName) + ".dae";
+            defaultPath = Path.Combine(defaultPath, modelName) + ".fbx";
 
             _view.FileNameTextBox.Text = defaultPath;
 
