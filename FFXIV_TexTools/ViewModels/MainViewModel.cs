@@ -63,19 +63,10 @@ namespace FFXIV_TexTools.ViewModels
         {
             _mainWindow = mainWindow;
             _win32Window = new WindowWrapper(new WindowInteropHelper(_mainWindow).Handle);
-
-            try
-            {
-                Initialize();
-            }
-            catch (Exception ex)
-            {
-                FlexibleMessageBox.Show($"There was an error getting the Items List\n\n{ex.Message}", $"Items List Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
         }
 
 
-        private async void Initialize()
+        public async Task Initialize()
         {
             SetDirectories(true);
             _gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
@@ -89,10 +80,12 @@ namespace FFXIV_TexTools.ViewModels
             await CheckIndexFiles();
 
             _mainWindow.TreeRefreshRequested += TreeRefreshRequested;
-            _mainWindow.RefreshTree(this);
         }
         private void TreeRefreshRequested(object sender, EventArgs e)
         {
+            _mainWindow.SearchTimer.Enabled = false;
+            _mainWindow.SearchTimer.AutoReset = false;
+
             IProgress<(int current, string category)> progress = new Progress<(int current, string category)>((prog) =>
             {
                 if (prog.category == "Done")
@@ -146,6 +139,7 @@ namespace FFXIV_TexTools.ViewModels
 
         private void OnTreeRefreshCompleted()
         {
+            _mainWindow.SearchTimer.Enabled = true;
             _mainWindow.Menu_ModConverter.IsEnabled = true;
             _mainWindow.ItemSearchTextBox.IsEnabled = true;
             _mainWindow.SetFilter();

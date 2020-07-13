@@ -26,7 +26,7 @@
         </UniformGrid>
         <UniformGrid Margin="10,135,10,0" Columns="3" Height="30" VerticalAlignment="Top">
             <Button x:Name="CancelButton" Content="Cancel" Margin="0,0,10,0" Click="CancelButton_Click"  />
-            <Button x:Name="EditButton" Content="Edit Details" Margin="0" />
+            <Button x:Name="EditButton" Content="Open Editor" Margin="0" />
             <Button x:Name="ImportButton" Content="Import" Margin="10,0,0,0" />
         </UniformGrid>
         <TextBox x:Name="LogTextBox" Height="418" Margin="8,183,8,0" TextWrapping="Wrap" Text="Warnings, etc." VerticalAlignment="Top" IsEnabled="False" Background="#FFACACAC" Foreground="Black" Style="{DynamicResource SimpleTextBox}" FontFamily="Courier New" VerticalScrollBarVisibility="Visible" Padding="5"/>

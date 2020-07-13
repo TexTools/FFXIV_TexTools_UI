@@ -1,22 +1,14 @@
-﻿using AutoUpdaterDotNET;
-using FFXIV_TexTools.Helpers;
+﻿using FFXIV_TexTools.Helpers;
 using FFXIV_TexTools.Properties;
 using FFXIV_TexTools.Resources;
 using FFXIV_TexTools.Views.Models;
-using HelixToolkit.Wpf;
-using Microsoft.Win32;
-using SharpDX.D3DCompiler;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Forms;
-using System.Windows.Threading;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Items;
@@ -24,7 +16,6 @@ using xivModdingFramework.Items.Interfaces;
 using xivModdingFramework.Models.DataContainers;
 using xivModdingFramework.Models.FileTypes;
 using xivModdingFramework.Models.Helpers;
-using xivModdingFramework.Mods.DataContainers;
 
 namespace FFXIV_TexTools.ViewModels
 {
@@ -41,6 +32,7 @@ namespace FFXIV_TexTools.ViewModels
         private string _internalPath;
 
         private bool _success = false;
+        private bool _editorOpen = false;
         public bool Success { get
             {
                 return _success;
@@ -148,7 +140,13 @@ namespace FFXIV_TexTools.ViewModels
             {
                 try
                 {
-                    await _mdl.ImportModel(_item, _race, d.FullName, options, LogMessageReceived, IntermediateStep, XivStrings.TexTools, _dataOnly);
+                    if (showEditor)
+                    {
+                        await _mdl.ImportModel(_item, _race, d.FullName, options, LogMessageReceived, IntermediateStep, XivStrings.TexTools, _dataOnly);
+                    } else
+                    {
+                        await _mdl.ImportModel(_item, _race, d.FullName, options, LogMessageReceived, null, XivStrings.TexTools, _dataOnly);
+                    }
                     OnImportComplete();
                 } catch(Exception ex)
                 {
@@ -159,12 +157,8 @@ namespace FFXIV_TexTools.ViewModels
                     {
                         if (ex.Message != "cancel")
                         {
-                            _view.LogTextBox.AppendText("> [ERR ]" + ex.Message + "\n");
+                            _view.LogTextBox.AppendText("> [ERROR] " + ex.Message + "\n");
                             FlexibleMessageBox.Show("An error occurred during import:\n" + ex.Message + "\n\nThe import has been cancelled.", "Import Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        } else
-                        {
-
-                            _view.LogTextBox.AppendText("> [INFO] User cancelled import process.\n");
                         }
 
                         _view.EnableAll(true);
@@ -183,8 +177,14 @@ namespace FFXIV_TexTools.ViewModels
         /// <returns></returns>
         private async Task<bool> IntermediateStep(TTModel model)
         {
-            // TODO - Handle Options Processing Here, then show Advanced Import Dialog.
-            return true;
+            _editorOpen = true;
+            var result = false;
+            await _view.Dispatcher.BeginInvoke((ThreadStart)delegate ()
+            {
+                var editorWindow = new ImportModelEditView(model) { Owner = _view };
+                result = editorWindow.ShowDialog() == true ? true : false;
+            });
+            return result;
         }
 
         /// <summary>
@@ -195,11 +195,12 @@ namespace FFXIV_TexTools.ViewModels
         private void LogMessageReceived(bool isWarning, string message)
         {
             if(message == null || message.Trim() == "") return;
+
             message = (isWarning ? "> [WARN] " : "> [INFO] ") + message;
             _view.Dispatcher.BeginInvoke((ThreadStart) delegate()
             {
                 _view.LogTextBox.AppendText(message + "\n");
-            });
+            }).Wait(); // The .Wait() is just to help ensure we don't print log lines out of order.
         }
 
         /// <summary>
@@ -211,7 +212,7 @@ namespace FFXIV_TexTools.ViewModels
             {
                 _view.EnableAll(true);
                 _success = true;
-            });
+            }).Wait();
         }
 
         private void SelectFileButton_Click(object sender, System.Windows.RoutedEventArgs e)
