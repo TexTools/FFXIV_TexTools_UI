@@ -290,6 +290,7 @@
     <Compile Include="ViewModels\BaseViewPortViewModel.cs" />
     <Compile Include="ViewModels\CustomizeViewModel.cs" />
     <Compile Include="ViewModels\IconSearchViewModel.cs" />
+    <Compile Include="ViewModels\ImportModelEditViewModel.cs" />
     <Compile Include="ViewModels\ImportModelViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\MaterialEditorViewModel.cs" />
@@ -321,6 +322,9 @@
     </Compile>
     <Compile Include="Views\Models\ExportModelOptionsView.xaml.cs">
       <DependentUpon>ExportModelOptionsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Models\ImportModelEditView.xaml.cs">
+      <DependentUpon>ImportModelEditView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Models\ImportModelView.xaml.cs">
       <DependentUpon>ImportModelView.xaml</DependentUpon>
@@ -433,6 +437,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Models\ExportModelOptionsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Models\ImportModelEditView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
