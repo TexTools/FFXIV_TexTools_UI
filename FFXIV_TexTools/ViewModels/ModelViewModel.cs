@@ -1519,8 +1519,12 @@ namespace FFXIV_TexTools.ViewModels
 
                         if (!raceString.Equals("0901") && !raceString.Equals("1001") && !raceString.Equals("1101") && !raceString.Equals("1501"))
                         {
+                            // XIV automatically forces skin materials to instead reference the appropiate one for the character wearing it.
+                            race = _selectedRace.XivRace;
+
+
                             var gender = 0;
-                            if (int.Parse(raceString.Substring(0, 2)) % 2 == 0)
+                            if (int.Parse(XivRaces.GetRaceCode(race).Substring(0, 2)) % 2 == 0)
                             {
                                 gender = 1;
                             }
