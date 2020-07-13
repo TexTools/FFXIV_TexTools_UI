@@ -63,6 +63,8 @@ namespace FFXIV_TexTools.ViewModels
         {
             _mainWindow = mainWindow;
             _win32Window = new WindowWrapper(new WindowInteropHelper(_mainWindow).Handle);
+            _mainWindow.TreeRefreshRequested += TreeRefreshRequested;
+            Initialize();
         }
 
 
@@ -79,7 +81,6 @@ namespace FFXIV_TexTools.ViewModels
             ProgressLabel = "Checking Index Files...";
             await CheckIndexFiles();
 
-            _mainWindow.TreeRefreshRequested += TreeRefreshRequested;
         }
         private void TreeRefreshRequested(object sender, EventArgs e)
         {
@@ -107,9 +108,6 @@ namespace FFXIV_TexTools.ViewModels
 
             try
             {
-                // Settings are valid, application is updated, initialize the
-                // Cache once so it can test if it needs to be updated as well.
-                var _cache = new XivCache(gameDirectory, lang);
                 FillTree(progress).GetAwaiter().OnCompleted(OnTreeRefreshCompleted);
             }
             catch (Exception ex)

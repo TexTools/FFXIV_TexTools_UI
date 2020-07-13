@@ -43,6 +43,7 @@ using xivModdingFramework.Mods.DataContainers;
 using xivModdingFramework.Mods.FileTypes;
 using xivModdingFramework.SqPack.FileTypes;
 using Application = System.Windows.Application;
+using System.Threading;
 
 namespace FFXIV_TexTools
 {
@@ -74,6 +75,15 @@ namespace FFXIV_TexTools
             _mainWindow = this;
             CheckForSettingsUpdate();
             LanguageSelection();
+
+            // Data Context needs to be set before we call Initialize Component to ensure
+            // that the bindings get connected immediately, and not after the constructor.
+            // It's kind of janky though because the constructor of MainViewModel fires
+            // an asynchronous non-waited call to check the Indexes/etc., which ideally
+            // we would really *want* to be waited, but blocking there will cause the whole
+            // application to lock because of inter-dependencies.
+            var mainViewModel = new MainViewModel(this);
+            this.DataContext = mainViewModel;
 
             InitializeComponent();
 
@@ -116,8 +126,6 @@ namespace FFXIV_TexTools
                 this.Show();
 
                 ItemSearchTextBox.Focus();
-                var mainViewModel = new MainViewModel(this);
-                this.DataContext = mainViewModel;
 
                 if (SearchTimer == null)
                 {
@@ -139,19 +147,11 @@ namespace FFXIV_TexTools
 
                 modelViewModel.LoadingComplete += ModelViewModelOnLoadingComplete;
 
-                // This needs to be put on the stack at the end of our initialization.
-                // We want C# to have finished putting together this object and the ViewModel
-                // Before we try any significant interaction with them.
-                DoAsyncInit();
+                // This can be safely called now.
+                RefreshTree();
             }
         }
 
-        private async void DoAsyncInit()
-        {
-            var vm = (MainViewModel)DataContext;
-            await vm.Initialize();
-            RefreshTree(null);
-        }
 
         private void LanguageSelection()
         {
@@ -847,11 +847,13 @@ namespace FFXIV_TexTools
 
         public void SetFilter()
         {
-            var view = (CollectionView)CollectionViewSource.GetDefaultView(ItemTreeView.ItemsSource);
-            if (view != null)
+
+            // This must be executed on the main UI thread if it's not already.
+            Dispatcher.BeginInvoke((ThreadStart)delegate ()
             {
+                var view = (CollectionView)CollectionViewSource.GetDefaultView(ItemTreeView.ItemsSource);
                 view.Filter = SearchFilter;
-            }
+            });
         }
 
         private bool SearchFilter(object item)
