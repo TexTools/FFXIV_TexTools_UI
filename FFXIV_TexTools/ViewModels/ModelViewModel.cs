@@ -29,6 +29,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
@@ -1344,11 +1345,17 @@ namespace FFXIV_TexTools.ViewModels
             try
             {
                 
-                bool success = await ImportModelView.ImportModel(_item, SelectedRace.XivRace);
-                if (!success)
+                bool success = await ImportModelView.ImportModel(_item, SelectedRace.XivRace, null, () =>
                 {
-                    return;
-                }
+                    _modelView.Dispatcher.BeginInvoke((ThreadStart)delegate ()
+                    {
+                        // Go ahead and reload the model as soon as the import process is done, even if they haven't closed the window.
+                        ModStatusToggleEnabled = true;
+
+                        _modelView.BottomFlyout.IsOpen = false;
+                        GetMeshes();
+                    });
+                });
             }
             catch (Exception ex)
             {
@@ -1359,10 +1366,6 @@ namespace FFXIV_TexTools.ViewModels
             }
             
 
-            ModStatusToggleEnabled = true;
-
-            _modelView.BottomFlyout.IsOpen = false;
-            GetMeshes();
         }
         #endregion
 

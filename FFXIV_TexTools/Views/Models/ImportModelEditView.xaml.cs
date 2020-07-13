@@ -31,6 +31,8 @@ namespace FFXIV_TexTools.Views.Models
         public ObservableCollection<KeyValuePair<string, string>> ShapesSource = new ObservableCollection<KeyValuePair<string, string>>();
         public ObservableCollection<KeyValuePair<string, string>> AttributesSource = new ObservableCollection<KeyValuePair<string, string>>();
         public ObservableCollection<KeyValuePair<string, string>> MaterialsSource = new ObservableCollection<KeyValuePair<string, string>>();
+        public ObservableCollection<KeyValuePair<string, string>> AllAttributesSource = new ObservableCollection<KeyValuePair<string, string>>();
+
         public ImportModelEditView(TTModel model)
         {
             InitializeComponent();
@@ -65,6 +67,9 @@ namespace FFXIV_TexTools.Views.Models
             AttributesListBox.DisplayMemberPath = "Value";
             AttributesListBox.SelectedValuePath = "Key";
 
+            AddAttributeBox.ItemsSource = AllAttributesSource;
+            AddAttributeBox.DisplayMemberPath = "Value";
+            AddAttributeBox.SelectedValuePath = "Key";
 
 
             _viewModel = new ImportModelEditViewModel(this, model);

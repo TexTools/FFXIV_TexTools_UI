@@ -29,6 +29,6 @@
             <Button x:Name="EditButton" Content="Open Editor" Margin="0" />
             <Button x:Name="ImportButton" Content="Import" Margin="10,0,0,0" />
         </UniformGrid>
-        <TextBox x:Name="LogTextBox" Height="418" Margin="8,183,8,0" TextWrapping="Wrap" Text="Warnings, etc." VerticalAlignment="Top" IsEnabled="False" Background="#FFACACAC" Foreground="Black" Style="{DynamicResource SimpleTextBox}" FontFamily="Courier New" VerticalScrollBarVisibility="Visible" Padding="5"/>
+        <RichTextBox x:Name="LogTextBox" Block.LineHeight="2" Height="418" Margin="8,183,8,0" VerticalAlignment="Top" Background="#FFE2E2E2" Foreground="Black" FontFamily="Courier New" VerticalScrollBarVisibility="Visible" Padding="5" IsUndoEnabled="True" IsReadOnly="True" mah:TextBoxHelper.WatermarkWrapping="Wrap"/>
     </Grid>
 </mah:MetroWindow>

@@ -2,12 +2,16 @@
 using FFXIV_TexTools.Properties;
 using FFXIV_TexTools.Resources;
 using FFXIV_TexTools.Views.Models;
+using SharpDX;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Windows.Media;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Documents;
 using System.Windows.Forms;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Helpers;
@@ -22,6 +26,7 @@ namespace FFXIV_TexTools.ViewModels
     public class ImportModelViewModel
     {
         private const int ExpandedHeight = 640;
+        private const double CloseDelay = 3000f;
 
         private ImportModelView _view;
         private IItemModel _item;
@@ -30,9 +35,10 @@ namespace FFXIV_TexTools.ViewModels
         private List<string> _importers;
         private bool _dataOnly;
         private string _internalPath;
+        private System.Timers.Timer _closeTimer;
 
         private bool _success = false;
-        private bool _editorOpen = false;
+        private Action _onComplete;
         public bool Success { get
             {
                 return _success;
@@ -42,12 +48,13 @@ namespace FFXIV_TexTools.ViewModels
         private bool _showEditor;
 
 
-        public ImportModelViewModel(ImportModelView view, IItemModel item, XivRace race, bool dataOnly)
+        public ImportModelViewModel(ImportModelView view, IItemModel item, XivRace race, bool dataOnly, Action onComplete = null)
         {
             _view = view;
             _item = item;
             _race = race;
             _dataOnly = dataOnly;
+            _onComplete = onComplete;
 
             var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
             var saveDirectory = new DirectoryInfo(Settings.Default.Save_Directory);
@@ -125,7 +132,8 @@ namespace FFXIV_TexTools.ViewModels
             var d = new DirectoryInfo(_view.FileNameTextBox.Text);
 
             // Clear log.
-            _view.LogTextBox.Text = "";
+            _view.LogTextBox.Document.Blocks.Clear();
+            _view.LogTextBox.AppendText("");
 
             var options = new ModelModifierOptions();
             options.EnableShapeData = _view.EnableShapeDataButton.IsChecked == true ? true : false;
@@ -157,7 +165,8 @@ namespace FFXIV_TexTools.ViewModels
                     {
                         if (ex.Message != "cancel")
                         {
-                            _view.LogTextBox.AppendText("> [ERROR] " + ex.Message + "\n");
+
+                            WriteToLog("> [ERROR] " + ex.Message, Brushes.DarkRed);
                             FlexibleMessageBox.Show("An error occurred during import:\n" + ex.Message + "\n\nThe import has been cancelled.", "Import Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
 
@@ -165,6 +174,21 @@ namespace FFXIV_TexTools.ViewModels
                     });
                 }
             });
+        }
+
+        private void WriteToLog(string text, Brush brush = null)
+        {
+            if(brush == null)
+            {
+                brush = Brushes.Black;
+            }
+            var paragraph = new Paragraph();
+            Run run = new Run();
+            run.Text = text;
+            paragraph.Inlines.Add(run);
+
+            paragraph.Foreground = brush;
+            _view.LogTextBox.Document.Blocks.Add(paragraph);
         }
 
 
@@ -177,7 +201,6 @@ namespace FFXIV_TexTools.ViewModels
         /// <returns></returns>
         private async Task<bool> IntermediateStep(TTModel model)
         {
-            _editorOpen = true;
             var result = false;
             await _view.Dispatcher.BeginInvoke((ThreadStart)delegate ()
             {
@@ -196,10 +219,16 @@ namespace FFXIV_TexTools.ViewModels
         {
             if(message == null || message.Trim() == "") return;
 
-            message = (isWarning ? "> [WARN] " : "> [INFO] ") + message;
             _view.Dispatcher.BeginInvoke((ThreadStart) delegate()
             {
-                _view.LogTextBox.AppendText(message + "\n");
+                if (isWarning)
+                {
+                    WriteToLog("> [WARN] " + message, Brushes.DarkGoldenrod);
+                }
+                else
+                {
+                    WriteToLog("> [INFO] " + message, Brushes.Black);
+                }
             }).Wait(); // The .Wait() is just to help ensure we don't print log lines out of order.
         }
 
@@ -210,8 +239,67 @@ namespace FFXIV_TexTools.ViewModels
         {
             _view.Dispatcher.BeginInvoke((ThreadStart)delegate ()
             {
-                _view.EnableAll(true);
+                WriteToLog("> [SUCCESS] Model Imported Successfully.", Brushes.DarkGreen);
+                _view.SetData(_mdl.GetRawData());
                 _success = true;
+
+                // Remove the old import button handler since it gets reused as a close button.
+                _view.ImportButton.Click -= ImportButton_Click;
+
+                _view.EnableClose();
+
+                _closeTimer = new System.Timers.Timer(CloseDelay);
+                _closeTimer.Elapsed += _closeTimer_Elapsed;
+                _closeTimer.Start();
+                _view.KeyDown += _view_KeyDown;
+                WriteToLog("> [INFO] This window will automatically close in 3 seconds... (ESC to cancel)", Brushes.Black);
+
+                // If we have a callback function, trigger it, that way we can do model refreshes/etc. 
+                // while the user is still looking at the log and feeling good about stuff.
+                if (_onComplete != null)
+                {
+                    _onComplete();
+                }
+            }).Wait();
+        }
+
+        private void _view_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            var key = e.Key;
+            if(key == System.Windows.Input.Key.Escape)
+            {
+                if (_closeTimer != null)
+                {
+                    _closeTimer.Elapsed -= _closeTimer_Elapsed;
+                    _closeTimer.Stop();
+                    _view.KeyDown += _view_KeyDown;
+                    _closeTimer = null;
+                    WriteToLog("> [INFO] Automatic close cancelled.", Brushes.Black);
+                }
+            }
+        }
+
+        private void _closeTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            _view.Dispatcher.BeginInvoke((ThreadStart)delegate ()
+            {
+                if(_closeTimer != null)
+                {
+                    _closeTimer.Elapsed -= _closeTimer_Elapsed;
+                    _closeTimer.Stop();
+                    _closeTimer = null;
+                    if (_view != null)
+                    {
+                        _view.KeyDown += _view_KeyDown;
+                    }
+                }
+                try
+                {
+                    _view.DialogResult = Success;
+                } catch(Exception ex)
+                {
+                    //No-Op.  If this fails /bc window is already closed it doesn't matter.
+                }
             }).Wait();
         }
 

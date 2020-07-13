@@ -30,6 +30,7 @@ namespace FFXIV_TexTools.ViewModels
         private readonly Regex DefaultSkinRegex = new Regex("\\/mt_c[0-9]{4}b0001_a\\.mtrl");
         private readonly Regex ItemMaterialRegex = new Regex("\\/mt_c([0-9]{4})e[0-9]{4}_[a-z0-9]{3}_([a-z])\\.mtrl");
         private const string SkinMaterial = "/mt_c0101b0001_a.mtrl";
+        private readonly KeyValuePair<string, string> DefaultTag = new KeyValuePair<string, string>("_!ADDNEW!_", "Add Parts...");
         private readonly KeyValuePair<string, string> CustomTag = new KeyValuePair<string, string>("_!CUSTOM!_", "Custom");
         private readonly KeyValuePair<string, string> SkinTag = new KeyValuePair<string, string>(SkinMaterial, "Skin");
 
@@ -86,6 +87,9 @@ namespace FFXIV_TexTools.ViewModels
 
             _view.RemoveShapeButton.Click += RemoveShapeButton_Click;
             _view.RemoveAttributeButton.Click += RemoveAttributeButton_Click;
+
+            _view.AddAttributeBox.SelectionChanged += AddAttributeBox_SelectionChanged;
+            _view.AddAttributeTextBox.KeyDown += AddAttributeTextBox_KeyDown;
 
             _view.MeshNumberBox.SelectedIndex = 0;
         }
@@ -171,6 +175,85 @@ namespace FFXIV_TexTools.ViewModels
             _view.MaterialsSource.Add(CustomTag);
         }
 
+        private void ResetAttributesList()
+        {
+            _view.AllAttributesSource.Clear();
+            _view.AddAttributeTextBox.Text = "";
+
+            _view.AllAttributesSource.Add(DefaultTag);
+            var m = GetGroup();
+            if (m == null) return;
+
+            foreach (var p in m.Parts)
+            {
+                foreach (var a in p.Attributes) {
+                    var r = _view.AllAttributesSource.FirstOrDefault(x => x.Key == a);
+                    if (r.Key == null)
+                    {
+                        _view.AllAttributesSource.Add(new KeyValuePair<string, string>(a, a));
+                    }
+                }
+            }
+            _view.AllAttributesSource.Add(CustomTag);
+
+            _view.AddAttributeBox.SelectedValue = DefaultTag.Key;
+        }
+        private void AddAttributeBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            if (_view.AddAttributeBox.SelectedValue == null) return;
+
+            var attr = (string)_view.AddAttributeBox.SelectedValue;
+            if (attr == DefaultTag.Key)
+            {
+                _view.AddAttributeTextBox.IsEnabled = false;
+                return;
+            }
+
+            if (attr == CustomTag.Key)
+            {
+                _view.AddAttributeTextBox.IsEnabled = true;
+
+                _view.AddAttributeTextBox.Focus();
+                _view.AddAttributeTextBox.Text = "";
+            } else
+            {
+                _view.AddAttributeTextBox.IsEnabled = false;
+                _view.AddAttributeTextBox.Text = "";
+                var p = GetPart();
+                if(!p.Attributes.Contains(attr))
+                {
+                    p.Attributes.Add(attr);
+                    _view.AttributesSource.Add(new KeyValuePair<string, string>(attr, attr));
+                }
+                ResetAttributesList();
+            }
+
+        }
+        private void AddAttributeTextBox_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            
+            if (e.Key == Key.Return)
+            {
+                var attr = _view.AddAttributeTextBox.Text;
+                attr.ToLower();
+                attr.Trim();
+                var validator = new Regex("[^a-z_]");
+                attr = validator.Replace(attr, "");
+                if (attr == "") return;
+
+                _view.AddAttributeBox.Focus();
+
+                var p = GetPart();
+                if (!p.Attributes.Contains(attr))
+                {
+                    p.Attributes.Add(attr);
+                    _view.AttributesSource.Add(new KeyValuePair<string, string>(attr, attr));
+                }
+                ResetAttributesList();
+            }
+        }
+
+
         // Mesh number changed.
         private void MeshNumberBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
@@ -217,6 +300,7 @@ namespace FFXIV_TexTools.ViewModels
         private void PartNumberBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
 
+            ResetAttributesList();
             if (_view.MeshNumberBox.SelectedValue == null || _view.PartNumberBox.SelectedValue == null)
             {
                 _view.AttributesSource.Clear();

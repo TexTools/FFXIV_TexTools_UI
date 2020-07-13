@@ -593,7 +593,6 @@ namespace FFXIV_TexTools.Views
             ModelTypeComboBox.Items.Clear();
             MaterialComboBox.Items.Clear();
             CustomTextureTextBox.Text = string.Empty;
-            CustomModelTextBox.Text = string.Empty;
 
 
             var modList = JsonConvert.DeserializeObject<ModList>(File.ReadAllText(_modListDirectory.FullName));
@@ -776,10 +775,7 @@ namespace FFXIV_TexTools.Views
             if (ModelTypeComboBox.Items.Count > 0)
             {
                 AddCurrentModelButton.IsEnabled = true;
-                GetCustomModelButton.IsEnabled = true;
-                CustomModelTextBox.IsEnabled = true;
                 AdvOptionsButton.IsEnabled = true;
-                AddCustomModelButton.IsEnabled = false;
                 ModelTypeComboBox.SelectedIndex = 0;
                 NoModelModsLabel.Content = string.Empty;
 
@@ -787,10 +783,7 @@ namespace FFXIV_TexTools.Views
             else
             {
                 AddCurrentModelButton.IsEnabled = false;
-                GetCustomModelButton.IsEnabled = false;
-                CustomModelTextBox.IsEnabled = false;
                 AdvOptionsButton.IsEnabled = false;
-                AddCustomModelButton.IsEnabled = false;
                 NoModelModsLabel.Content = UIStrings.No_3D_Mods;
             }
 
@@ -825,23 +818,6 @@ namespace FFXIV_TexTools.Views
                 AddCustomTextureButton.IsEnabled = true;
             }
         }
-
-        /// <summary>
-        /// The event handler for the custom model button clicked
-        /// </summary>
-        private void GetCustomModelButton_Click(object sender, RoutedEventArgs e)
-        {
-            var openFileDialog = new OpenFileDialog { Filter = "Collada Files(*.DAE)|*.DAE" };
-
-
-            if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-            {
-                CustomModelTextBox.Text = openFileDialog.FileName;
-                AddCustomModelButton.IsEnabled = true;
-                //AdvOptionsButton.IsEnabled = true;
-            }
-        }
-
         /// <summary>
         /// The event handler for the current texture button clicked
         /// </summary>
@@ -1124,49 +1100,22 @@ namespace FFXIV_TexTools.Views
 
             var includedModsList = IncludedModsList.Items.Cast<IncludedMods>().ToList();
             var mdl = new Mdl(_gameDirectory, XivDataFiles.GetXivDataFile(mod.datFile));
-
-            var xivMdl = await mdl.GetMdlData(itemModel, IOUtil.GetRaceFromPath(mod.fullPath), null, null, mod.data.originalOffset);
-            var modMdl = await mdl.GetMdlData(itemModel, IOUtil.GetRaceFromPath(mod.fullPath), null, null, mod.data.modOffset);
-
-            //TODO - FIXFIX - Show Advanced Import View for Wizard Dialog
-        }
-
-
-        /// <summary>
-        /// The event handler for the custom model button clicked
-        /// </summary>
-        private async void AddCustomModelButton_Click(object sender, RoutedEventArgs e)
-        {
-            var selectedItem = ModelTypeComboBox.SelectedItem as ModComboBox;
-
-            var mod = selectedItem.SelectedMod;
-
-            var includedMod = new IncludedMods
-            {
-                Name = $"{Path.GetFileNameWithoutExtension(mod.fullPath)} ({((Category)ModListTreeView.SelectedItem).Name})",
-                FullPath = mod.fullPath
-            };
-
-            var itemModel = MakeItemModel(mod);
-
-            var includedModsList = IncludedModsList.Items.Cast<IncludedMods>().ToList();
-            var mdl = new Mdl(_gameDirectory, XivDataFiles.GetXivDataFile(mod.datFile));
             try
             {
-                bool success = await ImportModelView.ImportModel(itemModel, IOUtil.GetRaceFromPath(mod.fullPath), this);
+                bool success = await ImportModelView.ImportModel(itemModel, IOUtil.GetRaceFromPath(mod.fullPath), this, null, true);
                 if (!success)
                 {
                     return;
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 FlexibleMessageBox.Show(ex.Message, UIMessages.AdvancedImportErrorTitle,
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
-            var mdlData = mdl.GetRawData();
+            var mdlData = ImportModelView.GetData();
 
             if (includedModsList.Any(item => item.Name.Equals(includedMod.Name)))
             {

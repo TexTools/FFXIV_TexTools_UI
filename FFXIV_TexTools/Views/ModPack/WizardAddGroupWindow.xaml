@@ -151,10 +151,7 @@
                                                 <ColumnDefinition Width="Auto"/>
                                                 <ColumnDefinition Width="Auto"/>
                                             </Grid.ColumnDefinitions>
-                                            <TextBox x:Name="CustomModelTextBox" Grid.Column="0" IsReadOnly="True" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.Select_a_file_dot}}" VerticalAlignment="Top" Margin="0,0,10,0"/>
-                                            <Button x:Name="GetCustomModelButton" Grid.Column="1" Content=" . . . " VerticalAlignment="Top" Margin="0,0,10,0" Click="GetCustomModelButton_Click"/>
                                         </Grid>
-                                        <Button x:Name="AddCustomModelButton" Grid.Column="1" Content="{Binding Source={x:Static resx:UIStrings.Add}}" VerticalAlignment="Top" Margin="10,0,0,0" Click="AddCustomModelButton_Click"/>
                                     </Grid>
                                     <Grid Grid.Row="3" Margin="5">
                                         <Grid.ColumnDefinitions>
