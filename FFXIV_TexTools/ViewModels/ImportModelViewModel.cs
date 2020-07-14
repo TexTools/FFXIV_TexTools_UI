@@ -39,10 +39,12 @@ namespace FFXIV_TexTools.ViewModels
 
         private bool _success = false;
         private Action _onComplete;
-        public bool Success { get
+        public bool Success
+        {
+            get
             {
                 return _success;
-            } 
+            }
         }
 
         private bool _showEditor;
@@ -77,14 +79,14 @@ namespace FFXIV_TexTools.ViewModels
             foreach (var suffix in _importers)
             {
                 startingPath = Path.Combine(defaultPath, modelName) + "." + suffix;
-                if(File.Exists(defaultPath))
+                if (File.Exists(defaultPath))
                 {
                     foundValidFile = true;
                     break;
                 }
             }
 
-            if(!foundValidFile)
+            if (!foundValidFile)
             {
                 startingPath = Path.Combine(defaultPath, modelName) + ".dae";
             }
@@ -99,11 +101,11 @@ namespace FFXIV_TexTools.ViewModels
             _view.Closing += _view_Closing;
 
             // Default Settings for specific categories.
-            if(item.SecondaryCategory == XivStrings.Face)
+            if (item.SecondaryCategory == XivStrings.Face)
             {
                 _view.EnableShapeDataButton.IsChecked = true;
             }
-            if(item.SecondaryCategory == XivStrings.Hair)
+            if (item.SecondaryCategory == XivStrings.Hair)
             {
                 _view.CloneUV1Button.IsChecked = true;
             }
@@ -144,41 +146,43 @@ namespace FFXIV_TexTools.ViewModels
             options.ClearVColor = _view.ClearVColorButton.IsChecked == true ? true : false;
 
             // Asynchronously call ImportModel.
-            Task.Run( async () =>
-            {
-                try
-                {
-                    if (showEditor)
-                    {
-                        await _mdl.ImportModel(_item, _race, d.FullName, options, LogMessageReceived, IntermediateStep, XivStrings.TexTools, _dataOnly);
-                    } else
-                    {
-                        await _mdl.ImportModel(_item, _race, d.FullName, options, LogMessageReceived, null, XivStrings.TexTools, _dataOnly);
-                    }
-                    OnImportComplete();
-                } catch(Exception ex)
-                {
+            Task.Run(async () =>
+           {
+               try
+               {
+                   if (showEditor)
+                   {
+                       await _mdl.ImportModel(_item, _race, d.FullName, options, LogMessageReceived, IntermediateStep, XivStrings.TexTools, _dataOnly);
+                   }
+                   else
+                   {
+                       await _mdl.ImportModel(_item, _race, d.FullName, options, LogMessageReceived, null, XivStrings.TexTools, _dataOnly);
+                   }
+                   OnImportComplete();
+               }
+               catch (Exception ex)
+               {
                     // This is kind of a weird construct, but ensures this is called
                     // on the main UI thread.
                     // main thread that has ownership to edit the Enabled values.
                     await _view.Dispatcher.BeginInvoke((ThreadStart)delegate ()
-                    {
-                        if (ex.Message != "cancel")
-                        {
+                   {
+                       if (ex.Message != "cancel")
+                       {
 
-                            WriteToLog("> [ERROR] " + ex.Message, Brushes.DarkRed);
-                            FlexibleMessageBox.Show("An error occurred during import:\n" + ex.Message + "\n\nThe import has been cancelled.", "Import Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        }
+                           WriteToLog("> [ERROR] " + ex.Message, Brushes.DarkRed);
+                           FlexibleMessageBox.Show("An error occurred during import:\n" + ex.Message + "\n\nThe import has been cancelled.", "Import Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                       }
 
-                        _view.EnableAll(true);
-                    });
-                }
-            });
+                       _view.EnableAll(true);
+                   });
+               }
+           });
         }
 
         private void WriteToLog(string text, Brush brush = null)
         {
-            if(brush == null)
+            if (brush == null)
             {
                 brush = Brushes.Black;
             }
@@ -204,8 +208,15 @@ namespace FFXIV_TexTools.ViewModels
             var result = false;
             await _view.Dispatcher.BeginInvoke((ThreadStart)delegate ()
             {
-                var editorWindow = new ImportModelEditView(model) { Owner = _view };
-                result = editorWindow.ShowDialog() == true ? true : false;
+                try
+                {
+                    var editorWindow = new ImportModelEditView(model) { Owner = _view };
+                    result = editorWindow.ShowDialog() == true ? true : false;
+                }
+                catch (Exception Ex)
+                {
+                    throw Ex;
+                }
             });
             return result;
         }
@@ -217,19 +228,19 @@ namespace FFXIV_TexTools.ViewModels
         /// <param name="message"></param>
         private void LogMessageReceived(bool isWarning, string message)
         {
-            if(message == null || message.Trim() == "") return;
+            if (message == null || message.Trim() == "") return;
 
-            _view.Dispatcher.BeginInvoke((ThreadStart) delegate()
-            {
-                if (isWarning)
-                {
-                    WriteToLog("> [WARN] " + message, Brushes.DarkGoldenrod);
-                }
-                else
-                {
-                    WriteToLog("> [INFO] " + message, Brushes.Black);
-                }
-            }).Wait(); // The .Wait() is just to help ensure we don't print log lines out of order.
+            _view.Dispatcher.BeginInvoke((ThreadStart)delegate ()
+           {
+               if (isWarning)
+               {
+                   WriteToLog("> [WARN] " + message, Brushes.DarkGoldenrod);
+               }
+               else
+               {
+                   WriteToLog("> [INFO] " + message, Brushes.Black);
+               }
+           }).Wait(); // The .Wait() is just to help ensure we don't print log lines out of order.
         }
 
         /// <summary>
@@ -266,7 +277,7 @@ namespace FFXIV_TexTools.ViewModels
         private void _view_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
             var key = e.Key;
-            if(key == System.Windows.Input.Key.Escape)
+            if (key == System.Windows.Input.Key.Escape)
             {
                 if (_closeTimer != null)
                 {
@@ -283,7 +294,7 @@ namespace FFXIV_TexTools.ViewModels
         {
             _view.Dispatcher.BeginInvoke((ThreadStart)delegate ()
             {
-                if(_closeTimer != null)
+                if (_closeTimer != null)
                 {
                     _closeTimer.Elapsed -= _closeTimer_Elapsed;
                     _closeTimer.Stop();
@@ -296,7 +307,8 @@ namespace FFXIV_TexTools.ViewModels
                 try
                 {
                     _view.DialogResult = Success;
-                } catch(Exception ex)
+                }
+                catch (Exception ex)
                 {
                     //No-Op.  If this fails /bc window is already closed it doesn't matter.
                 }
@@ -309,13 +321,13 @@ namespace FFXIV_TexTools.ViewModels
             openFileDialog.InitialDirectory = Path.GetDirectoryName(_view.FileNameTextBox.Text);
 
             var filter = "";
-            foreach(var s in _importers)
+            foreach (var s in _importers)
             {
                 filter += "*." + s + ";";
             }
             filter = filter.Substring(0, filter.Length - 1);
 
-            openFileDialog.Filter = "3D Models (" + filter + ")|"+filter;
+            openFileDialog.Filter = "3D Models (" + filter + ")|" + filter;
             openFileDialog.RestoreDirectory = false;
 
             if (openFileDialog.ShowDialog() == DialogResult.OK)

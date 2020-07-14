@@ -64,6 +64,13 @@ namespace FFXIV_TexTools.ViewModels
             // Merge all the default skin materials together, since FFXIV auto-handles them anyways.
             foreach(var m in _model.MeshGroups)
             {
+                if(m.Material == null)
+                {
+                    // Sanity assurance.
+                    m.Material = model.MeshGroups[0].Material;
+                }
+
+
                 var result = DefaultSkinRegex.Match(m.Material);
                 if (result.Success)
                 {
