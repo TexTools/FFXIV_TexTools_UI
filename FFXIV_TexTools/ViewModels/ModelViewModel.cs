@@ -1515,28 +1515,34 @@ namespace FFXIV_TexTools.ViewModels
                     case "cb":
                         var body = mtrlFilePath.Substring(mtrlFilePath.IndexOf("b") + 1, 4);
                         raceString = mtrlFilePath.Substring(mtrlFilePath.IndexOf("c") + 1, 4);
-                        race = XivRaces.GetXivRace(raceString);
 
-                        if (!raceString.Equals("0901") && !raceString.Equals("1001") && !raceString.Equals("1101") && !raceString.Equals("1501"))
+                        // XIV automatically forces skin materials to instead reference the appropiate one for the character wearing it.
+                        race = XivRaceTree.GetSkinRace(_selectedRace.XivRace);
+
+
+                        var gender = 0;
+                        if (int.Parse(XivRaces.GetRaceCode(race).Substring(0, 2)) % 2 == 0)
                         {
-                            // XIV automatically forces skin materials to instead reference the appropiate one for the character wearing it.
-                            race = _selectedRace.XivRace;
-
-
-                            var gender = 0;
-                            if (int.Parse(XivRaces.GetRaceCode(race).Substring(0, 2)) % 2 == 0)
-                            {
-                                gender = 1;
-                            }
-
-                            var settingsRace = GetSettingsRace(gender);
-
-                            race = settingsRace.Race;
-
-                            filePath = mtrlFilePath.Replace(raceString, race.GetRaceCode()).Replace(body, settingsRace.BodyID);
-
-                            body = settingsRace.BodyID;
+                            gender = 1;
                         }
+
+                        // Get the actual skin the user's preferred race uses.
+                        var settingsRace = XivRaceTree.GetSkinRace(GetSettingsRace(gender).Race);
+                        var settingsBody = settingsRace == GetSettingsRace(gender).Race ? GetSettingsRace(gender).BodyID : "0001";
+
+                        // If the user's race is a child of the item's race, we can show the user skin instead.
+                        var useSettings = XivRaceTree.IsChildOf(settingsRace, race);
+                        if(useSettings)
+                        {
+                            race = settingsRace;
+                            filePath = mtrlFilePath.Replace(raceString, settingsRace.GetRaceCode()).Replace(body, settingsBody);
+                        } else
+                        {
+                            // Just use item race.
+                            filePath = mtrlFilePath.Replace(raceString, race.GetRaceCode()).Replace(body, "0001");
+                        }
+
+
 
 
                         mtrlItem = new XivGenericItemModel
