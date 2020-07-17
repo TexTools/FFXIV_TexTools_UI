@@ -104,7 +104,9 @@ namespace FFXIV_TexTools.ViewModels
                     mg.Positions.Add(v.Position);
                     mg.Normals.Add(v.Normal);
 
-                    mg.TextureCoordinates.Add(v.UV1);
+                    var uv = v.UV1;
+                    uv.Y *= -1;
+                    mg.TextureCoordinates.Add(uv);
                     mg.Colors.Add(color);
                     mg.BiTangents.Add(v.Binormal);
                     mg.Tangents.Add(v.Tangent);
