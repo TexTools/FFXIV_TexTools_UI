@@ -103,7 +103,7 @@ namespace FFXIV_TexTools.Views.Models
 
             // Bone List Index
             AddText(textBox, "Bone List Index:\t", _textColor, false);
-            AddText(textBox, $"{mesh.BoneListIndex}\n\n", _textColor, true);
+            AddText(textBox, $"{mesh.BoneSetIndex}\n\n", _textColor, true);
 
             // Index Data Offset
             AddText(textBox, "Index Data Offset:\t", _textColor, false);

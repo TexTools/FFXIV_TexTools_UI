@@ -35,10 +35,10 @@ namespace FFXIV_TexTools.Views.Models
 
         // Height to expand to when opening the log window.
 
-        public ImportModelView(IItemModel item, XivRace race, Action onComplete, bool dataOnly = false)
+        public ImportModelView(IItemModel item, XivRace race, Action onComplete, string submeshId = null, bool dataOnly = false)
         {
             InitializeComponent();
-            _viewModel = new ImportModelViewModel(this, item, race, dataOnly, onComplete);
+            _viewModel = new ImportModelViewModel(this, item, race, submeshId, dataOnly, onComplete);
             DataContext = _viewModel;
         }
 
@@ -91,7 +91,7 @@ namespace FFXIV_TexTools.Views.Models
         /// <param name="onComplete">Function to be called after import completes, but before user has closed the window. (Task handler returns when window is closed)</param>
         /// <param name="dataOnly">If this should be just load the data to memory and not import the resultant MDL.  Data can be accessed with ImportModelView.GetData()</param>
         /// <returns></returns>
-        public static async Task<bool> ImportModel(IItemModel item, XivRace race, Window windowOwner = null, Action onComplete = null, bool dataOnly = false)
+        public static async Task<bool> ImportModel(IItemModel item, XivRace race, string submeshId = null, Window windowOwner = null, Action onComplete = null, bool dataOnly = false)
         {
 
             if (windowOwner == null)
@@ -100,7 +100,7 @@ namespace FFXIV_TexTools.Views.Models
                 windowOwner = MainWindow.GetMainWindow();
             }
 
-            var imView = new ImportModelView(item, race, onComplete, dataOnly) { Owner = windowOwner };
+            var imView = new ImportModelView(item, race, onComplete, submeshId, dataOnly) { Owner = windowOwner };
 
             // This blocks until the dialog closes.
             var result = imView.ShowDialog();

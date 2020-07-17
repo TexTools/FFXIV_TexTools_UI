@@ -29,8 +29,10 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows.Media.Media3D;
+using xivModdingFramework.General.Enums;
 using xivModdingFramework.Models.DataContainers;
 using xivModdingFramework.Models.FileTypes;
+using xivModdingFramework.Models.Helpers;
 using MeshBuilder = HelixToolkit.Wpf.SharpDX.MeshBuilder;
 using MeshGeometry3D = HelixToolkit.Wpf.SharpDX.MeshGeometry3D;
 using PerspectiveCamera = HelixToolkit.Wpf.SharpDX.PerspectiveCamera;
@@ -63,37 +65,82 @@ namespace FFXIV_TexTools.ViewModels
             BackgroundColor = Properties.Settings.Default.BG_Color;
         }
 
+        private MeshGeometry3D GetMeshGeometry(TTModel model, int meshGroupId)
+        {
+            var group = model.MeshGroups[meshGroupId];
+            var mg = new MeshGeometry3D
+            {
+                Positions = new Vector3Collection((int)group.VertexCount),
+                Normals = new Vector3Collection((int)group.VertexCount),
+                Colors = new Color4Collection((int)group.VertexCount),
+                TextureCoordinates = new Vector2Collection((int)group.VertexCount),
+                BiTangents = new Vector3Collection((int)group.VertexCount),
+                Tangents = new Vector3Collection((int)group.VertexCount),
+                Indices = new IntCollection((int)group.IndexCount)
+            };
+
+            var indexCount = 0;
+            var vertCount = 0;
+
+            for (int mi = 0; mi < meshGroupId; mi++)
+            {
+                var g = model.MeshGroups[mi];
+                //vertCount += (int) g.VertexCount;
+                //indexCount += (int)g.IndexCount;
+            }
+
+            foreach (var p in group.Parts)
+            {
+                foreach (var v in p.Vertices) {
+
+                    // I don't think our current shader actually utilizes this data anyways
+                    // but may as well include it correctly.
+                    var color = new Color4();
+                    color.Red = v.VertexColor[0] / 255f;
+                    color.Green = v.VertexColor[1] / 255f;
+                    color.Blue = v.VertexColor[2] / 255f;
+                    color.Alpha = v.VertexColor[3] / 255f;
+
+                    mg.Positions.Add(v.Position);
+                    mg.Normals.Add(v.Normal);
+
+                    mg.TextureCoordinates.Add(v.UV1);
+                    mg.Colors.Add(color);
+                    mg.BiTangents.Add(v.Binormal);
+                    mg.Tangents.Add(v.Tangent);
+                }
+
+                foreach(var vertexId in p.TriangleIndices)
+                {
+                    // Have to bump these to account for merging the lists together.
+                    mg.Indices.Add(vertCount + vertexId);
+                }
+
+
+                vertCount += p.Vertices.Count;
+                indexCount += p.TriangleIndices.Count;
+            }
+            return mg;
+        }
+
         /// <summary>
         /// Updates the model in the 3D viewport
         /// </summary>
         /// <param name="mdlData">The model data</param>
         /// <param name="textureDataDictionary">The texture dictionary for the model</param>
-        public void UpdateModel(XivMdl mdlData, Dictionary<int, ModelTextureData> textureDataDictionary)
+        public void UpdateModel(TTModel model, Dictionary<int, ModelTextureData> textureDataDictionary)
         {
             SharpDX.BoundingBox? boundingBox = null;
+            ModelModifiers.CalculateTangentsFromBinormals(model);
+            //ModelModifiers.ApplyRacialDeform(model, XivRace.Miqote_Female);
 
-            var totalMeshCount = mdlData.LoDList[0].MeshCount + mdlData.LoDList[0].ExtraMeshCount;
+            var totalMeshCount = model.MeshGroups.Count;
 
             for (var i = 0; i < totalMeshCount; i++)
             {
-                var meshData = mdlData.LoDList[0].MeshDataList[i].VertexData;
-
-                var meshGeometry3D = new MeshGeometry3D
-                {
-                    Positions = new Vector3Collection(meshData.Positions),
-                    Normals = new Vector3Collection(meshData.Normals),
-                    Indices = new IntCollection(meshData.Indices),
-                    Colors = new Color4Collection(meshData.Colors4),
-                    TextureCoordinates = new Vector2Collection(meshData.TextureCoordinates0),
-                    BiTangents = new Vector3Collection(meshData.BiNormals)
-                };
-
-                // Calculate the missing Tangent data by making use of the Normal, Binormal and Handedness data.
-                // This is significantly less expensive than recalculating everything, and more accurate.
-                var tangents = Mdl.CalculateTangentsFromBinormals(meshData.Normals, meshData.BiNormals, meshData.BiNormalHandedness);
-                meshGeometry3D.Tangents = new Vector3Collection(tangents);
-
-                var textureData = textureDataDictionary[mdlData.LoDList[0].MeshDataList[i].MeshInfo.MaterialIndex];
+                var meshGeometry3D = GetMeshGeometry(model, i);
+                
+                var textureData = textureDataDictionary[model.GetMaterialIndex(i)];
 
                 Stream diffuse = null, specular = null, normal = null, alpha = null, emissive = null;
 
@@ -166,8 +213,8 @@ namespace FFXIV_TexTools.ViewModels
                 var mgm3d = new CustomMeshGeometryModel3D
                 {
                     Geometry = meshGeometry3D,
-                    Material = material,
-                    IsBody = mdlData.LoDList[0].MeshDataList[i].IsBody
+                    Material = material//,
+                    //IsBody = mdlData.LoDList[0].MeshDataList[i].IsBody
                 };
 
                 boundingBox = meshGeometry3D.Bound;

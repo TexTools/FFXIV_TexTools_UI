@@ -320,9 +320,6 @@
     <Compile Include="Views\ModConverterView.xaml.cs">
       <DependentUpon>ModConverterView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Models\ExportModelOptionsView.xaml.cs">
-      <DependentUpon>ExportModelOptionsView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\Models\ImportModelEditView.xaml.cs">
       <DependentUpon>ImportModelEditView.xaml</DependentUpon>
     </Compile>
@@ -433,10 +430,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\ModConverterView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Models\ExportModelOptionsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -35,6 +35,7 @@ namespace FFXIV_TexTools.ViewModels
         private List<string> _importers;
         private bool _dataOnly;
         private string _internalPath;
+        private string _submeshId;
         private System.Timers.Timer _closeTimer;
 
         private bool _success = false;
@@ -50,11 +51,12 @@ namespace FFXIV_TexTools.ViewModels
         private bool _showEditor;
 
 
-        public ImportModelViewModel(ImportModelView view, IItemModel item, XivRace race, bool dataOnly, Action onComplete = null)
+        public ImportModelViewModel(ImportModelView view, IItemModel item, XivRace race, string submeshId, bool dataOnly, Action onComplete = null)
         {
             _view = view;
             _item = item;
             _race = race;
+            _submeshId = submeshId;
             _dataOnly = dataOnly;
             _onComplete = onComplete;
 
@@ -65,8 +67,8 @@ namespace FFXIV_TexTools.ViewModels
             _importers = _mdl.GetAvailableImporters();
 
 
-            var dir = _mdl.GetMdlPath(item, race, item.GetPrimaryItemType(), null, null, null);
-            _internalPath = dir.Folder + "/" + dir.File;
+            var path = _mdl.GetMdlPath(item, race);
+            _internalPath = path;
 
             var defaultPath = $"{IOUtil.MakeItemSavePath(_item, saveDirectory, _race)}\\3D";
             defaultPath = defaultPath.Replace("/", "\\");
@@ -152,11 +154,11 @@ namespace FFXIV_TexTools.ViewModels
                {
                    if (showEditor)
                    {
-                       await _mdl.ImportModel(_item, _race, d.FullName, options, LogMessageReceived, IntermediateStep, XivStrings.TexTools, _dataOnly);
+                       await _mdl.ImportModel(_item, _race, d.FullName, options, LogMessageReceived, IntermediateStep, XivStrings.TexTools, _submeshId, _dataOnly);
                    }
                    else
                    {
-                       await _mdl.ImportModel(_item, _race, d.FullName, options, LogMessageReceived, null, XivStrings.TexTools, _dataOnly);
+                       await _mdl.ImportModel(_item, _race, d.FullName, options, LogMessageReceived, null, XivStrings.TexTools, _submeshId, _dataOnly);
                    }
                    OnImportComplete();
                }

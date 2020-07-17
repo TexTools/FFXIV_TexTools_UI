@@ -19,7 +19,7 @@ namespace FFXIV_TexTools.Resources {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class UIMessages {
@@ -530,6 +530,24 @@ namespace FFXIV_TexTools.Resources {
         internal static string ExistingOption {
             get {
                 return ResourceManager.GetString("ExistingOption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An error occured while attempting to export the model..
+        /// </summary>
+        internal static string ExportErrorMessage {
+            get {
+                return ResourceManager.GetString("ExportErrorMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Export Error.
+        /// </summary>
+        internal static string ExportErrorTitle {
+            get {
+                return ResourceManager.GetString("ExportErrorTitle", resourceCulture);
             }
         }
         

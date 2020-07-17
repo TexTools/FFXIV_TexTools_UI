@@ -1102,7 +1102,8 @@ namespace FFXIV_TexTools.Views
             var mdl = new Mdl(_gameDirectory, XivDataFiles.GetXivDataFile(mod.datFile));
             try
             {
-                bool success = await ImportModelView.ImportModel(itemModel, IOUtil.GetRaceFromPath(mod.fullPath), this, null, true);
+                // TODO - FIXFIX - Include Submesh ID
+                bool success = await ImportModelView.ImportModel(itemModel, IOUtil.GetRaceFromPath(mod.fullPath), null, this, null, true);
                 if (!success)
                 {
                     return;
