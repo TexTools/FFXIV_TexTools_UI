@@ -134,7 +134,7 @@ namespace FFXIV_TexTools.ViewModels
         {
             SharpDX.BoundingBox? boundingBox = null;
             ModelModifiers.CalculateTangentsFromBinormals(model);
-            //ModelModifiers.ApplyRacialDeform(model, XivRace.Miqote_Female);
+            ModelModifiers.ApplyRacialDeform(model, XivRace.Miqote_Female);
 
             var totalMeshCount = model.MeshGroups.Count;
 
