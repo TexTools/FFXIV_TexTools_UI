@@ -103,10 +103,7 @@ namespace FFXIV_TexTools.ViewModels
 
                     mg.Positions.Add(v.Position);
                     mg.Normals.Add(v.Normal);
-
-                    var uv = v.UV1;
-                    uv.Y *= -1;
-                    mg.TextureCoordinates.Add(uv);
+                    mg.TextureCoordinates.Add(v.UV1);
                     mg.Colors.Add(color);
                     mg.BiTangents.Add(v.Binormal);
                     mg.Tangents.Add(v.Tangent);
@@ -132,9 +129,9 @@ namespace FFXIV_TexTools.ViewModels
         /// <param name="textureDataDictionary">The texture dictionary for the model</param>
         public void UpdateModel(TTModel model, Dictionary<int, ModelTextureData> textureDataDictionary)
         {
+
             SharpDX.BoundingBox? boundingBox = null;
             ModelModifiers.CalculateTangentsFromBinormals(model);
-            ModelModifiers.ApplyRacialDeform(model, XivRace.Miqote_Female);
 
             var totalMeshCount = model.MeshGroups.Count;
 

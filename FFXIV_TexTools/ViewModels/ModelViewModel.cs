@@ -1250,7 +1250,12 @@ namespace FFXIV_TexTools.ViewModels
             {
                try
                {
-                   // Pump the materials out first, in case any of the exporters need them.
+                    // Pump the materials out first, in case any of the exporters need them.
+
+                    if (!Directory.Exists(GetItem3DFolder()))
+                    {
+                        System.IO.Directory.CreateDirectory(GetItem3DFolder());
+                    }
                    ExportMaterials();
                    var path = GetItem3DFolder() + Path.GetFileNameWithoutExtension(_model.Source) + "." + format;
                    await _mdl.ExportMdlToFile(_item, SelectedRace.XivRace, path);
