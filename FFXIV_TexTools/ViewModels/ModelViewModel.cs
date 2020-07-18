@@ -1250,13 +1250,6 @@ namespace FFXIV_TexTools.ViewModels
             {
                try
                {
-                    // Pump the materials out first, in case any of the exporters need them.
-
-                    if (!Directory.Exists(GetItem3DFolder()))
-                    {
-                        System.IO.Directory.CreateDirectory(GetItem3DFolder());
-                    }
-                   ExportMaterials();
                    var path = GetItem3DFolder() + Path.GetFileNameWithoutExtension(_model.Source) + "." + format;
                    await _mdl.ExportMdlToFile(_item, SelectedRace.XivRace, path);
 
@@ -1296,63 +1289,6 @@ namespace FFXIV_TexTools.ViewModels
             BasicImportEnabled = true;
         }
 
-        /// <summary>
-        /// Exports the materials for the current model
-        /// </summary>
-        private void ExportMaterials()
-        {
-            var modelName = Path.GetFileNameWithoutExtension(_model.Source);
-
-            foreach (var materialDict in _materialDictionary)
-            {
-                var modelMaps = materialDict.Value;
-                var matNum = materialDict.Key;
-
-                var saveDir = new DirectoryInfo(Settings.Default.Save_Directory);
-
-                var path = GetItem3DFolder();
-
-                if (modelMaps.Diffuse != null && modelMaps.Diffuse.Length > 0)
-                {
-                    using (var img = Image.LoadPixelData<Rgba32>(modelMaps.Diffuse, modelMaps.Width, modelMaps.Height))
-                    {
-                        img.Save($"{path}\\{modelName}_{matNum}_Diffuse.bmp", new BmpEncoder());
-                    }
-                }
-
-                if (modelMaps.Normal != null && modelMaps.Normal.Length > 0)
-                {
-                    using (var img = Image.LoadPixelData<Rgba32>(modelMaps.Normal, modelMaps.Width, modelMaps.Height))
-                    {
-                        img.Save($"{path}\\{modelName}_{matNum}_Normal.bmp", new BmpEncoder());
-                    }
-                }
-
-                if (modelMaps.Specular != null && modelMaps.Specular.Length > 0)
-                {
-                    using (var img = Image.LoadPixelData<Rgba32>(modelMaps.Specular, modelMaps.Width, modelMaps.Height))
-                    {
-                        img.Save($"{path}\\{modelName}_{matNum}_Specular.bmp", new BmpEncoder());
-                    }
-                }
-
-                if (modelMaps.Alpha != null && modelMaps.Alpha.Length > 0)
-                {
-                    using (var img = Image.LoadPixelData<Rgba32>(modelMaps.Alpha, modelMaps.Width, modelMaps.Height))
-                    {
-                        img.Save($"{path}\\{modelName}_{matNum}_Alpha.bmp", new BmpEncoder());
-                    }
-                }
-
-                if (modelMaps.Emissive != null && modelMaps.Emissive.Length > 0)
-                {
-                    using (var img = Image.LoadPixelData<Rgba32>(modelMaps.Emissive, modelMaps.Width, modelMaps.Height))
-                    {
-                        img.Save($"{path}\\{modelName}_{matNum}_Emissive.bmp", new BmpEncoder());
-                    }
-                }
-            }
-        }
 
 
         #endregion
