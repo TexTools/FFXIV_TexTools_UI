@@ -24,8 +24,85 @@ namespace FFXIV_TexTools.ViewModels
 {
     public class ImportModelEditViewModel
     {
+        /// <summary>
+        /// The list of nice, human readable attribute names, keyed by their underlying FFXIV name.
+        /// </summary>
+        /// <returns></returns>
+        private Dictionary<string, string> NiceAttributeNames = new Dictionary<string, string>()
+        {
+
+            { "atr_hair","Hair" },
+            { "atr_kam", "Scalp" },
+            { "atr_hig", "Facial Hair" },
+            { "atr_mim", "Ear" },
+            { "atr_hrn", "Horn" },
+            { "atr_kao", "Face" },
+
+            // Used in weapons
+            { "atr_arrow", "Arrow" },
+            { "atr_ar0", "Quiver Arrow" },
+            { "atr_attach", "Gauss Barrel" },
+
+            // Used in Body gear
+            { "atr_hij", "Wrist" },
+            { "atr_ude", "Elbow" },
+            { "atr_nek", "Neck" },
+
+            // Used in Leg gear
+            { "atr_kod", "Waist" },
+            { "atr_sne", "Shin" },
+            { "atr_hiz", "Knee" },
+
+            // Used in headgear
+            { "atr_inr", "Gorget" },    // Neck only for head items.
+            
+            { "atr_lod", "Excess Detail" },
+
+            // Used in Glove items
+            { "atr_arm", "Glove" },
+
+            // Used in Foot items
+            { "atr_lpd", "Knee Pad" },
+            { "atr_leg", "Boot" },
+
+            // Misc
+            { "atr_tlh", "Non-Tail Races Only" },
+            { "atr_tls", "Tail Races Only" },
+
+            // Unknown/unverified
+            { "atr_top", "Body" },
+            { "atr_sta", null },
+
+            // IMC Attributes are handled below in GetNiceAttributeName()
+        };
+
+        private Dictionary<string, string> NiceImcAttributeNames = new Dictionary<string, string>()
+        {
+            { "bv", "Weapon" },
+            { "dv", XivStrings.Legs },
+            { "mv", XivStrings.Head },
+            { "gv", XivStrings.Hands},
+            { "sv", XivStrings.Feet },
+            { "tv", XivStrings.Body },
+            { "fv", XivStrings.Face },
+            { "hv", XivStrings.Hair },
+            { "nv", null },
+        };
+
+        /// <summary>
+        /// The list of nice, human readable shape names, keyed by their underlying FFXIV name.
+        /// </summary>
+        /// <returns></returns>
+        private Dictionary<string, string> NiceShapeNames = new Dictionary<string, string>()
+        {
+
+        };
+
+
         private ImportModelEditView _view;
         private TTModel _model;
+
+        private readonly Regex ImcAttributeRegex = new Regex("^atr_([a-z]{2})_([a-j])$");
 
         private readonly Regex DefaultSkinRegex = new Regex("\\/mt_c[0-9]{4}b0001_a\\.mtrl");
         private readonly Regex ItemMaterialRegex = new Regex("\\/mt_c([0-9]{4})e[0-9]{4}_[a-z0-9]{3}_([a-z])\\.mtrl");
@@ -33,6 +110,7 @@ namespace FFXIV_TexTools.ViewModels
         private readonly KeyValuePair<string, string> DefaultTag = new KeyValuePair<string, string>("_!ADDNEW!_", "Add Parts...");
         private readonly KeyValuePair<string, string> CustomTag = new KeyValuePair<string, string>("_!CUSTOM!_", "Custom");
         private readonly KeyValuePair<string, string> SkinTag = new KeyValuePair<string, string>(SkinMaterial, "Skin");
+        private readonly string UnknownText = "Unknown";
 
         private TTMeshGroup GetGroup()
         {
@@ -182,29 +260,42 @@ namespace FFXIV_TexTools.ViewModels
             _view.MaterialsSource.Add(CustomTag);
         }
 
-        private void ResetAttributesList()
+        // Repopulates the list box showing what attributes are available to add.
+        private void ResetAvailableAttributesList()
         {
             _view.AllAttributesSource.Clear();
             _view.AddAttributeTextBox.Text = "";
 
             _view.AllAttributesSource.Add(DefaultTag);
-            var m = GetGroup();
-            if (m == null) return;
 
-            foreach (var p in m.Parts)
+            var attributes = new List<KeyValuePair<string, string>>(_model.Attributes.Count);
+            foreach (var a in _model.Attributes)
             {
-                foreach (var a in p.Attributes) {
-                    var r = _view.AllAttributesSource.FirstOrDefault(x => x.Key == a);
-                    if (r.Key == null)
-                    {
-                        _view.AllAttributesSource.Add(new KeyValuePair<string, string>(a, a));
-                    }
+                var r = _view.AllAttributesSource.FirstOrDefault(x => x.Key == a);
+                if (r.Key == null)
+                {
+                    attributes.Add(new KeyValuePair<string, string>(a, GetNiceAttributeName(a)));
                 }
             }
+            
+            // Sort the attributes by their nice name before adding them.
+            attributes = attributes.OrderBy(x => x.Value).ToList();
+            foreach(var kv in attributes)
+            {
+                _view.AllAttributesSource.Add(kv);
+            }
+
             _view.AllAttributesSource.Add(CustomTag);
 
             _view.AddAttributeBox.SelectedValue = DefaultTag.Key;
         }
+
+
+        /// <summary>
+        /// When the user selects a new attribute from the dropdown list.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void AddAttributeBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
             if (_view.AddAttributeBox.SelectedValue == null) return;
@@ -218,21 +309,22 @@ namespace FFXIV_TexTools.ViewModels
 
             if (attr == CustomTag.Key)
             {
+                // Enable manual editing if they hit the custom button.
                 _view.AddAttributeTextBox.IsEnabled = true;
-
                 _view.AddAttributeTextBox.Focus();
                 _view.AddAttributeTextBox.Text = "";
             } else
             {
+                // Otherwise straight add the thing.
                 _view.AddAttributeTextBox.IsEnabled = false;
                 _view.AddAttributeTextBox.Text = "";
                 var p = GetPart();
                 if(!p.Attributes.Contains(attr))
                 {
                     p.Attributes.Add(attr);
-                    _view.AttributesSource.Add(new KeyValuePair<string, string>(attr, attr));
+                    _view.AttributesSource.Add(new KeyValuePair<string, string>(attr, GetNiceAttributeName(attr)));
                 }
-                ResetAttributesList();
+                ResetAvailableAttributesList();
             }
 
         }
@@ -242,8 +334,33 @@ namespace FFXIV_TexTools.ViewModels
             if (e.Key == Key.Return)
             {
                 var attr = _view.AddAttributeTextBox.Text;
-                attr.ToLower();
-                attr.Trim();
+                attr = attr.ToLower();
+                attr = attr.Trim();
+
+                // See if we can find it in the nice names list.
+                var found = NiceAttributeNames.FirstOrDefault(x => x.Value != null ? (x.Value.ToLower() == attr) : false);
+                if(found.Key != null)
+                {
+                    attr = found.Key;
+                } else
+                {
+                    // See if the thing they typed in is an imc attribute nice name.
+                    var ImcNiceNameRegex = new Regex("imc (.+) ([a-j])$");
+                    var match = ImcNiceNameRegex.Match(attr.ToLower());
+                    if(match.Success)
+                    {
+                        var niceSlotName = match.Groups[1].Value;
+                        var letter = match.Groups[2].Value;
+                        found = NiceImcAttributeNames.FirstOrDefault(x => x.Value != null ? (x.Value.ToLower() == niceSlotName) : false);
+                        if (found.Key != null)
+                        {
+                            var rawSlotName = found.Key;
+                            attr = "atr_" + rawSlotName + "_" + letter;
+                        }
+                    }
+                }
+
+
                 var validator = new Regex("[^a-z_]");
                 attr = validator.Replace(attr, "");
                 if (attr == "") return;
@@ -254,9 +371,9 @@ namespace FFXIV_TexTools.ViewModels
                 if (!p.Attributes.Contains(attr))
                 {
                     p.Attributes.Add(attr);
-                    _view.AttributesSource.Add(new KeyValuePair<string, string>(attr, attr));
+                    _view.AttributesSource.Add(new KeyValuePair<string, string>(attr, GetNiceAttributeName(attr)));
                 }
-                ResetAttributesList();
+                ResetAvailableAttributesList();
             }
         }
 
@@ -307,7 +424,7 @@ namespace FFXIV_TexTools.ViewModels
         private void PartNumberBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
 
-            ResetAttributesList();
+            ResetAvailableAttributesList();
             if (_view.MeshNumberBox.SelectedValue == null || _view.PartNumberBox.SelectedValue == null)
             {
                 _view.AttributesSource.Clear();
@@ -321,8 +438,29 @@ namespace FFXIV_TexTools.ViewModels
             _view.AttributesSource.Clear();
             foreach (var attribute in p.Attributes)
             {
-                _view.AttributesSource.Add(new KeyValuePair<string, string>(attribute, attribute));
+                _view.AttributesSource.Add(new KeyValuePair<string, string>(attribute, GetNiceAttributeName(attribute)));
             }
+        }
+
+        // Gets the nice, human readable name for an attribute.
+        private string GetNiceAttributeName(string attribute)
+        {
+
+            var niceName = NiceAttributeNames.ContainsKey(attribute) && NiceAttributeNames[attribute] != null ? NiceAttributeNames[attribute] : UnknownText;
+            if (niceName == UnknownText)
+            {
+                var imcMatch = ImcAttributeRegex.Match(attribute);
+                if (imcMatch.Success)
+                {
+                    var slotPrefix = imcMatch.Groups[1].Value;
+                    var letter = imcMatch.Groups[2].Value;
+                    var niceImcName = NiceImcAttributeNames.ContainsKey(slotPrefix) && NiceImcAttributeNames[slotPrefix] != null ? NiceImcAttributeNames[slotPrefix] : UnknownText;
+
+                    niceName = "IMC " + niceImcName + " " + letter;
+                }
+            }
+            var fullNiceName = niceName + " (" + attribute + ")";
+            return fullNiceName;
         }
 
         // Material combo box selector changed.

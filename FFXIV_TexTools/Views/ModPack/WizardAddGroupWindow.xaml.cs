@@ -1102,7 +1102,9 @@ namespace FFXIV_TexTools.Views
             var mdl = new Mdl(_gameDirectory, XivDataFiles.GetXivDataFile(mod.datFile));
             try
             {
-                // TODO - FIXFIX - Include Submesh ID
+                // TODO - Include Submesh ID ?
+                // Do we even have any kind of UI To specify this in the wizard?
+                // Submeshes are only used for Furniture anyways, so it might be a 'will not fix'
                 bool success = await ImportModelView.ImportModel(itemModel, IOUtil.GetRaceFromPath(mod.fullPath), null, this, null, true);
                 if (!success)
                 {

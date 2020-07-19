@@ -9,11 +9,13 @@
     <Grid>
         <Grid Height="54" VerticalAlignment="Top">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="73*"/>
-                <ColumnDefinition Width="17*"/>
+                <ColumnDefinition Width="223*"/>
+                <ColumnDefinition Width="39*"/>
+                <ColumnDefinition Width="55*"/>
             </Grid.ColumnDefinitions>
-            <TextBox x:Name="FileNameTextBox" Text="Some File Path" Grid.ColumnSpan="1" Margin="10" VerticalAlignment="Center" VerticalContentAlignment="Center" FontStyle="Italic" />
-            <Button x:Name="SelectFileButton" Content="..." Grid.ColumnSpan="1" Grid.Column="1" Margin="10" VerticalAlignment="Center" />
+            <TextBox x:Name="FileNameTextBox" Text="Some File Path" Grid.ColumnSpan="1" Margin="10,14,5,14" VerticalAlignment="Center" VerticalContentAlignment="Center" FontStyle="Italic" Height="26" />
+            <Button x:Name="SelectFileButton" Content="..." Grid.ColumnSpan="1" Grid.Column="1" Margin="5,14" VerticalAlignment="Center" Height="26" />
+            <Button x:Name="UseExistingButton" Content="Use Existing" Grid.ColumnSpan="1" Margin="5,14,10,14" VerticalAlignment="Center" Grid.Column="2" Height="26" Click="UseExistingButton_Click" />
 
         </Grid>
         <UniformGrid Margin="10,59,10,0" Columns="3" Rows="2" Height="72" VerticalAlignment="Top">

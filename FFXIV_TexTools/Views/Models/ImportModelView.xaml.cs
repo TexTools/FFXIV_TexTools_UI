@@ -124,8 +124,14 @@ namespace FFXIV_TexTools.Views.Models
             EnableShapeDataButton.IsEnabled = enabled;
             ForceUVsButton.IsEnabled = enabled;
             FileNameTextBox.IsEnabled = enabled;
+            UseExistingButton.IsEnabled = enabled;
             IsCloseButtonEnabled = enabled;
             SelectFileButton.IsEnabled = enabled;
+        }
+
+        private void UseExistingButton_Click(object sender, RoutedEventArgs e)
+        {
+            FileNameTextBox.Text = "";
         }
     }
 }

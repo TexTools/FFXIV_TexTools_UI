@@ -77,20 +77,29 @@ namespace FFXIV_TexTools.ViewModels
 
             // Scan to see which file type(s) actually exist.
             bool foundValidFile = false;
-            string startingPath = "";
-            foreach (var suffix in _importers)
+
+            // FBX is default, so check that first.
+            var startingPath = Path.Combine(defaultPath, modelName) + ".fbx";
+            if (File.Exists(startingPath))
             {
-                startingPath = Path.Combine(defaultPath, modelName) + "." + suffix;
-                if (File.Exists(defaultPath))
+                foundValidFile = true;
+            }
+            if (!foundValidFile)
+            {
+                foreach (var suffix in _importers)
                 {
-                    foundValidFile = true;
-                    break;
+                    startingPath = Path.Combine(defaultPath, modelName) + "." + suffix;
+                    if (File.Exists(startingPath))
+                    {
+                        foundValidFile = true;
+                        break;
+                    }
                 }
             }
 
             if (!foundValidFile)
             {
-                startingPath = Path.Combine(defaultPath, modelName) + ".dae";
+                startingPath = "";
             }
 
 
@@ -130,10 +139,26 @@ namespace FFXIV_TexTools.ViewModels
 
         private void DoImport(bool showEditor)
         {
+
+            string path = null;
+            if (_view.FileNameTextBox.Text != null && _view.FileNameTextBox.Text.Trim() != "") 
+            {
+                try
+                {
+                    var d = new DirectoryInfo(_view.FileNameTextBox.Text);
+                    path = d.FullName;
+                }
+                catch(Exception ex)
+                {
+                    // Invalid directory.
+                    FlexibleMessageBox.Show("The given file path is invalid.", "Import Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+            }
+
             _showEditor = showEditor;
             _view.Height = ExpandedHeight;
             _view.EnableAll(false);
-            var d = new DirectoryInfo(_view.FileNameTextBox.Text);
 
             // Clear log.
             _view.LogTextBox.Document.Blocks.Clear();
@@ -154,11 +179,11 @@ namespace FFXIV_TexTools.ViewModels
                {
                    if (showEditor)
                    {
-                       await _mdl.ImportModel(_item, _race, d.FullName, options, LogMessageReceived, IntermediateStep, XivStrings.TexTools, _submeshId, _dataOnly);
+                       await _mdl.ImportModel(_item, _race, path, options, LogMessageReceived, IntermediateStep, XivStrings.TexTools, _submeshId, _dataOnly);
                    }
                    else
                    {
-                       await _mdl.ImportModel(_item, _race, d.FullName, options, LogMessageReceived, null, XivStrings.TexTools, _submeshId, _dataOnly);
+                       await _mdl.ImportModel(_item, _race, path, options, LogMessageReceived, null, XivStrings.TexTools, _submeshId, _dataOnly);
                    }
                    OnImportComplete();
                }
@@ -320,7 +345,13 @@ namespace FFXIV_TexTools.ViewModels
         private void SelectFileButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
             var openFileDialog = new System.Windows.Forms.OpenFileDialog();
-            openFileDialog.InitialDirectory = Path.GetDirectoryName(_view.FileNameTextBox.Text);
+            try
+            {
+                openFileDialog.InitialDirectory = Path.GetDirectoryName(_view.FileNameTextBox.Text);
+            } catch(Exception ex)
+            {
+                // Doesn't really matter if the default path they put in is invalid.
+            }
 
             var filter = "";
             foreach (var s in _importers)
