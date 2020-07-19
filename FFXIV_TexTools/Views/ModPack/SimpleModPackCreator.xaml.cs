@@ -394,7 +394,7 @@ namespace FFXIV_TexTools.Views
             string part = "-";
             string[] parts = new[] { "a", "b", "c", "d", "e", "f" };
 
-            if (modPath.Contains("/equipment/"))
+            if (modPath.Contains("/equipment/") || modPath.Contains("/hair/"))
             {
                 if(modPath.Contains("/texture/"))
                 {
