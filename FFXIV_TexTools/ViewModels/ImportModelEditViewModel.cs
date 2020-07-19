@@ -2,6 +2,8 @@
 using FFXIV_TexTools.Properties;
 using FFXIV_TexTools.Resources;
 using FFXIV_TexTools.Views.Models;
+using SharpDX;
+using SharpDX.Direct3D9;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -10,6 +12,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Input;
 using xivModdingFramework.General.Enums;
@@ -39,6 +42,10 @@ namespace FFXIV_TexTools.ViewModels
         private readonly KeyValuePair<string, string> SkinTag = new KeyValuePair<string, string>(SkinMaterial, "Skin");
         private readonly string UnknownText = "Unknown";
 
+        private readonly float ModelSize;
+        private const float MinAcceptableSize = 0.1f;
+        private const float MaxAcceptableSize = 5f;
+
         private TTMeshGroup GetGroup()
         {
             if (_view.MeshNumberBox.SelectedValue == null)
@@ -67,9 +74,9 @@ namespace FFXIV_TexTools.ViewModels
 
 
             // Merge all the default skin materials together, since FFXIV auto-handles them anyways.
-            foreach(var m in _model.MeshGroups)
+            foreach (var m in _model.MeshGroups)
             {
-                if(m.Material == null)
+                if (m.Material == null)
                 {
                     // Sanity assurance.
                     m.Material = model.MeshGroups[0].Material;
@@ -82,6 +89,32 @@ namespace FFXIV_TexTools.ViewModels
                     m.Material = SkinMaterial;
                 }
             }
+
+            float minX = 9999.0f, minY = 9999.0f, minZ = 9999.0f;
+            float maxX = -9999.0f, maxY = -9999.0f, maxZ = -9999.0f;
+            foreach (var m in _model.MeshGroups)
+            {
+                foreach (var p in m.Parts)
+                {
+                    foreach (var v in p.Vertices)
+                    {
+                        minX = minX < v.Position.X ? minX : v.Position.X;
+                        minY = minY < v.Position.Y ? minY : v.Position.Y;
+                        minZ = minZ < v.Position.Z ? minZ : v.Position.Z;
+
+                        maxX = maxX > v.Position.X ? maxX : v.Position.X;
+                        maxY = maxY > v.Position.Y ? maxY : v.Position.Y;
+                        maxZ = maxZ > v.Position.Z ? maxZ : v.Position.Z;
+                    }
+                }
+            }
+
+            Vector3 min = new Vector3(minX, minY, minZ);
+            Vector3 max = new Vector3(maxX, maxY, maxZ);
+            ModelSize = Vector3.Distance(min, max);
+
+            UpdateModelSizeWarning();
+
 
             UpdateMaterialsList();
 
@@ -103,7 +136,39 @@ namespace FFXIV_TexTools.ViewModels
             _view.AddAttributeBox.SelectionChanged += AddAttributeBox_SelectionChanged;
             _view.AddAttributeTextBox.KeyDown += AddAttributeTextBox_KeyDown;
 
+            _view.ScaleComboBox.SelectionChanged += ScaleComboBox_SelectionChanged;
+
             _view.MeshNumberBox.SelectedIndex = 0;
+        }
+
+        private void ScaleComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            UpdateModelSizeWarning();
+        }
+
+        private void UpdateModelSizeWarning()
+        {
+            float size = ModelSize * ((float)_view.ScaleComboBox.SelectedValue);
+            if (size < MinAcceptableSize)
+            {
+                _view.ScaleWarningBox.Foreground = System.Windows.Media.Brushes.DarkGoldenrod;
+                _view.ScaleWarningBox.FontWeight = FontWeights.Bold;
+                _view.ScaleWarningBox.Content = "Model Size: " + size.ToString("0.00") + " meters.\nYou may wish to consider scaling the model up.";
+
+            }
+            else if (size > MaxAcceptableSize)
+            {
+                _view.ScaleWarningBox.Foreground = System.Windows.Media.Brushes.DarkGoldenrod;
+                _view.ScaleWarningBox.FontWeight = FontWeights.Bold;
+                _view.ScaleWarningBox.Content = "Model Size: " + size.ToString("0.00") + " meters.\nYou may wish to consider scaling the model down.";
+
+            }
+            else
+            {
+                _view.ScaleWarningBox.Foreground = System.Windows.Media.Brushes.Black;
+                _view.ScaleWarningBox.FontWeight = FontWeights.Normal;
+                _view.ScaleWarningBox.Content = "Model Size: " + size.ToString("0.00") + " meters.\nThis seems within the normal range.";
+            }
         }
 
         private void AttributesListBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
