@@ -50,6 +50,11 @@ namespace FFXIV_TexTools.ViewModels
 
         private bool _showEditor;
 
+        private async Task AssignPath() {
+            var result = await _mdl.GetMdlPath(_item, _race);
+            _internalPath = result;
+        }
+
 
         public ImportModelViewModel(ImportModelView view, IItemModel item, XivRace race, string submeshId, bool dataOnly, Action onComplete = null)
         {
@@ -67,8 +72,8 @@ namespace FFXIV_TexTools.ViewModels
             _importers = _mdl.GetAvailableImporters();
 
 
-            var path = _mdl.GetMdlPath(item, race);
-            _internalPath = path;
+            // We need to explicitly fork this onto a new thread to avoid deadlock.
+            Task.Run(AssignPath).Wait();
 
             var defaultPath = $"{IOUtil.MakeItemSavePath(_item, saveDirectory, _race)}\\3D";
             defaultPath = defaultPath.Replace("/", "\\");

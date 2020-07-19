@@ -540,7 +540,7 @@ namespace FFXIV_TexTools.ViewModels
                     string submeshId = null;
                     if (PartVisibility == Visibility.Visible)
                     {
-                        ((XivFurniture)_item).TertiaryCategory = SelectedPart.Name;
+                        var path = SelectedPart.MdlPath;
                         var type = _item.GetPrimaryItemType();
                         if (_selectedPart.Name != "b0")
                         {
