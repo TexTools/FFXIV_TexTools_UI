@@ -24,79 +24,6 @@ namespace FFXIV_TexTools.ViewModels
 {
     public class ImportModelEditViewModel
     {
-        /// <summary>
-        /// The list of nice, human readable attribute names, keyed by their underlying FFXIV name.
-        /// </summary>
-        /// <returns></returns>
-        private Dictionary<string, string> NiceAttributeNames = new Dictionary<string, string>()
-        {
-
-            { "atr_hair","Hair" },
-            { "atr_kam", "Scalp" },
-            { "atr_hig", "Facial Hair" },
-            { "atr_mim", "Ear" },
-            { "atr_hrn", "Horn" },
-            { "atr_kao", "Face" },
-
-            // Used in weapons
-            { "atr_arrow", "Arrow" },
-            { "atr_ar0", "Quiver Arrow" },
-            { "atr_attach", "Gauss Barrel" },
-
-            // Used in Body gear
-            { "atr_hij", "Wrist" },
-            { "atr_ude", "Elbow" },
-            { "atr_nek", "Neck" },
-
-            // Used in Leg gear
-            { "atr_kod", "Waist" },
-            { "atr_sne", "Shin" },
-            { "atr_hiz", "Knee" },
-
-            // Used in headgear
-            { "atr_inr", "Gorget" },    // Neck only for head items.
-            
-            { "atr_lod", "Excess Detail" },
-
-            // Used in Glove items
-            { "atr_arm", "Glove" },
-
-            // Used in Foot items
-            { "atr_lpd", "Knee Pad" },
-            { "atr_leg", "Boot" },
-
-            // Misc
-            { "atr_tlh", "Non-Tail Races Only" },
-            { "atr_tls", "Tail Races Only" },
-
-            // Unknown/unverified
-            { "atr_top", "Body" },
-            { "atr_sta", null },
-
-            // IMC Attributes are handled below in GetNiceAttributeName()
-        };
-
-        private Dictionary<string, string> NiceImcAttributeNames = new Dictionary<string, string>()
-        {
-            { "bv", "Weapon" },
-            { "dv", XivStrings.Legs },
-            { "mv", XivStrings.Head },
-            { "gv", XivStrings.Hands},
-            { "sv", XivStrings.Feet },
-            { "tv", XivStrings.Body },
-            { "fv", XivStrings.Face },
-            { "hv", XivStrings.Hair },
-            { "nv", null },
-        };
-
-        /// <summary>
-        /// The list of nice, human readable shape names, keyed by their underlying FFXIV name.
-        /// </summary>
-        /// <returns></returns>
-        private Dictionary<string, string> NiceShapeNames = new Dictionary<string, string>()
-        {
-
-        };
 
 
         private ImportModelEditView _view;
@@ -403,7 +330,7 @@ namespace FFXIV_TexTools.ViewModels
             _view.ShapesSource.Clear();
             foreach (var shape in m.ShapeParts)
             {
-                _view.ShapesSource.Add(new KeyValuePair<string, string>(shape.Name, shape.Name));
+                _view.ShapesSource.Add(new KeyValuePair<string, string>(shape.Name, GetNiceShapeName(shape.Name)));
             }
 
             SetMaterial(m.Material == null ? _model.Materials[0] : m.Material);
@@ -460,6 +387,16 @@ namespace FFXIV_TexTools.ViewModels
                 }
             }
             var fullNiceName = niceName + " (" + attribute + ")";
+            return fullNiceName;
+        }
+
+        // Gets the nice, human readable name for a shape
+        private string GetNiceShapeName(string shape)
+        {
+
+            var niceName = NiceShapeNames.ContainsKey(shape) && NiceShapeNames[shape] != null ? NiceShapeNames[shape] : UnknownText;
+
+            var fullNiceName = niceName + " (" + shape + ")";
             return fullNiceName;
         }
 
@@ -539,5 +476,160 @@ namespace FFXIV_TexTools.ViewModels
         }
 
 
+        /// <summary>
+        /// The list of nice, human readable attribute names, keyed by their underlying FFXIV name.
+        /// </summary>
+        /// <returns></returns>
+        private static readonly Dictionary<string, string> NiceAttributeNames = new Dictionary<string, string>()
+        {
+
+            { "atr_hair","Hair" },
+            { "atr_kam", "Scalp" },
+            { "atr_hig", "Facial Hair" },
+            { "atr_mim", "Ear" },
+            { "atr_hrn", "Horn" },
+            { "atr_kao", "Face" },
+
+            // Used in weapons
+            { "atr_arrow", "Arrow" },
+            { "atr_ar0", "Quiver Arrow" },
+            { "atr_attach", "Gauss Barrel" },
+
+            // Used in Body gear
+            { "atr_hij", "Wrist" },
+            { "atr_ude", "Elbow" },
+            { "atr_nek", "Neck" },
+
+            // Used in Leg gear
+            { "atr_kod", "Waist" },
+            { "atr_sne", "Shin" },
+            { "atr_hiz", "Knee" },
+
+            // Used in headgear
+            { "atr_inr", "Gorget" },    // Neck only for head items.
+            
+            { "atr_lod", "Excess Detail" },
+
+            // Used in Glove items
+            { "atr_arm", "Glove" },
+
+            // Used in Foot items
+            { "atr_lpd", "Knee Pad" },
+            { "atr_leg", "Boot" },
+
+            // Misc
+            { "atr_tlh", "Non-Tail Races Only" },
+            { "atr_tls", "Tail Races Only" },
+
+            // Unknown/unverified
+            { "atr_top", "Body" },
+            { "atr_sta", null },
+
+            // IMC Attributes are handled below in GetNiceAttributeName()
+        };
+
+        private static readonly Dictionary<string, string> NiceImcAttributeNames = new Dictionary<string, string>()
+        {
+            { "bv", "Weapon" },
+            { "dv", XivStrings.Legs },
+            { "mv", XivStrings.Head },
+            { "gv", XivStrings.Hands},
+            { "sv", XivStrings.Feet },
+            { "tv", XivStrings.Body },
+            { "fv", XivStrings.Face },
+            { "hv", XivStrings.Hair },
+            { "nv", null },
+        };
+        /// <summary>
+        /// The list of nice, human readable attribute names, keyed by their underlying FFXIV name.
+        /// </summary>
+        /// <returns></returns>
+        private static readonly Dictionary<string, string> NiceShapeNames = new Dictionary<string, string>()
+        {
+            // This is mostly a copy of the atr list, but sometimes the names change,
+            // so it's listed as a separate dictionary.
+            { "shp_hair","Hair" },
+            { "shp_kam", "Scalp" },
+            { "shp_hig", "Facial Hair" },
+            { "shp_mim", "Ear" },
+            { "shp_hrn", "Horn" },
+            { "shp_kao", "Face" },
+
+            // Used in weapons
+            { "shp_arrow", "Arrow" },
+            { "shp_ar0", "Quiver Arrow" },
+            { "shp_attach", "Gauss Barrel" },
+
+            // Used in Body gear
+            { "shp_hij", "Wrist" },
+            { "shp_ude", "Elbow" },
+            { "shp_nek", "Neck" },
+
+            // Used in Leg gear
+            { "shp_kod", "Waist" },
+            { "shp_sne", "Shin" },
+            { "shp_hiz", "Knee" },
+
+            // Used in headgear
+            { "shp_inr", "Gorget" },    // Neck only for head items.
+            
+            { "shp_lod", "Excess Detail" },
+
+            // Used in Glove items
+            { "shp_arm", "Glove" },
+
+            // Used in Foot items
+            { "shp_lpd", "Knee Pad" },
+            { "shp_leg", "Boot" },
+
+            // Misc
+            { "shp_tlh", "Non-Tail Races Only" },
+            { "shp_tls", "Tail Races Only" },
+
+            // Unknown/unverified
+            { "shp_top", "Body" },
+            { "shp_sta", null },
+
+            // Face stuff.
+            // Was it the smartest idea to do these by hand?  Probably not.
+            // But it works, and it's done.
+            { "shp_brw_a", "Brow a" },
+            { "shp_brw_b", "Brow b" },
+            { "shp_brw_c", "Brow c" },
+            { "shp_brw_d", "Brow d" },
+            { "shp_brw_e", "Brow e" },
+
+            { "shp_chk_a", "Cheek a" },
+            { "shp_chk_b", "Cheek b" },
+            { "shp_chk_c", "Cheek c" },
+            { "shp_chk_d", "Cheek d" },
+            { "shp_chk_e", "Cheek e" },
+
+            { "shp_etc_a", "Etc a" },
+            { "shp_etc_b", "Etc b" },
+            { "shp_etc_c", "Etc c" },
+            { "shp_etc_d", "Etc d" },
+            { "shp_etc_e", "Etc e" },
+
+            { "shp_irs_a", "Iris a" },
+
+            { "shp_mth_a", "Mouth a" },
+            { "shp_mth_b", "Mouth b" },
+            { "shp_mth_c", "Mouth c" },
+            { "shp_mth_d", "Mouth d" },
+            { "shp_mth_e", "Mouth e" },
+
+            { "shp_eye_a", "Eye a" },
+            { "shp_eye_b", "Eye b" },
+            { "shp_eye_c", "Eye c" },
+            { "shp_eye_d", "Eye d" },
+            { "shp_eye_e", "Eye e" },
+
+            { "shp_nse_a", "Nose a" },
+            { "shp_nse_b", "Nose b" },
+            { "shp_nse_c", "Nose c" },
+            { "shp_nse_d", "Nose d" },
+            { "shp_nse_e", "Nose e" },
+        };
     }
 }

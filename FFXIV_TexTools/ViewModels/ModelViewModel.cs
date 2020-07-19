@@ -137,6 +137,8 @@ namespace FFXIV_TexTools.ViewModels
             {
                 var button = new System.Windows.Controls.Button();
                 button.Content = format;
+                button.Width = 100;
+                button.Margin = new System.Windows.Thickness(0);
                 button.Click += (object sender, RoutedEventArgs e) =>
                 {
                     ExportModel(format);

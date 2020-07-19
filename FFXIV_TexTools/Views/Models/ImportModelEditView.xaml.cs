@@ -43,7 +43,14 @@ namespace FFXIV_TexTools.Views.Models
             for (var mIdx = 0; mIdx < model.MeshGroups.Count; mIdx++)
             {
                 var m = model.MeshGroups[mIdx];
-                MeshSource.Add(new KeyValuePair<int, string>(mIdx, "#" + mIdx.ToString()));
+                if(m.Name == null)
+                {
+                    MeshSource.Add(new KeyValuePair<int, string>(mIdx, "#" + mIdx.ToString()));
+
+                } else
+                {
+                    MeshSource.Add(new KeyValuePair<int, string>(mIdx, "#" + mIdx.ToString() + ": " + m.Name));
+                }
             }
 
             MeshNumberBox.ItemsSource = MeshSource;

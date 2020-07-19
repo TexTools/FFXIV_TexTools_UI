@@ -250,6 +250,7 @@
     <Compile Include="Helpers\Wpf32Window.cs" />
     <Compile Include="Models\Category.cs" />
     <Compile Include="Models\ItemsList.cs" />
+    <Compile Include="Models\SimpleModpackEntry.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Resources\CommonInstallDirectories.Designer.cs">
       <AutoGen>True</AutoGen>
