@@ -540,18 +540,7 @@ namespace FFXIV_TexTools.ViewModels
                     string submeshId = null;
                     if (PartVisibility == Visibility.Visible)
                     {
-                        var path = SelectedPart.MdlPath;
-                        var type = _item.GetPrimaryItemType();
-                        if (_selectedPart.Name != "b0")
-                        {
-                            // This is super hacky, but it'll do for now.
-                            var regex = new Regex("\\( ([a-z]) \\)");
-                            var match = regex.Match(_selectedPart.Name);
-                            if (match.Success)
-                            {
-                                submeshId = match.Groups[1].Value;
-                            }
-                        }
+                        submeshId = _selectedPart.Name;
                     }
 
                     _model = await _mdl.GetModel(_item, SelectedRace.XivRace, submeshId);

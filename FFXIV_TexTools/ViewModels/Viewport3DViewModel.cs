@@ -131,7 +131,7 @@ namespace FFXIV_TexTools.ViewModels
         {
 
             SharpDX.BoundingBox? boundingBox = null;
-            ModelModifiers.CalculateTangentsFromBinormals(model);
+            ModelModifiers.CalculateTangents(model);
 
             var totalMeshCount = model.MeshGroups.Count;
 
