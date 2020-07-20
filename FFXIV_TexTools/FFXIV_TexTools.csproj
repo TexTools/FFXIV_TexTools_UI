@@ -250,6 +250,7 @@
     <Compile Include="Helpers\Wpf32Window.cs" />
     <Compile Include="Models\Category.cs" />
     <Compile Include="Models\ItemsList.cs" />
+    <Compile Include="Models\SimpleModpackEntry.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Resources\CommonInstallDirectories.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -287,10 +288,11 @@
       <DependentUpon>XivStrings.resx</DependentUpon>
     </Compile>
     <Compile Include="Textures\ColorChannels.cs" />
-    <Compile Include="ViewModels\AdvancedImportViewModel.cs" />
     <Compile Include="ViewModels\BaseViewPortViewModel.cs" />
     <Compile Include="ViewModels\CustomizeViewModel.cs" />
     <Compile Include="ViewModels\IconSearchViewModel.cs" />
+    <Compile Include="ViewModels\ImportModelEditViewModel.cs" />
+    <Compile Include="ViewModels\ImportModelViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\MaterialEditorViewModel.cs" />
     <Compile Include="ViewModels\ModConverterViewModel.cs" />
@@ -319,20 +321,17 @@
     <Compile Include="Views\ModConverterView.xaml.cs">
       <DependentUpon>ModConverterView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Models\AdvancedModelImportView.xaml.cs">
-      <DependentUpon>AdvancedModelImportView.xaml</DependentUpon>
+    <Compile Include="Views\Models\ImportModelEditView.xaml.cs">
+      <DependentUpon>ImportModelEditView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Models\ExportModelOptionsView.xaml.cs">
-      <DependentUpon>ExportModelOptionsView.xaml</DependentUpon>
+    <Compile Include="Views\Models\ImportModelView.xaml.cs">
+      <DependentUpon>ImportModelView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Models\MeshInspectorView.xaml.cs">
       <DependentUpon>MeshInspectorView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Models\ModelInspector.xaml.cs">
       <DependentUpon>ModelInspector.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Models\ImportModelOptionsView.xaml.cs">
-      <DependentUpon>ImportModelOptionsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ModPack\ImportModPackWizard.xaml.cs">
       <DependentUpon>ImportModPackWizard.xaml</DependentUpon>
@@ -435,11 +434,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Models\AdvancedModelImportView.xaml">
+    <Page Include="Views\Models\ImportModelEditView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Models\ExportModelOptionsView.xaml">
+    <Page Include="Views\Models\ImportModelView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -448,10 +447,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Models\ModelInspector.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Models\ImportModelOptionsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

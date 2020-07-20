@@ -697,4 +697,10 @@ TexTools only supports importing *.ttmp and *.ttmp2 ModPacks. </value>
   <data name="UnsupportedFileExtensionErrorTitle" xml:space="preserve">
     <value>File Extension Error</value>
   </data>
+  <data name="ExportErrorMessage" xml:space="preserve">
+    <value>An error occured while attempting to export the model.</value>
+  </data>
+  <data name="ExportErrorTitle" xml:space="preserve">
+    <value>Export Error</value>
+  </data>
 </root>

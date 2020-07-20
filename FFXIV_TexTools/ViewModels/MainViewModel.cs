@@ -59,51 +59,106 @@ namespace FFXIV_TexTools.ViewModels
         private System.Windows.Forms.IWin32Window _win32Window;
         private ProgressDialogController _progressController;
 
+        private const string WarningIdentifier = "!!";
+
         public MainViewModel(MainWindow mainWindow)
         {
             _mainWindow = mainWindow;
             _win32Window = new WindowWrapper(new WindowInteropHelper(_mainWindow).Handle);
-
-            try
-            {
-                Initialize();
-            }
-            catch (Exception ex)
-            {
-                FlexibleMessageBox.Show($"There was an error getting the Items List\n\n{ex.Message}", $"Items List Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            _mainWindow.TreeRefreshRequested += TreeRefreshRequested;
+            Initialize();
         }
 
+        /// <summary>
+        /// Unified function for showing information in the Progress Bar area.
+        /// Will not overwrite warning messages.
+        /// </summary>
+        /// <param name="message">A value of NULL will hide the progress bar.</param>
+        /// <param name="progress"></param>
+        public void ShowInfoMessage(string message, int progress = -1)
+        {
+            if (ProgressLabel == null)
+            {
+                ProgressLabel = "";
 
-        private async void Initialize()
+            }
+
+            if (ProgressLabel.Contains(WarningIdentifier))
+            {
+                return;
+            }
+            
+            if (progress != -1)
+            {
+                ProgressValue = progress;
+            }else
+            {
+                ProgressBarVisible = Visibility.Collapsed;
+            }
+
+            if(message == null)
+            {
+                ProgressLabelVisible = Visibility.Collapsed;
+            }
+
+            ProgressLabel = message;
+        }
+
+        /// <summary>
+        /// Shows a warning message in the progress area.
+        /// Will remain on screen until ClearWarning() is called.
+        /// </summary>
+        /// <param name="warning"></param>
+        public void ShowWarning(string warning)
+        {
+            ProgressLabel = WarningIdentifier + " " + warning + " " + WarningIdentifier;
+            ProgressLabelVisible = Visibility.Visible;
+        }
+
+        /// <summary>
+        /// Clears any existing on-screen warning message. No-op otherwise.
+        /// </summary>
+        public void ClearWarning()
+        {
+            if(!ProgressLabel.Contains(WarningIdentifier)) {
+                return;
+            }
+            ProgressLabel = "";
+            ShowInfoMessage(null);
+        }
+
+        public async Task Initialize()
         {
             SetDirectories(true);
             _gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
             _index = new Index(_gameDirectory);
+            if(ProgressLabel == null)
+            {
+                ProgressLabel = "";
+            }
 
-            ProgressLabel = "Checking for old installs...";
+            ShowInfoMessage("Checking for old installs...");
             CheckForOldModList();
-            ProgressLabel = "Checking Game Version...";
+            ShowInfoMessage("Checking Game Version...");
             await CheckGameVersion();
-            ProgressLabel = "Checking Index Files...";
+            ShowInfoMessage("Checking Index Files...");
             await CheckIndexFiles();
 
-            _mainWindow.TreeRefreshRequested += TreeRefreshRequested;
-            _mainWindow.RefreshTree(this);
         }
         private void TreeRefreshRequested(object sender, EventArgs e)
         {
+            _mainWindow.SearchTimer.Enabled = false;
+            _mainWindow.SearchTimer.AutoReset = false;
+
             IProgress<(int current, string category)> progress = new Progress<(int current, string category)>((prog) =>
             {
                 if (prog.category == "Done")
                 {
-                    ProgressBarVisible = Visibility.Collapsed;
-                    ProgressLabelVisible = Visibility.Collapsed;
+                    ShowInfoMessage(null);
                 }
                 else
                 {
-                    ProgressValue = prog.current;
-                    ProgressLabel = $"Loading {prog.category} List";
+                    ShowInfoMessage($"Loading {prog.category} List", prog.current);
                 }
             });
 
@@ -114,9 +169,6 @@ namespace FFXIV_TexTools.ViewModels
 
             try
             {
-                // Settings are valid, application is updated, initialize the
-                // Cache once so it can test if it needs to be updated as well.
-                var _cache = new XivCache(gameDirectory, lang);
                 FillTree(progress).GetAwaiter().OnCompleted(OnTreeRefreshCompleted);
             }
             catch (Exception ex)
@@ -137,15 +189,15 @@ namespace FFXIV_TexTools.ViewModels
                     }
                 } else
                 {
-                    // Make this error not totally silent at least.
-                    FlexibleMessageBox.Show("An error occurred while trying to populate the item list.",
-                               "Item list Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    // Make this a "Warning". 
+                    ShowWarning("Item List Error");
                 }
             }
         }
 
         private void OnTreeRefreshCompleted()
         {
+            _mainWindow.SearchTimer.Enabled = true;
             _mainWindow.Menu_ModConverter.IsEnabled = true;
             _mainWindow.ItemSearchTextBox.IsEnabled = true;
             _mainWindow.SetFilter();

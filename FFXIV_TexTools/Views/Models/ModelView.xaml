@@ -108,9 +108,28 @@
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
             <UniformGrid Grid.Column="0" Rows="1">
-                <Button x:Name="ExportModelButton" Content="{Binding Source={x:Static resx:UIStrings.Export}}" Margin="5" VerticalAlignment="Center" Click="ExportModelButton_Click" IsEnabled="{Binding ExportEnabled, FallbackValue=false}"/>
+
+                <Grid IsEnabled="{Binding ExportEnabled, FallbackValue=false}" Margin="5">
+                    <Button x:Name="ExportModelButton" Grid.Column="0" Padding="0, 0, 0, 0" Margin="0" Height="29">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding Source={x:Static resx:UIStrings.Export}}"  />
+                            <TextBlock x:Name="ExportFormatLabel" Text="{Binding ExportTexDisplay}" />
+                        </StackPanel>
+                    </Button>
+                    <Button x:Name="ExportContextButton" Width="32" HorizontalAlignment="Right" BorderThickness="3" BorderBrush="Transparent" Height="29">
+                        <iconPacks:PackIconFontAwesome Kind="CaretDownSolid" Height="4"/>
+                    </Button>
+                    <Line Y1="0" Y2="1" StrokeThickness="1" Stroke="Black" Stretch="Fill" Margin="0,3,32,3" HorizontalAlignment="Right" Opacity="0.25"/>
+
+                    <Grid.ContextMenu>
+                        <ContextMenu x:Name="ExportContextMenu">
+                        </ContextMenu>
+                    </Grid.ContextMenu>
+
+                </Grid>
+
                 <Button x:Name="ImportModelButton" Content="{Binding Source={x:Static resx:UIStrings.Import}}" Margin="5" VerticalAlignment="Center" Click="ImportModelButton_Click" IsEnabled="{Binding ImportEnabled, FallbackValue=false}"/>
-                <Button x:Name="ModStatusToggleButton" Content="{Binding ModToggleText, FallbackValue=Enable/Disable}" Margin="5" VerticalAlignment="Center" IsEnabled="{Binding ModStatusToggleEnabled, FallbackValue=false}" Command="{Binding ModStatusToggleButton}"/>
+                <Button x:Name="ModStatusToggleButton"  Content="{Binding ModToggleText, FallbackValue=Enable/Disable}" Margin="5" VerticalAlignment="Center" IsEnabled="{Binding ModStatusToggleEnabled, FallbackValue=false}" Command="{Binding ModStatusToggleButton}"/>
                 <Button x:Name="MoreModelOptionsButton" Content="{Binding Source={x:Static resx:UIStrings.More_Options}}" Margin="5" VerticalAlignment="Center" IsEnabled="{Binding MoreOptionsEnabled, FallbackValue=false}" Visibility="Collapsed"/>
                 <Button Content="{Binding Source={x:Static resx:UIStrings.Update_TEX}}" Margin="5" VerticalAlignment="Center" Command="{Binding UpdateTexButton}" IsEnabled="{Binding UpdateTexEnabled, FallbackValue=false}"/>
             </UniformGrid>
@@ -119,11 +138,5 @@
             </Button>
         </Grid>
 
-
-        <mah:FlyoutsControl Grid.Row="2" Grid.RowSpan="2" VerticalAlignment="Bottom">
-            <mah:Flyout x:Name="BottomFlyout" Position="Bottom">
-                <local:ExportModelOptionsView/>
-            </mah:Flyout>
-        </mah:FlyoutsControl>
     </Grid>
 </UserControl>

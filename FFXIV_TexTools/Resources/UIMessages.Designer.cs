@@ -534,6 +534,24 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to An error occured while attempting to export the model..
+        /// </summary>
+        internal static string ExportErrorMessage {
+            get {
+                return ResourceManager.GetString("ExportErrorMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Export Error.
+        /// </summary>
+        internal static string ExportErrorTitle {
+            get {
+                return ResourceManager.GetString("ExportErrorTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to TexTools was unable to determine the game version..
         /// </summary>
         internal static string GameVersionErrorMessage {

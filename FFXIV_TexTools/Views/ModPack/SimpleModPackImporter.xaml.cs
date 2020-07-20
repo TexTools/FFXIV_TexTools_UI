@@ -47,24 +47,56 @@ namespace FFXIV_TexTools.Views
     /// </summary>
     public partial class SimpleModPackImporter
     {
-        private readonly ObservableCollection<SimpleModPackEntries> _simpleDataList = new ObservableCollection<SimpleModPackEntries>();
+        public ObservableCollection<SimpleModpackEntry> Entries { get; set; } = new ObservableCollection<SimpleModpackEntry>();
         private ListSortDirection _lastDirection = ListSortDirection.Ascending;
         private readonly DirectoryInfo _gameDirectory, _modPackDirectory;
         private ProgressDialogController _progressController;
         private readonly TTMP _texToolsModPack;
-        private int _modCount;
         private long _modSize;
         private bool _messageInImport, _indexLockStatus;
         private TextureViewModel _textureViewModel;
         private ModelViewModel _modelViewModel;
+        private ModPackJson _packJson;
+        private bool _silent = false;
 
         [DllImport("Shlwapi.dll", CharSet = CharSet.Auto)]
         public static extern long StrFormatByteSize(long fileSize, [MarshalAs(UnmanagedType.LPTStr)] StringBuilder buffer, int bufferSize);
 
+        public List<ModsJson> JsonEntries;
+        public HashSet<int> SelectedEntries;
+
+        public long ModSize
+        {
+            get
+            {
+                return _modSize;
+            }
+            set
+            {
+                _modSize = value;
+                var byteFormatedString = new StringBuilder(32);
+                StrFormatByteSize(_modSize, byteFormatedString, byteFormatedString.Capacity);
+
+                ModCountLabel.Content = SelectedEntries.Count;
+                ModSizeLabel.Content = byteFormatedString.ToString();
+
+                if (!_indexLockStatus)
+                {
+                    ImportModPackButton.IsEnabled = SelectedEntries.Count > 0;
+                }
+
+            }
+        }
+
 
         public SimpleModPackImporter(DirectoryInfo modPackDirectory, ModPackJson modPackJson, TextureViewModel textureViewModel, ModelViewModel modelViewModel, bool silent = false, bool messageInImport = false)
         {
+            this.DataContext = this;
+
             InitializeComponent();
+
+            JsonEntries = new List<ModsJson>();
+            SelectedEntries = new HashSet<int>();
 
             _modPackDirectory = modPackDirectory;
             _gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
@@ -78,9 +110,16 @@ namespace FFXIV_TexTools.Views
 
             _indexLockStatus = index.IsIndexLocked(XivDataFile._0A_Exd);
 
-            ModListView.ItemsSource = _simpleDataList;
 
-            Initialize(modPackJson, silent);
+            _packJson = modPackJson;
+            _silent = silent;
+
+            ModListView.IsEnabled = false;
+            LockedStatusLabel.Foreground = Brushes.Black;
+            LockedStatusLabel.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Left;
+            LockedStatusLabel.Content = UIStrings.Loading;
+
+            Task.Run(Initialize);
         }
 
         #region Public Properties
@@ -94,58 +133,46 @@ namespace FFXIV_TexTools.Views
         #endregion
 
         #region Private Methods
-        private async void Initialize(ModPackJson modPackJson, bool silent)
+        private async void Initialize()
         {
-            ModListView.IsEnabled = false;
-            LockedStatusLabel.Foreground = Brushes.Black;
-            LockedStatusLabel.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Left;
-            LockedStatusLabel.Content = UIStrings.Loading;
-
-            var progress = new Progress<(int count, int total)>(prog =>
+            if (_packJson != null)
             {
-                LockedStatusLabel.Content = $"{UIStrings.Loading} ({prog.count}, {prog.total})";
-
-                if (prog.count == prog.total)
-                {
-                    LockedStatusLabel.Content = UIStrings.Finalizing;
-
-                }
-            });
-
-            if (modPackJson != null)
-            {
-                await ImportSimpleModPack(modPackJson);
+                await ImportSimpleModPack(_packJson);
             }
             else
             {
-                await ImportOldModPack(progress);
+                await ImportOldModPack();
             }
 
-            // Resize columns to fit content
-            foreach (var column in GridViewCol.Columns)
+            Dispatcher.Invoke(() =>
             {
-                if (double.IsNaN(column.Width))
+
+                // Resize columns to fit content
+                foreach (var column in GridViewCol.Columns)
                 {
-                    column.Width = column.ActualWidth;
+                    if (double.IsNaN(column.Width))
+                    {
+                        column.Width = column.ActualWidth;
+                    }
+
+                    column.Width = double.NaN;
                 }
 
-                column.Width = double.NaN;
-            }
+                LockedStatusLabel.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Right;
+                LockedStatusLabel.Foreground = Brushes.Red;
+                LockedStatusLabel.Content = string.Empty;
+                ModListView.IsEnabled = true;
 
-            LockedStatusLabel.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Right;
-            LockedStatusLabel.Foreground = Brushes.Red;
-            LockedStatusLabel.Content = string.Empty;
-            ModListView.IsEnabled = true;
+                if (_indexLockStatus)
+                {
+                    LockedStatusLabel.Content = UIStrings.Index_Locked;
+                }
 
-            if (_indexLockStatus)
-            {
-                LockedStatusLabel.Content = UIStrings.Index_Locked;
-            }
-
-            if (silent)
-            {
-                FinalizeImport();
-            }
+                if (_silent)
+                {
+                    FinalizeImport();
+                }
+            });
         }
 
         /// <summary>
@@ -155,225 +182,95 @@ namespace FFXIV_TexTools.Views
         private async Task ImportSimpleModPack(ModPackJson modPackJson)
         {
             var modding = new Modding(_gameDirectory);
+            Dispatcher.Invoke(() =>
+            {
+                // This does not need to be an async task set.
+                for (int i = 0; i < modPackJson.SimpleModsList.Count; i++)
+                {
+                    var jsonItem = modPackJson.SimpleModsList[i];
+                    JsonEntries.Add(jsonItem);
+                    Entries.Add(new SimpleModpackEntry(JsonEntries.Count - 1, this));
+                }
 
-            var tasks = modPackJson.SimpleModsList.Select(modsJson => AddToList(modsJson, modding, modPackJson));
+                ModPackName.Content = modPackJson.Name;
+                ModPackAuthor.Content = modPackJson.Author;
+                ModPackVersion.Content = modPackJson.Version;
 
-            await Task.WhenAll(tasks);            
+                var cv = (CollectionView)CollectionViewSource.GetDefaultView(ModListView.ItemsSource);
+                cv.SortDescriptions.Clear();
+                cv.SortDescriptions.Add(new SortDescription(nameof(SimpleModpackEntry.Name), _lastDirection));
 
-            ModPackName.Content = modPackJson.Name;
-            ModPackAuthor.Content = modPackJson.Author;
-            ModPackVersion.Content = modPackJson.Version;
-
-            var cv = (CollectionView)CollectionViewSource.GetDefaultView(ModListView.ItemsSource);
-            cv.SortDescriptions.Clear();
-            cv.SortDescriptions.Add(new SortDescription(nameof(SimpleModPackEntries.Name), _lastDirection));
-
-            ModListView.SelectAll();
+                SelectedEntries.Clear();
+                long size = 0;
+                for (int i = 0; i < JsonEntries.Count; i++)
+                {
+                    SelectedEntries.Add(i);
+                    size += JsonEntries[i].ModSize;
+                }
+                ModListView.SelectAll();
+                ModSize = size;
+            });
         }
-
-        /// <summary>
-        /// Adds the given mod entry to the simple mod pack data list
-        /// </summary>
-        /// <param name="modsJson">The JSON describing the mod to be added to the list</param>
-        /// <param name="modding"></param>
-        /// <param name="modPackJson">The JSON describing the entire modpack</param>
-        /// <returns>Task</returns>
-        private async Task AddToList(ModsJson modsJson, Modding modding, ModPackJson modPackJson)
-        {
-            var raceTask = GetRace(modsJson.FullPath);
-
-            var numberTask = GetNumber(modsJson.FullPath);
-
-            var typeTask = GetType(modsJson.FullPath);
-
-            var partTask = GetPart(modsJson.FullPath);
-
-            var mapTask = GetMap(modsJson.FullPath);
-
-            var active = false;
-            var isActiveTask = modding.IsModEnabled(modsJson.FullPath, false);
-
-            var taskList = new List<Task> { raceTask, numberTask, typeTask, partTask, mapTask, isActiveTask };
-
-            var race = XivRace.All_Races;
-            string number = string.Empty, type = string.Empty, part = string.Empty, map = string.Empty;
-            var isActive = XivModStatus.Disabled;
-
-            while (taskList.Any())
-            {
-                var finished = await Task.WhenAny(taskList);
-
-                if (finished == raceTask)
-                {
-                    taskList.Remove(raceTask);
-                    race = await raceTask;
-                }
-                else if (finished == numberTask)
-                {
-                    taskList.Remove(numberTask);
-                    number = await numberTask;
-                }
-                else if (finished == typeTask)
-                {
-                    taskList.Remove(typeTask);
-                    type = await typeTask;
-                }
-                else if (finished == partTask)
-                {
-                    taskList.Remove(partTask);
-                    part = await partTask;
-                }
-                else if (finished == mapTask)
-                {
-                    taskList.Remove(mapTask);
-                    map = await mapTask;
-                }
-                else if (finished == isActiveTask)
-                {
-                    taskList.Remove(isActiveTask);
-                    isActive = await isActiveTask;
-                }
-            }
-
-            if (isActive == XivModStatus.Enabled || isActive == XivModStatus.MatAdd)
-            {
-                active = true;
-            }
-
-            modsJson.ModPackEntry = new ModPack
-            { name = modPackJson.Name, author = modPackJson.Author, version = modPackJson.Version };
-
-            System.Windows.Application.Current.Dispatcher.Invoke(() => _simpleDataList.Add(new SimpleModPackEntries
-            {
-                Name = modsJson.Name,
-                Category = modsJson.Category,
-                Race = race.ToString(),
-                Type = type,
-                Part = part,
-                Num = number,
-                Map = map,
-                Active = active,
-                JsonEntry = modsJson,
-            }));            
-        }
-
 
         /// <summary>
         /// Imports a first generation mod pack
         /// </summary>
         /// <param name="modPackDirectory">The mod pack directory</param>
-        private async Task ImportOldModPack(IProgress<(int count, int total)> progress)
+        private async Task ImportOldModPack()
         {
+            Dispatcher.Invoke(() =>
+            {
+                var progress = new Progress<(int count, int total)>(prog =>
+                {
+                LockedStatusLabel.Content = $"{UIStrings.Loading} ({prog.count}, {prog.total})";
+
+                if (prog.count == prog.total)
+                {
+                    LockedStatusLabel.Content = UIStrings.Finalizing;
+
+                }
+                });
+            });
             var modding = new Modding(_gameDirectory);
 
             var originalModPackData = await _texToolsModPack.GetOriginalModPackJsonData(_modPackDirectory);
 
-            await Task.Run(async () =>
+            Dispatcher.Invoke(() =>
             {
-                var modNum = 0;
+                // There is nearly no point to doing this on another thread if it's going to be constantly
+                // re-invoking the main thread with literally every line.
                 foreach (var modsJson in originalModPackData)
                 {
-                    progress.Report((++modNum, originalModPackData.Count));
-                    var raceTask = GetRace(modsJson.FullPath);
-
-                    var numberTask = GetNumber(modsJson.FullPath);
-
-                    var typeTask = GetType(modsJson.FullPath);
-
-                    var partTask = GetPart(modsJson.FullPath);
-
-                    var mapTask = GetMap(modsJson.FullPath);
-
-                    var active = false;
-                    var isActiveTask = modding.IsModEnabled(modsJson.FullPath, false);
-
-                    var taskList = new List<Task> {raceTask, numberTask, typeTask, partTask, mapTask, isActiveTask};
-
-                    XivRace race = XivRace.All_Races;
-                    string number = string.Empty, type = string.Empty, part = string.Empty, map = string.Empty;
-                    XivModStatus isActive = XivModStatus.Disabled;
-
-                    while (taskList.Any())
+                    var jsonEntry = new ModsJson
                     {
-                        var finished = await Task.WhenAny(taskList);
-
-                        if (finished == raceTask)
+                        Name = modsJson.Name,
+                        Category = modsJson.Category.GetDisplayName(),
+                        FullPath = modsJson.FullPath,
+                        DatFile = modsJson.DatFile,
+                        ModOffset = modsJson.ModOffset,
+                        ModSize = modsJson.ModSize,
+                        ModPackEntry = new ModPack
                         {
-                            taskList.Remove(raceTask);
-                            race = await raceTask;
+                            name = Path.GetFileNameWithoutExtension(_modPackDirectory.FullName),
+                            author = "N/A",
+                            version = "1.0.0"
                         }
-                        else if (finished == numberTask)
-                        {
-                            taskList.Remove(numberTask);
-                            number = await numberTask;
-                        }
-                        else if (finished == typeTask)
-                        {
-                            taskList.Remove(typeTask);
-                            type = await typeTask;
-                        }
-                        else if (finished == partTask)
-                        {
-                            taskList.Remove(partTask);
-                            part = await partTask;
-                        }
-                        else if (finished == mapTask)
-                        {
-                            taskList.Remove(mapTask);
-                            map = await mapTask;
-                        }
-                        else if (finished == isActiveTask)
-                        {
-                            taskList.Remove(isActiveTask);
-                            isActive = await isActiveTask;
-                        }
-                    }
-
-                    if (isActive == XivModStatus.Enabled || isActive == XivModStatus.MatAdd)
-                    {
-                        active = true;
-                    }
-
-                    System.Windows.Application.Current.Dispatcher.Invoke(() =>
-                        _simpleDataList.Add(new SimpleModPackEntries
-                        {
-                            Name = modsJson.Name,
-                            Category = modsJson.Category,
-                            Race = race.GetDisplayName(),
-                            Type = type,
-                            Part = part,
-                            Num = number,
-                            Map = map,
-                            Active = active,
-                            JsonEntry = new ModsJson
-                            {
-                                Name = modsJson.Name,
-                                Category = modsJson.Category.GetDisplayName(),
-                                FullPath = modsJson.FullPath,
-                                DatFile = modsJson.DatFile,
-                                ModOffset = modsJson.ModOffset,
-                                ModSize = modsJson.ModSize,
-                                ModPackEntry = new ModPack
-                                {
-                                    name = Path.GetFileNameWithoutExtension(_modPackDirectory.FullName),
-                                    author = "N/A",
-                                    version = "1.0.0"
-                                }
-                            }
-                        }));
+                    };
+                    JsonEntries.Add(jsonEntry);
+                    Entries.Add(new SimpleModpackEntry(JsonEntries.Count - 1, this));
 
                 }
+
+                ModPackName.Content = Path.GetFileNameWithoutExtension(_modPackDirectory.FullName);
+                ModPackAuthor.Content = "N/A";
+                ModPackVersion.Content = "1.0.0";
+
+                var cv = (CollectionView)CollectionViewSource.GetDefaultView(ModListView.ItemsSource);
+                cv.SortDescriptions.Clear();
+                cv.SortDescriptions.Add(new SortDescription(nameof(SimpleModpackEntry.Name), _lastDirection));
+
+                ModListView.SelectAll();
             });
-
-            ModPackName.Content = Path.GetFileNameWithoutExtension(_modPackDirectory.FullName);
-            ModPackAuthor.Content = "N/A";
-            ModPackVersion.Content = "1.0.0";
-
-            var cv = (CollectionView)CollectionViewSource.GetDefaultView(ModListView.ItemsSource);
-            cv.SortDescriptions.Clear();
-            cv.SortDescriptions.Add(new SortDescription(nameof(SimpleModPackEntries.Name), _lastDirection));
-
-            ModListView.SelectAll();
         }
 
         /// <summary>
@@ -679,7 +576,7 @@ namespace FFXIV_TexTools.Views
         {
             _progressController = await this.ShowProgressAsync(UIMessages.ModPackImportTitle, UIMessages.PleaseStandByMessage);
 
-            var importList = (from SimpleModPackEntries selectedItem in ModListView.SelectedItems select selectedItem.JsonEntry).ToList();
+            var importList = SelectedEntries.Select(x => JsonEntries[x]).ToList();
 
             var modListDirectory = new DirectoryInfo(Path.Combine(_gameDirectory.Parent.Parent.FullName, XivStrings.ModlistFilePath));
 
@@ -741,28 +638,9 @@ namespace FFXIV_TexTools.Views
         /// </summary>
         private void ModListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            foreach (SimpleModPackEntries modItem in e.AddedItems)
-            {
-                _modCount++;
-                _modSize += modItem.JsonEntry.ModSize;
-            }
-
-            foreach (SimpleModPackEntries modItem in e.RemovedItems)
-            {
-                _modCount--;
-                _modSize -= modItem.JsonEntry.ModSize;
-            }
-
-            var byteFormatedString = new StringBuilder(32);
-            StrFormatByteSize(_modSize, byteFormatedString, byteFormatedString.Capacity);
-
-            ModCountLabel.Content = _modCount;
-            ModSizeLabel.Content = byteFormatedString.ToString();
-
-            if (!_indexLockStatus)
-            {
-                ImportModPackButton.IsEnabled = ModListView.SelectedItems.Count > 0;
-            }
+            // This is called whenever an item is simply selected; not the checkbox enabled.
+            // We don't actually want to do anything here.  This is called with removed items
+            // any time the search window is used to filter things out.
         }
 
         /// <summary>
@@ -793,7 +671,17 @@ namespace FFXIV_TexTools.Views
         /// </summary>
         private void SelectAllButton_Click(object sender, RoutedEventArgs e)
         {
-            ModListView.SelectAll();
+            long newSize = 0;
+            for (int i = 0; i < JsonEntries.Count; i++)
+            {
+                SelectedEntries.Add(i);
+                newSize += JsonEntries[i].ModSize;
+            }
+            foreach (var entry in Entries)
+            {
+                entry.MarkDirty();
+            }
+            ModSize = newSize;
             ModListView.Focus();
         }
 
@@ -802,7 +690,14 @@ namespace FFXIV_TexTools.Views
         /// </summary>
         private void ClearSelectedButton_Click(object sender, RoutedEventArgs e)
         {
-            ModListView.UnselectAll();
+
+            SelectedEntries.Clear();
+            foreach (var entry in Entries)
+            {
+                entry.MarkDirty();
+            }
+            ModSize = 0;
+            ModListView.Focus();
         }
 
         /// <summary>

@@ -29,6 +29,8 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
@@ -58,7 +60,7 @@ namespace FFXIV_TexTools.ViewModels
 {
     public class ModelViewModel : INotifyPropertyChanged
     {
-        private readonly ModelView _modelView;
+        private readonly ModelView _view;
         private ObservableCollection<ComboBoxData> _raceComboBoxData = new ObservableCollection<ComboBoxData>();
         private ObservableCollection<ComboBoxData> _partComboBoxData = new ObservableCollection<ComboBoxData>();
         private ObservableCollection<ComboBoxData> _numberComboBoxData = new ObservableCollection<ComboBoxData>();
@@ -67,7 +69,7 @@ namespace FFXIV_TexTools.ViewModels
         private int _raceIndex, _partIndex, _numberIndex, _meshIndex, _partCount, _numberCount, _meshCount, _raceCount, _reflectionValue, _checkedLight;
         private float _lightingXValue, _lightingYValue, _lightingZValue;
         private bool _raceEnabled, _partEnabled, _numberEnabled, _meshEnabled, _exportEnabled, _importEnabled, _basicImportEnabled, _modStatusToggleEnabled, _updateTexEnabled, _flyoutOpen;
-        private string _partWatermark = XivStrings.Part, _numberWatermark = XivStrings.Number, _raceWatermark = XivStrings.Race, 
+        private string _partWatermark = XivStrings.Part, _numberWatermark = XivStrings.Number, _raceWatermark = XivStrings.Race,
             _meshWatermark = XivStrings.Mesh, _pathString;
 
         private string _lightXLabel = "X  |  0", _lightYLabel = "Y  |  0", _lightZLabel = "Z  |  0", _reflectionLabel = $"{UIStrings.Reflection}  |  1", _modToggleText = UIStrings.Enable_Disable, _modelStatusLabel;
@@ -78,7 +80,8 @@ namespace FFXIV_TexTools.ViewModels
         private IItemModel _item;
         private Dictionary<XivRace, int[]> _charaRaceAndNumberDictionary;
         private Mdl _mdl;
-        private XivMdl _mdlData;
+
+        private TTModel _model;
         private Viewport3DViewModel _viewPortVM;
         private Timer _modelStatusTimer;
 
@@ -91,7 +94,23 @@ namespace FFXIV_TexTools.ViewModels
         public ModelViewModel(ModelView modelView)
         {
             ViewPortVM = new Viewport3DViewModel(this);
-            _modelView = modelView;
+            _view = modelView;
+
+            _view.ExportModelButton.Click += ExportModelButton_Click;
+            _view.ExportContextButton.Click += ExportContextButton_Click;
+
+            //_modelView.ExportContextMenu.Items.Add();
+        }
+
+        private void ExportContextButton_Click(object sender, RoutedEventArgs e)
+        {
+            _view.ExportContextMenu.PlacementTarget = _view.ExportModelButton;
+            _view.ExportContextMenu.IsOpen = true;
+        }
+
+        private void ExportModelButton_Click(object sender, RoutedEventArgs e)
+        {
+            ExportModel("fbx");
         }
 
         /// <summary>
@@ -109,6 +128,27 @@ namespace FFXIV_TexTools.ViewModels
 
             _gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
             _mdl = new Mdl(_gameDirectory, _item.DataFile);
+
+
+            // Add the list of exporters to the menu.
+            var exporters = _mdl.GetAvailableExporters();
+            _view.ExportContextMenu.Items.Clear();
+            foreach(var format in exporters)
+            {
+                var button = new System.Windows.Controls.Button();
+                button.Content = format;
+                button.Width = 100;
+                button.Margin = new System.Windows.Thickness(0);
+                button.Click += (object sender, RoutedEventArgs e) =>
+                {
+                    ExportModel(format);
+                };
+
+                _view.ExportContextMenu.Items.Add(button);
+
+            }
+
+
 
             if (itemModel.PrimaryCategory.Equals(XivStrings.Gear))
             {
@@ -154,8 +194,8 @@ namespace FFXIV_TexTools.ViewModels
             RaceComboboxEnabled = _raceCount > 1;
 
             var defaultRace = (from race in Races
-                where race.XivRace.GetDisplayName().Equals(Settings.Default.Default_Race_Selection)
-                select race).ToList();
+                               where race.XivRace.GetDisplayName().Equals(Settings.Default.Default_Race_Selection)
+                               select race).ToList();
 
             var raceIndex = 0;
             if (defaultRace.Count > 0)
@@ -181,7 +221,7 @@ namespace FFXIV_TexTools.ViewModels
             get => _raceComboBoxData;
             set { _raceComboBoxData = value; NotifyPropertyChanged(nameof(Races)); }
         }
-        
+
         /// <summary>
         /// The selected race within the race combobox
         /// </summary>
@@ -247,7 +287,7 @@ namespace FFXIV_TexTools.ViewModels
 
                 foreach (var number in numbers)
                 {
-                    Numbers.Add(new ComboBoxData{Name = number.ToString()});
+                    Numbers.Add(new ComboBoxData { Name = number.ToString() });
                 }
 
                 _numberCount = numbers.Length;
@@ -356,7 +396,7 @@ namespace FFXIV_TexTools.ViewModels
 
                 foreach (var part in parts)
                 {
-                    Parts.Add(new ComboBoxData{ Name = part });
+                    Parts.Add(new ComboBoxData { Name = part });
                 }
             }
             else if (_item.PrimaryCategory.Equals(XivStrings.Companions))
@@ -368,7 +408,7 @@ namespace FFXIV_TexTools.ViewModels
 
                     foreach (var part in parts)
                     {
-                        Parts.Add(new ComboBoxData{Name = part});
+                        Parts.Add(new ComboBoxData { Name = part });
                     }
 
                     PartVisibility = Visibility.Visible;
@@ -476,16 +516,7 @@ namespace FFXIV_TexTools.ViewModels
             {
                 if (_item.PrimaryCategory.Equals(XivStrings.Gear))
                 {
-                    var xivGear = _item as XivGear;
-
-                    if (SelectedPart.Name.Equals(XivStrings.Primary))
-                    {
-                        _mdlData = await _mdl.GetMdlData(xivGear, SelectedRace.XivRace);
-                    }
-                    else
-                    {
-                        _mdlData = await _mdl.GetMdlData(xivGear, SelectedRace.XivRace, null, null, 0, SelectedPart.Name);
-                    }
+                    _model = await _mdl.GetModel(_item, SelectedRace.XivRace);
                 }
                 else if (_item.PrimaryCategory.Equals(XivStrings.Character))
                 {
@@ -493,7 +524,7 @@ namespace FFXIV_TexTools.ViewModels
 
                     ((XivCharacter)_item).TertiaryCategory = SelectedPart.Name;
 
-                    _mdlData = await _mdl.GetMdlData(_item, SelectedRace.XivRace);
+                    _model = await _mdl.GetModel(_item, SelectedRace.XivRace);
                 }
                 else if (_item.PrimaryCategory.Equals(XivStrings.Companions))
                 {
@@ -502,19 +533,20 @@ namespace FFXIV_TexTools.ViewModels
                         ((XivMount)_item).TertiaryCategory = SelectedPart.Name;
                     }
 
-                    _mdlData = await _mdl.GetMdlData(_item, SelectedRace.XivRace);
+                    _model = await _mdl.GetModel(_item, SelectedRace.XivRace);
                 }
                 else if (_item.PrimaryCategory.Equals(XivStrings.Housing))
                 {
+                    string submeshId = null;
                     if (PartVisibility == Visibility.Visible)
                     {
-                        ((XivFurniture)_item).TertiaryCategory = SelectedPart.Name;
+                        submeshId = _selectedPart.Name;
                     }
 
-                    _mdlData = await _mdl.GetMdlData(_item, SelectedRace.XivRace, null, SelectedPart.MdlPath);
+                    _model = await _mdl.GetModel(_item, SelectedRace.XivRace, submeshId);
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 FlexibleMessageBox.Show(
                     string.Format(UIMessages.MDLReadErrorMessage, ex.Message), UIMessages.MDLReadErrorTitle,
@@ -524,14 +556,14 @@ namespace FFXIV_TexTools.ViewModels
                 return;
             }
 
-            _meshCount = _mdlData.LoDList[0].MeshCount + _mdlData.LoDList[0].ExtraMeshCount;
+            _meshCount = _model.MeshGroups.Count;
 
-            PathString = $"{_mdlData.MdlPath.Folder}/{_mdlData.MdlPath.File}";
+            PathString = _model.Source;
 
-            Meshes.Add(new ComboBoxData{Name = XivStrings.All});
+            Meshes.Add(new ComboBoxData { Name = XivStrings.All });
             for (var i = 0; i < _meshCount; i++)
             {
-                Meshes.Add(new ComboBoxData{Name = i.ToString()});
+                Meshes.Add(new ComboBoxData { Name = i.ToString() });
             }
 
             MeshComboboxEnabled = _meshCount > 1;
@@ -1055,20 +1087,23 @@ namespace FFXIV_TexTools.ViewModels
             }
         }
 
-        // Button Commands
-        public ICommand ExportDaePlusMaterialsCommand => new RelayCommand(ExportDaePlusMaterials);
-        public ICommand ExportDaeCommand => new RelayCommand(ExportDae);
-        public ICommand ExportObjCommand => new RelayCommand(ExportObj);
         public ICommand ViewOptionsCommand => new RelayCommand(ViewerOptions);
         public ICommand ModStatusToggleButton => new RelayCommand(ModStatusToggle);
         public ICommand UpdateTexButton => new RelayCommand(UpdateTex);
 
         public ICommand ImportCommand => new RelayCommand(Import);
-        public ICommand ImportFromCommand => new RelayCommand(ImportFrom);
-        public ICommand AdvancedImportCommand => new RelayCommand(AdvancedImport);
         public ICommand OpenFolder => new RelayCommand(OpenSavedFolder);
         public ICommand ModelInspector => new RelayCommand(OpenModelInspector);
 
+        private string GetItem3DFolder()
+        {
+            var savePath = new DirectoryInfo(Settings.Default.Save_Directory);
+            if (_item == null)
+            {
+                return savePath.FullName;
+            }
+            return $"{IOUtil.MakeItemSavePath(_item, savePath, SelectedRace.XivRace)}\\3D\\";
+        }
         /// <summary>
         /// Opens the folder in which the exported data is saved
         /// </summary>
@@ -1077,13 +1112,8 @@ namespace FFXIV_TexTools.ViewModels
         /// </remarks>
         private void OpenSavedFolder(object obj)
         {
-            var savePath = new DirectoryInfo(Settings.Default.Save_Directory);
-            var path = savePath.FullName;
 
-            if (_item != null)
-            {
-                path = $"{IOUtil.MakeItemSavePath(_item, savePath, SelectedRace.XivRace)}\\3D";
-            }
+            var path = GetItem3DFolder();
 
             if (!Directory.Exists(path))
             {
@@ -1095,10 +1125,11 @@ namespace FFXIV_TexTools.ViewModels
 
         private void OpenModelInspector(object obj)
         {
-            if (_mdlData != null)
+            if (_model != null)
             {
-                var modelInspector = new ModelInspector(_mdlData);
-                modelInspector.Owner = Window.GetWindow(_modelView);
+                var mdl = _model.GetRawMdl(_mdl).GetAwaiter().GetResult();
+                var modelInspector = new ModelInspector(mdl);
+                modelInspector.Owner = Window.GetWindow(_view);
                 modelInspector.ShowDialog();
             }
         }
@@ -1203,122 +1234,53 @@ namespace FFXIV_TexTools.ViewModels
         /// <summary>
         /// Exports the DAE file and Materials for the current model
         /// </summary>
-        /// <param name="obj"></param>
-        private async void ExportDaePlusMaterials(object obj)
+        private void ExportModel(string format)
         {
-            try
+            DisableButtons();
+            Task.Run(async () =>
             {
-                var appVersion = FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location).FileVersion;
-                var dae = new Dae(_gameDirectory, _item.DataFile, Settings.Default.DAE_Plugin_Target, appVersion);
-                var saveDir = new DirectoryInfo(Settings.Default.Save_Directory);
-                await dae.MakeDaeFileFromModel(_item, _mdlData, saveDir, SelectedRace.XivRace);
-                _modelView.BottomFlyout.IsOpen = false;
-                ImportEnabled = true;
-                BasicImportEnabled = true;
-                ExportMaterials();
-            }
-            catch (Exception e)
-            {
-                FlexibleMessageBox.Show(
-                    string.Format(UIMessages.DAEExportErrorMessage, e.Message), UIMessages.DAEExportErrorTitle,
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+               try
+               {
+                   var path = GetItem3DFolder() + Path.GetFileNameWithoutExtension(_model.Source) + "." + format;
+                   await _mdl.ExportMdlToFile(_item, SelectedRace.XivRace, path);
+
+                }
+               catch (Exception e)
+                {
+                    // We're not guaranteed to be on the main thread here,
+                    // so ensure we call the message box on that thread so it doesn't
+                    // get eaten by access errors.
+                    await _view.Dispatcher.BeginInvoke((ThreadStart)delegate ()
+                    {
+                        FlexibleMessageBox.Show(
+                            string.Format(UIMessages.ExportErrorMessage + "\n\n" + e.Message), UIMessages.ExportErrorTitle,
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    });
+                }
+
+                await _view.Dispatcher.BeginInvoke((ThreadStart)delegate ()
+                {
+                    EnableButtons();
+                });
+            });
 
         }
 
-        /// <summary>
-        /// Exports the materials for the current model
-        /// </summary>
-        private void ExportMaterials()
+        private void DisableButtons()
         {
-            var modelName = Path.GetFileNameWithoutExtension(_mdlData.MdlPath.File);
-
-            foreach (var materialDict in _materialDictionary)
-            {
-                var modelMaps = materialDict.Value;
-                var matNum = materialDict.Key;
-
-                var saveDir = new DirectoryInfo(Settings.Default.Save_Directory);
-
-                var path = $"{IOUtil.MakeItemSavePath(_item, saveDir, SelectedRace.XivRace)}\\3D";
-
-                if (modelMaps.Diffuse != null && modelMaps.Diffuse.Length > 0)
-                {
-                    using (var img = Image.LoadPixelData<Rgba32>(modelMaps.Diffuse, modelMaps.Width, modelMaps.Height))
-                    {
-                        img.Save($"{path}\\{modelName}_{matNum}_Diffuse.bmp", new BmpEncoder());
-                    }
-                }
-
-                if (modelMaps.Normal != null && modelMaps.Normal.Length > 0)
-                {
-                    using (var img = Image.LoadPixelData<Rgba32>(modelMaps.Normal, modelMaps.Width, modelMaps.Height))
-                    {
-                        img.Save($"{path}\\{modelName}_{matNum}_Normal.bmp", new BmpEncoder());
-                    }
-                }
-
-                if (modelMaps.Specular != null && modelMaps.Specular.Length > 0)
-                {
-                    using (var img = Image.LoadPixelData<Rgba32>(modelMaps.Specular, modelMaps.Width, modelMaps.Height))
-                    {
-                        img.Save($"{path}\\{modelName}_{matNum}_Specular.bmp", new BmpEncoder());
-                    }
-                }
-
-                if (modelMaps.Alpha != null && modelMaps.Alpha.Length > 0)
-                {
-                    using (var img = Image.LoadPixelData<Rgba32>(modelMaps.Alpha, modelMaps.Width, modelMaps.Height))
-                    {
-                        img.Save($"{path}\\{modelName}_{matNum}_Alpha.bmp", new BmpEncoder());
-                    }
-                }
-
-                if (modelMaps.Emissive != null && modelMaps.Emissive.Length > 0)
-                {
-                    using (var img = Image.LoadPixelData<Rgba32>(modelMaps.Emissive, modelMaps.Width, modelMaps.Height))
-                    {
-                        img.Save($"{path}\\{modelName}_{matNum}_Emissive.bmp", new BmpEncoder());
-                    }
-                }
-            }
+            ExportEnabled = false;
+            ImportEnabled = false;
+            BasicImportEnabled = false;
         }
 
-        /// <summary>
-        /// Exports the DAE file for the current model
-        /// </summary>
-        private async void ExportDae(object obj)
+        private void EnableButtons()
         {
-            try
-            {
-                var appVersion = FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location).FileVersion;
-                var dae = new Dae(_gameDirectory, _item.DataFile, Settings.Default.DAE_Plugin_Target, appVersion);
-                var saveDir = new DirectoryInfo(Settings.Default.Save_Directory);
-                await dae.MakeDaeFileFromModel(_item, _mdlData, saveDir, SelectedRace.XivRace);
-            }
-            catch (Exception e)
-            {
-                FlexibleMessageBox.Show(
-                    string.Format(UIMessages.DAEExportErrorMessage, e.Message), UIMessages.DAEExportErrorTitle,
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-
-            _modelView.BottomFlyout.IsOpen = false;
+            ExportEnabled = true;
             ImportEnabled = true;
             BasicImportEnabled = true;
         }
 
-        /// <summary>
-        /// Exports the OBJ file for the current model
-        /// </summary>
-        private void ExportObj(object o)
-        {
-            var obj = new Obj(_gameDirectory);
-            var saveDir = new DirectoryInfo(Settings.Default.Save_Directory);
 
-            _modelView.BottomFlyout.IsOpen = false;
-            obj.ExportObj(_item, _mdlData, saveDir, SelectedRace.XivRace);
-        }
 
         #endregion
 
@@ -1330,7 +1292,7 @@ namespace FFXIV_TexTools.ViewModels
         /// <remarks>
         /// This will import the DAE file with the same name and location as the exported model
         /// </remarks>
-        private async void Import(object obj)
+        public async void Import(object obj)
         {
             var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
             var index = new Index(gameDirectory);
@@ -1343,33 +1305,32 @@ namespace FFXIV_TexTools.ViewModels
                 return;
             }
 
-            var saveDir = new DirectoryInfo(Settings.Default.Save_Directory);
-            var path = $"{IOUtil.MakeItemSavePath(_item, saveDir, SelectedRace.XivRace)}\\3D";
-            var modelName = Path.GetFileNameWithoutExtension(_mdlData.MdlPath.File);
-            var savePath = new DirectoryInfo(Path.Combine(path, modelName) + ".dae");
-
-            var modlist = new Modding(_gameDirectory);
-
-            var mdlPath = Path.Combine(_mdlData.MdlPath.Folder, _mdlData.MdlPath.File);
-
-            Dictionary<string, string> warnings;
-
-            var modData = await modlist.TryGetModEntry(mdlPath);
-
             try
             {
-                // pass in the original mdl if the current one is modded
-                if (modData != null && modData.enabled)
-                {
-                    var originalMdl = await _mdl.GetMdlData(_item, SelectedRace.XivRace, null, modData.fullPath,
-                        modData.data.originalOffset);
 
-                    warnings = await _mdl.ImportModel(_item, originalMdl, savePath, null, XivStrings.TexTools, Settings.Default.DAE_Plugin_Target);
+                var type = _item.GetPrimaryItemType();
+                string submeshId = null;
+                if (type == XivItemType.furniture) {
+                    if(_selectedPart.Name != "b0")
+                    {
+                        // This is super hacky, but it'll do for now.
+                        var regex = new Regex("\\( ([a-z]) \\)");
+                        var match= regex.Match(_selectedPart.Name);
+                        if (match.Success) {
+                            submeshId = match.Groups[1].Value;
+                        }
+                    }
                 }
-                else
+                bool success = await ImportModelView.ImportModel(_item, SelectedRace.XivRace, submeshId, null, () =>
                 {
-                    warnings = await _mdl.ImportModel(_item, _mdlData, savePath, null, XivStrings.TexTools, Settings.Default.DAE_Plugin_Target);
-                }
+                    _view.Dispatcher.BeginInvoke((ThreadStart)delegate ()
+                    {
+                        // Go ahead and reload the model as soon as the import process is done, even if they haven't closed the window.
+                        ModStatusToggleEnabled = true;
+
+                        GetMeshes();
+                    });
+                });
             }
             catch (Exception ex)
             {
@@ -1378,158 +1339,9 @@ namespace FFXIV_TexTools.ViewModels
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
+            
 
-            if (warnings.Count > 0)
-            {
-                foreach (var warning in warnings)
-                {
-                    FlexibleMessageBox.Show(
-                        $"{warning.Value}", $"{warning.Key}",
-                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                }
-            }
-
-            ModStatusToggleEnabled = true;
-
-            _modelView.BottomFlyout.IsOpen = false;
-            GetMeshes();
         }
-
-        /// <summary>
-        /// Imports a DAE for the model
-        /// </summary>
-        /// <remarks>
-        /// This will import a DAE file from any location
-        /// </remarks>
-        private async void ImportFrom(object obj)
-        {
-            var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
-            var index = new Index(gameDirectory);
-
-            if (index.IsIndexLocked(XivDataFile._0A_Exd))
-            {
-                FlexibleMessageBox.Show(UIMessages.IndexLockedErrorMessage,
-                    UIMessages.IndexLockedErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                return;
-            }
-
-            var saveDir = new DirectoryInfo(Settings.Default.Save_Directory);
-            var path = new DirectoryInfo($"{IOUtil.MakeItemSavePath(_item, saveDir, SelectedRace.XivRace)}\\3D");
-
-            var modlist = new Modding(_gameDirectory);
-            var mdlPath = Path.Combine(_mdlData.MdlPath.Folder, _mdlData.MdlPath.File);
-            var modData = await modlist.TryGetModEntry(mdlPath);
-
-            var openFileDialog = new OpenFileDialog();
-            openFileDialog.InitialDirectory = path.FullName;
-            openFileDialog.Filter = "Collada DAE (*.dae)|*.dae";
-
-            if (openFileDialog.ShowDialog() == DialogResult.OK)
-            {
-                Dictionary<string, string> warnings;
-
-                try
-                {
-                    if (modData != null && modData.enabled)
-                    {
-                        var originalMdl = await _mdl.GetMdlData(_item, SelectedRace.XivRace, null, modData.fullPath,
-                            modData.data.originalOffset);
-
-                        warnings = await _mdl.ImportModel(_item, originalMdl, new DirectoryInfo(openFileDialog.FileName), null,
-                            XivStrings.TexTools, Settings.Default.DAE_Plugin_Target);
-                    }
-                    else
-                    {
-                        warnings = await _mdl.ImportModel(_item, _mdlData, new DirectoryInfo(openFileDialog.FileName), null,
-                            XivStrings.TexTools, Settings.Default.DAE_Plugin_Target);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    FlexibleMessageBox.Show(
-                        string.Format(UIMessages.DAEImportErrorMessage, ex.Message), UIMessages.DAEImportErrorTitle,
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-
-                if (warnings.Count > 0)
-                {
-                    foreach (var warning in warnings)
-                    {
-                        FlexibleMessageBox.Show(
-                            $"{warning.Value}", $"{warning.Key}",
-                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    }
-                }
-
-                ModStatusToggleEnabled = true;
-
-                GetMeshes();
-            }
-
-            _modelView.BottomFlyout.IsOpen = false;
-        }
-
-        /// <summary>
-        /// Opens the advanced model import options
-        /// </summary>
-        /// <param name="obj"></param>
-        private async void AdvancedImport(object obj)
-        {
-            var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
-            var index = new Index(gameDirectory);
-
-            if (index.IsIndexLocked(XivDataFile._0A_Exd))
-            {
-                FlexibleMessageBox.Show(UIMessages.IndexLockedErrorMessage,
-                    UIMessages.IndexLockedErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                return;
-            }
-
-            var modlist = new Modding(_gameDirectory);
-            var mdlPath = Path.Combine(_mdlData.MdlPath.Folder, _mdlData.MdlPath.File);
-            bool? result = false;
-
-            var modData = await modlist.TryGetModEntry(mdlPath);
-
-            try
-            {
-                // pass in the original mdl if the current one is modded
-                if (modData != null && modData.enabled)
-                {
-                    var originalMdl = await _mdl.GetMdlData(_item, SelectedRace.XivRace, null, modData.fullPath,
-                        modData.data.originalOffset);
-                    var modMdl = await _mdl.GetMdlData(_item, SelectedRace.XivRace, null, modData.fullPath,
-                        modData.data.modOffset);
-
-                    var advImportedView = new AdvancedModelImportView(originalMdl, modMdl, _item, SelectedRace.XivRace, false)
-                        { Owner = Window.GetWindow(_modelView) };
-                    result = advImportedView.ShowDialog();
-                }
-                else
-                {
-                    var advImportedView = new AdvancedModelImportView(_mdlData,null, _item, SelectedRace.XivRace, false)
-                        { Owner = Window.GetWindow(_modelView) };
-                    result = advImportedView.ShowDialog();
-                }
-            }
-            catch (Exception ex)
-            {
-                FlexibleMessageBox.Show(
-                    string.Format(UIMessages.AdvancedImportWindowErrorMessage, ex.Message), UIMessages.AdvancedImportErrorTitle,
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-
-            if (result == true)
-            {
-                GetMeshes();
-            }
-
-            _modelView.BottomFlyout.IsOpen = false;
-        }
-
         #endregion
 
         #region Text
@@ -1584,17 +1396,17 @@ namespace FFXIV_TexTools.ViewModels
 
                 _materialDictionary = await GetMaterials();
 
-                ViewPortVM.UpdateModel(_mdlData, _materialDictionary);
+                ViewPortVM.UpdateModel(_model, _materialDictionary);
 
                 ReflectionValue = ViewPortVM.SpecularShine;
 
-                _modelView.viewport3DX.ZoomExtents();
+                _view.viewport3DX.ZoomExtents();
 
                 ExportEnabled = true;
 
                 var saveDir = new DirectoryInfo(Settings.Default.Save_Directory);
                 var path = $"{IOUtil.MakeItemSavePath(_item, saveDir, SelectedRace.XivRace)}\\3D";
-                var modelName = Path.GetFileNameWithoutExtension(_mdlData.MdlPath.File);
+                var modelName = Path.GetFileNameWithoutExtension(_model.Source);
                 var savePath = Path.Combine(path, modelName) + ".dae";
 
                 BasicImportEnabled = File.Exists(savePath);
@@ -1603,7 +1415,7 @@ namespace FFXIV_TexTools.ViewModels
 
                 if (!KeepCameraChecked)
                 {
-                    _modelView.viewport3DX.ZoomExtents();
+                    _view.viewport3DX.ZoomExtents();
                 }
 
                 ShowModelStatus(UIStrings.ModelStatus_UpdateSuccess);
@@ -1648,7 +1460,7 @@ namespace FFXIV_TexTools.ViewModels
             var textureDataDictionary = new Dictionary<int, ModelTextureData>();
             var mtrlDictionary = new Dictionary<int, XivMtrl>();
             var mtrl = new Mtrl(_gameDirectory, _item.DataFile, GetLanguage());
-            var mtrlFilePaths = _mdlData.PathData.MaterialList;
+            var mtrlFilePaths = _model.Materials;
             var hasColorChangeShader = false;
             Color? customColor = null;
             WinColor winColor;
@@ -1678,24 +1490,35 @@ namespace FFXIV_TexTools.ViewModels
                     case "cb":
                         var body = mtrlFilePath.Substring(mtrlFilePath.IndexOf("b") + 1, 4);
                         raceString = mtrlFilePath.Substring(mtrlFilePath.IndexOf("c") + 1, 4);
-                        race = XivRaces.GetXivRace(raceString);
 
-                        if (!raceString.Equals("0901") && !raceString.Equals("1001") && !raceString.Equals("1101") && !raceString.Equals("1501"))
+                        // XIV automatically forces skin materials to instead reference the appropiate one for the character wearing it.
+                        race = XivRaceTree.GetSkinRace(_selectedRace.XivRace);
+
+
+                        var gender = 0;
+                        if (int.Parse(XivRaces.GetRaceCode(race).Substring(0, 2)) % 2 == 0)
                         {
-                            var gender = 0;
-                            if (int.Parse(raceString.Substring(0, 2)) % 2 == 0)
-                            {
-                                gender = 1;
-                            }
-
-                            var settingsRace = GetSettingsRace(gender);
-
-                            race = settingsRace.Race;
-
-                            filePath = mtrlFilePath.Replace(raceString, race.GetRaceCode()).Replace(body, settingsRace.BodyID);
-
-                            body = settingsRace.BodyID;
+                            gender = 1;
                         }
+
+                        // Get the actual skin the user's preferred race uses.
+                        var settingsRace = XivRaceTree.GetSkinRace(GetSettingsRace(gender).Race);
+                        var settingsBody = settingsRace == GetSettingsRace(gender).Race ? GetSettingsRace(gender).BodyID : "0001";
+
+                        // If the user's race is a child of the item's race, we can show the user skin instead.
+                        var useSettings = XivRaceTree.IsChildOf(settingsRace, race);
+                        if(useSettings)
+                        {
+                            filePath = mtrlFilePath.Replace(raceString, settingsRace.GetRaceCode()).Replace(body, settingsBody);
+                            race = settingsRace;
+                            body = settingsBody;
+                        } else
+                        {
+                            // Just use item race.
+                            filePath = mtrlFilePath.Replace(raceString, race.GetRaceCode()).Replace(body, "0001");
+                        }
+
+
 
 
                         mtrlItem = new XivGenericItemModel

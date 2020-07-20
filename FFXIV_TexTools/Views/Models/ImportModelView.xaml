@@ -1,0 +1,36 @@
+﻿<mah:MetroWindow x:Name="ImportModelWindow" x:Class="FFXIV_TexTools.Views.Models.ImportModelView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+        mc:Ignorable="d"
+        Title="Model Importer" Height="210" IsMinButtonEnabled="False" IsMaxRestoreButtonEnabled="False" WindowStartupLocation="CenterOwner" FontSize="14" Width="640" ResizeMode="NoResize">
+    <Grid>
+        <Grid Height="54" VerticalAlignment="Top">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="223*"/>
+                <ColumnDefinition Width="39*"/>
+                <ColumnDefinition Width="55*"/>
+            </Grid.ColumnDefinitions>
+            <TextBox x:Name="FileNameTextBox" Text="Some File Path" Grid.ColumnSpan="1" Margin="10,14,5,14" VerticalAlignment="Center" VerticalContentAlignment="Center" FontStyle="Italic" Height="26" />
+            <Button x:Name="SelectFileButton" Content="..." Grid.ColumnSpan="1" Grid.Column="1" Margin="5,14" VerticalAlignment="Center" Height="26" />
+            <Button x:Name="UseExistingButton" Content="Use Existing" Grid.ColumnSpan="1" Margin="5,14,10,14" VerticalAlignment="Center" Grid.Column="2" Height="26" Click="UseExistingButton_Click" />
+
+        </Grid>
+        <UniformGrid Margin="10,59,10,0" Columns="3" Rows="2" Height="72" VerticalAlignment="Top">
+            <CheckBox x:Name="EnableShapeDataButton" Content="Enable Shape Data" Style="{DynamicResource SimpleCheckBox}" VerticalContentAlignment="Center" VerticalAlignment="Top" ToolTipService.ShowOnDisabled="True" ToolTip="Enable the model's original shape data. (Should be ON for Faces)" />
+            <CheckBox x:Name="ClearUV2Button" Content="Clear UV2" Style="{DynamicResource SimpleCheckBox}" VerticalContentAlignment="Center" VerticalAlignment="Top" ToolTipService.ShowOnDisabled="True" ToolTip="Reset the second UV layer to [0,0]" />
+            <CheckBox x:Name="ClearVColorButton" Content="Clear Vertex Color" Style="{DynamicResource SimpleCheckBox}" VerticalContentAlignment="Center" VerticalAlignment="Top" ToolTipService.ShowOnDisabled="True" ToolTip="Reset the Vertex Color to [255,255,255]" />
+            <CheckBox x:Name="ForceUVsButton" Content="Force UV1 to [1,-1]" Style="{DynamicResource SimpleCheckBox}" VerticalContentAlignment="Center" VerticalAlignment="Top" ToolTipService.ShowOnDisabled="True" ToolTip="Move all UV Coordinates into the [1,-1] quadrant."  />
+            <CheckBox x:Name="CloneUV1Button" Content="Clone UV1 to UV2" Style="{DynamicResource SimpleCheckBox}" VerticalContentAlignment="Center" VerticalAlignment="Top" ToolTipService.ShowOnDisabled="True" ToolTip="Copy UV1 into UV2. (Useful for Hair shader items)"  />
+            <CheckBox x:Name="ClearVAlphaButton" Content="Clear Vertex Alpha" Style="{DynamicResource SimpleCheckBox}" VerticalContentAlignment="Center" VerticalAlignment="Top" ToolTipService.ShowOnDisabled="True" ToolTip="Reset the Vertex Alpha to [255]" />
+        </UniformGrid>
+        <UniformGrid Margin="10,135,10,0" Columns="3" Height="30" VerticalAlignment="Top">
+            <Button x:Name="CancelButton" Content="Cancel" Margin="0,0,10,0" Click="CancelButton_Click"  />
+            <Button x:Name="EditButton" Content="Open Editor" Margin="0" />
+            <Button x:Name="ImportButton" Content="Import" Margin="10,0,0,0" />
+        </UniformGrid>
+        <RichTextBox x:Name="LogTextBox" Block.LineHeight="2" Height="418" Margin="8,183,8,0" VerticalAlignment="Top" Background="#FFE2E2E2" Foreground="Black" FontFamily="Courier New" VerticalScrollBarVisibility="Visible" Padding="5" IsUndoEnabled="True" IsReadOnly="True" mah:TextBoxHelper.WatermarkWrapping="Wrap"/>
+    </Grid>
+</mah:MetroWindow>
