@@ -1520,8 +1520,9 @@ namespace FFXIV_TexTools.ViewModels
                         var useSettings = XivRaceTree.IsChildOf(settingsRace, race);
                         if(useSettings)
                         {
-                            race = settingsRace;
                             filePath = mtrlFilePath.Replace(raceString, settingsRace.GetRaceCode()).Replace(body, settingsBody);
+                            race = settingsRace;
+                            body = settingsBody;
                         } else
                         {
                             // Just use item race.
