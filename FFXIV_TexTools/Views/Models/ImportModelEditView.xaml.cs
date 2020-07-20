@@ -26,7 +26,8 @@ namespace FFXIV_TexTools.Views.Models
     public partial class ImportModelEditView 
     {
         private ImportModelEditViewModel _viewModel;
-        private TTModel _model;
+        private TTModel _newModel;
+        private TTModel _oldModel;
 
         public ObservableCollection<KeyValuePair<int, string>> MeshSource = new ObservableCollection<KeyValuePair<int, string>>();
         public ObservableCollection<KeyValuePair<int, string>> PartSource = new ObservableCollection<KeyValuePair<int, string>>();
@@ -34,19 +35,20 @@ namespace FFXIV_TexTools.Views.Models
         public ObservableCollection<KeyValuePair<string, string>> AttributesSource = new ObservableCollection<KeyValuePair<string, string>>();
         public ObservableCollection<KeyValuePair<string, string>> MaterialsSource = new ObservableCollection<KeyValuePair<string, string>>();
         public ObservableCollection<KeyValuePair<string, string>> AllAttributesSource = new ObservableCollection<KeyValuePair<string, string>>();
-        public ObservableCollection<KeyValuePair<float, string>> SizeMultiplierSource = new ObservableCollection<KeyValuePair<float, string>>();
+        public ObservableCollection<KeyValuePair<double, string>> SizeMultiplierSource = new ObservableCollection<KeyValuePair<double, string>>();
 
-        public ImportModelEditView(TTModel model)
+        public ImportModelEditView(TTModel newModel, TTModel oldModel)
         {
             InitializeComponent();
-            _model = model;
+            _newModel = newModel;
+            _oldModel = oldModel;
             MeshNumberBox.Items.Clear();
             PartNumberBox.Items.Clear();
             ScaleComboBox.Items.Clear();
 
-            for (var mIdx = 0; mIdx < model.MeshGroups.Count; mIdx++)
+            for (var mIdx = 0; mIdx < _newModel.MeshGroups.Count; mIdx++)
             {
-                var m = model.MeshGroups[mIdx];
+                var m = _newModel.MeshGroups[mIdx];
                 if(m.Name == null)
                 {
                     MeshSource.Add(new KeyValuePair<int, string>(mIdx, "#" + mIdx.ToString()));
@@ -58,12 +60,13 @@ namespace FFXIV_TexTools.Views.Models
             }
 
 
-            SizeMultiplierSource.Add(new KeyValuePair<float, string>(1.0f, "1x"));
-            SizeMultiplierSource.Add(new KeyValuePair<float, string>(10.0f, "10x"));
-            SizeMultiplierSource.Add(new KeyValuePair<float, string>(100.0f, "100x"));
-            SizeMultiplierSource.Add(new KeyValuePair<float, string>(.1f, "0.1x"));
-            SizeMultiplierSource.Add(new KeyValuePair<float, string>(.01f, "0.01x"));
-
+            SizeMultiplierSource.Add(new KeyValuePair<double, string>(1.0D, "1x"));
+            SizeMultiplierSource.Add(new KeyValuePair<double, string>(10.0D, "10x"));
+            SizeMultiplierSource.Add(new KeyValuePair<double, string>(100.0D, "100x"));
+            SizeMultiplierSource.Add(new KeyValuePair<double, string>(.1D, "0.1x"));
+            SizeMultiplierSource.Add(new KeyValuePair<double, string>(.01D, "0.01x"));
+            SizeMultiplierSource.Add(new KeyValuePair<double, string>(0.03937007874D, "0.039x (Legacy Fix)"));
+            
             MeshNumberBox.ItemsSource = MeshSource;
             MeshNumberBox.DisplayMemberPath = "Value";
             MeshNumberBox.SelectedValuePath = "Key";
@@ -96,15 +99,15 @@ namespace FFXIV_TexTools.Views.Models
             ScaleComboBox.SelectedValue = 1.0f;
 
 
-            _viewModel = new ImportModelEditViewModel(this, model);
+            _viewModel = new ImportModelEditViewModel(this, _newModel, _oldModel);
             this.DataContext = _viewModel;
         }
 
         private void ImportButton_Click(object sender, RoutedEventArgs e)
         {
-            if ((float)ScaleComboBox.SelectedValue != 1.0f)
+            if (Convert.ToDouble(ScaleComboBox.SelectedValue) != 1.0)
             {
-                ModelModifiers.ScaleModel(_model, (float)ScaleComboBox.SelectedValue);
+                ModelModifiers.ScaleModel(_newModel, (double)ScaleComboBox.SelectedValue);
             }
             DialogResult = true;
         }

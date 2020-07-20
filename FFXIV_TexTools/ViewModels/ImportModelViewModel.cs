@@ -235,14 +235,14 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        private async Task<bool> IntermediateStep(TTModel model)
+        private async Task<bool> IntermediateStep(TTModel newModel, TTModel oldModel)
         {
             var result = false;
             await _view.Dispatcher.BeginInvoke((ThreadStart)delegate ()
             {
                 try
                 {
-                    var editorWindow = new ImportModelEditView(model) { Owner = _view };
+                    var editorWindow = new ImportModelEditView(newModel, oldModel) { Owner = _view };
                     result = editorWindow.ShowDialog() == true ? true : false;
                 }
                 catch (Exception Ex)

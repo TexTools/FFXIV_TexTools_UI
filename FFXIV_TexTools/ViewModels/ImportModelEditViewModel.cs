@@ -30,7 +30,8 @@ namespace FFXIV_TexTools.ViewModels
 
 
         private ImportModelEditView _view;
-        private TTModel _model;
+        private TTModel _newModel;
+        private TTModel _oldModel;
 
         private readonly Regex ImcAttributeRegex = new Regex("^atr_([a-z]{2})_([a-j])$");
 
@@ -42,9 +43,10 @@ namespace FFXIV_TexTools.ViewModels
         private readonly KeyValuePair<string, string> SkinTag = new KeyValuePair<string, string>(SkinMaterial, "Skin");
         private readonly string UnknownText = "Unknown";
 
-        private readonly float ModelSize;
-        private const float MinAcceptableSize = 0.1f;
-        private const float MaxAcceptableSize = 5f;
+        private readonly float OldModelSize;
+        private readonly float NewModelSize;
+        private const float MinAcceptableSize = 0.5f;
+        private const float MaxAcceptableSize = 2f;
 
         private TTMeshGroup GetGroup()
         {
@@ -52,7 +54,7 @@ namespace FFXIV_TexTools.ViewModels
                 return null;
 
             var mIdx = (int)_view.MeshNumberBox.SelectedValue;
-            return _model.MeshGroups[mIdx];
+            return _newModel.MeshGroups[mIdx];
 
         }
         private TTMeshPart GetPart()
@@ -67,19 +69,20 @@ namespace FFXIV_TexTools.ViewModels
 
         }
 
-        public ImportModelEditViewModel(ImportModelEditView view, TTModel model)
+        public ImportModelEditViewModel(ImportModelEditView view, TTModel newModel, TTModel oldModel)
         {
             _view = view;
-            _model = model;
+            _newModel = newModel;
+            _oldModel = oldModel;
 
 
             // Merge all the default skin materials together, since FFXIV auto-handles them anyways.
-            foreach (var m in _model.MeshGroups)
+            foreach (var m in _newModel.MeshGroups)
             {
                 if (m.Material == null)
                 {
                     // Sanity assurance.
-                    m.Material = model.MeshGroups[0].Material;
+                    m.Material = _newModel.MeshGroups[0].Material;
                 }
 
 
@@ -90,9 +93,10 @@ namespace FFXIV_TexTools.ViewModels
                 }
             }
 
+            // Calculate the model bounding box sizes.
             float minX = 9999.0f, minY = 9999.0f, minZ = 9999.0f;
             float maxX = -9999.0f, maxY = -9999.0f, maxZ = -9999.0f;
-            foreach (var m in _model.MeshGroups)
+            foreach (var m in _newModel.MeshGroups)
             {
                 foreach (var p in m.Parts)
                 {
@@ -111,7 +115,32 @@ namespace FFXIV_TexTools.ViewModels
 
             Vector3 min = new Vector3(minX, minY, minZ);
             Vector3 max = new Vector3(maxX, maxY, maxZ);
-            ModelSize = Vector3.Distance(min, max);
+
+            NewModelSize = Vector3.Distance(min, max);
+
+            minX = 9999.0f; minY = 9999.0f; minZ = 9999.0f;
+            maxX = -9999.0f; maxY = -9999.0f; maxZ = -9999.0f;
+            foreach (var m in _oldModel.MeshGroups)
+            {
+                foreach (var p in m.Parts)
+                {
+                    foreach (var v in p.Vertices)
+                    {
+                        minX = minX < v.Position.X ? minX : v.Position.X;
+                        minY = minY < v.Position.Y ? minY : v.Position.Y;
+                        minZ = minZ < v.Position.Z ? minZ : v.Position.Z;
+
+                        maxX = maxX > v.Position.X ? maxX : v.Position.X;
+                        maxY = maxY > v.Position.Y ? maxY : v.Position.Y;
+                        maxZ = maxZ > v.Position.Z ? maxZ : v.Position.Z;
+                    }
+                }
+            }
+
+            min = new Vector3(minX, minY, minZ);
+            max = new Vector3(maxX, maxY, maxZ);
+
+            OldModelSize = Vector3.Distance(min, max);
 
             UpdateModelSizeWarning();
 
@@ -148,26 +177,37 @@ namespace FFXIV_TexTools.ViewModels
 
         private void UpdateModelSizeWarning()
         {
-            float size = ModelSize * ((float)_view.ScaleComboBox.SelectedValue);
-            if (size < MinAcceptableSize)
-            {
-                _view.ScaleWarningBox.Foreground = System.Windows.Media.Brushes.DarkGoldenrod;
-                _view.ScaleWarningBox.FontWeight = FontWeights.Bold;
-                _view.ScaleWarningBox.Content = "Model Size: " + size.ToString("0.00") + " meters.\nYou may wish to consider scaling the model up.";
+            float size = (float)(NewModelSize * (Convert.ToDouble(_view.ScaleComboBox.SelectedValue)));
+            _view.OldModelSizeBox.Content = OldModelSize.ToString("0.00") + " meters";
+            _view.NewModelSizeBox.Content = size.ToString("0.00") + " meters";
 
-            }
-            else if (size > MaxAcceptableSize)
+            if (size < MinAcceptableSize * OldModelSize)
             {
                 _view.ScaleWarningBox.Foreground = System.Windows.Media.Brushes.DarkGoldenrod;
                 _view.ScaleWarningBox.FontWeight = FontWeights.Bold;
-                _view.ScaleWarningBox.Content = "Model Size: " + size.ToString("0.00") + " meters.\nYou may wish to consider scaling the model down.";
+                _view.ScaleWarningBox.Text = "You may wish to consider scaling this model up.";
+
+                _view.NewModelSizeBox.Foreground = System.Windows.Media.Brushes.DarkGoldenrod;
+                _view.NewModelSizeBox.FontWeight = FontWeights.Bold;
+            }
+            else if (size > MaxAcceptableSize * OldModelSize)
+            {
+                _view.ScaleWarningBox.Foreground = System.Windows.Media.Brushes.DarkGoldenrod;
+                _view.ScaleWarningBox.FontWeight = FontWeights.Bold;
+                _view.ScaleWarningBox.Text = "You may wish to consider scaling this model down.";
+
+                _view.NewModelSizeBox.Foreground = System.Windows.Media.Brushes.DarkGoldenrod;
+                _view.NewModelSizeBox.FontWeight = FontWeights.Bold;
 
             }
             else
             {
                 _view.ScaleWarningBox.Foreground = System.Windows.Media.Brushes.Black;
                 _view.ScaleWarningBox.FontWeight = FontWeights.Normal;
-                _view.ScaleWarningBox.Content = "Model Size: " + size.ToString("0.00") + " meters.\nThis seems within the normal range.";
+                _view.ScaleWarningBox.Text = "";
+
+                _view.NewModelSizeBox.Foreground = System.Windows.Media.Brushes.Black;
+                _view.NewModelSizeBox.FontWeight = FontWeights.Normal;
             }
         }
 
@@ -232,7 +272,7 @@ namespace FFXIV_TexTools.ViewModels
             }
 
             // Add in any new item materials.
-            foreach (var m in _model.MeshGroups)
+            foreach (var m in _newModel.MeshGroups)
             {
                 var result = ItemMaterialRegex.Match(m.Material);
                 if (result.Success)
@@ -260,8 +300,8 @@ namespace FFXIV_TexTools.ViewModels
 
             _view.AllAttributesSource.Add(DefaultTag);
 
-            var attributes = new List<KeyValuePair<string, string>>(_model.Attributes.Count);
-            foreach (var a in _model.Attributes)
+            var attributes = new List<KeyValuePair<string, string>>(_newModel.Attributes.Count);
+            foreach (var a in _newModel.Attributes)
             {
                 var r = _view.AllAttributesSource.FirstOrDefault(x => x.Key == a);
                 if (r.Key == null)
@@ -384,7 +424,7 @@ namespace FFXIV_TexTools.ViewModels
 
             _view.PartSource.Clear();
             var mIdx = (int)_view.MeshNumberBox.SelectedValue;
-            var m = _model.MeshGroups[mIdx];
+            var m = _newModel.MeshGroups[mIdx];
             for (var pIdx = 0; pIdx < m.Parts.Count; pIdx++)
             {
                 var p = m.Parts[pIdx];
@@ -398,7 +438,7 @@ namespace FFXIV_TexTools.ViewModels
                 _view.ShapesSource.Add(new KeyValuePair<string, string>(shape.Name, GetNiceShapeName(shape.Name)));
             }
 
-            SetMaterial(m.Material == null ? _model.Materials[0] : m.Material);
+            SetMaterial(m.Material == null ? _newModel.Materials[0] : m.Material);
 
             _view.ShapesListBox.SelectedItem = null;
             _view.AttributesListBox.SelectedItem = null;
@@ -425,7 +465,7 @@ namespace FFXIV_TexTools.ViewModels
 
             var mIdx = (int)_view.MeshNumberBox.SelectedValue;
             var pIdx = (int)_view.PartNumberBox.SelectedValue;
-            var p = _model.MeshGroups[mIdx].Parts[pIdx];
+            var p = _newModel.MeshGroups[mIdx].Parts[pIdx];
 
             _view.AttributesSource.Clear();
             foreach (var attribute in p.Attributes)
@@ -484,7 +524,7 @@ namespace FFXIV_TexTools.ViewModels
                 var mIdx = (int)_view.MeshNumberBox.SelectedValue;
 
                 // Assign the material to the model.
-                var m = _model.MeshGroups[mIdx];
+                var m = _newModel.MeshGroups[mIdx];
                 m.Material = material;
             }
         }
@@ -515,7 +555,7 @@ namespace FFXIV_TexTools.ViewModels
 
             // Assign the material to the model.
             var mIdx = (int)_view.MeshNumberBox.SelectedValue;
-            var m = _model.MeshGroups[mIdx];
+            var m = _newModel.MeshGroups[mIdx];
             var mat = _view.MaterialPathTextBox.Text;
             m.Material = mat;
 
