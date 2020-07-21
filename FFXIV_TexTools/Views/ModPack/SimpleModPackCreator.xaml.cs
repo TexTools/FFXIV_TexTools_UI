@@ -353,8 +353,7 @@ namespace FFXIV_TexTools.Views
                     FullPath = mod.fullPath,
                     ModOffset = mod.data.modOffset,
                     ModSize = mod.data.modSize,
-                    DatFile = mod.datFile,
-                    
+                    DatFile = mod.datFile
                 };
 
                 simpleModPackData.SimpleModDataList.Add(simpleData);

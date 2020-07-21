@@ -188,6 +188,19 @@ namespace FFXIV_TexTools.Views
                 for (int i = 0; i < modPackJson.SimpleModsList.Count; i++)
                 {
                     var jsonItem = modPackJson.SimpleModsList[i];
+
+                    // For some reason the ModPackEntry was never set before 2.0.13 so this is necessary for modpacks created prior to then
+                    if (jsonItem.ModPackEntry == null)
+                    {
+                        // Manually add the modpack entry that this mod is a part of
+                        jsonItem.ModPackEntry = new ModPack
+                        {
+                            name = modPackJson.Name,
+                            author = modPackJson.Author,
+                            version = modPackJson.Version
+                        };
+                    }
+
                     JsonEntries.Add(jsonItem);
                     Entries.Add(new SimpleModpackEntry(JsonEntries.Count - 1, this));
                 }
