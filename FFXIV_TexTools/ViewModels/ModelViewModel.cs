@@ -113,6 +113,7 @@ namespace FFXIV_TexTools.ViewModels
             ExportModel("fbx");
         }
 
+
         /// <summary>
         /// Updates the model to display
         /// </summary>
@@ -122,7 +123,11 @@ namespace FFXIV_TexTools.ViewModels
         /// <param name="itemModel">The model to update to</param>
         public async Task UpdateModel(IItemModel itemModel)
         {
+
             ClearAll();
+
+            // Might as well just make sure we have these updated.
+            CustomizeViewModel.UpdateFrameworkColors();
 
             _item = (IItemModel)itemModel.Clone();
 
@@ -1242,7 +1247,8 @@ namespace FFXIV_TexTools.ViewModels
                try
                {
                    var path = GetItem3DFolder() + Path.GetFileNameWithoutExtension(_model.Source) + "." + format;
-                   await _mdl.ExportMdlToFile(_item, SelectedRace.XivRace, path);
+                    // Todo - Fixfix - Need to include submesh id.
+                   await _mdl.ExportMdlToFile(_item, SelectedRace.XivRace, path, null);
 
                 }
                catch (Exception e)
@@ -1391,6 +1397,9 @@ namespace FFXIV_TexTools.ViewModels
         {
             try
             {
+                // Might as well just make sure we have these updated.
+                CustomizeViewModel.UpdateFrameworkColors();
+
                 ViewPortVM.ClearModels();
                 TransparencyToggle = false;
 
@@ -1676,38 +1685,15 @@ namespace FFXIV_TexTools.ViewModels
 
             foreach (var xivMtrl in mtrlDictionary)
             {
-                var modelTexture = new ModelTexture(_gameDirectory, xivMtrl.Value);
 
                 if (hasColorChangeShader)
                 {
-                    var modelMaps = await modelTexture.GetModelMaps(null, true);
-
+                    var modelMaps = await ModelTexture.GetModelMaps(_gameDirectory, xivMtrl.Value);
                     textureDataDictionary.Add(xivMtrl.Key, modelMaps);
                 }
                 else
                 {
-                    if (_item.SecondaryCategory.Equals(XivStrings.Face))
-                    {
-                        var path = xivMtrl.Value.MTRLPath;
-
-                        if (path.Contains("_iri_"))
-                        {
-                            winColor = (WinColor)ColorConverter.ConvertFromString(Settings.Default.Iris_Color);
-                        }
-                        else if (path.Contains("_etc_"))
-                        {
-                            winColor = (WinColor)ColorConverter.ConvertFromString(Settings.Default.Etc_Color);
-                        }
-                        else
-                        {
-                            winColor = (WinColor)ColorConverter.ConvertFromString(Settings.Default.Skin_Color);
-                        }
-
-                        customColor = new Color(winColor.R, winColor.G, winColor.B, winColor.A);
-                    }
-
-                    var modelMaps = await modelTexture.GetModelMaps(customColor);
-
+                    var modelMaps = await ModelTexture.GetModelMaps(_gameDirectory, xivMtrl.Value);
                     textureDataDictionary.Add(xivMtrl.Key, modelMaps);
                 }
             }

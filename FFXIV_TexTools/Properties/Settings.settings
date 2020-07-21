@@ -30,16 +30,25 @@
       <Value Profile="(Default)">Hyur Midlander</Value>
     </Setting>
     <Setting Name="Skin_Color" Type="System.String" Scope="User">
-      <Value Profile="(Default)">#FFFFFFFF</Value>
+      <Value Profile="(Default)">#FFCC9578</Value>
     </Setting>
     <Setting Name="Hair_Color" Type="System.String" Scope="User">
+      <Value Profile="(Default)">#FF82400D</Value>
+    </Setting>
+    <Setting Name="Hair_Highlight_Color" Type="System.String" Scope="User">
+      <Value Profile="(Default)">#FF4D7EF0</Value>
+    </Setting>
+    <Setting Name="Eye_Color" Type="System.String" Scope="User">
       <Value Profile="(Default)">#FF603913</Value>
     </Setting>
-    <Setting Name="Iris_Color" Type="System.String" Scope="User">
-      <Value Profile="(Default)">#FF603913</Value>
+    <Setting Name="Lip_Color" Type="System.String" Scope="User">
+      <Value Profile="(Default)">#FFAD6969</Value>
     </Setting>
-    <Setting Name="Etc_Color" Type="System.String" Scope="User">
-      <Value Profile="(Default)">#FF603913</Value>
+    <Setting Name="Tattoo_Color" Type="System.String" Scope="User">
+      <Value Profile="(Default)">#FF00FF42</Value>
+    </Setting>
+    <Setting Name="Furniture_Color" Type="System.String" Scope="User">
+      <Value Profile="(Default)">#FF8D3CCC</Value>
     </Setting>
     <Setting Name="Cull_Mode" Type="System.String" Scope="User">
       <Value Profile="(Default)">Back</Value>

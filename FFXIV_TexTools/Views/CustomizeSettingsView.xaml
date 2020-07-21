@@ -82,7 +82,10 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
-                        <RowDefinition/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
@@ -96,19 +99,28 @@
                     <Label Content="{Binding Source={x:Static resx:UIStrings.Hair_Color}}" Grid.Row="1" Margin="5"/>
                     <xctk:ColorPicker x:Name="HairColorPicker" SelectedColor="{Binding Selected_HairColor}" ColorMode="ColorCanvas" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" MinWidth="120" DropDownBackground="Gainsboro"/>
 
-                    <Label Content="{Binding Source={x:Static resx:UIStrings.Iris_Color}}" Grid.Row="2" Margin="5"/>
-                    <xctk:ColorPicker x:Name="IrisColorPicker" SelectedColor="{Binding Selected_IrisColor}" ColorMode="ColorCanvas" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" MinWidth="120" DropDownBackground="Gainsboro"/>
+                    <Label Content="Hair Highlight Color" Grid.Row="2" Margin="5"/>
+                    <xctk:ColorPicker x:Name="HairHighlightColorPicker" SelectedColor="{Binding Selected_HairHighlightColor}" ColorMode="ColorCanvas" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" MinWidth="120" DropDownBackground="Gainsboro"/>
+                    
+                    <Label Content="{Binding Source={x:Static resx:UIStrings.Iris_Color}}" Grid.Row="3" Margin="5"/>
+                    <xctk:ColorPicker x:Name="IrisColorPicker" SelectedColor="{Binding Selected_IrisColor}" ColorMode="ColorCanvas" Grid.Row="3" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" MinWidth="120" DropDownBackground="Gainsboro"/>
 
-                    <Label Content="{Binding Source={x:Static resx:UIStrings.Etc_Color}}" Grid.Row="3" Margin="5"/>
-                    <xctk:ColorPicker x:Name="EtcColorPicker" SelectedColor="{Binding Selected_EtcColor}" ColorMode="ColorCanvas" Grid.Row="3" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" MinWidth="120" DropDownBackground="Gainsboro"/>
+                    <Label Content="Lip Color" Grid.Row="4" Margin="5"/>
+                    <xctk:ColorPicker x:Name="LipColorPicker" SelectedColor="{Binding Selected_LipColor}" ColorMode="ColorCanvas" Grid.Row="4" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" MinWidth="120" DropDownBackground="Gainsboro"/>
+                    
+                    
+                    <Label Content="Tattoo Color" Grid.Row="5" Margin="5"/>
+                    <xctk:ColorPicker x:Name="TattooColorPicker" SelectedColor="{Binding Selected_TattooColor}" ColorMode="ColorCanvas" Grid.Row="5" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" MinWidth="120" DropDownBackground="Gainsboro"/>
 
-                    <Label Content="{Binding Source={x:Static resx:UIStrings.BG_Color}}" Grid.Row="4" Margin="5"/>
-                    <xctk:ColorPicker x:Name="BGColorPicker" SelectedColor="{Binding Selected_BgColor}" ColorMode="ColorCanvas" Grid.Row="4" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" MinWidth="120" DropDownBackground="Gainsboro"/>
+                    <Label Content="Furniture Color" Grid.Row="6" Margin="5"/>
+                    <xctk:ColorPicker x:Name="FurnitureColorPicker" SelectedColor="{Binding Selected_FurnitureColor}" ColorMode="ColorCanvas" Grid.Row="6" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" MinWidth="120" DropDownBackground="Gainsboro"/>
 
-                    <TextBlock Grid.Row="5" Grid.ColumnSpan="3" TextWrapping="WrapWithOverflow" Text="{Binding Source={x:Static resx:UIStrings.Skin_Color_Note_Info}}" VerticalAlignment="Top" Margin="0,10,0,0"/>
+                    <Label Content="{Binding Source={x:Static resx:UIStrings.BG_Color}}" Grid.Row="7" Margin="5"/>
+                    <xctk:ColorPicker x:Name="BGColorPicker" SelectedColor="{Binding Selected_BgColor}" ColorMode="ColorCanvas" Grid.Row="7" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" MinWidth="120" DropDownBackground="Gainsboro"/>
 
-                    <Button x:Name="DefaultButton" Content="{Binding Source={x:Static resx:UIStrings.Reset_to_Default}}" Command="{Binding Customize_Reset}" Grid.Row="6" Grid.Column="0" Margin="5"/>
-                    <Button x:Name="CloseButton" Grid.Row="6" Grid.Column="2" Content="{Binding Source={x:Static resx:UIStrings.Close}}" Command="{Binding CloseCustomize}" Margin="5" Click="CloseButton_Click" />
+
+                    <Button x:Name="DefaultButton" Content="{Binding Source={x:Static resx:UIStrings.Reset_to_Default}}" Command="{Binding Customize_Reset}" Grid.Row="9" Grid.Column="0" Margin="5"/>
+                    <Button x:Name="CloseButton" Grid.Row="9" Grid.Column="2" Content="{Binding Source={x:Static resx:UIStrings.Close}}" Command="{Binding CloseCustomize}" Margin="5" Click="CloseButton_Click" />
                 </Grid>
             </Grid>
         </GroupBox>

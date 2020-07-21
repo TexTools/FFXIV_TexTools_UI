@@ -12,7 +12,7 @@ namespace FFXIV_TexTools.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.6.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.5.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -133,7 +133,7 @@ namespace FFXIV_TexTools.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("#FFFFFFFF")]
+        [global::System.Configuration.DefaultSettingValueAttribute("#FFCC9578")]
         public string Skin_Color {
             get {
                 return ((string)(this["Skin_Color"]));
@@ -145,7 +145,7 @@ namespace FFXIV_TexTools.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("#FF603913")]
+        [global::System.Configuration.DefaultSettingValueAttribute("#FF82400D")]
         public string Hair_Color {
             get {
                 return ((string)(this["Hair_Color"]));
@@ -157,25 +157,61 @@ namespace FFXIV_TexTools.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("#FF603913")]
-        public string Iris_Color {
+        [global::System.Configuration.DefaultSettingValueAttribute("#FF4D7EF0")]
+        public string Hair_Highlight_Color {
             get {
-                return ((string)(this["Iris_Color"]));
+                return ((string)(this["Hair_Highlight_Color"]));
             }
             set {
-                this["Iris_Color"] = value;
+                this["Hair_Highlight_Color"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("#FF603913")]
-        public string Etc_Color {
+        public string Eye_Color {
             get {
-                return ((string)(this["Etc_Color"]));
+                return ((string)(this["Eye_Color"]));
             }
             set {
-                this["Etc_Color"] = value;
+                this["Eye_Color"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("#FFAD6969")]
+        public string Lip_Color {
+            get {
+                return ((string)(this["Lip_Color"]));
+            }
+            set {
+                this["Lip_Color"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("#FF00FF42")]
+        public string Tattoo_Color {
+            get {
+                return ((string)(this["Tattoo_Color"]));
+            }
+            set {
+                this["Tattoo_Color"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("#FF8D3CCC")]
+        public string Furniture_Color {
+            get {
+                return ((string)(this["Furniture_Color"]));
+            }
+            set {
+                this["Furniture_Color"] = value;
             }
         }
         
