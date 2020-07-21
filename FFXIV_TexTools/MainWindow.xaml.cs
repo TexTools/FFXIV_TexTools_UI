@@ -73,15 +73,12 @@ namespace FFXIV_TexTools
         {
 
             _mainWindow = this;
+            CheckForUpdates();
             CheckForSettingsUpdate();
             LanguageSelection();
 
             // Data Context needs to be set before we call Initialize Component to ensure
             // that the bindings get connected immediately, and not after the constructor.
-            // It's kind of janky though because the constructor of MainViewModel fires
-            // an asynchronous non-waited call to check the Indexes/etc., which ideally
-            // we would really *want* to be waited, but blocking there will cause the whole
-            // application to lock because of inter-dependencies.
             var mainViewModel = new MainViewModel(this);
             this.DataContext = mainViewModel;
 
@@ -97,7 +94,6 @@ namespace FFXIV_TexTools
             CultureInfo.CurrentCulture = ci;
             CultureInfo.CurrentUICulture = ci;
 
-            CheckForUpdates();
 
             var fileVersion = FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location).FileVersion;
 
@@ -200,6 +196,7 @@ namespace FFXIV_TexTools
 
         private void CheckForUpdates()
         {
+            AutoUpdater.Synchronous = true;
             AutoUpdater.Start(WebUrl.TexTools_Update_Url);
         }
 
