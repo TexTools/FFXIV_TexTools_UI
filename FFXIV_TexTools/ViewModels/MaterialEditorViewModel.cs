@@ -391,7 +391,7 @@ namespace FFXIV_TexTools.ViewModels
                 // using the new modified material to detokenize them.
                 foreach (var info in mapInfos)
                 {
-                    itemXivMtrl.SetMapInfo(info.Usage, info);
+                    itemXivMtrl.SetMapInfo(info.Usage, (MapInfo)info.Clone());
                 }
 
                 // Write the new Material
