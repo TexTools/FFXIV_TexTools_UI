@@ -1246,9 +1246,17 @@ namespace FFXIV_TexTools.ViewModels
             {
                try
                {
-                   var path = GetItem3DFolder() + Path.GetFileNameWithoutExtension(_model.Source) + "." + format;
-                    // Todo - Fixfix - Need to include submesh id.
-                   await _mdl.ExportMdlToFile(_item, SelectedRace.XivRace, path, null);
+                    var path = GetItem3DFolder() + Path.GetFileNameWithoutExtension(_model.Source) + "." + format;
+                    string submeshId = null;
+                    if (_item.PrimaryCategory.Equals(XivStrings.Housing))
+                    {
+                        if (PartVisibility == Visibility.Visible)
+                        {
+                            submeshId = _selectedPart.Name;
+                        }
+
+                    }
+                    await _mdl.ExportMdlToFile(_item, SelectedRace.XivRace, path, submeshId);
 
                 }
                catch (Exception e)
@@ -1316,16 +1324,13 @@ namespace FFXIV_TexTools.ViewModels
 
                 var type = _item.GetPrimaryItemType();
                 string submeshId = null;
-                if (type == XivItemType.furniture) {
-                    if(_selectedPart.Name != "b0")
+                if (_item.PrimaryCategory.Equals(XivStrings.Housing))
+                {
+                    if (PartVisibility == Visibility.Visible)
                     {
-                        // This is super hacky, but it'll do for now.
-                        var regex = new Regex("\\( ([a-z]) \\)");
-                        var match= regex.Match(_selectedPart.Name);
-                        if (match.Success) {
-                            submeshId = match.Groups[1].Value;
-                        }
+                        submeshId = _selectedPart.Name;
                     }
+
                 }
                 bool success = await ImportModelView.ImportModel(_item, SelectedRace.XivRace, submeshId, null, () =>
                 {
