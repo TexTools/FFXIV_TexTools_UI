@@ -1135,6 +1135,7 @@ namespace FFXIV_TexTools.ViewModels
             if (_model != null)
             {
                 var task = Task.Run(GetRawMdl);
+                task.Wait();
                 var mdl = task.Result;
                 var modelInspector = new ModelInspector(mdl);
                 modelInspector.Owner = Window.GetWindow(_view);
