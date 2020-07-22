@@ -26,8 +26,8 @@
         <ComboBox x:Name="PartNumberBox" HorizontalAlignment="Left" Margin="55,12,0,0" Width="215" VerticalContentAlignment="Center" BorderBrush="Gray" Grid.Column="1" VerticalAlignment="Top" Height="26">
             <ComboBoxItem Content="TEST"/>
         </ComboBox>
-        <Label Content="Mesh:" HorizontalAlignment="Left" Margin="10,12,0,0" Width="50" VerticalContentAlignment="Center" VerticalAlignment="Top" RenderTransformOrigin="-0.1,0.5" Height="26" FontWeight="Bold"/>
-        <Label Content="Part:" HorizontalAlignment="Left" Margin="10,12,0,0" Width="40" VerticalContentAlignment="Center" VerticalAlignment="Top" Height="26" FontWeight="Bold" Grid.Column="1"/>
+        <Label Content="Group:" HorizontalAlignment="Left" Margin="16,10,0,0" Width="54" VerticalContentAlignment="Center" VerticalAlignment="Top" RenderTransformOrigin="-0.1,0.5" Height="28" FontWeight="Bold"/>
+        <Label Content="Part:" HorizontalAlignment="Left" Margin="15,10,0,0" Width="40" VerticalContentAlignment="Center" VerticalAlignment="Top" Height="28" FontWeight="Bold" Grid.Column="1"/>
         <Rectangle Fill="White" Grid.Row="1" Stroke="Gray" Margin="10,5"/>
         <Rectangle Fill="White" Grid.Row="2" Stroke="Gray" Margin="10,5,10,10"/>
         <Rectangle Fill="White" Grid.Row="1" Stroke="Gray" Margin="10,5,10,10" Grid.Column="1" Grid.RowSpan="2"/>
