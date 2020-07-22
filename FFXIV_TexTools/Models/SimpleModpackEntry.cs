@@ -231,7 +231,7 @@ namespace xivModdingFramework.Mods.DataContainers
                         var task = Task.Run(GetModStatus);
                         task.Wait();
                         var status = task.Result;
-                        _isActive = status == Enums.XivModStatus.Enabled ? true : false;
+                        _isActive = status == Enums.XivModStatus.Enabled || status == XivModStatus.MatAdd ? true : false;
                         return (bool)_isActive;
                     } else
                     {
