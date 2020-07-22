@@ -77,13 +77,6 @@ namespace FFXIV_TexTools
             CheckForSettingsUpdate();
             LanguageSelection();
 
-            // Data Context needs to be set before we call Initialize Component to ensure
-            // that the bindings get connected immediately, and not after the constructor.
-            var mainViewModel = new MainViewModel(this);
-            this.DataContext = mainViewModel;
-
-            InitializeComponent();
-
             var ci = new CultureInfo(Properties.Settings.Default.Application_Language)
             {
                 NumberFormat = { NumberDecimalSeparator = "." }
@@ -94,6 +87,12 @@ namespace FFXIV_TexTools
             CultureInfo.CurrentCulture = ci;
             CultureInfo.CurrentUICulture = ci;
 
+            // Data Context needs to be set before we call Initialize Component to ensure
+            // that the bindings get connected immediately, and not after the constructor.
+            var mainViewModel = new MainViewModel(this);
+            this.DataContext = mainViewModel;
+
+            InitializeComponent();
 
             var fileVersion = FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location).FileVersion;
 
