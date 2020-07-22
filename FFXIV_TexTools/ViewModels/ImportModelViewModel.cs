@@ -125,6 +125,11 @@ namespace FFXIV_TexTools.ViewModels
             {
                 _view.CloneUV1Button.IsChecked = true;
             }
+
+            var iType = item.GetPrimaryItemType();
+            if (iType == xivModdingFramework.Items.Enums.XivItemType.equipment || iType == xivModdingFramework.Items.Enums.XivItemType.accessory || iType == xivModdingFramework.Items.Enums.XivItemType.weapon) {
+                _view.ForceUVsButton.IsChecked = true;
+            }
         }
 
         private void _view_Closing(object sender, CancelEventArgs e)
