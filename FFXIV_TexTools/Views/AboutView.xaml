@@ -7,37 +7,32 @@
         xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
         xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
         mc:Ignorable="d"
-        Title="{Binding Source={x:Static resx:UIStrings.About}}" Height="450" Width="800" WindowStartupLocation="CenterOwner" ResizeMode="NoResize" ShowMaxRestoreButton="False" ShowMinButton="False">
+        Title="{Binding Source={x:Static resx:UIStrings.About}}" Height="476.25" Width="870.312" WindowStartupLocation="CenterOwner" ResizeMode="NoResize" ShowMaxRestoreButton="False" ShowMinButton="False">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-                    <Image Source="/FFXIV_TexTools;component/Resources/ffxivmeteorlogo.png"/>
+        <Image Source="/FFXIV_TexTools;component/Resources/ffxivmeteorlogo.png"/>
         <Grid Grid.Column="1">
             <Grid.RowDefinitions>
-                <RowDefinition Height="2*"/>
-                <RowDefinition/>
-                <RowDefinition Height="2*"/>
-                <RowDefinition/>
+                <RowDefinition Height="23*"/>
+                <RowDefinition Height="111*"/>
+                <RowDefinition Height="28*"/>
+                <RowDefinition Height="211*"/>
+                <RowDefinition Height="74*"/>
             </Grid.RowDefinitions>
-            <Grid Grid.Row="0">
-                <Grid.RowDefinitions>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                </Grid.RowDefinitions>
-                <TextBox Grid.Row="0" TextWrapping="Wrap" AcceptsReturn="True" Text="FFXIV TexTools" IsReadOnly="True" FontSize="20" BorderThickness="0"/>
-                <TextBox x:Name="VersionTextBox" Grid.Row="1" TextWrapping="Wrap" AcceptsReturn="True" IsReadOnly="True" FontSize="20" BorderThickness="0"/>
-                <TextBox Grid.Row="2" TextWrapping="Wrap" AcceptsReturn="True" Text="Created By Liinko" IsReadOnly="True" FontSize="20" BorderThickness="0"/>
-            </Grid>
-            <Button x:Name="DonateButton" Grid.Row="1" BorderBrush="{x:Null}" Click="DonateButton_Click" Foreground="{x:Null}" Background="{x:Null}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" >
+            <TextBox TextWrapping="Wrap" AcceptsReturn="True" Text="FFXIV TexTools - " IsReadOnly="True" FontSize="20" BorderThickness="0" VerticalAlignment="Top" Margin="0,0,271,0" VerticalContentAlignment="Center" Background="{x:Null}" Height="33" Grid.RowSpan="2"/>
+            <TextBox x:Name="VersionTextBox" TextWrapping="Wrap" AcceptsReturn="True" IsReadOnly="True" FontSize="20" BorderThickness="0" Text="VERSION NUMBER" Margin="148,0,0,0" VerticalAlignment="Top" VerticalContentAlignment="Center" Background="{x:Null}" Height="33" Grid.RowSpan="2"/>
+            <TextBox TextWrapping="Wrap" AcceptsReturn="True" Text="Originally Created by Liinko" IsReadOnly="True" BorderThickness="0" Margin="247,39,0,33" HorizontalAlignment="Center" Width="185" Grid.Row="1" Background="{x:Null}" HorizontalContentAlignment="Center"/>
+            <TextBox TextWrapping="Wrap" AcceptsReturn="True" Text="Maintained and Updated by" IsReadOnly="True" BorderThickness="0" Margin="8,4,212,0" FontSize="16" Height="30" VerticalAlignment="Top" Grid.Row="1" Panel.ZIndex="5" Background="{x:Null}"/>
+            <Button x:Name="DonateButton" Grid.Row="1" BorderBrush="{x:Null}" Click="DonateButton_Click" Foreground="{x:Null}" Background="{x:Null}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Margin="247,56,0,0" Height="42" VerticalAlignment="Top" >
                 <Button.Content>
-                    <Image Source="/FFXIV_TexTools;component/Resources/PaypalDonateButton.png" Stretch="Uniform"/>
+                    <Image Source="/FFXIV_TexTools;component/Resources/PaypalDonateButton.png" Stretch="Uniform" Margin="-5" RenderTransformOrigin="0.589,-0.388"/>
                 </Button.Content>
             </Button>
-            <TextBox Grid.Row="2" TextWrapping="Wrap" AcceptsReturn="True" Text="A lot of hard work and effort went into making this possible, if you like the application consider donating above." IsReadOnly="True" FontSize="14" BorderThickness="0" Padding="5"/>
-            <Grid Grid.Row="3">
+            <TextBox Grid.Row="3" TextWrapping="Wrap" AcceptsReturn="True" Text="This software contains Autodesk® FBX® code developed by Autodesk, Inc. Copyright 2008 Autodesk, Inc. All rights, reserved. Such code is provided &quot;as is&quot; and Autodesk, Inc. disclaims any and all warranties, whether express or implied, including without limitation the implied warranties of merchantability, fitness for a particular purpose or non-infringement of third party rights. In no event shall Autodesk, Inc. be liable for any direct, indirect, incidental, special, exemplary, or consequential damages (including, but not limited to, procurement of substitute goods or services; loss of use, data, or profits; or business interruption) however caused and on any theory of liability, whether in contract, strict liability, or tort (including negligence or otherwise) arising in any way out of such code." IsReadOnly="True" FontSize="10" BorderThickness="0" Padding="5" FontStyle="Italic" TextAlignment="Center" Height="141" VerticalAlignment="Bottom"/>
+            <Grid Grid.Row="4">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
                     <ColumnDefinition/>
@@ -45,6 +40,12 @@
                 <Button x:Name="WebsiteButton" Grid.Column="0" Content="{Binding Source={x:Static resx:UIStrings.Visit_Website}}" Click="WebsiteButton_Click" Margin="5"/>
                 <Button x:Name="CloseButton" Grid.Column="1" Content="{Binding Source={x:Static resx:UIStrings.Close}}" Click="CloseButton_Click" Margin="5"/>
             </Grid>
+            <TextBlock TextWrapping="Wrap" Margin="215,8,-39,0" FontSize="16" Height="26" VerticalAlignment="Top" Grid.Row="1" FontFamily="Segoe UI, Lucida Sans Unicode, Verdana">    
+                <Hyperlink NavigateUri="http://www.github.com/textools/" RequestNavigate="Hyperlink_RequestNavigate">
+                    the TexTools Github Group
+                </Hyperlink>
+            </TextBlock>
+            <TextBlock HorizontalAlignment="Left" Margin="0,0,0,146" Grid.Row="3" TextWrapping="Wrap" Width="422" FontFamily="Segoe UI, Lucida Sans Unicode, Verdana" FontSize="10" TextAlignment="Center" Height="30" VerticalAlignment="Bottom"><Run Text="Final Fantasy XIV © 2010-2020 SQUARE ENIX CO., LTD. All Rights Reserved. "/><LineBreak/><Run Text="This application is not affiliated in any way with SQUARE ENIX CO., LTD"/></TextBlock>
         </Grid>
     </Grid>
 </mah:MetroWindow>

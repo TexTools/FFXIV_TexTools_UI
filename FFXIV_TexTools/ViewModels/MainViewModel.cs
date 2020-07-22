@@ -59,51 +59,148 @@ namespace FFXIV_TexTools.ViewModels
         private System.Windows.Forms.IWin32Window _win32Window;
         private ProgressDialogController _progressController;
 
+        private const string WarningIdentifier = "!!";
+
         public MainViewModel(MainWindow mainWindow)
         {
             _mainWindow = mainWindow;
             _win32Window = new WindowWrapper(new WindowInteropHelper(_mainWindow).Handle);
-
-            try
-            {
-                Initialize();
-            }
-            catch (Exception ex)
-            {
-                FlexibleMessageBox.Show($"There was an error getting the Items List\n\n{ex.Message}", $"Items List Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-
-        private async void Initialize()
-        {
+            // This is actually synchronous and can just be called immediately...
             SetDirectories(true);
+
             _gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
             _index = new Index(_gameDirectory);
+            if (ProgressLabel == null)
+            {
+                ProgressLabel = "";
+            }
 
-            ProgressLabel = "Checking for old installs...";
-            CheckForOldModList();
-            ProgressLabel = "Checking Game Version...";
-            await CheckGameVersion();
-            ProgressLabel = "Checking Index Files...";
-            await CheckIndexFiles();
+            // And the rest of this can be pushed into a new thread.
+            var task = Task.Run(Initialize);
+
+            // Now we can wait on it.  But we have to thread-safety it.
+            task.Wait();
+
+            var exception = task.Exception;
+            if(exception != null)
+            {
+                throw exception;
+            }
+            var result = task.Result;
+            if (!result)
+            {
+                System.Windows.Application.Current.Shutdown();
+            }
 
             _mainWindow.TreeRefreshRequested += TreeRefreshRequested;
-            _mainWindow.RefreshTree(this);
+        }
+
+        /// <summary>
+        /// Unified function for showing information in the Progress Bar area.
+        /// Will not overwrite warning messages.
+        /// </summary>
+        /// <param name="message">A value of NULL will hide the progress bar.</param>
+        /// <param name="progress"></param>
+        public void ShowInfoMessage(string message, int progress = -1)
+        {
+            if (ProgressLabel == null)
+            {
+                ProgressLabel = "";
+
+            }
+
+            if (ProgressLabel.Contains(WarningIdentifier))
+            {
+                return;
+            }
+            
+            if (progress != -1)
+            {
+                ProgressValue = progress;
+            }else
+            {
+                ProgressBarVisible = Visibility.Collapsed;
+            }
+
+            if(message == null)
+            {
+                ProgressLabelVisible = Visibility.Collapsed;
+            }
+
+            ProgressLabel = message;
+        }
+
+        /// <summary>
+        /// Shows a warning message in the progress area.
+        /// Will remain on screen until ClearWarning() is called.
+        /// </summary>
+        /// <param name="warning"></param>
+        public void ShowWarning(string warning)
+        {
+            ProgressLabel = WarningIdentifier + " " + warning + " " + WarningIdentifier;
+            ProgressLabelVisible = Visibility.Visible;
+        }
+
+        /// <summary>
+        /// Clears any existing on-screen warning message. No-op otherwise.
+        /// </summary>
+        public void ClearWarning()
+        {
+            if(!ProgressLabel.Contains(WarningIdentifier)) {
+                return;
+            }
+            ProgressLabel = "";
+            ShowInfoMessage(null);
+        }
+
+        /// <summary>
+        /// This function is called on a separate thread, *while* the main thread is blocked.
+        /// This means a few things.
+        ///   1.  You cannot access the view's UI elements (Thread safety error & uninitialized) 
+        ///   2.  You cannot use Dispatcher.Invoke (Deadlock)
+        ///   3.  You cannot spawn a new full-fledged windows form (Thread safety error) (Basic default popups are OK)
+        ///   4.  You cannot shut down the application (Thread safety error)
+        ///   
+        /// As such, the return value indicates if we want to gracefully shut down the application.
+        /// (True for success/continue, False for failure/graceful shutdown.)
+        /// 
+        /// Exceptions are checked and rethrown on the main thread.
+        /// 
+        /// This is really 100% only for things that can be safely checked and sanitized
+        /// without external code references or UI interaction beyond basic windows dialogs.
+        /// </summary>
+        /// <returns></returns>
+        public async Task<bool> Initialize()
+        {
+
+            // Info messages do nothing when the window's not even open & on wrong thread.
+
+            var success = await CheckForOldModList();
+            if(!success)
+            {
+                // User requested a graceful shutdown, or we errored in a non-recoverable way.
+                return false;
+            }
+
+            await CheckGameVersion();
+            await CheckIndexFiles();
+            return true;
+
         }
         private void TreeRefreshRequested(object sender, EventArgs e)
         {
+            _mainWindow.SearchTimer.Enabled = false;
+            _mainWindow.SearchTimer.AutoReset = false;
+
             IProgress<(int current, string category)> progress = new Progress<(int current, string category)>((prog) =>
             {
                 if (prog.category == "Done")
                 {
-                    ProgressBarVisible = Visibility.Collapsed;
-                    ProgressLabelVisible = Visibility.Collapsed;
+                    ShowInfoMessage(null);
                 }
                 else
                 {
-                    ProgressValue = prog.current;
-                    ProgressLabel = $"Loading {prog.category} List";
+                    ShowInfoMessage($"Loading {prog.category} List", prog.current);
                 }
             });
 
@@ -114,9 +211,6 @@ namespace FFXIV_TexTools.ViewModels
 
             try
             {
-                // Settings are valid, application is updated, initialize the
-                // Cache once so it can test if it needs to be updated as well.
-                var _cache = new XivCache(gameDirectory, lang);
                 FillTree(progress).GetAwaiter().OnCompleted(OnTreeRefreshCompleted);
             }
             catch (Exception ex)
@@ -137,15 +231,15 @@ namespace FFXIV_TexTools.ViewModels
                     }
                 } else
                 {
-                    // Make this error not totally silent at least.
-                    FlexibleMessageBox.Show("An error occurred while trying to populate the item list.",
-                               "Item list Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    // Make this a "Warning". 
+                    ShowWarning("Item List Error");
                 }
             }
         }
 
         private void OnTreeRefreshCompleted()
         {
+            _mainWindow.SearchTimer.Enabled = true;
             _mainWindow.Menu_ModConverter.IsEnabled = true;
             _mainWindow.ItemSearchTextBox.IsEnabled = true;
             _mainWindow.SetFilter();
@@ -155,7 +249,7 @@ namespace FFXIV_TexTools.ViewModels
         /// <summary>
         /// Checks for older modlist
         /// </summary>
-        private async void CheckForOldModList()
+        private async Task<bool> CheckForOldModList()
         {
             var oldModListFileDirectory =
                 new DirectoryInfo(
@@ -215,15 +309,16 @@ namespace FFXIV_TexTools.ViewModels
                         }
                         else
                         {
-                            System.Windows.Application.Current.Shutdown();
+                            return false;
                         }
                     }
                     else
                     {
-                        System.Windows.Application.Current.Shutdown();
+                        return false;
                     }
                 }
             }
+            return true;
         }
 
         private async Task CheckIndexFiles()
@@ -424,115 +519,112 @@ namespace FFXIV_TexTools.ViewModels
             }
         }
 
-        private Task CheckGameVersion()
+        private async Task CheckGameVersion()
         {
-            return Task.Run(async () =>
+            var applicationVersion = FileVersionInfo
+                .GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location).FileVersion;
+
+            Version ffxivVersion = null;
+            var needsNewBackup = false;
+            var backupMessage = "";
+
+            var modding = new Modding(_gameDirectory);
+            var backupDirectory = new DirectoryInfo(Properties.Settings.Default.Backup_Directory);
+
+            var versionFile = $"{_gameDirectory.Parent.Parent.FullName}\\ffxivgame.ver";
+
+            if (File.Exists(versionFile))
             {
-                var applicationVersion = FileVersionInfo
-                    .GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location).FileVersion;
+                var versionData = File.ReadAllLines(versionFile);
+                ffxivVersion = new Version(versionData[0].Substring(0, versionData[0].LastIndexOf(".")));
+            }
+            else
+            {
+                FlexibleMessageBox.Show(_win32Window, UIMessages.GameVersionErrorMessage,
+                    string.Format(UIMessages.GameVersionErrorTitle, applicationVersion), MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+                return;
+            }
 
-                Version ffxivVersion = null;
-                var needsNewBackup = false;
-                var backupMessage = "";
+            if (string.IsNullOrEmpty(Properties.Settings.Default.FFXIV_Version))
+            {
+                Properties.Settings.Default.FFXIV_Version = ffxivVersion.ToString();
+                Properties.Settings.Default.Save();
 
-                var modding = new Modding(_gameDirectory);
-                var backupDirectory = new DirectoryInfo(Properties.Settings.Default.Backup_Directory);
+                needsNewBackup = true;
+                backupMessage = UIMessages.NewInstallDetectedBackupMessage;
+            }
+            else
+            {
+                var versionCheck = new Version(Properties.Settings.Default.FFXIV_Version);
 
-                var versionFile = $"{_gameDirectory.Parent.Parent.FullName}\\ffxivgame.ver";
-
-                if (File.Exists(versionFile))
+                if (ffxivVersion > versionCheck)
                 {
-                    var versionData = File.ReadAllLines(versionFile);
-                    ffxivVersion = new Version(versionData[0].Substring(0, versionData[0].LastIndexOf(".")));
-                }
-                else
-                {
-                    FlexibleMessageBox.Show(_win32Window, UIMessages.GameVersionErrorMessage,
-                        string.Format(UIMessages.GameVersionErrorTitle, applicationVersion), MessageBoxButtons.OK,
-                        MessageBoxIcon.Warning);
-                    return;
-                }
-
-                if (string.IsNullOrEmpty(Properties.Settings.Default.FFXIV_Version))
-                {
-                    Properties.Settings.Default.FFXIV_Version = ffxivVersion.ToString();
-                    Properties.Settings.Default.Save();
-
                     needsNewBackup = true;
-                    backupMessage = UIMessages.NewInstallDetectedBackupMessage;
+                    backupMessage = UIMessages.NewerVersionDetectedBackupMessage;
                 }
-                else
-                {
-                    var versionCheck = new Version(Properties.Settings.Default.FFXIV_Version);
+            }
 
-                    if (ffxivVersion > versionCheck)
+            if (!Directory.Exists(backupDirectory.FullName))
+            {
+                FlexibleMessageBox.Show(_win32Window, UIMessages.BackupsDirectoryErrorMessage, UIMessages.BackupFailedTitle,
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (Directory.GetFiles(backupDirectory.FullName).Length == 0)
+            {
+                needsNewBackup = true;
+                backupMessage = UIMessages.NoBackupsFoundMessage;
+            }
+
+            if (needsNewBackup)
+            {
+                var indexFiles = new XivDataFile[]
+                    { XivDataFile._0A_Exd, XivDataFile._04_Chara, XivDataFile._06_Ui, XivDataFile._01_Bgcommon };
+
+                if (FlexibleMessageBox.Show(_win32Window, backupMessage, UIMessages.CreateBackupTitle, MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Warning) == DialogResult.Yes)
+                {
+                    if (_index.IsIndexLocked(XivDataFile._0A_Exd))
                     {
-                        needsNewBackup = true;
-                        backupMessage = UIMessages.NewerVersionDetectedBackupMessage;
+                        FlexibleMessageBox.Show(_win32Window, UIMessages.IndexLockedBackupFailedMessage,
+                            UIMessages.BackupFailedTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
                     }
-                }
 
-                if (!Directory.Exists(backupDirectory.FullName))
-                {
-                    FlexibleMessageBox.Show(_win32Window, UIMessages.BackupsDirectoryErrorMessage, UIMessages.BackupFailedTitle,
-                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
-
-                if (Directory.GetFiles(backupDirectory.FullName).Length == 0)
-                {
-                    needsNewBackup = true;
-                    backupMessage = UIMessages.NoBackupsFoundMessage;
-                }
-
-                if (needsNewBackup)
-                {
-                    var indexFiles = new XivDataFile[]
-                        { XivDataFile._0A_Exd, XivDataFile._04_Chara, XivDataFile._06_Ui, XivDataFile._01_Bgcommon };
-
-                    if (FlexibleMessageBox.Show(_win32Window, backupMessage, UIMessages.CreateBackupTitle, MessageBoxButtons.YesNo,
-                            MessageBoxIcon.Warning) == DialogResult.Yes)
+                    try
                     {
-                        if (_index.IsIndexLocked(XivDataFile._0A_Exd))
-                        {
-                            FlexibleMessageBox.Show(_win32Window, UIMessages.IndexLockedBackupFailedMessage,
-                                UIMessages.BackupFailedTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                            return;
-                        }
+                        // Toggle off all mods
+                        await modding.ToggleAllMods(false);
+                    }
+                    catch (Exception ex)
+                    {
+                        FlexibleMessageBox.Show(_win32Window, string.Format(UIMessages.BackupFailedErrorMessage, ex.Message),
+                            UIMessages.BackupFailedTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
 
+                    foreach (var xivDataFile in indexFiles)
+                    {
                         try
                         {
-                            // Toggle off all mods
-                            await modding.ToggleAllMods(false);
+                            File.Copy($"{_gameDirectory.FullName}\\{xivDataFile.GetDataFileName()}.win32.index",
+                                $"{backupDirectory}\\{xivDataFile.GetDataFileName()}.win32.index", true);
+                            File.Copy($"{_gameDirectory.FullName}\\{xivDataFile.GetDataFileName()}.win32.index2",
+                                $"{backupDirectory}\\{xivDataFile.GetDataFileName()}.win32.index2", true);
                         }
-                        catch (Exception ex)
+                        catch (Exception e)
                         {
-                            FlexibleMessageBox.Show(_win32Window, string.Format(UIMessages.BackupFailedErrorMessage, ex.Message),
-                                UIMessages.BackupFailedTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                            return;
+                            FlexibleMessageBox.Show(_win32Window, string.Format(UIMessages.BackupFailedErrorMessage, e.Message),
+                                UIMessages.BackupFailedTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
-
-                        foreach (var xivDataFile in indexFiles)
-                        {
-                            try
-                            {
-                                File.Copy($"{_gameDirectory.FullName}\\{xivDataFile.GetDataFileName()}.win32.index",
-                                    $"{backupDirectory}\\{xivDataFile.GetDataFileName()}.win32.index", true);
-                                File.Copy($"{_gameDirectory.FullName}\\{xivDataFile.GetDataFileName()}.win32.index2",
-                                    $"{backupDirectory}\\{xivDataFile.GetDataFileName()}.win32.index2", true);
-                            }
-                            catch (Exception e)
-                            {
-                                FlexibleMessageBox.Show(_win32Window, string.Format(UIMessages.BackupFailedErrorMessage, e.Message),
-                                    UIMessages.BackupFailedTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            }
-                        }
-
-                        Properties.Settings.Default.FFXIV_Version = ffxivVersion.ToString();
-                        Properties.Settings.Default.Save();
                     }
+
+                    Properties.Settings.Default.FFXIV_Version = ffxivVersion.ToString();
+                    Properties.Settings.Default.Save();
                 }
-            });
+            }
         }
 
         /// <summary>

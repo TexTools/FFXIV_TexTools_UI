@@ -33,21 +33,11 @@ namespace FFXIV_TexTools.Views
         }
 
         /// <summary>
-        /// Event handler for export button
-        /// </summary>
-        private void ExportModelButton_Click(object sender, RoutedEventArgs e)
-        {
-            BottomFlyout.Content = new ExportModelOptionsView();
-            BottomFlyout.IsOpen = true;
-        }
-
-        /// <summary>
         /// Event handler for import button
         /// </summary>
         private void ImportModelButton_Click(object sender, RoutedEventArgs e)
         {
-            BottomFlyout.Content = new ImportModelOptionsView();
-            BottomFlyout.IsOpen = true;
+            ((ModelViewModel)DataContext).Import(sender);//.GetAwaiter().GetResult();
         }
 
         /// <summary>

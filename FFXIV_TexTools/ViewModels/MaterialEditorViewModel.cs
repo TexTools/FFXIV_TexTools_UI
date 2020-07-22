@@ -220,8 +220,13 @@ namespace FFXIV_TexTools.ViewModels
             MapInfo newMulti = null;
             MapInfo newReflection = null;
 
+            // Don't know what defines the normal's format between the two types.
+            // But setting it to the UseColorset value all the time causes extremely rare crashes
+            // in the Try On menu sometimes.  Possibly GFX card/Driver related?
+            var oldNormal = _material.GetMapInfo(XivTexType.Normal);
+
             // Normal
-            newNormal = new MapInfo() { Usage = XivTexType.Normal, Format = MtrlTextureDescriptorFormat.UsesColorset, path = _view.NormalTextBox.Text };
+            newNormal = new MapInfo() { Usage = XivTexType.Normal, Format = oldNormal.Format, path = _view.NormalTextBox.Text };
 
             // Specular / Multi
             if (newShader.HasMulti)
@@ -386,7 +391,7 @@ namespace FFXIV_TexTools.ViewModels
                 // using the new modified material to detokenize them.
                 foreach (var info in mapInfos)
                 {
-                    itemXivMtrl.SetMapInfo(info.Usage, info);
+                    itemXivMtrl.SetMapInfo(info.Usage, (MapInfo)info.Clone());
                 }
 
                 // Write the new Material

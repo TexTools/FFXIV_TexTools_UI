@@ -43,7 +43,7 @@ using xivModdingFramework.Mods.DataContainers;
 using xivModdingFramework.Mods.FileTypes;
 using xivModdingFramework.SqPack.FileTypes;
 using Application = System.Windows.Application;
-using SysTimer = System.Timers;
+using System.Threading;
 
 namespace FFXIV_TexTools
 {
@@ -52,10 +52,10 @@ namespace FFXIV_TexTools
     /// </summary>
     public partial class MainWindow
     {
-        private SysTimer.Timer searchTimer = new SysTimer.Timer(300);
         private string _startupArgs;
         private Category _selectedCategory;
         private static MainWindow _mainWindow;
+        public System.Timers.Timer SearchTimer = new System.Timers.Timer(300);
 
 
         /// <summary>
@@ -71,9 +71,18 @@ namespace FFXIV_TexTools
 
         public MainWindow(string[] args)
         {
+
             _mainWindow = this;
+            CheckForUpdates();
             CheckForSettingsUpdate();
             LanguageSelection();
+
+            // Data Context needs to be set before we call Initialize Component to ensure
+            // that the bindings get connected immediately, and not after the constructor.
+            var mainViewModel = new MainViewModel(this);
+            this.DataContext = mainViewModel;
+
+            InitializeComponent();
 
             var ci = new CultureInfo(Properties.Settings.Default.Application_Language)
             {
@@ -85,14 +94,11 @@ namespace FFXIV_TexTools
             CultureInfo.CurrentCulture = ci;
             CultureInfo.CurrentUICulture = ci;
 
-            CheckForUpdates();
 
             var fileVersion = FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location).FileVersion;
 
             try
             {
-                InitializeComponent();
-
                 if (System.Globalization.CultureInfo.CurrentUICulture.Name == "zh")
                 {
                     this.ChinaDiscordButton.Visibility = Visibility.Visible;
@@ -116,17 +122,16 @@ namespace FFXIV_TexTools
                 this.Show();
 
                 ItemSearchTextBox.Focus();
-                var mainViewModel = new MainViewModel(this);
-                this.DataContext = mainViewModel;
-                
-                if (searchTimer == null)
-                {
-                    searchTimer = new SysTimer.Timer(300);
-                }
 
-                searchTimer.Enabled = true;
-                searchTimer.AutoReset = false;
-                searchTimer.Elapsed += SearchTimerOnElapsed;
+                if (SearchTimer == null)
+                {
+                    SearchTimer = new System.Timers.Timer(300);
+                }
+                SearchTimer.Elapsed += SearchTimerOnElapsed;
+
+                SearchTimer.Enabled = false;
+                SearchTimer.AutoReset = false;
+
 
                 var textureView = TextureTabItem.Content as TextureView;
                 var textureViewModel = textureView.DataContext as TextureViewModel;
@@ -137,8 +142,12 @@ namespace FFXIV_TexTools
                 var modelViewModel = modelView.DataContext as ModelViewModel;
 
                 modelViewModel.LoadingComplete += ModelViewModelOnLoadingComplete;
+
+                // This can be safely called now.
+                RefreshTree();
             }
         }
+
 
         private void LanguageSelection()
         {
@@ -187,6 +196,7 @@ namespace FFXIV_TexTools
 
         private void CheckForUpdates()
         {
+            AutoUpdater.Synchronous = true;
             AutoUpdater.Start(WebUrl.TexTools_Update_Url);
         }
 
@@ -834,8 +844,13 @@ namespace FFXIV_TexTools
 
         public void SetFilter()
         {
-            var view = (CollectionView)CollectionViewSource.GetDefaultView(ItemTreeView.ItemsSource);
-            view.Filter = SearchFilter;
+
+            // This must be executed on the main UI thread if it's not already.
+            Dispatcher.BeginInvoke((ThreadStart)delegate ()
+            {
+                var view = (CollectionView)CollectionViewSource.GetDefaultView(ItemTreeView.ItemsSource);
+                view.Filter = SearchFilter;
+            });
         }
 
         private bool SearchFilter(object item)
@@ -858,26 +873,35 @@ namespace FFXIV_TexTools
 
         private void ItemSearchTextBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
         {
-            searchTimer.Stop();
-            searchTimer.Start();
+            if (SearchTimer != null)
+            {
+                SearchTimer.Stop();
+                SearchTimer.Start();
+            }
         }
 
-        private void SearchTimerOnElapsed(object sender, SysTimer.ElapsedEventArgs e)
+        private void SearchTimerOnElapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             Dispatcher.Invoke(UpdateFilter);
         }
 
         private void UpdateFilter()
         {
-            CollectionViewSource.GetDefaultView(ItemTreeView.ItemsSource).Refresh();
+            try
+            {
+                CollectionViewSource.GetDefaultView(ItemTreeView.ItemsSource).Refresh();
+            } catch(Exception ex)
+            {
+                //No op, non-critical.
+            }
         }
 
         private void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (searchTimer != null)
+            if (SearchTimer != null)
             {
-                searchTimer.Elapsed -= SearchTimerOnElapsed;
-                searchTimer.Dispose();
+                SearchTimer.Elapsed -= SearchTimerOnElapsed;
+                SearchTimer.Dispose();
             }
         }
 

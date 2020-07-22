@@ -106,7 +106,7 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to https://github.com/liinko/FFXIV_TexTools_UI.
+        ///   Looks up a localized string similar to https://github.com/textools/.
         /// </summary>
         internal static string Github_Website {
             get {

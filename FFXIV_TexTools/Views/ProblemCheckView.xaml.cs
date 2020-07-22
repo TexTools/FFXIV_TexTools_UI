@@ -47,6 +47,7 @@ namespace FFXIV_TexTools.Views
         private DirectoryInfo _gameDirectory;
         private List<XivDataFile> _indexDatRepairList = new List<XivDataFile>();
         private string textColor = "Black";
+        private string secondaryTextColor = "Blue";
         private CancellationTokenSource cts = new CancellationTokenSource();
 
         public ProblemCheckView()
@@ -57,6 +58,7 @@ namespace FFXIV_TexTools.Views
             if (((AppTheme) appStyle.Item1).Name.Equals("BaseDark"))
             {
                 textColor = "White";
+                secondaryTextColor = "LightBlue";
             }
 
             _gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
@@ -78,11 +80,11 @@ namespace FFXIV_TexTools.Views
 
             AddText($"{UIStrings.ProblemCheck_Initialize}\n\n", textColor);
 
-            AddText($"{UIStrings.ProblemCheck_IndexDat}\n", "Blue");
+            AddText($"{UIStrings.ProblemCheck_IndexDat}\n", secondaryTextColor);
 
             if (await CheckIndexDatCounts())
             {
-                AddText($"\n{UIStrings.ProblemCheck_ErrorsFound}\n", "Blue");
+                AddText($"\n{UIStrings.ProblemCheck_ErrorsFound}\n", secondaryTextColor);
                 if (!index.IsIndexLocked(XivDataFile._0A_Exd))
                 {
                     await FixIndexDatCounts();
@@ -95,18 +97,15 @@ namespace FFXIV_TexTools.Views
                 }
             }
 
-            AddText($"\n{UIStrings.ProblemCheck_IndexBackups}\n", "Blue");
+            AddText($"\n{UIStrings.ProblemCheck_IndexBackups}\n", secondaryTextColor);
             await CheckBackups();
 
-            AddText($"\n{UIStrings.ProblemCheck_DatSize}\n", "Blue");
+            AddText($"\n{UIStrings.ProblemCheck_DatSize}\n", secondaryTextColor);
             await CheckDatSizes();
-
-            AddText($"\n{UIStrings.ProblemCheck_Dat}\n", "Blue");
-            CheckDat();
 
             try
             {
-                AddText($"\n{UIStrings.ProblemCheck_ModList}\n", "Blue");
+                AddText($"\n{UIStrings.ProblemCheck_ModList}\n", secondaryTextColor);
                 await CheckMods(progress);
             }
             catch (Exception ex)
@@ -117,7 +116,8 @@ namespace FFXIV_TexTools.Views
 
             try
             {
-                AddText($"\n{UIStrings.ProblemCheck_LoD}\n", "Blue");
+                AddText($"\n{UIStrings.ProblemCheck_LoD}\n", secondaryTextColor);
+                cfpTextBox.ScrollToEnd();
                 await CheckLoD();
             }
             catch (Exception ex)
@@ -127,7 +127,8 @@ namespace FFXIV_TexTools.Views
 
             try
             {
-                AddText($"\nRebuilding Cache...\n", "Blue");
+                AddText($"\nRebuilding Cache...\n", secondaryTextColor);
+                cfpTextBox.ScrollToEnd();
                 await CheckCache();
             }
             catch (Exception ex)
@@ -206,33 +207,8 @@ namespace FFXIV_TexTools.Views
             }
         }
 
-        private void CheckDat()
-        {
-            var fileInfo = new FileInfo($"{_gameDirectory}\\{XivDataFile._06_Ui.GetDataFileName()}.win32.dat1");
-
-            AddText($"\t{XivDataFile._06_Ui.GetDataFileName()} Dat1", textColor);
-
-            if (fileInfo.Exists)
-            {
-                if (fileInfo.Length < 1024 * 10)
-                {
-                    AddText("\t\u2716\n", "Red");
-                    AddText($"\t{UIStrings.ProblemCheck_MissingData} \n", "Red");
-                }
-                else
-                {
-                    AddText("\t\u2714\n", "Green");
-                }
-            }
-            else
-            {
-                AddText("\t\u2716\n", "Red");
-                AddText($"\t{UIStrings.ProblemCheck_DatMissing} \n", "Red");
-            }
-        }
         private async Task CheckCache()
         {
-
             var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
             var lang = XivLanguages.GetXivLanguage(Settings.Default.Application_Language);
             await Task.Run(async () =>
@@ -241,7 +217,7 @@ namespace FFXIV_TexTools.Views
                 _cache.RebuildCache();
             });
             AddText("\tCache Rebuilt Successfully.", textColor);
-            AddText("\t\u2714\n", "Green");
+            AddText("\t\u2714\n", "Green");            
         }
 
         private async Task CheckDatSizes()
@@ -348,7 +324,7 @@ namespace FFXIV_TexTools.Views
 
                         lock (checkModsLock)
                         {
-                            progress.Report((++modNum, modList.modCount));
+                            progress.Report((++modNum, modList.Mods.Count));
                         }
 
                         var fileName = Path.GetFileName(mod.fullPath);

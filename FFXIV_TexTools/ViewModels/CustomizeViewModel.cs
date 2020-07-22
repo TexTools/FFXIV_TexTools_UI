@@ -25,16 +25,14 @@ using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using xivModdingFramework.General.Enums;
+using xivModdingFramework.Models.ModelTextures;
 
 namespace FFXIV_TexTools.ViewModels
 {
     public class CustomizeViewModel : INotifyPropertyChanged
     {
-        private readonly string _skinDefault = "#FFFFFFFF";
-        private readonly string _brownDefault = "#FF603913";
-        private readonly string _bgColorDefault = "#FF777777";
         private string _defaultAuthor = Settings.Default.Default_Author;
-
+        const string _bgColorDefault = "#FF777777";
 
         public CustomizeViewModel()
         {
@@ -150,13 +148,25 @@ namespace FFXIV_TexTools.ViewModels
                 NotifyPropertyChanged(nameof(Selected_HairColor));
             }
         }
+        /// <summary>
+        /// The selected hair color
+        /// </summary>
+        public Color Selected_HairHighlightColor
+        {
+            get => (Color)ColorConverter.ConvertFromString(Settings.Default.Hair_Highlight_Color);
+            set
+            {
+                SetHairHighlightColor(value);
+                NotifyPropertyChanged(nameof(Selected_HairHighlightColor));
+            }
+        }
 
         /// <summary>
         /// The selected iris color
         /// </summary>
         public Color Selected_IrisColor
         {
-            get => (Color)ColorConverter.ConvertFromString(Settings.Default.Iris_Color);
+            get => (Color)ColorConverter.ConvertFromString(Settings.Default.Eye_Color);
             set
             {
                 SetIrisColor(value);
@@ -167,13 +177,38 @@ namespace FFXIV_TexTools.ViewModels
         /// <summary>
         /// The selected etc. color
         /// </summary>
-        public Color Selected_EtcColor
+        public Color Selected_TattooColor
         {
-            get => (Color)ColorConverter.ConvertFromString(Settings.Default.Etc_Color);
+            get => (Color)ColorConverter.ConvertFromString(Settings.Default.Tattoo_Color);
             set
             {
-                SetEtcColor(value);
-                NotifyPropertyChanged(nameof(Selected_EtcColor));
+                SetTattooColor(value);
+                NotifyPropertyChanged(nameof(Selected_TattooColor));
+            }
+        }
+
+        public Color Selected_FurnitureColor
+        {
+            get => (Color)ColorConverter.ConvertFromString(Settings.Default.Furniture_Color);
+            set
+            {
+                SetFurnitureColor(value);
+                NotifyPropertyChanged(nameof(Selected_FurnitureColor));
+            }
+        }
+
+
+
+        /// <summary>
+        /// The selected etc. color
+        /// </summary>
+        public Color Selected_LipColor
+        {
+            get => (Color)ColorConverter.ConvertFromString(Settings.Default.Lip_Color);
+            set
+            {
+                SetLipColor(value);
+                NotifyPropertyChanged(nameof(Selected_LipColor));
             }
         }
 
@@ -522,11 +557,26 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         private void ResetToDefault(object obj)
         {
-            Selected_SkinColor = (Color)ColorConverter.ConvertFromString(_skinDefault);
-            Selected_HairColor = (Color)ColorConverter.ConvertFromString(_brownDefault);
-            Selected_IrisColor = (Color)ColorConverter.ConvertFromString(_brownDefault);
-            Selected_EtcColor = (Color)ColorConverter.ConvertFromString(_brownDefault);
+
+            var def = new CustomModelColors();
+
+            Selected_SkinColor = FromSharpDX(def.SkinColor);
+            Selected_HairColor = FromSharpDX(def.HairColor);
+            Selected_HairHighlightColor = FromSharpDX(def.HairHighlightColor != null ? (SharpDX.Color) def.HairHighlightColor : def.HairColor);
+            Selected_IrisColor = FromSharpDX(def.EyeColor);
+            Selected_LipColor = FromSharpDX(def.LipColor);
+            Selected_TattooColor = FromSharpDX(def.TattooColor);
+            Selected_FurnitureColor = FromSharpDX(def.FurnitureColor);
             Selected_BgColor = (Color)ColorConverter.ConvertFromString(_bgColorDefault);
+
+            UpdateFrameworkColors();
+        }
+
+        private System.Windows.Media.Color FromSharpDX(SharpDX.Color c)
+        {
+            var r = new Color() { R = c.R, B = c.B, G = c.G, A = c.A };
+            return r;
+
         }
 
         #endregion
@@ -579,6 +629,7 @@ namespace FFXIV_TexTools.ViewModels
         {
             Settings.Default.Skin_Color = selectedColor.ToString();
             Settings.Default.Save();
+            UpdateFrameworkColors();
         }
 
         /// <summary>
@@ -589,6 +640,17 @@ namespace FFXIV_TexTools.ViewModels
         {
             Settings.Default.Hair_Color = selectedColor.ToString();
             Settings.Default.Save();
+            UpdateFrameworkColors();
+        }
+        /// <summary>
+        /// Saves the hair color to the settings
+        /// </summary>
+        /// <param name="selectedColor">The selected hair color</param>
+        private void SetHairHighlightColor(Color selectedColor)
+        {
+            Settings.Default.Hair_Highlight_Color = selectedColor.ToString();
+            Settings.Default.Save();
+            UpdateFrameworkColors();
         }
 
         /// <summary>
@@ -597,18 +659,31 @@ namespace FFXIV_TexTools.ViewModels
         /// <param name="selectedColor">The selected iris color</param>
         private void SetIrisColor(Color selectedColor)
         {
-            Settings.Default.Iris_Color = selectedColor.ToString();
+            Settings.Default.Eye_Color = selectedColor.ToString();
             Settings.Default.Save();
+            UpdateFrameworkColors();
         }
 
         /// <summary>
         /// Saves the etc. color to the settings
         /// </summary>
         /// <param name="selectedColor">The selected etc. color</param>
-        private void SetEtcColor(Color selectedColor)
+        private void SetLipColor(Color selectedColor)
         {
-            Settings.Default.Etc_Color = selectedColor.ToString();
+            Settings.Default.Lip_Color = selectedColor.ToString();
             Settings.Default.Save();
+            UpdateFrameworkColors();
+        }
+
+        /// <summary>
+        /// Saves the etc. color to the settings
+        /// </summary>
+        /// <param name="selectedColor">The selected etc. color</param>
+        private void SetTattooColor(Color selectedColor)
+        {
+            Settings.Default.Tattoo_Color = selectedColor.ToString();
+            Settings.Default.Save();
+            UpdateFrameworkColors();
         }
 
         /// <summary>
@@ -619,7 +694,20 @@ namespace FFXIV_TexTools.ViewModels
         {
             Settings.Default.BG_Color = selectedColor.ToString();
             Settings.Default.Save();
+            UpdateFrameworkColors();
         }
+
+        /// <summary>
+        /// Saves the 3D viewport background color to the settings
+        /// </summary>
+        /// <param name="selectedColor">The selected background color</param>
+        private void SetFurnitureColor(Color selectedColor)
+        {
+            Settings.Default.Furniture_Color = selectedColor.ToString();
+            Settings.Default.Save();
+            UpdateFrameworkColors();
+        }
+
 
         /// <summary>
         /// Saves the importer to the settings
@@ -629,9 +717,41 @@ namespace FFXIV_TexTools.ViewModels
         {
             Settings.Default.DAE_Plugin_Target = importer;
             Settings.Default.Save();
+            UpdateFrameworkColors();
         }
         #endregion
 
+        /// <summary>
+        /// Populates the user's color settings into the framework's static storage.
+        /// </summary>
+        public static void UpdateFrameworkColors()
+        {
+
+            var colorSet = new CustomModelColors();
+
+            var c = (System.Windows.Media.Color)ColorConverter.ConvertFromString(Settings.Default.Skin_Color);
+            colorSet.SkinColor = new SharpDX.Color(c.R, c.G, c.B, c.A);
+
+            c = (System.Windows.Media.Color)ColorConverter.ConvertFromString(Settings.Default.Hair_Color);
+            colorSet.HairColor = new SharpDX.Color(c.R, c.G, c.B, c.A);
+
+            c = (System.Windows.Media.Color)ColorConverter.ConvertFromString(Settings.Default.Hair_Highlight_Color);
+            colorSet.HairHighlightColor = new SharpDX.Color(c.R, c.G, c.B, c.A);
+
+            c = (System.Windows.Media.Color)ColorConverter.ConvertFromString(Settings.Default.Eye_Color);
+            colorSet.EyeColor = new SharpDX.Color(c.R, c.G, c.B, c.A);
+
+            c = (System.Windows.Media.Color)ColorConverter.ConvertFromString(Settings.Default.Lip_Color);
+            colorSet.LipColor= new SharpDX.Color(c.R, c.G, c.B, c.A);
+
+            c = (System.Windows.Media.Color)ColorConverter.ConvertFromString(Settings.Default.Tattoo_Color);
+            colorSet.TattooColor = new SharpDX.Color(c.R, c.G, c.B, c.A);
+
+            c = (System.Windows.Media.Color)ColorConverter.ConvertFromString(Settings.Default.Furniture_Color);
+            colorSet.FurnitureColor = new SharpDX.Color(c.R, c.G, c.B, c.A);
+
+            ModelTexture.SetCustomColors(colorSet);
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
 

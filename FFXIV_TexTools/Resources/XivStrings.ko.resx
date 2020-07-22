@@ -432,12 +432,6 @@
   <data name="TypePart" xml:space="preserve">
     <value>부분 유형</value>
   </data>
-  <data name="UI" xml:space="preserve">
-    <value>UI</value>
-  </data>
-  <data name="ULD" xml:space="preserve">
-    <value>ULD</value>
-  </data>
   <data name="Waist" xml:space="preserve">
     <value>허리</value>
   </data>

@@ -59,19 +59,22 @@
                 <Button x:Name="SelectAllButton" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="0" Content="{Binding Source={x:Static resx:UIStrings.Select_All}}" Click="SelectAllButton_Click" Margin="5"/>
                 <Button x:Name="ClearSelectedButton" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="2" Content="{Binding Source={x:Static resx:UIStrings.Clear_Selected}}" Click="ClearSelectedButton_Click" Margin="5"/>
             </Grid>
-            <ListView x:Name="ModListView" Grid.Row="1" SelectionChanged="ModListView_SelectionChanged" SelectionMode="Multiple"
-                      BorderBrush="Black" BorderThickness="0,1" AlternationCount="2" GridViewColumnHeader.Click="Header_Click">
-                <ListView.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <StackPanel></StackPanel>
-                    </ItemsPanelTemplate>
-                </ListView.ItemsPanel>
+            <ListView Style="{x:Null}" x:Name="ModListView" Grid.Row="1" SelectionChanged="ModListView_SelectionChanged" SelectionMode="Multiple"
+                      BorderBrush="Black" BorderThickness="0,1" AlternationCount="2" GridViewColumnHeader.Click="Header_Click"
+                      ItemsSource="{Binding Entries}">
+                
+                <ListView.Resources>
+                    <Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource MetroListViewItem}">
+                        <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}"/>
+                    </Style>
+                </ListView.Resources>
+                
                 <ListView.View>
                     <GridView  x:Name="GridViewCol">
                         <GridViewColumn Width="32">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
-                                    <CheckBox IsChecked="{Binding RelativeSource={RelativeSource AncestorType={x:Type ListViewItem}}, Path=IsSelected}"/>
+                                    <CheckBox IsChecked="{Binding IsSelected}"/>
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
