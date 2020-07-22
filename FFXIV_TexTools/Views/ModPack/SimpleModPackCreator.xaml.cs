@@ -397,28 +397,53 @@ namespace FFXIV_TexTools.Views
             ModPackVersion.CaretIndex = 0;
         }
 
+
+        private bool MatchesFilter(Mod item)
+        {
+
+            if (string.IsNullOrEmpty(SearchTextBox.Text.Trim()))
+                return true;
+
+            string[] searchTerms = SearchTextBox.Text.Split('|');
+
+            foreach (string searchTerm in searchTerms)
+            {
+                if (item.name.IndexOf(searchTerm.Trim(), StringComparison.OrdinalIgnoreCase) >= 0) return true;
+            }
+            return false;
+        }
+
         /// <summary>
         /// The event handler for the select all button clicked
         /// </summary>
         private void SelectAllButton_Click(object sender, RoutedEventArgs e)
         {
-            ModListView.SelectAll();
-            ModListView.Focus();
 
-
+            long addedSize = 0;
             for (var i = 0; i < ModList.Mods.Count; i++)
             {
                 var mod = ModList.Mods[i];
+
+                // Ignore invalid.
                 if (mod.fullPath.Equals(string.Empty)) continue;
-                ModpackSize += mod.data.modSize;
+
+                // Ignore things not in the filter.
+                if (!MatchesFilter(mod)) continue;
+
+                // Ignore things that are already selected.
+                if (SelectedMods.Contains(i)) continue;
+
                 SelectedMods.Add(i);
+                addedSize += mod.data.modSize;
             }
+            ModpackSize += addedSize;
 
 
             foreach (SimpleModpackEntry entry in this.Entries)
             {
                 entry.MarkDirty();
             }
+            ModListView.Focus();
         }
 
         /// <summary>
@@ -426,21 +451,28 @@ namespace FFXIV_TexTools.Views
         /// </summary>
         private void SelectActiveButton_Click(object sender, RoutedEventArgs e)
         {
-            ModListView.UnselectAll();
-            SelectedMods.Clear();
-            ModpackSize = 0;
-
-            long newSize = 0;
+            long addedSize = 0;
             for(var i = 0; i < ModList.Mods.Count; i++)
             {
                 var mod = ModList.Mods[i];
+
+                // Ignore invalid.
                 if (mod.fullPath.Equals(string.Empty)) continue;
+
+                // Ignore disabled mods
                 if (!mod.enabled) continue;
 
+                // Ignore things not in the filter.
+                if (!MatchesFilter(mod)) continue;
+
+                // Ignore things that are already selected.
+                if (SelectedMods.Contains(i)) continue;
+
+
                 SelectedMods.Add(i);
-                newSize += mod.data.modSize;
+                addedSize += mod.data.modSize;
             }
-            ModpackSize = newSize;
+            ModpackSize += addedSize;
 
 
             // Entries CANNOT be iterrated to add values.  Unloaded entries have
@@ -459,9 +491,25 @@ namespace FFXIV_TexTools.Views
         /// </summary>
         private void ClearSelectedButton_Click(object sender, RoutedEventArgs e)
         {
-            SelectedMods.Clear();
-            ModpackSize = 0;
-            ModListView.UnselectAll();
+            long removedSize = 0;
+            for (var i = 0; i < ModList.Mods.Count; i++)
+            {
+                var mod = ModList.Mods[i];
+
+                // Ignore invalid.
+                if (mod.fullPath.Equals(string.Empty)) continue;
+
+                // Ignore things not in the filter.
+                if (!MatchesFilter(mod)) continue;
+
+                // Ignore things that are not selected.
+                if (!SelectedMods.Contains(i)) continue;
+
+                SelectedMods.Remove(i);
+                removedSize += mod.data.modSize;
+            }
+            ModpackSize -= removedSize;
+
             foreach (SimpleModpackEntry entry in this.Entries)
             {
                 entry.MarkDirty();
