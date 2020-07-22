@@ -58,6 +58,7 @@ namespace FFXIV_TexTools.Views
         private ModelViewModel _modelViewModel;
         private ModPackJson _packJson;
         private bool _silent = false;
+        public Modding _modding;
 
         [DllImport("Shlwapi.dll", CharSet = CharSet.Auto)]
         public static extern long StrFormatByteSize(long fileSize, [MarshalAs(UnmanagedType.LPTStr)] StringBuilder buffer, int bufferSize);
@@ -100,6 +101,7 @@ namespace FFXIV_TexTools.Views
 
             _modPackDirectory = modPackDirectory;
             _gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
+            _modding = new Modding(_gameDirectory);
             _texToolsModPack = new TTMP(new DirectoryInfo(Properties.Settings.Default.ModPack_Directory),
                 XivStrings.TexTools);
             _messageInImport = messageInImport;
@@ -244,7 +246,6 @@ namespace FFXIV_TexTools.Views
                 }
                 });
             });
-            var modding = new Modding(_gameDirectory);
 
             var originalModPackData = await _texToolsModPack.GetOriginalModPackJsonData(_modPackDirectory);
 
@@ -705,6 +706,8 @@ namespace FFXIV_TexTools.Views
         {
 
             SelectedEntries.Clear();
+            ModListView.UnselectAll();
+
             foreach (var entry in Entries)
             {
                 entry.MarkDirty();

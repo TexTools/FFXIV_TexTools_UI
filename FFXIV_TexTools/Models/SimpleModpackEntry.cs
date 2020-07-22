@@ -21,8 +21,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
+using System.Windows.Navigation;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Models.FileTypes;
+using xivModdingFramework.Mods.Enums;
 using xivModdingFramework.Textures.Enums;
 
 namespace xivModdingFramework.Mods.DataContainers
@@ -206,6 +209,14 @@ namespace xivModdingFramework.Mods.DataContainers
             }
         }
 
+        private bool? _isActive;
+
+
+        private async Task<XivModStatus> GetModStatus()
+        {
+            return await _importerView._modding.IsModEnabled(Json.FullPath, false);
+        }
+
         /// <summary>
         /// The item part
         /// </summary>
@@ -215,7 +226,17 @@ namespace xivModdingFramework.Mods.DataContainers
             {
                 if (Mod == null)
                 {
-                    return false;
+                    if (_isActive == null)
+                    {
+                        var task = Task.Run(GetModStatus);
+                        task.Wait();
+                        var status = task.Result;
+                        _isActive = status == Enums.XivModStatus.Enabled ? true : false;
+                        return (bool)_isActive;
+                    } else
+                    {
+                        return (bool)_isActive;
+                    }
                 }
                 else
                 {
