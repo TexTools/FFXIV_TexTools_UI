@@ -28,9 +28,9 @@
         </ComboBox>
         <Label Content="Group:" HorizontalAlignment="Left" Margin="16,10,0,0" Width="54" VerticalContentAlignment="Center" VerticalAlignment="Top" RenderTransformOrigin="-0.1,0.5" Height="28" FontWeight="Bold"/>
         <Label Content="Part:" HorizontalAlignment="Left" Margin="15,10,0,0" Width="40" VerticalContentAlignment="Center" VerticalAlignment="Top" Height="28" FontWeight="Bold" Grid.Column="1"/>
-        <Rectangle Fill="White" Grid.Row="1" Stroke="Gray" Margin="10,5"/>
-        <Rectangle Fill="White" Grid.Row="2" Stroke="Gray" Margin="10,5,10,10"/>
-        <Rectangle Fill="White" Grid.Row="1" Stroke="Gray" Margin="10,5,10,10" Grid.Column="1" Grid.RowSpan="2"/>
+        <Rectangle Grid.Row="1" Stroke="Gray" Margin="10,5"/>
+        <Rectangle Grid.Row="2" Stroke="Gray" Margin="10,5,10,10"/>
+        <Rectangle Grid.Row="1" Stroke="Gray" Margin="10,5,10,10" Grid.Column="1" Grid.RowSpan="2"/>
         <Label Content="Material" Margin="10,10,10,0" Grid.Row="1" VerticalAlignment="Top" HorizontalContentAlignment="Center" FontSize="18" FontWeight="Bold" Height="34"/>
         <Label Content="Shapes" Margin="10,10,10,0" Grid.Row="2" VerticalAlignment="Top" HorizontalContentAlignment="Center" FontSize="18" FontWeight="Bold" Height="34"/>
         <Label Content="Attributes" Margin="10,10,10,0" Grid.Row="1" VerticalAlignment="Top" HorizontalContentAlignment="Center" FontSize="18" FontWeight="Bold" Height="34" Grid.Column="1"/>
