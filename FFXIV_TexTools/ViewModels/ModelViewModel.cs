@@ -1125,11 +1125,17 @@ namespace FFXIV_TexTools.ViewModels
             Process.Start(path);
         }
 
+        private async Task<XivMdl> GetRawMdl()
+        {
+            return (await _model.GetRawMdl(_mdl));
+        }
+
         private void OpenModelInspector(object obj)
         {
             if (_model != null)
             {
-                var mdl = _model.GetRawMdl(_mdl).GetAwaiter().GetResult();
+                var task = Task.Run(GetRawMdl);
+                var mdl = task.Result;
                 var modelInspector = new ModelInspector(mdl);
                 modelInspector.Owner = Window.GetWindow(_view);
                 modelInspector.ShowDialog();
