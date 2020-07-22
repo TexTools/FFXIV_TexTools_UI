@@ -29,6 +29,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Resources;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -521,7 +522,8 @@ namespace FFXIV_TexTools.ViewModels
             {
                 if (_item.PrimaryCategory.Equals(XivStrings.Gear))
                 {
-                    _model = await _mdl.GetModel(_item, SelectedRace.XivRace);
+                    string submeshId = GetSubmeshId();
+                    _model = await _mdl.GetModel(_item, SelectedRace.XivRace, submeshId);
                 }
                 else if (_item.PrimaryCategory.Equals(XivStrings.Character))
                 {
@@ -542,12 +544,7 @@ namespace FFXIV_TexTools.ViewModels
                 }
                 else if (_item.PrimaryCategory.Equals(XivStrings.Housing))
                 {
-                    string submeshId = null;
-                    if (PartVisibility == Visibility.Visible)
-                    {
-                        submeshId = _selectedPart.Name;
-                    }
-
+                    string submeshId = GetSubmeshId();
                     _model = await _mdl.GetModel(_item, SelectedRace.XivRace, submeshId);
                 }
             }
@@ -1236,6 +1233,28 @@ namespace FFXIV_TexTools.ViewModels
 
         #region Export
 
+        private string GetSubmeshId()
+        {
+            string submeshId = null;
+            if (_item.PrimaryCategory.Equals(XivStrings.Housing))
+            {
+                if (PartVisibility == Visibility.Visible)
+                {
+                    submeshId = _selectedPart.Name;
+                }
+
+            }
+            else if (_item.SecondaryCategory.Equals(XivStrings.Rings))
+            {
+                if (PartVisibility == Visibility.Visible)
+                {
+                    submeshId = _selectedPart.Name == XivStrings.Left ? "ril" : "rir";
+                }
+            }
+
+            return submeshId;
+        }
+
         /// <summary>
         /// Exports the DAE file and Materials for the current model
         /// </summary>
@@ -1247,15 +1266,7 @@ namespace FFXIV_TexTools.ViewModels
                try
                {
                     var path = GetItem3DFolder() + Path.GetFileNameWithoutExtension(_model.Source) + "." + format;
-                    string submeshId = null;
-                    if (_item.PrimaryCategory.Equals(XivStrings.Housing))
-                    {
-                        if (PartVisibility == Visibility.Visible)
-                        {
-                            submeshId = _selectedPart.Name;
-                        }
-
-                    }
+                    string submeshId = GetSubmeshId();
                     await _mdl.ExportMdlToFile(_item, SelectedRace.XivRace, path, submeshId);
 
                 }
@@ -1323,15 +1334,7 @@ namespace FFXIV_TexTools.ViewModels
             {
 
                 var type = _item.GetPrimaryItemType();
-                string submeshId = null;
-                if (_item.PrimaryCategory.Equals(XivStrings.Housing))
-                {
-                    if (PartVisibility == Visibility.Visible)
-                    {
-                        submeshId = _selectedPart.Name;
-                    }
-
-                }
+                string submeshId = GetSubmeshId();
                 bool success = await ImportModelView.ImportModel(_item, SelectedRace.XivRace, submeshId, null, () =>
                 {
                     _view.Dispatcher.BeginInvoke((ThreadStart)delegate ()
