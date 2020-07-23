@@ -681,56 +681,10 @@ namespace FFXIV_TexTools.ViewModels
                         }
 
                         // Part
-                        if (itemPath.Contains("_b_")|| itemPath.Contains("_b."))
-                        {
-                            modListModel.Part = "b";
-                        }
-                        else if (itemPath.Contains("_c_")|| itemPath.Contains("_c."))
-                        {
-                            modListModel.Part = "c";
-                        }
-                        else if (itemPath.Contains("_d_")|| itemPath.Contains("_d."))
-                        {
-                            modListModel.Part = "d";
-                        }
-                        else
-                        {
-                            modListModel.Part = "a";
-                        }
+                        modListModel.Part = SimpleModpackEntry.GetPart(itemPath);
 
                         // Number
-                        if (itemPath.Contains("/hair"))
-                        {
-                            modListModel.Number = itemPath.Substring(itemPath.IndexOf("/hair") + 8, 3).TrimStart('0');
-                        }
-                        else if (itemPath.Contains("/body"))
-                        {
-                            modListModel.Number = itemPath.Substring(itemPath.IndexOf("/body") + 8, 3).TrimStart('0');
-                        }
-                        else if (itemPath.Contains("/face"))
-                        {
-                            modListModel.Number = itemPath.Substring(itemPath.IndexOf("/face") + 8, 3).TrimStart('0');
-                        }
-                        else if (itemPath.Contains("/tail"))
-                        {
-                            modListModel.Number = itemPath.Substring(itemPath.IndexOf("/tail") + 8, 3).TrimStart('0');
-                        }
-                        else if (itemPath.Contains("/zear"))
-                        {
-                            modListModel.Number = itemPath.Substring(itemPath.IndexOf("/zear") + 8, 3).TrimStart('0');
-                        }
-                        else if (itemPath.Contains("/decal_face"))
-                        {
-                            modListModel.Number = itemPath.Substring(itemPath.IndexOf("/decal_face") + 19, 2).TrimEnd('.');                            
-                        }
-                        else if (itemPath.Contains("/decal_equip") && !itemPath.Contains("stigma"))
-                        {
-                            modListModel.Number = itemPath.Substring(itemPath.IndexOf("/decal_equip") + 20, 3);
-                        }
-                        else
-                        {
-                            modListModel.Number = "--";
-                        }
+                        modListModel.Number = SimpleModpackEntry.GetNumber(itemPath);
 
                         // Image
                         if (itemPath.Contains("material"))
