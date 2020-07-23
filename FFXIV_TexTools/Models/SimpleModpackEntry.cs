@@ -373,61 +373,44 @@ namespace xivModdingFramework.Mods.DataContainers
         /// </summary>
         /// <param name="modPath">The mod path</param>
         /// <returns>The number</returns>
-        private static string GetNumber(string modPath)
+        public static string GetNumber(string modPath)
         {
             string number = "-";
 
             if (modPath.Contains("/human/") && modPath.Contains("/body/"))
             {
-                string subString = modPath.Substring(modPath.LastIndexOf("/b") + 2, 4);
-                number = int.Parse(subString).ToString();
+                number = modPath.Substring(modPath.LastIndexOf("/b") + 2, 4).TrimStart('0');
             }
-
-            if (modPath.Contains("/face/"))
+            else if (modPath.Contains("/face/"))
             {
-                string subString = modPath.Substring(modPath.LastIndexOf("/f") + 2, 4);
-                number = int.Parse(subString).ToString();
+                number = modPath.Substring(modPath.LastIndexOf("/f") + 2, 4).TrimStart('0');
             }
-
-            if (modPath.Contains("decal_face"))
+            else if (modPath.Contains("decal_face"))
             {
-                int length = modPath.LastIndexOf(".") - (modPath.LastIndexOf("_") + 1);
-                string subString = modPath.Substring(modPath.LastIndexOf("_") + 1, length);
-
-                number = int.Parse(subString).ToString();
+                number = modPath.Substring(modPath.IndexOf("/decal_face") + 19, 2).TrimEnd('.');
             }
-
-            if (modPath.Contains("decal_equip"))
+            else if (modPath.Contains("decal_equip"))
             {
-                string subString = modPath.Substring(modPath.LastIndexOf("_") + 1, 3);
-
-                try
+                if (modPath.Contains("stigma"))
                 {
-                    number = int.Parse(subString).ToString();
+                    number = "stigma";
                 }
-                catch
+                else
                 {
-                    if (modPath.Contains("stigma"))
-                    {
-                        number = "stigma";
-                    }
-                    else
-                    {
-                        number = "Error";
-                    }
+                    number = modPath.Substring(modPath.LastIndexOf("_") + 1, 3).TrimStart('0');
                 }
             }
-
-            if (modPath.Contains("/hair/"))
+            else if (modPath.Contains("/hair/"))
             {
-                string t = modPath.Substring(modPath.LastIndexOf("/h") + 2, 4);
-                number = int.Parse(t).ToString();
+                number = modPath.Substring(modPath.LastIndexOf("/h") + 2, 4).TrimStart('0');
             }
-
-            if (modPath.Contains("/tail/"))
+            else if (modPath.Contains("/tail/"))
             {
-                string t = modPath.Substring(modPath.LastIndexOf("l/t") + 3, 4);
-                number = int.Parse(t).ToString();
+                number = modPath.Substring(modPath.LastIndexOf("l/t") + 3, 4).TrimStart('0');
+            }
+            else if (modPath.Contains("/zear/"))
+            {
+                number = modPath.Substring(modPath.IndexOf("/zear") + 8, 3).TrimStart('0');
             }
 
             return number;
@@ -500,27 +483,23 @@ namespace xivModdingFramework.Mods.DataContainers
         /// </summary>
         /// <param name="modPath">The mod path</param>
         /// <returns>The part</returns>
-        private static string GetPart(string modPath)
+        public static string GetPart(string modPath)
         {
             string part = "-";
             string[] parts = new[] { "a", "b", "c", "d", "e", "f" };
 
-            if (modPath.Contains("/equipment/"))
+            if (modPath.Contains("/texture/"))
             {
-                if (modPath.Contains("/texture/"))
+                part = modPath.Substring(modPath.LastIndexOf("_") - 1, 1);
+                foreach (string letter in parts)
                 {
-                    part = modPath.Substring(modPath.LastIndexOf("_") - 1, 1);
-                    foreach (string letter in parts)
-                    {
-                        if (part == letter) return part;
-                    }
-                    return "a";
+                    if (part == letter) return part;
                 }
-
-                if (modPath.Contains("/material/"))
-                {
-                    return modPath.Substring(modPath.LastIndexOf("_") + 1, 1);
-                }
+                return "a";
+            }
+            else if (modPath.Contains("/material/"))
+            {
+                return modPath.Substring(modPath.LastIndexOf("_") + 1, 1);
             }
 
             return part;
