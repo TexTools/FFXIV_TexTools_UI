@@ -428,7 +428,15 @@ namespace FFXIV_TexTools.ViewModels
             for (var pIdx = 0; pIdx < m.Parts.Count; pIdx++)
             {
                 var p = m.Parts[pIdx];
-                _view.PartSource.Add(new KeyValuePair<int, string>(pIdx, "#" + pIdx + ": " + (p.Name == null ? "Unnamed" : p.Name)));
+
+                string name = null;
+                if (p.Name != null)
+                {
+                    var itemName = Path.GetFileNameWithoutExtension(_oldModel.Source);
+                    name = p.Name.Replace(itemName, "");
+                    name = name.Trim();
+                }
+                _view.PartSource.Add(new KeyValuePair<int, string>(pIdx, "#" + pIdx + ": " + (name == null ? "Unnamed" : name)));
             }
 
 

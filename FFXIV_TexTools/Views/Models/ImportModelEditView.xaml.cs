@@ -1,19 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using AutoUpdaterDotNET;
 using FFXIV_TexTools.ViewModels;
 using xivModdingFramework.Models.DataContainers;
 using xivModdingFramework.Models.Helpers;
@@ -46,16 +35,19 @@ namespace FFXIV_TexTools.Views.Models
             PartNumberBox.Items.Clear();
             ScaleComboBox.Items.Clear();
 
+            var itemName = Path.GetFileNameWithoutExtension(oldModel.Source);
             for (var mIdx = 0; mIdx < _newModel.MeshGroups.Count; mIdx++)
             {
                 var m = _newModel.MeshGroups[mIdx];
                 if(m.Name == null)
                 {
-                    MeshSource.Add(new KeyValuePair<int, string>(mIdx, "#" + mIdx.ToString()));
+                    MeshSource.Add(new KeyValuePair<int, string>(mIdx, "#" + mIdx.ToString() + ": " + "Unknown"));
 
                 } else
                 {
-                    MeshSource.Add(new KeyValuePair<int, string>(mIdx, "#" + mIdx.ToString() + ": " + m.Name));
+                    var name = m.Name.Replace(itemName, "");
+                    name = name.Trim();
+                    MeshSource.Add(new KeyValuePair<int, string>(mIdx, "#" + mIdx.ToString() + ": " + name));
                 }
             }
 
