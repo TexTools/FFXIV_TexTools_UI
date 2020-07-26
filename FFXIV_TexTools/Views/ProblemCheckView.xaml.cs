@@ -273,6 +273,10 @@ namespace FFXIV_TexTools.Views
             try
             {
                 modList = JsonConvert.DeserializeObject<ModList>(File.ReadAllText(modListDirectory.FullName));
+
+                // Someone somehow had their entire modlist filled with 0's causing the deserealization to 
+                // just return null so this was added to still detect that as a corrupted modlist
+                if (modList == null) throw new Exception("How did this even happen?");
             }
             catch
             {

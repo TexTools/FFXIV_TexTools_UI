@@ -29,12 +29,6 @@
     <Setting Name="Default_Race" Type="System.String" Scope="User">
       <Value Profile="(Default)">Hyur Midlander</Value>
     </Setting>
-    <Setting Name="Skin_Color" Type="System.String" Scope="User">
-      <Value Profile="(Default)">#FFCC9578</Value>
-    </Setting>
-    <Setting Name="Hair_Color" Type="System.String" Scope="User">
-      <Value Profile="(Default)">#FF82400D</Value>
-    </Setting>
     <Setting Name="Hair_Highlight_Color" Type="System.String" Scope="User">
       <Value Profile="(Default)">#FF4D7EF0</Value>
     </Setting>
@@ -88,6 +82,18 @@
     </Setting>
     <Setting Name="ExportTexPNG" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="Skin_Color" Type="System.String" Scope="User">
+      <Value Profile="(Default)">#FFFFFFFF</Value>
+    </Setting>
+    <Setting Name="Hair_Color" Type="System.String" Scope="User">
+      <Value Profile="(Default)">#FF603913</Value>
+    </Setting>
+    <Setting Name="Iris_Color" Type="System.String" Scope="User">
+      <Value Profile="(Default)">#FF603913</Value>
+    </Setting>
+    <Setting Name="Etc_Color" Type="System.String" Scope="User">
+      <Value Profile="(Default)">#FF603913</Value>
     </Setting>
   </Settings>
 </SettingsFile>
