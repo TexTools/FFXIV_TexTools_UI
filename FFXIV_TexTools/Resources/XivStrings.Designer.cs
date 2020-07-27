@@ -70,7 +70,16 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to All.
+        ///   Looks up a localized string similar to Actions.
+        /// </summary>
+        internal static string Actions {
+            get {
+                return ResourceManager.GetString("Actions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ALL.
         /// </summary>
         internal static string All {
             get {
@@ -556,6 +565,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Indoor Furniture.
+        /// </summary>
+        internal static string Indoor_Furniture {
+            get {
+                return ResourceManager.GetString("Indoor_Furniture", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Iris.
         /// </summary>
         internal static string Iris {
@@ -651,6 +669,15 @@ namespace FFXIV_TexTools.Resources {
         internal static string Male {
             get {
                 return ResourceManager.GetString("Male", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Map Symbols.
+        /// </summary>
+        internal static string Map_Symbols {
+            get {
+                return ResourceManager.GetString("Map_Symbols", resourceCulture);
             }
         }
         
@@ -781,6 +808,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Online Status.
+        /// </summary>
+        internal static string Online_Status {
+            get {
+                return ResourceManager.GetString("Online_Status", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to OpenCOLLADA.
         /// </summary>
         internal static string OpenCollada {
@@ -795,6 +831,15 @@ namespace FFXIV_TexTools.Resources {
         internal static string Ornaments {
             get {
                 return ResourceManager.GetString("Ornaments", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Outdoor Furniture.
+        /// </summary>
+        internal static string Outdoor_Furniture {
+            get {
+                return ResourceManager.GetString("Outdoor_Furniture", resourceCulture);
             }
         }
         
@@ -970,6 +1015,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Status.
+        /// </summary>
+        internal static string Status {
+            get {
+                return ResourceManager.GetString("Status", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Tail.
         /// </summary>
         internal static string Tail {
@@ -1074,6 +1128,15 @@ namespace FFXIV_TexTools.Resources {
         internal static string Weapon {
             get {
                 return ResourceManager.GetString("Weapon", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Weather.
+        /// </summary>
+        internal static string Weather {
+            get {
+                return ResourceManager.GetString("Weather", resourceCulture);
             }
         }
         
