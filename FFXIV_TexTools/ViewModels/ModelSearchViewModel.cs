@@ -21,6 +21,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Input;
 using xivModdingFramework.General.DataContainers;
@@ -199,7 +200,6 @@ namespace FFXIV_TexTools.ViewModels
         {
             _mainView.ModelTabItem.IsEnabled = true;
 
-            CollectionViewSource.GetDefaultView(_mainView.ItemTreeView.ItemsSource).Refresh();
 
             var textureView = _mainView.TextureTabItem.Content as TextureView;
             var textureViewModel = textureView.DataContext as TextureViewModel;
@@ -232,7 +232,7 @@ namespace FFXIV_TexTools.ViewModels
                     }
                 };
 
-                _mainView.SelectItem(xivGear, false);
+                _mainView.SelectItem(xivGear);
             }
             else if (SelectedCategory.Equals(XivStrings.Monster))
             {
@@ -251,7 +251,7 @@ namespace FFXIV_TexTools.ViewModels
                     }
                 };
 
-                _mainView.SelectItem(xivMonster, false);
+                _mainView.SelectItem(xivMonster);
             }
             else if (SelectedCategory.Equals(XivStrings.DemiHuman))
             {
@@ -270,7 +270,7 @@ namespace FFXIV_TexTools.ViewModels
                     }
                 };
 
-                _mainView.SelectItem(xivDemiHuman, false);
+                _mainView.SelectItem(xivDemiHuman);
             }
             else if (SelectedCategory.Equals(XivStrings.Furniture))
             {
@@ -286,7 +286,7 @@ namespace FFXIV_TexTools.ViewModels
                     }
                 };
 
-                _mainView.SelectItem(xivFurniture, false);
+                _mainView.SelectItem(xivFurniture);
             }
         }
 

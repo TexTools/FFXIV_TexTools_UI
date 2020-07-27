@@ -213,8 +213,7 @@ namespace FFXIV_TexTools.Views
             var lang = XivLanguages.GetXivLanguage(Settings.Default.Application_Language);
             await Task.Run(async () =>
             {
-                var _cache = new XivCache(gameDirectory, lang);
-                _cache.RebuildCache();
+                XivCache.RebuildCache();
             });
             AddText("\tCache Rebuilt Successfully.", textColor);
             AddText("\t\u2714\n", "Green");            
