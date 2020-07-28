@@ -471,7 +471,7 @@ namespace FFXIV_TexTools.Views
             {"dwn", XivStrings.Legs},
             {"sho", XivStrings.Feet},
             {"top", XivStrings.Body},
-            {"ear", XivStrings.Ears},
+            {"ear", XivStrings.Ear},
             {"nek", XivStrings.Neck},
             {"rir", XivStrings.Ring_Right},
             {"ril", XivStrings.Ring_Left},

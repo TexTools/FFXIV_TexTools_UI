@@ -582,7 +582,7 @@ namespace xivModdingFramework.Mods.DataContainers
             {"dwn", XivStrings.Legs},
             {"sho", XivStrings.Feet},
             {"top", XivStrings.Body},
-            {"ear", XivStrings.Ears},
+            {"ear", XivStrings.Earring},
             {"nek", XivStrings.Neck},
             {"rir", XivStrings.Ring_Right},
             {"ril", XivStrings.Ring_Left},
