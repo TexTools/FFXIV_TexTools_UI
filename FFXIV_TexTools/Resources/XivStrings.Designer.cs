@@ -241,11 +241,20 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Ears.
+        ///   Looks up a localized string similar to Ear.
         /// </summary>
-        internal static string Ears {
+        internal static string Ear {
             get {
-                return ResourceManager.GetString("Ears", resourceCulture);
+                return ResourceManager.GetString("Ear", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Earring.
+        /// </summary>
+        internal static string Earring {
+            get {
+                return ResourceManager.GetString("Earring", resourceCulture);
             }
         }
         

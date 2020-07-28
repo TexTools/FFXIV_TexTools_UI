@@ -126,8 +126,8 @@
   <data name="Companions" xml:space="preserve">
     <value>Companions</value>
   </data>
-  <data name="Ears" xml:space="preserve">
-    <value>Ears</value>
+  <data name="Ear" xml:space="preserve">
+    <value>Ear</value>
   </data>
   <data name="EquipDecalFile" xml:space="preserve">
     <value>-decal_{0}.tex</value>
@@ -479,5 +479,8 @@
   </data>
   <data name="Weather" xml:space="preserve">
     <value>Weather</value>
+  </data>
+  <data name="Earring" xml:space="preserve">
+    <value>Earring</value>
   </data>
 </root>

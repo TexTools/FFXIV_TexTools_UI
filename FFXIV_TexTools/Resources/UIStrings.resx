@@ -928,4 +928,7 @@ If you would like to enable this, first import a texture for the selected item.<
   <data name="Variants" xml:space="preserve">
     <value>Variants</value>
   </data>
+  <data name="Rebuild_Cache" xml:space="preserve">
+    <value>Rebuild Cache</value>
+  </data>
 </root>

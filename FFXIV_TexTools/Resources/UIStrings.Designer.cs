@@ -1950,6 +1950,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Rebuild Cache.
+        /// </summary>
+        public static string Rebuild_Cache {
+            get {
+                return ResourceManager.GetString("Rebuild_Cache", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Reflection.
         /// </summary>
         public static string Reflection {
