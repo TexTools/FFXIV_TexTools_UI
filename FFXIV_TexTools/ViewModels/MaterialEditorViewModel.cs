@@ -333,7 +333,13 @@ namespace FFXIV_TexTools.ViewModels
 
             // Ordering these by name ensures that we create textures for the new variants in the first
             // item alphabetically, just for consistency's sake.
-            var sameModelItems = (await _gear.GetSameModelList(_item)).OrderBy(x => x.Name);
+            var sameModelItems = (await _gear.GetSameModelList(_item)).OrderBy(x => {
+                var npcItem = x.Name.Contains("_v");
+                
+                // The squiggle is basically the very last ASCII character, so NPC items will sort last.
+                return npcItem ? "~" + x.Name : x.Name;
+            });
+
             var oldVariantString = "/v" + _material.GetVariant().ToString().PadLeft(4, '0') + '/';
             var modifiedVariants = new List<int>();
 
