@@ -133,30 +133,6 @@ namespace FFXIV_TexTools.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("#FFCC9578")]
-        public string Skin_Color {
-            get {
-                return ((string)(this["Skin_Color"]));
-            }
-            set {
-                this["Skin_Color"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("#FF82400D")]
-        public string Hair_Color {
-            get {
-                return ((string)(this["Hair_Color"]));
-            }
-            set {
-                this["Hair_Color"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("#FF4D7EF0")]
         public string Hair_Highlight_Color {
             get {
@@ -368,6 +344,54 @@ namespace FFXIV_TexTools.Properties {
             }
             set {
                 this["ExportTexPNG"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("#FFFFFFFF")]
+        public string Skin_Color {
+            get {
+                return ((string)(this["Skin_Color"]));
+            }
+            set {
+                this["Skin_Color"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("#FF603913")]
+        public string Hair_Color {
+            get {
+                return ((string)(this["Hair_Color"]));
+            }
+            set {
+                this["Hair_Color"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("#FF603913")]
+        public string Iris_Color {
+            get {
+                return ((string)(this["Iris_Color"]));
+            }
+            set {
+                this["Iris_Color"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("#FF603913")]
+        public string Etc_Color {
+            get {
+                return ((string)(this["Etc_Color"]));
+            }
+            set {
+                this["Etc_Color"] = value;
             }
         }
     }

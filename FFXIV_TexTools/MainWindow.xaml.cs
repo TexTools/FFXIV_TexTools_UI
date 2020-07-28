@@ -121,11 +121,33 @@ namespace FFXIV_TexTools
         public event EventHandler InitialLoadComplete;
 
 
+        private bool _UPDATING = false;
+        private void AutoUpdater_ApplicationExitEvent()
+        {
+            _UPDATING = true;
+        }
         public MainWindow(string[] args)
         {
-
             _mainWindow = this;
+            AutoUpdater.ApplicationExitEvent += AutoUpdater_ApplicationExitEvent;
+
             CheckForUpdates();
+
+            // This slightly unusual contrivance is to ensure that we actually exit program on updates
+            // *before* performing the rest of the startup initialization.  If we let it continue
+            // some odd things can result.
+
+            // In particular, threads can be spawned that may keep the application files locked when 
+            // the updater wants to replace them, and/or new installs can error out on the culture info
+            // lines below, due to not having valid settings after Application.Shutdown() was already called.
+            if(_UPDATING)
+            {
+                if (Application.Current != null) { 
+                    Application.Current.Shutdown();
+                }
+                return;
+            }
+
             CheckForSettingsUpdate();
             LanguageSelection();
 
