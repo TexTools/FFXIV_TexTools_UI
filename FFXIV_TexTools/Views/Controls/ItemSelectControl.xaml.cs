@@ -360,6 +360,8 @@ namespace FFXIV_TexTools.Views.Controls
                 SearchTimer.Dispose();
                 ClearSelection();
             }
+            await MainWindow.GetMainWindow().LockUi("Loading Item List");
+
             CategoryElements = new ObservableCollection<ItemTreeElement>();
             SetElements = new ObservableCollection<ItemTreeElement>();
             DependencyRootNodes = new Dictionary<string, ItemTreeElement>();
@@ -423,6 +425,8 @@ namespace FFXIV_TexTools.Views.Controls
             SearchTimer.Elapsed += Search;
 
             _READY = true;
+
+            await MainWindow.GetMainWindow().UnlockUi();
             if (ItemsLoaded != null)
             {
                 ItemsLoaded.Invoke(this, null);
