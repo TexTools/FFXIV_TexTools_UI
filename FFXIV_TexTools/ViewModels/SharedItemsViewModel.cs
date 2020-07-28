@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using xivModdingFramework.Cache;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Items;
 using xivModdingFramework.Items.Categories;
@@ -126,7 +127,7 @@ namespace FFXIV_TexTools.ViewModels
                 return false;
 
             }
-            var sharedList = await _gear.GetSameModelList(im);
+            var sharedList = await im.GetSharedModelItems();
 
             var myVariantNumber = fullInfo.GetEntry(im.ModelInfo.ImcSubsetID, im.GetItemSlotAbbreviation()).Variant;
             var myImcNumber = im.ModelInfo.ImcSubsetID;

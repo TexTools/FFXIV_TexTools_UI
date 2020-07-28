@@ -215,10 +215,16 @@ namespace FFXIV_TexTools.Views.Controls
 
 
                                 var slotName = Mdl.SlotAbbreviationDictionary.FirstOrDefault(x => x.Value == root.Slot).Key;
-                                slotName = String.IsNullOrWhiteSpace(slotName) ? "--" : slotName;
 
                                 if (secondaryType != XivItemType.none)
                                 {
+                                    // This root has no slots, just list the parent as the root element.
+                                    if (String.IsNullOrWhiteSpace(slotName))
+                                    {
+                                        DependencyRootNodes.Add(root.ToString(), secondaryIdGroups[primaryType][primaryId][secondaryType][secondaryId]);
+                                        break;
+                                    }
+
                                     // Create the new node.
                                     var elem = new ItemTreeElement(null, secondaryIdGroups[primaryType][primaryId][secondaryType][secondaryId], slotName);
 
@@ -230,6 +236,13 @@ namespace FFXIV_TexTools.Views.Controls
                                 }
                                 else
                                 {
+                                    // This root has no slots, just list the parent as the root element.
+                                    if (String.IsNullOrWhiteSpace(slotName))
+                                    {
+                                        DependencyRootNodes.Add(root.ToString(), primaryIdGroups[primaryType][primaryId]);
+                                        break;
+                                    }
+
                                     // Create the new node.
                                     var elem = new ItemTreeElement(null, primaryIdGroups[primaryType][primaryId], slotName);
 
@@ -281,15 +294,11 @@ namespace FFXIV_TexTools.Views.Controls
             items.AddRange(await companions.GetPetList());
             items.AddRange(await ui.GetUIList());
             items.AddRange(await housing.GetFurnitureList());
+            items.AddRange(await companions.GetMountList(null, XivStrings.Mounts));
 
             if (language != XivLanguage.Chinese && language != XivLanguage.Korean)
             {
                 // I don't remember why we needed to set this this without the filter for CN, but carrying it through for now.
-                items.AddRange(await companions.GetMountList());
-            }
-            else
-            {
-                items.AddRange(await companions.GetMountList(null, XivStrings.Mounts));
                 items.AddRange(await companions.GetMountList(null, XivStrings.Ornaments));
             }
 
@@ -319,7 +328,7 @@ namespace FFXIV_TexTools.Views.Controls
                     // Perf.  Much faster to just not test those types at all, as we know they won't resolve.
                     if (type != typeof(XivUi) && type != typeof(XivFurniture))
                     {
-                        var itemRoot = item.GetItemRootInfo();
+                        var itemRoot = item.GetRootInfo();
                         if (itemRoot.PrimaryType != XivItemType.unknown)
                         {
 
@@ -375,42 +384,47 @@ namespace FFXIV_TexTools.Views.Controls
                 await BuildCategoryTree();
             } catch(Exception ex)
             {
-                FlexibleMessageBox.Show("Item List Error", "An error occurred while loading the item list.\n" + ex.Message, System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning);
+                FlexibleMessageBox.Show("An error occurred while loading the item list.\n" + ex.Message, "Item List Error", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning);
                 return;
             }
 
 
+            var toAdd = new List<(ItemTreeElement parent, ItemTreeElement child)>();
+            foreach (var kv in DependencyRootNodes)
+            {
+                // This dependency root had no EXD-Items associated with it.
+                // Gotta make a generic item for it.
+                if (kv.Value.Children.Count == 0)
+                {
+                    // See if we can actually turn this root into a fully fledged item.
+                    try
+                    {
+                        var root = await XivCache.GetFirstRoot(kv.Key);
+                        if (root != null)
+                        {
+                            // If we can, add it into the list.
+                            var item = root.ToRawItem();
+                            var e = new ItemTreeElement(null, kv.Value, item);
+                            toAdd.Add((kv.Value, e));
+                        } else
+                        {
+                            var e = new ItemTreeElement(null, kv.Value, "[Unsupported]");
+                            toAdd.Add((kv.Value, e));
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        throw;
+                    }
 
-            // This is a little slow/computation heavy, so better to not lock the main thread during it.
-            // It's also not actually necessary for general minute 0 functionality, so we can go ahead and
-            // Let the user at least browse the list first.
-            await Task.Run(() => {
-               foreach (var kv in DependencyRootNodes)
-               {
-                    // This dependency root had no EXD-Items associated with it.
-                    // Gotta make a generic item for it.
-                    if (kv.Value.Children.Count == 0)
-                   {
-                        // See if we can actually turn this root into a fully fledged item.
-                        try
-                       {
-                           var root = XivCache.CreateDependencyRoot(kv.Key);
-                           if (root != null)
-                           {
-                                // If we can, add it into the list.
-                                var item = root.ToItem();
-                               var e = new ItemTreeElement(null, kv.Value, item);
-                               kv.Value.Children.Add(e);
-                           }
-                       }
-                       catch (Exception ex)
-                       {
-                           throw;
-                       }
+                }
+            }
 
-                   }
-               }
-           });
+            // Loop back through to add the new items, so we're not affecting the previous iteration.
+            foreach(var tup in toAdd)
+            {
+                tup.parent.Children.Add(tup.child);
+            }
 
 
 
@@ -456,7 +470,10 @@ namespace FFXIV_TexTools.Views.Controls
             // Don't allow null selections to escape this controller.
             if (newE == null || newE.Item == null) return;
 
-            _selectedItem = newE == null ? null : newE.Item;
+            // If we re-selected the same item, selection doesn't escape this controller (didn't actually change).
+            if (_selectedItem == newE.Item) return;
+
+            _selectedItem = newE.Item;
             ItemSelected.Invoke(this, null);
         }
 
