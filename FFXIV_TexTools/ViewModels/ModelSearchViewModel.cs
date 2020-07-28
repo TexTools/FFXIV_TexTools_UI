@@ -232,7 +232,7 @@ namespace FFXIV_TexTools.ViewModels
                     }
                 };
 
-                _mainView.SelectItem(xivGear);
+                _mainView.SetSelectedItem(xivGear);
             }
             else if (SelectedCategory.Equals(XivStrings.Monster))
             {
@@ -251,7 +251,7 @@ namespace FFXIV_TexTools.ViewModels
                     }
                 };
 
-                _mainView.SelectItem(xivMonster);
+                _mainView.SetSelectedItem(xivMonster);
             }
             else if (SelectedCategory.Equals(XivStrings.DemiHuman))
             {
@@ -270,7 +270,7 @@ namespace FFXIV_TexTools.ViewModels
                     }
                 };
 
-                _mainView.SelectItem(xivDemiHuman);
+                _mainView.SetSelectedItem(xivDemiHuman);
             }
             else if (SelectedCategory.Equals(XivStrings.Furniture))
             {
@@ -286,7 +286,7 @@ namespace FFXIV_TexTools.ViewModels
                     }
                 };
 
-                _mainView.SelectItem(xivFurniture);
+                _mainView.SetSelectedItem(xivFurniture);
             }
         }
 

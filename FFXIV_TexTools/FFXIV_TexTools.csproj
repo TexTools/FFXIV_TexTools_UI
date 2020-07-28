@@ -249,7 +249,6 @@
     <Compile Include="Helpers\RelayCommand.cs" />
     <Compile Include="Helpers\Wpf32Window.cs" />
     <Compile Include="Models\Category.cs" />
-    <Compile Include="Models\ItemsList.cs" />
     <Compile Include="Models\SimpleModpackEntry.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Resources\CommonInstallDirectories.Designer.cs">
@@ -308,6 +307,9 @@
     <Compile Include="Views\AutoCompleteEntry.cs" />
     <Compile Include="Views\AutoCompleteTextBox.xaml.cs">
       <DependentUpon>AutoCompleteTextBox.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\ItemSelectControl.xaml.cs">
+      <DependentUpon>ItemSelectControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\CustomizeSettingsView.xaml.cs">
       <DependentUpon>CustomizeSettingsView.xaml</DependentUpon>
@@ -417,6 +419,10 @@
     <Page Include="Views\AutoCompleteTextBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Controls\ItemSelectControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\CustomizeSettingsView.xaml">
       <SubType>Designer</SubType>

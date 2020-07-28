@@ -234,7 +234,7 @@ namespace FFXIV_TexTools.ViewModels
         {
             var treeItem = (TreeViewItem)sender;
             var item = (IItem) treeItem.DataContext;
-            _mainWindow.SelectItem(item);
+            _mainWindow.SetSelectedItem(item);
         }
 
         /// <summary>
