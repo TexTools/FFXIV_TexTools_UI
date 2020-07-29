@@ -295,7 +295,6 @@
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\MaterialEditorViewModel.cs" />
     <Compile Include="ViewModels\ModConverterViewModel.cs" />
-    <Compile Include="ViewModels\ModelSearchViewModel.cs" />
     <Compile Include="ViewModels\ModelViewModel.cs" />
     <Compile Include="ViewModels\ModListViewModel.cs" />
     <Compile Include="ViewModels\SharedItemsViewModel.cs" />
@@ -346,9 +345,6 @@
     </Compile>
     <Compile Include="Views\LanguageOptionsView.xaml.cs">
       <DependentUpon>LanguageOptionsView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\ModelSearchView.xaml.cs">
-      <DependentUpon>ModelSearchView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Models\ModelView.xaml.cs">
       <DependentUpon>ModelView.xaml</DependentUpon>
@@ -469,10 +465,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\LanguageOptionsView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\ModelSearchView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -1371,6 +1371,8 @@ namespace FFXIV_TexTools.ViewModels
 
         public async Task Import(string fileName)
         {
+
+            ImportEnabled = false;
             var fileDir = new DirectoryInfo(fileName);
             var dxVersion = int.Parse(Settings.Default.DX_Version);
 
@@ -1450,7 +1452,7 @@ namespace FFXIV_TexTools.ViewModels
             }
 
             UpdateImage();
-            
+
         }
 
 

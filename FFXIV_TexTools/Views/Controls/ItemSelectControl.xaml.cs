@@ -144,7 +144,7 @@ namespace FFXIV_TexTools.Views.Controls
         {
 
             // First we must generate all the dependency root nodes.
-            var roots = XivCache.GetAllRoots();
+            var roots = XivCache.GetAllRootsDictionary();
             var primaryTypeGroups = new Dictionary<XivItemType, ItemTreeElement>();
             var primaryIdGroups = new Dictionary<XivItemType, Dictionary<int, ItemTreeElement>>();
             var secondaryTypeGroups = new Dictionary<XivItemType, Dictionary<int, Dictionary<XivItemType, ItemTreeElement>>>();
@@ -259,7 +259,7 @@ namespace FFXIV_TexTools.Views.Controls
             }
         }
 
-        private async Task BuildCategoryTree()
+        private async Task<List<IItem>> BuildCategoryTree()
         {
 
             foreach(var kv in _categoryStructure)
@@ -278,29 +278,7 @@ namespace FFXIV_TexTools.Views.Controls
             var gameDir = XivCache.GameInfo.GameDirectory;
             var language = XivCache.GameInfo.GameLanguage;
 
-            var items = new List<IItem>();
-
-
-            var gear = new Gear(gameDir, language);
-            var companions = new Companions(gameDir, language);
-            var housing = new Housing(gameDir, language);
-            var ui = new UI(gameDir, language);
-            var character = new Character(gameDir, language);
-
-
-            items.AddRange(await gear.GetGearList());
-            items.AddRange(await character.GetCharacterList());
-            items.AddRange(await companions.GetMinionList());
-            items.AddRange(await companions.GetPetList());
-            items.AddRange(await ui.GetUIList());
-            items.AddRange(await housing.GetFurnitureList());
-            items.AddRange(await companions.GetMountList(null, XivStrings.Mounts));
-
-            if (language != XivLanguage.Chinese && language != XivLanguage.Korean)
-            {
-                // I don't remember why we needed to set this this without the filter for CN, but carrying it through for now.
-                items.AddRange(await companions.GetMountList(null, XivStrings.Ornaments));
-            }
+            var items = await XivCache.GetFullItemList();
 
             foreach(var item in items)
             {
@@ -354,6 +332,7 @@ namespace FFXIV_TexTools.Views.Controls
                     setParent.Children.Add(e2);
                 }
             }
+            return items;
 
         }
 
@@ -380,7 +359,8 @@ namespace FFXIV_TexTools.Views.Controls
 
             try
             {
-                BuildSetTree();
+                // Gotta build set tree first, so the items from the item list can latch onto the nodes there.
+                BuildSetTree(); 
                 await BuildCategoryTree();
             } catch(Exception ex)
             {
@@ -429,11 +409,11 @@ namespace FFXIV_TexTools.Views.Controls
 
 
             var view = (CollectionView)CollectionViewSource.GetDefaultView(CategoryElements);
-            view.Filter = SearchFilter;
+            view.Filter = SearchFilterCat;
 
 
             view = (CollectionView)CollectionViewSource.GetDefaultView(SetElements);
-            view.Filter = SearchFilter;
+            view.Filter = SearchFilterSet;
 
             SearchTimer = new Timer(300);
             SearchTimer.Elapsed += Search;
@@ -606,25 +586,83 @@ namespace FFXIV_TexTools.Views.Controls
             AcceptSelection();
         }
 
-        private bool SearchFilter(object o)
+        private bool IncludeAllSearchFilter(object o)
         {
-            if (!_READY) return true;
-
             var e = (ItemTreeElement)o;
             if (e.Children.Count > 0)
             {
                 var subItems = (CollectionView)CollectionViewSource.GetDefaultView((e).Children);
+                subItems.Filter = IncludeAllSearchFilter;
+                e.IsExpanded = !string.IsNullOrEmpty(SearchBar.Text);
+            }
+            return true;
+        }
 
-                subItems.Filter = SearchFilter;
+        private bool SearchFilterSet(object o)
+        {
+            if (!_READY) return true;
 
+            var e = (ItemTreeElement)o;
+            var groups = SearchBar.Text.Split('|');
+            var iMatch = false;
+
+            foreach (var group in groups)
+            {
+                var searchTerms = group.Split(' ');
+                bool match = searchTerms.All(term => e.DisplayName.ToLower().Contains(term.Trim().ToLower()));
+                iMatch = iMatch || match;
+            }
+
+            if (e.Children.Count > 0)
+            {
+                var subItems = (CollectionView)CollectionViewSource.GetDefaultView((e).Children);
                 e.IsExpanded = !string.IsNullOrEmpty(SearchBar.Text);
 
+                if (iMatch)
+                {
+                    // If the actual group name matches the typed in name, include everything in that group.
+                    // This is only allowed in the set menu, as there's some pretty generic words used in the
+                    // category menu structure that muck this up. (Ex. Searching for "Hands" becomes impossible)
+                    subItems.Filter = IncludeAllSearchFilter;
+                    return true;
+                }
+                else
+                {
+                    subItems.Filter = SearchFilterSet;
+                    return !subItems.IsEmpty;
+                }
+            }
+
+
+            return iMatch;
+        }
+        private bool SearchFilterCat(object o)
+        {
+            if (!_READY) return true;
+
+            var e = (ItemTreeElement)o;
+            var groups = SearchBar.Text.Split('|');
+            var iMatch = false;
+
+            foreach (var group in groups)
+            {
+                var searchTerms = group.Split(' ');
+                bool match = searchTerms.All(term => e.DisplayName.ToLower().Contains(term.Trim().ToLower()));
+                iMatch = iMatch || match;
+            }
+
+
+            if (e.Children.Count > 0)
+            {
+                var subItems = (CollectionView)CollectionViewSource.GetDefaultView((e).Children);
+                e.IsExpanded = !string.IsNullOrEmpty(SearchBar.Text);
+
+                subItems.Filter = SearchFilterCat;
                 return !subItems.IsEmpty;
             }
 
-            var searchTerms = SearchBar.Text.Split(' ');
 
-            return searchTerms.All(term => e.DisplayName.ToLower().Contains(term.Trim().ToLower()));
+            return iMatch;
         }
 
         private readonly Dictionary<string, List<string>> _categoryStructure = new Dictionary<string, List<string>>()

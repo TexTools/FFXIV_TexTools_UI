@@ -281,6 +281,7 @@ namespace FFXIV_TexTools
         // Item load helpers.
         bool _modelLoaded = false;
         bool _texturesLoaded = false;
+        bool _waitingForItemLoad = false;
         private void ModelViewModelOnLoadingComplete(object sender, EventArgs e)
         {
             _modelLoaded = true;
@@ -295,12 +296,19 @@ namespace FFXIV_TexTools
 
         private async Task CheckItemLoadComplete()
         {
+            // Don't allow spurious event firings to fuck with us.
+            if(!_waitingForItemLoad)
+            {
+                _modelLoaded = false;
+                _texturesLoaded = false;
+            }
+
             if(_modelLoaded && _texturesLoaded)
             {
                 _modelLoaded = false;
                 _texturesLoaded = false;
+                _waitingForItemLoad = false;
 
-                
                 await UnlockUi();
 
                 ShowStatusMessage("Item Loaded Successfully.");
@@ -342,7 +350,14 @@ namespace FFXIV_TexTools
 
             _uiLocked = false;
 
-            await _lockProgressController.CloseAsync();
+            try
+            {
+                // Sometimes this chokes, not sure why.
+                await _lockProgressController.CloseAsync();
+            } catch
+            {
+
+            }
             _lockProgressController = null;
             _lockProgress = null;
 
@@ -537,7 +552,8 @@ namespace FFXIV_TexTools
         }
 
         /// <summary>
-        /// Updates the texture and model views with the selected item
+        /// Updates the various tab views with the information from the selected item.
+        /// Locks the UI until those tab views come back and confirm they've been loaded.
         /// </summary>
         /// <param name="selectedItem">The selected item</param>
         private async void UpdateViews(IItem item)
@@ -554,11 +570,16 @@ namespace FFXIV_TexTools
 
             await LockUi();
 
+            _modelLoaded = false;
+            _texturesLoaded = false;
+            _waitingForItemLoad = true;
+
             var textureView = TextureTabItem.Content as TextureView;
             var textureViewModel = textureView.DataContext as TextureViewModel;
             var sharedItemsView = SharedItemsTab.Content as SharedItemsView;
             var sharedItemsViewModel = sharedItemsView.DataContext as SharedItemsViewModel;
 
+            // This guy has no funny async callback.  It's ready once these awaits are done.
             await textureViewModel.UpdateTexture(item);
             var showSharedItems = await sharedItemsViewModel.SetItem(item, this);
             if(showSharedItems) { 
@@ -585,6 +606,9 @@ namespace FFXIV_TexTools
                 {
                     TabsControl.SelectedIndex = 0;
                 }
+
+                // No model to load, just set us as already loaded.
+                _modelLoaded = true;
 
                 ModelTabItem.IsEnabled = false;
                 ModelTabItem.Visibility = Visibility.Hidden;
