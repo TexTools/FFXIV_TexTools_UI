@@ -171,6 +171,9 @@ namespace FFXIV_TexTools
 
             var fileVersion = FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location).FileVersion;
 
+            // Clear out the debug message shown in the xaml designer.
+            StatusTextBox.Text = "";
+
             try
             {
                 if (System.Globalization.CultureInfo.CurrentUICulture.Name == "zh")
@@ -936,6 +939,43 @@ namespace FFXIV_TexTools
                 await LockUi("Rebuilding Cache");
                 await Task.Run(XivCache.RebuildCache);
                 await UnlockUi();
+            }
+        }
+        private async void Menu_ScanForSets_Click(object sender, RoutedEventArgs e)
+        {
+            var r = FlexibleMessageBox.Show("This will scan the entire FFXIV file system for new item sets.\n\nThis operation can take up to an hour.\nAre you sure you wish to proceed?.", "Set Scan Confirmation", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1);
+            if (r == System.Windows.Forms.DialogResult.OK)
+            {
+                await LockUi("Scanning for new Item Sets", "This can take up to roughly an hour, depending on computer specs.");
+
+                // Stop the worker, in case it was reading from the file for some reason.
+                XivCache.CacheWorkerEnabled = false;
+
+                await Task.Run(XivCache.RebuildAllRoots);
+                await UnlockUi();
+            }
+        }
+        private async void Menu_LoadSets_Click(object sender, RoutedEventArgs e)
+        {
+            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            {
+                openFileDialog.Filter = "db files (*.db)|*.db";
+                openFileDialog.RestoreDirectory = true;
+
+                if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    // Stop the worker, in case it was reading from the file for some reason.
+                    XivCache.CacheWorkerEnabled = false;
+
+                    //Get the path of specified file
+                    var filePath = openFileDialog.FileName;
+                    var targetPath = new DirectoryInfo(Path.Combine(XivCache.GameInfo.GameDirectory.Parent.Parent.FullName, "item_sets.db"));
+                    File.Delete(targetPath.FullName);
+                    File.Copy(filePath, targetPath.FullName);
+
+                    FlexibleMessageBox.Show("Item Sets loaded.\nRestarting TexTools.", "TexTools Restarting", MessageBoxButtons.OK);
+                    Restart();
+                }
             }
         }
 

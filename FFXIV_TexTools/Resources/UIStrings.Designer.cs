@@ -297,6 +297,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cache Operations.
+        /// </summary>
+        public static string Cache {
+            get {
+                return ResourceManager.GetString("Cache", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cancel.
         /// </summary>
         public static string Cancel {
@@ -1049,6 +1058,15 @@ namespace FFXIV_TexTools.Resources {
         public static string Load_From {
             get {
                 return ResourceManager.GetString("Load_From", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Load Item Sets File.
+        /// </summary>
+        public static string Load_Sets {
+            get {
+                return ResourceManager.GetString("Load_Sets", resourceCulture);
             }
         }
         
@@ -2047,6 +2065,15 @@ namespace FFXIV_TexTools.Resources {
         public static string Save_Directory {
             get {
                 return ResourceManager.GetString("Save_Directory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Scan for new Item Sets.
+        /// </summary>
+        public static string Scan_For_Sets {
+            get {
+                return ResourceManager.GetString("Scan_For_Sets", resourceCulture);
             }
         }
         

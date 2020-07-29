@@ -65,11 +65,16 @@
                 </MenuItem>
             </MenuItem>
             <MenuItem Header="{Binding Source={x:Static resx:UIStrings.Help}}">
+                <MenuItem x:Name="Menu_Backup" Header="{Binding Source={x:Static resx:UIStrings.Backup_Index_Files}}" Click="Menu_Backup_Click"/>
                 <MenuItem x:Name="Menu_ProblemCheck" Header="{Binding Source={x:Static resx:UIStrings.Check_For_Problems}}" Click="Menu_ProblemCheck_Click"/>
                 <MenuItem x:Name="Menu_StartOver" Header="{Binding Source={x:Static resx:UIStrings.Start_Over}}" Click="Menu_StartOver_Click" />
-                <MenuItem x:Name="Menu_RebuildCache" Header="{Binding Source={x:Static resx:UIStrings.Rebuild_Cache}}" Click="Menu_RebuildCache_Click" />
                 <MenuItem x:Name="Menu_BugReport" Header="{Binding Source={x:Static resx:UIStrings.Report_Bug}}" Click="Menu_BugReport_Click"/>
-                <MenuItem x:Name="Menu_Backup" Header="{Binding Source={x:Static resx:UIStrings.Backup_Index_Files}}" Click="Menu_Backup_Click"/>
+
+                <MenuItem Header="{Binding Source={x:Static resx:UIStrings.Cache}}">
+                    <MenuItem x:Name="Menu_RebuildCache" Header="{Binding Source={x:Static resx:UIStrings.Rebuild_Cache}}" Click="Menu_RebuildCache_Click" />
+                    <MenuItem x:Name="Menu_LoadSets" Header="{Binding Source={x:Static resx:UIStrings.Load_Sets}}" Click="Menu_LoadSets_Click" />
+                    <MenuItem x:Name="Menu_ScanForSets" Header="{Binding Source={x:Static resx:UIStrings.Scan_For_Sets}}" Click="Menu_ScanForSets_Click" />
+                </MenuItem>
             </MenuItem>
             <MenuItem Header="{Binding Source={x:Static resx:UIStrings.About}}">
                 <MenuItem x:Name="Menu_About" Header="{Binding Source={x:Static resx:UIStrings.About_TexTools}}" Click="Menu_About_Click"/>
