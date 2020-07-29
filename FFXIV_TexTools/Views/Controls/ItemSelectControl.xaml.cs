@@ -39,17 +39,11 @@ namespace FFXIV_TexTools.Views.Controls
                 _mainMenuMode = value;
                 if (value)
                 {
-                    SelectItemLabel.Visibility = Visibility.Collapsed;
                     SelectButton.Visibility = Visibility.Collapsed;
-                    SearchBar.SetValue(Grid.ColumnSpanProperty, 2);
-                    SearchBar.SetValue(Grid.RowProperty, 0);
                     Tabs.SetValue(Grid.RowSpanProperty, 2);
                 } else
                 {
-                    SelectItemLabel.Visibility = Visibility.Visible;
                     SelectButton.Visibility = Visibility.Visible;
-                    SearchBar.SetValue(Grid.ColumnSpanProperty, 1);
-                    SearchBar.SetValue(Grid.RowProperty, 2);
                     Tabs.SetValue(Grid.RowSpanProperty, 1);
                 }
             }
@@ -454,7 +448,10 @@ namespace FFXIV_TexTools.Views.Controls
             if (_selectedItem == newE.Item) return;
 
             _selectedItem = newE.Item;
-            ItemSelected.Invoke(this, null);
+            if (ItemSelected != null)
+            {
+                ItemSelected.Invoke(this, null);
+            }
         }
 
         private ItemTreeElement FindElement(IItem item, ObservableCollection<ItemTreeElement> elements = null) {
@@ -557,7 +554,7 @@ namespace FFXIV_TexTools.Views.Controls
         private void AcceptSelection()
         {
             if (!_READY) return;
-            if (ItemSelected != null)
+            if (SelectedItem != null && ItemConfirmed != null)
             {
                 ItemConfirmed.Invoke(this, null);
             }

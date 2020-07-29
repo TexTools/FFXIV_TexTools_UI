@@ -6,11 +6,10 @@
              xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:FFXIV_TexTools.Views.Controls"
-             mc:Ignorable="d" Height="373.124" Width="772.812">
+             mc:Ignorable="d" Height="449.791" Width="568.146">
     <Grid x:Name="GridPanel">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="639*"/>
-            <ColumnDefinition Width="161*"/>
+            <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" MinHeight="45"/>
@@ -18,9 +17,7 @@
             <RowDefinition Height="35"/>
         </Grid.RowDefinitions>
 
-        <Label x:Name="SelectItemLabel" Content="Select Item" Height="37" VerticalContentAlignment="Center" Grid.Row="0" HorizontalContentAlignment="Center" FontSize="16" FontWeight="Bold" Grid.ColumnSpan="2" Margin="0"/>
-
-        <TabControl x:Name="Tabs" Grid.Row="1" Grid.ColumnSpan="2" Margin="0" Background="{x:Null}">
+        <TabControl x:Name="Tabs" Grid.Row="1" Margin="0" Background="{x:Null}">
             <TabItem Header="By Category">
                 <TreeView x:Name="CategoryTree" Background="{x:Null}" ItemsSource="{Binding CategoryElements,Mode=TwoWay}"  Style="{StaticResource VirtualisedMetroTreeView}">
                     <TreeView.ItemContainerStyle>
@@ -57,8 +54,8 @@
             </TabItem>
         </TabControl>
 
-        <TextBox x:Name="SearchBar" Margin="5,5,5,0" Grid.Row="2" TextWrapping="Wrap" VerticalAlignment="Top"  Controls:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.Search_dot}}" />
-        <Button x:Name="SelectButton" Content="Select" Margin="10,5,10,0" Grid.Row="2" VerticalAlignment="Top" Height="26" Grid.Column="1"/>
+        <TextBox x:Name="SearchBar" Margin="5,5,5,0" TextWrapping="Wrap" VerticalAlignment="Top"  Controls:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.Search_dot}}" />
+        <Button x:Name="SelectButton" Content="Select Item" Margin="50,5" Grid.Row="2" Height="26" HorizontalAlignment="Center" Width="200"/>
 
     </Grid>
 </UserControl>

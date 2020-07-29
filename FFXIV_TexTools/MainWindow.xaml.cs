@@ -746,6 +746,12 @@ namespace FFXIV_TexTools
                 }
             }
         }
+        private async void Menu_MakeStandardModpack_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new StandardModpackCreator { Owner = this };
+            var result = dialog.ShowDialog();
+            
+        }
 
         /// <summary>
         /// Event handler for the import mod pack menu item clicked
