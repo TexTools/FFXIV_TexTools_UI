@@ -249,14 +249,25 @@ namespace FFXIV_TexTools
             // Kick this in a new thread because the cache call will lock up the one it's on.
             await Task.Run(async () =>
             {
-                // If the cache needs to be rebuilt, this will synchronously block until it is done.
-                XivCache.SetGameInfo(gameDir, lang);
+                bool cacheOK = true;
+                try
+                {
+                    // If the cache needs to be rebuilt, this will synchronously block until it is done.
+                    XivCache.SetGameInfo(gameDir, lang);
+                } catch(Exception ex)
+                {
+                    cacheOK = false;
+                    FlexibleMessageBox.Show("An error occurred while attempting to rebuild the cache.\n" + ex.Message, "Cache Rebuild Error.", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
+                }
 
                 await Dispatcher.Invoke(async () =>
                 {
                     await UnlockUi();
 
-                    RefreshTree();
+                    if (cacheOK)
+                    {
+                        RefreshTree();
+                    }
 
                     if(InitialLoadComplete != null)
                     {
@@ -300,8 +311,10 @@ namespace FFXIV_TexTools
             }
         }
 
+        private SemaphoreSlim _lockScreenSemaphore = new SemaphoreSlim(1);
         public async Task LockUi(string title = "Loading", string msg = "Please Wait...", object caller = null)
         {
+            await _lockScreenSemaphore.WaitAsync();
             if (_uiLocked) return;
 
             _uiLocked = true;
@@ -314,6 +327,7 @@ namespace FFXIV_TexTools
                 _lockProgressController.SetMessage(update);
             });
 
+            _lockScreenSemaphore.Release();
 
             if (UiLocked != null)
             {
@@ -323,12 +337,17 @@ namespace FFXIV_TexTools
 
         public async Task UnlockUi(object caller = null)
         {
+            await _lockScreenSemaphore.WaitAsync();
             if (!_uiLocked) return;
 
             _uiLocked = false;
+
             await _lockProgressController.CloseAsync();
             _lockProgressController = null;
             _lockProgress = null;
+
+            _lockScreenSemaphore.Release();
+
             if (UiUnlocked != null)
             {
                 UiUnlocked.Invoke(caller, null);
@@ -523,6 +542,11 @@ namespace FFXIV_TexTools
         /// <param name="selectedItem">The selected item</param>
         private async void UpdateViews(IItem item)
         {
+            if(item == null)
+            {
+                return;
+            }
+
             if (ItemChanging != null)
             {
                 ItemChanging.Invoke(this, null);
@@ -575,15 +599,6 @@ namespace FFXIV_TexTools
 
                 await modelViewModel.UpdateModel(item as IItemModel);
             }
-        }
-
-        /// <summary>
-        /// Event handler for the model id search clicked
-        /// </summary>
-        private void Menu_ModelIDSearch_Click(object sender, RoutedEventArgs e)
-        {
-            var modelSearchView = new ModelSearchView(this) {Owner = this};
-            modelSearchView.Show();
         }
 
         /// <summary>
@@ -938,7 +953,7 @@ namespace FFXIV_TexTools
                 {
                     await problemChecker.PerformStartOver(indexBackupsDirectory, _lockProgress, XivLanguages.GetXivLanguage(Settings.Default.Application_Language));
                 }
-                catch
+                catch(Exception ex)
                 {
                     FlexibleMessageBox.Show(UIMessages.StartOverErrorMessage,
                         UIMessages.StartOverErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -953,7 +968,10 @@ namespace FFXIV_TexTools
 
 
                 var item = ItemSelect.SelectedItem;
-                UpdateViews(item);
+                if (item != null)
+                {
+                    UpdateViews(item);
+                }
 
                 await this.ShowMessageAsync(UIMessages.StartOverCompleteTitle, UIMessages.StartOverCompleteMessage);
             }

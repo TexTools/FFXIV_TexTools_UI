@@ -125,17 +125,6 @@ namespace FFXIV_TexTools.Views
                 Debug.WriteLine($"Loading Canceled\n\n{ex.Message}");
             }
 
-            try
-            {
-                AddText($"\nRebuilding Cache...\n", secondaryTextColor);
-                cfpTextBox.ScrollToEnd();
-                await CheckCache();
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Cache Rebuild Failed.\n\n{ex.Message}");
-            }
-
             ProgressBar.Value = 0;
             ProgressLabel.Content = UIStrings.Done;
 
@@ -207,17 +196,6 @@ namespace FFXIV_TexTools.Views
             }
         }
 
-        private async Task CheckCache()
-        {
-            var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
-            var lang = XivLanguages.GetXivLanguage(Settings.Default.Application_Language);
-            await Task.Run(async () =>
-            {
-                XivCache.RebuildCache();
-            });
-            AddText("\tCache Rebuilt Successfully.", textColor);
-            AddText("\t\u2714\n", "Green");            
-        }
 
         private async Task CheckDatSizes()
         {

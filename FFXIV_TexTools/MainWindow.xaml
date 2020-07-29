@@ -55,7 +55,6 @@
                 <MenuItem x:Name="Menu_ModConverter" IsEnabled="False" Header="{Binding Source={x:Static resx:UIStrings.Mod_Converter}}" Click="Menu_ModConverter_Click"/>
             </MenuItem>
             <MenuItem Header="{Binding Source={x:Static resx:UIStrings.Search}}" StaysOpenOnClick="True">
-                <MenuItem x:Name="Menu_ModelIDSearch" Header="{Binding Source={x:Static resx:UIStrings.Model_ID}}" Click="Menu_ModelIDSearch_Click"/>
                 <MenuItem x:Name="Menu_IconSearch" Header="{Binding Source={x:Static resx:UIStrings.Icon_ID}}" Click="Menu_IconIDSearch_Click"/>
             </MenuItem>
             <MenuItem Header="{Binding Source={x:Static resx:UIStrings.Options}}" StaysOpenOnClick="True">

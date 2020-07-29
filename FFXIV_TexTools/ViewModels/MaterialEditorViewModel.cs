@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using xivModdingFramework.Cache;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Items;
 using xivModdingFramework.Items.Categories;
@@ -74,7 +75,7 @@ namespace FFXIV_TexTools.ViewModels
             {
                 // This isn't an actual perfect check for if there's only one Variant, but doing so
                 // would be a bit expensive here, and passing it through EditMulti isn't harmful anyways.
-                var sameModelItems = await _gear.GetSameModelList(_item);
+                var sameModelItems = await _item.GetSharedModelItems();
                 if(sameModelItems.Count == 1)
                 {
                     if (_mode == MaterialEditorMode.EditMulti)
@@ -333,7 +334,7 @@ namespace FFXIV_TexTools.ViewModels
 
             // Ordering these by name ensures that we create textures for the new variants in the first
             // item alphabetically, just for consistency's sake.
-            var sameModelItems = (await _gear.GetSameModelList(_item)).OrderBy(x => {
+            var sameModelItems = (await _item.GetSharedModelItems()).OrderBy(x => {
                 var npcItem = x.Name.Contains("_v");
                 
                 // The squiggle is basically the very last ASCII character, so NPC items will sort last.
@@ -418,7 +419,7 @@ namespace FFXIV_TexTools.ViewModels
 
             // If we're disabling from the Edit Multi menu, diable all variant versions as well.
             if (_mode == MaterialEditorMode.EditMulti) {
-                var sameModelItems = await _gear.GetSameModelList(_item);
+                var sameModelItems = await _item.GetSharedModelItems(); 
                 var itemType = ItemType.GetPrimaryItemType(_item);
                 // Find all the variant materials 
                 foreach (var item in sameModelItems)

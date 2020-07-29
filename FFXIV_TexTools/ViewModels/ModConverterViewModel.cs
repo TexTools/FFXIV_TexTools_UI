@@ -105,6 +105,8 @@ namespace FFXIV_TexTools.ViewModels
                 return;
             if (!ItemList.Exists(it => it.Name == TargetItemName))
                 return;
+            if (obj == null)
+                return;
             var jsons = GetModsJsonList(TTMPData.ModPackJson);
             ModsJson fromItem=null;
             foreach(var list in jsons)
