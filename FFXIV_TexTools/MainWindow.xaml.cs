@@ -268,27 +268,6 @@ namespace FFXIV_TexTools
                 {
                     await UnlockUi();
 
-                    var dat = new Dat(XivCache.GameInfo.GameDirectory);
-                    var index = new Index(XivCache.GameInfo.GameDirectory);
-                    var modding = new Modding(XivCache.GameInfo.GameDirectory);
-                    var path = "chara/equipment/e0328/material/v0001/mt_c0101e0328_met_a.mtrl";
-                    var modList = modding.GetModList();
-
-                    try
-                    {
-                        foreach (var mod in modList.Mods)
-                        {
-                            var ogO = mod.data.originalOffset;
-                            var offset = await index.GetDataOffset(mod.fullPath);
-                            var size = await dat.GetCompressedFileSize(ogO, IOUtil.GetDataFileFromPath(mod.fullPath));
-                            //Assert.AreEqual(size, mod.data.modSize);
-                        }
-                    } catch(Exception ex)
-                    {
-                        throw;
-                    }
-
-
                     if (cacheOK)
                     {
                         RefreshTree();
@@ -347,8 +326,8 @@ namespace FFXIV_TexTools
         private SemaphoreSlim _lockScreenSemaphore = new SemaphoreSlim(1);
         public async Task LockUi(string title = "Loading", string msg = "Please Wait...", object caller = null)
         {
-            await _lockScreenSemaphore.WaitAsync();
             if (_uiLocked) return;
+            await _lockScreenSemaphore.WaitAsync();
 
             _uiLocked = true;
             _lockProgressController = await this.ShowProgressAsync(title, msg);
@@ -370,8 +349,8 @@ namespace FFXIV_TexTools
 
         public async Task UnlockUi(object caller = null)
         {
-            await _lockScreenSemaphore.WaitAsync();
             if (!_uiLocked) return;
+            await _lockScreenSemaphore.WaitAsync();
 
             _uiLocked = false;
 

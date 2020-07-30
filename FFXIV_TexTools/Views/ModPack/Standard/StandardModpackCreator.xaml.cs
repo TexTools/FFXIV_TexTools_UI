@@ -22,6 +22,7 @@ using xivModdingFramework.Cache;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Items.Interfaces;
+using xivModdingFramework.Mods;
 using xivModdingFramework.Mods.DataContainers;
 using xivModdingFramework.Mods.FileTypes;
 using xivModdingFramework.SqPack.FileTypes;
@@ -265,12 +266,16 @@ namespace FFXIV_TexTools.Views
             TTMP texToolsModPack = new TTMP(new DirectoryInfo(Settings.Default.ModPack_Directory), XivStrings.TexTools);
             var index = new Index(XivCache.GameInfo.GameDirectory);
             var dat = new Dat(XivCache.GameInfo.GameDirectory);
+            var modding = new Modding(XivCache.GameInfo.GameDirectory);
+            var ModList = modding.GetModList();
 
             SimpleModPackData simpleModPackData = new SimpleModPackData
             {
                 Name = ViewModel.Name,
                 Author = ViewModel.Author,
                 Version = ViewModel.Version,
+                Description = ViewModel.Description,
+                Url = ViewModel.Url,
                 SimpleModDataList = new List<SimpleModData>()
             };
 
@@ -281,7 +286,10 @@ namespace FFXIV_TexTools.Views
                     var offset = await index.GetDataOffset(file);
                     var dataFile = IOUtil.GetDataFileFromPath(file);
                     var compressedSize = await dat.GetCompressedFileSize(offset, dataFile);
-                    
+                    var modEntry = ModList.Mods.FirstOrDefault(x => x.fullPath == file);
+                    var modded = modEntry != null && modEntry.enabled == true;
+
+
                     SimpleModData simpleData = new SimpleModData
                     {
                         Name = entry.Item.Name,
@@ -289,6 +297,7 @@ namespace FFXIV_TexTools.Views
                         FullPath = file,
                         ModOffset = offset,
                         ModSize = compressedSize,
+                        IsDefault = !modded,
                         DatFile = dataFile.GetDataFileName()
                     };
 

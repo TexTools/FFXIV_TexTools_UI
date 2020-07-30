@@ -23,6 +23,8 @@ namespace FFXIV_TexTools.ViewModels
         public string Name = "Standard Modpack";
         public string Author = "TexTools User";
         public Version Version = new Version("1.0.0");
+        public string Description = "";
+        public string Url = "";
 
         public string DestinationFilePath;
         public ObservableCollection<StandardModpackItemEntry> Entries = new ObservableCollection<StandardModpackItemEntry>();
