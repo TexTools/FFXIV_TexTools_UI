@@ -189,7 +189,7 @@ namespace FFXIV_TexTools.Views
             DirectoryInfo modListDirectory = new DirectoryInfo(Path.Combine(_gameDirectory.Parent.Parent.FullName, XivStrings.ModlistFilePath));
             Modding modding = new Modding(_gameDirectory);
 
-            this.ModList = JsonConvert.DeserializeObject<ModList>(File.ReadAllText(modListDirectory.FullName));
+            var modList = modding.GetModList();
 
             List<SimpleModpackEntry> entries = new List<SimpleModpackEntry>();
             for(int i = 0; i < this.ModList.Mods.Count; i++)

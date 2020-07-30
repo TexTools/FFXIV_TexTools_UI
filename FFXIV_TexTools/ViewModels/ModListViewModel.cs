@@ -38,6 +38,7 @@ using System.Windows.Media.Imaging;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Items.DataContainers;
 using xivModdingFramework.Materials.FileTypes;
+using xivModdingFramework.Mods;
 using xivModdingFramework.Mods.DataContainers;
 using xivModdingFramework.Textures.DataContainers;
 using xivModdingFramework.Textures.Enums;
@@ -107,7 +108,8 @@ namespace FFXIV_TexTools.ViewModels
 
             return Task.Run(() =>
             {
-                var modList = JsonConvert.DeserializeObject<ModList>(File.ReadAllText(_modListDirectory.FullName));
+                var modding = new Modding(_gameDirectory);
+                var modList = modding.GetModList();
 
                 if (modList == null) return;
 
@@ -204,7 +206,8 @@ namespace FFXIV_TexTools.ViewModels
 
             return Task.Run(() =>
             {
-                var modList = JsonConvert.DeserializeObject<ModList>(File.ReadAllText(_modListDirectory.FullName));
+                var modding = new Modding(_gameDirectory);
+                var modList = modding.GetModList();
 
                 var modPackCatDict = new Dictionary<string, Category>();
 
@@ -508,7 +511,8 @@ namespace FFXIV_TexTools.ViewModels
                 if (selectedItem == null) return;
 
                 var mtrl = new Mtrl(_gameDirectory, selectedItem.DataFile, GetLanguage());
-                var modList = JsonConvert.DeserializeObject<ModList>(File.ReadAllText(_modListDirectory.FullName));
+                var modding = new Modding(_gameDirectory);
+                var modList = modding.GetModList();
 
                 var modItems = new List<Mod>();
 
@@ -852,7 +856,8 @@ namespace FFXIV_TexTools.ViewModels
             ProgressValue = 0;
             ProgressText = string.Empty;
 
-            var modList = JsonConvert.DeserializeObject<ModList>(File.ReadAllText(_modListDirectory.FullName));
+            var modding = new Modding(_gameDirectory);
+            var modList = modding.GetModList();
             List<Mod> modPackModList = null;
 
             if (category.Name.Equals(UIStrings.Standalone_Non_ModPack))
@@ -929,7 +934,8 @@ namespace FFXIV_TexTools.ViewModels
         /// <param name="category">The Category object for the item</param>
         public void RemoveItem(ModListModel item, Category category)
         {
-            var modList = JsonConvert.DeserializeObject<ModList>(File.ReadAllText(_modListDirectory.FullName));
+            var modding = new Modding(_gameDirectory);
+            var modList = modding.GetModList();
 
             var remainingList = (from items in modList.Mods
                                 where items.name == item.ModItem.name
