@@ -45,6 +45,7 @@ using xivModdingFramework.SqPack.FileTypes;
 using Application = System.Windows.Application;
 using System.Threading;
 using xivModdingFramework.Cache;
+using ControlzEx.Standard;
 
 namespace FFXIV_TexTools
 {
@@ -266,6 +267,27 @@ namespace FFXIV_TexTools
                 await Dispatcher.Invoke(async () =>
                 {
                     await UnlockUi();
+
+                    var dat = new Dat(XivCache.GameInfo.GameDirectory);
+                    var index = new Index(XivCache.GameInfo.GameDirectory);
+                    var modding = new Modding(XivCache.GameInfo.GameDirectory);
+                    var path = "chara/equipment/e0328/material/v0001/mt_c0101e0328_met_a.mtrl";
+                    var modList = modding.GetModList();
+
+                    try
+                    {
+                        foreach (var mod in modList.Mods)
+                        {
+                            var ogO = mod.data.originalOffset;
+                            var offset = await index.GetDataOffset(mod.fullPath);
+                            var size = await dat.GetCompressedFileSize(ogO, IOUtil.GetDataFileFromPath(mod.fullPath));
+                            //Assert.AreEqual(size, mod.data.modSize);
+                        }
+                    } catch(Exception ex)
+                    {
+                        throw;
+                    }
+
 
                     if (cacheOK)
                     {
@@ -549,9 +571,9 @@ namespace FFXIV_TexTools
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void ItemSelect_ItemSelected(object sender, EventArgs e)
+        private void ItemSelect_ItemSelected(object sender, IItem item)
         {
-            UpdateViews(ItemSelect.SelectedItem);
+            UpdateViews(item);
         }
 
         /// <summary>

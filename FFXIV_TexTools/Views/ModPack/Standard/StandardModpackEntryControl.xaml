@@ -4,16 +4,16 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:FFXIV_TexTools.Views"
-             mc:Ignorable="d" Height="70" Width="400">
+             mc:Ignorable="d" Height="70" Width="400" BorderBrush="#FF595959">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="35"/>
             <RowDefinition Height="35"/>
         </Grid.RowDefinitions>
-        <Button x:Name="RemoveButton" Content="Remove Item" Width="112" HorizontalAlignment="Right" Margin="0,5,5,5"/>
-        <Label x:Name="ItemNameLabel" HorizontalAlignment="Left" Width="278" VerticalContentAlignment="Center" Content="Item Name" Margin="0"/>
-        <Label x:Name="ItemLevelLabel" Content="Selected [7] Model Files" HorizontalAlignment="Left" Width="268" Margin="10,0,0,0" VerticalContentAlignment="Center" Grid.Row="1"/>
-        <Button x:Name="EditButton" Content="Edit Item" Width="112" HorizontalAlignment="Right" Margin="0,5,5,5" Grid.Row="1"/>
+        <Label x:Name="ItemNameLabel" HorizontalAlignment="Left" VerticalContentAlignment="Center" Content="Item Name" Margin="0" FontWeight="Bold"/>
+        <Label x:Name="ItemLevelLabel" Content="Selected [7] Model Files" HorizontalAlignment="Left" Margin="20,0,0,0" VerticalContentAlignment="Center" Grid.Row="1" VerticalAlignment="Top" FontStyle="Italic"/>
+        
+        <Button x:Name="RemoveButton" Content="Remove Item" Width="100" HorizontalAlignment="Right" Grid.Row="0" Margin="0,5,5,5"/>
 
     </Grid>
 </UserControl>

@@ -12,17 +12,19 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="35"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="35"/>
+            <RowDefinition/>
             <RowDefinition Height="35"/>
         </Grid.RowDefinitions>
-        <StackPanel Grid.Row="1">
-            <Controls:DescribedButton x:Name="EverythingButton" Height="80" Width="Auto" ButtonText="EVERYTHING" DescriptionText="Include everything for this item.  Automatically includes all metadata, models, materials, and textures used.  (Excluding default skin materials)"/>
-            <Controls:DescribedButton x:Name="ModelButton" Height="80" Width="Auto" ButtonText="MODEL" DescriptionText="Select one or more models to include.  Automatically includes all materials and textures used.  (Excluding default skin materials)"/>
-            <Controls:DescribedButton x:Name="MaterialButton" Height="80" Width="Auto" ButtonText="MATERIAL" DescriptionText="Select one or more materials to include.  Automatically includes all textures used."/>
-            <Controls:DescribedButton x:Name="TextureButton" Height="80" Width="Auto" ButtonText="TEXTURE" DescriptionText="Select one or more textures to include.  Does not include any other files."/>
+        <Label x:Name="ItemName" Content="Item Name" FontSize="16" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Left"/>
+        <Label Content="Select Modification Level" Margin="20,0,0,0" FontSize="16" Grid.Row="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Left"/>
+        <StackPanel Grid.Row="2" Width="450" HorizontalAlignment="Center" MinWidth="350" Height="350">
+            <Controls:DescribedButton x:Name="EverythingButton" Height="80" Width="Auto" ButtonText="All Files" DescriptionText="Include all files used by this item.  Automatically includes all metadata, models, materials, and textures used.  (Excluding racial skin materials)"/>
+            <Controls:DescribedButton x:Name="ModelButton" Height="80" Width="Auto" ButtonText="Model" DescriptionText="Select one or more models to include.  Automatically includes all materials and textures used.  (Excluding racial skin materials)"/>
+            <Controls:DescribedButton x:Name="MaterialButton" Height="80" Width="Auto" ButtonText="Material" DescriptionText="Select one or more materials to include.  Automatically includes all textures used."/>
+            <Controls:DescribedButton x:Name="TextureButton" Height="80" Width="Auto" ButtonText="Texture" DescriptionText="Select one or more textures to include.  Does not include any other files."/>
         </StackPanel>
-        <Label Content="Select Inclusion Level" Margin="0" FontSize="16" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-        <Button x:Name="BackButton" Content="Back" HorizontalAlignment="Left" Margin="5,5,0,5" Grid.Row="2" Width="150"/>
+        <Button x:Name="BackButton" Content="Back" HorizontalAlignment="Left" Margin="5,5,0,5" Grid.Row="3" Width="150"/>
 
     </Grid>
 </Page>

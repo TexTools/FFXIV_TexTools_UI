@@ -16,15 +16,44 @@ namespace FFXIV_TexTools.ViewModels
     /// </summary>
     public class StandardModpackViewModel
     {
-        public StandardModpackViewModel(StandardModpackCreator creator)
+        public StandardModpackViewModel()
         {
-            Creator = creator;
         }
 
-        public readonly StandardModpackCreator Creator;
-        public string Name;
+        public string Name = "Standard Modpack";
+        public string Author = "TexTools User";
+        public Version Version = new Version("1.0.0");
+
         public string DestinationFilePath;
-        public ObservableCollection<StandardModpackItemEntry> Entries;
+        public ObservableCollection<StandardModpackItemEntry> Entries = new ObservableCollection<StandardModpackItemEntry>();
+        public int TotalFileCount
+        {
+            get
+            {
+                int count = 0;
+                foreach (var e in Entries)
+                {
+                    count += e.AllFiles.Count;
+                }
+                return count;
+            }
+        }
+
+        public SortedSet<string> AllFiles
+        {
+            get
+            {
+                var files = new SortedSet<string>();
+                foreach (var entry in Entries)
+                {
+                    foreach (var file in entry.AllFiles)
+                    {
+                        files.Add(file);
+                    }
+                }
+                return files;
+            }
+        }
     }
 
 
@@ -35,20 +64,29 @@ namespace FFXIV_TexTools.ViewModels
     {
         public readonly IItem Item;
         public readonly XivDependencyLevel Level;
-        public readonly ObservableCollection<string> Files = new ObservableCollection<string>();
+        public readonly ObservableCollection<string> MainFiles = new ObservableCollection<string>();
+        public readonly ObservableCollection<string> AllFiles = new ObservableCollection<string>();
 
-        public StandardModpackItemEntry(IItem item, XivDependencyLevel level, ObservableCollection<string> files = null)
+        public StandardModpackItemEntry(IItem item, XivDependencyLevel level, ObservableCollection<string> mainFiles = null, ObservableCollection<string> allFiles = null)
         {
             Item = item;
             Level = level;
-            if(files == null)
+            if(mainFiles == null)
             {
-                Files = new ObservableCollection<string>();
+                MainFiles = new ObservableCollection<string>();
             } else
             {
-                Files = files;
+                MainFiles = mainFiles;
             }
 
+            if (allFiles == null)
+            {
+                AllFiles = new ObservableCollection<string>();
+            }
+            else
+            {
+                AllFiles = allFiles;
+            }
         }
     }
 }

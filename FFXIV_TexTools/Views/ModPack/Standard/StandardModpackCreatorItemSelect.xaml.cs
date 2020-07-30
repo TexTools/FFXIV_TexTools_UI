@@ -24,7 +24,6 @@ namespace FFXIV_TexTools.Views
     public partial class StandardModpackCreatorItemSelect : Page
     {
         private StandardModpackViewModel _vm;
-        private ObservableCollection<StandardModpackEntryControl> EntryControls = new ObservableCollection<StandardModpackEntryControl>();
 
         public event EventHandler<IItem> ItemSelected;
         public event EventHandler FinalizeRequested;
@@ -39,7 +38,17 @@ namespace FFXIV_TexTools.Views
             ItemSelect.ItemConfirmed += ItemSelect_ItemConfirmed;
             CancelButton.Click += CancelButton_Click;
             FinalReviewButton.Click += FinalReviewButton_Click;
+
+
+            foreach(var entry in vm.Entries)
+            {
+                var control = new StandardModpackEntryControl(entry);
+                control.RemoveEntry += Control_RemoveEntry;
+                AddedItemsPanel.Children.Add(control);
+            }
+            UpdateTotalFiles();
         }
+
 
         private void FinalReviewButton_Click(object sender, RoutedEventArgs e)
         {
@@ -57,12 +66,46 @@ namespace FFXIV_TexTools.Views
             }
         }
 
-        private void ItemSelect_ItemConfirmed(object sender, EventArgs e)
+        private void ItemSelect_ItemConfirmed(object sender, IItem item)
         {
             if(ItemSelected != null)
             {
-                ItemSelected.Invoke(this, ItemSelect.SelectedItem);
+                ItemSelected.Invoke(this, item);
             }
         }
+
+        private void UpdateTotalFiles()
+        {
+            TotalFilesLabel.Content = _vm.TotalFileCount + " Total File(s)";
+            if(_vm.TotalFileCount == 0)
+            {
+                FinalReviewButton.IsEnabled = false;
+            } else
+            {
+                FinalReviewButton.IsEnabled = true;
+            }
+        }
+
+        private void Control_RemoveEntry(object sender, StandardModpackItemEntry e)
+        {
+            _vm.Entries.Remove(e);
+            UIElement target = null;
+            foreach (var control in AddedItemsPanel.Children)
+            {
+                var isTarget = ((StandardModpackEntryControl)control).Entry == e;
+                if (isTarget)
+                {
+                    target = (UIElement)control;
+                    break;
+                }
+            }
+
+            if (target != null)
+            {
+                AddedItemsPanel.Children.Remove(target);
+                UpdateTotalFiles();
+            }
+        }
+
     }
 }

@@ -29,5 +29,15 @@
             </Separator.LayoutTransform>
         </Separator>
         <Button x:Name="CancelButton" Content="Cancel" Grid.Column="1" HorizontalAlignment="Left" Margin="20,5,0,5" Grid.Row="2" Width="150"/>
+        <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Column="1" Margin="10" Grid.Row="1">
+            <StackPanel x:Name="AddedItemsPanel">
+                <StackPanel.Resources>
+                    <Style TargetType="{x:Type local:StandardModpackEntryControl}">
+                        <Setter Property="Margin" Value="0,10,0,0"/>
+                    </Style>
+                </StackPanel.Resources>
+            </StackPanel>
+        </ScrollViewer>
+        <Label x:Name="TotalFilesLabel" Content="105 Total Files" Grid.Column="1" Margin="0,5,180,5" Grid.Row="2" HorizontalAlignment="Right" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"/>
     </Grid>
 </Page>

@@ -21,11 +21,34 @@ namespace FFXIV_TexTools.Views
     /// </summary>
     public partial class StandardModpackEntryControl : UserControl
     {
-        public StandardModpackItemEntry Entry;
+        public readonly StandardModpackItemEntry Entry;
 
-        public StandardModpackEntryControl()
+        public event EventHandler<StandardModpackItemEntry> RemoveEntry;
+
+        public StandardModpackEntryControl(StandardModpackItemEntry entry)
         {
+            Entry = entry;
             InitializeComponent();
+
+            ItemNameLabel.Content = entry.Item.Name;
+            if (entry.Level == xivModdingFramework.Cache.XivDependencyLevel.Root)
+            {
+                ItemLevelLabel.Content = "Selected All Files - [" + Entry.AllFiles.Count + "] Total File(s)";
+            } else
+            {
+
+                ItemLevelLabel.Content = "Selected [" + Entry.MainFiles.Count + "] " + StandardModpackCreator.GetNiceLevelName(entry.Level) + " File(s) - [" + Entry.AllFiles.Count + "] Total File(s)";
+            }
+
+            RemoveButton.Click += RemoveButton_Click;
+        }
+
+        private void RemoveButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (RemoveEntry != null)
+            {
+                RemoveEntry.Invoke(this, Entry);
+            }
         }
     }
 }

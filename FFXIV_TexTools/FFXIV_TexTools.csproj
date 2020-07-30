@@ -356,11 +356,17 @@
     <Compile Include="Views\ModPack\Standard\StandardModpackFilesReview.xaml.cs">
       <DependentUpon>StandardModpackFilesReview.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\ModPack\Standard\StandardModpackFinalize.xaml.cs">
+      <DependentUpon>StandardModpackFinalize.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\ModPack\Standard\StandardModpackLevelSelect.xaml.cs">
       <DependentUpon>StandardModpackLevelSelect.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ModPack\ImportModPackWizard.xaml.cs">
       <DependentUpon>ImportModPackWizard.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ModPack\Standard\StandardModpackSharedItems.xaml.cs">
+      <DependentUpon>StandardModpackSharedItems.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Textures\ImportTextureOptionsView.xaml.cs">
       <DependentUpon>ImportTextureOptionsView.xaml</DependentUpon>
@@ -505,11 +511,19 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\ModPack\Standard\StandardModpackFinalize.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\ModPack\Standard\StandardModpackLevelSelect.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\ModPack\ImportModPackWizard.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ModPack\Standard\StandardModpackSharedItems.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

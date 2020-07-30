@@ -63,14 +63,17 @@ namespace FFXIV_TexTools.Views.Controls
         // Fired when tree finishes loading.
         public event EventHandler ItemsLoaded;
 
-        // Fired whenever the selected item (actually) changes.
-        public event EventHandler ItemSelected;
+        // Fired whenever the selected item actually changes.  (NULLs and Duplicates are filtered out)
+        public event EventHandler<IItem> ItemSelected;
+
+        // Fired any time the UI selection event fires, regardless of the selection.
+        public event EventHandler<IItem> RawItemSelected;
 
         // Fired whenever the user clicks the confirmation, or double clicks an item.
-        public event EventHandler ItemConfirmed;
+        public event EventHandler<IItem> ItemConfirmed;
 
         // Fired whenever the search filter activates.
-        public event EventHandler FilterChanged;
+        public event EventHandler<string> FilterChanged;
 
         Timer SearchTimer;
         private ObservableCollection<ItemTreeElement> CategoryElements = new ObservableCollection<ItemTreeElement>();
@@ -426,13 +429,13 @@ namespace FFXIV_TexTools.Views.Controls
             if (!_READY) return;
             if (_SILENT) return;
 
-            var z = (e.OriginalSource);
-            // Nothing actually changed.
-            if (_selectedItem == e.NewValue)
-                return;
-
             var oldE = (ItemTreeElement)e.OldValue;
             var newE = (ItemTreeElement)e.NewValue;
+
+            if (RawItemSelected != null) {
+                RawItemSelected.Invoke(null, newE == null ? null : newE.Item);
+            }
+
             if (newE != null
              && _selectedItem == null && newE.Item == null)
             {
@@ -450,7 +453,7 @@ namespace FFXIV_TexTools.Views.Controls
             _selectedItem = newE.Item;
             if (ItemSelected != null)
             {
-                ItemSelected.Invoke(this, null);
+                ItemSelected.Invoke(this, _selectedItem);
             }
         }
 
@@ -502,11 +505,11 @@ namespace FFXIV_TexTools.Views.Controls
             }
             else
             {
-
+                // Item was not in the tree.
                 if (_selectedItem != item)
                 {
                     _selectedItem = item;
-                    ItemSelected.Invoke(this, null);
+                    ItemSelected.Invoke(this, _selectedItem);
                 }
 
             }
@@ -546,7 +549,7 @@ namespace FFXIV_TexTools.Views.Controls
 
                 if (FilterChanged != null)
                 {
-                    FilterChanged.Invoke(this, null);
+                    FilterChanged.Invoke(this, SearchBar.Text);
                 }
             });
         }
@@ -556,7 +559,7 @@ namespace FFXIV_TexTools.Views.Controls
             if (!_READY) return;
             if (SelectedItem != null && ItemConfirmed != null)
             {
-                ItemConfirmed.Invoke(this, null);
+                ItemConfirmed.Invoke(this, _selectedItem);
             }
         }
 

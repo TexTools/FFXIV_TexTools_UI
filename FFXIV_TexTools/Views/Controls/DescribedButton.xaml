@@ -10,8 +10,8 @@
             <RowDefinition Height="35"/>
             <RowDefinition Height="100"/>
         </Grid.RowDefinitions>
-        <Button x:Name="PrimaryButton" Content="{Binding ButtonText}" ToolTip="{Binding Tooltip}" Margin="40,5" Height="25"/>
-        <TextBlock x:Name="DescriptionBox" Margin="10" TextWrapping="Wrap" Text="{Binding DescriptionText}" Grid.Row="1" TextAlignment="Center"/>
+        <Button x:Name="PrimaryButton" Content="{Binding ButtonText}" ToolTip="{Binding Tooltip}" Margin="40,5" Height="25" Width="200"/>
+        <TextBlock x:Name="DescriptionBox" Margin="10,0,10,10" TextWrapping="Wrap" Text="{Binding DescriptionText}" Grid.Row="1" TextAlignment="Center"/>
 
     </Grid>
 </UserControl>

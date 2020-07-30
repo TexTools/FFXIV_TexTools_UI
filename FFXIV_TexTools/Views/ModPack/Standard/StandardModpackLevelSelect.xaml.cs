@@ -29,6 +29,9 @@ namespace FFXIV_TexTools.Views
         {
             _item = item;
             InitializeComponent();
+
+            ItemName.Content = _item.Name;
+
             EverythingButton.Click += EverythingButton_Click;
             ModelButton.Click += ModelButton_Click;
             MaterialButton.Click += MaterialButton_Click;
