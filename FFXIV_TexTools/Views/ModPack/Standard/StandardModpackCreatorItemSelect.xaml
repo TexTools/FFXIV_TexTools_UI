@@ -8,7 +8,7 @@
       d:DesignHeight="450" d:DesignWidth="800"
       Title="StandardModpackCreatorItemSelect">
 
-    <Grid>
+    <Grid x:Name="PrimaryGrid">
 
         <Grid.RowDefinitions>
             <RowDefinition Height="35"/>
@@ -19,7 +19,6 @@
             <ColumnDefinition Width="311*"/>
             <ColumnDefinition Width="481*"/>
         </Grid.ColumnDefinitions>
-        <controls:ItemSelectControl x:Name="ItemSelect" Width="Auto" MainMenuMode="False" Margin="0" Grid.RowSpan="3" Height="Auto"/>
         <Button x:Name="FinalReviewButton" Content="Final Review" Grid.Column="1" HorizontalAlignment="Right" Margin="0,5,20,5" Grid.Row="2" Width="150"/>
         <Label Content="Currently Added Items" Grid.Column="1" Margin="0" HorizontalAlignment="Center" VerticalAlignment="Center"/>
 

@@ -69,11 +69,9 @@ namespace FFXIV_TexTools
 
         private System.Timers.Timer _statusTimer;
 
-        private bool _uiLocked = false;
-
         public bool IsUiLocked
         {
-            get { return _uiLocked; }
+            get { return _lockProgressController != null; }
         }
 
         private IProgress<string> _lockProgress;
@@ -324,12 +322,17 @@ namespace FFXIV_TexTools
         }
 
         private SemaphoreSlim _lockScreenSemaphore = new SemaphoreSlim(1);
+
         public async Task LockUi(string title = "Loading", string msg = "Please Wait...", object caller = null)
         {
-            if (_uiLocked) return;
             await _lockScreenSemaphore.WaitAsync();
+            if (IsUiLocked)
+            {
 
-            _uiLocked = true;
+                _lockScreenSemaphore.Release();
+                return;
+            }
+
             _lockProgressController = await this.ShowProgressAsync(title, msg);
 
             _lockProgressController.SetIndeterminate();
@@ -349,10 +352,12 @@ namespace FFXIV_TexTools
 
         public async Task UnlockUi(object caller = null)
         {
-            if (!_uiLocked) return;
             await _lockScreenSemaphore.WaitAsync();
-
-            _uiLocked = false;
+            if (!IsUiLocked)
+            {
+                _lockScreenSemaphore.Release();
+                return;
+            }
 
             try
             {

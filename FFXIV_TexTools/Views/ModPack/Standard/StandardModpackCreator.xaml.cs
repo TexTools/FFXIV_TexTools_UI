@@ -7,17 +7,12 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Forms;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
+using MahApps.Metro;
+using MahApps.Metro.Controls.Dialogs;
 using xivModdingFramework.Cache;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Helpers;
@@ -32,11 +27,13 @@ namespace FFXIV_TexTools.Views
     /// <summary>
     /// Interaction logic for CompleteModpackCreator.xaml
     /// </summary>
-    public partial class StandardModpackCreator : Window
+    public partial class StandardModpackCreator
     {
 
         private static readonly Thickness _MARGIN = new Thickness(5);
 
+        ProgressDialogController _lockProgressController;
+        Progress<string> _lockProgress;
         private Page _page
         {
             get
@@ -73,16 +70,32 @@ namespace FFXIV_TexTools.Views
         public StandardModpackCreator()
         {
             ViewModel = new StandardModpackViewModel();
-            this.DataContext = ViewModel;
             InitializeComponent();
 
             ShowItemSelect();
+        }
+        public async Task LockUi(string title, string message, object requestor)
+        {
+            _lockProgressController = await this.ShowProgressAsync(title, message);
+
+            _lockProgressController.SetIndeterminate();
+
+            _lockProgress = new Progress<string>((update) =>
+            {
+                _lockProgressController.SetMessage(update);
+            });
+        }
+        public async Task UnlockUi(object requestor)
+        {
+            await _lockProgressController.CloseAsync();
+            _lockProgressController = null;
+            _lockProgress = null;
         }
 
         // Show initial page.
         private void ShowItemSelect()
         {
-            var homePage = new StandardModpackCreatorItemSelect(ViewModel);
+            var homePage = new StandardModpackCreatorItemSelect(this, ViewModel);
             homePage.ItemSelected += HomePage_ItemSelected;
             homePage.FinalizeRequested += HomePage_FinalizeRequested;
             _page = homePage;
@@ -91,6 +104,7 @@ namespace FFXIV_TexTools.Views
         // They selected an item (or pressed cancel)
         private void HomePage_ItemSelected(object sender, xivModdingFramework.Items.Interfaces.IItem e)
         {
+            // Get rid of the item select screen fully.
             if(e == null)
             {
                 // Cancel was pressed, exit.

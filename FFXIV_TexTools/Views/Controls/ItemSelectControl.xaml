@@ -14,7 +14,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" MinHeight="45"/>
             <RowDefinition/>
-            <RowDefinition Height="35"/>
+            <RowDefinition Height="36"/>
         </Grid.RowDefinitions>
 
         <TabControl x:Name="Tabs" Grid.Row="1" Margin="0" Background="{x:Null}">

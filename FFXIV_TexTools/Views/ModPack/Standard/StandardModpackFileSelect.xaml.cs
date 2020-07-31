@@ -77,11 +77,27 @@ namespace FFXIV_TexTools.Views
             FilesListBox.DisplayMemberPath = "DisplayName";
             FilesListBox.SelectedValuePath = "File";
             FilesListBox.SelectionMode = SelectionMode.Multiple;
+            NextButton.IsEnabled = false;
+
+            FilesListBox.SelectionChanged += FilesListBox_SelectionChanged;
 
             NextButton.Click += NextButton_Click;
             BackButton.Click += BackButton_Click;
 
             LoadItems();
+        }
+
+        private void FilesListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (FilesListBox.SelectedItems == null || FilesListBox.SelectedItems.Count == 0)
+            {
+                NextButton.IsEnabled = false;
+
+            }
+            else
+            {
+                NextButton.IsEnabled = true;
+            }
         }
 
         private async Task LoadItems()
