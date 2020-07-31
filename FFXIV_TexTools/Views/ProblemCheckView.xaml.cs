@@ -128,9 +128,6 @@ namespace FFXIV_TexTools.Views
 
             ProgressBar.Value = 0;
             ProgressLabel.Content = UIStrings.Done;
-
-            MainWindow.GetMainWindow().RefreshTree();
-
         }
 
         /// <summary>

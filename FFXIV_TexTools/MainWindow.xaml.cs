@@ -268,7 +268,7 @@ namespace FFXIV_TexTools
 
                     if (cacheOK)
                     {
-                        RefreshTree();
+                        await RefreshTree();
                     }
 
                     if(InitialLoadComplete != null)
@@ -423,7 +423,7 @@ namespace FFXIV_TexTools
         /// Triggers the MainWindow's thread to refresh the tree view.
         /// </summary>
         /// <param name="requestor"></param>
-        public void RefreshTree(object requestor = null)
+        public async Task RefreshTree(object requestor = null)
         {
             if (TreeRefreshing != null)
             {
@@ -431,7 +431,7 @@ namespace FFXIV_TexTools
                 TreeRefreshing.Invoke(requestor, null);
             }
 
-            ItemSelect.LoadItems();
+            await ItemSelect.LoadItems();
         }
 
         private void CheckForUpdates()
@@ -1039,7 +1039,7 @@ namespace FFXIV_TexTools
 
                 await UnlockUi();
 
-                MainWindow.GetMainWindow().RefreshTree(this);
+                await RefreshTree(this);
 
 
 
