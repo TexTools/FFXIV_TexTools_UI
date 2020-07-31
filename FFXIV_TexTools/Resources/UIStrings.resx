@@ -943,4 +943,16 @@ If you would like to enable this, first import a texture for the selected item.<
   <data name="Standard_Modpack" xml:space="preserve">
     <value>Standard Modpack</value>
   </data>
+  <data name="FileName" xml:space="preserve">
+    <value>File Name</value>
+  </data>
+  <data name="Inspect" xml:space="preserve">
+    <value>Inspect</value>
+  </data>
+  <data name="ItemPlural" xml:space="preserve">
+    <value>Item(s)</value>
+  </data>
+  <data name="Usage" xml:space="preserve">
+    <value>Usage</value>
+  </data>
 </root>

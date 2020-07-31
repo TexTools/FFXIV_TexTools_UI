@@ -774,6 +774,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to File Name.
+        /// </summary>
+        public static string FileName {
+            get {
+                return ResourceManager.GetString("FileName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Filter By:.
         /// </summary>
         public static string Filter_By_colon {
@@ -981,6 +990,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Inspect.
+        /// </summary>
+        public static string Inspect {
+            get {
+                return ResourceManager.GetString("Inspect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Iris Color.
         /// </summary>
         public static string Iris_Color {
@@ -1004,6 +1022,15 @@ namespace FFXIV_TexTools.Resources {
         public static string Item_List {
             get {
                 return ResourceManager.GetString("Item_List", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Item(s).
+        /// </summary>
+        public static string ItemPlural {
+            get {
+                return ResourceManager.GetString("ItemPlural", resourceCulture);
             }
         }
         
@@ -2425,6 +2452,15 @@ namespace FFXIV_TexTools.Resources {
         public static string Update_TEX {
             get {
                 return ResourceManager.GetString("Update_TEX", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Usage.
+        /// </summary>
+        public static string Usage {
+            get {
+                return ResourceManager.GetString("Usage", resourceCulture);
             }
         }
         

@@ -83,13 +83,13 @@
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
-                        <GridViewColumn Header="{Binding Source={x:Static resx:UIStrings.Name}}" DisplayMemberBinding="{Binding Name}" Width="250"/>
-                        <GridViewColumn Header="{Binding Source={x:Static resx:UIStrings.Map}}" DisplayMemberBinding="{Binding Map}" Width="100"/>
-                        <GridViewColumn Header="{Binding Source={x:Static resx:UIStrings.Race}}" DisplayMemberBinding="{Binding Race}" Width="180"/>
-                        <GridViewColumn Header="{Binding Source={x:Static resx:UIStrings.Type}}" DisplayMemberBinding="{Binding Type}" Width="50"/>
-                        <GridViewColumn Header="{Binding Source={x:Static resx:UIStrings.Num}}" DisplayMemberBinding="{Binding Num}" Width="50"/>
-                        <GridViewColumn Header="{Binding Source={x:Static resx:UIStrings.Part}}" DisplayMemberBinding="{Binding Part}" Width="50"/>
+                        <GridViewColumn Header="{Binding Source={x:Static resx:UIStrings.ItemPlural}}" DisplayMemberBinding="{Binding ItemName}"/>
+                        <GridViewColumn Header="{Binding Source={x:Static resx:UIStrings.FileName}}" DisplayMemberBinding="{Binding FileName}"/>
+                        <GridViewColumn Header="{Binding Source={x:Static resx:UIStrings.Race}}" DisplayMemberBinding="{Binding Race}"/>
+                        <GridViewColumn Header="{Binding Source={x:Static resx:UIStrings.Type}}" DisplayMemberBinding="{Binding Type}"/>
+                        <GridViewColumn Header="{Binding Source={x:Static resx:UIStrings.Material}}" DisplayMemberBinding="{Binding Material}"/>
                         <GridViewColumn Header="{Binding Source={x:Static resx:UIStrings.Active}}" DisplayMemberBinding="{Binding Active}"/>
+                        <GridViewColumn Header="{Binding Source={x:Static resx:UIStrings.Inspect}}" DisplayMemberBinding="{Binding Inspect}"/>
                     </GridView>
                 </ListView.View>
             </ListView>

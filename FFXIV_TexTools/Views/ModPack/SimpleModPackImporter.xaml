@@ -78,12 +78,11 @@
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
-                        <GridViewColumn Header="{Binding Source={x:Static resx:UIStrings.Name}}" DisplayMemberBinding="{Binding Name}"/>
-                        <GridViewColumn Header="{Binding Source={x:Static resx:UIStrings.Map}}" DisplayMemberBinding="{Binding Map}"/>
+                        <GridViewColumn Header="{Binding Source={x:Static resx:UIStrings.ItemPlural}}" DisplayMemberBinding="{Binding ItemName}"/>
+                        <GridViewColumn Header="{Binding Source={x:Static resx:UIStrings.FileName}}" DisplayMemberBinding="{Binding FileName}"/>
                         <GridViewColumn Header="{Binding Source={x:Static resx:UIStrings.Race}}" DisplayMemberBinding="{Binding Race}"/>
                         <GridViewColumn Header="{Binding Source={x:Static resx:UIStrings.Type}}" DisplayMemberBinding="{Binding Type}"/>
-                        <GridViewColumn Header="{Binding Source={x:Static resx:UIStrings.Num}}" DisplayMemberBinding="{Binding Num}"/>
-                        <GridViewColumn Header="{Binding Source={x:Static resx:UIStrings.Part}}" DisplayMemberBinding="{Binding Part}"/>
+                        <GridViewColumn Header="{Binding Source={x:Static resx:UIStrings.Material}}" DisplayMemberBinding="{Binding Material}"/>
                         <GridViewColumn Header="{Binding Source={x:Static resx:UIStrings.Active}}" DisplayMemberBinding="{Binding Active}"/>
                     </GridView>
                 </ListView.View>

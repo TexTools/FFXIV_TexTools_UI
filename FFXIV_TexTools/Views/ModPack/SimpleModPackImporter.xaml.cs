@@ -213,7 +213,7 @@ namespace FFXIV_TexTools.Views
 
                 var cv = (CollectionView)CollectionViewSource.GetDefaultView(ModListView.ItemsSource);
                 cv.SortDescriptions.Clear();
-                cv.SortDescriptions.Add(new SortDescription(nameof(SimpleModpackEntry.Name), _lastDirection));
+                cv.SortDescriptions.Add(new SortDescription(nameof(SimpleModpackEntry.ItemName), _lastDirection));
 
                 SelectedEntries.Clear();
                 long size = 0;
@@ -281,7 +281,7 @@ namespace FFXIV_TexTools.Views
 
                 var cv = (CollectionView)CollectionViewSource.GetDefaultView(ModListView.ItemsSource);
                 cv.SortDescriptions.Clear();
-                cv.SortDescriptions.Add(new SortDescription(nameof(SimpleModpackEntry.Name), _lastDirection));
+                cv.SortDescriptions.Add(new SortDescription(nameof(SimpleModpackEntry.ItemName), _lastDirection));
 
                 ModListView.SelectAll();
             });
