@@ -38,6 +38,7 @@ using xivModdingFramework.Items.DataContainers;
 using xivModdingFramework.Items.Interfaces;
 using xivModdingFramework.Materials.FileTypes;
 using xivModdingFramework.Models.FileTypes;
+using xivModdingFramework.Mods;
 using xivModdingFramework.Mods.DataContainers;
 using xivModdingFramework.SqPack.FileTypes;
 using xivModdingFramework.Textures.DataContainers;
@@ -228,7 +229,8 @@ namespace FFXIV_TexTools.Views
         /// </summary>
         private void FillModListTreeView()
         {
-            var modList = JsonConvert.DeserializeObject<ModList>(File.ReadAllText(_modListDirectory.FullName));
+            var modding = new Modding(_gameDirectory);
+            var modList = modding.GetModList();
 
             var Categories = new ObservableCollection<Category>();
 
@@ -595,7 +597,8 @@ namespace FFXIV_TexTools.Views
             CustomTextureTextBox.Text = string.Empty;
 
 
-            var modList = JsonConvert.DeserializeObject<ModList>(File.ReadAllText(_modListDirectory.FullName));
+            var modding = new Modding(_gameDirectory);
+            var modList = modding.GetModList();
 
             var modItems =
                 from mod in modList.Mods

@@ -45,6 +45,7 @@ using xivModdingFramework.SqPack.FileTypes;
 using Application = System.Windows.Application;
 using System.Threading;
 using xivModdingFramework.Cache;
+using ControlzEx.Standard;
 
 namespace FFXIV_TexTools
 {
@@ -68,11 +69,9 @@ namespace FFXIV_TexTools
 
         private System.Timers.Timer _statusTimer;
 
-        private bool _uiLocked = false;
-
         public bool IsUiLocked
         {
-            get { return _uiLocked; }
+            get { return _lockProgressController != null; }
         }
 
         private IProgress<string> _lockProgress;
@@ -269,7 +268,7 @@ namespace FFXIV_TexTools
 
                     if (cacheOK)
                     {
-                        RefreshTree();
+                        await RefreshTree();
                     }
 
                     if(InitialLoadComplete != null)
@@ -323,12 +322,17 @@ namespace FFXIV_TexTools
         }
 
         private SemaphoreSlim _lockScreenSemaphore = new SemaphoreSlim(1);
+
         public async Task LockUi(string title = "Loading", string msg = "Please Wait...", object caller = null)
         {
             await _lockScreenSemaphore.WaitAsync();
-            if (_uiLocked) return;
+            if (IsUiLocked)
+            {
 
-            _uiLocked = true;
+                _lockScreenSemaphore.Release();
+                return;
+            }
+
             _lockProgressController = await this.ShowProgressAsync(title, msg);
 
             _lockProgressController.SetIndeterminate();
@@ -349,9 +353,11 @@ namespace FFXIV_TexTools
         public async Task UnlockUi(object caller = null)
         {
             await _lockScreenSemaphore.WaitAsync();
-            if (!_uiLocked) return;
-
-            _uiLocked = false;
+            if (!IsUiLocked)
+            {
+                _lockScreenSemaphore.Release();
+                return;
+            }
 
             try
             {
@@ -417,7 +423,7 @@ namespace FFXIV_TexTools
         /// Triggers the MainWindow's thread to refresh the tree view.
         /// </summary>
         /// <param name="requestor"></param>
-        public void RefreshTree(object requestor = null)
+        public async Task RefreshTree(object requestor = null)
         {
             if (TreeRefreshing != null)
             {
@@ -425,7 +431,7 @@ namespace FFXIV_TexTools
                 TreeRefreshing.Invoke(requestor, null);
             }
 
-            ItemSelect.LoadItems();
+            await ItemSelect.LoadItems();
         }
 
         private void CheckForUpdates()
@@ -549,9 +555,9 @@ namespace FFXIV_TexTools
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void ItemSelect_ItemSelected(object sender, EventArgs e)
+        private void ItemSelect_ItemSelected(object sender, IItem item)
         {
-            UpdateViews(ItemSelect.SelectedItem);
+            UpdateViews(item);
         }
 
         /// <summary>
@@ -745,6 +751,12 @@ namespace FFXIV_TexTools
                     await this.ShowMessageAsync(UIMessages.ModPackCreationCompleteTitle, string.Format(UIMessages.ModPackCreationCompleteMessage, wizard.ModPackFileName));
                 }
             }
+        }
+        private async void Menu_MakeStandardModpack_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new StandardModpackCreator { Owner = this };
+            var result = dialog.ShowDialog();
+            
         }
 
         /// <summary>
@@ -1027,7 +1039,7 @@ namespace FFXIV_TexTools
 
                 await UnlockUi();
 
-                MainWindow.GetMainWindow().RefreshTree(this);
+                await RefreshTree(this);
 
 
 

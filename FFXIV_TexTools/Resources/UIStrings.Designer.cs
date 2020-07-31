@@ -2285,6 +2285,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Standard Modpack.
+        /// </summary>
+        public static string Standard_Modpack {
+            get {
+                return ResourceManager.GetString("Standard_Modpack", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Start Over.
         /// </summary>
         public static string Start_Over {

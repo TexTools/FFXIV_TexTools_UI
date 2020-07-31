@@ -35,6 +35,7 @@ using xivModdingFramework.Mods.DataContainers;
 using xivModdingFramework.SqPack.FileTypes;
 using Application = System.Windows.Application;
 using xivModdingFramework.Cache;
+using xivModdingFramework.Mods;
 
 namespace FFXIV_TexTools.Views
 {
@@ -127,9 +128,6 @@ namespace FFXIV_TexTools.Views
 
             ProgressBar.Value = 0;
             ProgressLabel.Content = UIStrings.Done;
-
-            MainWindow.GetMainWindow().RefreshTree();
-
         }
 
         /// <summary>
@@ -249,7 +247,8 @@ namespace FFXIV_TexTools.Views
 
             try
             {
-                modList = JsonConvert.DeserializeObject<ModList>(File.ReadAllText(modListDirectory.FullName));
+                var modding = new Modding(_gameDirectory);
+                modList = modding.GetModList();
 
                 // Someone somehow had their entire modlist filled with 0's causing the deserealization to 
                 // just return null so this was added to still detect that as a corrupted modlist

@@ -1,0 +1,19 @@
+﻿<UserControl x:Class="FFXIV_TexTools.Views.Controls.FileList"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:FFXIV_TexTools.Views.Controls"
+             mc:Ignorable="d" Height="403.125" Width="330.312">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="35"/>
+            <RowDefinition/>
+            <RowDefinition Height="35"/>
+        </Grid.RowDefinitions>
+        <Label x:Name="FilesLabel"  Margin="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontWeight="Bold" FontStyle="Italic" FontSize="14"/>
+        <ListBox x:Name="FileBox" Margin="0,0,0,0" Grid.Row="1" Background="{x:Null}" ItemsSource="{Binding FilesList}"/>
+        <Button x:Name="RemoveButton" Content="Remove File" Margin="0,5,5,5" Grid.Row="2" VerticalContentAlignment="Center" HorizontalAlignment="Right" Width="109"/>
+
+    </Grid>
+</UserControl>

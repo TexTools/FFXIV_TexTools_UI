@@ -39,17 +39,11 @@ namespace FFXIV_TexTools.Views.Controls
                 _mainMenuMode = value;
                 if (value)
                 {
-                    SelectItemLabel.Visibility = Visibility.Collapsed;
                     SelectButton.Visibility = Visibility.Collapsed;
-                    SearchBar.SetValue(Grid.ColumnSpanProperty, 2);
-                    SearchBar.SetValue(Grid.RowProperty, 0);
                     Tabs.SetValue(Grid.RowSpanProperty, 2);
                 } else
                 {
-                    SelectItemLabel.Visibility = Visibility.Visible;
                     SelectButton.Visibility = Visibility.Visible;
-                    SearchBar.SetValue(Grid.ColumnSpanProperty, 1);
-                    SearchBar.SetValue(Grid.RowProperty, 2);
                     Tabs.SetValue(Grid.RowSpanProperty, 1);
                 }
             }
@@ -69,14 +63,24 @@ namespace FFXIV_TexTools.Views.Controls
         // Fired when tree finishes loading.
         public event EventHandler ItemsLoaded;
 
-        // Fired whenever the selected item (actually) changes.
-        public event EventHandler ItemSelected;
+        // Fired whenever the selected item actually changes.  (NULLs and Duplicates are filtered out)
+        public event EventHandler<IItem> ItemSelected;
+
+        // Fired any time the UI selection event fires, regardless of the selection.
+        public event EventHandler<IItem> RawItemSelected;
 
         // Fired whenever the user clicks the confirmation, or double clicks an item.
-        public event EventHandler ItemConfirmed;
+        public event EventHandler<IItem> ItemConfirmed;
 
         // Fired whenever the search filter activates.
-        public event EventHandler FilterChanged;
+        public event EventHandler<string> FilterChanged;
+
+
+        // Expose our lock and unlock functions so sub-menus using us can replace them.
+        public Func<string, string, object, Task> LockUiFunction;
+        public Func<object, Task> UnlockUiFunction;
+
+        public Func<IItem, bool> ExtraSearchFunction;
 
         Timer SearchTimer;
         private ObservableCollection<ItemTreeElement> CategoryElements = new ObservableCollection<ItemTreeElement>();
@@ -105,6 +109,8 @@ namespace FFXIV_TexTools.Views.Controls
             DataContext = this;
             InitializeComponent();
 
+            LockUiFunction = MainWindow.GetMainWindow().LockUi;
+            UnlockUiFunction = MainWindow.GetMainWindow().UnlockUi;
 
             SelectButton.Click += SelectButton_Click;
             SearchBar.KeyDown += SearchBar_KeyDown;
@@ -123,7 +129,10 @@ namespace FFXIV_TexTools.Views.Controls
             {
                 // Async'ing this is fine, it'll load when it's done.
                 // All the other functions are safety checked on the _READY var.
-                LoadItems();
+                if (CategoryElements.Count == 0)
+                {
+                    LoadItems();
+                }
             }
         }
 
@@ -156,7 +165,7 @@ namespace FFXIV_TexTools.Views.Controls
                 var primaryType = kvPrimaryType.Key;
 
                 // Create the new node.
-                primaryTypeGroups.Add(primaryType, new ItemTreeElement(null, null, XivItemTypes.NiceNames[primaryType]));
+                primaryTypeGroups.Add(primaryType, new ItemTreeElement(null, null, XivItemTypes.NiceNames[primaryType], true));
 
                 // Add us to parent.
                 SetElements.Add(primaryTypeGroups[primaryType]);
@@ -171,7 +180,7 @@ namespace FFXIV_TexTools.Views.Controls
                     var primaryId = kvPrimaryId.Key;
 
                     // Create the new node.
-                    primaryIdGroups[primaryType].Add(primaryId, new ItemTreeElement(null, primaryTypeGroups[primaryType], XivItemTypes.GetSystemPrefix(primaryType) + primaryId.ToString().PadLeft(4, '0')));
+                    primaryIdGroups[primaryType].Add(primaryId, new ItemTreeElement(null, primaryTypeGroups[primaryType], XivItemTypes.GetSystemPrefix(primaryType) + primaryId.ToString().PadLeft(4, '0'), true));
 
                     // Add us to parent.
                     primaryTypeGroups[primaryType].Children.Add(primaryIdGroups[primaryType][primaryId]);
@@ -187,7 +196,7 @@ namespace FFXIV_TexTools.Views.Controls
                         if (secondaryType != XivItemType.none)
                         {
                             // Create the new node.
-                            secondaryTypeGroups[primaryType][primaryId].Add(secondaryType, new ItemTreeElement(null, primaryIdGroups[primaryType][primaryId], XivItemTypes.NiceNames[secondaryType]));
+                            secondaryTypeGroups[primaryType][primaryId].Add(secondaryType, new ItemTreeElement(null, primaryIdGroups[primaryType][primaryId], XivItemTypes.NiceNames[secondaryType], true));
 
                             // Add us to parent.
                             primaryIdGroups[primaryType][primaryId].Children.Add(secondaryTypeGroups[primaryType][primaryId][secondaryType]);
@@ -203,7 +212,7 @@ namespace FFXIV_TexTools.Views.Controls
                             if (secondaryType != XivItemType.none)
                             {
                                 // Create the new node.
-                                secondaryIdGroups[primaryType][primaryId][secondaryType].Add(secondaryId, new ItemTreeElement(null, secondaryTypeGroups[primaryType][primaryId][secondaryType], XivItemTypes.GetSystemPrefix(secondaryType) + secondaryId.ToString().PadLeft(4, '0')));
+                                secondaryIdGroups[primaryType][primaryId][secondaryType].Add(secondaryId, new ItemTreeElement(null, secondaryTypeGroups[primaryType][primaryId][secondaryType], XivItemTypes.GetSystemPrefix(secondaryType) + secondaryId.ToString().PadLeft(4, '0'), true));
 
                                 // Add us to parent.
                                 secondaryTypeGroups[primaryType][primaryId][secondaryType].Children.Add(secondaryIdGroups[primaryType][primaryId][secondaryType][secondaryId]);
@@ -348,79 +357,99 @@ namespace FFXIV_TexTools.Views.Controls
                 SearchTimer.Dispose();
                 ClearSelection();
             }
-            await MainWindow.GetMainWindow().LockUi("Loading Item List");
 
-            CategoryElements = new ObservableCollection<ItemTreeElement>();
-            SetElements = new ObservableCollection<ItemTreeElement>();
-            DependencyRootNodes = new Dictionary<string, ItemTreeElement>();
-
-            CategoryTree.ItemsSource = CategoryElements;
-            SetTree.ItemsSource = SetElements;
-
-            try
+            if (LockUiFunction != null)
             {
-                // Gotta build set tree first, so the items from the item list can latch onto the nodes there.
-                BuildSetTree(); 
-                await BuildCategoryTree();
-            } catch(Exception ex)
-            {
-                FlexibleMessageBox.Show("An error occurred while loading the item list.\n" + ex.Message, "Item List Error", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning);
-                return;
+                await LockUiFunction("Loading Item List", "Please wait...", this);
             }
 
 
-            var toAdd = new List<(ItemTreeElement parent, ItemTreeElement child)>();
-            foreach (var kv in DependencyRootNodes)
+            // Pump us into another thread so the UI stays nice and fresh.
+            await Task.Run(async () =>
             {
-                // This dependency root had no EXD-Items associated with it.
-                // Gotta make a generic item for it.
-                if (kv.Value.Children.Count == 0)
+                CategoryElements = new ObservableCollection<ItemTreeElement>();
+                SetElements = new ObservableCollection<ItemTreeElement>();
+                DependencyRootNodes = new Dictionary<string, ItemTreeElement>();
+
+                try
                 {
-                    // See if we can actually turn this root into a fully fledged item.
-                    try
-                    {
-                        var root = await XivCache.GetFirstRoot(kv.Key);
-                        if (root != null)
-                        {
-                            // If we can, add it into the list.
-                            var item = root.ToRawItem();
-                            var e = new ItemTreeElement(null, kv.Value, item);
-                            toAdd.Add((kv.Value, e));
-                        } else
-                        {
-                            var e = new ItemTreeElement(null, kv.Value, "[Unsupported]");
-                            toAdd.Add((kv.Value, e));
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        throw;
-                    }
-
+                    // Gotta build set tree first, so the items from the item list can latch onto the nodes there.
+                    BuildSetTree();
+                    await BuildCategoryTree();
                 }
-            }
-
-            // Loop back through to add the new items, so we're not affecting the previous iteration.
-            foreach(var tup in toAdd)
-            {
-                tup.parent.Children.Add(tup.child);
-            }
+                catch (Exception ex)
+                {
+                    FlexibleMessageBox.Show("An error occurred while loading the item list.\n" + ex.Message, "Item List Error", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning);
+                    return;
+                }
 
 
+                var toAdd = new List<(ItemTreeElement parent, ItemTreeElement child)>();
+                foreach (var kv in DependencyRootNodes)
+                {
+                    // This dependency root had no EXD-Items associated with it.
+                    // Gotta make a generic item for it.
+                    if (kv.Value.Children.Count == 0)
+                    {
+                        // See if we can actually turn this root into a fully fledged item.
+                        try
+                        {
+                            var root = await XivCache.GetFirstRoot(kv.Key);
+                            if (root != null)
+                            {
+                                // If we can, add it into the list.
+                                var item = root.ToRawItem();
+                                var e = new ItemTreeElement(null, kv.Value, item);
+                                toAdd.Add((kv.Value, e));
+                            }
+                            else
+                            {
+                                var e = new ItemTreeElement(null, kv.Value, "[Unsupported]");
+                                toAdd.Add((kv.Value, e));
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            throw;
+                        }
+
+                    }
+                }
+
+                // Loop back through to add the new items, so we're not affecting the previous iteration.
+                foreach (var tup in toAdd)
+                {
+                    tup.parent.Children.Add(tup.child);
+                }
+
+
+
+
+
+            });
 
             var view = (CollectionView)CollectionViewSource.GetDefaultView(CategoryElements);
-            view.Filter = SearchFilterCat;
+            view.Filter = SearchFilter;
 
 
             view = (CollectionView)CollectionViewSource.GetDefaultView(SetElements);
-            view.Filter = SearchFilterSet;
+            view.Filter = SearchFilter;
 
             SearchTimer = new Timer(300);
             SearchTimer.Elapsed += Search;
 
+            CategoryTree.ItemsSource = CategoryElements;
+            SetTree.ItemsSource = SetElements;
+
             _READY = true;
 
-            await MainWindow.GetMainWindow().UnlockUi();
+            Search(this, null);
+
+            if (UnlockUiFunction != null)
+            {
+                await UnlockUiFunction(this);
+            }
+
             if (ItemsLoaded != null)
             {
                 ItemsLoaded.Invoke(this, null);
@@ -432,13 +461,13 @@ namespace FFXIV_TexTools.Views.Controls
             if (!_READY) return;
             if (_SILENT) return;
 
-            var z = (e.OriginalSource);
-            // Nothing actually changed.
-            if (_selectedItem == e.NewValue)
-                return;
-
             var oldE = (ItemTreeElement)e.OldValue;
             var newE = (ItemTreeElement)e.NewValue;
+
+            if (RawItemSelected != null) {
+                RawItemSelected.Invoke(null, newE == null ? null : newE.Item);
+            }
+
             if (newE != null
              && _selectedItem == null && newE.Item == null)
             {
@@ -454,7 +483,10 @@ namespace FFXIV_TexTools.Views.Controls
             if (_selectedItem == newE.Item) return;
 
             _selectedItem = newE.Item;
-            ItemSelected.Invoke(this, null);
+            if (ItemSelected != null)
+            {
+                ItemSelected.Invoke(this, _selectedItem);
+            }
         }
 
         private ItemTreeElement FindElement(IItem item, ObservableCollection<ItemTreeElement> elements = null) {
@@ -505,11 +537,11 @@ namespace FFXIV_TexTools.Views.Controls
             }
             else
             {
-
+                // Item was not in the tree.
                 if (_selectedItem != item)
                 {
                     _selectedItem = item;
-                    ItemSelected.Invoke(this, null);
+                    ItemSelected.Invoke(this, _selectedItem);
                 }
 
             }
@@ -549,7 +581,7 @@ namespace FFXIV_TexTools.Views.Controls
 
                 if (FilterChanged != null)
                 {
-                    FilterChanged.Invoke(this, null);
+                    FilterChanged.Invoke(this, SearchBar.Text);
                 }
             });
         }
@@ -557,9 +589,9 @@ namespace FFXIV_TexTools.Views.Controls
         private void AcceptSelection()
         {
             if (!_READY) return;
-            if (ItemSelected != null)
+            if (SelectedItem != null && ItemConfirmed != null)
             {
-                ItemConfirmed.Invoke(this, null);
+                ItemConfirmed.Invoke(this, _selectedItem);
             }
         }
 
@@ -598,7 +630,7 @@ namespace FFXIV_TexTools.Views.Controls
             return true;
         }
 
-        private bool SearchFilterSet(object o)
+        private bool SearchFilter(object o)
         {
             if (!_READY) return true;
 
@@ -616,9 +648,9 @@ namespace FFXIV_TexTools.Views.Controls
             if (e.Children.Count > 0)
             {
                 var subItems = (CollectionView)CollectionViewSource.GetDefaultView((e).Children);
-                e.IsExpanded = !string.IsNullOrEmpty(SearchBar.Text);
 
-                if (iMatch)
+                e.IsExpanded = !string.IsNullOrEmpty(SearchBar.Text);
+                if (e.Searchable && iMatch)
                 {
                     // If the actual group name matches the typed in name, include everything in that group.
                     // This is only allowed in the set menu, as there's some pretty generic words used in the
@@ -628,37 +660,17 @@ namespace FFXIV_TexTools.Views.Controls
                 }
                 else
                 {
-                    subItems.Filter = SearchFilterSet;
+                    subItems.Filter = SearchFilter;
                     return !subItems.IsEmpty;
                 }
             }
-
-
-            return iMatch;
-        }
-        private bool SearchFilterCat(object o)
-        {
-            if (!_READY) return true;
-
-            var e = (ItemTreeElement)o;
-            var groups = SearchBar.Text.Split('|');
-            var iMatch = false;
-
-            foreach (var group in groups)
+            else if(e.Item != null)
             {
-                var searchTerms = group.Split(' ');
-                bool match = searchTerms.All(term => e.DisplayName.ToLower().Contains(term.Trim().ToLower()));
-                iMatch = iMatch || match;
-            }
-
-
-            if (e.Children.Count > 0)
-            {
-                var subItems = (CollectionView)CollectionViewSource.GetDefaultView((e).Children);
-                e.IsExpanded = !string.IsNullOrEmpty(SearchBar.Text);
-
-                subItems.Filter = SearchFilterCat;
-                return !subItems.IsEmpty;
+                if(ExtraSearchFunction != null)
+                {
+                    // If we have an extra search criteria supplied by an outside function, it has to pass that, too.
+                    iMatch = ExtraSearchFunction(e.Item) && iMatch;
+                }
             }
 
 
@@ -730,11 +742,12 @@ namespace FFXIV_TexTools.Views.Controls
         /// </summary>
         /// <param name="name"></param>
         /// <param name="children"></param>
-        public ItemTreeElement(ItemTreeElement itemParent, ItemTreeElement depencencyParent, string name)
+        public ItemTreeElement(ItemTreeElement itemParent, ItemTreeElement depencencyParent, string name, bool searchable = false)
         {
             CategoryParent = itemParent;
             SetParent = depencencyParent;
             _backupName = name;
+            Searchable = searchable;
             Children = new ObservableCollection<ItemTreeElement>();
         }
 
@@ -743,16 +756,19 @@ namespace FFXIV_TexTools.Views.Controls
         /// Constructor for an actual valid item.
         /// </summary>
         /// <param name="i"></param>
-        public ItemTreeElement(ItemTreeElement itemParent, ItemTreeElement depencencyParent, IItem i)
+        public ItemTreeElement(ItemTreeElement itemParent, ItemTreeElement depencencyParent, IItem i, bool searchable = true)
         {
             CategoryParent = itemParent;
             SetParent = depencencyParent;
             Item = i;
+            Searchable = searchable;
             Children = new ObservableCollection<ItemTreeElement>();
         }
 
         private string _backupName;
 
+
+        public readonly bool Searchable;
 
         public string DisplayName
         {

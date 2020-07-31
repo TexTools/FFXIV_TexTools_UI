@@ -298,6 +298,7 @@
     <Compile Include="ViewModels\ModelViewModel.cs" />
     <Compile Include="ViewModels\ModListViewModel.cs" />
     <Compile Include="ViewModels\SharedItemsViewModel.cs" />
+    <Compile Include="ViewModels\StandardModpackViewModel.cs" />
     <Compile Include="ViewModels\TextureViewModel.cs" />
     <Compile Include="ViewModels\Viewport3DViewModel.cs" />
     <Compile Include="Views\AboutView.xaml.cs">
@@ -306,6 +307,12 @@
     <Compile Include="Views\AutoCompleteEntry.cs" />
     <Compile Include="Views\AutoCompleteTextBox.xaml.cs">
       <DependentUpon>AutoCompleteTextBox.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\DescribedButton.xaml.cs">
+      <DependentUpon>DescribedButton.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\FileList.xaml.cs">
+      <DependentUpon>FileList.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Controls\ItemSelectControl.xaml.cs">
       <DependentUpon>ItemSelectControl.xaml</DependentUpon>
@@ -334,8 +341,32 @@
     <Compile Include="Views\Models\ModelInspector.xaml.cs">
       <DependentUpon>ModelInspector.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\ModPack\Standard\StandardModpackCreatorItemSelect.xaml.cs">
+      <DependentUpon>StandardModpackCreatorItemSelect.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ModPack\Standard\StandardModpackEntryControl.xaml.cs">
+      <DependentUpon>StandardModpackEntryControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ModPack\Standard\StandardModpackCreator.xaml.cs">
+      <DependentUpon>StandardModpackCreator.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ModPack\Standard\StandardModpackFileSelect.xaml.cs">
+      <DependentUpon>StandardModpackFileSelect.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ModPack\Standard\StandardModpackFilesReview.xaml.cs">
+      <DependentUpon>StandardModpackFilesReview.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ModPack\Standard\StandardModpackFinalize.xaml.cs">
+      <DependentUpon>StandardModpackFinalize.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ModPack\Standard\StandardModpackLevelSelect.xaml.cs">
+      <DependentUpon>StandardModpackLevelSelect.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\ModPack\ImportModPackWizard.xaml.cs">
       <DependentUpon>ImportModPackWizard.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ModPack\Standard\StandardModpackSharedItems.xaml.cs">
+      <DependentUpon>StandardModpackSharedItems.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Textures\ImportTextureOptionsView.xaml.cs">
       <DependentUpon>ImportTextureOptionsView.xaml</DependentUpon>
@@ -416,9 +447,17 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Controls\ItemSelectControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
+    <Page Include="Views\Controls\DescribedButton.xaml">
       <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Controls\FileList.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Controls\ItemSelectControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\CustomizeSettingsView.xaml">
       <SubType>Designer</SubType>
@@ -452,7 +491,39 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\ModPack\Standard\StandardModpackCreatorItemSelect.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ModPack\Standard\StandardModpackEntryControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ModPack\Standard\StandardModpackCreator.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ModPack\Standard\StandardModpackFileSelect.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ModPack\Standard\StandardModpackFilesReview.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ModPack\Standard\StandardModpackFinalize.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ModPack\Standard\StandardModpackLevelSelect.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\ModPack\ImportModPackWizard.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ModPack\Standard\StandardModpackSharedItems.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

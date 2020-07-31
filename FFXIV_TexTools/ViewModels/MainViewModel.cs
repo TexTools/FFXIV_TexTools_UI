@@ -148,6 +148,10 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         private async Task<bool> CheckForOldModList()
         {
+            // This code probably needs to go soon.
+            // Textools sub 2.0 hasn't worked since before Shadowbringers, and this code was always super buggy
+            // to start with.
+
             var oldModListFileDirectory =
                 new DirectoryInfo(
                     $"{Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)}/TexTools/TexTools.modlist");
