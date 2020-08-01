@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -99,14 +100,14 @@ namespace xivModdingFramework.Mods.DataContainers
         /// </summary>
         public bool IsSelected {
             get {
-                if(_creatorView != null)
+                if (_creatorView != null)
                 {
                     return _creatorView.SelectedMods.Contains(Index);
                 } else
                 {
                     return _importerView.SelectedEntries.Contains(Index);
                 }
-            } 
+            }
             set
             {
                 if (_creatorView != null)
@@ -114,7 +115,7 @@ namespace xivModdingFramework.Mods.DataContainers
                     if (value)
                     {
                         var result = _creatorView.SelectedMods.Add(Index);
-                        if(result)
+                        if (result)
                         {
                             _creatorView.ModpackSize += Mod.data.modSize;
                         }
@@ -156,14 +157,17 @@ namespace xivModdingFramework.Mods.DataContainers
         /// </summary>
         public string ItemName { get
             {
+                var name = "";
                 if (Mod == null)
                 {
-                    return Json.Name;
+                    name = Json.Name;
                 }
                 else
                 {
-                    return Mod.name;
+                    name = Mod.name;
                 }
+
+                return GetFancyName(name, FileName);
             }
         }
 
@@ -189,12 +193,12 @@ namespace xivModdingFramework.Mods.DataContainers
         {
             get
             {
-                if(_creatorView != null)
+                if (_creatorView != null)
                 {
-                    if(_creatorView.ParentsDictionary != null && _creatorView.ParentsDictionary.ContainsKey(FilePath))
+                    if (_creatorView.ParentsDictionary != null && _creatorView.ParentsDictionary.ContainsKey(FilePath))
                     {
                         var parents = _creatorView.ParentsDictionary[FilePath];
-                        if(parents.Count > 0)
+                        if (parents.Count > 0)
                         {
                             // TOOD - Need to choose same-root parent when multiple parents are present.
                             return parents[0];
@@ -235,10 +239,10 @@ namespace xivModdingFramework.Mods.DataContainers
         {
             get
             {
-                if(Extension == "tex" )
+                if (Extension == "tex")
                 {
                     var parent = ParentFilePath;
-                    if(parent != null)
+                    if (parent != null)
                     {
                         // We have an associated MTRL file.
                         return GetMaterialId(parent);
@@ -246,9 +250,9 @@ namespace xivModdingFramework.Mods.DataContainers
                     {
                         // A null parent means we are either orphaned,
                         // still processing, or not a dependency enabled file.
-                        return "Unknown";
+                        return "-";
                     }
-                } else if(Extension == "mtrl")
+                } else if (Extension == "mtrl")
                 {
                     // We are an MTRL file.
                     return GetMaterialId(FilePath);
@@ -266,11 +270,36 @@ namespace xivModdingFramework.Mods.DataContainers
         {
             get
             {
-                // TODO - Race can always be determined from
-                // the model or material file path.  If our parent
-                // is one of those, use that, otherwise, use 
-                // the personal file path.
-                return GetRace(FilePath).GetDisplayName();
+                var race = XivRace.All_Races;
+                if (Extension == "tex")
+                {
+                    var parent = ParentFilePath;
+                    if (parent != null)
+                    {
+                        // We have an associated MTRL file.
+                        race = GetRace(parent);
+                    }
+                    else
+                    {
+                        // We have no associated MTRL file, hopefully Race Data is available in our own path.
+                        // (Race data is indeterminable for orphaned custom file path textures)
+                        race = GetRace(FilePath);
+                    }
+                }
+                else
+                {
+                    // Everything else either has Race Data in its own path, or is all races.
+                    race = GetRace(FilePath);
+                }
+
+
+                if (race == XivRace.All_Races)
+                {
+                    return "-";
+                } else
+                {
+                    return race.GetDisplayName();
+                }
             }
         }
 
@@ -282,6 +311,17 @@ namespace xivModdingFramework.Mods.DataContainers
             return await _importerView._modding.IsModEnabled(Json.FullPath, false);
         }
 
+        public string ActiveText
+        {
+            get {
+                if (Active) {
+                    return "Active";
+                } else
+                {
+                    return "-";
+                }
+            }
+        }
         public bool Active
         {
             get
@@ -337,40 +377,88 @@ namespace xivModdingFramework.Mods.DataContainers
             return FileName.CompareTo(obj.ItemName);
         }
 
+        private static readonly Regex _extractRaceRegex = new Regex(".*c([0-9]{4})");
+
         /// <summary>
         /// Gets the race from the path
         /// </summary>
         /// <param name="modPath">The mod path</param>
         /// <returns>The race as XivRace</returns>
-        private static XivRace GetRace(string modPath)
+        public static XivRace GetRace(string modPath)
         {
+            // I'm 99% sure we have another function somewhere that already does this, but whatever.
+            var match = _extractRaceRegex.Match(modPath);
+            if(match.Success)
+            {
+                return XivRaces.GetXivRace(match.Groups[1].Value);
+            }
             return XivRace.All_Races;
         }
 
 
         // This is the old ""Number"" field TexTools used to expose.
         // It's actually just the secondary ID for everything but Demihumans.
-        private static readonly Regex _extractSecondaryId = new Regex("(?:f|z|b|h|t)([0-9]{4})");
-        private static readonly Regex _demiHumanSecondaryId = new Regex("d(?:[0-9]{4}).*e([0-9]{4})");
+        private static readonly Regex _extractSecondaryId = new Regex("(?:c[0-9]{4}).*(?:f|z|b|h|t)([0-9]{4})");
+        private static readonly Regex _extractSlot = new Regex("_([a-z]{3})[_\\.]");
+
+        public static string GetFancyName(string itemName, string internalPath, string slotPath = null)
+        {
+            var id = GetFancyNameId(internalPath);
+            var name = itemName;
+            if(id != null)
+            {
+                name += " - " + id;
+
+
+                var suffix = Path.GetExtension(internalPath);
+                if (string.IsNullOrEmpty(suffix))
+                {
+                    suffix = "Unknown";
+                }
+                else
+                {
+                    suffix = suffix.Substring(1);
+                }
+
+                if (suffix == "mtrl" || suffix == "tex")
+                {
+                    // So if we have an ID # to display, we're one of the funny "Character" subtype items
+                    // where we bash the actual identifiers and list them all as just "Face" or "Tail", etc.
+                    // This means we also need to scrape the slot information.
+                    slotPath = slotPath != null ? slotPath : internalPath;
+
+                    var match = _extractSlot.Match(slotPath);
+                    if (match.Success)
+                    {
+                        var niceSlotName = Mdl.SlotAbbreviationDictionary.FirstOrDefault(x => x.Value == match.Groups[1].Value).Key;
+                        if (String.IsNullOrEmpty(niceSlotName))
+                        {
+                            niceSlotName = match.Groups[1].Value;
+                        }
+
+                        name += " - " + niceSlotName;
+                    }
+                }
+
+
+            }
+            return name;
+        }
 
         /// <summary>
-        /// Gets the secondary ID for the path.
+        /// Gets the Secondary Id for the path; at least for the cases where we use
+        /// non-unique Item Names, like Faces, Tails, etc.
         /// </summary>
         /// <param name="modPath">The mod path</param>
         /// <returns>The number</returns>
-        public static string GetSecondaryId(string modPath)
+        public static string GetFancyNameId(string modPath)
         {
             var match = _extractSecondaryId.Match(modPath);
             if(match.Success)
             {
                 return match.Groups[1].Value;
             }
-            match = _demiHumanSecondaryId.Match(modPath);
-            if (match.Success)
-            {
-                return match.Groups[1].Value;
-            }
-            return "-";
+            return null;
         }
 
         /// <summary>
@@ -380,7 +468,12 @@ namespace xivModdingFramework.Mods.DataContainers
         /// <returns>The type</returns>
         public static string GetType(string modPath)
         {
-            var ext = Path.GetExtension(modPath).Substring(1);
+            var exRaw = Path.GetExtension(modPath);
+            if(string.IsNullOrEmpty(exRaw))
+            {
+                return "Unknown";
+            }
+            var ext = exRaw.Substring(1);
             if(ext == "mdl")
             {
                 return "Model";

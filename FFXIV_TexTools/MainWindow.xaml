@@ -44,8 +44,8 @@
             <MenuItem Header="{Binding Source={x:Static resx:UIStrings.Mods}}">
                 <MenuItem x:Name="Menu_ModList" Header="{Binding Source={x:Static resx:UIStrings.Mod_List}}" Click="Menu_ModList_Click"/>
                 <MenuItem x:Name="Menu_CreateModPack" Header="{Binding Source={x:Static resx:UIStrings.Create_Modpack}}">
-                    <MenuItem x:Name="Menu_MakeStandardModpack" Header="{Binding Source={x:Static resx:UIStrings.Standard_Modpack}}" Click="Menu_MakeStandardModpack_Click"/>
                     <MenuItem x:Name="Menu_MakeModpackWizard" Header="{Binding Source={x:Static resx:UIStrings.ModPack_Wizard}}" Click="Menu_MakeModpackWizard_Click"/>
+                    <MenuItem x:Name="Menu_MakeStandardModpack" Header="{Binding Source={x:Static resx:UIStrings.Standard_Modpack}}" Click="Menu_MakeStandardModpack_Click"/>
                     <MenuItem x:Name="Menu_MakeSimpleModpack" Header="{Binding Source={x:Static resx:UIStrings.Simple_ModPack}}" Click="Menu_MakeSimpleModpack_Click"/>
                 </MenuItem>
                 <MenuItem x:Name="Menu_ImportModpack" Header="{Binding Source={x:Static resx:UIStrings.Import_ModPacks}}" Click="Menu_ImportModpack_Click"/>

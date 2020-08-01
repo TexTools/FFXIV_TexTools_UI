@@ -190,6 +190,11 @@ namespace FFXIV_TexTools
 
             if (args != null && args.Length > 0)
             {
+                // Just do a hard synchronous cache initialization for import only mode.
+                var gameDir = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
+                var lang = XivLanguages.GetXivLanguage(Properties.Settings.Default.Application_Language);
+                XivCache.SetGameInfo(gameDir, lang);
+
                 _startupArgs = args[0];
                 OnlyImport();
             }

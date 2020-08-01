@@ -1458,7 +1458,7 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ModPack Wizard.
+        ///   Looks up a localized string similar to Advanced Modpack.
         /// </summary>
         public static string ModPack_Wizard {
             get {
@@ -2222,7 +2222,7 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Simple ModPack.
+        ///   Looks up a localized string similar to Basic Modpack.
         /// </summary>
         public static string Simple_ModPack {
             get {
@@ -2231,7 +2231,7 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Simple ModPack Creator.
+        ///   Looks up a localized string similar to Basic Modpack Creator.
         /// </summary>
         public static string Simple_ModPack_Creator {
             get {
@@ -2240,7 +2240,7 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Simple ModPack Importer.
+        ///   Looks up a localized string similar to Basic Modpack Importer.
         /// </summary>
         public static string Simple_ModPack_Importer {
             get {

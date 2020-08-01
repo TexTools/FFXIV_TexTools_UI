@@ -82,8 +82,7 @@
                         <GridViewColumn Header="{Binding Source={x:Static resx:UIStrings.FileName}}" DisplayMemberBinding="{Binding FileName}"/>
                         <GridViewColumn Header="{Binding Source={x:Static resx:UIStrings.Race}}" DisplayMemberBinding="{Binding Race}"/>
                         <GridViewColumn Header="{Binding Source={x:Static resx:UIStrings.Type}}" DisplayMemberBinding="{Binding Type}"/>
-                        <GridViewColumn Header="{Binding Source={x:Static resx:UIStrings.Material}}" DisplayMemberBinding="{Binding Material}"/>
-                        <GridViewColumn Header="{Binding Source={x:Static resx:UIStrings.Active}}" DisplayMemberBinding="{Binding Active}"/>
+                        <GridViewColumn Header="{Binding Source={x:Static resx:UIStrings.Active}}" DisplayMemberBinding="{Binding ActiveText}"/>
                     </GridView>
                 </ListView.View>
             </ListView>

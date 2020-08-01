@@ -187,7 +187,7 @@
     <value>Model ID</value>
   </data>
   <data name="ModPack_Wizard" xml:space="preserve">
-    <value>ModPack Wizard</value>
+    <value>Advanced Modpack</value>
   </data>
   <data name="Mods" xml:space="preserve">
     <value>Mods</value>
@@ -223,7 +223,7 @@
     <value>Select Language</value>
   </data>
   <data name="Simple_ModPack" xml:space="preserve">
-    <value>Simple ModPack</value>
+    <value>Basic Modpack</value>
   </data>
   <data name="Texture" xml:space="preserve">
     <value>Texture</value>
@@ -550,7 +550,7 @@
     <value>Shapes</value>
   </data>
   <data name="Simple_ModPack_Creator" xml:space="preserve">
-    <value>Simple ModPack Creator</value>
+    <value>Basic Modpack Creator</value>
   </data>
   <data name="Size_colon" xml:space="preserve">
     <value>Size:</value>
@@ -697,7 +697,7 @@
     <value>Select Mod</value>
   </data>
   <data name="Simple_ModPack_Importer" xml:space="preserve">
-    <value>Simple ModPack Importer</value>
+    <value>Basic Modpack Importer</value>
   </data>
   <data name="Single_Selection" xml:space="preserve">
     <value>Single-Selection</value>

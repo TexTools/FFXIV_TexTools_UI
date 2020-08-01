@@ -117,15 +117,15 @@ namespace FFXIV_TexTools.Views
                 var url = IOUtil.ValidateUrl(ModPackUrl.Text);
                 if (url != null)
                 {
-                    ModPackVersion.Text = url;
+                    ModPackUrl.Text = url;
                 }
                 else
                 {
-                    ModPackVersion.Text = "";
+                    ModPackUrl.Text = "";
                 }
             } else
             {
-                ModPackVersion.Text = "";
+                ModPackUrl.Text = "";
             }
 
 

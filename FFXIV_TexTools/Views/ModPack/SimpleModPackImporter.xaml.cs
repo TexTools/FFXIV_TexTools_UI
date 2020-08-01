@@ -31,6 +31,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Forms;
 using System.Windows.Media;
+using xivModdingFramework.Cache;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Mods;
 using xivModdingFramework.Mods.DataContainers;
@@ -205,6 +206,20 @@ namespace FFXIV_TexTools.Views
 
                     JsonEntries.Add(jsonItem);
                     Entries.Add(new SimpleModpackEntry(JsonEntries.Count - 1, this));
+                }
+
+                if (String.IsNullOrEmpty(modPackJson.MinimumFrameworkVersion))
+                {
+                    Version ver;
+                    bool success = Version.TryParse(modPackJson.MinimumFrameworkVersion, out ver);
+                    if(success)
+                    {
+                        var frameworkVersion = typeof(XivCache).Assembly.GetName().Version;
+                        if (ver > frameworkVersion)
+                        {
+                            throw new NotSupportedException("This modpack requires a more recent TexTools version to install.");
+                        }
+                    }
                 }
 
                 ModPackName.Content = modPackJson.Name;

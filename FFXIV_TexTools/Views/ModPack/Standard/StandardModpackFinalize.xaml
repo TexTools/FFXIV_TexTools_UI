@@ -44,8 +44,8 @@
         
         <Label Grid.Column="1" Content="Create As:" VerticalAlignment="Center" Grid.Row="5" Margin="5" HorizontalContentAlignment="Right"/>
         <ComboBox x:Name="ModPackType" Grid.Column="2" Grid.Row="5" Margin="5" SelectedIndex="0" IsEnabled="False">
-            <ComboBoxItem Content="Basic Modpack"/>
-            <ComboBoxItem Content="Advanced Modpack"/>
+            <ComboBoxItem Content="{Binding Source={x:Static resx:UIStrings.Simple_ModPack}}"/>
+            <ComboBoxItem Content="{Binding Source={x:Static resx:UIStrings.ModPack_Wizard}}"/>
         </ComboBox>
 
         <TextBox x:Name="ModPackDescription"  AcceptsReturn="True" VerticalScrollBarVisibility="Visible" Grid.Column="1" Margin="5" Grid.Row="7" TextWrapping="Wrap" Grid.ColumnSpan="2" Grid.RowSpan="1"/>

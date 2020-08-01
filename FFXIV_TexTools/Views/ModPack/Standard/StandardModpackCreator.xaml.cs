@@ -320,39 +320,35 @@ namespace FFXIV_TexTools.Views
                 }
             }
 
-            Progress<(int current, int total, string message)> progressIndicator = new Progress<(int current, int total, string message)>(ReportProgress);
 
             string modPackPath = Path.Combine(Properties.Settings.Default.ModPack_Directory, $"{simpleModPackData.Name}.ttmp2");
-            bool overwriteModpack = false;
 
             if (File.Exists(modPackPath))
             {
                 DialogResult overwriteDialogResult = FlexibleMessageBox.Show(new Wpf32Window(this), UIMessages.ModPackOverwriteMessage,
                                             UIMessages.OverwriteTitle, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
-                if (overwriteDialogResult == System.Windows.Forms.DialogResult.Yes)
+                if (overwriteDialogResult == System.Windows.Forms.DialogResult.Cancel)
                 {
-                    overwriteModpack = true;
-                }
-                else if (overwriteDialogResult == System.Windows.Forms.DialogResult.Cancel)
-                {
-                    //await _progressController.CloseAsync();
                     return;
                 }
             }
 
             try
             {
-                await texToolsModPack.CreateSimpleModPack(simpleModPackData, XivCache.GameInfo.GameDirectory, progressIndicator, overwriteModpack);
+                await LockUi("Creating Modpack", "Please wait...", null);
+                Progress<(int current, int total, string message)> progressIndicator = new Progress<(int current, int total, string message)>(ReportProgress);
+                await texToolsModPack.CreateSimpleModPack(simpleModPackData, XivCache.GameInfo.GameDirectory, progressIndicator, true);
+                await UnlockUi(this);
+                DialogResult = true;
             }
             catch(Exception ex)
             {
                 FlexibleMessageBox.Show(new Wpf32Window(this), "An Error occured while creating the modpack.\n\n"+ ex.Message,
                                                "Modpack Creation Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                await UnlockUi(this);
             }
 
-            //await _progressController.CloseAsync();
 
-            DialogResult = true;
         }
 
         /// <summary>
@@ -361,20 +357,20 @@ namespace FFXIV_TexTools.Views
         /// <param name="value">The progress value</param>
         private void ReportProgress((int current, int total, string message) report)
         {
-            /*
             if (!report.message.Equals(string.Empty))
             {
-                _progressController.SetMessage(report.message);
-                _progressController.SetIndeterminate();
+
+                _lockProgressController.SetMessage(report.message);
+                _lockProgressController.SetIndeterminate();
             }
             else
             {
-                _progressController.SetMessage(
+                _lockProgressController.SetMessage(
                     $"{UIMessages.TTMPGettingData} ({report.current} / {report.total})");
 
                 double value = (double)report.current / (double)report.total;
-                _progressController.SetProgress(value);
-            }*/
+                _lockProgressController.SetProgress(value);
+            }
         }
 
     }
