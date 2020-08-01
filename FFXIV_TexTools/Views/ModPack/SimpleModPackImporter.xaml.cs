@@ -412,9 +412,41 @@ namespace FFXIV_TexTools.Views
 
             if (e.OriginalSource is GridViewColumnHeader h && h.Content != null)
             {
-                var cv = (CollectionView)CollectionViewSource.GetDefaultView(ModListView.ItemsSource);
+                var binding = h.Column.DisplayMemberBinding;
+                CollectionView cv = (CollectionView)CollectionViewSource.GetDefaultView(ModListView.ItemsSource);
                 cv.SortDescriptions.Clear();
-                cv.SortDescriptions.Add(new SortDescription(h.Content.ToString(), _lastDirection));
+
+                var sortMember = "";
+                if (h.Content.ToString() == UIStrings.ItemPlural)
+                {
+                    sortMember = "ItemName";
+                }
+                else if (h.Content.ToString() == UIStrings.FileName)
+                {
+                    sortMember = "FileName";
+                }
+                else if (h.Content.ToString() == UIStrings.Type)
+                {
+                    sortMember = "Type";
+                }
+                else if (h.Content.ToString() == UIStrings.Race)
+                {
+                    sortMember = "Race";
+                }
+                else if (h.Content.ToString() == UIStrings.Material)
+                {
+                    sortMember = "Material";
+                }
+                else if (h.Content.ToString() == UIStrings.Active)
+                {
+                    sortMember = "ActiveText";
+                }
+
+                cv.SortDescriptions.Add(new SortDescription(sortMember, _lastDirection));
+
+                // Item Name -> File Name is always the tiebreaker.
+                cv.SortDescriptions.Add(new SortDescription("ItemName", _lastDirection));
+                cv.SortDescriptions.Add(new SortDescription("FileName", _lastDirection));
             }
         }
 
