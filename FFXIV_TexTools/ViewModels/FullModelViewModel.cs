@@ -212,21 +212,28 @@ namespace FFXIV_TexTools.ViewModels
 
             // Add the item type to the model list
             var itemType = $"{item.PrimaryCategory}_{item.SecondaryCategory}";
-            if (!ModelList.Contains(itemType))
+            var itemDisplay = $"{item.Name} ({itemType})";
+
+            if (!ModelList.Any(x => x.Contains(itemType)))
             {
-                ModelList.Add(itemType);
+                ModelList.Add(itemDisplay);
                 SelectedModelIndex = ModelList.Count - 1;
             }
             else
             {
-                SelectedModelIndex = ModelList.IndexOf(itemType);
+                var removeItem = (from iDisplay in ModelList where iDisplay.Contains(itemType) select iDisplay).FirstOrDefault();
+                ModelList.Remove(removeItem);
+                ModelList.Add(itemDisplay);
+                SelectedModelIndex = ModelList.IndexOf(itemDisplay);
             }
 
             // Disable changing the skeleton while model and viewport update
             SkeletonComboboxEnabled = false;
 
             // Update body textures if the model being added is a different race than the selected skeleton race
-            if (modelRace != SelectedSkeleton.XivRace)
+            var skinRace = SelectedSkeleton.XivRace.GetSkinRace();
+
+            if (modelRace != skinRace)
             {
                 await UpdateBodyTextures(ttModel, item, _materialDictionary);
             }
@@ -292,9 +299,13 @@ namespace FFXIV_TexTools.ViewModels
                 SkeletonComboboxEnabled = false;
 
                 // Update Body Textures for each model to the new race
-                foreach (var shownModel in ViewPortVM.shownModels.Values)
+                var skinRace = selectedSkeleton.GetSkinRace();
+                if (_previousRace != skinRace)
                 {
-                    await UpdateBodyTextures(shownModel.TtModel, shownModel.ItemModel, shownModel.ModelTextureData);
+                    foreach (var shownModel in ViewPortVM.shownModels.Values)
+                    {
+                        await UpdateBodyTextures(shownModel.TtModel, shownModel.ItemModel, shownModel.ModelTextureData);
+                    }
                 }
 
                 ViewPortVM.UpdateSkeleton(_previousRace, selectedSkeleton);
@@ -334,10 +345,12 @@ namespace FFXIV_TexTools.ViewModels
             {
                 // Current Race Code
                 var raceCode = materialToReplace.Substring(materialToReplace.LastIndexOf('c') + 1, 4);
+                // The closest race with a skin texture
+                var skinRaceCode = SelectedSkeleton.XivRace.GetSkinRace().GetRaceCode();
                 // New material path after replacing with target race
-                var newMaterial = materialToReplace.Replace(raceCode, SelectedSkeleton.XivRace.GetRaceCode());
+                var newMaterial = materialToReplace.Replace(raceCode, skinRaceCode);
                 // Temp MDL path so that races match when getting mtrl path
-                var tempMdlPath = ttModel.Source.Replace(raceCode, SelectedSkeleton.XivRace.GetRaceCode());
+                var tempMdlPath = ttModel.Source.Replace(raceCode, skinRaceCode);
 
                 var mtrlVariant = 1;
                 try
@@ -682,7 +695,9 @@ namespace FFXIV_TexTools.ViewModels
             }
             else
             {
-                ViewPortVM.RemoveModel(ModelList[SelectedModelIndex]);
+                var modelToRemove = ModelList[SelectedModelIndex].Substring(ModelList[SelectedModelIndex].IndexOf('('))
+                    .Trim('(').Trim(')');
+                ViewPortVM.RemoveModel(modelToRemove);
                 ModelList.RemoveAt(SelectedModelIndex);
                 SelectedModelIndex = 0;
             }
