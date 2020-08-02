@@ -19,7 +19,7 @@ namespace FFXIV_TexTools.Resources {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class UIMessages {
@@ -795,6 +795,49 @@ namespace FFXIV_TexTools.Resources {
         internal static string MDLReadErrorTitle {
             get {
                 return ResourceManager.GetString("MDLReadErrorTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not find the following bones for {0}.
+        ///{1}
+        ///
+        ///This may affect animations..
+        /// </summary>
+        internal static string MissingBones {
+            get {
+                return ResourceManager.GetString("MissingBones", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Missing Bones.
+        /// </summary>
+        internal static string MissingBonesTitle {
+            get {
+                return ResourceManager.GetString("MissingBonesTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not apply [{0}] deform to [{1}].
+        ///
+        ///Missing Deforms:{2}
+        ///
+        ///No scaling was applied..
+        /// </summary>
+        internal static string MissingDeforms {
+            get {
+                return ResourceManager.GetString("MissingDeforms", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Model Deformer Warning.
+        /// </summary>
+        internal static string MissingDeformsTitle {
+            get {
+                return ResourceManager.GetString("MissingDeformsTitle", resourceCulture);
             }
         }
         

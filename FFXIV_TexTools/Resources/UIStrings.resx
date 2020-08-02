@@ -955,4 +955,16 @@ If you would like to enable this, first import a texture for the selected item.<
   <data name="Usage" xml:space="preserve">
     <value>Usage</value>
   </data>
+  <data name="Skeleton" xml:space="preserve">
+    <value>Skeleton</value>
+  </data>
+  <data name="FullModel_Export_Location" xml:space="preserve">
+    <value>Export Location:</value>
+  </data>
+  <data name="Full_Model_Name" xml:space="preserve">
+    <value>Full Model Name</value>
+  </data>
+  <data name="Model_Skeleton" xml:space="preserve">
+    <value>Model Skeleton:</value>
+  </data>
 </root>
