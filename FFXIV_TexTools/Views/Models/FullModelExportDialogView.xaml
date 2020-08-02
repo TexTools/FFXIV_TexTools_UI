@@ -29,7 +29,7 @@
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
             <Label Grid.Column="0" Content="{Binding Source={x:Static resx:UIStrings.Name_colon}}" VerticalAlignment="Center"/>
-            <TextBox x:Name="ModelNameTextBox" Grid.Column="1" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.Full_Model_Name}}" VerticalAlignment="Center" Margin="5" TextChanged="ModelNameTextBox_TextChanged"/>
+            <TextBox x:Name="ModelNameTextBox" Grid.Column="1" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.Full_Model_Name}}" VerticalAlignment="Center" Margin="5" TextChanged="ModelNameTextBox_TextChanged" BorderBrush="#FFCCCCCC"/>
         </Grid>
         <StackPanel Grid.Row="2">
             <Label Content="{Binding Source={x:Static resx:UIStrings.FullModel_Export_Location}}" VerticalAlignment="Center"/>

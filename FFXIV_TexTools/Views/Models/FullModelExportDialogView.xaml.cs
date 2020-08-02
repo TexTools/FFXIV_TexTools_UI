@@ -17,6 +17,7 @@
 using FFXIV_TexTools.Properties;
 using System.IO;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace FFXIV_TexTools.Views.Models
 {
@@ -50,6 +51,8 @@ namespace FFXIV_TexTools.Views.Models
             var outputFilePath = $"...\\{partialPath}\\FullModel\\{ModelNameTextBox.Text}\\{ModelNameTextBox.Text}.fbx";
 
             ExportLocationLabel.Content = outputFilePath;
+
+            ModelNameTextBox.BorderBrush = (SolidColorBrush)new BrushConverter().ConvertFrom("#FFCCCCCC");
         }
 
         /// <summary>
@@ -65,8 +68,15 @@ namespace FFXIV_TexTools.Views.Models
         /// </summary>
         private void Import_Button_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            DialogResult = true;
-            Close();
+            if (ModelNameTextBox.Text.Equals(string.Empty))
+            {
+                ModelNameTextBox.BorderBrush = new SolidColorBrush(Colors.Red);
+            }
+            else
+            {
+                DialogResult = true;
+                Close();
+            }
         }
     }
 }
