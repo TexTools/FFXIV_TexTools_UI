@@ -187,7 +187,7 @@
     <value>Model ID</value>
   </data>
   <data name="ModPack_Wizard" xml:space="preserve">
-    <value>ModPack Wizard</value>
+    <value>Advanced Modpack</value>
   </data>
   <data name="Mods" xml:space="preserve">
     <value>Mods</value>
@@ -223,7 +223,7 @@
     <value>Select Language</value>
   </data>
   <data name="Simple_ModPack" xml:space="preserve">
-    <value>Simple ModPack</value>
+    <value>Basic Modpack</value>
   </data>
   <data name="Texture" xml:space="preserve">
     <value>Texture</value>
@@ -550,7 +550,7 @@
     <value>Shapes</value>
   </data>
   <data name="Simple_ModPack_Creator" xml:space="preserve">
-    <value>Simple ModPack Creator</value>
+    <value>Basic Modpack Creator</value>
   </data>
   <data name="Size_colon" xml:space="preserve">
     <value>Size:</value>
@@ -697,7 +697,7 @@
     <value>Select Mod</value>
   </data>
   <data name="Simple_ModPack_Importer" xml:space="preserve">
-    <value>Simple ModPack Importer</value>
+    <value>Basic Modpack Importer</value>
   </data>
   <data name="Single_Selection" xml:space="preserve">
     <value>Single-Selection</value>
@@ -927,5 +927,32 @@ If you would like to enable this, first import a texture for the selected item.<
   </data>
   <data name="Variants" xml:space="preserve">
     <value>Variants</value>
+  </data>
+  <data name="Rebuild_Cache" xml:space="preserve">
+    <value>Rebuild Cache</value>
+  </data>
+  <data name="Cache" xml:space="preserve">
+    <value>Cache Operations</value>
+  </data>
+  <data name="Load_Sets" xml:space="preserve">
+    <value>Load Item Sets File</value>
+  </data>
+  <data name="Scan_For_Sets" xml:space="preserve">
+    <value>Scan for new Item Sets</value>
+  </data>
+  <data name="Standard_Modpack" xml:space="preserve">
+    <value>Standard Modpack</value>
+  </data>
+  <data name="FileName" xml:space="preserve">
+    <value>File Name</value>
+  </data>
+  <data name="Inspect" xml:space="preserve">
+    <value>Inspect</value>
+  </data>
+  <data name="ItemPlural" xml:space="preserve">
+    <value>Item(s)</value>
+  </data>
+  <data name="Usage" xml:space="preserve">
+    <value>Usage</value>
   </data>
 </root>

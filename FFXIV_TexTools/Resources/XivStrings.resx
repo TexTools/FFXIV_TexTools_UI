@@ -126,8 +126,8 @@
   <data name="Companions" xml:space="preserve">
     <value>Companions</value>
   </data>
-  <data name="Ears" xml:space="preserve">
-    <value>Ears</value>
+  <data name="Ear" xml:space="preserve">
+    <value>Ear</value>
   </data>
   <data name="EquipDecalFile" xml:space="preserve">
     <value>-decal_{0}.tex</value>
@@ -223,7 +223,7 @@
     <value>Wrists</value>
   </data>
   <data name="All" xml:space="preserve">
-    <value>All</value>
+    <value>ALL</value>
   </data>
   <data name="Mesh" xml:space="preserve">
     <value>Mesh</value>
@@ -458,5 +458,29 @@
   </data>
   <data name="Dual_Wield" xml:space="preserve">
     <value>Dual Wield</value>
+  </data>
+  <data name="Actions" xml:space="preserve">
+    <value>Actions</value>
+  </data>
+  <data name="Indoor_Furniture" xml:space="preserve">
+    <value>Indoor Furniture</value>
+  </data>
+  <data name="Map_Symbols" xml:space="preserve">
+    <value>Map Symbols</value>
+  </data>
+  <data name="Online_Status" xml:space="preserve">
+    <value>Online Status</value>
+  </data>
+  <data name="Outdoor_Furniture" xml:space="preserve">
+    <value>Outdoor Furniture</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Weather" xml:space="preserve">
+    <value>Weather</value>
+  </data>
+  <data name="Earring" xml:space="preserve">
+    <value>Earring</value>
   </data>
 </root>

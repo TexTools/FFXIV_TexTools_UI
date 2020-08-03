@@ -97,7 +97,6 @@ namespace FFXIV_TexTools.ViewModels
 
             _mainView.ModelTabItem.IsEnabled = false;
 
-            CollectionViewSource.GetDefaultView(_mainView.ItemTreeView.ItemsSource).Refresh();
 
             var iconInt = -1;
             try

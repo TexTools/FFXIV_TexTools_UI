@@ -72,70 +72,60 @@
                                 <Border BorderBrush="{Binding ActiveBorder}" BorderThickness="2" Background="{Binding Active}" Opacity="{Binding ActiveOpacity}">
                                     <Grid>
                                         <Grid.RowDefinitions>
-                                            <RowDefinition Height="3*"/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
                                             <RowDefinition/>
                                         </Grid.RowDefinitions>
-                                        <Grid Grid.Row="1">
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition/>
-                                                <RowDefinition Height="2*"/>
-                                                <RowDefinition/>
-                                                <RowDefinition Height="2*"/>
-                                            </Grid.RowDefinitions>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="1*"/>
-                                                <ColumnDefinition Width="1*"/>
-                                            </Grid.ColumnDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition/>
+                                        </Grid.ColumnDefinitions>
 
-                                            <Border BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" BorderThickness="1" Grid.Row="1">
-                                                <Viewbox StretchDirection="DownOnly">
-                                                    <Label Content="{Binding Race}"/>
-                                                </Viewbox>
-                                            </Border>
+                                        <!-- Top Line Header -->
+                                        <!-- Row 0 Data-->
+                                        <Border BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" BorderThickness="1" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
+                                            <Viewbox StretchDirection="DownOnly">
+                                                <Label Content="{Binding ItemName}"/>
+                                            </Viewbox>
+                                        </Border>
 
-                                            <Border BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" BorderThickness="1" Grid.Row="3">
-                                                <Viewbox StretchDirection="DownOnly">
-                                                    <Label Content="{Binding Map}"/>
-                                                </Viewbox>
-                                            </Border>
+                                        <Border BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" BorderThickness="1" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
+                                            <Viewbox StretchDirection="DownOnly">
+                                                <Label Content="{Binding FileName}"/>
+                                            </Viewbox>
+                                        </Border>
 
-                                            <Border BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" BorderThickness="1" Grid.Row="1" Grid.Column="1">
-                                                <Viewbox StretchDirection="DownOnly">
-                                                    <Label Content="{Binding Part}"/>
-                                                </Viewbox>
-                                            </Border>
 
-                                            <Border BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" BorderThickness="1" Grid.Column="1" Grid.Row="3">
-                                                <Viewbox StretchDirection="DownOnly">
-                                                    <Label Content="{Binding Number}"/>
-                                                </Viewbox>
-                                            </Border>
+                                        <!-- Preview Image -->
+                                        <Image Margin="5" Source="{Binding Image}" MaxWidth="200" MaxHeight="200" RenderOptions.BitmapScalingMode="NearestNeighbor" Grid.Row="2" Grid.ColumnSpan="2"/>
 
-                                            <Border Background="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}">
-                                                <Viewbox StretchDirection="DownOnly">
-                                                    <Label Content="{Binding Source={x:Static resx:UIStrings.Race}}"  VerticalContentAlignment="Top" Padding="0" HorizontalContentAlignment="Center"/>
-                                                </Viewbox>
-                                            </Border>
+                                        <!-- Type and Race-->
+                                        <Border BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" BorderThickness="1" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2">
+                                            <Viewbox StretchDirection="DownOnly">
+                                                <Label Content="{Binding Type}"/>
+                                            </Viewbox>
+                                        </Border>
+                                        <Border BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" BorderThickness="1" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2">
+                                            <Viewbox StretchDirection="DownOnly">
+                                                <Label Content="{Binding Race}"/>
+                                            </Viewbox>
+                                        </Border>
 
-                                            <Border Background="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Grid.Row="2">
-                                                <Viewbox StretchDirection="DownOnly">
-                                                    <Label Content="{Binding Source={x:Static resx:UIStrings.Map}}" VerticalContentAlignment="Top" HorizontalContentAlignment="Center" Padding="0" />
-                                                </Viewbox>
-                                            </Border>
 
-                                            <Border Background="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Grid.Column="1">
-                                                <Viewbox StretchDirection="DownOnly">
-                                                    <Label Content="{Binding Source={x:Static resx:UIStrings.Part}}" VerticalContentAlignment="Top" HorizontalContentAlignment="Center" Padding="0"/>
-                                                </Viewbox>
-                                            </Border>
-
-                                            <Border Background="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Grid.Row="2" Grid.Column="1">
-                                                <Viewbox StretchDirection="DownOnly">
-                                                    <Label Content="{Binding Source={x:Static resx:UIStrings.Num}}" VerticalContentAlignment="Top" HorizontalContentAlignment="Center" Padding="0"/>
-                                                </Viewbox>
-                                            </Border>
-                                        </Grid>
-                                        <Image Margin="5" Source="{Binding Image}" MaxWidth="200" MaxHeight="200" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
+                                        <!-- Material -->
+                                        <Border Background="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="1">
+                                            <Viewbox StretchDirection="DownOnly">
+                                                <Label Content="{Binding Source={x:Static resx:UIStrings.Material}}" VerticalContentAlignment="Top" Padding="0" HorizontalContentAlignment="Center"/>
+                                            </Viewbox>
+                                        </Border>
+                                        <Border BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" BorderThickness="1" Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="1">
+                                            <Viewbox StretchDirection="DownOnly">
+                                                <Label Content="{Binding Material}"/>
+                                            </Viewbox>
+                                        </Border>
                                     </Grid>
                                 </Border>
                             </DataTemplate>

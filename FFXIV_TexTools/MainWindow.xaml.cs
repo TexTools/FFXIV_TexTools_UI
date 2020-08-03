@@ -44,6 +44,8 @@ using xivModdingFramework.Mods.FileTypes;
 using xivModdingFramework.SqPack.FileTypes;
 using Application = System.Windows.Application;
 using System.Threading;
+using xivModdingFramework.Cache;
+using ControlzEx.Standard;
 
 namespace FFXIV_TexTools
 {
@@ -53,9 +55,7 @@ namespace FFXIV_TexTools
     public partial class MainWindow
     {
         private string _startupArgs;
-        private Category _selectedCategory;
         private static MainWindow _mainWindow;
-        public System.Timers.Timer SearchTimer = new System.Timers.Timer(300);
 
 
         /// <summary>
@@ -67,7 +67,58 @@ namespace FFXIV_TexTools
             return _mainWindow;
         }
 
-        public event EventHandler TreeRefreshRequested;
+        private System.Timers.Timer _statusTimer;
+
+        public bool IsUiLocked
+        {
+            get { return _lockProgressController != null; }
+        }
+
+        private IProgress<string> _lockProgress;
+
+        /// <summary>
+        /// Progress message reporter for the lock screen.  
+        /// Only available during the window lock period.
+        /// </summary>
+        public IProgress<string> LockProgress { get { return _lockProgress; } }
+
+        private ProgressDialogController _lockProgressController;
+
+        /// <summary>
+        /// Fired when the old tree is about to be discarded.
+        /// </summary>
+        public event EventHandler TreeRefreshing;
+
+        /// <summary>
+        /// Fired once the tree has been fully rebuilt.
+        /// </summary>
+        public event EventHandler TreeRefreshed;
+
+        /// <summary>
+        /// Fired when the sub views are about to be changed.
+        /// </summary>
+        public event EventHandler ItemChanging;
+
+        /// <summary>
+        /// Fired once all the sub-views have been fully initialized and the UI unlocked.
+        /// </summary>
+        public event EventHandler ItemChanged;
+
+        /// <summary>
+        /// Fired after the UI has been locked.
+        /// </summary>
+        public event EventHandler UiLocked;
+
+        /// <summary>
+        /// Fired after the UI has been unlocked.
+        /// </summary>
+        public event EventHandler UiUnlocked;
+
+        /// <summary>
+        /// Fired when the cache has been validated.
+        /// </summary>
+        public event EventHandler InitialLoadComplete;
+
 
         private bool _UPDATING = false;
         private void AutoUpdater_ApplicationExitEvent()
@@ -114,9 +165,13 @@ namespace FFXIV_TexTools
             var mainViewModel = new MainViewModel(this);
             this.DataContext = mainViewModel;
 
+
             InitializeComponent();
 
             var fileVersion = FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location).FileVersion;
+
+            // Clear out the debug message shown in the xaml designer.
+            StatusTextBox.Text = "";
 
             try
             {
@@ -135,23 +190,17 @@ namespace FFXIV_TexTools
 
             if (args != null && args.Length > 0)
             {
+                // Just do a hard synchronous cache initialization for import only mode.
+                var gameDir = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
+                var lang = XivLanguages.GetXivLanguage(Properties.Settings.Default.Application_Language);
+                XivCache.SetGameInfo(gameDir, lang);
+
                 _startupArgs = args[0];
                 OnlyImport();
             }
             else
             {
                 this.Show();
-
-                ItemSearchTextBox.Focus();
-
-                if (SearchTimer == null)
-                {
-                    SearchTimer = new System.Timers.Timer(300);
-                }
-                SearchTimer.Elapsed += SearchTimerOnElapsed;
-
-                SearchTimer.Enabled = false;
-                SearchTimer.AutoReset = false;
 
 
                 var textureView = TextureTabItem.Content as TextureView;
@@ -164,11 +213,14 @@ namespace FFXIV_TexTools
 
                 modelViewModel.LoadingComplete += ModelViewModelOnLoadingComplete;
 
-                // This can be safely called now.
-                RefreshTree();
+
+                // This can be set whereever, since the item select won't fire it unless things are loaded fully.
+                ItemSelect.ItemSelected += ItemSelect_ItemSelected;
+                ItemSelect.ItemsLoaded += OnTreeLoaded;
+
+                InitializeCache();
             }
         }
-
 
         private void LanguageSelection()
         {
@@ -183,36 +235,208 @@ namespace FFXIV_TexTools
 
                 Properties.Settings.Default.Application_Language = langCode;
                 Properties.Settings.Default.Save();
+            } else if (lang != Properties.Settings.Default.Application_Language)
+            {
+                // We shouldn't evet actually get here, as this function is only called on 
+                // first time installs, where lang would be empty, and other calls force-restart the application.
+                // But doesn't hurt to have a safety check here anyways.
+                InitializeCache();
             }
         }
 
+        /// <summary>
+        /// Initializes the Cache and loads the item tree for the first time when done.
+        /// </summary>
+        /// <returns></returns>
+        private async Task InitializeCache()
+        {
+            var gameDir = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
+            var lang = XivLanguages.GetXivLanguage(Properties.Settings.Default.Application_Language);
+            await LockUi("Validating Cache", "If you have many mods, this may take a minute...", this);
+            // Kick this in a new thread because the cache call will lock up the one it's on.
+            await Task.Run(async () =>
+            {
+                bool cacheOK = true;
+                try
+                {
+                    // If the cache needs to be rebuilt, this will synchronously block until it is done.
+                    XivCache.SetGameInfo(gameDir, lang);
+                } catch(Exception ex)
+                {
+                    cacheOK = false;
+                    FlexibleMessageBox.Show("An error occurred while attempting to rebuild the cache.\n" + ex.Message, "Cache Rebuild Error.", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
+                }
+
+                await Dispatcher.Invoke(async () =>
+                {
+                    await UnlockUi();
+
+                    if (cacheOK)
+                    {
+                        await RefreshTree();
+                    }
+
+                    if(InitialLoadComplete != null)
+                    {
+                        InitialLoadComplete.Invoke(this, null);
+                    }
+                });
+            });
+        }
+
+
+        // Item load helpers.
+        bool _modelLoaded = false;
+        bool _texturesLoaded = false;
+        bool _waitingForItemLoad = false;
         private void ModelViewModelOnLoadingComplete(object sender, EventArgs e)
         {
-            ItemTreeView.IsEnabled = true;
+            _modelLoaded = true;
+            CheckItemLoadComplete();
         }
 
         private void TextureViewModelOnLoadingComplete(object sender, EventArgs e)
         {
-            var selectedItem = ItemTreeView.SelectedItem as Category;
+            _texturesLoaded = true;
+            CheckItemLoadComplete();
+        }
 
-            if(selectedItem?.Item == null) return;
-
-            if (selectedItem.Item.PrimaryCategory.Equals(XivStrings.UI) ||
-                selectedItem.Item.SecondaryCategory.Equals(XivStrings.Face_Paint) ||
-                selectedItem.Item.SecondaryCategory.Equals(XivStrings.Equipment_Decals) ||
-                selectedItem.Item.SecondaryCategory.Equals(XivStrings.Paintings))
+        private async Task CheckItemLoadComplete()
+        {
+            // Don't allow spurious event firings to fuck with us.
+            if(!_waitingForItemLoad)
             {
-                ItemTreeView.IsEnabled = true;
+                _modelLoaded = false;
+                _texturesLoaded = false;
             }
+
+            if(_modelLoaded && _texturesLoaded)
+            {
+                _modelLoaded = false;
+                _texturesLoaded = false;
+                _waitingForItemLoad = false;
+
+                await UnlockUi();
+
+                ShowStatusMessage("Item Loaded Successfully.");
+                if (ItemChanged != null)
+                {
+                    ItemChanged.Invoke(this, null);
+                }
+            }
+        }
+
+        private SemaphoreSlim _lockScreenSemaphore = new SemaphoreSlim(1);
+
+        public async Task LockUi(string title = "Loading", string msg = "Please Wait...", object caller = null)
+        {
+            await _lockScreenSemaphore.WaitAsync();
+            if (IsUiLocked)
+            {
+
+                _lockScreenSemaphore.Release();
+                return;
+            }
+
+            _lockProgressController = await this.ShowProgressAsync(title, msg);
+
+            _lockProgressController.SetIndeterminate();
+
+            _lockProgress = new Progress<string>((update) =>
+            {
+                _lockProgressController.SetMessage(update);
+            });
+
+            _lockScreenSemaphore.Release();
+
+            if (UiLocked != null)
+            {
+                UiLocked.Invoke(caller, null);
+            }
+        }
+
+        public async Task UnlockUi(object caller = null)
+        {
+            await _lockScreenSemaphore.WaitAsync();
+            if (!IsUiLocked)
+            {
+                _lockScreenSemaphore.Release();
+                return;
+            }
+
+            try
+            {
+                // Sometimes this chokes, not sure why.
+                await _lockProgressController.CloseAsync();
+            } catch
+            {
+
+            }
+            _lockProgressController = null;
+            _lockProgress = null;
+
+            _lockScreenSemaphore.Release();
+
+            if (UiUnlocked != null)
+            {
+                UiUnlocked.Invoke(caller, null);
+            }
+        }
+
+        public void Restart()
+        {
+            System.Diagnostics.Process.Start(Application.ResourceAssembly.Location);
+            Application.Current.Shutdown();
+            // Async invoked here to avoid deadlock in case this was called in some kind of dialog window.
+            Dispatcher.InvokeAsync(() =>
+            {
+            });
+        }
+
+        public void ShowStatusMessage(string message, float duration = 5000.0f)
+        {
+            Dispatcher.InvokeAsync(() =>
+            {
+                if (_statusTimer != null)
+                {
+                    _statusTimer.Stop();
+                    _statusTimer.Dispose();
+                }
+
+                StatusTextBox.Text = message;
+                _statusTimer = new System.Timers.Timer(duration);
+                _statusTimer.Elapsed += StatusTimerExpired; ;
+                _statusTimer.AutoReset = false;
+                _statusTimer.Enabled = true;
+            });
+        }
+
+        private void StatusTimerExpired(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            Dispatcher.InvokeAsync(() =>
+            {
+                StatusTextBox.Text = "";
+                if (_statusTimer != null)
+                {
+                    _statusTimer.Stop();
+                    _statusTimer.Dispose();
+                }
+            });
         }
 
         /// <summary>
         /// Triggers the MainWindow's thread to refresh the tree view.
         /// </summary>
         /// <param name="requestor"></param>
-        public void RefreshTree(object requestor = null)
+        public async Task RefreshTree(object requestor = null)
         {
-            TreeRefreshRequested.Invoke(requestor, null);
+            if (TreeRefreshing != null)
+            {
+                // Let any other elements that need to know know that we're reloading the item list.
+                TreeRefreshing.Invoke(requestor, null);
+            }
+
+            await ItemSelect.LoadItems();
         }
 
         private void CheckForUpdates()
@@ -289,184 +513,130 @@ namespace FFXIV_TexTools
             Settings.Default.Save();
         }
 
-        /// <summary>
-        /// Event handler for the treeview selected item changed
-        /// </summary>
-        private void TreeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        private void OnTreeLoaded(object sender, EventArgs e)
         {
-            var c = (e.NewValue as Category);
-            UpdateViews(c);
+
+            var vm = (MainViewModel)DataContext;
+            vm.CacheTimer.Enabled = true;
+            vm.CacheTimer.Start();
+            Menu_ModConverter.IsEnabled = true;
+
+            if (string.IsNullOrEmpty(Properties.Settings.Default.Default_Race_Selection))
+            {
+                Properties.Settings.Default.Default_Race_Selection = XivRace.Hyur_Midlander_Male.GetDisplayName();
+            }
+
+            ShowStatusMessage("Item List Loaded Successfully.");
+            if (TreeRefreshed != null)
+            {
+                TreeRefreshed.Invoke(this, null);
+            }
         }
 
         /// <summary>
         /// Select an item in the tree view (and switch to that item)
         /// </summary>
         /// <param name="item"></param>
-        public void SelectItem(IItem item, bool selectInTree = true)
+        public void SetSelectedItem(IItem item)
         {
-            Category c = null;
-            if (selectInTree)
-            {
-                c = FindInTree(item);
-                if (c != null)
-                {
+            ItemSelect.SelectedItem = item;
+        }
 
-                    var p = c.ParentCategory;
-                    var cats = new List<Category>();
-                    while (p != null)
-                    {
-                        cats.Add(p);
-                        p = p.ParentCategory;
-                    }
-                    cats.Reverse();
-
-                    // Expand from top down.
-                    foreach (var cat in cats)
-                    {
-                        cat.IsExpanded = true;
-                    }
-                    c.IsSelected = true;
-                }
-            }
-
-            if(c == null)
-            {
-                c = new Category { IsSelected = true, Item = item };
-            }
-
-            UpdateViews(c);
+        public IItem GetSelectedItem()
+        {
+            return ItemSelect.SelectedItem;
         }
 
         /// <summary>
-        /// Finds an item in the tree.
-        /// This is not efficient by any means, and is a straight O(n) scan of the tree.
+        /// Reloads the currently selected item.
         /// </summary>
-        /// <param name="item"></param>
-        /// <param name="parent"></param>
-        /// <returns></returns>
-        private Category FindInTree(IItem item, Category parent = null) {
-            if(parent == null)
-            {
-                var treeItems = ItemTreeView.Items;
-                foreach (var ti in treeItems)
-                {
-                    var c = (Category)ti;
-                    var result = FindInTree(item, c);
-                    if (result != null)
-                    {
-                        // Apparently the ParentCategory field is not
-                        // always populated correctly.
-                        if (result.ParentCategory == null)
-                        {
-                            result.ParentCategory = c;
-                        }
-                    }
-                    return result;
-                }
-            } else
-            {
-                foreach(var c in parent.Categories)
-                {
-                    if(c.Item != null)
-                    {
-
-                        if(c.Item.Name == item.Name)
-                        {
-                            return c;
-                        }
-                    } else
-                    {
-                        var r = FindInTree(item, c);
-                        if(r != null)
-                        {
-                            // Apparently the ParentCategory field is not
-                            // always populated correctly.
-                            if(r.ParentCategory == null)
-                            {
-                                r.ParentCategory = c;
-                            }
-                            return r;
-                        }
-                    }
-                }
-            }
-            return null;
+        public void ReloadItem()
+        {
+            UpdateViews(ItemSelect.SelectedItem);
         }
 
         /// <summary>
-        /// Updates the texture and model views with the selected item
+        /// Triggered when the ItemSelect has its selection changed.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ItemSelect_ItemSelected(object sender, IItem item)
+        {
+            UpdateViews(item);
+        }
+
+        /// <summary>
+        /// Updates the various tab views with the information from the selected item.
+        /// Locks the UI until those tab views come back and confirm they've been loaded.
         /// </summary>
         /// <param name="selectedItem">The selected item</param>
-        private async void UpdateViews(Category category)
+        private async void UpdateViews(IItem item)
         {
-            if ((category != null && category.Item != null) // Thing we're selecting has a valid item.
-                && (_selectedCategory == null || _selectedCategory.Item == null // And either we have no item selected
-                    || (!_selectedCategory.Item.Equals(category.Item))))        // Or a different item selected.
+            if(item == null)
             {
-                // De-select the previous category.
-                if(_selectedCategory != null && _selectedCategory.IsSelected)
-                {
-                    _selectedCategory.IsSelected = false;
-                }
-
-                var item = category.Item;
-                _selectedCategory = category;
-                ItemTreeView.IsEnabled = false;
-                var textureView = TextureTabItem.Content as TextureView;
-                var textureViewModel = textureView.DataContext as TextureViewModel;
-                var sharedItemsView = SharedItemsTab.Content as SharedItemsView;
-                var sharedItemsViewModel = sharedItemsView.DataContext as SharedItemsViewModel;
-
-                await textureViewModel.UpdateTexture(item);
-                var showSharedItems = await sharedItemsViewModel.SetItem(item, this);
-                if(showSharedItems) { 
-                    SharedItemsTab.IsEnabled = true;
-                    SharedItemsTab.Visibility = Visibility.Visible;
-                } else
-                {
-                    if(SharedItemsTab.IsSelected)
-                    {
-                        SharedItemsTab.IsSelected = false;
-                        TextureTabItem.IsSelected = true;
-                    }
-                    SharedItemsTab.IsEnabled = false;
-                    SharedItemsTab.Visibility = Visibility.Hidden;
-                }
-
-
-                if (item.PrimaryCategory.Equals(XivStrings.UI) ||
-                    item.SecondaryCategory.Equals(XivStrings.Face_Paint) ||
-                    item.SecondaryCategory.Equals(XivStrings.Equipment_Decals) ||
-                    item.SecondaryCategory.Equals(XivStrings.Paintings))
-                {
-                    if (TabsControl.SelectedIndex == 1)
-                    {
-                        TabsControl.SelectedIndex = 0;
-                    }
-
-                    ModelTabItem.IsEnabled = false;
-                    ModelTabItem.Visibility = Visibility.Hidden;
-                }
-                else
-                {
-                    ModelTabItem.IsEnabled = true;
-                    ModelTabItem.Visibility = Visibility.Visible;
-
-                    var modelView = ModelTabItem.Content as ModelView;
-                    var modelViewModel = modelView.DataContext as ModelViewModel;
-
-                    await modelViewModel.UpdateModel(item as IItemModel);
-                }
+                return;
             }
-        }
 
-        /// <summary>
-        /// Event handler for the model id search clicked
-        /// </summary>
-        private void Menu_ModelIDSearch_Click(object sender, RoutedEventArgs e)
-        {
-            var modelSearchView = new ModelSearchView(this) {Owner = this};
-            modelSearchView.Show();
+            if (ItemChanging != null)
+            {
+                ItemChanging.Invoke(this, null);
+            }
+
+            await LockUi();
+
+            _modelLoaded = false;
+            _texturesLoaded = false;
+            _waitingForItemLoad = true;
+
+            var textureView = TextureTabItem.Content as TextureView;
+            var textureViewModel = textureView.DataContext as TextureViewModel;
+            var sharedItemsView = SharedItemsTab.Content as SharedItemsView;
+            var sharedItemsViewModel = sharedItemsView.DataContext as SharedItemsViewModel;
+
+            // This guy has no funny async callback.  It's ready once these awaits are done.
+            await textureViewModel.UpdateTexture(item);
+            var showSharedItems = await sharedItemsViewModel.SetItem(item, this);
+            if(showSharedItems) { 
+                SharedItemsTab.IsEnabled = true;
+                SharedItemsTab.Visibility = Visibility.Visible;
+            } else
+            {
+                if(SharedItemsTab.IsSelected)
+                {
+                    SharedItemsTab.IsSelected = false;
+                    TextureTabItem.IsSelected = true;
+                }
+                SharedItemsTab.IsEnabled = false;
+                SharedItemsTab.Visibility = Visibility.Hidden;
+            }
+
+
+            if (item.PrimaryCategory.Equals(XivStrings.UI) ||
+                item.SecondaryCategory.Equals(XivStrings.Face_Paint) ||
+                item.SecondaryCategory.Equals(XivStrings.Equipment_Decals) ||
+                item.SecondaryCategory.Equals(XivStrings.Paintings))
+            {
+                if (TabsControl.SelectedIndex == 1)
+                {
+                    TabsControl.SelectedIndex = 0;
+                }
+
+                // No model to load, just set us as already loaded.
+                _modelLoaded = true;
+
+                ModelTabItem.IsEnabled = false;
+                ModelTabItem.Visibility = Visibility.Hidden;
+            }
+            else
+            {
+                ModelTabItem.IsEnabled = true;
+                ModelTabItem.Visibility = Visibility.Visible;
+
+                var modelView = ModelTabItem.Content as ModelView;
+                var modelViewModel = modelView.DataContext as ModelViewModel;
+
+                await modelViewModel.UpdateModel(item as IItemModel);
+            }
         }
 
         /// <summary>
@@ -586,6 +756,12 @@ namespace FFXIV_TexTools
                     await this.ShowMessageAsync(UIMessages.ModPackCreationCompleteTitle, string.Format(UIMessages.ModPackCreationCompleteMessage, wizard.ModPackFileName));
                 }
             }
+        }
+        private async void Menu_MakeStandardModpack_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new StandardModpackCreator { Owner = this };
+            var result = dialog.ShowDialog();
+            
         }
 
         /// <summary>
@@ -772,6 +948,54 @@ namespace FFXIV_TexTools
             }
         }
 
+        private async void Menu_RebuildCache_Click(object sender, RoutedEventArgs e)
+        {
+            var r = FlexibleMessageBox.Show("This will rebuild the TexTools cache.\nThis may take up to 5 minutes if you have many mods installed.", "Cache Rebuild Confirmation", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1);
+            if (r == System.Windows.Forms.DialogResult.OK)
+            {
+                await LockUi("Rebuilding Cache");
+                await Task.Run(XivCache.RebuildCache);
+                await UnlockUi();
+            }
+        }
+        private async void Menu_ScanForSets_Click(object sender, RoutedEventArgs e)
+        {
+            var r = FlexibleMessageBox.Show("This will scan the entire FFXIV file system for new item sets.\n\nThis operation can take up to an hour.\nAre you sure you wish to proceed?.", "Set Scan Confirmation", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1);
+            if (r == System.Windows.Forms.DialogResult.OK)
+            {
+                await LockUi("Scanning for new Item Sets", "This can take up to roughly an hour, depending on computer specs.");
+
+                // Stop the worker, in case it was reading from the file for some reason.
+                XivCache.CacheWorkerEnabled = false;
+
+                await Task.Run(XivCache.RebuildAllRoots);
+                await UnlockUi();
+            }
+        }
+        private async void Menu_LoadSets_Click(object sender, RoutedEventArgs e)
+        {
+            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            {
+                openFileDialog.Filter = "db files (*.db)|*.db";
+                openFileDialog.RestoreDirectory = true;
+
+                if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    // Stop the worker, in case it was reading from the file for some reason.
+                    XivCache.CacheWorkerEnabled = false;
+
+                    //Get the path of specified file
+                    var filePath = openFileDialog.FileName;
+                    var targetPath = new DirectoryInfo(Path.Combine(XivCache.GameInfo.GameDirectory.Parent.Parent.FullName, "item_sets.db"));
+                    File.Delete(targetPath.FullName);
+                    File.Copy(filePath, targetPath.FullName);
+
+                    FlexibleMessageBox.Show("Item Sets loaded.\nRestarting TexTools.", "TexTools Restarting", MessageBoxButtons.OK);
+                    Restart();
+                }
+            }
+        }
+
         /// <summary>
         /// Event handler for the start over menu item clicked
         /// </summary>
@@ -803,34 +1027,32 @@ namespace FFXIV_TexTools
 
                 var problemChecker = new ProblemChecker(gameDirectory);
 
-                var progressController = await this.ShowProgressAsync(UIStrings.Start_Over, UIMessages.PleaseStandByMessage);
+                await LockUi(UIStrings.Start_Over, UIMessages.PleaseStandByMessage, this);
 
-                progressController.SetIndeterminate();
-
-                IProgress<string> progress = new Progress<string>((update) =>
-                {
-                    progressController.SetMessage(update);
-                });
 
                 try
                 {
-                    await problemChecker.PerformStartOver(indexBackupsDirectory, progress, XivLanguages.GetXivLanguage(Settings.Default.Application_Language));
+                    await problemChecker.PerformStartOver(indexBackupsDirectory, _lockProgress, XivLanguages.GetXivLanguage(Settings.Default.Application_Language));
                 }
-                catch
+                catch(Exception ex)
                 {
                     FlexibleMessageBox.Show(UIMessages.StartOverErrorMessage,
                         UIMessages.StartOverErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    await progressController.CloseAsync();
+                    await UnlockUi();
                     return;
                 }
 
-                MainWindow.GetMainWindow().RefreshTree(this);
+                await UnlockUi();
 
-                await progressController.CloseAsync();
+                await RefreshTree(this);
 
 
-                var c = (ItemTreeView.SelectedItem as Category);
-                UpdateViews(c);
+
+                var item = ItemSelect.SelectedItem;
+                if (item != null)
+                {
+                    UpdateViews(item);
+                }
 
                 await this.ShowMessageAsync(UIMessages.StartOverCompleteTitle, UIMessages.StartOverCompleteMessage);
             }
@@ -863,67 +1085,8 @@ namespace FFXIV_TexTools
             }
         }
 
-        public void SetFilter()
-        {
-
-            // This must be executed on the main UI thread if it's not already.
-            Dispatcher.BeginInvoke((ThreadStart)delegate ()
-            {
-                var view = (CollectionView)CollectionViewSource.GetDefaultView(ItemTreeView.ItemsSource);
-                view.Filter = SearchFilter;
-            });
-        }
-
-        private bool SearchFilter(object item)
-        {
-            if (((Category)item).Categories != null)
-            {
-                var subItems = (CollectionView)CollectionViewSource.GetDefaultView(((Category)item).Categories);
-
-                subItems.Filter = SearchFilter;
-
-                ((Category)item).IsExpanded = !string.IsNullOrEmpty(ItemSearchTextBox.Text);
-
-                return !subItems.IsEmpty;
-            }
-
-            var searchTerms = ItemSearchTextBox.Text.Split(' ');
-
-            return searchTerms.All(term => ((Category)item).Name.ToLower().Contains(term.Trim().ToLower()));
-        }
-
-        private void ItemSearchTextBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
-        {
-            if (SearchTimer != null)
-            {
-                SearchTimer.Stop();
-                SearchTimer.Start();
-            }
-        }
-
-        private void SearchTimerOnElapsed(object sender, System.Timers.ElapsedEventArgs e)
-        {
-            Dispatcher.Invoke(UpdateFilter);
-        }
-
-        private void UpdateFilter()
-        {
-            try
-            {
-                CollectionViewSource.GetDefaultView(ItemTreeView.ItemsSource).Refresh();
-            } catch(Exception ex)
-            {
-                //No op, non-critical.
-            }
-        }
-
         private void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (SearchTimer != null)
-            {
-                SearchTimer.Elapsed -= SearchTimerOnElapsed;
-                SearchTimer.Dispose();
-            }
         }
 
         private void MetroWindow_Loaded(object sender, RoutedEventArgs e)
@@ -981,22 +1144,8 @@ namespace FFXIV_TexTools
                 }
 
             }
-            var categorys = ItemTreeView.ItemsSource as ObservableCollection<Category>;
             var list= new List<xivModdingFramework.Items.Interfaces.IItem>();
-            var ctgs1 = categorys[0];
-            foreach (var ctgs2 in ctgs1.Categories)
-            {
-                if (ctgs2.Item != null)
-                {
-                    list.Add(ctgs2.Item);
-                    continue;
-                }
-                foreach (var ctgs3 in ctgs2.Categories)
-                {
-                    if (ctgs3.Item != null)
-                        list.Add(ctgs3.Item);
-                }
-            }
+            list.Add(ItemSelect.SelectedItem);
             var modConverterView = new ModConverterView(list,ttmpFileName, ttmpData) { Owner = this,WindowStartupLocation=WindowStartupLocation.CenterOwner };
             await progressController.CloseAsync();
             modConverterView.ShowDialog();

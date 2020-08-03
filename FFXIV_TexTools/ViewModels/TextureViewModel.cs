@@ -212,6 +212,14 @@ namespace FFXIV_TexTools.ViewModels
             {
                 raceIndex = Races.IndexOf(defaultRace[0]);
             }
+            else if(Races.Count == 0)
+            {
+                // If there are no races, we're done.
+                if (LoadingComplete != null)
+                {
+                    LoadingComplete.Invoke(this, null);
+                }
+            }
 
             SelectedRaceIndex = raceIndex;
         }
@@ -429,7 +437,7 @@ namespace FFXIV_TexTools.ViewModels
                 }
 
                 // For hair and face we get the type (Hair, Accessory, Face, Iris, Etc)
-                if (_item.SecondaryCategory.Equals(XivStrings.Hair) || _item.SecondaryCategory.Equals(XivStrings.Face) || _item.SecondaryCategory.Equals(XivStrings.Ears))
+                if (_item.SecondaryCategory.Equals(XivStrings.Hair) || _item.SecondaryCategory.Equals(XivStrings.Face) || _item.SecondaryCategory.Equals(XivStrings.Ear))
                 {
                     TypePartVisibility = Visibility.Visible;
                     var charaTypeParts = await _character.GetTypePartForTextures(_item as XivCharacter, SelectedRace.XivRace,
@@ -531,7 +539,7 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     Maps.Clear();
                     if (_item.PrimaryCategory.Equals(XivStrings.Character) && (_item.SecondaryCategory.Equals(XivStrings.Hair) || _item.SecondaryCategory.Equals(XivStrings.Face) ||
-                        _item.SecondaryCategory.Equals(XivStrings.Ears) || _item.SecondaryCategory.Equals(XivStrings.Body) || _item.SecondaryCategory.Equals(XivStrings.Tail)))
+                        _item.SecondaryCategory.Equals(XivStrings.Ear) || _item.SecondaryCategory.Equals(XivStrings.Body) || _item.SecondaryCategory.Equals(XivStrings.Tail)))
                     {
                         TypeParts.Clear();
                         GetTypeParts();
@@ -1363,6 +1371,8 @@ namespace FFXIV_TexTools.ViewModels
 
         public async Task Import(string fileName)
         {
+
+            ImportEnabled = false;
             var fileDir = new DirectoryInfo(fileName);
             var dxVersion = int.Parse(Settings.Default.DX_Version);
 
@@ -1442,7 +1452,7 @@ namespace FFXIV_TexTools.ViewModels
             }
 
             UpdateImage();
-            
+
         }
 
 

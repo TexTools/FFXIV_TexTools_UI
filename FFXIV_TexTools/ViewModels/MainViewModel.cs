@@ -41,6 +41,7 @@ using xivModdingFramework.Helpers;
 using xivModdingFramework.Mods;
 using xivModdingFramework.SqPack.FileTypes;
 using xivModdingFramework.Cache;
+using FFXIV_TexTools.Views;
 
 namespace FFXIV_TexTools.ViewModels
 {
@@ -58,6 +59,7 @@ namespace FFXIV_TexTools.ViewModels
         private Index _index;
         private System.Windows.Forms.IWin32Window _win32Window;
         private ProgressDialogController _progressController;
+        public System.Timers.Timer CacheTimer = new System.Timers.Timer(3000);
 
         private const string WarningIdentifier = "!!";
 
@@ -92,65 +94,17 @@ namespace FFXIV_TexTools.ViewModels
                 System.Windows.Application.Current.Shutdown();
             }
 
-            _mainWindow.TreeRefreshRequested += TreeRefreshRequested;
+            CacheTimer.Elapsed += UpdateDependencyQueueCount;
+
         }
 
-        /// <summary>
-        /// Unified function for showing information in the Progress Bar area.
-        /// Will not overwrite warning messages.
-        /// </summary>
-        /// <param name="message">A value of NULL will hide the progress bar.</param>
-        /// <param name="progress"></param>
-        public void ShowInfoMessage(string message, int progress = -1)
+        public void UpdateDependencyQueueCount(object sender, System.Timers.ElapsedEventArgs e)
         {
-            if (ProgressLabel == null)
+            var count = XivCache.GetDependencyQueueLength();
+            if (count > 0)
             {
-                ProgressLabel = "";
-
+                _mainWindow.ShowStatusMessage("Processing Cache Queue... [" + count + "]");
             }
-
-            if (ProgressLabel.Contains(WarningIdentifier))
-            {
-                return;
-            }
-            
-            if (progress != -1)
-            {
-                ProgressValue = progress;
-            }else
-            {
-                ProgressBarVisible = Visibility.Collapsed;
-            }
-
-            if(message == null)
-            {
-                ProgressLabelVisible = Visibility.Collapsed;
-            }
-
-            ProgressLabel = message;
-        }
-
-        /// <summary>
-        /// Shows a warning message in the progress area.
-        /// Will remain on screen until ClearWarning() is called.
-        /// </summary>
-        /// <param name="warning"></param>
-        public void ShowWarning(string warning)
-        {
-            ProgressLabel = WarningIdentifier + " " + warning + " " + WarningIdentifier;
-            ProgressLabelVisible = Visibility.Visible;
-        }
-
-        /// <summary>
-        /// Clears any existing on-screen warning message. No-op otherwise.
-        /// </summary>
-        public void ClearWarning()
-        {
-            if(!ProgressLabel.Contains(WarningIdentifier)) {
-                return;
-            }
-            ProgressLabel = "";
-            ShowInfoMessage(null);
         }
 
         /// <summary>
@@ -187,70 +141,17 @@ namespace FFXIV_TexTools.ViewModels
             return true;
 
         }
-        private void TreeRefreshRequested(object sender, EventArgs e)
-        {
-            _mainWindow.SearchTimer.Enabled = false;
-            _mainWindow.SearchTimer.AutoReset = false;
 
-            IProgress<(int current, string category)> progress = new Progress<(int current, string category)>((prog) =>
-            {
-                if (prog.category == "Done")
-                {
-                    ShowInfoMessage(null);
-                }
-                else
-                {
-                    ShowInfoMessage($"Loading {prog.category} List", prog.current);
-                }
-            });
-
-            _mainWindow.ItemSearchTextBox.IsEnabled = false;
-
-            var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
-            var lang = XivLanguages.GetXivLanguage(Settings.Default.Application_Language);
-
-            try
-            {
-                FillTree(progress).GetAwaiter().OnCompleted(OnTreeRefreshCompleted);
-            }
-            catch (Exception ex)
-            {
-                // Revert to English when there were errors while loading the item tree/cache
-                // and the game language was set to Chinese or Korean (they have separate clients)
-                if (lang == XivLanguage.Chinese || lang == XivLanguage.Korean)
-                {
-                    if (FlexibleMessageBox.Show(UIMessages.LanguageError,
-                            UIMessages.LanguageErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error) ==
-                        DialogResult.OK)
-                    {
-                        Properties.Settings.Default.Application_Language = "en";
-                        Properties.Settings.Default.Save();
-
-                        System.Windows.Forms.Application.Restart();
-                        System.Windows.Application.Current.Shutdown();
-                    }
-                } else
-                {
-                    // Make this a "Warning". 
-                    ShowWarning("Item List Error");
-                }
-            }
-        }
-
-        private void OnTreeRefreshCompleted()
-        {
-            _mainWindow.SearchTimer.Enabled = true;
-            _mainWindow.Menu_ModConverter.IsEnabled = true;
-            _mainWindow.ItemSearchTextBox.IsEnabled = true;
-            _mainWindow.SetFilter();
-            SetDefaults();
-        }
 
         /// <summary>
         /// Checks for older modlist
         /// </summary>
         private async Task<bool> CheckForOldModList()
         {
+            // This code probably needs to go soon.
+            // Textools sub 2.0 hasn't worked since before Shadowbringers, and this code was always super buggy
+            // to start with.
+
             var oldModListFileDirectory =
                 new DirectoryInfo(
                     $"{Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)}/TexTools/TexTools.modlist");
@@ -627,194 +528,6 @@ namespace FFXIV_TexTools.ViewModels
             }
         }
 
-        /// <summary>
-        /// Fills the tree view with items
-        /// </summary>
-        public async Task FillTree(IProgress<(int current, string total)> progress)
-        {
-            Categories.Clear();
-            Categories.Add(new Category{Name = XivStrings.Gear, Categories = new ObservableCollection<Category>(), CategoryList = new List<string>() });
-            Categories.Add(new Category{Name = XivStrings.Character, Categories = new ObservableCollection<Category>(), CategoryList = new List<string>() });
-            Categories.Add(new Category{Name = XivStrings.Companions, Categories = new ObservableCollection<Category>(), CategoryList = new List<string>() });
-            Categories.Add(new Category{Name = XivStrings.UI, Categories = new ObservableCollection<Category>(), CategoryList = new List<string>() });
-            Categories.Add(new Category{Name = XivStrings.Housing, Categories = new ObservableCollection<Category>(), CategoryList = new List<string>() });
-
-            var itemList = new ItemsList(_gameDirectory);
-
-            foreach (var categoryOrder in _categoryOrderList)
-            {
-                var category = new Category { Name = categoryOrder, Categories = new ObservableCollection<Category>(), CategoryList = new List<string>(), ParentCategory = Categories[0] };
-                Categories[0].Categories.Add(category);
-                Categories[0].CategoryList.Add(categoryOrder);
-            }
-
-            //var gearListTask      = itemList.GetGearList();
-            //var characterListTask = itemList.GetCharacterList();
-            //var companionListTask = itemList.GetCompanionList();
-            //var uiListTask        = itemList.GetUIList();
-            //var housingListTask   = itemList.GetHousingList();
-
-            // Gear List
-            progress.Report((0, "Gear"));
-            var gearList = await itemList.GetGearList();
-            //var gearList = await gearListTask;
-
-            foreach (var xivGear in gearList)
-            {
-                if (Categories[0].CategoryList.Contains(xivGear.SecondaryCategory))
-                {
-                    var cat = (from category1 in Categories[0].Categories
-                        where category1.Name == xivGear.SecondaryCategory
-                        select category1).FirstOrDefault();
-
-                    cat.Categories.Add(new Category{Name = xivGear.Name, Item = xivGear, ParentCategory = cat });
-                }
-                else
-                {
-                    var category = new Category {Name = xivGear.SecondaryCategory, Categories = new ObservableCollection<Category>(), CategoryList = new List<string>(), ParentCategory = Categories[0]};
-                    category.Categories.Add(new Category{Name = xivGear.Name, Item = xivGear});
-                    category.CategoryList.Add(xivGear.Name);
-                    Categories[0].Categories.Add(category);
-                    Categories[0].CategoryList.Add(xivGear.SecondaryCategory);
-                }
-            }
-
-            // Character List
-            progress.Report((20, "Character"));
-            var characterList = await itemList.GetCharacterList();
-            //var characterList = await characterListTask;
-
-            foreach (var xivCharacter in characterList)
-            {
-                Categories[1].Categories.Add(new Category{Name = xivCharacter.Name, Item = xivCharacter});
-                Categories[1].CategoryList.Add(xivCharacter.Name);
-            }
-
-            // Companion List
-            progress.Report((40, "Companion"));
-            var companionList = await itemList.GetCompanionList();
-            //var companionList = await companionListTask;
-
-            var minionCategory = new Category { Name = XivStrings.Minions, Categories = new ObservableCollection<Category>()};
-            Categories[2].Categories.Add(minionCategory);
-            foreach (var xivMinion in companionList.MinionList)
-            {
-                minionCategory.Categories.Add(new Category{Name = xivMinion.Name, Item = xivMinion});
-            }
-
-            var mountCategory = new Category { Name = XivStrings.Mounts, Categories = new ObservableCollection<Category>() };
-            Categories[2].Categories.Add(mountCategory);
-            foreach (var xivMount in companionList.MountList)
-            {
-                mountCategory.Categories.Add(new Category { Name = xivMount.Name, Item = xivMount });
-            }
-
-            var petCategory = new Category { Name = XivStrings.Pets, Categories = new ObservableCollection<Category>() };
-            Categories[2].Categories.Add(petCategory);
-            foreach (var xivPet in companionList.PetList)
-            {
-                petCategory.Categories.Add(new Category { Name = xivPet.Name, Item = xivPet });
-            }
-
-            var ornamentCategory = new Category { Name = "Ornaments", Categories = new ObservableCollection<Category>() };
-            Categories[2].Categories.Add(ornamentCategory);
-            foreach (var xivOrnament in companionList.OrnamentList)
-            {
-                ornamentCategory.Categories.Add(new Category { Name = xivOrnament.Name, Item = xivOrnament });
-            }
-
-            // UI List
-            progress.Report((60, "UI"));
-            var uiList = await itemList.GetUIList();
-            //var uiList = await uiListTask;
-
-            foreach (var xivUi in uiList)
-            {
-                if (xivUi.TertiaryCategory != null)
-                {
-                    if (Categories[3].CategoryList.Contains(xivUi.SecondaryCategory))
-                    {
-                        var cat = (from category1 in Categories[3].Categories
-                            where category1.Name == xivUi.SecondaryCategory
-                            select category1).FirstOrDefault();
-
-                        if (cat.CategoryList.Contains(xivUi.TertiaryCategory))
-                        {
-                            var subcat = (from category1 in cat.Categories
-                                where category1.Name == xivUi.TertiaryCategory
-                                select category1).FirstOrDefault();
-
-                            subcat.Categories.Add(new Category { Name = xivUi.Name, Item = xivUi });
-                        }
-                        else
-                        {
-                            var subCategory = new Category { Name = xivUi.TertiaryCategory, Categories = new ObservableCollection<Category>() };
-                            subCategory.Categories.Add(new Category { Name = xivUi.Name, Item = xivUi });
-
-                            cat.Categories.Add(subCategory);
-                            cat.CategoryList.Add(xivUi.TertiaryCategory);
-                        }
-                    }
-                    else
-                    {
-                        var category = new Category { Name = xivUi.SecondaryCategory, Categories = new ObservableCollection<Category>(), CategoryList = new List<string>()};
-                        var subCategory = new Category { Name = xivUi.TertiaryCategory, Categories = new ObservableCollection<Category>()};
-                        subCategory.Categories.Add(new Category { Name = xivUi.Name, Item = xivUi });
-                 
-                        category.Categories.Add(subCategory);
-                        category.CategoryList.Add(xivUi.TertiaryCategory);
-
-                        Categories[3].Categories.Add(category);
-                        Categories[3].CategoryList.Add(xivUi.SecondaryCategory);
-                    }
-                }
-                else
-                {
-                    if (Categories[3].CategoryList.Contains(xivUi.SecondaryCategory))
-                    {
-                        var cat = (from category1 in Categories[3].Categories
-                            where category1.Name == xivUi.SecondaryCategory
-                            select category1).FirstOrDefault();
-
-                        cat.Categories.Add(new Category { Name = xivUi.Name, Item = xivUi });
-                    }
-                    else
-                    {
-                        var category = new Category { Name = xivUi.SecondaryCategory, Categories = new ObservableCollection<Category>() };
-                        category.Categories.Add(new Category { Name = xivUi.Name, Item = xivUi });
-                        Categories[3].Categories.Add(category);
-                        Categories[3].CategoryList.Add(xivUi.SecondaryCategory);
-                    }
-                }
-            }
-
-            // Housing List
-            progress.Report((80, "Housing"));
-            var housingList = await itemList.GetHousingList();
-            //var housingList = await housingListTask;
-
-            foreach (var xivFurniture in housingList)
-            {
-                if (Categories[4].CategoryList.Contains(xivFurniture.SecondaryCategory))
-                {
-                    var cat = (from category1 in Categories[4].Categories
-                        where category1.Name == xivFurniture.SecondaryCategory
-                        select category1).FirstOrDefault();
-
-                    cat.Categories.Add(new Category{Name = xivFurniture.Name, Item = xivFurniture});
-                }
-                else
-                {
-                    var category = new Category { Name = xivFurniture.SecondaryCategory, Categories = new ObservableCollection<Category>(), CategoryList = new List<string>() };
-                    category.Categories.Add(new Category { Name = xivFurniture.Name, Item = xivFurniture });
-                    category.CategoryList.Add(xivFurniture.Name);
-                    Categories[4].Categories.Add(category);
-                    Categories[4].CategoryList.Add(xivFurniture.SecondaryCategory);
-                }
-            }
-
-            progress.Report((100, "Done"));
-        }
 
         /// <summary>
         /// The DX Version
@@ -927,13 +640,6 @@ namespace FFXIV_TexTools.ViewModels
         }
 
 
-        private void SetDefaults()
-        {
-            if (string.IsNullOrEmpty(Properties.Settings.Default.Default_Race_Selection))
-            {
-                Properties.Settings.Default.Default_Race_Selection = XivRace.Hyur_Midlander_Male.GetDisplayName();
-            }
-        }
 
         /// <summary>
         /// Enables all mods in the mod list
@@ -1030,30 +736,5 @@ namespace FFXIV_TexTools.ViewModels
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        // A list containing the category order
-        private readonly List<string> _categoryOrderList = new List<string>
-        {
-            {XivStrings.Head },
-            {XivStrings.Body },
-            {XivStrings.Hands },
-            {XivStrings.Legs },
-            {XivStrings.Feet },
-            {XivStrings.Main_Hand },
-            {XivStrings.Off_Hand },
-            {XivStrings.Dual_Wield },
-            {XivStrings.Two_Handed },
-            {XivStrings.Main_Off },
-            {XivStrings.Ears },
-            {XivStrings.Neck },
-            {XivStrings.Wrists },
-            {XivStrings.Rings },
-            {XivStrings.Body_Hands_Legs_Feet },
-            {XivStrings.Body_Hands_Legs },
-            {XivStrings.Body_Legs_Feet },
-            {XivStrings.Head_Body },
-            {XivStrings.Legs_Feet },
-            {XivStrings.All },
-            {XivStrings.Food }
-        };
     }
 }

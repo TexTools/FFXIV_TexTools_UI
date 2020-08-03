@@ -20,12 +20,16 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows.Media.Animation;
 using System.Windows.Navigation;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Models.FileTypes;
 using xivModdingFramework.Mods.Enums;
+using xivModdingFramework.Textures.DataContainers;
 using xivModdingFramework.Textures.Enums;
 
 namespace xivModdingFramework.Mods.DataContainers
@@ -41,6 +45,7 @@ namespace xivModdingFramework.Mods.DataContainers
         /// </summary>
         private int _index;
 
+        private Mod _mod;
         private SimpleModPackCreator _creatorView;
         private SimpleModPackImporter _importerView;
 
@@ -54,12 +59,18 @@ namespace xivModdingFramework.Mods.DataContainers
             _index = index;
             _importerView = view;
         }
+        public SimpleModpackEntry(Mod mod)
+        {
+            _mod = mod;
+        }
 
 
         public Mod Mod
         {
             get
             {
+                if (_mod != null) return Mod;
+
                 if (_creatorView == null) return null;
                 return _creatorView.ModList.Mods[Index];
             }
@@ -89,14 +100,14 @@ namespace xivModdingFramework.Mods.DataContainers
         /// </summary>
         public bool IsSelected {
             get {
-                if(_creatorView != null)
+                if (_creatorView != null)
                 {
                     return _creatorView.SelectedMods.Contains(Index);
                 } else
                 {
                     return _importerView.SelectedEntries.Contains(Index);
                 }
-            } 
+            }
             set
             {
                 if (_creatorView != null)
@@ -104,7 +115,7 @@ namespace xivModdingFramework.Mods.DataContainers
                     if (value)
                     {
                         var result = _creatorView.SelectedMods.Add(Index);
-                        if(result)
+                        if (result)
                         {
                             _creatorView.ModpackSize += Mod.data.modSize;
                         }
@@ -144,36 +155,114 @@ namespace xivModdingFramework.Mods.DataContainers
         /// <summary>
         /// The name of the item
         /// </summary>
-        public string Name { get
+        public string ItemName { get
             {
+                var name = "";
                 if (Mod == null)
                 {
-                    return Json.Name;
+                    name = Json.Name;
                 }
                 else
                 {
-                    return Mod.name;
+                    name = Mod.name;
+                }
+
+                return GetFancyName(name, FileName);
+            }
+        }
+
+        public string Extension
+        {
+            get
+            {
+                try
+                {
+                    return Path.GetExtension(FilePath).Substring(1);
+                }
+                catch
+                {
+                    return "Unknown";
                 }
             }
         }
 
         /// <summary>
-        /// The category of the item
+        /// File path of the first parent file we have cached.
         /// </summary>
-        public string Category
+        public string ParentFilePath
+        {
+            get
+            {
+                if (_creatorView != null)
+                {
+                    if (_creatorView.ParentsDictionary != null && _creatorView.ParentsDictionary.ContainsKey(FilePath))
+                    {
+                        var parents = _creatorView.ParentsDictionary[FilePath];
+                        if (parents.Count > 0)
+                        {
+                            // TOOD - Need to choose same-root parent when multiple parents are present.
+                            return parents[0];
+                        }
+                    }
+                }
+                return null;
+            }
+        }
+
+        public string FilePath
         {
             get
             {
                 if (Mod == null)
                 {
-                    return Json.Category;
+                    return Json.FullPath;
                 }
                 else
                 {
-                    return Mod.category;
+                    return Mod.fullPath;
                 }
             }
         }
+
+        /// <summary>
+        /// The name of the item
+        /// </summary>
+        public string FileName
+        {
+            get
+            {
+                return Path.GetFileName(FilePath);
+            }
+        }
+
+        public string Material
+        {
+            get
+            {
+                if (Extension == "tex")
+                {
+                    var parent = ParentFilePath;
+                    if (parent != null)
+                    {
+                        // We have an associated MTRL file.
+                        return GetMaterialId(parent);
+                    } else
+                    {
+                        // A null parent means we are either orphaned,
+                        // still processing, or not a dependency enabled file.
+                        return "-";
+                    }
+                } else if (Extension == "mtrl")
+                {
+                    // We are an MTRL file.
+                    return GetMaterialId(FilePath);
+                }
+
+                // We don't have an associated MTRL file, or we don't use one.
+                return "-";
+            }
+        }
+
         /// <summary>
         /// The race associated with the mod
         /// </summary>
@@ -181,30 +270,35 @@ namespace xivModdingFramework.Mods.DataContainers
         {
             get
             {
-                if (Mod == null)
+                var race = XivRace.All_Races;
+                if (Extension == "tex")
                 {
-                    return GetRace(Json.FullPath).GetDisplayName();
+                    var parent = ParentFilePath;
+                    if (parent != null)
+                    {
+                        // We have an associated MTRL file.
+                        race = GetRace(parent);
+                    }
+                    else
+                    {
+                        // We have no associated MTRL file, hopefully Race Data is available in our own path.
+                        // (Race data is indeterminable for orphaned custom file path textures)
+                        race = GetRace(FilePath);
+                    }
                 }
                 else
                 {
-                    return GetRace(Mod.fullPath).GetDisplayName();
+                    // Everything else either has Race Data in its own path, or is all races.
+                    race = GetRace(FilePath);
                 }
-            }
-        }
-        /// <summary>
-        /// The item part
-        /// </summary>
-        public string Part
-        {
-            get
-            {
-                if (Mod == null)
+
+
+                if (race == XivRace.All_Races)
                 {
-                    return GetPart(Json.FullPath);
-                }
-                else
+                    return "-";
+                } else
                 {
-                    return GetPart(Mod.fullPath);
+                    return race.GetDisplayName();
                 }
             }
         }
@@ -217,9 +311,17 @@ namespace xivModdingFramework.Mods.DataContainers
             return await _importerView._modding.IsModEnabled(Json.FullPath, false);
         }
 
-        /// <summary>
-        /// The item part
-        /// </summary>
+        public string ActiveText
+        {
+            get {
+                if (Active) {
+                    return "Active";
+                } else
+                {
+                    return "-";
+                }
+            }
+        }
         public bool Active
         {
             get
@@ -252,50 +354,7 @@ namespace xivModdingFramework.Mods.DataContainers
         {
             get
             {
-                if (Mod == null)
-                {
-                    return GetType(Json.FullPath);
-                }
-                else
-                {
-                    return GetType(Mod.fullPath);
-                }
-            }
-        }
-
-        /// <summary>
-        /// The item number
-        /// </summary>
-        public string Num
-        {
-            get
-            {
-                if (Mod == null)
-                {
-                    return GetNumber(Json.FullPath);
-                }
-                else
-                {
-                    return GetNumber(Mod.fullPath);
-                }
-            }
-        }
-
-        /// <summary>
-        /// The item texture map
-        /// </summary>
-        public string Map
-        {
-            get
-            {
-                if (Mod == null)
-                {
-                    return GetMap(Json.FullPath);
-                }
-                else
-                {
-                    return GetMap(Mod.fullPath);
-                }
+                return GetType(FilePath);
             }
         }
 
@@ -315,251 +374,213 @@ namespace xivModdingFramework.Mods.DataContainers
 
         public int CompareTo(SimpleModpackEntry obj)
         {
-            return Name.CompareTo(obj.Name);
+            return FileName.CompareTo(obj.ItemName);
         }
+
+        private static readonly Regex _extractRaceRegex = new Regex(".*c([0-9]{4})");
 
         /// <summary>
         /// Gets the race from the path
         /// </summary>
         /// <param name="modPath">The mod path</param>
         /// <returns>The race as XivRace</returns>
-        private static XivRace GetRace(string modPath)
+        public static XivRace GetRace(string modPath)
         {
-            XivRace xivRace = XivRace.All_Races;
-
-            if (modPath.Contains("ui/") || modPath.Contains(".avfx"))
+            // I'm 99% sure we have another function somewhere that already does this, but whatever.
+            var match = _extractRaceRegex.Match(modPath);
+            if(match.Success)
             {
-                xivRace = XivRace.All_Races;
+                return XivRaces.GetXivRace(match.Groups[1].Value);
             }
-            else if (modPath.Contains("monster"))
-            {
-                xivRace = XivRace.Monster;
-            }
-            else if (modPath.Contains("bgcommon"))
-            {
-                xivRace = XivRace.All_Races;
-            }
-            else if (modPath.Contains(".tex") || modPath.Contains(".mdl") || modPath.Contains(".atex"))
-            {
-                if (modPath.Contains("accessory") || modPath.Contains("weapon") || modPath.Contains("/common/"))
-                {
-                    xivRace = XivRace.All_Races;
-                }
-                else
-                {
-                    if (modPath.Contains("demihuman"))
-                    {
-                        xivRace = XivRace.DemiHuman;
-                    }
-                    else if (modPath.Contains("/v"))
-                    {
-                        string raceCode = modPath.Substring(modPath.IndexOf("_c") + 2, 4);
-                        xivRace = XivRaces.GetXivRace(raceCode);
-                    }
-                    else
-                    {
-                        string raceCode = modPath.Substring(modPath.IndexOf("/c") + 2, 4);
-                        xivRace = XivRaces.GetXivRace(raceCode);
-                    }
-                }
-            }
-
-            return xivRace;
+            return XivRace.All_Races;
         }
 
 
+        // This is the old ""Number"" field TexTools used to expose.
+        // It's actually just the secondary ID for everything but Demihumans.
+        private static readonly Regex _extractSecondaryId = new Regex("(?:c[0-9]{4}).*(?:f|z|b|h|t)([0-9]{4})");
+        private static readonly Regex _extractSlot = new Regex("_([a-z]{3})[_\\.]");
+
+        public static string GetFancyName(string itemName, string internalPath, string slotPath = null)
+        {
+            var id = GetFancyNameId(internalPath);
+            var name = itemName;
+            if(id != null)
+            {
+                name += " - " + id;
+
+
+                var suffix = Path.GetExtension(internalPath);
+                if (string.IsNullOrEmpty(suffix))
+                {
+                    suffix = "Unknown";
+                }
+                else
+                {
+                    suffix = suffix.Substring(1);
+                }
+
+                if (suffix == "mtrl" || suffix == "tex")
+                {
+                    // So if we have an ID # to display, we're one of the funny "Character" subtype items
+                    // where we bash the actual identifiers and list them all as just "Face" or "Tail", etc.
+                    // This means we also need to scrape the slot information.
+                    slotPath = slotPath != null ? slotPath : internalPath;
+
+                    var match = _extractSlot.Match(slotPath);
+                    if (match.Success)
+                    {
+                        var niceSlotName = Mdl.SlotAbbreviationDictionary.FirstOrDefault(x => x.Value == match.Groups[1].Value).Key;
+                        if (String.IsNullOrEmpty(niceSlotName))
+                        {
+                            niceSlotName = match.Groups[1].Value;
+                        }
+
+                        name += " - " + niceSlotName;
+                    }
+                }
+
+
+            }
+            return name;
+        }
+
         /// <summary>
-        /// Gets the number from the path
+        /// Gets the Secondary Id for the path; at least for the cases where we use
+        /// non-unique Item Names, like Faces, Tails, etc.
         /// </summary>
         /// <param name="modPath">The mod path</param>
         /// <returns>The number</returns>
-        public static string GetNumber(string modPath)
+        public static string GetFancyNameId(string modPath)
         {
-            string number = "-";
-
-            if (modPath.Contains("/human/") && modPath.Contains("/body/"))
+            var match = _extractSecondaryId.Match(modPath);
+            if(match.Success)
             {
-                number = modPath.Substring(modPath.LastIndexOf("/b") + 2, 4).TrimStart('0');
+                return match.Groups[1].Value;
             }
-            else if (modPath.Contains("/face/"))
-            {
-                number = modPath.Substring(modPath.LastIndexOf("/f") + 2, 4).TrimStart('0');
-            }
-            else if (modPath.Contains("decal_face"))
-            {
-                number = modPath.Substring(modPath.IndexOf("/decal_face") + 19, 2).TrimEnd('.');
-            }
-            else if (modPath.Contains("decal_equip"))
-            {
-                if (modPath.Contains("stigma"))
-                {
-                    number = "stigma";
-                }
-                else
-                {
-                    number = modPath.Substring(modPath.LastIndexOf("_") + 1, 3).TrimStart('0');
-                }
-            }
-            else if (modPath.Contains("/hair/"))
-            {
-                number = modPath.Substring(modPath.LastIndexOf("/h") + 2, 4).TrimStart('0');
-            }
-            else if (modPath.Contains("/tail/"))
-            {
-                number = modPath.Substring(modPath.LastIndexOf("l/t") + 3, 4).TrimStart('0');
-            }
-            else if (modPath.Contains("/zear/"))
-            {
-                number = modPath.Substring(modPath.IndexOf("/zear") + 8, 3).TrimStart('0');
-            }
-
-            return number;
+            return null;
         }
 
         /// <summary>
-        /// Gets the type from the path
+        /// Gets the human readable type from the path
         /// </summary>
         /// <param name="modPath">The mod path</param>
         /// <returns>The type</returns>
-        private static string GetType(string modPath)
+        public static string GetType(string modPath)
         {
-            string type = "-";
-
-            if (modPath.Contains(".tex") || modPath.Contains(".mdl") || modPath.Contains(".atex"))
+            var exRaw = Path.GetExtension(modPath);
+            if(string.IsNullOrEmpty(exRaw))
             {
-                if (modPath.Contains("demihuman"))
-                {
-                    type = Mdl.SlotAbbreviationDictionary[modPath.Substring(modPath.LastIndexOf("/") + 16, 3)];
-                }
-
-                if (modPath.Contains("/face/"))
-                {
-                    if (modPath.Contains(".tex"))
-                    {
-                        string fileName = Path.GetFileNameWithoutExtension(modPath);
-                        try
-                        {
-                            type = FaceTypes[fileName.Substring(fileName.IndexOf("_") + 1, 3)];
-                        }
-                        catch (Exception ex)
-                        {
-                            type = "Unknown";
-                        }
-                    }
-                }
-
-                if (modPath.Contains("/hair/"))
-                {
-                    if (modPath.Contains(".tex"))
-                    {
-                        string fileName = Path.GetFileNameWithoutExtension(modPath);
-                        try
-                        {
-                            type = HairTypes[fileName.Substring(fileName.IndexOf("_") + 1, 3)];
-                        }
-                        catch
-                        {
-                            type = "Unknown";
-                        }
-                    }
-                }
-
-                if (modPath.Contains("/vfx/"))
-                {
-                    type = "VFX";
-                }
-
+                return "Unknown";
             }
-            else if (modPath.Contains(".avfx"))
+            var ext = exRaw.Substring(1);
+            if(ext == "mdl")
             {
-                type = "AVFX";
+                return "Model";
+            } else if ( ext == "meta") {
+                return "Metadata";
+            } else if (ext == "mtrl") {
+                return "Material";
+            } else if(ext == "tex")
+            {
+                return "Texture - " + GuessTextureUsage(modPath).ToString();
+            } else
+            {
+                return ext.ToUpper();
             }
-
-            return type;
         }
+
+
+        private static Regex _materialExtractionRegex = new Regex("(?:v([0-9]{4}).*)?(?:_([a-z]+)\\.mtrl$)");
 
         /// <summary>
-        /// Gets the part from the path
+        /// Extracts the Material Variant and Material Identifier from a material path.
         /// </summary>
-        /// <param name="modPath">The mod path</param>
-        /// <returns>The part</returns>
-        public static string GetPart(string modPath)
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public static string GetMaterialId(string path)
         {
-            string part = "-";
-            string[] parts = new[] { "a", "b", "c", "d", "e", "f" };
-
-            if (modPath.Contains("/texture/"))
+            var match = _materialExtractionRegex.Match(path);
+            if (match.Success)
             {
-                part = modPath.Substring(modPath.LastIndexOf("_") - 1, 1);
-                foreach (string letter in parts)
+                var ret = "";
+                if(match.Groups[1].Success)
                 {
-                    if (part == letter) return part;
+                    ret += "v" + match.Groups[1].Value + " - ";
                 }
-                return "a";
-            }
-            else if (modPath.Contains("/material/"))
-            {
-                return modPath.Substring(modPath.LastIndexOf("_") + 1, 1);
-            }
 
-            return part;
+                return  ret + match.Groups[2].Value;
+            } else
+            {
+                return "-";
+            }
         }
 
+        private static readonly Regex _normRegex = new Regex("(_n(\\.|_))|(norm)");
+        private static readonly Regex _diffuseRegex = new Regex("(_d(\\.|_))|(diff)");
+        private static readonly Regex _specRegex = new Regex("(_s(\\.|_))|(spec)");
+        private static readonly Regex _multiRegex = new Regex("(_m(\\.|_))|(mul)|(mask)");
+        private static readonly Regex _reflectionRegex = new Regex("(catchlight|refl)");
+        private static readonly Regex _iconRegex = new Regex("^ui/icon/");
+        private static readonly Regex _mapRegex = new Regex("^ui/map/");
+        private static readonly Regex _loadingImageRegex = new Regex("^ui/loadingimage/");
+        private static readonly Regex _uldRegex = new Regex("^ui/uld/");
 
         /// <summary>
-        /// Gets the map from the path
+        /// This function *Guesses* the texture usage type of a texture file, 
+        /// based on its file name.  This is not 100% accurate, but it's significantly
+        /// cheaper than ripping open the parent MTRL file to pull its usage type.
+        /// 
+        /// Long term, we may want to consider having the cache queue calculate this for us.
         /// </summary>
-        /// <param name="modPath">The mod path</param>
-        /// <returns>The map</returns>
-        private static string GetMap(string modPath)
-        {
-            XivTexType xivTexType = XivTexType.Other;
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public static XivTexType GuessTextureUsage(string path) {
+            
+            if(_normRegex.IsMatch(path))
+            {
+                return XivTexType.Normal;
+            } else if(_diffuseRegex.IsMatch(path))
+            {
+                return XivTexType.Diffuse;
+            }
+            else if (_specRegex.IsMatch(path))
+            {
+                return XivTexType.Specular;
+            }
+            else if (_multiRegex.IsMatch(path))
+            {
+                return XivTexType.Multi;
+            }
+            else if (_reflectionRegex.IsMatch(path))
+            {
+                return XivTexType.Reflection;
+            } else if(_iconRegex.IsMatch(path))
+            {
+                return XivTexType.Icon;
 
-            if (modPath.Contains(".mdl"))
+            }
+            else if (_mapRegex.IsMatch(path))
             {
-                return "3D";
+                return XivTexType.Map;
+
+            }
+            else if (_loadingImageRegex.IsMatch(path))
+            {
+                return XivTexType.UI;
+
+            }
+            else if (_uldRegex.IsMatch(path))
+            {
+                return XivTexType.UI;
+
+            }
+            else
+            {
+                return XivTexType.Other;
             }
 
-            if (modPath.Contains(".mtrl"))
-            {
-                return "ColorSet";
-            }
-
-            if (modPath.Contains("ui/"))
-            {
-                string subString = modPath.Substring(modPath.IndexOf("/") + 1);
-                return subString.Substring(0, subString.IndexOf("/"));
-            }
-
-            if (modPath.Contains("_s.tex") || modPath.Contains("skin_m"))
-            {
-                xivTexType = XivTexType.Specular;
-            }
-            else if (modPath.Contains("_d.tex"))
-            {
-                xivTexType = XivTexType.Diffuse;
-            }
-            else if (modPath.Contains("_n.tex"))
-            {
-                xivTexType = XivTexType.Normal;
-            }
-            else if (modPath.Contains("_m.tex"))
-            {
-                xivTexType = XivTexType.Multi;
-            }
-            else if (modPath.Contains(".atex"))
-            {
-                string atex = Path.GetFileNameWithoutExtension(modPath);
-                return atex.Substring(0, 4);
-            }
-            else if (modPath.Contains("decal"))
-            {
-                xivTexType = XivTexType.Mask;
-            }
-
-            return xivTexType.ToString();
         }
-
 
         private static readonly Dictionary<string, string> FaceTypes = new Dictionary<string, string>
         {
@@ -582,7 +603,7 @@ namespace xivModdingFramework.Mods.DataContainers
             {"dwn", XivStrings.Legs},
             {"sho", XivStrings.Feet},
             {"top", XivStrings.Body},
-            {"ear", XivStrings.Ears},
+            {"ear", XivStrings.Earring},
             {"nek", XivStrings.Neck},
             {"rir", XivStrings.Ring_Right},
             {"ril", XivStrings.Ring_Left},

@@ -25,6 +25,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Forms;
 using Xceed.Wpf.Toolkit;
+using xivModdingFramework.Cache;
 using xivModdingFramework.Mods.DataContainers;
 using xivModdingFramework.Mods.FileTypes;
 
@@ -59,6 +60,21 @@ namespace FFXIV_TexTools.Views
             ModPackAuthorLabel.Content = modPackJson.Author;
             ModPackVersionLabel.Content = modPackJson.Version;
             ModPackDescription.Text = modPackJson.Description;
+
+
+            if (String.IsNullOrEmpty(modPackJson.MinimumFrameworkVersion))
+            {
+                Version ver;
+                bool success = Version.TryParse(modPackJson.MinimumFrameworkVersion, out ver);
+                if (success)
+                {
+                    var frameworkVersion = typeof(XivCache).Assembly.GetName().Version;
+                    if (ver > frameworkVersion)
+                    {
+                        throw new NotSupportedException("This modpack requires a more recent TexTools version to install.");
+                    }
+                }
+            }
 
             _modPackEntry = new ModPack{name = modPackJson.Name, author = modPackJson.Author, version = modPackJson.Version};
 

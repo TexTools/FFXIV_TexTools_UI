@@ -208,6 +208,14 @@ namespace FFXIV_TexTools.ViewModels
             {
                 raceIndex = Races.IndexOf(defaultRace[0]);
             }
+            else if(Races.Count == 0)
+            {
+                // If there are no races, we're done.
+                if (LoadingComplete != null)
+                {
+                    LoadingComplete.Invoke(this, null);
+                }
+            }
 
             SelectedRaceIndex = raceIndex;
 
@@ -1631,8 +1639,8 @@ namespace FFXIV_TexTools.ViewModels
                         mtrlItem = new XivGenericItemModel
                         {
                             PrimaryCategory = XivStrings.Character,
-                            SecondaryCategory = XivStrings.Ears,
-                            Name = XivStrings.Ears,
+                            SecondaryCategory = XivStrings.Ear,
+                            Name = XivStrings.Ear,
                             ModelInfo = new XivModelInfo
                             {
                                 SecondaryID = bodyID
