@@ -1,0 +1,68 @@
+﻿<Controls:MetroWindow x:Class="FFXIV_TexTools.Views.DependencyInfoView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
+        mc:Ignorable="d"
+        Title="File Info" Width="800" Height="600">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="35"/>
+            <RowDefinition Height="35"/>
+            <RowDefinition Height="100*"/>
+            <RowDefinition Height="35"/>
+            <RowDefinition Height="100*"/>
+            <RowDefinition Height="35"/>
+            <RowDefinition Height="100*"/>
+        </Grid.RowDefinitions>
+
+
+        <TextBlock x:Name="FilePathLabel" Text="/FILE PATH/" Margin="0,10,0,9"  Grid.ColumnSpan="3" FontWeight="Bold" TextAlignment="Center" VerticalAlignment="Center" Height="16"/>
+
+        <Grid Grid.Column="0" Grid.Row="1" Grid.RowSpan="4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="120"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="35"/>
+                <RowDefinition Height="35"/>
+                <RowDefinition Height="35"/>
+                <RowDefinition Height="35"/>
+                <RowDefinition Height="35"/>
+            </Grid.RowDefinitions>
+
+            <Label Content="File Name:" Margin="0" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"  Grid.Row="0"/>
+            <TextBlock x:Name="FileNameBox" Grid.Column="1" Grid.Row="0" Text="FILENAME" VerticalAlignment="Center"></TextBlock>
+
+            <Label Content="First Root Name:" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Grid.Row="1"/>
+            <TextBlock x:Name="RootNameBox" Grid.Column="1" Grid.Row="1" Text="ROOT_NAME" VerticalAlignment="Center"></TextBlock>
+
+            <Label Content="Model Level Item:" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Grid.Row="2"/>
+            <TextBlock x:Name="ModelLevelBox" Grid.Column="1" Grid.Row="2" Text="MODEL_ITEM_NAME" VerticalAlignment="Center"></TextBlock>
+
+            <Label Content="Material Level Item:" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Grid.Row="3"/>
+            <TextBlock x:Name="MaterialLevelBox" Grid.Column="1" Grid.Row="3" Text="MATERIAL_ITEM_NAME" VerticalAlignment="Center"></TextBlock>
+
+            <TextBlock x:Name="WarningLabel" Text="Warning Text" Grid.Row="4" Grid.ColumnSpan="2" FontStyle="Italic" TextAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap"/>
+        </Grid>
+
+        <Label Content="Affected Items" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.Row="5"  Grid.Column="0"/>
+        <ListBox x:Name="AffectedItemsBox" Margin="5" Style="{DynamicResource SimpleListBox}" Grid.Row="6"  Grid.Column="0"/>
+
+
+        <Label Content="Parent Files" HorizontalContentAlignment="Center" VerticalContentAlignment="Bottom" Grid.Row="1" Grid.Column="1" />
+        <ListBox x:Name="ParentFilesBox" Grid.Row="2" Margin="5" Style="{DynamicResource SimpleListBox}" Grid.Column="1" ></ListBox>
+        <Label Content="Sibling Files" HorizontalContentAlignment="Center" VerticalContentAlignment="Bottom" Grid.Row="3" Grid.Column="1"/>
+        <ListBox x:Name="SiblingFilesBox" Grid.Row="4" Margin="5" Style="{DynamicResource SimpleListBox}" Grid.Column="1" ></ListBox>
+        <Label Content="Child Files" HorizontalContentAlignment="Center" VerticalContentAlignment="Bottom" Grid.Row="5" Grid.Column="1"/>
+        <ListBox x:Name="ChildFilesBox" Grid.Row="6" Margin="5" Style="{DynamicResource SimpleListBox}" Grid.Column="1" ></ListBox>
+
+
+    </Grid>
+</Controls:MetroWindow>

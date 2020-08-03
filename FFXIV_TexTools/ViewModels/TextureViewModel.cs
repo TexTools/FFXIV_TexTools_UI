@@ -1288,6 +1288,25 @@ namespace FFXIV_TexTools.ViewModels
         }
 
         /// <summary>
+        /// Command for the Details button
+        /// </summary>
+        public ICommand OpenFileDetails => new RelayCommand(ShowFileDetails);
+
+        /// <summary>
+        /// Opens the dependency dialog.
+        /// </summary>
+        private void ShowFileDetails(object obj)
+        {
+            if (SelectedMap != null && SelectedMap.TexType != null) 
+            { 
+                var path = SelectedMap.TexType.Path;
+                var view = new DependencyInfoView(path);
+                view.ShowDialog();
+            }
+        }
+
+
+        /// <summary>
         /// Imports a texture file 
         /// </summary>
         /// <remarks>

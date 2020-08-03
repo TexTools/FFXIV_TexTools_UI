@@ -1829,6 +1829,25 @@ namespace FFXIV_TexTools.ViewModels
             TransparencyToggle = false;
         }
 
+
+        /// <summary>
+        /// Command for the Details button
+        /// </summary>
+        public ICommand OpenFileDetails => new RelayCommand(ShowFileDetails);
+
+        /// <summary>
+        /// Opens the dependency dialog.
+        /// </summary>
+        private void ShowFileDetails(object obj)
+        {
+            if (_model != null)
+            {
+                var path = _model.Source;
+                var view = new DependencyInfoView(path);
+                view.ShowDialog();
+            }
+        }
+
         /// <summary>
         /// Event fired when add to FMV button is clicked
         /// </summary>

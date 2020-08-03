@@ -268,8 +268,9 @@ namespace FFXIV_TexTools
         {
             var gameDir = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
             var lang = XivLanguages.GetXivLanguage(Properties.Settings.Default.Application_Language);
-            await LockUi("Validating Cache", "If you have many mods, this may take a minute...", this);
-            // Kick this in a new thread because the cache call will lock up the one it's on.
+            await LockUi("Updating Cache", "If you have many mods, this may up to 5 minutes...", this);
+
+            // Kick this in a new thread because the cache call will lock up the one it's on if it has to do a rebuild.
             await Task.Run(async () =>
             {
                 bool cacheOK = true;
