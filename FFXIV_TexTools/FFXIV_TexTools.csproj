@@ -240,6 +240,7 @@
     <Compile Include="Controls\FeedbackControl.xaml.cs">
       <DependentUpon>FeedbackControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Custom\CustomBoneSkinMeshGeometry3D.cs" />
     <Compile Include="Custom\CustomEffectsManager.cs" />
     <Compile Include="Custom\CustomMeshGeometryModel3D.cs" />
     <Compile Include="Helpers\FlexibleMessageBox.cs" />
@@ -289,6 +290,8 @@
     <Compile Include="Textures\ColorChannels.cs" />
     <Compile Include="ViewModels\BaseViewPortViewModel.cs" />
     <Compile Include="ViewModels\CustomizeViewModel.cs" />
+    <Compile Include="ViewModels\FullModelViewModel.cs" />
+    <Compile Include="ViewModels\FullModelViewport3DViewModel.cs" />
     <Compile Include="ViewModels\IconSearchViewModel.cs" />
     <Compile Include="ViewModels\ImportModelEditViewModel.cs" />
     <Compile Include="ViewModels\ImportModelViewModel.cs" />
@@ -328,6 +331,12 @@
     </Compile>
     <Compile Include="Views\ModConverterView.xaml.cs">
       <DependentUpon>ModConverterView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Models\FullModelExportDialogView.xaml.cs">
+      <DependentUpon>FullModelExportDialogView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Models\FullModelView.xaml.cs">
+      <DependentUpon>FullModelView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Models\ImportModelEditView.xaml.cs">
       <DependentUpon>ImportModelEditView.xaml</DependentUpon>
@@ -474,6 +483,14 @@
     <Page Include="Views\ModConverterView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Models\FullModelExportDialogView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Models\FullModelView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Models\ImportModelEditView.xaml">
       <SubType>Designer</SubType>

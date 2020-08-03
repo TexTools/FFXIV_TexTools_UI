@@ -15,37 +15,32 @@
 
 using AutoUpdaterDotNET;
 using FFXIV_TexTools.Helpers;
-using FFXIV_TexTools.Models;
 using FFXIV_TexTools.Properties;
 using FFXIV_TexTools.Resources;
 using FFXIV_TexTools.ViewModels;
 using FFXIV_TexTools.Views;
+using FFXIV_TexTools.Views.Models;
 using MahApps.Metro;
 using MahApps.Metro.Controls.Dialogs;
 using SixLabors.ImageSharp;
 using System;
-using System.Linq;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Data;
 using System.Windows.Forms;
 using System.Windows.Threading;
+using xivModdingFramework.Cache;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Items.Interfaces;
-using xivModdingFramework.Mods;
 using xivModdingFramework.Mods.DataContainers;
 using xivModdingFramework.Mods.FileTypes;
 using xivModdingFramework.SqPack.FileTypes;
 using Application = System.Windows.Application;
-using System.Threading;
-using xivModdingFramework.Cache;
-using ControlzEx.Standard;
 
 namespace FFXIV_TexTools
 {
@@ -56,6 +51,7 @@ namespace FFXIV_TexTools
     {
         private string _startupArgs;
         private static MainWindow _mainWindow;
+        private FullModelView _fmv;
 
 
         /// <summary>
@@ -212,6 +208,7 @@ namespace FFXIV_TexTools
                 var modelViewModel = modelView.DataContext as ModelViewModel;
 
                 modelViewModel.LoadingComplete += ModelViewModelOnLoadingComplete;
+                modelViewModel.AddToFullModelEvent += ModelViewModelOnAddToFullModelEvent;
 
 
                 // This can be set whereever, since the item select won't fire it unless things are loaded fully.
@@ -220,6 +217,25 @@ namespace FFXIV_TexTools
 
                 InitializeCache();
             }
+        }
+
+        /// <summary>
+        /// Event handler for adding models to the full model view
+        /// </summary>
+        private async void ModelViewModelOnAddToFullModelEvent(object sender, EventArgs e)
+        {
+            // Gets the model data of the current model in the model view
+            var modelData = e as ModelViewModel.fullModelEventArgs;
+
+            // Open the full model view if it is not already open
+            if (_fmv == null || !_fmv.IsLoaded)
+            {
+                _fmv = new FullModelView();
+
+                _fmv.Show();
+            }
+
+            await _fmv.AddModel(modelData.TTModelData, modelData.TextureData, modelData.Item, modelData.XivRace);
         }
 
         private void LanguageSelection()
@@ -1149,6 +1165,15 @@ namespace FFXIV_TexTools
             var modConverterView = new ModConverterView(list,ttmpFileName, ttmpData) { Owner = this,WindowStartupLocation=WindowStartupLocation.CenterOwner };
             await progressController.CloseAsync();
             modConverterView.ShowDialog();
+        }
+
+        /// <summary>
+        /// Event handler for clicking on Full Model Viewer in the menu
+        /// </summary>
+        private void FullModelViewer_Click(object sender, RoutedEventArgs e)
+        {
+            _fmv = new FullModelView() { Owner = this };
+            _fmv.Show();
         }
     }
 }

@@ -75,7 +75,7 @@ namespace FFXIV_TexTools.ViewModels
 
         private string _lightXLabel = "X  |  0", _lightYLabel = "Y  |  0", _lightZLabel = "Z  |  0", _reflectionLabel = $"{UIStrings.Reflection}  |  1", _modToggleText = UIStrings.Enable_Disable, _modelStatusLabel;
         private ComboBoxData _selectedRace, _selectedPart, _selectedNumber, _selectedMesh;
-        private Visibility _numberVisibility, _partVisibility, _lightToggleVisibility = Visibility.Collapsed;
+        private Visibility _numberVisibility, _partVisibility, _lightToggleVisibility = Visibility.Collapsed, _fmvVisibility;
         private bool _light1Check = true, _light2Check, _light3Check, _lightRenderToggle, _transparencyToggle, _cullModeToggle, _keepCameraChecked;
 
         private IItemModel _item;
@@ -87,6 +87,7 @@ namespace FFXIV_TexTools.ViewModels
         private Timer _modelStatusTimer;
 
         public event EventHandler LoadingComplete;
+        public event EventHandler AddToFullModelEvent;
 
         private Dictionary<int, ModelTextureData> _materialDictionary;
 
@@ -170,6 +171,8 @@ namespace FFXIV_TexTools.ViewModels
 
                     Races.Add(raceCBD);
                 }
+
+                FMVVisibility = Visibility.Visible;
             }
             else if (itemModel.PrimaryCategory.Equals(XivStrings.Companions))
             {
@@ -178,6 +181,8 @@ namespace FFXIV_TexTools.ViewModels
                 Races.Add(_item.GetPrimaryItemType() == XivItemType.demihuman
                     ? new ComboBoxData { Name = XivRace.DemiHuman.GetDisplayName(), XivRace = XivRace.DemiHuman }
                     : new ComboBoxData { Name = XivRace.Monster.GetDisplayName(), XivRace = XivRace.Monster });
+
+                FMVVisibility = Visibility.Hidden;
             }
             else if (itemModel.PrimaryCategory.Equals(XivStrings.Character))
             {
@@ -189,10 +194,14 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     Races.Add(new ComboBoxData { Name = racesAndNumber.Key.GetDisplayName(), XivRace = racesAndNumber.Key });
                 }
+
+                FMVVisibility = Visibility.Visible;
             }
             else if (itemModel.PrimaryCategory.Equals(XivStrings.Housing))
             {
                 Races.Add(new ComboBoxData { Name = XivRace.All_Races.GetDisplayName(), XivRace = XivRace.All_Races });
+
+                FMVVisibility = Visibility.Hidden;
             }
 
             _raceCount = Races.Count;
@@ -985,6 +994,19 @@ namespace FFXIV_TexTools.ViewModels
         }
 
         /// <summary>
+        /// Flag for visibility of full model view button
+        /// </summary>
+        public Visibility FMVVisibility
+        {
+            get => _fmvVisibility;
+            set
+            {
+                _fmvVisibility = value;
+                NotifyPropertyChanged(nameof(FMVVisibility));
+            }
+        }
+
+        /// <summary>
         /// Updates the Cull Mode
         /// </summary>
         private void UpdateCullMode(bool noneCull)
@@ -1104,6 +1126,15 @@ namespace FFXIV_TexTools.ViewModels
         public ICommand ImportCommand => new RelayCommand(Import);
         public ICommand OpenFolder => new RelayCommand(OpenSavedFolder);
         public ICommand ModelInspector => new RelayCommand(OpenModelInspector);
+        public ICommand AddToFullModelViewerCommand => new RelayCommand(AddToFullModelView);
+
+        /// <summary>
+        /// Triggers event when add to FMV button is clicked
+        /// </summary>
+        private void AddToFullModelView(object obj)
+        {
+            OnFullModelClick();
+        }
 
         private string GetItem3DFolder()
         {
@@ -1796,6 +1827,29 @@ namespace FFXIV_TexTools.ViewModels
             NumberVisibility = Visibility.Collapsed;
             PartVisibility = Visibility.Collapsed;
             TransparencyToggle = false;
+        }
+
+        /// <summary>
+        /// Event fired when add to FMV button is clicked
+        /// </summary>
+        protected virtual void OnFullModelClick()
+        {
+            var fmea = new fullModelEventArgs { TTModelData = _model, TextureData = _materialDictionary, Item = _item, XivRace = SelectedRace.XivRace};
+
+            AddToFullModelEvent?.Invoke(this, fmea);
+        }
+
+        /// <summary>
+        /// Class containing properties for full model event arguments
+        /// </summary>
+        public class fullModelEventArgs : EventArgs
+        {
+            public TTModel TTModelData { get; set; }
+            public Dictionary<int, ModelTextureData> TextureData { get; set; }
+
+            public IItemModel Item { get; set; }
+
+            public XivRace XivRace { get; set; }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

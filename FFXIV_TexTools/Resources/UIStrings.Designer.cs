@@ -837,6 +837,24 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Full Model Name.
+        /// </summary>
+        public static string Full_Model_Name {
+            get {
+                return ResourceManager.GetString("Full_Model_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Export Location:.
+        /// </summary>
+        public static string FullModel_Export_Location {
+            get {
+                return ResourceManager.GetString("FullModel_Export_Location", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Go through the wizard and select relevant options to import mod pack.
         /// </summary>
         public static string Go_through_the_wizard_and_select_relevant_options_to_import_mod_pack {
@@ -1373,6 +1391,15 @@ namespace FFXIV_TexTools.Resources {
         public static string Model_Search {
             get {
                 return ResourceManager.GetString("Model_Search", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Model Skeleton:.
+        /// </summary>
+        public static string Model_Skeleton {
+            get {
+                return ResourceManager.GetString("Model_Skeleton", resourceCulture);
             }
         }
         
@@ -2263,6 +2290,15 @@ namespace FFXIV_TexTools.Resources {
         public static string Size_colon {
             get {
                 return ResourceManager.GetString("Size_colon", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Skeleton.
+        /// </summary>
+        public static string Skeleton {
+            get {
+                return ResourceManager.GetString("Skeleton", resourceCulture);
             }
         }
         

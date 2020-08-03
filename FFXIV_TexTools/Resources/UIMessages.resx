@@ -703,4 +703,23 @@ TexTools only supports importing *.ttmp and *.ttmp2 ModPacks. </value>
   <data name="ExportErrorTitle" xml:space="preserve">
     <value>Export Error</value>
   </data>
+  <data name="MissingDeforms" xml:space="preserve">
+    <value>Could not apply [{0}] deform to [{1}].
+
+Missing Deforms:{2}
+
+No scaling was applied.</value>
+  </data>
+  <data name="MissingDeformsTitle" xml:space="preserve">
+    <value>Model Deformer Warning</value>
+  </data>
+  <data name="MissingBones" xml:space="preserve">
+    <value>Could not find the following bones for {0}.
+{1}
+
+This may affect animations.</value>
+  </data>
+  <data name="MissingBonesTitle" xml:space="preserve">
+    <value>Missing Bones</value>
+  </data>
 </root>

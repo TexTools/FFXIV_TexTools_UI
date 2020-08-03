@@ -45,12 +45,16 @@ namespace FFXIV_TexTools.ViewModels
         private Vector3D _light1Direction;
         private Vector3D _light2Direction;
         private Vector3D _light3Direction;
-        private double _lightX, _light1X, _light2X, _lightY, _light1Y, _light2Y, _lightZ, _light1Z, _light2Z;
+        protected double _lightX, _light1X, _light2X, _lightY, _light1Y, _light2Y, _lightZ, _light1Z, _light2Z;
         private bool _renderLight3;
         private readonly ModelViewModel _modelViewModel;
-        private List<Stream> streamList = new List<Stream>();
+        protected List<Stream> streamList = new List<Stream>();
 
         public ObservableElement3DCollection Models { get; } = new ObservableElement3DCollection();
+
+        public Viewport3DViewModel()
+        {
+        }
 
         public Viewport3DViewModel(ModelViewModel mvm)
         {
@@ -129,7 +133,6 @@ namespace FFXIV_TexTools.ViewModels
         /// <param name="textureDataDictionary">The texture dictionary for the model</param>
         public void UpdateModel(TTModel model, Dictionary<int, ModelTextureData> textureDataDictionary)
         {
-
             SharpDX.BoundingBox? boundingBox = null;
             ModelModifiers.CalculateTangents(model);
 
@@ -239,7 +242,7 @@ namespace FFXIV_TexTools.ViewModels
         /// <summary>
         /// Event handler for the camera property changing
         /// </summary>
-        private void CameraInternal_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        protected virtual void CameraInternal_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName.Equals("LookDirection"))
             {
@@ -480,7 +483,7 @@ namespace FFXIV_TexTools.ViewModels
         {
             foreach (var model in Models)
             {
-                var material = ((CustomMeshGeometryModel3D)model).Material as PhongMaterial;
+                var material = ((MeshGeometryModel3D)model).Material as PhongMaterial;
 
                 material.SpecularShininess = value;
             }
@@ -496,7 +499,7 @@ namespace FFXIV_TexTools.ViewModels
         /// with the exception of any model which contains a body mesh
         /// </remarks>
         /// <param name="transparencyEnabled">The transparency enabled flag</param>
-        public void UpdateTransparency(bool transparencyEnabled)
+        public virtual void UpdateTransparency(bool transparencyEnabled)
         {
             foreach (var model in Models)
             {
@@ -530,7 +533,7 @@ namespace FFXIV_TexTools.ViewModels
         {
             foreach (var model in Models)
             {
-                ((CustomMeshGeometryModel3D)model).CullMode = noneCullMode ? CullMode.None : CullMode.Back;
+                ((MeshGeometryModel3D)model).CullMode = noneCullMode ? CullMode.None : CullMode.Back;
             }
         }
 

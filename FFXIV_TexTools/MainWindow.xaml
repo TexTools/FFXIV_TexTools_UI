@@ -64,6 +64,7 @@
                     <MenuItem x:Name="MenuLightTheme" Header="Light" Click="MenuLightTheme_Click"/>
                     <MenuItem x:Name="MenuDarkTheme" Header="Dark" Click="MenuDarkTheme_Click"/>
                 </MenuItem>
+                <MenuItem x:Name="Menu_FullModelViewer" Header="Full Model Viewer" Click="FullModelViewer_Click"/>
             </MenuItem>
             <MenuItem Header="{Binding Source={x:Static resx:UIStrings.Help}}">
                 <MenuItem x:Name="Menu_Backup" Header="{Binding Source={x:Static resx:UIStrings.Backup_Index_Files}}" Click="Menu_Backup_Click"/>

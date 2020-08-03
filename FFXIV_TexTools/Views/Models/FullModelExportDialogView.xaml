@@ -1,0 +1,44 @@
+﻿<mah:MetroWindow x:Class="FFXIV_TexTools.Views.Models.FullModelExportDialogView"
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                 xmlns:local="clr-namespace:FFXIV_TexTools.Views.Models"
+                 xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
+                 xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+                 mc:Ignorable="d"
+                 Title="Export Full Model" Height="200" Width="400" WindowStartupLocation="CenterOwner">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Label Grid.Column="0" Content="{Binding Source={x:Static resx:UIStrings.Model_Skeleton}}" VerticalAlignment="Center"/>
+            <Label x:Name="ModelSkeletonLabel" Grid.Column="1" />
+        </Grid>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Label Grid.Column="0" Content="{Binding Source={x:Static resx:UIStrings.Name_colon}}" VerticalAlignment="Center"/>
+            <TextBox x:Name="ModelNameTextBox" Grid.Column="1" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.Full_Model_Name}}" VerticalAlignment="Center" Margin="5" TextChanged="ModelNameTextBox_TextChanged" BorderBrush="#FFCCCCCC"/>
+        </Grid>
+        <StackPanel Grid.Row="2">
+            <Label Content="{Binding Source={x:Static resx:UIStrings.FullModel_Export_Location}}" VerticalAlignment="Center"/>
+            <Label x:Name="ExportLocationLabel" VerticalAlignment="Center"/>
+        </StackPanel>
+        <StackPanel Grid.Row="3" HorizontalAlignment="Right" Orientation="Horizontal">
+            <Button x:Name="Cancel_Button" Content="{Binding Source={x:Static resx:UIStrings.Cancel}}" Margin="5" Click="Cancel_Button_Click"/>
+            <Button x:Name="Import_Button" Content="{Binding Source={x:Static resx:UIStrings.Export}}" Margin="5" Click="Import_Button_Click"/>
+        </StackPanel>
+
+    </Grid>
+</mah:MetroWindow>
