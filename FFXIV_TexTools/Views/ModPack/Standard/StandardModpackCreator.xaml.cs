@@ -335,7 +335,7 @@ namespace FFXIV_TexTools.Views
 
             try
             {
-                await LockUi("Creating Modpack", "Please wait...", null);
+                await LockUi(UIStrings.Creating_Modpack, null, null);
                 Progress<(int current, int total, string message)> progressIndicator = new Progress<(int current, int total, string message)>(ReportProgress);
                 await texToolsModPack.CreateSimpleModPack(simpleModPackData, XivCache.GameInfo.GameDirectory, progressIndicator, true);
                 await UnlockUi(this);

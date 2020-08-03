@@ -360,7 +360,7 @@ namespace FFXIV_TexTools.Views.Controls
 
             if (LockUiFunction != null)
             {
-                await LockUiFunction("Loading Item List", "Please wait...", this);
+                await LockUiFunction(UIStrings.Loading_Items, null, this);
             }
 
 

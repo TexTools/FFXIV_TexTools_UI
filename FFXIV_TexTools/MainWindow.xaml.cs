@@ -268,7 +268,7 @@ namespace FFXIV_TexTools
         {
             var gameDir = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
             var lang = XivLanguages.GetXivLanguage(Properties.Settings.Default.Application_Language);
-            await LockUi("Updating Cache", "If you have many mods, this may up to 5 minutes...", this);
+            await LockUi(UIStrings.Updating_Cache, UIStrings.Updating_Cache_Message, this);
 
             // Kick this in a new thread because the cache call will lock up the one it's on if it has to do a rebuild.
             await Task.Run(async () =>
@@ -345,7 +345,7 @@ namespace FFXIV_TexTools
 
         private SemaphoreSlim _lockScreenSemaphore = new SemaphoreSlim(1);
 
-        public async Task LockUi(string title = "Loading", string msg = "Please Wait...", object caller = null)
+        public async Task LockUi(string title = null, string msg = null, object caller = null)
         {
             await _lockScreenSemaphore.WaitAsync();
             if (IsUiLocked)
@@ -353,6 +353,15 @@ namespace FFXIV_TexTools
 
                 _lockScreenSemaphore.Release();
                 return;
+            }
+            if(title == null)
+            {
+                title = UIStrings.Loading;
+            }
+
+            if(msg == null)
+            {
+                msg = UIStrings.Please_Wait;
             }
 
             _lockProgressController = await this.ShowProgressAsync(title, msg);
