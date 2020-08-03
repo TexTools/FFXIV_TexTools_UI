@@ -35,10 +35,20 @@ namespace FFXIV_TexTools.Views.Models
             InitializeComponent();
 
             _savePath = new DirectoryInfo(Settings.Default.Save_Directory).FullName;
-            var partialPath = _savePath.Substring(_savePath.IndexOf("TexTools"));
+
+            if (_savePath.Contains("TexTools"))
+            {
+                var partialPath = _savePath.Substring(_savePath.IndexOf("TexTools"));
+                ExportLocationLabel.Content = $"...\\{partialPath}\\FullModel\\[Name]\\[Name].fbx";
+            }
+            else
+            {
+                ExportLocationLabel.Content = $"{_savePath}\\FullModel\\[Name]\\[Name].fbx";
+            }
+
 
             ModelSkeletonLabel.Content = skeleton;
-            ExportLocationLabel.Content = $"...\\{partialPath}\\FullModel\\[Name]\\[Name].fbx";
+
         }
 
         /// <summary>
@@ -46,11 +56,17 @@ namespace FFXIV_TexTools.Views.Models
         /// </summary>
         private void ModelNameTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            var partialPath = _savePath.Substring(_savePath.IndexOf("TexTools"));
 
-            var outputFilePath = $"...\\{partialPath}\\FullModel\\{ModelNameTextBox.Text}\\{ModelNameTextBox.Text}.fbx";
+            if (_savePath.Contains("TexTools"))
+            {
+                var partialPath = _savePath.Substring(_savePath.IndexOf("TexTools"));
 
-            ExportLocationLabel.Content = outputFilePath;
+                ExportLocationLabel.Content = $"...\\{partialPath}\\FullModel\\{ModelNameTextBox.Text}\\{ModelNameTextBox.Text}.fbx";
+            }
+            else
+            {
+                ExportLocationLabel.Content = $"{_savePath}\\FullModel\\{ModelNameTextBox.Text}\\{ModelNameTextBox.Text}.fbx"; ;
+            }
 
             ModelNameTextBox.BorderBrush = (SolidColorBrush)new BrushConverter().ConvertFrom("#FFCCCCCC");
         }
