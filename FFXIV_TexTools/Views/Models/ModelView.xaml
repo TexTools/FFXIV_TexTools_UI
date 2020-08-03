@@ -17,8 +17,8 @@
         <Grid.RowDefinitions>
             <RowDefinition/>
             <RowDefinition Height="8*"/>
-            <RowDefinition/>
-            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <UniformGrid Rows="1" Grid.Row="0">
