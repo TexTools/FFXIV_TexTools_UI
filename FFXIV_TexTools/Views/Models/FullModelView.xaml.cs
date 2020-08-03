@@ -144,7 +144,7 @@ namespace FFXIV_TexTools.Views.Models
                 await Mdl.ExportMaterialsForModel(model.Value.TtModel, outputFilePath, _gameDirectory, mtrlVariant, _fmvm.SelectedSkeleton.XivRace);
 
                 // Save model to DB
-                model.Value.TtModel.SaveFullToFile(dbPath);
+                model.Value.TtModel.SaveFullToFile(dbPath, $"c{_fmvm.SelectedSkeleton.XivRace.GetRaceCode()}");
             }
 
             var proc = new Process
