@@ -413,10 +413,6 @@ namespace FFXIV_TexTools
         {
             System.Diagnostics.Process.Start(Application.ResourceAssembly.Location);
             Application.Current.Shutdown();
-            // Async invoked here to avoid deadlock in case this was called in some kind of dialog window.
-            Dispatcher.InvokeAsync(() =>
-            {
-            });
         }
 
         public void ShowStatusMessage(string message, float duration = 5000.0f)

@@ -91,7 +91,10 @@ namespace FFXIV_TexTools.ViewModels
             var result = task.Result;
             if (!result)
             {
-                System.Windows.Application.Current.Shutdown();
+                // We need to die NOW, and not risk any other functions possibly
+                // fucking with broken files.
+                Process.GetCurrentProcess().Kill();
+                return;
             }
 
             CacheTimer.Elapsed += UpdateDependencyQueueCount;
@@ -137,8 +140,7 @@ namespace FFXIV_TexTools.ViewModels
             }
 
             await CheckGameVersion();
-            await CheckIndexFiles();
-            return true;
+            return await CheckIndexFiles();
 
         }
 
@@ -222,20 +224,43 @@ namespace FFXIV_TexTools.ViewModels
             return true;
         }
 
-        private async Task CheckIndexFiles()
+        private async Task<bool> CheckIndexFiles()
         {
             var xivDataFiles = new XivDataFile[] { XivDataFile._0A_Exd, XivDataFile._01_Bgcommon, XivDataFile._04_Chara, XivDataFile._06_Ui };
             var problemChecker = new ProblemChecker(_gameDirectory);
 
-            foreach (var xivDataFile in xivDataFiles)
+            try
             {
-                var errorFound = await problemChecker.CheckIndexDatCounts(xivDataFile);
-
-                if (errorFound)
+                foreach (var xivDataFile in xivDataFiles)
                 {
-                    await problemChecker.RepairIndexDatCounts(xivDataFile);
+                    var errorFound = await problemChecker.CheckIndexDatCounts(xivDataFile);
+
+                    if (errorFound)
+                    {
+                        await problemChecker.RepairIndexDatCounts(xivDataFile);
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+                var result = FlexibleMessageBox.Show("A critical error occurred when attempting to read the FFXIV index files.\n\nWould you like to restore your index backups?", "Critical Index Error", MessageBoxButtons.YesNo, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
+                if (result == DialogResult.Yes)
+                {
+                    var indexBackupsDirectory = new DirectoryInfo(Settings.Default.Backup_Directory);
+                    var success = await problemChecker.RestoreBackups(indexBackupsDirectory);
+                    if(!success)
+                    {
+                        FlexibleMessageBox.Show("Unable to restore Index Backups, shutting down TexTools.", "Critical Error Shutdown", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
+                        return false;
+                    }
+                }
+                else
+                {
+                    FlexibleMessageBox.Show("Shutting Down TexTools.", "Critical Error Shutdown",  MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
+                    return false;
+                }
+            }
+            return true;
         }
 
         /// <summary>
