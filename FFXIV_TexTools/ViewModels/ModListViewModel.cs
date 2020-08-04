@@ -59,6 +59,7 @@ namespace FFXIV_TexTools.ViewModels
         private int _progressValue;
         private ObservableCollection<Category> _categories;
         private IProgress<(int current, int total)> progress;
+        private Dictionary<string, List<string>> _modListParents;
 
 
         public ModListViewModel()
@@ -85,6 +86,8 @@ namespace FFXIV_TexTools.ViewModels
                 _modPackFilter = true;
                 SetFilter("ModPackFilter");
             }
+
+            _modListParents = XivCache.GetModListParents();
         }
 
         /// <summary>
@@ -560,7 +563,6 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     tex = new Tex(_gameDirectory);
                 }
-                var modParents = XivCache.GetModListParents();
 
                 var modNum = 0;
 
@@ -576,9 +578,9 @@ namespace FFXIV_TexTools.ViewModels
                         };
 
                         string parent = null;
-                        if(modParents.ContainsKey(modItem.fullPath) && modParents[modItem.fullPath] != null && modParents[modItem.fullPath].Count > 0)
+                        if(_modListParents.ContainsKey(modItem.fullPath) && _modListParents[modItem.fullPath] != null && _modListParents[modItem.fullPath].Count > 0)
                         {
-                            parent = modParents[modItem.fullPath][0];
+                            parent = _modListParents[modItem.fullPath][0];
                         }
 
                         var suffix = "";
