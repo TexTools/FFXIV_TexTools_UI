@@ -123,28 +123,10 @@ namespace FFXIV_TexTools.Views.Models
                     // No-op, defaulted to 1.
                 }
 
-                // Replace material names
-                var matToReplace = (from mat in model.Value.TtModel.Materials where mat.Contains("b0001") select mat).FirstOrDefault();
-
-                if (matToReplace != null)
-                {
-                    var matIndex = model.Value.TtModel.Materials.IndexOf(matToReplace);
-
-                    var currentRace = matToReplace.Substring(matToReplace.LastIndexOf('c') + 1, 4);
-                    var newMat = matToReplace.Replace(currentRace, _fmvm.SelectedSkeleton.XivRace.GetRaceCode());
-
-                    var bodyMG = (from mg in model.Value.TtModel.MeshGroups where mg.Material.Contains("b0001") select mg).FirstOrDefault();
-
-                    if (bodyMG != null)
-                    {
-                        bodyMG.Material = newMat;
-                    }
-                }
-
                 await Mdl.ExportMaterialsForModel(model.Value.TtModel, outputFilePath, _gameDirectory, mtrlVariant, _fmvm.SelectedSkeleton.XivRace);
 
                 // Save model to DB
-                model.Value.TtModel.SaveFullToFile(dbPath);
+                model.Value.TtModel.SaveFullToFile(dbPath, $"c{_fmvm.SelectedSkeleton.XivRace.GetRaceCode()}");
             }
 
             var proc = new Process

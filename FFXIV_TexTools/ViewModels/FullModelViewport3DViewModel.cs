@@ -94,6 +94,7 @@ namespace FFXIV_TexTools.ViewModels
             // If target race is different than the model race Apply racial deforms
             if (modelRace != targetRace)
             {
+                ModelModifiers.FixUpSkinReferences(model, targetRace);
                 ApplyDeformers(model, itemType, modelRace, targetRace);
             }
 
@@ -267,6 +268,7 @@ namespace FFXIV_TexTools.ViewModels
             // This pretty much replaces every model by deleting and recreating them with the target race deforms
             foreach (var model in shownModelList)
             {
+                ModelModifiers.FixUpSkinReferences(shownModels[model].TtModel, targetRace);
                 UpdateModel(shownModels[model].TtModel, shownModels[model].ModelTextureData, shownModels[model].ItemModel, previousRace, targetRace);
             }
         }
