@@ -302,8 +302,16 @@ namespace FFXIV_TexTools.Views.Controls
                 var secondLevel = topLevel.Children.FirstOrDefault(x => x.DisplayName == item.SecondaryCategory);
                 if (secondLevel == null)
                 {
-                    secondLevel = new ItemTreeElement(topLevel, null, item.SecondaryCategory);
-                    topLevel.Children.Add(secondLevel);
+                    if (item.SecondaryCategory == item.Name)
+                    {
+                        // These are a special snowflake case.
+                        secondLevel = topLevel;
+                    }
+                    else
+                    {
+                        secondLevel = new ItemTreeElement(topLevel, null, item.SecondaryCategory);
+                        topLevel.Children.Add(secondLevel);
+                    }
                 }
 
                 catParent = secondLevel;
@@ -702,13 +710,13 @@ namespace FFXIV_TexTools.Views.Controls
                 {XivStrings.Food }
             } },
             { XivStrings.Character, new List<string>() {
-                { XivStrings.Body },
+                /*{ XivStrings.Body },
                 { XivStrings.Face },
                 { XivStrings.Hair },
                 { XivStrings.Tail },
                 { XivStrings.Ear },
                 { XivStrings.Face_Paint },
-                { XivStrings.Equipment_Decals }
+                { XivStrings.Equipment_Decals }*/ 
             } },
             { XivStrings.Companions, new List<string>() {
                 { XivStrings.Minions },
