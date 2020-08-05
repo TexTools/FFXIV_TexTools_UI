@@ -1056,7 +1056,6 @@ namespace FFXIV_TexTools.ViewModels
                     ModStatusToggleEnabled = true;
                     ModToggleText = UIStrings.Enable;
                     break;
-                case XivModStatus.MatAdd:
                 case XivModStatus.Original:
                 default:
                     ModStatusToggleEnabled = false;
