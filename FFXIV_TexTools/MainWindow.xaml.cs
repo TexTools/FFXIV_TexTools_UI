@@ -227,15 +227,11 @@ namespace FFXIV_TexTools
             // Gets the model data of the current model in the model view
             var modelData = e as ModelViewModel.fullModelEventArgs;
 
-            // Open the full model view if it is not already open
-            if (_fmv == null || !_fmv.IsLoaded)
-            {
-                _fmv = new FullModelView();
+            var fmv = FullModelView.Instance;
+            fmv.Owner = this;
+            fmv.Show();
 
-                _fmv.Show();
-            }
-
-            await _fmv.AddModel(modelData.TTModelData, modelData.TextureData, modelData.Item, modelData.XivRace);
+            await fmv.AddModel(modelData.TTModelData, modelData.TextureData, modelData.Item, modelData.XivRace);
         }
 
         private void LanguageSelection()
@@ -1173,8 +1169,10 @@ namespace FFXIV_TexTools
         /// </summary>
         private void FullModelViewer_Click(object sender, RoutedEventArgs e)
         {
-            _fmv = new FullModelView() { Owner = this };
-            _fmv.Show();
+            var fmv = FullModelView.Instance;
+            fmv.Owner = this;
+
+            fmv.Show();
         }
     }
 }

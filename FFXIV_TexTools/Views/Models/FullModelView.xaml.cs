@@ -37,8 +37,11 @@ namespace FFXIV_TexTools.Views.Models
     {
         private readonly DirectoryInfo _gameDirectory;
         private readonly FullModelViewModel _fmvm;
+        private static readonly Lazy<FullModelView> lazy = new Lazy<FullModelView>(() => new FullModelView());
 
-        public FullModelView()
+        public static FullModelView Instance => lazy.Value;
+
+        private FullModelView()
         {
             InitializeComponent();
 
