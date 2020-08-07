@@ -457,6 +457,15 @@ namespace FFXIV_TexTools.ViewModels
             _partCount = Parts.Count;
             PartComboboxEnabled = _partCount > 1;
             SelectedPartIndex = 0;
+
+            if(Parts.Count == 0)
+            {
+                // If there are no parts, we're done.
+                if (LoadingComplete != null)
+                {
+                    LoadingComplete.Invoke(this, null);
+                }
+            }
         }
 
         /// <summary>
@@ -602,7 +611,6 @@ namespace FFXIV_TexTools.ViewModels
                     ModStatusToggleEnabled = true;
                     ModToggleText = UIStrings.Enable;
                     break;
-                case XivModStatus.MatAdd:
                 case XivModStatus.Original:
                 default:
                     ModStatusToggleEnabled = false;

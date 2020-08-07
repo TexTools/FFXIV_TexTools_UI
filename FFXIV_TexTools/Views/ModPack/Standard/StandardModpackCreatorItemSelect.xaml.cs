@@ -94,10 +94,9 @@ namespace FFXIV_TexTools.Views
         /// </summary>
         private bool Filter(IItem item) {
 
-            // Character is kind of messy and needs a little work to make support work well.
-            // Furniture doesn't have 100% code in yet for generating their root trees.
-            // UI Won't ever be supported since there's nothing to connect them by (that I know of at least -Sel)
-            if(item.PrimaryCategory == XivStrings.Character || item.PrimaryCategory == XivStrings.UI || item.PrimaryCategory == XivStrings.Housing)
+            // Character is kind of messy and needs a little work to make support work smoothly in this menu.
+            // UI Won't ever be supported since there's nothing to connect them together via (that I know of at least -Sel)
+            if(item.PrimaryCategory == XivStrings.Character || item.PrimaryCategory == XivStrings.UI || item.SecondaryCategory == XivStrings.Paintings)
             {
                 return false;
             }

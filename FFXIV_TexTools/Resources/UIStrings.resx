@@ -967,6 +967,24 @@ If you would like to enable this, first import a texture for the selected item.<
   <data name="Model_Skeleton" xml:space="preserve">
     <value>Model Skeleton:</value>
   </data>
+  <data name="Creating_Modpack" xml:space="preserve">
+    <value>Creating Modpack</value>
+  </data>
+  <data name="Loading_Items" xml:space="preserve">
+    <value>Loading Item List</value>
+  </data>
+  <data name="Please_Wait" xml:space="preserve">
+    <value>Please wait...</value>
+  </data>
+  <data name="Updating_Cache" xml:space="preserve">
+    <value>Updating Cache</value>
+  </data>
+  <data name="Updating_Cache_Message" xml:space="preserve">
+    <value>This may up to 5 minutes if you have many mods installed...</value>
+  </data>
+  <data name="Working_Ellipsis" xml:space="preserve">
+    <value>Working...</value>
+  </data>
   <data name="Face" xml:space="preserve">
     <value>Face</value>
   </data>

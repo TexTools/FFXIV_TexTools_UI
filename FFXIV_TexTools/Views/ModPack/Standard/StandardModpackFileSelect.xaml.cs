@@ -17,6 +17,7 @@ using System.Windows.Shapes;
 using xivModdingFramework.Cache;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Items.Interfaces;
+using xivModdingFramework.SqPack.FileTypes;
 using xivModdingFramework.Variants.FileTypes;
 
 namespace FFXIV_TexTools.Views
@@ -114,14 +115,27 @@ namespace FFXIV_TexTools.Views
                 else if (_level == XivDependencyLevel.Material)
                 {
                     var imc = new Imc(XivCache.GameInfo.GameDirectory);
-                    var entry = await imc.GetImcInfo((IItemModel)_item);
-                    children = await root.GetMaterialFiles(entry.Variant);
+                    try
+                    {
+                        var entry = await imc.GetImcInfo((IItemModel)_item);
+                        children = await root.GetMaterialFiles(entry.Variant);
+                    } catch
+                    {
+                        children = await root.GetMaterialFiles(0);
+                    }
                 }
                 else if (_level == XivDependencyLevel.Texture)
                 {
-                    var imc = new Imc(XivCache.GameInfo.GameDirectory);
-                    var entry = await imc.GetImcInfo((IItemModel)_item);
-                    children = await root.GetTextureFiles(entry.Variant);
+                    try
+                    {
+                        var imc = new Imc(XivCache.GameInfo.GameDirectory);
+                        var entry = await imc.GetImcInfo((IItemModel)_item);
+                        children = await root.GetTextureFiles(entry.Variant);
+                    }
+                    catch
+                    {
+                        children = await root.GetTextureFiles(0);
+                    }
                 }
                 else
                 {
@@ -129,8 +143,12 @@ namespace FFXIV_TexTools.Views
                 }
             }
 
+            var index = new Index(XivCache.GameInfo.GameDirectory);
             foreach(var file in children)
             {
+                var exists = await index.FileExists(file);
+                if (!exists) continue;
+
                 Files.Add(new FileEntry(file));
             }
         }
