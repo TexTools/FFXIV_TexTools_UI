@@ -312,8 +312,10 @@ namespace FFXIV_TexTools.ViewModels
             // Update only if races are different and it is not the first model being added
             if (_previousRace != selectedSkeleton  && !_isFirstModel)
             {
-                // Disable changing the skeleton while model and viewport update
+                // Disable changes while model and viewport update
                 SkeletonComboboxEnabled = false;
+                RemoveEnabled = false;
+                ExportEnabled = false;
 
                 // Update Body Textures for each model to the new race
                 var skinRace = selectedSkeleton.GetSkinRace();
@@ -334,6 +336,8 @@ namespace FFXIV_TexTools.ViewModels
                 ViewPortVM.UpdateSkeleton(_previousRace, selectedSkeleton);
 
                 SkeletonComboboxEnabled = true;
+                RemoveEnabled = true;
+                ExportEnabled = true;
             }
         }
 
@@ -368,7 +372,6 @@ namespace FFXIV_TexTools.ViewModels
         /// <param name="materialDictionary">The dictionary of materials for the current model</param>
         private async Task UpdateBodyTextures(TTModel ttModel, IItemModel item, Dictionary<int, ModelTextureData> materialDictionary)
         {
-
             var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
             var _imc = new Imc(gameDirectory);
             var _mtrl = new Mtrl(gameDirectory, IOUtil.GetDataFileFromPath(ttModel.Source), XivLanguage.None);
@@ -408,16 +411,24 @@ namespace FFXIV_TexTools.ViewModels
                 }
             }
 
-            var bTex = (from m in materialDictionary.Values where m.MaterialPath.Contains(body) select m).FirstOrDefault();
-            bTex.MaterialPath = newMaterial;
+            try
+            {
+                var bTex = (from m in materialDictionary.Values where m.MaterialPath.Contains(body) select m)
+                    .FirstOrDefault();
+                bTex.MaterialPath = newMaterial;
 
-            var mtrlPath = _mtrl.GetMtrlPath(tempMdlPath, newMaterial, mtrlVariant);
-            var mtrlOffset = await _index.GetDataOffset(mtrlPath);
-            var mtrl = await _mtrl.GetMtrlData(mtrlOffset, mtrlPath, 11);
-            var modelMaps = await ModelTexture.GetModelMaps(gameDirectory, mtrl);
+                var mtrlPath = _mtrl.GetMtrlPath(tempMdlPath, newMaterial, mtrlVariant);
+                var mtrlOffset = await _index.GetDataOffset(mtrlPath);
+                var mtrl = await _mtrl.GetMtrlData(mtrlOffset, mtrlPath, 11);
+                var modelMaps = await ModelTexture.GetModelMaps(gameDirectory, mtrl);
 
-            // Reindex the material dictionary as materials may have sorted differently
-            ReIndexMaterialDictionary(ttModel, materialDictionary, modelMaps);
+                // Reindex the material dictionary as materials may have sorted differently
+                ReIndexMaterialDictionary(ttModel, materialDictionary, modelMaps);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(string.Format(UIMessages.UpdateBodyTextureError, ex.Message));
+            }
         }
 
 

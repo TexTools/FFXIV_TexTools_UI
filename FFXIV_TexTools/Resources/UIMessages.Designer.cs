@@ -851,6 +851,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Model Add Error.
+        /// </summary>
+        internal static string ModelAddErrorTitle {
+            get {
+                return ResourceManager.GetString("ModelAddErrorTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There was an error getting the model data for {0} | {1}.
         /// </summary>
         internal static string ModelDataErrorMessage {
@@ -1534,6 +1543,17 @@ namespace FFXIV_TexTools.Resources {
         internal static string UnsupportedFileExtensionErrorTitle {
             get {
                 return ResourceManager.GetString("UnsupportedFileExtensionErrorTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Encountered an error while updating body textures.
+        ///
+        ///Error: {0}.
+        /// </summary>
+        internal static string UpdateBodyTextureError {
+            get {
+                return ResourceManager.GetString("UpdateBodyTextureError", resourceCulture);
             }
         }
         

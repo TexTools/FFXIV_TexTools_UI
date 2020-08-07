@@ -23,6 +23,9 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Forms;
+using FFXIV_TexTools.Helpers;
+using FFXIV_TexTools.Resources;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Items.Interfaces;
 using xivModdingFramework.Models.DataContainers;
@@ -71,7 +74,14 @@ namespace FFXIV_TexTools.Views.Models
                 throw new InvalidDataException("Unable to resolve model skeleton.");
             }
 
-            _fmvm.AddModelToView(ttModel, materialDictionary, item, race);
+            try
+            {
+                _fmvm.AddModelToView(ttModel, materialDictionary, item, race);
+            }
+            catch(Exception ex)
+            {
+                FlexibleMessageBox.Show(ex.Message, UIMessages.ModelAddErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
 

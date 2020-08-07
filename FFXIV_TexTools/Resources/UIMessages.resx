@@ -722,4 +722,12 @@ This may affect animations.</value>
   <data name="MissingBonesTitle" xml:space="preserve">
     <value>Missing Bones</value>
   </data>
+  <data name="ModelAddErrorTitle" xml:space="preserve">
+    <value>Model Add Error</value>
+  </data>
+  <data name="UpdateBodyTextureError" xml:space="preserve">
+    <value>Encountered an error while updating body textures.
+
+Error: {0}</value>
+  </data>
 </root>
