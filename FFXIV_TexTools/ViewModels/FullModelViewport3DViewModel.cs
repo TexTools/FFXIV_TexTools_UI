@@ -272,6 +272,28 @@ namespace FFXIV_TexTools.ViewModels
         }
 
         /// <summary>
+        /// Updates all models to the new skeleton
+        /// </summary>
+        /// <param name="previousRace">The original or previous race of the model</param>
+        /// <param name="targetRace">The target race for the skeleton and model</param>
+        public void UpdateSkin(XivRace race)
+        {
+            var shownModelList = new List<string>();
+
+            foreach (var model in shownModels)
+            {
+                shownModelList.Add(model.Key);
+            }
+
+            foreach (var model in shownModelList)
+            {
+                UpdateModel(shownModels[model].TtModel, shownModels[model].ModelTextureData, shownModels[model].ItemModel, race, race);
+            }
+        }
+
+
+
+        /// <summary>
         /// Toggles the skeleton visibility
         /// </summary>
         public void ToggleSkeleton(bool visible)
