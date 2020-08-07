@@ -24,14 +24,19 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using MahApps.Metro.Controls.Dialogs;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Helpers;
+using xivModdingFramework.Items.Categories;
+using xivModdingFramework.Items.DataContainers;
 using xivModdingFramework.Items.Interfaces;
 using xivModdingFramework.Materials.FileTypes;
 using xivModdingFramework.Models.DataContainers;
+using xivModdingFramework.Models.Helpers;
 using xivModdingFramework.Models.ModelTextures;
 using xivModdingFramework.SqPack.FileTypes;
 using xivModdingFramework.Variants.FileTypes;
@@ -44,17 +49,21 @@ namespace FFXIV_TexTools.ViewModels
         private FullModelViewport3DViewModel _viewPortVM;
         private float _lightingXValue, _lightingYValue, _lightingZValue;
         private string _lightXLabel = "X  |  0", _lightYLabel = "Y  |  0", _lightZLabel = "Z  |  0", _reflectionLabel = $"{UIStrings.Reflection}  |  1", _modToggleText = UIStrings.Enable_Disable, _modelStatusLabel;
-        private int _checkedLight, _reflectionValue, _selectedSkeletonIndex, _selectedModelIndex;
-        private bool _flyoutOpen, _lightRenderToggle, _light1Check = true, _light2Check, _light3Check, _transparencyToggle, _cullModeToggle, _showSkeleton, _skeletonComboboxEnabled, _exportEnabled, _removeEnabled, _isFirstModel;
+        private int _checkedLight, _reflectionValue, _selectedSkeletonIndex, _selectedModelIndex, _selectedSkinIndex, _selectedSkin;
+        private bool _flyoutOpen, _lightRenderToggle, _light1Check = true, _light2Check, _light3Check, _transparencyToggle, _cullModeToggle, _showSkeleton, _skeletonComboboxEnabled, _skinComboboxEnabled, _exportEnabled, _removeEnabled, _isFirstModel;
         private Visibility _lightToggleVisibility = Visibility.Collapsed;
         private FullModelView _fullModelView;
         private ObservableCollection<ComboBoxData> _skeletonComboBoxData = new ObservableCollection<ComboBoxData>();
+        private ObservableCollection<int> _skins = new ObservableCollection<int>();
         private ObservableCollection<string> _modelList = new ObservableCollection<string>();
         private ComboBoxData _selectedSkeleton;
         private XivRace _previousRace;
+        private DirectoryInfo _gameDirectory;
+        private Dictionary<XivRace, int[]> _charaRaceAndSkinDictionary;
 
         public FullModelViewModel(FullModelView fullModelView)
         {
+            _gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
             _fullModelView = fullModelView;
             ViewPortVM = new FullModelViewport3DViewModel(this);
             FillSkeletonComboBox();
@@ -138,6 +147,60 @@ namespace FFXIV_TexTools.ViewModels
         }
 
         /// <summary>
+        /// The collection of skins available to the skeleton
+        /// </summary>
+        public ObservableCollection<int> Skins
+        {
+            get => _skins;
+            set
+            {
+                _skins = value;
+                NotifyPropertyChanged(nameof(Skins));
+            }
+        }
+
+        /// <summary>
+        /// The selected skin
+        /// </summary>
+        public int SelectedSkin
+        {
+            get => _selectedSkin;
+            set
+            {
+                _selectedSkin = value;
+                NotifyPropertyChanged(nameof(SelectedSkin));
+
+                UpdateAllSkin();
+            }
+        }
+
+        /// <summary>
+        /// The selected skin index
+        /// </summary>
+        public int SelectedSkinIndex
+        {
+            get => _selectedSkinIndex;
+            set
+            {
+                _selectedSkinIndex = value;
+                NotifyPropertyChanged(nameof(SelectedSkinIndex));
+            }
+        }
+
+        /// <summary>
+        /// Flag for enabling or disabling the Skin ComboBox
+        /// </summary>
+        public bool SkinComboboxEnabled
+        {
+            get => _skinComboboxEnabled;
+            set
+            {
+                _skinComboboxEnabled = value;
+                NotifyPropertyChanged(nameof(SkinComboboxEnabled));
+            }
+        }
+
+        /// <summary>
         /// The list of models by item type
         /// </summary>
         public ObservableCollection<string> ModelList
@@ -202,13 +265,30 @@ namespace FFXIV_TexTools.ViewModels
         /// <param name="race">The race of the model being added</param>
         public async void AddModelToView(TTModel ttModel, Dictionary<int, ModelTextureData> _materialDictionary, IItemModel item, XivRace modelRace)
         {
+
+            var pc = await _fullModelView.ShowProgressAsync(UIStrings.ModelStatus_Loading, UIMessages.PleaseStandByMessage);
             // Sets the skeleton to the same as the race of the first model added
             if (ViewPortVM.Models.Count < 1)
             {
                 _isFirstModel = true;
+                if (_charaRaceAndSkinDictionary == null)
+                {
+                    await GetCharaSkinDictionary();
+                }
                 var firstModelSkeleton = from s in Skeletons where s.XivRace == modelRace select s;
                 SelectedSkeleton = firstModelSkeleton.FirstOrDefault();
+
+                Skins.Clear();
+
+                foreach (var skinNum in _charaRaceAndSkinDictionary[SelectedSkeleton.XivRace.GetSkinRace()])
+                {
+                    Skins.Add(skinNum);
+                }
+
+                SelectedSkinIndex = 0;
             }
+
+            await UpdateSkin(ttModel, _materialDictionary, item);
 
             // Add the item type to the model list
             var itemType = $"{item.PrimaryCategory}_{item.SecondaryCategory}";
@@ -227,24 +307,29 @@ namespace FFXIV_TexTools.ViewModels
                 SelectedModelIndex = ModelList.IndexOf(itemDisplay);
             }
 
-            // Disable changing the skeleton while model and viewport update
+            // Disable changes while model and viewport update
             SkeletonComboboxEnabled = false;
-
-            // Update body textures if the model being added is a different race than the selected skeleton race
-            var skinRace = SelectedSkeleton.XivRace.GetSkinRace();
-
-            if (modelRace != skinRace)
-            {
-                await UpdateBodyTextures(ttModel, item, _materialDictionary);
-            }
+            SkinComboboxEnabled = false;
 
             ViewPortVM.UpdateModel(ttModel, _materialDictionary, item, modelRace, SelectedSkeleton.XivRace);
             SkeletonComboboxEnabled = true;
+            SkinComboboxEnabled = true;
 
             ExportEnabled = true;
             RemoveEnabled = true;
             _isFirstModel = false;
             _fullModelView.viewport3DX.ZoomExtents();
+
+            await pc.CloseAsync();
+        }
+
+        /// <summary>
+        /// Clean up when window is closed
+        /// </summary>
+        public void CleanUp()
+        {
+            _modelList.Clear();
+            ViewPortVM.CleanUp();
         }
 
         #endregion
@@ -287,31 +372,159 @@ namespace FFXIV_TexTools.ViewModels
         }
 
         /// <summary>
+        /// Gets the dictionary of all skins available per race
+        /// </summary>
+        /// <returns>A dictionary containing an array of skin numbers per race</returns>
+        private async Task GetCharaSkinDictionary()
+        {
+            var character = new Character(_gameDirectory, XivLanguages.GetXivLanguage(Settings.Default.Application_Language));
+
+            var xivChara = new XivCharacter
+            {
+                DataFile = XivDataFile._04_Chara,
+                Name = XivStrings.Body,
+                PrimaryCategory = XivStrings.Character,
+                SecondaryCategory = XivStrings.Body
+            };
+
+            _charaRaceAndSkinDictionary = await character.GetRacesAndNumbersForTextures(xivChara);
+
+            FillSkeletonComboBox();
+        }
+
+        /// <summary>
         /// Updates the skeleton
         /// </summary>
         /// <param name="selectedSkeleton">The race of the selected skeleton</param>
         private async Task UpdateSkeleton(XivRace selectedSkeleton)
         {
             // Update only if races are different and it is not the first model being added
-            if (_previousRace != selectedSkeleton  && !_isFirstModel)
+            if (_previousRace != selectedSkeleton && !_isFirstModel)
             {
-                // Disable changing the skeleton while model and viewport update
-                SkeletonComboboxEnabled = false;
+                var pc = await _fullModelView.ShowProgressAsync(UIMessages.UpdatingSkeletonTitle, UIMessages.PleaseStandByMessage);
 
-                // Update Body Textures for each model to the new race
-                var skinRace = selectedSkeleton.GetSkinRace();
-                if (_previousRace != skinRace)
+                Skins.Clear();
+
+                foreach (var skinNum in _charaRaceAndSkinDictionary[selectedSkeleton.GetSkinRace()])
                 {
-                    foreach (var shownModel in ViewPortVM.shownModels.Values)
+                    Skins.Add(skinNum);
+                }
+
+                // Disable changes while model and viewport update
+                SkeletonComboboxEnabled = false;
+                SkinComboboxEnabled = false;
+                RemoveEnabled = false;
+                ExportEnabled = false;
+
+                if (!_isFirstModel)
+                {
+                    ViewPortVM.UpdateSkeleton(_previousRace, selectedSkeleton);
+                }
+
+                SkeletonComboboxEnabled = true;
+                SkinComboboxEnabled = true;
+                RemoveEnabled = true;
+                ExportEnabled = true;
+
+                await pc.CloseAsync();
+
+                SelectedSkinIndex = 0;
+            }
+        }
+
+        /// <summary>
+        /// Updates the skin for a model to the selected skin
+        /// </summary>
+        /// <param name="ttModel">The model to update the skin for</param>
+        /// <param name="textureData">The texture data of the model</param>
+        /// <param name="itemModel">The item model</param>
+        private async Task UpdateSkin(TTModel ttModel, Dictionary<int, ModelTextureData> textureData, IItemModel itemModel)
+        {
+            var originalBodyIndex = GetBodyTextureIndex(ttModel);
+
+            if (originalBodyIndex != -1)
+            {
+                var bodyReplacement = $"b{SelectedSkin.ToString().PadLeft(4, '0')}";
+                ModelModifiers.FixUpSkinReferences(ttModel, SelectedSkeleton.XivRace, null, bodyReplacement);
+                await UpdateBodyTextures(ttModel, itemModel, textureData);
+            }
+        }
+
+        /// <summary>
+        /// Updates all skin textures for the model to the selected skin
+        /// </summary>
+        private async Task UpdateAllSkin()
+        {
+
+            if (ViewPortVM.shownModels.Any())
+            {
+                var pc = await _fullModelView.ShowProgressAsync(UIMessages.UpdatingSkinTitle, UIMessages.PleaseStandByMessage);
+
+                foreach (var shownModel in ViewPortVM.shownModels.Values)
+                {
+                    var originalBodyIndex = GetBodyTextureIndex(shownModel.TtModel);
+
+                    if (originalBodyIndex != -1)
                     {
+                        var bodyReplacement = $"b{SelectedSkin.ToString().PadLeft(4, '0')}";
+                        ModelModifiers.FixUpSkinReferences(shownModel.TtModel, SelectedSkeleton.XivRace, null, bodyReplacement);
                         await UpdateBodyTextures(shownModel.TtModel, shownModel.ItemModel, shownModel.ModelTextureData);
                     }
                 }
 
-                ViewPortVM.UpdateSkeleton(_previousRace, selectedSkeleton);
+                ViewPortVM.UpdateSkin(SelectedSkeleton.XivRace);
 
-                SkeletonComboboxEnabled = true;
+                await pc.CloseAsync();
             }
+        }
+
+        /// <summary>
+        /// Gets the index of the body material
+        /// </summary>
+        /// <param name="ttModel">The TTModel</param>
+        /// <returns>The index of the body material</returns>
+        private int GetBodyTextureIndex(TTModel ttModel)
+        {
+            foreach (var material in ttModel.Materials)
+            {
+                var bodyRegex = new Regex("(b[0-9]{4})");
+
+                var body = "b0001";
+
+                var result = bodyRegex.Match(material);
+                if (result.Success)
+                {
+                    body = result.Value;
+                }
+
+                if (material.Contains(body))
+                {
+                    return ttModel.Materials.IndexOf(material);
+                }
+            }
+
+            return -1;
+        }
+
+        /// <summary>
+        /// Gets the body number from the model
+        /// </summary>
+        /// <param name="ttModel">The TT model</param>
+        /// <returns>The body number</returns>
+        private string GetBodyNum(TTModel ttModel)
+        {
+            foreach (var material in ttModel.Materials)
+            {
+                var bodyRegex = new Regex("(b[0-9]{4})");
+
+                var result = bodyRegex.Match(material);
+                if (result.Success)
+                {
+                    return result.Value;
+                }
+            }
+
+            return string.Empty;
         }
 
         /// <summary>
@@ -322,63 +535,105 @@ namespace FFXIV_TexTools.ViewModels
         /// <param name="materialDictionary">The dictionary of materials for the current model</param>
         private async Task UpdateBodyTextures(TTModel ttModel, IItemModel item, Dictionary<int, ModelTextureData> materialDictionary)
         {
-
-            var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
-            var _imc = new Imc(gameDirectory);
-            var _mtrl = new Mtrl(gameDirectory, IOUtil.GetDataFileFromPath(ttModel.Source), XivLanguage.None);
-            var _index = new Index(gameDirectory);
+            var _imc = new Imc(_gameDirectory);
+            var _mtrl = new Mtrl(_gameDirectory, IOUtil.GetDataFileFromPath(ttModel.Source), XivLanguage.None);
+            var _index = new Index(_gameDirectory);
 
             // Determine which materials in the model need to be replaced
-            var materialToReplace = string.Empty;
-            var bodyMaterialIndex = 0;
-            foreach (var material in ttModel.Materials)
+            var bodyMaterialIndex = GetBodyTextureIndex(ttModel);
+            var newMaterial = ttModel.Materials[bodyMaterialIndex];
+            var currBodyNum = GetBodyNum(ttModel);
+            var newBodyNum = $"b{SelectedSkin.ToString().PadLeft(4, '0')}";
+
+            // Replace the body number with the selected one
+            if (!currBodyNum.Equals(newBodyNum))
             {
-                if (material.Contains("b0001"))
+                newMaterial = newMaterial.Replace(currBodyNum, newBodyNum);
+            }
+
+            var skinRaceCode = SelectedSkeleton.XivRace.GetSkinRace().GetRaceCode();
+
+            // Current Race Code
+            var raceCode = ttModel.Source.Substring(ttModel.Source.LastIndexOf('c') + 1, 4);
+
+            // Temp MDL path so that races match when getting mtrl path
+            var tempMdlPath = ttModel.Source.Replace(raceCode, skinRaceCode);
+
+            var mtrlVariant = 1;
+            try
+            {
+                mtrlVariant = (await _imc.GetImcInfo(item)).Variant;
+            }
+            catch (Exception ex)
+            {
+                // No-op, defaulted to 1.
+            }
+            var bodyRegex = new Regex("(b[0-9]{4})");
+
+            var body = "b0001";
+            foreach (var m in materialDictionary.Values)
+            {
+                var result = bodyRegex.Match(m.MaterialPath);
+                if (result.Success)
                 {
-                    materialToReplace = material;
-                    bodyMaterialIndex = ttModel.Materials.IndexOf(material);
+                    body = result.Value;
                 }
             }
 
-            // Replace only if the model has a body texture
-            if (!string.IsNullOrEmpty(materialToReplace))
+            try
             {
-                // Current Race Code
-                var raceCode = materialToReplace.Substring(materialToReplace.LastIndexOf('c') + 1, 4);
-                // The closest race with a skin texture
-                var skinRaceCode = SelectedSkeleton.XivRace.GetSkinRace().GetRaceCode();
-                // New material path after replacing with target race
-                var newMaterial = materialToReplace.Replace(raceCode, skinRaceCode);
-                // Temp MDL path so that races match when getting mtrl path
-                var tempMdlPath = ttModel.Source.Replace(raceCode, skinRaceCode);
-
-                var mtrlVariant = 1;
-                try
-                {
-                    mtrlVariant = (await _imc.GetImcInfo(item)).Variant;
-                }
-                catch (Exception ex)
-                {
-                    // No-op, defaulted to 1.
-                }
+                var bTex = (from m in materialDictionary.Values where m.MaterialPath.Contains(body) select m)
+                    .FirstOrDefault();
+                bTex.MaterialPath = newMaterial;
 
                 var mtrlPath = _mtrl.GetMtrlPath(tempMdlPath, newMaterial, mtrlVariant);
                 var mtrlOffset = await _index.GetDataOffset(mtrlPath);
                 var mtrl = await _mtrl.GetMtrlData(mtrlOffset, mtrlPath, 11);
-                var modelMaps = await ModelTexture.GetModelMaps(gameDirectory, mtrl);
+                var modelMaps = await ModelTexture.GetModelMaps(_gameDirectory, mtrl);
 
-                materialDictionary[bodyMaterialIndex] = modelMaps;
+                // Reindex the material dictionary as materials may have sorted differently
+                ReIndexMaterialDictionary(ttModel, materialDictionary, modelMaps);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(string.Format(UIMessages.UpdateBodyTextureError, ex.Message));
             }
         }
 
+
         /// <summary>
-        /// Clean up when window is closed
+        /// Reorganizes the texture dictionary to match the model materials
         /// </summary>
-        public void CleanUp()
+        /// <param name="ttModel">The TTModel</param>
+        /// <param name="materialDictionary">The material dictionary to reorganize</param>
+        /// <param name="newBodyTextures">The new textures that will go into body</param>
+        private void ReIndexMaterialDictionary(TTModel ttModel, Dictionary<int, ModelTextureData> materialDictionary, ModelTextureData newBodyTextures = null)
         {
-            _skeletonComboBoxData.Clear();
-            _modelList.Clear();
-            ViewPortVM.CleanUp();
+            var tempDict = new Dictionary<int, ModelTextureData>();
+
+            var bodyRegex = new Regex("(b[0-9]{4})");
+
+            for (var i = 0; i < materialDictionary.Count; i++)
+            {
+                var modelTextureData = materialDictionary[i];
+
+                var isBody = bodyRegex.Match(modelTextureData.MaterialPath).Success;
+
+                // Add the new body textures if they were changed
+                if (isBody && newBodyTextures != null)
+                {
+                    tempDict.Add(ttModel.Materials.IndexOf(modelTextureData.MaterialPath), newBodyTextures);
+                }
+                else
+                {
+                    tempDict.Add(ttModel.Materials.IndexOf(modelTextureData.MaterialPath), modelTextureData);
+                }
+            }
+
+            foreach (var modelTextureData in tempDict)
+            {
+                materialDictionary[modelTextureData.Key] = modelTextureData.Value;
+            }
         }
 
         #endregion

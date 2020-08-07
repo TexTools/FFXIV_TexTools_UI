@@ -9,7 +9,7 @@
                       xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
                       xmlns:views="clr-namespace:FFXIV_TexTools.Views"
                       mc:Ignorable="d"
-                      Title="Full Model Viewer" Height="800" Width="450" Closed="MetroWindow_Closed">
+                      Title="Full Model Viewer" Height="800" Width="450" Closing="MetroWindow_Closing">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -17,11 +17,17 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <UniformGrid Rows="1" Grid.Row="0">
-            <ComboBox VerticalAlignment="Center" Margin="5" mah:TextBoxHelper.UseFloatingWatermark="True" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.Skeleton}}" 
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <ComboBox Grid.Column="0" VerticalAlignment="Center" Margin="5" mah:TextBoxHelper.UseFloatingWatermark="True" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.Skeleton}}" 
                       ItemsSource="{Binding Skeletons}" DisplayMemberPath="Name" SelectedValuePath="XivRace" SelectedItem="{Binding SelectedSkeleton}" SelectedIndex="{Binding SelectedSkeletonIndex}"
                       IsEnabled="{Binding SkeletonComboboxEnabled}" />
-        </UniformGrid>
+            <ComboBox Grid.Column="1" VerticalAlignment="Center" Margin="5" mah:TextBoxHelper.UseFloatingWatermark="True" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.Skin}}" 
+                      ItemsSource="{Binding Skins}" SelectedItem="{Binding SelectedSkin}" SelectedIndex="{Binding SelectedSkinIndex}" IsEnabled="{Binding SkinComboboxEnabled}" />
+        </Grid>
         <Grid Grid.Row="1">
             <Grid>
                 <hx:Viewport3DX
@@ -35,7 +41,7 @@
                 BackgroundColor="{Binding BackgroundColor}"
                 EffectsManager="{Binding EffectsManager}"
                 DataContext="{Binding ViewPortVM}"
-                ShowTriangleCountInfo="True" FXAALevel="Medium" MSAA="Two" ZoomExtentsWhenLoaded="True" 
+                FXAALevel="Medium" MSAA="Two" ZoomExtentsWhenLoaded="True" 
                 EnableOITRendering="True" OITWeightMode="Linear0" ZoomDistanceLimitNear="0.0001">
                     <hx:Viewport3DX.InputBindings>
                         <KeyBinding Key="B" Command="hx:ViewportCommands.BackView" />
