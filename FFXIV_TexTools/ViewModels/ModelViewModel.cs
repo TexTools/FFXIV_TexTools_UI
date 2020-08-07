@@ -69,7 +69,7 @@ namespace FFXIV_TexTools.ViewModels
 
         private int _raceIndex, _partIndex, _numberIndex, _meshIndex, _partCount, _numberCount, _meshCount, _raceCount, _reflectionValue, _checkedLight;
         private float _lightingXValue, _lightingYValue, _lightingZValue;
-        private bool _raceEnabled, _partEnabled, _numberEnabled, _meshEnabled, _exportEnabled, _importEnabled, _basicImportEnabled, _modStatusToggleEnabled, _updateTexEnabled, _flyoutOpen;
+        private bool _raceEnabled, _partEnabled, _numberEnabled, _meshEnabled, _exportEnabled, _importEnabled, _basicImportEnabled, _modStatusToggleEnabled, _updateTexEnabled, _flyoutOpen, _fmvEnabled;
         private string _partWatermark = XivStrings.Part, _numberWatermark = XivStrings.Number, _raceWatermark = XivStrings.Race,
             _meshWatermark = XivStrings.Mesh, _pathString;
 
@@ -1119,6 +1119,16 @@ namespace FFXIV_TexTools.ViewModels
             }
         }
 
+        public bool FMVEnabled
+        {
+            get => _fmvEnabled;
+            set
+            {
+                _fmvEnabled = value;
+                NotifyPropertyChanged(nameof(FMVEnabled));
+            }
+        }
+
         public ICommand ViewOptionsCommand => new RelayCommand(ViewerOptions);
         public ICommand ModStatusToggleButton => new RelayCommand(ModStatusToggle);
         public ICommand UpdateTexButton => new RelayCommand(UpdateTex);
@@ -1456,6 +1466,7 @@ namespace FFXIV_TexTools.ViewModels
 
                 ViewPortVM.ClearModels();
                 TransparencyToggle = false;
+                FMVEnabled = false;
 
                 _materialDictionary = await GetMaterials();
 
@@ -1475,6 +1486,7 @@ namespace FFXIV_TexTools.ViewModels
                 BasicImportEnabled = File.Exists(savePath);
                 ImportEnabled = true;
                 UpdateTexEnabled = true;
+                FMVEnabled = true;
 
                 if (!KeepCameraChecked)
                 {
