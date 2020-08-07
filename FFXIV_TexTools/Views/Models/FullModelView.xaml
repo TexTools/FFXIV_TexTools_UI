@@ -9,7 +9,7 @@
                       xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
                       xmlns:views="clr-namespace:FFXIV_TexTools.Views"
                       mc:Ignorable="d"
-                      Title="Full Model Viewer" Height="800" Width="450" Closing="MetroWindow_Closing">
+                      Title="Full Model Viewer" Height="800" Width="550" Closing="MetroWindow_Closing">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
