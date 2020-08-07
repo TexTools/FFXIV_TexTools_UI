@@ -1,4 +1,5 @@
-﻿using MahApps.Metro.Controls.Dialogs;
+﻿using FFXIV_TexTools.Resources;
+using MahApps.Metro.Controls.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,6 +11,7 @@ using System.Windows;
 using System.Windows.Controls;
 using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 using xivModdingFramework.Cache;
+using xivModdingFramework.Items.Enums;
 using xivModdingFramework.Items.Interfaces;
 using xivModdingFramework.Variants.FileTypes;
 
@@ -101,7 +103,7 @@ namespace FFXIV_TexTools.Views
             if(root == null)
             {
                 RootNameBox.Text = "NULL";
-                WarningLabel.Text = "File dependency information not yet supported for this item.";
+                WarningLabel.Text = "File dependency information not supported for this item.";
                 await UnlockUi();
                 return;
             }
@@ -113,9 +115,14 @@ namespace FFXIV_TexTools.Views
 
             if(allItems.Count == 0)
             {
-                WarningLabel.Text = "File dependency information not yet supported for this item.";
+                WarningLabel.Text = "File dependency information not supported for this item.";
                 await UnlockUi();
                 return;
+            }
+
+            if(root.Info.PrimaryType == XivItemType.human)
+            {
+                WarningLabel.Text = "Parent file references & affected items lists \n may not be complete for this file. \n (Unknown cross-references may exist.)";
             }
 
             var orderedItems = allItems.OrderBy((x => x.Name), new ItemNameComparer()).ToList();
@@ -149,6 +156,8 @@ namespace FFXIV_TexTools.Views
                 {
                     // Each of our parents has a root...
                     var pRoot = await XivCache.GetFirstRoot(parent);
+
+                    if (pRoot == null) continue;
 
                     // And each of these files also has a material set id.
                     var match = _extractVariant.Match(parent);
@@ -197,53 +206,71 @@ namespace FFXIV_TexTools.Views
 
             var _imc = new Imc(XivCache.GameInfo.GameDirectory);
 
-            // We now have a dictionary of <Root>, <Material Set Id> that comprises all of our referencing material sets.
-            // We now need to convert that into a list of <root> => <Imc Subset IDs>, for all IMC subsets in that root which use our material ID.
-            foreach (var kv in mVariants)
+            try
             {
-                var rt = kv.Key;
-                sharedImcSubsets.Add(rt, new HashSet<int>());
-                var imcPath = rt.GetRawImcFilePath();
-                var fullImcInfo = await _imc.GetFullImcInfo(imcPath);
+                // We now have a dictionary of <Root>, <Material Set Id> that comprises all of our referencing material sets.
+                // We now need to convert that into a list of <root> => <Imc Subset IDs>, for all IMC subsets in that root which use our material ID.
+                foreach (var kv in mVariants)
+                {
+                    var rt = kv.Key;
+                    sharedImcSubsets.Add(rt, new HashSet<int>());
+                    var imcPath = rt.GetRawImcFilePath();
 
-                var setCount = fullImcInfo.SubsetCount + 1;
-                for (int i = 0; i < setCount; i++) {
-                    var info = fullImcInfo.GetEntry(i, rt.Info.Slot);
+                    var fullImcInfo = await _imc.GetFullImcInfo(imcPath);
 
-                    // This IMC subset references the one of our material sets.
-                    if(kv.Value.Contains(info.Variant))
+                    var setCount = fullImcInfo.SubsetCount + 1;
+                    for (int i = 0; i < setCount; i++)
                     {
-                        sharedImcSubsets[rt].Add(i);
+                        var info = fullImcInfo.GetEntry(i, rt.Info.Slot);
+
+                        // This IMC subset references the one of our material sets.
+                        if (kv.Value.Contains(info.Variant))
+                        {
+                            sharedImcSubsets[rt].Add(i);
+                        }
                     }
                 }
+
+                // We now have a dictionary of <root>, <imc subset ids>.  At this point, we can compare this to our original alll items list.
+                var sh = allItems.Where(x =>
+                {
+                    var iRoot = x.GetRoot();
+
+                    // The root must be one of our roots we care about.
+                    if (!sharedImcSubsets.ContainsKey(iRoot)) return false;
+
+                    var imcs = sharedImcSubsets[iRoot];
+
+                    // The imc subset must be in the imc subsets that use this material.
+                    if (!imcs.Contains(x.ModelInfo.ImcSubsetID)) return false;
+
+                     return true;
+                });
+
+                foreach (var i in sh)
+                {
+                    affectedItems.Add(i);
+                }
+
+            } catch
+            {
+                // The item doesn't have a valid IMC entry.  In that case, it affects all items in the tree.
+                affectedItems.AddRange(allItems);
             }
 
-            // We now have a dictionary of <root>, <imc subset ids>.  At this point, we can compare this to our original alll items list.
-            var sh = allItems.Where(x =>
+
+
+            if (affectedItems.Count == 0)
             {
-               var iRoot = x.GetRoot();
-
-                // The root must be one of our roots we care about.
-                if (!sharedImcSubsets.ContainsKey(iRoot)) return false;
-
-                var imcs = sharedImcSubsets[iRoot];
-
-                // The imc subset must be in the imc subsets that use this material.
-                if (!imcs.Contains(x.ModelInfo.ImcSubsetID)) return false;
-
-                return true;
-            });
-
-
-            foreach(var i in sh)
-            {
-                affectedItems.Add(i);
+                MaterialLevelBox.Text = "Unknown";
             }
-
-            if (ext == "tex" || ext == "mtrl")
+            else
             {
-                var ordered = affectedItems.OrderBy((x => x.Name), new ItemNameComparer()).ToList();
-                MaterialLevelBox.Text = ordered[0].Name;
+                if (ext == "tex" || ext == "mtrl")
+                {
+                    var ordered = affectedItems.OrderBy((x => x.Name), new ItemNameComparer()).ToList();
+                    MaterialLevelBox.Text = ordered[0].Name;
+                }
             }
 
             foreach (var item in affectedItems)
