@@ -351,6 +351,15 @@ namespace FFXIV_TexTools.ViewModels
 
             PartComboboxEnabled = _partCount > 1;
             SelectedPartIndex = 0;
+
+            if (_partCount == 0)
+            {
+                // If there are no parts, we're done.
+                if (LoadingComplete != null)
+                {
+                    LoadingComplete.Invoke(this, null);
+                }
+            }
         }
 
         /// <summary>
@@ -615,6 +624,7 @@ namespace FFXIV_TexTools.ViewModels
             }
 
             _typePartCount = typeParts.Length;
+
 
             TypePartComboboxEnabled = _typePartCount > 1;
 

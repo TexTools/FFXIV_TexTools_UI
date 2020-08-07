@@ -291,6 +291,7 @@ namespace FFXIV_TexTools.Views.Controls
 
             foreach(var item in items)
             {
+                // Find what node we should be attached to.
                 ItemTreeElement catParent = null;
                 var topLevel = CategoryElements.FirstOrDefault(x => x.DisplayName == item.PrimaryCategory);
                 if(topLevel == null)
@@ -317,11 +318,12 @@ namespace FFXIV_TexTools.Views.Controls
                 catParent = secondLevel;
 
                 ItemTreeElement setParent = null;
+                // Try and see if we have a valid root parent to attach to in the sets tree.
                 try
                 {
                     var type = item.GetType();
                     // Perf.  Much faster to just not test those types at all, as we know they won't resolve.
-                    if (type != typeof(XivUi) && type != typeof(XivFurniture))
+                    if (type != typeof(XivUi))
                     {
                         var itemRoot = item.GetRootInfo();
                         if (itemRoot.PrimaryType != XivItemType.unknown)
