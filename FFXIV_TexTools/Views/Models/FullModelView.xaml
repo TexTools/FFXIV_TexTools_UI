@@ -35,7 +35,7 @@
                 BackgroundColor="{Binding BackgroundColor}"
                 EffectsManager="{Binding EffectsManager}"
                 DataContext="{Binding ViewPortVM}"
-                ShowTriangleCountInfo="True" FXAALevel="Medium" MSAA="Two" ZoomExtentsWhenLoaded="True" 
+                FXAALevel="Medium" MSAA="Two" ZoomExtentsWhenLoaded="True" 
                 EnableOITRendering="True" OITWeightMode="Linear0" ZoomDistanceLimitNear="0.0001">
                     <hx:Viewport3DX.InputBindings>
                         <KeyBinding Key="B" Command="hx:ViewportCommands.BackView" />
