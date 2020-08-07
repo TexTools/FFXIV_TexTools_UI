@@ -1558,6 +1558,24 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Updating Skeleton.
+        /// </summary>
+        internal static string UpdatingSkeletonTitle {
+            get {
+                return ResourceManager.GetString("UpdatingSkeletonTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Updating Skin.
+        /// </summary>
+        internal static string UpdatingSkinTitle {
+            get {
+                return ResourceManager.GetString("UpdatingSkinTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to update the viewport. 
         ///
         ///{0}.

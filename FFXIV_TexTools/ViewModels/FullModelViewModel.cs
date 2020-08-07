@@ -28,6 +28,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using MahApps.Metro.Controls.Dialogs;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Items.Categories;
@@ -264,6 +265,8 @@ namespace FFXIV_TexTools.ViewModels
         /// <param name="race">The race of the model being added</param>
         public async void AddModelToView(TTModel ttModel, Dictionary<int, ModelTextureData> _materialDictionary, IItemModel item, XivRace modelRace)
         {
+
+            var pc = await _fullModelView.ShowProgressAsync(UIStrings.ModelStatus_Loading, UIMessages.PleaseStandByMessage);
             // Sets the skeleton to the same as the race of the first model added
             if (ViewPortVM.Models.Count < 1)
             {
@@ -275,9 +278,17 @@ namespace FFXIV_TexTools.ViewModels
                 var firstModelSkeleton = from s in Skeletons where s.XivRace == modelRace select s;
                 SelectedSkeleton = firstModelSkeleton.FirstOrDefault();
 
+                Skins.Clear();
+
+                foreach (var skinNum in _charaRaceAndSkinDictionary[SelectedSkeleton.XivRace.GetSkinRace()])
+                {
+                    Skins.Add(skinNum);
+                }
+
                 SelectedSkinIndex = 0;
-                await UpdateSkin(ttModel, _materialDictionary, item);
             }
+
+            await UpdateSkin(ttModel, _materialDictionary, item);
 
             // Add the item type to the model list
             var itemType = $"{item.PrimaryCategory}_{item.SecondaryCategory}";
@@ -308,6 +319,8 @@ namespace FFXIV_TexTools.ViewModels
             RemoveEnabled = true;
             _isFirstModel = false;
             _fullModelView.viewport3DX.ZoomExtents();
+
+            await pc.CloseAsync();
         }
 
         /// <summary>
@@ -386,8 +399,10 @@ namespace FFXIV_TexTools.ViewModels
         private async Task UpdateSkeleton(XivRace selectedSkeleton)
         {
             // Update only if races are different and it is not the first model being added
-            if (_previousRace != selectedSkeleton)
+            if (_previousRace != selectedSkeleton && !_isFirstModel)
             {
+                var pc = await _fullModelView.ShowProgressAsync(UIMessages.UpdatingSkeletonTitle, UIMessages.PleaseStandByMessage);
+
                 Skins.Clear();
 
                 foreach (var skinNum in _charaRaceAndSkinDictionary[selectedSkeleton.GetSkinRace()])
@@ -406,12 +421,14 @@ namespace FFXIV_TexTools.ViewModels
                     ViewPortVM.UpdateSkeleton(_previousRace, selectedSkeleton);
                 }
 
-                SelectedSkinIndex = 0;
-
                 SkeletonComboboxEnabled = true;
                 SkinComboboxEnabled = true;
                 RemoveEnabled = true;
                 ExportEnabled = true;
+
+                await pc.CloseAsync();
+
+                SelectedSkinIndex = 0;
             }
         }
 
@@ -438,19 +455,27 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         private async Task UpdateAllSkin()
         {
-            foreach (var shownModel in ViewPortVM.shownModels.Values)
+
+            if (ViewPortVM.shownModels.Any())
             {
-                var originalBodyIndex = GetBodyTextureIndex(shownModel.TtModel);
+                var pc = await _fullModelView.ShowProgressAsync(UIMessages.UpdatingSkinTitle, UIMessages.PleaseStandByMessage);
 
-                if (originalBodyIndex != -1)
+                foreach (var shownModel in ViewPortVM.shownModels.Values)
                 {
-                    var bodyReplacement = $"b{SelectedSkin.ToString().PadLeft(4, '0')}";
-                    ModelModifiers.FixUpSkinReferences(shownModel.TtModel, SelectedSkeleton.XivRace, null, bodyReplacement);
-                    await UpdateBodyTextures(shownModel.TtModel, shownModel.ItemModel, shownModel.ModelTextureData);
-                }
-            }
+                    var originalBodyIndex = GetBodyTextureIndex(shownModel.TtModel);
 
-            ViewPortVM.UpdateSkin(SelectedSkeleton.XivRace);
+                    if (originalBodyIndex != -1)
+                    {
+                        var bodyReplacement = $"b{SelectedSkin.ToString().PadLeft(4, '0')}";
+                        ModelModifiers.FixUpSkinReferences(shownModel.TtModel, SelectedSkeleton.XivRace, null, bodyReplacement);
+                        await UpdateBodyTextures(shownModel.TtModel, shownModel.ItemModel, shownModel.ModelTextureData);
+                    }
+                }
+
+                ViewPortVM.UpdateSkin(SelectedSkeleton.XivRace);
+
+                await pc.CloseAsync();
+            }
         }
 
         /// <summary>
