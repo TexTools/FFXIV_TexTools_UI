@@ -376,7 +376,6 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         public void CleanUp()
         {
-            _skeletonComboBoxData.Clear();
             _modelList.Clear();
             ViewPortVM.CleanUp();
         }

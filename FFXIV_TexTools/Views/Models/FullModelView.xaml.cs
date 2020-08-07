@@ -22,6 +22,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Items.Interfaces;
 using xivModdingFramework.Models.DataContainers;
@@ -166,12 +167,13 @@ namespace FFXIV_TexTools.Views.Models
         }
 
         /// <summary>
-        /// Event handler when the window is closed
+        /// Event handler when the window is closing
         /// </summary>
-        private void MetroWindow_Closed(object sender, EventArgs e)
+        private void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            // Clean up resources when the window is closed
             _fmvm.CleanUp();
+            e.Cancel = true;
+            this.Visibility = Visibility.Hidden;
         }
     }
 }
