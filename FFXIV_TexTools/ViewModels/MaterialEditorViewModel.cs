@@ -202,7 +202,7 @@ namespace FFXIV_TexTools.ViewModels
             _view.SaveButton.IsEnabled = false;
             _view.CancelButton.IsEnabled = false;
             _view.DisableButton.IsEnabled = false;
-            _view.SaveButton.Content = "Working...";
+            _view.SaveButton.Content = UIStrings.Working_Ellipsis;
             _view.NormalTextBox.Text = SanitizePath(_view.NormalTextBox.Text);
             _view.DiffuseTextBox.Text = SanitizePath(_view.DiffuseTextBox.Text);
             _view.SpecularTextBox.Text = SanitizePath(_view.SpecularTextBox.Text);
@@ -409,7 +409,7 @@ namespace FFXIV_TexTools.ViewModels
             _view.SaveButton.IsEnabled = false;
             _view.CancelButton.IsEnabled = false;
             _view.DisableButton.IsEnabled = false;
-            _view.DisableButton.Content = "Working...";
+            _view.DisableButton.Content = UIStrings.Working_Ellipsis;
             var files = new List<string>();
 
             // If we're disabling from the Edit Multi menu, diable all variant versions as well.

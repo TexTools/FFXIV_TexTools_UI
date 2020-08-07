@@ -432,6 +432,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Creating Modpack.
+        /// </summary>
+        public static string Creating_Modpack {
+            get {
+                return ResourceManager.GetString("Creating_Modpack", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cull Mode.
         /// </summary>
         public static string Cull_Mode {
@@ -1125,6 +1134,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Loading Item List.
+        /// </summary>
+        public static string Loading_Items {
+            get {
+                return ResourceManager.GetString("Loading_Items", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Map.
         /// </summary>
         public static string Map {
@@ -1757,6 +1775,15 @@ namespace FFXIV_TexTools.Resources {
         public static string Paths {
             get {
                 return ResourceManager.GetString("Paths", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please wait....
+        /// </summary>
+        public static string Please_Wait {
+            get {
+                return ResourceManager.GetString("Please_Wait", resourceCulture);
             }
         }
         
@@ -2501,6 +2528,24 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Updating Cache.
+        /// </summary>
+        public static string Updating_Cache {
+            get {
+                return ResourceManager.GetString("Updating_Cache", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This may up to 5 minutes if you have many mods installed....
+        /// </summary>
+        public static string Updating_Cache_Message {
+            get {
+                return ResourceManager.GetString("Updating_Cache_Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Usage.
         /// </summary>
         public static string Usage {
@@ -2587,6 +2632,15 @@ namespace FFXIV_TexTools.Resources {
         public static string Visit_Website {
             get {
                 return ResourceManager.GetString("Visit_Website", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Working....
+        /// </summary>
+        public static string Working_Ellipsis {
+            get {
+                return ResourceManager.GetString("Working_Ellipsis", resourceCulture);
             }
         }
         

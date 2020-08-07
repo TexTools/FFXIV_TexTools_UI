@@ -264,7 +264,7 @@ namespace FFXIV_TexTools
         {
             var gameDir = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
             var lang = XivLanguages.GetXivLanguage(Properties.Settings.Default.Application_Language);
-            await LockUi("Updating Cache", "If you have many mods, this may up to 5 minutes...", this);
+            await LockUi(UIStrings.Updating_Cache, UIStrings.Updating_Cache_Message, this);
 
             // Kick this in a new thread because the cache call will lock up the one it's on if it has to do a rebuild.
             await Task.Run(async () =>
@@ -341,7 +341,7 @@ namespace FFXIV_TexTools
 
         private SemaphoreSlim _lockScreenSemaphore = new SemaphoreSlim(1);
 
-        public async Task LockUi(string title = "Loading", string msg = "Please Wait...", object caller = null)
+        public async Task LockUi(string title = null, string msg = null, object caller = null)
         {
             await _lockScreenSemaphore.WaitAsync();
             if (IsUiLocked)
@@ -349,6 +349,15 @@ namespace FFXIV_TexTools
 
                 _lockScreenSemaphore.Release();
                 return;
+            }
+            if(title == null)
+            {
+                title = UIStrings.Loading;
+            }
+
+            if(msg == null)
+            {
+                msg = UIStrings.Please_Wait;
             }
 
             _lockProgressController = await this.ShowProgressAsync(title, msg);
@@ -400,10 +409,6 @@ namespace FFXIV_TexTools
         {
             System.Diagnostics.Process.Start(Application.ResourceAssembly.Location);
             Application.Current.Shutdown();
-            // Async invoked here to avoid deadlock in case this was called in some kind of dialog window.
-            Dispatcher.InvokeAsync(() =>
-            {
-            });
         }
 
         public void ShowStatusMessage(string message, float duration = 5000.0f)
@@ -981,7 +986,13 @@ namespace FFXIV_TexTools
                 // Stop the worker, in case it was reading from the file for some reason.
                 XivCache.CacheWorkerEnabled = false;
 
-                await Task.Run(XivCache.RebuildAllRoots);
+                try
+                {
+                    await Task.Run(XivCache.RebuildAllRoots);
+                } catch(Exception ex)
+                {
+                    FlexibleMessageBox.Show("Item Scan Error", "An error occured while trying to scan for new item sets.\n\n" + ex.Message, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
                 await UnlockUi();
             }
         }

@@ -34,7 +34,7 @@
                 <RowDefinition Height="35"/>
                 <RowDefinition Height="35"/>
                 <RowDefinition Height="35"/>
-                <RowDefinition Height="35"/>
+                <RowDefinition Height="70"/>
             </Grid.RowDefinitions>
 
             <Label Content="File Name:" Margin="0" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"  Grid.Row="0"/>

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using xivModdingFramework.Cache;
+using xivModdingFramework.SqPack.FileTypes;
 
 namespace FFXIV_TexTools.Views
 {
@@ -84,8 +85,14 @@ namespace FFXIV_TexTools.Views
             ConfirmButton.IsEnabled = true;
         }
         
-        private void AddFile(string file)
+        private async Task<bool> AddFile(string file)
         {
+            var _index = new Index(XivCache.GameInfo.GameDirectory);
+            if(!(await _index.FileExists(file))) {
+                // File doesn't actually exist, can't be added.
+                return false;
+            }
+
             var match = _suffixRegex.Match(file);
             if (match.Success && match.Groups[1].Value == "mdl")
             {
@@ -104,6 +111,7 @@ namespace FFXIV_TexTools.Views
             {
                 MetaListBox.Items.Add(new StandardModpackFileSelect.FileEntry(file));
             }
+            return true;
         }
 
         private void UpdateCounts()
@@ -138,16 +146,14 @@ namespace FFXIV_TexTools.Views
             }
 
 
-            foreach(var file in files)
-            {
-                AddFile(file);
-            }
-
-
             _entry.AllFiles.Clear();
-            foreach(var file in files)
+            foreach (var file in files)
             {
-                _entry.AllFiles.Add(file);
+                var exists = await AddFile(file);
+                if(exists)
+                {
+                    _entry.AllFiles.Add(file);
+                }
             }
 
             UpdateCounts();
