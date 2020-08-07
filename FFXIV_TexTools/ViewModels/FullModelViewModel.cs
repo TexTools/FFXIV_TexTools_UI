@@ -24,6 +24,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -32,6 +33,7 @@ using xivModdingFramework.Helpers;
 using xivModdingFramework.Items.Interfaces;
 using xivModdingFramework.Materials.FileTypes;
 using xivModdingFramework.Models.DataContainers;
+using xivModdingFramework.Models.Helpers;
 using xivModdingFramework.Models.ModelTextures;
 using xivModdingFramework.SqPack.FileTypes;
 using xivModdingFramework.Variants.FileTypes;
@@ -235,7 +237,13 @@ namespace FFXIV_TexTools.ViewModels
 
             if (modelRace != skinRace)
             {
-                await UpdateBodyTextures(ttModel, item, _materialDictionary);
+                var originalBodyIndex = GetBodyTextureIndex(ttModel);
+
+                if (originalBodyIndex != -1)
+                {
+                    ModelModifiers.FixUpSkinReferences(ttModel, SelectedSkeleton.XivRace);
+                    await UpdateBodyTextures(ttModel, item, _materialDictionary);
+                }
             }
 
             ViewPortVM.UpdateModel(ttModel, _materialDictionary, item, modelRace, SelectedSkeleton.XivRace);
@@ -245,6 +253,15 @@ namespace FFXIV_TexTools.ViewModels
             RemoveEnabled = true;
             _isFirstModel = false;
             _fullModelView.viewport3DX.ZoomExtents();
+        }
+
+        /// <summary>
+        /// Clean up when window is closed
+        /// </summary>
+        public void CleanUp()
+        {
+            _modelList.Clear();
+            ViewPortVM.CleanUp();
         }
 
         #endregion
@@ -304,7 +321,13 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     foreach (var shownModel in ViewPortVM.shownModels.Values)
                     {
-                        await UpdateBodyTextures(shownModel.TtModel, shownModel.ItemModel, shownModel.ModelTextureData);
+                        var originalBodyIndex = GetBodyTextureIndex(shownModel.TtModel);
+
+                        if (originalBodyIndex != -1)
+                        {
+                            ModelModifiers.FixUpSkinReferences(shownModel.TtModel, SelectedSkeleton.XivRace);
+                            await UpdateBodyTextures(shownModel.TtModel, shownModel.ItemModel, shownModel.ModelTextureData);
+                        }
                     }
                 }
 
@@ -312,6 +335,29 @@ namespace FFXIV_TexTools.ViewModels
 
                 SkeletonComboboxEnabled = true;
             }
+        }
+
+        private int GetBodyTextureIndex(TTModel ttModel)
+        {
+            foreach (var material in ttModel.Materials)
+            {
+                var bodyRegex = new Regex("(b[0-9]{4})");
+
+                var body = "b0001";
+
+                var result = bodyRegex.Match(material);
+                if (result.Success)
+                {
+                    body = result.Value;
+                }
+
+                if (material.Contains(body))
+                {
+                    return ttModel.Materials.IndexOf(material);
+                }
+            }
+
+            return -1;
         }
 
         /// <summary>
@@ -329,55 +375,85 @@ namespace FFXIV_TexTools.ViewModels
             var _index = new Index(gameDirectory);
 
             // Determine which materials in the model need to be replaced
-            var materialToReplace = string.Empty;
-            var bodyMaterialIndex = 0;
-            foreach (var material in ttModel.Materials)
+            var bodyMaterialIndex = GetBodyTextureIndex(ttModel);
+            var newMaterial = ttModel.Materials[bodyMaterialIndex];
+
+
+            var skinRaceCode = SelectedSkeleton.XivRace.GetSkinRace().GetRaceCode();
+
+            // Current Race Code
+            var raceCode = ttModel.Source.Substring(ttModel.Source.LastIndexOf('c') + 1, 4);
+
+            // Temp MDL path so that races match when getting mtrl path
+            var tempMdlPath = ttModel.Source.Replace(raceCode, skinRaceCode);
+
+            var mtrlVariant = 1;
+            try
             {
-                if (material.Contains("b0001"))
+                mtrlVariant = (await _imc.GetImcInfo(item)).Variant;
+            }
+            catch (Exception ex)
+            {
+                // No-op, defaulted to 1.
+            }
+            var bodyRegex = new Regex("(b[0-9]{4})");
+
+            var body = "b0001";
+            foreach (var m in materialDictionary.Values)
+            {
+                var result = bodyRegex.Match(m.MaterialPath);
+                if (result.Success)
                 {
-                    materialToReplace = material;
-                    bodyMaterialIndex = ttModel.Materials.IndexOf(material);
+                    body = result.Value;
                 }
             }
 
-            // Replace only if the model has a body texture
-            if (!string.IsNullOrEmpty(materialToReplace))
-            {
-                // Current Race Code
-                var raceCode = materialToReplace.Substring(materialToReplace.LastIndexOf('c') + 1, 4);
-                // The closest race with a skin texture
-                var skinRaceCode = SelectedSkeleton.XivRace.GetSkinRace().GetRaceCode();
-                // New material path after replacing with target race
-                var newMaterial = materialToReplace.Replace(raceCode, skinRaceCode);
-                // Temp MDL path so that races match when getting mtrl path
-                var tempMdlPath = ttModel.Source.Replace(raceCode, skinRaceCode);
+            var bTex = (from m in materialDictionary.Values where m.MaterialPath.Contains(body) select m).FirstOrDefault();
+            bTex.MaterialPath = newMaterial;
 
-                var mtrlVariant = 1;
-                try
-                {
-                    mtrlVariant = (await _imc.GetImcInfo(item)).Variant;
-                }
-                catch (Exception ex)
-                {
-                    // No-op, defaulted to 1.
-                }
+            var mtrlPath = _mtrl.GetMtrlPath(tempMdlPath, newMaterial, mtrlVariant);
+            var mtrlOffset = await _index.GetDataOffset(mtrlPath);
+            var mtrl = await _mtrl.GetMtrlData(mtrlOffset, mtrlPath, 11);
+            var modelMaps = await ModelTexture.GetModelMaps(gameDirectory, mtrl);
 
-                var mtrlPath = _mtrl.GetMtrlPath(tempMdlPath, newMaterial, mtrlVariant);
-                var mtrlOffset = await _index.GetDataOffset(mtrlPath);
-                var mtrl = await _mtrl.GetMtrlData(mtrlOffset, mtrlPath, 11);
-                var modelMaps = await ModelTexture.GetModelMaps(gameDirectory, mtrl);
-
-                materialDictionary[bodyMaterialIndex] = modelMaps;
-            }
+            // Reindex the material dictionary as materials may have sorted differently
+            ReIndexMaterialDictionary(ttModel, materialDictionary, modelMaps);
         }
 
+
         /// <summary>
-        /// Clean up when window is closed
+        /// Reorganizes the texture dictionary to match the model materials
         /// </summary>
-        public void CleanUp()
+        /// <param name="ttModel">The TTModel</param>
+        /// <param name="materialDictionary">The material dictionary to reorganize</param>
+        /// <param name="newBodyTextures">The new textures that will go into body</param>
+        private void ReIndexMaterialDictionary(TTModel ttModel, Dictionary<int, ModelTextureData> materialDictionary, ModelTextureData newBodyTextures = null)
         {
-            _modelList.Clear();
-            ViewPortVM.CleanUp();
+            var tempDict = new Dictionary<int, ModelTextureData>();
+
+            var bodyRegex = new Regex("(b[0-9]{4})");
+
+            for (var i = 0; i < materialDictionary.Count; i++)
+            {
+                var modelTextureData = materialDictionary[i];
+
+                var isBody = bodyRegex.Match(modelTextureData.MaterialPath).Success;
+
+                // Add the new body textures if they were changed
+                if (isBody && newBodyTextures != null)
+                {
+                    tempDict.Add(ttModel.Materials.IndexOf(modelTextureData.MaterialPath), newBodyTextures);
+                }
+                else
+                {
+                    tempDict.Add(ttModel.Materials.IndexOf(modelTextureData.MaterialPath), modelTextureData);
+                }
+            }
+
+            foreach (var modelTextureData in tempDict)
+            {
+                materialDictionary[modelTextureData.Key] = modelTextureData.Value;
+            }
         }
 
         #endregion
