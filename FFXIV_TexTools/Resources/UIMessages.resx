@@ -730,6 +730,9 @@ This may affect animations.</value>
 
 Error: {0}</value>
   </data>
+  <data name="UpdatingFaceTitle" xml:space="preserve">
+    <value>Updating Face Textures</value>
+  </data>
   <data name="UpdatingSkeletonTitle" xml:space="preserve">
     <value>Updating Skeleton</value>
   </data>

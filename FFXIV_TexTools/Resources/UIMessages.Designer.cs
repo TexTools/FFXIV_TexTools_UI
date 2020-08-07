@@ -1558,6 +1558,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Updating Face Textures.
+        /// </summary>
+        internal static string UpdatingFaceTitle {
+            get {
+                return ResourceManager.GetString("UpdatingFaceTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Updating Skeleton.
         /// </summary>
         internal static string UpdatingSkeletonTitle {
