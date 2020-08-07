@@ -990,7 +990,13 @@ namespace FFXIV_TexTools
                 // Stop the worker, in case it was reading from the file for some reason.
                 XivCache.CacheWorkerEnabled = false;
 
-                await Task.Run(XivCache.RebuildAllRoots);
+                try
+                {
+                    await Task.Run(XivCache.RebuildAllRoots);
+                } catch(Exception ex)
+                {
+                    FlexibleMessageBox.Show("Item Scan Error", "An error occured while trying to scan for new item sets.\n\n" + ex.Message, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
                 await UnlockUi();
             }
         }
