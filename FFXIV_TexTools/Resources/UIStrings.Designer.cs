@@ -2546,7 +2546,7 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This may up to 5 minutes if you have many mods installed....
+        ///   Looks up a localized string similar to This may take 30-60 seconds if you have many mods installed....
         /// </summary>
         public static string Updating_Cache_Message {
             get {
