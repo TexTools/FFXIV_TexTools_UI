@@ -352,7 +352,7 @@ namespace FFXIV_TexTools.ViewModels
             PartComboboxEnabled = _partCount > 1;
             SelectedPartIndex = 0;
 
-            if (_partCount == 0)
+            if (_partCount <= 1)
             {
                 // If there are no parts, we're done.
                 if (LoadingComplete != null)
