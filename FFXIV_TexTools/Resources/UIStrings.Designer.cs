@@ -774,6 +774,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Face.
+        /// </summary>
+        public static string Face {
+            get {
+                return ResourceManager.GetString("Face", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to FFXIV Directory.
         /// </summary>
         public static string FFXIV_Directory {

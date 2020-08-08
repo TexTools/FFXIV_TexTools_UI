@@ -730,10 +730,24 @@ This may affect animations.</value>
 
 Error: {0}</value>
   </data>
+  <data name="UpdatingFaceTitle" xml:space="preserve">
+    <value>Updating Face Textures</value>
+  </data>
   <data name="UpdatingSkeletonTitle" xml:space="preserve">
     <value>Updating Skeleton</value>
   </data>
   <data name="UpdatingSkinTitle" xml:space="preserve">
     <value>Updating Skin</value>
+  </data>
+  <data name="ExportingFullModelTitle" xml:space="preserve">
+    <value>Exporting Full Model</value>
+  </data>
+  <data name="FullModelExportSuccessMessage" xml:space="preserve">
+    <value>Full Model successfuly exported to:
+
+{0}</value>
+  </data>
+  <data name="FullModelExportSuccessTitle" xml:space="preserve">
+    <value>Export Successful</value>
   </data>
 </root>

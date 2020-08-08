@@ -79,6 +79,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Helion.
+        /// </summary>
+        internal static string Helion {
+            get {
+                return ResourceManager.GetString("Helion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Hyur Highlander.
         /// </summary>
         internal static string Hyur_H {
@@ -93,6 +102,51 @@ namespace FFXIV_TexTools.Resources {
         internal static string Hyur_M {
             get {
                 return ResourceManager.GetString("Hyur_M", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Lost.
+        /// </summary>
+        internal static string Lost {
+            get {
+                return ResourceManager.GetString("Lost", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Raen.
+        /// </summary>
+        internal static string Raen {
+            get {
+                return ResourceManager.GetString("Raen", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Rava.
+        /// </summary>
+        internal static string Rava {
+            get {
+                return ResourceManager.GetString("Rava", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Veena.
+        /// </summary>
+        internal static string Veena {
+            get {
+                return ResourceManager.GetString("Veena", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Xaela.
+        /// </summary>
+        internal static string Xaela {
+            get {
+                return ResourceManager.GetString("Xaela", resourceCulture);
             }
         }
     }

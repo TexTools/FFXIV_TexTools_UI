@@ -985,6 +985,9 @@ If you would like to enable this, first import a texture for the selected item.<
   <data name="Working_Ellipsis" xml:space="preserve">
     <value>Working...</value>
   </data>
+  <data name="Face" xml:space="preserve">
+    <value>Face</value>
+  </data>
   <data name="Skin" xml:space="preserve">
     <value>Skin</value>
   </data>

@@ -155,8 +155,6 @@ namespace FFXIV_TexTools.ViewModels
 
             }
 
-
-
             if (itemModel.PrimaryCategory.Equals(XivStrings.Gear))
             {
                 var gear = new Gear(_gameDirectory, GetLanguage());
@@ -172,7 +170,7 @@ namespace FFXIV_TexTools.ViewModels
                     Races.Add(raceCBD);
                 }
 
-                FMVVisibility = Visibility.Visible;
+                FMVVisibility = (xivGear.ModelInfo as XivGearModelInfo).IsWeapon ? Visibility.Hidden : Visibility.Visible;
             }
             else if (itemModel.PrimaryCategory.Equals(XivStrings.Companions))
             {

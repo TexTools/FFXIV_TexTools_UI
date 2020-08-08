@@ -552,6 +552,35 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Exporting Full Model.
+        /// </summary>
+        internal static string ExportingFullModelTitle {
+            get {
+                return ResourceManager.GetString("ExportingFullModelTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Full Model successfuly exported to:
+        ///
+        ///{0}.
+        /// </summary>
+        internal static string FullModelExportSuccessMessage {
+            get {
+                return ResourceManager.GetString("FullModelExportSuccessMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Export Successful.
+        /// </summary>
+        internal static string FullModelExportSuccessTitle {
+            get {
+                return ResourceManager.GetString("FullModelExportSuccessTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to TexTools was unable to determine the game version..
         /// </summary>
         internal static string GameVersionErrorMessage {
@@ -1554,6 +1583,15 @@ namespace FFXIV_TexTools.Resources {
         internal static string UpdateBodyTextureError {
             get {
                 return ResourceManager.GetString("UpdateBodyTextureError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Updating Face Textures.
+        /// </summary>
+        internal static string UpdatingFaceTitle {
+            get {
+                return ResourceManager.GetString("UpdatingFaceTitle", resourceCulture);
             }
         }
         

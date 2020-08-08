@@ -48,14 +48,15 @@ namespace FFXIV_TexTools.ViewModels
 
         private FullModelViewport3DViewModel _viewPortVM;
         private float _lightingXValue, _lightingYValue, _lightingZValue;
-        private string _lightXLabel = "X  |  0", _lightYLabel = "Y  |  0", _lightZLabel = "Z  |  0", _reflectionLabel = $"{UIStrings.Reflection}  |  1", _modToggleText = UIStrings.Enable_Disable, _modelStatusLabel;
-        private int _checkedLight, _reflectionValue, _selectedSkeletonIndex, _selectedModelIndex, _selectedSkinIndex, _selectedSkin;
-        private bool _flyoutOpen, _lightRenderToggle, _light1Check = true, _light2Check, _light3Check, _transparencyToggle, _cullModeToggle, _showSkeleton, _skeletonComboboxEnabled, _skinComboboxEnabled, _exportEnabled, _removeEnabled, _isFirstModel;
-        private Visibility _lightToggleVisibility = Visibility.Collapsed;
+        private string _lightXLabel = "X  |  0", _lightYLabel = "Y  |  0", _lightZLabel = "Z  |  0", _reflectionLabel = $"{UIStrings.Reflection}  |  1", _modToggleText = UIStrings.Enable_Disable, _modelStatusLabel, _selectedFace;
+        private int _checkedLight, _reflectionValue, _selectedSkeletonIndex, _selectedModelIndex, _selectedSkinIndex, _selectedSkin, _selectedFaceIndex;
+        private bool _flyoutOpen, _lightRenderToggle, _light1Check = true, _light2Check, _light3Check, _transparencyToggle, _cullModeToggle, _showSkeleton, _skeletonComboboxEnabled, _skinComboboxEnabled, _exportEnabled, _removeEnabled, _isFirstModel, _faceComboboxEnabled;
+        private Visibility _lightToggleVisibility = Visibility.Collapsed, _faceComboBoxVisibility = Visibility.Collapsed;
         private FullModelView _fullModelView;
         private ObservableCollection<ComboBoxData> _skeletonComboBoxData = new ObservableCollection<ComboBoxData>();
         private ObservableCollection<int> _skins = new ObservableCollection<int>();
         private ObservableCollection<string> _modelList = new ObservableCollection<string>();
+        private ObservableCollection<string> _facesList = new ObservableCollection<string>();
         private ComboBoxData _selectedSkeleton;
         private XivRace _previousRace;
         private DirectoryInfo _gameDirectory;
@@ -201,6 +202,73 @@ namespace FFXIV_TexTools.ViewModels
         }
 
         /// <summary>
+        /// The collection of skins available to the skeleton
+        /// </summary>
+        public ObservableCollection<string> Faces
+        {
+            get => _facesList;
+            set
+            {
+                _facesList = value;
+                NotifyPropertyChanged(nameof(Faces));
+            }
+        }
+
+        /// <summary>
+        /// The selected face
+        /// </summary>
+        public string SelectedFace
+        {
+            get => _selectedFace;
+            set
+            {
+                _selectedFace = value;
+                NotifyPropertyChanged(nameof(SelectedFace));
+
+                UpdateFaceTextures();
+            }
+        }
+
+        /// <summary>
+        /// The selected face index
+        /// </summary>
+        public int SelectedFaceIndex
+        {
+            get => _selectedFaceIndex;
+            set
+            {
+                _selectedFaceIndex = value;
+                NotifyPropertyChanged(nameof(SelectedFaceIndex));
+            }
+        }
+
+        /// <summary>
+        /// Flag for enabling or disabling the Face ComboBox
+        /// </summary>
+        public bool FaceComboboxEnabled
+        {
+            get => _faceComboboxEnabled;
+            set
+            {
+                _faceComboboxEnabled = value;
+                NotifyPropertyChanged(nameof(FaceComboboxEnabled));
+            }
+        }
+
+        /// <summary>
+        /// Flag for visibility of the Face ComboBox
+        /// </summary>
+        public Visibility FaceComboboxVisibility
+        {
+            get => _faceComboBoxVisibility;
+            set
+            {
+                _faceComboBoxVisibility = value;
+                NotifyPropertyChanged(nameof(FaceComboboxVisibility));
+            }
+        }
+
+        /// <summary>
         /// The list of models by item type
         /// </summary>
         public ObservableCollection<string> ModelList
@@ -286,6 +354,17 @@ namespace FFXIV_TexTools.ViewModels
                 }
 
                 SelectedSkinIndex = 0;
+            }
+
+            // Show the face combo box if a face with different textures is added
+            if (item.Name.Equals(XivStrings.Face) && (SelectedSkeleton.XivRace == XivRace.AuRa_Female || SelectedSkeleton.XivRace == XivRace.AuRa_Male ||
+                SelectedSkeleton.XivRace == XivRace.Viera || SelectedSkeleton.XivRace == XivRace.Hrothgar))
+            {
+                Faces.Clear();
+                FaceComboboxVisibility = Visibility.Visible;
+                FaceComboboxEnabled = true;
+                FillFaceComboBox(SelectedSkeleton.XivRace);
+                SelectedFaceIndex = 0;
             }
 
             await UpdateSkin(ttModel, _materialDictionary, item);
@@ -390,6 +469,31 @@ namespace FFXIV_TexTools.ViewModels
             _charaRaceAndSkinDictionary = await character.GetRacesAndNumbersForTextures(xivChara);
 
             FillSkeletonComboBox();
+        }
+
+        /// <summary>
+        /// Fills the Face ComboBox
+        /// </summary>
+        /// <param name="selectedRace">The selected race</param>
+        private void FillFaceComboBox(XivRace selectedRace)
+        {
+            switch (selectedRace)
+            {
+                case XivRace.AuRa_Male:
+                case XivRace.AuRa_Female:
+                    Faces.Add(XivStringRaces.Raen);
+                    Faces.Add(XivStringRaces.Xaela);
+                    break;
+                case XivRace.Viera:
+                    Faces.Add(XivStringRaces.Rava);
+                    Faces.Add(XivStringRaces.Veena);
+                    break;
+                case XivRace.Hrothgar:
+                    Faces.Add(XivStringRaces.Helion);
+                    Faces.Add(XivStringRaces.Lost);
+                    break;
+            }
+
         }
 
         /// <summary>
@@ -528,6 +632,24 @@ namespace FFXIV_TexTools.ViewModels
         }
 
         /// <summary>
+        /// Gets the face number from the model
+        /// </summary>
+        /// <param name="ttModel">The TT Model</param>
+        /// <returns>the face number</returns>
+        private string GetFaceNum(TTModel ttModel)
+        {
+            var faceRegex = new Regex("(f[0-9]{4})");
+
+            var result = faceRegex.Match(ttModel.Materials[0]);
+            if (result.Success)
+            {
+                return result.Value;
+            }
+
+            return string.Empty;
+        }
+
+        /// <summary>
         /// Updates the body textures for a given model
         /// </summary>
         /// <param name="ttModel">The model to update the body textures for</param>
@@ -597,6 +719,88 @@ namespace FFXIV_TexTools.ViewModels
             catch (Exception ex)
             {
                 throw new Exception(string.Format(UIMessages.UpdateBodyTextureError, ex.Message));
+            }
+        }
+
+        /// <summary>
+        /// Updates the face textures to the selected clan
+        /// </summary>
+        private async Task UpdateFaceTextures()
+        {
+            ProgressDialogController pc = null;
+            if (!_fullModelView.IsAnyDialogOpen)
+            {
+                pc = await _fullModelView.ShowProgressAsync(UIMessages.UpdatingFaceTitle, UIMessages.PleaseStandByMessage);
+            }
+
+            TTModel ttModel = null;
+            Dictionary<int, ModelTextureData> materialDictionary = null;
+
+            foreach (var shownModel in ViewPortVM.shownModels.Values)
+            {
+                if (shownModel.ItemModel.Name.Equals(XivStrings.Face))
+                {
+                    ttModel = shownModel.TtModel;
+                    materialDictionary = shownModel.ModelTextureData;
+                }
+            }
+
+            if (ttModel != null)
+            {
+                var _mtrl = new Mtrl(_gameDirectory, IOUtil.GetDataFileFromPath(ttModel.Source), XivLanguage.None);
+                var _index = new Index(_gameDirectory);
+
+                var faceRegex = new Regex("(f[0-9]{4})");
+                var facePartRegex = new Regex("(_[a-z]{3}_)");
+                var origFaceNum = faceRegex.Match(ttModel.Source).Value;
+                var newFaceNum = origFaceNum;
+
+                // Second clan face add 100
+                if (SelectedFaceIndex == 1)
+                {
+                    newFaceNum = $"f{(int.Parse(origFaceNum.Substring(1)) + 100).ToString().PadLeft(4, '0')}";
+                }
+
+                var currFaceNum = GetFaceNum(ttModel);
+
+                var tempMdlPath = ttModel.Source.Replace(origFaceNum, newFaceNum);
+
+                if (!currFaceNum.Equals(newFaceNum))
+                {
+                    foreach (var meshGroup in ttModel.MeshGroups)
+                    {
+                        meshGroup.Material = meshGroup.Material.Replace(currFaceNum, newFaceNum);
+                    }
+                }
+
+                foreach (var material in ttModel.Materials)
+                {
+                    var matPart = facePartRegex.Match(material).Value;
+
+                    var matLoc = from m in materialDictionary where m.Value.MaterialPath.Contains(matPart) select m;
+
+                    try
+                    {
+                        var mtrlPath = _mtrl.GetMtrlPath(tempMdlPath, material);
+                        var mtrlOffset = await _index.GetDataOffset(mtrlPath);
+                        var mtrl = await _mtrl.GetMtrlData(mtrlOffset, mtrlPath, 11);
+                        var modelMaps = await ModelTexture.GetModelMaps(_gameDirectory, mtrl);
+
+                        materialDictionary[matLoc.First().Key] = modelMaps;
+                    }
+                    catch
+                    {
+                        // Material was not present in new material path
+                        // eg. Viera f0101 only has _etc_ and _iri_ in materials, it retains _fac_ from the original f0001
+                    }
+                }
+
+                ViewPortVM.UpdateSkin(SelectedSkeleton.XivRace);
+            }
+
+            if (pc != null)
+            {
+                await pc.CloseAsync();
             }
         }
 
@@ -947,11 +1151,17 @@ namespace FFXIV_TexTools.ViewModels
                 ModelList.Clear();
                 RemoveEnabled = false;
                 ExportEnabled = false;
+                FaceComboboxVisibility = Visibility.Collapsed;
             }
             else
             {
                 var modelToRemove = ModelList[SelectedModelIndex].Substring(ModelList[SelectedModelIndex].IndexOf('('))
                     .Trim('(').Trim(')');
+                if (modelToRemove.Equals($"{XivStrings.Character}_{XivStrings.Face}"))
+                {
+                    FaceComboboxVisibility = Visibility.Collapsed;
+                }
+
                 ViewPortVM.RemoveModel(modelToRemove);
                 ModelList.RemoveAt(SelectedModelIndex);
                 SelectedModelIndex = 0;
