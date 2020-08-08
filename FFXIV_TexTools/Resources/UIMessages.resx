@@ -739,4 +739,15 @@ Error: {0}</value>
   <data name="UpdatingSkinTitle" xml:space="preserve">
     <value>Updating Skin</value>
   </data>
+  <data name="ExportingFullModelTitle" xml:space="preserve">
+    <value>Exporting Full Model</value>
+  </data>
+  <data name="FullModelExportSuccessMessage" xml:space="preserve">
+    <value>Full Model successfuly exported to:
+
+{0}</value>
+  </data>
+  <data name="FullModelExportSuccessTitle" xml:space="preserve">
+    <value>Export Successful</value>
+  </data>
 </root>

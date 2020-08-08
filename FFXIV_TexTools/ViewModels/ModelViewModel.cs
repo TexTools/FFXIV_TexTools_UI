@@ -155,8 +155,6 @@ namespace FFXIV_TexTools.ViewModels
 
             }
 
-
-
             if (itemModel.PrimaryCategory.Equals(XivStrings.Gear))
             {
                 var gear = new Gear(_gameDirectory, GetLanguage());

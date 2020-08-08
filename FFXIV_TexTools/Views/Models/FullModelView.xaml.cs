@@ -26,6 +26,7 @@ using System.Windows;
 using System.Windows.Forms;
 using FFXIV_TexTools.Helpers;
 using FFXIV_TexTools.Resources;
+using MahApps.Metro.Controls.Dialogs;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Items.Interfaces;
 using xivModdingFramework.Models.DataContainers;
@@ -105,6 +106,8 @@ namespace FFXIV_TexTools.Views.Models
         /// <param name="fullModelName">The name chosen by the user for the full model export</param>
         private async Task Export(string fullModelName)
         {
+            var pc = await this.ShowProgressAsync(UIMessages.ExportingFullModelTitle, UIMessages.PleaseStandByMessage);
+
             var fileFormat = "fbx";
             var savePath = new DirectoryInfo(Settings.Default.Save_Directory);
             var outputFilePath = $"{savePath}\\FullModel\\{fullModelName}\\{fullModelName}.{fileFormat}";
@@ -174,6 +177,10 @@ namespace FFXIV_TexTools.Views.Models
                 File.Delete(outputFilePath);
                 File.Move(outputFile, outputFilePath);
             }
+
+            await pc.CloseAsync();
+
+            await this.ShowMessageAsync(UIMessages.FullModelExportSuccessTitle, string.Format(UIMessages.FullModelExportSuccessMessage, outputFilePath));
         }
 
         /// <summary>
