@@ -1,0 +1,17 @@
+﻿<UserControl x:Class="FFXIV_TexTools.Views.Controls.DescribedButton"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:FFXIV_TexTools.Views.Controls"
+             mc:Ignorable="d" Height="142.5" Width="527.187">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="35"/>
+            <RowDefinition Height="100"/>
+        </Grid.RowDefinitions>
+        <Button x:Name="PrimaryButton" Content="{Binding ButtonText}" ToolTip="{Binding Tooltip}" Margin="40,5" Height="25" Width="200"/>
+        <TextBlock x:Name="DescriptionBox" Margin="10,0,10,10" TextWrapping="Wrap" Text="{Binding DescriptionText}" Grid.Row="1" TextAlignment="Center"/>
+
+    </Grid>
+</UserControl>

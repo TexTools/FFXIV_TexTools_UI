@@ -28,7 +28,7 @@ namespace FFXIV_TexTools.Views
         {
             InitializeComponent();
 
-            DataContext = new CustomizeViewModel();
+            DataContext = new CustomizeViewModel(this);
         }
 
         /// <summary>

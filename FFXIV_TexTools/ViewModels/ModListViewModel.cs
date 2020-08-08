@@ -35,9 +35,11 @@ using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using xivModdingFramework.Cache;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Items.DataContainers;
 using xivModdingFramework.Materials.FileTypes;
+using xivModdingFramework.Mods;
 using xivModdingFramework.Mods.DataContainers;
 using xivModdingFramework.Textures.DataContainers;
 using xivModdingFramework.Textures.Enums;
@@ -57,6 +59,7 @@ namespace FFXIV_TexTools.ViewModels
         private int _progressValue;
         private ObservableCollection<Category> _categories;
         private IProgress<(int current, int total)> progress;
+        private Dictionary<string, List<string>> _modListParents;
 
 
         public ModListViewModel()
@@ -83,6 +86,8 @@ namespace FFXIV_TexTools.ViewModels
                 _modPackFilter = true;
                 SetFilter("ModPackFilter");
             }
+
+            _modListParents = XivCache.GetModListParents();
         }
 
         /// <summary>
@@ -107,7 +112,8 @@ namespace FFXIV_TexTools.ViewModels
 
             return Task.Run(() =>
             {
-                var modList = JsonConvert.DeserializeObject<ModList>(File.ReadAllText(_modListDirectory.FullName));
+                var modding = new Modding(_gameDirectory);
+                var modList = modding.GetModList();
 
                 if (modList == null) return;
 
@@ -204,7 +210,8 @@ namespace FFXIV_TexTools.ViewModels
 
             return Task.Run(() =>
             {
-                var modList = JsonConvert.DeserializeObject<ModList>(File.ReadAllText(_modListDirectory.FullName));
+                var modding = new Modding(_gameDirectory);
+                var modList = modding.GetModList();
 
                 var modPackCatDict = new Dictionary<string, Category>();
 
@@ -508,7 +515,8 @@ namespace FFXIV_TexTools.ViewModels
                 if (selectedItem == null) return;
 
                 var mtrl = new Mtrl(_gameDirectory, selectedItem.DataFile, GetLanguage());
-                var modList = JsonConvert.DeserializeObject<ModList>(File.ReadAllText(_modListDirectory.FullName));
+                var modding = new Modding(_gameDirectory);
+                var modList = modding.GetModList();
 
                 var modItems = new List<Mod>();
 
@@ -569,239 +577,173 @@ namespace FFXIV_TexTools.ViewModels
                             ModItem = modItem
                         };
 
+                        string parent = null;
+                        if(_modListParents.ContainsKey(modItem.fullPath) && _modListParents[modItem.fullPath] != null && _modListParents[modItem.fullPath].Count > 0)
+                        {
+                            parent = _modListParents[modItem.fullPath][0];
+                        }
+
+                        var suffix = "";
+                        try
+                        {
+                            suffix = Path.GetExtension(modItem.fullPath).Substring(1);
+                        }
+                        catch
+                        {
+                            // No-op.
+                        }
+
                         // Race
-                        if (selectedItem.PrimaryCategory.Equals(XivStrings.Gear))
-                        {
-                            if (modItem.fullPath.Contains("equipment"))
-                            {
-                                string raceCode;
-                                if (itemPath.Contains("/v"))
-                                {
-                                    raceCode = itemPath.Substring(itemPath.LastIndexOf("_c") + 2, 4);
-                                }
-                                else
-                                {
-                                    raceCode = itemPath.Substring(itemPath.LastIndexOf("/c") + 2, 4);
-                                }
+                        modListModel.ItemName = SimpleModpackEntry.GetFancyName(modItem.name, modItem.fullPath);
 
-                                modListModel.Race = XivRaces.GetXivRace(raceCode).GetDisplayName();
-                            }
-                            else
-                            {
-                                modListModel.Race = XivStrings.All;
-                            }
-                        }
-                        else if (selectedItem.PrimaryCategory.Equals(XivStrings.Character))
-                        {
-                            if (!modItem.fullPath.Contains("chara/common"))
-                            {
-                                var raceCode = itemPath.Substring(itemPath.IndexOf("n/c") + 3, 4);
-                                modListModel.Race = XivRaces.GetXivRace(raceCode).GetDisplayName();
-                            }
-                            else
-                            {
-                                modListModel.Race = XivStrings.All;
-                            }
+                        // File Name
+                        modListModel.FileName = Path.GetFileName(modItem.fullPath);
 
-                        }
-                        else if (selectedItem.PrimaryCategory.Equals(XivStrings.Companions))
-                        {
-                            modListModel.Race = XivStrings.Monster;
-                        }
-                        else if (selectedItem.PrimaryCategory.Equals(XivStrings.UI))
-                        {
-                            modListModel.Race = XivStrings.All;
-                        }
-                        else if (selectedItem.PrimaryCategory.Equals(XivStrings.Housing))
-                        {
-                            modListModel.Race = XivStrings.All;
-                        }
+                        // Type
+                        modListModel.Type = SimpleModpackEntry.GetType(modItem.fullPath);
 
-                        XivTexType? xivTexType = null;
-                        // Map
-                        if (itemPath.Contains("_d."))
+                        // Material
+                        if (suffix == "tex" && parent != null)
                         {
-                            xivTexType = XivTexType.Diffuse;
-                            modListModel.Map = xivTexType.ToString();
-                        }
-                        else if (itemPath.Contains("_n."))
-                        {
-                            xivTexType = XivTexType.Normal;
-                            modListModel.Map = xivTexType.ToString();
-                        }
-                        else if (itemPath.Contains("_s."))
-                        {
-                            xivTexType = XivTexType.Specular;
-                            modListModel.Map = xivTexType.ToString();
-                        }
-                        else if (itemPath.Contains("_m."))
-                        {
-                            xivTexType = XivTexType.Multi;
-                            modListModel.Map = xivTexType.ToString();
-                        }
-                        else if (itemPath.Contains("material"))
-                        {
-                            xivTexType = XivTexType.ColorSet;
-                            modListModel.Map = xivTexType.ToString();
-                        }
-                        else if (itemPath.Contains("decal"))
-                        {
-                            xivTexType = XivTexType.Mask;
-                            modListModel.Map = xivTexType.ToString();
-                        }
-                        else if (itemPath.Contains("vfx"))
-                        {
-                            xivTexType = XivTexType.Vfx;
-                            modListModel.Map = xivTexType.ToString();
-                        }
-                        else if (itemPath.Contains("ui/"))
-                        {
-                            if (itemPath.Contains("icon"))
-                            {
-                                xivTexType = XivTexType.Icon;
-                                modListModel.Map = xivTexType.ToString();
-                            }
-                            else if (itemPath.Contains("map"))
-                            {
-                                xivTexType = XivTexType.Map;
-                                modListModel.Map = xivTexType.ToString();
-                            }
-                            else
-                            {
-                                modListModel.Map = "UI";
-                            }
-                        }
-                        else if (itemPath.Contains(".mdl"))
-                        {
-                            modListModel.Map = "3D";
+                            modListModel.Material = SimpleModpackEntry.GetMaterialId(parent);
                         }
                         else
                         {
-                            modListModel.Map = "--";
+                            modListModel.Material = SimpleModpackEntry.GetMaterialId(modItem.fullPath);
                         }
 
-                        // Part
-                        modListModel.Part = SimpleModpackEntry.GetPart(itemPath);
-
-                        // Number
-                        modListModel.Number = SimpleModpackEntry.GetNumber(itemPath);
-
-                        // Image
-                        if (itemPath.Contains("material"))
+                        // Race
+                        if (suffix == "tex" && parent != null)
                         {
-                            var dxVersion = int.Parse(Properties.Settings.Default.DX_Version);
+                            modListModel.Race = SimpleModpackEntry.GetRace(parent).GetDisplayName();
+                        }
+                        else
+                        {
+                            modListModel.Race = SimpleModpackEntry.GetRace(modItem.fullPath).GetDisplayName();
+                        }
 
-                            var offset = modItem.enabled ? modItem.data.modOffset : modItem.data.originalOffset;
 
-                            try
+                        // Added files which are currently disabled cannot be previewed, as their index file entries don't exist.
+                        if (!(modItem.data.originalOffset == modItem.data.modOffset && !modItem.enabled))
+                        {
+                            // Image
+                            if (itemPath.Contains("material"))
                             {
-                                mtrl.DataFile = XivDataFiles.GetXivDataFile(modItem.datFile);
+                                var dxVersion = int.Parse(Properties.Settings.Default.DX_Version);
 
-                                var mtrlData = await mtrl.GetMtrlData(offset, modItem.fullPath, dxVersion);
+                                var offset = modItem.enabled ? modItem.data.modOffset : modItem.data.originalOffset;
 
-                                var floats = Half.ConvertToFloat(mtrlData.ColorSetData.ToArray());
-
-                                var floatArray = Utilities.ToByteArray(floats);
-
-                                if (floatArray.Length > 0)
+                                try
                                 {
-                                    using (var img = Image.LoadPixelData<RgbaVector>(floatArray, 4, 16))
+                                    mtrl.DataFile = XivDataFiles.GetXivDataFile(modItem.datFile);
+
+                                    var mtrlData = await mtrl.GetMtrlData(offset, modItem.fullPath, dxVersion);
+
+                                    var floats = Half.ConvertToFloat(mtrlData.ColorSetData.ToArray());
+
+                                    var floatArray = Utilities.ToByteArray(floats);
+
+                                    if (floatArray.Length > 0)
                                     {
-                                        img.Mutate(x => x.Opacity(1));
-
-                                        BitmapImage bmp;
-
-                                        using (var ms = new MemoryStream())
+                                        using (var img = Image.LoadPixelData<RgbaVector>(floatArray, 4, 16))
                                         {
-                                            img.Save(ms, new BmpEncoder());
+                                            img.Mutate(x => x.Opacity(1));
 
-                                            bmp = new BitmapImage();
-                                            bmp.BeginInit();
-                                            bmp.StreamSource = ms;
-                                            bmp.CacheOption = BitmapCacheOption.OnLoad;
-                                            bmp.EndInit();
-                                            bmp.Freeze();
+                                            BitmapImage bmp;
+
+                                            using (var ms = new MemoryStream())
+                                            {
+                                                img.Save(ms, new BmpEncoder());
+
+                                                bmp = new BitmapImage();
+                                                bmp.BeginInit();
+                                                bmp.StreamSource = ms;
+                                                bmp.CacheOption = BitmapCacheOption.OnLoad;
+                                                bmp.EndInit();
+                                                bmp.Freeze();
+                                            }
+
+                                            modListModel.Image =
+                                                Application.Current.Dispatcher.Invoke(() => bmp);
                                         }
-
-                                        modListModel.Image =
-                                            Application.Current.Dispatcher.Invoke(() => bmp);
                                     }
                                 }
-                            }
-                            catch (Exception ex)
-                            {
-                                FlexibleMessageBox.Show(
-                                    string.Format(UIMessages.MaterialFileReadErrorMessage, modItem.fullPath,
-                                        ex.Message),
-                                    UIMessages.MaterialDataReadErrorTitle,
-                                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            }
-
-                        }
-                        else if (itemPath.Contains(".mdl"))
-                        {
-                            modListModel.Image = Application.Current.Dispatcher.Invoke(() => new BitmapImage(
-                                new Uri("pack://application:,,,/FFXIV_TexTools;component/Resources/3DModel.png")));
-                        }
-                        else if (itemPath.Contains(".imc"))
-                        {
-                            modListModel.Image = Application.Current.Dispatcher.Invoke(() => new BitmapImage(
-                                new Uri("pack://application:,,,/FFXIV_TexTools;component/Resources/Metadata.png")));
-                        }
-                        else
-                        {
-                            var ttp = new TexTypePath
-                            {
-                                Type = xivTexType.GetValueOrDefault(),
-                                DataFile = XivDataFiles.GetXivDataFile(modItem.datFile),
-                                Path = modItem.fullPath
-                            };
-
-                            XivTex texData;
-                            try
-                            {
-                                if (modItems.Count > 10)
+                                catch (Exception ex)
                                 {
-                                    texData = await tex.GetTexDataPreFetchedIndex(ttp);
-                                }
-                                else
-                                {
-                                    texData = await tex.GetTexData(ttp);
+                                    FlexibleMessageBox.Show(
+                                        string.Format(UIMessages.MaterialFileReadErrorMessage, modItem.fullPath,
+                                            ex.Message),
+                                        UIMessages.MaterialDataReadErrorTitle,
+                                        MessageBoxButtons.OK, MessageBoxIcon.Error);
                                 }
 
                             }
-                            catch (Exception ex)
+                            else if (itemPath.Contains(".mdl"))
                             {
-                                FlexibleMessageBox.Show(
-                                    string.Format(UIMessages.TextureFileReadErrorMessage, ttp.Path, ex.Message),
-                                    UIMessages.TextureDataReadErrorTitle,
-                                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-                                return;
+                                modListModel.Image = Application.Current.Dispatcher.Invoke(() => new BitmapImage(
+                                    new Uri("pack://application:,,,/FFXIV_TexTools;component/Resources/3DModel.png")));
                             }
-
-                            var mapBytes = await tex.GetImageData(texData);
-
-                            using (var img = Image.LoadPixelData<Rgba32>(mapBytes, texData.Width, texData.Height))
+                            else if (itemPath.Contains(".imc"))
                             {
-                                img.Mutate(x => x.Opacity(1));
-
-                                BitmapImage bmp;
-
-                                using (var ms = new MemoryStream())
+                                modListModel.Image = Application.Current.Dispatcher.Invoke(() => new BitmapImage(
+                                    new Uri("pack://application:,,,/FFXIV_TexTools;component/Resources/Metadata.png")));
+                            }
+                            else
+                            {
+                                var ttp = new TexTypePath
                                 {
-                                    img.Save(ms, new BmpEncoder());
+                                    Type = XivTexType.Diffuse,
+                                    DataFile = XivDataFiles.GetXivDataFile(modItem.datFile),
+                                    Path = modItem.fullPath
+                                };
 
-                                    bmp = new BitmapImage();
-                                    bmp.BeginInit();
-                                    bmp.StreamSource = ms;
-                                    bmp.CacheOption = BitmapCacheOption.OnLoad;
-                                    bmp.EndInit();
-                                    bmp.Freeze();
+                                XivTex texData;
+                                try
+                                {
+                                    if (modItems.Count > 10)
+                                    {
+                                        texData = await tex.GetTexDataPreFetchedIndex(ttp);
+                                    }
+                                    else
+                                    {
+                                        texData = await tex.GetTexData(ttp);
+                                    }
+
+                                }
+                                catch (Exception ex)
+                                {
+                                    FlexibleMessageBox.Show(
+                                        string.Format(UIMessages.TextureFileReadErrorMessage, ttp.Path, ex.Message),
+                                        UIMessages.TextureDataReadErrorTitle,
+                                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    return;
                                 }
 
-                                modListModel.Image =
-                                    Application.Current.Dispatcher.Invoke(() => bmp);
+                                var mapBytes = await tex.GetImageData(texData);
+
+                                using (var img = Image.LoadPixelData<Rgba32>(mapBytes, texData.Width, texData.Height))
+                                {
+                                    img.Mutate(x => x.Opacity(1));
+
+                                    BitmapImage bmp;
+
+                                    using (var ms = new MemoryStream())
+                                    {
+                                        img.Save(ms, new BmpEncoder());
+
+                                        bmp = new BitmapImage();
+                                        bmp.BeginInit();
+                                        bmp.StreamSource = ms;
+                                        bmp.CacheOption = BitmapCacheOption.OnLoad;
+                                        bmp.EndInit();
+                                        bmp.Freeze();
+                                    }
+
+                                    modListModel.Image =
+                                        Application.Current.Dispatcher.Invoke(() => bmp);
+                                }
                             }
+
                         }
 
                         // Status
@@ -852,7 +794,8 @@ namespace FFXIV_TexTools.ViewModels
             ProgressValue = 0;
             ProgressText = string.Empty;
 
-            var modList = JsonConvert.DeserializeObject<ModList>(File.ReadAllText(_modListDirectory.FullName));
+            var modding = new Modding(_gameDirectory);
+            var modList = modding.GetModList();
             List<Mod> modPackModList = null;
 
             if (category.Name.Equals(UIStrings.Standalone_Non_ModPack))
@@ -929,7 +872,8 @@ namespace FFXIV_TexTools.ViewModels
         /// <param name="category">The Category object for the item</param>
         public void RemoveItem(ModListModel item, Category category)
         {
-            var modList = JsonConvert.DeserializeObject<ModList>(File.ReadAllText(_modListDirectory.FullName));
+            var modding = new Modding(_gameDirectory);
+            var modList = modding.GetModList();
 
             var remainingList = (from items in modList.Mods
                                 where items.name == item.ModItem.name
@@ -1226,24 +1170,30 @@ namespace FFXIV_TexTools.ViewModels
             private float _opacity;
 
             /// <summary>
-            /// The race of the modded item
+            /// The name of the parent item.
+            /// </summary>
+            public string ItemName { get; set; }
+
+            /// <summary>
+            /// The name of the file.
+            /// </summary>
+            public string FileName { get; set; }
+
+            /// <summary>
+            /// The race the file is associated with.
             /// </summary>
             public string Race { get; set; }
 
             /// <summary>
-            /// The texture map of the modded item
+            /// The file type and usage of the file.
             /// </summary>
-            public string Map { get; set; }
+            public string Type { get; set; }
+
 
             /// <summary>
-            /// The part of the modded item
+            /// The material the file is associated with.
             /// </summary>
-            public string Part { get; set; }
-
-            /// <summary>
-            /// The number of the modded item
-            /// </summary>
-            public string Number { get; set; }
+            public string Material { get; set; }
 
             /// <summary>
             /// The brush color reflecting the active status of the modded item

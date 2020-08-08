@@ -19,7 +19,7 @@ namespace FFXIV_TexTools.Resources {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class UIMessages {
@@ -552,6 +552,35 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Exporting Full Model.
+        /// </summary>
+        internal static string ExportingFullModelTitle {
+            get {
+                return ResourceManager.GetString("ExportingFullModelTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Full Model successfuly exported to:
+        ///
+        ///{0}.
+        /// </summary>
+        internal static string FullModelExportSuccessMessage {
+            get {
+                return ResourceManager.GetString("FullModelExportSuccessMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Export Successful.
+        /// </summary>
+        internal static string FullModelExportSuccessTitle {
+            get {
+                return ResourceManager.GetString("FullModelExportSuccessTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to TexTools was unable to determine the game version..
         /// </summary>
         internal static string GameVersionErrorMessage {
@@ -799,11 +828,63 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Could not find the following bones for {0}.
+        ///{1}
+        ///
+        ///This may affect animations..
+        /// </summary>
+        internal static string MissingBones {
+            get {
+                return ResourceManager.GetString("MissingBones", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Missing Bones.
+        /// </summary>
+        internal static string MissingBonesTitle {
+            get {
+                return ResourceManager.GetString("MissingBonesTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not apply [{0}] deform to [{1}].
+        ///
+        ///Missing Deforms:{2}
+        ///
+        ///No scaling was applied..
+        /// </summary>
+        internal static string MissingDeforms {
+            get {
+                return ResourceManager.GetString("MissingDeforms", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Model Deformer Warning.
+        /// </summary>
+        internal static string MissingDeformsTitle {
+            get {
+                return ResourceManager.GetString("MissingDeformsTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Error Reading Mod Data.
         /// </summary>
         internal static string ModDataReadErrorTitle {
             get {
                 return ResourceManager.GetString("ModDataReadErrorTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Model Add Error.
+        /// </summary>
+        internal static string ModelAddErrorTitle {
+            get {
+                return ResourceManager.GetString("ModelAddErrorTitle", resourceCulture);
             }
         }
         
@@ -1491,6 +1572,44 @@ namespace FFXIV_TexTools.Resources {
         internal static string UnsupportedFileExtensionErrorTitle {
             get {
                 return ResourceManager.GetString("UnsupportedFileExtensionErrorTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Encountered an error while updating body textures.
+        ///
+        ///Error: {0}.
+        /// </summary>
+        internal static string UpdateBodyTextureError {
+            get {
+                return ResourceManager.GetString("UpdateBodyTextureError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Updating Face Textures.
+        /// </summary>
+        internal static string UpdatingFaceTitle {
+            get {
+                return ResourceManager.GetString("UpdatingFaceTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Updating Skeleton.
+        /// </summary>
+        internal static string UpdatingSkeletonTitle {
+            get {
+                return ResourceManager.GetString("UpdatingSkeletonTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Updating Skin.
+        /// </summary>
+        internal static string UpdatingSkinTitle {
+            get {
+                return ResourceManager.GetString("UpdatingSkinTitle", resourceCulture);
             }
         }
         

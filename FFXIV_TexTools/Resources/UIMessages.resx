@@ -703,4 +703,51 @@ TexTools only supports importing *.ttmp and *.ttmp2 ModPacks. </value>
   <data name="ExportErrorTitle" xml:space="preserve">
     <value>Export Error</value>
   </data>
+  <data name="MissingDeforms" xml:space="preserve">
+    <value>Could not apply [{0}] deform to [{1}].
+
+Missing Deforms:{2}
+
+No scaling was applied.</value>
+  </data>
+  <data name="MissingDeformsTitle" xml:space="preserve">
+    <value>Model Deformer Warning</value>
+  </data>
+  <data name="MissingBones" xml:space="preserve">
+    <value>Could not find the following bones for {0}.
+{1}
+
+This may affect animations.</value>
+  </data>
+  <data name="MissingBonesTitle" xml:space="preserve">
+    <value>Missing Bones</value>
+  </data>
+  <data name="ModelAddErrorTitle" xml:space="preserve">
+    <value>Model Add Error</value>
+  </data>
+  <data name="UpdateBodyTextureError" xml:space="preserve">
+    <value>Encountered an error while updating body textures.
+
+Error: {0}</value>
+  </data>
+  <data name="UpdatingFaceTitle" xml:space="preserve">
+    <value>Updating Face Textures</value>
+  </data>
+  <data name="UpdatingSkeletonTitle" xml:space="preserve">
+    <value>Updating Skeleton</value>
+  </data>
+  <data name="UpdatingSkinTitle" xml:space="preserve">
+    <value>Updating Skin</value>
+  </data>
+  <data name="ExportingFullModelTitle" xml:space="preserve">
+    <value>Exporting Full Model</value>
+  </data>
+  <data name="FullModelExportSuccessMessage" xml:space="preserve">
+    <value>Full Model successfuly exported to:
+
+{0}</value>
+  </data>
+  <data name="FullModelExportSuccessTitle" xml:space="preserve">
+    <value>Export Successful</value>
+  </data>
 </root>

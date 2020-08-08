@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using xivModdingFramework.Cache;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Items;
 using xivModdingFramework.Items.Categories;
@@ -74,7 +75,7 @@ namespace FFXIV_TexTools.ViewModels
             {
                 // This isn't an actual perfect check for if there's only one Variant, but doing so
                 // would be a bit expensive here, and passing it through EditMulti isn't harmful anyways.
-                var sameModelItems = await _gear.GetSameModelList(_item);
+                var sameModelItems = await _item.GetSharedModelItems();
                 if(sameModelItems.Count == 1)
                 {
                     if (_mode == MaterialEditorMode.EditMulti)
@@ -201,7 +202,7 @@ namespace FFXIV_TexTools.ViewModels
             _view.SaveButton.IsEnabled = false;
             _view.CancelButton.IsEnabled = false;
             _view.DisableButton.IsEnabled = false;
-            _view.SaveButton.Content = "Working...";
+            _view.SaveButton.Content = UIStrings.Working_Ellipsis;
             _view.NormalTextBox.Text = SanitizePath(_view.NormalTextBox.Text);
             _view.DiffuseTextBox.Text = SanitizePath(_view.DiffuseTextBox.Text);
             _view.SpecularTextBox.Text = SanitizePath(_view.SpecularTextBox.Text);
@@ -333,7 +334,8 @@ namespace FFXIV_TexTools.ViewModels
 
             // Ordering these by name ensures that we create textures for the new variants in the first
             // item alphabetically, just for consistency's sake.
-            var sameModelItems = (await _gear.GetSameModelList(_item)).OrderBy(x => x.Name);
+            var sameModelItems = (await _item.GetSharedModelItems()).OrderBy(x => x.Name, new ItemNameComparer());
+
             var oldVariantString = "/v" + _material.GetVariant().ToString().PadLeft(4, '0') + '/';
             var modifiedVariants = new List<int>();
 
@@ -407,12 +409,12 @@ namespace FFXIV_TexTools.ViewModels
             _view.SaveButton.IsEnabled = false;
             _view.CancelButton.IsEnabled = false;
             _view.DisableButton.IsEnabled = false;
-            _view.DisableButton.Content = "Working...";
+            _view.DisableButton.Content = UIStrings.Working_Ellipsis;
             var files = new List<string>();
 
             // If we're disabling from the Edit Multi menu, diable all variant versions as well.
             if (_mode == MaterialEditorMode.EditMulti) {
-                var sameModelItems = await _gear.GetSameModelList(_item);
+                var sameModelItems = await _item.GetSharedModelItems(); 
                 var itemType = ItemType.GetPrimaryItemType(_item);
                 // Find all the variant materials 
                 foreach (var item in sameModelItems)

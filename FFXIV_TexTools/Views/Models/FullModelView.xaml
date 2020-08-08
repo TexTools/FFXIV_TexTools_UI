@@ -1,0 +1,102 @@
+﻿<mah:MetroWindow x:Class="FFXIV_TexTools.Views.Models.FullModelView"
+                      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                      xmlns:local="clr-namespace:FFXIV_TexTools.Views.Models"
+                      xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+                      xmlns:hx="http://helix-toolkit.org/wpf/SharpDX"
+                      xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
+                      xmlns:views="clr-namespace:FFXIV_TexTools.Views"
+                      mc:Ignorable="d"
+                      Title="Full Model Viewer" Height="800" Width="550" Closing="MetroWindow_Closing">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <ComboBox Grid.Column="0" VerticalAlignment="Center" Margin="5" mah:TextBoxHelper.UseFloatingWatermark="True" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.Skeleton}}" 
+                      ItemsSource="{Binding Skeletons}" DisplayMemberPath="Name" SelectedValuePath="XivRace" SelectedItem="{Binding SelectedSkeleton}" SelectedIndex="{Binding SelectedSkeletonIndex}"
+                      IsEnabled="{Binding SkeletonComboboxEnabled}" />
+            <ComboBox Grid.Column="1" VerticalAlignment="Center" Margin="5" mah:TextBoxHelper.UseFloatingWatermark="True" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.Skin}}" 
+                      ItemsSource="{Binding Skins}" SelectedItem="{Binding SelectedSkin}" SelectedIndex="{Binding SelectedSkinIndex}" IsEnabled="{Binding SkinComboboxEnabled}" />
+            <ComboBox Grid.Column="2" VerticalAlignment="Center" Margin="5" mah:TextBoxHelper.UseFloatingWatermark="True" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.Face}}" 
+                      ItemsSource="{Binding Faces}" SelectedItem="{Binding SelectedFace}" SelectedIndex="{Binding SelectedFaceIndex}" IsEnabled="{Binding FaceComboboxEnabled}" Visibility="{Binding FaceComboboxVisibility, FallbackValue=Collapsed}"/>
+        </Grid>
+        <Grid Grid.Row="1">
+            <Grid>
+                <hx:Viewport3DX
+                x:Name="viewport3DX"
+                Camera="{Binding Camera}"
+                CoordinateSystemLabelForeground="White"
+                TextBrush="Black"
+                UseDefaultGestures="False"
+                Title="{Binding Title}"
+                SubTitle="{Binding SubTitle}"
+                BackgroundColor="{Binding BackgroundColor}"
+                EffectsManager="{Binding EffectsManager}"
+                DataContext="{Binding ViewPortVM}"
+                FXAALevel="Medium" MSAA="Two" ZoomExtentsWhenLoaded="True" 
+                EnableOITRendering="True" OITWeightMode="Linear0" ZoomDistanceLimitNear="0.0001">
+                    <hx:Viewport3DX.InputBindings>
+                        <KeyBinding Key="B" Command="hx:ViewportCommands.BackView" />
+                        <KeyBinding Key="F" Command="hx:ViewportCommands.FrontView" />
+                        <KeyBinding Key="U" Command="hx:ViewportCommands.TopView" />
+                        <KeyBinding Key="D" Command="hx:ViewportCommands.BottomView" />
+                        <KeyBinding Key="L" Command="hx:ViewportCommands.LeftView" />
+                        <KeyBinding Key="R" Command="hx:ViewportCommands.RightView" />
+                        <KeyBinding Command="hx:ViewportCommands.ZoomExtents" Gesture="Control+E" />
+                        <KeyBinding Command="hx:ViewportCommands.Reset" Gesture="Control+R"/>
+                        <MouseBinding Command="hx:ViewportCommands.Rotate" Gesture="RightClick" />
+                        <MouseBinding Command="hx:ViewportCommands.Zoom" Gesture="MiddleClick" />
+                        <MouseBinding Command="hx:ViewportCommands.Pan" Gesture="LeftClick" />
+                    </hx:Viewport3DX.InputBindings>
+                    <hx:DirectionalLight3D
+                    Direction="{Binding Light1Direction}"
+                    Color="White"/>
+                    <hx:DirectionalLight3D
+                    Direction="{Binding Light2Direction}"
+                    Color="White" />
+                    <hx:DirectionalLight3D
+                    Direction="{Binding Light3Direction}"                 
+                    IsRendering="{Binding RenderLight3}"
+                    Color="White" />
+                    <hx:GroupModel3D ItemsSource="{Binding Models}"/>
+                    <hx:Element3DPresenter Content="{Binding ModelGroup}"/>
+                    <hx:PostEffectMeshXRayGrid x:Name="xrayGridEffect" EffectName="xrayGrid" />
+                </hx:Viewport3DX>
+                <Label VerticalAlignment="Bottom" HorizontalAlignment="Center" Content="{Binding ModelStatusLabel}" Foreground="#FF151515" FontSize="18"/>
+            </Grid>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="5">
+                <Button x:Name="ViewerOptionsButton" Content="{Binding Source={x:Static resx:UIStrings.Viewer_Options}}" Command="{Binding ViewOptionsCommand}"/>
+                <CheckBox Margin="5,0" Content="Show Skeleton" IsChecked="{Binding ShowSkeleton}"/>
+            </StackPanel>
+        </Grid>
+        <mah:FlyoutsControl Grid.Row="0" Grid.RowSpan="2" HorizontalAlignment="Right">
+            <mah:Flyout x:Name="ViewerOptionsFlyout" Header="Viewer Options" Position="Right" Width="250" IsOpen="{Binding FlyoutOpen}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
+                <views:ModelViewerOptionsView/>
+            </mah:Flyout>
+        </mah:FlyoutsControl>
+
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <ComboBox VerticalAlignment="Center" Margin="5,0" mah:TextBoxHelper.UseFloatingWatermark="True" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.Model}}" 
+                      ItemsSource="{Binding ModelList}" SelectedIndex="{Binding SelectedModelIndex}" IsEnabled="{Binding ModelListComboboxEnabled}" />
+            <Button Grid.Column="1" x:Name="RemoveButton" Content="{Binding Source={x:Static resx:UIStrings.Remove}}" Command="{Binding RemoveCommand}" IsEnabled="{Binding RemoveEnabled}" Margin="5"/>
+        </Grid>
+
+        <Button Grid.Row="3" x:Name="ExportModelButton" Content="{Binding Source={x:Static resx:UIStrings.Export}}" Margin="5" VerticalAlignment="Center" Click="ExportModelButton_Click" IsEnabled="{Binding ExportEnabled, FallbackValue=false}"/>
+
+    </Grid>
+</mah:MetroWindow>

@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using xivModdingFramework.Cache;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Items;
 using xivModdingFramework.Items.Categories;
@@ -51,7 +52,7 @@ namespace FFXIV_TexTools.ViewModels
         public async Task<bool> SetItem(IItem item, MainWindow mainWindow = null)
         {
             var gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
-            _imc = new Imc(gameDirectory, item.DataFile);
+            _imc = new Imc(gameDirectory);
             _gear = new Gear(gameDirectory, XivLanguages.GetXivLanguage(Properties.Settings.Default.Application_Language));
 
             if (mainWindow != null)
@@ -126,7 +127,7 @@ namespace FFXIV_TexTools.ViewModels
                 return false;
 
             }
-            var sharedList = await _gear.GetSameModelList(im);
+            var sharedList = await im.GetSharedModelItems();
 
             var myVariantNumber = fullInfo.GetEntry(im.ModelInfo.ImcSubsetID, im.GetItemSlotAbbreviation()).Variant;
             var myImcNumber = im.ModelInfo.ImcSubsetID;
@@ -234,7 +235,7 @@ namespace FFXIV_TexTools.ViewModels
         {
             var treeItem = (TreeViewItem)sender;
             var item = (IItem) treeItem.DataContext;
-            _mainWindow.SelectItem(item);
+            _mainWindow.SetSelectedItem(item);
         }
 
         /// <summary>

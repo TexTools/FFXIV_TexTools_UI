@@ -69,13 +69,13 @@ namespace FFXIV_TexTools.ViewModels
 
         private int _raceIndex, _partIndex, _numberIndex, _meshIndex, _partCount, _numberCount, _meshCount, _raceCount, _reflectionValue, _checkedLight;
         private float _lightingXValue, _lightingYValue, _lightingZValue;
-        private bool _raceEnabled, _partEnabled, _numberEnabled, _meshEnabled, _exportEnabled, _importEnabled, _basicImportEnabled, _modStatusToggleEnabled, _updateTexEnabled, _flyoutOpen;
+        private bool _raceEnabled, _partEnabled, _numberEnabled, _meshEnabled, _exportEnabled, _importEnabled, _basicImportEnabled, _modStatusToggleEnabled, _updateTexEnabled, _flyoutOpen, _fmvEnabled;
         private string _partWatermark = XivStrings.Part, _numberWatermark = XivStrings.Number, _raceWatermark = XivStrings.Race,
             _meshWatermark = XivStrings.Mesh, _pathString;
 
         private string _lightXLabel = "X  |  0", _lightYLabel = "Y  |  0", _lightZLabel = "Z  |  0", _reflectionLabel = $"{UIStrings.Reflection}  |  1", _modToggleText = UIStrings.Enable_Disable, _modelStatusLabel;
         private ComboBoxData _selectedRace, _selectedPart, _selectedNumber, _selectedMesh;
-        private Visibility _numberVisibility, _partVisibility, _lightToggleVisibility = Visibility.Collapsed;
+        private Visibility _numberVisibility, _partVisibility, _lightToggleVisibility = Visibility.Collapsed, _fmvVisibility;
         private bool _light1Check = true, _light2Check, _light3Check, _lightRenderToggle, _transparencyToggle, _cullModeToggle, _keepCameraChecked;
 
         private IItemModel _item;
@@ -87,6 +87,7 @@ namespace FFXIV_TexTools.ViewModels
         private Timer _modelStatusTimer;
 
         public event EventHandler LoadingComplete;
+        public event EventHandler AddToFullModelEvent;
 
         private Dictionary<int, ModelTextureData> _materialDictionary;
 
@@ -154,8 +155,6 @@ namespace FFXIV_TexTools.ViewModels
 
             }
 
-
-
             if (itemModel.PrimaryCategory.Equals(XivStrings.Gear))
             {
                 var gear = new Gear(_gameDirectory, GetLanguage());
@@ -170,6 +169,8 @@ namespace FFXIV_TexTools.ViewModels
 
                     Races.Add(raceCBD);
                 }
+
+                FMVVisibility = (xivGear.ModelInfo as XivGearModelInfo).IsWeapon ? Visibility.Hidden : Visibility.Visible;
             }
             else if (itemModel.PrimaryCategory.Equals(XivStrings.Companions))
             {
@@ -178,6 +179,8 @@ namespace FFXIV_TexTools.ViewModels
                 Races.Add(_item.GetPrimaryItemType() == XivItemType.demihuman
                     ? new ComboBoxData { Name = XivRace.DemiHuman.GetDisplayName(), XivRace = XivRace.DemiHuman }
                     : new ComboBoxData { Name = XivRace.Monster.GetDisplayName(), XivRace = XivRace.Monster });
+
+                FMVVisibility = Visibility.Hidden;
             }
             else if (itemModel.PrimaryCategory.Equals(XivStrings.Character))
             {
@@ -189,10 +192,14 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     Races.Add(new ComboBoxData { Name = racesAndNumber.Key.GetDisplayName(), XivRace = racesAndNumber.Key });
                 }
+
+                FMVVisibility = Visibility.Visible;
             }
             else if (itemModel.PrimaryCategory.Equals(XivStrings.Housing))
             {
                 Races.Add(new ComboBoxData { Name = XivRace.All_Races.GetDisplayName(), XivRace = XivRace.All_Races });
+
+                FMVVisibility = Visibility.Hidden;
             }
 
             _raceCount = Races.Count;
@@ -207,6 +214,14 @@ namespace FFXIV_TexTools.ViewModels
             if (defaultRace.Count > 0)
             {
                 raceIndex = Races.IndexOf(defaultRace[0]);
+            }
+            else if(Races.Count == 0)
+            {
+                // If there are no races, we're done.
+                if (LoadingComplete != null)
+                {
+                    LoadingComplete.Invoke(this, null);
+                }
             }
 
             SelectedRaceIndex = raceIndex;
@@ -440,6 +455,15 @@ namespace FFXIV_TexTools.ViewModels
             _partCount = Parts.Count;
             PartComboboxEnabled = _partCount > 1;
             SelectedPartIndex = 0;
+
+            if(Parts.Count <= 1)
+            {
+                // If there are no parts, we're done.
+                if (LoadingComplete != null)
+                {
+                    LoadingComplete.Invoke(this, null);
+                }
+            }
         }
 
         /// <summary>
@@ -585,7 +609,6 @@ namespace FFXIV_TexTools.ViewModels
                     ModStatusToggleEnabled = true;
                     ModToggleText = UIStrings.Enable;
                     break;
-                case XivModStatus.MatAdd:
                 case XivModStatus.Original:
                 default:
                     ModStatusToggleEnabled = false;
@@ -977,6 +1000,19 @@ namespace FFXIV_TexTools.ViewModels
         }
 
         /// <summary>
+        /// Flag for visibility of full model view button
+        /// </summary>
+        public Visibility FMVVisibility
+        {
+            get => _fmvVisibility;
+            set
+            {
+                _fmvVisibility = value;
+                NotifyPropertyChanged(nameof(FMVVisibility));
+            }
+        }
+
+        /// <summary>
         /// Updates the Cull Mode
         /// </summary>
         private void UpdateCullMode(bool noneCull)
@@ -1089,6 +1125,16 @@ namespace FFXIV_TexTools.ViewModels
             }
         }
 
+        public bool FMVEnabled
+        {
+            get => _fmvEnabled;
+            set
+            {
+                _fmvEnabled = value;
+                NotifyPropertyChanged(nameof(FMVEnabled));
+            }
+        }
+
         public ICommand ViewOptionsCommand => new RelayCommand(ViewerOptions);
         public ICommand ModStatusToggleButton => new RelayCommand(ModStatusToggle);
         public ICommand UpdateTexButton => new RelayCommand(UpdateTex);
@@ -1096,6 +1142,15 @@ namespace FFXIV_TexTools.ViewModels
         public ICommand ImportCommand => new RelayCommand(Import);
         public ICommand OpenFolder => new RelayCommand(OpenSavedFolder);
         public ICommand ModelInspector => new RelayCommand(OpenModelInspector);
+        public ICommand AddToFullModelViewerCommand => new RelayCommand(AddToFullModelView);
+
+        /// <summary>
+        /// Triggers event when add to FMV button is clicked
+        /// </summary>
+        private void AddToFullModelView(object obj)
+        {
+            OnFullModelClick();
+        }
 
         private string GetItem3DFolder()
         {
@@ -1417,6 +1472,7 @@ namespace FFXIV_TexTools.ViewModels
 
                 ViewPortVM.ClearModels();
                 TransparencyToggle = false;
+                FMVEnabled = false;
 
                 _materialDictionary = await GetMaterials();
 
@@ -1436,6 +1492,7 @@ namespace FFXIV_TexTools.ViewModels
                 BasicImportEnabled = File.Exists(savePath);
                 ImportEnabled = true;
                 UpdateTexEnabled = true;
+                FMVEnabled = true;
 
                 if (!KeepCameraChecked)
                 {
@@ -1631,8 +1688,8 @@ namespace FFXIV_TexTools.ViewModels
                         mtrlItem = new XivGenericItemModel
                         {
                             PrimaryCategory = XivStrings.Character,
-                            SecondaryCategory = XivStrings.Ears,
-                            Name = XivStrings.Ears,
+                            SecondaryCategory = XivStrings.Ear,
+                            Name = XivStrings.Ear,
                             ModelInfo = new XivModelInfo
                             {
                                 SecondaryID = bodyID
@@ -1788,6 +1845,48 @@ namespace FFXIV_TexTools.ViewModels
             NumberVisibility = Visibility.Collapsed;
             PartVisibility = Visibility.Collapsed;
             TransparencyToggle = false;
+        }
+
+
+        /// <summary>
+        /// Command for the Details button
+        /// </summary>
+        public ICommand OpenFileDetails => new RelayCommand(ShowFileDetails);
+
+        /// <summary>
+        /// Opens the dependency dialog.
+        /// </summary>
+        private void ShowFileDetails(object obj)
+        {
+            if (_model != null)
+            {
+                var path = _model.Source;
+                var view = new DependencyInfoView(path);
+                view.ShowDialog();
+            }
+        }
+
+        /// <summary>
+        /// Event fired when add to FMV button is clicked
+        /// </summary>
+        protected virtual void OnFullModelClick()
+        {
+            var fmea = new fullModelEventArgs { TTModelData = _model, TextureData = _materialDictionary, Item = _item, XivRace = SelectedRace.XivRace};
+
+            AddToFullModelEvent?.Invoke(this, fmea);
+        }
+
+        /// <summary>
+        /// Class containing properties for full model event arguments
+        /// </summary>
+        public class fullModelEventArgs : EventArgs
+        {
+            public TTModel TTModelData { get; set; }
+            public Dictionary<int, ModelTextureData> TextureData { get; set; }
+
+            public IItemModel Item { get; set; }
+
+            public XivRace XivRace { get; set; }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

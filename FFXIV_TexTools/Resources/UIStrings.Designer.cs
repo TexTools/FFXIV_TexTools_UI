@@ -297,6 +297,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cache Operations.
+        /// </summary>
+        public static string Cache {
+            get {
+                return ResourceManager.GetString("Cache", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cancel.
         /// </summary>
         public static string Cancel {
@@ -419,6 +428,15 @@ namespace FFXIV_TexTools.Resources {
         public static string Create_ModPack_Wizard {
             get {
                 return ResourceManager.GetString("Create_ModPack_Wizard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Creating Modpack.
+        /// </summary>
+        public static string Creating_Modpack {
+            get {
+                return ResourceManager.GetString("Creating_Modpack", resourceCulture);
             }
         }
         
@@ -756,11 +774,29 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Face.
+        /// </summary>
+        public static string Face {
+            get {
+                return ResourceManager.GetString("Face", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to FFXIV Directory.
         /// </summary>
         public static string FFXIV_Directory {
             get {
                 return ResourceManager.GetString("FFXIV_Directory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File Name.
+        /// </summary>
+        public static string FileName {
+            get {
+                return ResourceManager.GetString("FileName", resourceCulture);
             }
         }
         
@@ -815,6 +851,24 @@ namespace FFXIV_TexTools.Resources {
         public static string Force_UV_Quadrant {
             get {
                 return ResourceManager.GetString("Force_UV_Quadrant", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Full Model Name.
+        /// </summary>
+        public static string Full_Model_Name {
+            get {
+                return ResourceManager.GetString("Full_Model_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Export Location:.
+        /// </summary>
+        public static string FullModel_Export_Location {
+            get {
+                return ResourceManager.GetString("FullModel_Export_Location", resourceCulture);
             }
         }
         
@@ -972,6 +1026,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Inspect.
+        /// </summary>
+        public static string Inspect {
+            get {
+                return ResourceManager.GetString("Inspect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Iris Color.
         /// </summary>
         public static string Iris_Color {
@@ -995,6 +1058,15 @@ namespace FFXIV_TexTools.Resources {
         public static string Item_List {
             get {
                 return ResourceManager.GetString("Item_List", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Item(s).
+        /// </summary>
+        public static string ItemPlural {
+            get {
+                return ResourceManager.GetString("ItemPlural", resourceCulture);
             }
         }
         
@@ -1053,11 +1125,29 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Load Item Sets File.
+        /// </summary>
+        public static string Load_Sets {
+            get {
+                return ResourceManager.GetString("Load_Sets", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Loading.
         /// </summary>
         public static string Loading {
             get {
                 return ResourceManager.GetString("Loading", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Loading Item List.
+        /// </summary>
+        public static string Loading_Items {
+            get {
+                return ResourceManager.GetString("Loading_Items", resourceCulture);
             }
         }
         
@@ -1332,6 +1422,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Model Skeleton:.
+        /// </summary>
+        public static string Model_Skeleton {
+            get {
+                return ResourceManager.GetString("Model_Skeleton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Model Type.
         /// </summary>
         public static string Model_Type {
@@ -1413,7 +1512,7 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ModPack Wizard.
+        ///   Looks up a localized string similar to Advanced Modpack.
         /// </summary>
         public static string ModPack_Wizard {
             get {
@@ -1689,6 +1788,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Please wait....
+        /// </summary>
+        public static string Please_Wait {
+            get {
+                return ResourceManager.GetString("Please_Wait", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to PrettyKitty Emporium.
         /// </summary>
         public static string PrettyKitty_Emporium {
@@ -1950,6 +2058,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Rebuild Cache.
+        /// </summary>
+        public static string Rebuild_Cache {
+            get {
+                return ResourceManager.GetString("Rebuild_Cache", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Reflection.
         /// </summary>
         public static string Reflection {
@@ -2038,6 +2155,15 @@ namespace FFXIV_TexTools.Resources {
         public static string Save_Directory {
             get {
                 return ResourceManager.GetString("Save_Directory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Scan for new Item Sets.
+        /// </summary>
+        public static string Scan_For_Sets {
+            get {
+                return ResourceManager.GetString("Scan_For_Sets", resourceCulture);
             }
         }
         
@@ -2159,7 +2285,7 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Simple ModPack.
+        ///   Looks up a localized string similar to Basic Modpack.
         /// </summary>
         public static string Simple_ModPack {
             get {
@@ -2168,7 +2294,7 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Simple ModPack Creator.
+        ///   Looks up a localized string similar to Basic Modpack Creator.
         /// </summary>
         public static string Simple_ModPack_Creator {
             get {
@@ -2177,7 +2303,7 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Simple ModPack Importer.
+        ///   Looks up a localized string similar to Basic Modpack Importer.
         /// </summary>
         public static string Simple_ModPack_Importer {
             get {
@@ -2200,6 +2326,24 @@ namespace FFXIV_TexTools.Resources {
         public static string Size_colon {
             get {
                 return ResourceManager.GetString("Size_colon", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Skeleton.
+        /// </summary>
+        public static string Skeleton {
+            get {
+                return ResourceManager.GetString("Skeleton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Skin.
+        /// </summary>
+        public static string Skin {
+            get {
+                return ResourceManager.GetString("Skin", resourceCulture);
             }
         }
         
@@ -2245,6 +2389,15 @@ namespace FFXIV_TexTools.Resources {
         public static string Standalone_Non_ModPack {
             get {
                 return ResourceManager.GetString("Standalone_Non_ModPack", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Standard Modpack.
+        /// </summary>
+        public static string Standard_Modpack {
+            get {
+                return ResourceManager.GetString("Standard_Modpack", resourceCulture);
             }
         }
         
@@ -2384,6 +2537,33 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Updating Cache.
+        /// </summary>
+        public static string Updating_Cache {
+            get {
+                return ResourceManager.GetString("Updating_Cache", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This may take 30-60 seconds if you have many mods installed....
+        /// </summary>
+        public static string Updating_Cache_Message {
+            get {
+                return ResourceManager.GetString("Updating_Cache_Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Usage.
+        /// </summary>
+        public static string Usage {
+            get {
+                return ResourceManager.GetString("Usage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Use Currently Modded Item.
         /// </summary>
         public static string Use_Currently_Modded_Item {
@@ -2461,6 +2641,15 @@ namespace FFXIV_TexTools.Resources {
         public static string Visit_Website {
             get {
                 return ResourceManager.GetString("Visit_Website", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Working....
+        /// </summary>
+        public static string Working_Ellipsis {
+            get {
+                return ResourceManager.GetString("Working_Ellipsis", resourceCulture);
             }
         }
         

@@ -8,8 +8,9 @@
         xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         xmlns:views ="clr-namespace:FFXIV_TexTools.Views"
-        xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
-        mc:Ignorable="d"
+        xmlns:resx="clr-namespace:FFXIV_TexTools.Resources" 
+        xmlns:items="clr-namespace:FFXIV_TexTools.Views.Controls"
+                      mc:Ignorable="d"
         Title="FFXIV TexTools" Height="720" Width="1280" WindowStartupLocation="CenterScreen" Closing="MetroWindow_Closing" Loaded="MetroWindow_Loaded">
     <Controls:MetroWindow.RightWindowCommands>
         <Controls:WindowCommands>
@@ -44,6 +45,7 @@
                 <MenuItem x:Name="Menu_ModList" Header="{Binding Source={x:Static resx:UIStrings.Mod_List}}" Click="Menu_ModList_Click"/>
                 <MenuItem x:Name="Menu_CreateModPack" Header="{Binding Source={x:Static resx:UIStrings.Create_Modpack}}">
                     <MenuItem x:Name="Menu_MakeModpackWizard" Header="{Binding Source={x:Static resx:UIStrings.ModPack_Wizard}}" Click="Menu_MakeModpackWizard_Click"/>
+                    <MenuItem x:Name="Menu_MakeStandardModpack" Header="{Binding Source={x:Static resx:UIStrings.Standard_Modpack}}" Click="Menu_MakeStandardModpack_Click"/>
                     <MenuItem x:Name="Menu_MakeSimpleModpack" Header="{Binding Source={x:Static resx:UIStrings.Simple_ModPack}}" Click="Menu_MakeSimpleModpack_Click"/>
                 </MenuItem>
                 <MenuItem x:Name="Menu_ImportModpack" Header="{Binding Source={x:Static resx:UIStrings.Import_ModPacks}}" Click="Menu_ImportModpack_Click"/>
@@ -54,7 +56,6 @@
                 <MenuItem x:Name="Menu_ModConverter" IsEnabled="False" Header="{Binding Source={x:Static resx:UIStrings.Mod_Converter}}" Click="Menu_ModConverter_Click"/>
             </MenuItem>
             <MenuItem Header="{Binding Source={x:Static resx:UIStrings.Search}}" StaysOpenOnClick="True">
-                <MenuItem x:Name="Menu_ModelIDSearch" Header="{Binding Source={x:Static resx:UIStrings.Model_ID}}" Click="Menu_ModelIDSearch_Click"/>
                 <MenuItem x:Name="Menu_IconSearch" Header="{Binding Source={x:Static resx:UIStrings.Icon_ID}}" Click="Menu_IconIDSearch_Click"/>
             </MenuItem>
             <MenuItem Header="{Binding Source={x:Static resx:UIStrings.Options}}" StaysOpenOnClick="True">
@@ -63,12 +64,19 @@
                     <MenuItem x:Name="MenuLightTheme" Header="Light" Click="MenuLightTheme_Click"/>
                     <MenuItem x:Name="MenuDarkTheme" Header="Dark" Click="MenuDarkTheme_Click"/>
                 </MenuItem>
+                <MenuItem x:Name="Menu_FullModelViewer" Header="Full Model Viewer" Click="FullModelViewer_Click"/>
             </MenuItem>
             <MenuItem Header="{Binding Source={x:Static resx:UIStrings.Help}}">
+                <MenuItem x:Name="Menu_Backup" Header="{Binding Source={x:Static resx:UIStrings.Backup_Index_Files}}" Click="Menu_Backup_Click"/>
                 <MenuItem x:Name="Menu_ProblemCheck" Header="{Binding Source={x:Static resx:UIStrings.Check_For_Problems}}" Click="Menu_ProblemCheck_Click"/>
                 <MenuItem x:Name="Menu_StartOver" Header="{Binding Source={x:Static resx:UIStrings.Start_Over}}" Click="Menu_StartOver_Click" />
                 <MenuItem x:Name="Menu_BugReport" Header="{Binding Source={x:Static resx:UIStrings.Report_Bug}}" Click="Menu_BugReport_Click"/>
-                <MenuItem x:Name="Menu_Backup" Header="{Binding Source={x:Static resx:UIStrings.Backup_Index_Files}}" Click="Menu_Backup_Click"/>
+
+                <MenuItem Header="{Binding Source={x:Static resx:UIStrings.Cache}}">
+                    <MenuItem x:Name="Menu_RebuildCache" Header="{Binding Source={x:Static resx:UIStrings.Rebuild_Cache}}" Click="Menu_RebuildCache_Click" />
+                    <MenuItem x:Name="Menu_LoadSets" Header="{Binding Source={x:Static resx:UIStrings.Load_Sets}}" Click="Menu_LoadSets_Click" />
+                    <MenuItem x:Name="Menu_ScanForSets" Header="{Binding Source={x:Static resx:UIStrings.Scan_For_Sets}}" Click="Menu_ScanForSets_Click" />
+                </MenuItem>
             </MenuItem>
             <MenuItem Header="{Binding Source={x:Static resx:UIStrings.About}}">
                 <MenuItem x:Name="Menu_About" Header="{Binding Source={x:Static resx:UIStrings.About_TexTools}}" Click="Menu_About_Click"/>
@@ -89,26 +97,14 @@
                 <ColumnDefinition Width="3*"/>
             </Grid.ColumnDefinitions>
 
-            <GroupBox Header="{Binding Source={x:Static resx:UIStrings.Item_List}}" Margin="5">
-                <Grid Grid.Column="0">
-                    <TextBox x:Name="ItemSearchTextBox" Controls:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.Search_dot}}" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" TextChanged="ItemSearchTextBox_TextChanged"/>
-                    <TreeView x:Name="ItemTreeView" Margin="0,26,0,0" ItemsSource="{Binding Categories,Mode=TwoWay}" SelectedItemChanged="TreeView_SelectedItemChanged" Style="{StaticResource VirtualisedMetroTreeView}">
-                        <TreeView.ItemContainerStyle>
-                            <Style BasedOn="{StaticResource MetroTreeViewItem}" TargetType="{x:Type TreeViewItem}">
-                                <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}"/>
-                                <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}"/>
-                            </Style>
-                        </TreeView.ItemContainerStyle>
-                        <TreeView.Resources>
-                            <HierarchicalDataTemplate ItemsSource="{Binding Categories}" DataType="{x:Type models:Category}">
-                                <StackPanel>
-                                    <TextBlock Text="{Binding Name}"/>
-                                </StackPanel>
-                            </HierarchicalDataTemplate>
-                        </TreeView.Resources>
-                    </TreeView>
-                    <Controls:MetroProgressBar x:Name="ListProgressBar" VerticalAlignment="Bottom" Margin="5" Value="{Binding ProgressValue}" Visibility="{Binding ProgressBarVisible}"/>
-                    <Label x:Name="ProgressLabel" VerticalAlignment="Bottom" Margin="5" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="{Binding ProgressLabel}" Visibility="{Binding ProgressLabelVisible}"/>
+            <GroupBox Header="{Binding Source={x:Static resx:UIStrings.Item_List}}" Margin="5,5,5,5">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <items:ItemSelectControl x:Name="ItemSelect" Height="Auto" Width="Auto" DeferLoading="True" MainMenuMode="True" Margin="0,0,0,0"/>
+                <TextBlock x:Name="StatusTextBox" Margin="0" TextWrapping="Wrap" Text="Status Text Goes Here" TextAlignment="Center" Grid.Row="1"/>
                 </Grid>
             </GroupBox>
 

@@ -37,7 +37,7 @@ namespace FFXIV_TexTools.Views
             this.textureViewModel = new TextureViewModel(this);
             this.DataContext = this.textureViewModel;
 
-            CustomizeViewModel customizeViewModel = new CustomizeViewModel();
+            CustomizeViewModel customizeViewModel = new CustomizeViewModel(null);
             this.ExportContextMenu.DataContext = customizeViewModel;
             this.ExportFormatLabel.DataContext = customizeViewModel;
         }

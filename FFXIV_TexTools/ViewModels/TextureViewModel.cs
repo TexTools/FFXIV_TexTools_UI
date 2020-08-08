@@ -212,6 +212,14 @@ namespace FFXIV_TexTools.ViewModels
             {
                 raceIndex = Races.IndexOf(defaultRace[0]);
             }
+            else if(Races.Count == 0)
+            {
+                // If there are no races, we're done.
+                if (LoadingComplete != null)
+                {
+                    LoadingComplete.Invoke(this, null);
+                }
+            }
 
             SelectedRaceIndex = raceIndex;
         }
@@ -343,6 +351,15 @@ namespace FFXIV_TexTools.ViewModels
 
             PartComboboxEnabled = _partCount > 1;
             SelectedPartIndex = 0;
+
+            if (_partCount <= 1)
+            {
+                // If there are no parts, we're done.
+                if (LoadingComplete != null)
+                {
+                    LoadingComplete.Invoke(this, null);
+                }
+            }
         }
 
         /// <summary>
@@ -429,7 +446,7 @@ namespace FFXIV_TexTools.ViewModels
                 }
 
                 // For hair and face we get the type (Hair, Accessory, Face, Iris, Etc)
-                if (_item.SecondaryCategory.Equals(XivStrings.Hair) || _item.SecondaryCategory.Equals(XivStrings.Face) || _item.SecondaryCategory.Equals(XivStrings.Ears))
+                if (_item.SecondaryCategory.Equals(XivStrings.Hair) || _item.SecondaryCategory.Equals(XivStrings.Face) || _item.SecondaryCategory.Equals(XivStrings.Ear))
                 {
                     TypePartVisibility = Visibility.Visible;
                     var charaTypeParts = await _character.GetTypePartForTextures(_item as XivCharacter, SelectedRace.XivRace,
@@ -531,7 +548,7 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     Maps.Clear();
                     if (_item.PrimaryCategory.Equals(XivStrings.Character) && (_item.SecondaryCategory.Equals(XivStrings.Hair) || _item.SecondaryCategory.Equals(XivStrings.Face) ||
-                        _item.SecondaryCategory.Equals(XivStrings.Ears) || _item.SecondaryCategory.Equals(XivStrings.Body) || _item.SecondaryCategory.Equals(XivStrings.Tail)))
+                        _item.SecondaryCategory.Equals(XivStrings.Ear) || _item.SecondaryCategory.Equals(XivStrings.Body) || _item.SecondaryCategory.Equals(XivStrings.Tail)))
                     {
                         TypeParts.Clear();
                         GetTypeParts();
@@ -607,6 +624,7 @@ namespace FFXIV_TexTools.ViewModels
             }
 
             _typePartCount = typeParts.Length;
+
 
             TypePartComboboxEnabled = _typePartCount > 1;
 
@@ -937,6 +955,32 @@ namespace FFXIV_TexTools.ViewModels
             set { _mapEnabled = value; NotifyPropertyChanged(nameof(MapComboboxEnabled)); }
         }
 
+        public void ClearImage()
+        {
+            PathString = "No Texture Selected";
+            TextureFormat = "N/A";
+            TextureDimensions = "0x0";
+            MipMapInfo = "No";
+
+            ImageDisplay = null;
+            ChannelsEnabled = false;
+            ExportEnabled = false;
+            ImportEnabled = false;
+            MoreOptionsEnabled = false;
+            AddNewTexturePartEnabled = false;
+            _mapData = new MapData()
+            {
+                MapBytes = new byte[0],
+                Height = 0,
+                Width = 0
+            };
+
+            _imageEffect = new ColorChannels
+            {
+                Channel = new System.Windows.Media.Media3D.Point4D(1.0f, 1.0f, 1.0f, 0.0f)
+            };
+        }
+
         /// <summary>
         /// Updates the texture image for the selected item
         /// </summary>
@@ -1048,7 +1092,6 @@ namespace FFXIV_TexTools.ViewModels
                     ModStatusToggleEnabled = true;
                     ModToggleText = UIStrings.Enable;
                     break;
-                case XivModStatus.MatAdd:
                 case XivModStatus.Original:
                 default:
                     ModStatusToggleEnabled = false;
@@ -1280,6 +1323,25 @@ namespace FFXIV_TexTools.ViewModels
         }
 
         /// <summary>
+        /// Command for the Details button
+        /// </summary>
+        public ICommand OpenFileDetails => new RelayCommand(ShowFileDetails);
+
+        /// <summary>
+        /// Opens the dependency dialog.
+        /// </summary>
+        private void ShowFileDetails(object obj)
+        {
+            if (SelectedMap != null && SelectedMap.TexType != null) 
+            { 
+                var path = SelectedMap.TexType.Path;
+                var view = new DependencyInfoView(path);
+                view.ShowDialog();
+            }
+        }
+
+
+        /// <summary>
         /// Imports a texture file 
         /// </summary>
         /// <remarks>
@@ -1363,6 +1425,8 @@ namespace FFXIV_TexTools.ViewModels
 
         public async Task Import(string fileName)
         {
+
+            ImportEnabled = false;
             var fileDir = new DirectoryInfo(fileName);
             var dxVersion = int.Parse(Settings.Default.DX_Version);
 
@@ -1442,7 +1506,7 @@ namespace FFXIV_TexTools.ViewModels
             }
 
             UpdateImage();
-            
+
         }
 
 
@@ -1747,6 +1811,8 @@ namespace FFXIV_TexTools.ViewModels
             TypePartVisibility = Visibility.Collapsed;
             TypeVisibility = Visibility.Collapsed;
             PartVisibility = Visibility.Visible;
+
+            ClearImage();
         }
 
         /// <summary>

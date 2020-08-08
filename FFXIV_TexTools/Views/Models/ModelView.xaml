@@ -17,8 +17,8 @@
         <Grid.RowDefinitions>
             <RowDefinition/>
             <RowDefinition Height="8*"/>
-            <RowDefinition/>
-            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <UniformGrid Rows="1" Grid.Row="0">
@@ -80,7 +80,8 @@
             </Grid>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="5">
                 <Button x:Name="ViewerOptionsButton" Content="{Binding Source={x:Static resx:UIStrings.Viewer_Options}}" Command="{Binding ViewOptionsCommand}"/>
-                <CheckBox Margin="5,0,0,0" Content="{Binding Source={x:Static resx:UIStrings.Keep_Camera_Position}}" IsChecked="{Binding KeepCameraChecked}"/>
+                <CheckBox Margin="5,0" Content="{Binding Source={x:Static resx:UIStrings.Keep_Camera_Position}}" IsChecked="{Binding KeepCameraChecked}"/>
+                <Button x:Name="FullModelViewerButton" Content="Add To FMV" Command="{Binding AddToFullModelViewerCommand}" Visibility="{Binding FMVVisibility, FallbackValue=Hidden}" IsEnabled="{Binding FMVEnabled}"/>
             </StackPanel>
         </Grid>
         <mah:FlyoutsControl Grid.Row="0" Grid.RowSpan="2" HorizontalAlignment="Right">
@@ -93,10 +94,15 @@
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
-                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="48"/>
+                <ColumnDefinition Width="48"/>
             </Grid.ColumnDefinitions>
             <TextBox Grid.Column="0" Text="{Binding PathString}" TextWrapping="NoWrap" VerticalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" mah:TextBoxHelper.Watermark="MDL Path" Margin="5" IsReadOnly="true"/>
-            <Button Grid.Column="1" Margin="5" Command="{Binding ModelInspector}" HorizontalAlignment="Center" VerticalAlignment="Center">
+
+            <Button Grid.Column="1" Margin="5" VerticalAlignment="Center" Command="{Binding OpenFileDetails}">
+                <iconPacks:PackIconFontAwesome Kind="SearchSolid"/>
+            </Button>
+            <Button Grid.Column="2" Margin="5" VerticalAlignment="Center" Command="{Binding ModelInspector}" >
                 <iconPacks:PackIconModern Kind="PageSearch"/>
             </Button>
         </Grid>
@@ -105,7 +111,7 @@
         <Grid Grid.Row="3">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="20*"/>
-                <ColumnDefinition/>
+                <ColumnDefinition Width="48"/>
             </Grid.ColumnDefinitions>
             <UniformGrid Grid.Column="0" Rows="1">
 

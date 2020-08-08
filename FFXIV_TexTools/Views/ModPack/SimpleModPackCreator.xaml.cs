@@ -39,6 +39,7 @@ using xivModdingFramework.Textures.Enums;
 using SysTimer = System.Timers;
 using System.Diagnostics;
 using SharpDX.Direct2D1;
+using xivModdingFramework.Cache;
 
 namespace FFXIV_TexTools.Views
 {
@@ -51,6 +52,8 @@ namespace FFXIV_TexTools.Views
         private ProgressDialogController _progressController;
         private readonly DirectoryInfo _gameDirectory;
         private long _modSize;
+
+        public Dictionary<string, List<string>> ParentsDictionary;
         public long ModpackSize { 
             get
             {
@@ -108,6 +111,7 @@ namespace FFXIV_TexTools.Views
             searchTimer.AutoReset = false;
             searchTimer.Elapsed += SearchTimerOnElapsed;
 
+
             Task.Run(Initialize);
         }
 
@@ -131,7 +135,7 @@ namespace FFXIV_TexTools.Views
             {
                 CollectionView cv = (CollectionView)CollectionViewSource.GetDefaultView(this.Entries);
                 cv.SortDescriptions.Clear();
-                cv.SortDescriptions.Add(new SortDescription(nameof(SimpleModpackEntry.Name), _lastDirection));
+                cv.SortDescriptions.Add(new SortDescription(nameof(SimpleModpackEntry.ItemName), _lastDirection));
 
                 ModSizeLabel.Content = "0";
                 ModListView.IsEnabled = true;
@@ -154,7 +158,7 @@ namespace FFXIV_TexTools.Views
 
             foreach (string searchTerm in searchTerms)
             {
-                if ((item as SimpleModpackEntry).Name.IndexOf(searchTerm.Trim(), StringComparison.OrdinalIgnoreCase) >= 0) return true;
+                if ((item as SimpleModpackEntry).ItemName.IndexOf(searchTerm.Trim(), StringComparison.OrdinalIgnoreCase) >= 0) return true;
             }
             return false;
         }
@@ -189,7 +193,9 @@ namespace FFXIV_TexTools.Views
             DirectoryInfo modListDirectory = new DirectoryInfo(Path.Combine(_gameDirectory.Parent.Parent.FullName, XivStrings.ModlistFilePath));
             Modding modding = new Modding(_gameDirectory);
 
-            this.ModList = JsonConvert.DeserializeObject<ModList>(File.ReadAllText(modListDirectory.FullName));
+            this.ModList = modding.GetModList();
+            this.ParentsDictionary = XivCache.GetModListParents();
+
 
             List<SimpleModpackEntry> entries = new List<SimpleModpackEntry>();
             for(int i = 0; i < this.ModList.Mods.Count; i++)
@@ -536,9 +542,41 @@ namespace FFXIV_TexTools.Views
 
             if (e.OriginalSource is GridViewColumnHeader h && h.Content != null)
             {
+                var binding = h.Column.DisplayMemberBinding;
                 CollectionView cv = (CollectionView)CollectionViewSource.GetDefaultView(ModListView.ItemsSource);
                 cv.SortDescriptions.Clear();
-                cv.SortDescriptions.Add(new SortDescription(h.Content.ToString(), _lastDirection));
+
+                var sortMember = "";
+                if (h.Content.ToString() == UIStrings.ItemPlural)
+                {
+                    sortMember = "ItemName";
+                }
+                else if (h.Content.ToString() == UIStrings.FileName)
+                {
+                    sortMember = "FileName";
+                }
+                else if (h.Content.ToString() == UIStrings.Type)
+                {
+                    sortMember = "Type";
+                }
+                else if (h.Content.ToString() == UIStrings.Race)
+                {
+                    sortMember = "Race";
+                }
+                else if (h.Content.ToString() == UIStrings.Material)
+                {
+                    sortMember = "Material";
+                }
+                else if (h.Content.ToString() == UIStrings.Active)
+                {
+                    sortMember = "ActiveText";
+                }
+
+                cv.SortDescriptions.Add(new SortDescription(sortMember, _lastDirection));
+
+                // Item Name -> File Name is always the tiebreaker.
+                cv.SortDescriptions.Add(new SortDescription("ItemName", _lastDirection));
+                cv.SortDescriptions.Add(new SortDescription("FileName", _lastDirection));
             }
         }
         #endregion

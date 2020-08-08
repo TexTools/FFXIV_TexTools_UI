@@ -70,7 +70,7 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to http://FF14ChinaDiscord.esrin.tk.
+        ///   Looks up a localized string similar to https://discord.gg/jKPqnhk.
         /// </summary>
         internal static string Discord_China {
             get {

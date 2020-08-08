@@ -17,6 +17,7 @@
 using FFXIV_TexTools.Helpers;
 using FFXIV_TexTools.Properties;
 using FFXIV_TexTools.Resources;
+using FFXIV_TexTools.Views;
 using FolderSelect;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -33,9 +34,11 @@ namespace FFXIV_TexTools.ViewModels
     {
         private string _defaultAuthor = Settings.Default.Default_Author;
         const string _bgColorDefault = "#FF777777";
+        private CustomizeSettingsView _view;
 
-        public CustomizeViewModel()
+        public CustomizeViewModel(CustomizeSettingsView view)
         {
+            _view = view;
             SkinTypes = new List<string>
             {
                 {XivStringRaces.Hyur_M},
@@ -401,9 +404,11 @@ namespace FFXIV_TexTools.ViewModels
                 Settings.Default.Save();
             }
 
-            //TODO: Logic to restart application once a new game directory is chosen
-
             FFXIV_Directory = Settings.Default.FFXIV_Directory;
+
+            Helpers.FlexibleMessageBox.Show("TexTools will now restart.");
+            _view.Close();
+            MainWindow.GetMainWindow().Restart();
         }
 
         /// <summary>

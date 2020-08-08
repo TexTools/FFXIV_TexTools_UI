@@ -31,6 +31,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Forms;
 using System.Windows.Media;
+using xivModdingFramework.Cache;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Mods;
 using xivModdingFramework.Mods.DataContainers;
@@ -207,13 +208,27 @@ namespace FFXIV_TexTools.Views
                     Entries.Add(new SimpleModpackEntry(JsonEntries.Count - 1, this));
                 }
 
+                if (String.IsNullOrEmpty(modPackJson.MinimumFrameworkVersion))
+                {
+                    Version ver;
+                    bool success = Version.TryParse(modPackJson.MinimumFrameworkVersion, out ver);
+                    if(success)
+                    {
+                        var frameworkVersion = typeof(XivCache).Assembly.GetName().Version;
+                        if (ver > frameworkVersion)
+                        {
+                            throw new NotSupportedException("This modpack requires a more recent TexTools version to install.");
+                        }
+                    }
+                }
+
                 ModPackName.Content = modPackJson.Name;
                 ModPackAuthor.Content = modPackJson.Author;
                 ModPackVersion.Content = modPackJson.Version;
 
                 var cv = (CollectionView)CollectionViewSource.GetDefaultView(ModListView.ItemsSource);
                 cv.SortDescriptions.Clear();
-                cv.SortDescriptions.Add(new SortDescription(nameof(SimpleModpackEntry.Name), _lastDirection));
+                cv.SortDescriptions.Add(new SortDescription(nameof(SimpleModpackEntry.ItemName), _lastDirection));
 
                 SelectedEntries.Clear();
                 long size = 0;
@@ -281,9 +296,16 @@ namespace FFXIV_TexTools.Views
 
                 var cv = (CollectionView)CollectionViewSource.GetDefaultView(ModListView.ItemsSource);
                 cv.SortDescriptions.Clear();
-                cv.SortDescriptions.Add(new SortDescription(nameof(SimpleModpackEntry.Name), _lastDirection));
+                cv.SortDescriptions.Add(new SortDescription(nameof(SimpleModpackEntry.ItemName), _lastDirection));
 
+                long size = 0;
+                for (int i = 0; i < JsonEntries.Count; i++)
+                {
+                    SelectedEntries.Add(i);
+                    size += JsonEntries[i].ModSize;
+                }
                 ModListView.SelectAll();
+                ModSize = size;
             });
         }
 
@@ -397,9 +419,41 @@ namespace FFXIV_TexTools.Views
 
             if (e.OriginalSource is GridViewColumnHeader h && h.Content != null)
             {
-                var cv = (CollectionView)CollectionViewSource.GetDefaultView(ModListView.ItemsSource);
+                var binding = h.Column.DisplayMemberBinding;
+                CollectionView cv = (CollectionView)CollectionViewSource.GetDefaultView(ModListView.ItemsSource);
                 cv.SortDescriptions.Clear();
-                cv.SortDescriptions.Add(new SortDescription(h.Content.ToString(), _lastDirection));
+
+                var sortMember = "";
+                if (h.Content.ToString() == UIStrings.ItemPlural)
+                {
+                    sortMember = "ItemName";
+                }
+                else if (h.Content.ToString() == UIStrings.FileName)
+                {
+                    sortMember = "FileName";
+                }
+                else if (h.Content.ToString() == UIStrings.Type)
+                {
+                    sortMember = "Type";
+                }
+                else if (h.Content.ToString() == UIStrings.Race)
+                {
+                    sortMember = "Race";
+                }
+                else if (h.Content.ToString() == UIStrings.Material)
+                {
+                    sortMember = "Material";
+                }
+                else if (h.Content.ToString() == UIStrings.Active)
+                {
+                    sortMember = "ActiveText";
+                }
+
+                cv.SortDescriptions.Add(new SortDescription(sortMember, _lastDirection));
+
+                // Item Name -> File Name is always the tiebreaker.
+                cv.SortDescriptions.Add(new SortDescription("ItemName", _lastDirection));
+                cv.SortDescriptions.Add(new SortDescription("FileName", _lastDirection));
             }
         }
 
@@ -471,7 +525,7 @@ namespace FFXIV_TexTools.Views
             {"dwn", XivStrings.Legs},
             {"sho", XivStrings.Feet},
             {"top", XivStrings.Body},
-            {"ear", XivStrings.Ears},
+            {"ear", XivStrings.Ear},
             {"nek", XivStrings.Neck},
             {"rir", XivStrings.Ring_Right},
             {"ril", XivStrings.Ring_Left},

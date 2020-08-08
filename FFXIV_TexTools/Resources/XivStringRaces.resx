@@ -123,10 +123,28 @@
   <data name="Aura_X" xml:space="preserve">
     <value>Au Ra Xaela</value>
   </data>
+  <data name="Helion" xml:space="preserve">
+    <value>Helion</value>
+  </data>
   <data name="Hyur_H" xml:space="preserve">
     <value>Hyur Highlander</value>
   </data>
   <data name="Hyur_M" xml:space="preserve">
     <value>Hyur Midlander</value>
+  </data>
+  <data name="Lost" xml:space="preserve">
+    <value>Lost</value>
+  </data>
+  <data name="Raen" xml:space="preserve">
+    <value>Raen</value>
+  </data>
+  <data name="Rava" xml:space="preserve">
+    <value>Rava</value>
+  </data>
+  <data name="Veena" xml:space="preserve">
+    <value>Veena</value>
+  </data>
+  <data name="Xaela" xml:space="preserve">
+    <value>Xaela</value>
   </data>
 </root>
