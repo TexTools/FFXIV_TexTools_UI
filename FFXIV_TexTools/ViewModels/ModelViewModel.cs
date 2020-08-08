@@ -172,7 +172,7 @@ namespace FFXIV_TexTools.ViewModels
                     Races.Add(raceCBD);
                 }
 
-                FMVVisibility = Visibility.Visible;
+                FMVVisibility = (xivGear.ModelInfo as XivGearModelInfo).IsWeapon ? Visibility.Hidden : Visibility.Visible;
             }
             else if (itemModel.PrimaryCategory.Equals(XivStrings.Companions))
             {
