@@ -298,7 +298,14 @@ namespace FFXIV_TexTools.Views
                 cv.SortDescriptions.Clear();
                 cv.SortDescriptions.Add(new SortDescription(nameof(SimpleModpackEntry.ItemName), _lastDirection));
 
+                long size = 0;
+                for (int i = 0; i < JsonEntries.Count; i++)
+                {
+                    SelectedEntries.Add(i);
+                    size += JsonEntries[i].ModSize;
+                }
                 ModListView.SelectAll();
+                ModSize = size;
             });
         }
 
