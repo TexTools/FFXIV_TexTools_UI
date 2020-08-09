@@ -127,6 +127,11 @@ namespace FFXIV_TexTools
             _mainWindow = this;
             AutoUpdater.ApplicationExitEvent += AutoUpdater_ApplicationExitEvent;
 
+            // Forcefully assign the correct working directory.  This helps keep the 
+            // AutoUpdater from choking.
+            var cwd = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
+            Directory.SetCurrentDirectory(cwd);
+
             CheckForUpdates();
 
             // This slightly unusual contrivance is to ensure that we actually exit program on updates
