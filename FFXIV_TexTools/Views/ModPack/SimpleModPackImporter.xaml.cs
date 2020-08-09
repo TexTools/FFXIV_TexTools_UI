@@ -21,6 +21,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -149,6 +150,8 @@ namespace FFXIV_TexTools.Views
 
             Dispatcher.Invoke(() =>
             {
+                MainWindow.MakeHighlander();
+
 
                 // Resize columns to fit content
                 foreach (var column in GridViewCol.Columns)
@@ -298,7 +301,14 @@ namespace FFXIV_TexTools.Views
                 cv.SortDescriptions.Clear();
                 cv.SortDescriptions.Add(new SortDescription(nameof(SimpleModpackEntry.ItemName), _lastDirection));
 
+                long size = 0;
+                for (int i = 0; i < JsonEntries.Count; i++)
+                {
+                    SelectedEntries.Add(i);
+                    size += JsonEntries[i].ModSize;
+                }
                 ModListView.SelectAll();
+                ModSize = size;
             });
         }
 

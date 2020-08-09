@@ -352,7 +352,7 @@ namespace FFXIV_TexTools.ViewModels
             PartComboboxEnabled = _partCount > 1;
             SelectedPartIndex = 0;
 
-            if (_partCount == 0)
+            if (_partCount <= 1)
             {
                 // If there are no parts, we're done.
                 if (LoadingComplete != null)
@@ -953,6 +953,32 @@ namespace FFXIV_TexTools.ViewModels
         {
             get => _mapEnabled;
             set { _mapEnabled = value; NotifyPropertyChanged(nameof(MapComboboxEnabled)); }
+        }
+
+        public void ClearImage()
+        {
+            PathString = "No Texture Selected";
+            TextureFormat = "N/A";
+            TextureDimensions = "0x0";
+            MipMapInfo = "No";
+
+            ImageDisplay = null;
+            ChannelsEnabled = false;
+            ExportEnabled = false;
+            ImportEnabled = false;
+            MoreOptionsEnabled = false;
+            AddNewTexturePartEnabled = false;
+            _mapData = new MapData()
+            {
+                MapBytes = new byte[0],
+                Height = 0,
+                Width = 0
+            };
+
+            _imageEffect = new ColorChannels
+            {
+                Channel = new System.Windows.Media.Media3D.Point4D(1.0f, 1.0f, 1.0f, 0.0f)
+            };
         }
 
         /// <summary>
@@ -1785,6 +1811,8 @@ namespace FFXIV_TexTools.ViewModels
             TypePartVisibility = Visibility.Collapsed;
             TypeVisibility = Visibility.Collapsed;
             PartVisibility = Visibility.Visible;
+
+            ClearImage();
         }
 
         /// <summary>

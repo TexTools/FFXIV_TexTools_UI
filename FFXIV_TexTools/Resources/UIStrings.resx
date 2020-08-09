@@ -980,7 +980,7 @@ If you would like to enable this, first import a texture for the selected item.<
     <value>Updating Cache</value>
   </data>
   <data name="Updating_Cache_Message" xml:space="preserve">
-    <value>This may up to 5 minutes if you have many mods installed...</value>
+    <value>This may take 30-60 seconds if you have many mods installed...</value>
   </data>
   <data name="Working_Ellipsis" xml:space="preserve">
     <value>Working...</value>
