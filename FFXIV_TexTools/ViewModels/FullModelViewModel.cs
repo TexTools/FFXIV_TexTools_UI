@@ -553,6 +553,12 @@ namespace FFXIV_TexTools.ViewModels
                 ModelModifiers.FixUpSkinReferences(ttModel, SelectedSkeleton.XivRace, null, bodyReplacement);
                 await UpdateBodyTextures(ttModel, itemModel, textureData);
             }
+
+            // Change the tail texture for Au Ra
+            if (itemModel.Name.Equals(XivStrings.Tail) && (SelectedSkeleton.XivRace == XivRace.AuRa_Female || SelectedSkeleton.XivRace == XivRace.AuRa_Male))
+            {
+                await UpdateTailTextures(ttModel, textureData);
+            }
         }
 
         /// <summary>
@@ -574,6 +580,12 @@ namespace FFXIV_TexTools.ViewModels
                         var bodyReplacement = $"b{SelectedSkin.ToString().PadLeft(4, '0')}";
                         ModelModifiers.FixUpSkinReferences(shownModel.TtModel, SelectedSkeleton.XivRace, null, bodyReplacement);
                         await UpdateBodyTextures(shownModel.TtModel, shownModel.ItemModel, shownModel.ModelTextureData);
+                    }
+
+                    // Change the tail texture for Au Ra
+                    if (shownModel.ItemModel.Name.Equals(XivStrings.Tail) && (SelectedSkeleton.XivRace == XivRace.AuRa_Female || SelectedSkeleton.XivRace == XivRace.AuRa_Male))
+                    {
+                        await UpdateTailTextures(shownModel.TtModel, shownModel.ModelTextureData);
                     }
                 }
 
@@ -633,6 +645,20 @@ namespace FFXIV_TexTools.ViewModels
         }
 
         /// <summary>
+        /// Gets the tail number from the model
+        /// </summary>
+        /// <param name="ttModel">The TT model</param>
+        /// <returns>The body number</returns>
+        private string GetTailNum(TTModel ttModel)
+        {
+            var bodyRegex = new Regex("(t[0-9]{4})");
+
+            var result = bodyRegex.Match(ttModel.Materials[0]);
+
+            return result.Success ? result.Value : string.Empty;
+        }
+
+        /// <summary>
         /// Gets the face number from the model
         /// </summary>
         /// <param name="ttModel">The TT Model</param>
@@ -667,6 +693,16 @@ namespace FFXIV_TexTools.ViewModels
             var newMaterial = ttModel.Materials[bodyMaterialIndex];
             var currBodyNum = GetBodyNum(ttModel);
             var newBodyNum = $"b{SelectedSkin.ToString().PadLeft(4, '0')}";
+            var newTailNum = string.Empty;
+
+            // Change the tail texture for Au Ra
+            if (item.Name.Equals(XivStrings.Tail) && (SelectedSkeleton.XivRace == XivRace.AuRa_Female || SelectedSkeleton.XivRace == XivRace.AuRa_Male))
+            {
+                var currTailNum = GetTailNum(ttModel);
+
+
+                newTailNum = SelectedSkin > 100 ? $"t010{currTailNum}" : $"t000{currTailNum}";
+            }
 
             // Replace the body number with the selected one
             if (!currBodyNum.Equals(newBodyNum))
@@ -716,6 +752,49 @@ namespace FFXIV_TexTools.ViewModels
 
                 // Reindex the material dictionary as materials may have sorted differently
                 ReIndexMaterialDictionary(ttModel, materialDictionary, modelMaps);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(string.Format(UIMessages.UpdateBodyTextureError, ex.Message));
+            }
+        }
+
+        /// <summary>
+        /// Updates the tail textures for a given model
+        /// </summary>
+        /// <param name="ttModel">The model to update the body textures for</param>
+        /// <param name="item">The item associated with the model</param>
+        /// <param name="materialDictionary">The dictionary of materials for the current model</param>
+        private async Task UpdateTailTextures(TTModel ttModel, Dictionary<int, ModelTextureData> materialDictionary)
+        {
+            var _imc = new Imc(_gameDirectory);
+            var _mtrl = new Mtrl(_gameDirectory, IOUtil.GetDataFileFromPath(ttModel.Source), XivLanguage.None);
+            var _index = new Index(_gameDirectory);
+
+            // Determine which materials in the model need to be replaced
+            var currTailNum = GetTailNum(ttModel);
+            var newTailNum = SelectedSkin > 100 ? $"t010{currTailNum.Substring(4)}" : $"t000{currTailNum.Substring(4)}";
+            var newMaterial = ttModel.Materials[0].Replace(currTailNum, newTailNum);
+
+            // Temp MDL path so that races match when getting mtrl path
+            var tempMdlPath = ttModel.Source.Replace(currTailNum, newTailNum);
+
+            foreach (var meshGroup in ttModel.MeshGroups)
+            {
+                meshGroup.Material = newMaterial;
+            }
+
+            try
+            {
+                var mtrlVariant = 1;
+                materialDictionary[0].MaterialPath = newMaterial;
+
+                var mtrlPath = _mtrl.GetMtrlPath(tempMdlPath, newMaterial, mtrlVariant);
+                var mtrlOffset = await _index.GetDataOffset(mtrlPath);
+                var mtrl = await _mtrl.GetMtrlData(mtrlOffset, mtrlPath, 11);
+                var modelMaps = await ModelTexture.GetModelMaps(_gameDirectory, mtrl);
+
+                materialDictionary[0] = modelMaps;
             }
             catch (Exception ex)
             {
