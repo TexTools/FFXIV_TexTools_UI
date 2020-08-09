@@ -137,6 +137,9 @@ namespace FFXIV_TexTools
             // lines below, due to not having valid settings after Application.Shutdown() was already called.
             if(_UPDATING)
             {
+                // Shut down any other copies of TexTools that are active.
+                MainWindow.MakeHighlander();
+
                 if (Application.Current != null) { 
                     Application.Current.Shutdown();
                 }
@@ -474,6 +477,43 @@ namespace FFXIV_TexTools
                 // Set theme according to settings now that the settings have been upgraded to the new version
                 var appStyle = ThemeManager.DetectAppStyle(Application.Current);
                 ThemeManager.ChangeAppStyle(Application.Current, ThemeManager.GetAccent(appStyle.Item2.Name), ThemeManager.GetAppTheme(Settings.Default.Application_Theme));
+            }
+        }
+
+        /// <summary>
+        /// There can only be one.
+        /// </summary>
+        public static void MakeHighlander()
+        {
+            try
+            {
+                List<Process> toKill = new List<Process>();
+                // Scan all processes for any processes with our name.
+                var self = Process.GetCurrentProcess();
+
+                Process[] processCollection = Process.GetProcesses();
+                foreach (Process p in processCollection)
+                {
+                    if (p.ProcessName == self.ProcessName && p.Id != self.Id)
+                    {
+                        toKill.Add(p);
+                    }
+                }
+
+                if (toKill.Count > 0)
+                {
+                    FlexibleMessageBox.Show("More than one TexTools process detected.  Shutting down other TexTools copies.", "Multi-Application Shutdown.", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+                    foreach (var p in toKill)
+                    {
+                        p.Kill();
+                    }
+                }
+            }
+            catch
+            {
+                // If this fails because of some security issue on getting the process list or the like,
+                // just try to continue as normal.
             }
         }
 

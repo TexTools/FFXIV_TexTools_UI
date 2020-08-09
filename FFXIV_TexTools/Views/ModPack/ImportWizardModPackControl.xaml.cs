@@ -37,6 +37,8 @@ namespace FFXIV_TexTools.Views
         {
             InitializeComponent();
 
+            MainWindow.MakeHighlander();
+
             _imageDictionary = imageDictionary;
 
             OptionsList.ItemsSource = new List<ModOptionJson>();
