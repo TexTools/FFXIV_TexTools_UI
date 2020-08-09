@@ -36,6 +36,7 @@ using System.Windows.Threading;
 using xivModdingFramework.Cache;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Helpers;
+using xivModdingFramework.Items.Categories;
 using xivModdingFramework.Items.Interfaces;
 using xivModdingFramework.Mods.DataContainers;
 using xivModdingFramework.Mods.FileTypes;
@@ -1208,9 +1209,11 @@ namespace FFXIV_TexTools
                 }
 
             }
-            var list= new List<xivModdingFramework.Items.Interfaces.IItem>();
-            list.Add(ItemSelect.SelectedItem);
-            var modConverterView = new ModConverterView(list,ttmpFileName, ttmpData) { Owner = this,WindowStartupLocation=WindowStartupLocation.CenterOwner };
+            var gameDir = new DirectoryInfo(Settings.Default.FFXIV_Directory);
+            var lang = XivLanguages.GetXivLanguage(Settings.Default.Application_Language);
+            var gear = new Gear(gameDir, lang);
+            var gearList = await gear.GetGearList();
+            var modConverterView = new ModConverterView(gearList, ttmpFileName, ttmpData) { Owner = this,WindowStartupLocation=WindowStartupLocation.CenterOwner };
             await progressController.CloseAsync();
             modConverterView.ShowDialog();
         }
