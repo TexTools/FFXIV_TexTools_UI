@@ -467,8 +467,6 @@ namespace FFXIV_TexTools.ViewModels
             };
 
             _charaRaceAndSkinDictionary = await character.GetRacesAndNumbersForTextures(xivChara);
-
-            FillSkeletonComboBox();
         }
 
         /// <summary>
@@ -509,9 +507,12 @@ namespace FFXIV_TexTools.ViewModels
 
                 Skins.Clear();
 
-                foreach (var skinNum in _charaRaceAndSkinDictionary[selectedSkeleton.GetSkinRace()])
+                if (_charaRaceAndSkinDictionary != null)
                 {
-                    Skins.Add(skinNum);
+                    foreach (var skinNum in _charaRaceAndSkinDictionary[selectedSkeleton.GetSkinRace()])
+                    {
+                        Skins.Add(skinNum);
+                    }
                 }
 
                 // Disable changes while model and viewport update
