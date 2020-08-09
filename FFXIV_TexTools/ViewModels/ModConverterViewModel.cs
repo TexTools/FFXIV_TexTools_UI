@@ -30,7 +30,7 @@ namespace FFXIV_TexTools.ViewModels
             LoadFromItemList();
         }
         public List<string> ItemTextList { get; set; }
-        public List<IItem> ItemList { get; set; }
+        public List<XivGear> ItemList { get; set; }
         public ObservableCollection<string> FromItemList { get; private set; } = new ObservableCollection<string>();
         public ObservableCollection<string> ConvertList { get; private set; } = new ObservableCollection<string>();
         public ObservableCollection<AutoCompleteEntry> ToConverterItemList { get; set; } = new ObservableCollection<AutoCompleteEntry>();
@@ -104,8 +104,6 @@ namespace FFXIV_TexTools.ViewModels
             if (_convertDic.ContainsKey(SelectedFromItemText))
                 return;
             if (!ItemList.Exists(it => it.Name == TargetItemName))
-                return;
-            if (obj == null)
                 return;
             var jsons = GetModsJsonList(TTMPData.ModPackJson);
             ModsJson fromItem=null;

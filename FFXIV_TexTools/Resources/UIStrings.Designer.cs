@@ -369,7 +369,7 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Colors &amp;amp; Skins.
+        ///   Looks up a localized string similar to Colors &amp; Skins.
         /// </summary>
         public static string Colors_Skins {
             get {
