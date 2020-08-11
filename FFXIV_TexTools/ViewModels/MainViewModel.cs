@@ -512,6 +512,7 @@ namespace FFXIV_TexTools.ViewModels
                 if (FlexibleMessageBox.Show(_win32Window, backupMessage, UIMessages.CreateBackupTitle, MessageBoxButtons.YesNo,
                         MessageBoxIcon.Warning) == DialogResult.Yes)
                 {
+
                     if (_index.IsIndexLocked(XivDataFile._0A_Exd))
                     {
                         FlexibleMessageBox.Show(_win32Window, UIMessages.IndexLockedBackupFailedMessage,
@@ -521,7 +522,11 @@ namespace FFXIV_TexTools.ViewModels
 
                     try
                     {
-                        // Toggle off all mods
+                        // Need to initialize the cache here before doing the mod toggle.
+                        var gameDir = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
+                        var lang = XivLanguages.GetXivLanguage(Properties.Settings.Default.Application_Language);
+                        XivCache.SetGameInfo(gameDir, lang, true);
+                        
                         await modding.ToggleAllMods(false);
                     }
                     catch (Exception ex)
