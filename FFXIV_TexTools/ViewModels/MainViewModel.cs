@@ -57,7 +57,6 @@ namespace FFXIV_TexTools.ViewModels
         private int _progressValue;
         private Visibility _progressBarVisible, _progressLabelVisible;
         private Index _index;
-        private System.Windows.Forms.IWin32Window _win32Window;
         private ProgressDialogController _progressController;
         public System.Timers.Timer CacheTimer = new System.Timers.Timer(3000);
 
@@ -66,7 +65,6 @@ namespace FFXIV_TexTools.ViewModels
         public MainViewModel(MainWindow mainWindow)
         {
             _mainWindow = mainWindow;
-            _win32Window = new WindowWrapper(new WindowInteropHelper(_mainWindow).Handle);
             // This is actually synchronous and can just be called immediately...
             SetDirectories(true);
 
@@ -164,7 +162,7 @@ namespace FFXIV_TexTools.ViewModels
 
                 if (modListContent.Length > 0)
                 {
-                    if (FlexibleMessageBox.Show(_win32Window, 
+                    if (FlexibleMessageBox.Show(_mainWindow.Win32Window, 
                             UIMessages.OldTexToolsFoundMessage, UIMessages.OldModListFoundTitle,
                             MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                     {
@@ -175,7 +173,7 @@ namespace FFXIV_TexTools.ViewModels
 
                         if (_index.IsIndexLocked(XivDataFile._0A_Exd))
                         {
-                            FlexibleMessageBox.Show(_win32Window, UIMessages.ModListIndexLockedErrorMessage,
+                            FlexibleMessageBox.Show(_mainWindow.Win32Window, UIMessages.ModListIndexLockedErrorMessage,
                                 UIMessages.ModListDisableFailedTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                             error = true;
                         }
@@ -188,7 +186,7 @@ namespace FFXIV_TexTools.ViewModels
                             catch (Exception ex)
                             {
                                 error = true;
-                                FlexibleMessageBox.Show(_win32Window, 
+                                FlexibleMessageBox.Show(_mainWindow.Win32Window, 
                                     string.Format(UIMessages.OldModListDisableFailedMessage, ex.Message),
                                     UIMessages.PreviousVersionErrorTitle, MessageBoxButtons.OK,
                                     MessageBoxIcon.Error);
@@ -466,7 +464,7 @@ namespace FFXIV_TexTools.ViewModels
             }
             else
             {
-                FlexibleMessageBox.Show(_win32Window, UIMessages.GameVersionErrorMessage,
+                FlexibleMessageBox.Show(_mainWindow.Win32Window, UIMessages.GameVersionErrorMessage,
                     string.Format(UIMessages.GameVersionErrorTitle, applicationVersion), MessageBoxButtons.OK,
                     MessageBoxIcon.Warning);
                 return;
@@ -493,7 +491,7 @@ namespace FFXIV_TexTools.ViewModels
 
             if (!Directory.Exists(backupDirectory.FullName))
             {
-                FlexibleMessageBox.Show(_win32Window, UIMessages.BackupsDirectoryErrorMessage, UIMessages.BackupFailedTitle,
+                FlexibleMessageBox.Show(_mainWindow.Win32Window, UIMessages.BackupsDirectoryErrorMessage, UIMessages.BackupFailedTitle,
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
@@ -509,13 +507,13 @@ namespace FFXIV_TexTools.ViewModels
                 var indexFiles = new XivDataFile[]
                     { XivDataFile._0A_Exd, XivDataFile._04_Chara, XivDataFile._06_Ui, XivDataFile._01_Bgcommon };
 
-                if (FlexibleMessageBox.Show(_win32Window, backupMessage, UIMessages.CreateBackupTitle, MessageBoxButtons.YesNo,
+                if (FlexibleMessageBox.Show(_mainWindow.Win32Window, backupMessage, UIMessages.CreateBackupTitle, MessageBoxButtons.YesNo,
                         MessageBoxIcon.Warning) == DialogResult.Yes)
                 {
 
                     if (_index.IsIndexLocked(XivDataFile._0A_Exd))
                     {
-                        FlexibleMessageBox.Show(_win32Window, UIMessages.IndexLockedBackupFailedMessage,
+                        FlexibleMessageBox.Show(_mainWindow.Win32Window, UIMessages.IndexLockedBackupFailedMessage,
                             UIMessages.BackupFailedTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
@@ -531,7 +529,7 @@ namespace FFXIV_TexTools.ViewModels
                     }
                     catch (Exception ex)
                     {
-                        FlexibleMessageBox.Show(_win32Window, string.Format(UIMessages.BackupFailedErrorMessage, ex.Message),
+                        FlexibleMessageBox.Show(_mainWindow.Win32Window, string.Format(UIMessages.BackupFailedErrorMessage, ex.Message),
                             UIMessages.BackupFailedTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
@@ -547,7 +545,7 @@ namespace FFXIV_TexTools.ViewModels
                         }
                         catch (Exception e)
                         {
-                            FlexibleMessageBox.Show(_win32Window, string.Format(UIMessages.BackupFailedErrorMessage, e.Message),
+                            FlexibleMessageBox.Show(_mainWindow.Win32Window, string.Format(UIMessages.BackupFailedErrorMessage, e.Message),
                                 UIMessages.BackupFailedTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
                     }
