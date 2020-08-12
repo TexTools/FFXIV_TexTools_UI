@@ -25,7 +25,7 @@ namespace FFXIV_TexTools.ViewModels
 {
     public class ImportModelViewModel
     {
-        private const int ExpandedHeight = 640;
+        private const int ExpandedHeight = 680;
         private const double CloseDelay = 3000f;
 
         private ImportModelView _view;
@@ -181,6 +181,7 @@ namespace FFXIV_TexTools.ViewModels
             options.CloneUV2 = _view.CloneUV1Button.IsChecked == true ? true : false;
             options.ClearVAlpha = _view.ClearVAlphaButton.IsChecked == true ? true : false;
             options.ClearVColor = _view.ClearVColorButton.IsChecked == true ? true : false;
+            options.AutoScale = _view.AutoScaleButton.IsChecked == true ? true : false;
 
             // Asynchronously call ImportModel.
             Task.Run(async () =>
