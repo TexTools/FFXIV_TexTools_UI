@@ -754,6 +754,9 @@ namespace FFXIV_TexTools.ViewModels
             { "fv", XivStrings.Face },
             { "hv", XivStrings.Hair },
             { "ev", XivStrings.Earring },
+            { "nv", XivStrings.Neck },
+            { "wv", XivStrings.Wrists },
+            { "rv", XivStrings.Rings },
             { "nv", null },
         };
 
@@ -826,6 +829,26 @@ namespace FFXIV_TexTools.ViewModels
                 "atr_ev_a",
                 "atr_ev_b",
                 "atr_ev_c",
+            } },
+            { "nek", new List<string> () {
+                "atr_nv_a",
+                "atr_nv_b",
+                "atr_nv_c",
+            } },
+            { "wrs", new List<string> () {
+                "atr_wv_a",
+                "atr_wv_b",
+                "atr_wv_c",
+            } },
+            { "rir", new List<string> () {
+                "atr_rv_a",
+                "atr_rv_b",
+                "atr_rv_c",
+            } },
+            { "ril", new List<string> () {
+                "atr_rv_a",
+                "atr_rv_b",
+                "atr_rv_c",
             } },
             { "fac", new List<string> () {
                 "atr_hig",
