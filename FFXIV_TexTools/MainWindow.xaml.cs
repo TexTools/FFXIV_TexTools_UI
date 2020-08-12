@@ -1151,6 +1151,7 @@ namespace FFXIV_TexTools
                 var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);                
                 var problemChecker = new ProblemChecker(gameDirectory);
                 var backupsDirectory = new DirectoryInfo(Properties.Settings.Default.Backup_Directory);
+                await LockUi("Backing Up Indexes", "If you have many mods enabled, this may take some time...");
                 try
                 {
                     await problemChecker.BackupIndexFiles(backupsDirectory);
@@ -1158,7 +1159,10 @@ namespace FFXIV_TexTools
                 catch(Exception ex)
                 {
                     FlexibleMessageBox.Show(string.Format(UIMessages.BackupFailedErrorMessage, ex.Message), UIMessages.BackupFailedTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                }                
+                } finally
+                {
+                    await UnlockUi();
+                }
 
                 await this.ShowMessageAsync(UIMessages.BackupCompleteTitle, UIMessages.BackupCompleteMessage);
             }
@@ -1304,8 +1308,23 @@ namespace FFXIV_TexTools
                         file.Delete();
                     }
 
+
                     _lockProgress.Report("Copying new indexes to backup directory...");
-                    ZipFile.ExtractToDirectory(localPath, Settings.Default.Backup_Directory);
+                    var newFiles = Directory.GetFiles(tempDi.FullName);
+                    foreach (var nFile in newFiles)
+                    {
+                        try
+                        {
+                            if (nFile.Contains(".win32.index"))
+                            {
+                                File.Copy(nFile, $"{Settings.Default.Backup_Directory}/{Path.GetFileName(nFile)}", true);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new Exception("Failed to copy index files.\n\n" + ex.Message);
+                        }
+                    }
 
 
                     _lockProgress.Report("Job Done.");

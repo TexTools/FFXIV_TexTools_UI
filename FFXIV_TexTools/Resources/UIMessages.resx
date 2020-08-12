@@ -156,7 +156,7 @@ Please set your Index Backups directory in Options &gt; Customize and try again.
     <value>ColorSet BMP import is not supported.</value>
   </data>
   <data name="CreateBackupsMessage" xml:space="preserve">
-    <value>This will create a backup of the commonly modified index files (0a, 01, 04, 06)
+    <value>This will create a backup of all index files.
 
 
 Do you want to Backup Now?

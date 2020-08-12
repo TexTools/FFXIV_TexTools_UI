@@ -214,7 +214,7 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This will create a backup of the commonly modified index files (0a, 01, 04, 06)
+        ///   Looks up a localized string similar to This will create a backup of all index files.
         ///
         ///
         ///Do you want to Backup Now?
