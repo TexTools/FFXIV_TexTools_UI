@@ -757,7 +757,6 @@ namespace FFXIV_TexTools.ViewModels
             { "nv", XivStrings.Neck },
             { "wv", XivStrings.Wrists },
             { "rv", XivStrings.Rings },
-            { "nv", null },
         };
 
 

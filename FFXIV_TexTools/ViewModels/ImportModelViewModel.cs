@@ -20,6 +20,7 @@ using xivModdingFramework.Items.Interfaces;
 using xivModdingFramework.Models.DataContainers;
 using xivModdingFramework.Models.FileTypes;
 using xivModdingFramework.Models.Helpers;
+using System.Text.RegularExpressions;
 
 namespace FFXIV_TexTools.ViewModels
 {
@@ -37,6 +38,7 @@ namespace FFXIV_TexTools.ViewModels
         private string _internalPath;
         private string _submeshId;
         private System.Timers.Timer _closeTimer;
+
 
         private bool _success = false;
         private Action _onComplete;
@@ -56,6 +58,60 @@ namespace FFXIV_TexTools.ViewModels
         }
 
 
+
+        private void SetupRaces()
+        {
+            var races = Eqp.DeformationAvailableRaces;
+
+            _view.RaceComboBox.SelectedValuePath = "Key";
+            _view.RaceComboBox.DisplayMemberPath = "Value";
+
+            _view.RaceComboBox.IsEnabled = false;
+
+            if (_race == XivRace.All_Races)
+            {
+                _view.OverrideRaceButton.IsEnabled = false;
+                var kv = new KeyValuePair<XivRace, string>(XivRace.All_Races, "--");
+                _view.RaceComboBox.Items.Add(kv);
+            } else
+            {
+                foreach (var race in races)
+                {
+                    var kv = new KeyValuePair<XivRace, string>(race, XivRaces.GetDisplayName(race));
+                    _view.RaceComboBox.Items.Add(kv);
+                }
+            }
+
+            _view.RaceComboBox.SelectedValue = _race;
+
+        }
+
+        /// <summary>
+        /// Automatically attempts to set the racial override status based upon a selected file name.
+        /// </summary>
+        private void SetRaceOverrideByFileName()
+        {
+            if (String.IsNullOrWhiteSpace(_view.FileNameTextBox.Text)) return;
+
+            var fileName = Path.GetFileNameWithoutExtension(_view.FileNameTextBox.Text);
+            var raceRegex = new Regex("c([0-9]{4})");
+            var match = raceRegex.Match(fileName);
+            if (match.Success)
+            {
+                // Swap the race to a non-NPC version if it's an NPC race.
+                var raceCode = match.Groups[1].Value.Substring(0, 2) + "01";
+                var race = XivRaces.GetXivRace(raceCode);
+
+                if(race != _race && race != XivRace.All_Races && _race != XivRace.All_Races)
+                {
+                    // We have a valid race.
+                    _view.OverrideRaceButton.IsChecked = true;
+                    _view.RaceComboBox.SelectedValue = race;
+                }
+            }
+        }
+
+
         public ImportModelViewModel(ImportModelView view, IItemModel item, XivRace race, string submeshId, bool dataOnly, Action onComplete = null)
         {
             _view = view;
@@ -70,6 +126,8 @@ namespace FFXIV_TexTools.ViewModels
             var dataFile = IOUtil.GetDataFileFromPath(_item.GetItemRootFolder());
             _mdl = new Mdl(gameDirectory, dataFile);
             _importers = _mdl.GetAvailableImporters();
+
+            SetupRaces();
 
 
             // We need to explicitly fork this onto a new thread to avoid deadlock.
@@ -115,6 +173,8 @@ namespace FFXIV_TexTools.ViewModels
             _view.ImportButton.Click += ImportButton_Click;
             _view.EditButton.Click += EditButton_Click;
             _view.Closing += _view_Closing;
+            _view.OverrideRaceButton.Checked += OverrideRaceButton_Checked;
+            _view.OverrideRaceButton.Unchecked += OverrideRaceButton_Unchecked;
 
             // Default Settings for specific categories.
             if (item.SecondaryCategory == XivStrings.Face)
@@ -131,6 +191,17 @@ namespace FFXIV_TexTools.ViewModels
                 _view.ForceUVsButton.IsChecked = true;
             }
         }
+
+        private void OverrideRaceButton_Checked(object sender, RoutedEventArgs e)
+        {
+            _view.RaceComboBox.IsEnabled = true;
+        }
+        private void OverrideRaceButton_Unchecked(object sender, RoutedEventArgs e)
+        {
+            _view.RaceComboBox.IsEnabled = false;
+            _view.RaceComboBox.SelectedValue = _race;
+        }
+
 
         private void _view_Closing(object sender, CancelEventArgs e)
         {
@@ -182,6 +253,12 @@ namespace FFXIV_TexTools.ViewModels
             options.ClearVAlpha = _view.ClearVAlphaButton.IsChecked == true ? true : false;
             options.ClearVColor = _view.ClearVColorButton.IsChecked == true ? true : false;
             options.AutoScale = _view.AutoScaleButton.IsChecked == true ? true : false;
+
+            var selectedRace = (XivRace)_view.RaceComboBox.SelectedValue;
+            if(selectedRace != XivRace.All_Races && selectedRace != _race)
+            {
+                options.SourceRace = selectedRace;
+            }
 
             // Asynchronously call ImportModel.
             Task.Run(async () =>
@@ -378,7 +455,9 @@ namespace FFXIV_TexTools.ViewModels
             {
                 //Get the path of specified file
                 _view.FileNameTextBox.Text = openFileDialog.FileName;
+                SetRaceOverrideByFileName();
             }
+
         }
     }
 }
