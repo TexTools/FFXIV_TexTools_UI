@@ -991,4 +991,10 @@ If you would like to enable this, first import a texture for the selected item.<
   <data name="Skin" xml:space="preserve">
     <value>Skin</value>
   </data>
+  <data name="Download_Backups" xml:space="preserve">
+    <value>Download Index Backups</value>
+  </data>
+  <data name="Index_Backups_Url" xml:space="preserve">
+    <value>https://textools.sfo2.digitaloceanspaces.com/Index_Backups.zip</value>
+  </data>
 </root>

@@ -398,6 +398,9 @@
   <data name="Included_Mods_in_Option" xml:space="preserve">
     <value>옵션을 포함한 모드</value>
   </data>
+  <data name="Index_Backups_Url" xml:space="preserve">
+    <value>NONE</value>
+  </data>
   <data name="Index_Locked" xml:space="preserve">
     <value>게임이 실행중에는 들여올수 없습니다.</value>
   </data>

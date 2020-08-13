@@ -20,6 +20,7 @@ using FFXIV_TexTools.Resources;
 using FFXIV_TexTools.ViewModels;
 using FFXIV_TexTools.Views;
 using FFXIV_TexTools.Views.Models;
+using FolderSelect;
 using MahApps.Metro;
 using MahApps.Metro.Controls.Dialogs;
 using SixLabors.ImageSharp;
@@ -28,10 +29,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.IO.Compression;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
+using System.Windows.Interop;
 using System.Windows.Threading;
 using xivModdingFramework.Cache;
 using xivModdingFramework.General.Enums;
@@ -53,6 +57,7 @@ namespace FFXIV_TexTools
         private string _startupArgs;
         private static MainWindow _mainWindow;
         private FullModelView _fmv;
+        public readonly System.Windows.Forms.IWin32Window Win32Window;
 
 
         /// <summary>
@@ -125,6 +130,7 @@ namespace FFXIV_TexTools
         public MainWindow(string[] args)
         {
             _mainWindow = this;
+
             AutoUpdater.ApplicationExitEvent += AutoUpdater_ApplicationExitEvent;
 
             // Forcefully assign the correct working directory.  This helps keep the 
@@ -206,6 +212,9 @@ namespace FFXIV_TexTools
             else
             {
                 this.Show();
+
+                // Can set this now that we're open.
+                Win32Window = new WindowWrapper(new WindowInteropHelper(this).Handle);
 
 
                 var textureView = TextureTabItem.Content as TextureView;
@@ -1142,16 +1151,19 @@ namespace FFXIV_TexTools
                 var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);                
                 var problemChecker = new ProblemChecker(gameDirectory);
                 var backupsDirectory = new DirectoryInfo(Properties.Settings.Default.Backup_Directory);
+                await LockUi("Backing Up Indexes", "If you have many mods enabled, this may take some time...");
                 try
                 {
                     await problemChecker.BackupIndexFiles(backupsDirectory);
+                    await this.ShowMessageAsync(UIMessages.BackupCompleteTitle, UIMessages.BackupCompleteMessage);
                 }
                 catch(Exception ex)
                 {
-                    FlexibleMessageBox.Show(string.Format(UIMessages.BackupFailedErrorMessage, ex.Message), UIMessages.BackupFailedTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                }                
-
-                await this.ShowMessageAsync(UIMessages.BackupCompleteTitle, UIMessages.BackupCompleteMessage);
+                    FlexibleMessageBox.Show(string.Format(UIMessages.BackupFailedErrorMessage, ex.Message), UIMessages.BackupFailedTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                } finally
+                {
+                    await UnlockUi();
+                }
             }
         }
 
@@ -1232,6 +1244,101 @@ namespace FFXIV_TexTools
             fmv.Owner = this;
 
             fmv.Show();
+        }
+
+
+        private void Menu_WebBackups_Click(object sender, RoutedEventArgs e)
+        {
+            DownloadIndexBackups();
+        }
+        private async Task DownloadIndexBackups()
+        {
+            var url = UIStrings.Index_Backups_Url;
+            if (url == "INVALID" || String.IsNullOrWhiteSpace(url))
+            {
+                FlexibleMessageBox.Show("Index backup download is not currently supported for your client language.", "Web Download Error", MessageBoxButtons.OK, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1);
+                return;
+            }
+
+            var result = FlexibleMessageBox.Show("This will download index backups from the internet. Proceed?", "Web Download Confirmation",MessageBoxButtons.OKCancel, MessageBoxIcon.Information, MessageBoxDefaultButton.Button2);
+
+            if (result != System.Windows.Forms.DialogResult.OK) return;
+
+            await LockUi("Downloading Backups");
+            try
+            {
+                await Task.Run(async () =>
+                {
+                    _lockProgress.Report("Downloading Indexes...");
+                    var localPath = Path.GetTempFileName();
+                    using (var client = new WebClient())
+                    {
+                        client.DownloadFile(url, localPath);
+                    }
+
+                    var tempDir = Path.GetTempPath();
+                    tempDir += "/index_backup";
+                    var tempDi = new DirectoryInfo(tempDir);
+                    foreach (FileInfo file in tempDi.GetFiles())
+                    {
+                        file.Delete();
+                    }
+
+
+                    Directory.CreateDirectory(tempDir);
+
+                    _lockProgress.Report("Unzipping new Indexes...");
+                    ZipFile.ExtractToDirectory(localPath, tempDir);
+
+                    _lockProgress.Report("Checking downloaded index version...");
+                    var versionRaw = File.ReadAllText(tempDir + "/ffxivgame.ver");
+                    
+                    Version version = new Version(versionRaw.Substring(0, versionRaw.LastIndexOf(".", StringComparison.Ordinal)));
+
+                    if (version != XivCache.GameInfo.GameVersion)
+                    {
+                        throw new Exception("Downloaded Index version does not match game version.");
+                    }
+
+                    _lockProgress.Report("Removing old Backups...");
+                    var backupDir = new DirectoryInfo(Settings.Default.Backup_Directory);
+                    foreach (FileInfo file in backupDir.GetFiles())
+                    {
+                        file.Delete();
+                    }
+
+
+                    _lockProgress.Report("Copying new indexes to backup directory...");
+                    var newFiles = Directory.GetFiles(tempDi.FullName);
+                    foreach (var nFile in newFiles)
+                    {
+                        try
+                        {
+                            if (nFile.Contains(".win32.index"))
+                            {
+                                File.Copy(nFile, $"{Settings.Default.Backup_Directory}/{Path.GetFileName(nFile)}", true);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new Exception("Failed to copy index files.\n\n" + ex.Message);
+                        }
+                    }
+
+
+                    _lockProgress.Report("Job Done.");
+                });
+                FlexibleMessageBox.Show("Successfully downloaded fresh index backups.\nYou may now use [Start Over] to apply them, if desired.", "Backup Download Success", MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
+            }
+            catch(Exception Ex)
+            {
+                FlexibleMessageBox.Show("Unable to download Index Backups.\n\n" + Ex.Message, "Web Download Error", MessageBoxButtons.OK, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1);
+
+            }
+            finally
+            {
+                await UnlockUi();
+            }
         }
     }
 }

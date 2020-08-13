@@ -68,6 +68,7 @@
             </MenuItem>
             <MenuItem Header="{Binding Source={x:Static resx:UIStrings.Help}}">
                 <MenuItem x:Name="Menu_Backup" Header="{Binding Source={x:Static resx:UIStrings.Backup_Index_Files}}" Click="Menu_Backup_Click"/>
+                <MenuItem x:Name="Menu_WebBackups" Header="{Binding Source={x:Static resx:UIStrings.Download_Backups}}" Click="Menu_WebBackups_Click" />
                 <MenuItem x:Name="Menu_ProblemCheck" Header="{Binding Source={x:Static resx:UIStrings.Check_For_Problems}}" Click="Menu_ProblemCheck_Click"/>
                 <MenuItem x:Name="Menu_StartOver" Header="{Binding Source={x:Static resx:UIStrings.Start_Over}}" Click="Menu_StartOver_Click" />
                 <MenuItem x:Name="Menu_BugReport" Header="{Binding Source={x:Static resx:UIStrings.Report_Bug}}" Click="Menu_BugReport_Click"/>

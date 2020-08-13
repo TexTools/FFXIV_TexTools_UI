@@ -747,4 +747,7 @@
   <data name="Convert_To" xml:space="preserve">
     <value>转换到</value>
   </data>
+  <data name="Index_Backups_Url" xml:space="preserve">
+    <value>NONE</value>
+  </data>
 </root>

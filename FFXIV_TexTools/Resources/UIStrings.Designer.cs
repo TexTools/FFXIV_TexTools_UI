@@ -594,6 +594,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Download Index Backups.
+        /// </summary>
+        public static string Download_Backups {
+            get {
+                return ResourceManager.GetString("Download_Backups", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Edit.
         /// </summary>
         public static string Edit {
@@ -1013,6 +1022,15 @@ namespace FFXIV_TexTools.Resources {
         public static string Included_Mods_in_Option {
             get {
                 return ResourceManager.GetString("Included_Mods_in_Option", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to https://textools.sfo2.digitaloceanspaces.com/Index_Backups.zip.
+        /// </summary>
+        public static string Index_Backups_Url {
+            get {
+                return ResourceManager.GetString("Index_Backups_Url", resourceCulture);
             }
         }
         

@@ -826,6 +826,18 @@ namespace FFXIV_TexTools.Helpers
             /// <returns>The dialog result.</returns>
             public static DialogResult Show(IWin32Window owner, string text, string caption, MessageBoxButtons buttons, MessageBoxIcon icon, MessageBoxDefaultButton defaultButton)
             {
+                if(owner == null)
+                {
+                    try
+                    {
+                        var mainWindow = MainWindow.GetMainWindow();
+                        owner = mainWindow.Win32Window;
+                    } catch
+                    {
+                        // No-Op.
+                    }
+                }
+
                 //Create a new instance of the FlexibleMessageBox form
                 var flexibleMessageBoxForm = new FlexibleMessageBoxForm();
                 flexibleMessageBoxForm.ShowInTaskbar = false;

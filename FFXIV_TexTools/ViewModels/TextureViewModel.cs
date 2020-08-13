@@ -350,9 +350,10 @@ namespace FFXIV_TexTools.ViewModels
             }
 
             PartComboboxEnabled = _partCount > 1;
+
             SelectedPartIndex = 0;
 
-            if (_partCount <= 1)
+            if (_partCount == 0)
             {
                 // If there are no parts, we're done.
                 if (LoadingComplete != null)
@@ -522,6 +523,15 @@ namespace FFXIV_TexTools.ViewModels
             else
             {
                 GetMaps();
+            }
+
+            if (_typeCount == 0)
+            {
+                // If there are no parts, we're done.
+                if (LoadingComplete != null)
+                {
+                    LoadingComplete.Invoke(this, null);
+                }
             }
         }
 
