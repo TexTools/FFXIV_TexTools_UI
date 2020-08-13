@@ -1155,16 +1155,15 @@ namespace FFXIV_TexTools
                 try
                 {
                     await problemChecker.BackupIndexFiles(backupsDirectory);
+                    await this.ShowMessageAsync(UIMessages.BackupCompleteTitle, UIMessages.BackupCompleteMessage);
                 }
                 catch(Exception ex)
                 {
-                    FlexibleMessageBox.Show(string.Format(UIMessages.BackupFailedErrorMessage, ex.Message), UIMessages.BackupFailedTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    FlexibleMessageBox.Show(string.Format(UIMessages.BackupFailedErrorMessage, ex.Message), UIMessages.BackupFailedTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 } finally
                 {
                     await UnlockUi();
                 }
-
-                await this.ShowMessageAsync(UIMessages.BackupCompleteTitle, UIMessages.BackupCompleteMessage);
             }
         }
 
