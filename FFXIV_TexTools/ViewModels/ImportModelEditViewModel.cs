@@ -15,9 +15,11 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Input;
+using xivModdingFramework.Cache;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Items;
+using xivModdingFramework.Items.Enums;
 using xivModdingFramework.Items.Interfaces;
 using xivModdingFramework.Models.DataContainers;
 using xivModdingFramework.Models.FileTypes;
@@ -36,7 +38,7 @@ namespace FFXIV_TexTools.ViewModels
         private readonly Regex ImcAttributeRegex = new Regex("^atr_([a-z]{2})_([a-j])$");
 
         private readonly Regex DefaultSkinRegex = new Regex("\\/mt_c[0-9]{4}b0001_a\\.mtrl");
-        private readonly Regex ItemMaterialRegex = new Regex("\\/mt_c([0-9]{4})e[0-9]{4}_[a-z0-9]{3}_([a-z])\\.mtrl");
+        private readonly Regex ItemMaterialRegex = new Regex("\\/mt_c([0-9]{4})[e|a][0-9]{4}_[a-z0-9]{3}_([a-z])+\\.mtrl");
         private const string SkinMaterial = "/mt_c0101b0001_a.mtrl";
         private readonly KeyValuePair<string, string> DefaultTag = new KeyValuePair<string, string>("_!ADDNEW!_", "Add Attributes...");
         private readonly KeyValuePair<string, string> CustomTag = new KeyValuePair<string, string>("_!CUSTOM!_", "Custom");
@@ -47,6 +49,10 @@ namespace FFXIV_TexTools.ViewModels
         private readonly float NewModelSize;
         private const float MinAcceptableSize = 0.5f;
         private const float MaxAcceptableSize = 2f;
+
+        private HashSet<string> RootMaterials = new HashSet<string>();
+
+        private XivDependencyRoot _root;
 
         private TTMeshGroup GetGroup()
         {
@@ -75,6 +81,9 @@ namespace FFXIV_TexTools.ViewModels
             _newModel = newModel;
             _oldModel = oldModel;
 
+
+
+            // Get all the materials available.
 
             // Merge all the default skin materials together, since FFXIV auto-handles them anyways.
             foreach (var m in _newModel.MeshGroups)
@@ -142,14 +151,33 @@ namespace FFXIV_TexTools.ViewModels
 
             OldModelSize = Vector3.Distance(min, max);
 
+
+            AsyncInit();
+        }
+
+        private async Task AsyncInit()
+        {
+            // Get this model's root.
+            _root = await XivCache.GetFirstRoot(_oldModel.Source);
+
+            if (_root != null && _root.Info.PrimaryType != XivItemType.indoor && _root.Info.PrimaryType != XivItemType.outdoor)
+            {
+                // Get all the materials in this root, and add them to the selectable list.
+                
+                var materials = await _root.GetMaterialFiles();
+                foreach (var m in materials)
+                {
+                    var mName = Path.GetFileName(m);
+                    mName = "/" + mName;
+                    RootMaterials.Add(mName);
+                }
+
+                RootMaterials = RootMaterials.OrderBy(x => x).ToHashSet();
+            }
+
             UpdateModelSizeWarning();
-
-
             UpdateMaterialsList();
 
-
-
-            
             _view.MeshNumberBox.SelectionChanged += MeshNumberBox_SelectionChanged;
             _view.PartNumberBox.SelectionChanged += PartNumberBox_SelectionChanged;
             _view.MaterialSelectorBox.SelectionChanged += MaterialSelectorBox_SelectionChanged;
@@ -269,28 +297,48 @@ namespace FFXIV_TexTools.ViewModels
             if (!_view.MaterialsSource.Contains(SkinTag))
             {
                 _view.MaterialsSource.Add(SkinTag);
+
+                // Get our root materials, if we have any
+                foreach(var m in RootMaterials)
+                {
+                    AddMaterial(m);
+                }
             }
 
             // Add in any new item materials.
             foreach (var m in _newModel.MeshGroups)
             {
-                var result = ItemMaterialRegex.Match(m.Material);
-                if (result.Success)
-                {
-                    if (_view.MaterialsSource.Any(x => x.Key == m.Material)) continue;
-
-                    // We have a new item material here that we haven't added to the list yet.
-                    var raceId = result.Groups[1].Value;
-                    var partId = result.Groups[2].Value;
-                    var race = XivRaces.GetXivRace(raceId);
-                    _view.MaterialsSource.Add(new KeyValuePair<string, string>(m.Material, "Material " + partId.ToUpper() + " - " + XivRaces.GetDisplayName(race)));
-
-                }
+                AddMaterial(m.Material);
             }
 
             // Re-Add the custom tag.
             _view.MaterialsSource.Add(CustomTag);
         }
+
+        private void AddMaterial(string m)
+        {
+            if (_view.MaterialsSource.Any(x => x.Key == m)) return;
+
+            var result = ItemMaterialRegex.Match(m);
+            if (result.Success
+                // This check is a little janky, but it's to avoid reading cross-slot references as the same item.
+                // ... Not that this should ever really happen, but it's *technically* possible.
+                && (_root.Info.Slot == null || m.Contains(_root.Info.Slot)))
+            {
+                // We have a new item material here that we haven't added to the list yet.
+                var raceId = result.Groups[1].Value;
+                var partId = result.Groups[2].Value;
+                var race = XivRaces.GetXivRace(raceId);
+                _view.MaterialsSource.Add(new KeyValuePair<string, string>(m, "Material " + partId.ToUpper() + " - " + XivRaces.GetDisplayName(race)));
+            }
+            else
+            {
+                _view.MaterialsSource.Add(new KeyValuePair<string, string>(m, Path.GetFileNameWithoutExtension(m)));
+            }
+
+        }
+
+        private static Regex _getRaceRegex = new Regex("c([0-9]{4})");
 
         // Repopulates the list box showing what attributes are available to add.
         private void ResetAvailableAttributesList()
@@ -300,8 +348,58 @@ namespace FFXIV_TexTools.ViewModels
 
             _view.AllAttributesSource.Add(DefaultTag);
 
+            // Get all standard attributes for this root.
+            HashSet<string> atrList = new HashSet<string>();
+            if(_root != null)
+            {
+                if(_root.Info.Slot != null && AttributesBySlot.ContainsKey(_root.Info.Slot))
+                {
+                    var slotAttributes = AttributesBySlot[_root.Info.Slot];
+                    slotAttributes.ForEach(x => atrList.Add(x));
+                }
+
+                if(AttributesByType.ContainsKey(_root.Info.PrimaryType))
+                {
+                    AttributesByType[_root.Info.PrimaryType].ForEach(x => atrList.Add(x));
+                }
+
+                if (_root.Info.PrimaryType == XivItemType.human && (_root.Info.SecondaryType == XivItemType.hair || _root.Info.SecondaryType == XivItemType.face))
+                {
+                    // Hair & Face has some special attributes that are only available for Miqo'te.
+                    var match = _getRaceRegex.Match(_oldModel.Source);
+                    if(match.Success == true && 
+                        (match.Groups[1].Value.StartsWith("08")
+                        || match.Groups[1].Value.StartsWith("07")))
+                    {
+                        // This is a Miqote (PC/NPC) (M/F) Hair or Face model.
+                        atrList.Add("atr_top");
+
+                        if (_root.Info.SecondaryType == XivItemType.hair)
+                        {
+                            atrList.Add("atr_sta");
+                        }
+                    }
+
+                    // Au Ra F has some special handling for faces.
+                    if (match.Success == true && match.Groups[1].Value.StartsWith("14") && _root.Info.SecondaryType == XivItemType.face)
+                    {
+                        // This is a weird Au Ra F thing.
+                        atrList.Add("atr_hair");
+                    }
+
+                }
+            }
+
             var attributes = new List<KeyValuePair<string, string>>(_newModel.Attributes.Count);
             foreach (var a in _newModel.Attributes)
+            {
+                // Add any attributes in the model that we didn't already pick up.
+                if (!atrList.Contains(a)) {
+                    atrList.Add(a);
+                }
+            }
+
+            foreach(var a in atrList)
             {
                 var r = _view.AllAttributesSource.FirstOrDefault(x => x.Key == a);
                 if (r.Key == null)
@@ -311,7 +409,7 @@ namespace FFXIV_TexTools.ViewModels
             }
             
             // Sort the attributes by their nice name before adding them.
-            attributes = attributes.OrderBy(x => x.Value).ToList();
+            //attributes = attributes.OrderBy(x => x.Value).ToList();
             foreach(var kv in attributes)
             {
                 _view.AllAttributesSource.Add(kv);
@@ -596,7 +694,6 @@ namespace FFXIV_TexTools.ViewModels
         private static readonly Dictionary<string, string> NiceAttributeNames = new Dictionary<string, string>()
         {
 
-            { "atr_hair","Hair" },
             { "atr_kam", "Scalp" },
             { "atr_hig", "Facial Hair" },
             { "atr_mim", "Ear" },
@@ -605,7 +702,9 @@ namespace FFXIV_TexTools.ViewModels
 
             // Used in weapons
             { "atr_arrow", "Arrow" },
-            { "atr_ar0", "Quiver Arrow" },
+            { "atr_ar1", "Quiver Arrow 1" },
+            { "atr_ar2", "Quiver Arrow 2" },
+            { "atr_ar3", "Quiver Arrow 3" },
             { "atr_attach", "Gauss Barrel" },
 
             // Used in Body gear
@@ -635,15 +734,18 @@ namespace FFXIV_TexTools.ViewModels
             { "atr_tls", "Tail Races Only" },
 
             // Unknown/unverified
-            { "atr_top", "Body" },
-            { "atr_sta", null },
+            
+            { "atr_blt", "Belt" },
+            { "atr_top", "Miqo'te Ears" },
+            { "atr_sta", "Miqo'te Long Hair Unique" },
+            { "atr_hair","Au Ra F Face Unique" },
 
             // IMC Attributes are handled below in GetNiceAttributeName()
         };
 
         private static readonly Dictionary<string, string> NiceImcAttributeNames = new Dictionary<string, string>()
         {
-            { "bv", "Weapon" },
+            { "bv", "Other" },
             { "dv", XivStrings.Legs },
             { "mv", XivStrings.Head },
             { "gv", XivStrings.Hands},
@@ -651,8 +753,119 @@ namespace FFXIV_TexTools.ViewModels
             { "tv", XivStrings.Body },
             { "fv", XivStrings.Face },
             { "hv", XivStrings.Hair },
-            { "nv", null },
+            { "ev", XivStrings.Earring },
+            { "nv", XivStrings.Neck },
+            { "wv", XivStrings.Wrists },
+            { "rv", XivStrings.Rings },
         };
+
+
+
+        private static readonly Dictionary<XivItemType, List<string>> AttributesByType = new Dictionary<XivItemType, List<string>>()
+        {
+            { XivItemType.weapon, new List<string> () {
+                "atr_arrow",
+                "atr_ar1",
+                "atr_ar2",
+                "atr_ar3",
+                "atr_attach",
+                "atr_bv_a",
+                "atr_bv_b",
+                "atr_bv_c",
+            } },
+            { XivItemType.monster, new List<string> () {
+                "atr_bv_a",
+                "atr_bv_b",
+                "atr_bv_c",
+            } },
+            { XivItemType.demihuman, new List<string> () {
+                "atr_bv_a",
+                "atr_bv_b",
+                "atr_bv_c",
+            } }
+        };
+
+        private static readonly Dictionary<string, List<string>> AttributesBySlot = new Dictionary<string, List<string>>()
+        {
+            { "met", new List<string> () {
+                "atr_inr",
+                "atr_mv_a",
+                "atr_mv_b",
+                "atr_mv_c",
+            } },
+            { "top", new List<string> () {
+                "atr_hij",
+                "atr_nek",
+                "atr_ude",
+                "atr_tlh",
+                "atr_tls",
+                "atr_tv_a",
+                "atr_tv_b",
+                "atr_tv_c",
+            } },
+            { "glv", new List<string> () {
+                "atr_arm",
+                "atr_gv_a",
+                "atr_gv_b",
+                "atr_gv_c",
+            } },
+            { "dwn", new List<string> () {
+                "atr_hiz",
+                "atr_kod",
+                "atr_sne",
+                "atr_dv_a",
+                "atr_dv_b",
+                "atr_dv_c",
+            } },
+            { "sho", new List<string> () {
+                "atr_leg",
+                "atr_spd",
+                "atr_sv_a",
+                "atr_sv_b",
+                "atr_sv_c",
+            } },
+            { "ear", new List<string> () {
+                "atr_ev_a",
+                "atr_ev_b",
+                "atr_ev_c",
+            } },
+            { "nek", new List<string> () {
+                "atr_nv_a",
+                "atr_nv_b",
+                "atr_nv_c",
+            } },
+            { "wrs", new List<string> () {
+                "atr_wv_a",
+                "atr_wv_b",
+                "atr_wv_c",
+            } },
+            { "rir", new List<string> () {
+                "atr_rv_a",
+                "atr_rv_b",
+                "atr_rv_c",
+            } },
+            { "ril", new List<string> () {
+                "atr_rv_a",
+                "atr_rv_b",
+                "atr_rv_c",
+            } },
+            { "fac", new List<string> () {
+                "atr_hig",
+                "atr_hrn",
+                "atr_kao",
+                "atr_mim",
+                "atr_fv_a",
+                "atr_fv_b",
+                "atr_fv_c",
+            } },
+            { "hir", new List<string> () {
+                "atr_kam",
+                "atr_hv_a",
+                "atr_hv_b",
+                "atr_hv_c",
+            } },
+        };
+
         /// <summary>
         /// The list of nice, human readable attribute names, keyed by their underlying FFXIV name.
         /// </summary>
@@ -661,12 +874,12 @@ namespace FFXIV_TexTools.ViewModels
         {
             // This is mostly a copy of the atr list, but sometimes the names change,
             // so it's listed as a separate dictionary.
-            { "shp_hair","Hair" },
             { "shp_kam", "Scalp" },
             { "shp_hig", "Facial Hair" },
             { "shp_mim", "Ear" },
             { "shp_hrn", "Horn" },
             { "shp_kao", "Face" },
+
 
             // Used in weapons
             { "shp_arrow", "Arrow" },
@@ -677,6 +890,7 @@ namespace FFXIV_TexTools.ViewModels
             { "shp_hij", "Wrist" },
             { "shp_ude", "Elbow" },
             { "shp_nek", "Neck" },
+            { "shp_blt", "Belt" },
 
             // Used in Leg gear
             { "shp_kod", "Waist" },
@@ -700,8 +914,9 @@ namespace FFXIV_TexTools.ViewModels
             { "shp_tls", "Tail Races Only" },
 
             // Unknown/unverified
-            { "shp_top", "Body" },
-            { "shp_sta", null },
+            { "shp_top", "Miqo'te Ears" },
+            { "shp_sta", "Miqo'te Hair Unique" },
+            { "shp_hair", "Au Ra F Face Unique" },
 
             // Face stuff.
             // Was it the smartest idea to do these by hand?  Probably not.
