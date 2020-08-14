@@ -364,6 +364,9 @@ namespace FFXIV_TexTools.ViewModels
                     variant = Int32.Parse(match.Groups[1].Value);
                 }
 
+                // Don't create materials for set 0.  (SE sets the material ID to 0 when that particular set-slot doesn't actually exist as an item)
+                if (variant == 0) continue;
+
                 // Only modify each Variant once.
                 if (modifiedVariants.Contains(variant))
                 {

@@ -1269,6 +1269,10 @@ namespace FFXIV_TexTools
             {
                 await Task.Run(async () =>
                 {
+                    var tempDir = Path.GetTempPath();
+                    tempDir += "/index_backup";
+                    Directory.CreateDirectory(tempDir);
+
                     _lockProgress.Report("Downloading Indexes...");
                     var localPath = Path.GetTempFileName();
                     using (var client = new WebClient())
@@ -1276,16 +1280,13 @@ namespace FFXIV_TexTools
                         client.DownloadFile(url, localPath);
                     }
 
-                    var tempDir = Path.GetTempPath();
-                    tempDir += "/index_backup";
+
                     var tempDi = new DirectoryInfo(tempDir);
                     foreach (FileInfo file in tempDi.GetFiles())
                     {
                         file.Delete();
                     }
 
-
-                    Directory.CreateDirectory(tempDir);
 
                     _lockProgress.Report("Unzipping new Indexes...");
                     ZipFile.ExtractToDirectory(localPath, tempDir);

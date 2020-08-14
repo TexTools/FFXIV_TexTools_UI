@@ -139,7 +139,8 @@ namespace FFXIV_TexTools.Views
             }
             else
             {
-                foreach (ModListViewModel.ModListModel selectedModItem in ModItemList.SelectedItems)
+                var items = ModItemList.SelectedItems;
+                foreach (ModListViewModel.ModListModel selectedModItem in items)
                 {
                     if (selectedModItem.ModItem.enabled)
                     {
