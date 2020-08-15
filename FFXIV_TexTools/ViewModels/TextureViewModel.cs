@@ -1112,6 +1112,11 @@ namespace FFXIV_TexTools.ViewModels
                 }
 
                 ModToggleText = UIStrings.Disable;
+            } else
+            {
+
+                ModStatusToggleEnabled = false;
+                ModToggleText = UIStrings.Enable;
             }
 
             ExportEnabled = true;
