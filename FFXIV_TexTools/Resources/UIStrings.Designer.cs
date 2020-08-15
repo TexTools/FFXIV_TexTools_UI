@@ -2654,6 +2654,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to TexTools model displays are only an approximation, and may not be 100% accurate to in-game visuals..
+        /// </summary>
+        public static string Viewport_Disclaimer {
+            get {
+                return ResourceManager.GetString("Viewport_Disclaimer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Visit Website.
         /// </summary>
         public static string Visit_Website {

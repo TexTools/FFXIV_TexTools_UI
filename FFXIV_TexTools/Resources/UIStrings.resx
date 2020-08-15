@@ -997,4 +997,7 @@ If you would like to enable this, first import a texture for the selected item.<
   <data name="Index_Backups_Url" xml:space="preserve">
     <value>https://textools.sfo2.digitaloceanspaces.com/Index_Backups.zip</value>
   </data>
+  <data name="Viewport_Disclaimer" xml:space="preserve">
+    <value>TexTools model displays are only an approximation, and may not be 100% accurate to in-game visuals.</value>
+  </data>
 </root>
