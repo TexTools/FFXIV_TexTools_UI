@@ -254,7 +254,11 @@ namespace FFXIV_TexTools.ViewModels
             options.ClearVColor = _view.ClearVColorButton.IsChecked == true ? true : false;
             options.AutoScale = _view.AutoScaleButton.IsChecked == true ? true : false;
 
-            var selectedRace = (XivRace)_view.RaceComboBox.SelectedValue;
+            var selectedRace = XivRace.All_Races;
+            if (_view.RaceComboBox.SelectedValue != null) {
+                selectedRace = (XivRace)_view.RaceComboBox.SelectedValue;
+            }
+
             if(selectedRace != XivRace.All_Races && selectedRace != _race)
             {
                 options.SourceRace = selectedRace;
