@@ -16,6 +16,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using xivModdingFramework.Cache;
 using xivModdingFramework.General.Enums;
+using xivModdingFramework.Items.Enums;
 using xivModdingFramework.Items.Interfaces;
 using xivModdingFramework.SqPack.FileTypes;
 using xivModdingFramework.Variants.FileTypes;
@@ -121,7 +122,17 @@ namespace FFXIV_TexTools.Views
                         children = await root.GetMaterialFiles(entry.Variant);
                     } catch
                     {
-                        children = await root.GetMaterialFiles(0);
+                        if(root.Info.SecondaryType == XivItemType.hair
+                            || root.Info.SecondaryType == XivItemType.tail
+                            || (root.Info.PrimaryType == XivItemType.human && root.Info.SecondaryType == XivItemType.body))
+                        {
+                            // These types don't have IMC entries, but have a material variant number.
+                            // Kind of weird, but whatever.
+                            children = await root.GetMaterialFiles(1);
+                        } else
+                        {
+                            children = await root.GetMaterialFiles(0);
+                        }
                     }
                 }
                 else if (_level == XivDependencyLevel.Texture)
@@ -134,7 +145,18 @@ namespace FFXIV_TexTools.Views
                     }
                     catch
                     {
-                        children = await root.GetTextureFiles(0);
+                        if (root.Info.SecondaryType == XivItemType.hair
+                            || root.Info.SecondaryType == XivItemType.tail
+                            || (root.Info.PrimaryType == XivItemType.human && root.Info.SecondaryType == XivItemType.body))
+                        {
+                            // These types don't have IMC entries, but have a material variant number.
+                            // Kind of weird, but whatever.
+                            children = await root.GetTextureFiles(1);
+                        }
+                        else
+                        {
+                            children = await root.GetTextureFiles(0);
+                        }
                     }
                 }
                 else

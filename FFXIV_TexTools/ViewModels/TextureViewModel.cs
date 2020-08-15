@@ -1090,23 +1090,28 @@ namespace FFXIV_TexTools.ViewModels
                 TextureDimensions = "4 x 16";
             }
 
-            var modStatus = await _modList.IsModEnabled(PathString, false);
+            var mod = await _modList.TryGetModEntry(PathString);
 
-            switch (modStatus)
+
+
+            if (mod != null && !mod.enabled)
             {
-                case XivModStatus.Enabled:
-                    ModStatusToggleEnabled = true;
-                    ModToggleText = UIStrings.Disable;
-                    break;
-                case XivModStatus.Disabled:
-                    ModStatusToggleEnabled = true;
-                    ModToggleText = UIStrings.Enable;
-                    break;
-                case XivModStatus.Original:
-                default:
+                ModStatusToggleEnabled = true;
+                ModToggleText = UIStrings.Enable;
+
+            } else if(mod != null)
+            {
+                if(mod.data.modOffset == mod.data.originalOffset)
+                {
+                    // This is a file addition material or texture.
+                    // Don't let them disable it via this menu, because it'll blow the UI the fuck up.
                     ModStatusToggleEnabled = false;
-                    ModToggleText = UIStrings.Enable_Disable;
-                    break;
+                } else
+                {
+                    ModStatusToggleEnabled = true;
+                }
+
+                ModToggleText = UIStrings.Disable;
             }
 
             ExportEnabled = true;
@@ -2109,6 +2114,13 @@ namespace FFXIV_TexTools.ViewModels
         }
         private bool CheckMapIsOK()
         {
+            if(SelectedMap == null)
+            {
+                // We shouldn't really ever get here, but if we do, it's definitely f*d.
+                TextureFormat = "ERROR: FILE DOES NOT EXIST/HAS NO INDEX ENTRY -- PLEASE RE-ENABLE MODDED TEXTURE, OR DISABLE MODDED MATERIAL REFERENCING IT.";
+                return false;
+            }
+
             var path = SelectedMap.TexType.Path;
             var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
             var index = new Index(gameDirectory);

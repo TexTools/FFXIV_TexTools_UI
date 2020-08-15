@@ -38,6 +38,7 @@ using System.Windows.Forms;
 using System.Windows.Interop;
 using System.Windows.Threading;
 using xivModdingFramework.Cache;
+using xivModdingFramework.Exd.FileTypes;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Items.Categories;
@@ -295,6 +296,16 @@ namespace FFXIV_TexTools
                 } catch(Exception ex)
                 {
                     cacheOK = false;
+                    if(ex.GetType() == typeof(AggregateException))
+                    {
+                        var x = (AggregateException)ex;
+                        var bas = x.GetBaseException();
+                        if(bas != null)
+                        {
+                            ex = bas;
+                        }
+
+                    }
                     FlexibleMessageBox.Show("An error occurred while attempting to rebuild the cache.\n" + ex.Message, "Cache Rebuild Error.", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
                 }
 
