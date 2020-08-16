@@ -7,7 +7,7 @@
         xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
         mc:Ignorable="d"
-        Title="{Binding Source={x:Static resx:UIStrings.Problem_Checker}}" Height="450" Width="400" WindowStartupLocation="CenterOwner" ShowMaxRestoreButton="False" ShowMinButton="False" Closing="MetroWindow_Closing">
+        Title="{Binding Source={x:Static resx:UIStrings.Problem_Checker}}" Height="550" Width="600" WindowStartupLocation="CenterOwner" ShowMaxRestoreButton="False" ShowMinButton="False" Closing="MetroWindow_Closing">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition/>

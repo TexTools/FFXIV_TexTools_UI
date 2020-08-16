@@ -36,6 +36,7 @@ using xivModdingFramework.SqPack.FileTypes;
 using Application = System.Windows.Application;
 using xivModdingFramework.Cache;
 using xivModdingFramework.Mods;
+using System.Runtime.CompilerServices;
 
 namespace FFXIV_TexTools.Views
 {
@@ -244,10 +245,10 @@ namespace FFXIV_TexTools.Views
             var modListDirectory =
                 new DirectoryInfo(Path.Combine(_gameDirectory.Parent.Parent.FullName, XivStrings.ModlistFilePath));
             var modList = new ModList();
+            var modding = new Modding(_gameDirectory);
 
             try
             {
-                var modding = new Modding(_gameDirectory);
                 modList = modding.GetModList();
 
                 // Someone somehow had their entire modlist filled with 0's causing the deserealization to 
@@ -284,6 +285,7 @@ namespace FFXIV_TexTools.Views
             }
 
             var dat = new Dat(_gameDirectory);
+            var index = new Index(_gameDirectory);
 
             // Filter out empty entries in the mod list
             modList.Mods.RemoveAll(mod => mod.name.Equals(string.Empty));
@@ -294,8 +296,10 @@ namespace FFXIV_TexTools.Views
                 {
                     var modNum = 0;
 
-                    Parallel.ForEach(modList.Mods, (mod) =>
+                    
+                    Parallel.ForEach(modList.Mods, async (mod) =>
                     {
+                        bool index2CorrectionNeeded = false;
                         if (cts.IsCancellationRequested)
                         {
                             cts.Token.ThrowIfCancellationRequested();
@@ -305,6 +309,18 @@ namespace FFXIV_TexTools.Views
                         lock (checkModsLock)
                         {
                             progress.Report((++modNum, modList.Mods.Count));
+                        }
+
+                        long index1Offset = 0; 
+                        long index2Offset = 0;
+
+                        try
+                        {
+                            index1Offset = await index.GetDataOffset(mod.fullPath);
+                            index2Offset = await index.GetDataOffsetIndex2(mod.fullPath);
+                        } catch
+                        {
+                            // Uh, fuck.
                         }
 
                         var fileName = Path.GetFileName(mod.fullPath);
@@ -319,19 +335,24 @@ namespace FFXIV_TexTools.Views
                             tabs = "\t\t";
                         }
 
+                        bool purgeMod = false;
+
                         lock (addTextLock)
                         {
                             Dispatcher.Invoke(() => AddText($"\t{fileName}{tabs}", textColor));
 
-                            if (mod.data.originalOffset == 0)
+                            if (mod.data.originalOffset <= 0)
                             {
                                 Dispatcher.Invoke(() => AddText("\t\u2716\n", "Red"));
                                 Dispatcher.Invoke(() => AddText($"\t{UIStrings.ProblemCheck_OriginalZero} \n", "Red"));
+                                Dispatcher.Invoke(() => AddText($"\tUnrecoverable ModList state.  Please use [Download Index Backups] =>  [Start Over].\n", "Red"));
                             }
-                            else if (mod.data.modOffset == 0)
+                            else if (mod.data.modOffset <= 0)
                             {
                                 Dispatcher.Invoke(() => AddText("\t\u2716\n", "Red"));
                                 Dispatcher.Invoke(() => AddText($"\t{UIStrings.ProblemCheck_ModZero}\n", "Red"));
+                                Dispatcher.Invoke(() => AddText($"\tThe mod will be disabled, deleted, and the mod slot will be purged from the ModList.\n", "Red"));
+                                purgeMod = true;
                             }
                             else
                             {
@@ -358,10 +379,49 @@ namespace FFXIV_TexTools.Views
                             }
                             else
                             {
+                                Dispatcher.Invoke(() => AddText("\t\u2714", "Green"));
+                            }
+
+                            // If the file exists in both indexes, but has a DIFFERENT index in index2...
+                            if(index1Offset != index2Offset && index2Offset != 0)
+                            {
+
+                                Dispatcher.Invoke(() => AddText("\t\u2716\n", "Orange"));
+                                Dispatcher.Invoke(() => AddText($"Index 1/2 Mismatch: Index 2 entry will be updated to match Index 1.\n", "Orange"));
+
+                            } else
+                            {
                                 Dispatcher.Invoke(() => AddText("\t\u2714\n", "Green"));
                             }
 
+
                             Dispatcher.Invoke(() => cfpTextBox.ScrollToEnd());
+                        }
+
+                        if (index2CorrectionNeeded)
+                        {
+                            await index.UpdateDataOffset(index1Offset, mod.fullPath, false);
+                        }
+
+                        if (purgeMod)
+                        {
+                            // Attempt to disable the mod.
+                            try
+                            {
+                                // Disable the mod first.
+                                await modding.ToggleModStatus(mod.fullPath, false);
+
+                                // Then delete the mod entry.  This will purge the frame as well if the offset is invalid.
+                                await modding.DeleteMod(mod.fullPath);
+                            }
+                            catch
+                            {
+                                lock (addTextLock)
+                                {
+                                    Dispatcher.Invoke(() => AddText($"Critical Error: Unable to Disable or Delete Mod: {mod.fullPath}\n\tPlease use [Download Index Backups] =>  [Start Over]", "Red"));
+
+                                }
+                            }
                         }
                     });
                 }
