@@ -344,14 +344,13 @@ namespace FFXIV_TexTools.Views
                             if (mod.data.originalOffset <= 0)
                             {
                                 Dispatcher.Invoke(() => AddText("\t\u2716\n", "Red"));
-                                Dispatcher.Invoke(() => AddText($"\t{UIStrings.ProblemCheck_OriginalZero} \n", "Red"));
-                                Dispatcher.Invoke(() => AddText($"\tUnrecoverable ModList state.  Please use [Download Index Backups] =>  [Start Over].\n", "Red"));
+                                //Dispatcher.Invoke(() => AddText($"\t{UIStrings.ProblemCheck_OriginalZero} \n", "Red"));
+                                Dispatcher.Invoke(() => AddText($"\tOriginal FFXIV Offset is Invalid.  Unrecoverable ModList state.\n\t Please use [Download Index Backups] =>  [Start Over].\n", "Red"));
                             }
                             else if (mod.data.modOffset <= 0)
                             {
                                 Dispatcher.Invoke(() => AddText("\t\u2716\n", "Red"));
-                                Dispatcher.Invoke(() => AddText($"\t{UIStrings.ProblemCheck_ModZero}\n", "Red"));
-                                Dispatcher.Invoke(() => AddText($"\tThe mod will be disabled, deleted, and the mod slot will be purged from the ModList.\n", "Red"));
+                                Dispatcher.Invoke(() => AddText($"\tMod Data Offset is invalid.  Mod will be disabled, deleted, and the mod slot will be purged from the ModList.\n", "Red"));
                                 purgeMod = true;
                             }
                             else
