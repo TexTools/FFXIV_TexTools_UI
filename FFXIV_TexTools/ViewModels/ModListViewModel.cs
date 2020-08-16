@@ -631,7 +631,7 @@ namespace FFXIV_TexTools.ViewModels
                             {
                                 var dxVersion = int.Parse(Properties.Settings.Default.DX_Version);
 
-                                var offset = modItem.enabled ? modItem.data.modOffset : modItem.data.originalOffset;
+                                long offset = modItem.enabled ? modItem.data.modOffset : modItem.data.originalOffset;
 
                                 try
                                 {
