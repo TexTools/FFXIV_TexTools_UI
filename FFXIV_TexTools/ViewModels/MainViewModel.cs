@@ -520,10 +520,19 @@ namespace FFXIV_TexTools.ViewModels
 
                     try
                     {
+                        int dxVersion = 0;
+                        bool success = Int32.TryParse(Settings.Default.DX_Version, out dxVersion);
+                        if(!success)
+                        {
+                            dxVersion = 11;
+                        }
+
                         // Need to initialize the cache here before doing the mod toggle.
                         var gameDir = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
                         var lang = XivLanguages.GetXivLanguage(Properties.Settings.Default.Application_Language);
-                        XivCache.SetGameInfo(gameDir, lang, true);
+
+                        // Don't bother starting the cache worker though in import only mode.  It'll just get shut right off again anyways.
+                        XivCache.SetGameInfo(gameDir, lang, dxVersion, true, false);
                         
                         await modding.ToggleAllMods(false);
                     }
@@ -653,15 +662,18 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         private void SetDXVersion(object obj)
         {
+            var gi = XivCache.GameInfo;
             if (DXVersionText.Contains("11"))
             {
                 Properties.Settings.Default.DX_Version = "9";
                 Properties.Settings.Default.Save();
+                XivCache.SetGameInfo(gi.GameDirectory, gi.GameLanguage, 9);
             }
             else
             {
                 Properties.Settings.Default.DX_Version = "11";
                 Properties.Settings.Default.Save();
+                XivCache.SetGameInfo(gi.GameDirectory, gi.GameLanguage, 11);
             }
 
             DXVersionText = $"DX: {Properties.Settings.Default.DX_Version}";

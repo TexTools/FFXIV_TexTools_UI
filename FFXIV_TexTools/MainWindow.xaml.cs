@@ -202,10 +202,17 @@ namespace FFXIV_TexTools
 
             if (args != null && args.Length > 0)
             {
+                int dxVersion = 0;
+                bool success = Int32.TryParse(Settings.Default.DX_Version, out dxVersion);
+                if (!success)
+                {
+                    dxVersion = 11;
+                }
+
                 // Just do a hard synchronous cache initialization for import only mode.
                 var gameDir = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
                 var lang = XivLanguages.GetXivLanguage(Properties.Settings.Default.Application_Language);
-                XivCache.SetGameInfo(gameDir, lang);
+                XivCache.SetGameInfo(gameDir, lang, dxVersion);
 
                 _startupArgs = args[0];
                 OnlyImport();
@@ -292,7 +299,14 @@ namespace FFXIV_TexTools
                 try
                 {
                     // If the cache needs to be rebuilt, this will synchronously block until it is done.
-                    XivCache.SetGameInfo(gameDir, lang);
+                    int dxVersion = 0;
+                    bool success = Int32.TryParse(Settings.Default.DX_Version, out dxVersion);
+                    if (!success)
+                    {
+                        dxVersion = 11;
+                    }
+
+                    XivCache.SetGameInfo(gameDir, lang, dxVersion);
                 } catch(Exception ex)
                 {
                     cacheOK = false;
