@@ -38,6 +38,7 @@ namespace FFXIV_TexTools.ViewModels
         private string _internalPath;
         private string _submeshId;
         private System.Timers.Timer _closeTimer;
+        private bool _anyWarnings = false;
 
 
         private bool _success = false;
@@ -222,6 +223,7 @@ namespace FFXIV_TexTools.ViewModels
         {
 
             string path = null;
+            _anyWarnings = false;
             if (_view.FileNameTextBox.Text != null && _view.FileNameTextBox.Text.Trim() != "") 
             {
                 try
@@ -288,7 +290,7 @@ namespace FFXIV_TexTools.ViewModels
                    {
                        if (ex.Message != "cancel")
                        {
-
+                           _anyWarnings = true;
                            WriteToLog("> [ERROR] " + ex.Message, Brushes.DarkRed);
                            FlexibleMessageBox.Show("An error occurred during import:\n" + ex.Message + "\n\nThe import has been cancelled.", "Import Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                        }
@@ -353,6 +355,7 @@ namespace FFXIV_TexTools.ViewModels
            {
                if (isWarning)
                {
+                   _anyWarnings = true;
                    WriteToLog("> [WARN] " + message, Brushes.DarkGoldenrod);
                }
                else
@@ -378,11 +381,18 @@ namespace FFXIV_TexTools.ViewModels
 
                 _view.EnableClose();
 
-                _closeTimer = new System.Timers.Timer(CloseDelay);
-                _closeTimer.Elapsed += _closeTimer_Elapsed;
-                _closeTimer.Start();
-                _view.KeyDown += _view_KeyDown;
-                WriteToLog("> [INFO] This window will automatically close in 3 seconds... (ESC to cancel)", Brushes.Black);
+                if (!_anyWarnings)
+                {
+                    _closeTimer = new System.Timers.Timer(CloseDelay);
+                    _closeTimer.Elapsed += _closeTimer_Elapsed;
+                    _closeTimer.Start();
+                    _view.KeyDown += _view_KeyDown;
+                    WriteToLog("> [INFO] This window will automatically close in 3 seconds... (ESC to cancel)", Brushes.Black);
+                } else
+                {
+                    WriteToLog("> [INFO] At Least one warning or error occurred during import.  Window will remain open until manually closed.", Brushes.Black);
+
+                }
 
                 // If we have a callback function, trigger it, that way we can do model refreshes/etc. 
                 // while the user is still looking at the log and feeling good about stuff.
