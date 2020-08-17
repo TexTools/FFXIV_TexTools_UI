@@ -396,6 +396,8 @@ namespace FFXIV_TexTools.Views
                                     Dispatcher.Invoke(() => AddText("\t\u2716\n", "Red"));
                                     Dispatcher.Invoke(() =>
                                         AddText($"\t{string.Format(UIStrings.ProblemCheck_UnkType, fileType)} [{mod.data.modOffset}, {((mod.data.modOffset / 8) & 0x0F) / 2}]\n", "Red"));
+                                    Dispatcher.Invoke(() => AddText($"\tThe Mod will automatically be disabled and deleted.\n", "Red"));
+                                    purgeMod = true;
                                 }
                                 else
                                 {
