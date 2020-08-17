@@ -37,6 +37,7 @@ using Application = System.Windows.Application;
 using xivModdingFramework.Cache;
 using xivModdingFramework.Mods;
 using System.Runtime.CompilerServices;
+using System.Linq;
 
 namespace FFXIV_TexTools.Views
 {
@@ -290,13 +291,20 @@ namespace FFXIV_TexTools.Views
             // Filter out empty entries in the mod list
             modList.Mods.RemoveAll(mod => mod.name.Equals(string.Empty));
 
-            return Task.Run(() =>
+            return Task.Run(async () =>
             {
                 if (modList.modCount > 0)
                 {
                     var modNum = 0;
 
+                    var files = modList.Mods.Select(x => x.fullPath).ToList();
+
                     
+                    var index1Offsets = await index.GetDataOffsets(files);
+                    var index2Offsets = await index.GetDataOffsetsIndex2(files);
+
+
+
                     Parallel.ForEach(modList.Mods, (mod) =>
                     {
                         Task.Run(async () =>
@@ -316,14 +324,14 @@ namespace FFXIV_TexTools.Views
                             long index1Offset = 0;
                             long index2Offset = 0;
 
-                            try
+                            if(index1Offsets.ContainsKey(mod.fullPath))
                             {
-                                index1Offset = await index.GetDataOffset(mod.fullPath);
-                                index2Offset = await index.GetDataOffsetIndex2(mod.fullPath);
+                                index1Offset = index1Offsets[mod.fullPath];
                             }
-                            catch
+
+                            if (index2Offsets.ContainsKey(mod.fullPath))
                             {
-                                // Uh, fuck.
+                                index2Offset = index2Offsets[mod.fullPath];
                             }
 
                             var fileName = Path.GetFileName(mod.fullPath);
