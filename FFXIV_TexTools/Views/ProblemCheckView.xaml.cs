@@ -297,139 +297,145 @@ namespace FFXIV_TexTools.Views
                     var modNum = 0;
 
                     
-                    Parallel.ForEach(modList.Mods, async (mod) =>
+                    Parallel.ForEach(modList.Mods, (mod) =>
                     {
-                        bool index2CorrectionNeeded = false;
-                        if (cts.IsCancellationRequested)
+                        Task.Run(async () =>
                         {
-                            cts.Token.ThrowIfCancellationRequested();
-                            return;
-                        }
-
-                        lock (checkModsLock)
-                        {
-                            progress.Report((++modNum, modList.Mods.Count));
-                        }
-
-                        long index1Offset = 0; 
-                        long index2Offset = 0;
-
-                        try
-                        {
-                            index1Offset = await index.GetDataOffset(mod.fullPath);
-                            index2Offset = await index.GetDataOffsetIndex2(mod.fullPath);
-                        } catch
-                        {
-                            // Uh, fuck.
-                        }
-
-                        var fileName = Path.GetFileName(mod.fullPath);
-
-                        var tabs = "";
-                        if (fileName.Length < 21 && fileName.Length > 12)
-                        {
-                            tabs = "\t";
-                        }
-                        else if (fileName.Length < 12)
-                        {
-                            tabs = "\t\t";
-                        }
-
-                        bool purgeMod = false;
-
-                        lock (addTextLock)
-                        {
-                            Dispatcher.Invoke(() => AddText($"\t{fileName}{tabs}", textColor));
-
-                            if (mod.data.originalOffset <= 0)
+                            bool index2CorrectionNeeded = false;
+                            if (cts.IsCancellationRequested)
                             {
-                                Dispatcher.Invoke(() => AddText("\t\u2716\n", "Red"));
-                                //Dispatcher.Invoke(() => AddText($"\t{UIStrings.ProblemCheck_OriginalZero} \n", "Red"));
-                                Dispatcher.Invoke(() => AddText($"\tOriginal FFXIV Offset is Invalid.  Unrecoverable ModList state.\n\t Please use [Download Index Backups] =>  [Start Over].\n", "Red"));
-                            }
-                            else if (mod.data.modOffset <= 0)
-                            {
-                                Dispatcher.Invoke(() => AddText("\t\u2716\n", "Red"));
-                                Dispatcher.Invoke(() => AddText($"\tMod Data Offset is invalid. \n\t The Mod will be disabled, deleted, and the mod slot will be purged from the ModList.\n", "Red"));
-                                purgeMod = true;
-                            }
-                            else
-                            {
-                                Dispatcher.Invoke(() => AddText("\t\u2714", "Green"));
+                                cts.Token.ThrowIfCancellationRequested();
+                                return;
                             }
 
-                            var fileType = 0;
+                            lock (checkModsLock)
+                            {
+                                progress.Report((++modNum, modList.Mods.Count));
+                            }
+
+                            long index1Offset = 0;
+                            long index2Offset = 0;
+
                             try
                             {
-                                fileType = dat.GetFileType(mod.data.modOffset,
-                                    XivDataFiles.GetXivDataFile(mod.datFile));
-                            }
-                            catch (Exception ex)
-                            {
-                                Dispatcher.Invoke(() => AddText("\t\u2716\n", "Red"));
-                                Dispatcher.Invoke(() => AddText($"\tError: {ex.Message}\n", "Red"));
-                            }
-
-                            if (fileType != 2 && fileType != 3 && fileType != 4)
-                            {
-                                Dispatcher.Invoke(() => AddText("\t\u2716\n", "Red"));
-                                Dispatcher.Invoke(() =>
-                                    AddText($"\t{string.Format(UIStrings.ProblemCheck_UnkType, fileType)} [{mod.data.modOffset}, {((mod.data.modOffset / 8) & 0x0F) / 2}]\n", "Red"));
-                            }
-                            else
-                            {
-                                Dispatcher.Invoke(() => AddText("\t\u2714", "Green"));
-                            }
-
-                            // If the file exists in both indexes, but has a DIFFERENT index in index2...
-                            if(index1Offset != index2Offset && index2Offset != 0)
-                            {
-
-                                Dispatcher.Invoke(() => AddText("\t\u2716\n", "Orange"));
-                                Dispatcher.Invoke(() => AddText($"Index 1/2 Mismatch: Index 2 entry will be updated to match Index 1.\n", "Orange"));
-
-                            } else
-                            {
-                                Dispatcher.Invoke(() => AddText("\t\u2714\n", "Green"));
-                            }
-
-
-                            Dispatcher.Invoke(() => cfpTextBox.ScrollToEnd());
-                        }
-
-                        if (index2CorrectionNeeded)
-                        {
-                            try
-                            {
-                                await index.UpdateDataOffset(index1Offset, mod.fullPath, false);
-                            } catch
-                            {
-                                lock (addTextLock)
-                                {
-                                    Dispatcher.Invoke(() => AddText($"Critical Error: Unable to Correct Index Discrepency for Mod: {mod.fullPath}\n\tPlease use [Download Index Backups] =>  [Start Over]", "Red"));
-                                }
-                            }
-                        }
-
-                        if (purgeMod)
-                        {
-                            // Attempt to disable the mod.
-                            try
-                            {
-                                // Disable the mod first.
-                                await modding.ToggleModStatus(mod.fullPath, false);
-
-                                // Then delete the mod entry.  This will purge the frame as well if the offset is invalid.
-                                await modding.DeleteMod(mod.fullPath);
+                                index1Offset = await index.GetDataOffset(mod.fullPath);
+                                index2Offset = await index.GetDataOffsetIndex2(mod.fullPath);
                             }
                             catch
                             {
-                                lock (addTextLock)
+                                // Uh, fuck.
+                            }
+
+                            var fileName = Path.GetFileName(mod.fullPath);
+
+                            var tabs = "";
+                            if (fileName.Length < 21 && fileName.Length > 12)
+                            {
+                                tabs = "\t";
+                            }
+                            else if (fileName.Length < 12)
+                            {
+                                tabs = "\t\t";
+                            }
+
+                            bool purgeMod = false;
+
+                            lock (addTextLock)
+                            {
+                                Dispatcher.Invoke(() => AddText($"\t{fileName}{tabs}", textColor));
+
+                                if (mod.data.originalOffset <= 0)
                                 {
-                                    Dispatcher.Invoke(() => AddText($"Critical Error: Unable to Disable or Delete Mod: {mod.fullPath}\n\tPlease use [Download Index Backups] =>  [Start Over]", "Red"));
+                                    Dispatcher.Invoke(() => AddText("\t\u2716\n", "Red"));
+                                    //Dispatcher.Invoke(() => AddText($"\t{UIStrings.ProblemCheck_OriginalZero} \n", "Red"));
+                                    Dispatcher.Invoke(() => AddText($"\tOriginal FFXIV Offset is Invalid.  Unrecoverable ModList state.\n\t Please use [Download Index Backups] =>  [Start Over].\n", "Red"));
+                                }
+                                else if (mod.data.modOffset <= 0)
+                                {
+                                    Dispatcher.Invoke(() => AddText("\t\u2716\n", "Red"));
+                                    Dispatcher.Invoke(() => AddText($"\tMod Data Offset is invalid. \n\t The Mod will be disabled, deleted, and the mod slot will be purged from the ModList.\n", "Red"));
+                                    purgeMod = true;
+                                }
+                                else
+                                {
+                                    Dispatcher.Invoke(() => AddText("\t\u2714", "Green"));
+                                }
+
+                                var fileType = 0;
+                                try
+                                {
+                                    fileType = dat.GetFileType(mod.data.modOffset,
+                                        XivDataFiles.GetXivDataFile(mod.datFile));
+                                }
+                                catch (Exception ex)
+                                {
+                                    Dispatcher.Invoke(() => AddText("\t\u2716\n", "Red"));
+                                    Dispatcher.Invoke(() => AddText($"\tError: {ex.Message}\n", "Red"));
+                                }
+
+                                if (fileType != 2 && fileType != 3 && fileType != 4)
+                                {
+                                    Dispatcher.Invoke(() => AddText("\t\u2716\n", "Red"));
+                                    Dispatcher.Invoke(() =>
+                                        AddText($"\t{string.Format(UIStrings.ProblemCheck_UnkType, fileType)} [{mod.data.modOffset}, {((mod.data.modOffset / 8) & 0x0F) / 2}]\n", "Red"));
+                                }
+                                else
+                                {
+                                    Dispatcher.Invoke(() => AddText("\t\u2714", "Green"));
+                                }
+
+                                // If the file exists in both indexes, but has a DIFFERENT index in index2...
+                                if (index1Offset != index2Offset && index2Offset != 0)
+                                {
+
+                                    Dispatcher.Invoke(() => AddText("\t\u2716\n", "Orange"));
+                                    Dispatcher.Invoke(() => AddText($"Index 1/2 Mismatch: Index 2 entry will be updated to match Index 1.\n", "Orange"));
+
+                                }
+                                else
+                                {
+                                    Dispatcher.Invoke(() => AddText("\t\u2714\n", "Green"));
+                                }
+
+
+                                Dispatcher.Invoke(() => cfpTextBox.ScrollToEnd());
+                            }
+
+                            if (index2CorrectionNeeded)
+                            {
+                                try
+                                {
+                                    await index.UpdateDataOffset(index1Offset, mod.fullPath, false);
+                                }
+                                catch
+                                {
+                                    lock (addTextLock)
+                                    {
+                                        Dispatcher.Invoke(() => AddText($"Critical Error: Unable to Correct Index Discrepency for Mod: {mod.fullPath}\n\tPlease use [Download Index Backups] =>  [Start Over]", "Red"));
+                                    }
                                 }
                             }
-                        }
+
+                            if (purgeMod)
+                            {
+                                // Attempt to disable the mod.
+                                try
+                                {
+                                    // Disable the mod first.
+                                    await modding.ToggleModStatus(mod.fullPath, false);
+
+                                    // Then delete the mod entry.  This will purge the frame as well if the offset is invalid.
+                                    await modding.DeleteMod(mod.fullPath);
+                                }
+                                catch
+                                {
+                                    lock (addTextLock)
+                                    {
+                                        Dispatcher.Invoke(() => AddText($"Critical Error: Unable to Disable or Delete Mod: {mod.fullPath}\n\tPlease use [Download Index Backups] =>  [Start Over]", "Red"));
+                                    }
+                                }
+                            }
+                        }).Wait();
                     });
                 }
                 else
