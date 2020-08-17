@@ -38,6 +38,7 @@ using xivModdingFramework.Cache;
 using xivModdingFramework.Mods;
 using System.Runtime.CompilerServices;
 using System.Linq;
+using FFXIV_TexTools.ViewModels;
 
 namespace FFXIV_TexTools.Views
 {
@@ -121,7 +122,7 @@ namespace FFXIV_TexTools.Views
             {
                 AddText($"\n{UIStrings.ProblemCheck_LoD}\n", secondaryTextColor);
                 cfpTextBox.ScrollToEnd();
-                await CheckLoD();
+                await CheckDXSettings();
             }
             catch (Exception ex)
             {
@@ -298,7 +299,7 @@ namespace FFXIV_TexTools.Views
                 if(removedBlocks > 0)
                 {
 
-                    Dispatcher.Invoke(() => AddText($"\tPurged {removedBlocks} invalid unused mod data slots.\n", "Yellow"));
+                    Dispatcher.Invoke(() => AddText($"\tPurged {removedBlocks} invalid unused mod data slots.\n", "Orange"));
                 }
 
 
@@ -465,7 +466,7 @@ namespace FFXIV_TexTools.Views
         /// <summary>
         /// Checks if LoD is on or off, and turns off if it is enabled
         /// </summary>
-        private async Task CheckLoD()
+        private async Task CheckDXSettings()
         {
             var dir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) +
                       "\\My Games\\FINAL FANTASY XIV - A Realm Reborn";
@@ -505,6 +506,51 @@ namespace FFXIV_TexTools.Views
 
                     return dx;
                 }, cts.Token);
+
+                if (DX11)
+                {
+                    AddText($"\tFFXIV set to DX11 Mode", textColor);
+                    AddText("\t\u2714\n", "Green");
+
+                    if (Properties.Settings.Default.DX_Version != "11")
+                    {
+                        // Set the User's DX Mode to 11 in TexTools to match 
+                        var gi = XivCache.GameInfo;
+                        Properties.Settings.Default.DX_Version = "11";
+                        Properties.Settings.Default.Save();
+                        XivCache.SetGameInfo(gi.GameDirectory, gi.GameLanguage, 11);
+                        AddText($"\tChanging TexTools Application Mode to DX11 to match FFXIV settings...", textColor);
+                        AddText("\t\u2714\n", "Green");
+
+                        ((MainViewModel)MainWindow.GetMainWindow().DataContext).DXVersionText = "11";
+                    }
+                } else
+                {
+                    AddText($"\tFFXIV set to DX11 Mode", textColor);
+                    AddText("\t\u2716\n", "Red");
+                    AddText($"\tFFXIV is set to DX9 Mode.  This may cause issues with some mods and will reduce the available mod data limit.\n", "Orange");
+
+                    if (Properties.Settings.Default.DX_Version != "9")
+                    {
+                        // Set the User's DX Mode to 9 in TexTools to match 
+                        var gi = XivCache.GameInfo;
+                        Properties.Settings.Default.DX_Version = "9";
+                        Properties.Settings.Default.Save();
+                        XivCache.SetGameInfo(gi.GameDirectory, gi.GameLanguage, 9);
+                        AddText($"\tChanging TexTools Application Mode to DX9 to match FFXIV settings...", textColor);
+                        AddText("\t\u2714\n", "Green");
+
+                        ((MainViewModel)MainWindow.GetMainWindow().DataContext).DXVersionText = "9";
+                    }
+                }
+
+
+
+
+                var datSizeLimit = Dat.GetMaximumDatSize();
+                double gb = ((double)datSizeLimit) / 1024D / 1024D / 1024D;
+                string datSize = gb.ToString("0.00") + " GB";
+                AddText($"\tPer-DAT File Size Limit: {datSize}\n", textColor);
 
 
                 if (File.Exists($"{dir}\\FFXIV.cfg"))
@@ -568,10 +614,11 @@ namespace FFXIV_TexTools.Views
                         File.WriteAllLines($"{dir}\\FFXIV.cfg", lines);
 
                         AddText($"\t{UIStrings.ProblemCheck_LoDOffDone}\n\n", textColor);
-                        await CheckLoD();
+                        await CheckDXSettings();
                     }
                 }
             }
+            cfpTextBox.ScrollToEnd();
         }
 
         private async Task CheckBackups()
