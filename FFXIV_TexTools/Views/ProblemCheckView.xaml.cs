@@ -293,6 +293,15 @@ namespace FFXIV_TexTools.Views
 
             return Task.Run(async () =>
             {
+                // Do a quick scan for any invalid empty blocks.
+                int removedBlocks = await modding.PurgeInvalidEmptyBlocks();
+                if(removedBlocks > 0)
+                {
+
+                    Dispatcher.Invoke(() => AddText($"\tPurged {removedBlocks} invalid unused mod data slots.\n", "Yellow"));
+                }
+
+
                 if (modList.modCount > 0)
                 {
                     var modNum = 0;
