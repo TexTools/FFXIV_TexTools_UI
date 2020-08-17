@@ -306,9 +306,7 @@ Use this directory?</value>
   <data name="MDLReadErrorMessage" xml:space="preserve">
     <value>There was an error reading the MDL file.
 
-{0}
-
-If this error appeared after importing, please submit a bug report with the DAE file attached.</value>
+{0}</value>
   </data>
   <data name="MDLReadErrorTitle" xml:space="preserve">
     <value>Error Reading Model Data</value>

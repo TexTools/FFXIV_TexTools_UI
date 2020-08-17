@@ -808,9 +808,7 @@ namespace FFXIV_TexTools.Resources {
         /// <summary>
         ///   Looks up a localized string similar to There was an error reading the MDL file.
         ///
-        ///{0}
-        ///
-        ///If this error appeared after importing, please submit a bug report with the DAE file attached..
+        ///{0}.
         /// </summary>
         internal static string MDLReadErrorMessage {
             get {

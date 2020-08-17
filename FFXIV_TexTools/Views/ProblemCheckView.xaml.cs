@@ -350,7 +350,7 @@ namespace FFXIV_TexTools.Views
                             else if (mod.data.modOffset <= 0)
                             {
                                 Dispatcher.Invoke(() => AddText("\t\u2716\n", "Red"));
-                                Dispatcher.Invoke(() => AddText($"\tMod Data Offset is invalid.  Mod will be disabled, deleted, and the mod slot will be purged from the ModList.\n", "Red"));
+                                Dispatcher.Invoke(() => AddText($"\tMod Data Offset is invalid. \n\t The Mod will be disabled, deleted, and the mod slot will be purged from the ModList.\n", "Red"));
                                 purgeMod = true;
                             }
                             else
@@ -399,7 +399,16 @@ namespace FFXIV_TexTools.Views
 
                         if (index2CorrectionNeeded)
                         {
-                            await index.UpdateDataOffset(index1Offset, mod.fullPath, false);
+                            try
+                            {
+                                await index.UpdateDataOffset(index1Offset, mod.fullPath, false);
+                            } catch
+                            {
+                                lock (addTextLock)
+                                {
+                                    Dispatcher.Invoke(() => AddText($"Critical Error: Unable to Correct Index Discrepency for Mod: {mod.fullPath}\n\tPlease use [Download Index Backups] =>  [Start Over]", "Red"));
+                                }
+                            }
                         }
 
                         if (purgeMod)
@@ -418,7 +427,6 @@ namespace FFXIV_TexTools.Views
                                 lock (addTextLock)
                                 {
                                     Dispatcher.Invoke(() => AddText($"Critical Error: Unable to Disable or Delete Mod: {mod.fullPath}\n\tPlease use [Download Index Backups] =>  [Start Over]", "Red"));
-
                                 }
                             }
                         }

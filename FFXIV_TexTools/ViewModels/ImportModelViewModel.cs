@@ -292,7 +292,8 @@ namespace FFXIV_TexTools.ViewModels
                        {
                            _anyWarnings = true;
                            WriteToLog("> [ERROR] " + ex.Message, Brushes.DarkRed);
-                           FlexibleMessageBox.Show("An error occurred during import:\n" + ex.Message + "\n\nThe import has been cancelled.", "Import Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                           WriteToLog("> Previous log messages may include more information.", Brushes.DarkRed);
+                           FlexibleMessageBox.Show("An error occurred during import:\n" + ex.Message + "\n\nThe import has been cancelled.\nPlease see the text log for more information.", "Import Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                        }
 
                        _view.EnableAll(true);
