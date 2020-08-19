@@ -100,6 +100,7 @@ namespace FFXIV_TexTools.Views.Textures
             _material = material;
             _item = item;
             _mode = mode;
+
             return await viewModel.SetMaterial(material, item, mode);
         }
 
@@ -274,6 +275,23 @@ namespace FFXIV_TexTools.Views.Textures
         private async void DisableButton_Click(object sender, RoutedEventArgs e)
         {
             await viewModel.DisableMod();
+        }
+
+        private void NewSharedButton_Click(object sender, RoutedEventArgs e)
+        {
+            var sharedTex = "{item_folder}/{default_name}";
+            DiffuseTextBox.Text = sharedTex;
+            SpecularTextBox.Text = sharedTex;
+            NormalTextBox.Text = sharedTex;
+        }
+
+        private void NewUniqueButton_Click(object sender, RoutedEventArgs e)
+        {
+            var uniqueTex = "{item_folder}/{variant}_{default_name}";
+            DiffuseTextBox.Text = uniqueTex;
+            SpecularTextBox.Text = uniqueTex;
+            NormalTextBox.Text = uniqueTex;
+
         }
     }
 }
