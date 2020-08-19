@@ -74,7 +74,7 @@
                             <RowDefinition Height="2*"/>
                         </Grid.RowDefinitions>
                         <GroupBox Grid.Row="0" Header="{Binding Source={x:Static resx:UIStrings.Option_Description}}">
-                            <TextBox x:Name="OptionDescription" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.Enter_a_description_for_the_selected_option_here_dot}}" LostFocus="OptionDescription_LostFocus" />
+                            <TextBox x:Name="OptionDescription" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.Enter_a_description_for_the_selected_option_here_dot}}" LostFocus="OptionDescription_LostFocus" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" AcceptsReturn="True"/>
                         </GroupBox>
                         <GroupBox Grid.Row="1" Header="{Binding Source={x:Static resx:UIStrings.Option_Preview_Image}}">
                             <Grid>

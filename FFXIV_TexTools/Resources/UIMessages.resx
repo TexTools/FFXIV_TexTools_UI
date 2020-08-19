@@ -306,9 +306,7 @@ Use this directory?</value>
   <data name="MDLReadErrorMessage" xml:space="preserve">
     <value>There was an error reading the MDL file.
 
-{0}
-
-If this error appeared after importing, please submit a bug report with the DAE file attached.</value>
+{0}</value>
   </data>
   <data name="MDLReadErrorTitle" xml:space="preserve">
     <value>Error Reading Model Data</value>
@@ -493,7 +491,7 @@ Do you want to start over?</value>
     <value>Start Over</value>
   </data>
   <data name="SuccessfulImportCountMessage" xml:space="preserve">
-    <value>{0} mod(s) successfully imported.</value>
+    <value>{0} mod(s) successfully imported.  ({1} Error(s))</value>
   </data>
   <data name="SuccessTitle" xml:space="preserve">
     <value>Success</value>

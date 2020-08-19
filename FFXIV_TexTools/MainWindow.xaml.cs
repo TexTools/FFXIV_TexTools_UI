@@ -202,10 +202,17 @@ namespace FFXIV_TexTools
 
             if (args != null && args.Length > 0)
             {
+                int dxVersion = 0;
+                bool success = Int32.TryParse(Settings.Default.DX_Version, out dxVersion);
+                if (!success)
+                {
+                    dxVersion = 11;
+                }
+
                 // Just do a hard synchronous cache initialization for import only mode.
                 var gameDir = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
                 var lang = XivLanguages.GetXivLanguage(Properties.Settings.Default.Application_Language);
-                XivCache.SetGameInfo(gameDir, lang);
+                XivCache.SetGameInfo(gameDir, lang, dxVersion);
 
                 _startupArgs = args[0];
                 OnlyImport();
@@ -292,7 +299,14 @@ namespace FFXIV_TexTools
                 try
                 {
                     // If the cache needs to be rebuilt, this will synchronously block until it is done.
-                    XivCache.SetGameInfo(gameDir, lang);
+                    int dxVersion = 0;
+                    bool success = Int32.TryParse(Settings.Default.DX_Version, out dxVersion);
+                    if (!success)
+                    {
+                        dxVersion = 11;
+                    }
+
+                    XivCache.SetGameInfo(gameDir, lang, dxVersion);
                 } catch(Exception ex)
                 {
                     cacheOK = false;
@@ -863,6 +877,7 @@ namespace FFXIV_TexTools
             var importMultiple = openFileDialog.FileNames.Length > 1;
 
             var modsImported = 0;
+            var modsErrored = 0;
 
             foreach (var fileName in openFileDialog.FileNames)
             {
@@ -874,12 +889,14 @@ namespace FFXIV_TexTools
                     continue;
                 }
 
-                modsImported += await ImportModpack(new DirectoryInfo(fileName), modPackDirectory, importMultiple);
+                var r = await ImportModpack(new DirectoryInfo(fileName), modPackDirectory, importMultiple);
+                modsImported += r.Imported;
+                modsErrored += r.Errors;
             }
 
             if (modsImported > 0)
             {
-                await this.ShowMessageAsync(UIMessages.ImportCompleteTitle, string.Format(UIMessages.SuccessfulImportCountMessage, modsImported));
+                await this.ShowMessageAsync(UIMessages.ImportCompleteTitle, string.Format(UIMessages.SuccessfulImportCountMessage, modsImported, modsErrored));
             }
         }
 
@@ -889,7 +906,7 @@ namespace FFXIV_TexTools
         /// <param name="path">The path to the modpack</param>
         /// <param name="silent">If the modpack wizard should be shown or the modpack should just be imported without any user interaction</param>
         /// <returns></returns>
-        private async Task<int> ImportModpack(DirectoryInfo path, DirectoryInfo modPackDirectory, bool silent = false, bool messageInImport = false)
+        private async Task<(int Imported, int Errors)> ImportModpack(DirectoryInfo path, DirectoryInfo modPackDirectory, bool silent = false, bool messageInImport = false)
         {
             var importError = false;
             TextureView textureView = null;
@@ -910,7 +927,7 @@ namespace FFXIV_TexTools
                 FlexibleMessageBox.Show(string.Format(UIMessages.UnsupportedFileExtensionErrorMessage, path.Extension), 
                     UIMessages.UnsupportedFileExtensionErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-                return 0;
+                return (0, 1);
             }
 
             try
@@ -928,7 +945,7 @@ namespace FFXIV_TexTools
                     {
                         FlexibleMessageBox.Show(UIMessages.IndexLockedErrorMessage, UIMessages.IndexLockedErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-                        return 0;
+                        return (0, 1);
                     }
 
                     try
@@ -949,7 +966,7 @@ namespace FFXIV_TexTools
 
                         if (result == true)
                         {
-                            return importWizard.TotalModsImported;
+                            return (importWizard.TotalModsImported, importWizard.TotalModsErrored);
                         }
                     }
                     catch
@@ -977,7 +994,7 @@ namespace FFXIV_TexTools
 
                         if (result == true)
                         {
-                            return simpleImport.TotalModsImported;
+                            return (simpleImport.TotalModsImported, simpleImport.TotalModsErrored);
                         }
                     }
                     catch
@@ -1005,17 +1022,17 @@ namespace FFXIV_TexTools
 
                     if (result == true)
                     {
-                        return simpleImport.TotalModsImported;
+                        return (simpleImport.TotalModsImported, simpleImport.TotalModsErrored);
                     }
                 }
                 else
                 {
                     FlexibleMessageBox.Show(string.Format(UIMessages.ModPackImportErrorMessage, path.FullName, ex.Message), UIMessages.ModPackImportErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return 0;
+                    return (0, 1);
                 }
             }
 
-            return 0;
+            return (0, 0);
         }
 
         /// <summary>

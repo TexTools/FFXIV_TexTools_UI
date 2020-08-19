@@ -74,7 +74,7 @@
                 <RowDefinition/>
             </Grid.RowDefinitions>
             <GroupBox Grid.Row="0" Header="{Binding Source={x:Static resx:UIStrings.Description}}" Margin="5">
-                <TextBox x:Name="OptionDescriptionTextBox" IsReadOnly="True"/>
+                <TextBox x:Name="OptionDescriptionTextBox" IsReadOnly="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
             </GroupBox>
             <GroupBox Grid.Row="1" Header="{Binding Source={x:Static resx:UIStrings.Preview}}" Margin="5">
                 <Image x:Name="OptionPreviewImage"/>

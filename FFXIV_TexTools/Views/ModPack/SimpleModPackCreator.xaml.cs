@@ -40,6 +40,8 @@ using SysTimer = System.Timers;
 using System.Diagnostics;
 using SharpDX.Direct2D1;
 using xivModdingFramework.Cache;
+using xivModdingFramework.SqPack.FileTypes;
+using xivModdingFramework.Helpers;
 
 namespace FFXIV_TexTools.Views
 {
@@ -194,6 +196,26 @@ namespace FFXIV_TexTools.Views
             Modding modding = new Modding(_gameDirectory);
 
             this.ModList = modding.GetModList();
+
+            // Rip through the mod list and get the correct raw compressed sizes for all the mods.
+            var _dat = new Dat(XivCache.GameInfo.GameDirectory);
+            foreach (var mod in ModList.Mods)
+            {
+
+                var compressedSize = mod.data.modSize;
+                try
+                {
+                    compressedSize = await _dat.GetCompressedFileSize(mod.data.modOffset, IOUtil.GetDataFileFromPath(mod.fullPath));
+                    mod.data.modSize = compressedSize;
+                }
+                catch
+                {
+                    // If the calculation failed, just use the original size I guess?
+                    // The main way this happens though is if the data is broken, so maybe we should error?
+                    // Though there's possibly filetypes from other framework applications in here that we don't know how to measure?
+                }
+            }
+
             this.ParentsDictionary = XivCache.GetModListParents();
 
 
@@ -268,6 +290,7 @@ namespace FFXIV_TexTools.Views
         /// </summary>
         private async void CreateModPackButton_Click(object sender, RoutedEventArgs e)
         {
+            var _dat = new Dat(XivCache.GameInfo.GameDirectory);
             if (ModPackName.Text.Equals(string.Empty))
             {
                 if (FlexibleMessageBox.Show(new Wpf32Window(this),
@@ -352,13 +375,24 @@ namespace FFXIV_TexTools.Views
             foreach (var idx in SelectedMods)
             {
                 var mod = ModList.Mods[idx];
+                var compressedSize = mod.data.modSize;
+                try
+                {
+                    compressedSize = await _dat.GetCompressedFileSize(mod.data.modOffset, IOUtil.GetDataFileFromPath(mod.fullPath));
+                } catch
+                {
+                    // If the calculation failed, just use the original size I guess?
+                    // The main way this happens though is if the data is broken, so maybe we should error?
+                    // Though there's possibly filetypes from other framework applications in here that we don't know how to measure?
+                }
+
                 SimpleModData simpleData = new SimpleModData
                 {
                     Name = mod.name,
                     Category = mod.category,
                     FullPath = mod.fullPath,
                     ModOffset = mod.data.modOffset,
-                    ModSize = mod.data.modSize,
+                    ModSize = compressedSize,
                     DatFile = mod.datFile
                 };
 
