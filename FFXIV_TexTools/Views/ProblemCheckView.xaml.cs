@@ -410,12 +410,13 @@ namespace FFXIV_TexTools.Views
 
                                     Dispatcher.Invoke(() => AddText("\t\u2716\n", "Orange"));
                                     Dispatcher.Invoke(() => AddText($"Index 1/2 Mismatch: Index 2 entry will be updated to match Index 1.\n", "Orange"));
-
+                                    index2CorrectionNeeded = true;
                                 }
                                 else
                                 {
                                     Dispatcher.Invoke(() => AddText("\t\u2714\n", "Green"));
                                 }
+
 
 
                                 Dispatcher.Invoke(() => cfpTextBox.ScrollToEnd());
