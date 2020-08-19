@@ -525,7 +525,7 @@ namespace FFXIV_TexTools.Views
                         AddText($"\tChanging TexTools Application Mode to DX11 to match FFXIV settings...", textColor);
                         AddText("\t\u2714\n", "Green");
 
-                        ((MainViewModel)MainWindow.GetMainWindow().DataContext).DXVersionText = "11";
+                        ((MainViewModel)MainWindow.GetMainWindow().DataContext).DXVersionText = "DX: 11";
                     }
                 } else
                 {
@@ -543,9 +543,10 @@ namespace FFXIV_TexTools.Views
                         AddText($"\tChanging TexTools Application Mode to DX9 to match FFXIV settings...", textColor);
                         AddText("\t\u2714\n", "Green");
 
-                        ((MainViewModel)MainWindow.GetMainWindow().DataContext).DXVersionText = "9";
+                        ((MainViewModel)MainWindow.GetMainWindow().DataContext).DXVersionText = "DX: 9";
                     }
                 }
+
 
 
 
@@ -555,6 +556,11 @@ namespace FFXIV_TexTools.Views
                 string datSize = gb.ToString("0.00") + " GB";
                 AddText($"\tPer-DAT File Size Limit: {datSize}\n", textColor);
 
+                var runningIn32bMode = IntPtr.Size == 4;
+                if (runningIn32bMode)
+                {
+                    AddText($"TexTools is running in 32bit Mode. This will reduce the available mod data limit.\n", "Orange");
+                }
 
                 if (File.Exists($"{dir}\\FFXIV.cfg"))
                 {

@@ -100,6 +100,7 @@ namespace FFXIV_TexTools.Views
         /// The total mods imported
         /// </summary>
         public int TotalModsImported { get; private set; }
+        public int TotalModsErrored { get; private set; }
 
         #endregion
 
@@ -259,6 +260,7 @@ namespace FFXIV_TexTools.Views
                     gameDirectory, modListDirectory, progressIndicator);
 
                 TotalModsImported = importResults.ImportCount;
+                TotalModsErrored = importResults.ErrorCount;
 
                 if (!string.IsNullOrEmpty(importResults.Errors))
                 {
@@ -279,7 +281,7 @@ namespace FFXIV_TexTools.Views
             if (_messageInImport)
             {
                 await this.ShowMessageAsync(UIMessages.ImportCompleteTitle,
-                    string.Format(UIMessages.SuccessfulImportCountMessage, TotalModsImported));
+                    string.Format(UIMessages.SuccessfulImportCountMessage, TotalModsImported, TotalModsErrored));
             }
 
             DialogResult = true;

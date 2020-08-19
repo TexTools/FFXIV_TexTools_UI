@@ -491,7 +491,7 @@ Do you want to start over?</value>
     <value>Start Over</value>
   </data>
   <data name="SuccessfulImportCountMessage" xml:space="preserve">
-    <value>{0} mod(s) successfully imported.</value>
+    <value>{0} mod(s) successfully imported.  ({1} Error(s))</value>
   </data>
   <data name="SuccessTitle" xml:space="preserve">
     <value>Success</value>

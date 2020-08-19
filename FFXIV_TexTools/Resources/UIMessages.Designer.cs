@@ -1466,7 +1466,7 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} mod(s) successfully imported..
+        ///   Looks up a localized string similar to {0} mod(s) successfully imported.  ({1} Error(s)).
         /// </summary>
         internal static string SuccessfulImportCountMessage {
             get {

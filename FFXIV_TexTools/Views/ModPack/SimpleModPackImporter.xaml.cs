@@ -133,6 +133,7 @@ namespace FFXIV_TexTools.Views
         /// Total mods imported
         /// </summary>
         public int TotalModsImported { get; private set; }
+        public int TotalModsErrored { get; private set; }
 
         #endregion
 
@@ -345,13 +346,15 @@ namespace FFXIV_TexTools.Views
             var modListDirectory = new DirectoryInfo(Path.Combine(_gameDirectory.Parent.Parent.FullName, XivStrings.ModlistFilePath));
 
             var progressIndicator = new Progress<(int current, int total, string message)>(ReportProgress);
+            var eCount = 0;
 
             try
             {
                 var importResults = await _texToolsModPack.ImportModPackAsync(_modPackDirectory, importList,
                     _gameDirectory, modListDirectory, progressIndicator);
 
-                TotalModsImported = importResults.ImportCount;
+                TotalModsErrored = importResults.ErrorCount;
+                TotalModsImported = importResults.ImportCount - TotalModsErrored;
 
                 if (!string.IsNullOrEmpty(importResults.Errors))
                 {
@@ -372,7 +375,7 @@ namespace FFXIV_TexTools.Views
             if (_messageInImport)
             {
                 await this.ShowMessageAsync(UIMessages.ImportCompleteTitle,
-                    string.Format(UIMessages.SuccessfulImportCountMessage, TotalModsImported));
+                    string.Format(UIMessages.SuccessfulImportCountMessage, TotalModsImported, TotalModsErrored));
             }
 
             // When the import is done force an update of the Texture/Model tabs by setting the selected parts
