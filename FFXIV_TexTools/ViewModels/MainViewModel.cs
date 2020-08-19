@@ -138,7 +138,94 @@ namespace FFXIV_TexTools.ViewModels
             }
 
             await CheckGameVersion();
-            return await CheckIndexFiles();
+            success =  await CheckIndexFiles();
+            if (!success)
+            {
+                return false;
+            }
+
+            try
+            {
+                await CheckGameDxVersion();
+            } catch
+            {
+                // Unable to determine version, skip it.
+            }
+
+            return true;
+
+        }
+
+        /// <summary>
+        /// Checks FFXIV's selected DirectX version and changes TexTools to the appropriate mode if it does not already match.
+        /// </summary>
+        /// <returns></returns>
+        private async Task CheckGameDxVersion()
+        {
+
+            var dir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) +
+                      "\\My Games\\FINAL FANTASY XIV - A Realm Reborn";
+
+            var DX11 = await Task.Run(() =>
+            {
+                var dx = false;
+
+                if (File.Exists($"{dir}\\FFXIV_BOOT.cfg"))
+                {
+                    var lines = File.ReadAllLines($"{dir}\\FFXIV_BOOT.cfg");
+
+                    foreach (var line in lines)
+                    {
+                        if (line.Contains("DX11Enabled"))
+                        {
+                            var val = line.Substring(line.Length - 1, 1);
+                            if (val.Equals("1"))
+                            {
+                                dx = true;
+                            }
+
+                            break;
+                        }
+                    }
+                }
+
+                return dx;
+            });
+
+            if (DX11)
+            {
+                if (Properties.Settings.Default.DX_Version != "11")
+                {
+                    // Set the User's DX Mode to 11 in TexTools to match 
+                    Properties.Settings.Default.DX_Version = "11";
+                    Properties.Settings.Default.Save();
+                    DXVersionText = "DX: 11";
+
+                    if(XivCache.Initialized)
+                    {
+                        var gi = XivCache.GameInfo;
+                        XivCache.SetGameInfo(gi.GameDirectory, gi.GameLanguage, 11);
+                    }
+                }
+            }
+            else
+            {
+
+                if (Properties.Settings.Default.DX_Version != "9")
+                {
+                    // Set the User's DX Mode to 9 in TexTools to match 
+                    var gi = XivCache.GameInfo;
+                    Properties.Settings.Default.DX_Version = "9";
+                    Properties.Settings.Default.Save();
+                    DXVersionText = "DX: 9";
+                }
+
+                if (XivCache.Initialized)
+                {
+                    var gi = XivCache.GameInfo;
+                    XivCache.SetGameInfo(gi.GameDirectory, gi.GameLanguage, 9);
+                }
+            }
 
         }
 
@@ -520,10 +607,19 @@ namespace FFXIV_TexTools.ViewModels
 
                     try
                     {
+                        int dxVersion = 0;
+                        bool success = Int32.TryParse(Settings.Default.DX_Version, out dxVersion);
+                        if(!success)
+                        {
+                            dxVersion = 11;
+                        }
+
                         // Need to initialize the cache here before doing the mod toggle.
                         var gameDir = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
                         var lang = XivLanguages.GetXivLanguage(Properties.Settings.Default.Application_Language);
-                        XivCache.SetGameInfo(gameDir, lang, true);
+
+                        // Don't bother starting the cache worker though in import only mode.  It'll just get shut right off again anyways.
+                        XivCache.SetGameInfo(gameDir, lang, dxVersion, true, false);
                         
                         await modding.ToggleAllMods(false);
                     }
@@ -653,15 +749,18 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         private void SetDXVersion(object obj)
         {
+            var gi = XivCache.GameInfo;
             if (DXVersionText.Contains("11"))
             {
                 Properties.Settings.Default.DX_Version = "9";
                 Properties.Settings.Default.Save();
+                XivCache.SetGameInfo(gi.GameDirectory, gi.GameLanguage, 9);
             }
             else
             {
                 Properties.Settings.Default.DX_Version = "11";
                 Properties.Settings.Default.Save();
+                XivCache.SetGameInfo(gi.GameDirectory, gi.GameLanguage, 11);
             }
 
             DXVersionText = $"DX: {Properties.Settings.Default.DX_Version}";

@@ -36,6 +36,9 @@ using xivModdingFramework.SqPack.FileTypes;
 using Application = System.Windows.Application;
 using xivModdingFramework.Cache;
 using xivModdingFramework.Mods;
+using System.Runtime.CompilerServices;
+using System.Linq;
+using FFXIV_TexTools.ViewModels;
 
 namespace FFXIV_TexTools.Views
 {
@@ -119,7 +122,7 @@ namespace FFXIV_TexTools.Views
             {
                 AddText($"\n{UIStrings.ProblemCheck_LoD}\n", secondaryTextColor);
                 cfpTextBox.ScrollToEnd();
-                await CheckLoD();
+                await CheckDXSettings();
             }
             catch (Exception ex)
             {
@@ -244,10 +247,10 @@ namespace FFXIV_TexTools.Views
             var modListDirectory =
                 new DirectoryInfo(Path.Combine(_gameDirectory.Parent.Parent.FullName, XivStrings.ModlistFilePath));
             var modList = new ModList();
+            var modding = new Modding(_gameDirectory);
 
             try
             {
-                var modding = new Modding(_gameDirectory);
                 modList = modding.GetModList();
 
                 // Someone somehow had their entire modlist filled with 0's causing the deserealization to 
@@ -284,86 +287,178 @@ namespace FFXIV_TexTools.Views
             }
 
             var dat = new Dat(_gameDirectory);
+            var index = new Index(_gameDirectory);
 
             // Filter out empty entries in the mod list
             modList.Mods.RemoveAll(mod => mod.name.Equals(string.Empty));
 
-            return Task.Run(() =>
+            return Task.Run(async () =>
             {
+                // Do a quick scan for any invalid empty blocks.
+                int removedBlocks = await modding.PurgeInvalidEmptyBlocks();
+                if(removedBlocks > 0)
+                {
+
+                    Dispatcher.Invoke(() => AddText($"\tPurged {removedBlocks} invalid unused mod data slots.\n", "Orange"));
+                }
+
+
                 if (modList.modCount > 0)
                 {
                     var modNum = 0;
 
-                    Parallel.ForEach(modList.Mods, (mod) =>
+                    var files = modList.Mods.Select(x => x.fullPath).ToList();
+
+                    
+                    var index1Offsets = await index.GetDataOffsets(files);
+                    var index2Offsets = await index.GetDataOffsetsIndex2(files);
+
+
+
+                    // Spawning 1400 tasks for this check is kind of redundant when we're
+                    // really just going to do them in sequence anyways.
+                    Task.Run(async () =>
                     {
-                        if (cts.IsCancellationRequested)
-                        {
-                            cts.Token.ThrowIfCancellationRequested();
-                            return;
+                        foreach (var mod in modList.Mods) { 
+                            bool index2CorrectionNeeded = false;
+                            if (cts.IsCancellationRequested)
+                            {
+                                cts.Token.ThrowIfCancellationRequested();
+                                return;
+                            }
+
+                            lock (checkModsLock)
+                            {
+                                progress.Report((++modNum, modList.Mods.Count));
+                            }
+
+                            long index1Offset = 0;
+                            long index2Offset = 0;
+
+                            if(index1Offsets.ContainsKey(mod.fullPath))
+                            {
+                                index1Offset = index1Offsets[mod.fullPath];
+                            }
+
+                            if (index2Offsets.ContainsKey(mod.fullPath))
+                            {
+                                index2Offset = index2Offsets[mod.fullPath];
+                            }
+
+                            var fileName = Path.GetFileName(mod.fullPath);
+
+                            var tabs = "";
+                            if (fileName.Length < 21 && fileName.Length > 12)
+                            {
+                                tabs = "\t";
+                            }
+                            else if (fileName.Length < 12)
+                            {
+                                tabs = "\t\t";
+                            }
+
+                            bool purgeMod = false;
+
+                            lock (addTextLock)
+                            {
+                                Dispatcher.Invoke(() => AddText($"\t{fileName}{tabs}", textColor));
+
+                                if (mod.data.originalOffset <= 0)
+                                {
+                                    Dispatcher.Invoke(() => AddText("\t\u2716\n", "Red"));
+                                    //Dispatcher.Invoke(() => AddText($"\t{UIStrings.ProblemCheck_OriginalZero} \n", "Red"));
+                                    Dispatcher.Invoke(() => AddText($"\tOriginal FFXIV Offset is Invalid.  Unrecoverable ModList state.\n\t Please use [Download Index Backups] =>  [Start Over].\n", "Red"));
+                                }
+                                else if (mod.data.modOffset <= 0)
+                                {
+                                    Dispatcher.Invoke(() => AddText("\t\u2716\n", "Red"));
+                                    Dispatcher.Invoke(() => AddText($"\tMod Data Offset is invalid. \n\t The Mod will be disabled, deleted, and the mod slot will be purged from the ModList.\n", "Red"));
+                                    purgeMod = true;
+                                }
+                                else
+                                {
+                                    Dispatcher.Invoke(() => AddText("\t\u2714", "Green"));
+                                }
+
+                                var fileType = 0;
+                                try
+                                {
+                                    fileType = dat.GetFileType(mod.data.modOffset,
+                                        XivDataFiles.GetXivDataFile(mod.datFile));
+                                }
+                                catch (Exception ex)
+                                {
+                                    Dispatcher.Invoke(() => AddText("\t\u2716\n", "Red"));
+                                    Dispatcher.Invoke(() => AddText($"\tError: {ex.Message}\n", "Red"));
+                                }
+
+                                if (fileType != 2 && fileType != 3 && fileType != 4)
+                                {
+                                    Dispatcher.Invoke(() => AddText("\t\u2716\n", "Red"));
+                                    Dispatcher.Invoke(() =>
+                                        AddText($"\t{string.Format(UIStrings.ProblemCheck_UnkType, fileType)} [{mod.data.modOffset}, {((mod.data.modOffset / 8) & 0x0F) / 2}]\n", "Red"));
+                                    Dispatcher.Invoke(() => AddText($"\tThe Mod will automatically be disabled and deleted.\n", "Red"));
+                                    purgeMod = true;
+                                }
+                                else
+                                {
+                                    Dispatcher.Invoke(() => AddText("\t\u2714", "Green"));
+                                }
+
+                                // If the file exists in both indexes, but has a DIFFERENT index in index2...
+                                if (index1Offset != index2Offset && index2Offset != 0)
+                                {
+
+                                    Dispatcher.Invoke(() => AddText("\t\u2716\n", "Orange"));
+                                    Dispatcher.Invoke(() => AddText($"Index 1/2 Mismatch: Index 2 entry will be updated to match Index 1.\n", "Orange"));
+                                    index2CorrectionNeeded = true;
+                                }
+                                else
+                                {
+                                    Dispatcher.Invoke(() => AddText("\t\u2714\n", "Green"));
+                                }
+
+
+
+                                Dispatcher.Invoke(() => cfpTextBox.ScrollToEnd());
+                            }
+
+                            if (index2CorrectionNeeded)
+                            {
+                                try
+                                {
+                                    await index.UpdateDataOffset(index1Offset, mod.fullPath, false);
+                                }
+                                catch
+                                {
+                                    lock (addTextLock)
+                                    {
+                                        Dispatcher.Invoke(() => AddText($"Critical Error: Unable to Correct Index Discrepency for Mod: {mod.fullPath}\n\tPlease use [Download Index Backups] =>  [Start Over]", "Red"));
+                                    }
+                                }
+                            }
+
+                            if (purgeMod)
+                            {
+                                // Attempt to disable the mod.
+                                try
+                                {
+                                    // Disable the mod first.
+                                    await modding.ToggleModStatus(mod.fullPath, false);
+
+                                    // Then delete the mod entry.  This will purge the frame as well if the offset is invalid.
+                                    await modding.DeleteMod(mod.fullPath);
+                                }
+                                catch
+                                {
+                                    lock (addTextLock)
+                                    {
+                                        Dispatcher.Invoke(() => AddText($"Critical Error: Unable to Disable or Delete Mod: {mod.fullPath}\n\tPlease use [Download Index Backups] =>  [Start Over]", "Red"));
+                                    }
+                                }
+                            }
                         }
-
-                        lock (checkModsLock)
-                        {
-                            progress.Report((++modNum, modList.Mods.Count));
-                        }
-
-                        var fileName = Path.GetFileName(mod.fullPath);
-
-                        var tabs = "";
-                        if (fileName.Length < 21 && fileName.Length > 12)
-                        {
-                            tabs = "\t";
-                        }
-                        else if (fileName.Length < 12)
-                        {
-                            tabs = "\t\t";
-                        }
-
-                        lock (addTextLock)
-                        {
-                            Dispatcher.Invoke(() => AddText($"\t{fileName}{tabs}", textColor));
-
-                            if (mod.data.originalOffset == 0)
-                            {
-                                Dispatcher.Invoke(() => AddText("\t\u2716\n", "Red"));
-                                Dispatcher.Invoke(() => AddText($"\t{UIStrings.ProblemCheck_OriginalZero} \n", "Red"));
-                            }
-                            else if (mod.data.modOffset == 0)
-                            {
-                                Dispatcher.Invoke(() => AddText("\t\u2716\n", "Red"));
-                                Dispatcher.Invoke(() => AddText($"\t{UIStrings.ProblemCheck_ModZero}\n", "Red"));
-                            }
-                            else
-                            {
-                                Dispatcher.Invoke(() => AddText("\t\u2714", "Green"));
-                            }
-
-                            var fileType = 0;
-                            try
-                            {
-                                fileType = dat.GetFileType(mod.data.modOffset,
-                                    XivDataFiles.GetXivDataFile(mod.datFile));
-                            }
-                            catch (Exception ex)
-                            {
-                                Dispatcher.Invoke(() => AddText("\t\u2716\n", "Red"));
-                                Dispatcher.Invoke(() => AddText($"\tError: {ex.Message}\n", "Red"));
-                            }
-
-                            if (fileType != 2 && fileType != 3 && fileType != 4)
-                            {
-                                Dispatcher.Invoke(() => AddText("\t\u2716\n", "Red"));
-                                Dispatcher.Invoke(() =>
-                                    AddText($"\t{string.Format(UIStrings.ProblemCheck_UnkType, fileType)} [{mod.data.modOffset}, {((mod.data.modOffset / 8) & 0x0F) / 2}]\n", "Red"));
-                            }
-                            else
-                            {
-                                Dispatcher.Invoke(() => AddText("\t\u2714\n", "Green"));
-                            }
-
-                            Dispatcher.Invoke(() => cfpTextBox.ScrollToEnd());
-                        }
-                    });
+                    }).Wait();
                 }
                 else
                 {
@@ -375,7 +470,7 @@ namespace FFXIV_TexTools.Views
         /// <summary>
         /// Checks if LoD is on or off, and turns off if it is enabled
         /// </summary>
-        private async Task CheckLoD()
+        private async Task CheckDXSettings()
         {
             var dir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) +
                       "\\My Games\\FINAL FANTASY XIV - A Realm Reborn";
@@ -416,6 +511,57 @@ namespace FFXIV_TexTools.Views
                     return dx;
                 }, cts.Token);
 
+                if (DX11)
+                {
+                    AddText($"\tFFXIV set to DX11 Mode", textColor);
+                    AddText("\t\u2714\n", "Green");
+
+                    if (Properties.Settings.Default.DX_Version != "11")
+                    {
+                        // Set the User's DX Mode to 11 in TexTools to match 
+                        var gi = XivCache.GameInfo;
+                        Properties.Settings.Default.DX_Version = "11";
+                        Properties.Settings.Default.Save();
+                        XivCache.SetGameInfo(gi.GameDirectory, gi.GameLanguage, 11);
+                        AddText($"\tChanging TexTools Application Mode to DX11 to match FFXIV settings...", textColor);
+                        AddText("\t\u2714\n", "Green");
+
+                        ((MainViewModel)MainWindow.GetMainWindow().DataContext).DXVersionText = "DX: 11";
+                    }
+                } else
+                {
+                    AddText($"\tFFXIV set to DX11 Mode", textColor);
+                    AddText("\t\u2716\n", "Red");
+                    AddText($"\tFFXIV is set to DX9 Mode.  This may cause issues with some mods and will reduce the available mod data limit.\n", "Orange");
+
+                    if (Properties.Settings.Default.DX_Version != "9")
+                    {
+                        // Set the User's DX Mode to 9 in TexTools to match 
+                        var gi = XivCache.GameInfo;
+                        Properties.Settings.Default.DX_Version = "9";
+                        Properties.Settings.Default.Save();
+                        XivCache.SetGameInfo(gi.GameDirectory, gi.GameLanguage, 9);
+                        AddText($"\tChanging TexTools Application Mode to DX9 to match FFXIV settings...", textColor);
+                        AddText("\t\u2714\n", "Green");
+
+                        ((MainViewModel)MainWindow.GetMainWindow().DataContext).DXVersionText = "DX: 9";
+                    }
+                }
+
+
+
+
+
+                var datSizeLimit = Dat.GetMaximumDatSize();
+                double gb = ((double)datSizeLimit) / 1024D / 1024D / 1024D;
+                string datSize = gb.ToString("0.00") + " GB";
+                AddText($"\tPer-DAT File Size Limit: {datSize}\n", textColor);
+
+                var runningIn32bMode = IntPtr.Size == 4;
+                if (runningIn32bMode)
+                {
+                    AddText($"TexTools is running in 32bit Mode. This will reduce the available mod data limit.\n", "Orange");
+                }
 
                 if (File.Exists($"{dir}\\FFXIV.cfg"))
                 {
@@ -478,10 +624,11 @@ namespace FFXIV_TexTools.Views
                         File.WriteAllLines($"{dir}\\FFXIV.cfg", lines);
 
                         AddText($"\t{UIStrings.ProblemCheck_LoDOffDone}\n\n", textColor);
-                        await CheckLoD();
+                        await CheckDXSettings();
                     }
                 }
             }
+            cfpTextBox.ScrollToEnd();
         }
 
         private async Task CheckBackups()

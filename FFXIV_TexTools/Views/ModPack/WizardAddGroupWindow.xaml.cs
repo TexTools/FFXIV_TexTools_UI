@@ -26,12 +26,14 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using xivModdingFramework.Cache;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Items.DataContainers;
@@ -70,11 +72,6 @@ namespace FFXIV_TexTools.Views
             _groupNames = groupNames;
 
             FillModListTreeView();
-            ModListGrid.IsEnabled = false;
-            OptionDescription.IsEnabled = false;
-            OptionImageButton.IsEnabled = false;
-            SelectModGroup.IsEnabled = false;
-            RemoveModItemButton.IsEnabled = false;
         }
 
         #region Public Methods
@@ -227,20 +224,45 @@ namespace FFXIV_TexTools.Views
         /// <summary>
         /// Fills the mod list tree view
         /// </summary>
-        private void FillModListTreeView()
+        private async Task FillModListTreeView()
         {
             var modding = new Modding(_gameDirectory);
             var modList = modding.GetModList();
 
             var Categories = new ObservableCollection<Category>();
 
-            if (modList == null) return;
+            if (modList == null)
+            {
+                ModListGrid.IsEnabled = false;
+                OptionDescription.IsEnabled = false;
+                OptionImageButton.IsEnabled = false;
+                SelectModGroup.IsEnabled = false;
+                RemoveModItemButton.IsEnabled = false;
+                return;
+            }
 
             // Mods
             var mainCategories = new HashSet<string>();
 
+            // Rip through the mod list and get the correct raw compressed sizes for all the mods.
+            var _dat = new Dat(XivCache.GameInfo.GameDirectory);
+
             foreach (var modEntry in modList.Mods)
             {
+
+                var compressedSize = modEntry.data.modSize;
+                try
+                {
+                    compressedSize = await _dat.GetCompressedFileSize(modEntry.data.modOffset, IOUtil.GetDataFileFromPath(modEntry.fullPath));
+                    modEntry.data.modSize = compressedSize;
+                }
+                catch
+                {
+                    // If the calculation failed, just use the original size I guess?
+                    // The main way this happens though is if the data is broken, so maybe we should error?
+                    // Though there's possibly filetypes from other framework applications in here that we don't know how to measure?
+                }
+
                 if (!modEntry.name.Equals(string.Empty))
                 {
                     mainCategories.Add(modEntry.category);
@@ -281,6 +303,12 @@ namespace FFXIV_TexTools.Views
             }
 
             ModListTreeView.ItemsSource = Categories;
+
+            ModListGrid.IsEnabled = false;
+            OptionDescription.IsEnabled = false;
+            OptionImageButton.IsEnabled = false;
+            SelectModGroup.IsEnabled = false;
+            RemoveModItemButton.IsEnabled = false;
         }
 
         /// <summary>

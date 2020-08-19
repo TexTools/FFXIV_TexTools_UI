@@ -153,7 +153,7 @@ namespace FFXIV_TexTools.Views.Controls
         {
 
             // First we must generate all the dependency root nodes.
-            var roots = XivCache.GetAllRootsDictionary();
+            var roots = XivCache.GetAllRootsDictionary().OrderBy(x => x.Key);
             var primaryTypeGroups = new Dictionary<XivItemType, ItemTreeElement>();
             var primaryIdGroups = new Dictionary<XivItemType, Dictionary<int, ItemTreeElement>>();
             var secondaryTypeGroups = new Dictionary<XivItemType, Dictionary<int, Dictionary<XivItemType, ItemTreeElement>>>();
