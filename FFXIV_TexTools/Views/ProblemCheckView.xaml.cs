@@ -315,10 +315,11 @@ namespace FFXIV_TexTools.Views
 
 
 
-                    Parallel.ForEach(modList.Mods, (mod) =>
+                    // Spawning 1400 tasks for this check is kind of redundant when we're
+                    // really just going to do them in sequence anyways.
+                    Task.Run(async () =>
                     {
-                        Task.Run(async () =>
-                        {
+                        foreach (var mod in modList.Mods) { 
                             bool index2CorrectionNeeded = false;
                             if (cts.IsCancellationRequested)
                             {
@@ -456,8 +457,8 @@ namespace FFXIV_TexTools.Views
                                     }
                                 }
                             }
-                        }).Wait();
-                    });
+                        }
+                    }).Wait();
                 }
                 else
                 {
