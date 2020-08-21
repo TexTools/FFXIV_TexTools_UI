@@ -22,6 +22,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
 using Xceed.Wpf.Toolkit;
@@ -256,8 +257,12 @@ namespace FFXIV_TexTools.Views
 
             try
             {
-                var importResults = await texToolsModPack.ImportModPackAsync(_modPackDirectory, importList,
+                var importResults = await Task.Run(async () =>
+                {
+                    return await texToolsModPack.ImportModPackAsync(_modPackDirectory, importList,
                     gameDirectory, modListDirectory, progressIndicator);
+                });
+
 
                 TotalModsImported = importResults.ImportCount;
                 TotalModsErrored = importResults.ErrorCount;
