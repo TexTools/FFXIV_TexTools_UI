@@ -425,7 +425,10 @@ namespace FFXIV_TexTools.Views
                                     try
                                     {
                                         // Just test to see if we can get the data at all.
-                                        await dat.GetType4Data(mod.fullPath, false);
+                                        if (extension == ".tex")
+                                        {
+                                            await dat.GetType4Data(mod.fullPath, false);
+                                        }
                                         textsToAdd.Add(("\t\u2714\n", "Green"));
                                     } catch
                                     {
