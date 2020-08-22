@@ -16,6 +16,7 @@
 using FFXIV_TexTools.Helpers;
 using FFXIV_TexTools.Resources;
 using FFXIV_TexTools.ViewModels;
+using FolderSelect;
 using MahApps.Metro.Controls.Dialogs;
 using SixLabors.ImageSharp;
 using System;
@@ -25,6 +26,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
+using System.Windows.Interop;
 using Xceed.Wpf.Toolkit;
 using xivModdingFramework.Cache;
 using xivModdingFramework.Mods.DataContainers;
@@ -72,7 +74,11 @@ namespace FFXIV_TexTools.Views
                     var frameworkVersion = typeof(XivCache).Assembly.GetName().Version;
                     if (ver > frameworkVersion)
                     {
-                        throw new NotSupportedException("This modpack requires a more recent TexTools version to install.");
+
+                        var Win32Window = new WindowWrapper(new WindowInteropHelper(this).Handle);
+                        FlexibleMessageBox.Show(Win32Window, "This Modpack requires a more recent version of TexTools to install.", "Framework Version Error", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
+                        Close();
+                        return;
                     }
                 }
             }
