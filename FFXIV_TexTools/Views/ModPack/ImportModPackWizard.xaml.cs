@@ -63,7 +63,7 @@ namespace FFXIV_TexTools.Views
             ModPackDescription.Text = modPackJson.Description;
 
 
-            if (String.IsNullOrEmpty(modPackJson.MinimumFrameworkVersion))
+            if (!String.IsNullOrEmpty(modPackJson.MinimumFrameworkVersion))
             {
                 Version ver;
                 bool success = Version.TryParse(modPackJson.MinimumFrameworkVersion, out ver);

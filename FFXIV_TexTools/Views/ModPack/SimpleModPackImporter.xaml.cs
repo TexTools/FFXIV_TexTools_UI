@@ -212,7 +212,7 @@ namespace FFXIV_TexTools.Views
                     Entries.Add(new SimpleModpackEntry(JsonEntries.Count - 1, this));
                 }
 
-                if (String.IsNullOrEmpty(modPackJson.MinimumFrameworkVersion))
+                if (!String.IsNullOrEmpty(modPackJson.MinimumFrameworkVersion))
                 {
                     Version ver;
                     bool success = Version.TryParse(modPackJson.MinimumFrameworkVersion, out ver);
