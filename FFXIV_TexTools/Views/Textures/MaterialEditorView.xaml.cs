@@ -191,8 +191,6 @@ namespace FFXIV_TexTools.Views.Textures
             // Generate a fresh shader info so we can access some of the calculated fields.
             var info = new ShaderInfo() { Shader = shader, Preset = preset, TransparencyEnabled = transparency };
 
-            ColorsetComboBox.SelectedValue = info.HasColorset;
-
             if(info.HasMulti)
             {
                 SpecularLabel.Content = "Multi:";
