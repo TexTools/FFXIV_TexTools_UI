@@ -129,16 +129,7 @@ namespace FFXIV_TexTools.ViewModels
         public async Task<bool> Initialize()
         {
 
-            // Info messages do nothing when the window's not even open & on wrong thread.
-
-            var success = await CheckForOldModList();
-            if(!success)
-            {
-                // User requested a graceful shutdown, or we errored in a non-recoverable way.
-                return false;
-            }
-
-            success =  await CheckIndexFiles();
+            var success =  await CheckIndexFiles();
             if (!success)
             {
                 return false;
@@ -230,85 +221,6 @@ namespace FFXIV_TexTools.ViewModels
         }
 
 
-        /// <summary>
-        /// Checks for older modlist
-        /// </summary>
-        private async Task<bool> CheckForOldModList()
-        {
-            // This code probably needs to go soon.
-            // Textools sub 2.0 hasn't worked since before Shadowbringers, and this code was always super buggy
-            // to start with.
-
-            var oldModListFileDirectory =
-                new DirectoryInfo(
-                    $"{Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)}/TexTools/TexTools.modlist");
-
-            if (File.Exists(oldModListFileDirectory.FullName))
-            {
-                var modListContent = File.ReadAllLines(oldModListFileDirectory.FullName);
-
-                if (modListContent.Length > 0)
-                {
-                    if (FlexibleMessageBox.Show(_mainWindow.Win32Window, 
-                            UIMessages.OldTexToolsFoundMessage, UIMessages.OldModListFoundTitle,
-                            MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-                    {
-                        var modding = new Modding(_gameDirectory);
-
-                        var dat = new Dat(_gameDirectory);
-                        var error = false;
-
-                        if (_index.IsIndexLocked(XivDataFile._0A_Exd))
-                        {
-                            FlexibleMessageBox.Show(_mainWindow.Win32Window, UIMessages.ModListIndexLockedErrorMessage,
-                                UIMessages.ModListDisableFailedTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                            error = true;
-                        }
-                        else
-                        {
-                            try
-                            {
-                                await modding.DisableOldModList(oldModListFileDirectory);
-                            }
-                            catch (Exception ex)
-                            {
-                                error = true;
-                                FlexibleMessageBox.Show(_mainWindow.Win32Window, 
-                                    string.Format(UIMessages.OldModListDisableFailedMessage, ex.Message),
-                                    UIMessages.PreviousVersionErrorTitle, MessageBoxButtons.OK,
-                                    MessageBoxIcon.Error);
-                            }
-                        }
-
-                        if (!error)
-                        {
-                            File.Delete(oldModListFileDirectory.FullName);
-
-                            // Delete modded dat files
-                            foreach (var xivDataFile in (XivDataFile[])Enum.GetValues(typeof(XivDataFile)))
-                            {
-                                var datFiles = await dat.GetModdedDatList(xivDataFile);
-
-                                foreach (var datFile in datFiles)
-                                {
-                                    File.Delete(datFile);
-                                }
-                            }
-                        }
-                        else
-                        {
-                            return false;
-                        }
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
-            }
-            return true;
-        }
-
         private async Task<bool> CheckIndexFiles()
         {
             var xivDataFiles = new XivDataFile[] { XivDataFile._0A_Exd, XivDataFile._01_Bgcommon, XivDataFile._04_Chara, XivDataFile._06_Ui };
@@ -328,7 +240,7 @@ namespace FFXIV_TexTools.ViewModels
             }
             catch (Exception ex)
             {
-                var result = FlexibleMessageBox.Show("A critical error occurred when attempting to read the FFXIV index files.\n\nWould you like to restore your index backups?", "Critical Index Error", MessageBoxButtons.YesNo, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
+                var result = FlexibleMessageBox.Show("A critical error occurred when attempting to read the FFXIV index files.\n\nWould you like to restore your index backups?\n\nError: " + ex.Message, "Critical Index Error", MessageBoxButtons.YesNo, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
                 if (result == DialogResult.Yes)
                 {
                     var indexBackupsDirectory = new DirectoryInfo(Settings.Default.Backup_Directory);
