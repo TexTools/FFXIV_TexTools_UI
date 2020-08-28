@@ -1226,11 +1226,6 @@ namespace FFXIV_TexTools.ViewModels
             DirectoryInfo gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
             Index index = new Index(gameDirectory);
 
-            if (index.IsIndexLocked(XivDataFile._0A_Exd))
-            {
-                FlexibleMessageBox.Show(UIMessages.IndexLockedErrorMessage, UIMessages.IndexLockedErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return null;
-            }
 
             DirectoryInfo savePath = new DirectoryInfo(Settings.Default.Save_Directory);
             DirectoryInfo path;
