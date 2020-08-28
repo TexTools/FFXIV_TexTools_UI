@@ -1195,9 +1195,16 @@ namespace FFXIV_TexTools
             if (r == System.Windows.Forms.DialogResult.OK)
             {
                 await LockUi("Rebuilding Cache");
-                await Task.Run(() => {
-                    XivCache.RebuildCache();
-                });
+                try
+                {
+                    await Task.Run(() =>
+                    {
+                        XivCache.RebuildCache();
+                    });
+                } catch(Exception ex)
+                {
+                    FlexibleMessageBox.Show("Unable to rebuild cache file.\n\nError:" + ex.Message, "Cache Rebuild Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
                 await UnlockUi();
             }
         }

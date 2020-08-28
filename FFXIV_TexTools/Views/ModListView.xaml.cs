@@ -126,13 +126,24 @@ namespace FFXIV_TexTools.Views
 
                 if ((DataContext as ModListViewModel).ModToggleText == FFXIV_TexTools.Resources.UIStrings.Enable)
                 {
-                    await modding.ToggleModPackStatus(selectedItem.Name, true);
-                    (DataContext as ModListViewModel).ModToggleText = FFXIV_TexTools.Resources.UIStrings.Disable;
+                    try
+                    {
+                        await modding.ToggleModPackStatus(selectedItem.Name, true);
+                        (DataContext as ModListViewModel).ModToggleText = FFXIV_TexTools.Resources.UIStrings.Disable;
+                    } catch(Exception ex)
+                    {
+                        FlexibleMessageBox.Show("Unable to fully disable Modpack.\nPlease use Help => Download Index Backups/Help => Start Over\n" + "Error: " + ex.Message, "Mod Disable Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
                 else
                 {
-                    await modding.ToggleModPackStatus(selectedItem.Name, false);
-                    (DataContext as ModListViewModel).ModToggleText = FFXIV_TexTools.Resources.UIStrings.Enable;
+                    try { 
+                        await modding.ToggleModPackStatus(selectedItem.Name, false);
+                        (DataContext as ModListViewModel).ModToggleText = FFXIV_TexTools.Resources.UIStrings.Enable;
+                    } catch (Exception ex)
+                    {
+                        FlexibleMessageBox.Show("Unable to fully enable Modpack.\n\n" + "Error: " + ex.Message, "Mod Enable Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
 
                 (DataContext as ModListViewModel).UpdateInfoGrid(selectedItem);
@@ -144,7 +155,14 @@ namespace FFXIV_TexTools.Views
                 {
                     if (selectedModItem.ModItem.enabled)
                     {
-                        var success = await modding.ToggleModStatus(selectedModItem.ModItem.fullPath, false);
+
+                        var success = false;
+                        try { 
+                            success = await modding.ToggleModStatus(selectedModItem.ModItem.fullPath, false);
+                        } catch (Exception ex)
+                        {
+                            FlexibleMessageBox.Show("Unable to disable mod.\nPlease use Help => Download Index Backups/Help => Start Over\n" + "Error: " + ex.Message, "Mod Disable Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
                         if (success)
                         {
                             (DataContext as ModListViewModel).ModToggleText = FFXIV_TexTools.Resources.UIStrings.Enable;
@@ -156,7 +174,15 @@ namespace FFXIV_TexTools.Views
                     }
                     else
                     {
-                        var success = await modding.ToggleModStatus(selectedModItem.ModItem.fullPath, true);
+                        var success = false;
+                        try
+                        {
+                            success = await modding.ToggleModStatus(selectedModItem.ModItem.fullPath, true);
+                        }
+                        catch (Exception ex)
+                        {
+                            FlexibleMessageBox.Show("Unable to enable mod.\n\n" + "Error: " + ex.Message, "Mod Disable Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
                         if (success)
                         {
                             (DataContext as ModListViewModel).ModToggleText = FFXIV_TexTools.Resources.UIStrings.Disable;
