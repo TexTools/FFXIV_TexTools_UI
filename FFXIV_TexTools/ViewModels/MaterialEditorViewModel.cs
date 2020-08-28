@@ -9,6 +9,8 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Forms;
 using xivModdingFramework.Cache;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Items;
@@ -496,25 +498,30 @@ namespace FFXIV_TexTools.ViewModels
             }
 
             files = files.Distinct().ToList();
-
-            foreach(var file in files)
+            try
             {
-                var modEntry = await _modding.TryGetModEntry(file);
+                foreach (var file in files)
+                {
+                    var modEntry = await _modding.TryGetModEntry(file);
 
-                if (!modEntry.enabled)
-                {
-                    continue;
-                }
+                    if (!modEntry.enabled)
+                    {
+                        continue;
+                    }
 
-                // If the file is a custom addition, and not a modification.
-                if (modEntry.source != XivStrings.TexTools)
-                {
-                    await _modding.DeleteMod(file);
+                    // If the file is a custom addition, and not a modification.
+                    if (modEntry.source != XivStrings.TexTools)
+                    {
+                        await _modding.DeleteMod(file);
+                    }
+                    else
+                    {
+                        await _modding.ToggleModStatus(file, false);
+                    }
                 }
-                else
-                {
-                    await _modding.ToggleModStatus(file, false);
-                }
+            } catch(Exception ex)
+            {
+                FlexibleMessageBox.Show("Unable to delete Mod.\n\nError: " + ex.Message, "Mod Delete Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             _view.Close(false);
         }

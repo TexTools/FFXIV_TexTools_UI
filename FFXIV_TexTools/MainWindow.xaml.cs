@@ -1206,6 +1206,7 @@ namespace FFXIV_TexTools
                     FlexibleMessageBox.Show("Unable to rebuild cache file.\n\nError:" + ex.Message, "Cache Rebuild Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 await UnlockUi();
+                await RefreshTree(this);
             }
         }
         private async void Menu_ScanForSets_Click(object sender, RoutedEventArgs e)
@@ -1292,7 +1293,8 @@ namespace FFXIV_TexTools
                 }
                 catch(Exception ex)
                 {
-                    FlexibleMessageBox.Show(UIMessages.StartOverErrorMessage,
+                    var msg = UIMessages.StartOverErrorMessage + "\n\nError:" + ex.Message;
+                    FlexibleMessageBox.Show(msg,
                         UIMessages.StartOverErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     await UnlockUi();
                     return;
