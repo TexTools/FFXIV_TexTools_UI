@@ -204,32 +204,38 @@ namespace FFXIV_TexTools.Views
             var gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
             var modding = new Modding(gameDirectory);
 
-            if ((ModListTreeView.SelectedItem as Category).ParentCategory.Name.Equals("ModPacks"))
+            try
             {
-                if (FlexibleMessageBox.Show(
-                        UIMessages.DeleteModPackMessage, 
-                        UIMessages.DeleteModPackTitle,
-                        MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == System.Windows.Forms.DialogResult.Yes)
+                if ((ModListTreeView.SelectedItem as Category).ParentCategory.Name.Equals("ModPacks"))
                 {
-                    var progress = await this.ShowProgressAsync(UIMessages.ModPack_Delete, UIMessages.PleaseStandByMessage);
+                    if (FlexibleMessageBox.Show(
+                            UIMessages.DeleteModPackMessage,
+                            UIMessages.DeleteModPackTitle,
+                            MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == System.Windows.Forms.DialogResult.Yes)
+                    {
+                        var progress = await this.ShowProgressAsync(UIMessages.ModPack_Delete, UIMessages.PleaseStandByMessage);
 
-                    await modding.DeleteModPack((ModListTreeView.SelectedItem as Category).Name);
-                    (DataContext as ModListViewModel).RemoveModPack();
+                        await modding.DeleteModPack((ModListTreeView.SelectedItem as Category).Name);
+                        (DataContext as ModListViewModel).RemoveModPack();
 
-                    await progress.CloseAsync();
+                        await progress.CloseAsync();
+                    }
+
                 }
+                else
+                {
+                    var enumerable = ModItemList.SelectedItems as IEnumerable;
+                    var selectedItems = enumerable.OfType<ModListViewModel.ModListModel>().ToArray();
 
-            }
-            else
+                    foreach (var selectedModItem in selectedItems)
+                    {
+                        await modding.DeleteMod(selectedModItem.ModItem.fullPath);
+                        (DataContext as ModListViewModel).RemoveItem(selectedModItem, (Category)ModListTreeView.SelectedItem);
+                    }
+                }
+            } catch(Exception Ex)
             {
-                var enumerable = ModItemList.SelectedItems as IEnumerable;
-                var selectedItems = enumerable.OfType<ModListViewModel.ModListModel>().ToArray();
-
-                foreach (var selectedModItem in selectedItems)
-                {
-                    await modding.DeleteMod(selectedModItem.ModItem.fullPath);
-                    (DataContext as ModListViewModel).RemoveItem(selectedModItem, (Category)ModListTreeView.SelectedItem);
-                }
+                FlexibleMessageBox.Show("Unable to delete Mod or Modpack.\n\nError: " + Ex.Message, "Mod Delete Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

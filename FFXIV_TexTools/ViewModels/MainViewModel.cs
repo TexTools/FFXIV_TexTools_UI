@@ -904,11 +904,21 @@ namespace FFXIV_TexTools.ViewModels
                     UIMessages.EnableAllModsMessage, UIMessages.EnablingModsTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
                 var modding = new Modding(_gameDirectory);
-                await modding.ToggleAllMods(true, progressIndicator);
+                bool err = false;
+                try
+                {
+                    await modding.ToggleAllMods(true, progressIndicator);
+                } catch(Exception ex)
+                {
+                    FlexibleMessageBox.Show("Failed to Enable all Mods: \n\nError:" + ex.Message, "Enable Mod Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    err = true;
+                }
 
                 await _progressController.CloseAsync();
-
-                await _mainWindow.ShowMessageAsync(UIMessages.SuccessTitle, UIMessages.ModsEnabledSuccessMessage);
+                if (!err)
+                {
+                    await _mainWindow.ShowMessageAsync(UIMessages.SuccessTitle, UIMessages.ModsEnabledSuccessMessage);
+                }
             }
             else
             {
@@ -935,11 +945,21 @@ namespace FFXIV_TexTools.ViewModels
                     UIMessages.DisableAllModsMessage, UIMessages.DisableAllModsTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
                 var modding = new Modding(_gameDirectory);
-                await modding.ToggleAllMods(false, progressIndicator);
+                bool err = false;
+                try { 
+                    await modding.ToggleAllMods(false, progressIndicator);
+                } catch (Exception ex)
+                {
+                    FlexibleMessageBox.Show("Failed to Disable all Mods: \n\nError:" + ex.Message, "Disable Mod Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    err = true;
+                }
 
                 await _progressController.CloseAsync();
 
-                await _mainWindow.ShowMessageAsync(UIMessages.SuccessTitle, UIMessages.ModsDisabledSuccessMessage);
+                if (!err)
+                {
+                    await _mainWindow.ShowMessageAsync(UIMessages.SuccessTitle, UIMessages.ModsDisabledSuccessMessage);
+                }
             }
             else
             {
