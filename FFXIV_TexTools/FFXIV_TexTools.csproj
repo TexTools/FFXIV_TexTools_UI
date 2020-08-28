@@ -297,6 +297,7 @@
     <Compile Include="ViewModels\ImportModelViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\MaterialEditorViewModel.cs" />
+    <Compile Include="ViewModels\MetadataViewModel.cs" />
     <Compile Include="ViewModels\ModConverterViewModel.cs" />
     <Compile Include="ViewModels\ModelViewModel.cs" />
     <Compile Include="ViewModels\ModListViewModel.cs" />
@@ -314,11 +315,14 @@
     <Compile Include="Views\Controls\DescribedButton.xaml.cs">
       <DependentUpon>DescribedButton.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Controls\FileList.xaml.cs">
-      <DependentUpon>FileList.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\Controls\ItemSelectControl.xaml.cs">
       <DependentUpon>ItemSelectControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\PathDisplay.xaml.cs">
+      <DependentUpon>PathDisplay.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\CopyFileDialog.xaml.cs">
+      <DependentUpon>CopyFileDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\CustomizeSettingsView.xaml.cs">
       <DependentUpon>CustomizeSettingsView.xaml</DependentUpon>
@@ -331,6 +335,27 @@
     </Compile>
     <Compile Include="Views\LanguageSelectView.xaml.cs">
       <DependentUpon>LanguageSelectView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Metadata\AffectedFilesView.xaml.cs">
+      <DependentUpon>AffectedFilesView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Metadata\EqdpControl.xaml.cs">
+      <DependentUpon>EqdpControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Metadata\EqpControl.xaml.cs">
+      <DependentUpon>EqpControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Metadata\ImcControl.xaml.cs">
+      <DependentUpon>ImcControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Metadata\MetadataView.xaml.cs">
+      <DependentUpon>MetadataView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Metadata\SkeletonControl.xaml.cs">
+      <DependentUpon>SkeletonControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Metadata\VisorControl.xaml.cs">
+      <DependentUpon>VisorControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ModConverterView.xaml.cs">
       <DependentUpon>ModConverterView.xaml</DependentUpon>
@@ -463,11 +488,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Controls\FileList.xaml">
+    <Page Include="Views\Controls\ItemSelectControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Controls\ItemSelectControl.xaml">
+    <Page Include="Views\Controls\PathDisplay.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\CopyFileDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -484,6 +513,34 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\LanguageSelectView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Metadata\AffectedFilesView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Metadata\EqdpControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Metadata\EqpControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Metadata\ImcControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Metadata\MetadataView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Metadata\SkeletonControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Metadata\VisorControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -396,6 +396,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Copy File.
+        /// </summary>
+        public static string Copy_File {
+            get {
+                return ResourceManager.GetString("Copy_File", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Count.
         /// </summary>
         public static string Count {
@@ -473,24 +482,6 @@ namespace FFXIV_TexTools.Resources {
         public static string Customize_DefaultRace {
             get {
                 return ResourceManager.GetString("Customize_DefaultRace", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to DAE file to import.
-        /// </summary>
-        public static string DAE_file_to_import {
-            get {
-                return ResourceManager.GetString("DAE_file_to_import", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to DAE Info.
-        /// </summary>
-        public static string DAE_Info {
-            get {
-                return ResourceManager.GetString("DAE_Info", resourceCulture);
             }
         }
         
@@ -725,24 +716,6 @@ namespace FFXIV_TexTools.Resources {
         public static string Export_Both {
             get {
                 return ResourceManager.GetString("Export_Both", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Export DAE file.
-        /// </summary>
-        public static string Export_DAE_file {
-            get {
-                return ResourceManager.GetString("Export_DAE_file", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Export DAE + Materials.
-        /// </summary>
-        public static string Export_DAE_Materials {
-            get {
-                return ResourceManager.GetString("Export_DAE_Materials", resourceCulture);
             }
         }
         

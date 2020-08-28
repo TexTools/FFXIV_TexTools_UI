@@ -144,6 +144,7 @@ namespace FFXIV_TexTools.ViewModels
                     category.Categories.Add(categoryItem);
                 }
 
+
                 if(_nameSort)
                 {
                     category.Categories = new ObservableCollection<Category>(category.Categories.OrderBy(i => i.Name));
@@ -156,6 +157,7 @@ namespace FFXIV_TexTools.ViewModels
 
                 foreach (var modEntry in modList.Mods)
                 {
+                    if (modEntry.IsInternal()) continue;
                     if (!modEntry.name.Equals(string.Empty))
                     {
                         mainCategories.Add(modEntry.category);
@@ -279,6 +281,7 @@ namespace FFXIV_TexTools.ViewModels
 
                     foreach (var modEntry in modsInModpack)
                     {
+                        if (modEntry.IsInternal()) continue;
                         if (!modEntry.name.Equals(string.Empty))
                         {
                             mainCategories.Add(modEntry.category);
@@ -570,6 +573,8 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     foreach (var modItem in modItems)
                     {
+                        if (modItem.IsInternal()) continue;
+
                         var itemPath = modItem.fullPath;
 
                         var modListModel = new ModListModel
@@ -683,7 +688,7 @@ namespace FFXIV_TexTools.ViewModels
                                 modListModel.Image = Application.Current.Dispatcher.Invoke(() => new BitmapImage(
                                     new Uri("pack://application:,,,/FFXIV_TexTools;component/Resources/3DModel.png")));
                             }
-                            else if (itemPath.Contains(".imc"))
+                            else if (itemPath.Contains(".imc") || itemPath.Contains(".eqp") || itemPath.Contains(".eqdp") || itemPath.Contains(".meta"))
                             {
                                 modListModel.Image = Application.Current.Dispatcher.Invoke(() => new BitmapImage(
                                     new Uri("pack://application:,,,/FFXIV_TexTools;component/Resources/Metadata.png")));
@@ -822,12 +827,16 @@ namespace FFXIV_TexTools.ViewModels
             }
 
             ModPackTitle = category.Name;
-            ModPackModCountLabel = modPackModList.Count.ToString();
 
             var modNameDict = new Dictionary<string, int>();
 
+            var count = 0;
             foreach (var mod in modPackModList)
             {
+                if (mod.IsInternal()) continue;
+
+                count++;
+
                 if (mod.enabled)
                 {
                     enabledCount++;
@@ -846,6 +855,7 @@ namespace FFXIV_TexTools.ViewModels
                     modNameDict[mod.name] += 1;
                 }
             }
+            ModPackModCountLabel = count.ToString();
 
             foreach (var mod in modNameDict)
             {

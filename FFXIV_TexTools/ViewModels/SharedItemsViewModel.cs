@@ -129,16 +129,12 @@ namespace FFXIV_TexTools.ViewModels
             }
             var sharedList = await im.GetSharedModelItems();
 
-            var myVariantNumber = fullInfo.GetEntry(im.ModelInfo.ImcSubsetID, im.GetItemSlotAbbreviation()).Variant;
+            var myMaterialSetNumber = fullInfo.GetEntry(im.ModelInfo.ImcSubsetID, im.GetItemSlotAbbreviation()).Variant;
             var myImcNumber = im.ModelInfo.ImcSubsetID;
 
-            var materialVariantHeaders = new Dictionary<int, TreeViewItem>();
             var imcVariantHeaders = new Dictionary<int, TreeViewItem>();
 
-            // TODO -
-            // Add the Variant header nodes at the start, and only scan the IMC files when a 
 
-            TreeViewItem myMaterialHeader = null;
             TreeViewItem myImcHeader = null;
             TreeViewItem myNode = null;
             foreach(var i in sharedList)
@@ -150,39 +146,35 @@ namespace FFXIV_TexTools.ViewModels
                     // Invalid IMC Set ID for the item.
                     continue;
                 }
+                var imcVariant = i.ModelInfo.ImcSubsetID;
+                var mtrlVariant = info.Variant;
 
-                if (!materialVariantHeaders.ContainsKey(info.Variant))
+                if (!imcVariantHeaders.ContainsKey(imcVariant))
                 {
-                    materialVariantHeaders.Add(info.Variant, new TreeViewItem());
-                    materialVariantHeaders[info.Variant].Header = "Material Variant #" + info.Variant;
-                    materialVariantHeaders[info.Variant].DataContext = info.Variant;
-                }
+                    imcVariantHeaders.Add(imcVariant, new TreeViewItem());
+                    imcVariantHeaders[imcVariant].Header = "Variant " + i.ModelInfo.ImcSubsetID;
+                    imcVariantHeaders[imcVariant].DataContext = i.ModelInfo.ImcSubsetID;
 
-                if (!imcVariantHeaders.ContainsKey(i.ModelInfo.ImcSubsetID))
-                {
-                    imcVariantHeaders.Add(i.ModelInfo.ImcSubsetID, new TreeViewItem());
-                    imcVariantHeaders[i.ModelInfo.ImcSubsetID].Header = "IMC Variant #" + i.ModelInfo.ImcSubsetID;
-                    imcVariantHeaders[i.ModelInfo.ImcSubsetID].DataContext = i.ModelInfo.ImcSubsetID;
+                    imcVariantHeaders[imcVariant].Header += " - Material Set: " + mtrlVariant;
 
                     var hiddenParts = MaskToHidenParts(info.Mask);
-                    imcVariantHeaders[i.ModelInfo.ImcSubsetID].Header += " - Hidden Parts: ";
+                    imcVariantHeaders[i.ModelInfo.ImcSubsetID].Header += " | Hidden Parts: ";
 
                     if (hiddenParts.Count > 0)
                     {
-                        imcVariantHeaders[i.ModelInfo.ImcSubsetID].Header += String.Join(",", hiddenParts);
+                        imcVariantHeaders[imcVariant].Header += String.Join(",", hiddenParts);
                     }
                     else
                     {
-                        imcVariantHeaders[i.ModelInfo.ImcSubsetID].Header += "None";
+                        imcVariantHeaders[imcVariant].Header += "None";
                     }
 
-                    materialVariantHeaders[info.Variant].Items.Add(imcVariantHeaders[i.ModelInfo.ImcSubsetID]);
+                    imcVariantHeaders[imcVariant].Header += " - [%] " + i.Name;
 
                     if (i.ModelInfo.ImcSubsetID == myImcNumber)
                     {
-                        myImcHeader = imcVariantHeaders[i.ModelInfo.ImcSubsetID];
+                        myImcHeader = imcVariantHeaders[imcVariant];
                     }
-
                 }
 
                 var nextNode = new TreeViewItem();
@@ -193,11 +185,6 @@ namespace FFXIV_TexTools.ViewModels
                 imcVariantHeaders[i.ModelInfo.ImcSubsetID].Items.Add(nextNode);
 
                 
-                if(myMaterialHeader == null && info.Variant == myVariantNumber)
-                {
-                    myMaterialHeader = materialVariantHeaders[info.Variant];
-                }
-
                 if (i.Name == im.Name)
                 {
                     myNode = nextNode;
@@ -207,7 +194,15 @@ namespace FFXIV_TexTools.ViewModels
                 }
             }
 
-            var ordered = materialVariantHeaders.OrderBy(x => x.Key);
+            foreach (var h in imcVariantHeaders)
+            {
+
+                var st = ((string)h.Value.Header);
+                h.Value.Header = st.Replace("%", h.Value.Items.Count.ToString());
+            }
+
+
+            var ordered = imcVariantHeaders.OrderBy(x => x.Key);
 
             foreach(var kv in ordered)
             {
@@ -215,10 +210,6 @@ namespace FFXIV_TexTools.ViewModels
             }
             nextParent.IsExpanded = true;
 
-            if (myMaterialHeader != null)
-            {
-                myMaterialHeader.IsExpanded = true;
-            }
             if (myImcHeader != null)
             {
                 myImcHeader.IsExpanded = true;

@@ -7,8 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FFXIV_TexTools", "FFXIV_Tex
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "xivModdingFramework", "lib\xivModdingFramework\xivModdingFramework\xivModdingFramework.csproj", "{CDC45CC3-60E7-4CB1-A267-BE1CB3BDE340}"
 EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "TexTools_Setup", "TexTools_Setup\TexTools_Setup.vdproj", "{E8B5A836-A883-4818-ACA3-5C99B9D4F5B7}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -43,12 +41,6 @@ Global
 		{CDC45CC3-60E7-4CB1-A267-BE1CB3BDE340}.Release|x64.Build.0 = Release|Any CPU
 		{CDC45CC3-60E7-4CB1-A267-BE1CB3BDE340}.Release|x86.ActiveCfg = Release|Any CPU
 		{CDC45CC3-60E7-4CB1-A267-BE1CB3BDE340}.Release|x86.Build.0 = Release|Any CPU
-		{E8B5A836-A883-4818-ACA3-5C99B9D4F5B7}.Debug|Any CPU.ActiveCfg = Debug
-		{E8B5A836-A883-4818-ACA3-5C99B9D4F5B7}.Debug|x64.ActiveCfg = Debug
-		{E8B5A836-A883-4818-ACA3-5C99B9D4F5B7}.Debug|x86.ActiveCfg = Debug
-		{E8B5A836-A883-4818-ACA3-5C99B9D4F5B7}.Release|Any CPU.ActiveCfg = Release
-		{E8B5A836-A883-4818-ACA3-5C99B9D4F5B7}.Release|x64.ActiveCfg = Release
-		{E8B5A836-A883-4818-ACA3-5C99B9D4F5B7}.Release|x86.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

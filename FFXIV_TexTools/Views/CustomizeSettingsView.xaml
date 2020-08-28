@@ -49,8 +49,7 @@
                         <ColumnDefinition/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <ComboBox VerticalAlignment="Top" Grid.Column="0" mah:TextBoxHelper.UseFloatingWatermark="True" mah:TextBoxHelper.Watermark="DAE Plugin Target" ItemsSource="{Binding TargetImporters}" SelectedItem="{Binding SelectedImporter}" Margin="5"/>
-                    <TextBox x:Name="AuthorTextBox" Grid.Column="1" Text="{Binding DefaultAuthor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.Mod_Pack_Author}}" mah:TextBoxHelper.UseFloatingWatermark="True" Margin="5" VerticalContentAlignment="Center"/>
+                    <TextBox x:Name="AuthorTextBox" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding DefaultAuthor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.Mod_Pack_Author}}" mah:TextBoxHelper.UseFloatingWatermark="True" Margin="5" VerticalContentAlignment="Center"/>
                 </Grid>
             </GroupBox>
             <GroupBox Grid.Row="2" Header="Default Race">

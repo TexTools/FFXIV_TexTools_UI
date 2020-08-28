@@ -42,6 +42,9 @@ using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
+using xivModdingFramework.Cache;
 using xivModdingFramework.Exd.FileTypes;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Helpers;
@@ -52,6 +55,7 @@ using xivModdingFramework.Items.Enums;
 using xivModdingFramework.Items.Interfaces;
 using xivModdingFramework.Materials.DataContainers;
 using xivModdingFramework.Materials.FileTypes;
+using xivModdingFramework.Models.FileTypes;
 using xivModdingFramework.Mods;
 using xivModdingFramework.Mods.Enums;
 using xivModdingFramework.SqPack.FileTypes;
@@ -64,20 +68,143 @@ namespace FFXIV_TexTools.ViewModels
 {
     public class TextureViewModel : INotifyPropertyChanged
     {
-        private ObservableCollection<ComboBoxData> _raceComboBoxData = new ObservableCollection<ComboBoxData>();
-        private ObservableCollection<ComboBoxData> _partComboBoxData = new ObservableCollection<ComboBoxData>();
-        private ObservableCollection<ComboBoxData> _typeComboBoxData = new ObservableCollection<ComboBoxData>();
-        private ObservableCollection<ComboBoxData> _typePartComboBoxData = new ObservableCollection<ComboBoxData>();
-        private ObservableCollection<ComboBoxData> _mapComboBoxData = new ObservableCollection<ComboBoxData>();
+        // The actual underlying observeables for the UI boxes.
+        private ObservableCollection<KeyValuePair<string, int>> _primaryComboBoxData = new ObservableCollection<KeyValuePair<string, int>>();
+        private ObservableCollection<KeyValuePair<string, string>> _materialComboBoxData = new ObservableCollection<KeyValuePair<string, string>>();
+        private ObservableCollection<KeyValuePair<string, MapInfo>> _mapComboBoxData = new ObservableCollection<KeyValuePair<string, MapInfo>>();
 
-        private ComboBoxData _selectedRace, _selectedPart, _selectedType, _selectedTypePart, _selectedMap;
-        private Gear _gear;
-        private Character _character;
-        private Companions _companions;
-        private Mtrl _mtrl;
-        private Tex _tex;
+        public ObservableCollection<KeyValuePair<string, int>> Races { get { return _primaryComboBoxData; } }
+        public ObservableCollection<KeyValuePair<string, string>> Materials { get { return _materialComboBoxData; } }
+        public ObservableCollection<KeyValuePair<string, MapInfo>> Maps { get { return _mapComboBoxData; } }
+
+        private string _lastCategory = null;
+        private int _lastPrimary = -1;
+
+
+
+        private int SelectedPrimary
+        {
+            get
+            {
+                var val = _textureView.RaceComboBox.SelectedValue;
+                if (val == null)
+                {
+                    return -1;
+                }
+                return (int)val;
+            }
+            set
+            {
+                var idx = -1;
+                for (int i = 0; i < _primaryComboBoxData.Count; i++)
+                {
+                    if (_primaryComboBoxData[i].Value == value)
+                    {
+                        idx = i;
+                        break;
+                    }
+                }
+
+                _textureView.RaceComboBox.SelectedIndex = idx;
+            }
+        }
+
+        private XivRace SelectedRace
+        {
+            get {
+                var val = _textureView.RaceComboBox.SelectedValue;
+                if(val == null)
+                {
+                    return XivRace.All_Races;
+                }
+                return XivRaces.GetXivRace((int)val);
+            }
+            set
+            {
+                var code = value.GetRaceCodeInt();
+                var idx = -1;
+                for(int i = 0; i < _primaryComboBoxData.Count; i++)
+                {
+                    if(_primaryComboBoxData[i].Value == code)
+                    {
+                        idx = i;
+                        break;
+                    }
+                }
+
+                _textureView.RaceComboBox.SelectedIndex = idx;
+            }
+        }
+
+        private string SelectedMaterial
+        {
+            get
+            {
+                var val = _textureView.MaterialComboBox.SelectedValue;
+                if (val == null)
+                {
+                    return null;
+                }
+                return (string)val;
+            }
+            set
+            {
+                if (value == null)
+                {
+                    _textureView.MaterialComboBox.SelectedIndex = -1;
+                    return;
+                }
+
+                var idx = -1;
+                for (int i = 0; i < _materialComboBoxData.Count; i++)
+                {
+                    if (_materialComboBoxData[i].Value == value)
+                    {
+                        idx = i;
+                        break;
+                    }
+                }
+
+                _textureView.MaterialComboBox.SelectedIndex = idx;
+            }
+        }
+        private MapInfo SelectedMap
+        {
+            get
+            {
+                var val = _textureView.MapComboBox.SelectedValue;
+                if (val == null)
+                {
+                    return null;
+                }
+
+                return (MapInfo)val;
+            }
+            set
+            {
+                if(value == null)
+                {
+                    _textureView.MapComboBox.SelectedIndex = -1;
+                    return;
+                }
+
+                var idx = -1;
+                for (int i = 0; i < _mapComboBoxData.Count; i++)
+                {
+                    if (_mapComboBoxData[i].Value.Path == value.Path)
+                    {
+                        idx = i;
+                        break;
+                    }
+                }
+
+                _textureView.MapComboBox.SelectedIndex = idx;
+            }
+        }
+
+        private bool _primaryIsRace = true;
+
         private XivMtrl _xivMtrl;
-        private Modding _modList;
         private XivUi _uiItem;
         private BitmapSource _imageDisplay;
         private ColorChannels _imageEffect;
@@ -86,20 +213,21 @@ namespace FFXIV_TexTools.ViewModels
 
         private Dictionary<XivRace, int[]> _charaRaceAndNumberDictionary;
 
-        private Visibility _typePartVisibility, _typeVisibility, _partVisibility;
         private IItemModel _item;
+        private XivDependencyRoot _root;
 
         private string _pathString, _textureFormat, _textureDimensions, _category, _mipMapInfo;
-        private string _partWatermark = XivStrings.Part, _typeWatermark = XivStrings.Type, _raceWatermark = XivStrings.Race,
+        private string _partWatermark = XivStrings.Material, _typeWatermark = XivStrings.Type, _raceWatermark = XivStrings.Race,
             _typePartWatermark = XivStrings.TypePart, _textureMapWatermark = XivStrings.Texture_Map;
         private string _modToggleText = UIStrings.Enable_Disable;
 
-        private bool _raceEnabled, _partEnabled, _typeEnabled, _typePartEnabled, _mapEnabled, _channelsEnabled;
-        private bool _exportEnabled, _importEnabled, _modStatusEnabled, _moreOptionsEnabled, _translucencyEnabled, _translucencyCheck, _addNewTexturePartEnabled=true;
+        private bool _raceEnabled, _materialEnabled, _mapEnabled, _channelsEnabled;
+        private bool _exportEnabled, _importEnabled, _modStatusEnabled, _moreOptionsEnabled, _addMaterialEnabled=false;
         private bool _materialEditorEnabled = false;
         private bool _redChecked = true, _greenChecked = true, _blueChecked = true, _alphaChecked;
 
-        private int _raceIndex, _partIndex, _typeIndex, _typePartIndex, _mapIndex, _partCount, _typeCount, _typePartCount, _mapCount, _raceCount;
+        private bool _hasVfx = false;
+        private string _vfxPath = null;
 
         public event EventHandler LoadingComplete;
 
@@ -107,6 +235,37 @@ namespace FFXIV_TexTools.ViewModels
         {
             _textureView = textureView;
             ChannelsEnabled = false;
+
+            _textureView.RaceComboBox.SelectionChanged += PrimaryComboBox_SelectionChanged;
+            _textureView.MaterialComboBox.SelectionChanged += MaterialComboBox_SelectionChanged;
+            _textureView.MapComboBox.SelectionChanged += MapComboBox_SelectionChanged;
+
+            var mw = MainWindow.GetMainWindow();
+            mw.SelectedPrimaryItemValueChanged += Mw_SelectedPrimaryItemValueChanged;
+        }
+
+        /// <summary>
+        /// Called when the main window fires the number changed event.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Mw_SelectedPrimaryItemValueChanged(object sender, int e)
+        {
+            if (e < 0) return;
+            if (SelectedPrimary == e) return;
+            if (_item == null) return;
+            if (_tab.IsSelected) return;
+            if (!_primaryComboBoxData.Any(x => x.Value == e)) return;
+            SelectedPrimary = e;
+        }
+
+        private System.Windows.Controls.TabItem _tab
+        {
+            get
+            {
+                var mw = MainWindow.GetMainWindow();
+                return mw.TextureTabItem;
+            }
         }
 
         /// <summary>
@@ -117,156 +276,486 @@ namespace FFXIV_TexTools.ViewModels
         {
             ClearAll();
 
-            var gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
-            _mtrl = new Mtrl(gameDirectory, item.DataFile, GetLanguage());
-            _materialEditorEnabled = false;
+            _root = item.GetRoot();
 
-            _tex = new Tex(gameDirectory);
-            _modList = new Modding(gameDirectory);
-
-            if (item.PrimaryCategory.Equals(XivStrings.Gear))
+            if(_root == null)
             {
-                _category = XivStrings.Gear;
-                _item = item as IItemModel;
+                _primaryIsRace = false;
+                await HandleTexOnlyItem(item);
+                return;
+            }
 
-                _gear = new Gear(gameDirectory, GetLanguage());
+            _item = (IItemModel) item;
+            var gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
 
-                var gearItem = item as XivGear;
+            var _eqp = new Eqp(gameDirectory);
+            var races = new List<XivRace>() { XivRace.All_Races };
 
-                var raceList = await _gear.GetRacesForTextures(gearItem, item.DataFile);
+            if (_root.Info.PrimaryType == XivItemType.human && _root.Info.SecondaryId == null || _root.Info.SecondaryId == 0)
+            {
+                _primaryIsRace = false;
+                RaceWatermark = _item.SecondaryCategory + " Number";
+                // In this case, we switch the main race toggle over to be the item number.
+                // Really *either* is wrong, as each race + sub-item # has its own root, but
+                // that's just a really awful user experience.
 
-                foreach (var xivRace in raceList)
+
+                var _character = new Character(XivCache.GameInfo.GameDirectory, XivCache.GameInfo.GameLanguage);
+                var numbers = await _character.GetNumbersForCharacterItem((XivCharacter) _item);
+
+                foreach (var i in numbers)
                 {
-                    var raceCBD = new ComboBoxData{Name = xivRace.GetDisplayName(), XivRace = xivRace};
-
-                    Races.Add(raceCBD);
+                    var name = item.SecondaryCategory + " - " + i.ToString().PadLeft(4, '0');
+                    _primaryComboBoxData.Add(new KeyValuePair<string, int>(name, i));
                 }
             }
-            else if (item.PrimaryCategory.Equals(XivStrings.Companions))
+            else
             {
-                _companions = new Companions(gameDirectory, GetLanguage());
-                _category = XivStrings.Companions;
-                _item = item as IItemModel;
+                RaceWatermark = XivStrings.Race;
+                _primaryIsRace = true;
 
-                Races.Add(_item.GetPrimaryItemType() == XivItemType.demihuman
-                    ? new ComboBoxData {Name = XivRace.DemiHuman.GetDisplayName(), XivRace = XivRace.DemiHuman}
-                    : new ComboBoxData {Name = XivRace.Monster.GetDisplayName(), XivRace = XivRace.Monster});
-            }
-            else if (item.PrimaryCategory.Equals(XivStrings.Character))
-            {
-                _character = new Character(gameDirectory, GetLanguage());
-                _item = item as IItemModel;
-
-                if (_item.SecondaryCategory.Equals(XivStrings.Face_Paint) ||
-                    _item.SecondaryCategory.Equals(XivStrings.Equipment_Decals))
+                races = await _eqp.GetAvailableRacialModels(item);
+                if(races.Count == 0)
                 {
-                    Races.Add(new ComboBoxData{Name = XivRace.All_Races.GetDisplayName(), XivRace = XivRace.All_Races});
+                    // This root has the race pre-specified within it.
+                    if (_root.Info.PrimaryType == XivItemType.human)
+                    {
+                        races = new List<XivRace>()
+                        {
+                            XivRaces.GetXivRace(_root.Info.PrimaryId)
+                        };
+                    }
+                    else
+                    {
+                        // Just use default.
+                        races = new List<XivRace>() { XivRace.All_Races };
+                    }
+                }
+
+                foreach (var race in races)
+                {
+                    _primaryComboBoxData.Add(new KeyValuePair<string, int>(race.GetDisplayName(), race.GetRaceCodeInt()));
+                }
+            }
+
+
+            RaceComboboxEnabled = _primaryComboBoxData.Count > 0;
+
+
+
+            // Change selected race, triggering the selection event below this.
+            if (_primaryComboBoxData.Count > 0)
+            {
+
+                var userRace = XivRaces.GetXivRaceFromDisplayName(Settings.Default.Default_Race_Selection);
+
+                var defaultValue = _primaryComboBoxData[0].Value;
+                if (userRace != XivRace.All_Races)
+                {
+                    var val = userRace.GetRaceCodeInt();
+                    if (_primaryComboBoxData.Any(x => x.Value == val)) {
+                        defaultValue = val;
+                    }
+                }
+
+                bool tryReselect = _lastCategory == _item.PrimaryCategory;
+                _lastCategory = _item.PrimaryCategory;
+
+                if (tryReselect)
+                {
+                    if(_primaryComboBoxData.Any(x => x.Value == _lastPrimary))
+                    {
+                        SelectedPrimary = _lastPrimary;
+                    } else
+                    {
+                        SelectedPrimary = defaultValue;
+                    }
                 }
                 else
                 {
-                    _charaRaceAndNumberDictionary = await _character.GetRacesAndNumbersForTextures(item as XivCharacter);
+                    SelectedPrimary = defaultValue;
+                }
+            }
+            else
+            {
+                MaterialComboBoxEnabled = false;
+                MapComboBoxEnabled = false;
+                OnLoadingComplete();
+            }
+        }
 
-                    foreach (var racesAndNumber in _charaRaceAndNumberDictionary)
+        private async void PrimaryComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            _materialComboBoxData.Clear();
+            _mapComboBoxData.Clear();
+            if (_item == null)
+            {
+                _xivMtrl = null;
+                RaceComboboxEnabled = false;
+                MaterialComboBoxEnabled = false;
+                MapComboBoxEnabled = false;
+                OnLoadingComplete();
+                return;
+            }
+
+            if (SelectedPrimary == -1)
+            {
+                _xivMtrl = null;
+                OnLoadingComplete();
+                return;
+            }
+
+            _lastPrimary = SelectedPrimary;
+            var mw = MainWindow.GetMainWindow();
+            mw.SelectedPrimaryItemValue = SelectedPrimary;
+
+            // Need to get materials for the current race.
+            var race = SelectedRace;
+
+            if (!_primaryIsRace)
+            {
+                // For these items, the main selection is technically their secondary type id
+                // ex. face number, body number.
+                var info = new XivDependencyRootInfo()
+                {
+                    PrimaryId = _root.Info.PrimaryId,
+                    PrimaryType = _root.Info.PrimaryType,
+                    SecondaryId = SelectedPrimary,
+                    SecondaryType = _root.Info.SecondaryType,
+                };
+                race = XivRaces.GetXivRace(info.PrimaryId);
+                _root = info.ToFullRoot();
+            }
+            // First of all, need to get the material set number.
+            var materialSet = await Mtrl.GetMaterialSetId(_item);
+
+            // Get all models in this root.
+            List<string> materials = new List<string>();
+
+
+            var sharedRace = XivRace.All_Races;
+            // Kick this into a new thread since it can take a bit.
+            await Task.Run(async () =>
+            {
+                materials = await _root.GetMaterialFiles(materialSet);
+
+                if (_root.Info.PrimaryType == XivItemType.equipment || _root.Info.PrimaryType == XivItemType.weapon)
+                {
+                    // Need to test to see if they have VFX files too.
+                    var vfxPath = await ATex.GetVfxPath(_item);
+                    var index = new Index(XivCache.GameInfo.GameDirectory);
+                    _vfxPath = vfxPath.Folder + "/" + vfxPath.File;
+                    _hasVfx = await index.FileExists(_vfxPath);
+                }
+            });
+
+
+            var finalList = new SortedSet<string>();
+            foreach(var material in materials)
+            {
+                // If we have a specific race, narrow things down more.
+                if(race != XivRace.All_Races)
+                {
+                    if (material.Contains("c" + race.GetRaceCode()))
                     {
-                        Races.Add(new ComboBoxData { Name = racesAndNumber.Key.GetDisplayName(), XivRace = racesAndNumber.Key });
+                        finalList.Add(material);
+                    }
+                } else
+                {
+                    finalList.Add(material);
+                }
+            }
+
+
+            sharedRace = await GetMaterialSharedRace(race);
+            if (sharedRace != XivRace.All_Races && sharedRace != race)
+            {
+                _textureView.SharedMaterialLabel.Content = "This race's model uses " + sharedRace.GetDisplayName() + "'s material(s).";
+                _textureView.SharedMaterialLabel.Visibility = Visibility.Visible;
+                MoreOptionsEnabled = true;
+                AddMaterialEnabled = true;
+                MaterialEditorEnabled = false;
+            }
+            else
+            {
+                _textureView.SharedMaterialLabel.Content = "";
+                _textureView.SharedMaterialLabel.Visibility = Visibility.Collapsed;
+            }
+
+            if (_hasVfx)
+            {
+                finalList.Add(_vfxPath);
+            }
+
+            foreach(var material in finalList)
+            {
+                
+                var mName = Path.GetFileNameWithoutExtension(material);
+                var ext = Path.GetExtension(material);
+                if (ext == ".avfx")
+                {
+
+                    _materialComboBoxData.Add(new KeyValuePair<string, string>("VFX: " + mName, material));
+                }
+                else
+                {
+                    var displayedSuffix = mName;
+
+                    if (mName.IndexOf('_') != -1)
+                    {
+                        var idx = mName.LastIndexOf('_') + 1;
+                        var rem = mName.Length - idx;
+                        if (rem > 0 && idx > 1)
+                        {
+                            var materialIdentifier = displayedSuffix.Substring(idx, rem);
+
+                            // If this doesn't actually have any suffix, just show the slot.
+                            if (materialIdentifier == _root.Info.Slot)
+                            {
+                                displayedSuffix = _root.Info.Slot;
+                            } else
+                            {
+                                var rest = mName.Substring(0, idx-1);
+
+                                // Keep walking back through to find the slot.
+                                if (rest.IndexOf('_') != -1)
+                                {
+                                    idx = rest.LastIndexOf('_') + 1;
+                                    rem = rest.Length - idx;
+                                    if (rem > 0)
+                                    {
+                                        var slot = displayedSuffix.Substring(idx, rem);
+                                        if (slot.Length == 3)
+                                        {
+                                            displayedSuffix = slot + " " + materialIdentifier;
+                                        } else
+                                        {
+                                            displayedSuffix = materialIdentifier;
+                                        }
+                                    } else
+                                    {
+                                        displayedSuffix = materialIdentifier;
+                                    }
+                                } else
+                                {
+                                    displayedSuffix = materialIdentifier;
+                                }
+                            }
+                        }
+                    }
+
+                    if (displayedSuffix != mName)
+                    {
+                        displayedSuffix = "Material: " + displayedSuffix.ToUpper() + " - " + mName;
+                    }
+
+
+                    _materialComboBoxData.Add(new KeyValuePair<string, string>(displayedSuffix, material));
+                }
+            }
+
+            MaterialComboBoxEnabled = _materialComboBoxData.Count > 0;
+
+            // Change selected material, triggering the selection event below this.
+            if (finalList.Count > 0)
+            {
+                SelectedMaterial = finalList.First();
+            }
+            else
+            {
+                MapComboBoxEnabled = false;
+                OnLoadingComplete();
+            }
+        }
+
+        private async void MaterialComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            _mapComboBoxData.Clear();
+            if (SelectedMaterial == null)
+            {
+                _xivMtrl = null;
+                return;
+            }
+            var ext = Path.GetExtension(SelectedMaterial);
+
+            var items = 0;
+            if (ext == ".avfx")
+            {
+                var _atex = new ATex(XivCache.GameInfo.GameDirectory, IOUtil.GetDataFileFromPath(SelectedMaterial));
+                var paths = await _atex.GetAtexPaths(_item);
+
+                foreach(var path in paths)
+                {
+                    var mi = new MapInfo();
+                    mi.Path = path.Path;
+                    mi.Usage = XivTexType.Vfx;
+                    _mapComboBoxData.Add(new KeyValuePair<string, MapInfo>("VFX - " + Path.GetFileNameWithoutExtension(mi.Path), mi));
+                    items++;
+                }
+
+            } else { 
+
+                var _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory, IOUtil.GetDataFileFromPath(SelectedMaterial), XivCache.GameInfo.GameLanguage);
+                try
+                {
+                    _xivMtrl = await _mtrl.GetMtrlData(SelectedMaterial);
+                }
+                catch (Exception ex)
+                {
+                    FlexibleMessageBox.Show("An error occured while loading the material:\n" + ex.Message, "Item Load Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    OnLoadingComplete();
+                    return;
+                }
+                var maps = _xivMtrl.GetAllMapInfos(false);
+                var shInfo = _xivMtrl.GetShaderInfo();
+
+                if (shInfo.HasColorset)
+                {
+                    var cSetMap = new MapInfo();
+                    cSetMap.Path = SelectedMaterial;
+                    cSetMap.Usage = XivTexType.ColorSet;
+                    maps.Add(cSetMap);
+                }
+
+                foreach (var map in maps)
+                {
+                    _mapComboBoxData.Add(new KeyValuePair<string, MapInfo>(map.Usage.ToString() + " - " + Path.GetFileNameWithoutExtension(map.Path), map));
+                }
+
+
+                items = maps.Count;
+            }
+
+            MapComboBoxEnabled = items > 0;
+
+            // Set the map, triggering the changed event below.
+            if (items > 0)
+            {
+                SelectedMap = _mapComboBoxData[0].Value;
+            }
+            else
+            {
+                OnLoadingComplete();
+            }
+        }
+
+        private void MapComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            ClearImage();
+            if(SelectedMap == null)
+            {
+                return;
+            }
+
+            UpdateImage();
+        }
+
+        /// <summary>
+        /// Handle resolution for items that don't have models/materials.
+        /// </summary>
+        /// <returns></returns>
+        private async Task HandleTexOnlyItem(IItem item)
+        {
+            if (item == null)
+            {
+                OnLoadingComplete();
+                return;
+            }
+
+            try 
+            {
+                var uiItem = (XivUi)item;
+                _uiItem = uiItem;
+
+                var paths = await uiItem.GetTexPaths();
+                foreach(var kv in paths)
+                {
+                    var mapInfo = new MapInfo();
+
+
+                    mapInfo.Path = kv.Value;
+                    mapInfo.Usage = XivTexType.UI;
+
+                    _mapComboBoxData.Add(new KeyValuePair<string, MapInfo>(kv.Key, mapInfo));
+
+                }
+
+            } catch
+            {
+                if (item.SecondaryCategory == XivStrings.Paintings)
+                {
+                    // Okay, try and see if it's a gimpy furniture painting thing then.
+                    var paintingItem = (XivFurniture)item;
+                    _item = paintingItem;
+
+                    // There has got to be a function somewhere that does this already, but I couldn't find it.
+                    var mapInfo = new MapInfo();
+                    var block = paintingItem.ModelInfo.PrimaryID - (paintingItem.ModelInfo.PrimaryID % 1000);
+                    mapInfo.Path = "ui/icon/" + block.ToString().PadLeft(6, '0') + "/" + paintingItem.ModelInfo.PrimaryID.ToString().PadLeft(6, '0') + ".tex";
+                    mapInfo.Usage = XivTexType.UI;
+
+                    _mapComboBoxData.Add(new KeyValuePair<string, MapInfo>(item.Name, mapInfo));
+                    SelectedMap = mapInfo;
+                }
+                else if (item.SecondaryCategory == XivStrings.Face_Paint)
+                {
+                    var _character = new Character(XivCache.GameInfo.GameDirectory, XivCache.GameInfo.GameLanguage);
+
+                    var paths = await _character.GetDecalPaths(Character.XivDecalType.FacePaint);
+
+                    foreach (var path in paths)
+                    {
+                        var mapInfo = new MapInfo();
+
+
+                        mapInfo.Path = path;
+                        mapInfo.Usage = XivTexType.UI;
+
+                        _mapComboBoxData.Add(new KeyValuePair<string, MapInfo>(Path.GetFileNameWithoutExtension(path), mapInfo));
+
+                    }
+
+                }
+                else if (item.SecondaryCategory == XivStrings.Equipment_Decals)
+                {
+                    var _character = new Character(XivCache.GameInfo.GameDirectory, XivCache.GameInfo.GameLanguage);
+                    var paths = await _character.GetDecalPaths(Character.XivDecalType.Equipment);
+                    foreach (var path in paths)
+                    {
+                        var mapInfo = new MapInfo();
+
+                        mapInfo.Path = path;
+                        mapInfo.Usage = XivTexType.UI;
+
+                        _mapComboBoxData.Add(new KeyValuePair<string, MapInfo>(Path.GetFileNameWithoutExtension(path), mapInfo));
                     }
                 }
             }
-            else if (item.PrimaryCategory.Equals(XivStrings.UI))
-            {
-                Races.Add(new ComboBoxData { Name = XivRace.All_Races.GetDisplayName(), XivRace = XivRace.All_Races });
 
-                _uiItem = item as XivUi;
+            if (_mapComboBoxData.Count > 0)
+            {
+                MapComboBoxEnabled = true;
+                SelectedMap = _mapComboBoxData[0].Value;
             }
-            else if (item.PrimaryCategory.Equals(XivStrings.Housing))
+            else
             {
-                Races.Add(new ComboBoxData { Name = XivRace.All_Races.GetDisplayName(), XivRace = XivRace.All_Races });
-
-                if (item.SecondaryCategory.Equals(XivStrings.Paintings))
-                {
-                    _uiItem = new XivUi
-                    {
-                        Name = item.Name,
-                        PrimaryCategory = item.PrimaryCategory,
-                        SecondaryCategory = item.SecondaryCategory,
-                        IconNumber = ((IItemModel)item).ModelInfo.PrimaryID,
-                        DataFile = XivDataFile._06_Ui
-                    };
-                }
-                else
-                {
-                    _item = item as IItemModel;
-                }
+                MapComboBoxEnabled = false;
             }
 
-            _raceCount = Races.Count;
+            OnLoadingComplete();
 
-            RaceComboboxEnabled = _raceCount > 1;
-
-            var defaultRace = (from race in Races
-                where race.XivRace.GetDisplayName().Equals(Settings.Default.Default_Race_Selection)
-                select race).ToList();
-
-            var raceIndex = 0;
-            if (defaultRace.Count > 0)
-            {
-                raceIndex = Races.IndexOf(defaultRace[0]);
-            }
-            else if(Races.Count == 0)
-            {
-                // If there are no races, we're done.
-                if (LoadingComplete != null)
-                {
-                    LoadingComplete.Invoke(this, null);
-                }
-            }
-
-            SelectedRaceIndex = raceIndex;
         }
+
 
         /// <summary>
-        /// The collection of data for the race combobox
+        /// The enabled status for the race combobox
         /// </summary>
-        public ObservableCollection<ComboBoxData> Races
+        public bool MaterialComboBoxEnabled
         {
-            get => _raceComboBoxData;
-            set { _raceComboBoxData = value; NotifyPropertyChanged(nameof(Races)); }
+            get => _materialEnabled;
+            set { _materialEnabled = value; NotifyPropertyChanged(nameof(MaterialComboBoxEnabled)); }
         }
 
-        /// <summary>
-        /// The selected race in the race combobox
-        /// </summary>
-        public ComboBoxData SelectedRace
-        {
-            get => _selectedRace;
-            set
-            {
-                _selectedRace = value;
-                NotifyPropertyChanged(nameof(SelectedRace));
-                if (SelectedRaceIndex > -1)
-                {
-                    Parts.Clear();
-                    Types.Clear();
-                    TypeParts.Clear();
-                    Maps.Clear();
-
-                    GetParts();
-                }
-            }
-        }
-
-        /// <summary>
-        /// The selected race index in the race combobox
-        /// </summary>
-        public int SelectedRaceIndex
-        {
-            get => _raceIndex;
-            set
-            {
-                _raceIndex = value;
-                NotifyPropertyChanged(nameof(SelectedRaceIndex));
-            }
-        }
 
         /// <summary>
         /// The enabled status for the race combobox
@@ -276,695 +765,25 @@ namespace FFXIV_TexTools.ViewModels
             get => _raceEnabled;
             set { _raceEnabled = value; NotifyPropertyChanged(nameof(RaceComboboxEnabled)); }
         }
-
         /// <summary>
-        /// Gets the parts for the selected item
+        /// The enabled status for the race combobox
         /// </summary>
-        private async void GetParts()
+        public bool MapComboBoxEnabled
         {
-            if (_item != null)
-            {
-                // For character, the part list is used as a number list
-                List<string> partList;
-
-                if (_item.PrimaryCategory.Equals(XivStrings.Character))
-                {
-                    if (_item.SecondaryCategory.Equals(XivStrings.Face_Paint) ||
-                        _item.SecondaryCategory.Equals(XivStrings.Equipment_Decals))
-                    {
-                        partList = (await _character.GetDecalNums(_item)).Select(part => part.ToString()).ToList();
-
-                        if (_item.SecondaryCategory.Equals(XivStrings.Equipment_Decals))
-                        {
-                            partList.Add("_stigma");
-                        }
-                    }
-                    else
-                    {
-                        partList = _charaRaceAndNumberDictionary[SelectedRace.XivRace].Select(part => part.ToString()).ToList();
-                    }
-
-                    foreach (var part in partList)
-                    {
-                        Parts.Add(new ComboBoxData { Name = part });
-                    }
-
-                    _partCount = partList.Count;
-                }
-                else if ((_item.SecondaryCategory.Equals(XivStrings.Mounts) || _item.SecondaryCategory.Equals(XivStrings.Monster)) && _item.GetPrimaryItemType() == XivItemType.demihuman)
-                {
-                    var equipParts = await _companions.GetDemiHumanMountTextureEquipPartList(_item);
-
-                    foreach (var equipPart in equipParts)
-                    {
-                        Parts.Add(new ComboBoxData { Name = equipPart.Key, TypeParts = equipPart.Value });
-                    }
-
-                    _partCount = equipParts.Count;
-                }
-                else if (_item.PrimaryCategory.Equals(XivStrings.Gear))
-                {
-                    var xivGear = _item as XivGear;
-
-                    Parts.Add(new ComboBoxData { Name = XivStrings.Primary });
-
-                    PartVisibility = Visibility.Collapsed;
-
-                    _partCount = Parts.Count;
-                }
-                else
-                {
-                    partList = await _tex.GetTexturePartList(_item, SelectedRace.XivRace, _item.DataFile);
-
-                    foreach (var part in partList)
-                    {
-                        Parts.Add(new ComboBoxData { Name = part });
-                    }
-
-                    _partCount = partList.Count;
-                }
-            }
-            else if (_uiItem != null)
-            {
-                GetMaps();
-            }
-
-            PartComboboxEnabled = _partCount > 1;
-
-            SelectedPartIndex = 0;
-
-            if (_partCount == 0)
-            {
-                // If there are no parts, we're done.
-                if (LoadingComplete != null)
-                {
-                    LoadingComplete.Invoke(this, null);
-                }
-            }
+            get => _mapEnabled;
+            set { _mapEnabled = value; NotifyPropertyChanged(nameof(MapComboBoxEnabled)); }
         }
 
-        /// <summary>
-        /// The collection of data for the parts combobox
-        /// </summary>
-        public ObservableCollection<ComboBoxData> Parts
-        {
-            get => _partComboBoxData;
-            set
-            {
-                _partComboBoxData = value;
-                NotifyPropertyChanged(nameof(Parts));
-            }
-        }
-
-        /// <summary>
-        /// The selected part in the part combobox
-        /// </summary>
-        public ComboBoxData SelectedPart
-        {
-            get => _selectedPart;
-            set
-            {
-                _selectedPart = value;
-                NotifyPropertyChanged(nameof(SelectedPart));
-                if (SelectedPartIndex > -1)
-                {
-                    Types.Clear();
-                    TypeParts.Clear();
-                    Maps.Clear();
-                    GetTexType();
-                }
-            }
-        }
-
-        /// <summary>
-        /// The selected index for the part combobox
-        /// </summary>
-        public int SelectedPartIndex
-        {
-            get => _partIndex;
-            set
-            {
-                _partIndex = value;
-                NotifyPropertyChanged(nameof(SelectedPartIndex));
-            }
-        }
-
-        /// <summary>
-        /// The enabled status for the part combobox
-        /// </summary>
-        public bool PartComboboxEnabled
-        {
-            get => _partEnabled;
-            set { _partEnabled = value; NotifyPropertyChanged(nameof(PartComboboxEnabled)); }
-        }
-
-        /// <summary>
-        /// The visibility of the part combobox
-        /// </summary>
-        public Visibility PartVisibility
-        {
-            get => _partVisibility;
-            set
-            {
-                _partVisibility = value;
-                NotifyPropertyChanged(nameof(PartVisibility));
-            }
-        }
-        /// <summary>
-        /// Gets the type for the selected item
-        /// </summary>
-        private async void GetTexType()
-        {
-            if (_item.PrimaryCategory.Equals(XivStrings.Character))
-            {
-                TypeVisibility = Visibility.Visible;
-                // Create the model info for character
-                _item.ModelInfo = new XivModelInfo();
-
-                if (!SelectedPart.Name.Equals("_stigma"))
-                {
-                    _item.ModelInfo.SecondaryID = int.Parse(SelectedPart.Name);
-                }
-
-                // For hair and face we get the type (Hair, Accessory, Face, Iris, Etc)
-                if (_item.SecondaryCategory.Equals(XivStrings.Hair) || _item.SecondaryCategory.Equals(XivStrings.Face) || _item.SecondaryCategory.Equals(XivStrings.Ear))
-                {
-                    TypePartVisibility = Visibility.Visible;
-                    var charaTypeParts = await _character.GetTypePartForTextures(_item as XivCharacter, SelectedRace.XivRace,
-                        int.Parse(SelectedPart.Name));
-
-                    _typeCount = charaTypeParts.Count;
-                    foreach (var charaTypePart in charaTypeParts)
-                    {
-                        Types.Add(new ComboBoxData{Name = charaTypePart.Key, TypeParts = charaTypePart.Value});
-                    }
-                }
-                else if (_item.SecondaryCategory.Equals(XivStrings.Body) || _item.SecondaryCategory.Equals(XivStrings.Tail))
-                {
-                    TypePartVisibility = Visibility.Visible;
-                    var parts = await _character.GetVariantsForTextures(_item as XivCharacter, SelectedRace.XivRace, int.Parse(SelectedPart.Name));
-
-                    _typeCount = parts.Count;
-                    foreach (var part in parts)
-                    {
-                        Types.Add(new ComboBoxData { Name = part.ToString() });
-                    }
-                }
-                else
-                {
-                    TypeVisibility = Visibility.Collapsed;
-
-                    GetMaps();
-                }
-
-                _typeCount = Types.Count;
-
-                TypeComboboxEnabled = _typeCount > 1;
-
-                SelectedTypeIndex = 0;
-            }
-            else if ((_item.SecondaryCategory.Equals(XivStrings.Mounts) || _item.SecondaryCategory.Equals(XivStrings.Monster)) && _item.GetPrimaryItemType() == XivItemType.demihuman)
-            {
-                TypeVisibility = Visibility.Visible;
-
-                ((XivMount)_item).TertiaryCategory = SelectedPart.Name;
-
-                var parts = SelectedPart.TypeParts;
-                _typeCount = parts.Length;
-
-                foreach (var part in parts)
-                {
-                    Types.Add(new ComboBoxData{Name = part.ToString()});
-                }
-
-                _typeCount = Types.Count;
-
-                TypeComboboxEnabled = _typeCount > 1;
-
-                SelectedTypeIndex = 0;
-            }
-            else if(_item.PrimaryCategory.Equals(XivStrings.Gear))
-            {
-                TypeVisibility = Visibility.Visible;
-
-                var typesList = await _tex.GetTexturePartList(_item, SelectedRace.XivRace, _item.DataFile);
-
-                foreach (var type in typesList)
-                {
-                    Types.Add(new ComboBoxData { Name = type });
-                }
-
-                _typeCount = Types.Count;
-
-                TypeComboboxEnabled = _typeCount > 1;
-
-                SelectedTypeIndex = 0;
-            }
-            else
-            {
-                GetMaps();
-            }
-
-            if (_typeCount == 0)
-            {
-                // If there are no parts, we're done.
-                if (LoadingComplete != null)
-                {
-                    LoadingComplete.Invoke(this, null);
-                }
-            }
-        }
-
-        /// <summary>
-        /// The collection of type data for the type combobox
-        /// </summary>
-        public ObservableCollection<ComboBoxData> Types
-        {
-            get => _typeComboBoxData;
-            set { _typeComboBoxData = value; NotifyPropertyChanged(nameof(Types)); }
-        }
-
-        /// <summary>
-        /// The selected type in the type combobox
-        /// </summary>
-        public ComboBoxData SelectedType
-        {
-            get => _selectedType;
-            set
-            {
-                _selectedType = value;
-                NotifyPropertyChanged(nameof(SelectedType));
-                if (SelectedTypeIndex > -1)
-                {
-                    Maps.Clear();
-                    if (_item.PrimaryCategory.Equals(XivStrings.Character) && (_item.SecondaryCategory.Equals(XivStrings.Hair) || _item.SecondaryCategory.Equals(XivStrings.Face) ||
-                        _item.SecondaryCategory.Equals(XivStrings.Ear) || _item.SecondaryCategory.Equals(XivStrings.Body) || _item.SecondaryCategory.Equals(XivStrings.Tail)))
-                    {
-                        TypeParts.Clear();
-                        GetTypeParts();
-                    }
-                    else
-                    {
-                        GetMaps();
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// The selected index in the type combobox
-        /// </summary>
-        public int SelectedTypeIndex
-        {
-            get => _typeIndex;
-            set
-            {
-                _typeIndex = value;
-                NotifyPropertyChanged(nameof(SelectedTypeIndex));
-            }
-        }
-
-        /// <summary>
-        /// The enabled status of the type combobox
-        /// </summary>
-        public bool TypeComboboxEnabled
-        {
-            get => _typeEnabled;
-            set { _typeEnabled = value; NotifyPropertyChanged(nameof(TypeComboboxEnabled)); }
-        }
-
-        /// <summary>
-        /// The visibility of the type combobox
-        /// </summary>
-        public Visibility TypeVisibility
-        {
-            get => _typeVisibility;
-            set
-            {
-                _typeVisibility = value;
-                NotifyPropertyChanged(nameof(TypeVisibility));
-            }
-        }
-
-        /// <summary>
-        /// Gets the type parts for the selected item
-        /// </summary>
-        private async void GetTypeParts()
-        {
-            var typeParts = SelectedType.TypeParts;
-
-            if (_item.PrimaryCategory.Equals(XivStrings.Character))
-            {
-                if (_item.SecondaryCategory.Equals(XivStrings.Body) || _item.SecondaryCategory.Equals(XivStrings.Tail))
-                {
-                    typeParts = SelectedType.TypeParts = await _character.GetPartForTextures(_item as XivCharacter, SelectedRace.XivRace, int.Parse(SelectedPart.Name), int.Parse(SelectedType.Name));
-                }
-
-                ((XivCharacter)_item).TertiaryCategory = SelectedType.Name;
-            }
-
-            if (typeParts == null) {
-                // Swapping items too fast and we didn't properly load the things.
-                return;
-            }
-
-            foreach (var typePart in typeParts)
-            {
-                TypeParts.Add(new ComboBoxData{Name = typePart.ToString()});
-            }
-
-            _typePartCount = typeParts.Length;
-
-
-            TypePartComboboxEnabled = _typePartCount > 1;
-
-            SelectedTypePartIndex = 0;
-        }
-
-        /// <summary>
-        /// The collection of type part data for the type part combobox
-        /// </summary>
-        public ObservableCollection<ComboBoxData> TypeParts
-        {
-            get => _typePartComboBoxData;
-            set { _typePartComboBoxData = value; NotifyPropertyChanged(nameof(TypeParts)); }
-        }
-
-        /// <summary>
-        /// The selected type part in the type part combobox
-        /// </summary>
-        public ComboBoxData SelectedTypePart
-        {
-            get => _selectedTypePart;
-            set
-            {
-                _selectedTypePart = value;
-                NotifyPropertyChanged(nameof(SelectedTypePart));
-                if (SelectedTypePartIndex > -1)
-                {
-                    Maps.Clear();
-                    GetMaps();
-                }
-            }
-        }
-
-        /// <summary>
-        /// The selected index in the type part combobox
-        /// </summary>
-        public int SelectedTypePartIndex
-        {
-            get => _typePartIndex;
-            set
-            {
-                _typePartIndex = value;
-                NotifyPropertyChanged(nameof(SelectedTypePartIndex));
-            }
-        }
-
-        /// <summary>
-        /// The enabled status for the type part combobox
-        /// </summary>
-        public bool TypePartComboboxEnabled
-        {
-            get => _typePartEnabled;
-            set { _typePartEnabled = value; NotifyPropertyChanged(nameof(TypePartComboboxEnabled)); }
-        }
-
-        /// <summary>
-        /// The visibility of the type part combobox
-        /// </summary>
-        public Visibility TypePartVisibility
-        {
-            get => _typePartVisibility;
-            set
-            {
-                _typePartVisibility = value;
-                NotifyPropertyChanged(nameof(TypePartVisibility));
-            }
-        }
         /// <summary>
         /// Gets the texture maps for the given item
         /// </summary>
         private async void GetMaps()
         {
-            var dxVersion = int.Parse(Properties.Settings.Default.DX_Version);
+            //_mapCount = 0;
 
-            List<TexTypePath> ttpList;
-            if (_item != null)
-            {
-                if (_item.PrimaryCategory.Equals(XivStrings.Character))
-                {
-                    if (_item.SecondaryCategory.Equals(XivStrings.Face_Paint))
-                    {
-                        var path = $"{XivStrings.FacePaintFolder}/{string.Format(XivStrings.FacePaintFile, SelectedPart.Name)}";
-
-                        ttpList = new List<TexTypePath> { new TexTypePath { DataFile = _item.DataFile, Path = path, Type = XivTexType.Mask } };
-                    }
-                    else if (_item.SecondaryCategory.Equals(XivStrings.Equipment_Decals))
-                    {
-                        var path = $"{XivStrings.EquipDecalFolder}/{string.Format(XivStrings.EquipDecalFile, SelectedPart.Name)}";
-
-                        if (SelectedPart.Name.Equals("_stigma"))
-                        {
-                            path = $"{XivStrings.EquipDecalFolder}/_stigma.tex";
-                        }
-
-                        ttpList = new List<TexTypePath> { new TexTypePath { DataFile = _item.DataFile, Path = path, Type = XivTexType.Mask } };
-                    }
-                    else
-                    {
-                        if (TypePartVisibility == Visibility.Visible)
-                        {
-                            _xivMtrl = await _mtrl.GetMtrlData(_item, SelectedRace.XivRace, SelectedTypePart.Name[0], dxVersion);
-                        }
-                        else
-                        {
-                            _xivMtrl = await _mtrl.GetMtrlData(_item, SelectedRace.XivRace, SelectedType.Name[0], dxVersion);
-                        }
-
-                        ttpList = _xivMtrl.TextureTypePathList;
-
-                        // Removes the type if there is no texture maps for it.
-                        // This specifically was added because Miqote hair 104 and 109 have an mtrl that points to non existent textures and
-                        // there may be others that do the same.
-                        if (ttpList.Count == 0)
-                        {
-                            Types.Remove(SelectedType);
-                            SelectedTypeIndex = 0;
-                            _typeCount -= 1;
-                        }
-                    }
-                }
-                else
-                {
-                    if ((_item.SecondaryCategory.Equals(XivStrings.Mounts) || _item.SecondaryCategory.Equals(XivStrings.Monster)) && _item.GetPrimaryItemType() == XivItemType.demihuman)
-                    {
-                        _xivMtrl = await _mtrl.GetMtrlData(_item, SelectedRace.XivRace, SelectedType.Name[0], dxVersion);
-                        ttpList = _xivMtrl.GetTextureTypePathList();
-                    }
-                    else if (_item.PrimaryCategory.Equals(XivStrings.Gear))
-                    {
-                        _xivMtrl = await _mtrl.GetMtrlData(_item, SelectedRace.XivRace, SelectedType.Name[0], dxVersion);
-                        ttpList = _xivMtrl.GetTextureTypePathList();
-
-                        var xivGear = _item as XivGear;
-
-                        if (xivGear.IconNumber != 0)
-                        {
-                            ttpList.AddRange(await _gear.GetIconInfo(xivGear));
-                        }
-                    }
-                    else
-                    {
-                        _xivMtrl = await _mtrl.GetMtrlData(_item, SelectedRace.XivRace, SelectedPart.Name[0], dxVersion);
-                        ttpList = _xivMtrl.GetTextureTypePathList();
-                    }
-                }
-            }
-            else
-            {
-                if (_uiItem.UiPath != null)
-                {
-                    string path;
-                    if (_uiItem.SecondaryCategory.Equals(XivStrings.Maps))
-                    {
-                        var mapNamePaths = await _tex.GetMapAvailableTex(_uiItem.UiPath);
-
-                        ttpList = new List<TexTypePath>();
-
-                        foreach (var mapNamePath in mapNamePaths)
-                        {
-                            var ttp = new TexTypePath
-                            {
-                                DataFile = _uiItem.DataFile,
-                                Path = mapNamePath.Value,
-                                Type = XivTexType.Map,
-                                Name = mapNamePath.Key
-                            };
-
-                            ttpList.Add(ttp);
-                        }
-                    }
-                    else if(_uiItem.SecondaryCategory.Equals(XivStrings.HUD))
-                    {
-                        path = $"{_uiItem.UiPath}/{_uiItem.Name.ToLower()}.tex";
-
-                        ttpList = new List<TexTypePath> { new TexTypePath { DataFile = _uiItem.DataFile, Path = path, Type = XivTexType.Mask } };
-                    }
-                    else if (_uiItem.SecondaryCategory.Equals(XivStrings.Loading_Screen))
-                    {
-                        path = $"{_uiItem.UiPath}/{_uiItem.Name.ToLower()}.tex";
-
-                        ttpList = new List<TexTypePath> { new TexTypePath { DataFile = _uiItem.DataFile, Path = path, Type = XivTexType.Diffuse } };
-                    }
-                    else
-                    {
-                        if (_uiItem.SecondaryCategory.Equals("Icon"))
-                        {
-                            var index = new Index(new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory));
-                            var languages = new[] {"en", "ja", "fr", "de"};
-                            var iconFile = $"{_uiItem.IconNumber.ToString().PadLeft(6, '0')}.tex";
-                            var iconFolder = $"{Path.GetDirectoryName(_uiItem.UiPath).Replace("\\", "/")}";
-
-                            ttpList = new List<TexTypePath>();
-
-                            if (await index.FileExists(HashGenerator.GetHash(iconFile), HashGenerator.GetHash(iconFolder), XivDataFile._06_Ui))
-                            {
-                                var ttp = new TexTypePath { DataFile = _uiItem.DataFile, Path = _uiItem.UiPath, Type = XivTexType.Icon };
-                                ttpList.Add(ttp);
-                            }
-
-                            foreach (var language in languages)
-                            {
-                                var iconLangFolder = $"{iconFolder}/{language}";
-
-                                if (await index.FileExists(HashGenerator.GetHash(iconFile), HashGenerator.GetHash(iconLangFolder), XivDataFile._06_Ui))
-                                {
-                                    var ttp = new TexTypePath { DataFile = _uiItem.DataFile, Path = $"{iconLangFolder}/{iconFile}", Type = XivTexType.Icon, Name = $"Icon {language}"};
-                                    ttpList.Add(ttp);
-                                }
-                            }
-
-                            var iconHQFolder = $"{iconFolder}/hq";
-
-                            if (await index.FileExists(HashGenerator.GetHash(iconFile), HashGenerator.GetHash(iconHQFolder), XivDataFile._06_Ui))
-                            {
-                                var ttp = new TexTypePath { DataFile = _uiItem.DataFile, Path = $"{iconHQFolder}/{iconFile}", Type = XivTexType.Icon, Name = "Icon HQ"};
-                                ttpList.Add(ttp);
-                            }
-                        }
-                        else
-                        {
-                            ttpList = null;
-                        }
-                    }
-
-                }
-                else
-                {
-                    var iconNum = _uiItem.IconNumber;
-                    var baseNum = 0;
-
-                    if (iconNum >= 1000)
-                    {
-                        baseNum = (int)Math.Truncate(iconNum / 1000f) * 1000;
-                    }
-
-                    var path = $"ui/icon/{baseNum.ToString().PadLeft(6, '0')}/{iconNum.ToString().PadLeft(6, '0')}.tex";
-
-                    ttpList = new List<TexTypePath> { new TexTypePath { DataFile = _uiItem.DataFile, Path = path, Type = XivTexType.Icon } };
-                }
-
-                PartVisibility = Visibility.Collapsed;
-            }
-            if (ttpList == null)
-                ttpList = new List<TexTypePath>();
-
-
-            // If the MTRL has VFX, retrieve those VFX textures as well.
-            if(_xivMtrl != null && _xivMtrl.hasVfx)
-            {
-                DirectoryInfo gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
-                var atex = new ATex(gameDirectory, _xivMtrl.GetDataFile());
-                try
-                {
-                    ttpList.AddRange(await atex.GetAtexPaths(_item));
-                }
-                catch
-                {
-                }
-            }
-
-            foreach (var texTypePath in ttpList)
-            {
-                if (texTypePath.Name != null)
-                {
-                    Maps.Add(new ComboBoxData { Name = texTypePath.Name, TexType = texTypePath });
-                }
-                else
-                {
-                    Maps.Add(new ComboBoxData { Name = texTypePath.Type.ToString(), TexType = texTypePath });
-                }
-            }
-
-            _mapCount = Maps.Count;
-
-            MapComboboxEnabled = _mapCount > 1;
-
-            SetComboBoxWatermarks();
-            SelectedMapIndex = 0;
 
             _materialEditorEnabled = _xivMtrl != null;
         }
-
-        /// <summary>
-        /// The collection of map data for the map combobox
-        /// </summary>
-        public ObservableCollection<ComboBoxData> Maps
-        {
-            get => _mapComboBoxData;
-            set { _mapComboBoxData = value; NotifyPropertyChanged(nameof(Maps)); }
-        }
-
-        /// <summary>
-        /// THe selected map in the map combobox
-        /// </summary>
-        public ComboBoxData SelectedMap
-        {
-            get => _selectedMap;
-            set
-            {
-                _selectedMap = value;
-                NotifyPropertyChanged(nameof(SelectedMap));
-                if (SelectedMapIndex > -1)
-                {
-                    UpdateImage();
-                }
-            }
-        }
-
-        /// <summary>
-        /// The selected map index in the map combobox
-        /// </summary>
-        public int SelectedMapIndex
-        {
-            get => _mapIndex;
-            set
-            {
-                _mapIndex = value;
-                NotifyPropertyChanged(nameof(SelectedMapIndex));
-            }
-        }
-
-        /// <summary>
-        /// The enabled status of the map combobox
-        /// </summary>
-        public bool MapComboboxEnabled
-        {
-            get => _mapEnabled;
-            set { _mapEnabled = value; NotifyPropertyChanged(nameof(MapComboboxEnabled)); }
-        }
-
         public void ClearImage()
         {
             PathString = "No Texture Selected";
@@ -977,7 +796,7 @@ namespace FFXIV_TexTools.ViewModels
             ExportEnabled = false;
             ImportEnabled = false;
             MoreOptionsEnabled = false;
-            AddNewTexturePartEnabled = false;
+            AddMaterialEnabled = false;
             _mapData = new MapData()
             {
                 MapBytes = new byte[0],
@@ -996,17 +815,21 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         public async void UpdateImage()
         {
-            if (!CheckMapIsOK())
-            {
-                OnLoadingComplete();
-                return;
-            }
             ImageDisplay = null;
             ChannelsEnabled = true;
 
-            if (SelectedMap.TexType.Type != XivTexType.ColorSet)
+            if(SelectedMap == null || SelectedMap.Path == null)
             {
-                var texData = await _tex.GetTexData(SelectedMap.TexType);
+                return;
+            }
+
+            var _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory, IOUtil.GetDataFileFromPath(SelectedMap.Path), XivCache.GameInfo.GameLanguage);
+            var _tex = new Tex(XivCache.GameInfo.GameDirectory);
+            var _modding = new Modding(XivCache.GameInfo.GameDirectory);
+
+            if (SelectedMap.Usage != XivTexType.ColorSet)
+            {
+                var texData = await _tex.GetTexData(SelectedMap);
 
                 var mapBytes = await _tex.GetImageData(texData);
 
@@ -1034,35 +857,6 @@ namespace FFXIV_TexTools.ViewModels
             }
             else
             {
-                var dxVersion = int.Parse(Properties.Settings.Default.DX_Version);
-
-                if (_item.PrimaryCategory.Equals(XivStrings.Character))
-                {
-                    if (TypePartVisibility == Visibility.Visible)
-                    {
-                        _xivMtrl = await _mtrl.GetMtrlData(_item, SelectedRace.XivRace, SelectedTypePart.Name[0], dxVersion);
-                    }
-                    else
-                    {
-                        _xivMtrl = await _mtrl.GetMtrlData(_item, SelectedRace.XivRace, SelectedType.Name[0], dxVersion);
-                    }
-                }
-                else
-                {
-                    if ((_item.SecondaryCategory.Equals(XivStrings.Mounts) || _item.SecondaryCategory.Equals(XivStrings.Monster)) && _item.GetPrimaryItemType() == XivItemType.demihuman)
-                    {
-                        _xivMtrl = await _mtrl.GetMtrlData(_item, SelectedRace.XivRace, SelectedType.Name[0], dxVersion);
-                    }
-                    else if (_item.PrimaryCategory.Equals(XivStrings.Gear))
-                    {
-                        _xivMtrl = await _mtrl.GetMtrlData(_item, SelectedRace.XivRace, SelectedType.Name[0], dxVersion);
-                    }
-                    else
-                    {
-                        _xivMtrl = await _mtrl.GetMtrlData(_item, SelectedRace.XivRace, SelectedPart.Name[0], dxVersion);
-                    }
-                }
-
                 var floats = Half.ConvertToFloat(_xivMtrl.ColorSetData.ToArray());
 
                 var floatArray = Utilities.ToByteArray(floats);
@@ -1085,12 +879,12 @@ namespace FFXIV_TexTools.ViewModels
                 _textureView.ImageZoombox.CenterContent();
                 _textureView.ImageZoombox.FitToBounds();
 
-                PathString = SelectedMap.TexType.Path;
+                PathString = SelectedMap.Path;
                 TextureFormat = XivTexFormat.A16B16G16R16F.GetTexDisplayName();
                 TextureDimensions = "4 x 16";
             }
 
-            var mod = await _modList.TryGetModEntry(PathString);
+            var mod = await _modding.TryGetModEntry(PathString);
 
 
 
@@ -1127,18 +921,20 @@ namespace FFXIV_TexTools.ViewModels
             {
                 if ( _item.SecondaryCategory.Equals(XivStrings.Equipment_Decals) || _item.SecondaryCategory.Equals(XivStrings.Face_Paint))
                 {
-                    AddNewTexturePartEnabled = false;
+                    AddMaterialEnabled = false;
+                    MaterialEditorEnabled = false;
                 }
                 else
                 {
-                    AddNewTexturePartEnabled = true;
+                    MaterialEditorEnabled = true;
+                    AddMaterialEnabled = true;
                 }
             }
             else
             {
-                AddNewTexturePartEnabled = false;
+                MaterialEditorEnabled = false;
+                AddMaterialEnabled = false;
             }
-
 
             OnLoadingComplete();
         }
@@ -1249,15 +1045,27 @@ namespace FFXIV_TexTools.ViewModels
             {
                 DirectoryInfo savePath = new DirectoryInfo(Settings.Default.Save_Directory);
                 XivTex texData;
+                var df = IOUtil.GetDataFileFromPath(SelectedMap.Path);
+                var _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory, df, XivCache.GameInfo.GameLanguage);
+                var _tex = new Tex(XivCache.GameInfo.GameDirectory);
 
-                if (SelectedMap.TexType.Type == XivTexType.ColorSet)
+
+                var ttp = new TexTypePath
                 {
-                    texData = await _mtrl.MtrlToXivTex(_xivMtrl, SelectedMap.TexType);
-                    _mtrl.SaveColorSetExtraData(_item, _xivMtrl, savePath, SelectedRace.XivRace);
+                    Path = SelectedMap.Path,
+                    Type = SelectedMap.Usage,
+                    DataFile = df
+                };
+
+                if (SelectedMap.Usage== XivTexType.ColorSet)
+                {
+
+                    texData = await _mtrl.MtrlToXivTex(_xivMtrl, ttp);
+                    _mtrl.SaveColorSetExtraData(_item, _xivMtrl, savePath, SelectedRace);
                 }
                 else
                 {
-                    texData = await _tex.GetTexData(SelectedMap.TexType);
+                    texData = await _tex.GetTexData(ttp);
                 }
 
                 if (_uiItem != null)
@@ -1266,7 +1074,7 @@ namespace FFXIV_TexTools.ViewModels
                 }
                 else
                 {
-                    _tex.SaveTexAsDDS(_item, texData, savePath, SelectedRace.XivRace);
+                    _tex.SaveTexAsDDS(_item, texData, savePath, SelectedRace);
                 }
             }
             else
@@ -1327,7 +1135,7 @@ namespace FFXIV_TexTools.ViewModels
 
             if (_item != null)
             {
-                path = IOUtil.MakeItemSavePath(_item, savePath, SelectedRace.XivRace);
+                path = IOUtil.MakeItemSavePath(_item, savePath, SelectedRace);
             }
             else if (_uiItem != null)
             {
@@ -1352,9 +1160,9 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         private void ShowFileDetails(object obj)
         {
-            if (SelectedMap != null && SelectedMap.TexType != null) 
+            if (SelectedMap != null && SelectedMap != null) 
             { 
-                var path = SelectedMap.TexType.Path;
+                var path = SelectedMap.Path;
                 var view = new DependencyInfoView(path);
                 view.ShowDialog();
             }
@@ -1409,7 +1217,7 @@ namespace FFXIV_TexTools.ViewModels
             if (format == TextureFormats.PNG)
                 extension = "png";
 
-            DirectoryInfo fullPath = new DirectoryInfo($"{path}\\{Path.GetFileNameWithoutExtension(SelectedMap.TexType.Path)}.{extension}");
+            DirectoryInfo fullPath = new DirectoryInfo($"{path}\\{Path.GetFileNameWithoutExtension(SelectedMap.Path)}.{extension}");
             return fullPath;
         }
 
@@ -1429,7 +1237,7 @@ namespace FFXIV_TexTools.ViewModels
 
             if (_item != null)
             {
-                path = new DirectoryInfo(IOUtil.MakeItemSavePath(_item, savePath, SelectedRace.XivRace));
+                path = new DirectoryInfo(IOUtil.MakeItemSavePath(_item, savePath, SelectedRace));
             }
             else if (_uiItem != null)
             {
@@ -1445,6 +1253,9 @@ namespace FFXIV_TexTools.ViewModels
 
         public async Task Import(string fileName)
         {
+            var _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory, IOUtil.GetDataFileFromPath(SelectedMap.Path), XivCache.GameInfo.GameLanguage);
+            var _tex = new Tex(XivCache.GameInfo.GameDirectory);
+            var _modding = new Modding(XivCache.GameInfo.GameDirectory);
 
             ImportEnabled = false;
             var fileDir = new DirectoryInfo(fileName);
@@ -1452,9 +1263,10 @@ namespace FFXIV_TexTools.ViewModels
 
             if (fileDir.FullName.ToLower().Contains(".dds"))
             {
-                if (SelectedMap.TexType.Type != XivTexType.ColorSet)
+                if (SelectedMap.Usage != XivTexType.ColorSet)
                 {
-                    var texData = await _tex.GetTexData(SelectedMap.TexType);
+                    
+                    var texData = await _tex.GetTexData(SelectedMap);
 
                     try
                     {
@@ -1493,9 +1305,9 @@ namespace FFXIV_TexTools.ViewModels
             }
             else
             {
-                if (SelectedMap.TexType.Type != XivTexType.ColorSet)
+                if (SelectedMap.Usage != XivTexType.ColorSet)
                 {
-                    var texData = await _tex.GetTexData(SelectedMap.TexType);
+                    var texData = await _tex.GetTexData(SelectedMap);
 
                     try
                     {
@@ -1529,7 +1341,6 @@ namespace FFXIV_TexTools.ViewModels
 
         }
 
-
         /// <summary>
         /// Command for the Mod Status Toggle Button
         /// </summary>
@@ -1549,11 +1360,11 @@ namespace FFXIV_TexTools.ViewModels
             {
                 if (ModToggleText.Equals(UIStrings.Enable))
                 {
-                    await modlist.ToggleModStatus(SelectedMap.TexType.Path, true);
+                    await modlist.ToggleModStatus(SelectedMap.Path, true);
                 }
                 else if (ModToggleText.Equals(UIStrings.Disable))
                 {
-                    await modlist.ToggleModStatus(SelectedMap.TexType.Path, false);
+                    await modlist.ToggleModStatus(SelectedMap.Path, false);
                 }
             }
             catch (Exception ex)
@@ -1565,6 +1376,38 @@ namespace FFXIV_TexTools.ViewModels
             }
 
             UpdateImage();
+        }
+
+        private async Task<XivRace> GetMaterialSharedRace(XivRace race)
+        {
+            var raceCode = race.GetRaceCode();
+            //SharedMaterialLabel
+            var racialModels = (await _root.GetModelFiles()).Where(x => x.Contains("c" + raceCode)).ToList();
+            if (racialModels.Count > 0)
+            {
+                // This item has no materials, but it *does* have a racial model, which has materials...
+                var mats = await XivCache.GetChildFiles(racialModels[0]);
+
+                if (mats.Count > 0)
+                {
+                    // Scan for a used race code that's not a skin material
+                    var regex = new Regex("c([0-9]{4})[^b]");
+                    foreach (var mat in mats)
+                    {
+                        var match = regex.Match(mat);
+                        if (match.Success)
+                        {
+                            var foundRace = XivRaces.GetXivRace(match.Groups[1].Value);
+                            if (race != foundRace)
+                            {
+                                return foundRace;
+                            }
+                        }
+                    }
+                }
+            }
+
+            return XivRace.All_Races;
         }
 
         /// <summary>
@@ -1612,6 +1455,40 @@ namespace FFXIV_TexTools.ViewModels
         {
             try
             {
+
+                var race = SelectedRace;
+                var sharedRace = await GetMaterialSharedRace(race);
+
+                if(material == null && sharedRace != race && sharedRace != XivRace.All_Races && race != XivRace.All_Races)
+                {
+                    // Need to get the shared race's material, then replace the race code.
+                    var original = "c" + sharedRace.GetRaceCode();
+                    var target = "c" + race.GetRaceCode();
+
+                    var materialSet = await Mtrl.GetMaterialSetId(_item);
+                    var materials = await _root.GetMaterialFiles(materialSet);
+
+                    string matPath = null;
+                    foreach(var mat in materials)
+                    {
+                        if(mat.Contains(original))
+                        {
+                            matPath = mat;
+                            break;
+                        }
+                    }
+
+                    if (matPath == null) return;
+                    var _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory, IOUtil.GetDataFileFromPath(matPath), XivCache.GameInfo.GameLanguage);
+
+                    // Load the original material.
+                    material = await _mtrl.GetMtrlData(matPath, materialSet);
+
+                    // And replace the path.
+                    material.MTRLPath = material.MTRLPath.Replace(original, target);
+                    mode = MaterialEditorMode.NewRace;
+                }
+
                 var editor = new Views.Textures.MaterialEditorView() { Owner = Window.GetWindow(_textureView) };
                 var open = await editor.SetMaterial(material, item, mode);
                 
@@ -1626,42 +1503,36 @@ namespace FFXIV_TexTools.ViewModels
                 _textureView.BottomFlyout.IsOpen = false;
                 var result = editor.ShowDialog();
 
-                if(result != true)
+                var prim = SelectedPrimary;
+
+                var newMaterial = editor.Material;
+
+                if (result != true)
                 {
                     // User cancelled the process or deleted/removed the material.
                     // Just reset us back to the top level and reload the UI.
-                    SelectedRace = SelectedRace;
-                    return;
+                    newMaterial = null;
                 }
 
 
-                var newMaterial = editor.Material;
+                // Just re-set the primary selector to update the view.
                 LoadingComplete += SetToNewTexturePart;
-                if (TypeParts.Count > 0)
-                {
-                    // The TypeParts menu doesn't update these when you change SelectedType,
-                    // So we need to add to it manually to get the new material to show up
-                    // without refreshing the entire view (which is a cascading async mess)
-                    var parts = SelectedType.TypeParts.ToList();
-                    var identifier = newMaterial.GetMaterialIdentifier();
-                    if (!parts.Contains(identifier))
-                    {
-                        parts.Add(identifier);
-                        SelectedType.TypeParts = parts.ToArray();
-                    }
-
-                    SelectedType = SelectedType;
-                }
-                else
-                {
-                    SelectedRace = SelectedRace;
-                }
+                SelectedPrimary = -1;
 
                 // Reload UI and then switch to material.
                 void SetToNewTexturePart(object sender, EventArgs e)
                 {
+                    if (SelectedPrimary == -1)
+                    {
+                        SelectedPrimary = prim;
+                        return;
+                    }
+
                     LoadingComplete -= SetToNewTexturePart;
-                    SelectMaterial(newMaterial.GetMaterialIdentifier());
+                    if (newMaterial != null)
+                    {
+                        SelectMaterial(newMaterial.GetMaterialIdentifier().ToString());
+                    }
                 }
 
             }
@@ -1678,41 +1549,14 @@ namespace FFXIV_TexTools.ViewModels
         /// Attempts to show a given material in the viewport.
         /// </summary>
         /// <param name="materialIdentifier"></param>
-        private void SelectMaterial(char materialIdentifier)
+        private void SelectMaterial(string materialIdentifier)
         {
 
-            var search = Types;
-            if (_item.PrimaryCategory.Equals(XivStrings.Character))
+            var result = _materialComboBoxData.FirstOrDefault(x => Path.GetFileNameWithoutExtension(x.Value).EndsWith(materialIdentifier) && Path.GetExtension(x.Value) == ".mtrl").Value;
+            if(result != null)
             {
-                search = TypeParts;
+                SelectedMaterial = result;
             }
-
-            ComboBoxData selectedItem = null;
-            for (var idx = 0; idx < search.Count; idx++)
-            {
-                var elem = search[idx];
-                if (elem.Name == materialIdentifier.ToString())
-                {
-                    selectedItem = elem;
-                    break;
-                }
-            }
-
-            if (selectedItem != null)
-            {
-                if (_item.PrimaryCategory.Equals(XivStrings.Character))
-                {
-                    //SelectedTypePartIndex = selectedIdx;
-                    SelectedTypePart = selectedItem;
-                }
-                else
-                {
-                    //SelectedTypeIndex = selectedIdx;
-                    SelectedType = selectedItem;
-                }
-            }
-
-
         }
 
 
@@ -1784,13 +1628,13 @@ namespace FFXIV_TexTools.ViewModels
         /// <summary>
         /// The enabled status of the add new texture part button        
         /// </summary>
-        public bool AddNewTexturePartEnabled
+        public bool AddMaterialEnabled
         {
-            get => _addNewTexturePartEnabled;
+            get => _addMaterialEnabled;
             set
             {
-                _addNewTexturePartEnabled = value;
-                NotifyPropertyChanged(nameof(AddNewTexturePartEnabled));
+                _addMaterialEnabled = value;
+                NotifyPropertyChanged(nameof(AddMaterialEnabled));
             }
         }
 
@@ -1814,66 +1658,19 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         private void ClearAll()
         {
-            Races.Clear();
-            SelectedRaceIndex = -1;
-            Parts.Clear();
-            SelectedPartIndex = -1;
-            Types.Clear();
-            SelectedTypeIndex = -1;
-            TypeParts.Clear();
-            SelectedTypePartIndex = -1;
-            Maps.Clear();
-            SelectedMapIndex = -1;
+            _hasVfx = false;
             _item = null;
             _uiItem = null;
             _xivMtrl = null;
+            _primaryComboBoxData.Clear();
+            _materialComboBoxData.Clear();
+            _mapComboBoxData.Clear();
 
-            TypePartVisibility = Visibility.Collapsed;
-            TypeVisibility = Visibility.Collapsed;
-            PartVisibility = Visibility.Visible;
+            _textureView.SharedMaterialLabel.Content = "";
+            _textureView.SharedMaterialLabel.Visibility = Visibility.Collapsed;
+
 
             ClearImage();
-        }
-
-        /// <summary>
-        /// Sets the watermarks for the combobox
-        /// </summary>
-        private void SetComboBoxWatermarks()
-        {
-            if (_item == null) return;
-
-            RaceWatermark = $"{XivStrings.Race}  |  {_raceCount}";
-            TextureMapWatermark = $"{XivStrings.Texture_Map}  |  {_mapCount}";
-
-            if (_item.PrimaryCategory.Equals(XivStrings.Character))
-            {
-                PartWatermark = $"{XivStrings.Number}  |  {_partCount}";
-
-                if (_item.SecondaryCategory.Equals(XivStrings.Body))
-                {
-                    TypeWatermark = XivStrings.Variant;
-                    TypePartWatermark = XivStrings.Part;
-                }
-                else
-                {
-                    TypeWatermark = TypePartVisibility == Visibility.Visible ? $"{XivStrings.Type}  |  {_typeCount}" : $"{XivStrings.Part}  |  {_typeCount}";
-
-                    if (TypePartVisibility == Visibility.Visible)
-                    {
-                        TypePartWatermark = $"{XivStrings.TypePart}  |  {_typePartCount}";
-                    }
-                }
-            }
-            else if (_item.SecondaryCategory.Equals(XivStrings.Mounts) && _item.GetPrimaryItemType() == XivItemType.demihuman)
-            {
-                PartWatermark = $"{XivStrings.Type}  |  {_partCount}";
-                TypeWatermark = $"{XivStrings.Part}  |  {_typeCount}";
-            }
-            else
-            {
-                PartWatermark = $"{XivStrings.Part}  |  {_partCount}";
-                TypeWatermark = $"{XivStrings.Type}  |  {_typeCount}";
-            }
         }
 
         /// <summary>
@@ -2087,16 +1884,6 @@ namespace FFXIV_TexTools.ViewModels
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        public class ComboBoxData
-        {
-            public string Name { get; set; }
-
-            public XivRace XivRace { get; set; }
-
-            public TexTypePath TexType { get; set; }
-
-            public char[] TypeParts { get; set; }
-        }
 
         protected virtual void OnLoadingComplete()
         {
@@ -2111,7 +1898,6 @@ namespace FFXIV_TexTools.ViewModels
                 var offset = index.GetDataOffset(HashGenerator.GetHash(Path.GetDirectoryName(_xivMtrl.MTRLPath).Replace("\\", "/")), HashGenerator.GetHash(Path.GetFileName(_xivMtrl.MTRLPath)), _item.DataFile).GetAwaiter().GetResult();
                 if (offset == 0)
                 {
-                    SelectedPart = SelectedPart;
                     return false;
                 }
             }
@@ -2126,7 +1912,7 @@ namespace FFXIV_TexTools.ViewModels
                 return false;
             }
 
-            var path = SelectedMap.TexType.Path;
+            var path = SelectedMap.Path;
             var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
             var index = new Index(gameDirectory);
 
@@ -2142,7 +1928,6 @@ namespace FFXIV_TexTools.ViewModels
             {
                 return true;
             }
-            SelectedPart = SelectedPart;
             return false;
         }
 

@@ -144,21 +144,27 @@ namespace FFXIV_TexTools.Views
                 {
                     if (selectedModItem.ModItem.enabled)
                     {
-                        await modding.ToggleModStatus(selectedModItem.ModItem.fullPath, false);
-                        (DataContext as ModListViewModel).ModToggleText = FFXIV_TexTools.Resources.UIStrings.Enable;
-                        selectedModItem.ActiveBorder = Brushes.Red;
-                        selectedModItem.Active = Brushes.Gray;
-                        selectedModItem.ActiveOpacity = 0.5f;
-                        selectedModItem.ModItem.enabled = false;
+                        var success = await modding.ToggleModStatus(selectedModItem.ModItem.fullPath, false);
+                        if (success)
+                        {
+                            (DataContext as ModListViewModel).ModToggleText = FFXIV_TexTools.Resources.UIStrings.Enable;
+                            selectedModItem.ActiveBorder = Brushes.Red;
+                            selectedModItem.Active = Brushes.Gray;
+                            selectedModItem.ActiveOpacity = 0.5f;
+                            selectedModItem.ModItem.enabled = false;
+                        }
                     }
                     else
                     {
-                        await modding.ToggleModStatus(selectedModItem.ModItem.fullPath, true);
-                        (DataContext as ModListViewModel).ModToggleText = FFXIV_TexTools.Resources.UIStrings.Disable;
-                        selectedModItem.ActiveBorder = Brushes.Green;
-                        selectedModItem.Active = Brushes.Transparent;
-                        selectedModItem.ActiveOpacity = 1;
-                        selectedModItem.ModItem.enabled = true;
+                        var success = await modding.ToggleModStatus(selectedModItem.ModItem.fullPath, true);
+                        if (success)
+                        {
+                            (DataContext as ModListViewModel).ModToggleText = FFXIV_TexTools.Resources.UIStrings.Disable;
+                            selectedModItem.ActiveBorder = Brushes.Green;
+                            selectedModItem.Active = Brushes.Transparent;
+                            selectedModItem.ActiveOpacity = 1;
+                            selectedModItem.ModItem.enabled = true;
+                        }
                     }
                 }
             }
@@ -205,14 +211,7 @@ namespace FFXIV_TexTools.Views
         {
             (DataContext as ModListViewModel).Dispose();
             _cts?.Dispose();
-            if (_textureViewModel.SelectedPart != null)
-            {
-                _textureViewModel.SelectedPart = _textureViewModel.SelectedPart;
-            }
-            if(_modelViewModel.SelectedPart != null)
-            {
-                _modelViewModel.SelectedPart = _modelViewModel.SelectedPart;
-            }         
+            MainWindow.GetMainWindow().ReloadItem();
         }
     }
 }

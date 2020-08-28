@@ -42,6 +42,7 @@ using xivModdingFramework.Mods;
 using xivModdingFramework.SqPack.FileTypes;
 using xivModdingFramework.Cache;
 using FFXIV_TexTools.Views;
+using xivModdingFramework.Mods.DataContainers;
 
 namespace FFXIV_TexTools.ViewModels
 {
@@ -137,7 +138,6 @@ namespace FFXIV_TexTools.ViewModels
                 return false;
             }
 
-            await CheckGameVersion();
             success =  await CheckIndexFiles();
             if (!success)
             {
@@ -530,125 +530,240 @@ namespace FFXIV_TexTools.ViewModels
             }
         }
 
-        private async Task CheckGameVersion()
+
+        /// <summary>
+        /// Performs post-patch modlist corrections and validation, prompting user also to generate backups after a successful completion.
+        /// </summary>
+        /// <returns></returns>
+        public async Task DoPostPatchCleanup()
         {
-            var applicationVersion = FileVersionInfo
-                .GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location).FileVersion;
 
-            Version ffxivVersion = null;
-            var needsNewBackup = false;
-            var backupMessage = "";
+            FlexibleMessageBox.Show(_mainWindow.Win32Window, UIMessages.PatchDetectedMessage, "Post Patch Cleanup Starting", MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
 
-            var modding = new Modding(_gameDirectory);
-            var backupDirectory = new DirectoryInfo(Properties.Settings.Default.Backup_Directory);
 
-            var versionFile = $"{_gameDirectory.Parent.Parent.FullName}\\ffxivgame.ver";
-
-            if (File.Exists(versionFile))
+            await _mainWindow.LockUi("Performing Post-Patch Maintenence", "This may take a few minutes if you have many mods installed.", this);
+            try
             {
-                var versionData = File.ReadAllLines(versionFile);
-                ffxivVersion = new Version(versionData[0].Substring(0, versionData[0].LastIndexOf(".")));
-            }
-            else
-            {
-                FlexibleMessageBox.Show(_mainWindow.Win32Window, UIMessages.GameVersionErrorMessage,
-                    string.Format(UIMessages.GameVersionErrorTitle, applicationVersion), MessageBoxButtons.OK,
-                    MessageBoxIcon.Warning);
-                return;
-            }
+                var modding = new Modding(_gameDirectory);
+                var _index = new Index(_gameDirectory);
+                var _dat = new Dat(_gameDirectory);
 
-            if (string.IsNullOrEmpty(Properties.Settings.Default.FFXIV_Version))
-            {
-                Properties.Settings.Default.FFXIV_Version = ffxivVersion.ToString();
-                Properties.Settings.Default.Save();
+                // We have to do a few things here.
+                // 1.  Save a list of what mods were enabled.
+                // 2.  Go through and validate everything that says it is enabled actually is enabled, or mark it as disabled and update its original index offset if it is not.
+                // 3.  Prompt the user for either a full disable and backup creation, or a restore to normal state (re-enable anything that was enabled before but is not now)
+                var modList = modding.GetModList();
 
-                needsNewBackup = true;
-                backupMessage = UIMessages.NewInstallDetectedBackupMessage;
-            }
-            else
-            {
-                var versionCheck = new Version(Properties.Settings.Default.FFXIV_Version);
 
-                if (ffxivVersion > versionCheck)
+                var internalFilesModified = false;
+
+                // Cache our currently enabled stuff.
+                List<Mod> enabledMods = modList.Mods.Where(x => x.enabled == true).ToList();
+                var toRemove = new List<Mod>();
+
+                foreach (var mod in modList.Mods)
                 {
-                    needsNewBackup = true;
-                    backupMessage = UIMessages.NewerVersionDetectedBackupMessage;
-                }
-            }
-
-            if (!Directory.Exists(backupDirectory.FullName))
-            {
-                FlexibleMessageBox.Show(_mainWindow.Win32Window, UIMessages.BackupsDirectoryErrorMessage, UIMessages.BackupFailedTitle,
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            if (Directory.GetFiles(backupDirectory.FullName).Length == 0)
-            {
-                needsNewBackup = true;
-                backupMessage = UIMessages.NoBackupsFoundMessage;
-            }
-
-            if (needsNewBackup)
-            {
-                var indexFiles = new XivDataFile[]
-                    { XivDataFile._0A_Exd, XivDataFile._04_Chara, XivDataFile._06_Ui, XivDataFile._01_Bgcommon };
-
-                if (FlexibleMessageBox.Show(_mainWindow.Win32Window, backupMessage, UIMessages.CreateBackupTitle, MessageBoxButtons.YesNo,
-                        MessageBoxIcon.Warning) == DialogResult.Yes)
-                {
-
-                    if (_index.IsIndexLocked(XivDataFile._0A_Exd))
+                    if (!String.IsNullOrEmpty(mod.fullPath))
                     {
-                        FlexibleMessageBox.Show(_mainWindow.Win32Window, UIMessages.IndexLockedBackupFailedMessage,
-                            UIMessages.BackupFailedTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        return;
+                        var index1Value = await _index.GetDataOffset(mod.fullPath);
+                        var index2Value = await _index.GetDataOffsetIndex2(mod.fullPath);
+                        var oldOriginalOffset = mod.data.originalOffset;
+                        var modOffset = mod.data.modOffset;
+
+                        // In any event where an offset does not match either of our saved offsets, we must assume this is a new
+                        // default file offset for post-patch.
+                        if (index1Value != oldOriginalOffset && index1Value != modOffset && index1Value != 0)
+                        {
+                            // Index 1 value is our new base offset.
+                            mod.data.originalOffset = index1Value;
+                            mod.enabled = false;
+                        }
+                        else if (index2Value != oldOriginalOffset && index2Value != modOffset && index2Value != 0)
+                        {
+                            // Index 2 value is our new base offset.
+                            mod.data.originalOffset = index2Value;
+                            mod.enabled = false;
+                        }
+
+                        // Indexes don't match.  This can occur if SE adds something to index2 that didn't exist in index2 before.
+                        if (index1Value != index2Value && index2Value != 0)
+                        {
+                            if(mod.source == Constants.InternalModSourceName)
+                            {
+                                internalFilesModified = true;
+                            }
+
+                            // We should never actually get to this state for file-addition mods.  If we do, uh.. I guess correct the indexes and yolo?
+                            await _index.UpdateDataOffset(mod.data.originalOffset, mod.fullPath, false);
+                            index1Value = mod.data.originalOffset;
+                            index2Value = mod.data.originalOffset;
+
+                            mod.enabled = false;
+                        }
+
+                        // Set it to the corrected state.
+                        if (index1Value == mod.data.modOffset)
+                        {
+                            mod.enabled = true;
+                        }
+                        else
+                        {
+                            mod.enabled = false;
+                        }
+
+
+                        // Perform a basic file type check on our results.
+                        var fileType = _dat.GetFileType(mod.data.modOffset, IOUtil.GetDataFileFromPath(mod.fullPath));
+                        var originalFileType = _dat.GetFileType(mod.data.modOffset, IOUtil.GetDataFileFromPath(mod.fullPath));
+
+                        var validTypes = new List<int>() { 2, 3, 4 };
+                        if (!validTypes.Contains(fileType))
+                        {
+                            // Mod data is busted.  Fun.
+                            toRemove.Add(mod);
+                            if (mod.source == Constants.InternalModSourceName)
+                            {
+                                internalFilesModified = true;
+                            }
+                        }
+
+                        if (!validTypes.Contains(originalFileType))
+                        {
+                            if (mod.IsCustomFile())
+                            {
+                                // Okay, in this case this is recoverable as the mod is a custom addition anyways, so we can just delete it.
+                            }
+                            else
+                            {
+                                // Update ended up with us unable to find a valid original offset.  Double fun.
+                                throw new Exception("Unable to determine working offset for file:" + mod.fullPath);
+                            }
+                        }
                     }
 
+                    // Okay, this mod is now represented in the modlist in it's actual post-patch index state.
+                    var datNum = (int)((mod.data.modOffset / 8) & 0x0F) / 2;
+                    var dat = XivDataFiles.GetXivDataFile(mod.datFile);
+
+                    var originalDats = await _dat.GetUnmoddedDatList(dat);
+                    var datPath = $"{dat.GetDataFileName()}{Dat.DatExtension}{datNum}";
+
+                    // Test for SE Dat file rollover.
+                    if (originalDats.Contains(datPath))
+                    {
+                        // Shit.  This means that the dat file where this mod lived got eaten by SE.  We have to destroy the modlist entry at this point.
+                        toRemove.Add(mod);
+                    }
+
+                    if (mod.enabled == false && mod.source == Constants.InternalModSourceName && !String.IsNullOrEmpty(mod.fullPath))
+                    {
+                        // Shit.  Some internal multi-edit file got eaten.  This means we'll have to re-apply all metadata mods later.
+                        internalFilesModified = true;
+                    }
+                }
+
+                modding.SaveModList(modList);
+
+                if (toRemove.Count > 0)
+                {
+                    var removedString = "";
+                    foreach (var mod in toRemove)
+                    {
+                        if (mod.enabled)
+                        {
+                            // We shouldn't really get here with something like this enabled, but if it is, disable it.
+                            await modding.ToggleModUnsafe(false, mod, true);
+                            mod.enabled = false;
+                        }
+
+                        modList.Mods.Remove(mod);
+
+                        // Since we're deleting this entry entirely, we can't leave it in the other cached list either to get re-enabled later.
+                        enabledMods.Remove(mod);
+
+                        removedString += mod.fullPath + "\n";
+                    }
+
+                    modding.SaveModList(modList);
+
+                    // Show the user a message if we purged any real files.
+                    if (toRemove.Any(x => !String.IsNullOrEmpty(x.fullPath)))
+                    {
+                        var text = String.Format(UIMessages.PatchDestroyedFiles, removedString);
+
+                        FlexibleMessageBox.Show(_mainWindow.Win32Window, text, "Destroyed Files Notification", MessageBoxButtons.OK, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1);
+                    }
+                }
+
+                var result = FlexibleMessageBox.Show(_mainWindow.Win32Window, UIMessages.PostPatchBackupPrompt, "Post-Patch Backup Prompt", MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
+
+                if (result == DialogResult.Yes)
+                {
+                    _mainWindow.LockProgress.Report("Disabling Mods.  This can take a minute if you have many mods...");
+                    await modding.ToggleAllMods(false);
+
+                    _mainWindow.LockProgress.Report("Creating Index Backups...");
+                    var pc = new ProblemChecker(_gameDirectory);
+                    DirectoryInfo backupDir;
                     try
                     {
-                        int dxVersion = 0;
-                        bool success = Int32.TryParse(Settings.Default.DX_Version, out dxVersion);
-                        if(!success)
-                        {
-                            dxVersion = 11;
-                        }
-
-                        // Need to initialize the cache here before doing the mod toggle.
-                        var gameDir = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
-                        var lang = XivLanguages.GetXivLanguage(Properties.Settings.Default.Application_Language);
-
-                        // Don't bother starting the cache worker though in import only mode.  It'll just get shut right off again anyways.
-                        XivCache.SetGameInfo(gameDir, lang, dxVersion, true, false);
-                        
-                        await modding.ToggleAllMods(false);
+                        Directory.CreateDirectory(Settings.Default.Backup_Directory);
+                        backupDir = new DirectoryInfo(Settings.Default.Backup_Directory);
                     }
-                    catch (Exception ex)
+                    catch
                     {
-                        FlexibleMessageBox.Show(_mainWindow.Win32Window, string.Format(UIMessages.BackupFailedErrorMessage, ex.Message),
-                            UIMessages.BackupFailedTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        return;
+                        throw new Exception("Unable to create index backups.\nThe Index Backup directory is invalid or inaccessible: " + Settings.Default.Backup_Directory);
                     }
 
-                    foreach (var xivDataFile in indexFiles)
-                    {
-                        try
-                        {
-                            File.Copy($"{_gameDirectory.FullName}\\{xivDataFile.GetDataFileName()}.win32.index",
-                                $"{backupDirectory}\\{xivDataFile.GetDataFileName()}.win32.index", true);
-                            File.Copy($"{_gameDirectory.FullName}\\{xivDataFile.GetDataFileName()}.win32.index2",
-                                $"{backupDirectory}\\{xivDataFile.GetDataFileName()}.win32.index2", true);
-                        }
-                        catch (Exception e)
-                        {
-                            FlexibleMessageBox.Show(_mainWindow.Win32Window, string.Format(UIMessages.BackupFailedErrorMessage, e.Message),
-                                UIMessages.BackupFailedTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        }
-                    }
+                    await pc.BackupIndexFiles(backupDir);
 
-                    Properties.Settings.Default.FFXIV_Version = ffxivVersion.ToString();
-                    Properties.Settings.Default.Save();
+                    FlexibleMessageBox.Show(_mainWindow.Win32Window, UIMessages.PostPatchBackupsComplete, "Post-Patch Backup Complete", MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
+
                 }
+                else
+                {
+                    _mainWindow.LockProgress.Report("Re-Enabling mods disabled by FFXIV Patch...");
+
+                    if (internalFilesModified)
+                    {
+                        // Okay, if any of our internal multi-edit files got edited, we have to bash them all so that we can rebuild them from the new game files correctly.
+                        var internals = modList.Mods.Where(x => x.IsInternal());
+                        foreach(var mod in internals)
+                        {
+                            await modding.DeleteMod(mod.fullPath, true);
+                        }
+
+                        // And likewise, set the raw meta entries to disabled to ensure they get re-enabled fully.
+                        var metas = modList.Mods.Where(x => Path.GetExtension(x.fullPath) == ".meta");
+                        foreach(var mod in metas)
+                        {
+                            await _index.DeleteFileDescriptor(mod.fullPath, IOUtil.GetDataFileFromPath(mod.fullPath));
+                            mod.enabled = false;
+                        }
+                    }
+
+                    foreach (var mod in enabledMods)
+                    {
+                        // If the mod was disabled by our previous 
+                        if(!mod.enabled)
+                        {
+                            await modding.ToggleModStatus(mod.fullPath, true);
+                        }
+                    }
+
+
+                    FlexibleMessageBox.Show(_mainWindow.Win32Window, UIMessages.PostPatchComplete, "Post-Patch Process Complete", MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
+
+                }
+            }
+            catch(Exception Ex)
+            {
+                // Show the user the error, then let them go about their business of fixing things.
+                FlexibleMessageBox.Show(_mainWindow.Win32Window, String.Format(UIMessages.PostPatchError, Ex.Message), "Post-Patch Failure", MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
+            }
+            finally
+            {
+                await _mainWindow.UnlockUi(this);
             }
         }
 

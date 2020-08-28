@@ -76,11 +76,11 @@ namespace FFXIV_TexTools.Views
 
         private static readonly Regex _suffixRegex = new Regex("\\.([a-z]+)$");
 
-        private void LoadVMFiles()
+        private async Task LoadVMFiles()
         {
-            foreach(var file in _vm.AllFiles)
+            foreach (var file in _vm.AllFiles)
             {
-                AddFile(file);
+                await AddFile(file);
             }
             ConfirmButton.IsEnabled = true;
         }
@@ -88,9 +88,14 @@ namespace FFXIV_TexTools.Views
         private async Task<bool> AddFile(string file)
         {
             var _index = new Index(XivCache.GameInfo.GameDirectory);
-            if(!(await _index.FileExists(file))) {
-                // File doesn't actually exist, can't be added.
-                return false;
+
+            if (Path.GetExtension(file) != ".meta")
+            {
+                if (!(await _index.FileExists(file)))
+                {
+                    // File doesn't actually exist, can't be added.
+                    return false;
+                }
             }
 
             var match = _suffixRegex.Match(file);

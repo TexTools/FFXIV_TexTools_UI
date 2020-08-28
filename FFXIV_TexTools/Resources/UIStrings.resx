@@ -315,12 +315,6 @@
   <data name="Current_Language_colon" xml:space="preserve">
     <value>Current Language:</value>
   </data>
-  <data name="DAE_file_to_import" xml:space="preserve">
-    <value>DAE file to import</value>
-  </data>
-  <data name="DAE_Info" xml:space="preserve">
-    <value>DAE Info</value>
-  </data>
   <data name="Default_Skin" xml:space="preserve">
     <value>Default Skin</value>
   </data>
@@ -353,12 +347,6 @@
   </data>
   <data name="Export_Both" xml:space="preserve">
     <value>Export Both</value>
-  </data>
-  <data name="Export_DAE_file" xml:space="preserve">
-    <value>Export DAE file</value>
-  </data>
-  <data name="Export_DAE_Materials" xml:space="preserve">
-    <value>Export DAE + Materials</value>
   </data>
   <data name="Export_DDS" xml:space="preserve">
     <value>Export DDS</value>
@@ -999,5 +987,8 @@ If you would like to enable this, first import a texture for the selected item.<
   </data>
   <data name="Viewport_Disclaimer" xml:space="preserve">
     <value>TexTools model displays are only an approximation, and may not be 100% accurate to in-game visuals.</value>
+  </data>
+  <data name="Copy_File" xml:space="preserve">
+    <value>Copy File</value>
   </data>
 </root>

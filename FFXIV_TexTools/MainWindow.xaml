@@ -8,6 +8,7 @@
         xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         xmlns:views ="clr-namespace:FFXIV_TexTools.Views"
+        xmlns:metadata ="clr-namespace:FFXIV_TexTools.Views.Metadata"
         xmlns:resx="clr-namespace:FFXIV_TexTools.Resources" 
         xmlns:items="clr-namespace:FFXIV_TexTools.Views.Controls"
                       mc:Ignorable="d"
@@ -54,6 +55,7 @@
                     <MenuItem x:Name="Menu_EnableAll" Header="{Binding Source={x:Static resx:UIStrings.Enable_All_Mods}}" Command="{Binding EnableAllModsCommand}"/>
                 </MenuItem>
                 <MenuItem x:Name="Menu_ModConverter" IsEnabled="False" Header="{Binding Source={x:Static resx:UIStrings.Mod_Converter}}" Click="Menu_ModConverter_Click"/>
+                <MenuItem x:Name="Menu_CopyFile" Header="{Binding Source={x:Static resx:UIStrings.Copy_File}}" Click="Menu_CopyFile_Click"/>
             </MenuItem>
             <MenuItem Header="{Binding Source={x:Static resx:UIStrings.Search}}" StaysOpenOnClick="True">
                 <MenuItem x:Name="Menu_IconSearch" Header="{Binding Source={x:Static resx:UIStrings.Icon_ID}}" Click="Menu_IconIDSearch_Click"/>
@@ -127,6 +129,9 @@
                 </TabItem>
                 <TabItem x:Name="SharedItemsTab" Header="{Binding Source={x:Static resx:UIStrings.Variants}}" IsEnabled="False" Visibility="Hidden">
                     <views:SharedItemsView/>
+                </TabItem>
+                <TabItem x:Name="MetadataTab" Header="Metadata" IsEnabled="False" Visibility="Hidden">
+                    <metadata:MetadataView/>
                 </TabItem>
             </Controls:MetroTabControl>
         </Grid>

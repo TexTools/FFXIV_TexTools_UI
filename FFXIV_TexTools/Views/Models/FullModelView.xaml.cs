@@ -65,16 +65,6 @@ namespace FFXIV_TexTools.Views.Models
         /// <param name="race">The race of the model</param>
         public async Task AddModel(TTModel ttModel, Dictionary<int, ModelTextureData> materialDictionary, IItemModel item, XivRace race)
         {
-            // Because the full model is skinned, it requires the bones to exist so we check them here
-            var sklb = new Sklb(_gameDirectory);
-            var skel = await sklb.CreateParsedSkelFile(ttModel.Source);
-
-            // If we have weights, but can't find a skel, bad times.
-            if (skel == null)
-            {
-                throw new InvalidDataException("Unable to resolve model skeleton.");
-            }
-
             try
             {
                 _fmvm.AddModelToView(ttModel, materialDictionary, item, race);

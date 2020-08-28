@@ -1,0 +1,80 @@
+﻿<UserControl x:Class="FFXIV_TexTools.Views.Metadata.ImcControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:FFXIV_TexTools.Views.Metadata"
+             xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="800" MinWidth="800">
+    <GroupBox Header="Variant Settings">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="36"></RowDefinition>
+                <RowDefinition Height="1*" ></RowDefinition>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="100"></ColumnDefinition>
+                <ColumnDefinition Width="160"></ColumnDefinition>
+                <ColumnDefinition Width="50"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+
+            <Label Content="IMC Variant:" Margin="0" FontSize="16" Grid.Row="0" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"/>
+            <ComboBox  x:Name="ImcVariantBox" Grid.Row="0" Grid.Column="1" Margin="5,5,0,5" HorizontalAlignment="Left" Width="150" />
+
+            <Grid Grid.Row="1" Grid.Column="1" Margin="5" Grid.ColumnSpan="3">
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="36"></RowDefinition>
+                    <RowDefinition Height="36"></RowDefinition>
+                    <RowDefinition Height="1*"></RowDefinition>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="100"></ColumnDefinition>
+                    <ColumnDefinition Width="150"></ColumnDefinition>
+                    <ColumnDefinition Width="100"></ColumnDefinition>
+                    <ColumnDefinition Width="150"></ColumnDefinition>
+                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+
+                <Label Content="Material Set:" Margin="0" FontSize="16" Grid.Row="0" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"/>
+                <ComboBox x:Name="MaterialSetBox" Grid.Row="0" Grid.Column="1" Margin="5" />
+
+                <Label Content="VFX ID:" Margin="0" FontSize="16" Grid.Row="0" Grid.Column="2" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"/>
+                <TextBox x:Name="VfxBox" Grid.Row="0" Grid.Column="3" Margin="5" PreviewTextInput="PreviewNumericInput" TextChanged="VfxBox_TextChanged"  />
+
+                <Label Content="SFX ID:" Margin="0" FontSize="16" Grid.Row="1" Grid.Column="2" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"/>
+                <TextBox x:Name="SfxBox" Grid.Row="1" Grid.Column="3" Margin="5" PreviewTextInput="PreviewNumericInput" TextChanged="SfxBox_TextChanged" />
+
+                <GroupBox Grid.Column="0" Grid.Row="2"  Header="Visible IMC Parts" Margin="5" Grid.ColumnSpan="5" HorizontalAlignment="Left" Width="490" Height="100" VerticalAlignment="Top">
+                    <UniformGrid x:Name="PartsGrid" Rows="2" Columns="5">
+
+                        <CheckBox Content=" A" Grid.Column="1"  Width="50" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <CheckBox Content=" B" Grid.Column="1" HorizontalAlignment="Center"  Width="50" VerticalAlignment="Center"/>
+                        <CheckBox Content=" C" Grid.Column="1" HorizontalAlignment="Center"  Width="50" VerticalAlignment="Center"/>
+
+                        <CheckBox Content=" D" Grid.Column="1" HorizontalAlignment="Center"  Width="50" VerticalAlignment="Center"/>
+                        <CheckBox Content=" E" Grid.Column="1" HorizontalAlignment="Center"  Width="50" VerticalAlignment="Center"/>
+                        <CheckBox Content=" F" Grid.Column="1" HorizontalAlignment="Center"  Width="50" VerticalAlignment="Center"/>
+
+                        <CheckBox Content=" G" Grid.Column="1" HorizontalAlignment="Center"  Width="50" VerticalAlignment="Center"/>
+                        <CheckBox Content=" H" Grid.Column="1" HorizontalAlignment="Center"  Width="50" VerticalAlignment="Center"/>
+                        <CheckBox Content=" I" Grid.Column="1" HorizontalAlignment="Center"  Width="50" VerticalAlignment="Center"/>
+
+                        <CheckBox Content=" J" Grid.Column="1" HorizontalAlignment="Center"  Width="50" VerticalAlignment="Center"/>
+                    </UniformGrid>
+                </GroupBox>
+                <Button x:Name="PathsButton" Content="Show Paths" Grid.Column="4" VerticalAlignment="Center" Margin="10,0,0,0" Click="ShowPaths" HorizontalAlignment="Left" Width="150"/>
+            </Grid>
+
+            <Button Grid.Column="2" x:Name="AffectedItemsButton" Margin="5,0" VerticalAlignment="Center" Click="AffectedItemsButton_Click">
+                <iconPacks:PackIconFontAwesome Kind="SearchSolid"/>
+            </Button>
+
+            <TextBlock x:Name="ItemNameBox" Text="[3] Some Cool Item Name" Margin="10,0" FontSize="16" Grid.Row="0" Grid.Column="3" VerticalAlignment="Center"/>
+
+
+        </Grid>
+    </GroupBox>
+</UserControl>

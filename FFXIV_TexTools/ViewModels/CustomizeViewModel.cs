@@ -284,21 +284,6 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         public List<string> TargetImporters { get; set; }
 
-        /// <summary>
-        /// The selected importer
-        /// </summary>
-        public string SelectedImporter
-        {
-            get => Settings.Default.DAE_Plugin_Target;
-            set
-            {
-                if (SelectedImporter != value)
-                {
-                    SetImporter(value);
-                }
-            }
-        }
-
         public bool ExportTextureAsDDS
         {
             get => Settings.Default.ExportTexDDS;
@@ -712,19 +697,8 @@ namespace FFXIV_TexTools.ViewModels
             Settings.Default.Save();
             UpdateFrameworkColors();
         }
-
-
-        /// <summary>
-        /// Saves the importer to the settings
-        /// </summary>
-        /// <param name="importer">The importer</param>
-        private void SetImporter(string importer)
-        {
-            Settings.Default.DAE_Plugin_Target = importer;
-            Settings.Default.Save();
-            UpdateFrameworkColors();
-        }
         #endregion
+
 
         /// <summary>
         /// Populates the user's color settings into the framework's static storage.

@@ -56,7 +56,7 @@
         <Button x:Name="CopyMaterialButton" Content="Copy Material" HorizontalAlignment="Left" Margin="243,12,0,0" VerticalAlignment="Top" Width="102" Grid.Column="3" Grid.Row="1" Click="CopyMaterialButton_Click" Height="27"/>
         <Button x:Name="PasteMaterialButton" Content="Paste Material" HorizontalAlignment="Left" Margin="243,12,0,0" Grid.Row="2" VerticalAlignment="Top" Width="102" Grid.Column="3" Click="PasteMaterialButton_Click" Height="27"/>
         <Button x:Name="DisableButton" Content="Disable/Delete" Margin="52,0,0,10" Grid.Row="8" FontSize="12" HorizontalAlignment="Left" Width="150" Height="30" VerticalAlignment="Bottom" Click="DisableButton_Click" Grid.Column="1"/>
-        <Label x:Name="SaveStatusLabel" Content="" Grid.Column="2" HorizontalAlignment="Left" Margin="29,12,0,0" Grid.Row="8" VerticalAlignment="Top" Grid.ColumnSpan="2" Width="269" HorizontalContentAlignment="Right" FontStyle="Italic" Height="29"/>
+        <Label x:Name="SaveStatusLabel" Content="" Grid.Column="2" HorizontalAlignment="Left" Margin="29,7,0,0" Grid.Row="8" VerticalAlignment="Top" Grid.ColumnSpan="2" Width="243" HorizontalContentAlignment="Right" FontStyle="Italic" Height="29"/>
         <Label Content="Backfaces:" Margin="0,10,10,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14" Height="29" Grid.Row="3" RenderTransformOrigin="0.164,0.793" HorizontalAlignment="Right" Width="100" HorizontalContentAlignment="Right"/>
         <ComboBox x:Name="BackfacesComboBox" Margin="10,13,10,0" VerticalAlignment="Top" Height="26" Grid.Column="1" Grid.Row="3" />
     </Grid>

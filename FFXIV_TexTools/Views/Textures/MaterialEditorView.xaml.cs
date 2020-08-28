@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using xivModdingFramework.General.Enums;
 using xivModdingFramework.Items.Interfaces;
 using xivModdingFramework.Materials.DataContainers;
 using xivModdingFramework.Mods;
@@ -17,6 +18,7 @@ namespace FFXIV_TexTools.Views.Textures
         EditSingle,
         EditMulti,
         NewSingle,
+        NewRace,
         NewMulti
     }
     /// <summary>
@@ -191,7 +193,9 @@ namespace FFXIV_TexTools.Views.Textures
             // Generate a fresh shader info so we can access some of the calculated fields.
             var info = new ShaderInfo() { Shader = shader, Preset = preset, TransparencyEnabled = transparency };
 
-            if(info.HasMulti)
+            ColorsetComboBox.SelectedValue = info.HasColorset;
+
+            if (info.HasMulti)
             {
                 SpecularLabel.Content = "Multi:";
                 SpecularTextBox.IsEnabled = true;

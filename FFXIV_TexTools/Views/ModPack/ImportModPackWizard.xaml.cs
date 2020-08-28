@@ -163,18 +163,7 @@ namespace FFXIV_TexTools.Views
 
             }
 
-            // When the window is closed force an update of the Texture/Model tabs by setting the selected parts
-            if (_textureViewModel != null && _modelViewModel != null)
-            {
-                if (_textureViewModel.SelectedPart != null)
-                {
-                    _textureViewModel.SelectedPart = _textureViewModel.SelectedPart;
-                }
-                if (_modelViewModel.SelectedPart != null)
-                {
-                    _modelViewModel.SelectedPart = _modelViewModel.SelectedPart;
-                }
-            }
+            MainWindow.GetMainWindow().ReloadItem();
         }
 
         /// <summary>

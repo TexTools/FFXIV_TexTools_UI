@@ -62,7 +62,7 @@ namespace FFXIV_TexTools.ViewModels
 
         private void SetupRaces()
         {
-            var races = Eqp.DeformationAvailableRaces;
+            var races = Eqp.PlayableRaces;
 
             _view.RaceComboBox.SelectedValuePath = "Key";
             _view.RaceComboBox.DisplayMemberPath = "Value";

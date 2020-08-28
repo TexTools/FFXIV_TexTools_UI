@@ -30,8 +30,19 @@ namespace FFXIV_TexTools.Views
         {
             InitializeComponent();
 
-            var fileVersion = FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location).FileVersion;
-            VersionTextBox.Text = $"Version {fileVersion.Substring(0, fileVersion.LastIndexOf("."))}";
+            if (MainWindow.IsBetaVersion)
+            {
+                var fileVersion = MainWindow.BetaVersion.ToString();
+                VersionTextBox.Text = $"Version {fileVersion} {MainWindow.BetaSuffix}";
+
+            }
+            else
+            {
+                var fileVersion = FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location).FileVersion;
+                VersionTextBox.Text = $"Version {fileVersion}";
+            }
+
+
         }
 
         /// <summary>

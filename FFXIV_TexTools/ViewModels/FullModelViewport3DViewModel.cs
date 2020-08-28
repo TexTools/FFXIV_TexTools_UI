@@ -185,7 +185,7 @@ namespace FFXIV_TexTools.ViewModels
                     Geometry = meshGeometry3D,
                     Material = material,
                     ItemType = itemType,
-                    BoneMatrices = GetMatrices(model.Bones, targetRace),
+                    BoneMatrices = GetMatrices(targetRace),
                     BoneList = model.Bones
                 };
 
@@ -234,7 +234,7 @@ namespace FFXIV_TexTools.ViewModels
             ModelGroup.Dispose();
             ModelGroup.Clear();
 
-            var bones = MakeHelixBones(shownBonesList.ToList(), targetRace);
+            var bones = MakeHelixBones(targetRace);
 
             var bsmNode = new BoneSkinMeshNode
             {
@@ -327,6 +327,7 @@ namespace FFXIV_TexTools.ViewModels
                     }
                 }
             }
+            
 
             foreach (var model in modelsToRemove)
             {
@@ -502,40 +503,73 @@ namespace FFXIV_TexTools.ViewModels
             return mg;
         }
 
+
+        /// <summary>
+        /// Creates the composite bone dictionary for all the models.
+        /// </summary>
+        /// <returns></returns>
+        private Dictionary<string, SkeletonData> GetBoneDictionary(XivRace race)
+        {
+            // Just build a quick and dirty temp model we can use to call the full bone heirarchy function.
+            var tempModel = new TTModel();
+            foreach(var kv in shownModels)
+            {
+                var model = kv.Value.TtModel;
+                foreach(var mg in model.MeshGroups)
+                {
+                    tempModel.MeshGroups.Add(mg);
+                }
+            }
+
+            var boneDict = tempModel.ResolveFullBoneHeirarchy(race);
+
+            // Fill in any missing bones that we couldn't otherwise figure out, if possible.
+            var missingBones = new List<string>();
+
+            var boneList = tempModel.Bones;
+            foreach (var bone in boneList)
+            {
+                if (!boneDict.ContainsKey(bone)) {
+                    // Create a dummy bone for anything missing.
+                    boneDict.Add(bone, new SkeletonData() { 
+                        BoneName = bone, 
+                        BoneParent = 0, 
+                        BoneNumber = boneDict.Select(x => x.Value.BoneNumber).Max() + 1, 
+                        InversePoseMatrix = Matrix.Identity.ToArray(), 
+                        PoseMatrix = Matrix.Identity.ToArray()
+                    });
+                }
+            }
+
+            return boneDict;
+        }
+
         /// <summary>
         /// Creates the Bones to be used in the format Helix Toolkit uses
         /// </summary>
         /// <param name="boneList">The list of bones in the model</param>
         /// <param name="targetRace">The target race to get the bones from</param>
         /// <returns>A list of Bone structures used by Helix Toolkit</returns>
-        private List<Bone> MakeHelixBones(List<string> boneList, XivRace targetRace)
+        private List<Bone> MakeHelixBones(XivRace targetRace)
         {
-            // Get the skeleton file for the target race
-            var skeletonFile = Directory.GetCurrentDirectory() + $"/Skeletons/c{targetRace.GetRaceCode()}.skel";
-            var skeletonData = File.ReadAllLines(skeletonFile);
+            // Get the skeleton, including all EX bones.
+            var boneDict = GetBoneDictionary(targetRace);
 
-
-            // Deserialize the skeleton json and create a dictionary of all bones
-            var boneDict = new Dictionary<int, SkeletonData>();
-
-            foreach (var b in skeletonData)
+            // Functions below expect bone dictionary by numer.
+            var numericBoneDict = new Dictionary<int, SkeletonData>();
+            foreach (var entry in boneDict)
             {
-                if (b == "") continue;
-                var j = JsonConvert.DeserializeObject<SkeletonData>(b);
-
-                boneDict.Add(j.BoneNumber, j);
+                numericBoneDict.Add(entry.Value.BoneNumber, entry.Value);
             }
 
             // Add only the bones that are contained in the model including all parent bones
-            var bonesInModel = new List<SkeletonData>();
+            var bonesInModel = boneDict.Values.ToList();
 
             foreach (var bone in boneDict)
             {
-                if (!boneList.Contains(bone.Value.BoneName)) continue;
-
                 bonesInModel.Add(bone.Value);
 
-                AddBones(boneDict, bonesInModel, bone.Value);
+                AddBones(numericBoneDict, bonesInModel, bone.Value);
             }
 
             // Create a bone list with the bones for the model in helix toolkit format
@@ -606,57 +640,18 @@ namespace FFXIV_TexTools.ViewModels
         /// <param name="boneList">List of bones used in the model</param>
         /// <param name="targetRace">Target Race to get the bone data for</param>
         /// <returns>A matrix array containing the pose data for each bone</returns>
-        private Matrix[] GetMatrices(List<string> boneList, XivRace targetRace)
+        private Matrix[] GetMatrices(XivRace targetRace)
         {
-            // Get the skeleton file for the target race
-            var skeletonFile = Directory.GetCurrentDirectory() + $"/Skeletons/c{targetRace.GetRaceCode()}.skel";
-            var skeletonData = File.ReadAllLines(skeletonFile);
+            // Get the skeleton, including all EX bones.
+            var boneDict = GetBoneDictionary(targetRace);
 
-            // Deserialize the skeleton json and create a dictionary of all bones
-            var skelData = new Dictionary<string, SkeletonData>();
-
-            foreach (var b in skeletonData)
-            {
-                if (b == "") continue;
-                var j = JsonConvert.DeserializeObject<SkeletonData>(b);
-
-                skelData.Add(j.BoneName, j);
-            }
-
-            // Add matrices for bones in the model to a list
-            // Add missing bones if they exist in the model but not in the target race
             var matrixList = new List<Matrix>();
-            var missingBones = new List<string>();
-
-            foreach (var bone in boneList)
+            foreach (var kv in boneDict)
             {
-                if (skelData.ContainsKey(bone))
-                {
-                    var matrix = new Matrix(skelData[bone].InversePoseMatrix);
-                    matrix.Invert();
+                var matrix = new Matrix(kv.Value.InversePoseMatrix);
+                matrix.Invert();
 
-                    matrixList.Add(matrix);
-                }
-                else
-                {
-                    missingBones.Add(bone);
-                }
-
-            }
-
-            // Show a warning when there is bones in the model that do not exist in the target race skeleton
-            // The model will still be added, but with no bones animation will not work for that part
-            if (missingBones.Count > 0)
-            {
-                var warning = new StringBuilder();
-                warning.AppendLine();
-
-                foreach (var bone in missingBones)
-                {
-                    warning.AppendLine(bone);
-                }
-
-                FlexibleMessageBox.Show(string.Format(UIMessages.MissingBones, targetRace, warning), UIMessages.MissingBonesTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                matrixList.Add(matrix);
             }
 
             return matrixList.ToArray();

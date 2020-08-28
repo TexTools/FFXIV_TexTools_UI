@@ -160,10 +160,10 @@ namespace FFXIV_TexTools.Views
         {
             // If they hit everything, skip over the file select screen.
             var root = _inProgressItem.GetRoot();
-            var models = await root.GetModelFiles();
-            var oModels = new ObservableCollection<string>();
-            models.ForEach(x => oModels.Add(x));
-            var entry = new StandardModpackItemEntry(_inProgressItem, _inProgressLevel, oModels);
+            var metaFile = root.Info.GetRootFile();
+            var files = new ObservableCollection<string>();
+            files.Add(metaFile);
+            var entry = new StandardModpackItemEntry(_inProgressItem, _inProgressLevel, files);
             var review = new StandardModpackFilesReview(entry);
             review.ReviewAccepted += Review_ReviewAccepted;
             _page = review;
@@ -297,6 +297,16 @@ namespace FFXIV_TexTools.Views
             {
                 foreach(var file in entry.AllFiles)
                 {
+                    var exists = await index.FileExists(file);
+
+                    // This is a funny case where in order to create the modpack we actually have to write a default meta entry to the dats first.
+                    // If we had the right functions we could just load and serialize the data, but we don't atm.
+                    if (!exists && Path.GetExtension(file) == ".meta")
+                    {
+                        var meta = await ItemMetadata.GetMetadata(file);
+                        await ItemMetadata.SaveMetadata(meta, XivStrings.TexTools);
+                    }
+
                     var offset = await index.GetDataOffset(file);
                     var dataFile = IOUtil.GetDataFileFromPath(file);
                     var compressedSize = await dat.GetCompressedFileSize(offset, dataFile);

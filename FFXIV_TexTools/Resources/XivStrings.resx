@@ -483,4 +483,7 @@
   <data name="Earring" xml:space="preserve">
     <value>Earring</value>
   </data>
+  <data name="Material" xml:space="preserve">
+    <value>Material</value>
+  </data>
 </root>
