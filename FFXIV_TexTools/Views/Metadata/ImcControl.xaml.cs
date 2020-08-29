@@ -12,6 +12,7 @@ using xivModdingFramework.Helpers;
 using xivModdingFramework.Materials.FileTypes;
 using xivModdingFramework.Mods.FileTypes;
 using xivModdingFramework.Textures.FileTypes;
+using xivModdingFramework.Variants.DataContainers;
 using xivModdingFramework.VFX.FileTypes;
 
 namespace FFXIV_TexTools.Views.Metadata
@@ -27,6 +28,7 @@ namespace FFXIV_TexTools.Views.Metadata
             InitializeComponent();
 
             ImcVariantBox.SelectionChanged += ImcVariantBox_SelectionChanged;
+            MaterialSetBox.SelectionChanged += MaterialSetBox_SelectionChanged;
 
             foreach (var cb in PartsGrid.Children)
             {
@@ -35,6 +37,7 @@ namespace FFXIV_TexTools.Views.Metadata
                 box.Unchecked += Box_Checked;
             }
         }
+
         public async Task SetMetadata(ItemMetadata m, int startingVariant = 0)
         {
             _metadata = m;
@@ -114,6 +117,16 @@ namespace FFXIV_TexTools.Views.Metadata
 
             MaterialSetBox.SelectedIndex = entry.Variant;
 
+        }
+
+        private void MaterialSetBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if(ImcVariantBox.SelectedItem == null)
+            {
+                return;
+            }
+            var entry = _metadata.ImcEntries[(int)ImcVariantBox.SelectedItem];
+            entry.Variant = (byte)MaterialSetBox.SelectedIndex;
         }
 
         private void AffectedItemsButton_Click(object sender, RoutedEventArgs e)
@@ -197,6 +210,42 @@ namespace FFXIV_TexTools.Views.Metadata
 
             var wind = new PathDisplay(paths);
             wind.Show();
+        }
+        private void ApplyAllButton_Click(object sender, RoutedEventArgs e)
+        {
+            var current = _metadata.ImcEntries[(int)ImcVariantBox.SelectedItem];
+
+            foreach(var entry in _metadata.ImcEntries)
+            {
+                entry.Mask = current.Mask;
+                entry.Unknown = current.Unknown;
+                entry.Vfx = current.Vfx;
+                entry.Variant = current.Variant;
+            }
+        }
+
+        private void AddVariantButton_Click(object sender, RoutedEventArgs e)
+        {
+            var current = _metadata.ImcEntries[(int)ImcVariantBox.SelectedItem];
+            var entry = new XivImc();
+            entry.Mask = current.Mask;
+            entry.Unknown = current.Unknown;
+            entry.Vfx = current.Vfx;
+            entry.Variant = current.Variant;
+
+            var idx = _metadata.ImcEntries.Count;
+            _metadata.ImcEntries.Add(entry);
+            ImcVariantBox.Items.Add(idx);
+            ImcVariantBox.SelectedIndex = idx;
+        }
+
+        private void AddMaterialSetButton_Click(object sender, RoutedEventArgs e)
+        {
+            var currentMax = MaterialSetBox.Items.Count;
+            if (currentMax >= 256) return;
+
+            MaterialSetBox.Items.Add(currentMax);
+            MaterialSetBox.SelectedIndex = currentMax;
         }
     }
 }

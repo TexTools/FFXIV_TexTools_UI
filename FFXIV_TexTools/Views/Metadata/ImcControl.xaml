@@ -17,13 +17,21 @@
                 <ColumnDefinition Width="100"></ColumnDefinition>
                 <ColumnDefinition Width="160"></ColumnDefinition>
                 <ColumnDefinition Width="50"/>
+                <ColumnDefinition Width="50"/>
                 <ColumnDefinition Width="1*"/>
             </Grid.ColumnDefinitions>
 
             <Label Content="IMC Variant:" Margin="0" FontSize="16" Grid.Row="0" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"/>
             <ComboBox  x:Name="ImcVariantBox" Grid.Row="0" Grid.Column="1" Margin="5,5,0,5" HorizontalAlignment="Left" Width="150" />
+            <Button Grid.Column="2" x:Name="AffectedItemsButton" Margin="5,0" VerticalAlignment="Center" Click="AffectedItemsButton_Click">
+                <iconPacks:PackIconFontAwesome Kind="SearchSolid"/>
+            </Button>
+            <Button Grid.Column="3" x:Name="AddVariantButton" Margin="5,0" VerticalAlignment="Center" Click="AddVariantButton_Click">
+                <iconPacks:PackIconFontAwesome Kind="PlusSolid"/>
+            </Button>
+            <TextBlock x:Name="ItemNameBox" Text="[3] Some Cool Item Name" Margin="10,0" FontSize="16" Grid.Row="0" Grid.Column="4" VerticalAlignment="Center"/>
 
-            <Grid Grid.Row="1" Grid.Column="1" Margin="5" Grid.ColumnSpan="3">
+            <Grid Grid.Row="1" Grid.Column="1" Margin="5" Grid.ColumnSpan="4">
 
                 <Grid.RowDefinitions>
                     <RowDefinition Height="36"></RowDefinition>
@@ -40,6 +48,9 @@
 
                 <Label Content="Material Set:" Margin="0" FontSize="16" Grid.Row="0" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"/>
                 <ComboBox x:Name="MaterialSetBox" Grid.Row="0" Grid.Column="1" Margin="5" />
+                <Button Grid.Row="0" x:Name="AddMaterialSetButton" Margin="0" VerticalAlignment="Center" Click="AddMaterialSetButton_Click" Grid.Column="2" HorizontalAlignment="Left" FontSize="10" Panel.ZIndex="100">
+                    <iconPacks:PackIconFontAwesome  Kind="PlusSolid" Height="12"/>
+                </Button>
 
                 <Label Content="VFX ID:" Margin="0" FontSize="16" Grid.Row="0" Grid.Column="2" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"/>
                 <TextBox x:Name="VfxBox" Grid.Row="0" Grid.Column="3" Margin="5" PreviewTextInput="PreviewNumericInput" TextChanged="VfxBox_TextChanged"  />
@@ -65,14 +76,11 @@
                         <CheckBox Content=" J" Grid.Column="1" HorizontalAlignment="Center"  Width="50" VerticalAlignment="Center"/>
                     </UniformGrid>
                 </GroupBox>
-                <Button x:Name="PathsButton" Content="Show Paths" Grid.Column="4" VerticalAlignment="Center" Margin="10,0,0,0" Click="ShowPaths" HorizontalAlignment="Left" Width="150"/>
+                <Button x:Name="ApplyAllButton" Content="Apply to All Variants" Grid.Column="4" VerticalAlignment="Center" Margin="10,0,0,0" Click="ApplyAllButton_Click" HorizontalAlignment="Left" Width="150"/>
+                <Button x:Name="PathsButton" Grid.Row="1" Content="Show Paths" Grid.Column="4" VerticalAlignment="Center" Margin="10,0,0,0" Click="ShowPaths" HorizontalAlignment="Left" Width="150"/>
             </Grid>
 
-            <Button Grid.Column="2" x:Name="AffectedItemsButton" Margin="5,0" VerticalAlignment="Center" Click="AffectedItemsButton_Click">
-                <iconPacks:PackIconFontAwesome Kind="SearchSolid"/>
-            </Button>
 
-            <TextBlock x:Name="ItemNameBox" Text="[3] Some Cool Item Name" Margin="10,0" FontSize="16" Grid.Row="0" Grid.Column="3" VerticalAlignment="Center"/>
 
 
         </Grid>
