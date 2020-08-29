@@ -18,6 +18,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using xivModdingFramework.Helpers;
+using xivModdingFramework.Mods.DataContainers;
 
 namespace FFXIV_TexTools.Views
 {
@@ -135,8 +136,9 @@ namespace FFXIV_TexTools.Views
             _vm.Version = versionNumber;
             _vm.Description = ModPackDescription.Text;
             _vm.Url = ModPackUrl.Text;
+            _vm.SaveAdvanced = ModPackType.SelectedIndex == 1;
 
-            if(CreateModpack != null)
+            if (CreateModpack != null)
             {
                 CreateModpack.Invoke(this, _vm);
             }
