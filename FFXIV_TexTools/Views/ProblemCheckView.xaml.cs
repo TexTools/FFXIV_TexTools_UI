@@ -459,8 +459,10 @@ namespace FFXIV_TexTools.Views
                                     skip = true;
                                 }
 
+
                                 if (!skip)
                                 {
+
                                     List<string> missingFiles = new List<string>();
                                     foreach (var child in children)
                                     {
@@ -470,6 +472,10 @@ namespace FFXIV_TexTools.Views
                                             missingFiles.Add(child);
                                         }
                                     }
+
+                                    // Remove missing variant material references for _a type materials; these are most commonly cases of default (non-mat-add) files, where
+                                    // SE has some variant materials due to racial equipment restrictions to start with, and would only end up spurious warnings to the user.
+                                    missingFiles = missingFiles.Where(x => !x.EndsWith("_a.mtrl")).ToList();
 
                                     if (missingFiles.Count > 0)
                                     {

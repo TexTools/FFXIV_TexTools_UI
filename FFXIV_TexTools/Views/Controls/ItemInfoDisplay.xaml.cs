@@ -1,6 +1,8 @@
-﻿using MahApps.Metro.Controls;
+﻿using FFXIV_TexTools.Helpers;
+using MahApps.Metro.Controls;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -10,6 +12,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Interactivity;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
@@ -31,17 +34,60 @@ namespace FFXIV_TexTools.Views.Controls
     public partial class ItemInfoDisplay : Window
     {
         private IItemModel _item;
+
+        private ObservableCollection<KeyValuePair<string, IItem>> SameVariantItems = new ObservableCollection<KeyValuePair<string, IItem>>();
+        private ObservableCollection<KeyValuePair<string, IItem>> SameMSetItems = new ObservableCollection<KeyValuePair<string, IItem>>();
+        private ObservableCollection<KeyValuePair<string, IItem>> SameModelItems= new ObservableCollection<KeyValuePair<string, IItem>>();
         public ItemInfoDisplay(IItemModel item)
         {
             _item = item;
             InitializeComponent();
 
-            AsyncInit();
+            SameModelBox.ItemsSource = SameModelItems;
+            SameMaterialBox.ItemsSource = SameMSetItems;
+            SameVariantBox.ItemsSource = SameModelItems;
+
+            SameModelBox.DisplayMemberPath = "Key";
+            SameModelBox.SelectedValuePath = "Value";
+
+            SameMaterialBox.DisplayMemberPath = "Key";
+            SameMaterialBox.SelectedValuePath = "Value";
+
+            SameVariantBox.DisplayMemberPath = "Key";
+            SameVariantBox.SelectedValuePath = "Value";
+
+            SameModelBox.MouseDoubleClick += SameModelBox_MouseDoubleClick;
+            SameMaterialBox.MouseDoubleClick += SameModelBox_MouseDoubleClick;
+            SameVariantBox.MouseDoubleClick += SameModelBox_MouseDoubleClick;
+
+            try
+            {
+                AsyncInit();
+            } catch(Exception Ex)
+            {
+                FlexibleMessageBox.Show("Unable to load item information:\n\nError:" + Ex.Message, "Item Information Error", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning);
+            }
+        }
+
+        private void SameModelBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            var lb = (ListBox)sender;
+            var selected = lb.SelectedItem;
+
+            if (selected == null) return;
+
+            var kv = (KeyValuePair<string, IItem>)selected;
+            if (kv.Value == null) return;
+
+            var mw = MainWindow.GetMainWindow();
+            mw.SetSelectedItem(kv.Value);
         }
 
         public async Task AsyncInit()
         {
             var root = _item.GetRoot();
+            if (root == null) return;
+
             var gd = XivCache.GameInfo.GameDirectory;
             var lang = XivCache.GameInfo.GameLanguage;
             var df = IOUtil.GetDataFileFromPath(root.Info.GetRootFile());
@@ -54,9 +100,30 @@ namespace FFXIV_TexTools.Views.Controls
 
             ItemNameBox.Text = _item.Name;
 
+            var setName = root.Info.GetBaseFileName();
+
+            SetLabel.Content = "Set: " + setName;
+
+            if (!String.IsNullOrWhiteSpace(root.Info.Slot)) {
+                var niceSlot = Mdl.SlotAbbreviationDictionary.FirstOrDefault(x => x.Value == root.Info.Slot);
+                if (niceSlot.Key != null)
+                {
+                    SlotLabel.Content = "Slot: " + niceSlot.Key + " (" + root.Info.Slot + ")";
+                } else
+                {
+                    SlotLabel.Content = "Slot: Unknown (" + root.Info.Slot + ")";
+                }
+            } else
+            {
+                SlotLabel.Content = "Slot: --";
+            }
+
+            VariantLabel.Content = "Variant: " + _item.ModelInfo.ImcSubsetID;
+            var mSet = await _imc.GetMaterialSetId(_item);
+            MaterialSetLabel.Content = "Material Set: " + mSet;
+
             var races = XivRaces.PlayableRaces;
 
-            var mSet = await _imc.GetMaterialSetId(_item);
             var models = await root.GetModelFiles();
             var materials = await root.GetMaterialFiles(mSet);
 
@@ -194,18 +261,18 @@ namespace FFXIV_TexTools.Views.Controls
 
                 foreach (var item in allItems)
                 {
-                    SameModelBox.Items.Add(item.Name);
+                    SameModelItems.Add(new KeyValuePair<string, IItem>(item.Name, item));
                     if (entries.Count > item.ModelInfo.ImcSubsetID) {
                         var imSet = entries[item.ModelInfo.ImcSubsetID].Variant;
 
                         if(mSet == imSet)
                         {
-                            SameMaterialBox.Items.Add(item.Name);
+                            SameMSetItems.Add(new KeyValuePair<string, IItem>(item.Name, item));
                         }
                     }
                     if(item.ModelInfo.ImcSubsetID == myImcSubsetId)
                     {
-                        SameVariantBox.Items.Add(item.Name);
+                        SameVariantItems.Add(new KeyValuePair<string, IItem>(item.Name, item));
                     }
                 }
             }

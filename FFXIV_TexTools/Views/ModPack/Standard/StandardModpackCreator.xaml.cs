@@ -409,7 +409,7 @@ namespace FFXIV_TexTools.Views
         }
         private async Task CreateBasic()
         {
-            string modPackPath = Path.Combine(Properties.Settings.Default.ModPack_Directory, $"{simpleModPackData.Name}.ttmp2");
+            string modPackPath = Path.Combine(Properties.Settings.Default.ModPack_Directory, $"{ViewModel.Name}.ttmp2");
 
             if (File.Exists(modPackPath))
             {
