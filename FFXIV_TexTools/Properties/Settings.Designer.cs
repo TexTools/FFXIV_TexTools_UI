@@ -394,5 +394,17 @@ namespace FFXIV_TexTools.Properties {
                 this["Sync_Views"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool Remember_Race_Selection {
+            get {
+                return ((bool)(this["Remember_Race_Selection"]));
+            }
+            set {
+                this["Remember_Race_Selection"] = value;
+            }
+        }
     }
 }

@@ -315,6 +315,9 @@
     <Compile Include="Views\Controls\DescribedButton.xaml.cs">
       <DependentUpon>DescribedButton.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Controls\ItemInfoDisplay.xaml.cs">
+      <DependentUpon>ItemInfoDisplay.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Controls\ItemSelectControl.xaml.cs">
       <DependentUpon>ItemSelectControl.xaml</DependentUpon>
     </Compile>
@@ -485,6 +488,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Controls\DescribedButton.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Controls\ItemInfoDisplay.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

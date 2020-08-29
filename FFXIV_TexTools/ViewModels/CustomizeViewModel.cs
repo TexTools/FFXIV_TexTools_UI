@@ -47,12 +47,6 @@ namespace FFXIV_TexTools.ViewModels
                 {XivStringRaces.Aura_X}
             };
 
-            TargetImporters = new List<string>
-            {
-                {XivStrings.OpenCollada},
-                {XivStrings.AutodeskCollada}
-            };
-
             DefaultRaces = new List<string>
             {
                 XivRace.Hyur_Midlander_Male.GetDisplayName(),
@@ -72,7 +66,6 @@ namespace FFXIV_TexTools.ViewModels
                 XivRace.Viera.GetDisplayName(),
                 XivRace.Hrothgar.GetDisplayName()
             };
-
         }
 
         #region Public Properties
@@ -244,9 +237,65 @@ namespace FFXIV_TexTools.ViewModels
                 if (Selected_SkinType != value)
                 {
                     SetSkin(value);
+                    NotifyPropertyChanged(nameof(Selected_SkinType));
+                }
+            }
+        }
+
+        public bool DefaultRaceEnabled { get
+            {
+                return Settings.Default.Remember_Race_Selection == false;
+            } set
+            {
+                // --
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool RememberRaceSelection
+        {
+            get => Settings.Default.Remember_Race_Selection;
+            set
+            {
+                if (RememberRaceSelection != value)
+                {
+                    SetRememberRaceSelection(value);
+                    NotifyPropertyChanged(nameof(RememberRaceSelection));
+                    NotifyPropertyChanged(nameof(DefaultRaceEnabled));
                 }
 
             }
+        }
+
+        public void SetRememberRaceSelection(bool value)
+        {
+            Settings.Default.Remember_Race_Selection = value;
+            Settings.Default.Save();
+        }
+
+        /// <summary>
+        /// The selected skin type
+        /// </summary>
+        public bool UseSynchronizedViews
+        {
+            get => Settings.Default.Sync_Views;
+            set
+            {
+                if (UseSynchronizedViews != value)
+                {
+                    SetViewSync(value);
+                    NotifyPropertyChanged(nameof(UseSynchronizedViews));
+                }
+
+            }
+        }
+
+        public void SetViewSync(bool value)
+        {
+            Settings.Default.Sync_Views = value;
+            Settings.Default.Save();
         }
 
         /// <summary>
@@ -278,11 +327,6 @@ namespace FFXIV_TexTools.ViewModels
                 }
             }
         }
-
-        /// <summary>
-        /// The list of target importers
-        /// </summary>
-        public List<string> TargetImporters { get; set; }
 
         public bool ExportTextureAsDDS
         {

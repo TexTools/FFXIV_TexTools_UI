@@ -20,6 +20,7 @@ using FFXIV_TexTools.Properties;
 using FFXIV_TexTools.Resources;
 using FFXIV_TexTools.Textures;
 using FFXIV_TexTools.Views;
+using FFXIV_TexTools.Views.Controls;
 using FFXIV_TexTools.Views.Textures;
 using HelixToolkit.Wpf.SharpDX;
 using SharpDX;
@@ -62,6 +63,8 @@ using xivModdingFramework.SqPack.FileTypes;
 using xivModdingFramework.Textures.DataContainers;
 using xivModdingFramework.Textures.Enums;
 using xivModdingFramework.Textures.FileTypes;
+using xivModdingFramework.Variants.DataContainers;
+using xivModdingFramework.Variants.FileTypes;
 using BitmapSource = System.Windows.Media.Imaging.BitmapSource;
 
 namespace FFXIV_TexTools.ViewModels
@@ -239,6 +242,7 @@ namespace FFXIV_TexTools.ViewModels
             _textureView.RaceComboBox.SelectionChanged += PrimaryComboBox_SelectionChanged;
             _textureView.MaterialComboBox.SelectionChanged += MaterialComboBox_SelectionChanged;
             _textureView.MapComboBox.SelectionChanged += MapComboBox_SelectionChanged;
+            _textureView.ItemInfoButton.Click += ItemInfoButton_Click;
 
             var mw = MainWindow.GetMainWindow();
             mw.SelectedPrimaryItemValueChanged += Mw_SelectedPrimaryItemValueChanged;
@@ -290,6 +294,11 @@ namespace FFXIV_TexTools.ViewModels
 
             var _eqp = new Eqp(gameDirectory);
             var races = new List<XivRace>() { XivRace.All_Races };
+
+            if(_root.Info.PrimaryType != XivItemType.human)
+            {
+                _textureView.ItemInfoButton.IsEnabled = true;
+            }
 
             if (_root.Info.PrimaryType == XivItemType.human && _root.Info.SecondaryId == null || _root.Info.SecondaryId == 0)
             {
@@ -350,7 +359,9 @@ namespace FFXIV_TexTools.ViewModels
                 var userRace = XivRaces.GetXivRaceFromDisplayName(Settings.Default.Default_Race_Selection);
 
                 var defaultValue = _primaryComboBoxData[0].Value;
-                if (userRace != XivRace.All_Races)
+
+                // ONly use default race selection if selection memory is off.
+                if (userRace != XivRace.All_Races && !Settings.Default.Remember_Race_Selection)
                 {
                     var val = userRace.GetRaceCodeInt();
                     if (_primaryComboBoxData.Any(x => x.Value == val)) {
@@ -359,8 +370,9 @@ namespace FFXIV_TexTools.ViewModels
                 }
 
                 bool tryReselect = _lastCategory == _item.PrimaryCategory;
+                tryReselect = tryReselect && Settings.Default.Remember_Race_Selection;
                 _lastCategory = _item.PrimaryCategory;
-
+                
                 if (tryReselect)
                 {
                     if(_primaryComboBoxData.Any(x => x.Value == _lastPrimary))
@@ -811,6 +823,145 @@ namespace FFXIV_TexTools.ViewModels
         }
 
         /// <summary>
+        /// Asynchronously loads the parent file information for a given texture.
+        /// </summary>
+        /// <returns></returns>
+        private async Task LoadParentFileInformation(string path)
+        {
+
+            var item = _item;
+            if (item == null)
+            {
+                _textureView.SharedVariantLabel.Visibility = Visibility.Collapsed;
+                _textureView.SharedTextureLabel.Visibility = Visibility.Collapsed;
+                return;
+            }
+            try
+            {
+
+                var root = item.GetRoot();
+                if (root == null || root.Info.PrimaryType == XivItemType.human || root.Info.PrimaryType == XivItemType.outdoor || root.Info.PrimaryType == XivItemType.indoor || !Imc.UsesImc(item))
+                {
+                    _textureView.SharedVariantLabel.Visibility = Visibility.Collapsed;
+                    _textureView.SharedTextureLabel.Visibility = Visibility.Collapsed;
+                    return;
+                }
+
+
+
+                _textureView.SharedVariantLabel.Visibility = Visibility.Visible;
+                _textureView.SharedTextureLabel.Visibility = Visibility.Collapsed;
+                _textureView.SharedVariantLabel.Content = "Loading usage data...";
+
+                List<string> parents = new List<string>();
+                List<XivImc> entries = null;
+                await Task.Run(async () =>
+                {
+                    var _imc = new Imc(XivCache.GameInfo.GameDirectory);
+                    var info = (await _imc.GetFullImcInfo(item));
+                    entries = info.GetAllEntries(item.GetItemSlotAbbreviation(), true);
+
+                    if (Path.GetExtension(path) == ".mtrl")
+                    {
+                        parents = new List<string>() { path };
+                    }
+                    else
+                    {
+                        parents = await XivCache.GetParentFiles(path);
+                    }
+                });
+
+                // Invalid IMC set, cancel.
+                if (item.ModelInfo.ImcSubsetID > entries.Count)
+                {
+                    if (SelectedMap.Path == path)
+                    {
+                        _textureView.SharedVariantLabel.Visibility = Visibility.Collapsed;
+                        _textureView.SharedTextureLabel.Visibility = Visibility.Collapsed;
+                    }
+                    return;
+                }
+
+                var vCount = entries.Count;
+                Dictionary<int, int> variantsPerMset = new Dictionary<int, int>();
+                foreach (var e in entries)
+                {
+                    if (!variantsPerMset.ContainsKey(e.Variant))
+                    {
+                        variantsPerMset[e.Variant] = 0;
+                    }
+                    variantsPerMset[e.Variant]++;
+                }
+
+                if (variantsPerMset.ContainsKey(0))
+                {
+                    // Material set 0 is the null set.
+                    vCount -= variantsPerMset[0];
+                }
+
+                if (parents.Count == 0)
+                {
+                    if (SelectedMap.Path == path)
+                    {
+                        _textureView.SharedVariantLabel.Content = "";
+                        _textureView.SharedVariantLabel.Visibility = Visibility.Collapsed;
+                    }
+                    return;
+                }
+
+                var mymSet = entries[item.ModelInfo.ImcSubsetID].Variant;
+
+                // Check if we're just used in some amount of variants of the same material.
+                var firstName = Path.GetFileName(parents[0]);
+                var sameMaterials = parents.Where(x => Path.GetFileName(x) == firstName);
+
+                var mSetExctraction = new Regex("v([0-9]{4})");
+                List<int> representedMaterialSets = new List<int>();
+                foreach (var x in sameMaterials)
+                {
+                    var match = mSetExctraction.Match(x);
+                    if (!match.Success) continue;
+
+                    representedMaterialSets.Add(Int32.Parse(match.Groups[1].Value));
+                }
+
+                var variantSum = 0;
+                foreach (var i in representedMaterialSets)
+                {
+                    if (!variantsPerMset.ContainsKey(i))
+                    {
+                        variantSum++;
+                    }
+                    else
+                    {
+                        variantSum += variantsPerMset[i];
+                    }
+                }
+
+                if (SelectedMap.Path == path)
+                {
+                    _textureView.SharedVariantLabel.Content = $"Used by {variantSum}/{vCount} Variants";
+                    _textureView.SharedVariantLabel.Visibility = Visibility.Visible;
+                }
+
+                var allSame = sameMaterials.Count() == parents.Count;
+                if (!allSame)
+                {
+                    var differentFiles = parents.Select(x => Path.GetFileName(x)).ToHashSet();
+                    var count = differentFiles.Count - 1;
+                    if (SelectedMap.Path == path)
+                    {
+                        _textureView.SharedTextureLabel.Content = "Used by " + count + " Other Materials";
+                        _textureView.SharedTextureLabel.Visibility = Visibility.Visible;
+                    }
+                }
+            } catch (Exception ex)
+            {
+                // No-op.  Lacking this data is not a critical failure.
+            }
+        }
+
+        /// <summary>
         /// Updates the texture image for the selected item
         /// </summary>
         public async void UpdateImage()
@@ -826,6 +977,8 @@ namespace FFXIV_TexTools.ViewModels
             var _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory, IOUtil.GetDataFileFromPath(SelectedMap.Path), XivCache.GameInfo.GameLanguage);
             var _tex = new Tex(XivCache.GameInfo.GameDirectory);
             var _modding = new Modding(XivCache.GameInfo.GameDirectory);
+
+            LoadParentFileInformation(SelectedMap.Path);
 
             if (SelectedMap.Usage != XivTexType.ColorSet)
             {
@@ -1336,6 +1489,14 @@ namespace FFXIV_TexTools.ViewModels
 
         }
 
+        private void ItemInfoButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (_item == null) return;
+            var wind = new ItemInfoDisplay(_item);
+            wind.Show();
+        }
+
+
         /// <summary>
         /// Command for the Mod Status Toggle Button
         /// </summary>
@@ -1664,6 +1825,9 @@ namespace FFXIV_TexTools.ViewModels
             _textureView.SharedMaterialLabel.Content = "";
             _textureView.SharedMaterialLabel.Visibility = Visibility.Collapsed;
 
+            _textureView.SharedVariantLabel.Visibility = Visibility.Collapsed;
+            _textureView.SharedTextureLabel.Visibility = Visibility.Collapsed;
+            _textureView.ItemInfoButton.IsEnabled = false;
 
             ClearImage();
         }

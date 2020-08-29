@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using xivModdingFramework.General.Enums;
+using xivModdingFramework.Items.Enums;
 using xivModdingFramework.Models.DataContainers;
 using xivModdingFramework.Models.FileTypes;
 using xivModdingFramework.Mods.FileTypes;
@@ -74,11 +75,19 @@ namespace FFXIV_TexTools.Views.Metadata
 
             RacialComboBoxes.Add(race, cb);
 
+            if(_metadata.Root.Info.PrimaryType == XivItemType.human && _metadata.Root.Info.PrimaryId == 0)
+            {
+                // Disable stuff here to ensure we can't accidentally set a 
+                // skeleton on a null type.
+                cb.IsEnabled = false;
+            }
+
 
             RacialGrid.Children.Add(new Label());
             RacialGrid.Children.Add(label);
             RacialGrid.Children.Add(cb);
             RacialGrid.Children.Add(new Label());
+
 
             // Empty Row
             RacialGrid.Children.Add(new Label());
