@@ -100,27 +100,41 @@ namespace FFXIV_TexTools.Views.Controls
 
             ItemNameBox.Text = _item.Name;
 
-            var setName = root.Info.GetBaseFileName();
+            var setName = root.Info.GetBaseFileName(false);
 
-            SetLabel.Content = "Set: " + setName;
+            SetLabel.Text = "Set: " + setName;
 
             if (!String.IsNullOrWhiteSpace(root.Info.Slot)) {
                 var niceSlot = Mdl.SlotAbbreviationDictionary.FirstOrDefault(x => x.Value == root.Info.Slot);
                 if (niceSlot.Key != null)
                 {
-                    SlotLabel.Content = "Slot: " + niceSlot.Key + " (" + root.Info.Slot + ")";
+                    SlotLabel.Text = "Slot: " + niceSlot.Key + " (" + root.Info.Slot + ")";
                 } else
                 {
-                    SlotLabel.Content = "Slot: Unknown (" + root.Info.Slot + ")";
+                    SlotLabel.Text = "Slot: Unknown (" + root.Info.Slot + ")";
                 }
             } else
             {
-                SlotLabel.Content = "Slot: --";
+                SlotLabel.Text = "Slot: --";
             }
 
-            VariantLabel.Content = "Variant: " + _item.ModelInfo.ImcSubsetID;
+            var usesImc = Imc.UsesImc(_item);
+            if (usesImc)
+            {
+                VariantLabel.Text = "Variant: " + _item.ModelInfo.ImcSubsetID;
+            } else
+            {
+                VariantLabel.Text = "Variant: --";
+            }
+
             var mSet = await _imc.GetMaterialSetId(_item);
-            MaterialSetLabel.Content = "Material Set: " + mSet;
+            if (mSet > 0)
+            {
+                MaterialSetLabel.Text = "Material Set: " + mSet;
+            } else
+            {
+                MaterialSetLabel.Text = "Material Set: --";
+            }
 
             var races = XivRaces.PlayableRaces;
 

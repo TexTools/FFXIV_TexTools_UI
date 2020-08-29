@@ -21,13 +21,13 @@
         </Grid.RowDefinitions>
 
 
-        <TextBlock x:Name="ItemNameBox" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Text="ITEM NAME" VerticalAlignment="Center" TextAlignment="Center" FontSize="14" FontWeight="Bold" Height="20" Margin="0,10" FontStyle="Italic"/>
+        <TextBlock x:Name="ItemNameBox" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Text="ITEM NAME" VerticalAlignment="Center" TextAlignment="Center" FontSize="14" FontWeight="Bold" FontStyle="Italic"/>
 
         <UniformGrid Grid.Row="1" Rows="1" Columns="4" Grid.ColumnSpan="2">
-            <Label x:Name="SetLabel" Content="Set: e0123" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            <Label x:Name="SlotLabel" Content="Slot: Head(met)" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            <Label x:Name="VariantLabel" Content="Variant: 5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            <Label x:Name="MaterialSetLabel" Content="Material Set: 3" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <TextBlock x:Name="SetLabel" Text="Set: e0123" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <TextBlock x:Name="SlotLabel" Text="Slot: Head(met)" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <TextBlock x:Name="VariantLabel" Text="Variant: 5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <TextBlock x:Name="MaterialSetLabel" Text="Material Set: 3" HorizontalAlignment="Center" VerticalAlignment="Center"/>
         </UniformGrid>
         <GroupBox Grid.Row="2" Grid.RowSpan="3" Header="Race Information">
             <Grid x:Name="RacialGrid">
