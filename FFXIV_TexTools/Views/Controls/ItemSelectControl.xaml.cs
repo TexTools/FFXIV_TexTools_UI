@@ -544,6 +544,9 @@ namespace FFXIV_TexTools.Views.Controls
             {
                 e.IsSelected = true;
                 _selectedItem = item;
+
+                // Manually invoke this in case the item isn't in the filter currently.
+                ItemSelected.Invoke(this, _selectedItem);
             }
             else
             {
