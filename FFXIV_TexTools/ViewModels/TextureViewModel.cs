@@ -317,6 +317,14 @@ namespace FFXIV_TexTools.ViewModels
                     var name = item.SecondaryCategory + " - " + i.ToString().PadLeft(4, '0');
                     _primaryComboBoxData.Add(new KeyValuePair<string, int>(name, i));
                 }
+
+                if(numbers.Length == 0 && _root.Info.SecondaryType == XivItemType.body)
+                {
+                    var race = XivRaces.GetXivRace(_root.Info.PrimaryId);
+                    _textureView.SharedMaterialLabel.Visibility = Visibility.Visible;
+                    var skinRace = XivRaceTree.GetSkinRace(race);
+                    _textureView.SharedMaterialLabel.Content = "This race uses " + skinRace.GetDisplayName() + "'s body material(s).";
+                }
             }
             else
             {
@@ -400,6 +408,10 @@ namespace FFXIV_TexTools.ViewModels
         {
             _materialComboBoxData.Clear();
             _mapComboBoxData.Clear();
+            _textureView.SharedVariantLabel.Visibility = Visibility.Collapsed;
+            _textureView.SharedTextureLabel.Visibility = Visibility.Collapsed;
+            _textureView.SharedMaterialLabel.Visibility = Visibility.Collapsed;
+
             if (_item == null)
             {
                 _xivMtrl = null;
@@ -434,6 +446,7 @@ namespace FFXIV_TexTools.ViewModels
                     PrimaryType = _root.Info.PrimaryType,
                     SecondaryId = SelectedPrimary,
                     SecondaryType = _root.Info.SecondaryType,
+                    Slot = _root.Info.Slot
                 };
                 race = XivRaces.GetXivRace(info.PrimaryId);
                 _root = info.ToFullRoot();
