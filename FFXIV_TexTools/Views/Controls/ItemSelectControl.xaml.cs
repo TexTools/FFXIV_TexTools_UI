@@ -562,6 +562,7 @@ namespace FFXIV_TexTools.Views.Controls
 
 
         public void ClearSelection(ObservableCollection<ItemTreeElement> elements = null)
+
         {
             if (!_READY) return;
 
@@ -580,7 +581,6 @@ namespace FFXIV_TexTools.Views.Controls
             }
         }
 
-
         private void Search(object sender, ElapsedEventArgs e)
         {
             if (!_READY) return;
@@ -589,6 +589,8 @@ namespace FFXIV_TexTools.Views.Controls
             // Do stuff.
             Dispatcher.Invoke(() =>
             {
+                ClearSelection(CategoryElements);
+                ClearSelection(SetElements);
                 CollectionViewSource.GetDefaultView(CategoryElements).Refresh();
                 CollectionViewSource.GetDefaultView(SetElements).Refresh();
 
