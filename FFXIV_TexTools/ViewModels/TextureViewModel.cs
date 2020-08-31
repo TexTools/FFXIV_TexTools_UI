@@ -300,7 +300,7 @@ namespace FFXIV_TexTools.ViewModels
                 _textureView.ItemInfoButton.IsEnabled = true;
             }
 
-            if (_root.Info.PrimaryType == XivItemType.human && _root.Info.SecondaryId == null || _root.Info.SecondaryId == 0)
+            if (_root.Info.PrimaryType == XivItemType.human && (_root.Info.SecondaryId == null || _root.Info.SecondaryId == 0))
             {
                 _primaryIsRace = false;
                 RaceWatermark = _item.SecondaryCategory + " Number";
@@ -634,7 +634,7 @@ namespace FFXIV_TexTools.ViewModels
                 var maps = _xivMtrl.GetAllMapInfos(false);
                 var shInfo = _xivMtrl.GetShaderInfo();
 
-                if (shInfo.HasColorset)
+                if (shInfo.HasColorset && _xivMtrl.ColorSetDataSize > 0)
                 {
                     var cSetMap = new MapInfo();
                     cSetMap.Path = SelectedMaterial;
@@ -1707,8 +1707,8 @@ namespace FFXIV_TexTools.ViewModels
             }
             catch (Exception ex)
             {
-                FlexibleMessageBox.Show(UIMessages.MaterialEditorErrorTitle,
-                        UIMessages.MaterialEditorErrorMessage, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                FlexibleMessageBox.Show(
+                        UIMessages.MaterialEditorErrorMessage + "\n\nError:" + ex.Message, UIMessages.MaterialEditorErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 await UpdateTexture(_item);
 
             }

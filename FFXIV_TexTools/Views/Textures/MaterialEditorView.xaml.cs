@@ -159,19 +159,17 @@ namespace FFXIV_TexTools.Views.Textures
             // Ensure the UI is updated for the new selection.
             PresetComboBox_SelectionChanged(null, null);
 
-            if(shader == MtrlShader.Furniture || shader == MtrlShader.DyeableFurniture || shader == MtrlShader.Other )
+
+            if(shader == MtrlShader.Other || shader == MtrlShader.Furniture || shader == MtrlShader.DyeableFurniture)
             {
-                // Disable all the editable options except transparency for these items.
+                // Disable everything.
                 NormalTextBox.IsEnabled = false;
                 DiffuseTextBox.IsEnabled = false;
                 SpecularTextBox.IsEnabled = false;
                 ColorsetComboBox.IsEnabled = false;
+                NewSharedButton.IsEnabled = false;
+                NewUniqueButton.IsEnabled = false;
                 PresetComboBox.IsEnabled = false;
-            } 
-
-            if(shader == MtrlShader.Other)
-            {
-                // Disable everything.
                 TransparencyComboBox.IsEnabled = false;
                 ShaderComboBox.IsEnabled = false;
                 SaveButton.IsEnabled = false;

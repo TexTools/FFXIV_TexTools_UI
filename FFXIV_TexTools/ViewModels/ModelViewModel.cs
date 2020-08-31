@@ -257,6 +257,11 @@ namespace FFXIV_TexTools.ViewModels
             var races = await _eqp.GetAvailableRacialModels(_item);
 
             var root = _item.GetRoot();
+            if(root == null)
+            {
+                OnLoadingComplete();
+                return;
+            }
 
             if (races.Count == 0)
             {
