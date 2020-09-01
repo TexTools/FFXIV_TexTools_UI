@@ -21,6 +21,7 @@ using FFXIV_TexTools.Views.Models;
 using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
 using Newtonsoft.Json;
+using SixLabors.ImageSharp.Formats.Bmp;
 using SixLabors.ImageSharp.Formats.Png;
 using System;
 using System.Collections.Generic;
@@ -322,7 +323,7 @@ namespace FFXIV_TexTools.Views
 
                     using (var ms = new MemoryStream())
                     {
-                        _selectedModOption.Image.Save(ms, new PngEncoder());
+                        _selectedModOption.Image.Save(ms, new BmpEncoder());
 
                         bmp = new BitmapImage();
                         bmp.BeginInit();

@@ -33,7 +33,7 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <GroupBox Grid.Row="0" Header="{Binding Source={x:Static resx:UIStrings.Option_List}}" Margin="5">
-                <ListBox x:Name="OptionsList" SelectionChanged="OptionsList_SelectionChanged">
+                <ListBox x:Name="OptionsList" SelectionChanged="OptionsList_SelectionChanged" ScrollViewer.CanContentScroll="False">
                     <ListBox.GroupStyle>
                         <GroupStyle>
                             <GroupStyle.HeaderTemplate>

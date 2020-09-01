@@ -21,19 +21,26 @@
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
-                        <StackPanel Grid.Column="0" Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition></ColumnDefinition>
+                            <ColumnDefinition></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
                             <Label Content="{Binding Source={x:Static resx:UIStrings.Name_colon}}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                             <Label Name="ModPackNameLabel" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold"/>
                         </StackPanel>
-                        <StackPanel Grid.Column="0" Grid.Row="2" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <StackPanel Grid.Column="0" Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
                             <Label Content="{Binding Source={x:Static resx:UIStrings.Author_colon}}" VerticalAlignment="Center"/>
-                            <Label Name="ModPackAuthorLabel" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold"/>
+                            <Label Name="ModPackAuthorLabel" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                         </StackPanel>
-                        <StackPanel Grid.Column="0" Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <StackPanel Grid.Column="1" Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
                             <Label Content="{Binding Source={x:Static resx:UIStrings.Version_colon}}"  VerticalAlignment="Center"/>
                             <Label Name="ModPackVersionLabel" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
+                            <Label Content="Url:"  VerticalAlignment="Center"/>
+                            <TextBlock Name="ModPackUrlLabel" VerticalAlignment="Center" HorizontalAlignment="Center" TextDecorations="Underline" FontStyle="Italic" FontFamily="Courier New" Foreground="#FF0000EE"></TextBlock>
                         </StackPanel>
                     </Grid>
                 </Grid>

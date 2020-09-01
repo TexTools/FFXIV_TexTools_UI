@@ -22,6 +22,7 @@ using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
@@ -29,6 +30,7 @@ using System.Windows.Forms;
 using System.Windows.Interop;
 using Xceed.Wpf.Toolkit;
 using xivModdingFramework.Cache;
+using xivModdingFramework.Helpers;
 using xivModdingFramework.Mods.DataContainers;
 using xivModdingFramework.Mods.FileTypes;
 
@@ -63,6 +65,8 @@ namespace FFXIV_TexTools.Views
             ModPackAuthorLabel.Content = modPackJson.Author;
             ModPackVersionLabel.Content = modPackJson.Version;
             ModPackDescription.Text = modPackJson.Description;
+            ModPackUrlLabel.Text = modPackJson.Url;
+            ModPackUrlLabel.PreviewMouseLeftButtonDown += ModPackUrlLabel_PreviewMouseLeftButtonDown;
 
 
             if (!String.IsNullOrEmpty(modPackJson.MinimumFrameworkVersion))
@@ -99,6 +103,18 @@ namespace FFXIV_TexTools.Views
                     HeaderBackground = null
                 });
             }
+        }
+
+        private void ModPackUrlLabel_PreviewMouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            var url = IOUtil.ValidateUrl(ModPackUrlLabel.Text);
+            if (url == null)
+            {
+                return;
+            }
+
+            Process.Start(new ProcessStartInfo(url));
+            e.Handled = true;
         }
 
         #region Public Properties

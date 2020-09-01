@@ -376,6 +376,7 @@ namespace FFXIV_TexTools.Views
                 this.ModPackName.Text = ttmpData.ModPackJson.Name;
                 this.ModPackVersion.Text= ttmpData.ModPackJson.Version;
                 this.ModPackDescription.Text = ttmpData.ModPackJson.Description;
+                this.ModPackUrl.Text = ttmpData.ModPackJson.Url;
                 for (var i = modPackWizard.Items.Count - 1; i > 0; i--)
                 {
                     modPackWizard.Items.RemoveAt(i);

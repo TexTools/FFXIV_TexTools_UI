@@ -254,7 +254,7 @@ namespace FFXIV_TexTools.ViewModels
             }
 
             var _eqp = new Eqp(_gameDirectory);
-            var races = await _eqp.GetAvailableRacialModels(_item);
+            var races = await _eqp.GetAvailableRacialModels(_item, false, true);
 
             var root = _item.GetRoot();
             if(root == null)

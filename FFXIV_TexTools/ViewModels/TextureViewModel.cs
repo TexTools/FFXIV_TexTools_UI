@@ -331,7 +331,7 @@ namespace FFXIV_TexTools.ViewModels
                 RaceWatermark = XivStrings.Race;
                 _primaryIsRace = true;
 
-                races = await _eqp.GetAvailableRacialModels(item);
+                races = await _eqp.GetAvailableRacialModels(item, false, true);
                 if(races.Count == 0)
                 {
                     // This root has the race pre-specified within it.
