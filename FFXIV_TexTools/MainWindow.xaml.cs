@@ -64,7 +64,7 @@ namespace FFXIV_TexTools
         public readonly System.Windows.Forms.IWin32Window Win32Window;
 
         public static readonly Version BetaVersion = new Version("2.3.0.0");
-        public static readonly string BetaSuffix = "BETA 1";
+        public static readonly string BetaSuffix = "BETA 2";
         public static bool IsBetaVersion {
             get
             {
@@ -504,32 +504,36 @@ namespace FFXIV_TexTools
         public async Task LockUi(string title = null, string msg = null, object caller = null)
         {
             await _lockScreenSemaphore.WaitAsync();
-            if (IsUiLocked)
+            try
             {
+                if (IsUiLocked)
+                {
+                    return;
+                }
 
+                if (title == null)
+                {
+                    title = UIStrings.Loading;
+                }
+
+                if (msg == null)
+                {
+                    msg = UIStrings.Please_Wait;
+                }
+
+                _lockProgressController = await this.ShowProgressAsync(title, msg);
+
+                _lockProgressController.SetIndeterminate();
+
+                _lockProgress = new Progress<string>((update) =>
+                {
+                    _lockProgressController.SetMessage(update);
+                });
+            }
+            finally
+            {
                 _lockScreenSemaphore.Release();
-                return;
             }
-            if(title == null)
-            {
-                title = UIStrings.Loading;
-            }
-
-            if(msg == null)
-            {
-                msg = UIStrings.Please_Wait;
-            }
-
-            _lockProgressController = await this.ShowProgressAsync(title, msg);
-
-            _lockProgressController.SetIndeterminate();
-
-            _lockProgress = new Progress<string>((update) =>
-            {
-                _lockProgressController.SetMessage(update);
-            });
-
-            _lockScreenSemaphore.Release();
 
             if (UiLocked != null)
             {
@@ -540,24 +544,29 @@ namespace FFXIV_TexTools
         public async Task UnlockUi(object caller = null)
         {
             await _lockScreenSemaphore.WaitAsync();
-            if (!IsUiLocked)
-            {
-                _lockScreenSemaphore.Release();
-                return;
-            }
-
             try
             {
-                // Sometimes this chokes, not sure why.
-                await _lockProgressController.CloseAsync();
-            } catch
-            {
+                if (!IsUiLocked)
+                {
+                    return;
+                }
 
+                try
+                {
+                    // Sometimes this chokes, not sure why.
+                    await _lockProgressController.CloseAsync();
+                }
+                catch
+                {
+
+                }
+                _lockProgressController = null;
+                _lockProgress = null;
             }
-            _lockProgressController = null;
-            _lockProgress = null;
-
-            _lockScreenSemaphore.Release();
+            finally
+            {
+                _lockScreenSemaphore.Release();
+            }
 
             if (UiUnlocked != null)
             {

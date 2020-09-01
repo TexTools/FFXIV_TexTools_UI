@@ -27,6 +27,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Forms;
 using Xceed.Wpf.Toolkit;
+using xivModdingFramework.Helpers;
 using xivModdingFramework.Mods.DataContainers;
 using xivModdingFramework.Mods.FileTypes;
 using Image = SixLabors.ImageSharp.Image;
@@ -47,7 +48,8 @@ namespace FFXIV_TexTools.Views
             modPackWizard.CanHelp = false;
             ModPackName.Focus();
 
-            ModPackAuthor.Text = Settings.Default.Default_Author;
+            ModPackAuthor.Text = String.IsNullOrWhiteSpace(Settings.Default.Default_Author) ? "TexTools User" : Settings.Default.Default_Author;
+            ModPackVersion.Text = "1.0.0";
         }
 
         #region Private Properties
@@ -56,6 +58,8 @@ namespace FFXIV_TexTools.Views
         /// The version number
         /// </summary>
         private Version VersionNumber { get; set; }
+
+        private string Url { get; set; }
 
         /// <summary>
         /// The mod pack file name
@@ -141,6 +145,24 @@ namespace FFXIV_TexTools.Views
                 }
             }
 
+            if (!String.IsNullOrWhiteSpace(ModPackUrl.Text))
+            {
+                var url = IOUtil.ValidateUrl(ModPackUrl.Text);
+                if (url != null)
+                {
+                    ModPackUrl.Text = url;
+                }
+                else
+                {
+                    ModPackUrl.Text = "";
+                }
+            }
+            else
+            {
+                ModPackUrl.Text = "";
+            }
+            Url = ModPackUrl.Text;
+
 
             var index = wizPages.IndexOf(modPackWizard.CurrentPage);
             if (index == wizPages.Count - 2)
@@ -200,6 +222,7 @@ namespace FFXIV_TexTools.Views
                 Author = ModPackAuthor.Text,
                 Version = VersionNumber,
                 Description = ModPackDescription.Text,
+                Url = Url,
                 ModPackPages = new List<ModPackData.ModPackPage>()
             };
 
@@ -401,6 +424,11 @@ namespace FFXIV_TexTools.Views
                 Background = null,
                 HeaderBackground = null
             });
+        }
+
+        private void UrlBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
         }
     }
 }

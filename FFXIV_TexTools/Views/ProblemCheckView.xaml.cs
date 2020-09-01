@@ -530,7 +530,14 @@ namespace FFXIV_TexTools.Views
                         {
                             try
                             {
-                                await index.UpdateDataOffset(index1Offset, mod.fullPath, false);
+                                if (mod.IsCustomFile())
+                                {
+                                    await index.AddFileDescriptor(mod.fullPath, index1Offset, IOUtil.GetDataFileFromPath(mod.fullPath), true);
+                                }
+                                else
+                                {
+                                    await index.UpdateDataOffset(index1Offset, mod.fullPath, true);
+                                }
                                 resolvedErrors++;
                             }
                             catch

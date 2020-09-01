@@ -58,7 +58,7 @@ namespace FFXIV_TexTools.Views
                     if (cancel) return;
                 }
 
-                await _dat.CopyFile(from, to, "Copied Files", Path.GetFileName(to), XivStrings.TexTools);
+                await _dat.CopyFile(from, to, "Copied Files", Path.GetFileName(to), XivStrings.TexTools, true);
 
                 Dispatcher.Invoke(() =>
                 {

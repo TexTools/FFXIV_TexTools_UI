@@ -1526,6 +1526,10 @@ namespace FFXIV_TexTools.ViewModels
                 }
                catch (Exception e)
                 {
+                    while(e.InnerException != null)
+                    {
+                        e = e.InnerException;
+                    }
                     // We're not guaranteed to be on the main thread here,
                     // so ensure we call the message box on that thread so it doesn't
                     // get eaten by access errors.
@@ -1663,10 +1667,6 @@ namespace FFXIV_TexTools.ViewModels
                 _view.viewport3DX.ZoomExtents();
 
                 ExportEnabled = true;
-
-                var saveDir = new DirectoryInfo(Settings.Default.Save_Directory);
-                var path = $"{IOUtil.MakeItemSavePath(_item, saveDir, SelectedRace.XivRace)}\\3D";
-                var modelName = Path.GetFileNameWithoutExtension(_model.Source);
 
                 ImportEnabled = true;
                 UpdateTexEnabled = true;

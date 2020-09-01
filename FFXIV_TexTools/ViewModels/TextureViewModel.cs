@@ -491,6 +491,13 @@ namespace FFXIV_TexTools.ViewModels
                 }
             }
 
+            var _tex = new Tex(XivCache.GameInfo.GameDirectory);
+            var icons = await _tex.GetItemIcons(_item);
+            if(icons.Count > 0)
+            {
+                finalList.Add("icons.ui");
+            }
+
 
             sharedRace = await GetMaterialSharedRace(race);
             if (sharedRace != XivRace.All_Races && sharedRace != race)
@@ -521,8 +528,11 @@ namespace FFXIV_TexTools.ViewModels
                 {
 
                     _materialComboBoxData.Add(new KeyValuePair<string, string>("VFX: " + mName, material));
+                } else if(ext == ".ui")
+                {
+                    _materialComboBoxData.Add(new KeyValuePair<string, string>("UI Elements", material));
                 }
-                else
+                else if(ext == ".mtrl")
                 {
                     var displayedSuffix = mName;
 
@@ -609,7 +619,7 @@ namespace FFXIV_TexTools.ViewModels
                 var _atex = new ATex(XivCache.GameInfo.GameDirectory, IOUtil.GetDataFileFromPath(SelectedMaterial));
                 var paths = await _atex.GetAtexPaths(_item);
 
-                foreach(var path in paths)
+                foreach (var path in paths)
                 {
                     var mi = new MapInfo();
                     mi.Path = path.Path;
@@ -618,7 +628,23 @@ namespace FFXIV_TexTools.ViewModels
                     items++;
                 }
 
-            } else { 
+            }
+            else if (ext == ".ui")
+            {
+                var _tex = new Tex(XivCache.GameInfo.GameDirectory);
+                var icons = await _tex.GetItemIcons(_item);
+
+                foreach (var ttp in icons)
+                {
+                    var mi = new MapInfo();
+                    mi.Path = ttp.Path;
+                    mi.Usage = XivTexType.UI;
+                    _mapComboBoxData.Add(new KeyValuePair<string, MapInfo>(ttp.Name, mi));
+                    items++;
+                }
+            }
+            else if (ext == ".mtrl")
+            {
 
                 var _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory, IOUtil.GetDataFileFromPath(SelectedMaterial), XivCache.GameInfo.GameLanguage);
                 try
@@ -1433,11 +1459,11 @@ namespace FFXIV_TexTools.ViewModels
                     {
                         if (_item != null)
                         {
-                            await _tex.TexDDSImporter(texData, _item, fileDir, XivStrings.TexTools);
+                            await _tex.ImportTex(texData.TextureTypeAndPath.Path, fileDir.FullName, _item, XivStrings.TexTools);
                         }
                         else if (_uiItem != null)
                         {
-                            await _tex.TexDDSImporter(texData, _uiItem, fileDir, XivStrings.TexTools);
+                            await _tex.ImportTex(texData.TextureTypeAndPath.Path, fileDir.FullName, _uiItem, XivStrings.TexTools);
                         }
                     }
                     catch (Exception ex)
@@ -1474,11 +1500,11 @@ namespace FFXIV_TexTools.ViewModels
                     {
                         if (_item != null)
                         {
-                            await _tex.TexImporter(texData, _item, fileDir, XivStrings.TexTools);
+                            await _tex.ImportTex(texData.TextureTypeAndPath.Path, fileDir.FullName, _item, XivStrings.TexTools);
                         }
                         else if (_uiItem != null)
                         {
-                            await _tex.TexImporter(texData, _uiItem, fileDir, XivStrings.TexTools);
+                            await _tex.ImportTex(texData.TextureTypeAndPath.Path, fileDir.FullName, _uiItem, XivStrings.TexTools);
                         }
                     }
                     catch (Exception ex)
