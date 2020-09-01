@@ -10,14 +10,14 @@
     <UserControl.Resources>
         <DataTemplate x:Key="CheckBoxTemplate">
             <StackPanel Orientation="Horizontal">
-                <CheckBox IsChecked="{Binding IsChecked}"/>
+                <CheckBox IsChecked="{Binding IsChecked}" Checked="Option_Toggled" Unchecked="Option_Toggled"/>
                 <TextBlock Text="{Binding Name}"/>
             </StackPanel>
         </DataTemplate>
 
         <DataTemplate x:Key="RadioButtonTemplate">
             <StackPanel Orientation="Horizontal">
-                <RadioButton GroupName="{Binding GroupName}" IsChecked="{Binding IsChecked}"/>
+                <RadioButton GroupName="{Binding GroupName}" IsChecked="{Binding IsChecked}" Checked="Option_Toggled" Unchecked="Option_Toggled" />
                 <TextBlock Text="{Binding Name}"/>
             </StackPanel>
         </DataTemplate>

@@ -15,6 +15,9 @@
 
 using FFXIV_TexTools.Helpers;
 using FFXIV_TexTools.Resources;
+using MahApps.Metro.Controls;
+using SixLabors.ImageSharp.Formats;
+using SixLabors.ImageSharp.Formats.Bmp;
 using SixLabors.ImageSharp.Formats.Png;
 using System.Collections.Generic;
 using System.IO;
@@ -23,6 +26,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Forms;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using xivModdingFramework.Mods.DataContainers;
 using UserControl = System.Windows.Controls.UserControl;
@@ -221,13 +225,13 @@ namespace FFXIV_TexTools.Views
             {
                 OptionDescriptionTextBox.Text = option.Description ?? string.Empty;
 
-                if (option.Image != null)
+                if (option.Image != null && !option.Image.IsDisposed)
                 {
                     BitmapImage bmp;
 
                     using (var ms = new MemoryStream())
                     {
-                        option.Image.Save(ms, new PngEncoder());
+                        option.Image.Save(ms, new BmpEncoder());
 
                         bmp = new BitmapImage();
                         bmp.BeginInit();
@@ -268,6 +272,13 @@ namespace FFXIV_TexTools.Views
         }
 
         #endregion
+
+        private void Option_Toggled(object sender, RoutedEventArgs e)
+        {
+            var s = (FrameworkElement)sender;
+            var modOption = (ModOption)s.DataContext;
+            OptionsList.SelectedItem = modOption;
+        }
     }
 
     /// <summary>
@@ -294,7 +305,8 @@ namespace FFXIV_TexTools.Views
 
             if (container is FrameworkElement frameworkElement)
             {
-                var selectionType = ((ModOption) item).SelectionType;
+                var option = (ModOption)item;
+                var selectionType = option.SelectionType;
 
                 if (selectionType.Equals("Single"))
                 {

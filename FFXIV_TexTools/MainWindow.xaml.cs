@@ -64,7 +64,7 @@ namespace FFXIV_TexTools
         public readonly System.Windows.Forms.IWin32Window Win32Window;
 
         public static readonly Version BetaVersion = new Version("2.3.0.0");
-        public static readonly string BetaSuffix = "BETA 2";
+        public static readonly string BetaSuffix = "BETA 3";
         public static bool IsBetaVersion {
             get
             {

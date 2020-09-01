@@ -19,6 +19,7 @@ using FFXIV_TexTools.Properties;
 using FFXIV_TexTools.Resources;
 using FFXIV_TexTools.Views.Models;
 using MahApps.Metro.Controls;
+using MahApps.Metro.Controls.Dialogs;
 using Newtonsoft.Json;
 using SixLabors.ImageSharp.Formats.Png;
 using System;
@@ -26,6 +27,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -76,6 +79,35 @@ namespace FFXIV_TexTools.Views
 
             ItemList.ExtraSearchFunction = Filter;
             ItemList.ItemSelected += ItemList_ItemSelected;
+
+            ItemList.LockUiFunction = LockUi;
+            ItemList.UnlockUiFunction = UnlockUi;
+
+            ModListGrid.IsEnabled = false;
+            OptionDescription.IsEnabled = false;
+            OptionImageButton.IsEnabled = false;
+            RemoveOptionButton.IsEnabled = false;
+        }
+
+        private ProgressDialogController _lockProgressController;
+        private IProgress<string> _lockProgress;
+
+        public async Task LockUi(string title, string message, object sender)
+        {
+            _lockProgressController = await this.ShowProgressAsync("Loading", "Please Wait...");
+
+            _lockProgressController.SetIndeterminate();
+
+            _lockProgress = new Progress<string>((update) =>
+            {
+                _lockProgressController.SetMessage(update);
+            });
+        }
+        public async Task UnlockUi(object sender)
+        {
+            await _lockProgressController.CloseAsync();
+            _lockProgressController = null;
+            _lockProgress = null;
         }
 
         /// <summary>
@@ -138,23 +170,11 @@ namespace FFXIV_TexTools.Views
                 selectionType = "Multi";
             }
 
-            var modOptionsToRemove = new List<ModOption>();
 
             foreach (var modOption in _modOptions)
             {
-                if (modOption.Mods.Count < 1)
-                {
-                    modOptionsToRemove.Add(modOption);
-                    continue;
-                }
-
                 modOption.GroupName = ModGroupTitle.Text;
                 modOption.SelectionType = selectionType;
-            }
-
-            foreach (var modOption in modOptionsToRemove)
-            {
-                _modOptions.Remove(modOption);
             }
 
             var modGroup = new ModGroup
@@ -180,23 +200,11 @@ namespace FFXIV_TexTools.Views
                 selectionType = "Multi";
             }
 
-            var modOptionsToRemove = new List<ModOption>();
 
             foreach (var modOption in _modOptions)
             {
-                if (modOption.Mods.Count < 1)
-                {
-                    modOptionsToRemove.Add(modOption);
-                    continue;
-                }
-
                 modOption.GroupName = ModGroupTitle.Text;
                 modOption.SelectionType = selectionType;
-            }
-
-            foreach (var modOption in modOptionsToRemove)
-            {
-                _modOptions.Remove(modOption);
             }
 
             modGroup.GroupName = ModGroupTitle.Text;
@@ -216,7 +224,7 @@ namespace FFXIV_TexTools.Views
         /// <param name="optionNum">The option number</param>
         private void AddOption(string optionText, int optionNum = 0)
         {
-            if (OptionNameTextBox.Text.Equals(string.Empty)) return;
+            if (String.IsNullOrWhiteSpace(OptionNameTextBox.Text)) return;
 
             var optionListItems = OptionList.Items.Cast<string>().ToList();
 
@@ -337,7 +345,7 @@ namespace FFXIV_TexTools.Views
                     {
                         var includedMods = new FileEntry
                         {
-                            Name = $"{Path.GetFileNameWithoutExtension(mod.Key)} ({mod.Value.Name})",
+                            Name = MakeFriendlyFileName(mod.Value.FullPath),
                             Path = mod.Value.FullPath
                         };
 
@@ -356,6 +364,11 @@ namespace FFXIV_TexTools.Views
                 OptionDescription.IsEnabled = false;
                 OptionImageButton.IsEnabled = false;
                 RemoveOptionButton.IsEnabled = false;
+            }
+
+            if (SelectedItem != null)
+            {
+                ItemList_ItemSelected(this, SelectedItem);
             }
 
         }
@@ -402,6 +415,11 @@ namespace FFXIV_TexTools.Views
             TextureMapComboBox.Items.Clear();
             ModelTypeComboBox.Items.Clear();
             MaterialComboBox.Items.Clear();
+
+            if (OptionList.SelectedItem == null)
+            {
+                return;
+            }
 
 
             var modding = new Modding(_gameDirectory);
@@ -461,7 +479,7 @@ namespace FFXIV_TexTools.Views
             {
                 var fe = new FileEntry();
                 fe.Path = file;
-                fe.Name = Path.GetFileNameWithoutExtension(file);
+                fe.Name = MakeFriendlyFileName(file);
 
                 ModelTypeComboBox.Items.Add(fe);
             }
@@ -470,7 +488,7 @@ namespace FFXIV_TexTools.Views
             {
                 var fe = new FileEntry();
                 fe.Path = file;
-                fe.Name = Path.GetFileNameWithoutExtension(file);
+                fe.Name = MakeFriendlyFileName(file);
 
                 MaterialComboBox.Items.Add(fe);
             }
@@ -479,7 +497,7 @@ namespace FFXIV_TexTools.Views
             {
                 var fe = new FileEntry();
                 fe.Path = file;
-                fe.Name = Path.GetFileNameWithoutExtension(file);
+                fe.Name = MakeFriendlyFileName(file);
 
                 TextureMapComboBox.Items.Add(fe);
             }
@@ -601,7 +619,7 @@ namespace FFXIV_TexTools.Views
 
             foreach (var child in children)
             {
-                var fe = new FileEntry() { Name = Path.GetFileName(child), Path = child };
+                var fe = new FileEntry() { Name = MakeFriendlyFileName(child), Path = child };
                 if (child == file && rawData != null)
                 {
                     await AddFile(fe, item, rawData);
@@ -721,6 +739,7 @@ namespace FFXIV_TexTools.Views
         /// </summary>
         private void RemoveModItemButton_Click(object sender, RoutedEventArgs e)
         {
+            if (IncludedModsList.SelectedItem == null) return;
             _selectedModOption.Mods.Remove(((FileEntry)IncludedModsList.SelectedItem).Path);
             IncludedModsList.Items.Remove(IncludedModsList.SelectedItem);
         }
@@ -825,7 +844,7 @@ namespace FFXIV_TexTools.Views
             var selectedFile = new FileEntry()
             {
                 Path = path,
-                Name = Path.GetFileName(path)
+                Name = MakeFriendlyFileName(path)
             };
             var addChildren = MetadataIncludeChildFilesBox.IsChecked == true ? true : false;
 
@@ -842,6 +861,48 @@ namespace FFXIV_TexTools.Views
                 AddFile(selectedFile, SelectedItem, data);
             }
 
+        }
+
+        public static string MakeFriendlyFileName(string path)
+        {
+            var filename = Path.GetFileName(path);
+            var ext = Path.GetExtension(path);
+            string niceName = null;
+            if(ext == ".mtrl")
+            {
+                // Include material set identifier for materials.
+                var rex = new Regex("v[0-9]{4}/");
+                var m = rex.Match(path);
+
+                if(m.Success)
+                {
+                    filename = m.Value + filename;
+                }
+
+                niceName = "Material";
+            } else if(ext == ".atex")
+            {
+                niceName = "VFX";
+            } else if(ext == ".mdl")
+            {
+                niceName = "Model";
+            } else if(ext == ".tex")
+            {
+                var type = SimpleModpackEntry.GuessTextureUsage(path);
+                niceName = type.ToString() + " Texture";
+            } else if(ext == ".meta")
+            {
+                niceName = "Metadata";
+            }
+
+
+
+            var ret = filename;
+            if(niceName != null)
+            {
+                ret = niceName + " (" + filename + ")";
+            }
+            return ret;
         }
     }
 }

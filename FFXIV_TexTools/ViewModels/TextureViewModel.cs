@@ -1049,6 +1049,7 @@ namespace FFXIV_TexTools.ViewModels
             }
             else
             {
+                _xivMtrl = await _mtrl.GetMtrlData(_item, SelectedMap.Path);
                 var floats = Half.ConvertToFloat(_xivMtrl.ColorSetData.ToArray());
 
                 var floatArray = Utilities.ToByteArray(floats);
