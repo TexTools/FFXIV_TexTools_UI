@@ -25,6 +25,7 @@ namespace FFXIV_TexTools.ViewModels
         public Version Version = new Version("1.0.0");
         public string Description = "";
         public string Url = "";
+        public bool SaveAdvanced = false;
 
         public string DestinationFilePath;
         public ObservableCollection<StandardModpackItemEntry> Entries = new ObservableCollection<StandardModpackItemEntry>();

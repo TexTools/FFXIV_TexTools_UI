@@ -99,18 +99,21 @@ namespace FFXIV_TexTools.Views.Controls
             }
         }
 
-        public ItemSelectControl() : this(null)
+        public ItemSelectControl() : this(false)
         {
 
         }
-        public ItemSelectControl(bool? deferLoading = null)
+        public ItemSelectControl(bool deferLoading = false)
         {
 
             DataContext = this;
             InitializeComponent();
 
-            LockUiFunction = MainWindow.GetMainWindow().LockUi;
-            UnlockUiFunction = MainWindow.GetMainWindow().UnlockUi;
+            if (MainWindow.GetMainWindow() != null)
+            {
+                LockUiFunction = MainWindow.GetMainWindow().LockUi;
+                UnlockUiFunction = MainWindow.GetMainWindow().UnlockUi;
+            }
 
             SelectButton.Click += SelectButton_Click;
             SearchBar.KeyDown += SearchBar_KeyDown;
@@ -123,6 +126,7 @@ namespace FFXIV_TexTools.Views.Controls
 
         private void ItemSelectControl_Loaded(object sender, System.Windows.RoutedEventArgs e)
         {
+            if (DesignerProperties.GetIsInDesignMode(this)) { return; }
             // This is done here because the DeferLoading property will not actually be
             // Populated from our parent XAML file in the constructor yet.
             if (!DeferLoading)
@@ -544,6 +548,9 @@ namespace FFXIV_TexTools.Views.Controls
             {
                 e.IsSelected = true;
                 _selectedItem = item;
+
+                // Manually invoke this in case the item isn't in the filter currently.
+                ItemSelected.Invoke(this, _selectedItem);
             }
             else
             {
@@ -559,6 +566,7 @@ namespace FFXIV_TexTools.Views.Controls
 
 
         public void ClearSelection(ObservableCollection<ItemTreeElement> elements = null)
+
         {
             if (!_READY) return;
 
@@ -577,7 +585,6 @@ namespace FFXIV_TexTools.Views.Controls
             }
         }
 
-
         private void Search(object sender, ElapsedEventArgs e)
         {
             if (!_READY) return;
@@ -586,6 +593,8 @@ namespace FFXIV_TexTools.Views.Controls
             // Do stuff.
             Dispatcher.Invoke(() =>
             {
+                ClearSelection(CategoryElements);
+                ClearSelection(SetElements);
                 CollectionViewSource.GetDefaultView(CategoryElements).Refresh();
                 CollectionViewSource.GetDefaultView(SetElements).Refresh();
 

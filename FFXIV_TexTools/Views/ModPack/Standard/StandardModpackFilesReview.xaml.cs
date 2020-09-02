@@ -143,7 +143,7 @@ namespace FFXIV_TexTools.Views
             var files = new SortedSet<string>();
             foreach(var file in parentFiles)
             {
-                var children = await GetChildrenRecursive(file);
+                var children = await XivCache.GetChildrenRecursive(file);
                 foreach(var child in children)
                 {
                     files.Add(child);
@@ -164,33 +164,6 @@ namespace FFXIV_TexTools.Views
             UpdateCounts();
 
             ConfirmButton.IsEnabled = true;
-        }
-
-        private async Task<HashSet<string>> GetChildrenRecursive(string file)
-        {
-            var files = new HashSet<string>();
-            files.Add(file);
-
-            var baseChildren = await XivCache.GetChildFiles(file);
-            if(baseChildren == null || baseChildren.Count == 0)
-            {
-                // No children, just us.
-                return files;
-            } else
-            {
-                // We have child files.
-                foreach(var child in baseChildren)
-                {
-                    // Recursively get their children.
-                    var children = await GetChildrenRecursive(child);
-                    foreach(var subchild in children)
-                    {
-                        // Add the results to the list.
-                        files.Add(subchild);
-                    }
-                }
-            }
-            return files;
         }
 
         private void BackButton_Click(object sender, RoutedEventArgs e)

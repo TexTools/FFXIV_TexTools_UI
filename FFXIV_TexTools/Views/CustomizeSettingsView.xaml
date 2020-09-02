@@ -8,7 +8,7 @@
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
         xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
-        Title="{Binding Source={x:Static resx:UIStrings.Customize}}" Height="450" Width="800" ShowMaxRestoreButton="False" ShowMinButton="False" WindowStartupLocation="CenterOwner">
+        Title="{Binding Source={x:Static resx:UIStrings.Customize}}" Height="500" Width="800" ShowMaxRestoreButton="False" ShowMinButton="False" WindowStartupLocation="CenterOwner">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
@@ -52,14 +52,28 @@
                     <TextBox x:Name="AuthorTextBox" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding DefaultAuthor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.Mod_Pack_Author}}" mah:TextBoxHelper.UseFloatingWatermark="True" Margin="5" VerticalContentAlignment="Center"/>
                 </Grid>
             </GroupBox>
-            <GroupBox Grid.Row="2" Header="Default Race">
+            <GroupBox Grid.Row="2" Header="Other Settings">
                 <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="175"></ColumnDefinition>
+                        <ColumnDefinition></ColumnDefinition>
+
+                    </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition/>
+                        <RowDefinition Height="40"/>
+                        <RowDefinition Height="40"/>
+                        <RowDefinition Height="40"/>
                     </Grid.RowDefinitions>
-                    <ComboBox VerticalAlignment="Top" HorizontalAlignment="Left" mah:TextBoxHelper.UseFloatingWatermark="True" mah:TextBoxHelper.Watermark="Race" ItemsSource="{Binding DefaultRaces}" SelectedItem="{Binding SelectedDefaultRace}"/>
-                    <TextBox Grid.Row="1" Text="{Binding Source={x:Static resx:UIStrings.Customize_DefaultRace}, Mode=OneWay}" IsReadOnly="True" TextWrapping="Wrap" BorderThickness="0"/>
+
+
+                    <Label Grid.Column="0" Grid.Row="0"  Margin="10,0,5,0" Content="Synchronize View Tabs" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
+                    <CheckBox x:Name="SynchronizeViewsBox"  Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" Margin="5,0,10,0"  IsChecked="{Binding UseSynchronizedViews}" ToolTip="Synchronize the model/texture/metadata view tabs to use the same Race/'Number' selection."></CheckBox>
+
+                    <Label Grid.Column="0" Grid.Row="1"  Margin="10,0,5,0" Content="Remember Race Selection" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
+                    <CheckBox x:Name="RememberSelectionBox"  Grid.Column="2" Grid.Row="1" VerticalAlignment="Center" Margin="5,0,10,0" ToolTip="Remember the Race/'Number' Selection when changing between items."  IsChecked="{Binding RememberRaceSelection}"></CheckBox>
+
+                    <Label Grid.Column="0" Grid.Row="2" Margin="10,0,5,0" Content="Default Race" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
+                    <ComboBox x:Name="DefaultRacesBox" Grid.Column="1" Grid.Row="2"  VerticalAlignment="Center" ItemsSource="{Binding DefaultRaces}" IsEnabled="{Binding DefaultRaceEnabled}" SelectedItem="{Binding SelectedDefaultRace}" Margin="5,0,10,0" ToolTip="Always attempt to switch to this race when changing items."/>
                 </Grid>
             </GroupBox>
         </Grid>
@@ -100,14 +114,14 @@
 
                     <Label Content="Hair Highlight Color" Grid.Row="2" Margin="5"/>
                     <xctk:ColorPicker x:Name="HairHighlightColorPicker" SelectedColor="{Binding Selected_HairHighlightColor}" ColorMode="ColorCanvas" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" MinWidth="120" DropDownBackground="Gainsboro"/>
-                    
+
                     <Label Content="{Binding Source={x:Static resx:UIStrings.Iris_Color}}" Grid.Row="3" Margin="5"/>
                     <xctk:ColorPicker x:Name="IrisColorPicker" SelectedColor="{Binding Selected_IrisColor}" ColorMode="ColorCanvas" Grid.Row="3" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" MinWidth="120" DropDownBackground="Gainsboro"/>
 
                     <Label Content="Lip Color" Grid.Row="4" Margin="5"/>
                     <xctk:ColorPicker x:Name="LipColorPicker" SelectedColor="{Binding Selected_LipColor}" ColorMode="ColorCanvas" Grid.Row="4" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" MinWidth="120" DropDownBackground="Gainsboro"/>
-                    
-                    
+
+
                     <Label Content="Tattoo Color" Grid.Row="5" Margin="5"/>
                     <xctk:ColorPicker x:Name="TattooColorPicker" SelectedColor="{Binding Selected_TattooColor}" ColorMode="ColorCanvas" Grid.Row="5" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" MinWidth="120" DropDownBackground="Gainsboro"/>
 

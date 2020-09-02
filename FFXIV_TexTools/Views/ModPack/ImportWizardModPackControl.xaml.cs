@@ -13,7 +13,9 @@
 // 
 // You should have received a copy of the GNU General Public License
 
+using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Png;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -31,7 +33,7 @@ namespace FFXIV_TexTools.Views
     /// </summary>
     public partial class ImportWizardModPackControl : UserControl
     {
-        private readonly Dictionary<string, Image> _imageDictionary;
+        private readonly Dictionary<string, string> _imgageTempFileDictionary = new Dictionary<string, string>();
 
         public ImportWizardModPackControl(ModPackPageJson modPackPage, Dictionary<string, Image> imageDictionary)
         {
@@ -39,7 +41,26 @@ namespace FFXIV_TexTools.Views
 
             MainWindow.MakeHighlander();
 
-            _imageDictionary = imageDictionary;
+
+            // Just immediately save all the images to the temp folder, because the loading times from ImageSharp are absolutely
+            // awful, and/or leak RAM all over the place otherwise.
+            var tempFolder = Path.GetTempPath();
+            foreach (var kv in imageDictionary)
+            {
+                try
+                {
+                    var newfName = Path.Combine(tempFolder, Guid.NewGuid().ToString());
+                    using (var fstream = new FileStream(newfName, FileMode.OpenOrCreate))
+                    {
+                        kv.Value.SaveAsBmp(fstream);
+                    }
+                    _imgageTempFileDictionary.Add(kv.Key, newfName);
+                } catch(Exception ex)
+                {
+                    // No-Op
+                }
+            }
+
 
             OptionsList.ItemsSource = new List<ModOptionJson>();
 
@@ -76,26 +97,49 @@ namespace FFXIV_TexTools.Views
 
                 if (!option.ImagePath.Equals(string.Empty))
                 {
-                    BitmapImage bmp;
-
-                    using (var ms = new MemoryStream())
+                    if(_imgageTempFileDictionary.ContainsKey(option.ImagePath))
                     {
-                        _imageDictionary[option.ImagePath].Save(ms, new PngEncoder());
+                        try
+                        {
+                            var path = _imgageTempFileDictionary[option.ImagePath];
+                            BitmapImage bi3 = new BitmapImage();
+                            bi3.BeginInit();
+                            bi3.UriSource = new Uri(path, UriKind.Absolute);
+                            bi3.EndInit();
 
-                        bmp = new BitmapImage();
-                        bmp.BeginInit();
-                        bmp.StreamSource = ms;
-                        bmp.CacheOption = BitmapCacheOption.OnLoad;
-                        bmp.EndInit();
-                        bmp.Freeze();
+                            OptionPreviewImage.Source = bi3;
+                        } catch(Exception ex)
+                        {
+                            // No-Op
+                        }
                     }
-
-                    OptionPreviewImage.Source = bmp;
                 }
                 else
                 {
                     OptionPreviewImage.Source = null;
                 }
+            }
+        }
+        private void Option_Toggled(object sender, RoutedEventArgs e)
+        {
+            var s = (FrameworkElement)sender;
+            var modOption = (ModOptionJson)s.DataContext;
+            OptionsList.SelectedItem = modOption;
+        }
+
+        ~ImportWizardModPackControl()
+        {
+            try
+            {
+                // Clean up temp files.
+                foreach (var kv in _imgageTempFileDictionary)
+                {
+                    File.Delete(kv.Value);
+                }
+            }
+            catch
+            {
+                // No-Op
             }
         }
     }

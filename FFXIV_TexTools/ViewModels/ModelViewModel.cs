@@ -254,9 +254,14 @@ namespace FFXIV_TexTools.ViewModels
             }
 
             var _eqp = new Eqp(_gameDirectory);
-            var races = await _eqp.GetAvailableRacialModels(_item);
+            var races = await _eqp.GetAvailableRacialModels(_item, false, true);
 
             var root = _item.GetRoot();
+            if(root == null)
+            {
+                OnLoadingComplete();
+                return;
+            }
 
             if (races.Count == 0)
             {
@@ -308,13 +313,14 @@ namespace FFXIV_TexTools.ViewModels
                 }
             }
 
+            var tryReselect = Settings.Default.Remember_Race_Selection;
             var raceIndex = 0;
-            if(lastRaceIdx >= 0)
+            if(lastRaceIdx >= 0 && tryReselect)
             {
                 // Re-select last.
                 raceIndex = lastRaceIdx;
             }
-            else if (defaultRace.Count > 0)
+            else if (defaultRace.Count > 0 && !tryReselect)
             {
                 // Use default.
                 raceIndex = Races.IndexOf(defaultRace[0]);
@@ -421,6 +427,7 @@ namespace FFXIV_TexTools.ViewModels
 
                 var toSelect = 0;
                 var idx = 0;
+                var tryReselect = Settings.Default.Remember_Race_Selection;
 
                 if (charaItem.ModelInfo.SecondaryID > 0)
                 {
@@ -430,10 +437,11 @@ namespace FFXIV_TexTools.ViewModels
                 }
                 else
                 {
-
                     foreach (var number in numbers)
                     {
-                        if (number == _lastNumber)
+
+                        
+                        if (tryReselect && number == _lastNumber)
                         {
                             toSelect = idx;
                         }
@@ -1518,6 +1526,10 @@ namespace FFXIV_TexTools.ViewModels
                 }
                catch (Exception e)
                 {
+                    while(e.InnerException != null)
+                    {
+                        e = e.InnerException;
+                    }
                     // We're not guaranteed to be on the main thread here,
                     // so ensure we call the message box on that thread so it doesn't
                     // get eaten by access errors.
@@ -1655,10 +1667,6 @@ namespace FFXIV_TexTools.ViewModels
                 _view.viewport3DX.ZoomExtents();
 
                 ExportEnabled = true;
-
-                var saveDir = new DirectoryInfo(Settings.Default.Save_Directory);
-                var path = $"{IOUtil.MakeItemSavePath(_item, saveDir, SelectedRace.XivRace)}\\3D";
-                var modelName = Path.GetFileNameWithoutExtension(_model.Source);
 
                 ImportEnabled = true;
                 UpdateTexEnabled = true;

@@ -1,0 +1,59 @@
+﻿<Window x:Class="FFXIV_TexTools.Views.Controls.ItemInfoDisplay"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FFXIV_TexTools.Views.Controls"
+        mc:Ignorable="d"
+        Title="Item Information" Height="600
+        " Width="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="450"></ColumnDefinition>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"></RowDefinition>
+            <RowDefinition Height="30"></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
+
+
+        <TextBlock x:Name="ItemNameBox" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Text="ITEM NAME" VerticalAlignment="Center" TextAlignment="Center" FontSize="14" FontWeight="Bold" FontStyle="Italic"/>
+
+        <UniformGrid Grid.Row="1" Rows="1" Columns="4" Grid.ColumnSpan="2">
+            <TextBlock x:Name="SetLabel" Text="Set: e0123" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <TextBlock x:Name="SlotLabel" Text="Slot: Head(met)" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <TextBlock x:Name="VariantLabel" Text="Variant: 5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <TextBlock x:Name="MaterialSetLabel" Text="Material Set: 3" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        </UniformGrid>
+        <GroupBox Grid.Row="2" Grid.RowSpan="3" Header="Race Information">
+            <Grid x:Name="RacialGrid">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="150"></ColumnDefinition>
+                    <ColumnDefinition Width="150"></ColumnDefinition>
+                    <ColumnDefinition Width="150"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30"></RowDefinition>
+                </Grid.RowDefinitions>
+                <Label Grid.Row="0" Grid.Column="0" Content="Race" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"></Label>
+                <Label Grid.Row="0" Grid.Column="1" Content="Model Used" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"></Label>
+                <Label Grid.Row="0" Grid.Column="2" Content="Material Used" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"></Label>
+
+            </Grid>
+        </GroupBox>
+
+        <GroupBox Grid.Column="1" Grid.Row="2" Header="Items in Variant (Identical Items)">
+            <ListBox x:Name="SameVariantBox"></ListBox>
+        </GroupBox>
+        <GroupBox Grid.Column="1" Grid.Row="3" Header="Items with same Material Set">
+            <ListBox x:Name="SameMaterialBox"></ListBox>
+        </GroupBox>
+        <GroupBox Grid.Column="1" Grid.Row="4" Header="Items with same Model">
+            <ListBox x:Name="SameModelBox"></ListBox>
+        </GroupBox>
+    </Grid>
+</Window>

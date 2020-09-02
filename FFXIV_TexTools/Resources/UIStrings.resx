@@ -691,7 +691,7 @@
     <value>Single-Selection</value>
   </data>
   <data name="TD_Model" xml:space="preserve">
-    <value>3D Model</value>
+    <value>Model</value>
   </data>
   <data name="Textures" xml:space="preserve">
     <value>Textures</value>

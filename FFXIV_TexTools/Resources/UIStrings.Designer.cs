@@ -2402,7 +2402,7 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 3D Model.
+        ///   Looks up a localized string similar to Model.
         /// </summary>
         public static string TD_Model {
             get {

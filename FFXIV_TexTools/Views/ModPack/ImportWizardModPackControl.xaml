@@ -10,14 +10,14 @@
     <UserControl.Resources>
         <DataTemplate x:Key="CheckBoxTemplate">
             <StackPanel Orientation="Horizontal">
-                <CheckBox IsChecked="{Binding IsChecked}"/>
+                <CheckBox IsChecked="{Binding IsChecked}" Checked="Option_Toggled" Unchecked="Option_Toggled"/>
                 <TextBlock Text="{Binding Name}"/>
             </StackPanel>
         </DataTemplate>
 
         <DataTemplate x:Key="RadioButtonTemplate">
             <StackPanel Orientation="Horizontal">
-                <RadioButton GroupName="{Binding GroupName}" IsChecked="{Binding IsChecked}"/>
+                <RadioButton GroupName="{Binding GroupName}" IsChecked="{Binding IsChecked}" Checked="Option_Toggled" Unchecked="Option_Toggled" />
                 <TextBlock Text="{Binding Name}"/>
             </StackPanel>
         </DataTemplate>
@@ -29,7 +29,7 @@
         </Grid.ColumnDefinitions>
         <Grid Grid.Column="0">
             <GroupBox Grid.Row="0" Header="{Binding Source={x:Static resx:UIStrings.Options_List}}" Margin="5">
-                <ListBox x:Name="OptionsList" SelectionChanged="OptionsList_SelectionChanged">
+                <ListBox x:Name="OptionsList" SelectionChanged="OptionsList_SelectionChanged" ScrollViewer.CanContentScroll="False">
                     <ListBox.GroupStyle>
                         <GroupStyle>
                             <GroupStyle.HeaderTemplate>

@@ -311,6 +311,11 @@ namespace FFXIV_TexTools.ViewModels
             var materialIdentifier = _material.GetMaterialIdentifier();
 
             var newIdentifier = '\0';
+            var rex = new Regex("_([a-z0-9])\\.mtrl");
+            if (!rex.IsMatch(_material.MTRLPath))
+            {
+                return 'a';
+            }
             for (var i = 1; i < alphabet.Length; i++)
             {
                 var identifier = alphabet[i];
@@ -326,7 +331,14 @@ namespace FFXIV_TexTools.ViewModels
             // Note - This can be fixed.  Materials don't need to be named a-z, but realisitcally is anyone going to have more than 26 materials?
             if (newIdentifier == '\0')
             {
-                throw new NotSupportedException("Maximum Material Limit Reached.");
+                if (materialIdentifier == '\0')
+                {
+                    newIdentifier = 'a';
+                }
+                else
+                {
+                    throw new NotSupportedException("Maximum Material Limit Reached.");
+                }
             }
             return newIdentifier;
 

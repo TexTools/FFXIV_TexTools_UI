@@ -11,6 +11,7 @@ using xivModdingFramework.Helpers;
 using xivModdingFramework.Items.Interfaces;
 using xivModdingFramework.Models.FileTypes;
 using xivModdingFramework.Mods.FileTypes;
+using xivModdingFramework.SqPack.FileTypes;
 
 namespace FFXIV_TexTools.ViewModels
 {
@@ -128,6 +129,32 @@ namespace FFXIV_TexTools.ViewModels
 
                     // Here we have a new race, we need to create a model for it.
                     await _mdl.AddRacialModel(_metadata.Root.Info.PrimaryId, _metadata.Root.Info.Slot, kv.Key, XivStrings.TexTools);
+                }
+
+                if(_metadata.ImcEntries.Count > 0)
+                {
+                    var _dat = new Dat(XivCache.GameInfo.GameDirectory);
+                    var originalMaterialSetMax = _original.ImcEntries.Select(x => x.Variant).Max();
+                    var newMaterialSetMax = _metadata.ImcEntries.Select(x => x.Variant).Max();
+
+                    if(newMaterialSetMax > originalMaterialSetMax)
+                    {
+                        // We have new materials to add.
+
+                        // First find the base files to copy. (Just always copy from set 1 for simplicity)
+                        var copySource = await _metadata.Root.GetMaterialFiles(1);
+                        var item = _metadata.Root.GetFirstItem();
+
+                        for(int i = originalMaterialSetMax +1; i <= newMaterialSetMax; i++)
+                        {
+                            foreach(var material in copySource)
+                            {
+                                var dest = material.Replace("v0001", "v" + i.ToString().PadLeft(4, '0'));
+
+                                await _dat.CopyFile(material, dest, item.SecondaryCategory, item.Name, XivStrings.TexTools);
+                            }
+                        }
+                    }
                 }
 
                 success = true;

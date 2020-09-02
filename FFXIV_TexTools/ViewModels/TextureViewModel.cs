@@ -20,6 +20,7 @@ using FFXIV_TexTools.Properties;
 using FFXIV_TexTools.Resources;
 using FFXIV_TexTools.Textures;
 using FFXIV_TexTools.Views;
+using FFXIV_TexTools.Views.Controls;
 using FFXIV_TexTools.Views.Textures;
 using HelixToolkit.Wpf.SharpDX;
 using SharpDX;
@@ -62,6 +63,8 @@ using xivModdingFramework.SqPack.FileTypes;
 using xivModdingFramework.Textures.DataContainers;
 using xivModdingFramework.Textures.Enums;
 using xivModdingFramework.Textures.FileTypes;
+using xivModdingFramework.Variants.DataContainers;
+using xivModdingFramework.Variants.FileTypes;
 using BitmapSource = System.Windows.Media.Imaging.BitmapSource;
 
 namespace FFXIV_TexTools.ViewModels
@@ -239,6 +242,7 @@ namespace FFXIV_TexTools.ViewModels
             _textureView.RaceComboBox.SelectionChanged += PrimaryComboBox_SelectionChanged;
             _textureView.MaterialComboBox.SelectionChanged += MaterialComboBox_SelectionChanged;
             _textureView.MapComboBox.SelectionChanged += MapComboBox_SelectionChanged;
+            _textureView.ItemInfoButton.Click += ItemInfoButton_Click;
 
             var mw = MainWindow.GetMainWindow();
             mw.SelectedPrimaryItemValueChanged += Mw_SelectedPrimaryItemValueChanged;
@@ -291,7 +295,12 @@ namespace FFXIV_TexTools.ViewModels
             var _eqp = new Eqp(gameDirectory);
             var races = new List<XivRace>() { XivRace.All_Races };
 
-            if (_root.Info.PrimaryType == XivItemType.human && _root.Info.SecondaryId == null || _root.Info.SecondaryId == 0)
+            if(_root.Info.PrimaryType != XivItemType.human)
+            {
+                _textureView.ItemInfoButton.IsEnabled = true;
+            }
+
+            if (_root.Info.PrimaryType == XivItemType.human && (_root.Info.SecondaryId == null || _root.Info.SecondaryId == 0))
             {
                 _primaryIsRace = false;
                 RaceWatermark = _item.SecondaryCategory + " Number";
@@ -308,13 +317,21 @@ namespace FFXIV_TexTools.ViewModels
                     var name = item.SecondaryCategory + " - " + i.ToString().PadLeft(4, '0');
                     _primaryComboBoxData.Add(new KeyValuePair<string, int>(name, i));
                 }
+
+                if(numbers.Length == 0 && _root.Info.SecondaryType == XivItemType.body)
+                {
+                    var race = XivRaces.GetXivRace(_root.Info.PrimaryId);
+                    _textureView.SharedMaterialLabel.Visibility = Visibility.Visible;
+                    var skinRace = XivRaceTree.GetSkinRace(race);
+                    _textureView.SharedMaterialLabel.Content = "This race uses " + skinRace.GetDisplayName() + "'s body material(s).";
+                }
             }
             else
             {
                 RaceWatermark = XivStrings.Race;
                 _primaryIsRace = true;
 
-                races = await _eqp.GetAvailableRacialModels(item);
+                races = await _eqp.GetAvailableRacialModels(item, false, true);
                 if(races.Count == 0)
                 {
                     // This root has the race pre-specified within it.
@@ -350,7 +367,9 @@ namespace FFXIV_TexTools.ViewModels
                 var userRace = XivRaces.GetXivRaceFromDisplayName(Settings.Default.Default_Race_Selection);
 
                 var defaultValue = _primaryComboBoxData[0].Value;
-                if (userRace != XivRace.All_Races)
+
+                // ONly use default race selection if selection memory is off.
+                if (userRace != XivRace.All_Races && !Settings.Default.Remember_Race_Selection)
                 {
                     var val = userRace.GetRaceCodeInt();
                     if (_primaryComboBoxData.Any(x => x.Value == val)) {
@@ -359,8 +378,9 @@ namespace FFXIV_TexTools.ViewModels
                 }
 
                 bool tryReselect = _lastCategory == _item.PrimaryCategory;
+                tryReselect = tryReselect && Settings.Default.Remember_Race_Selection;
                 _lastCategory = _item.PrimaryCategory;
-
+                
                 if (tryReselect)
                 {
                     if(_primaryComboBoxData.Any(x => x.Value == _lastPrimary))
@@ -388,6 +408,10 @@ namespace FFXIV_TexTools.ViewModels
         {
             _materialComboBoxData.Clear();
             _mapComboBoxData.Clear();
+            _textureView.SharedVariantLabel.Visibility = Visibility.Collapsed;
+            _textureView.SharedTextureLabel.Visibility = Visibility.Collapsed;
+            _textureView.SharedMaterialLabel.Visibility = Visibility.Collapsed;
+
             if (_item == null)
             {
                 _xivMtrl = null;
@@ -422,6 +446,7 @@ namespace FFXIV_TexTools.ViewModels
                     PrimaryType = _root.Info.PrimaryType,
                     SecondaryId = SelectedPrimary,
                     SecondaryType = _root.Info.SecondaryType,
+                    Slot = _root.Info.Slot
                 };
                 race = XivRaces.GetXivRace(info.PrimaryId);
                 _root = info.ToFullRoot();
@@ -466,6 +491,13 @@ namespace FFXIV_TexTools.ViewModels
                 }
             }
 
+            var _tex = new Tex(XivCache.GameInfo.GameDirectory);
+            var icons = await _tex.GetItemIcons(_item);
+            if(icons.Count > 0)
+            {
+                finalList.Add("icons.ui");
+            }
+
 
             sharedRace = await GetMaterialSharedRace(race);
             if (sharedRace != XivRace.All_Races && sharedRace != race)
@@ -496,8 +528,11 @@ namespace FFXIV_TexTools.ViewModels
                 {
 
                     _materialComboBoxData.Add(new KeyValuePair<string, string>("VFX: " + mName, material));
+                } else if(ext == ".ui")
+                {
+                    _materialComboBoxData.Add(new KeyValuePair<string, string>("UI Elements", material));
                 }
-                else
+                else if(ext == ".mtrl")
                 {
                     var displayedSuffix = mName;
 
@@ -584,7 +619,7 @@ namespace FFXIV_TexTools.ViewModels
                 var _atex = new ATex(XivCache.GameInfo.GameDirectory, IOUtil.GetDataFileFromPath(SelectedMaterial));
                 var paths = await _atex.GetAtexPaths(_item);
 
-                foreach(var path in paths)
+                foreach (var path in paths)
                 {
                     var mi = new MapInfo();
                     mi.Path = path.Path;
@@ -593,7 +628,23 @@ namespace FFXIV_TexTools.ViewModels
                     items++;
                 }
 
-            } else { 
+            }
+            else if (ext == ".ui")
+            {
+                var _tex = new Tex(XivCache.GameInfo.GameDirectory);
+                var icons = await _tex.GetItemIcons(_item);
+
+                foreach (var ttp in icons)
+                {
+                    var mi = new MapInfo();
+                    mi.Path = ttp.Path;
+                    mi.Usage = XivTexType.UI;
+                    _mapComboBoxData.Add(new KeyValuePair<string, MapInfo>(ttp.Name, mi));
+                    items++;
+                }
+            }
+            else if (ext == ".mtrl")
+            {
 
                 var _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory, IOUtil.GetDataFileFromPath(SelectedMaterial), XivCache.GameInfo.GameLanguage);
                 try
@@ -609,7 +660,7 @@ namespace FFXIV_TexTools.ViewModels
                 var maps = _xivMtrl.GetAllMapInfos(false);
                 var shInfo = _xivMtrl.GetShaderInfo();
 
-                if (shInfo.HasColorset)
+                if (shInfo.HasColorset && _xivMtrl.ColorSetDataSize > 0)
                 {
                     var cSetMap = new MapInfo();
                     cSetMap.Path = SelectedMaterial;
@@ -811,6 +862,145 @@ namespace FFXIV_TexTools.ViewModels
         }
 
         /// <summary>
+        /// Asynchronously loads the parent file information for a given texture.
+        /// </summary>
+        /// <returns></returns>
+        private async Task LoadParentFileInformation(string path)
+        {
+
+            var item = _item;
+            if (item == null)
+            {
+                _textureView.SharedVariantLabel.Visibility = Visibility.Collapsed;
+                _textureView.SharedTextureLabel.Visibility = Visibility.Collapsed;
+                return;
+            }
+            try
+            {
+
+                var root = item.GetRoot();
+                if (root == null || root.Info.PrimaryType == XivItemType.human || root.Info.PrimaryType == XivItemType.outdoor || root.Info.PrimaryType == XivItemType.indoor || !Imc.UsesImc(item))
+                {
+                    _textureView.SharedVariantLabel.Visibility = Visibility.Collapsed;
+                    _textureView.SharedTextureLabel.Visibility = Visibility.Collapsed;
+                    return;
+                }
+
+
+
+                _textureView.SharedVariantLabel.Visibility = Visibility.Visible;
+                _textureView.SharedTextureLabel.Visibility = Visibility.Collapsed;
+                _textureView.SharedVariantLabel.Content = "Loading usage data...";
+
+                List<string> parents = new List<string>();
+                List<XivImc> entries = null;
+                await Task.Run(async () =>
+                {
+                    var _imc = new Imc(XivCache.GameInfo.GameDirectory);
+                    var info = (await _imc.GetFullImcInfo(item));
+                    entries = info.GetAllEntries(item.GetItemSlotAbbreviation(), true);
+
+                    if (Path.GetExtension(path) == ".mtrl")
+                    {
+                        parents = new List<string>() { path };
+                    }
+                    else
+                    {
+                        parents = await XivCache.GetParentFiles(path);
+                    }
+                });
+
+                // Invalid IMC set, cancel.
+                if (item.ModelInfo.ImcSubsetID > entries.Count)
+                {
+                    if (SelectedMap.Path == path)
+                    {
+                        _textureView.SharedVariantLabel.Visibility = Visibility.Collapsed;
+                        _textureView.SharedTextureLabel.Visibility = Visibility.Collapsed;
+                    }
+                    return;
+                }
+
+                var vCount = entries.Count;
+                Dictionary<int, int> variantsPerMset = new Dictionary<int, int>();
+                foreach (var e in entries)
+                {
+                    if (!variantsPerMset.ContainsKey(e.Variant))
+                    {
+                        variantsPerMset[e.Variant] = 0;
+                    }
+                    variantsPerMset[e.Variant]++;
+                }
+
+                if (variantsPerMset.ContainsKey(0))
+                {
+                    // Material set 0 is the null set.
+                    vCount -= variantsPerMset[0];
+                }
+
+                if (parents.Count == 0)
+                {
+                    if (SelectedMap.Path == path)
+                    {
+                        _textureView.SharedVariantLabel.Content = "";
+                        _textureView.SharedVariantLabel.Visibility = Visibility.Collapsed;
+                    }
+                    return;
+                }
+
+                var mymSet = entries[item.ModelInfo.ImcSubsetID].Variant;
+
+                // Check if we're just used in some amount of variants of the same material.
+                var firstName = Path.GetFileName(parents[0]);
+                var sameMaterials = parents.Where(x => Path.GetFileName(x) == firstName);
+
+                var mSetExctraction = new Regex("v([0-9]{4})");
+                List<int> representedMaterialSets = new List<int>();
+                foreach (var x in sameMaterials)
+                {
+                    var match = mSetExctraction.Match(x);
+                    if (!match.Success) continue;
+
+                    representedMaterialSets.Add(Int32.Parse(match.Groups[1].Value));
+                }
+
+                var variantSum = 0;
+                foreach (var i in representedMaterialSets)
+                {
+                    if (!variantsPerMset.ContainsKey(i))
+                    {
+                        variantSum++;
+                    }
+                    else
+                    {
+                        variantSum += variantsPerMset[i];
+                    }
+                }
+
+                if (SelectedMap.Path == path)
+                {
+                    _textureView.SharedVariantLabel.Content = $"Used by {variantSum}/{vCount} Variants";
+                    _textureView.SharedVariantLabel.Visibility = Visibility.Visible;
+                }
+
+                var allSame = sameMaterials.Count() == parents.Count;
+                if (!allSame)
+                {
+                    var differentFiles = parents.Select(x => Path.GetFileName(x)).ToHashSet();
+                    var count = differentFiles.Count - 1;
+                    if (SelectedMap.Path == path)
+                    {
+                        _textureView.SharedTextureLabel.Content = "Used by " + count + " Other Materials";
+                        _textureView.SharedTextureLabel.Visibility = Visibility.Visible;
+                    }
+                }
+            } catch (Exception ex)
+            {
+                // No-op.  Lacking this data is not a critical failure.
+            }
+        }
+
+        /// <summary>
         /// Updates the texture image for the selected item
         /// </summary>
         public async void UpdateImage()
@@ -826,6 +1016,8 @@ namespace FFXIV_TexTools.ViewModels
             var _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory, IOUtil.GetDataFileFromPath(SelectedMap.Path), XivCache.GameInfo.GameLanguage);
             var _tex = new Tex(XivCache.GameInfo.GameDirectory);
             var _modding = new Modding(XivCache.GameInfo.GameDirectory);
+
+            LoadParentFileInformation(SelectedMap.Path);
 
             if (SelectedMap.Usage != XivTexType.ColorSet)
             {
@@ -857,6 +1049,7 @@ namespace FFXIV_TexTools.ViewModels
             }
             else
             {
+                _xivMtrl = await _mtrl.GetMtrlData(_item, SelectedMap.Path);
                 var floats = Half.ConvertToFloat(_xivMtrl.ColorSetData.ToArray());
 
                 var floatArray = Utilities.ToByteArray(floats);
@@ -1267,11 +1460,11 @@ namespace FFXIV_TexTools.ViewModels
                     {
                         if (_item != null)
                         {
-                            await _tex.TexDDSImporter(texData, _item, fileDir, XivStrings.TexTools);
+                            await _tex.ImportTex(texData.TextureTypeAndPath.Path, fileDir.FullName, _item, XivStrings.TexTools);
                         }
                         else if (_uiItem != null)
                         {
-                            await _tex.TexDDSImporter(texData, _uiItem, fileDir, XivStrings.TexTools);
+                            await _tex.ImportTex(texData.TextureTypeAndPath.Path, fileDir.FullName, _uiItem, XivStrings.TexTools);
                         }
                     }
                     catch (Exception ex)
@@ -1308,11 +1501,11 @@ namespace FFXIV_TexTools.ViewModels
                     {
                         if (_item != null)
                         {
-                            await _tex.TexImporter(texData, _item, fileDir, XivStrings.TexTools);
+                            await _tex.ImportTex(texData.TextureTypeAndPath.Path, fileDir.FullName, _item, XivStrings.TexTools);
                         }
                         else if (_uiItem != null)
                         {
-                            await _tex.TexImporter(texData, _uiItem, fileDir, XivStrings.TexTools);
+                            await _tex.ImportTex(texData.TextureTypeAndPath.Path, fileDir.FullName, _uiItem, XivStrings.TexTools);
                         }
                     }
                     catch (Exception ex)
@@ -1335,6 +1528,14 @@ namespace FFXIV_TexTools.ViewModels
             UpdateImage();
 
         }
+
+        private void ItemInfoButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (_item == null) return;
+            var wind = new ItemInfoDisplay(_item);
+            wind.Show();
+        }
+
 
         /// <summary>
         /// Command for the Mod Status Toggle Button
@@ -1533,8 +1734,8 @@ namespace FFXIV_TexTools.ViewModels
             }
             catch (Exception ex)
             {
-                FlexibleMessageBox.Show(UIMessages.MaterialEditorErrorTitle,
-                        UIMessages.MaterialEditorErrorMessage, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                FlexibleMessageBox.Show(
+                        UIMessages.MaterialEditorErrorMessage + "\n\nError:" + ex.Message, UIMessages.MaterialEditorErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 await UpdateTexture(_item);
 
             }
@@ -1664,6 +1865,9 @@ namespace FFXIV_TexTools.ViewModels
             _textureView.SharedMaterialLabel.Content = "";
             _textureView.SharedMaterialLabel.Visibility = Visibility.Collapsed;
 
+            _textureView.SharedVariantLabel.Visibility = Visibility.Collapsed;
+            _textureView.SharedTextureLabel.Visibility = Visibility.Collapsed;
+            _textureView.ItemInfoButton.IsEnabled = false;
 
             ClearImage();
         }
