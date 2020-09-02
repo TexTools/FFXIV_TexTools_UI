@@ -187,7 +187,7 @@ namespace FFXIV_TexTools.Views.Metadata
             { "glv", new Dictionary<string, byte[]>()
             {
                 // 1 Byte per
-                {  "Bare Hands", new byte [] { 115 } }
+                {  "Bare Hands", new byte [] { 115 } },
                 {  "Mid Gloves", new byte [] { 13 } },
                 {  "Long Gloves", new byte [] { 15 } },
 
@@ -203,7 +203,7 @@ namespace FFXIV_TexTools.Views.Metadata
             { "sho", new Dictionary<string, byte[]>()
             {
                 // 1 Byte per
-                {  "Shoes", new byte [] { 3 } }
+                {  "Shoes", new byte [] { 3 } },
                 {  "Mid Boots", new byte [] { 13 } },
                 {  "Long Boots", new byte [] { 15 } },
 
