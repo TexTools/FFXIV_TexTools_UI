@@ -991,4 +991,7 @@ If you would like to enable this, first import a texture for the selected item.<
   <data name="Copy_File" xml:space="preserve">
     <value>Copy File</value>
   </data>
+  <data name="Item_Converter" xml:space="preserve">
+    <value>Item Converter</value>
+  </data>
 </root>

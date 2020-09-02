@@ -54,7 +54,7 @@
                     <MenuItem x:Name="Menu_DisableAll" Header="{Binding Source={x:Static resx:UIStrings.Disable_All_Mods}}" Command="{Binding DisableAllModsCommand}"/>
                     <MenuItem x:Name="Menu_EnableAll" Header="{Binding Source={x:Static resx:UIStrings.Enable_All_Mods}}" Command="{Binding EnableAllModsCommand}"/>
                 </MenuItem>
-                <MenuItem x:Name="Menu_ModConverter" IsEnabled="False" Header="{Binding Source={x:Static resx:UIStrings.Mod_Converter}}" Click="Menu_ModConverter_Click"/>
+                <MenuItem x:Name="Menu_ItemConverter" Header="{Binding Source={x:Static resx:UIStrings.Item_Converter}}" Click="Menu_ItemConverter_Click"/>
                 <MenuItem x:Name="Menu_CopyFile" Header="{Binding Source={x:Static resx:UIStrings.Copy_File}}" Click="Menu_CopyFile_Click"/>
             </MenuItem>
             <MenuItem Header="{Binding Source={x:Static resx:UIStrings.Search}}" StaysOpenOnClick="True">

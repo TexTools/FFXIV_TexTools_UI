@@ -1044,6 +1044,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Item Converter.
+        /// </summary>
+        public static string Item_Converter {
+            get {
+                return ResourceManager.GetString("Item_Converter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Item List.
         /// </summary>
         public static string Item_List {
