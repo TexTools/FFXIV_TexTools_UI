@@ -170,42 +170,42 @@ namespace FFXIV_TexTools.Views.Metadata
             { "met", new Dictionary<string, byte[]>()
             {
                 // 3 Bytes per
-                { "Glasses", new byte [] { 255, 255, 255} },
-                { "Hat", new byte [] { 255, 255, 255} },
-                { "Open Helmet", new byte [] { 255, 255, 255} },
-                { "Full Helmet", new byte [] { 255, 255, 255} },
+                { "Glasses", new byte [] { 255, 63, 3} },
+                { "Hat", new byte [] { 227, 118, 3} },
+                { "Open Helmet", new byte [] { 21, 240, 3} },
+                { "Full Helmet", new byte [] { 23, 48, 3} },
 
             } },
             { "top", new Dictionary<string, byte[]>()
             {
-                // 2 Bytes per
+                // 2 Bytes per3
                 { "Sleeveless Top", new byte [] { 1, 63} },
-                {  "Long-Sleeve Top", new byte [] { 255, 255 } },
-                {  "Leotard", new byte [] { 255, 255 } },
-                {  "Bodysuit", new byte [] { 255, 255 } },
+                {  "Long-Sleeve Top", new byte [] { 115, 103 } },
+                {  "Leotard", new byte [] { 1, 62 } },
+                {  "Bodysuit", new byte [] { 1, 36 } },
             } },
             { "glv", new Dictionary<string, byte[]>()
             {
                 // 1 Byte per
-                {  "Long Glove", new byte [] { 255 } },
-                {  "Mid Glove", new byte [] { 255 } },
-                {  "Short Glove", new byte [] { 255 } }
+                {  "Bare Hands", new byte [] { 115 } }
+                {  "Mid Gloves", new byte [] { 13 } },
+                {  "Long Gloves", new byte [] { 15 } },
 
             } },
             { "dwn", new Dictionary<string, byte[]>()
             {
                 // 1 Byte per
-                {  "Shorts", new byte [] { 255 } },
-                {  "Long Pants", new byte [] { 255 } },
-                {  "Pants + Shoes", new byte [] { 255 } },
+                {  "Shorts", new byte [] { 97 } },
+                {  "Pants", new byte [] { 105 } },
+                {  "Pants and Shoes", new byte [] { 65 } },
 
             } },
             { "sho", new Dictionary<string, byte[]>()
             {
                 // 1 Byte per
-                {  "Long Boots", new byte [] { 255 } },
-                {  "Mid Glove", new byte [] { 255 } },
-                {  "Short Glove", new byte [] { 255 } }
+                {  "Shoes", new byte [] { 3 } }
+                {  "Mid Boots", new byte [] { 13 } },
+                {  "Long Boots", new byte [] { 15 } },
 
             } }
         };
