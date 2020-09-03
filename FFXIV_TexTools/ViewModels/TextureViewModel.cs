@@ -1266,7 +1266,6 @@ namespace FFXIV_TexTools.ViewModels
                 var _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory, df, XivCache.GameInfo.GameLanguage);
                 var _tex = new Tex(XivCache.GameInfo.GameDirectory);
 
-
                 var ttp = new TexTypePath
                 {
                     Path = SelectedMap.Path,
@@ -1278,7 +1277,17 @@ namespace FFXIV_TexTools.ViewModels
                 {
 
                     texData = await _mtrl.MtrlToXivTex(_xivMtrl, ttp);
-                    _mtrl.SaveColorSetExtraData(_item, _xivMtrl, savePath, SelectedRace);
+                    if (_primaryIsRace)
+                    {
+                        _mtrl.SaveColorSetExtraData(_item, _xivMtrl, savePath, SelectedRace);
+                    }
+                    else
+                    {
+                        var saveItem = (XivCharacter)((XivCharacter)_item).Clone();
+                        saveItem.ModelInfo.SecondaryID = SelectedPrimary;
+                        var race = XivRaces.GetXivRace(_root.Info.PrimaryId);
+                        _mtrl.SaveColorSetExtraData(saveItem, _xivMtrl, savePath, race);
+                    }
                 }
                 else
                 {
@@ -1291,7 +1300,16 @@ namespace FFXIV_TexTools.ViewModels
                 }
                 else
                 {
-                    _tex.SaveTexAsDDS(_item, texData, savePath, SelectedRace);
+                    if (_primaryIsRace)
+                    {
+                        _tex.SaveTexAsDDS(_item, texData, savePath, SelectedRace);
+                    } else
+                    {
+                        var saveItem = (XivCharacter)((XivCharacter)_item).Clone();
+                        saveItem.ModelInfo.SecondaryID = SelectedPrimary;
+                        var race = XivRaces.GetXivRace(_root.Info.PrimaryId);
+                        _tex.SaveTexAsDDS(saveItem, texData, savePath, race);
+                    }
                 }
             }
             else
@@ -1352,7 +1370,14 @@ namespace FFXIV_TexTools.ViewModels
 
             if (_item != null)
             {
-                path = IOUtil.MakeItemSavePath(_item, savePath, SelectedRace);
+                if (!_primaryIsRace)
+                {
+                    var race = XivRaces.GetXivRace(_root.Info.PrimaryId);
+                    path = IOUtil.MakeItemSavePath(_item, savePath, race, SelectedPrimary);
+                } else
+                {
+                    path = IOUtil.MakeItemSavePath(_item, savePath, SelectedRace);
+                }
             }
             else if (_uiItem != null)
             {
@@ -1449,7 +1474,15 @@ namespace FFXIV_TexTools.ViewModels
 
             if (_item != null)
             {
-                path = new DirectoryInfo(IOUtil.MakeItemSavePath(_item, savePath, SelectedRace));
+                if (!_primaryIsRace)
+                {
+                    var race = XivRaces.GetXivRace(_root.Info.PrimaryId);
+                    path = new DirectoryInfo(IOUtil.MakeItemSavePath(_item, savePath, race, SelectedPrimary));
+                }
+                else
+                {
+                    path = new DirectoryInfo(IOUtil.MakeItemSavePath(_item, savePath, SelectedRace));
+                }
             }
             else if (_uiItem != null)
             {

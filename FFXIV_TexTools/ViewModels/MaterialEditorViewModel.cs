@@ -407,7 +407,25 @@ namespace FFXIV_TexTools.ViewModels
             var count = 0;
 
             var allItems = (await root.ToFullRoot().GetAllItems());
-            allItems = allItems.OrderBy(x => x.Name, new ItemNameComparer()).ToList();
+
+            var matNumToItems = new Dictionary<int, List<IItemModel>>();
+            foreach (var i in allItems) {
+                if (imcEntries.Count <= i.ModelInfo.ImcSubsetID) continue;
+
+                var matSet = imcEntries[i.ModelInfo.ImcSubsetID].Variant;
+                if(!matNumToItems.ContainsKey(matSet))
+                {
+                    matNumToItems.Add(matSet, new List<IItemModel>());
+                }
+                matNumToItems[matSet].Add(i);
+            }
+
+            var keys = matNumToItems.Keys.ToList();
+            foreach(var key in keys)
+            {
+                var list = matNumToItems[key];
+                matNumToItems[key] = list.OrderBy(x => x.Name, new ItemNameComparer()).ToList();
+            }
 
             // Load and modify all the MTRLs.
             foreach (var materialSetId in materialSets)
@@ -455,19 +473,15 @@ namespace FFXIV_TexTools.ViewModels
                     itemXivMtrl.SetMapInfo(info.Usage, (MapInfo)info.Clone());
                 }
 
-                // Need to determine what item to list this under in the modlist.
-                var matRoot = await XivCache.GetFirstRoot(newMaterialPath);
-                var imcVariant = -1;
-                for(int i = 0; i < imcEntries.Count; i++)
-                {
-                    if(imcEntries[i].Variant == materialSetId)
-                    {
-                        imcVariant = i;
-                        break;
-                    }
-                }
 
-                var item = allItems.First(x => x.ModelInfo.ImcSubsetID == imcVariant);
+                IItem item;
+                try
+                {
+                    item = matNumToItems[materialSetId].First();
+                } catch
+                {
+                    item = (await XivCache.GetFirstRoot(itemXivMtrl.MTRLPath)).GetFirstItem();
+                }
 
                 count++;
                 // Write the new Material
