@@ -475,7 +475,7 @@ namespace FFXIV_TexTools.ViewModels
                 } else
                 {
                     // See if the thing they typed in is an imc attribute nice name.
-                    var ImcNiceNameRegex = new Regex("imc (.+) ([a-j])$");
+                    var ImcNiceNameRegex = new Regex("(.+) (?:variant|imc) ([a-j])$");
                     var match = ImcNiceNameRegex.Match(attr.ToLower());
                     if(match.Success)
                     {
@@ -594,7 +594,7 @@ namespace FFXIV_TexTools.ViewModels
                     var letter = imcMatch.Groups[2].Value;
                     var niceImcName = NiceImcAttributeNames.ContainsKey(slotPrefix) && NiceImcAttributeNames[slotPrefix] != null ? NiceImcAttributeNames[slotPrefix] : UnknownText;
 
-                    niceName = "IMC " + niceImcName + " " + letter;
+                    niceName = niceImcName + " Variant " + letter;
                 }
             }
             var fullNiceName = niceName + " (" + attribute + ")";
