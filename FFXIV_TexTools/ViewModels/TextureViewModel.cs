@@ -472,14 +472,29 @@ namespace FFXIV_TexTools.ViewModels
                     _vfxPath = vfxPath.Folder + "/" + vfxPath.File;
                     _hasVfx = await index.FileExists(_vfxPath);
                 }
+
             });
 
 
             var finalList = new SortedSet<string>();
+            var rex = new Regex("\\/[^/]+c([0-9]{4})[^/]+\\.mtrl$");
             foreach(var material in materials)
             {
+
+                // Safety check.  If any materials are referenced in the item which do not exist in the Racial menu, add the race to the menu.
+                var match = rex.Match(material);
+                if (match.Success)
+                {
+                    var matCode = match.Groups[1].Value;
+                    var matRace = XivRaces.GetXivRace(matCode); 
+                    if (_primaryIsRace && !_primaryComboBoxData.Any(x => x.Value == (int)matRace))
+                    {
+                        _primaryComboBoxData.Add(new KeyValuePair<string, int>(matRace.GetDisplayName(), (int)matRace));
+                    }
+                }
+
                 // If we have a specific race, narrow things down more.
-                if(race != XivRace.All_Races)
+                if (race != XivRace.All_Races)
                 {
                     if (material.Contains("c" + race.GetRaceCode()))
                     {
