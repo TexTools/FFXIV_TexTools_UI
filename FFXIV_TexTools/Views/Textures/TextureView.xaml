@@ -46,23 +46,25 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <UniformGrid Rows="1" Grid.Row="0" VerticalAlignment="Center" Margin="0, 5">
-            <ComboBox Margin="5,0" mah:TextBoxHelper.UseFloatingWatermark="True" mah:TextBoxHelper.Watermark="{Binding RaceWatermark, FallbackValue='Race'}" 
-                      ItemsSource="{Binding Races}" DisplayMemberPath="Name" SelectedValuePath="XivRace" SelectedItem="{Binding SelectedRace}" SelectedIndex="{Binding SelectedRaceIndex}"
-                      IsEnabled="{Binding RaceComboboxEnabled}"/>
-            <ComboBox Margin="5,0" mah:TextBoxHelper.UseFloatingWatermark="True" mah:TextBoxHelper.Watermark="{Binding TextureMapWatermark, FallbackValue='Texture Map'}" 
-                      ItemsSource="{Binding Maps}" DisplayMemberPath="Name" SelectedValuePath="TexType"  SelectedItem="{Binding SelectedMap}" SelectedIndex="{Binding SelectedMapIndex}"
-                      IsEnabled="{Binding MapComboboxEnabled}"/>
-            <ComboBox Margin="5,0" mah:TextBoxHelper.UseFloatingWatermark="True" mah:TextBoxHelper.Watermark="{Binding PartWatermark, FallbackValue='Part'}" 
-                      ItemsSource="{Binding Parts}" DisplayMemberPath="Name" SelectedValuePath="Name"  SelectedItem="{Binding SelectedPart}" SelectedIndex="{Binding SelectedPartIndex}"
-                      IsEnabled="{Binding PartComboboxEnabled}" Visibility="{Binding PartVisibility}"/>
-            <ComboBox Margin="5,0" mah:TextBoxHelper.UseFloatingWatermark="True" mah:TextBoxHelper.Watermark="{Binding TypeWatermark, FallbackValue='Type'}" 
-                      Visibility="{Binding TypeVisibility, FallbackValue=Collapsed}" ItemsSource="{Binding Types}" DisplayMemberPath="Name" SelectedValuePath="Name"  
-                      SelectedItem="{Binding SelectedType}" SelectedIndex="{Binding SelectedTypeIndex}" IsEnabled="{Binding TypeComboboxEnabled}"/>
-            <ComboBox Margin="5,0" mah:TextBoxHelper.UseFloatingWatermark="True" mah:TextBoxHelper.Watermark="{Binding TypePartWatermark, FallbackValue='Type Part'}" 
-                      Visibility="{Binding TypePartVisibility, FallbackValue=Collapsed}" ItemsSource="{Binding TypeParts}" DisplayMemberPath="Name" SelectedValuePath="Name"  
-                      SelectedItem="{Binding SelectedTypePart}" SelectedIndex="{Binding SelectedTypePartIndex}" IsEnabled="{Binding TypePartComboboxEnabled}"/>
-        </UniformGrid>
+        <Grid Grid.Row="0" VerticalAlignment="Center" Margin="0, 5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="48"></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            
+            <Button x:Name="ItemInfoButton" Margin="5,0" Grid.Column="0" IsEnabled="false">
+                    <iconPacks:PackIconFontAwesome Kind="InfoSolid" Height="12"/>
+            </Button>
+
+            <ComboBox Grid.Column="1" x:Name="RaceComboBox" Margin="5,0" mah:TextBoxHelper.UseFloatingWatermark="True" mah:TextBoxHelper.Watermark="{Binding RaceWatermark, FallbackValue='Race'}" 
+                      ItemsSource="{Binding Races}" DisplayMemberPath="Key" SelectedValuePath="Value" IsEnabled="{Binding RaceComboboxEnabled}"/>
+            <ComboBox Grid.Column="2" x:Name="MaterialComboBox"  Margin="5,0" mah:TextBoxHelper.UseFloatingWatermark="True" mah:TextBoxHelper.Watermark="{Binding MaterialWatermark, FallbackValue='Material'}" 
+                      ItemsSource="{Binding Materials}" DisplayMemberPath="Key" SelectedValuePath="Value" IsEnabled="{Binding MaterialComboBoxEnabled}" />
+            <ComboBox Grid.Column="3"  x:Name="MapComboBox"  Margin="5,0" mah:TextBoxHelper.UseFloatingWatermark="True" mah:TextBoxHelper.Watermark="{Binding TextureMapWatermark, FallbackValue='Texture Map'}" 
+                      ItemsSource="{Binding Maps}" DisplayMemberPath="Key" SelectedValuePath="Value" IsEnabled="{Binding MapComboBoxEnabled}"/>
+        </Grid>
 
         <Border Grid.Row="1" Margin="5, 0">
             <Border.Background>
@@ -108,8 +110,12 @@
                     <CheckBox x:Name="AlphaCheckBox" Content="A" Grid.Column="3" HorizontalAlignment="Center" Margin="0" VerticalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" IsChecked="{Binding AlphaChecked}"/>
                 </Grid>
                 <Label x:Name="TexTypeLabel" Content="{Binding TextureFormat}" Background="#66FFFFFF" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold"/>
-                <Label x:Name="TexDimensionLabel" Content="{Binding TextureDimensions}" Background="#66FFFFFF" HorizontalAlignment="Left" VerticalAlignment="Bottom" FontWeight="Bold"/>
                 <Label x:Name="MipMapLabel" Content="{Binding MipMapInfo}" Background="#66FFFFFF" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold" Margin="0,26,0,0"/>
+                <Label x:Name="SharedMaterialLabel"  Background="#66FFFFFF" HorizontalAlignment="Center" VerticalAlignment="Top" Visibility="Collapsed" FontWeight="Bold" Margin="0,5,0,0"/>
+                
+                <Label x:Name="TexDimensionLabel" Content="{Binding TextureDimensions}" Background="#66FFFFFF" HorizontalAlignment="Left" VerticalAlignment="Bottom" FontWeight="Bold"/>
+                <Label x:Name="SharedVariantLabel"  Background="#66FFFFFF" HorizontalAlignment="Left" VerticalAlignment="Bottom"  FontWeight="Bold" Margin="0,0,0,26"/>
+                <Label x:Name="SharedTextureLabel"  Background="#66FFFFFF" HorizontalAlignment="Left" VerticalAlignment="Bottom"  FontWeight="Bold" Margin="0,0,0,52" />
             </Grid>
         </Border>
 

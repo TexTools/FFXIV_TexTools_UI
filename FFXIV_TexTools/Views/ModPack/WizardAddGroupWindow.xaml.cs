@@ -19,13 +19,17 @@ using FFXIV_TexTools.Properties;
 using FFXIV_TexTools.Resources;
 using FFXIV_TexTools.Views.Models;
 using MahApps.Metro.Controls;
+using MahApps.Metro.Controls.Dialogs;
 using Newtonsoft.Json;
+using SixLabors.ImageSharp.Formats.Bmp;
 using SixLabors.ImageSharp.Formats.Png;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -42,10 +46,12 @@ using xivModdingFramework.Materials.FileTypes;
 using xivModdingFramework.Models.FileTypes;
 using xivModdingFramework.Mods;
 using xivModdingFramework.Mods.DataContainers;
+using xivModdingFramework.Mods.FileTypes;
 using xivModdingFramework.SqPack.FileTypes;
 using xivModdingFramework.Textures.DataContainers;
 using xivModdingFramework.Textures.Enums;
 using xivModdingFramework.Textures.FileTypes;
+using xivModdingFramework.Variants.FileTypes;
 using Image = SixLabors.ImageSharp.Image;
 
 namespace FFXIV_TexTools.Views
@@ -62,6 +68,7 @@ namespace FFXIV_TexTools.Views
         private readonly List<string> _groupNames;
         private string _editGroupName;
         private bool _editMode;
+        private IItem SelectedItem;
 
         public WizardAddGroupWindow(List<string> groupNames)
         {
@@ -71,7 +78,53 @@ namespace FFXIV_TexTools.Views
             _modListDirectory = new DirectoryInfo(Path.Combine(_gameDirectory.Parent.Parent.FullName, XivStrings.ModlistFilePath));
             _groupNames = groupNames;
 
-            FillModListTreeView();
+            ItemList.ExtraSearchFunction = Filter;
+            ItemList.ItemSelected += ItemList_ItemSelected;
+
+            ItemList.LockUiFunction = LockUi;
+            ItemList.UnlockUiFunction = UnlockUi;
+
+            ModListGrid.IsEnabled = false;
+            OptionDescription.IsEnabled = false;
+            OptionImageButton.IsEnabled = false;
+            RemoveOptionButton.IsEnabled = false;
+        }
+
+        private ProgressDialogController _lockProgressController;
+        private IProgress<string> _lockProgress;
+
+        public async Task LockUi(string title, string message, object sender)
+        {
+            _lockProgressController = await this.ShowProgressAsync("Loading", "Please Wait...");
+
+            _lockProgressController.SetIndeterminate();
+
+            _lockProgress = new Progress<string>((update) =>
+            {
+                _lockProgressController.SetMessage(update);
+            });
+        }
+        public async Task UnlockUi(object sender)
+        {
+            await _lockProgressController.CloseAsync();
+            _lockProgressController = null;
+            _lockProgress = null;
+        }
+
+        /// <summary>
+        /// Extra search filter criterion.  Lets us filter out unsupported items.
+        /// </summary>
+        private bool Filter(IItem item)
+        {
+
+            // Selecting things via the Characters tab listing doesn't really work
+            // as there's too many things within the same listing.  Works better
+            // to force users to select character entries by their set name so they're more specific.
+            if (item.PrimaryCategory == XivStrings.Character)
+            {
+                return false;
+            }
+            return true;
         }
 
         #region Public Methods
@@ -118,23 +171,11 @@ namespace FFXIV_TexTools.Views
                 selectionType = "Multi";
             }
 
-            var modOptionsToRemove = new List<ModOption>();
 
             foreach (var modOption in _modOptions)
             {
-                if (modOption.Mods.Count < 1)
-                {
-                    modOptionsToRemove.Add(modOption);
-                    continue;
-                }
-
                 modOption.GroupName = ModGroupTitle.Text;
                 modOption.SelectionType = selectionType;
-            }
-
-            foreach (var modOption in modOptionsToRemove)
-            {
-                _modOptions.Remove(modOption);
             }
 
             var modGroup = new ModGroup
@@ -160,23 +201,11 @@ namespace FFXIV_TexTools.Views
                 selectionType = "Multi";
             }
 
-            var modOptionsToRemove = new List<ModOption>();
 
             foreach (var modOption in _modOptions)
             {
-                if (modOption.Mods.Count < 1)
-                {
-                    modOptionsToRemove.Add(modOption);
-                    continue;
-                }
-
                 modOption.GroupName = ModGroupTitle.Text;
                 modOption.SelectionType = selectionType;
-            }
-
-            foreach (var modOption in modOptionsToRemove)
-            {
-                _modOptions.Remove(modOption);
             }
 
             modGroup.GroupName = ModGroupTitle.Text;
@@ -196,7 +225,7 @@ namespace FFXIV_TexTools.Views
         /// <param name="optionNum">The option number</param>
         private void AddOption(string optionText, int optionNum = 0)
         {
-            if (OptionNameTextBox.Text.Equals(string.Empty)) return;
+            if (String.IsNullOrWhiteSpace(OptionNameTextBox.Text)) return;
 
             var optionListItems = OptionList.Items.Cast<string>().ToList();
 
@@ -219,247 +248,6 @@ namespace FFXIV_TexTools.Views
 
             OptionNameTextBox.Text = string.Empty;
         }
-
-
-        /// <summary>
-        /// Fills the mod list tree view
-        /// </summary>
-        private async Task FillModListTreeView()
-        {
-            var modding = new Modding(_gameDirectory);
-            var modList = modding.GetModList();
-
-            var Categories = new ObservableCollection<Category>();
-
-            if (modList == null)
-            {
-                ModListGrid.IsEnabled = false;
-                OptionDescription.IsEnabled = false;
-                OptionImageButton.IsEnabled = false;
-                SelectModGroup.IsEnabled = false;
-                RemoveModItemButton.IsEnabled = false;
-                return;
-            }
-
-            // Mods
-            var mainCategories = new HashSet<string>();
-
-            // Rip through the mod list and get the correct raw compressed sizes for all the mods.
-            var _dat = new Dat(XivCache.GameInfo.GameDirectory);
-
-            foreach (var modEntry in modList.Mods)
-            {
-
-                var compressedSize = modEntry.data.modSize;
-                try
-                {
-                    compressedSize = await _dat.GetCompressedFileSize(modEntry.data.modOffset, IOUtil.GetDataFileFromPath(modEntry.fullPath));
-                    modEntry.data.modSize = compressedSize;
-                }
-                catch
-                {
-                    // If the calculation failed, just use the original size I guess?
-                    // The main way this happens though is if the data is broken, so maybe we should error?
-                    // Though there's possibly filetypes from other framework applications in here that we don't know how to measure?
-                }
-
-                if (!modEntry.name.Equals(string.Empty))
-                {
-                    mainCategories.Add(modEntry.category);
-                }
-            }
-
-            foreach (var mainCategory in mainCategories)
-            {
-                var category = new Category
-                {
-                    Name = mainCategory,
-                    Categories = new ObservableCollection<Category>(),
-                    CategoryList = new List<string>()
-                };
-
-                var modItems =
-                    from mod in modList.Mods
-                    where mod.category.Equals(mainCategory)
-                    select mod;
-
-                foreach (var modItem in modItems)
-                {
-                    if (category.CategoryList.Contains(modItem.name)) continue;
-
-                    var categoryItem = new Category
-                    {
-                        Name = modItem.name,
-                        Item = MakeItemModel(modItem),
-                        ParentCategory = category
-                    };
-
-                    category.Categories.Add(categoryItem);
-                    category.CategoryList.Add(modItem.name);
-
-                }
-
-                Categories.Add(category);
-            }
-
-            ModListTreeView.ItemsSource = Categories;
-
-            ModListGrid.IsEnabled = false;
-            OptionDescription.IsEnabled = false;
-            OptionImageButton.IsEnabled = false;
-            SelectModGroup.IsEnabled = false;
-            RemoveModItemButton.IsEnabled = false;
-        }
-
-        /// <summary>
-        /// Makes a generic item model from the mod item
-        /// </summary>
-        /// <param name="modItem">The mod item</param>
-        /// <returns>The mod item as a XivGenericItemModel</returns>
-        private static XivGenericItemModel MakeItemModel(Mod modItem)
-        {
-            var fullPath = modItem.fullPath;
-
-            var item = new XivGenericItemModel
-            {
-                Name = modItem.name,
-                SecondaryCategory = modItem.category,
-                DataFile = XivDataFiles.GetXivDataFile(modItem.datFile)
-            };
-
-
-            if (modItem.fullPath.Contains("chara/equipment") || modItem.fullPath.Contains("chara/accessory"))
-            {
-                item.PrimaryCategory = XivStrings.Gear;
-                item.ModelInfo = new XivModelInfo
-                {
-                    PrimaryID = int.Parse(fullPath.Substring(17, 4))
-                };
-            }
-
-
-            if (modItem.fullPath.Contains("chara/weapon"))
-            {
-                item.PrimaryCategory = XivStrings.Gear;
-                item.ModelInfo = new XivModelInfo
-                {
-                    PrimaryID = int.Parse(fullPath.Substring(14, 4))
-                };
-            }
-
-            if (modItem.fullPath.Contains("chara/human"))
-            {
-                item.PrimaryCategory = XivStrings.Character;
-
-                if (item.Name.Equals(XivStrings.Body))
-                {
-                    item.ModelInfo = new XivModelInfo
-                    {
-                        PrimaryID = int.Parse(fullPath.Substring(fullPath.IndexOf("/body", StringComparison.Ordinal) + 7, 4))
-                    };
-                }
-                else if (item.Name.Equals(XivStrings.Hair))
-                {
-                    item.ModelInfo = new XivModelInfo
-                    {
-                        PrimaryID = int.Parse(fullPath.Substring(fullPath.IndexOf("/hair", StringComparison.Ordinal) + 7, 4))
-                    };
-                }
-                else if (item.Name.Equals(XivStrings.Face))
-                {
-                    item.ModelInfo = new XivModelInfo
-                    {
-                        PrimaryID = int.Parse(fullPath.Substring(fullPath.IndexOf("/face", StringComparison.Ordinal) + 7, 4))
-                    };
-                }
-                else if (item.Name.Equals(XivStrings.Tail))
-                {
-                    item.ModelInfo = new XivModelInfo
-                    {
-                        PrimaryID = int.Parse(fullPath.Substring(fullPath.IndexOf("/tail", StringComparison.Ordinal) + 7, 4))
-                    };
-                }
-            }
-
-            if (modItem.fullPath.Contains("chara/common"))
-            {
-                item.PrimaryCategory = XivStrings.Character;
-
-                if (item.Name.Equals(XivStrings.Face_Paint))
-                {
-                    item.ModelInfo = new XivModelInfo
-                    {
-                        PrimaryID = int.Parse(fullPath.Substring(fullPath.LastIndexOf("_", StringComparison.Ordinal) + 1, 1))
-                    };
-                }
-                else if (item.Name.Equals(XivStrings.Equipment_Decals))
-                {
-                    if (!fullPath.Contains("_stigma"))
-                    {
-                        item.ModelInfo = new XivModelInfo
-                        {
-                            PrimaryID = int.Parse(fullPath.Substring(fullPath.LastIndexOf("_", StringComparison.Ordinal) + 1, 3))
-                        };
-                    }
-                }
-            }
-
-            if (modItem.fullPath.Contains("chara/monster"))
-            {
-                item.PrimaryCategory = XivStrings.Companions;
-
-                item.ModelInfo = new XivModelInfo
-                {
-                    PrimaryID = int.Parse(fullPath.Substring(15, 4)),
-                    SecondaryID = int.Parse(fullPath.Substring(fullPath.IndexOf("/body", StringComparison.Ordinal) + 7, 4))
-                };
-            }
-
-            if (modItem.fullPath.Contains("chara/demihuman"))
-            {
-                item.PrimaryCategory = XivStrings.Companions;
-
-                item.ModelInfo = new XivModelInfo
-                {
-                    SecondaryID = int.Parse(fullPath.Substring(17, 4)),
-                    PrimaryID = int.Parse(fullPath.Substring(fullPath.IndexOf("t/e", StringComparison.Ordinal) + 3, 4))
-                };
-            }
-
-            if (modItem.fullPath.Contains("ui/"))
-            {
-                item.PrimaryCategory = XivStrings.UI;
-
-                if (modItem.fullPath.Contains("ui/uld") || modItem.fullPath.Contains("ui/map"))
-                {
-                    item.ModelInfo = new XivModelInfo
-                    {
-                        PrimaryID = 0
-                    };
-                }
-                else
-                {
-                    item.ModelInfo = new XivModelInfo
-                    {
-                        PrimaryID = int.Parse(fullPath.Substring(fullPath.LastIndexOf("/", StringComparison.Ordinal) + 1,
-                            6))
-                    };
-                }
-            }
-
-            if (modItem.fullPath.Contains("/hou/"))
-            {
-                item.PrimaryCategory = XivStrings.Housing;
-
-                item.ModelInfo = new XivModelInfo
-                {
-                    PrimaryID = int.Parse(fullPath.Substring(fullPath.LastIndexOf("_m", StringComparison.Ordinal) + 2, 3))
-                };
-            }
-
-            return item;
-        }
-
 
 
         #endregion
@@ -505,6 +293,7 @@ namespace FFXIV_TexTools.Views
             }
         }
 
+
         /// <summary>
         /// The event handler for the option list selection changed
         /// </summary>
@@ -534,7 +323,7 @@ namespace FFXIV_TexTools.Views
 
                     using (var ms = new MemoryStream())
                     {
-                        _selectedModOption.Image.Save(ms, new PngEncoder());
+                        _selectedModOption.Image.Save(ms, new BmpEncoder());
 
                         bmp = new BitmapImage();
                         bmp.BeginInit();
@@ -555,10 +344,10 @@ namespace FFXIV_TexTools.Views
                 {
                     foreach (var mod in _selectedModOption.Mods)
                     {
-                        var includedMods = new IncludedMods
+                        var includedMods = new FileEntry
                         {
-                            Name = $"{Path.GetFileNameWithoutExtension(mod.Key)} ({mod.Value.Name})",
-                            FullPath = mod.Value.FullPath
+                            Name = MakeFriendlyFileName(mod.Value.FullPath),
+                            Path = mod.Value.FullPath
                         };
 
                         IncludedModsList.Items.Add(includedMods);
@@ -576,6 +365,11 @@ namespace FFXIV_TexTools.Views
                 OptionDescription.IsEnabled = false;
                 OptionImageButton.IsEnabled = false;
                 RemoveOptionButton.IsEnabled = false;
+            }
+
+            if (SelectedItem != null)
+            {
+                ItemList_ItemSelected(this, SelectedItem);
             }
 
         }
@@ -608,199 +402,125 @@ namespace FFXIV_TexTools.Views
             }
         }
 
-        /// <summary>
-        /// The event handler for the tree view item selection changed
-        /// </summary>
-        private void TreeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        private void ItemList_ItemSelected(object sender, IItem item)
         {
-            var selectedItem = e.NewValue as Category;
-            if (selectedItem == null || selectedItem.Item == null)
+            if(item == null)
             {
                 return;
             }
 
+            SelectedItem = item;
+
+            var root = item.GetRoot();
+
             TextureMapComboBox.Items.Clear();
             ModelTypeComboBox.Items.Clear();
             MaterialComboBox.Items.Clear();
-            CustomTextureTextBox.Text = string.Empty;
+
+            if (OptionList.SelectedItem == null)
+            {
+                return;
+            }
 
 
             var modding = new Modding(_gameDirectory);
-            var modList = modding.GetModList();
+            //var modList = modding.GetModList();
+            var _imc = new Imc(_gameDirectory);
 
-            var modItems =
-                from mod in modList.Mods
-                where mod.name.Equals(selectedItem.Name)
-                select mod;
-
-            foreach (var modItem in modItems)
+            int mSet = -1;
+            string metadataFile = null;
+            var models = new List<string>();
+            var materials = new List<string>();
+            var textures = new List<string>();
+            Task.Run(async () =>
             {
-                var itemPath = modItem.fullPath;
-                var modCB = new ModComboBox();
-                var ttp = new TexTypePath
+                if (root != null)
                 {
-                    Path = itemPath,
-                    DataFile = XivDataFiles.GetXivDataFile(modItem.datFile)
-                };
+                    // Get ALL THE THINGS
+                    // Meta Entries, Models, Materials, Textures, Icons, and VFX Elements.
+                    var im = (IItemModel)item;
+                    var df = IOUtil.GetDataFileFromPath(root.Info.GetRootFile());
 
-                // Textures
-                if (itemPath.Contains("_d."))
-                {
-                    modCB.Name = $"{XivTexType.Diffuse} ({Path.GetFileNameWithoutExtension(itemPath)})";
-                    modCB.SelectedMod = modItem;
-                    ttp.Type = XivTexType.Diffuse;
-                }
-                else if (itemPath.Contains("_n."))
-                {
-                    modCB.Name = $"{XivTexType.Normal} ({Path.GetFileNameWithoutExtension(itemPath)})";
-                    modCB.SelectedMod = modItem;
-                    ttp.Type = XivTexType.Normal;
-                }
-                else if (itemPath.Contains("_s."))
-                {
-                    modCB.Name = $"{XivTexType.Specular} ({Path.GetFileNameWithoutExtension(itemPath)})";
-                    modCB.SelectedMod = modItem;
-                    ttp.Type = XivTexType.Specular;
-                }
-                else if (itemPath.Contains("_m."))
-                {
-                    modCB.Name = $"{XivTexType.Multi} ({Path.GetFileNameWithoutExtension(itemPath)})";
-                    modCB.SelectedMod = modItem;
-                    ttp.Type = XivTexType.Multi;
-                }
-                else if (itemPath.Contains("material"))
-                {
-                    modCB.Name = $"{XivTexType.ColorSet} ({Path.GetFileNameWithoutExtension(itemPath)})";
-                    modCB.SelectedMod = modItem;
-                    ttp.Type = XivTexType.ColorSet;
-                }
-                else if (itemPath.Contains("decal"))
-                {
-                    modCB.Name = $"{XivTexType.Mask} ({Path.GetFileNameWithoutExtension(itemPath)})";
-                    modCB.SelectedMod = modItem;
-                    ttp.Type = XivTexType.Mask;
-                }
-                else if (itemPath.Contains("vfx"))
-                {
-                    modCB.Name = $"{XivTexType.Vfx} ({Path.GetFileNameWithoutExtension(itemPath)})";
-                    modCB.SelectedMod = modItem;
-                    ttp.Type = XivTexType.Vfx;
-                }
-                else if (itemPath.Contains("ui/"))
-                {
-                    if (itemPath.Contains("icon"))
+                    metadataFile = root.Info.GetRootFile();
+                    mSet = await _imc.GetMaterialSetId(im);
+                    models = await root.GetModelFiles();
+                    materials = await root.GetMaterialFiles(mSet);
+                    textures = await root.GetTextureFiles(mSet);
+
+                    var _tex = new Tex(XivCache.GameInfo.GameDirectory);
+                    var icons = await _tex.GetItemIcons(im);
+
+                    foreach (var icon in icons)
                     {
-                        modCB.Name = $"{XivTexType.Icon} ({Path.GetFileNameWithoutExtension(itemPath)})";
-                        modCB.SelectedMod = modItem;
-                        ttp.Type = XivTexType.Icon;
+                        textures.Add(icon.Path);
                     }
-                    else if (itemPath.Contains("map"))
+
+                    var _atex = new ATex(XivCache.GameInfo.GameDirectory, df);
+                    var paths = await _atex.GetAtexPaths(im);
+                    foreach (var path in paths)
                     {
-                        modCB.Name = $"{XivTexType.Map} ({Path.GetFileNameWithoutExtension(itemPath)})";
-                        modCB.SelectedMod = modItem;
-                        ttp.Type = XivTexType.Map;
-                    }
-                    else
-                    {
-                        modCB.Name = $"UI ({Path.GetFileNameWithoutExtension(itemPath)})";
-                        modCB.SelectedMod = modItem;
-                        ttp.Type = XivTexType.Other;
+                        textures.Add(path.Path);
                     }
                 }
-                else if (itemPath.Contains(".tex"))
+                else
                 {
-                    modCB.Name = $"{XivTexType.Other} ({Path.GetFileNameWithoutExtension(itemPath)})";
-                    modCB.SelectedMod = modItem;
-                    ttp.Type = XivTexType.Other;
-
-                }
-
-                if (modCB.Name != null)
-                {
-                    modCB.TexTypePath = ttp;
-                    TextureMapComboBox.Items.Add(modCB);
-                }
-
-                // Models
-                if (itemPath.Contains(".mdl"))
-                {
-                    //esrinzou for Repair program crash when selecting [character/Body] item
-                    //modCB.Name = $"{((IItemModel)selectedItem.Item).ModelInfo.ModelID} ({Path.GetFileNameWithoutExtension(itemPath)})";
-                    //esrinzou begin
-                    if (((IItemModel)selectedItem.Item).ModelInfo == null)
+                    // This is a UI item or otherwise an item which has no root, and only has textures.
+                    var uiItem = (XivUi)item;
+                    var paths = await uiItem.GetTexPaths();
+                    foreach (var kv in paths)
                     {
-                        modCB.Name = $"{((IItemModel)selectedItem.Item).Name} ({Path.GetFileNameWithoutExtension(itemPath)})";
+                        textures.Add(kv.Value);
                     }
-                    else
-                    {
-                        var modelId = ((IItemModel)selectedItem.Item).ModelInfo.PrimaryID;
-
-                        if (selectedItem.Item.PrimaryCategory.Equals(XivStrings.Character))
-                        {
-                            var item = selectedItem.Item;
-
-                            if (item.Name.Equals(XivStrings.Body))
-                            {
-                                modelId = int.Parse(
-                                    itemPath.Substring(itemPath.IndexOf("/body", StringComparison.Ordinal) + 7, 4));
-                            }
-                            else if (item.Name.Equals(XivStrings.Hair))
-                            {
-                                modelId = int.Parse(
-                                    itemPath.Substring(itemPath.IndexOf("/hair", StringComparison.Ordinal) + 7, 4));
-                            }
-                            else if (item.Name.Equals(XivStrings.Face))
-                            {
-                                modelId = int.Parse(
-                                    itemPath.Substring(itemPath.IndexOf("/face", StringComparison.Ordinal) + 7, 4));
-                            }
-                            else if (item.Name.Equals(XivStrings.Tail))
-                            {
-                                modelId = int.Parse(
-                                    itemPath.Substring(itemPath.IndexOf("/tail", StringComparison.Ordinal) + 7, 4));
-                            }
-                        }
-
-                        modCB.Name = $"{modelId} ({Path.GetFileNameWithoutExtension(itemPath)})";
-                    }
-                    //esrinzou end
-                    modCB.SelectedMod = modItem;
-                    modCB.TexTypePath = null;
-
-                    ModelTypeComboBox.Items.Add(modCB);
                 }
+            }).Wait();
 
-                // Material
-                if (itemPath.Contains(".mtrl"))
-                {
-                    var materialModCB = new ModComboBox
-                    {
-                        Name = $"Material ({Path.GetFileNameWithoutExtension(itemPath)})",
-                        SelectedMod = modItem,
-                        TexTypePath = null
-                    };
+            MetadataPathBox.Text = metadataFile;
 
-                    MaterialComboBox.Items.Add(materialModCB);
-                    MaterialTabItem.IsEnabled = true;
-                }
+            foreach(var file in models)
+            {
+                var fe = new FileEntry();
+                fe.Path = file;
+                fe.Name = MakeFriendlyFileName(file);
+
+                ModelTypeComboBox.Items.Add(fe);
+            }
+
+            foreach (var file in materials)
+            {
+                var fe = new FileEntry();
+                fe.Path = file;
+                fe.Name = MakeFriendlyFileName(file);
+
+                MaterialComboBox.Items.Add(fe);
+            }
+
+            foreach (var file in textures)
+            {
+                var fe = new FileEntry();
+                fe.Path = file;
+                fe.Name = MakeFriendlyFileName(file);
+
+                TextureMapComboBox.Items.Add(fe);
+            }
+
+            if(String.IsNullOrEmpty(metadataFile))
+            {
+                AddMetadataButton.IsEnabled = false;
+            } else
+            {
+                AddMetadataButton.IsEnabled = true;
             }
 
             if (TextureMapComboBox.Items.Count > 0)
             {
                 AddCurrentTextureButton.IsEnabled = true;
-                GetCustomTextureButton.IsEnabled = true;
-                CustomTextureTextBox.IsEnabled = true;
-                AddCustomTextureButton.IsEnabled = false;
+                AddCustomTextureButton.IsEnabled = true;
                 TextureMapComboBox.SelectedIndex = 0;
-                NoTextureModsLabel.Content = string.Empty;
             }
             else
             {
                 AddCurrentTextureButton.IsEnabled = false;
-                GetCustomTextureButton.IsEnabled = false;
-                CustomTextureTextBox.IsEnabled = false;
                 AddCustomTextureButton.IsEnabled = false;
-                NoTextureModsLabel.Content = UIStrings.No_Texture_Mods;
             }
 
             if (ModelTypeComboBox.Items.Count > 0)
@@ -808,26 +528,22 @@ namespace FFXIV_TexTools.Views
                 AddCurrentModelButton.IsEnabled = true;
                 AdvOptionsButton.IsEnabled = true;
                 ModelTypeComboBox.SelectedIndex = 0;
-                NoModelModsLabel.Content = string.Empty;
 
             }
             else
             {
                 AddCurrentModelButton.IsEnabled = false;
                 AdvOptionsButton.IsEnabled = false;
-                NoModelModsLabel.Content = UIStrings.No_3D_Mods;
             }
 
             if (MaterialComboBox.Items.Count > 0)
             {
                 AddCurrentMaterialButton.IsEnabled = true;
                 MaterialComboBox.SelectedIndex = 0;
-                NoMaterialsModsLabel.Content = string.Empty;
             }
             else
             {
                 AddCurrentMaterialButton.IsEnabled = false;
-                NoMaterialsModsLabel.Content = UIStrings.No_Material_Mods;
             }
 
             SelectModGroup.IsEnabled = true;
@@ -835,82 +551,93 @@ namespace FFXIV_TexTools.Views
 
 
 
-        /// <summary>
-        /// The event handler for the custom texture button clicked
-        /// </summary>
-        private void GetCustomTextureButton_Click(object sender, RoutedEventArgs e)
+
+
+        private async Task AddFile(FileEntry file, IItem item, byte[] rawData = null)
         {
-            var openFileDialog = new OpenFileDialog { Filter = "Texture Files(*.DDS;*.BMP;*.PNG) |*.DDS;*.BMP;*.PNG" };
+            var dat = new Dat(_gameDirectory);
+            var index = new Index(_gameDirectory);
 
+            if (file == null || file.Path == null || _selectedModOption == null) return;
 
-            if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            var includedModsList = IncludedModsList.Items.Cast<FileEntry>().ToList();
+
+            if (includedModsList.Any(f => f.Path.Equals(file.Path)))
             {
-                CustomTextureTextBox.Text = openFileDialog.FileName;
-                AddCustomTextureButton.IsEnabled = true;
+                if (FlexibleMessageBox.Show(
+                        string.Format(UIMessages.ExistingOption, file.Name),
+                        UIMessages.OverwriteTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Question) !=
+                    System.Windows.Forms.DialogResult.Yes)
+                {
+                    return;
+                }
+            }
+
+            if (rawData == null)
+            {
+                var df = IOUtil.GetDataFileFromPath(file.Path);
+                var offset = await index.GetDataOffset(file.Path);
+                if (offset <= 0)
+                {
+                    FlexibleMessageBox.Show("Cannot include file, file offset invalid.",
+                        UIMessages.ModDataReadErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+                var size = await dat.GetCompressedFileSize(offset, df);
+                rawData = dat.GetRawData(offset, df, size);
+
+                if (rawData == null)
+                {
+                    FlexibleMessageBox.Show("Cannot include file, file offset invalid.",
+                        UIMessages.ModDataReadErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+            }
+
+            
+            if(_selectedModOption.Mods.ContainsKey(file.Path))
+            {
+                _selectedModOption.Mods[file.Path].ModDataBytes = rawData;
+            } else
+            {
+                IncludedModsList.Items.Add(file);
+                var modData = new ModData
+                {
+                    Name = item.Name,
+                    Category = item.SecondaryCategory,
+                    FullPath = file.Path,
+                    ModDataBytes = rawData,
+                };
+                _selectedModOption.Mods.Add(file.Path, modData);
+            }
+
+        }
+
+        private async Task AddWithChildren(string file, IItem item, byte[] rawData = null)
+        {
+            var children = await XivCache.GetChildrenRecursive(file);
+
+
+            foreach (var child in children)
+            {
+                var fe = new FileEntry() { Name = MakeFriendlyFileName(child), Path = child };
+                if (child == file && rawData != null)
+                {
+                    await AddFile(fe, item, rawData);
+                } else 
+                {
+                    await AddFile(fe, item);
+                }
             }
         }
+
         /// <summary>
         /// The event handler for the current texture button clicked
         /// </summary>
         private void AddCurrentTextureButton_Click(object sender, RoutedEventArgs e)
         {
-            var dat = new Dat(_gameDirectory);
-
-            var selectedItem = TextureMapComboBox.SelectedItem as ModComboBox;
-
-            var mod = selectedItem.SelectedMod;
-
-            var includedMod = new IncludedMods
-            {
-                Name = $"{Path.GetFileNameWithoutExtension(mod.fullPath)} ({((Category)ModListTreeView.SelectedItem).Name})",
-                FullPath = mod.fullPath
-            };
-
-            var includedModsList = IncludedModsList.Items.Cast<IncludedMods>().ToList();
-
-            if (includedModsList.Any(item => item.FullPath.Equals(includedMod.FullPath)))
-            {
-                if (FlexibleMessageBox.Show(
-                        string.Format(UIMessages.ExistingOption, includedMod.Name),
-                        UIMessages.OverwriteTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Question) ==
-                    System.Windows.Forms.DialogResult.Yes)
-                {
-                    var rawData = dat.GetRawData(mod.data.modOffset, XivDataFiles.GetXivDataFile(mod.datFile), mod.data.modSize);
-
-                    if (rawData == null)
-                    {
-                        FlexibleMessageBox.Show(
-                            string.Format(UIMessages.RawDataErrorMessage, mod.data.modOffset, mod.datFile),
-                            UIMessages.ModDataReadErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
-
-                    _selectedModOption.Mods[mod.fullPath].ModDataBytes = rawData;
-                }
-            }
-            else
-            {
-                var rawData = dat.GetRawData(mod.data.modOffset, XivDataFiles.GetXivDataFile(mod.datFile), mod.data.modSize);
-
-                if (rawData == null)
-                {
-                    FlexibleMessageBox.Show(
-                        string.Format(UIMessages.RawDataErrorMessage, mod.data.modOffset, mod.datFile),
-                        UIMessages.ModDataReadErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-
-                var modData = new ModData
-                {
-                    Name = mod.name,
-                    Category = mod.category,
-                    FullPath = mod.fullPath,
-                    ModDataBytes = rawData,
-                };
-
-                IncludedModsList.Items.Add(includedMod);
-                _selectedModOption.Mods.Add(mod.fullPath, modData);
-            }
+            var selectedFile = TextureMapComboBox.SelectedItem as FileEntry;
+            AddFile(selectedFile, SelectedItem);
         }
 
         /// <summary>
@@ -918,69 +645,29 @@ namespace FFXIV_TexTools.Views
         /// </summary>
         private async void AddCustomTextureButton_Click(object sender, RoutedEventArgs e)
         {
-            var selectedItem = TextureMapComboBox.SelectedItem as ModComboBox;
+            var selectedFile = TextureMapComboBox.SelectedItem as FileEntry;
 
-            var mod = selectedItem.SelectedMod;
+            var openFileDialog = new OpenFileDialog { Filter = "Texture Files(*.DDS;*.BMP;*.PNG) |*.DDS;*.BMP;*.PNG" };
 
-            byte[] modData;
 
-            var includedMod = new IncludedMods
+            var result = openFileDialog.ShowDialog();
+
+            if (result != System.Windows.Forms.DialogResult.OK) return;
+                ;
+
+            var _tex = new Tex(XivCache.GameInfo.GameDirectory);
+
+            try
             {
-                Name = $"{Path.GetFileNameWithoutExtension(mod.fullPath)} ({((Category)ModListTreeView.SelectedItem).Name})",
-                FullPath = mod.fullPath
-            };
-
-            var includedModsList = IncludedModsList.Items.Cast<IncludedMods>().ToList();
-
-            var tex = new Tex(_gameDirectory);
-
-            var ddsDirectory = new DirectoryInfo(CustomTextureTextBox.Text);
-
-            if (selectedItem.TexTypePath.Type == XivTexType.ColorSet)
-            {
-                var mtrl = new Mtrl(_gameDirectory, XivDataFiles.GetXivDataFile(mod.datFile), GetLanguage());
-
-                var xivMtrl = await mtrl.GetMtrlData(mod.data.modOffset, mod.fullPath, int.Parse(Settings.Default.DX_Version));
-
-                modData = tex.DDStoMtrlData(xivMtrl, ddsDirectory, ((Category) ModListTreeView.SelectedItem).Item, GetLanguage());
-                var dat = new Dat(_gameDirectory);
-                modData = await dat.CreateType2Data(modData);
+                var data = await _tex.MakeTexData(selectedFile.Path, openFileDialog.FileName);
+                await AddFile(selectedFile, SelectedItem, data);
             }
-            else
+            catch (Exception ex)
             {
-                try
-                {
-                    var texData = await tex.GetTexData(selectedItem.TexTypePath);
-
-                    modData = await tex.DDStoTexData(texData, ((Category)ModListTreeView.SelectedItem).Item, ddsDirectory);
-                }
-                catch(Exception ex)
-                {
-                    FlexibleMessageBox.Show(ex.Message);
-                    return;
-                }
-            }
-            
-            if (includedModsList.Any(item => item.Name.Equals(includedMod.Name)))
-            {
-                if (FlexibleMessageBox.Show(
-                        string.Format(UIMessages.ExistingOption, includedMod.Name),
-                        UIMessages.OverwriteTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Question) ==
-                    System.Windows.Forms.DialogResult.Yes)
-                {
-                    _selectedModOption.Mods[mod.fullPath].ModDataBytes = modData;
-                }
-            }
-            else
-            {
-                IncludedModsList.Items.Add(includedMod);
-                _selectedModOption.Mods.Add(mod.fullPath, new ModData
-                {
-                    Name = mod.name,
-                    Category = mod.category,
-                    FullPath = mod.fullPath,
-                    ModDataBytes = modData,
-                });
+                FlexibleMessageBox.Show(
+                    string.Format(UIMessages.TextureImportErrorMessage, ex.Message), UIMessages.TextureImportErrorTitle,
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
             }
         }
 
@@ -989,62 +676,15 @@ namespace FFXIV_TexTools.Views
         /// </summary>
         private void AddCurrentMaterialButton_Click(object sender, RoutedEventArgs e)
         {
-            var dat = new Dat(_gameDirectory);
-
-            var selectedItem = MaterialComboBox.SelectedItem as ModComboBox;
-
-            var mod = selectedItem.SelectedMod;
-
-            var includedMod = new IncludedMods
+            var selectedFile = MaterialComboBox.SelectedItem as FileEntry;
+            var addChildren = MaterialIncludeChildrenBox.IsChecked == true ? true : false;
+            if (addChildren)
             {
-                Name = $"{Path.GetFileNameWithoutExtension(mod.fullPath)} ({((Category)ModListTreeView.SelectedItem).Name})",
-                FullPath = mod.fullPath
-            };
-
-            var includedModsList = IncludedModsList.Items.Cast<IncludedMods>().ToList();
-
-            if (includedModsList.Any(item => item.Name.Equals(includedMod.Name)))
-            {
-                if (FlexibleMessageBox.Show(
-                        string.Format(UIMessages.ExistingOption, includedMod.Name),
-                        UIMessages.OverwriteTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Question) ==
-                    System.Windows.Forms.DialogResult.Yes)
-                {
-                    var rawData = dat.GetRawData(mod.data.modOffset, XivDataFiles.GetXivDataFile(mod.datFile), mod.data.modSize);
-
-                    if (rawData == null)
-                    {
-                        FlexibleMessageBox.Show(
-                            string.Format(UIMessages.RawDataErrorMessage, mod.data.modOffset, mod.datFile),
-                            UIMessages.ModDataReadErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
-
-                    _selectedModOption.Mods[mod.fullPath].ModDataBytes = rawData;
-                }
+                AddWithChildren(selectedFile.Path, SelectedItem);
             }
             else
             {
-                var rawData = dat.GetRawData(mod.data.modOffset, XivDataFiles.GetXivDataFile(mod.datFile), mod.data.modSize);
-
-                if (rawData == null)
-                {
-                    FlexibleMessageBox.Show(
-                        string.Format(UIMessages.RawDataErrorMessage, mod.data.modOffset, mod.datFile),
-                        UIMessages.ModDataReadErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-
-                var modData = new ModData
-                {
-                    Name = mod.name,
-                    Category = mod.category,
-                    FullPath = mod.fullPath,
-                    ModDataBytes = rawData,
-                };
-
-                IncludedModsList.Items.Add(includedMod);
-                _selectedModOption.Mods.Add(mod.fullPath, modData);
+                AddFile(selectedFile, SelectedItem);
             }
         }
 
@@ -1053,62 +693,15 @@ namespace FFXIV_TexTools.Views
         /// </summary>
         private void AddCurrentModelButton_Click(object sender, RoutedEventArgs e)
         {
-            var dat = new Dat(_gameDirectory);
-
-            var selectedItem = ModelTypeComboBox.SelectedItem as ModComboBox;
-
-            var mod = selectedItem.SelectedMod;
-
-            var includedMod = new IncludedMods
+            var selectedFile = ModelTypeComboBox.SelectedItem as FileEntry;
+            var addChildren = ModelIncludeChildFilesBox.IsChecked == true ? true : false;
+            if (addChildren)
             {
-                Name = $"{Path.GetFileNameWithoutExtension(mod.fullPath)} ({((Category)ModListTreeView.SelectedItem).Name})",
-                FullPath = mod.fullPath
-            };
-
-            var includedModsList = IncludedModsList.Items.Cast<IncludedMods>().ToList();
-
-            if (includedModsList.Any(item => item.Name.Equals(includedMod.Name)))
-            {
-                if (FlexibleMessageBox.Show(
-                        string.Format(UIMessages.ExistingOption, includedMod.Name),
-                        UIMessages.OverwriteTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Question) ==
-                    System.Windows.Forms.DialogResult.Yes)
-                {
-                    var rawData = dat.GetRawData(mod.data.modOffset, XivDataFiles.GetXivDataFile(mod.datFile), mod.data.modSize);
-
-                    if (rawData == null)
-                    {
-                        FlexibleMessageBox.Show(
-                            string.Format(UIMessages.RawDataErrorMessage, mod.data.modOffset, mod.datFile),
-                            UIMessages.ModDataReadErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
-
-                    _selectedModOption.Mods[mod.fullPath].ModDataBytes = rawData;
-                }
+                AddWithChildren(selectedFile.Path, SelectedItem);
             }
             else
             {
-                var rawData = dat.GetRawData(mod.data.modOffset, XivDataFiles.GetXivDataFile(mod.datFile), mod.data.modSize);
-
-                if (rawData == null)
-                {
-                    FlexibleMessageBox.Show(
-                        string.Format(UIMessages.RawDataErrorMessage, mod.data.modOffset, mod.datFile),
-                        UIMessages.ModDataReadErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-
-                var modData = new ModData
-                {
-                    Name = mod.name,
-                    Category = mod.category,
-                    FullPath = mod.fullPath,
-                    ModDataBytes = rawData,
-                };
-
-                IncludedModsList.Items.Add(includedMod);
-                _selectedModOption.Mods.Add(mod.fullPath, modData);
+                AddFile(selectedFile, SelectedItem);
             }
         }
 
@@ -1117,26 +710,15 @@ namespace FFXIV_TexTools.Views
         /// </summary>
         private async void AdvOptionsButton_Click(object sender, RoutedEventArgs e)
         {
-            var selectedItem = ModelTypeComboBox.SelectedItem as ModComboBox;
-
-            var mod = selectedItem.SelectedMod;
-
-            var includedMod = new IncludedMods
-            {
-                Name = $"{Path.GetFileNameWithoutExtension(mod.fullPath)} ({((Category)ModListTreeView.SelectedItem).Name})",
-                FullPath = mod.fullPath
-            };
-
-            var itemModel = MakeItemModel(mod);
-
-            var includedModsList = IncludedModsList.Items.Cast<IncludedMods>().ToList();
-            var mdl = new Mdl(_gameDirectory, XivDataFiles.GetXivDataFile(mod.datFile));
+            var selectedFile = ModelTypeComboBox.SelectedItem as FileEntry;
+            var itemModel = (IItemModel) SelectedItem;
+            var mdl = new Mdl(_gameDirectory, IOUtil.GetDataFileFromPath(selectedFile.Path));
             try
             {
                 // TODO - Include Submesh ID ?
                 // Do we even have any kind of UI To specify this in the wizard?
                 // Submeshes are only used for Furniture anyways, so it might be a 'will not fix'
-                bool success = await ImportModelView.ImportModel(itemModel, IOUtil.GetRaceFromPath(mod.fullPath), null, this, null, true);
+                bool success = await ImportModelView.ImportModel(itemModel, IOUtil.GetRaceFromPath(selectedFile.Path), null, this, null, true);
                 if (!success)
                 {
                     return;
@@ -1150,28 +732,7 @@ namespace FFXIV_TexTools.Views
             }
 
             var mdlData = ImportModelView.GetData();
-
-            if (includedModsList.Any(item => item.Name.Equals(includedMod.Name)))
-            {
-                if (FlexibleMessageBox.Show(
-                        string.Format(UIMessages.ExistingOption, includedMod.Name),
-                        UIMessages.OverwriteTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Question) ==
-                    System.Windows.Forms.DialogResult.Yes)
-                {
-                    _selectedModOption.Mods[mod.fullPath].ModDataBytes = mdlData;
-                }
-            }
-            else
-            {
-                IncludedModsList.Items.Add(includedMod);
-                _selectedModOption.Mods.Add(mod.fullPath, new ModData
-                {
-                    Name = mod.name,
-                    Category = mod.category,
-                    FullPath = mod.fullPath,
-                    ModDataBytes = mdlData,
-                });
-            }
+            AddFile(selectedFile, SelectedItem, mdlData);
         }
 
         /// <summary>
@@ -1179,7 +740,8 @@ namespace FFXIV_TexTools.Views
         /// </summary>
         private void RemoveModItemButton_Click(object sender, RoutedEventArgs e)
         {
-            _selectedModOption.Mods.Remove(((IncludedMods)IncludedModsList.SelectedItem).FullPath);
+            if (IncludedModsList.SelectedItem == null) return;
+            _selectedModOption.Mods.Remove(((FileEntry)IncludedModsList.SelectedItem).Path);
             IncludedModsList.Items.Remove(IncludedModsList.SelectedItem);
         }
 
@@ -1246,35 +808,17 @@ namespace FFXIV_TexTools.Views
         #endregion
 
 
-        private class ModComboBox
+        private class FileEntry
         {
             /// <summary>
-            /// The name of the mod
+            /// Display Name
             /// </summary>
             public string Name { get; set; }
 
             /// <summary>
-            /// The selected mod
+            /// The underlying file.
             /// </summary>
-            public Mod SelectedMod { get; set; }
-
-            /// <summary>
-            /// The texture type path
-            /// </summary>
-            public TexTypePath TexTypePath { get; set; }
-        }
-
-        private class IncludedMods
-        {
-            /// <summary>
-            /// The mod name
-            /// </summary>
-            public string Name { get; set; }
-
-            /// <summary>
-            /// The mods full path
-            /// </summary>
-            public string FullPath { get; set; }
+            public string Path { get; set; }
         }
 
         private void OptionNameTextBox_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
@@ -1293,6 +837,73 @@ namespace FFXIV_TexTools.Views
         private static XivLanguage GetLanguage()
         {
             return XivLanguages.GetXivLanguage(Properties.Settings.Default.Application_Language);
+        }
+
+        private async void AddMetadataButton_Click(object sender, RoutedEventArgs e)
+        {
+            var path = MetadataPathBox.Text;
+            var selectedFile = new FileEntry()
+            {
+                Path = path,
+                Name = MakeFriendlyFileName(path)
+            };
+            var addChildren = MetadataIncludeChildFilesBox.IsChecked == true ? true : false;
+
+            var _dat = new Dat(_gameDirectory);
+            var meta = await ItemMetadata.GetMetadata(path);
+            var data = await _dat.CreateType2Data(await ItemMetadata.Serialize(meta));
+
+            if (addChildren)
+            {
+                AddWithChildren(selectedFile.Path, SelectedItem, data);
+            }
+            else
+            {
+                AddFile(selectedFile, SelectedItem, data);
+            }
+
+        }
+
+        public static string MakeFriendlyFileName(string path)
+        {
+            var filename = Path.GetFileName(path);
+            var ext = Path.GetExtension(path);
+            string niceName = null;
+            if(ext == ".mtrl")
+            {
+                // Include material set identifier for materials.
+                var rex = new Regex("v[0-9]{4}/");
+                var m = rex.Match(path);
+
+                if(m.Success)
+                {
+                    filename = m.Value + filename;
+                }
+
+                niceName = "Material";
+            } else if(ext == ".atex")
+            {
+                niceName = "VFX";
+            } else if(ext == ".mdl")
+            {
+                niceName = "Model";
+            } else if(ext == ".tex")
+            {
+                var type = SimpleModpackEntry.GuessTextureUsage(path);
+                niceName = type.ToString() + " Texture";
+            } else if(ext == ".meta")
+            {
+                niceName = "Metadata";
+            }
+
+
+
+            var ret = filename;
+            if(niceName != null)
+            {
+                ret = niceName + " (" + filename + ")";
+            }
+            return ret;
         }
     }
 }

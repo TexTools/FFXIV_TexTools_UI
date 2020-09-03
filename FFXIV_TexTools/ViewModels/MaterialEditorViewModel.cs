@@ -1,12 +1,16 @@
-﻿using FFXIV_TexTools.Helpers;
+﻿using AutoUpdaterDotNET;
+using FFXIV_TexTools.Helpers;
 using FFXIV_TexTools.Resources;
 using FFXIV_TexTools.Views.Textures;
+using HelixToolkit.Wpf.SharpDX;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Forms;
 using xivModdingFramework.Cache;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Items;
@@ -17,6 +21,8 @@ using xivModdingFramework.Materials.FileTypes;
 using xivModdingFramework.Mods;
 using xivModdingFramework.SqPack.FileTypes;
 using xivModdingFramework.Textures.Enums;
+using xivModdingFramework.Variants.DataContainers;
+using xivModdingFramework.Variants.FileTypes;
 using Constants = xivModdingFramework.Helpers.Constants;
 
 namespace FFXIV_TexTools.ViewModels
@@ -39,6 +45,7 @@ namespace FFXIV_TexTools.ViewModels
     {
         public MaterialEditorMode _mode;
 
+        
         private MaterialEditorView _view;
         private Mtrl _mtrl;
         private Index _index;
@@ -47,6 +54,8 @@ namespace FFXIV_TexTools.ViewModels
         private XivMtrl _material;
         private IItemModel _item;
         private char _newMaterialIdentifier;
+        private XivRace _overrideDestinationRace;
+
         public MaterialEditorViewModel(MaterialEditorView view)
         {
             _view = view;
@@ -121,6 +130,9 @@ namespace FFXIV_TexTools.ViewModels
                 case MaterialEditorMode.NewMulti:
                     _view.MaterialPathLabel.Text = "New Materials";
                     break;
+                case MaterialEditorMode.NewRace:
+                    _view.MaterialPathLabel.Text = "New Racial Material";
+                    break;
             }
 
             var shader = _material.GetShaderInfo();
@@ -131,11 +143,11 @@ namespace FFXIV_TexTools.ViewModels
             var reflection = _material.GetMapInfo(XivTexType.Reflection);
 
             // Show Paths
-            _view.NormalTextBox.Text = normal == null ? "" : normal.path;
-            _view.SpecularTextBox.Text = specular == null ? "" : specular.path;
-            _view.SpecularTextBox.Text = multi == null ? _view.SpecularTextBox.Text : multi.path;
-            _view.DiffuseTextBox.Text = diffuse == null ? "" : diffuse.path;
-            _view.DiffuseTextBox.Text = reflection == null ? _view.DiffuseTextBox.Text : reflection.path;
+            _view.NormalTextBox.Text = normal == null ? "" : normal.Path;
+            _view.SpecularTextBox.Text = specular == null ? "" : specular.Path;
+            _view.SpecularTextBox.Text = multi == null ? _view.SpecularTextBox.Text : multi.Path;
+            _view.DiffuseTextBox.Text = diffuse == null ? "" : diffuse.Path;
+            _view.DiffuseTextBox.Text = reflection == null ? _view.DiffuseTextBox.Text : reflection.Path;
 
             // Add Other option if needed.
             if (shader.Shader == MtrlShader.Other)
@@ -227,26 +239,26 @@ namespace FFXIV_TexTools.ViewModels
             var oldNormal = _material.GetMapInfo(XivTexType.Normal);
 
             // Normal
-            newNormal = new MapInfo() { Usage = XivTexType.Normal, Format = oldNormal.Format, path = _view.NormalTextBox.Text };
+            newNormal = new MapInfo() { Usage = XivTexType.Normal, Format = oldNormal.Format, Path = _view.NormalTextBox.Text };
 
             // Specular / Multi
             if (newShader.HasMulti)
             {
-                newMulti = new MapInfo() { Usage = XivTexType.Multi, Format = MtrlTextureDescriptorFormat.NoColorset, path = _view.SpecularTextBox.Text };
+                newMulti = new MapInfo() { Usage = XivTexType.Multi, Format = MtrlTextureDescriptorFormat.NoColorset, Path = _view.SpecularTextBox.Text };
             }
             else
             {
-                newSpecular = new MapInfo() { Usage = XivTexType.Specular, Format = MtrlTextureDescriptorFormat.NoColorset, path = _view.SpecularTextBox.Text };
+                newSpecular = new MapInfo() { Usage = XivTexType.Specular, Format = MtrlTextureDescriptorFormat.NoColorset, Path = _view.SpecularTextBox.Text };
             }
 
             // Diffuse / Reflection
             if (newShader.HasDiffuse)
             {
-                newDiffuse = new MapInfo() { Usage = XivTexType.Diffuse, Format = MtrlTextureDescriptorFormat.NoColorset, path = _view.DiffuseTextBox.Text };
+                newDiffuse = new MapInfo() { Usage = XivTexType.Diffuse, Format = MtrlTextureDescriptorFormat.NoColorset, Path = _view.DiffuseTextBox.Text };
             }
             else if (newShader.HasReflection)
             { 
-                newReflection = new MapInfo() { Usage = XivTexType.Reflection, Format = MtrlTextureDescriptorFormat.NoColorset, path = _view.DiffuseTextBox.Text };
+                newReflection = new MapInfo() { Usage = XivTexType.Reflection, Format = MtrlTextureDescriptorFormat.NoColorset, Path = _view.DiffuseTextBox.Text };
             }
 
             if(_mode == MaterialEditorMode.NewSingle)
@@ -270,14 +282,17 @@ namespace FFXIV_TexTools.ViewModels
                     // Save the existing MTRL.
                     await _mtrl.ImportMtrl(_material, _item, XivStrings.TexTools);
                 }
-                else if (_mode == MaterialEditorMode.NewMulti || _mode == MaterialEditorMode.EditMulti)
+                else if (_mode == MaterialEditorMode.NewMulti || _mode == MaterialEditorMode.EditMulti || _mode == MaterialEditorMode.NewRace)
                 {
                     // Ship it to the more complex save function.
                     await SaveMulti();
 
                     // Change this after calling SaveMulti.  Updated so that the external classes looking for the material after
                     // can find the right type identifier and such.
-                    _material.MTRLPath = Regex.Replace(_material.MTRLPath, "_([a-z0-9])\\.mtrl", "_" + _newMaterialIdentifier + ".mtrl");
+                    if (_mode != MaterialEditorMode.NewRace)
+                    {
+                        _material.MTRLPath = Regex.Replace(_material.MTRLPath, "_([a-z0-9])\\.mtrl", "_" + _newMaterialIdentifier + ".mtrl");
+                    }
                 }
             } catch (Exception Ex)
             {
@@ -296,6 +311,11 @@ namespace FFXIV_TexTools.ViewModels
             var materialIdentifier = _material.GetMaterialIdentifier();
 
             var newIdentifier = '\0';
+            var rex = new Regex("_([a-z0-9])\\.mtrl");
+            if (!rex.IsMatch(_material.MTRLPath))
+            {
+                return 'a';
+            }
             for (var i = 1; i < alphabet.Length; i++)
             {
                 var identifier = alphabet[i];
@@ -311,7 +331,14 @@ namespace FFXIV_TexTools.ViewModels
             // Note - This can be fixed.  Materials don't need to be named a-z, but realisitcally is anyone going to have more than 26 materials?
             if (newIdentifier == '\0')
             {
-                throw new NotSupportedException("Maximum Material Limit Reached.");
+                if (materialIdentifier == '\0')
+                {
+                    newIdentifier = 'a';
+                }
+                else
+                {
+                    throw new NotSupportedException("Maximum Material Limit Reached.");
+                }
             }
             return newIdentifier;
 
@@ -319,6 +346,9 @@ namespace FFXIV_TexTools.ViewModels
 
         public async Task SaveMulti()
         {
+
+            var _imc = new Imc(XivCache.GameInfo.GameDirectory);
+            var _index = new Index(XivCache.GameInfo.GameDirectory);
 
             // Get tokenized map info structs.
             // This will let us set them in the new Materials and
@@ -331,6 +361,7 @@ namespace FFXIV_TexTools.ViewModels
 
             // Add new Materials for shared model items.    
             var oldMaterialIdentifier = _material.GetMaterialIdentifier();
+            var oldMtrlName = Path.GetFileName(_material.MTRLPath);
 
             // Ordering these by name ensures that we create textures for the new variants in the first
             // item alphabetically, just for consistency's sake.
@@ -343,45 +374,70 @@ namespace FFXIV_TexTools.ViewModels
             var mtrlReplacementRegex = "_" + oldMaterialIdentifier + ".mtrl";
             var mtrlReplacementRegexResult = "_" + _newMaterialIdentifier + ".mtrl";
 
+            if(_mode == MaterialEditorMode.NewRace)
+            {
+                mtrlReplacementRegexResult = mtrlReplacementRegex;
+            }
+
+            var newMtrlName = oldMtrlName.Replace(mtrlReplacementRegex, mtrlReplacementRegexResult);
+
+            var root = _item.GetRootInfo();
+
+            var imcEntries = new List<XivImc>();
+            var materialSets = new HashSet<byte>();
+            try
+            {
+                var imcInfo = await _imc.GetFullImcInfo(_item);
+                imcEntries = imcInfo.GetAllEntries(root.Slot, true);
+                materialSets = imcEntries.Select(x => x.Variant).ToHashSet();
+            } catch
+            {
+                // Item doesn't use IMC entries, and thus only has a single variant. 
+                materialSets.Clear();
+                materialSets.Add(0);
+            }
+
+
+            // We need to save our non-existent base material once before we can continue.
+            if (_mode == MaterialEditorMode.NewRace)
+            {
+                await _mtrl.ImportMtrl(_material, _item, XivStrings.TexTools);
+            }
+
+            var count = 0;
+
+            var allItems = (await root.ToFullRoot().GetAllItems());
+            allItems = allItems.OrderBy(x => x.Name, new ItemNameComparer()).ToList();
 
             // Load and modify all the MTRLs.
-            foreach (var item in sameModelItems)
+            foreach (var materialSetId in materialSets)
             {
-
-                // Resolve this item's material variant.
-                // - This isn't always the same as the item model variant, for some reason.
-                // - So it has to be resolved manually.
-                var variantMtrlPath = "";
-                var itemType = ItemType.GetPrimaryItemType(_item);
-
-                
-                variantMtrlPath = (await _mtrl.GetMtrlPath(item, _material.GetRace(), oldMaterialIdentifier, itemType)).Folder;
-
-                var match = Regex.Match(variantMtrlPath, "/v([0-9]+)");
-                var variant = 0;
-                if (match.Success)
-                {
-                    variant = Int32.Parse(match.Groups[1].Value);
-                }
+                var variantPath = _mtrl.GetMtrlFolder(root, materialSetId);
+                var oldMaterialPath = variantPath + "/" + oldMtrlName;
+                var newMaterialPath = variantPath + "/" + newMtrlName;
 
                 // Don't create materials for set 0.  (SE sets the material ID to 0 when that particular set-slot doesn't actually exist as an item)
-                if (variant == 0) continue;
-
-                // Only modify each Variant once.
-                if (modifiedVariants.Contains(variant))
-                {
-                    continue;
-                }
+                if (materialSetId == 0 && imcEntries.Count > 0) continue;
 
                 var dxVersion = 11;
                 XivMtrl itemXivMtrl;
 
-                // Get mtrl path -- TODO: Need support here for offhand item materials.
-                // But Offhand support is basically completely broken anyways, so this can wait.
-                itemXivMtrl = await _mtrl.GetMtrlData(_item, _material.GetRace(), oldMaterialIdentifier, dxVersion);
+                // Get mtrl path
+                if(await _index.FileExists(oldMaterialPath))
+                {
+                    // Use the Material from this variant as a base?
+                    itemXivMtrl = await _mtrl.GetMtrlData(_item, oldMaterialPath, dxVersion);
+                } else
+                {
+                    itemXivMtrl = await _mtrl.GetMtrlData(_item, _material.MTRLPath, dxVersion);
+                }
 
-                // Shift the MTRL to the new variant folder.
-                itemXivMtrl.MTRLPath = Regex.Replace(itemXivMtrl.MTRLPath, oldVariantString, "/v" + variant.ToString().PadLeft(4, '0') + "/");
+                // If we're an item that doesn't use IMC variants, make sure we don't accidentally move the material around.
+                if (materialSetId != 0)
+                {
+                    // Shift the MTRL to the new variant folder.
+                    itemXivMtrl.MTRLPath = Regex.Replace(itemXivMtrl.MTRLPath, oldVariantString, "/v" + materialSetId.ToString().PadLeft(4, '0') + "/");
+                }
 
                 if (_mode == MaterialEditorMode.NewMulti)
                 {
@@ -399,10 +455,24 @@ namespace FFXIV_TexTools.ViewModels
                     itemXivMtrl.SetMapInfo(info.Usage, (MapInfo)info.Clone());
                 }
 
+                // Need to determine what item to list this under in the modlist.
+                var matRoot = await XivCache.GetFirstRoot(newMaterialPath);
+                var imcVariant = -1;
+                for(int i = 0; i < imcEntries.Count; i++)
+                {
+                    if(imcEntries[i].Variant == materialSetId)
+                    {
+                        imcVariant = i;
+                        break;
+                    }
+                }
+
+                var item = allItems.First(x => x.ModelInfo.ImcSubsetID == imcVariant);
+
+                count++;
                 // Write the new Material
                 await _mtrl.ImportMtrl(itemXivMtrl, item, XivStrings.TexTools);
-                modifiedVariants.Add(variant);
-                _view.SaveStatusLabel.Content = "Updated " + modifiedVariants.Count + " Variants...";
+                _view.SaveStatusLabel.Content = "Updated " + count + "/" + materialSets.Count + " Material Sets...";
             }
 
         }
@@ -415,41 +485,55 @@ namespace FFXIV_TexTools.ViewModels
             _view.DisableButton.Content = UIStrings.Working_Ellipsis;
             var files = new List<string>();
 
-            // If we're disabling from the Edit Multi menu, diable all variant versions as well.
+            // If we're disabling from the Edit Multi menu, disable all variant versions as well.
             if (_mode == MaterialEditorMode.EditMulti) {
                 var sameModelItems = await _item.GetSharedModelItems(); 
                 var itemType = ItemType.GetPrimaryItemType(_item);
-                // Find all the variant materials 
-                foreach (var item in sameModelItems)
+                var root = await XivCache.GetFirstRoot(_material.MTRLPath);
+
+                var allMtrls = await root.GetMaterialFiles();
+
+                // Find all the materials 
+                foreach (var mtrl in allMtrls)
                 {
-                    var variantPath = await _mtrl.GetMtrlPath(item, _material.GetRace(), _material.GetMaterialIdentifier(), itemType);
-                    files.Add(variantPath.Folder + "/" + variantPath.File);
+                    // Find all matching ones
+                    if(Path.GetFileName(mtrl) == Path.GetFileName(_material.MTRLPath))
+                    {
+                        files.Add(mtrl);
+                    }
                 }
+
             } else {
+
                 // Just disabling this one.
                 files.Add(_material.MTRLPath);
             }
 
             files = files.Distinct().ToList();
-
-            foreach(var file in files)
+            try
             {
-                var modEntry = await _modding.TryGetModEntry(file);
+                foreach (var file in files)
+                {
+                    var modEntry = await _modding.TryGetModEntry(file);
 
-                if (!modEntry.enabled)
-                {
-                    continue;
-                }
+                    if (!modEntry.enabled)
+                    {
+                        continue;
+                    }
 
-                // If the file is a custom addition, and not a modification.
-                if (modEntry.source != XivStrings.TexTools)
-                {
-                    await _modding.DeleteMod(file);
+                    // If the file is a custom addition, and not a modification.
+                    if (modEntry.source != XivStrings.TexTools)
+                    {
+                        await _modding.DeleteMod(file);
+                    }
+                    else
+                    {
+                        await _modding.ToggleModStatus(file, false);
+                    }
                 }
-                else
-                {
-                    await _modding.ToggleModStatus(file, false);
-                }
+            } catch(Exception ex)
+            {
+                FlexibleMessageBox.Show("Unable to delete Mod.\n\nError: " + ex.Message, "Mod Delete Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             _view.Close(false);
         }

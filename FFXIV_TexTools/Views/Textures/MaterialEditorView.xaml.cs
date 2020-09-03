@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using xivModdingFramework.General.Enums;
 using xivModdingFramework.Items.Interfaces;
 using xivModdingFramework.Materials.DataContainers;
 using xivModdingFramework.Mods;
@@ -17,6 +18,7 @@ namespace FFXIV_TexTools.Views.Textures
         EditSingle,
         EditMulti,
         NewSingle,
+        NewRace,
         NewMulti
     }
     /// <summary>
@@ -157,19 +159,17 @@ namespace FFXIV_TexTools.Views.Textures
             // Ensure the UI is updated for the new selection.
             PresetComboBox_SelectionChanged(null, null);
 
-            if(shader == MtrlShader.Furniture || shader == MtrlShader.DyeableFurniture || shader == MtrlShader.Other )
+
+            if(shader == MtrlShader.Other || shader == MtrlShader.Furniture || shader == MtrlShader.DyeableFurniture)
             {
-                // Disable all the editable options except transparency for these items.
+                // Disable everything.
                 NormalTextBox.IsEnabled = false;
                 DiffuseTextBox.IsEnabled = false;
                 SpecularTextBox.IsEnabled = false;
                 ColorsetComboBox.IsEnabled = false;
+                NewSharedButton.IsEnabled = false;
+                NewUniqueButton.IsEnabled = false;
                 PresetComboBox.IsEnabled = false;
-            } 
-
-            if(shader == MtrlShader.Other)
-            {
-                // Disable everything.
                 TransparencyComboBox.IsEnabled = false;
                 ShaderComboBox.IsEnabled = false;
                 SaveButton.IsEnabled = false;
@@ -191,7 +191,9 @@ namespace FFXIV_TexTools.Views.Textures
             // Generate a fresh shader info so we can access some of the calculated fields.
             var info = new ShaderInfo() { Shader = shader, Preset = preset, TransparencyEnabled = transparency };
 
-            if(info.HasMulti)
+            ColorsetComboBox.SelectedValue = info.HasColorset;
+
+            if (info.HasMulti)
             {
                 SpecularLabel.Content = "Multi:";
                 SpecularTextBox.IsEnabled = true;

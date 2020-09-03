@@ -50,9 +50,6 @@
     <Setting Name="FFXIV_Version" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="DAE_Plugin_Target" Type="System.String" Scope="User">
-      <Value Profile="(Default)">Autodesk Collada</Value>
-    </Setting>
     <Setting Name="UpgradeRequired" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
@@ -94,6 +91,12 @@
     </Setting>
     <Setting Name="Etc_Color" Type="System.String" Scope="User">
       <Value Profile="(Default)">#FF603913</Value>
+    </Setting>
+    <Setting Name="Sync_Views" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="Remember_Race_Selection" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
     </Setting>
   </Settings>
 </SettingsFile>

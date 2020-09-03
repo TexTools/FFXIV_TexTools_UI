@@ -35,8 +35,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Input;
+using xivModdingFramework.Cache;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Items;
@@ -69,17 +71,17 @@ namespace FFXIV_TexTools.ViewModels
 
         private int _raceIndex, _partIndex, _numberIndex, _meshIndex, _partCount, _numberCount, _meshCount, _raceCount, _reflectionValue, _checkedLight;
         private float _lightingXValue, _lightingYValue, _lightingZValue;
-        private bool _raceEnabled, _partEnabled, _numberEnabled, _meshEnabled, _exportEnabled, _importEnabled, _basicImportEnabled, _modStatusToggleEnabled, _updateTexEnabled, _flyoutOpen, _fmvEnabled;
+        private bool _raceEnabled, _partEnabled, _numberEnabled, _meshEnabled, _exportEnabled, _importEnabled, _modStatusToggleEnabled, _updateTexEnabled, _flyoutOpen, _fmvEnabled;
         private string _partWatermark = XivStrings.Part, _numberWatermark = XivStrings.Number, _raceWatermark = XivStrings.Race,
             _meshWatermark = XivStrings.Mesh, _pathString;
 
         private string _lightXLabel = "X  |  0", _lightYLabel = "Y  |  0", _lightZLabel = "Z  |  0", _reflectionLabel = $"{UIStrings.Reflection}  |  1", _modToggleText = UIStrings.Enable_Disable, _modelStatusLabel;
         private ComboBoxData _selectedRace, _selectedPart, _selectedNumber, _selectedMesh;
         private Visibility _numberVisibility, _partVisibility, _lightToggleVisibility = Visibility.Collapsed, _fmvVisibility;
+        private Visibility _raceVisibility = Visibility.Visible;
         private bool _light1Check = true, _light2Check, _light3Check, _lightRenderToggle, _transparencyToggle, _cullModeToggle, _keepCameraChecked;
 
         private IItemModel _item;
-        private Dictionary<XivRace, int[]> _charaRaceAndNumberDictionary;
         private Mdl _mdl;
 
         private TTModel _model;
@@ -93,6 +95,8 @@ namespace FFXIV_TexTools.ViewModels
 
         private DirectoryInfo _gameDirectory;
 
+        private bool _updateNeeded = false;
+
         public ModelViewModel(ModelView modelView)
         {
             ViewPortVM = new Viewport3DViewModel(this);
@@ -101,6 +105,9 @@ namespace FFXIV_TexTools.ViewModels
             _view.ExportModelButton.Click += ExportModelButton_Click;
             _view.ExportContextButton.Click += ExportContextButton_Click;
 
+
+            var mw = MainWindow.GetMainWindow();
+            mw.SelectedPrimaryItemValueChanged += Mw_SelectedPrimaryItemValueChanged;
             //_modelView.ExportContextMenu.Items.Add();
         }
 
@@ -113,6 +120,97 @@ namespace FFXIV_TexTools.ViewModels
         private void ExportModelButton_Click(object sender, RoutedEventArgs e)
         {
             ExportModel("fbx");
+        }
+
+
+        private void Mw_SelectedPrimaryItemValueChanged(object sender, int e)
+        {
+            // Called whenever the main window has the selected primary value changed (this is either Race or Number).
+            if (e < 0) return;
+            if (_item == null) return;
+
+            // If we were the ones to trigger it, there's no need to adjust this.
+            if (_tab.IsSelected) return;
+
+            if(_item.SecondaryCategory == XivStrings.Character)
+            {
+                // Character type items this means the ""Number""
+                if (SelectedNumber == null) return;
+
+                var selectedNum = 0;
+                var ok = Int32.TryParse(SelectedNumber.Name, out selectedNum);
+                if (!ok) return;
+
+
+                // These menus are so jank...
+                var idx = -1;
+                for (int i = 0; i < Numbers.Count; i++)
+                {
+                    var num = 0;
+                    ok = Int32.TryParse(SelectedNumber.Name, out num);
+                    if (!ok) continue;
+
+                    if (num == e)
+                    {
+                        idx = i;
+                        break;
+                    }
+                }
+
+                // Don't have the number in question.
+                if (idx == -1) return;
+
+
+                SelectedNumberIndex = idx;
+                _updateNeeded = true;
+            }
+            else
+            {
+                // Otherwise it's race.
+                var race = XivRaces.GetXivRace(e);
+                if (SelectedRace == null) return;
+                if (SelectedRace.XivRace == race) return;
+
+                // These menus are so jank...
+                var idx = -1;
+                for(int i = 0; i < Races.Count; i++)
+                {
+                    if(Races[i].XivRace == race)
+                    {
+                        idx = i;
+                        break;
+                    }
+                }
+
+                // Don't have the race in question.
+                if (idx == -1) return;
+
+                SelectedRaceIndex = idx;
+                _updateNeeded = true;
+            }
+
+        }
+
+        /// <summary>
+        /// Called whenever the user selects the Model tab.
+        /// </summary>
+        /// <returns></returns>
+        public async Task OnTabShown()
+        {
+            if (_updateNeeded)
+            {
+                _updateNeeded = false;
+                await UpdateViewPort();
+            }
+        }
+
+        private TabItem _tab
+        {
+            get
+            {
+                var mw = MainWindow.GetMainWindow();
+                return mw.ModelTabItem;
+            }
         }
 
 
@@ -155,53 +253,48 @@ namespace FFXIV_TexTools.ViewModels
 
             }
 
-            if (itemModel.PrimaryCategory.Equals(XivStrings.Gear))
+            var _eqp = new Eqp(_gameDirectory);
+            var races = await _eqp.GetAvailableRacialModels(_item, false, true);
+
+            var root = _item.GetRoot();
+            if(root == null)
             {
-                var gear = new Gear(_gameDirectory, GetLanguage());
+                OnLoadingComplete();
+                return;
+            }
 
-                var xivGear = itemModel as XivGear;
+            if (races.Count == 0)
+            {
+                // This is a type that doesn't use EQDP files for identifying racial models.
+                // This means either is has no racial models (monster, demi, furniture, etc.)
+                // Or is the human/character tab and has special treatment.
 
-                var raceList = await gear.GetRacesForModels(xivGear, _item.DataFile);
-
-                foreach (var xivRace in raceList)
+                // This type has a pre-defined race.
+                if (root.Info.PrimaryType == XivItemType.human)
                 {
-                    var raceCBD = new ComboBoxData { Name = xivRace.GetDisplayName(), XivRace = xivRace };
+                    var race = XivRaces.GetXivRace(root.Info.PrimaryId);
+                    races.Add(race);
 
-                    Races.Add(raceCBD);
+                    // In these cases, hide the race bar entirely so we can show the number bar instead.
+                    RaceVisibility = Visibility.Collapsed;
+                }
+                else
+                {
+                    RaceVisibility = Visibility.Visible;
+                    races.Add(XivRace.All_Races);
                 }
 
-                FMVVisibility = (xivGear.ModelInfo as XivGearModelInfo).IsWeapon ? Visibility.Hidden : Visibility.Visible;
             }
-            else if (itemModel.PrimaryCategory.Equals(XivStrings.Companions))
+            else
             {
-                var companions = new Companions(_gameDirectory, GetLanguage());
 
-                Races.Add(_item.GetPrimaryItemType() == XivItemType.demihuman
-                    ? new ComboBoxData { Name = XivRace.DemiHuman.GetDisplayName(), XivRace = XivRace.DemiHuman }
-                    : new ComboBoxData { Name = XivRace.Monster.GetDisplayName(), XivRace = XivRace.Monster });
-
-                FMVVisibility = Visibility.Hidden;
+                RaceVisibility = Visibility.Visible;
             }
-            else if (itemModel.PrimaryCategory.Equals(XivStrings.Character))
+
+            foreach (var race in races)
             {
-                var character = new Character(_gameDirectory, GetLanguage());
-
-                _charaRaceAndNumberDictionary = await character.GetRacesAndNumbersForModels(_item as XivCharacter);
-
-                foreach (var racesAndNumber in _charaRaceAndNumberDictionary)
-                {
-                    Races.Add(new ComboBoxData { Name = racesAndNumber.Key.GetDisplayName(), XivRace = racesAndNumber.Key });
-                }
-
-                FMVVisibility = Visibility.Visible;
+                Races.Add(new ComboBoxData { Name = race.GetDisplayName(), XivRace = race });
             }
-            else if (itemModel.PrimaryCategory.Equals(XivStrings.Housing))
-            {
-                Races.Add(new ComboBoxData { Name = XivRace.All_Races.GetDisplayName(), XivRace = XivRace.All_Races });
-
-                FMVVisibility = Visibility.Hidden;
-            }
-
             _raceCount = Races.Count;
 
             RaceComboboxEnabled = _raceCount > 1;
@@ -210,11 +303,29 @@ namespace FFXIV_TexTools.ViewModels
                                where race.XivRace.GetDisplayName().Equals(Settings.Default.Default_Race_Selection)
                                select race).ToList();
 
-            var raceIndex = 0;
-            if (defaultRace.Count > 0)
+            var lastRaceIdx = -1;
+            for (int i = 0; i < Races.Count; i++)
             {
+                if(Races[i].XivRace == _lastRace)
+                {
+                    lastRaceIdx = i;
+                    break;
+                }
+            }
+
+            var tryReselect = Settings.Default.Remember_Race_Selection;
+            var raceIndex = 0;
+            if(lastRaceIdx >= 0 && tryReselect)
+            {
+                // Re-select last.
+                raceIndex = lastRaceIdx;
+            }
+            else if (defaultRace.Count > 0 && !tryReselect)
+            {
+                // Use default.
                 raceIndex = Races.IndexOf(defaultRace[0]);
             }
+
             else if(Races.Count == 0)
             {
                 // If there are no races, we're done.
@@ -228,8 +339,6 @@ namespace FFXIV_TexTools.ViewModels
 
             CullModeToggle = Settings.Default.Cull_Mode == "None";
 
-            //ShowModelStatus(UIStrings.ModelStatus_Loading);
-            ModelStatusLabel = UIStrings.ModelStatus_Loading;
         }
 
         #region Race
@@ -257,6 +366,15 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     Parts.Clear();
                     Numbers.Clear();
+                    _lastRace = value.XivRace;
+
+                    if (_item.PrimaryCategory != XivStrings.Character)
+                    {
+                        var race = value.XivRace;
+                        var mw = MainWindow.GetMainWindow();
+                        mw.SelectedPrimaryItemValue = race.GetRaceCodeInt();
+                    }
+
 
                     GetNumbers();
                 }
@@ -302,18 +420,53 @@ namespace FFXIV_TexTools.ViewModels
             {
                 NumberVisibility = Visibility.Visible;
                 PartVisibility = Visibility.Visible;
-                var numbers = _charaRaceAndNumberDictionary[SelectedRace.XivRace];
+                var _chara = new Character(XivCache.GameInfo.GameDirectory, XivCache.GameInfo.GameLanguage);
+                var charaItem = (XivCharacter)_item;
+                int[] numbers = new int[0];
+                Task.Run(async () => numbers = await _chara.GetNumbersForCharacterItem(charaItem, false)).Wait();
 
-                Array.Sort(numbers);
+                var toSelect = 0;
+                var idx = 0;
+                var tryReselect = Settings.Default.Remember_Race_Selection;
 
-                foreach (var number in numbers)
+                if (charaItem.ModelInfo.SecondaryID > 0)
                 {
-                    Numbers.Add(new ComboBoxData { Name = number.ToString() });
+                    _lastNumber = charaItem.ModelInfo.SecondaryID;
+                    Numbers.Add(new ComboBoxData { Name = charaItem.ModelInfo.SecondaryID.ToString() });
+                    _numberCount = 1;
                 }
+                else
+                {
+                    foreach (var number in numbers)
+                    {
 
-                _numberCount = numbers.Length;
+                        
+                        if (tryReselect && number == _lastNumber)
+                        {
+                            toSelect = idx;
+                        }
+
+                        Numbers.Add(new ComboBoxData { Name = number.ToString() });
+                        idx++;
+                    }
+                    _numberCount = numbers.Length;
+                }
                 NumberComboboxEnabled = _numberCount > 1;
-                SelectedNumberIndex = 0;
+
+                SelectedNumberIndex = toSelect;
+
+                if(numbers.Length == 0)
+                {
+                    Parts.Clear();
+                    Meshes.Clear();
+                    _model = new TTModel();
+                    PartComboboxEnabled = false;
+                    MeshComboboxEnabled = false;
+                    NumberComboboxEnabled = false;
+                    UpdateViewPort();
+                    OnLoadingComplete();
+                    return;
+                }
             }
             else
             {
@@ -330,6 +483,8 @@ namespace FFXIV_TexTools.ViewModels
             set { _numberComboBoxData = value; NotifyPropertyChanged(nameof(Numbers)); }
         }
 
+        private XivRace _lastRace = XivRace.All_Races;
+        private int _lastNumber = -1;
         /// <summary>
         /// The selected number within the number combobox
         /// </summary>
@@ -342,6 +497,26 @@ namespace FFXIV_TexTools.ViewModels
                 NotifyPropertyChanged(nameof(SelectedNumber));
                 if (SelectedNumberIndex > -1)
                 {
+                    var num = 0;
+                    var ok = Int32.TryParse(value.Name, out num);
+                    if(ok)
+                    {
+                        _lastNumber = num;
+                    }
+
+                    var valNum = -1;
+                    ok = Int32.TryParse(value.Name, out num);
+                    if (ok)
+                    {
+                        valNum = num;
+                    }
+
+                    if (_item.PrimaryCategory == XivStrings.Character && valNum >= 0)
+                    {
+                        var mw = MainWindow.GetMainWindow();
+                        mw.SelectedPrimaryItemValue = valNum;
+                    }
+
                     Parts.Clear();
                     GetParts();
                 }
@@ -380,6 +555,15 @@ namespace FFXIV_TexTools.ViewModels
             {
                 _numberVisibility = value;
                 NotifyPropertyChanged(nameof(NumberVisibility));
+            }
+        }
+        public Visibility RaceVisibility
+        {
+            get => _raceVisibility;
+            set
+            {
+                _raceVisibility = value;
+                NotifyPropertyChanged(nameof(RaceVisibility));
             }
         }
 
@@ -597,28 +781,48 @@ namespace FFXIV_TexTools.ViewModels
 
             var modList = new Modding(_gameDirectory);
 
-            var modStatus = await modList.IsModEnabled(PathString, false);
+            var mod = await modList.TryGetModEntry(PathString);
+            //var modStatus = await modList.IsModEnabled(PathString, false);
 
-            switch (modStatus)
+            if(mod == null)
             {
-                case XivModStatus.Enabled:
-                    ModStatusToggleEnabled = true;
-                    ModToggleText = UIStrings.Disable;
-                    break;
-                case XivModStatus.Disabled:
-                    ModStatusToggleEnabled = true;
-                    ModToggleText = UIStrings.Enable;
-                    break;
-                case XivModStatus.Original:
-                default:
+
+                ModStatusToggleEnabled = false;
+                ModToggleText = UIStrings.Enable_Disable;
+            } else if(!mod.enabled)
+            {
+                ModStatusToggleEnabled = true;
+                ModToggleText = UIStrings.Enable;
+
+            } else if(mod.enabled)
+            {
+                ModToggleText = UIStrings.Disable;
+                if(mod.IsCustomFile())
+                {
+                    // Don't let users disable custom racial models from this menu since it'll blow up the sun.
                     ModStatusToggleEnabled = false;
-                    ModToggleText = UIStrings.Enable_Disable;
-                    break;
+                } else
+                {
+                    ModStatusToggleEnabled = true;
+                }
+            }
+            else
+            {
+                ModStatusToggleEnabled = false;
+                ModToggleText = UIStrings.Enable_Disable;
+
             }
 
             SetComboBoxWatermarks();
 
-            await UpdateViewPort();
+            if (_tab.IsSelected)
+            {
+                await UpdateViewPort();
+            } else
+            {
+                _updateNeeded = true;
+                OnLoadingComplete();
+            }
         }
 
         /// <summary>
@@ -1086,18 +1290,6 @@ namespace FFXIV_TexTools.ViewModels
             }
         }
 
-        /// <summary>
-        /// The enabled status of the basic import button
-        /// </summary>
-        public bool BasicImportEnabled
-        {
-            get => _basicImportEnabled;
-            set
-            {
-                _basicImportEnabled = value;
-                NotifyPropertyChanged(nameof(BasicImportEnabled));
-            }
-        }
 
         /// <summary>
         /// The enabled status of the mod status button
@@ -1334,6 +1526,10 @@ namespace FFXIV_TexTools.ViewModels
                 }
                catch (Exception e)
                 {
+                    while(e.InnerException != null)
+                    {
+                        e = e.InnerException;
+                    }
                     // We're not guaranteed to be on the main thread here,
                     // so ensure we call the message box on that thread so it doesn't
                     // get eaten by access errors.
@@ -1357,14 +1553,12 @@ namespace FFXIV_TexTools.ViewModels
         {
             ExportEnabled = false;
             ImportEnabled = false;
-            BasicImportEnabled = false;
         }
 
         private void EnableButtons()
         {
             ExportEnabled = true;
             ImportEnabled = true;
-            BasicImportEnabled = true;
         }
 
 
@@ -1374,7 +1568,7 @@ namespace FFXIV_TexTools.ViewModels
         #region Import
 
         /// <summary>
-        /// Imports the DAE for the model
+        /// Opens the import dialog.
         /// </summary>
         /// <remarks>
         /// This will import the DAE file with the same name and location as the exported model
@@ -1392,29 +1586,18 @@ namespace FFXIV_TexTools.ViewModels
                 return;
             }
 
-            try
+            var type = _item.GetPrimaryItemType();
+            string submeshId = GetSubmeshId();
+            bool success = await ImportModelView.ImportModel(_item, SelectedRace.XivRace, submeshId, null, () =>
             {
-
-                var type = _item.GetPrimaryItemType();
-                string submeshId = GetSubmeshId();
-                bool success = await ImportModelView.ImportModel(_item, SelectedRace.XivRace, submeshId, null, () =>
+                _view.Dispatcher.BeginInvoke((ThreadStart)delegate ()
                 {
-                    _view.Dispatcher.BeginInvoke((ThreadStart)delegate ()
-                    {
-                        // Go ahead and reload the model as soon as the import process is done, even if they haven't closed the window.
-                        ModStatusToggleEnabled = true;
+                    // Go ahead and reload the model as soon as the import process is done, even if they haven't closed the window.
+                    ModStatusToggleEnabled = true;
 
-                        GetMeshes();
-                    });
+                    GetMeshes();
                 });
-            }
-            catch (Exception ex)
-            {
-                FlexibleMessageBox.Show(
-                    string.Format(UIMessages.DAEImportErrorMessage, ex.Message), UIMessages.DAEImportErrorTitle,
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
+            });
             
 
         }
@@ -1467,6 +1650,7 @@ namespace FFXIV_TexTools.ViewModels
         {
             try
             {
+                ModelStatusLabel = UIStrings.ModelStatus_Loading;
                 // Might as well just make sure we have these updated.
                 CustomizeViewModel.UpdateFrameworkColors();
 
@@ -1484,12 +1668,6 @@ namespace FFXIV_TexTools.ViewModels
 
                 ExportEnabled = true;
 
-                var saveDir = new DirectoryInfo(Settings.Default.Save_Directory);
-                var path = $"{IOUtil.MakeItemSavePath(_item, saveDir, SelectedRace.XivRace)}\\3D";
-                var modelName = Path.GetFileNameWithoutExtension(_model.Source);
-                var savePath = Path.Combine(path, modelName) + ".dae";
-
-                BasicImportEnabled = File.Exists(savePath);
                 ImportEnabled = true;
                 UpdateTexEnabled = true;
                 FMVEnabled = true;
@@ -1742,8 +1920,7 @@ namespace FFXIV_TexTools.ViewModels
                 }
 
                 var dxVersion = int.Parse(Settings.Default.DX_Version);
-
-                var mtrlData = await mtrl.GetMtrlData(mtrlItem, race, filePath.Remove(0, 1), dxVersion);
+                var mtrlData = await mtrl.GetMtrlData(mtrlItem, filePath, dxVersion);
 
                 if (mtrlData.Shader.Contains("colorchange"))
                 {

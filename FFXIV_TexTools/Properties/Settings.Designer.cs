@@ -217,18 +217,6 @@ namespace FFXIV_TexTools.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Autodesk Collada")]
-        public string DAE_Plugin_Target {
-            get {
-                return ((string)(this["DAE_Plugin_Target"]));
-            }
-            set {
-                this["DAE_Plugin_Target"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool UpgradeRequired {
             get {
@@ -392,6 +380,30 @@ namespace FFXIV_TexTools.Properties {
             }
             set {
                 this["Etc_Color"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool Sync_Views {
+            get {
+                return ((bool)(this["Sync_Views"]));
+            }
+            set {
+                this["Sync_Views"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool Remember_Race_Selection {
+            get {
+                return ((bool)(this["Remember_Race_Selection"]));
+            }
+            set {
+                this["Remember_Race_Selection"] = value;
             }
         }
     }

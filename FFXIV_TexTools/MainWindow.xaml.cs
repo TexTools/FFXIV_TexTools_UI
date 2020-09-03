@@ -19,6 +19,7 @@ using FFXIV_TexTools.Properties;
 using FFXIV_TexTools.Resources;
 using FFXIV_TexTools.ViewModels;
 using FFXIV_TexTools.Views;
+using FFXIV_TexTools.Views.Metadata;
 using FFXIV_TexTools.Views.Models;
 using FolderSelect;
 using MahApps.Metro;
@@ -43,9 +44,11 @@ using xivModdingFramework.General.Enums;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Items.Categories;
 using xivModdingFramework.Items.Interfaces;
+using xivModdingFramework.Mods;
 using xivModdingFramework.Mods.DataContainers;
 using xivModdingFramework.Mods.FileTypes;
 using xivModdingFramework.SqPack.FileTypes;
+using static xivModdingFramework.Cache.XivCache;
 using Application = System.Windows.Application;
 
 namespace FFXIV_TexTools
@@ -59,6 +62,41 @@ namespace FFXIV_TexTools
         private static MainWindow _mainWindow;
         private FullModelView _fmv;
         public readonly System.Windows.Forms.IWin32Window Win32Window;
+
+        public static readonly Version BetaVersion = null;
+        public static readonly string BetaSuffix = null;
+        public static bool IsBetaVersion {
+            get
+            {
+                return BetaVersion != null;
+            }
+        }
+
+        public event EventHandler<int> SelectedPrimaryItemValueChanged;
+
+        private int _selectedPrimaryItemValue = -1;
+
+        /// <summary>
+        /// This number represents the selected Race or "Number" for the various tab views.
+        /// Changing it will trigger an event that those views listen to, for cycling the numbers.
+        /// </summary>
+        public int SelectedPrimaryItemValue
+        {
+            get { return _selectedPrimaryItemValue; }
+            set
+            {
+                // Only allow changing this value if it's *actually* changing, and to a real value.
+                if (SelectedPrimaryItemValueChanged != null && value >= 0 && value != _selectedPrimaryItemValue)
+                {
+                    _selectedPrimaryItemValue = value;
+                    if (Properties.Settings.Default.Sync_Views)
+                    {
+                        SelectedPrimaryItemValueChanged.Invoke(this, value);
+                    }
+                }
+            }
+        }
+
 
 
         /// <summary>
@@ -236,12 +274,27 @@ namespace FFXIV_TexTools
                 modelViewModel.LoadingComplete += ModelViewModelOnLoadingComplete;
                 modelViewModel.AddToFullModelEvent += ModelViewModelOnAddToFullModelEvent;
 
+                this.TabsControl.SelectionChanged += TabsControl_SelectionChanged;
+
 
                 // This can be set whereever, since the item select won't fire it unless things are loaded fully.
                 ItemSelect.ItemSelected += ItemSelect_ItemSelected;
                 ItemSelect.ItemsLoaded += OnTreeLoaded;
 
                 InitializeCache();
+            }
+        }
+
+        private void TabsControl_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            if (e.Source == TabsControl)
+            {
+                if (TabsControl.SelectedItem == this.ModelTabItem)
+                {
+                    var modelView = ModelTabItem.Content as ModelView;
+                    var modelViewModel = modelView.DataContext as ModelViewModel;
+                    modelViewModel.OnTabShown();
+                }
             }
         }
 
@@ -282,6 +335,37 @@ namespace FFXIV_TexTools
             }
         }
 
+        private bool _FFXIV_PATCHED = false;
+        private bool _NEW_INSTALL = false;
+        private void OnCacheRebuild(object sender, CacheRebuildReason reason)
+        {
+            // If the cache is cycling because of a FFXIV version mismatch, we need to trigger the 
+            // version update process after it's done.
+            if(IsUiLocked)
+            {
+                _lockProgress.Report("Rebuilding Cache... This may take up to 60 seconds.  (Rebuild Reason: " + reason.ToString() + ")");
+            }
+
+            if (reason == CacheRebuildReason.FFXIVUpdate)
+            {
+                _FFXIV_PATCHED = true;
+            }
+
+            if(reason == CacheRebuildReason.NoCache)
+            {
+                // If the user had no cache, and no modlist, they're a new install (or close enough to one)
+                var gameDir = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
+                var modding = new Modding(gameDir);
+                var modList = modding.GetModList();
+
+                if(modList.Mods.Count == 0)
+                {
+                    // New install prompt time after rebuild is done.
+                    _NEW_INSTALL = true;
+                }
+            }
+        }
+
         /// <summary>
         /// Initializes the Cache and loads the item tree for the first time when done.
         /// </summary>
@@ -306,6 +390,7 @@ namespace FFXIV_TexTools
                         dxVersion = 11;
                     }
 
+                    XivCache.CacheRebuilding += OnCacheRebuild;
                     XivCache.SetGameInfo(gameDir, lang, dxVersion);
                 } catch(Exception ex)
                 {
@@ -326,6 +411,38 @@ namespace FFXIV_TexTools
                 await Dispatcher.Invoke(async () =>
                 {
                     await UnlockUi();
+
+                    // Oh boy, update time.  This part's fun.
+                    if(_FFXIV_PATCHED)
+                    {
+                        var vm = (MainViewModel)DataContext;
+                        await vm.DoPostPatchCleanup();
+                        _FFXIV_PATCHED = false;
+                    }
+
+                    if(_NEW_INSTALL)
+                    {
+                        // Back up their stuff if they're a totally fresh install.
+                        var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
+                        var problemChecker = new ProblemChecker(gameDirectory);
+                        var backupsDirectory = new DirectoryInfo(Properties.Settings.Default.Backup_Directory);
+
+
+                        await LockUi("Creating Initial Backups", "This should only take a moment...");
+                        try
+                        {
+                            await problemChecker.BackupIndexFiles(backupsDirectory);
+                            await this.ShowMessageAsync(UIMessages.BackupCompleteTitle, UIMessages.BackupCompleteMessage);
+                        }
+                        catch (Exception ex)
+                        {
+                            FlexibleMessageBox.Show(string.Format(UIMessages.BackupFailedErrorMessage, ex.Message), UIMessages.BackupFailedTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                        finally
+                        {
+                            await UnlockUi();
+                        }
+                    }
 
                     if (cacheOK)
                     {
@@ -387,32 +504,36 @@ namespace FFXIV_TexTools
         public async Task LockUi(string title = null, string msg = null, object caller = null)
         {
             await _lockScreenSemaphore.WaitAsync();
-            if (IsUiLocked)
+            try
             {
+                if (IsUiLocked)
+                {
+                    return;
+                }
 
+                if (title == null)
+                {
+                    title = UIStrings.Loading;
+                }
+
+                if (msg == null)
+                {
+                    msg = UIStrings.Please_Wait;
+                }
+
+                _lockProgressController = await this.ShowProgressAsync(title, msg);
+
+                _lockProgressController.SetIndeterminate();
+
+                _lockProgress = new Progress<string>((update) =>
+                {
+                    _lockProgressController.SetMessage(update);
+                });
+            }
+            finally
+            {
                 _lockScreenSemaphore.Release();
-                return;
             }
-            if(title == null)
-            {
-                title = UIStrings.Loading;
-            }
-
-            if(msg == null)
-            {
-                msg = UIStrings.Please_Wait;
-            }
-
-            _lockProgressController = await this.ShowProgressAsync(title, msg);
-
-            _lockProgressController.SetIndeterminate();
-
-            _lockProgress = new Progress<string>((update) =>
-            {
-                _lockProgressController.SetMessage(update);
-            });
-
-            _lockScreenSemaphore.Release();
 
             if (UiLocked != null)
             {
@@ -423,24 +544,29 @@ namespace FFXIV_TexTools
         public async Task UnlockUi(object caller = null)
         {
             await _lockScreenSemaphore.WaitAsync();
-            if (!IsUiLocked)
-            {
-                _lockScreenSemaphore.Release();
-                return;
-            }
-
             try
             {
-                // Sometimes this chokes, not sure why.
-                await _lockProgressController.CloseAsync();
-            } catch
-            {
+                if (!IsUiLocked)
+                {
+                    return;
+                }
 
+                try
+                {
+                    // Sometimes this chokes, not sure why.
+                    await _lockProgressController.CloseAsync();
+                }
+                catch
+                {
+
+                }
+                _lockProgressController = null;
+                _lockProgress = null;
             }
-            _lockProgressController = null;
-            _lockProgress = null;
-
-            _lockScreenSemaphore.Release();
+            finally
+            {
+                _lockScreenSemaphore.Release();
+            }
 
             if (UiUnlocked != null)
             {
@@ -690,6 +816,24 @@ namespace FFXIV_TexTools
             var textureViewModel = textureView.DataContext as TextureViewModel;
             var sharedItemsView = SharedItemsTab.Content as SharedItemsView;
             var sharedItemsViewModel = sharedItemsView.DataContext as SharedItemsViewModel;
+            var metadataView = MetadataTab.Content as MetadataView;
+
+            var showMetadata = await metadataView.SetItem(item);
+            if (showMetadata)
+            {
+                MetadataTab.IsEnabled = true;
+                MetadataTab.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                if (MetadataTab.IsSelected)
+                {
+                    MetadataTab.IsSelected = false;
+                    MetadataTab.IsSelected = true;
+                }
+                MetadataTab.IsEnabled = false;
+                MetadataTab.Visibility = Visibility.Collapsed;
+            }
 
             // This guy has no funny async callback.  It's ready once these awaits are done.
             await textureViewModel.UpdateTexture(item);
@@ -705,8 +849,10 @@ namespace FFXIV_TexTools
                     TextureTabItem.IsSelected = true;
                 }
                 SharedItemsTab.IsEnabled = false;
-                SharedItemsTab.Visibility = Visibility.Hidden;
+                SharedItemsTab.Visibility = Visibility.Collapsed;
             }
+
+
 
 
             if (item.PrimaryCategory.Equals(XivStrings.UI) ||
@@ -723,7 +869,7 @@ namespace FFXIV_TexTools
                 _modelLoaded = true;
 
                 ModelTabItem.IsEnabled = false;
-                ModelTabItem.Visibility = Visibility.Hidden;
+                ModelTabItem.Visibility = Visibility.Collapsed;
             }
             else
             {
@@ -735,6 +881,9 @@ namespace FFXIV_TexTools
 
                 await modelViewModel.UpdateModel(item as IItemModel);
             }
+
+            // Need to do this here in case any of the views came back immediately and fired before we finished this function.
+            await CheckItemLoadComplete();
         }
 
         /// <summary>
@@ -1055,8 +1204,18 @@ namespace FFXIV_TexTools
             if (r == System.Windows.Forms.DialogResult.OK)
             {
                 await LockUi("Rebuilding Cache");
-                await Task.Run(XivCache.RebuildCache);
+                try
+                {
+                    await Task.Run(() =>
+                    {
+                        XivCache.RebuildCache();
+                    });
+                } catch(Exception ex)
+                {
+                    FlexibleMessageBox.Show("Unable to rebuild cache file.\n\nError:" + ex.Message, "Cache Rebuild Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
                 await UnlockUi();
+                await RefreshTree(this);
             }
         }
         private async void Menu_ScanForSets_Click(object sender, RoutedEventArgs e)
@@ -1143,7 +1302,8 @@ namespace FFXIV_TexTools
                 }
                 catch(Exception ex)
                 {
-                    FlexibleMessageBox.Show(UIMessages.StartOverErrorMessage,
+                    var msg = UIMessages.StartOverErrorMessage + "\n\nError:" + ex.Message;
+                    FlexibleMessageBox.Show(msg,
                         UIMessages.StartOverErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     await UnlockUi();
                     return;
@@ -1202,6 +1362,12 @@ namespace FFXIV_TexTools
         private void MetroWindow_Loaded(object sender, RoutedEventArgs e)
         {
             var fileVersion = FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location).FileVersion;
+
+            if (IsBetaVersion)
+            {
+                fileVersion = BetaVersion.ToString() + " " + BetaSuffix;
+            }
+
             var tmps = fileVersion.Split('.');
             var pre = tmps[tmps.Length - 1] == "0" ? "" : $".{tmps[tmps.Length - 1]}";
             Title += $" {fileVersion.Substring(0, fileVersion.LastIndexOf("."))}{pre}";
@@ -1368,6 +1534,13 @@ namespace FFXIV_TexTools
             {
                 await UnlockUi();
             }
+        }
+
+        private void Menu_CopyFile_Click(object sender, RoutedEventArgs e)
+        {
+            var win = new CopyFileDialog() { Owner = this };
+            win.Show();
+
         }
     }
 }

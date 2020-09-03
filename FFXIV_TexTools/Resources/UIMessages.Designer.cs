@@ -248,66 +248,6 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There was an error attempting to export the model as a dae.
-        ///
-        ///{0}.
-        /// </summary>
-        internal static string DAEExportErrorMessage {
-            get {
-                return ResourceManager.GetString("DAEExportErrorMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Error exporting DAE.
-        /// </summary>
-        internal static string DAEExportErrorTitle {
-            get {
-                return ResourceManager.GetString("DAEExportErrorTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to There was an error attempting to import the model.
-        ///
-        ///{0}.
-        /// </summary>
-        internal static string DAEImportErrorMessage {
-            get {
-                return ResourceManager.GetString("DAEImportErrorMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Error Importing DAE.
-        /// </summary>
-        internal static string DAEImportErrorTitle {
-            get {
-                return ResourceManager.GetString("DAEImportErrorTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to There was an error attempting to read the DAE file.
-        ///
-        ///Error: {0}.
-        /// </summary>
-        internal static string DAEReadErrorMessage {
-            get {
-                return ResourceManager.GetString("DAEReadErrorMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Error Reading DAE.
-        /// </summary>
-        internal static string DAEReadErrorTitle {
-            get {
-                return ResourceManager.GetString("DAEReadErrorTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Nothing was entered for ModPack Description
         ///
         ///Description will be left empty..
@@ -1326,6 +1266,31 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The following mod files were destroyed by the FFXIV Patch.
+        ///It is recommended to create or download index backups and perform a [Start Over] to avoid potential problems.
+        ///
+        ///{0}.
+        /// </summary>
+        internal static string PatchDestroyedFiles {
+            get {
+                return ResourceManager.GetString("PatchDestroyedFiles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An FFXIV Update has been detected on this FFXIV Install.
+        ///The Modlist will now be checked for errors and changes.
+        ///Please ensure FFXIV is not open, and do not close TexTools until this process is complete.
+        ///
+        ///.
+        /// </summary>
+        internal static string PatchDetectedMessage {
+            get {
+                return ResourceManager.GetString("PatchDetectedMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Please Stand By....
         /// </summary>
         internal static string PleaseStandByMessage {
@@ -1340,6 +1305,51 @@ namespace FFXIV_TexTools.Resources {
         internal static string PleaseWaitMessage {
             get {
                 return ResourceManager.GetString("PleaseWaitMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Modlist has been validated successfully.
+        ///Would you like like to disable all mods and create updated index backups now?.
+        /// </summary>
+        internal static string PostPatchBackupPrompt {
+            get {
+                return ResourceManager.GetString("PostPatchBackupPrompt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Index Backups Created Successfully.
+        ///The Post-Patch Process is now complete.
+        ///
+        ///If you encounter problems, use Help =&gt; Download Index Backups/Start Over..
+        /// </summary>
+        internal static string PostPatchBackupsComplete {
+            get {
+                return ResourceManager.GetString("PostPatchBackupsComplete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Post-Patch Process is now complete.
+        ///
+        ///If you encounter problems, please use Help =&gt; Download Index Backups/Start Over..
+        /// </summary>
+        internal static string PostPatchComplete {
+            get {
+                return ResourceManager.GetString("PostPatchComplete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to complete Post-Patch cleanup.
+        ///Please use [Help =&gt; Download Index Backups], then [Help =&gt; Start Over].
+        ///
+        ///Error Message: {0}.
+        /// </summary>
+        internal static string PostPatchError {
+            get {
+                return ResourceManager.GetString("PostPatchError", resourceCulture);
             }
         }
         

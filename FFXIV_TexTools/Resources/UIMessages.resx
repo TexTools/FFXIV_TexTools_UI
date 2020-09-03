@@ -171,30 +171,6 @@ In order to create a clean backup, all active modifications will be set to disab
   <data name="CreateBackupTitle" xml:space="preserve">
     <value>Create Backup?</value>
   </data>
-  <data name="DAEExportErrorMessage" xml:space="preserve">
-    <value>There was an error attempting to export the model as a dae.
-
-{0}</value>
-  </data>
-  <data name="DAEExportErrorTitle" xml:space="preserve">
-    <value>Error exporting DAE</value>
-  </data>
-  <data name="DAEImportErrorMessage" xml:space="preserve">
-    <value>There was an error attempting to import the model.
-
-{0}</value>
-  </data>
-  <data name="DAEImportErrorTitle" xml:space="preserve">
-    <value>Error Importing DAE</value>
-  </data>
-  <data name="DAEReadErrorMessage" xml:space="preserve">
-    <value>There was an error attempting to read the DAE file.
-
-Error: {0}</value>
-  </data>
-  <data name="DAEReadErrorTitle" xml:space="preserve">
-    <value>Error Reading DAE</value>
-  </data>
   <data name="DependencyErrorMessage" xml:space="preserve">
     <value>TexTools was unable to locate dependency files.
 Please make sure you are running TexTools in the folder it came in.
@@ -747,5 +723,39 @@ Error: {0}</value>
   </data>
   <data name="FullModelExportSuccessTitle" xml:space="preserve">
     <value>Export Successful</value>
+  </data>
+  <data name="PatchDetectedMessage" xml:space="preserve">
+    <value>An FFXIV Update has been detected on this FFXIV Install.
+The Modlist will now be checked for errors and changes.
+Please ensure FFXIV is not open, and do not close TexTools until this process is complete.
+
+</value>
+  </data>
+  <data name="PostPatchBackupPrompt" xml:space="preserve">
+    <value>The Modlist has been validated successfully.
+Would you like like to disable all mods and create updated index backups now?</value>
+  </data>
+  <data name="PatchDestroyedFiles" xml:space="preserve">
+    <value>The following mod files were destroyed by the FFXIV Patch.
+It is recommended to create or download index backups and perform a [Start Over] to avoid potential problems.
+
+{0}</value>
+  </data>
+  <data name="PostPatchBackupsComplete" xml:space="preserve">
+    <value>Index Backups Created Successfully.
+The Post-Patch Process is now complete.
+
+If you encounter problems, use Help =&gt; Download Index Backups/Start Over.</value>
+  </data>
+  <data name="PostPatchComplete" xml:space="preserve">
+    <value>The Post-Patch Process is now complete.
+
+If you encounter problems, please use Help =&gt; Download Index Backups/Start Over.</value>
+  </data>
+  <data name="PostPatchError" xml:space="preserve">
+    <value>Unable to complete Post-Patch cleanup.
+Please use [Help =&gt; Download Index Backups], then [Help =&gt; Start Over].
+
+Error Message: {0}</value>
   </data>
 </root>

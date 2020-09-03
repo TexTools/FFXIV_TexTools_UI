@@ -24,13 +24,13 @@
         <UniformGrid Rows="1" Grid.Row="0">
             <ComboBox VerticalAlignment="Center" Margin="5,0" mah:TextBoxHelper.UseFloatingWatermark="True" mah:TextBoxHelper.Watermark="{Binding RaceWatermark, FallbackValue='Race'}" 
                       ItemsSource="{Binding Races}" DisplayMemberPath="Name" SelectedValuePath="XivRace" SelectedItem="{Binding SelectedRace}" SelectedIndex="{Binding SelectedRaceIndex}"
-                      IsEnabled="{Binding RaceComboboxEnabled}" />
+                      IsEnabled="{Binding RaceComboboxEnabled}" Visibility="{Binding RaceVisibility, FallbackValue=Visible}" />
             <ComboBox VerticalAlignment="Center" Margin="5,0" mah:TextBoxHelper.UseFloatingWatermark="True" mah:TextBoxHelper.Watermark="{Binding NumberWatermark, FallbackValue='Number'}" 
                       ItemsSource="{Binding Numbers}" DisplayMemberPath="Name" SelectedValuePath="Name"  SelectedItem="{Binding SelectedNumber}" SelectedIndex="{Binding SelectedNumberIndex}"
                       IsEnabled="{Binding NumberComboboxEnabled}" Visibility="{Binding NumberVisibility, FallbackValue=Collapsed}"/>
             <ComboBox VerticalAlignment="Center" Margin="5,0" mah:TextBoxHelper.UseFloatingWatermark="True" mah:TextBoxHelper.Watermark="{Binding PartWatermark, FallbackValue='Part'}" 
                       ItemsSource="{Binding Parts}" DisplayMemberPath="Name" SelectedValuePath="Name"  SelectedItem="{Binding SelectedPart}" SelectedIndex="{Binding SelectedPartIndex}"
-                      IsEnabled="{Binding PartComboboxEnabled}"  Visibility="{Binding PartVisibility, FallbackValue=Collapsed}"/>
+                      IsEnabled="{Binding PartComboboxEnabled}"  Visibility="{Binding PartVisibility, FallbackValue=Visible}"/>
             <ComboBox VerticalAlignment="Center" Margin="5,0" mah:TextBoxHelper.UseFloatingWatermark="True" mah:TextBoxHelper.Watermark="{Binding MeshWatermark, FallbackValue='Mesh'}" 
                       ItemsSource="{Binding Meshes}" DisplayMemberPath="Name" SelectedValuePath="Name"  
                       SelectedItem="{Binding SelectedMesh}" SelectedIndex="{Binding SelectedMeshIndex}" IsEnabled="{Binding MeshComboboxEnabled}" />

@@ -388,18 +388,7 @@ namespace FFXIV_TexTools.Views
                     string.Format(UIMessages.SuccessfulImportCountMessage, TotalModsImported, TotalModsErrored));
             }
 
-            // When the import is done force an update of the Texture/Model tabs by setting the selected parts
-            if (_textureViewModel != null && _modelViewModel != null)
-            {
-                if (_textureViewModel.SelectedPart != null)
-                {
-                    _textureViewModel.SelectedPart = _textureViewModel.SelectedPart;
-                }
-                if (_modelViewModel.SelectedPart != null)
-                {
-                    _modelViewModel.SelectedPart = _modelViewModel.SelectedPart;
-                }
-            }
+            MainWindow.GetMainWindow().ReloadItem();
 
             DialogResult = true;
         }

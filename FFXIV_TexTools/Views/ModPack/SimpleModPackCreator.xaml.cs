@@ -197,6 +197,9 @@ namespace FFXIV_TexTools.Views
 
             this.ModList = modding.GetModList();
 
+            // Don't show or list internal mods at all in this menu.
+            this.ModList.Mods.RemoveAll(x => x.IsInternal());
+
             // Rip through the mod list and get the correct raw compressed sizes for all the mods.
             var _dat = new Dat(XivCache.GameInfo.GameDirectory);
             foreach (var mod in ModList.Mods)

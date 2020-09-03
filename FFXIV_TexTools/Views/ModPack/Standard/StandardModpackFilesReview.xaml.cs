@@ -76,11 +76,11 @@ namespace FFXIV_TexTools.Views
 
         private static readonly Regex _suffixRegex = new Regex("\\.([a-z]+)$");
 
-        private void LoadVMFiles()
+        private async Task LoadVMFiles()
         {
-            foreach(var file in _vm.AllFiles)
+            foreach (var file in _vm.AllFiles)
             {
-                AddFile(file);
+                await AddFile(file);
             }
             ConfirmButton.IsEnabled = true;
         }
@@ -88,9 +88,14 @@ namespace FFXIV_TexTools.Views
         private async Task<bool> AddFile(string file)
         {
             var _index = new Index(XivCache.GameInfo.GameDirectory);
-            if(!(await _index.FileExists(file))) {
-                // File doesn't actually exist, can't be added.
-                return false;
+
+            if (Path.GetExtension(file) != ".meta")
+            {
+                if (!(await _index.FileExists(file)))
+                {
+                    // File doesn't actually exist, can't be added.
+                    return false;
+                }
             }
 
             var match = _suffixRegex.Match(file);
@@ -138,7 +143,7 @@ namespace FFXIV_TexTools.Views
             var files = new SortedSet<string>();
             foreach(var file in parentFiles)
             {
-                var children = await GetChildrenRecursive(file);
+                var children = await XivCache.GetChildrenRecursive(file);
                 foreach(var child in children)
                 {
                     files.Add(child);
@@ -159,33 +164,6 @@ namespace FFXIV_TexTools.Views
             UpdateCounts();
 
             ConfirmButton.IsEnabled = true;
-        }
-
-        private async Task<HashSet<string>> GetChildrenRecursive(string file)
-        {
-            var files = new HashSet<string>();
-            files.Add(file);
-
-            var baseChildren = await XivCache.GetChildFiles(file);
-            if(baseChildren == null || baseChildren.Count == 0)
-            {
-                // No children, just us.
-                return files;
-            } else
-            {
-                // We have child files.
-                foreach(var child in baseChildren)
-                {
-                    // Recursively get their children.
-                    var children = await GetChildrenRecursive(child);
-                    foreach(var subchild in children)
-                    {
-                        // Add the results to the list.
-                        files.Add(subchild);
-                    }
-                }
-            }
-            return files;
         }
 
         private void BackButton_Click(object sender, RoutedEventArgs e)

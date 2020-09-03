@@ -135,7 +135,14 @@ namespace FFXIV_TexTools.Views
             var parents = await XivCache.GetParentFiles(filePath);
             var siblings = await XivCache.GetSiblingFiles(filePath);
 
-            foreach(var s in children)
+            if (children == null || parents == null || siblings == null)
+            {
+                WarningLabel.Text = "File dependency information not supported for this item.";
+                await UnlockUi();
+                return;
+            }
+
+            foreach (var s in children)
             {
                 ChildFilesBox.Items.Add(s);
             }

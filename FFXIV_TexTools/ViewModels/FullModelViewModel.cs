@@ -62,6 +62,8 @@ namespace FFXIV_TexTools.ViewModels
         private DirectoryInfo _gameDirectory;
         private Dictionary<XivRace, int[]> _charaRaceAndSkinDictionary;
 
+        private bool _updateNeeded = true;
+
         public FullModelViewModel(FullModelView fullModelView)
         {
             _gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
