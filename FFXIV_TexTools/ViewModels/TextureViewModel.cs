@@ -936,7 +936,7 @@ namespace FFXIV_TexTools.ViewModels
                 // Invalid IMC set, cancel.
                 if (item.ModelInfo.ImcSubsetID > entries.Count)
                 {
-                    if (SelectedMap.Path == path)
+                    if (SelectedMap != null && SelectedMap.Path == path)
                     {
                         _textureView.SharedVariantLabel.Visibility = Visibility.Collapsed;
                         _textureView.SharedTextureLabel.Visibility = Visibility.Collapsed;
@@ -963,7 +963,7 @@ namespace FFXIV_TexTools.ViewModels
 
                 if (parents.Count == 0)
                 {
-                    if (SelectedMap.Path == path)
+                    if (SelectedMap != null && SelectedMap.Path == path)
                     {
                         _textureView.SharedVariantLabel.Content = "";
                         _textureView.SharedVariantLabel.Visibility = Visibility.Collapsed;
@@ -1000,7 +1000,7 @@ namespace FFXIV_TexTools.ViewModels
                     }
                 }
 
-                if (SelectedMap.Path == path)
+                if (SelectedMap != null && SelectedMap.Path == path)
                 {
                     _textureView.SharedVariantLabel.Content = $"Used by {variantSum}/{vCount} Variants";
                     _textureView.SharedVariantLabel.Visibility = Visibility.Visible;
@@ -1011,7 +1011,7 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     var differentFiles = parents.Select(x => Path.GetFileName(x)).ToHashSet();
                     var count = differentFiles.Count - 1;
-                    if (SelectedMap.Path == path)
+                    if (SelectedMap != null && SelectedMap.Path == path)
                     {
                         _textureView.SharedTextureLabel.Content = "Used by " + count + " Other Materials";
                         _textureView.SharedTextureLabel.Visibility = Visibility.Visible;

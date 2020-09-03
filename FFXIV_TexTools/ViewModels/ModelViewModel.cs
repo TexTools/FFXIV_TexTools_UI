@@ -1724,6 +1724,8 @@ namespace FFXIV_TexTools.ViewModels
             Color? customColor = null;
             WinColor winColor;
 
+            if (SelectedRace == null) return textureDataDictionary;
+
             var race = SelectedRace.XivRace;
 
             var materialNum = 0;
