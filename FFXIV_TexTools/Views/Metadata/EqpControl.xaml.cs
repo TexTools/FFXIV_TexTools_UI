@@ -181,7 +181,7 @@ namespace FFXIV_TexTools.Views.Metadata
             { "met", new Dictionary<string, byte[]>()
             {
                 // 3 Bytes per
-                { "Glasses", new byte [] { 255, 63, 3} },
+                { "Glasses", new byte [] { 225, 63, 3} },
                 { "Hat", new byte [] { 227, 118, 3} },
                 { "Open Helmet", new byte [] { 21, 240, 3} },
                 { "Full Helmet", new byte [] { 23, 48, 3} },

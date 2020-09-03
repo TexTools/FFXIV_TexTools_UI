@@ -521,14 +521,25 @@ namespace FFXIV_TexTools
                     msg = UIStrings.Please_Wait;
                 }
 
-                _lockProgressController = await this.ShowProgressAsync(title, msg);
+                // If the lock screen doesn't proc within 1 second, kill it.
+                const int timeout = 1000;
+                var task = this.ShowProgressAsync(title, msg);
 
-                _lockProgressController.SetIndeterminate();
-
-                _lockProgress = new Progress<string>((update) =>
+                if (await Task.WhenAny(task, Task.Delay(timeout)) == task)
                 {
-                    _lockProgressController.SetMessage(update);
-                });
+                    // Task completed within timeout
+                    _lockProgressController = task.Result;
+                    _lockProgressController.SetIndeterminate();
+
+                    _lockProgress = new Progress<string>((update) =>
+                    {
+                        _lockProgressController.SetMessage(update);
+                    });
+                }
+                else
+                {
+                    // Lock screen failed to resolve, don't let us deadlock.
+                }
             }
             finally
             {
@@ -554,7 +565,17 @@ namespace FFXIV_TexTools
                 try
                 {
                     // Sometimes this chokes, not sure why.
-                    await _lockProgressController.CloseAsync();
+                    const int timeout = 1000;
+                    var task = _lockProgressController.CloseAsync();
+
+                    if (await Task.WhenAny(task, Task.Delay(timeout)) == task)
+                    {
+                        // Task completed within timeout
+                    }
+                    else
+                    {
+                        // Unlock screen failed to resolve, don't let us deadlock.
+                    }
                 }
                 catch
                 {

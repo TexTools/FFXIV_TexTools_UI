@@ -132,7 +132,7 @@ namespace FFXIV_TexTools.ViewModels
             // If we were the ones to trigger it, there's no need to adjust this.
             if (_tab.IsSelected) return;
 
-            if(_item.SecondaryCategory == XivStrings.Character)
+            if(_item.PrimaryCategory == XivStrings.Character)
             {
                 // Character type items this means the ""Number""
                 if (SelectedNumber == null) return;
@@ -147,7 +147,7 @@ namespace FFXIV_TexTools.ViewModels
                 for (int i = 0; i < Numbers.Count; i++)
                 {
                     var num = 0;
-                    ok = Int32.TryParse(SelectedNumber.Name, out num);
+                    ok = Int32.TryParse(Numbers[i].Name, out num);
                     if (!ok) continue;
 
                     if (num == e)
@@ -1723,6 +1723,8 @@ namespace FFXIV_TexTools.ViewModels
             var hasColorChangeShader = false;
             Color? customColor = null;
             WinColor winColor;
+
+            if (SelectedRace == null) return textureDataDictionary;
 
             var race = SelectedRace.XivRace;
 

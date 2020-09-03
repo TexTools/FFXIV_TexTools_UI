@@ -472,14 +472,29 @@ namespace FFXIV_TexTools.ViewModels
                     _vfxPath = vfxPath.Folder + "/" + vfxPath.File;
                     _hasVfx = await index.FileExists(_vfxPath);
                 }
+
             });
 
 
             var finalList = new SortedSet<string>();
+            var rex = new Regex("\\/[^/]+c([0-9]{4})[^/]+\\.mtrl$");
             foreach(var material in materials)
             {
+
+                // Safety check.  If any materials are referenced in the item which do not exist in the Racial menu, add the race to the menu.
+                var match = rex.Match(material);
+                if (match.Success)
+                {
+                    var matCode = match.Groups[1].Value;
+                    var matRace = XivRaces.GetXivRace(matCode); 
+                    if (_primaryIsRace && !_primaryComboBoxData.Any(x => x.Value == (int)matRace))
+                    {
+                        _primaryComboBoxData.Add(new KeyValuePair<string, int>(matRace.GetDisplayName(), (int)matRace));
+                    }
+                }
+
                 // If we have a specific race, narrow things down more.
-                if(race != XivRace.All_Races)
+                if (race != XivRace.All_Races)
                 {
                     if (material.Contains("c" + race.GetRaceCode()))
                     {
@@ -921,7 +936,7 @@ namespace FFXIV_TexTools.ViewModels
                 // Invalid IMC set, cancel.
                 if (item.ModelInfo.ImcSubsetID > entries.Count)
                 {
-                    if (SelectedMap.Path == path)
+                    if (SelectedMap != null && SelectedMap.Path == path)
                     {
                         _textureView.SharedVariantLabel.Visibility = Visibility.Collapsed;
                         _textureView.SharedTextureLabel.Visibility = Visibility.Collapsed;
@@ -948,7 +963,7 @@ namespace FFXIV_TexTools.ViewModels
 
                 if (parents.Count == 0)
                 {
-                    if (SelectedMap.Path == path)
+                    if (SelectedMap != null && SelectedMap.Path == path)
                     {
                         _textureView.SharedVariantLabel.Content = "";
                         _textureView.SharedVariantLabel.Visibility = Visibility.Collapsed;
@@ -985,7 +1000,7 @@ namespace FFXIV_TexTools.ViewModels
                     }
                 }
 
-                if (SelectedMap.Path == path)
+                if (SelectedMap != null && SelectedMap.Path == path)
                 {
                     _textureView.SharedVariantLabel.Content = $"Used by {variantSum}/{vCount} Variants";
                     _textureView.SharedVariantLabel.Visibility = Visibility.Visible;
@@ -996,7 +1011,7 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     var differentFiles = parents.Select(x => Path.GetFileName(x)).ToHashSet();
                     var count = differentFiles.Count - 1;
-                    if (SelectedMap.Path == path)
+                    if (SelectedMap != null && SelectedMap.Path == path)
                     {
                         _textureView.SharedTextureLabel.Content = "Used by " + count + " Other Materials";
                         _textureView.SharedTextureLabel.Visibility = Visibility.Visible;
@@ -1251,7 +1266,6 @@ namespace FFXIV_TexTools.ViewModels
                 var _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory, df, XivCache.GameInfo.GameLanguage);
                 var _tex = new Tex(XivCache.GameInfo.GameDirectory);
 
-
                 var ttp = new TexTypePath
                 {
                     Path = SelectedMap.Path,
@@ -1263,7 +1277,18 @@ namespace FFXIV_TexTools.ViewModels
                 {
 
                     texData = await _mtrl.MtrlToXivTex(_xivMtrl, ttp);
-                    _mtrl.SaveColorSetExtraData(_item, _xivMtrl, savePath, SelectedRace);
+                    if (_primaryIsRace)
+                    {
+                        _mtrl.SaveColorSetExtraData(_item, _xivMtrl, savePath, SelectedRace);
+                    }
+                    else
+                    {
+                        var saveItem = (XivCharacter)((XivCharacter)_item).Clone();
+                        saveItem.ModelInfo.SecondaryID = SelectedPrimary;
+                        saveItem.Name = saveItem.SecondaryCategory;
+                        var race = XivRaces.GetXivRace(_root.Info.PrimaryId);
+                        _mtrl.SaveColorSetExtraData(saveItem, _xivMtrl, savePath, race);
+                    }
                 }
                 else
                 {
@@ -1276,7 +1301,17 @@ namespace FFXIV_TexTools.ViewModels
                 }
                 else
                 {
-                    _tex.SaveTexAsDDS(_item, texData, savePath, SelectedRace);
+                    if (_primaryIsRace)
+                    {
+                        _tex.SaveTexAsDDS(_item, texData, savePath, SelectedRace);
+                    } else
+                    {
+                        var saveItem = (XivCharacter)((XivCharacter)_item).Clone();
+                        saveItem.Name = saveItem.SecondaryCategory;
+                        saveItem.ModelInfo.SecondaryID = SelectedPrimary;
+                        var race = XivRaces.GetXivRace(_root.Info.PrimaryId);
+                        _tex.SaveTexAsDDS(saveItem, texData, savePath, race);
+                    }
                 }
             }
             else
@@ -1337,7 +1372,14 @@ namespace FFXIV_TexTools.ViewModels
 
             if (_item != null)
             {
-                path = IOUtil.MakeItemSavePath(_item, savePath, SelectedRace);
+                if (!_primaryIsRace)
+                {
+                    var race = XivRaces.GetXivRace(_root.Info.PrimaryId);
+                    path = IOUtil.MakeItemSavePath(_item, savePath, race, SelectedPrimary);
+                } else
+                {
+                    path = IOUtil.MakeItemSavePath(_item, savePath, SelectedRace);
+                }
             }
             else if (_uiItem != null)
             {
@@ -1434,7 +1476,19 @@ namespace FFXIV_TexTools.ViewModels
 
             if (_item != null)
             {
-                path = new DirectoryInfo(IOUtil.MakeItemSavePath(_item, savePath, SelectedRace));
+                if (!_primaryIsRace)
+                {
+                    var race = XivRaces.GetXivRace(_root.Info.PrimaryId);
+                    var saveItem = (XivCharacter)((XivCharacter)_item).Clone();
+                    saveItem.Name = saveItem.SecondaryCategory;
+                    saveItem.ModelInfo.SecondaryID = SelectedPrimary;
+
+                    path = new DirectoryInfo(IOUtil.MakeItemSavePath(saveItem, savePath, race, SelectedPrimary));
+                }
+                else
+                {
+                    path = new DirectoryInfo(IOUtil.MakeItemSavePath(_item, savePath, SelectedRace));
+                }
             }
             else if (_uiItem != null)
             {
@@ -1469,7 +1523,17 @@ namespace FFXIV_TexTools.ViewModels
                     {
                         if (_item != null)
                         {
-                            await _tex.ImportTex(texData.TextureTypeAndPath.Path, fileDir.FullName, _item, XivStrings.TexTools);
+                            var saveItem = _item;
+
+                            if (!_primaryIsRace)
+                            {
+                                var temp = (XivCharacter)((XivCharacter)_item).Clone();
+                                temp.Name = saveItem.SecondaryCategory;
+                                temp.ModelInfo.SecondaryID = SelectedPrimary;
+                                saveItem = temp;
+                            }
+
+                            await _tex.ImportTex(texData.TextureTypeAndPath.Path, fileDir.FullName, saveItem, XivStrings.TexTools);
                         }
                         else if (_uiItem != null)
                         {
@@ -1510,6 +1574,16 @@ namespace FFXIV_TexTools.ViewModels
                     {
                         if (_item != null)
                         {
+                            var saveItem = _item;
+
+                            if (!_primaryIsRace)
+                            {
+                                var temp = (XivCharacter)((XivCharacter)_item).Clone();
+                                temp.Name = saveItem.SecondaryCategory;
+                                temp.ModelInfo.SecondaryID = SelectedPrimary;
+                                saveItem = temp;
+                            }
+
                             await _tex.ImportTex(texData.TextureTypeAndPath.Path, fileDir.FullName, _item, XivStrings.TexTools);
                         }
                         else if (_uiItem != null)

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using xivModdingFramework.Cache;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Helpers;
+using xivModdingFramework.Items.DataContainers;
 using xivModdingFramework.Items.Interfaces;
 using xivModdingFramework.Models.FileTypes;
 using xivModdingFramework.Mods.FileTypes;
@@ -145,13 +146,19 @@ namespace FFXIV_TexTools.ViewModels
                         var copySource = await _metadata.Root.GetMaterialFiles(1);
                         var item = _metadata.Root.GetFirstItem();
 
+                        var iName = item.Name;
+                        if(typeof(XivCharacter) == item.GetType())
+                        {
+                            iName = item.SecondaryCategory;
+                        }
+
                         for(int i = originalMaterialSetMax +1; i <= newMaterialSetMax; i++)
                         {
                             foreach(var material in copySource)
                             {
                                 var dest = material.Replace("v0001", "v" + i.ToString().PadLeft(4, '0'));
 
-                                await _dat.CopyFile(material, dest, item.SecondaryCategory, item.Name, XivStrings.TexTools);
+                                await _dat.CopyFile(material, dest, item.SecondaryCategory, iName, XivStrings.TexTools);
                             }
                         }
                     }
