@@ -22,6 +22,16 @@ namespace FFXIV_TexTools.Views.Metadata
         private Dictionary<XivRace, ComboBox> RacialComboBoxes;
         private Dictionary<XivRace, ObservableCollection<KeyValuePair<int, string>>> RacialItemSources;
 
+
+        private bool IsRaceEnabled(XivRace race)
+        {
+            if(_metadata.EqdpEntries.ContainsKey(race))
+            {
+                return _metadata.EqdpEntries[race].bit1;
+            }
+            return false;
+        }
+
         private bool SingleRaceMode
         {
             get
@@ -37,6 +47,16 @@ namespace FFXIV_TexTools.Views.Metadata
             RacialComboBoxes = new Dictionary<XivRace, ComboBox>();
             RacialItemSources = new Dictionary<XivRace, ObservableCollection<KeyValuePair<int, string>>>();
 
+            MetadataView.CurrentView.EqdpView.RaceChanged += EqdpView_RaceChanged;
+
+        }
+
+        private void EqdpView_RaceChanged(object sender, (XivRace Race, bool Enabled) e)
+        {
+            if (RacialComboBoxes.ContainsKey(e.Race))
+            {
+                RacialComboBoxes[e.Race].IsEnabled = e.Enabled;
+            }
         }
 
         private void SetupSingleRaceMenu()
@@ -67,6 +87,8 @@ namespace FFXIV_TexTools.Views.Metadata
 
             var dict = new ObservableCollection<KeyValuePair<int, string>>();
             RacialItemSources.Add(race, dict);
+
+            cb.IsEnabled = IsRaceEnabled(race);
 
             cb.DataContext = race;
             cb.ItemsSource = dict;
@@ -161,6 +183,8 @@ namespace FFXIV_TexTools.Views.Metadata
 
                 var dict = new ObservableCollection<KeyValuePair<int, string>>();
                 cb.DataContext = race;
+
+                cb.IsEnabled = IsRaceEnabled(race);
                 RacialItemSources.Add(race, dict);
                 cb.ItemsSource = dict;
                 cb.DisplayMemberPath = "Value";

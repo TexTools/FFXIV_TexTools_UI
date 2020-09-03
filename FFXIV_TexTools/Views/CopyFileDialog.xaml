@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FFXIV_TexTools.Views"
         mc:Ignorable="d"
-        Title="CopyFileDialog" Height="155.625" Width="496.25">
+        Title="Copy Raw File" Height="155.625" Width="496.25">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="40"></RowDefinition>

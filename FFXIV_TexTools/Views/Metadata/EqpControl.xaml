@@ -13,6 +13,9 @@
                 <Grid x:Name="SimpleGrid">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="10"></RowDefinition>
+                        <RowDefinition Height="40"></RowDefinition>
+                        <RowDefinition Height="40"></RowDefinition>
+                        <RowDefinition Height="40"></RowDefinition>
                         <RowDefinition></RowDefinition>
 
                     </Grid.RowDefinitions>
@@ -23,6 +26,9 @@
 
                     <Label Content="Preset:" VerticalAlignment="Top" HorizontalAlignment="Right" Grid.Row="1"></Label>
                     <ComboBox x:Name="PresetComboBox" Grid.Column="1" VerticalAlignment="Top" Grid.Row="1"></ComboBox>
+
+                    <Button x:Name="CopyButton" Content="Copy Visibility Settings" Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left" Width="150" Margin="10,0,0,0" Click="CopyButton_Click"></Button>
+                    <Button x:Name="PasteButton" IsEnabled="False"  Content="Paste Visibility Settings" Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left" Width="150" Margin="10,0,0,0" Click="PasteButton_Click"></Button>
                 </Grid>
             </TabItem>
             <TabItem Header="Advanced" mah:ControlsHelper.HeaderFontSize="18">

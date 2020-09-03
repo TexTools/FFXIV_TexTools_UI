@@ -27,6 +27,8 @@ namespace FFXIV_TexTools.Views.Metadata
         private ItemMetadata _metadata;
 
         private Dictionary<XivRace, CheckBox> RacialCheckboxes = new Dictionary<XivRace, CheckBox>();
+
+        public event EventHandler<(XivRace Race, bool Enabled)> RaceChanged;
         public EqdpControl()
         {
             InitializeComponent();
@@ -58,6 +60,11 @@ namespace FFXIV_TexTools.Views.Metadata
             {
                 _metadata.EqdpEntries[race].bit0 = enabled;
                 _metadata.EqdpEntries[race].bit1 = enabled;
+
+                if(RaceChanged != null)
+                {
+                    RaceChanged.Invoke(this, (race, enabled));
+                }
             }
 
         }

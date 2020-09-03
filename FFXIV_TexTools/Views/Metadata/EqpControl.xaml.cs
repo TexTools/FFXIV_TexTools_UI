@@ -27,6 +27,9 @@ namespace FFXIV_TexTools.Views.Metadata
         private ItemMetadata _metadata;
         private EquipmentParameter entry;
 
+        private static string SlotCopiedFrom = null;
+        private static byte[] CopiedBytes = null;
+
         private ObservableCollection<KeyValuePair<string, byte[]>> PresetCollection = new ObservableCollection<KeyValuePair<string, byte[]>>();
         public EqpControl()
         {
@@ -60,6 +63,14 @@ namespace FFXIV_TexTools.Views.Metadata
             RawGrid.Children.Clear();
             PresetCollection.Clear();
             if (entry == null) return;
+
+            if(entry.Slot == SlotCopiedFrom && CopiedBytes != null)
+            {
+                PasteButton.IsEnabled = true;
+            } else
+            {
+                PasteButton.IsEnabled = false;
+            }
 
             var flags = entry.GetFlags();
 
@@ -209,5 +220,23 @@ namespace FFXIV_TexTools.Views.Metadata
 
             } }
         };
+
+        private void CopyButton_Click(object sender, RoutedEventArgs e)
+        {
+            var raw = _metadata.EqpEntry.GetBytes();
+            var bytes = new byte[raw.Length];
+            Array.Copy(raw, bytes, raw.Length);
+            CopiedBytes = bytes;
+            SlotCopiedFrom = _metadata.Root.Info.Slot;
+
+            PasteButton.IsEnabled = true;
+        }
+
+        private void PasteButton_Click(object sender, RoutedEventArgs e)
+        {
+            var bytes = new byte[CopiedBytes.Length];
+            Array.Copy(CopiedBytes, bytes, CopiedBytes.Length);
+            _metadata.EqpEntry.SetBytes(bytes);
+        }
     }
 }
