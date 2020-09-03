@@ -733,6 +733,14 @@ namespace FFXIV_TexTools.ViewModels
 
             } catch
             {
+                try
+                {
+                    _item = (IItemModel)item;
+                } catch
+                {
+
+                }
+                 
                 if (item.SecondaryCategory == XivStrings.Paintings)
                 {
                     // Okay, try and see if it's a gimpy furniture painting thing then.
@@ -1234,6 +1242,7 @@ namespace FFXIV_TexTools.ViewModels
             if (!CheckMtrlIsOK())
                 return;
 
+            
             if (format == TextureFormats.DDS)
             {
                 DirectoryInfo savePath = new DirectoryInfo(Settings.Default.Save_Directory);
