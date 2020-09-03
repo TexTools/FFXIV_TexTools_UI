@@ -15,6 +15,7 @@ using xivModdingFramework.Cache;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Items;
 using xivModdingFramework.Items.Categories;
+using xivModdingFramework.Items.DataContainers;
 using xivModdingFramework.Items.Interfaces;
 using xivModdingFramework.Materials.DataContainers;
 using xivModdingFramework.Materials.FileTypes;
@@ -417,7 +418,17 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     matNumToItems.Add(matSet, new List<IItemModel>());
                 }
-                matNumToItems[matSet].Add(i);
+
+                var saveItem = i;
+
+                if (typeof(XivCharacter) == i.GetType())
+                {
+                    var temp = (XivCharacter)((XivCharacter)_item).Clone();
+                    temp.Name = saveItem.SecondaryCategory;
+                    saveItem = temp;
+                }
+
+                matNumToItems[matSet].Add(saveItem);
             }
 
             var keys = matNumToItems.Keys.ToList();

@@ -21,6 +21,7 @@ using xivModdingFramework.Models.DataContainers;
 using xivModdingFramework.Models.FileTypes;
 using xivModdingFramework.Models.Helpers;
 using System.Text.RegularExpressions;
+using xivModdingFramework.Items.DataContainers;
 
 namespace FFXIV_TexTools.ViewModels
 {
@@ -121,6 +122,14 @@ namespace FFXIV_TexTools.ViewModels
             _submeshId = submeshId;
             _dataOnly = dataOnly;
             _onComplete = onComplete;
+
+            if(typeof(XivCharacter) == _item.GetType())
+            {
+                // Fix up naming scheme for character items to match user expectation.
+                var clone = (XivCharacter)((XivCharacter)_item).Clone();
+                clone.Name = clone.SecondaryCategory;
+                _item = clone;
+            }
 
             var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
             var saveDirectory = new DirectoryInfo(Settings.Default.Save_Directory);
@@ -265,6 +274,7 @@ namespace FFXIV_TexTools.ViewModels
             {
                 options.SourceRace = selectedRace;
             }
+            
 
             // Asynchronously call ImportModel.
             Task.Run(async () =>

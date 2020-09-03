@@ -25,6 +25,7 @@ namespace FFXIV_TexTools.Views.Metadata
 
         private bool IsRaceEnabled(XivRace race)
         {
+
             if(_metadata.EqdpEntries.ContainsKey(race))
             {
                 return _metadata.EqdpEntries[race].bit1;
@@ -53,6 +54,7 @@ namespace FFXIV_TexTools.Views.Metadata
 
         private void EqdpView_RaceChanged(object sender, (XivRace Race, bool Enabled) e)
         {
+            if (SingleRaceMode) return;
             if (RacialComboBoxes.ContainsKey(e.Race))
             {
                 RacialComboBoxes[e.Race].IsEnabled = e.Enabled;
@@ -88,7 +90,7 @@ namespace FFXIV_TexTools.Views.Metadata
             var dict = new ObservableCollection<KeyValuePair<int, string>>();
             RacialItemSources.Add(race, dict);
 
-            cb.IsEnabled = IsRaceEnabled(race);
+            cb.IsEnabled = true;
 
             cb.DataContext = race;
             cb.ItemsSource = dict;
