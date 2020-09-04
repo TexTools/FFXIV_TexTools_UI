@@ -406,5 +406,17 @@ namespace FFXIV_TexTools.Properties {
                 this["Remember_Race_Selection"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool InvertNormalGreen {
+            get {
+                return ((bool)(this["InvertNormalGreen"]));
+            }
+            set {
+                this["InvertNormalGreen"] = value;
+            }
+        }
     }
 }
