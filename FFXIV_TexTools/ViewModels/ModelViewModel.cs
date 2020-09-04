@@ -620,6 +620,7 @@ namespace FFXIV_TexTools.ViewModels
                 }
                 else
                 {
+                    Parts.Add(new ComboBoxData { Name = "Default" });
                     GetMeshes();
                 }
             }
@@ -634,6 +635,9 @@ namespace FFXIV_TexTools.ViewModels
                 }
 
                 PartVisibility = Visibility.Visible;
+            } else
+            {
+                Parts.Add(new ComboBoxData { Name = "Default" });
             }
 
             _partCount = Parts.Count;
@@ -798,6 +802,7 @@ namespace FFXIV_TexTools.ViewModels
             if(_model == null)
             {
                 _model = new TTModel();
+                UpdateViewPort();
                 OnLoadingComplete();
                 return;
             }
@@ -1981,14 +1986,16 @@ namespace FFXIV_TexTools.ViewModels
             foreach (var xivMtrl in mtrlDictionary)
             {
 
+                var colors = ModelTexture.GetCustomColors();
+                colors.InvertNormalGreen = false;
                 if (hasColorChangeShader)
                 {
-                    var modelMaps = await ModelTexture.GetModelMaps(_gameDirectory, xivMtrl.Value);
+                    var modelMaps = await ModelTexture.GetModelMaps(_gameDirectory, xivMtrl.Value, colors);
                     textureDataDictionary.Add(xivMtrl.Key, modelMaps);
                 }
                 else
                 {
-                    var modelMaps = await ModelTexture.GetModelMaps(_gameDirectory, xivMtrl.Value);
+                    var modelMaps = await ModelTexture.GetModelMaps(_gameDirectory, xivMtrl.Value, colors);
                     textureDataDictionary.Add(xivMtrl.Key, modelMaps);
                 }
             }

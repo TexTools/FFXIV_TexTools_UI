@@ -359,7 +359,7 @@ namespace FFXIV_TexTools.ViewModels
             }
 
             // Show the face combo box if a face with different textures is added
-            if (item.Name.Equals(XivStrings.Face) && (SelectedSkeleton.XivRace == XivRace.AuRa_Female || SelectedSkeleton.XivRace == XivRace.AuRa_Male ||
+            if (item.SecondaryCategory.Equals(XivStrings.Face) && (SelectedSkeleton.XivRace == XivRace.AuRa_Female || SelectedSkeleton.XivRace == XivRace.AuRa_Male ||
                 SelectedSkeleton.XivRace == XivRace.Viera || SelectedSkeleton.XivRace == XivRace.Hrothgar))
             {
                 Faces.Clear();
@@ -750,7 +750,10 @@ namespace FFXIV_TexTools.ViewModels
                 var mtrlPath = _mtrl.GetMtrlPath(tempMdlPath, newMaterial, mtrlVariant);
                 var mtrlOffset = await _index.GetDataOffset(mtrlPath);
                 var mtrl = await _mtrl.GetMtrlData(mtrlOffset, mtrlPath, 11);
-                var modelMaps = await ModelTexture.GetModelMaps(_gameDirectory, mtrl);
+
+                var colors = ModelTexture.GetCustomColors();
+                colors.InvertNormalGreen = false;
+                var modelMaps = await ModelTexture.GetModelMaps(_gameDirectory, mtrl, colors);
 
                 // Reindex the material dictionary as materials may have sorted differently
                 ReIndexMaterialDictionary(ttModel, materialDictionary, modelMaps);
@@ -794,7 +797,9 @@ namespace FFXIV_TexTools.ViewModels
                 var mtrlPath = _mtrl.GetMtrlPath(tempMdlPath, newMaterial, mtrlVariant);
                 var mtrlOffset = await _index.GetDataOffset(mtrlPath);
                 var mtrl = await _mtrl.GetMtrlData(mtrlOffset, mtrlPath, 11);
-                var modelMaps = await ModelTexture.GetModelMaps(_gameDirectory, mtrl);
+                var colors = ModelTexture.GetCustomColors();
+                colors.InvertNormalGreen = false;
+                var modelMaps = await ModelTexture.GetModelMaps(_gameDirectory, mtrl, colors);
 
                 materialDictionary[0] = modelMaps;
             }
@@ -820,7 +825,7 @@ namespace FFXIV_TexTools.ViewModels
 
             foreach (var shownModel in ViewPortVM.shownModels.Values)
             {
-                if (shownModel.ItemModel.Name.Equals(XivStrings.Face))
+                if (shownModel.ItemModel.SecondaryCategory.Equals(XivStrings.Face))
                 {
                     ttModel = shownModel.TtModel;
                     materialDictionary = shownModel.ModelTextureData;
@@ -866,7 +871,9 @@ namespace FFXIV_TexTools.ViewModels
                         var mtrlPath = _mtrl.GetMtrlPath(tempMdlPath, material);
                         var mtrlOffset = await _index.GetDataOffset(mtrlPath);
                         var mtrl = await _mtrl.GetMtrlData(mtrlOffset, mtrlPath, 11);
-                        var modelMaps = await ModelTexture.GetModelMaps(_gameDirectory, mtrl);
+                        var colors = ModelTexture.GetCustomColors();
+                        colors.InvertNormalGreen = false;
+                        var modelMaps = await ModelTexture.GetModelMaps(_gameDirectory, mtrl, colors);
 
                         materialDictionary[matLoc.First().Key] = modelMaps;
                     }

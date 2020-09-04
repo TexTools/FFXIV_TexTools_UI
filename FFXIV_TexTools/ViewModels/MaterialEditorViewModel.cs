@@ -508,46 +508,44 @@ namespace FFXIV_TexTools.ViewModels
             _view.CancelButton.IsEnabled = false;
             _view.DisableButton.IsEnabled = false;
             _view.DisableButton.Content = UIStrings.Working_Ellipsis;
-            var files = new List<string>();
+            var files = new HashSet<string>();
 
-            // If we're disabling from the Edit Multi menu, disable all variant versions as well.
-            if (_mode == MaterialEditorMode.EditMulti) {
-                var sameModelItems = await _item.GetSharedModelItems(); 
-                var itemType = ItemType.GetPrimaryItemType(_item);
-                var root = await XivCache.GetFirstRoot(_material.MTRLPath);
-
-                var allMtrls = await root.GetMaterialFiles();
-
-                // Find all the materials 
-                foreach (var mtrl in allMtrls)
-                {
-                    // Find all matching ones
-                    if(Path.GetFileName(mtrl) == Path.GetFileName(_material.MTRLPath))
-                    {
-                        files.Add(mtrl);
-                    }
-                }
-
-            } else {
-
-                // Just disabling this one.
+            var root = _item.GetRoot();
+            if(root == null || !Imc.UsesImc(root))
+            {
+                // This is the only copy of the material we know how to find.
                 files.Add(_material.MTRLPath);
+            } else
+            {
+                var imc = new Imc(XivCache.GameInfo.GameDirectory);
+                var info = await imc.GetFullImcInfo(_item);
+                var entries = info.GetAllEntries(root.Info.Slot);
+                var materialSets = entries.Select(x => x.Variant).ToHashSet();
+
+                var extract = new Regex("(v[0-9]{4})");
+                var rep = extract.Match(_material.MTRLPath).Groups[1].Value;
+
+                // Remove the material in all of the referenced material sets.
+                foreach(var setId in materialSets)
+                {
+                    var newPath = _material.MTRLPath.Replace(rep, "v" + setId.ToString().PadLeft(4, '0'));
+                    files.Add(newPath);
+                }
             }
 
-            files = files.Distinct().ToList();
             try
             {
                 foreach (var file in files)
                 {
                     var modEntry = await _modding.TryGetModEntry(file);
 
-                    if (!modEntry.enabled)
+                    if (modEntry == null)
                     {
                         continue;
                     }
 
                     // If the file is a custom addition, and not a modification.
-                    if (modEntry.source != XivStrings.TexTools)
+                    if (modEntry.IsCustomFile())
                     {
                         await _modding.DeleteMod(file);
                     }
