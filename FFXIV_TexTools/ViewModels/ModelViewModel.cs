@@ -410,7 +410,7 @@ namespace FFXIV_TexTools.ViewModels
         /// <summary>
         /// Gets the numbers for applicable models
         /// </summary>
-        private void GetNumbers()
+        private async void GetNumbers()
         {
             if (_item.PrimaryCategory.Equals(XivStrings.Gear) || _item.PrimaryCategory.Equals(XivStrings.Companions) || _item.PrimaryCategory.Equals(XivStrings.Housing))
             {
@@ -423,7 +423,7 @@ namespace FFXIV_TexTools.ViewModels
                 var _chara = new Character(XivCache.GameInfo.GameDirectory, XivCache.GameInfo.GameLanguage);
                 var charaItem = (XivCharacter)_item;
                 int[] numbers = new int[0];
-                Task.Run(async () => numbers = await _chara.GetNumbersForCharacterItem(charaItem, false)).Wait();
+                numbers = await _chara.GetNumbersForCharacterItem(charaItem, false);
 
                 var toSelect = 0;
                 var idx = 0;
@@ -734,6 +734,13 @@ namespace FFXIV_TexTools.ViewModels
         {
             Meshes.Clear();
 
+            if(SelectedRace == null)
+            {
+                // Edge case safety checks.
+                OnLoadingComplete();
+                return;
+            }
+
             try
             {
                 if (_item.PrimaryCategory.Equals(XivStrings.Gear))
@@ -743,6 +750,13 @@ namespace FFXIV_TexTools.ViewModels
                 }
                 else if (_item.PrimaryCategory.Equals(XivStrings.Character))
                 {
+                    if (SelectedNumber == null || SelectedPart == null)
+                    {
+                        // Edge case safety checks.
+                        OnLoadingComplete();
+                        return;
+                    }
+
                     _item.ModelInfo = new XivModelInfo { SecondaryID = int.Parse(SelectedNumber.Name) };
 
                     ((XivCharacter)_item).TertiaryCategory = SelectedPart.Name;
@@ -751,6 +765,13 @@ namespace FFXIV_TexTools.ViewModels
                 }
                 else if (_item.PrimaryCategory.Equals(XivStrings.Companions))
                 {
+                    if (SelectedPart == null)
+                    {
+                        // Edge case safety checks.
+                        OnLoadingComplete();
+                        return;
+                    }
+
                     if (_item.GetPrimaryItemType() == XivItemType.demihuman)
                     {
                         ((XivMount)_item).TertiaryCategory = SelectedPart.Name;
