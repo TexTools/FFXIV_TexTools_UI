@@ -359,7 +359,7 @@ namespace FFXIV_TexTools.ViewModels
             }
 
             // Show the face combo box if a face with different textures is added
-            if (item.Name.Equals(XivStrings.Face) && (SelectedSkeleton.XivRace == XivRace.AuRa_Female || SelectedSkeleton.XivRace == XivRace.AuRa_Male ||
+            if (item.SecondaryCategory.Equals(XivStrings.Face) && (SelectedSkeleton.XivRace == XivRace.AuRa_Female || SelectedSkeleton.XivRace == XivRace.AuRa_Male ||
                 SelectedSkeleton.XivRace == XivRace.Viera || SelectedSkeleton.XivRace == XivRace.Hrothgar))
             {
                 Faces.Clear();
@@ -820,7 +820,7 @@ namespace FFXIV_TexTools.ViewModels
 
             foreach (var shownModel in ViewPortVM.shownModels.Values)
             {
-                if (shownModel.ItemModel.Name.Equals(XivStrings.Face))
+                if (shownModel.ItemModel.SecondaryCategory.Equals(XivStrings.Face))
                 {
                     ttModel = shownModel.TtModel;
                     materialDictionary = shownModel.ModelTextureData;
