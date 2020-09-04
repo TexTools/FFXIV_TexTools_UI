@@ -110,7 +110,7 @@
                 <ColumnDefinition Width="2*"/>
             </Grid.ColumnDefinitions>
             <GroupBox Header="Item List">
-                <Controls:ItemSelectControl x:Name="ItemList" MainMenuMode="True" Margin="0" />
+                <Controls:ItemSelectControl x:Name="ItemList" MainMenuMode="True" ExpandCharacterMenu="True" Margin="0" Width="Auto" Height="Auto" />
             </GroupBox>
             <GroupBox x:Name="SelectModGroup" Grid.Column="1" Header="{Binding Source={x:Static resx:UIStrings.Select_Mod}}">
                 <mah:MetroTabControl x:Name="TabsControl" Grid.Column="2" mah:TabControlHelper.Underlined="TabPanel">

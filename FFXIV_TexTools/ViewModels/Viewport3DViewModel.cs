@@ -142,6 +142,11 @@ namespace FFXIV_TexTools.ViewModels
             {
                 var meshGeometry3D = GetMeshGeometry(model, i);
                 
+                if(!textureDataDictionary.ContainsKey(model.GetMaterialIndex(i)))
+                {
+                    // This material didn't exist, was corrupt or otherwise didn't get loaded.  Skip it.
+                    continue;
+                }
                 var textureData = textureDataDictionary[model.GetMaterialIndex(i)];
 
                 Stream diffuse = null, specular = null, normal = null, alpha = null, emissive = null;

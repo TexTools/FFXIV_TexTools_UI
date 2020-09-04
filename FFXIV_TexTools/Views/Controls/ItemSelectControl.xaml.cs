@@ -18,6 +18,7 @@ using xivModdingFramework.Items.DataContainers;
 using xivModdingFramework.Models.FileTypes;
 using System.Windows;
 using FFXIV_TexTools.Helpers;
+using xivModdingFramework.Items;
 
 namespace FFXIV_TexTools.Views.Controls
 {
@@ -50,6 +51,11 @@ namespace FFXIV_TexTools.Views.Controls
         }
 
         public bool DeferLoading
+        {
+            get; set;
+        }
+
+        public bool ExpandCharacterMenu
         {
             get; set;
         }
@@ -99,13 +105,8 @@ namespace FFXIV_TexTools.Views.Controls
             }
         }
 
-        public ItemSelectControl() : this(false)
+        public ItemSelectControl()
         {
-
-        }
-        public ItemSelectControl(bool deferLoading = false)
-        {
-
             DataContext = this;
             InitializeComponent();
 
@@ -150,6 +151,7 @@ namespace FFXIV_TexTools.Views.Controls
         }
 
 
+        private Dictionary<XivItemType, Dictionary<XivRace, ItemTreeElement>> HumanParentNodes = new Dictionary<XivItemType, Dictionary<XivRace, ItemTreeElement>>();
         /// <summary>
         /// Builds the set tree from XivCache.GetAllRoots().
         /// </summary>
@@ -231,21 +233,25 @@ namespace FFXIV_TexTools.Views.Controls
 
                                 if (secondaryType != XivItemType.none)
                                 {
+                                    ItemTreeElement elem = null;
                                     // This root has no slots, just list the parent as the root element.
                                     if (String.IsNullOrWhiteSpace(slotName))
                                     {
-                                        DependencyRootNodes.Add(root.ToString(), secondaryIdGroups[primaryType][primaryId][secondaryType][secondaryId]);
-                                        break;
+                                        elem = secondaryIdGroups[primaryType][primaryId][secondaryType][secondaryId];
+                                        DependencyRootNodes.Add(root.ToString(), elem);
+                                    }
+                                    else
+                                    {
+                                        // Create the new node.
+                                        elem = new ItemTreeElement(null, secondaryIdGroups[primaryType][primaryId][secondaryType][secondaryId], slotName);
+
+                                        // Add us to parent.
+                                        secondaryIdGroups[primaryType][primaryId][secondaryType][secondaryId].Children.Add(elem);
+
+                                        // Save us to the primary listing so the items can list themselves under us.
+                                        DependencyRootNodes.Add(root.ToString(), elem);
                                     }
 
-                                    // Create the new node.
-                                    var elem = new ItemTreeElement(null, secondaryIdGroups[primaryType][primaryId][secondaryType][secondaryId], slotName);
-
-                                    // Add us to parent.
-                                    secondaryIdGroups[primaryType][primaryId][secondaryType][secondaryId].Children.Add(elem);
-
-                                    // Save us to the primary listing so the items can list themselves under us.
-                                    DependencyRootNodes.Add(root.ToString(), elem);
                                 }
                                 else
                                 {
@@ -322,6 +328,7 @@ namespace FFXIV_TexTools.Views.Controls
                 catParent = secondLevel;
 
                 ItemTreeElement setParent = null;
+
                 // Try and see if we have a valid root parent to attach to in the sets tree.
                 try
                 {
@@ -345,7 +352,21 @@ namespace FFXIV_TexTools.Views.Controls
                     throw;
                 }
 
-                var e2 = new ItemTreeElement(catParent, setParent, item);
+                ItemTreeElement e2;
+                if (ExpandCharacterMenu && typeof(XivCharacter) == item.GetType())
+                {
+                    var charItem = (XivCharacter)item;
+                    if (charItem.ModelInfo != null && charItem.ModelInfo.PrimaryID > 0)
+                    {
+                        e2 = new ItemTreeElement(catParent, setParent, item.Name);
+                    } else
+                    {
+                        e2 = new ItemTreeElement(catParent, setParent, item);
+                    }
+                } else
+                {
+                    e2 = new ItemTreeElement(catParent, setParent, item);
+                }
                 if(catParent != null)
                 {
                     catParent.Children.Add(e2);
@@ -353,6 +374,28 @@ namespace FFXIV_TexTools.Views.Controls
                 if(setParent != null)
                 {
                     setParent.Children.Add(e2);
+                }
+
+                if (ExpandCharacterMenu)
+                {
+                    if (typeof(XivCharacter) == item.GetType())
+                    {
+                        // Cache the references to our human root nodes.
+                        var charItem = (XivCharacter)item;
+                        var type = charItem.GetSecondaryItemType();
+                        if (type != XivItemType.none)
+                        {
+                            var raceCode = charItem.ModelInfo.PrimaryID;
+                            var race = XivRaces.GetXivRace(raceCode);
+
+                            if (!HumanParentNodes.ContainsKey(type))
+                            {
+                                HumanParentNodes.Add(type, new Dictionary<XivRace, ItemTreeElement>());
+                            }
+
+                            HumanParentNodes[type].Add(race, e2);
+                        }
+                    }
                 }
             }
             return items;
@@ -390,6 +433,7 @@ namespace FFXIV_TexTools.Views.Controls
                     // Gotta build set tree first, so the items from the item list can latch onto the nodes there.
                     BuildSetTree();
                     await BuildCategoryTree();
+
                 }
                 catch (Exception ex)
                 {
@@ -409,18 +453,36 @@ namespace FFXIV_TexTools.Views.Controls
                         try
                         {
                             var root = await XivCache.GetFirstRoot(kv.Key);
+                            ItemTreeElement e;
                             if (root != null)
                             {
                                 // If we can, add it into the list.
                                 var item = root.ToRawItem();
-                                var e = new ItemTreeElement(null, kv.Value, item);
+                                e = new ItemTreeElement(null, kv.Value, item);
                                 toAdd.Add((kv.Value, e));
+
+                                if (ExpandCharacterMenu && root.Info.PrimaryType == XivItemType.human)
+                                {
+                                    // Cache our human type elements if we need them later.
+                                    var race = XivRaces.GetXivRace(root.Info.PrimaryId);
+                                    var sType = (XivItemType)root.Info.SecondaryType;
+
+                                    if (!HumanParentNodes.ContainsKey(sType)) continue;
+                                    if (!HumanParentNodes[sType].ContainsKey(race)) continue;
+
+                                    var parent = HumanParentNodes[sType][race];
+                                    e.CategoryParent = parent;
+                                    parent.Children.Add(e);
+                                }
                             }
                             else
                             {
-                                var e = new ItemTreeElement(null, kv.Value, "[Unsupported]");
+                                e = new ItemTreeElement(null, kv.Value, "[Unsupported]");
                                 toAdd.Add((kv.Value, e));
                             }
+
+
+
                         }
                         catch (Exception ex)
                         {

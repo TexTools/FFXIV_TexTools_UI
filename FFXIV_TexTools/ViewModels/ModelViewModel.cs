@@ -642,10 +642,18 @@ namespace FFXIV_TexTools.ViewModels
 
             if(Parts.Count <= 1)
             {
-                // If there are no parts, we're done.
-                if (LoadingComplete != null)
+                Meshes.Clear();
+                _model = new TTModel();
+                MeshComboboxEnabled = false;
+
+                if (_tab.IsSelected)
                 {
-                    LoadingComplete.Invoke(this, null);
+                    await UpdateViewPort();
+                }
+                else
+                {
+                    _updateNeeded = true;
+                    OnLoadingComplete();
                 }
             }
         }
@@ -760,9 +768,15 @@ namespace FFXIV_TexTools.ViewModels
             {
                 FlexibleMessageBox.Show(
                     string.Format(UIMessages.MDLReadErrorMessage, ex.Message), UIMessages.MDLReadErrorTitle,
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
                 OnLoadingComplete();
+                return;
+            }
+
+            if(_model == null)
+            {
+                _model = new TTModel();
                 return;
             }
 
@@ -1658,6 +1672,8 @@ namespace FFXIV_TexTools.ViewModels
                 TransparencyToggle = false;
                 FMVEnabled = false;
 
+                if (_model == null) return;
+
                 _materialDictionary = await GetMaterials();
 
                 ViewPortVM.UpdateModel(_model, _materialDictionary);
@@ -1717,6 +1733,7 @@ namespace FFXIV_TexTools.ViewModels
         private async Task<Dictionary<int, ModelTextureData>> GetMaterials()
         {
             var textureDataDictionary = new Dictionary<int, ModelTextureData>();
+            if (_model == null) return textureDataDictionary;
             var mtrlDictionary = new Dictionary<int, XivMtrl>();
             var mtrl = new Mtrl(_gameDirectory, _item.DataFile, GetLanguage());
             var mtrlFilePaths = _model.Materials;
@@ -1923,6 +1940,11 @@ namespace FFXIV_TexTools.ViewModels
 
                 var dxVersion = int.Parse(Settings.Default.DX_Version);
                 var mtrlData = await mtrl.GetMtrlData(mtrlItem, filePath, dxVersion);
+
+                if(mtrlData == null)
+                {
+                    return textureDataDictionary;
+                }
 
                 if (mtrlData.Shader.Contains("colorchange"))
                 {

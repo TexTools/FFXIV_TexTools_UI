@@ -1254,9 +1254,10 @@ namespace FFXIV_TexTools
                     await Task.Run(XivCache.RebuildAllRoots);
                 } catch(Exception ex)
                 {
-                    FlexibleMessageBox.Show("Item Scan Error", "An error occured while trying to scan for new item sets.\n\n" + ex.Message, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    FlexibleMessageBox.Show( "An error occured while trying to scan for new item sets.\n\n" + ex.Message, "Item Scan Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 await UnlockUi();
+                await RefreshTree();
             }
         }
         private async void Menu_LoadSets_Click(object sender, RoutedEventArgs e)

@@ -320,7 +320,7 @@ namespace FFXIV_TexTools.ViewModels
 
                 if(numbers.Length == 0 && _root.Info.SecondaryType == XivItemType.body)
                 {
-                    var race = XivRaces.GetXivRace(_root.Info.PrimaryId);
+                    var race = _root == null ? XivRace.All_Races : XivRaces.GetXivRace(_root.Info.PrimaryId);
                     _textureView.SharedMaterialLabel.Visibility = Visibility.Visible;
                     var skinRace = XivRaceTree.GetSkinRace(race);
                     _textureView.SharedMaterialLabel.Content = "This race uses " + skinRace.GetDisplayName() + "'s body material(s).";
@@ -487,7 +487,7 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     var matCode = match.Groups[1].Value;
                     var matRace = XivRaces.GetXivRace(matCode); 
-                    if (_primaryIsRace && !_primaryComboBoxData.Any(x => x.Value == (int)matRace))
+                    if (_primaryIsRace && !_primaryComboBoxData.Any(x => x.Value == matRace.GetRaceCodeInt()))
                     {
                         _primaryComboBoxData.Add(new KeyValuePair<string, int>(matRace.GetDisplayName(), (int)matRace));
                     }
@@ -660,10 +660,19 @@ namespace FFXIV_TexTools.ViewModels
             }
             else if (ext == ".mtrl")
             {
+                var index = new Index(XivCache.GameInfo.GameDirectory);
 
                 var _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory, IOUtil.GetDataFileFromPath(SelectedMaterial), XivCache.GameInfo.GameLanguage);
                 try
                 {
+                    // Material doesn't exist for this material set.
+                    var exists = await index.FileExists(SelectedMaterial);
+                    if(!exists)
+                    {
+                        OnLoadingComplete();
+                        return;
+                    }
+
                     _xivMtrl = await _mtrl.GetMtrlData(SelectedMaterial);
                 }
                 catch (Exception ex)
@@ -1286,7 +1295,7 @@ namespace FFXIV_TexTools.ViewModels
                         var saveItem = (XivCharacter)((XivCharacter)_item).Clone();
                         saveItem.ModelInfo.SecondaryID = SelectedPrimary;
                         saveItem.Name = saveItem.SecondaryCategory;
-                        var race = XivRaces.GetXivRace(_root.Info.PrimaryId);
+                        var race = _root == null ? XivRace.All_Races : XivRaces.GetXivRace(_root.Info.PrimaryId);
                         _mtrl.SaveColorSetExtraData(saveItem, _xivMtrl, savePath, race);
                     }
                 }
@@ -1309,7 +1318,7 @@ namespace FFXIV_TexTools.ViewModels
                         var saveItem = (XivCharacter)((XivCharacter)_item).Clone();
                         saveItem.Name = saveItem.SecondaryCategory;
                         saveItem.ModelInfo.SecondaryID = SelectedPrimary;
-                        var race = XivRaces.GetXivRace(_root.Info.PrimaryId);
+                        var race = _root == null ? XivRace.All_Races : XivRaces.GetXivRace(_root.Info.PrimaryId);
                         _tex.SaveTexAsDDS(saveItem, texData, savePath, race);
                     }
                 }
@@ -1374,7 +1383,7 @@ namespace FFXIV_TexTools.ViewModels
             {
                 if (!_primaryIsRace)
                 {
-                    var race = XivRaces.GetXivRace(_root.Info.PrimaryId);
+                    var race = _root == null ? XivRace.All_Races : XivRaces.GetXivRace(_root.Info.PrimaryId);
                     path = IOUtil.MakeItemSavePath(_item, savePath, race, SelectedPrimary);
                 } else
                 {
@@ -1478,7 +1487,7 @@ namespace FFXIV_TexTools.ViewModels
             {
                 if (!_primaryIsRace)
                 {
-                    var race = XivRaces.GetXivRace(_root.Info.PrimaryId);
+                    var race = _root == null ? XivRace.All_Races : XivRaces.GetXivRace(_root.Info.PrimaryId);
                     var saveItem = (XivCharacter)((XivCharacter)_item).Clone();
                     saveItem.Name = saveItem.SecondaryCategory;
                     saveItem.ModelInfo.SecondaryID = SelectedPrimary;
