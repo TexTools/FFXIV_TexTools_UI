@@ -1986,14 +1986,16 @@ namespace FFXIV_TexTools.ViewModels
             foreach (var xivMtrl in mtrlDictionary)
             {
 
+                var colors = ModelTexture.GetCustomColors();
+                colors.InvertNormalGreen = false;
                 if (hasColorChangeShader)
                 {
-                    var modelMaps = await ModelTexture.GetModelMaps(_gameDirectory, xivMtrl.Value);
+                    var modelMaps = await ModelTexture.GetModelMaps(_gameDirectory, xivMtrl.Value, colors);
                     textureDataDictionary.Add(xivMtrl.Key, modelMaps);
                 }
                 else
                 {
-                    var modelMaps = await ModelTexture.GetModelMaps(_gameDirectory, xivMtrl.Value);
+                    var modelMaps = await ModelTexture.GetModelMaps(_gameDirectory, xivMtrl.Value, colors);
                     textureDataDictionary.Add(xivMtrl.Key, modelMaps);
                 }
             }

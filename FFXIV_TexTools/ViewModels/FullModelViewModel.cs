@@ -750,7 +750,10 @@ namespace FFXIV_TexTools.ViewModels
                 var mtrlPath = _mtrl.GetMtrlPath(tempMdlPath, newMaterial, mtrlVariant);
                 var mtrlOffset = await _index.GetDataOffset(mtrlPath);
                 var mtrl = await _mtrl.GetMtrlData(mtrlOffset, mtrlPath, 11);
-                var modelMaps = await ModelTexture.GetModelMaps(_gameDirectory, mtrl);
+
+                var colors = ModelTexture.GetCustomColors();
+                colors.InvertNormalGreen = false;
+                var modelMaps = await ModelTexture.GetModelMaps(_gameDirectory, mtrl, colors);
 
                 // Reindex the material dictionary as materials may have sorted differently
                 ReIndexMaterialDictionary(ttModel, materialDictionary, modelMaps);
@@ -794,7 +797,9 @@ namespace FFXIV_TexTools.ViewModels
                 var mtrlPath = _mtrl.GetMtrlPath(tempMdlPath, newMaterial, mtrlVariant);
                 var mtrlOffset = await _index.GetDataOffset(mtrlPath);
                 var mtrl = await _mtrl.GetMtrlData(mtrlOffset, mtrlPath, 11);
-                var modelMaps = await ModelTexture.GetModelMaps(_gameDirectory, mtrl);
+                var colors = ModelTexture.GetCustomColors();
+                colors.InvertNormalGreen = false;
+                var modelMaps = await ModelTexture.GetModelMaps(_gameDirectory, mtrl, colors);
 
                 materialDictionary[0] = modelMaps;
             }
@@ -866,7 +871,9 @@ namespace FFXIV_TexTools.ViewModels
                         var mtrlPath = _mtrl.GetMtrlPath(tempMdlPath, material);
                         var mtrlOffset = await _index.GetDataOffset(mtrlPath);
                         var mtrl = await _mtrl.GetMtrlData(mtrlOffset, mtrlPath, 11);
-                        var modelMaps = await ModelTexture.GetModelMaps(_gameDirectory, mtrl);
+                        var colors = ModelTexture.GetCustomColors();
+                        colors.InvertNormalGreen = false;
+                        var modelMaps = await ModelTexture.GetModelMaps(_gameDirectory, mtrl, colors);
 
                         materialDictionary[matLoc.First().Key] = modelMaps;
                     }
