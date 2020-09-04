@@ -640,7 +640,7 @@ namespace FFXIV_TexTools.ViewModels
             PartComboboxEnabled = _partCount > 1;
             SelectedPartIndex = 0;
 
-            if(Parts.Count <= 1)
+            if(Parts.Count == 0)
             {
                 Meshes.Clear();
                 _model = new TTModel();
@@ -777,6 +777,7 @@ namespace FFXIV_TexTools.ViewModels
             if(_model == null)
             {
                 _model = new TTModel();
+                OnLoadingComplete();
                 return;
             }
 
@@ -1943,7 +1944,7 @@ namespace FFXIV_TexTools.ViewModels
 
                 if(mtrlData == null)
                 {
-                    return textureDataDictionary;
+                    continue;
                 }
 
                 if (mtrlData.Shader.Contains("colorchange"))
