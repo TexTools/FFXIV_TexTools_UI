@@ -626,8 +626,12 @@ namespace FFXIV_TexTools.Views.Controls
             }
         }
 
-
-        public void ClearSelection(ObservableCollection<ItemTreeElement> elements = null)
+        public void ClearSelection()
+        {
+            ClearSelection(SetElements);
+            ClearSelection(CategoryElements);
+        }
+        private void ClearSelection(ObservableCollection<ItemTreeElement> elements = null)
 
         {
             if (!_READY) return;

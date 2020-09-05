@@ -19,6 +19,7 @@ using FFXIV_TexTools.Properties;
 using FFXIV_TexTools.Resources;
 using FFXIV_TexTools.ViewModels;
 using FFXIV_TexTools.Views;
+using FFXIV_TexTools.Views.ItemConverter;
 using FFXIV_TexTools.Views.Metadata;
 using FFXIV_TexTools.Views.Models;
 using FolderSelect;
@@ -1406,6 +1407,10 @@ namespace FFXIV_TexTools
 
         private async void Menu_ItemConverter_Click(object sender, RoutedEventArgs e)
         {
+
+            var wind = new ItemConverterWindow() { Owner = this };
+            wind.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            wind.Show();
         }
 
         /// <summary>

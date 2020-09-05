@@ -335,6 +335,9 @@
     <Compile Include="Views\IconSearchView.xaml.cs">
       <DependentUpon>IconSearchView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\ItemConverter\ItemConverterWindow.xaml.cs">
+      <DependentUpon>ItemConverterWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\LanguageSelectView.xaml.cs">
       <DependentUpon>LanguageSelectView.xaml</DependentUpon>
     </Compile>
@@ -512,6 +515,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\IconSearchView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ItemConverter\ItemConverterWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
