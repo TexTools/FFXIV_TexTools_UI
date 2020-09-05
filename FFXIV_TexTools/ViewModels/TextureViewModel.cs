@@ -489,7 +489,7 @@ namespace FFXIV_TexTools.ViewModels
                     var matRace = XivRaces.GetXivRace(matCode); 
                     if (_primaryIsRace && !_primaryComboBoxData.Any(x => x.Value == matRace.GetRaceCodeInt()))
                     {
-                        _primaryComboBoxData.Add(new KeyValuePair<string, int>(matRace.GetDisplayName(), (int)matRace));
+                        _primaryComboBoxData.Add(new KeyValuePair<string, int>(matRace.GetDisplayName(), matRace.GetRaceCodeInt()));
                     }
                 }
 
@@ -1050,115 +1050,123 @@ namespace FFXIV_TexTools.ViewModels
             var _modding = new Modding(XivCache.GameInfo.GameDirectory);
 
             LoadParentFileInformation(SelectedMap.Path);
-
-            if (SelectedMap.Usage != XivTexType.ColorSet)
+            try
             {
-                var texData = await _tex.GetTexData(SelectedMap);
-
-                var mapBytes = await _tex.GetImageData(texData);
-
-                _mapData = new MapData
+                if (SelectedMap.Usage != XivTexType.ColorSet)
                 {
-                    MapBytes = mapBytes,
-                    Height = texData.Height,
-                    Width = texData.Width
-                };
+                    var texData = await _tex.GetTexData(SelectedMap);
 
-                _imageEffect = new ColorChannels
-                {
-                    Channel = new System.Windows.Media.Media3D.Point4D(1.0f, 1.0f, 1.0f, 0.0f)
-                };
+                    var mapBytes = await _tex.GetImageData(texData);
 
-                SetColorChannelFilter();
+                    _mapData = new MapData
+                    {
+                        MapBytes = mapBytes,
+                        Height = texData.Height,
+                        Width = texData.Width
+                    };
 
-                _textureView.ImageZoombox.CenterContent();
-                _textureView.ImageZoombox.FitToBounds();
+                    _imageEffect = new ColorChannels
+                    {
+                        Channel = new System.Windows.Media.Media3D.Point4D(1.0f, 1.0f, 1.0f, 0.0f)
+                    };
 
-                PathString = texData.TextureTypeAndPath.Path;
-                TextureFormat = texData.TextureFormat.GetTexDisplayName();
-                TextureDimensions = $"{texData.Height} x {texData.Width}";
-                MipMapInfo = texData.MipMapCount != 0 ? $"Yes ({texData.MipMapCount})" : "No";
-            }
-            else
-            {
-                _xivMtrl = await _mtrl.GetMtrlData(_item, SelectedMap.Path);
-                var floats = Half.ConvertToFloat(_xivMtrl.ColorSetData.ToArray());
+                    SetColorChannelFilter();
 
-                var floatArray = Utilities.ToByteArray(floats);
+                    _textureView.ImageZoombox.CenterContent();
+                    _textureView.ImageZoombox.FitToBounds();
 
-                _mapData = new MapData
-                {
-                    MapBytes = floatArray,
-                    Height = 16,
-                    Width = 4,
-                    IsColorSet = true
-                };
-
-                _imageEffect = new ColorChannels
-                {
-                    Channel = new System.Windows.Media.Media3D.Point4D(1.0f, 1.0f, 1.0f, 0.0f)
-                };
-
-                SetColorChannelFilter();
-
-                _textureView.ImageZoombox.CenterContent();
-                _textureView.ImageZoombox.FitToBounds();
-
-                PathString = SelectedMap.Path;
-                TextureFormat = XivTexFormat.A16B16G16R16F.GetTexDisplayName();
-                TextureDimensions = "4 x 16";
-            }
-
-            var mod = await _modding.TryGetModEntry(PathString);
-
-
-
-            if (mod != null && !mod.enabled)
-            {
-                ModStatusToggleEnabled = true;
-                ModToggleText = UIStrings.Enable;
-
-            } else if(mod != null)
-            {
-                if(mod.data.modOffset == mod.data.originalOffset)
-                {
-                    // This is a file addition material or texture.
-                    // Don't let them disable it via this menu, because it'll blow the UI the fuck up.
-                    ModStatusToggleEnabled = false;
-                } else
-                {
-                    ModStatusToggleEnabled = true;
-                }
-
-                ModToggleText = UIStrings.Disable;
-            } else
-            {
-
-                ModStatusToggleEnabled = false;
-                ModToggleText = UIStrings.Enable;
-            }
-
-            ExportEnabled = true;
-            ImportEnabled = true;
-            MoreOptionsEnabled = true;
-
-            if (_item != null)
-            {
-                if ( _item.SecondaryCategory.Equals(XivStrings.Equipment_Decals) || _item.SecondaryCategory.Equals(XivStrings.Face_Paint))
-                {
-                    AddMaterialEnabled = false;
-                    MaterialEditorEnabled = false;
+                    PathString = texData.TextureTypeAndPath.Path;
+                    TextureFormat = texData.TextureFormat.GetTexDisplayName();
+                    TextureDimensions = $"{texData.Height} x {texData.Width}";
+                    MipMapInfo = texData.MipMapCount != 0 ? $"Yes ({texData.MipMapCount})" : "No";
                 }
                 else
                 {
-                    MaterialEditorEnabled = true;
-                    AddMaterialEnabled = true;
+                    _xivMtrl = await _mtrl.GetMtrlData(_item, SelectedMap.Path);
+                    var floats = Half.ConvertToFloat(_xivMtrl.ColorSetData.ToArray());
+
+                    var floatArray = Utilities.ToByteArray(floats);
+
+                    _mapData = new MapData
+                    {
+                        MapBytes = floatArray,
+                        Height = 16,
+                        Width = 4,
+                        IsColorSet = true
+                    };
+
+                    _imageEffect = new ColorChannels
+                    {
+                        Channel = new System.Windows.Media.Media3D.Point4D(1.0f, 1.0f, 1.0f, 0.0f)
+                    };
+
+                    SetColorChannelFilter();
+
+                    _textureView.ImageZoombox.CenterContent();
+                    _textureView.ImageZoombox.FitToBounds();
+
+                    PathString = SelectedMap.Path;
+                    TextureFormat = XivTexFormat.A16B16G16R16F.GetTexDisplayName();
+                    TextureDimensions = "4 x 16";
                 }
-            }
-            else
+
+                var mod = await _modding.TryGetModEntry(PathString);
+
+
+
+                if (mod != null && !mod.enabled)
+                {
+                    ModStatusToggleEnabled = true;
+                    ModToggleText = UIStrings.Enable;
+
+                }
+                else if (mod != null)
+                {
+                    if (mod.data.modOffset == mod.data.originalOffset)
+                    {
+                        // This is a file addition material or texture.
+                        // Don't let them disable it via this menu, because it'll blow the UI the fuck up.
+                        ModStatusToggleEnabled = false;
+                    }
+                    else
+                    {
+                        ModStatusToggleEnabled = true;
+                    }
+
+                    ModToggleText = UIStrings.Disable;
+                }
+                else
+                {
+
+                    ModStatusToggleEnabled = false;
+                    ModToggleText = UIStrings.Enable;
+                }
+
+                ExportEnabled = true;
+                ImportEnabled = true;
+                MoreOptionsEnabled = true;
+
+                if (_item != null)
+                {
+                    if (_item.SecondaryCategory.Equals(XivStrings.Equipment_Decals) || _item.SecondaryCategory.Equals(XivStrings.Face_Paint))
+                    {
+                        AddMaterialEnabled = false;
+                        MaterialEditorEnabled = false;
+                    }
+                    else
+                    {
+                        MaterialEditorEnabled = true;
+                        AddMaterialEnabled = true;
+                    }
+                }
+                else
+                {
+                    MaterialEditorEnabled = false;
+                    AddMaterialEnabled = false;
+                }
+            } catch (Exception ex)
             {
-                MaterialEditorEnabled = false;
-                AddMaterialEnabled = false;
+                FlexibleMessageBox.Show("Unable to load texture file:\n\nError:" + ex.Message, "Texture File Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
 
             OnLoadingComplete();
