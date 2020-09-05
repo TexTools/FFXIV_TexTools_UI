@@ -40,6 +40,7 @@ using System.Windows.Media.Imaging;
 using xivModdingFramework.Cache;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Helpers;
+using xivModdingFramework.Items.Categories;
 using xivModdingFramework.Items.DataContainers;
 using xivModdingFramework.Items.Interfaces;
 using xivModdingFramework.Materials.FileTypes;
@@ -116,14 +117,6 @@ namespace FFXIV_TexTools.Views
         /// </summary>
         private bool Filter(IItem item)
         {
-
-            // Selecting things via the Characters tab listing doesn't really work
-            // as there's too many things within the same listing.  Works better
-            // to force users to select character entries by their set name so they're more specific.
-            if (item.PrimaryCategory == XivStrings.Character)
-            {
-                return false;
-            }
             return true;
         }
 
@@ -464,12 +457,40 @@ namespace FFXIV_TexTools.Views
                 }
                 else
                 {
-                    // This is a UI item or otherwise an item which has no root, and only has textures.
-                    var uiItem = (XivUi)item;
-                    var paths = await uiItem.GetTexPaths();
-                    foreach (var kv in paths)
+                    if (item.GetType() == typeof(XivCharacter))
                     {
-                        textures.Add(kv.Value);
+                        // Face Paint/Equipment Decals jank-items.  Ugh.
+                        if (item.SecondaryCategory == XivStrings.Face_Paint)
+                        {
+                            var _character = new Character(XivCache.GameInfo.GameDirectory, XivCache.GameInfo.GameLanguage);
+
+                            var paths = await _character.GetDecalPaths(Character.XivDecalType.FacePaint);
+
+                            foreach (var path in paths)
+                            {
+                                textures.Add(path);
+                            }
+
+                        }
+                        else if (item.SecondaryCategory == XivStrings.Equipment_Decals)
+                        {
+                            var _character = new Character(XivCache.GameInfo.GameDirectory, XivCache.GameInfo.GameLanguage);
+                            var paths = await _character.GetDecalPaths(Character.XivDecalType.Equipment);
+                            foreach (var path in paths)
+                            {
+                                textures.Add(path);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // This is a UI item or otherwise an item which has no root, and only has textures.
+                        var uiItem = (XivUi)item;
+                        var paths = await uiItem.GetTexPaths();
+                        foreach (var kv in paths)
+                        {
+                            textures.Add(kv.Value);
+                        }
                     }
                 }
             }).Wait();

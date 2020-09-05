@@ -66,6 +66,11 @@ namespace FFXIV_TexTools.ViewModels
                 XivRace.Viera.GetDisplayName(),
                 XivRace.Hrothgar.GetDisplayName()
             };
+
+            Target3DPrograms = new List<string>() {
+                blenderName, 
+                maxName 
+            };
         }
 
         #region Public Properties
@@ -226,6 +231,8 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         public List<string> SkinTypes { get; }
 
+        public List<string> Target3DPrograms { get; }
+
         /// <summary>
         /// The selected skin type
         /// </summary>
@@ -250,6 +257,25 @@ namespace FFXIV_TexTools.ViewModels
                 // --
             }
         }
+
+        const string maxName = "3DS Max/Unreal";
+        const string blenderName = "Blender/Maya/Unity";
+        public string Selected3DProgram
+        {
+            get => Settings.Default.InvertNormalGreen ? maxName : blenderName;
+            set
+            {
+
+                var b = value == maxName ? true : false;
+
+                if (Settings.Default.InvertNormalGreen != b)
+                {
+                    SetInvertNormal(b);
+                    NotifyPropertyChanged(nameof(Selected3DProgram));
+                }
+            }
+        }
+
 
         /// <summary>
         /// 
@@ -296,6 +322,13 @@ namespace FFXIV_TexTools.ViewModels
         {
             Settings.Default.Sync_Views = value;
             Settings.Default.Save();
+        }
+
+        public void SetInvertNormal(bool value)
+        {
+            Settings.Default.InvertNormalGreen = value;
+            Settings.Default.Save();
+            UpdateFrameworkColors();
         }
 
         /// <summary>
@@ -772,6 +805,8 @@ namespace FFXIV_TexTools.ViewModels
 
             c = (System.Windows.Media.Color)ColorConverter.ConvertFromString(Settings.Default.Furniture_Color);
             colorSet.FurnitureColor = new SharpDX.Color(c.R, c.G, c.B, c.A);
+
+            colorSet.InvertNormalGreen = Settings.Default.InvertNormalGreen;
 
             ModelTexture.SetCustomColors(colorSet);
         }

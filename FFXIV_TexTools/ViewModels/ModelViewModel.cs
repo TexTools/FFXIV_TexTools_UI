@@ -132,7 +132,7 @@ namespace FFXIV_TexTools.ViewModels
             // If we were the ones to trigger it, there's no need to adjust this.
             if (_tab.IsSelected) return;
 
-            if(_item.SecondaryCategory == XivStrings.Character)
+            if(_item.PrimaryCategory == XivStrings.Character)
             {
                 // Character type items this means the ""Number""
                 if (SelectedNumber == null) return;
@@ -147,7 +147,7 @@ namespace FFXIV_TexTools.ViewModels
                 for (int i = 0; i < Numbers.Count; i++)
                 {
                     var num = 0;
-                    ok = Int32.TryParse(SelectedNumber.Name, out num);
+                    ok = Int32.TryParse(Numbers[i].Name, out num);
                     if (!ok) continue;
 
                     if (num == e)
@@ -410,7 +410,7 @@ namespace FFXIV_TexTools.ViewModels
         /// <summary>
         /// Gets the numbers for applicable models
         /// </summary>
-        private void GetNumbers()
+        private async void GetNumbers()
         {
             if (_item.PrimaryCategory.Equals(XivStrings.Gear) || _item.PrimaryCategory.Equals(XivStrings.Companions) || _item.PrimaryCategory.Equals(XivStrings.Housing))
             {
@@ -423,7 +423,7 @@ namespace FFXIV_TexTools.ViewModels
                 var _chara = new Character(XivCache.GameInfo.GameDirectory, XivCache.GameInfo.GameLanguage);
                 var charaItem = (XivCharacter)_item;
                 int[] numbers = new int[0];
-                Task.Run(async () => numbers = await _chara.GetNumbersForCharacterItem(charaItem, false)).Wait();
+                numbers = await _chara.GetNumbersForCharacterItem(charaItem, false);
 
                 var toSelect = 0;
                 var idx = 0;
@@ -620,6 +620,7 @@ namespace FFXIV_TexTools.ViewModels
                 }
                 else
                 {
+                    Parts.Add(new ComboBoxData { Name = "Default" });
                     GetMeshes();
                 }
             }
@@ -634,18 +635,29 @@ namespace FFXIV_TexTools.ViewModels
                 }
 
                 PartVisibility = Visibility.Visible;
+            } else
+            {
+                Parts.Add(new ComboBoxData { Name = "Default" });
             }
 
             _partCount = Parts.Count;
             PartComboboxEnabled = _partCount > 1;
             SelectedPartIndex = 0;
 
-            if(Parts.Count <= 1)
+            if(Parts.Count == 0)
             {
-                // If there are no parts, we're done.
-                if (LoadingComplete != null)
+                Meshes.Clear();
+                _model = new TTModel();
+                MeshComboboxEnabled = false;
+
+                if (_tab.IsSelected)
                 {
-                    LoadingComplete.Invoke(this, null);
+                    await UpdateViewPort();
+                }
+                else
+                {
+                    _updateNeeded = true;
+                    OnLoadingComplete();
                 }
             }
         }
@@ -726,6 +738,13 @@ namespace FFXIV_TexTools.ViewModels
         {
             Meshes.Clear();
 
+            if(SelectedRace == null)
+            {
+                // Edge case safety checks.
+                OnLoadingComplete();
+                return;
+            }
+
             try
             {
                 if (_item.PrimaryCategory.Equals(XivStrings.Gear))
@@ -735,6 +754,13 @@ namespace FFXIV_TexTools.ViewModels
                 }
                 else if (_item.PrimaryCategory.Equals(XivStrings.Character))
                 {
+                    if (SelectedNumber == null || SelectedPart == null)
+                    {
+                        // Edge case safety checks.
+                        OnLoadingComplete();
+                        return;
+                    }
+
                     _item.ModelInfo = new XivModelInfo { SecondaryID = int.Parse(SelectedNumber.Name) };
 
                     ((XivCharacter)_item).TertiaryCategory = SelectedPart.Name;
@@ -743,6 +769,13 @@ namespace FFXIV_TexTools.ViewModels
                 }
                 else if (_item.PrimaryCategory.Equals(XivStrings.Companions))
                 {
+                    if (SelectedPart == null)
+                    {
+                        // Edge case safety checks.
+                        OnLoadingComplete();
+                        return;
+                    }
+
                     if (_item.GetPrimaryItemType() == XivItemType.demihuman)
                     {
                         ((XivMount)_item).TertiaryCategory = SelectedPart.Name;
@@ -760,8 +793,16 @@ namespace FFXIV_TexTools.ViewModels
             {
                 FlexibleMessageBox.Show(
                     string.Format(UIMessages.MDLReadErrorMessage, ex.Message), UIMessages.MDLReadErrorTitle,
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
+                OnLoadingComplete();
+                return;
+            }
+
+            if(_model == null)
+            {
+                _model = new TTModel();
+                UpdateViewPort();
                 OnLoadingComplete();
                 return;
             }
@@ -1658,6 +1699,8 @@ namespace FFXIV_TexTools.ViewModels
                 TransparencyToggle = false;
                 FMVEnabled = false;
 
+                if (_model == null) return;
+
                 _materialDictionary = await GetMaterials();
 
                 ViewPortVM.UpdateModel(_model, _materialDictionary);
@@ -1717,12 +1760,15 @@ namespace FFXIV_TexTools.ViewModels
         private async Task<Dictionary<int, ModelTextureData>> GetMaterials()
         {
             var textureDataDictionary = new Dictionary<int, ModelTextureData>();
+            if (_model == null) return textureDataDictionary;
             var mtrlDictionary = new Dictionary<int, XivMtrl>();
             var mtrl = new Mtrl(_gameDirectory, _item.DataFile, GetLanguage());
             var mtrlFilePaths = _model.Materials;
             var hasColorChangeShader = false;
             Color? customColor = null;
             WinColor winColor;
+
+            if (SelectedRace == null) return textureDataDictionary;
 
             var race = SelectedRace.XivRace;
 
@@ -1922,6 +1968,11 @@ namespace FFXIV_TexTools.ViewModels
                 var dxVersion = int.Parse(Settings.Default.DX_Version);
                 var mtrlData = await mtrl.GetMtrlData(mtrlItem, filePath, dxVersion);
 
+                if(mtrlData == null)
+                {
+                    continue;
+                }
+
                 if (mtrlData.Shader.Contains("colorchange"))
                 {
                     hasColorChangeShader = true;
@@ -1935,14 +1986,16 @@ namespace FFXIV_TexTools.ViewModels
             foreach (var xivMtrl in mtrlDictionary)
             {
 
+                var colors = ModelTexture.GetCustomColors();
+                colors.InvertNormalGreen = false;
                 if (hasColorChangeShader)
                 {
-                    var modelMaps = await ModelTexture.GetModelMaps(_gameDirectory, xivMtrl.Value);
+                    var modelMaps = await ModelTexture.GetModelMaps(_gameDirectory, xivMtrl.Value, colors);
                     textureDataDictionary.Add(xivMtrl.Key, modelMaps);
                 }
                 else
                 {
-                    var modelMaps = await ModelTexture.GetModelMaps(_gameDirectory, xivMtrl.Value);
+                    var modelMaps = await ModelTexture.GetModelMaps(_gameDirectory, xivMtrl.Value, colors);
                     textureDataDictionary.Add(xivMtrl.Key, modelMaps);
                 }
             }

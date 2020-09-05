@@ -63,8 +63,8 @@ namespace FFXIV_TexTools
         private FullModelView _fmv;
         public readonly System.Windows.Forms.IWin32Window Win32Window;
 
-        public static readonly Version BetaVersion = new Version("2.3.0.0");
-        public static readonly string BetaSuffix = "BETA 3";
+        public static readonly Version BetaVersion = null;
+        public static readonly string BetaSuffix = null;
         public static bool IsBetaVersion {
             get
             {
@@ -521,14 +521,25 @@ namespace FFXIV_TexTools
                     msg = UIStrings.Please_Wait;
                 }
 
-                _lockProgressController = await this.ShowProgressAsync(title, msg);
+                // If the lock screen doesn't proc within 1 second, kill it.
+                const int timeout = 1000;
+                var task = this.ShowProgressAsync(title, msg);
 
-                _lockProgressController.SetIndeterminate();
-
-                _lockProgress = new Progress<string>((update) =>
+                if (await Task.WhenAny(task, Task.Delay(timeout)) == task)
                 {
-                    _lockProgressController.SetMessage(update);
-                });
+                    // Task completed within timeout
+                    _lockProgressController = task.Result;
+                    _lockProgressController.SetIndeterminate();
+
+                    _lockProgress = new Progress<string>((update) =>
+                    {
+                        _lockProgressController.SetMessage(update);
+                    });
+                }
+                else
+                {
+                    // Lock screen failed to resolve, don't let us deadlock.
+                }
             }
             finally
             {
@@ -554,7 +565,17 @@ namespace FFXIV_TexTools
                 try
                 {
                     // Sometimes this chokes, not sure why.
-                    await _lockProgressController.CloseAsync();
+                    const int timeout = 1000;
+                    var task = _lockProgressController.CloseAsync();
+
+                    if (await Task.WhenAny(task, Task.Delay(timeout)) == task)
+                    {
+                        // Task completed within timeout
+                    }
+                    else
+                    {
+                        // Unlock screen failed to resolve, don't let us deadlock.
+                    }
                 }
                 catch
                 {
@@ -1232,9 +1253,10 @@ namespace FFXIV_TexTools
                     await Task.Run(XivCache.RebuildAllRoots);
                 } catch(Exception ex)
                 {
-                    FlexibleMessageBox.Show("Item Scan Error", "An error occured while trying to scan for new item sets.\n\n" + ex.Message, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    FlexibleMessageBox.Show( "An error occured while trying to scan for new item sets.\n\n" + ex.Message, "Item Scan Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 await UnlockUi();
+                await RefreshTree();
             }
         }
         private async void Menu_LoadSets_Click(object sender, RoutedEventArgs e)

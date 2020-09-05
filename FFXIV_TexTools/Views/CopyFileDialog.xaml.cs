@@ -63,6 +63,7 @@ namespace FFXIV_TexTools.Views
                 Dispatcher.Invoke(() =>
                 {
                     FlexibleMessageBox.Show("File Copied Successfully.", "Copy Success", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Information);
+                    Close();
                 });
             } catch(Exception ex)
             {

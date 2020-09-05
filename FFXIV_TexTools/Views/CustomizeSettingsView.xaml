@@ -8,7 +8,7 @@
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
         xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
-        Title="{Binding Source={x:Static resx:UIStrings.Customize}}" Height="500" Width="800" ShowMaxRestoreButton="False" ShowMinButton="False" WindowStartupLocation="CenterOwner">
+        Title="{Binding Source={x:Static resx:UIStrings.Customize}}" Height="550" Width="800" ShowMaxRestoreButton="False" ShowMinButton="False" WindowStartupLocation="CenterOwner">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
@@ -63,6 +63,7 @@
                         <RowDefinition Height="40"/>
                         <RowDefinition Height="40"/>
                         <RowDefinition Height="40"/>
+                        <RowDefinition Height="40"/>
                     </Grid.RowDefinitions>
 
 
@@ -74,6 +75,9 @@
 
                     <Label Grid.Column="0" Grid.Row="2" Margin="10,0,5,0" Content="Default Race" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
                     <ComboBox x:Name="DefaultRacesBox" Grid.Column="1" Grid.Row="2"  VerticalAlignment="Center" ItemsSource="{Binding DefaultRaces}" IsEnabled="{Binding DefaultRaceEnabled}" SelectedItem="{Binding SelectedDefaultRace}" Margin="5,0,10,0" ToolTip="Always attempt to switch to this race when changing items."/>
+
+                    <Label Grid.Column="0" Grid.Row="3" Margin="10,0,5,0" Content="External Model Viewer Type" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
+                    <ComboBox x:Name="Target3DProgramBox" Grid.Column="1" Grid.Row="3"  VerticalAlignment="Center" ItemsSource="{Binding Target3DPrograms}" SelectedItem="{Binding Selected3DProgram}" Margin="5,0,10,0" />
                 </Grid>
             </GroupBox>
         </Grid>

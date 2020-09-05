@@ -46,7 +46,9 @@ namespace FFXIV_TexTools.Views
             //< controls:ItemSelectControl x:Name = "ItemSelect" Width = "Auto" MainMenuMode = "False" Margin = "0" Grid.RowSpan = "3" Height = "Auto" />
             if(ItemSelect == null)
             {
-                ItemSelect = new ItemSelectControl(false);
+                ItemSelect = new ItemSelectControl();
+                ItemSelect.DeferLoading = false;
+                ItemSelect.ExpandCharacterMenu = true;
                 ItemSelect.MainMenuMode = false;
                 ItemSelect.SetValue(Grid.RowSpanProperty, 3);
                 ItemSelect.Width = Double.NaN;
@@ -96,7 +98,7 @@ namespace FFXIV_TexTools.Views
 
             // Character is kind of messy and needs a little work to make support work smoothly in this menu.
             // UI Won't ever be supported since there's nothing to connect them together via (that I know of at least -Sel)
-            if(item.PrimaryCategory == XivStrings.Character || item.PrimaryCategory == XivStrings.UI || item.SecondaryCategory == XivStrings.Paintings)
+            if(item.PrimaryCategory == XivStrings.UI || item.SecondaryCategory == XivStrings.Paintings)
             {
                 return false;
             }
