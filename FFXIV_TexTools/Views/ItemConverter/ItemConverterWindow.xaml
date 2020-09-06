@@ -7,7 +7,8 @@
         xmlns:local="clr-namespace:FFXIV_TexTools.Views.ItemConverter"
         xmlns:Controls="clr-namespace:FFXIV_TexTools.Views.Controls" x:Class="FFXIV_TexTools.Views.ItemConverter.ItemConverterWindow"
         mc:Ignorable="d"
-        Title="Item Converter" Height="520" Width="350" ResizeMode="NoResize">
+        Title="Item Converter" Height="520" Width="400
+    " ResizeMode="NoResize">
     <Grid>
 
         <Grid.RowDefinitions>
@@ -32,6 +33,7 @@
                 <RowDefinition Height="30"></RowDefinition>
                 <RowDefinition Height="30"></RowDefinition>
                 <RowDefinition ></RowDefinition>
+                <RowDefinition Height="30"></RowDefinition>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="125"></ColumnDefinition>
@@ -51,6 +53,7 @@
             <TextBlock x:Name="DestinationVariantsBox" Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" Height="16" Margin="0,7,0,8">5</TextBlock>
 
             <Label Grid.Row="4" Grid.ColumnSpan="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">Affected Items</Label>
+
             <ListBox x:Name="AffectedItemsBox" Grid.Row="5" Grid.ColumnSpan="2" VerticalContentAlignment="Center" Margin="10,0,10,10" Style="{DynamicResource SimpleListBox}">
                 <ListBox.ItemContainerStyle>
                     <Style TargetType="{x:Type ListBoxItem}">
@@ -58,6 +61,9 @@
                     </Style>
                 </ListBox.ItemContainerStyle>
             </ListBox>
+            
+            <CheckBox x:Name="SameVariantBox" Grid.Row="6" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Center">Make all destination variants identical</CheckBox>
+
         </Grid>
 
         <Button x:Name="BackButton" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0" Width="125" Click="BackButton_Click">Back</Button>
