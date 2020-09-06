@@ -989,9 +989,12 @@ If you would like to enable this, first import a texture for the selected item.<
     <value>TexTools model displays are only an approximation, and may not be 100% accurate to in-game visuals.</value>
   </data>
   <data name="Copy_File" xml:space="preserve">
-    <value>Copy File</value>
+    <value>Raw File Copy</value>
   </data>
   <data name="Item_Converter" xml:space="preserve">
     <value>Item Converter</value>
+  </data>
+  <data name="Tools" xml:space="preserve">
+    <value>Tools</value>
   </data>
 </root>

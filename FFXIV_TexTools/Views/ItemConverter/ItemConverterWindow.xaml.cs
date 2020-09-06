@@ -43,7 +43,7 @@ namespace FFXIV_TexTools.Views.ItemConverter
         private IProgress<string> _lockProgress;
         public async Task LockUi(string title, string message, object sender)
         {
-            _lockProgressController = await this.ShowProgressAsync("Loading", "Please Wait...");
+            _lockProgressController = await this.ShowProgressAsync(title, message);
 
             _lockProgressController.SetIndeterminate();
 
@@ -169,6 +169,9 @@ namespace FFXIV_TexTools.Views.ItemConverter
                 if (root.PrimaryId != src.PrimaryId) return false;
             }
 
+            // Don't let people copy onto set equipment set 0.  It's special and doesn't like some of the metadata elements.
+            if (root.PrimaryType == XivItemType.equipment && root.PrimaryId == 0) return false;
+
             return true;
         }
         private void ItemSelect_RawItemSelected(object sender, IItem item)
@@ -212,8 +215,6 @@ namespace FFXIV_TexTools.Views.ItemConverter
             if (item.PrimaryCategory == XivStrings.Character)
             {
                 if (item.SecondaryCategory == XivStrings.Hair) return true;
-                if (item.SecondaryCategory == XivStrings.Tail) return true;
-                if (item.SecondaryCategory == XivStrings.Ear) return true;
             }
             return false;
         }
@@ -268,14 +269,22 @@ namespace FFXIV_TexTools.Views.ItemConverter
 
             var imc = new Imc(XivCache.GameInfo.GameDirectory);
 
-            var sourceInfo = await imc.GetFullImcInfo(Source.GetRawImcFilePath());
-            var destInfo = await imc.GetFullImcInfo(Destination.GetRawImcFilePath());
 
             SourceBox.Text = Source.Info.GetBaseFileName();
             DestinationBox.Text = Destination.Info.GetBaseFileName();
 
-            SourceVariantsBox.Text = (sourceInfo.SubsetCount + 1).ToString();
-            DestinationVariantsBox.Text = (destInfo.SubsetCount + 1).ToString();
+            if (Imc.UsesImc(Source))
+            {
+                var sourceInfo = await imc.GetFullImcInfo(Source.GetRawImcFilePath());
+                var destInfo = await imc.GetFullImcInfo(Destination.GetRawImcFilePath());
+                SourceVariantsBox.Text = (sourceInfo.SubsetCount + 1).ToString();
+                DestinationVariantsBox.Text = (destInfo.SubsetCount + 1).ToString();
+            } else
+            {
+                SourceVariantsBox.Text = "1";
+                DestinationVariantsBox.Text = "1";
+
+            }
 
             var items = await Destination.GetAllItems();
 
@@ -291,7 +300,7 @@ namespace FFXIV_TexTools.Views.ItemConverter
             await LockUi("Cloning Items", "Please wait...", this);
             try
             {
-                await RootCloner.CloneRoot(Source, Destination, XivStrings.TexTools);
+                await RootCloner.CloneRoot(Source, Destination, XivStrings.TexTools, _lockProgress);
             }
             catch(Exception ex)
             {

@@ -396,7 +396,7 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Copy File.
+        ///   Looks up a localized string similar to Raw File Copy.
         /// </summary>
         public static string Copy_File {
             get {
@@ -2470,6 +2470,15 @@ namespace FFXIV_TexTools.Resources {
         public static string This_will_only_affect_shared_races {
             get {
                 return ResourceManager.GetString("This_will_only_affect_shared_races", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tools.
+        /// </summary>
+        public static string Tools {
+            get {
+                return ResourceManager.GetString("Tools", resourceCulture);
             }
         }
         

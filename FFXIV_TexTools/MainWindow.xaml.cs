@@ -1313,10 +1313,12 @@ namespace FFXIV_TexTools
                     return;
                 }
 
+
                 var problemChecker = new ProblemChecker(gameDirectory);
 
                 await LockUi(UIStrings.Start_Over, UIMessages.PleaseStandByMessage, this);
 
+                MakeHighlander();
 
                 try
                 {

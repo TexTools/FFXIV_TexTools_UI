@@ -970,7 +970,7 @@ namespace FFXIV_TexTools.ViewModels
                     vCount -= variantsPerMset[0];
                 }
 
-                if (parents.Count == 0)
+                if (parents == null || parents.Count == 0)
                 {
                     if (SelectedMap != null && SelectedMap.Path == path)
                     {
