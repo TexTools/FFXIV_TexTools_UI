@@ -62,7 +62,9 @@ namespace FFXIV_TexTools.Views.ItemConverter
         private ItemConverterState State;
 
         private XivDependencyRoot Source;
+        private IItem SourceItem;
         private XivDependencyRoot Destination;
+        private IItem DestinationItem;
 
         public ItemConverterWindow()
         {
@@ -235,11 +237,13 @@ namespace FFXIV_TexTools.Views.ItemConverter
         private void SourceSelected(object sender, IItem e)
         {
             Source = e.GetRoot();
+            SourceItem = e;
             SetState(ItemConverterState.DestinationSelect);
         }
         private void DestinationSelected(object sender, IItem e)
         {
             Destination = e.GetRoot();
+            DestinationItem = e;
             SetState(ItemConverterState.Confirmation);
         }
         #endregion
@@ -270,8 +274,8 @@ namespace FFXIV_TexTools.Views.ItemConverter
             var imc = new Imc(XivCache.GameInfo.GameDirectory);
 
 
-            SourceBox.Text = Source.Info.GetBaseFileName();
-            DestinationBox.Text = Destination.Info.GetBaseFileName();
+            SourceBox.Text = Source.Info.GetBaseFileName() + " (" + SourceItem.Name + ")";
+            DestinationBox.Text = Destination.Info.GetBaseFileName() + " (" + DestinationItem.Name + ")";
 
             if (Imc.UsesImc(Source))
             {
@@ -279,11 +283,15 @@ namespace FFXIV_TexTools.Views.ItemConverter
                 var destInfo = await imc.GetFullImcInfo(Destination.GetRawImcFilePath());
                 SourceVariantsBox.Text = (sourceInfo.SubsetCount + 1).ToString();
                 DestinationVariantsBox.Text = (destInfo.SubsetCount + 1).ToString();
+
+                SameVariantBox.IsEnabled = true;
+                SameVariantBox.IsChecked = true;
             } else
             {
+                SameVariantBox.IsEnabled = false;
+                SameVariantBox.IsChecked = false;
                 SourceVariantsBox.Text = "1";
                 DestinationVariantsBox.Text = "1";
-
             }
 
             var items = await Destination.GetAllItems();
@@ -298,12 +306,27 @@ namespace FFXIV_TexTools.Views.ItemConverter
         private async void NextButton_Click(object sender, RoutedEventArgs e)
         {
             await LockUi("Cloning Items", "Please wait...", this);
+
             try
             {
-                await RootCloner.CloneRoot(Source, Destination, XivStrings.TexTools, _lockProgress);
+                var variant = -1;
+                if (SameVariantBox.IsChecked == true)
+                {
+                    variant = ((IItemModel)SourceItem).ModelInfo.ImcSubsetID;
+                }
+
+                await Task.Run(async () =>
+                {
+                    await RootCloner.CloneRoot(Source, Destination, XivStrings.TexTools, variant, _lockProgress);
+                });
             }
             catch(Exception ex)
             {
+                while(ex.InnerException != null)
+                {
+                    ex = ex.InnerException;
+                }
+
                 await UnlockUi(this);
                 FlexibleMessageBox.Show("Unable to convert items:\n\nError: " + ex.Message, "Item Conversion Error", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
                 return;
