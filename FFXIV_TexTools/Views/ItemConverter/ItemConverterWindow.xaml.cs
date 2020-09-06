@@ -1,6 +1,7 @@
 ﻿using FFXIV_TexTools.Annotations;
 using FFXIV_TexTools.Helpers;
 using FFXIV_TexTools.Resources;
+using FolderSelect;
 using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
 using System;
@@ -13,6 +14,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
@@ -305,6 +307,7 @@ namespace FFXIV_TexTools.Views.ItemConverter
 
         private async void NextButton_Click(object sender, RoutedEventArgs e)
         {
+            var windowHandle = new WindowWrapper(new WindowInteropHelper(this).Handle);
             await LockUi("Cloning Items", "Please wait...", this);
 
             try
@@ -328,12 +331,12 @@ namespace FFXIV_TexTools.Views.ItemConverter
                 }
 
                 await UnlockUi(this);
-                FlexibleMessageBox.Show("Unable to convert items:\n\nError: " + ex.Message, "Item Conversion Error", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
+                FlexibleMessageBox.Show(windowHandle, "Unable to convert items:\n\nError: " + ex.Message, "Item Conversion Error", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
                 return;
 
             }
             await UnlockUi(this);
-            FlexibleMessageBox.Show("Items converted successfully.", "Item Conversion Successful", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Information);
+            FlexibleMessageBox.Show(windowHandle, "Items converted successfully.", "Item Conversion Successful", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Information);
             Close();
         }
     }
