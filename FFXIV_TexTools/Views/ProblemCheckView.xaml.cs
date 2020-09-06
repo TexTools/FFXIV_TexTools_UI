@@ -480,11 +480,7 @@ namespace FFXIV_TexTools.Views
                                     if (missingFiles.Count > 0)
                                     {
 
-                                        var color = "Red";
-                                        if (extension == ".mdl")
-                                        {
-                                            color = "Orange";
-                                        }
+                                        var color = "Orange";
 
                                         textsToAdd.Add(("\t\u2716\n", color));
                                         foreach (var file in missingFiles)
@@ -501,13 +497,13 @@ namespace FFXIV_TexTools.Views
                                         }
                                         else if (extension == ".mtrl")
                                         {
-                                            textsToAdd.Add(($"\tThis may cause FFXIV to crash if the material is used.\n", color));
-                                            unresolvedCriticalErrors++;
+                                            textsToAdd.Add(($"\tThis may cause some variants of this model to be invisible in game.\n", color));
+                                            unresolvedWarnings++;
                                         }
                                         else if (extension == ".meta")
                                         {
-                                            textsToAdd.Add(($"\tThis may cause FFXIV to crash if certain racial models are used.\n", color));
-                                            unresolvedCriticalErrors++;
+                                            textsToAdd.Add(($"\tThis may cause some racial models to be invisible in game.\n", color));
+                                            unresolvedWarnings++;
                                         }
 
 
