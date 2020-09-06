@@ -19,6 +19,7 @@ using FFXIV_TexTools.Properties;
 using FFXIV_TexTools.Resources;
 using FFXIV_TexTools.ViewModels;
 using FFXIV_TexTools.Views;
+using FFXIV_TexTools.Views.ItemConverter;
 using FFXIV_TexTools.Views.Metadata;
 using FFXIV_TexTools.Views.Models;
 using FolderSelect;
@@ -764,7 +765,6 @@ namespace FFXIV_TexTools
             var vm = (MainViewModel)DataContext;
             vm.CacheTimer.Enabled = true;
             vm.CacheTimer.Start();
-            Menu_ModConverter.IsEnabled = true;
 
             if (string.IsNullOrEmpty(Properties.Settings.Default.Default_Race_Selection))
             {
@@ -1313,10 +1313,12 @@ namespace FFXIV_TexTools
                     return;
                 }
 
+
                 var problemChecker = new ProblemChecker(gameDirectory);
 
                 await LockUi(UIStrings.Start_Over, UIMessages.PleaseStandByMessage, this);
 
+                MakeHighlander();
 
                 try
                 {
@@ -1405,50 +1407,12 @@ namespace FFXIV_TexTools
             Process.Start(WebUrl.Discord_China);
         }
 
-        private async void Menu_ModConverter_Click(object sender, RoutedEventArgs e)
+        private async void Menu_ItemConverter_Click(object sender, RoutedEventArgs e)
         {
-            var modPackDirectory = new DirectoryInfo(Settings.Default.ModPack_Directory);
-            var openFileDialog = new OpenFileDialog { InitialDirectory = modPackDirectory.FullName, Filter = "TexToolsModPack TTMP (*.ttmp;*.ttmp2)|*.ttmp;*.ttmp2" };
-            if (openFileDialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
-                return;
-            var ttmpFileName = openFileDialog.FileName;
-            var ttmp = new TTMP(modPackDirectory, XivStrings.TexTools);
-            (ModPackJson ModPackJson, Dictionary<string, Image> ImageDictionary) ttmpData;
-            var progressController = await this.ShowProgressAsync(UIStrings.Mod_Converter, UIMessages.PleaseStandByMessage);
-            var modsJsonList = await ttmp.GetOriginalModPackJsonData(new DirectoryInfo(ttmpFileName));
-            if (modsJsonList == null)
-            {
-                ttmpData = await ttmp.GetModPackJsonData(new DirectoryInfo(ttmpFileName));
-            }
-            else
-            {
-                ttmpData = (ModPackJson: new ModPackJson(), ImageDictionary: new Dictionary<string, Image>());
-                ttmpData.ModPackJson.Author = "Mod Converter";
-                ttmpData.ModPackJson.Version = "1.0.0";
-                ttmpData.ModPackJson.Name = Path.GetFileNameWithoutExtension(ttmpFileName);
-                ttmpData.ModPackJson.TTMPVersion = "s";
-                ttmpData.ModPackJson.SimpleModsList = new List<ModsJson>();
-                foreach (var mod in modsJsonList)
-                {
-                    var modsJson = new ModsJson();
-                    modsJson.Category = mod.Category;
-                    modsJson.DatFile = mod.DatFile;
-                    modsJson.FullPath = mod.FullPath;
-                    modsJson.ModOffset = mod.ModOffset;
-                    modsJson.ModPackEntry = null;
-                    modsJson.ModSize = mod.ModSize;
-                    modsJson.Name = mod.Name;
-                    ttmpData.ModPackJson.SimpleModsList.Add(modsJson);
-                }
 
-            }
-            var gameDir = new DirectoryInfo(Settings.Default.FFXIV_Directory);
-            var lang = XivLanguages.GetXivLanguage(Settings.Default.Application_Language);
-            var gear = new Gear(gameDir, lang);
-            var gearList = await gear.GetGearList();
-            var modConverterView = new ModConverterView(gearList, ttmpFileName, ttmpData) { Owner = this,WindowStartupLocation=WindowStartupLocation.CenterOwner };
-            await progressController.CloseAsync();
-            modConverterView.ShowDialog();
+            var wind = new ItemConverterWindow() { Owner = this };
+            wind.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            wind.Show();
         }
 
         /// <summary>
