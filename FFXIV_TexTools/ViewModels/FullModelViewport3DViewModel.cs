@@ -512,16 +512,13 @@ namespace FFXIV_TexTools.ViewModels
         {
             // Just build a quick and dirty temp model we can use to call the full bone heirarchy function.
             var tempModel = new TTModel();
+            var models = new HashSet<string>();
             foreach(var kv in shownModels)
             {
-                var model = kv.Value.TtModel;
-                foreach(var mg in model.MeshGroups)
-                {
-                    tempModel.MeshGroups.Add(mg);
-                }
+                models.Add(kv.Value.TtModel.Source);
             }
 
-            var boneDict = tempModel.ResolveFullBoneHeirarchy(race);
+            var boneDict = TTModel.ResolveFullBoneHeirarchy(race, models.ToList());
 
             // Fill in any missing bones that we couldn't otherwise figure out, if possible.
             var missingBones = new List<string>();
