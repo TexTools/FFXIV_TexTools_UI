@@ -478,7 +478,7 @@ namespace FFXIV_TexTools.ViewModels
 
             var finalList = new SortedSet<string>();
             var rex = new Regex("\\/[^/]+c([0-9]{4})[^/]+\\.mtrl$");
-            foreach(var material in materials)
+            foreach (var material in materials)
             {
 
                 // Safety check.  If any materials are referenced in the item which do not exist in the Racial menu, add the race to the menu.
@@ -486,7 +486,7 @@ namespace FFXIV_TexTools.ViewModels
                 if (match.Success)
                 {
                     var matCode = match.Groups[1].Value;
-                    var matRace = XivRaces.GetXivRace(matCode); 
+                    var matRace = XivRaces.GetXivRace(matCode);
                     if (_primaryIsRace && !_primaryComboBoxData.Any(x => x.Value == matRace.GetRaceCodeInt()))
                     {
                         _primaryComboBoxData.Add(new KeyValuePair<string, int>(matRace.GetDisplayName(), matRace.GetRaceCodeInt()));
@@ -508,7 +508,7 @@ namespace FFXIV_TexTools.ViewModels
 
             var _tex = new Tex(XivCache.GameInfo.GameDirectory);
             var icons = await _tex.GetItemIcons(_item);
-            if(icons.Count > 0)
+            if (icons.Count > 0)
             {
                 finalList.Add("icons.ui");
             }
@@ -534,6 +534,41 @@ namespace FFXIV_TexTools.ViewModels
                 finalList.Add(_vfxPath);
             }
 
+            var mSetExtract = new Regex("v([0-9]{4})/");
+            bool showMsets = false;
+            if (finalList.Count > 0)
+            {
+                var mSet = -1;
+
+                // Get the first material set
+                finalList.FirstOrDefault(x =>
+                {
+                    var match = mSetExtract.Match(x);
+                    if(match.Success)
+                    {
+                        mSet = Int32.Parse(match.Groups[1].Value);
+                        return true;
+                    }
+                    return false;
+                });
+
+                // See if any of the material sets don't match.  If they don't, we need to show the mset values.
+                showMsets = finalList.Any(x =>
+                {
+                    var match = mSetExtract.Match(x);
+                    if (match.Success)
+                    {
+                        var set = Int32.Parse(match.Groups[1].Value);
+                        if (set != mSet)
+                        {
+                            return true;
+                        } 
+                    }
+                    return false;
+                });
+
+            }
+
             foreach(var material in finalList)
             {
                 
@@ -550,6 +585,17 @@ namespace FFXIV_TexTools.ViewModels
                 else if(ext == ".mtrl")
                 {
                     var displayedSuffix = mName;
+                    var mSetString = "";
+                    if (showMsets)
+                    {
+                        var match = mSetExtract.Match(material);
+                        if (match.Success)
+                        {
+                            var mSet = Int32.Parse(match.Groups[1].Value);
+                            mSetString = "v" + mSet.ToString().PadLeft(4, '0') + "/";
+                        }
+
+                    }
 
                     if (mName.IndexOf('_') != -1)
                     {
@@ -596,7 +642,7 @@ namespace FFXIV_TexTools.ViewModels
 
                     if (displayedSuffix != mName)
                     {
-                        displayedSuffix = "Material: " + displayedSuffix.ToUpper() + " - " + mName;
+                        displayedSuffix = "Material: " + displayedSuffix.ToUpper() + " - " + mSetString + mName;
                     }
 
 
