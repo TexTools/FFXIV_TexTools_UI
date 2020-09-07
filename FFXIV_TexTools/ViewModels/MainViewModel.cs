@@ -455,6 +455,12 @@ namespace FFXIV_TexTools.ViewModels
 
 
             await _mainWindow.LockUi("Performing Post-Patch Maintenence", "This may take a few minutes if you have many mods installed.", this);
+            var workerStatus = XivCache.CacheWorkerEnabled;
+            if(workerStatus)
+            {
+                // Stop the cache worker if it's running.
+                XivCache.CacheWorkerEnabled = false;
+            }
             try
             {
                 var modding = new Modding(_gameDirectory);
@@ -640,7 +646,7 @@ namespace FFXIV_TexTools.ViewModels
                         toRemove.Add(mod);
                     }
 
-                    if (mod.enabled == false && mod.source == Constants.InternalModSourceName && !String.IsNullOrEmpty(mod.fullPath))
+                    if (mod.enabled == false && mod.IsInternal() && !String.IsNullOrEmpty(mod.fullPath))
                     {
                         // Shit.  Some internal multi-edit file got eaten.  This means we'll have to re-apply all metadata mods later.
                         internalFilesModified = true;
@@ -766,6 +772,7 @@ namespace FFXIV_TexTools.ViewModels
             }
             finally
             {
+                XivCache.CacheWorkerEnabled = workerStatus;
                 await _mainWindow.UnlockUi(this);
             }
         }
