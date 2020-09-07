@@ -1,5 +1,6 @@
 ﻿using FFXIV_TexTools.Annotations;
 using FFXIV_TexTools.Helpers;
+using FFXIV_TexTools.Properties;
 using FFXIV_TexTools.Resources;
 using FolderSelect;
 using MahApps.Metro.Controls;
@@ -322,9 +323,11 @@ namespace FFXIV_TexTools.Views.ItemConverter
                     variant = ((IItemModel)SourceItem).ModelInfo.ImcSubsetID;
                 }
 
+                var saveModpack = SaveModpackFileBox.IsChecked == true ? true : false;
+                string mpd = saveModpack ? Settings.Default.ModPack_Directory : null;
                 await Task.Run(async () =>
                 {
-                    await RootCloner.CloneRoot(Source, Destination, XivStrings.TexTools, variant, _lockProgress);
+                    await RootCloner.CloneRoot(Source, Destination, XivStrings.TexTools, variant, mpd, _lockProgress);
                 });
             }
             catch(Exception ex)
