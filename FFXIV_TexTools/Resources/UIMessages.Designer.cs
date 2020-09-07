@@ -1279,10 +1279,9 @@ namespace FFXIV_TexTools.Resources {
         
         /// <summary>
         ///   Looks up a localized string similar to An FFXIV Update has been detected on this FFXIV Install.
-        ///The Modlist will now be checked for errors and changes.
-        ///Please ensure FFXIV is closed, and do not close TexTools until this process is complete.
         ///
-        ///.
+        ///The Modlist will now be checked for errors and changes.
+        ///Please ensure FFXIV is closed, and do not close TexTools until this process is complete..
         /// </summary>
         internal static string PatchDetectedMessage {
             get {
@@ -1322,7 +1321,8 @@ namespace FFXIV_TexTools.Resources {
         ///   Looks up a localized string similar to Index Backups Created Successfully.
         ///The Post-Patch Process is now complete.
         ///
-        ///If you encounter problems, use Help =&gt; Download Index Backups/Start Over..
+        ///You may now enable your mods via Mods =&gt; Batch =&gt; Enable All Mods
+        ///If you encounter problems, please use Help =&gt; Download Index Backups/Start Over..
         /// </summary>
         internal static string PostPatchBackupsComplete {
             get {

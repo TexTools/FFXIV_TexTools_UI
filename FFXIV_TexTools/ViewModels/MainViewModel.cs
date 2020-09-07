@@ -653,6 +653,7 @@ namespace FFXIV_TexTools.ViewModels
                     }
                 }
 
+                // The modlist is now saved in its current index-represented post patch state.
                 modding.SaveModList(modList);
 
                 if (toRemove.Count > 0)
@@ -704,10 +705,13 @@ namespace FFXIV_TexTools.ViewModels
                     }
                 }
 
+                // The modlist is now in a completely valid state, with all mods having valid offsets and original offsets, with none of the mod offsets pointing into vanilla SE data.
+
                 var result = FlexibleMessageBox.Show(_mainWindow.Win32Window, UIMessages.PostPatchBackupPrompt, "Post-Patch Backup Prompt", MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
 
                 if (result == DialogResult.Yes)
                 {
+                    // Disable all mods and create backups.  (The user can re-enable after manually if desired.)
                     _mainWindow.LockProgress.Report("Disabling Mods.  This can take a minute if you have many mods...");
                     await modding.ToggleAllMods(false);
 
@@ -731,6 +735,7 @@ namespace FFXIV_TexTools.ViewModels
                 }
                 else
                 {
+                    // Restore all our still existent mods that were enabled back to the enabled state, if they are not currently.
                     _mainWindow.LockProgress.Report("Re-Enabling mods disabled by FFXIV Patch...");
 
                     if (internalFilesModified)
