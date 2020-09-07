@@ -1327,6 +1327,7 @@ namespace FFXIV_TexTools
                 try
                 {
                     await problemChecker.PerformStartOver(indexBackupsDirectory, _lockProgress, XivLanguages.GetXivLanguage(Settings.Default.Application_Language));
+                    CustomizeViewModel.UpdateCacheSettings();
                 }
                 catch(Exception ex)
                 {
