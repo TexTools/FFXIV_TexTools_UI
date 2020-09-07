@@ -246,7 +246,10 @@ namespace FFXIV_TexTools.ViewModels
                         ParentCategory = modPacksParent
                     };
 
-                    modPackCatDict.Add(category.Name, category);
+                    if (!modPackCatDict.ContainsKey(category.Name))
+                    {
+                        modPackCatDict.Add(category.Name, category);
+                    }
                 }
 
                 var sortedModPackCatDict = new Dictionary<string, Category>();
