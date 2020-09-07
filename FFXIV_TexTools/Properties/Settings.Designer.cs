@@ -418,5 +418,17 @@ namespace FFXIV_TexTools.Properties {
                 this["InvertNormalGreen"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ExportAllBones {
+            get {
+                return ((bool)(this["ExportAllBones"]));
+            }
+            set {
+                this["ExportAllBones"] = value;
+            }
+        }
     }
 }
