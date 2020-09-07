@@ -502,7 +502,7 @@ namespace FFXIV_TexTools.ViewModels
                                 // Oh dear.  The new index is fucked.  Is the old Index Ok?
                                 type = _dat.GetFileType(oldOriginalOffset, df);
 
-                                if (type == 2 || type == 3 || type == 4)
+                                if (type == 2 || type == 3 || type == 4 && oldOriginalOffset != 0)
                                 {
                                     // Old index is fine, so keep using that.
                                 } else

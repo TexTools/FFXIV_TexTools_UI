@@ -1280,7 +1280,7 @@ namespace FFXIV_TexTools.Resources {
         /// <summary>
         ///   Looks up a localized string similar to An FFXIV Update has been detected on this FFXIV Install.
         ///The Modlist will now be checked for errors and changes.
-        ///Please ensure FFXIV is not open, and do not close TexTools until this process is complete.
+        ///Please ensure FFXIV is closed, and do not close TexTools until this process is complete.
         ///
         ///.
         /// </summary>
