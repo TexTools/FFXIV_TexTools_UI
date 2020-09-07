@@ -483,19 +483,83 @@ namespace FFXIV_TexTools.ViewModels
                         var oldOriginalOffset = mod.data.originalOffset;
                         var modOffset = mod.data.modOffset;
 
+                        var df = IOUtil.GetDataFileFromPath(mod.fullPath);
+
                         // In any event where an offset does not match either of our saved offsets, we must assume this is a new
                         // default file offset for post-patch.
                         if (index1Value != oldOriginalOffset && index1Value != modOffset && index1Value != 0)
                         {
                             // Index 1 value is our new base offset.
-                            mod.data.originalOffset = index1Value;
-                            mod.enabled = false;
+                            var type = _dat.GetFileType(index1Value, df);
+
+                            // Make sure the file it's trying to point to is actually valid.
+                            if (type == 2 || type == 3 || type == 4)
+                            {
+                                mod.data.originalOffset = index1Value;
+                                mod.enabled = false;
+                            } else
+                            {
+                                // Oh dear.  The new index is fucked.  Is the old Index Ok?
+                                type = _dat.GetFileType(oldOriginalOffset, df);
+
+                                if (type == 2 || type == 3 || type == 4)
+                                {
+                                    // Old index is fine, so keep using that.
+                                } else
+                                {
+                                    // Okay... Maybe the new Index2 Value?
+                                    if (index2Value != 0)
+                                    {
+                                        type = _dat.GetFileType(index2Value, df);
+                                        if (type == 2 || type == 3 || type == 4)
+                                        {
+                                            // Set the index 1 value to invalid so that the if later down the chain stomps the index1 value.
+                                            index1Value = -1;
+
+                                            mod.data.originalOffset = index2Value;
+                                            mod.enabled = false;
+                                        }
+                                        else
+                                        {
+                                            // We be fucked.
+                                            throw new Exception("Unable to determine working original offset for file:" + mod.fullPath);
+                                        }
+                                    } else
+                                    {
+                                        // We be fucked.
+                                        throw new Exception("Unable to determine working original offset for file:" + mod.fullPath);
+                                    }
+                                }
+                            }
                         }
                         else if (index2Value != oldOriginalOffset && index2Value != modOffset && index2Value != 0)
                         {
-                            // Index 2 value is our new base offset.
-                            mod.data.originalOffset = index2Value;
-                            mod.enabled = false;
+                            // Our Index 1 was normal, but our Index 2 is changed to an unknown value.
+                            // If the index 2 points to a valid file, we must assume that this new file 
+                            // is our new base data offset.
+
+                            var type = _dat.GetFileType(index2Value, df);
+
+                            if (type == 2 || type == 3 || type == 4)
+                            {
+                                mod.data.originalOffset = index2Value;
+                                mod.enabled = false;
+                            }
+                            else
+                            {
+                                // Oh dear.  The new index is fucked.  Is the old Index Ok?
+                                type = _dat.GetFileType(oldOriginalOffset, df);
+
+                                if (type == 2 || type == 3 || type == 4)
+                                {
+                                    // Old index is fine, so keep using that.
+                                }
+                                else
+                                {
+                                    // We be fucked.
+                                    throw new Exception("Unable to determine working original offset for file:" + mod.fullPath);
+                                }
+                            }
                         }
 
                         // Indexes don't match.  This can occur if SE adds something to index2 that didn't exist in index2 before.
