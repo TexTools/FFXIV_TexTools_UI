@@ -632,7 +632,7 @@ namespace FFXIV_TexTools.ViewModels
                         if (!(modItem.data.originalOffset == modItem.data.modOffset && !modItem.enabled))
                         {
                             // Image
-                            if (itemPath.Contains("material"))
+                            if (itemPath.Contains(".mtrl"))
                             {
                                 var dxVersion = int.Parse(Properties.Settings.Default.DX_Version);
 
@@ -693,7 +693,7 @@ namespace FFXIV_TexTools.ViewModels
                                 modListModel.Image = Application.Current.Dispatcher.Invoke(() => new BitmapImage(
                                     new Uri("pack://application:,,,/FFXIV_TexTools;component/Resources/Metadata.png")));
                             }
-                            else
+                            else if(itemPath.Contains(".tex"))
                             {
                                 var ttp = new TexTypePath
                                 {
