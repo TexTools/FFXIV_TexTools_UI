@@ -278,13 +278,20 @@ namespace FFXIV_TexTools.Views.ItemConverter
 
             if (Imc.UsesImc(Source))
             {
-                var sourceInfo = await imc.GetFullImcInfo(Source.GetRawImcFilePath());
-                var destInfo = await imc.GetFullImcInfo(Destination.GetRawImcFilePath());
-                SourceVariantsBox.Text = (sourceInfo.SubsetCount + 1).ToString();
-                DestinationVariantsBox.Text = (destInfo.SubsetCount + 1).ToString();
-
-                SameVariantBox.IsEnabled = true;
-                SameVariantBox.IsChecked = true;
+                try
+                {
+                    var sourceInfo = await imc.GetFullImcInfo(Source.GetRawImcFilePath());
+                    var destInfo = await imc.GetFullImcInfo(Destination.GetRawImcFilePath());
+                    SourceVariantsBox.Text = (sourceInfo.SubsetCount + 1).ToString();
+                    DestinationVariantsBox.Text = (destInfo.SubsetCount + 1).ToString();
+                    SameVariantBox.IsEnabled = true;
+                    SameVariantBox.IsChecked = true;
+                }
+                catch
+                {
+                    SameVariantBox.IsEnabled = true;
+                    SameVariantBox.IsChecked = true;
+                }
             } else
             {
                 SameVariantBox.IsEnabled = false;

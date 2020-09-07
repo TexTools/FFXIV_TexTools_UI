@@ -393,6 +393,8 @@ namespace FFXIV_TexTools
 
                     XivCache.CacheRebuilding += OnCacheRebuild;
                     XivCache.SetGameInfo(gameDir, lang, dxVersion);
+                    CustomizeViewModel.UpdateCacheSettings();
+
                 } catch(Exception ex)
                 {
                     cacheOK = false;
@@ -1231,6 +1233,8 @@ namespace FFXIV_TexTools
                     {
                         XivCache.RebuildCache();
                     });
+
+                    CustomizeViewModel.UpdateCacheSettings();
                 } catch(Exception ex)
                 {
                     FlexibleMessageBox.Show("Unable to rebuild cache file.\n\nError:" + ex.Message, "Cache Rebuild Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1323,6 +1327,7 @@ namespace FFXIV_TexTools
                 try
                 {
                     await problemChecker.PerformStartOver(indexBackupsDirectory, _lockProgress, XivLanguages.GetXivLanguage(Settings.Default.Application_Language));
+                    CustomizeViewModel.UpdateCacheSettings();
                 }
                 catch(Exception ex)
                 {

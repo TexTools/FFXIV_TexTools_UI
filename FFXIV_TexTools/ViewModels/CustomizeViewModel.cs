@@ -25,7 +25,9 @@ using System.IO;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
+using xivModdingFramework.Cache;
 using xivModdingFramework.General.Enums;
+using xivModdingFramework.Models.DataContainers;
 using xivModdingFramework.Models.ModelTextures;
 
 namespace FFXIV_TexTools.ViewModels
@@ -274,6 +276,28 @@ namespace FFXIV_TexTools.ViewModels
                     NotifyPropertyChanged(nameof(Selected3DProgram));
                 }
             }
+        }
+
+        public bool ExportAllBones
+        {
+            get
+            {
+                return Settings.Default.ExportAllBones;
+            }
+            set
+            {
+                if (ExportAllBones != value)
+                {
+                    SetExportAllBones(value);
+                    NotifyPropertyChanged(nameof(ExportAllBones));
+                }
+            }
+        }
+        public void SetExportAllBones(bool value)
+        {
+            Settings.Default.ExportAllBones = value;
+            Settings.Default.Save();
+            UpdateCacheSettings();
         }
 
 
@@ -809,6 +833,11 @@ namespace FFXIV_TexTools.ViewModels
             colorSet.InvertNormalGreen = Settings.Default.InvertNormalGreen;
 
             ModelTexture.SetCustomColors(colorSet);
+        }
+
+        public static void UpdateCacheSettings()
+        {
+            XivCache.SetMetaValue(TTModel._SETTINGS_KEY_EXPORT_ALL_BONES, Settings.Default.ExportAllBones);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
