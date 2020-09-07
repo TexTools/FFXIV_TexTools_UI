@@ -31,6 +31,7 @@ using System.Windows.Media;
 using MahApps.Metro.Controls.Dialogs;
 using xivModdingFramework.Mods;
 using ListBox = System.Windows.Controls.ListBox;
+using System.Threading.Tasks;
 
 namespace FFXIV_TexTools.Views
 {
@@ -39,6 +40,28 @@ namespace FFXIV_TexTools.Views
     /// </summary>
     public partial class ModListView
     {
+
+        private ProgressDialogController _lockProgressController;
+        private IProgress<string> _lockProgress;
+        public async Task LockUi(string title, string message, object sender)
+        {
+            _lockProgressController = await this.ShowProgressAsync(title, message);
+
+            _lockProgressController.SetIndeterminate();
+
+            _lockProgress = new Progress<string>((update) =>
+            {
+                _lockProgressController.SetMessage(update);
+            });
+        }
+        public async Task UnlockUi(object sender)
+        {
+            await _lockProgressController.CloseAsync();
+            _lockProgressController = null;
+            _lockProgress = null;
+        }
+
+
         private CancellationTokenSource _cts;
         private TextureViewModel _textureViewModel;
         private ModelViewModel _modelViewModel;
@@ -120,79 +143,92 @@ namespace FFXIV_TexTools.Views
             var gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
             var modding = new Modding(gameDirectory);
 
-            if ((ModListTreeView.SelectedItem as Category).ParentCategory.Name.Equals("ModPacks"))
+            await LockUi("Changing Mod Status", "Please wait...", this);
+            try
             {
-                var selectedItem = (ModListTreeView.SelectedItem as Category);
-
-                if ((DataContext as ModListViewModel).ModToggleText == FFXIV_TexTools.Resources.UIStrings.Enable)
+                if ((ModListTreeView.SelectedItem as Category).ParentCategory.Name.Equals("ModPacks"))
                 {
-                    try
-                    {
-                        await modding.ToggleModPackStatus(selectedItem.Name, true);
-                        (DataContext as ModListViewModel).ModToggleText = FFXIV_TexTools.Resources.UIStrings.Disable;
-                    } catch(Exception ex)
-                    {
-                        FlexibleMessageBox.Show("Unable to fully disable Modpack.\nPlease use Help => Download Index Backups/Help => Start Over\n" + "Error: " + ex.Message, "Mod Disable Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                }
-                else
-                {
-                    try { 
-                        await modding.ToggleModPackStatus(selectedItem.Name, false);
-                        (DataContext as ModListViewModel).ModToggleText = FFXIV_TexTools.Resources.UIStrings.Enable;
-                    } catch (Exception ex)
-                    {
-                        FlexibleMessageBox.Show("Unable to fully enable Modpack.\n\n" + "Error: " + ex.Message, "Mod Enable Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                }
+                    var selectedItem = (ModListTreeView.SelectedItem as Category);
 
-                (DataContext as ModListViewModel).UpdateInfoGrid(selectedItem);
-            }
-            else
-            {
-                var items = ModItemList.SelectedItems;
-                foreach (ModListViewModel.ModListModel selectedModItem in items)
-                {
-                    if (selectedModItem.ModItem.enabled)
+                    if ((DataContext as ModListViewModel).ModToggleText == FFXIV_TexTools.Resources.UIStrings.Enable)
                     {
-
-                        var success = false;
-                        try { 
-                            success = await modding.ToggleModStatus(selectedModItem.ModItem.fullPath, false);
-                        } catch (Exception ex)
+                        try
                         {
-                            FlexibleMessageBox.Show("Unable to disable mod.\nPlease use Help => Download Index Backups/Help => Start Over\n" + "Error: " + ex.Message, "Mod Disable Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            await modding.ToggleModPackStatus(selectedItem.Name, true);
+                            (DataContext as ModListViewModel).ModToggleText = FFXIV_TexTools.Resources.UIStrings.Disable;
                         }
-                        if (success)
+                        catch (Exception ex)
                         {
-                            (DataContext as ModListViewModel).ModToggleText = FFXIV_TexTools.Resources.UIStrings.Enable;
-                            selectedModItem.ActiveBorder = Brushes.Red;
-                            selectedModItem.Active = Brushes.Gray;
-                            selectedModItem.ActiveOpacity = 0.5f;
-                            selectedModItem.ModItem.enabled = false;
+                            FlexibleMessageBox.Show("Unable to fully disable Modpack.\nPlease use Help => Download Index Backups/Help => Start Over\n" + "Error: " + ex.Message, "Mod Disable Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
                     }
                     else
                     {
-                        var success = false;
                         try
                         {
-                            success = await modding.ToggleModStatus(selectedModItem.ModItem.fullPath, true);
+                            await modding.ToggleModPackStatus(selectedItem.Name, false);
+                            (DataContext as ModListViewModel).ModToggleText = FFXIV_TexTools.Resources.UIStrings.Enable;
                         }
                         catch (Exception ex)
                         {
-                            FlexibleMessageBox.Show("Unable to enable mod.\n\n" + "Error: " + ex.Message, "Mod Disable Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            FlexibleMessageBox.Show("Unable to fully enable Modpack.\n\n" + "Error: " + ex.Message, "Mod Enable Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
-                        if (success)
+                    }
+
+                    (DataContext as ModListViewModel).UpdateInfoGrid(selectedItem);
+                }
+                else
+                {
+                    var items = ModItemList.SelectedItems;
+                    foreach (ModListViewModel.ModListModel selectedModItem in items)
+                    {
+                        if (selectedModItem.ModItem.enabled)
                         {
-                            (DataContext as ModListViewModel).ModToggleText = FFXIV_TexTools.Resources.UIStrings.Disable;
-                            selectedModItem.ActiveBorder = Brushes.Green;
-                            selectedModItem.Active = Brushes.Transparent;
-                            selectedModItem.ActiveOpacity = 1;
-                            selectedModItem.ModItem.enabled = true;
+
+                            var success = false;
+                            try
+                            {
+                                success = await modding.ToggleModStatus(selectedModItem.ModItem.fullPath, false);
+                            }
+                            catch (Exception ex)
+                            {
+                                FlexibleMessageBox.Show("Unable to disable mod.\nPlease use Help => Download Index Backups/Help => Start Over\n" + "Error: " + ex.Message, "Mod Disable Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            }
+                            if (success)
+                            {
+                                (DataContext as ModListViewModel).ModToggleText = FFXIV_TexTools.Resources.UIStrings.Enable;
+                                selectedModItem.ActiveBorder = Brushes.Red;
+                                selectedModItem.Active = Brushes.Gray;
+                                selectedModItem.ActiveOpacity = 0.5f;
+                                selectedModItem.ModItem.enabled = false;
+                            }
+                        }
+                        else
+                        {
+                            var success = false;
+                            try
+                            {
+                                success = await modding.ToggleModStatus(selectedModItem.ModItem.fullPath, true);
+                            }
+                            catch (Exception ex)
+                            {
+                                FlexibleMessageBox.Show("Unable to enable mod.\n\n" + "Error: " + ex.Message, "Mod Disable Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            }
+                            if (success)
+                            {
+                                (DataContext as ModListViewModel).ModToggleText = FFXIV_TexTools.Resources.UIStrings.Disable;
+                                selectedModItem.ActiveBorder = Brushes.Green;
+                                selectedModItem.Active = Brushes.Transparent;
+                                selectedModItem.ActiveOpacity = 1;
+                                selectedModItem.ModItem.enabled = true;
+                            }
                         }
                     }
                 }
+            }
+            finally
+            {
+                await UnlockUi(this);
             }
         }
 
@@ -204,6 +240,7 @@ namespace FFXIV_TexTools.Views
             var gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
             var modding = new Modding(gameDirectory);
 
+            await LockUi("Deleting Mod", "Please wait...", this);
             try
             {
                 if ((ModListTreeView.SelectedItem as Category).ParentCategory.Name.Equals("ModPacks"))
@@ -233,9 +270,13 @@ namespace FFXIV_TexTools.Views
                         (DataContext as ModListViewModel).RemoveItem(selectedModItem, (Category)ModListTreeView.SelectedItem);
                     }
                 }
-            } catch(Exception Ex)
+            }
+            catch (Exception Ex)
             {
                 FlexibleMessageBox.Show("Unable to delete Mod or Modpack.\n\nError: " + Ex.Message, "Mod Delete Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally {
+                await UnlockUi(this);
             }
         }
 
