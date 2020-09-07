@@ -726,10 +726,9 @@ Error: {0}</value>
   </data>
   <data name="PatchDetectedMessage" xml:space="preserve">
     <value>An FFXIV Update has been detected on this FFXIV Install.
-The Modlist will now be checked for errors and changes.
-Please ensure FFXIV is not open, and do not close TexTools until this process is complete.
 
-</value>
+The Modlist will now be checked for errors and changes.
+Please ensure FFXIV is closed, and do not close TexTools until this process is complete.</value>
   </data>
   <data name="PostPatchBackupPrompt" xml:space="preserve">
     <value>The Modlist has been validated successfully.
@@ -745,7 +744,8 @@ It is recommended to create or download index backups and perform a [Start Over]
     <value>Index Backups Created Successfully.
 The Post-Patch Process is now complete.
 
-If you encounter problems, use Help =&gt; Download Index Backups/Start Over.</value>
+You may now enable your mods via Mods =&gt; Batch =&gt; Enable All Mods
+If you encounter problems, please use Help =&gt; Download Index Backups/Start Over.</value>
   </data>
   <data name="PostPatchComplete" xml:space="preserve">
     <value>The Post-Patch Process is now complete.

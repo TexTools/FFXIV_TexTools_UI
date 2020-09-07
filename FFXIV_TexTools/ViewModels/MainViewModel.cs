@@ -455,11 +455,19 @@ namespace FFXIV_TexTools.ViewModels
 
 
             await _mainWindow.LockUi("Performing Post-Patch Maintenence", "This may take a few minutes if you have many mods installed.", this);
+            var workerStatus = XivCache.CacheWorkerEnabled;
+            if(workerStatus)
+            {
+                // Stop the cache worker if it's running.
+                XivCache.CacheWorkerEnabled = false;
+            }
             try
             {
                 var modding = new Modding(_gameDirectory);
                 var _index = new Index(_gameDirectory);
                 var _dat = new Dat(_gameDirectory);
+
+                var validTypes = new List<int>() { 2, 3, 4 };
 
                 // We have to do a few things here.
                 // 1.  Save a list of what mods were enabled.
@@ -483,19 +491,89 @@ namespace FFXIV_TexTools.ViewModels
                         var oldOriginalOffset = mod.data.originalOffset;
                         var modOffset = mod.data.modOffset;
 
+                        var df = IOUtil.GetDataFileFromPath(mod.fullPath);
+
                         // In any event where an offset does not match either of our saved offsets, we must assume this is a new
                         // default file offset for post-patch.
                         if (index1Value != oldOriginalOffset && index1Value != modOffset && index1Value != 0)
                         {
                             // Index 1 value is our new base offset.
-                            mod.data.originalOffset = index1Value;
-                            mod.enabled = false;
+                            var type = _dat.GetFileType(index1Value, df);
+
+                            // Make sure the file it's trying to point to is actually valid.
+                            if (validTypes.Contains(type))
+                            {
+                                mod.data.originalOffset = index1Value;
+                                mod.enabled = false;
+                            } else
+                            {
+                                // Oh dear.  The new index is fucked.  Is the old Index Ok?
+                                type = _dat.GetFileType(oldOriginalOffset, df);
+
+                                if (validTypes.Contains(type) && oldOriginalOffset != 0)
+                                {
+                                    // Old index is fine, so keep using that.
+
+                                    // But mark the index value as invalid, so that we stomp on the index value after this.
+                                    index1Value = -1;
+                                    mod.enabled = false;
+                                } else
+                                {
+                                    // Okay... Maybe the new Index2 Value?
+                                    if (index2Value != 0)
+                                    {
+                                        type = _dat.GetFileType(index2Value, df);
+                                        if (validTypes.Contains(type))
+                                        {
+                                            // Set the index 1 value to invalid so that the if later down the chain stomps the index1 value.
+                                            index1Value = -1;
+
+                                            mod.data.originalOffset = index2Value;
+                                            mod.enabled = false;
+                                        }
+                                        else
+                                        {
+                                            // We be fucked.
+                                            throw new Exception("Unable to determine working original offset for file:" + mod.fullPath);
+                                        }
+                                    } else
+                                    {
+                                        // We be fucked.
+                                        throw new Exception("Unable to determine working original offset for file:" + mod.fullPath);
+                                    }
+                                }
+                            }
                         }
                         else if (index2Value != oldOriginalOffset && index2Value != modOffset && index2Value != 0)
                         {
-                            // Index 2 value is our new base offset.
-                            mod.data.originalOffset = index2Value;
-                            mod.enabled = false;
+                            // Our Index 1 was normal, but our Index 2 is changed to an unknown value.
+                            // If the index 2 points to a valid file, we must assume that this new file 
+                            // is our new base data offset.
+
+                            var type = _dat.GetFileType(index2Value, df);
+
+                            if (validTypes.Contains(type))
+                            {
+                                mod.data.originalOffset = index2Value;
+                                mod.enabled = false;
+                            }
+                            else
+                            {
+                                // Oh dear.  The new index is fucked.  Is the old Index Ok?
+                                type = _dat.GetFileType(oldOriginalOffset, df);
+
+                                if (validTypes.Contains(type))
+                                {
+                                    // Old index is fine, so keep using that, but set the index2 value to invalid to ensure we 
+                                    // stomp on the current broken index value.
+                                    index2Value = -1;
+                                }
+                                else
+                                {
+                                    // We be fucked.
+                                    throw new Exception("Unable to determine working original offset for file:" + mod.fullPath);
+                                }
+                            }
                         }
 
                         // Indexes don't match.  This can occur if SE adds something to index2 that didn't exist in index2 before.
@@ -507,6 +585,7 @@ namespace FFXIV_TexTools.ViewModels
                             }
 
                             // We should never actually get to this state for file-addition mods.  If we do, uh.. I guess correct the indexes and yolo?
+                            // ( Only way we get here is if SE added a new file at the same name as a file the user had created via modding, in which case, it's technically no longer a file addition mod )
                             await _index.UpdateDataOffset(mod.data.originalOffset, mod.fullPath, false);
                             index1Value = mod.data.originalOffset;
                             index2Value = mod.data.originalOffset;
@@ -524,13 +603,11 @@ namespace FFXIV_TexTools.ViewModels
                             mod.enabled = false;
                         }
 
-
                         // Perform a basic file type check on our results.
                         var fileType = _dat.GetFileType(mod.data.modOffset, IOUtil.GetDataFileFromPath(mod.fullPath));
                         var originalFileType = _dat.GetFileType(mod.data.modOffset, IOUtil.GetDataFileFromPath(mod.fullPath));
 
-                        var validTypes = new List<int>() { 2, 3, 4 };
-                        if (!validTypes.Contains(fileType))
+                        if (!validTypes.Contains(fileType) || mod.data.modOffset == 0)
                         {
                             // Mod data is busted.  Fun.
                             toRemove.Add(mod);
@@ -540,15 +617,16 @@ namespace FFXIV_TexTools.ViewModels
                             }
                         }
 
-                        if (!validTypes.Contains(originalFileType))
+                        if ((!validTypes.Contains(originalFileType)) || mod.data.originalOffset == 0)
                         {
                             if (mod.IsCustomFile())
                             {
                                 // Okay, in this case this is recoverable as the mod is a custom addition anyways, so we can just delete it.
+                                // ( Which is already triggered above, as custom files have the same original and base offset).
                             }
                             else
                             {
-                                // Update ended up with us unable to find a valid original offset.  Double fun.
+                                // Update ended up with us unable to find a working offset.  Double fun.
                                 throw new Exception("Unable to determine working offset for file:" + mod.fullPath);
                             }
                         }
@@ -568,13 +646,14 @@ namespace FFXIV_TexTools.ViewModels
                         toRemove.Add(mod);
                     }
 
-                    if (mod.enabled == false && mod.source == Constants.InternalModSourceName && !String.IsNullOrEmpty(mod.fullPath))
+                    if (mod.enabled == false && mod.IsInternal() && !String.IsNullOrEmpty(mod.fullPath))
                     {
                         // Shit.  Some internal multi-edit file got eaten.  This means we'll have to re-apply all metadata mods later.
                         internalFilesModified = true;
                     }
                 }
 
+                // The modlist is now saved in its current index-represented post patch state.
                 modding.SaveModList(modList);
 
                 if (toRemove.Count > 0)
@@ -582,19 +661,37 @@ namespace FFXIV_TexTools.ViewModels
                     var removedString = "";
                     foreach (var mod in toRemove)
                     {
-                        if (mod.enabled)
+                        if (mod.data.modOffset == 0 || mod.data.originalOffset == 0)
                         {
-                            // We shouldn't really get here with something like this enabled, but if it is, disable it.
-                            await modding.ToggleModUnsafe(false, mod, true);
-                            mod.enabled = false;
+                            // It should be impossible to get here in this state, but if some how we *do* end up here with a 0 offset mod,
+                            // just strip it from the modlist.
+
+                            if(mod.data.originalOffset == 0 && mod.enabled)
+                            {
+                                throw new Exception("Unable to disable mod with unknown original offset.");
+                            }
+
+                            modList.Mods.Remove(mod);
+                            enabledMods.Remove(mod);
+                            removedString += mod.fullPath + "\n";
                         }
+                        else
+                        {
 
-                        modList.Mods.Remove(mod);
+                            if (mod.enabled)
+                            {
+                                // We shouldn't really get here with something like this enabled, but if it is, disable it.
+                                await modding.ToggleModUnsafe(false, mod, true);
+                                mod.enabled = false;
+                            }
 
-                        // Since we're deleting this entry entirely, we can't leave it in the other cached list either to get re-enabled later.
-                        enabledMods.Remove(mod);
+                            modList.Mods.Remove(mod);
 
-                        removedString += mod.fullPath + "\n";
+                            // Since we're deleting this entry entirely, we can't leave it in the other cached list either to get re-enabled later.
+                            enabledMods.Remove(mod);
+
+                            removedString += mod.fullPath + "\n";
+                        }
                     }
 
                     modding.SaveModList(modList);
@@ -608,10 +705,13 @@ namespace FFXIV_TexTools.ViewModels
                     }
                 }
 
+                // The modlist is now in a completely valid state, with all mods having valid offsets and original offsets, with none of the mod offsets pointing into vanilla SE data.
+
                 var result = FlexibleMessageBox.Show(_mainWindow.Win32Window, UIMessages.PostPatchBackupPrompt, "Post-Patch Backup Prompt", MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
 
                 if (result == DialogResult.Yes)
                 {
+                    // Disable all mods and create backups.  (The user can re-enable after manually if desired.)
                     _mainWindow.LockProgress.Report("Disabling Mods.  This can take a minute if you have many mods...");
                     await modding.ToggleAllMods(false);
 
@@ -635,6 +735,7 @@ namespace FFXIV_TexTools.ViewModels
                 }
                 else
                 {
+                    // Restore all our still existent mods that were enabled back to the enabled state, if they are not currently.
                     _mainWindow.LockProgress.Report("Re-Enabling mods disabled by FFXIV Patch...");
 
                     if (internalFilesModified)
@@ -676,6 +777,7 @@ namespace FFXIV_TexTools.ViewModels
             }
             finally
             {
+                XivCache.CacheWorkerEnabled = workerStatus;
                 await _mainWindow.UnlockUi(this);
             }
         }
