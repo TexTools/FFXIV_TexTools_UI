@@ -173,9 +173,6 @@ namespace FFXIV_TexTools.Views.ItemConverter
                 if (root.PrimaryId != src.PrimaryId) return false;
             }
 
-            // Don't let people copy onto set equipment set 0.  It's special and doesn't like some of the metadata elements.
-            if (root.PrimaryType == XivItemType.equipment && root.PrimaryId == 0) return false;
-
             return true;
         }
         private void ItemSelect_RawItemSelected(object sender, IItem item)
