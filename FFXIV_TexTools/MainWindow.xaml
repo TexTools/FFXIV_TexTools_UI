@@ -107,7 +107,7 @@
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
                     <items:ItemSelectControl x:Name="ItemSelect" Height="Auto" Width="Auto" DeferLoading="True" MainMenuMode="True" Margin="0,0,0,0"/>
-                <TextBlock x:Name="StatusTextBox" Margin="0" TextWrapping="Wrap" Text="Status Text Goes Here" TextAlignment="Center" Grid.Row="1"/>
+                <TextBlock x:Name="StatusTextBox" ToolTip="You may continue using FFXIV/TexTools as normal while TexTools works. You do not need to keep TexTools open." Margin="0" TextWrapping="Wrap" Text="Status Text Goes Here" TextAlignment="Center" Grid.Row="1"/>
                 </Grid>
             </GroupBox>
 
