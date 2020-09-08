@@ -723,7 +723,7 @@ namespace FFXIV_TexTools.ViewModels
             var mtrlVariant = 1;
             try
             {
-                mtrlVariant = (await _imc.GetImcInfo(item)).Variant;
+                mtrlVariant = (await _imc.GetImcInfo(item)).MaterialSet;
             }
             catch (Exception ex)
             {

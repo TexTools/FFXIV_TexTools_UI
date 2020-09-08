@@ -135,8 +135,8 @@ namespace FFXIV_TexTools.ViewModels
                 if(_metadata.ImcEntries.Count > 0)
                 {
                     var _dat = new Dat(XivCache.GameInfo.GameDirectory);
-                    var originalMaterialSetMax = _original.ImcEntries.Select(x => x.Variant).Max();
-                    var newMaterialSetMax = _metadata.ImcEntries.Select(x => x.Variant).Max();
+                    var originalMaterialSetMax = _original.ImcEntries.Select(x => x.MaterialSet).Max();
+                    var newMaterialSetMax = _metadata.ImcEntries.Select(x => x.MaterialSet).Max();
 
                     if(newMaterialSetMax > originalMaterialSetMax)
                     {

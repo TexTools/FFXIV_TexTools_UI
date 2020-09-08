@@ -119,7 +119,7 @@ namespace FFXIV_TexTools.Views
                     try
                     {
                         var entry = await imc.GetImcInfo((IItemModel)_item);
-                        children = await root.GetMaterialFiles(entry.Variant);
+                        children = await root.GetMaterialFiles(entry.MaterialSet);
                     } catch
                     {
                         if(root.Info.SecondaryType == XivItemType.hair
@@ -141,7 +141,7 @@ namespace FFXIV_TexTools.Views
                     {
                         var imc = new Imc(XivCache.GameInfo.GameDirectory);
                         var entry = await imc.GetImcInfo((IItemModel)_item);
-                        children = await root.GetTextureFiles(entry.Variant);
+                        children = await root.GetTextureFiles(entry.MaterialSet);
                     }
                     catch
                     {

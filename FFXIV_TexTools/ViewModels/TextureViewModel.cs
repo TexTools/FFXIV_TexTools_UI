@@ -1003,11 +1003,11 @@ namespace FFXIV_TexTools.ViewModels
                 Dictionary<int, int> variantsPerMset = new Dictionary<int, int>();
                 foreach (var e in entries)
                 {
-                    if (!variantsPerMset.ContainsKey(e.Variant))
+                    if (!variantsPerMset.ContainsKey(e.MaterialSet))
                     {
-                        variantsPerMset[e.Variant] = 0;
+                        variantsPerMset[e.MaterialSet] = 0;
                     }
-                    variantsPerMset[e.Variant]++;
+                    variantsPerMset[e.MaterialSet]++;
                 }
 
                 if (variantsPerMset.ContainsKey(0))
@@ -1026,7 +1026,7 @@ namespace FFXIV_TexTools.ViewModels
                     return;
                 }
 
-                var mymSet = entries[item.ModelInfo.ImcSubsetID].Variant;
+                var mymSet = entries[item.ModelInfo.ImcSubsetID].MaterialSet;
 
                 // Check if we're just used in some amount of variants of the same material.
                 var firstName = Path.GetFileName(parents[0]);

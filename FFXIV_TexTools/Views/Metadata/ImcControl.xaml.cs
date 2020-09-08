@@ -48,9 +48,9 @@ namespace FFXIV_TexTools.Views.Metadata
             for (int i = 0; i < m.ImcEntries.Count; i++)
             {
                 ImcVariantBox.Items.Add(i);
-                if (m.ImcEntries[i].Variant > maxMaterialSetId)
+                if (m.ImcEntries[i].MaterialSet > maxMaterialSetId)
                 {
-                    maxMaterialSetId = m.ImcEntries[i].Variant;
+                    maxMaterialSetId = m.ImcEntries[i].MaterialSet;
                 }
             }
 
@@ -115,7 +115,10 @@ namespace FFXIV_TexTools.Views.Metadata
             ushort vfx = entry.Vfx;
             VfxBox.Text = vfx.ToString();
 
-            MaterialSetBox.SelectedIndex = entry.Variant;
+            ushort decal = entry.Decal;
+            DecalBox.Text = decal.ToString();
+
+            MaterialSetBox.SelectedIndex = entry.MaterialSet;
 
         }
 
@@ -126,7 +129,7 @@ namespace FFXIV_TexTools.Views.Metadata
                 return;
             }
             var entry = _metadata.ImcEntries[(int)ImcVariantBox.SelectedItem];
-            entry.Variant = (byte)MaterialSetBox.SelectedIndex;
+            entry.MaterialSet = (byte)MaterialSetBox.SelectedIndex;
         }
 
         private void AffectedItemsButton_Click(object sender, RoutedEventArgs e)
@@ -149,6 +152,22 @@ namespace FFXIV_TexTools.Views.Metadata
             {
                 e.Handled = true;
             }
+        }
+
+        private void DecalBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (String.IsNullOrWhiteSpace(((TextBox)sender).Text) || _metadata == null)
+            {
+                return;
+            }
+
+            var value = Int32.Parse(((TextBox)sender).Text);
+            var entry = _metadata.ImcEntries[(int)ImcVariantBox.SelectedItem];
+
+            if (value > 255) { value = 255; }
+            if (value < 0) { value = 0; }
+
+            entry.Decal = (byte) value;
         }
 
         private void SfxBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -195,7 +214,7 @@ namespace FFXIV_TexTools.Views.Metadata
             var paths = new List<(string title, string path)>();
 
             var mtrl = new Mtrl(XivCache.GameInfo.GameDirectory, IOUtil.GetDataFileFromPath(_metadata.Root.Info.GetRootFile()), XivCache.GameInfo.GameLanguage);
-            var folder = mtrl.GetMtrlFolder(_metadata.Root.Info, entry.Variant) + "/";
+            var folder = mtrl.GetMtrlFolder(_metadata.Root.Info, entry.MaterialSet) + "/";
             paths.Add(("Material Folder", folder));
 
             if (entry.Vfx > 0)
@@ -218,9 +237,9 @@ namespace FFXIV_TexTools.Views.Metadata
             foreach(var entry in _metadata.ImcEntries)
             {
                 entry.Mask = current.Mask;
-                entry.Unknown = current.Unknown;
+                entry.Decal = current.Decal;
                 entry.Vfx = current.Vfx;
-                entry.Variant = current.Variant;
+                entry.MaterialSet = current.MaterialSet;
             }
         }
 
@@ -229,9 +248,9 @@ namespace FFXIV_TexTools.Views.Metadata
             var current = _metadata.ImcEntries[(int)ImcVariantBox.SelectedItem];
             var entry = new XivImc();
             entry.Mask = current.Mask;
-            entry.Unknown = current.Unknown;
+            entry.Decal = current.Decal;
             entry.Vfx = current.Vfx;
-            entry.Variant = current.Variant;
+            entry.MaterialSet = current.MaterialSet;
 
             var idx = _metadata.ImcEntries.Count;
             _metadata.ImcEntries.Add(entry);

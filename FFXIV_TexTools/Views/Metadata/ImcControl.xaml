@@ -36,6 +36,7 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="36"></RowDefinition>
                     <RowDefinition Height="36"></RowDefinition>
+                    <RowDefinition Height="36"></RowDefinition>
                     <RowDefinition Height="1*"></RowDefinition>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
@@ -57,8 +58,11 @@
 
                 <Label Content="SFX ID:" Margin="0" FontSize="16" Grid.Row="1" Grid.Column="2" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"/>
                 <TextBox x:Name="SfxBox" Grid.Row="1" Grid.Column="3" Margin="5" PreviewTextInput="PreviewNumericInput" TextChanged="SfxBox_TextChanged" />
+                
+                <Label Content="Decal ID:" Margin="0" FontSize="16" Grid.Row="2" Grid.Column="2" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"/>
+                <TextBox x:Name="DecalBox" Grid.Row="2" Grid.Column="3" Margin="5" PreviewTextInput="PreviewNumericInput" TextChanged="DecalBox_TextChanged" />
 
-                <GroupBox Grid.Column="0" Grid.Row="2"  Header="Visible Variant Parts" Margin="5" Grid.ColumnSpan="5" HorizontalAlignment="Left" Width="490" Height="100" VerticalAlignment="Top">
+                <GroupBox Grid.Column="0" Grid.Row="3"  Header="Visible Variant Parts" Margin="5" Grid.ColumnSpan="5" HorizontalAlignment="Left" Width="490" Height="100" VerticalAlignment="Top">
                     <UniformGrid x:Name="PartsGrid" Rows="2" Columns="5">
 
                         <CheckBox Content=" A" Grid.Column="1"  Width="50" HorizontalAlignment="Center" VerticalAlignment="Center"/>

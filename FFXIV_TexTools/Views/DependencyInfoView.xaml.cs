@@ -231,7 +231,7 @@ namespace FFXIV_TexTools.Views
                         var info = fullImcInfo.GetEntry(i, rt.Info.Slot);
 
                         // This IMC subset references the one of our material sets.
-                        if (kv.Value.Contains(info.Variant))
+                        if (kv.Value.Contains(info.MaterialSet))
                         {
                             sharedImcSubsets[rt].Add(i);
                         }
