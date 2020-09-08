@@ -200,10 +200,10 @@ namespace FFXIV_TexTools.Views.Metadata
             var value = Int32.Parse(((TextBox)sender).Text);
             var entry = _metadata.ImcEntries[(int)ImcVariantBox.SelectedItem];
 
-            if (value > ushort.MaxValue ) { value = ushort.MaxValue; }
+            if (value > 255) { value = 255; }
             if (value < 0) { value = 0; }
 
-            entry.Vfx = (ushort)value;
+            entry.Vfx = (byte)value;
         }
 
 
@@ -240,17 +240,14 @@ namespace FFXIV_TexTools.Views.Metadata
                 entry.Decal = current.Decal;
                 entry.Vfx = current.Vfx;
                 entry.MaterialSet = current.MaterialSet;
+                entry.Animation = current.Animation;
             }
         }
 
         private void AddVariantButton_Click(object sender, RoutedEventArgs e)
         {
             var current = _metadata.ImcEntries[(int)ImcVariantBox.SelectedItem];
-            var entry = new XivImc();
-            entry.Mask = current.Mask;
-            entry.Decal = current.Decal;
-            entry.Vfx = current.Vfx;
-            entry.MaterialSet = current.MaterialSet;
+            var entry = (XivImc)current.Clone();
 
             var idx = _metadata.ImcEntries.Count;
             _metadata.ImcEntries.Add(entry);
