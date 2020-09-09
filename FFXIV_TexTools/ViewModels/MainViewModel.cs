@@ -681,7 +681,7 @@ namespace FFXIV_TexTools.ViewModels
                             if (mod.enabled)
                             {
                                 // We shouldn't really get here with something like this enabled, but if it is, disable it.
-                                await modding.ToggleModUnsafe(false, mod, true);
+                                await modding.ToggleModUnsafe(false, mod, true, false);
                                 mod.enabled = false;
                             }
 
