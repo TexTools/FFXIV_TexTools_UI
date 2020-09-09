@@ -23,7 +23,9 @@ using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 using xivModdingFramework.Cache;
 using xivModdingFramework.Items.Enums;
 using xivModdingFramework.Items.Interfaces;
+using xivModdingFramework.Models.DataContainers;
 using xivModdingFramework.Mods;
+using xivModdingFramework.Mods.FileTypes;
 using xivModdingFramework.Variants.FileTypes;
 
 namespace FFXIV_TexTools.Views.ItemConverter
@@ -323,11 +325,35 @@ namespace FFXIV_TexTools.Views.ItemConverter
                     variant = ((IItemModel)SourceItem).ModelInfo.ImcSubsetID;
                 }
 
+                var extraConversions = new Dictionary<XivDependencyRoot, XivDependencyRoot>();
+                if (Source.Info.Slot == "top")
+                {
+                    try
+                    {
+                        extraConversions = await GetExtraConversions();
+                        if(extraConversions == null)
+                        {
+                            return;
+                        }
+                    }
+                    catch
+                    {
+                        extraConversions.Clear();
+                    }
+                }
+
+
+
                 var saveModpack = SaveModpackFileBox.IsChecked == true ? true : false;
                 string mpd = saveModpack ? Settings.Default.ModPack_Directory : null;
                 await Task.Run(async () =>
                 {
                     await RootCloner.CloneRoot(Source, Destination, XivStrings.TexTools, variant, mpd, _lockProgress);
+
+                    foreach(var kv in extraConversions)
+                    {
+                        await RootCloner.CloneRoot(kv.Key, kv.Value, XivStrings.TexTools, variant, mpd, _lockProgress);
+                    }
                 });
             }
             catch(Exception ex)
@@ -345,6 +371,131 @@ namespace FFXIV_TexTools.Views.ItemConverter
             await UnlockUi(this);
             FlexibleMessageBox.Show(windowHandle, "Items converted successfully.", "Item Conversion Successful", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Information);
             Close();
+        }
+
+        /// <summary>
+        /// Performs a metadata analysis between the two sets to determine what other slots, if any,
+        /// need to be converted along with this item to guarantee proper visuals.
+        /// </summary>
+        /// <returns></returns>
+        private async Task<Dictionary<XivDependencyRoot, XivDependencyRoot>> GetExtraConversions()
+        {
+            var variant = -1;
+            if (SameVariantBox.IsChecked == true)
+            {
+                variant = ((IItemModel)SourceItem).ModelInfo.ImcSubsetID;
+            }
+
+            var extraConversions = new Dictionary<XivDependencyRoot, XivDependencyRoot>();
+            // For top items, we need to check and see if a recursive action is required.
+            var meta = await ItemMetadata.GetMetadata(Source);
+            var eqp = meta.EqpEntry;
+
+            if (eqp != null || !eqp.GetFlag(EquipmentParameterFlag.EnableBodyFlags))
+            {
+                var hideHand = !eqp.GetFlag(EquipmentParameterFlag.BodyShowHand);
+                var hideLeg = !eqp.GetFlag(EquipmentParameterFlag.BodyShowLeg);
+                var hideHead = !eqp.GetFlag(EquipmentParameterFlag.BodyShowHead);
+
+                // If we don't full-hide any other slots, recursion is never needed.
+                if (hideHand || hideLeg || hideHead)
+                {
+                    var itemConversions = "";
+
+                    if (hideHand)
+                    {
+                        // Recursive actions are only necessary if the base set actually differs in terms of what accessories are shown.
+                        var sourceAltRoot = Source.Info.GetOtherSlot("glv").ToFullRoot();
+                        var destAltRoot = Destination.Info.GetOtherSlot("glv").ToFullRoot();
+
+                        var sourceAltMeta = await ItemMetadata.GetMetadata(sourceAltRoot);
+                        var destAltMeta = await ItemMetadata.GetMetadata(destAltRoot);
+
+                        var srcShowRingR = sourceAltMeta.EqpEntry.GetFlag(EquipmentParameterFlag.HandShowRingR);
+                        var dstShowRingR = destAltMeta.EqpEntry.GetFlag(EquipmentParameterFlag.HandShowRingR);
+
+                        var srcShowRingL = sourceAltMeta.EqpEntry.GetFlag(EquipmentParameterFlag.HandShowRingL);
+                        var dstShowRingL = destAltMeta.EqpEntry.GetFlag(EquipmentParameterFlag.HandShowRingL);
+
+                        var srcShowBrac = sourceAltMeta.EqpEntry.GetFlag(EquipmentParameterFlag.HandShowBracelet);
+                        var dstShowBrac = destAltMeta.EqpEntry.GetFlag(EquipmentParameterFlag.HandShowBracelet);
+
+                        if (srcShowRingR != dstShowRingR
+                            || srcShowRingL != dstShowRingL
+                            || srcShowBrac != dstShowBrac)
+                        {
+
+                            var sourceAltItem = sourceAltRoot.GetFirstItem(variant);
+                            var destAltItem = destAltRoot.GetFirstItem();
+
+                            itemConversions += sourceAltItem.Name + " => " + destAltItem.Name + "\n";
+                            extraConversions.Add(sourceAltRoot, destAltRoot);
+                        }
+                    }
+
+                    if (hideLeg)
+                    {
+                        // Recursive actions are only necessary if the base set actually differs in terms whether feet are shown or not.
+                        var sourceAltRoot = Source.Info.GetOtherSlot("dwn").ToFullRoot();
+                        var destAltRoot = Destination.Info.GetOtherSlot("dwn").ToFullRoot();
+
+                        var sourceAltMeta = await ItemMetadata.GetMetadata(sourceAltRoot);
+                        var destAltMeta = await ItemMetadata.GetMetadata(destAltRoot);
+
+                        var srcShowFoot = sourceAltMeta.EqpEntry.GetFlag(EquipmentParameterFlag.LegShowFoot);
+                        var dstShowFoot = destAltMeta.EqpEntry.GetFlag(EquipmentParameterFlag.LegShowFoot);
+                        if (srcShowFoot != dstShowFoot)
+                        {
+                            var sourceAltItem = sourceAltRoot.GetFirstItem(variant);
+                            var destAltItem = destAltRoot.GetFirstItem();
+
+
+                            itemConversions += sourceAltItem.Name + " => " + destAltItem.Name + "\n";
+                            extraConversions.Add(sourceAltRoot, destAltRoot);
+                        }
+                    }
+
+                    if (hideHead)
+                    {
+                        // Calculation recursion on head is a nightmare of like 12+ flags.
+                        // Just always suggest converting the headpiece.
+                        var sourceAltRoot = Source.Info.GetOtherSlot("met").ToFullRoot();
+                        var destAltRoot = Destination.Info.GetOtherSlot("met").ToFullRoot();
+
+                        var sourceAltItem = sourceAltRoot.GetFirstItem(variant);
+                        var destAltItem = destAltRoot.GetFirstItem();
+
+                        itemConversions += sourceAltItem.Name + " => " + destAltItem.Name + "\n";
+                        extraConversions.Add(sourceAltRoot, destAltRoot);
+                    }
+
+                    if (extraConversions.Count > 0)
+                    {
+
+
+                        var msg = "In order to fully convert this item, the following items may also need to be converted with it.\n\n" + itemConversions + "\nPerform these conversions as well?";
+
+                        var result = FlexibleMessageBox.Show(msg, "Multi-Slot Convert Required", System.Windows.Forms.MessageBoxButtons.YesNoCancel, System.Windows.Forms.MessageBoxIcon.Warning);
+
+                        if (result == System.Windows.Forms.DialogResult.Yes)
+                        {
+                            return extraConversions;
+                        }
+                        else if (result == System.Windows.Forms.DialogResult.No)
+                        {
+                            extraConversions.Clear();
+                            return extraConversions;
+                        }
+                        else
+                        {
+                            return null;
+                        }
+                    }
+                }
+            }
+
+            extraConversions.Clear();
+            return extraConversions;
         }
     }
 }
