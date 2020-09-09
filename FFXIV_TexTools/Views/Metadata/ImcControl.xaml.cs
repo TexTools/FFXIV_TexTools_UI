@@ -118,6 +118,9 @@ namespace FFXIV_TexTools.Views.Metadata
             ushort decal = entry.Decal;
             DecalBox.Text = decal.ToString();
 
+            ushort anim= entry.Animation;
+            AnimationBox.Text = anim.ToString();
+
             MaterialSetBox.SelectedIndex = entry.MaterialSet;
 
         }
@@ -168,6 +171,21 @@ namespace FFXIV_TexTools.Views.Metadata
             if (value < 0) { value = 0; }
 
             entry.Decal = (byte) value;
+        }
+        private void AnimationBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (String.IsNullOrWhiteSpace(((TextBox)sender).Text) || _metadata == null)
+            {
+                return;
+            }
+
+            var value = Int32.Parse(((TextBox)sender).Text);
+            var entry = _metadata.ImcEntries[(int)ImcVariantBox.SelectedItem];
+
+            if (value > 255) { value = 255; }
+            if (value < 0) { value = 0; }
+
+            entry.Animation = (byte)value;
         }
 
         private void SfxBox_TextChanged(object sender, TextChangedEventArgs e)
