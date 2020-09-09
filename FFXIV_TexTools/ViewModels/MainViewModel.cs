@@ -105,7 +105,7 @@ namespace FFXIV_TexTools.ViewModels
             var count = XivCache.GetDependencyQueueLength();
             if (count > 0)
             {
-                _mainWindow.ShowStatusMessage("Processing Cache Queue... [" + count + "]");
+                _mainWindow.ShowStatusMessage("Queue Length: " + count + "");
             }
         }
 
