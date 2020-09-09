@@ -277,7 +277,7 @@ namespace FFXIV_TexTools.Views.Controls
                 {
                     SameModelItems.Add(new KeyValuePair<string, IItem>(item.Name, item));
                     if (entries.Count > item.ModelInfo.ImcSubsetID) {
-                        var imSet = entries[item.ModelInfo.ImcSubsetID].Variant;
+                        var imSet = entries[item.ModelInfo.ImcSubsetID].MaterialSet;
 
                         if(mSet == imSet)
                         {

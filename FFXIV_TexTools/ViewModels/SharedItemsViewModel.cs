@@ -129,7 +129,7 @@ namespace FFXIV_TexTools.ViewModels
             }
             var sharedList = await im.GetSharedModelItems();
 
-            var myMaterialSetNumber = fullInfo.GetEntry(im.ModelInfo.ImcSubsetID, im.GetItemSlotAbbreviation()).Variant;
+            var myMaterialSetNumber = fullInfo.GetEntry(im.ModelInfo.ImcSubsetID, im.GetItemSlotAbbreviation()).MaterialSet;
             var myImcNumber = im.ModelInfo.ImcSubsetID;
 
             var imcVariantHeaders = new Dictionary<int, TreeViewItem>();
@@ -147,7 +147,7 @@ namespace FFXIV_TexTools.ViewModels
                     continue;
                 }
                 var imcVariant = i.ModelInfo.ImcSubsetID;
-                var mtrlVariant = info.Variant;
+                var mtrlVariant = info.MaterialSet;
 
                 if (!imcVariantHeaders.ContainsKey(imcVariant))
                 {

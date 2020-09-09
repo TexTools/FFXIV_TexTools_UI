@@ -852,7 +852,7 @@ namespace FFXIV_TexTools
                 if (MetadataTab.IsSelected)
                 {
                     MetadataTab.IsSelected = false;
-                    MetadataTab.IsSelected = true;
+                    TextureTabItem.IsSelected = true;
                 }
                 MetadataTab.IsEnabled = false;
                 MetadataTab.Visibility = Visibility.Collapsed;

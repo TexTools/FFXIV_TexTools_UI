@@ -390,7 +390,7 @@ namespace FFXIV_TexTools.ViewModels
             {
                 var imcInfo = await _imc.GetFullImcInfo(_item);
                 imcEntries = imcInfo.GetAllEntries(root.Slot, true);
-                materialSets = imcEntries.Select(x => x.Variant).ToHashSet();
+                materialSets = imcEntries.Select(x => x.MaterialSet).ToHashSet();
             } catch
             {
                 // Item doesn't use IMC entries, and thus only has a single variant. 
@@ -413,7 +413,7 @@ namespace FFXIV_TexTools.ViewModels
             foreach (var i in allItems) {
                 if (imcEntries.Count <= i.ModelInfo.ImcSubsetID) continue;
 
-                var matSet = imcEntries[i.ModelInfo.ImcSubsetID].Variant;
+                var matSet = imcEntries[i.ModelInfo.ImcSubsetID].MaterialSet;
                 if(!matNumToItems.ContainsKey(matSet))
                 {
                     matNumToItems.Add(matSet, new List<IItemModel>());
@@ -520,7 +520,7 @@ namespace FFXIV_TexTools.ViewModels
                 var imc = new Imc(XivCache.GameInfo.GameDirectory);
                 var info = await imc.GetFullImcInfo(_item);
                 var entries = info.GetAllEntries(root.Info.Slot);
-                var materialSets = entries.Select(x => x.Variant).ToHashSet();
+                var materialSets = entries.Select(x => x.MaterialSet).ToHashSet();
 
                 var extract = new Regex("(v[0-9]{4})");
                 var rep = extract.Match(_material.MTRLPath).Groups[1].Value;
