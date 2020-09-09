@@ -420,9 +420,11 @@ namespace FFXIV_TexTools.Views.ItemConverter
                         var srcShowBrac = sourceAltMeta.EqpEntry.GetFlag(EquipmentParameterFlag.HandShowBracelet);
                         var dstShowBrac = destAltMeta.EqpEntry.GetFlag(EquipmentParameterFlag.HandShowBracelet);
 
+
                         if (srcShowRingR != dstShowRingR
                             || srcShowRingL != dstShowRingL
-                            || srcShowBrac != dstShowBrac)
+                            || srcShowBrac != dstShowBrac
+                            || !destAltMeta.EqpEntry.GetFlag(EquipmentParameterFlag.EnableHandFlags))
                         {
 
                             var sourceAltItem = sourceAltRoot.GetFirstItem(variant);
@@ -444,7 +446,8 @@ namespace FFXIV_TexTools.Views.ItemConverter
 
                         var srcShowFoot = sourceAltMeta.EqpEntry.GetFlag(EquipmentParameterFlag.LegShowFoot);
                         var dstShowFoot = destAltMeta.EqpEntry.GetFlag(EquipmentParameterFlag.LegShowFoot);
-                        if (srcShowFoot != dstShowFoot)
+                        if (srcShowFoot != dstShowFoot
+                            || !destAltMeta.EqpEntry.GetFlag(EquipmentParameterFlag.EnableLegFlags))
                         {
                             var sourceAltItem = sourceAltRoot.GetFirstItem(variant);
                             var destAltItem = destAltRoot.GetFirstItem();
