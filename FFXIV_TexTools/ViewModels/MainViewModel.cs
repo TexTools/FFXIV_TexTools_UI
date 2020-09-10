@@ -656,6 +656,11 @@ namespace FFXIV_TexTools.ViewModels
                 // The modlist is now saved in its current index-represented post patch state.
                 modding.SaveModList(modList);
 
+                // In retrospect, we actually just want to always recomplie our internal files after FFXIV patches.
+                // Even if the offsets are identical, without Hash checks on the files, there's no way to know
+                // if some bits got changed that we need to carry through into the updated Metadata files.
+                internalFilesModified = true;
+
                 if (toRemove.Count > 0)
                 {
                     var removedString = "";
