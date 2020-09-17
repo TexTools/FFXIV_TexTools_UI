@@ -14,11 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+using AutoUpdaterDotNET;
 using FFXIV_TexTools.Helpers;
 using FFXIV_TexTools.Properties;
 using FFXIV_TexTools.Resources;
 using FFXIV_TexTools.Views;
 using FolderSelect;
+using ForceUpdateAssembly;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -67,6 +69,12 @@ namespace FFXIV_TexTools.ViewModels
                 XivRace.AuRa_Female.GetDisplayName(),
                 XivRace.Viera.GetDisplayName(),
                 XivRace.Hrothgar.GetDisplayName()
+            };
+
+            UpdateBranches  = new List<string>
+            {
+                UIStrings.Version_Stable,
+                UIStrings.Version_Latest
             };
 
             Target3DPrograms = new List<string>() {
@@ -278,6 +286,66 @@ namespace FFXIV_TexTools.ViewModels
             }
         }
 
+        public string UpdateBranch
+        {
+            get => Settings.Default.UpdateBranch == "latest" ? UIStrings.Version_Latest : UIStrings.Version_Stable;
+            set
+            {
+                var v = "stable";
+                if(value == UIStrings.Version_Latest)
+                {
+                    v = "latest";
+                }
+
+                if (Settings.Default.UpdateBranch != v)
+                {
+                    SetUpdateBranch(v);
+                    NotifyPropertyChanged(nameof(UpdateBranch));
+                }
+            }
+        }
+
+        public void SetUpdateBranch(string v)
+        {
+            MainWindow.MakeHighlander();
+            var result = FlexibleMessageBox.Show("TexTools will now change to the selected update branch.", "Branch Change Notice", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
+            if (result != DialogResult.OK) return;
+
+            Settings.Default.UpdateBranch = v;
+            Settings.Default.Save();
+
+
+            // Force an update when changing branches.
+            var assembly = typeof(ForceUpdateAssemblyStub).Assembly;
+
+            AutoUpdater.Mandatory = true;
+            AutoUpdater.Synchronous = true;
+            AutoUpdater.UpdateMode = Mode.ForcedDownload;
+            try
+            {
+                if (Settings.Default.UpdateBranch == "latest")
+                {
+                    AutoUpdater.Start(WebUrl.TexTools_Beta_Update_Url, assembly);
+                }
+                else
+                {
+                    AutoUpdater.Start(WebUrl.TexTools_Update_Url, assembly);
+                }
+            }
+            catch
+            {
+                AutoUpdater.Start(WebUrl.TexTools_Update_Url, assembly);
+                Settings.Default.UpdateBranch = "stable";
+                Settings.Default.Save();
+            }
+
+
+            if (System.Windows.Application.Current != null)
+            {
+                System.Windows.Application.Current.Shutdown();
+            }
+        }
+
         public bool ExportAllBones
         {
             get
@@ -359,6 +427,8 @@ namespace FFXIV_TexTools.ViewModels
         /// The list of default races
         /// </summary>
         public List<string> DefaultRaces { get; }
+
+        public List<string> UpdateBranches { get; }
 
         /// <summary>
         /// The selected default race

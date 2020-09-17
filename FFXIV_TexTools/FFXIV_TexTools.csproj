@@ -797,6 +797,10 @@
     <Content Include="Resources\Shaders\psCommon.hlsl" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ForceUpdateAssembly\ForceUpdateAssembly.csproj">
+      <Project>{734acc29-8f05-4193-b981-f5266150f11f}</Project>
+      <Name>ForceUpdateAssembly</Name>
+    </ProjectReference>
     <ProjectReference Include="..\lib\xivModdingFramework\xivModdingFramework\xivModdingFramework.csproj">
       <Project>{cdc45cc3-60e7-4cb1-a267-be1cb3bde340}</Project>
       <Name>xivModdingFramework</Name>

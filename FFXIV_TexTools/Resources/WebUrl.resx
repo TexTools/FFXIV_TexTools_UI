@@ -141,6 +141,9 @@
   <data name="PKEmporium_Website" xml:space="preserve">
     <value>https://prettykittyemporium.blogspot.com/</value>
   </data>
+  <data name="TexTools_Beta_Update_Url" xml:space="preserve">
+    <value>https://raw.githubusercontent.com/TexTools/FFXIV_TexTools_Updater/master/updater_beta.xml</value>
+  </data>
   <data name="TexTools_Update_Url" xml:space="preserve">
     <value>https://raw.githubusercontent.com/TexTools/FFXIV_TexTools_Updater/master/updater.xml</value>
   </data>
