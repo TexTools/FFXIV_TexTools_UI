@@ -250,12 +250,8 @@ namespace FFXIV_TexTools.Views
                             UIMessages.DeleteModPackTitle,
                             MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == System.Windows.Forms.DialogResult.Yes)
                     {
-                        var progress = await this.ShowProgressAsync(UIMessages.ModPack_Delete, UIMessages.PleaseStandByMessage);
-
                         await modding.DeleteModPack((ModListTreeView.SelectedItem as Category).Name);
                         (DataContext as ModListViewModel).RemoveModPack();
-
-                        await progress.CloseAsync();
                     }
 
                 }
