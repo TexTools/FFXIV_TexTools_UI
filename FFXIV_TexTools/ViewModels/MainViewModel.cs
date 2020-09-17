@@ -552,7 +552,7 @@ namespace FFXIV_TexTools.ViewModels
 
                             var type = _dat.GetFileType(index2Value, df);
 
-                            if (validTypes.Contains(type))
+                            if (validTypes.Contains(type) && index2Value != 0)
                             {
                                 mod.data.originalOffset = index2Value;
                                 mod.enabled = false;
@@ -562,7 +562,7 @@ namespace FFXIV_TexTools.ViewModels
                                 // Oh dear.  The new index is fucked.  Is the old Index Ok?
                                 type = _dat.GetFileType(oldOriginalOffset, df);
 
-                                if (validTypes.Contains(type))
+                                if (validTypes.Contains(type) && oldOriginalOffset != 0)
                                 {
                                     // Old index is fine, so keep using that, but set the index2 value to invalid to ensure we 
                                     // stomp on the current broken index value.
@@ -622,7 +622,10 @@ namespace FFXIV_TexTools.ViewModels
                             if (mod.IsCustomFile())
                             {
                                 // Okay, in this case this is recoverable as the mod is a custom addition anyways, so we can just delete it.
-                                // ( Which is already triggered above, as custom files have the same original and base offset).
+                                if(!toRemove.Contains(mod))
+                                {
+                                    toRemove.Add(mod);
+                                }
                             }
                             else
                             {
@@ -710,6 +713,7 @@ namespace FFXIV_TexTools.ViewModels
                     }
                 }
 
+
                 // The modlist is now in a completely valid state, with all mods having valid offsets and original offsets, with none of the mod offsets pointing into vanilla SE data.
 
                 var result = FlexibleMessageBox.Show(_mainWindow.Win32Window, UIMessages.PostPatchBackupPrompt, "Post-Patch Backup Prompt", MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
@@ -719,6 +723,20 @@ namespace FFXIV_TexTools.ViewModels
                     // Disable all mods and create backups.  (The user can re-enable after manually if desired.)
                     _mainWindow.LockProgress.Report("Disabling Mods.  This can take a minute if you have many mods...");
                     await modding.ToggleAllMods(false);
+
+                    // Get an updated modlist after the disable.
+                    modList = await modding.GetModListAsync();
+
+                    if (internalFilesModified)
+                    {
+                        // Reset the internal files so they are rebuilt later.
+                        var internals = modList.Mods.Where(x => x.IsInternal());
+                        foreach (var mod in internals)
+                        {
+                            await modding.DeleteMod(mod.fullPath, true);
+                        }
+                    }
+
 
                     _mainWindow.LockProgress.Report("Creating Index Backups...");
                     var pc = new ProblemChecker(_gameDirectory);
