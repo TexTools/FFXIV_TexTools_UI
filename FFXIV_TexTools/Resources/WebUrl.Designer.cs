@@ -133,6 +133,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to https://raw.githubusercontent.com/TexTools/FFXIV_TexTools_Updater/master/updater_beta.xml.
+        /// </summary>
+        internal static string TexTools_Beta_Update_Url {
+            get {
+                return ResourceManager.GetString("TexTools_Beta_Update_Url", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to https://raw.githubusercontent.com/TexTools/FFXIV_TexTools_Updater/master/updater.xml.
         /// </summary>
         internal static string TexTools_Update_Url {

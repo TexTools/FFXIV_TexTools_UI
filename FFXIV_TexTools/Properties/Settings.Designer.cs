@@ -430,5 +430,17 @@ namespace FFXIV_TexTools.Properties {
                 this["ExportAllBones"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string UpdateBranch {
+            get {
+                return ((string)(this["UpdateBranch"]));
+            }
+            set {
+                this["UpdateBranch"] = value;
+            }
+        }
     }
 }

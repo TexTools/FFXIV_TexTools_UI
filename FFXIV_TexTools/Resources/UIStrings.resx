@@ -508,7 +508,7 @@
     <value>Remove Part Attribute</value>
   </data>
   <data name="Reset_to_Default" xml:space="preserve">
-    <value>Reset to Default</value>
+    <value>Reset Colors</value>
   </data>
   <data name="Save_Directory" xml:space="preserve">
     <value>Save Directory</value>
@@ -996,5 +996,11 @@ If you would like to enable this, first import a texture for the selected item.<
   </data>
   <data name="Tools" xml:space="preserve">
     <value>Tools</value>
+  </data>
+  <data name="Version_Latest" xml:space="preserve">
+    <value>Latest Version</value>
+  </data>
+  <data name="Version_Stable" xml:space="preserve">
+    <value>Stable Version</value>
   </data>
 </root>

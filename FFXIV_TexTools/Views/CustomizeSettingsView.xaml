@@ -8,7 +8,7 @@
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
         xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
-        Title="{Binding Source={x:Static resx:UIStrings.Customize}}" Height="550" Width="800" ShowMaxRestoreButton="False" ShowMinButton="False" WindowStartupLocation="CenterOwner">
+        Title="{Binding Source={x:Static resx:UIStrings.Customize}}" Height="600" Width="800" ShowMaxRestoreButton="False" ShowMinButton="False" WindowStartupLocation="CenterOwner">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
@@ -18,9 +18,8 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
-                <RowDefinition/>
             </Grid.RowDefinitions>
-            <GroupBox Header="{Binding Source={x:Static resx:UIStrings.Directories}}" Grid.Row="0">
+            <GroupBox Header="{Binding Source={x:Static resx:UIStrings.Directories}}" Grid.Row="0" Margin="5">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -43,16 +42,7 @@
                     <Button Content="..." Grid.Row="3" Grid.Column="1" Margin="5" Command="{Binding ModPack_SelectDir}" HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="25" MinHeight="25" VerticalContentAlignment="Top" HorizontalContentAlignment="Center"/>
                 </Grid>
             </GroupBox>
-            <GroupBox Grid.Row="1" Header="{Binding Source={x:Static resx:UIStrings.Export_Settings}}">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
-                    <TextBox x:Name="AuthorTextBox" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding DefaultAuthor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.Mod_Pack_Author}}" mah:TextBoxHelper.UseFloatingWatermark="True" Margin="5" VerticalContentAlignment="Center"/>
-                </Grid>
-            </GroupBox>
-            <GroupBox Grid.Row="2" Header="Other Settings">
+            <GroupBox Grid.Row="1" Header="System Settings" Margin="5">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="175"></ColumnDefinition>
@@ -60,44 +50,49 @@
 
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="35"/>
-                        <RowDefinition Height="35"/>
-                        <RowDefinition Height="35"/>
-                        <RowDefinition Height="35"/>
-                        <RowDefinition Height="35"/>
+                        <RowDefinition Height="36"/>
+                        <RowDefinition Height="36"/>
+                        <RowDefinition Height="36"/>
+                        <RowDefinition Height="36"/>
+                        <RowDefinition Height="36"/>
+                        <RowDefinition Height="36"/>
+                        <RowDefinition Height="36"/>
                     </Grid.RowDefinitions>
 
+                    <Label Grid.Column="0" Grid.Row="0"  Margin="10,0,5,0" Content="Default Author" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
+                    <TextBox x:Name="AuthorTextBox" Grid.Column="1" Text="{Binding DefaultAuthor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="5" VerticalContentAlignment="Center"/>
 
-                    <Label Grid.Column="0" Grid.Row="0"  Margin="10,0,5,0" Content="Synchronize View Tabs" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
-                    <CheckBox x:Name="SynchronizeViewsBox"  Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" Margin="5,0,10,0"  IsChecked="{Binding UseSynchronizedViews}" ToolTip="Synchronize the model/texture/metadata view tabs to use the same Race/'Number' selection."></CheckBox>
+                    <Label Grid.Column="0" Grid.Row="1"  Margin="10,0,5,0" Content="Synchronize View Tabs" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
+                    <CheckBox x:Name="SynchronizeViewsBox"  Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" Margin="5,0,10,0"  IsChecked="{Binding UseSynchronizedViews}" ToolTip="Synchronize the model/texture/metadata view tabs to use the same Race/'Number' selection."></CheckBox>
 
-                    <Label Grid.Column="0" Grid.Row="1"  Margin="10,0,5,0" Content="Remember Race Selection" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
-                    <CheckBox x:Name="RememberSelectionBox"  Grid.Column="2" Grid.Row="1" VerticalAlignment="Center" Margin="5,0,10,0" ToolTip="Remember the Race/'Number' Selection when changing between items."  IsChecked="{Binding RememberRaceSelection}"></CheckBox>
+                    <Label Grid.Column="0" Grid.Row="2"  Margin="10,0,5,0" Content="Remember Race Selection" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
+                    <CheckBox x:Name="RememberSelectionBox"  Grid.Column="2" Grid.Row="2" VerticalAlignment="Center" Margin="5,0,10,0" ToolTip="Remember the Race/'Number' Selection when changing between items."  IsChecked="{Binding RememberRaceSelection}"></CheckBox>
 
-                    <Label Grid.Column="0" Grid.Row="2" Margin="10,0,5,0" Content="Default Race" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
-                    <ComboBox x:Name="DefaultRacesBox" Grid.Column="1" Grid.Row="2"  VerticalAlignment="Center" ItemsSource="{Binding DefaultRaces}" IsEnabled="{Binding DefaultRaceEnabled}" SelectedItem="{Binding SelectedDefaultRace}" Margin="5,0,10,0" ToolTip="Always attempt to switch to this race when changing items."/>
+                    <Label Grid.Column="0" Grid.Row="3" Margin="10,0,5,0" Content="Default Race" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
+                    <ComboBox x:Name="DefaultRacesBox" Grid.Column="1" Grid.Row="3"  VerticalAlignment="Center" ItemsSource="{Binding DefaultRaces}" IsEnabled="{Binding DefaultRaceEnabled}" SelectedItem="{Binding SelectedDefaultRace}" Margin="5,0,10,0" ToolTip="Always attempt to switch to this race when changing items."/>
 
-                    <Label Grid.Column="0" Grid.Row="3" Margin="10,0,5,0" Content="External Model Viewer Type" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
-                    <ComboBox x:Name="Target3DProgramBox" Grid.Column="1" Grid.Row="3"  VerticalAlignment="Center" ItemsSource="{Binding Target3DPrograms}" SelectedItem="{Binding Selected3DProgram}" Margin="5,0,10,0" />
+                    <Label Grid.Column="0" Grid.Row="4" Margin="10,0,5,0" Content="External Model Viewer Type" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
+                    <ComboBox x:Name="Target3DProgramBox" Grid.Column="1" Grid.Row="4"  VerticalAlignment="Center" ItemsSource="{Binding Target3DPrograms}" SelectedItem="{Binding Selected3DProgram}" Margin="5,0,10,0" />
 
-                    <Label Grid.Column="0" Grid.Row="4" Margin="10,0,5,0" Content="Export Complete Skeletons" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
-                    <CheckBox x:Name="ExportAllBonesBox"  Grid.Column="2" Grid.Row="4" VerticalAlignment="Center" Margin="5,0,10,0" ToolTip="Should model exports include unused bones in the associated skeletons?"  IsChecked="{Binding ExportAllBones}"></CheckBox>
+                    <Label Grid.Column="0" Grid.Row="5" Margin="10,0,5,0" Content="Export Complete Skeletons" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
+                    <CheckBox x:Name="ExportAllBonesBox"  Grid.Column="2" Grid.Row="5" VerticalAlignment="Center" Margin="5,0,10,0" ToolTip="Should model exports include unused bones in the associated skeletons?"  IsChecked="{Binding ExportAllBones}"></CheckBox>
+
+                    <Label Grid.Column="0" Grid.Row="6" Margin="10,0,5,0" Content="TexTools Version" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
+                    <ComboBox x:Name="UpdateBranchBox" Grid.Column="1" Grid.Row="6"  VerticalAlignment="Center" ItemsSource="{Binding UpdateBranches}" SelectedItem="{Binding UpdateBranch}" Margin="5,0,10,0" />
+
                 </Grid>
             </GroupBox>
         </Grid>
 
-        <GroupBox Grid.Column="1" Header="{Binding Source={x:Static resx:UIStrings.Colors_Skins}}">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition/>
-                </Grid.RowDefinitions>
-                <StackPanel Orientation="Horizontal">
-                    <ComboBox x:Name="SkinComboBox" ItemsSource="{Binding SkinTypes}" SelectedItem="{Binding Selected_SkinType}" VerticalAlignment="Center" HorizontalAlignment="Left" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.Default_Skin}}" mah:TextBoxHelper.UseFloatingWatermark="True"/>
-                    <Label Content="{Binding Source={x:Static resx:UIStrings.This_will_only_affect_shared_races}}"/>
-                </StackPanel>
-                <Grid Grid.Row="1" Margin="0,10,0,0">
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition></RowDefinition>
+            </Grid.RowDefinitions>
+            <GroupBox Header="{Binding Source={x:Static resx:UIStrings.Colors_Skins}}" Margin="5">
+                <Grid>
                     <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
@@ -112,38 +107,41 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <Label Content="{Binding Source={x:Static resx:UIStrings.Skin_Color}}" Grid.Row="0" Margin="5"/>
-                    <xctk:ColorPicker x:Name="SkinColorPicker" SelectedColor="{Binding Selected_SkinColor}" ColorMode="ColorCanvas" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" MinWidth="120" DropDownBackground="Gainsboro" />
 
-                    <Label Content="{Binding Source={x:Static resx:UIStrings.Hair_Color}}" Grid.Row="1" Margin="5"/>
-                    <xctk:ColorPicker x:Name="HairColorPicker" SelectedColor="{Binding Selected_HairColor}" ColorMode="ColorCanvas" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" MinWidth="120" DropDownBackground="Gainsboro"/>
+                    <Label Content="Skin Race" Grid.Column="0" Margin="5"/>
+                    <ComboBox x:Name="SkinComboBox" ItemsSource="{Binding SkinTypes}" SelectedItem="{Binding Selected_SkinType}" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left" ToolTip="This selection is only reflected on applicable race models." mah:TextBoxHelper.UseFloatingWatermark="True"/>
 
-                    <Label Content="Hair Highlight Color" Grid.Row="2" Margin="5"/>
-                    <xctk:ColorPicker x:Name="HairHighlightColorPicker" SelectedColor="{Binding Selected_HairHighlightColor}" ColorMode="ColorCanvas" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" MinWidth="120" DropDownBackground="Gainsboro"/>
+                    <Label Content="{Binding Source={x:Static resx:UIStrings.Skin_Color}}" Grid.Row="1" Margin="5"/>
+                    <xctk:ColorPicker x:Name="SkinColorPicker" SelectedColor="{Binding Selected_SkinColor}" ColorMode="ColorCanvas" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Top" MinWidth="120" DropDownBackground="Gainsboro" Margin="0,7,0,0" />
 
-                    <Label Content="{Binding Source={x:Static resx:UIStrings.Iris_Color}}" Grid.Row="3" Margin="5"/>
-                    <xctk:ColorPicker x:Name="IrisColorPicker" SelectedColor="{Binding Selected_IrisColor}" ColorMode="ColorCanvas" Grid.Row="3" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" MinWidth="120" DropDownBackground="Gainsboro"/>
+                    <Label Content="{Binding Source={x:Static resx:UIStrings.Hair_Color}}" Grid.Row="2" Margin="5"/>
+                    <xctk:ColorPicker x:Name="HairColorPicker" SelectedColor="{Binding Selected_HairColor}" ColorMode="ColorCanvas" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" MinWidth="120" DropDownBackground="Gainsboro"/>
 
-                    <Label Content="Lip Color" Grid.Row="4" Margin="5"/>
-                    <xctk:ColorPicker x:Name="LipColorPicker" SelectedColor="{Binding Selected_LipColor}" ColorMode="ColorCanvas" Grid.Row="4" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" MinWidth="120" DropDownBackground="Gainsboro"/>
+                    <Label Content="Hair Highlight Color" Grid.Row="3" Margin="5"/>
+                    <xctk:ColorPicker x:Name="HairHighlightColorPicker" SelectedColor="{Binding Selected_HairHighlightColor}" ColorMode="ColorCanvas" Grid.Row="3" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" MinWidth="120" DropDownBackground="Gainsboro"/>
+
+                    <Label Content="{Binding Source={x:Static resx:UIStrings.Iris_Color}}" Grid.Row="4" Margin="5"/>
+                    <xctk:ColorPicker x:Name="IrisColorPicker" SelectedColor="{Binding Selected_IrisColor}" ColorMode="ColorCanvas" Grid.Row="4" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" MinWidth="120" DropDownBackground="Gainsboro"/>
+
+                    <Label Content="Lip Color" Grid.Row="5" Margin="5"/>
+                    <xctk:ColorPicker x:Name="LipColorPicker" SelectedColor="{Binding Selected_LipColor}" ColorMode="ColorCanvas" Grid.Row="5" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" MinWidth="120" DropDownBackground="Gainsboro"/>
 
 
-                    <Label Content="Tattoo Color" Grid.Row="5" Margin="5"/>
-                    <xctk:ColorPicker x:Name="TattooColorPicker" SelectedColor="{Binding Selected_TattooColor}" ColorMode="ColorCanvas" Grid.Row="5" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" MinWidth="120" DropDownBackground="Gainsboro"/>
+                    <Label Content="Tattoo Color" Grid.Row="6" Margin="5"/>
+                    <xctk:ColorPicker x:Name="TattooColorPicker" SelectedColor="{Binding Selected_TattooColor}" ColorMode="ColorCanvas" Grid.Row="6" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" MinWidth="120" DropDownBackground="Gainsboro"/>
 
-                    <Label Content="Furniture Color" Grid.Row="6" Margin="5"/>
-                    <xctk:ColorPicker x:Name="FurnitureColorPicker" SelectedColor="{Binding Selected_FurnitureColor}" ColorMode="ColorCanvas" Grid.Row="6" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" MinWidth="120" DropDownBackground="Gainsboro"/>
+                    <Label Content="Furniture Color" Grid.Row="7" Margin="5"/>
+                    <xctk:ColorPicker x:Name="FurnitureColorPicker" SelectedColor="{Binding Selected_FurnitureColor}" ColorMode="ColorCanvas" Grid.Row="7" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" MinWidth="120" DropDownBackground="Gainsboro"/>
 
-                    <Label Content="{Binding Source={x:Static resx:UIStrings.BG_Color}}" Grid.Row="7" Margin="5"/>
-                    <xctk:ColorPicker x:Name="BGColorPicker" SelectedColor="{Binding Selected_BgColor}" ColorMode="ColorCanvas" Grid.Row="7" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" MinWidth="120" DropDownBackground="Gainsboro"/>
-
+                    <Label Content="{Binding Source={x:Static resx:UIStrings.BG_Color}}" Grid.Row="8" Margin="5"/>
+                    <xctk:ColorPicker x:Name="BGColorPicker" SelectedColor="{Binding Selected_BgColor}" ColorMode="ColorCanvas" Grid.Row="8" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" MinWidth="120" DropDownBackground="Gainsboro"/>
 
                     <Button x:Name="DefaultButton" Content="{Binding Source={x:Static resx:UIStrings.Reset_to_Default}}" Command="{Binding Customize_Reset}" Grid.Row="9" Grid.Column="0" Margin="5"/>
-                    <Button x:Name="CloseButton" Grid.Row="9" Grid.Column="2" Content="{Binding Source={x:Static resx:UIStrings.Close}}" Command="{Binding CloseCustomize}" Margin="5" Click="CloseButton_Click" />
                 </Grid>
-            </Grid>
-        </GroupBox>
+            </GroupBox>
+            <Button x:Name="CloseButton" Grid.Row="1" Content="{Binding Source={x:Static resx:UIStrings.Close}}" Command="{Binding CloseCustomize}" Margin="10" Click="CloseButton_Click" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="150" />
+
+        </Grid>
     </Grid>
 </mah:MetroWindow>

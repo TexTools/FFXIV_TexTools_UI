@@ -2141,7 +2141,7 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Reset to Default.
+        ///   Looks up a localized string similar to Reset Colors.
         /// </summary>
         public static string Reset_to_Default {
             get {
@@ -2605,6 +2605,24 @@ namespace FFXIV_TexTools.Resources {
         public static string Version_colon {
             get {
                 return ResourceManager.GetString("Version_colon", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Latest Version.
+        /// </summary>
+        public static string Version_Latest {
+            get {
+                return ResourceManager.GetString("Version_Latest", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stable Version.
+        /// </summary>
+        public static string Version_Stable {
+            get {
+                return ResourceManager.GetString("Version_Stable", resourceCulture);
             }
         }
         

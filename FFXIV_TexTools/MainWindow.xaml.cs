@@ -23,6 +23,7 @@ using FFXIV_TexTools.Views.ItemConverter;
 using FFXIV_TexTools.Views.Metadata;
 using FFXIV_TexTools.Views.Models;
 using FolderSelect;
+using ForceUpdateAssembly;
 using MahApps.Metro;
 using MahApps.Metro.Controls.Dialogs;
 using SixLabors.ImageSharp;
@@ -33,6 +34,8 @@ using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Net;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -54,6 +57,7 @@ using Application = System.Windows.Application;
 
 namespace FFXIV_TexTools
 {
+
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
@@ -650,10 +654,22 @@ namespace FFXIV_TexTools
             await ItemSelect.LoadItems();
         }
 
-        private void CheckForUpdates()
+        public static void CheckForUpdates()
         {
             AutoUpdater.Synchronous = true;
-            AutoUpdater.Start(WebUrl.TexTools_Update_Url);
+            try
+            {
+                if (Settings.Default.UpdateBranch == "latest")
+                {
+                    AutoUpdater.Start(WebUrl.TexTools_Beta_Update_Url);
+                } else
+                {
+                    AutoUpdater.Start(WebUrl.TexTools_Update_Url);
+                }
+            } catch
+            {
+                AutoUpdater.Start(WebUrl.TexTools_Update_Url);
+            }
         }
 
         private void CheckForSettingsUpdate()
@@ -1531,7 +1547,6 @@ namespace FFXIV_TexTools
         {
             var win = new CopyFileDialog() { Owner = this };
             win.Show();
-
         }
     }
 }
