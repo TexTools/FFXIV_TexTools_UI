@@ -136,6 +136,7 @@ namespace FFXIV_TexTools.Views
         /// </summary>
         public int TotalModsImported { get; private set; }
         public int TotalModsErrored { get; private set; }
+        public float ImportDuration { get; private set; }
 
         #endregion
 
@@ -364,7 +365,8 @@ namespace FFXIV_TexTools.Views
                 });
 
                 TotalModsErrored = importResults.ErrorCount;
-                TotalModsImported = importResults.ImportCount - TotalModsErrored;
+                TotalModsImported = importResults.ImportCount;
+                ImportDuration = importResults.Duration;
 
                 if (!string.IsNullOrEmpty(importResults.Errors))
                 {
@@ -384,8 +386,9 @@ namespace FFXIV_TexTools.Views
 
             if (_messageInImport)
             {
+                var durationString = ImportDuration.ToString("0.00");
                 await this.ShowMessageAsync(UIMessages.ImportCompleteTitle,
-                    string.Format(UIMessages.SuccessfulImportCountMessage, TotalModsImported, TotalModsErrored));
+                    string.Format(UIMessages.SuccessfulImportCountMessage, TotalModsImported, TotalModsErrored, durationString));
             }
 
             MainWindow.GetMainWindow().ReloadItem();
