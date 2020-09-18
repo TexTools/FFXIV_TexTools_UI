@@ -2609,7 +2609,7 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Latest Version.
+        ///   Looks up a localized string similar to Latest (Beta) Version.
         /// </summary>
         public static string Version_Latest {
             get {
