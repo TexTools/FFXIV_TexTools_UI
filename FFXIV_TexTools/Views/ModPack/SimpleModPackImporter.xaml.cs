@@ -136,6 +136,7 @@ namespace FFXIV_TexTools.Views
         /// </summary>
         public int TotalModsImported { get; private set; }
         public int TotalModsErrored { get; private set; }
+        public float ImportDuration { get; private set; }
 
         #endregion
 
@@ -324,15 +325,15 @@ namespace FFXIV_TexTools.Views
         /// <param name="value">The progress value</param>
         private void ReportProgress((int current, int total, string message) report)
         {
-            if (!report.message.Equals(string.Empty))
+            if (report.total == 0)
             {
                 _progressController.SetMessage(report.message);
                 _progressController.SetIndeterminate();
             }
             else
             {
-                _progressController.SetMessage(
-                    $"{UIMessages.PleaseStandByMessage} ({report.current} / {report.total})");
+                var message = report.message == null ? "Please wait..." : report.message;
+                _progressController.SetMessage(report.message + $"({report.current} / {report.total})");
 
                 var value = (double)report.current / (double)report.total;
                 _progressController.SetProgress(value);
@@ -364,7 +365,8 @@ namespace FFXIV_TexTools.Views
                 });
 
                 TotalModsErrored = importResults.ErrorCount;
-                TotalModsImported = importResults.ImportCount - TotalModsErrored;
+                TotalModsImported = importResults.ImportCount;
+                ImportDuration = importResults.Duration;
 
                 if (!string.IsNullOrEmpty(importResults.Errors))
                 {
@@ -384,8 +386,9 @@ namespace FFXIV_TexTools.Views
 
             if (_messageInImport)
             {
+                var durationString = ImportDuration.ToString("0.00");
                 await this.ShowMessageAsync(UIMessages.ImportCompleteTitle,
-                    string.Format(UIMessages.SuccessfulImportCountMessage, TotalModsImported, TotalModsErrored));
+                    string.Format(UIMessages.SuccessfulImportCountMessage, TotalModsImported, TotalModsErrored, durationString));
             }
 
             MainWindow.GetMainWindow().ReloadItem();

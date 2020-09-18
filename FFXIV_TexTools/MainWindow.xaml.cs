@@ -68,8 +68,8 @@ namespace FFXIV_TexTools
         private FullModelView _fmv;
         public readonly System.Windows.Forms.IWin32Window Win32Window;
 
-        public static readonly Version BetaVersion = null;
-        public static readonly string BetaSuffix = null;
+        public static readonly Version BetaVersion = new Version("2.3.2.0");
+        public static readonly string BetaSuffix = "BETA";
         public static bool IsBetaVersion {
             get
             {
@@ -1066,6 +1066,7 @@ namespace FFXIV_TexTools
 
             var modsImported = 0;
             var modsErrored = 0;
+            float duration = 0;
 
             foreach (var fileName in openFileDialog.FileNames)
             {
@@ -1080,11 +1081,13 @@ namespace FFXIV_TexTools
                 var r = await ImportModpack(new DirectoryInfo(fileName), modPackDirectory, importMultiple);
                 modsImported += r.Imported;
                 modsErrored += r.Errors;
+                duration += r.Duration;
             }
 
             if (modsImported > 0)
             {
-                await this.ShowMessageAsync(UIMessages.ImportCompleteTitle, string.Format(UIMessages.SuccessfulImportCountMessage, modsImported, modsErrored));
+                var durationString = duration.ToString("0.00");
+                await this.ShowMessageAsync(UIMessages.ImportCompleteTitle, string.Format(UIMessages.SuccessfulImportCountMessage, modsImported, modsErrored, durationString));
             }
         }
 
@@ -1094,7 +1097,7 @@ namespace FFXIV_TexTools
         /// <param name="path">The path to the modpack</param>
         /// <param name="silent">If the modpack wizard should be shown or the modpack should just be imported without any user interaction</param>
         /// <returns></returns>
-        private async Task<(int Imported, int Errors)> ImportModpack(DirectoryInfo path, DirectoryInfo modPackDirectory, bool silent = false, bool messageInImport = false)
+        private async Task<(int Imported, int Errors, float Duration)> ImportModpack(DirectoryInfo path, DirectoryInfo modPackDirectory, bool silent = false, bool messageInImport = false)
         {
             var importError = false;
             TextureView textureView = null;
@@ -1115,7 +1118,7 @@ namespace FFXIV_TexTools
                 FlexibleMessageBox.Show(string.Format(UIMessages.UnsupportedFileExtensionErrorMessage, path.Extension), 
                     UIMessages.UnsupportedFileExtensionErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-                return (0, 1);
+                return (0, 1, 0);
             }
 
             try
@@ -1133,7 +1136,7 @@ namespace FFXIV_TexTools
                     {
                         FlexibleMessageBox.Show(UIMessages.IndexLockedErrorMessage, UIMessages.IndexLockedErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-                        return (0, 1);
+                        return (0, 1, 0);
                     }
 
                     try
@@ -1154,7 +1157,7 @@ namespace FFXIV_TexTools
 
                         if (result == true)
                         {
-                            return (importWizard.TotalModsImported, importWizard.TotalModsErrored);
+                            return (importWizard.TotalModsImported, importWizard.TotalModsErrored, importWizard.ImportDuration);
                         }
                     }
                     catch
@@ -1182,7 +1185,7 @@ namespace FFXIV_TexTools
 
                         if (result == true)
                         {
-                            return (simpleImport.TotalModsImported, simpleImport.TotalModsErrored);
+                            return (simpleImport.TotalModsImported, simpleImport.TotalModsErrored, simpleImport.ImportDuration);
                         }
                     }
                     catch
@@ -1210,17 +1213,17 @@ namespace FFXIV_TexTools
 
                     if (result == true)
                     {
-                        return (simpleImport.TotalModsImported, simpleImport.TotalModsErrored);
+                        return (simpleImport.TotalModsImported, simpleImport.TotalModsErrored, simpleImport.ImportDuration);
                     }
                 }
                 else
                 {
                     FlexibleMessageBox.Show(string.Format(UIMessages.ModPackImportErrorMessage, path.FullName, ex.Message), UIMessages.ModPackImportErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return (0, 1);
+                    return (0, 1, 0);
                 }
             }
 
-            return (0, 0);
+            return (0, 0, 0);
         }
 
         /// <summary>

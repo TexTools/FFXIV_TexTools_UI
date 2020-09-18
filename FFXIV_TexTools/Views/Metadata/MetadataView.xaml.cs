@@ -1,4 +1,5 @@
-﻿using FFXIV_TexTools.ViewModels;
+﻿using FFXIV_TexTools.Helpers;
+using FFXIV_TexTools.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +18,7 @@ using xivModdingFramework.Cache;
 using xivModdingFramework.Items.Enums;
 using xivModdingFramework.Items.Interfaces;
 using xivModdingFramework.Models.FileTypes;
+using xivModdingFramework.Mods;
 
 namespace FFXIV_TexTools.Views.Metadata
 {
@@ -134,6 +136,25 @@ namespace FFXIV_TexTools.Views.Metadata
             var items = await _root.GetAllItems();
             ItemNameBox.Text  = "[" + items.Count + "] " + items[0].Name;
 
+            var _modding = new Modding(XivCache.GameInfo.GameDirectory);
+            var path = _root.Info.GetRootFile();
+            var mod = await _modding.TryGetModEntry(path);
+
+            if(mod == null)
+            {
+                ToggleButton.IsEnabled = false;
+                ToggleButton.Content = "Enable";
+            } else
+            {
+                ToggleButton.IsEnabled = true;
+                if(mod.enabled)
+                {
+                    ToggleButton.Content = "Disable";
+                } else {
+                    ToggleButton.Content = "Enable";
+                }
+            }
+
             return await _vm.SetRoot(_root, defaultVariant);
         }
 
@@ -231,6 +252,44 @@ namespace FFXIV_TexTools.Views.Metadata
         private void SaveButton_Click(object sender, RoutedEventArgs e)
         {
             _vm.Save();
+        }
+
+        private async void ToggleButton_Click(object sender, RoutedEventArgs e)
+        {
+            var _modding = new Modding(XivCache.GameInfo.GameDirectory);
+            var path = _root.Info.GetRootFile();
+            var mod = await _modding.TryGetModEntry(path);
+
+            if (mod == null) return;
+            var enabled = mod.enabled;
+
+            await MainWindow.GetMainWindow().LockUi("Updating Metadata");
+
+            try
+            {
+                if (enabled)
+                {
+                    await _modding.ToggleModStatus(path, false);
+                    ToggleButton.Content = "Enable";
+                }
+                else
+                {
+                    await _modding.ToggleModStatus(path, true);
+                    ToggleButton.Content = "Disable";
+                }
+            }
+            catch(Exception ex)
+            {
+                FlexibleMessageBox.Show("Unable to toggle mod status.\n\nError: " + ex.Message, "Mod Toggle Error", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
+            }
+            finally
+            {
+                await MainWindow.GetMainWindow().UnlockUi();
+
+                var mw = MainWindow.GetMainWindow();
+                mw.ReloadItem();
+            }
+
         }
     }
 }

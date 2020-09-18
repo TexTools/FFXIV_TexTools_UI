@@ -998,7 +998,7 @@ If you would like to enable this, first import a texture for the selected item.<
     <value>Tools</value>
   </data>
   <data name="Version_Latest" xml:space="preserve">
-    <value>Latest Version</value>
+    <value>Latest (Beta) Version</value>
   </data>
   <data name="Version_Stable" xml:space="preserve">
     <value>Stable Version</value>
