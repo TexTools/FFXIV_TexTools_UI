@@ -659,7 +659,7 @@ namespace FFXIV_TexTools
             AutoUpdater.Synchronous = true;
             try
             {
-                if (Settings.Default.UpdateBranch == "latest")
+                if (BetaVersion != null)
                 {
                     AutoUpdater.Start(WebUrl.TexTools_Beta_Update_Url);
                 } else

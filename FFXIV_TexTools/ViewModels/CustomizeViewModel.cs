@@ -288,18 +288,13 @@ namespace FFXIV_TexTools.ViewModels
 
         public string UpdateBranch
         {
-            get => Settings.Default.UpdateBranch == "latest" ? UIStrings.Version_Latest : UIStrings.Version_Stable;
+            get => MainWindow.BetaVersion != null ? UIStrings.Version_Latest : UIStrings.Version_Stable;
             set
             {
-                var v = "stable";
-                if(value == UIStrings.Version_Latest)
-                {
-                    v = "latest";
-                }
 
-                if (Settings.Default.UpdateBranch != v)
+                if (UpdateBranch != value)
                 {
-                    SetUpdateBranch(v);
+                    SetUpdateBranch(value);
                     NotifyPropertyChanged(nameof(UpdateBranch));
                 }
             }
@@ -308,12 +303,15 @@ namespace FFXIV_TexTools.ViewModels
         public void SetUpdateBranch(string v)
         {
             MainWindow.MakeHighlander();
+
             var result = FlexibleMessageBox.Show("TexTools will now change to the selected update branch.", "Branch Change Notice", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
             if (result != DialogResult.OK) return;
 
-            Settings.Default.UpdateBranch = v;
-            Settings.Default.Save();
-
+            var beta = false;
+            if (v == UIStrings.Version_Latest)
+            {
+                beta = true;
+            }
 
             // Force an update when changing branches.
             var assembly = typeof(ForceUpdateAssemblyStub).Assembly;
@@ -323,7 +321,7 @@ namespace FFXIV_TexTools.ViewModels
             AutoUpdater.UpdateMode = Mode.ForcedDownload;
             try
             {
-                if (Settings.Default.UpdateBranch == "latest")
+                if (beta)
                 {
                     AutoUpdater.Start(WebUrl.TexTools_Beta_Update_Url, assembly);
                 }
@@ -335,8 +333,6 @@ namespace FFXIV_TexTools.ViewModels
             catch
             {
                 AutoUpdater.Start(WebUrl.TexTools_Update_Url, assembly);
-                Settings.Default.UpdateBranch = "stable";
-                Settings.Default.Save();
             }
 
 
