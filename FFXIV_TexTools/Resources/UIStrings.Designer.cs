@@ -396,7 +396,7 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Raw File Copy.
+        ///   Looks up a localized string similar to Copy Raw File.
         /// </summary>
         public static string Copy_File {
             get {
@@ -756,6 +756,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Extract Raw File.
+        /// </summary>
+        public static string Extract_Raw {
+            get {
+                return ResourceManager.GetString("Extract_Raw", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Face.
         /// </summary>
         public static string Face {
@@ -986,6 +995,15 @@ namespace FFXIV_TexTools.Resources {
         public static string Import_ModPacks {
             get {
                 return ResourceManager.GetString("Import_ModPacks", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import Raw File.
+        /// </summary>
+        public static string Import_Raw {
+            get {
+                return ResourceManager.GetString("Import_Raw", resourceCulture);
             }
         }
         
@@ -2054,6 +2072,15 @@ namespace FFXIV_TexTools.Resources {
         public static string Race {
             get {
                 return ResourceManager.GetString("Race", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Raw File Operations.
+        /// </summary>
+        public static string Raw_File_Operations {
+            get {
+                return ResourceManager.GetString("Raw_File_Operations", resourceCulture);
             }
         }
         

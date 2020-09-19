@@ -1551,5 +1551,17 @@ namespace FFXIV_TexTools
             var win = new CopyFileDialog() { Owner = this };
             win.Show();
         }
+
+        private void Menu_ExtractRaw_Click(object sender, RoutedEventArgs e)
+        {
+            var win = new ExtractRawDialog() { Owner = this };
+            win.Show();
+        }
+
+        private void Menu_ImportRaw_Click(object sender, RoutedEventArgs e)
+        {
+            var win = new ImportRawDialog() { Owner = this };
+            win.Show();
+        }
     }
 }

@@ -335,8 +335,14 @@
     <Compile Include="Views\DependencyInfoView.xaml.cs">
       <DependentUpon>DependencyInfoView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\ExtractRawDialog.xaml.cs">
+      <DependentUpon>ExtractRawDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\IconSearchView.xaml.cs">
       <DependentUpon>IconSearchView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ImportRawDialog.xaml.cs">
+      <DependentUpon>ImportRawDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ItemConverter\ItemConverterWindow.xaml.cs">
       <DependentUpon>ItemConverterWindow.xaml</DependentUpon>
@@ -517,7 +523,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\ExtractRawDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\IconSearchView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ImportRawDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
