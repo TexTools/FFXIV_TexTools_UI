@@ -579,16 +579,7 @@ namespace FFXIV_TexTools.ViewModels
             if (_item.PrimaryCategory.Equals(XivStrings.Gear))
             {
                 var xivGear = _item as XivGear;
-
-                if (xivGear.SecondaryCategory.Equals(XivStrings.Rings))
-                {
-                    Parts.Add(new ComboBoxData { Name = XivStrings.Right });
-                    Parts.Add(new ComboBoxData { Name = XivStrings.Left });
-                }
-                else
-                {
-                    Parts.Add(new ComboBoxData { Name = XivStrings.Primary });
-                }
+                Parts.Add(new ComboBoxData { Name = XivStrings.Primary });
 
                 PartVisibility = Visibility.Visible;
             }
@@ -749,8 +740,7 @@ namespace FFXIV_TexTools.ViewModels
             {
                 if (_item.PrimaryCategory.Equals(XivStrings.Gear))
                 {
-                    string submeshId = GetSubmeshId();
-                    _model = await _mdl.GetModel(_item, SelectedRace.XivRace, submeshId);
+                    _model = await _mdl.GetModel(_item, SelectedRace.XivRace);
                 }
                 else if (_item.PrimaryCategory.Equals(XivStrings.Character))
                 {
@@ -1538,13 +1528,6 @@ namespace FFXIV_TexTools.ViewModels
                     submeshId = _selectedPart.Name;
                 }
 
-            }
-            else if (_item.SecondaryCategory.Equals(XivStrings.Rings))
-            {
-                if (PartVisibility == Visibility.Visible)
-                {
-                    submeshId = _selectedPart.Name == XivStrings.Left ? "ril" : "rir";
-                }
             }
 
             return submeshId;
