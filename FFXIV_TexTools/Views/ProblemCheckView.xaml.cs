@@ -39,6 +39,7 @@ using xivModdingFramework.Mods;
 using System.Runtime.CompilerServices;
 using System.Linq;
 using FFXIV_TexTools.ViewModels;
+using xivModdingFramework.SqPack.DataContainers;
 
 namespace FFXIV_TexTools.Views
 {
@@ -290,6 +291,7 @@ namespace FFXIV_TexTools.Views
             var dat = new Dat(_gameDirectory);
             var index = new Index(_gameDirectory);
 
+
             // Filter out empty entries in the mod list
             modList.Mods.RemoveAll(mod => mod.name.Equals(string.Empty));
 
@@ -317,7 +319,7 @@ namespace FFXIV_TexTools.Views
                     var index1Offsets = await index.GetDataOffsets(files);
                     var index2Offsets = await index.GetDataOffsetsIndex2(files);
 
-                    foreach (var mod in modList.Mods) { 
+                    foreach (var mod in modList.Mods) {
                         bool index2CorrectionNeeded = false;
                         List<(string text, string color)> textsToAdd = new List<(string text, string color)>();
                         if (cts.IsCancellationRequested)
@@ -686,6 +688,12 @@ namespace FFXIV_TexTools.Views
                 double gb = ((double)datSizeLimit) / 1024D / 1024D / 1024D;
                 string datSize = gb.ToString("0.00") + " GB";
                 AddText($"\tPer-DAT File Size Limit: {datSize}\n", textColor);
+
+                var _modding = new Modding(XivCache.GameInfo.GameDirectory);
+                var totalModSize = await _modding.GetTotalModDataSize();
+                gb = ((double)datSizeLimit) / 1024D / 1024D / 1024D;
+                string modSize = gb.ToString("0.00") + " GB";
+                AddText($"\tSum Total Mod Files Size: {modSize}\n", textColor);
 
                 var runningIn32bMode = IntPtr.Size == 4;
                 if (runningIn32bMode)
