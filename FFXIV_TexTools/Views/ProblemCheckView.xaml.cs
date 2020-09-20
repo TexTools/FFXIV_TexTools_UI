@@ -311,7 +311,7 @@ namespace FFXIV_TexTools.Views
                 }
 
 
-                if (modList.modCount > 0)
+                if (modList.Mods.Count > 0)
                 {
                     var files = modList.Mods.Select(x => x.fullPath).ToList();
 
