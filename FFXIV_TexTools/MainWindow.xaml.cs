@@ -1644,7 +1644,7 @@ namespace FFXIV_TexTools
                 });
 
                 var savedSpace = FormatBytes(savedBytes);
-                FlexibleMessageBox.Show($"DAT File Defragmentation completed successfully.\n\n{savedSpace} of free space has been recovered.", "Defragmentation Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                FlexibleMessageBox.Show($"DAT File Defragmentation completed successfully.\n\n{savedSpace} of unused space has been recovered.", "Defragmentation Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
