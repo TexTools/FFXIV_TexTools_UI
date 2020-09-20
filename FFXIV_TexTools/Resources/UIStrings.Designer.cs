@@ -333,6 +333,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Clean Up Modlist.
+        /// </summary>
+        public static string Clean_Up_ModList {
+            get {
+                return ResourceManager.GetString("Clean_Up_ModList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Clear Selected.
         /// </summary>
         public static string Clear_Selected {
@@ -1166,6 +1175,15 @@ namespace FFXIV_TexTools.Resources {
         public static string Loading_Items {
             get {
                 return ResourceManager.GetString("Loading_Items", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Manage Mod List.
+        /// </summary>
+        public static string Manage_ModList {
+            get {
+                return ResourceManager.GetString("Manage_ModList", resourceCulture);
             }
         }
         
@@ -2090,6 +2108,15 @@ namespace FFXIV_TexTools.Resources {
         public static string Rebuild_Cache {
             get {
                 return ResourceManager.GetString("Rebuild_Cache", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Recover Unused Space.
+        /// </summary>
+        public static string Recover_Space {
+            get {
+                return ResourceManager.GetString("Recover_Space", resourceCulture);
             }
         }
         

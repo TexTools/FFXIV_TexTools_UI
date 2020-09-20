@@ -21,6 +21,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 using xivModdingFramework.Cache;
+using xivModdingFramework.Items.DataContainers;
 using xivModdingFramework.Items.Enums;
 using xivModdingFramework.Items.Interfaces;
 using xivModdingFramework.Models.DataContainers;
@@ -326,20 +327,17 @@ namespace FFXIV_TexTools.Views.ItemConverter
                 }
 
                 var extraConversions = new Dictionary<XivDependencyRoot, XivDependencyRoot>();
-                if (Source.Info.Slot == "top")
+                try
                 {
-                    try
+                    extraConversions = await GetExtraConversions();
+                    if(extraConversions == null)
                     {
-                        extraConversions = await GetExtraConversions();
-                        if(extraConversions == null)
-                        {
-                            return;
-                        }
+                        return;
                     }
-                    catch
-                    {
-                        extraConversions.Clear();
-                    }
+                }
+                catch
+                {
+                    extraConversions.Clear();
                 }
 
 
@@ -391,7 +389,7 @@ namespace FFXIV_TexTools.Views.ItemConverter
             var meta = await ItemMetadata.GetMetadata(Source);
             var eqp = meta.EqpEntry;
 
-            if (eqp != null || !eqp.GetFlag(EquipmentParameterFlag.EnableBodyFlags))
+            if (eqp != null && !eqp.GetFlag(EquipmentParameterFlag.EnableBodyFlags))
             {
                 var hideHand = !eqp.GetFlag(EquipmentParameterFlag.BodyShowHand);
                 var hideLeg = !eqp.GetFlag(EquipmentParameterFlag.BodyShowLeg);
@@ -495,6 +493,88 @@ namespace FFXIV_TexTools.Views.ItemConverter
                         }
                     }
                 }
+            }
+
+            // Rings
+            if(Source.Info.Slot == "ril" || Source.Info.Slot == "rir")
+            {
+                var itemConversions = "";
+                if (Source.Info.Slot == "ril")
+                {
+                    var sourceAltRoot = Source.Info.GetOtherSlot("rir").ToFullRoot();
+                    var destAltRoot = Destination.Info.GetOtherSlot("rir").ToFullRoot();
+
+                    var sourceAltItem = sourceAltRoot.GetFirstItem(variant);
+                    var destAltItem = destAltRoot.GetFirstItem();
+
+                    itemConversions += sourceAltItem.Name + " => " + destAltItem.Name + "\n";
+                    extraConversions.Add(sourceAltRoot, destAltRoot);
+                } else
+                {
+                    var sourceAltRoot = Source.Info.GetOtherSlot("ril").ToFullRoot();
+                    var destAltRoot = Destination.Info.GetOtherSlot("ril").ToFullRoot();
+
+                    var sourceAltItem = sourceAltRoot.GetFirstItem(variant);
+                    var destAltItem = destAltRoot.GetFirstItem();
+
+                    itemConversions += sourceAltItem.Name + " => " + destAltItem.Name + "\n";
+                    extraConversions.Add(sourceAltRoot, destAltRoot);
+                }
+
+                var msg = "In order to properly convert this item, the following item may also need to be converted with it:\n\n" + itemConversions +"\nPerform these conversions as well?";
+
+                var result = FlexibleMessageBox.Show(msg, "Off-Ring Conversion Required", System.Windows.Forms.MessageBoxButtons.YesNoCancel, System.Windows.Forms.MessageBoxIcon.Warning);
+
+                if (result == System.Windows.Forms.DialogResult.Yes)
+                {
+                    return extraConversions;
+                }
+                else if (result == System.Windows.Forms.DialogResult.No)
+                {
+                    extraConversions.Clear();
+                    return extraConversions;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+
+            // Dual Wield weapons.
+            if(SourceItem.GetType() == typeof(XivGear) && DestinationItem.GetType() == typeof(XivGear))
+            {
+                var sourceGear = (XivGear)SourceItem;
+                var destGear = (XivGear)DestinationItem;
+
+                if(sourceGear.PairedItem != null && destGear.PairedItem != null)
+                {
+                    var itemConversions = "";
+                    var sourceOffhand = sourceGear.PairedItem.GetRoot();
+                    var destOffhand = destGear.PairedItem.GetRoot();
+
+
+                    extraConversions.Add(sourceOffhand, destOffhand);
+                    itemConversions += sourceGear.PairedItem.Name + " => " + destGear.PairedItem.Name + "\n";
+
+                    var msg = "In order to properly convert this item, the following item may also need to be converted with it:\n\n" + itemConversions + "\nPerform these conversions as well?";
+
+                    var result = FlexibleMessageBox.Show(msg, "Dual-Wield Conversion Required", System.Windows.Forms.MessageBoxButtons.YesNoCancel, System.Windows.Forms.MessageBoxIcon.Warning);
+
+                    if (result == System.Windows.Forms.DialogResult.Yes)
+                    {
+                        return extraConversions;
+                    }
+                    else if (result == System.Windows.Forms.DialogResult.No)
+                    {
+                        extraConversions.Clear();
+                        return extraConversions;
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+
             }
 
             extraConversions.Clear();
