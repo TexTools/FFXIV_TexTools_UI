@@ -389,7 +389,7 @@ namespace FFXIV_TexTools.Views.ItemConverter
             var meta = await ItemMetadata.GetMetadata(Source);
             var eqp = meta.EqpEntry;
 
-            if (eqp != null && !eqp.GetFlag(EquipmentParameterFlag.EnableBodyFlags))
+            if (eqp != null && eqp.GetFlag(EquipmentParameterFlag.EnableBodyFlags))
             {
                 var hideHand = !eqp.GetFlag(EquipmentParameterFlag.BodyShowHand);
                 var hideLeg = !eqp.GetFlag(EquipmentParameterFlag.BodyShowLeg);
