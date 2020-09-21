@@ -68,7 +68,7 @@ namespace FFXIV_TexTools
         private FullModelView _fmv;
         public readonly System.Windows.Forms.IWin32Window Win32Window;
 
-        public static readonly Version BetaVersion = new Version("2.3.2.3");
+        public static readonly Version BetaVersion = new Version("2.3.2.4");
         public static readonly string BetaSuffix = "BETA";
         public static bool IsBetaVersion {
             get
@@ -1644,7 +1644,7 @@ namespace FFXIV_TexTools
                 });
 
                 var savedSpace = FormatBytes(savedBytes);
-                FlexibleMessageBox.Show($"DAT File Defragmentation completed successfully.\n\n{savedSpace} of free space has been recovered.", "Defragmentation Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                FlexibleMessageBox.Show($"DAT File Defragmentation completed successfully.\n\n{savedSpace} of unused space has been recovered.", "Defragmentation Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
