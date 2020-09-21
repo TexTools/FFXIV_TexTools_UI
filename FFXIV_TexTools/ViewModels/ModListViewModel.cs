@@ -560,15 +560,7 @@ namespace FFXIV_TexTools.ViewModels
                          select mod).ToList();
                 }
 
-                if (modItems.Count > 10)
-                {
-                    tex = new Tex(_gameDirectory, selectedItem.DataFile);
-                    await tex.GetIndexFileDictionary();
-                }
-                else
-                {
-                    tex = new Tex(_gameDirectory);
-                }
+                tex = new Tex(_gameDirectory);
 
                 var modNum = 0;
 

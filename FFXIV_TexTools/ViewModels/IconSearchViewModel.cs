@@ -125,8 +125,9 @@ namespace FFXIV_TexTools.ViewModels
                 var iconFileString = $"{IconText.PadLeft(6, '0')}.tex";
                 var iconFolderInt = (iconInt / 1000) * 1000;
                 var iconFolderString = $"ui/icon/{iconFolderInt.ToString().PadLeft(6, '0')}";
+                var path = iconFolderString + "/" + iconFileString;
 
-                if (await index.FileExists(HashGenerator.GetHash(iconFileString), HashGenerator.GetHash(iconFolderString), XivDataFile._06_Ui))
+                if (await index.FileExists(path, XivDataFile._06_Ui))
                 {
                     var textureView = _mainView.TextureTabItem.Content as TextureView;
                     var textureViewModel = textureView.DataContext as TextureViewModel;
@@ -147,8 +148,7 @@ namespace FFXIV_TexTools.ViewModels
                 else
                 {
                     var iconLangFolderString = $"ui/icon/{iconFolderInt.ToString().PadLeft(6, '0')}/en";
-                    if (await index.FileExists(HashGenerator.GetHash(iconFileString), HashGenerator.GetHash(iconLangFolderString),
-                        XivDataFile._06_Ui))
+                    if (await index.FileExists(path, XivDataFile._06_Ui))
                     {
                         var textureView = _mainView.TextureTabItem.Content as TextureView;
                         var textureViewModel = textureView.DataContext as TextureViewModel;

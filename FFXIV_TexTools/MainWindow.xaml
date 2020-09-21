@@ -43,7 +43,11 @@
                 </ItemsPanelTemplate>
             </Menu.ItemsPanel>
             <MenuItem Header="{Binding Source={x:Static resx:UIStrings.Mods}}">
-                <MenuItem x:Name="Menu_ModList" Header="{Binding Source={x:Static resx:UIStrings.Mod_List}}" Click="Menu_ModList_Click"/>
+                <MenuItem Header="{Binding Source={x:Static resx:UIStrings.Mod_List}}">
+                    <MenuItem x:Name="Menu_ModList" Header="{Binding Source={x:Static resx:UIStrings.Manage_ModList}}" Click="Menu_ModList_Click"/>
+                    <MenuItem x:Name="Menu_CleanUpModList" Header="{Binding Source={x:Static resx:UIStrings.Clean_Up_ModList}}" Click="Menu_CleanUpModList_Click"/>
+                    <MenuItem x:Name="Menu_RecoverSpace" Header="{Binding Source={x:Static resx:UIStrings.Recover_Space}}" Click="Menu_RecoverSpace_Click"/>
+                </MenuItem>
                 <MenuItem x:Name="Menu_CreateModPack" Header="{Binding Source={x:Static resx:UIStrings.Create_Modpack}}">
                     <MenuItem x:Name="Menu_MakeModpackWizard" Header="{Binding Source={x:Static resx:UIStrings.ModPack_Wizard}}" Click="Menu_MakeModpackWizard_Click"/>
                     <MenuItem x:Name="Menu_MakeStandardModpack" Header="{Binding Source={x:Static resx:UIStrings.Standard_Modpack}}" Click="Menu_MakeStandardModpack_Click"/>
@@ -58,8 +62,12 @@
             <MenuItem Header="{Binding Source={x:Static resx:UIStrings.Tools}}" StaysOpenOnClick="True">
                 <MenuItem x:Name="Menu_ItemConverter" Header="{Binding Source={x:Static resx:UIStrings.Item_Converter}}" Click="Menu_ItemConverter_Click"/>
                 <MenuItem x:Name="Menu_FullModelViewer" Header="Full Model Viewer" Click="FullModelViewer_Click"/>
-                <MenuItem x:Name="Menu_CopyFile" Header="{Binding Source={x:Static resx:UIStrings.Copy_File}}" Click="Menu_CopyFile_Click"/>
                 <MenuItem x:Name="Menu_IconSearch" Header="{Binding Source={x:Static resx:UIStrings.Icon_Search}}" Click="Menu_IconIDSearch_Click"/>
+                <MenuItem Header="{Binding Source={x:Static resx:UIStrings.Raw_File_Operations}}">
+                    <MenuItem x:Name="Menu_ExtractRaw" Header="{Binding Source={x:Static resx:UIStrings.Extract_Raw}}" Click="Menu_ExtractRaw_Click"/>
+                    <MenuItem x:Name="Menu_ImportRaw" Header="{Binding Source={x:Static resx:UIStrings.Import_Raw}}" Click="Menu_ImportRaw_Click"/>
+                    <MenuItem x:Name="Menu_CopyFile" Header="{Binding Source={x:Static resx:UIStrings.Copy_File}}" Click="Menu_CopyFile_Click"/>
+                </MenuItem>
             </MenuItem>
             <MenuItem Header="{Binding Source={x:Static resx:UIStrings.Options}}" StaysOpenOnClick="True">
                 <MenuItem x:Name="Menu_Customize" Header="{Binding Source={x:Static resx:UIStrings.Customize}}" Click="Customize_Click"/>

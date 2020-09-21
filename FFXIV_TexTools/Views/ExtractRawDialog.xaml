@@ -1,0 +1,29 @@
+﻿<Window x:Class="FFXIV_TexTools.Views.ExtractRawDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FFXIV_TexTools.Views"
+        mc:Ignorable="d"
+        Title="Extract Raw File" Height="155" Width="500">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40"></RowDefinition>
+            <RowDefinition Height="40"></RowDefinition>
+            <RowDefinition Height="40"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="100"></ColumnDefinition>
+            <ColumnDefinition Width="1*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+
+        <Label Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" Content="File Path:" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
+        <TextBox x:Name="FromBox" Grid.Column="1" Grid.Row="0" Margin="5,0" VerticalAlignment="Center"></TextBox>
+
+        <CheckBox x:Name="DecompressType2Box" IsChecked="True" Grid.Row="1" Grid.Column="1" Margin="5,0" Content="Decompress Type 2 Data"></CheckBox>
+
+        <Button x:Name="ExtractButton"  Grid.Row="2" Grid.Column="1" Content="Extract File" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0" Width="150" Click="ExtractButton_Click"></Button>
+
+
+    </Grid>
+</Window>

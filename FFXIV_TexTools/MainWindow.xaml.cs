@@ -659,7 +659,7 @@ namespace FFXIV_TexTools
             AutoUpdater.Synchronous = true;
             try
             {
-                if (Settings.Default.UpdateBranch == "latest")
+                if (BetaVersion != null)
                 {
                     AutoUpdater.Start(WebUrl.TexTools_Beta_Update_Url);
                 } else
@@ -1066,6 +1066,7 @@ namespace FFXIV_TexTools
 
             var modsImported = 0;
             var modsErrored = 0;
+            float duration = 0;
 
             foreach (var fileName in openFileDialog.FileNames)
             {
@@ -1080,11 +1081,13 @@ namespace FFXIV_TexTools
                 var r = await ImportModpack(new DirectoryInfo(fileName), modPackDirectory, importMultiple);
                 modsImported += r.Imported;
                 modsErrored += r.Errors;
+                duration += r.Duration;
             }
 
             if (modsImported > 0)
             {
-                await this.ShowMessageAsync(UIMessages.ImportCompleteTitle, string.Format(UIMessages.SuccessfulImportCountMessage, modsImported, modsErrored));
+                var durationString = duration.ToString("0.00");
+                await this.ShowMessageAsync(UIMessages.ImportCompleteTitle, string.Format(UIMessages.SuccessfulImportCountMessage, modsImported, modsErrored, durationString));
             }
         }
 
@@ -1094,7 +1097,7 @@ namespace FFXIV_TexTools
         /// <param name="path">The path to the modpack</param>
         /// <param name="silent">If the modpack wizard should be shown or the modpack should just be imported without any user interaction</param>
         /// <returns></returns>
-        private async Task<(int Imported, int Errors)> ImportModpack(DirectoryInfo path, DirectoryInfo modPackDirectory, bool silent = false, bool messageInImport = false)
+        private async Task<(int Imported, int Errors, float Duration)> ImportModpack(DirectoryInfo path, DirectoryInfo modPackDirectory, bool silent = false, bool messageInImport = false)
         {
             var importError = false;
             TextureView textureView = null;
@@ -1115,7 +1118,7 @@ namespace FFXIV_TexTools
                 FlexibleMessageBox.Show(string.Format(UIMessages.UnsupportedFileExtensionErrorMessage, path.Extension), 
                     UIMessages.UnsupportedFileExtensionErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-                return (0, 1);
+                return (0, 1, 0);
             }
 
             try
@@ -1133,7 +1136,7 @@ namespace FFXIV_TexTools
                     {
                         FlexibleMessageBox.Show(UIMessages.IndexLockedErrorMessage, UIMessages.IndexLockedErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-                        return (0, 1);
+                        return (0, 1, 0);
                     }
 
                     try
@@ -1154,7 +1157,7 @@ namespace FFXIV_TexTools
 
                         if (result == true)
                         {
-                            return (importWizard.TotalModsImported, importWizard.TotalModsErrored);
+                            return (importWizard.TotalModsImported, importWizard.TotalModsErrored, importWizard.ImportDuration);
                         }
                     }
                     catch
@@ -1182,7 +1185,7 @@ namespace FFXIV_TexTools
 
                         if (result == true)
                         {
-                            return (simpleImport.TotalModsImported, simpleImport.TotalModsErrored);
+                            return (simpleImport.TotalModsImported, simpleImport.TotalModsErrored, simpleImport.ImportDuration);
                         }
                     }
                     catch
@@ -1210,17 +1213,17 @@ namespace FFXIV_TexTools
 
                     if (result == true)
                     {
-                        return (simpleImport.TotalModsImported, simpleImport.TotalModsErrored);
+                        return (simpleImport.TotalModsImported, simpleImport.TotalModsErrored, simpleImport.ImportDuration);
                     }
                 }
                 else
                 {
                     FlexibleMessageBox.Show(string.Format(UIMessages.ModPackImportErrorMessage, path.FullName, ex.Message), UIMessages.ModPackImportErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return (0, 1);
+                    return (0, 1, 0);
                 }
             }
 
-            return (0, 0);
+            return (0, 0, 0);
         }
 
         /// <summary>
@@ -1547,6 +1550,110 @@ namespace FFXIV_TexTools
         {
             var win = new CopyFileDialog() { Owner = this };
             win.Show();
+        }
+
+        private void Menu_ExtractRaw_Click(object sender, RoutedEventArgs e)
+        {
+            var win = new ExtractRawDialog() { Owner = this };
+            win.Show();
+        }
+
+        private void Menu_ImportRaw_Click(object sender, RoutedEventArgs e)
+        {
+            var win = new ImportRawDialog() { Owner = this };
+            win.Show();
+        }
+
+        private void ReportNumericProgress((int Count, int Total, string Message) data)
+        {
+            if (data.Total > 0)
+            {
+                float value = ((float)data.Count) / ((float)data.Total);
+                _lockProgressController.SetProgress(value);
+            } else
+            {
+                _lockProgressController.SetIndeterminate();
+            }
+
+            _lockProgress.Report(data.Message + $" ({data.Count}/{data.Total})");
+        }
+        private async void Menu_CleanUpModList_Click(object sender, RoutedEventArgs e)
+        {
+            var queueLength = XivCache.GetDependencyQueueLength();
+
+            System.Windows.Forms.DialogResult result;
+            if(queueLength > 100)
+            {
+                result = FlexibleMessageBox.Show("This will update the Modlist to ensure all modded files are\nlabeled under the correct items.\n\nAs the Queue currently has a large amount of files still processing,\nthis operation may take an extended amount of time to complete.\n(Up to one hour)", "Modlist Cleanup Confirmation", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
+            } else
+            {
+                result = FlexibleMessageBox.Show("This will update the Modlist to ensure all modded files are\nlabeled under the correct items.\n\nThis may take up to 5 minutes to complete.", "Modlist Cleanup Confirmation", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
+            }
+
+            if (result != System.Windows.Forms.DialogResult.OK) return;
+
+            await LockUi("Cleaning up Modlist");
+            try
+            {
+                Progress<(int Count, int Total, string Message)> reporter = new Progress<(int Count, int Total, string Message)>(ReportNumericProgress);
+                // Run in new thread so UI doesn't lock.
+                await Task.Run(async () =>
+                {
+                    var modding = new Modding(XivCache.GameInfo.GameDirectory);
+                    await modding.CleanUpModlist(reporter);
+                });
+                FlexibleMessageBox.Show("The Modlist was cleaned up successfully.", "Cleanup Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch(Exception ex)
+            {
+                FlexibleMessageBox.Show("An error occurred during the cleanup process.\n\nError: " + ex.Message, "Cleanup Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                await UnlockUi();
+            }
+        }
+        private static string FormatBytes(long bytes)
+        {
+            string[] Suffix = { "B", "KB", "MB", "GB", "TB" };
+            int i;
+            double dblSByte = bytes;
+            for (i = 0; i < Suffix.Length && bytes >= 1024; i++, bytes /= 1024)
+            {
+                dblSByte = bytes / 1024.0;
+            }
+
+            return String.Format("{0:0.##} {1}", dblSByte, Suffix[i]);
+        }
+
+        private async void Menu_RecoverSpace_Click(object sender, RoutedEventArgs e)
+        {
+            var result = FlexibleMessageBox.Show("This will recover unused space in the game files by defragmenting the modded DAT files.\n\nPlease do not close TexTools or open FFXIV until this operation is complete", "Recover Space Confirmation", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
+
+            if (result != System.Windows.Forms.DialogResult.OK) return;
+            await LockUi("Defragmenting DAT Files");
+            try
+            {
+                long savedBytes = 0;
+                Progress<(int Count, int Total, string Message)> reporter = new Progress<(int Count, int Total, string Message)>(ReportNumericProgress);
+                // Run in new thread so UI doesn't lock.
+                await Task.Run(async () =>
+                {
+                    var modding = new Modding(XivCache.GameInfo.GameDirectory);
+                    savedBytes = await modding.DefragmentModdedDats(reporter);
+                });
+
+                var savedSpace = FormatBytes(savedBytes);
+                FlexibleMessageBox.Show($"DAT File Defragmentation completed successfully.\n\n{savedSpace} of unused space has been recovered.", "Defragmentation Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                FlexibleMessageBox.Show("An error occurred during the defragmentation process.\n\nError: " + ex.Message, "Modlist Defragmentation Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                await UnlockUi();
+            }
         }
     }
 }

@@ -333,6 +333,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Clean Up Modlist.
+        /// </summary>
+        public static string Clean_Up_ModList {
+            get {
+                return ResourceManager.GetString("Clean_Up_ModList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Clear Selected.
         /// </summary>
         public static string Clear_Selected {
@@ -396,7 +405,7 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Raw File Copy.
+        ///   Looks up a localized string similar to Copy Raw File.
         /// </summary>
         public static string Copy_File {
             get {
@@ -756,6 +765,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Extract Raw File.
+        /// </summary>
+        public static string Extract_Raw {
+            get {
+                return ResourceManager.GetString("Extract_Raw", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Face.
         /// </summary>
         public static string Face {
@@ -990,6 +1008,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Import Raw File.
+        /// </summary>
+        public static string Import_Raw {
+            get {
+                return ResourceManager.GetString("Import_Raw", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Included Mods in Option.
         /// </summary>
         public static string Included_Mods_in_Option {
@@ -1148,6 +1175,15 @@ namespace FFXIV_TexTools.Resources {
         public static string Loading_Items {
             get {
                 return ResourceManager.GetString("Loading_Items", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Manage Mod List.
+        /// </summary>
+        public static string Manage_ModList {
+            get {
+                return ResourceManager.GetString("Manage_ModList", resourceCulture);
             }
         }
         
@@ -2058,11 +2094,29 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Raw File Operations.
+        /// </summary>
+        public static string Raw_File_Operations {
+            get {
+                return ResourceManager.GetString("Raw_File_Operations", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Rebuild Cache.
         /// </summary>
         public static string Rebuild_Cache {
             get {
                 return ResourceManager.GetString("Rebuild_Cache", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Recover Unused Space.
+        /// </summary>
+        public static string Recover_Space {
+            get {
+                return ResourceManager.GetString("Recover_Space", resourceCulture);
             }
         }
         
@@ -2609,7 +2663,7 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Latest Version.
+        ///   Looks up a localized string similar to Latest (Beta) Version.
         /// </summary>
         public static string Version_Latest {
             get {

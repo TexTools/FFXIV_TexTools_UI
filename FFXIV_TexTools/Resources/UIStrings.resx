@@ -989,7 +989,7 @@ If you would like to enable this, first import a texture for the selected item.<
     <value>TexTools model displays are only an approximation, and may not be 100% accurate to in-game visuals.</value>
   </data>
   <data name="Copy_File" xml:space="preserve">
-    <value>Raw File Copy</value>
+    <value>Copy Raw File</value>
   </data>
   <data name="Item_Converter" xml:space="preserve">
     <value>Item Converter</value>
@@ -998,9 +998,27 @@ If you would like to enable this, first import a texture for the selected item.<
     <value>Tools</value>
   </data>
   <data name="Version_Latest" xml:space="preserve">
-    <value>Latest Version</value>
+    <value>Latest (Beta) Version</value>
   </data>
   <data name="Version_Stable" xml:space="preserve">
     <value>Stable Version</value>
+  </data>
+  <data name="Extract_Raw" xml:space="preserve">
+    <value>Extract Raw File</value>
+  </data>
+  <data name="Import_Raw" xml:space="preserve">
+    <value>Import Raw File</value>
+  </data>
+  <data name="Raw_File_Operations" xml:space="preserve">
+    <value>Raw File Operations</value>
+  </data>
+  <data name="Clean_Up_ModList" xml:space="preserve">
+    <value>Clean Up Modlist</value>
+  </data>
+  <data name="Manage_ModList" xml:space="preserve">
+    <value>Manage Mod List</value>
+  </data>
+  <data name="Recover_Space" xml:space="preserve">
+    <value>Recover Unused Space</value>
   </data>
 </root>

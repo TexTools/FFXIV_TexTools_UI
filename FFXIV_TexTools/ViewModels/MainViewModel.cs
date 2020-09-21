@@ -43,6 +43,7 @@ using xivModdingFramework.SqPack.FileTypes;
 using xivModdingFramework.Cache;
 using FFXIV_TexTools.Views;
 using xivModdingFramework.Mods.DataContainers;
+using xivModdingFramework.SqPack.DataContainers;
 
 namespace FFXIV_TexTools.ViewModels
 {
@@ -475,8 +476,8 @@ namespace FFXIV_TexTools.ViewModels
                 // 3.  Prompt the user for either a full disable and backup creation, or a restore to normal state (re-enable anything that was enabled before but is not now)
                 var modList = modding.GetModList();
 
+                Dictionary<XivDataFile, IndexFile> indexFiles = new Dictionary<XivDataFile, IndexFile>();
 
-                var internalFilesModified = false;
 
                 // Cache our currently enabled stuff.
                 List<Mod> enabledMods = modList.Mods.Where(x => x.enabled == true).ToList();
@@ -486,12 +487,17 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     if (!String.IsNullOrEmpty(mod.fullPath))
                     {
-                        var index1Value = await _index.GetDataOffset(mod.fullPath);
-                        var index2Value = await _index.GetDataOffsetIndex2(mod.fullPath);
+                        var df = IOUtil.GetDataFileFromPath(mod.fullPath);
+                        if (!indexFiles.ContainsKey(df))
+                        {
+                            indexFiles[df] = await _index.GetIndexFile(df);
+                        }
+
+                        var index1Value = indexFiles[df].Get8xDataOffset(mod.fullPath);
+                        var index2Value = indexFiles[df].Get8xDataOffsetIndex2(mod.fullPath);
                         var oldOriginalOffset = mod.data.originalOffset;
                         var modOffset = mod.data.modOffset;
 
-                        var df = IOUtil.GetDataFileFromPath(mod.fullPath);
 
                         // In any event where an offset does not match either of our saved offsets, we must assume this is a new
                         // default file offset for post-patch.
@@ -579,14 +585,9 @@ namespace FFXIV_TexTools.ViewModels
                         // Indexes don't match.  This can occur if SE adds something to index2 that didn't exist in index2 before.
                         if (index1Value != index2Value && index2Value != 0)
                         {
-                            if(mod.source == Constants.InternalModSourceName)
-                            {
-                                internalFilesModified = true;
-                            }
-
                             // We should never actually get to this state for file-addition mods.  If we do, uh.. I guess correct the indexes and yolo?
                             // ( Only way we get here is if SE added a new file at the same name as a file the user had created via modding, in which case, it's technically no longer a file addition mod )
-                            await _index.UpdateDataOffset(mod.data.originalOffset, mod.fullPath, false);
+                            indexFiles[df].SetDataOffset(mod.fullPath, mod.data.originalOffset);
                             index1Value = mod.data.originalOffset;
                             index2Value = mod.data.originalOffset;
 
@@ -611,10 +612,6 @@ namespace FFXIV_TexTools.ViewModels
                         {
                             // Mod data is busted.  Fun.
                             toRemove.Add(mod);
-                            if (mod.source == Constants.InternalModSourceName)
-                            {
-                                internalFilesModified = true;
-                            }
                         }
 
                         if ((!validTypes.Contains(originalFileType)) || mod.data.originalOffset == 0)
@@ -648,35 +645,44 @@ namespace FFXIV_TexTools.ViewModels
                         // Shit.  This means that the dat file where this mod lived got eaten by SE.  We have to destroy the modlist entry at this point.
                         toRemove.Add(mod);
                     }
+                }
 
-                    if (mod.enabled == false && mod.IsInternal() && !String.IsNullOrEmpty(mod.fullPath))
-                    {
-                        // Shit.  Some internal multi-edit file got eaten.  This means we'll have to re-apply all metadata mods later.
-                        internalFilesModified = true;
-                    }
+                // Save any index changes we made.
+                foreach(var dkv in indexFiles)
+                {
+                    await _index.SaveIndexFile(dkv.Value);
                 }
 
                 // The modlist is now saved in its current index-represented post patch state.
                 modding.SaveModList(modList);
 
-                // In retrospect, we actually just want to always recomplie our internal files after FFXIV patches.
-                // Even if the offsets are identical, without Hash checks on the files, there's no way to know
-                // if some bits got changed that we need to carry through into the updated Metadata files.
-                internalFilesModified = true;
+                // We now need to clear out any mods that are irreparably fucked, and clear out all of our
+                // internal data files so we can rebuild them later.
+
+                var internalFiles = modList.Mods.Where(x => x.IsInternal());
+                toRemove.AddRange(internalFiles);
 
                 if (toRemove.Count > 0)
                 {
                     var removedString = "";
+
+                    // Soft-Disable all metadata mods, since we're going to purge their internal file entries.
+                    var metadata = modList.Mods.Where(x => x.fullPath.EndsWith(".meta"));
+                    foreach (var mod in metadata)
+                    {
+                        var df = IOUtil.GetDataFileFromPath(mod.fullPath);
+                        await modding.ToggleModUnsafe(false, mod, true, false, indexFiles[df], modList);
+                    }
+
                     foreach (var mod in toRemove)
                     {
                         if (mod.data.modOffset == 0 || mod.data.originalOffset == 0)
                         {
-                            // It should be impossible to get here in this state, but if some how we *do* end up here with a 0 offset mod,
-                            // just strip it from the modlist.
-
                             if(mod.data.originalOffset == 0 && mod.enabled)
                             {
-                                throw new Exception("Unable to disable mod with unknown original offset.");
+                                // This is awkward.  We have a mod whose data got bashed, but has no valid original offset to restore.
+                                // So the indexes here are fucked if we do, fucked if we don't.
+                                throw new Exception("Patch-Broken file has no valid index to restore.  Clean Index Restoration required.");
                             }
 
                             modList.Mods.Remove(mod);
@@ -688,9 +694,8 @@ namespace FFXIV_TexTools.ViewModels
 
                             if (mod.enabled)
                             {
-                                // We shouldn't really get here with something like this enabled, but if it is, disable it.
-                                await modding.ToggleModUnsafe(false, mod, true, false);
-                                mod.enabled = false;
+                                var df = IOUtil.GetDataFileFromPath(mod.fullPath);
+                                await modding.ToggleModUnsafe(false, mod, true, false, indexFiles[df], modList);
                             }
 
                             modList.Mods.Remove(mod);
@@ -698,14 +703,22 @@ namespace FFXIV_TexTools.ViewModels
                             // Since we're deleting this entry entirely, we can't leave it in the other cached list either to get re-enabled later.
                             enabledMods.Remove(mod);
 
-                            removedString += mod.fullPath + "\n";
+                            if (!mod.IsInternal())
+                            {
+                                removedString += mod.fullPath + "\n";
+                            }
                         }
                     }
 
+                    // Save the index files and modlist again now that we've removed all the invalid entries.
+                    foreach (var dkv in indexFiles)
+                    {
+                        await _index.SaveIndexFile(dkv.Value);
+                    }
                     modding.SaveModList(modList);
 
                     // Show the user a message if we purged any real files.
-                    if (toRemove.Any(x => !String.IsNullOrEmpty(x.fullPath)))
+                    if (toRemove.Any(x => !String.IsNullOrEmpty(x.fullPath) && !x.IsInternal()))
                     {
                         var text = String.Format(UIMessages.PatchDestroyedFiles, removedString);
 
@@ -713,85 +726,34 @@ namespace FFXIV_TexTools.ViewModels
                     }
                 }
 
+                // Always create clean index backups after this process is completed.
 
-                // The modlist is now in a completely valid state, with all mods having valid offsets and original offsets, with none of the mod offsets pointing into vanilla SE data.
+                _mainWindow.LockProgress.Report("Disabling Mods...");
+                await modding.ToggleAllMods(false);
 
-                var result = FlexibleMessageBox.Show(_mainWindow.Win32Window, UIMessages.PostPatchBackupPrompt, "Post-Patch Backup Prompt", MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
-
-                if (result == DialogResult.Yes)
+                _mainWindow.LockProgress.Report("Creating Index Backups...");
+                var pc = new ProblemChecker(_gameDirectory);
+                DirectoryInfo backupDir;
+                try
                 {
-                    // Disable all mods and create backups.  (The user can re-enable after manually if desired.)
-                    _mainWindow.LockProgress.Report("Disabling Mods.  This can take a minute if you have many mods...");
-                    await modding.ToggleAllMods(false);
-
-                    // Get an updated modlist after the disable.
-                    modList = await modding.GetModListAsync();
-
-                    if (internalFilesModified)
-                    {
-                        // Reset the internal files so they are rebuilt later.
-                        var internals = modList.Mods.Where(x => x.IsInternal());
-                        foreach (var mod in internals)
-                        {
-                            await modding.DeleteMod(mod.fullPath, true);
-                        }
-                    }
-
-
-                    _mainWindow.LockProgress.Report("Creating Index Backups...");
-                    var pc = new ProblemChecker(_gameDirectory);
-                    DirectoryInfo backupDir;
-                    try
-                    {
-                        Directory.CreateDirectory(Settings.Default.Backup_Directory);
-                        backupDir = new DirectoryInfo(Settings.Default.Backup_Directory);
-                    }
-                    catch
-                    {
-                        throw new Exception("Unable to create index backups.\nThe Index Backup directory is invalid or inaccessible: " + Settings.Default.Backup_Directory);
-                    }
-
-                    await pc.BackupIndexFiles(backupDir);
-
-                    FlexibleMessageBox.Show(_mainWindow.Win32Window, UIMessages.PostPatchBackupsComplete, "Post-Patch Backup Complete", MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
-
+                    Directory.CreateDirectory(Settings.Default.Backup_Directory);
+                    backupDir = new DirectoryInfo(Settings.Default.Backup_Directory);
                 }
-                else
+                catch
                 {
-                    // Restore all our still existent mods that were enabled back to the enabled state, if they are not currently.
-                    _mainWindow.LockProgress.Report("Re-Enabling mods disabled by FFXIV Patch...");
-
-                    if (internalFilesModified)
-                    {
-                        // Okay, if any of our internal multi-edit files got edited, we have to bash them all so that we can rebuild them from the new game files correctly.
-                        var internals = modList.Mods.Where(x => x.IsInternal());
-                        foreach(var mod in internals)
-                        {
-                            await modding.DeleteMod(mod.fullPath, true);
-                        }
-
-                        // And likewise, set the raw meta entries to disabled to ensure they get re-enabled fully.
-                        var metas = modList.Mods.Where(x => Path.GetExtension(x.fullPath) == ".meta");
-                        foreach(var mod in metas)
-                        {
-                            await _index.DeleteFileDescriptor(mod.fullPath, IOUtil.GetDataFileFromPath(mod.fullPath));
-                            mod.enabled = false;
-                        }
-                    }
-
-                    foreach (var mod in enabledMods)
-                    {
-                        // If the mod was disabled by our previous 
-                        if(!mod.enabled)
-                        {
-                            await modding.ToggleModStatus(mod.fullPath, true);
-                        }
-                    }
-
-
-                    FlexibleMessageBox.Show(_mainWindow.Win32Window, UIMessages.PostPatchComplete, "Post-Patch Process Complete", MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
-
+                    throw new Exception("Unable to create index backups.\nThe Index Backup directory is invalid or inaccessible: " + Settings.Default.Backup_Directory);
                 }
+
+                await pc.BackupIndexFiles(backupDir);
+
+                // Now restore the modlist enable/disable state back to how the user had it before.
+                _mainWindow.LockProgress.Report("Re-Enabling mods...");
+
+                // Re-enable things.
+                await modding.ToggleMods(true, enabledMods.Select(x => x.fullPath));
+
+                FlexibleMessageBox.Show(_mainWindow.Win32Window, UIMessages.PostPatchComplete, "Post-Patch Process Complete", MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
+
             }
             catch(Exception Ex)
             {
