@@ -69,7 +69,6 @@ namespace FFXIV_TexTools.Views
                     var root = await XivCache.GetFirstRoot(file);
                     if (root != null && RootCloner.IsSupported(root))
                     {
-                        Results.Add(root, (root, -1));
                         var items = await root.GetAllItems();
                         Items.Add(root, items);
                         ItemSelections.Add(root, (items[0], items[0]));
@@ -85,6 +84,7 @@ namespace FFXIV_TexTools.Views
                         }
 
 
+                        Results.Add(root, (root, -1));
                         roots.Add(root);
                     }
                 }

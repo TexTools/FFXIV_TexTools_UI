@@ -259,3 +259,7 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+
+# Shortcuts
+push_beta_shortcut*
+push_master_shortcut*
