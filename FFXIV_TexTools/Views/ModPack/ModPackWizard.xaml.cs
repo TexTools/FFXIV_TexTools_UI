@@ -422,19 +422,23 @@ namespace FFXIV_TexTools.Views
                             
                                 using (var zipFile = ZipFile.OpenRead(openFileDialog.FileName))
                                 {
-                                    using (var stream = zipFile.GetEntry(optionJson.ImagePath).Open())
+                                    var entry = zipFile.GetEntry(optionJson.ImagePath);
+                                    if (entry != null)
                                     {
-                                        var tmpImage = Path.GetTempFileName();                                    
-                                        using (var imageStream = File.Open(tmpImage,FileMode.OpenOrCreate))
+                                        using (var stream = entry.Open())
                                         {
-                                            await stream.CopyToAsync(imageStream);
-                                            imageStream.Position = 0;
+                                            var tmpImage = Path.GetTempFileName();
+                                            using (var imageStream = File.Open(tmpImage, FileMode.OpenOrCreate))
+                                            {
+                                                await stream.CopyToAsync(imageStream);
+                                                imageStream.Position = 0;
+                                            }
+                                            var fileNameBak = openFileDialog.FileName;
+                                            openFileDialog.FileName = tmpImage;
+                                            modOption.Image = Image.Load(openFileDialog.FileName);
+                                            modOption.ImageFileName = openFileDialog.FileName;
+                                            openFileDialog.FileName = fileNameBak;
                                         }
-                                        var fileNameBak = openFileDialog.FileName;
-                                        openFileDialog.FileName = tmpImage;
-                                        modOption.Image = Image.Load(openFileDialog.FileName);
-                                        modOption.ImageFileName = openFileDialog.FileName;
-                                        openFileDialog.FileName = fileNameBak;
                                     }
                                 }
                             }
