@@ -1654,5 +1654,12 @@ namespace FFXIV_TexTools
                 await UnlockUi();
             }
         }
+
+        private void Menu_CopyModel_Click(object sender, RoutedEventArgs e)
+        {
+            var wind = new CopyModelDialog() { Owner = this };
+            wind.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            wind.Show();
+        }
     }
 }
