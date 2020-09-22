@@ -21,6 +21,7 @@ using xivModdingFramework.General.Enums;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Items.Enums;
 using xivModdingFramework.Items.Interfaces;
+using xivModdingFramework.Mods;
 using xivModdingFramework.Mods.DataContainers;
 using xivModdingFramework.SqPack.DataContainers;
 
@@ -66,7 +67,7 @@ namespace FFXIV_TexTools.Views
                 foreach (var file in metaFiles)
                 {
                     var root = await XivCache.GetFirstRoot(file);
-                    if (root != null)
+                    if (root != null && RootCloner.IsSupported(root))
                     {
                         Results.Add(root, (root, -1));
                         var items = await root.GetAllItems();
@@ -82,6 +83,7 @@ namespace FFXIV_TexTools.Views
                         {
                             continue;
                         }
+
 
                         roots.Add(root);
                     }

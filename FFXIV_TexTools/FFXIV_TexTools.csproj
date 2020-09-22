@@ -332,6 +332,9 @@
     <Compile Include="Views\CopyFileDialog.xaml.cs">
       <DependentUpon>CopyFileDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\CopyModelDialog.xaml.cs">
+      <DependentUpon>CopyModelDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\CustomizeSettingsView.xaml.cs">
       <DependentUpon>CustomizeSettingsView.xaml</DependentUpon>
     </Compile>
@@ -522,6 +525,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\CopyFileDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\CopyModelDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
