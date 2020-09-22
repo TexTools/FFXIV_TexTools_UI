@@ -5,17 +5,21 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FFXIV_TexTools.Views"
         mc:Ignorable="d"
-        Title="ModpackRootConvertWindow" Height="450" Width="800">
+        Title="Import Item Selection" Height="600" Width="800">
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="40"></RowDefinition>
             <RowDefinition Height="1*"></RowDefinition>
             <RowDefinition Height="40"></RowDefinition>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             
         </Grid.ColumnDefinitions>
-        <ScrollViewer>
-            <StackPanel />
+        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="18" FontWeight="Bold">Select Destination Items</TextBlock>
+        <ScrollViewer Grid.Row="1">
+            <StackPanel x:Name="PrimaryStackPanel"/>
         </ScrollViewer>
+        <Button x:Name="CancelButton" Grid.Row="2" Content="Cancel" HorizontalAlignment="Left" VerticalAlignment="Center" Width="200" Margin="10,0,0,0" Click="CancelButton_Click"></Button>
+        <Button x:Name="ContinueButton" Grid.Row="2" Content="Continue" HorizontalAlignment="Right" VerticalAlignment="Center" Width="200" Margin="0,0,10,0" Click="ContinueButton_Click"></Button>
     </Grid>
 </Window>
