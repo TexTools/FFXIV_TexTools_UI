@@ -389,6 +389,9 @@
     <Compile Include="Views\Models\ModelInspector.xaml.cs">
       <DependentUpon>ModelInspector.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\ModPack\ModpackRootConvertWindow.xaml.cs">
+      <DependentUpon>ModpackRootConvertWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\ModPack\Standard\StandardModpackCreatorItemSelect.xaml.cs">
       <DependentUpon>StandardModpackCreatorItemSelect.xaml</DependentUpon>
     </Compile>
@@ -592,6 +595,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Models\ModelInspector.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ModPack\ModpackRootConvertWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

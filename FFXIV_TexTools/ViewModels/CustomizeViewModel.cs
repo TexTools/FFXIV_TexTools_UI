@@ -288,7 +288,7 @@ namespace FFXIV_TexTools.ViewModels
 
         public string UpdateBranch
         {
-            get => MainWindow.BetaVersion != null ? UIStrings.Version_Latest : UIStrings.Version_Stable;
+            get => MainWindow.IsBetaVersion ? UIStrings.Version_Latest : UIStrings.Version_Stable;
             set
             {
 

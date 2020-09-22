@@ -68,12 +68,11 @@ namespace FFXIV_TexTools
         private FullModelView _fmv;
         public readonly System.Windows.Forms.IWin32Window Win32Window;
 
-        public static readonly Version BetaVersion = null;
-        public static readonly string BetaSuffix = null;
+        public static readonly string BetaSuffix = "BETA";
         public static bool IsBetaVersion {
             get
             {
-                return BetaVersion != null;
+                return BetaSuffix != null;
             }
         }
 
@@ -659,7 +658,7 @@ namespace FFXIV_TexTools
             AutoUpdater.Synchronous = true;
             try
             {
-                if (BetaVersion != null)
+                if (IsBetaVersion)
                 {
                     AutoUpdater.Start(WebUrl.TexTools_Beta_Update_Url);
                 } else
@@ -1413,7 +1412,7 @@ namespace FFXIV_TexTools
 
             if (IsBetaVersion)
             {
-                fileVersion = BetaVersion.ToString() + " " + BetaSuffix;
+                fileVersion = fileVersion + " " + BetaSuffix;
             }
 
             var tmps = fileVersion.Split('.');
