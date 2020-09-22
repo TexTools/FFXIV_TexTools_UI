@@ -40,6 +40,7 @@ using xivModdingFramework.Mods;
 using xivModdingFramework.Mods.DataContainers;
 using xivModdingFramework.Mods.Enums;
 using xivModdingFramework.Mods.FileTypes;
+using xivModdingFramework.SqPack.DataContainers;
 using xivModdingFramework.SqPack.FileTypes;
 using xivModdingFramework.Textures.Enums;
 using Path = System.IO.Path;
@@ -219,7 +220,7 @@ namespace FFXIV_TexTools.Views
                 {
                     Version ver;
                     bool success = Version.TryParse(modPackJson.MinimumFrameworkVersion, out ver);
-                    if(success)
+                    if (success)
                     {
                         var frameworkVersion = typeof(XivCache).Assembly.GetName().Version;
                         if (ver > frameworkVersion)
@@ -262,13 +263,13 @@ namespace FFXIV_TexTools.Views
             {
                 var progress = new Progress<(int count, int total)>(prog =>
                 {
-                LockedStatusLabel.Content = $"{UIStrings.Loading} ({prog.count}, {prog.total})";
+                    LockedStatusLabel.Content = $"{UIStrings.Loading} ({prog.count}, {prog.total})";
 
-                if (prog.count == prog.total)
-                {
-                    LockedStatusLabel.Content = UIStrings.Finalizing;
+                    if (prog.count == prog.total)
+                    {
+                        LockedStatusLabel.Content = UIStrings.Finalizing;
 
-                }
+                    }
                 });
             });
 
@@ -361,7 +362,7 @@ namespace FFXIV_TexTools.Views
                 var importResults = await Task.Run(async () =>
                 {
                     return await _texToolsModPack.ImportModPackAsync(_modPackDirectory, importList,
-                    _gameDirectory, modListDirectory, progressIndicator);
+                    _gameDirectory, modListDirectory, progressIndicator, ModpackRootConvertWindow.GetRootConversions);
                 });
 
                 TotalModsErrored = importResults.ErrorCount;
