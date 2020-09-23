@@ -374,7 +374,8 @@ namespace FFXIV_TexTools.Views
                 var tempMPD = Path.GetTempFileName();
                 using (var archive = ZipFile.OpenRead(openFileDialog.FileName))
                 {
-                    using (var zipStream = archive.GetEntry("TTMPD.mpd").Open())
+                    var ttmpd = archive.Entries.First(x => x.FullName.EndsWith(".mpd"));
+                    using (var zipStream = ttmpd.Open())
                     {
                         using (var fileStream = new FileStream(tempMPD, FileMode.OpenOrCreate))
                         {
