@@ -61,6 +61,7 @@
             </MenuItem>
             <MenuItem Header="{Binding Source={x:Static resx:UIStrings.Tools}}" StaysOpenOnClick="True">
                 <MenuItem x:Name="Menu_ItemConverter" Header="{Binding Source={x:Static resx:UIStrings.Item_Converter}}" Click="Menu_ItemConverter_Click"/>
+                <MenuItem x:Name="Menu_RacialScaling" Header="Edit Racial Settings" Click="Menu_RacialScaling_Click"/>
                 <MenuItem x:Name="Menu_FullModelViewer" Header="Full Model Viewer" Click="FullModelViewer_Click"/>
                 <MenuItem x:Name="Menu_IconSearch" Header="{Binding Source={x:Static resx:UIStrings.Icon_Search}}" Click="Menu_IconIDSearch_Click"/>
                 <MenuItem Header="{Binding Source={x:Static resx:UIStrings.Raw_File_Operations}}">

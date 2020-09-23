@@ -667,7 +667,7 @@ namespace FFXIV_TexTools.ViewModels
                     var removedString = "";
 
                     // Soft-Disable all metadata mods, since we're going to purge their internal file entries.
-                    var metadata = modList.Mods.Where(x => x.fullPath.EndsWith(".meta"));
+                    var metadata = modList.Mods.Where(x => x.fullPath.EndsWith(".meta") || x.fullPath.EndsWith(".rgsp"));
                     foreach (var mod in metadata)
                     {
                         var df = IOUtil.GetDataFileFromPath(mod.fullPath);
