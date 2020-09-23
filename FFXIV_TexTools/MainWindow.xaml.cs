@@ -1666,5 +1666,14 @@ namespace FFXIV_TexTools
             wind.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             wind.Show();
         }
+
+
+
+        private void Menu_RacialScaling_Click(object sender, RoutedEventArgs e)
+        {
+            var wind = new RacialSettingsEditor() { Owner = this };
+            wind.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            wind.Show();
+        }
     }
 }

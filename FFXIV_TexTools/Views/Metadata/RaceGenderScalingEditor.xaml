@@ -1,0 +1,58 @@
+﻿<Window x:Class="FFXIV_TexTools.Views.Metadata.RaceGenderScalingEditor"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FFXIV_TexTools.Views.Metadata"
+        mc:Ignorable="d"
+        Title="RaceGenderScalingEditor" Height="364.688" Width="697.812">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"></RowDefinition>
+
+            <RowDefinition Height="40"></RowDefinition>
+            <RowDefinition Height="40"></RowDefinition>
+            <RowDefinition Height="40"></RowDefinition>
+            <RowDefinition Height="40"></RowDefinition>
+            <RowDefinition Height="40"></RowDefinition>
+
+            <RowDefinition Height="1*"></RowDefinition>
+            <RowDefinition Height="40"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <TextBlock x:Name="TitleBox" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold" Grid.ColumnSpan="4" FontSize="14">Racial Settings: Miqo'te - Seeker - Female</TextBlock>
+
+        <Label Content="Minimum Height Multiplier:" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10,0,0,0"></Label>
+        <TextBox x:Name="MinHeightBox" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Margin="0,0,10,0"/>
+        <Label Content="Maximum Height Multiplier:" Grid.Row="1" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10,0,0,0"></Label>
+        <TextBox x:Name="MaxHeightBox" Grid.Row="1" Grid.Column="3" VerticalAlignment="Center" Margin="0,0,10,0"/>
+
+        <Label Content="Minimum Tail/Ear Multiplier:" Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10,0,0,0"></Label>
+        <TextBox x:Name="MinTailBox" Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" Margin="0,0,10,0"/>
+        <Label Content="Maximum Tail/Ear Multiplier:" Grid.Row="2" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10,0,0,0"></Label>
+        <TextBox x:Name="MaxTailBox" Grid.Row="2" Grid.Column="3" VerticalAlignment="Center" Margin="0,0,10,0"/>
+
+        <Label x:Name="MinBustXLabel" Content="Minimum Bust X Multiplier:" Grid.Row="3" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10,0,0,0"></Label>
+        <TextBox x:Name="MinBustX" Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" Margin="0,0,10,0"/>
+        <Label x:Name="MaxBustXLabel" Content="Maximum Bust X Multiplier:" Grid.Row="3" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10,0,0,0"></Label>
+        <TextBox x:Name="MaxBustX" Grid.Row="3" Grid.Column="3" VerticalAlignment="Center" Margin="0,0,10,0"/>
+
+        <Label x:Name="MinBustYLabel" Content="Minimum Bust Y Multiplier:" Grid.Row="4" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10,0,0,0"></Label>
+        <TextBox x:Name="MinBustY" Grid.Row="4" Grid.Column="1" VerticalAlignment="Center" Margin="0,0,10,0"/>
+        <Label x:Name="MaxBustYLabel" Content="Maximum Bust Y Multiplier:" Grid.Row="4" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10,0,0,0"></Label>
+        <TextBox x:Name="MaxBustY" Grid.Row="4" Grid.Column="3" VerticalAlignment="Center" Margin="0,0,10,0"/>
+
+        <Label x:Name="MinBustZLabel"  Content="Minimum Bust Z Multiplier:" Grid.Row="5" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10,0,0,0"></Label>
+        <TextBox x:Name="MinBustZ" Grid.Row="5" Grid.Column="1" VerticalAlignment="Center" Margin="0,0,10,0"/>
+        <Label x:Name="MaxBustZLabel"  Content="Maximum Bust Z Multiplier:" Grid.Row="5" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10,0,0,0"></Label>
+        <TextBox x:Name="MaxBustZ" Grid.Row="5" Grid.Column="3" VerticalAlignment="Center" Margin="0,0,10,0"/>
+        
+        <Button Grid.Row="7" Grid.Column="2" Grid.ColumnSpan="2" Content="Save" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0" Width="200" x:Name="SaveButton" Click="SaveButton_Click"></Button>
+        <Button Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2" Content="Cancel" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0" Width="200" x:Name="CancelButton" Click="CancelButton_Click"></Button>
+    </Grid>
+</Window>

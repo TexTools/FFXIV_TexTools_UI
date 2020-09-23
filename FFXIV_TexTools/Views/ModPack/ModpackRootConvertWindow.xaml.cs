@@ -114,6 +114,10 @@ namespace FFXIV_TexTools.Views
 
             var txt = root.Info.GetBaseFileName(true);
             txt = txt.Replace('_', ' ');
+            if (items.Count > 0)
+            {
+                txt += " - " + items[0];
+            }
             gBox.Header = txt;
             gBox.Margin = new Thickness(10);
 
@@ -168,6 +172,7 @@ namespace FFXIV_TexTools.Views
             srcCb.SelectedItem = selected.SourceItem;
             srcCb.Margin = new Thickness(5, 0, 5, 0);
             srcCb.IsEnabled = false;
+            srcCb.ToolTip = "The original item(s) this mod applied to.";
 
 
             var dst = new TextBox();
@@ -179,6 +184,7 @@ namespace FFXIV_TexTools.Views
             dst.IsReadOnly = true;
             dst.Margin = new Thickness(5, 0, 5, 0);
             dst.IsEnabled = false;
+            dst.ToolTip = "The new item(s) this mod will apply to instead.";
 
             var lb = new Label();
             g.Children.Add(lb);
@@ -194,12 +200,22 @@ namespace FFXIV_TexTools.Views
             btn.SetValue(Grid.RowProperty, 1);
             btn.SetValue(Grid.ColumnProperty, 3);
             btn.Margin = new Thickness(5,0,5,0);
-            btn.Content = "Select Item";
+            btn.Content = "Choose New Item";
             btn.IsEnabled = false;
+
+            var btn2 = new Button();
+            g.Children.Add(btn2);
+            btn2.VerticalAlignment = VerticalAlignment.Center;
+            btn2.SetValue(Grid.RowProperty, 0);
+            btn2.SetValue(Grid.ColumnProperty, 3);
+            btn2.Margin = new Thickness(5, 0, 5, 0);
+            btn2.Content = "Show Affected Items";
+            btn2.IsEnabled = true;
 
             variantCheckbox.Checked += VariantBox_Checked;
             variantCheckbox.Unchecked += VariantBox_Checked;
             btn.Click += ItemSearch_Click;
+            btn2.Click += AffectedItems_Click;
             srcCb.SelectionChanged += SrcCb_SelectionChanged;
             destinationCheckbox.Checked += DestinationCheckbox_Checked;
             destinationCheckbox.Unchecked += DestinationCheckbox_Checked;
@@ -208,6 +224,33 @@ namespace FFXIV_TexTools.Views
 
 
             return top;
+        }
+
+        private async void AffectedItems_Click(object sender, RoutedEventArgs e)
+        {
+            var root = ((XivDependencyRoot)((Button)e.Source).DataContext);
+            if (root == null) return;
+
+            var destRoot = Results[root].Root;
+
+            var items = new List<IItemModel>();
+            var ui = UiElements[root];
+
+            if (ui.EnabledCheckBox.IsChecked == true)
+            {
+                items = await destRoot.GetAllItems();
+            } else
+            {
+                items = await root.GetAllItems();
+            }
+
+
+            var strings = items.Select(x => x.Name).ToList();
+
+            var wind = new AffectedFilesView(strings, "Affected Items") { Owner = this };
+            wind.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            wind.Show();
+
         }
 
         private void DestinationCheckbox_Checked(object sender, RoutedEventArgs e)
@@ -343,7 +386,8 @@ namespace FFXIV_TexTools.Views
             var mw = MainWindow.GetMainWindow();
             mw.Invoke(() =>
             {
-                var window = new ModpackRootConvertWindow(indexFiles, modlist);
+                var window = new ModpackRootConvertWindow(indexFiles, modlist) { Owner = mw };
+                window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
                 var anyRoots = window.Init(files);
 
                 if(!anyRoots)

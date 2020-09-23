@@ -371,6 +371,12 @@
     <Compile Include="Views\Metadata\MetadataView.xaml.cs">
       <DependentUpon>MetadataView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Metadata\RaceGenderScalingEditor.xaml.cs">
+      <DependentUpon>RaceGenderScalingEditor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Metadata\RacialSettingsEditor.xaml.cs">
+      <DependentUpon>RacialSettingsEditor.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Metadata\SkeletonControl.xaml.cs">
       <DependentUpon>SkeletonControl.xaml</DependentUpon>
     </Compile>
@@ -577,6 +583,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Metadata\MetadataView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Metadata\RaceGenderScalingEditor.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Metadata\RacialSettingsEditor.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

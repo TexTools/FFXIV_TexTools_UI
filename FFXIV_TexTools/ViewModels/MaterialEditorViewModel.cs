@@ -1,6 +1,7 @@
 ﻿using AutoUpdaterDotNET;
 using FFXIV_TexTools.Helpers;
 using FFXIV_TexTools.Resources;
+using FFXIV_TexTools.Views;
 using FFXIV_TexTools.Views.Textures;
 using HelixToolkit.Wpf.SharpDX;
 using System;
@@ -60,6 +61,33 @@ namespace FFXIV_TexTools.ViewModels
         public MaterialEditorViewModel(MaterialEditorView view)
         {
             _view = view;
+            _view.RawValuesButton.Click += RawValuesButton_Click;
+        }
+
+        private void RawValuesButton_Click(object sender, RoutedEventArgs e)
+        {
+            if(_material == null)
+            {
+                return; 
+            }
+
+            var values = _material.ShaderParameterList.Select( x=> { 
+                var ret = x.ParameterID.ToString() + " { "; 
+
+                foreach(var val in x.Args)
+                {
+                    ret += val.ToString("0.000") + ", ";
+                }
+
+                ret = ret.Substring(0, ret.Length - 2);
+                ret += " }";
+
+                return ret;
+            }).ToList();
+
+            var wind = new AffectedFilesView(values, "Raw Shader Parameters") { Owner = _view };
+            wind.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            wind.Show();
         }
 
         public async Task<bool> SetMaterial(XivMtrl material, IItemModel item, MaterialEditorMode mode)
