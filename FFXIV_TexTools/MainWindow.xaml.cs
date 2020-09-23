@@ -1349,7 +1349,12 @@ namespace FFXIV_TexTools
                 }
                 catch(Exception ex)
                 {
-                    var msg = UIMessages.StartOverErrorMessage + "\n\nError:" + ex.Message;
+                    while(ex.InnerException != null)
+                    {
+                        ex = ex.InnerException;
+                    }
+
+                    var msg = UIMessages.StartOverErrorMessage + "\n\nError: " + ex.Message;
                     FlexibleMessageBox.Show(msg,
                         UIMessages.StartOverErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     await UnlockUi();
