@@ -30,6 +30,9 @@ git push --tags
 echo Creating MASTER update %patchver% for UI Repo...
 pause
 cd ../../
+git checkout develop
+git add ./lib/*
+git commit -m "Update Framework Reference to Update %patchver%"
 git checkout master
 git merge develop --no-ff --no-commit
 git commit -m "Update %patchver%"

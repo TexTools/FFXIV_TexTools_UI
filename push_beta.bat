@@ -30,6 +30,9 @@ git push --tags
 echo Creating BETA update %patchver% for UI Repo...
 pause
 cd ../../
+git checkout develop
+git add ./lib/*
+git commit -m "Update Framework Reference to Beta %patchver%"
 git checkout beta
 git merge develop --no-ff --no-commit
 git commit -m "Beta %patchver%"

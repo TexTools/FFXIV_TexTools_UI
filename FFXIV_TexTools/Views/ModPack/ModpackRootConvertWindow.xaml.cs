@@ -1,5 +1,6 @@
 ﻿using FFXIV_TexTools.Resources;
 using FFXIV_TexTools.Views.Controls;
+using MahApps.Metro;
 using MahApps.Metro.Controls;
 using SharpDX;
 using System;
@@ -44,6 +45,12 @@ namespace FFXIV_TexTools.Views
 
         public ModpackRootConvertWindow(Dictionary<XivDataFile, IndexFile> indexFiles, ModList modList)
         {
+            var appStyle = ThemeManager.DetectAppStyle(Application.Current);
+            var theme = ((AppTheme)appStyle.Item1);
+            if (theme.Name.Equals("BaseDark"))
+            {
+            }
+
             InitializeComponent();
 
             _indexFiles = indexFiles;

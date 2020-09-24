@@ -16,8 +16,8 @@
         <Grid.ColumnDefinitions>
             
         </Grid.ColumnDefinitions>
-        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="18" FontWeight="Bold">Choose Destination Items</TextBlock>
-        <TextBlock VerticalAlignment="Center" Grid.Row="1" HorizontalAlignment="Center" FontStyle="Italic">You may choose new items for this modpack to apply to, if desired.  Press [Continue] when done.</TextBlock>
+        <Label VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="18" FontWeight="Bold">Choose Destination Items</Label>
+        <Label VerticalAlignment="Center" Grid.Row="1" HorizontalAlignment="Center" FontStyle="Italic">You may choose new items for this modpack to apply to, if desired.  Press [Continue] when done.</Label>
         <ScrollViewer Grid.Row="2">
             <StackPanel x:Name="PrimaryStackPanel"/>
         </ScrollViewer>

@@ -25,7 +25,7 @@
             <ColumnDefinition></ColumnDefinition>
             <ColumnDefinition></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <TextBlock x:Name="TitleBox" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold" Grid.ColumnSpan="4" FontSize="14">Racial Settings: Miqo'te - Seeker - Female</TextBlock>
+        <Label x:Name="TitleBox" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold" Grid.ColumnSpan="4" FontSize="14">Racial Settings: Miqo'te - Seeker - Female</Label>
 
         <Label Content="Minimum Height Multiplier:" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10,0,0,0"></Label>
         <TextBox x:Name="MinHeightBox" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Margin="0,0,10,0"/>

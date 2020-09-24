@@ -199,6 +199,11 @@ namespace FFXIV_TexTools
                     Application.Current.Shutdown();
                 }
                 return;
+            } else
+            {
+                // No updates needed? We can clear out the update path then.
+                var updateDir = Path.Combine(Environment.CurrentDirectory, "update");
+                Directory.Delete(updateDir, true);
             }
 
             CheckForSettingsUpdate();
@@ -656,6 +661,9 @@ namespace FFXIV_TexTools
         public static void CheckForUpdates()
         {
             AutoUpdater.Synchronous = true;
+            var updateDir = Path.Combine(Environment.CurrentDirectory, "update");
+            Directory.CreateDirectory(updateDir);
+            AutoUpdater.DownloadPath = updateDir;
             try
             {
                 if (IsBetaVersion)
@@ -1473,6 +1481,7 @@ namespace FFXIV_TexTools
             if (result != System.Windows.Forms.DialogResult.OK) return;
 
             await LockUi("Downloading Backups");
+            string localPath = null;
             try
             {
                 await Task.Run(async () =>
@@ -1482,7 +1491,7 @@ namespace FFXIV_TexTools
                     Directory.CreateDirectory(tempDir);
 
                     _lockProgress.Report("Downloading Indexes...");
-                    var localPath = Path.GetTempFileName();
+                    localPath = Path.GetTempFileName();
                     using (var client = new WebClient())
                     {
                         client.DownloadFile(url, localPath);
@@ -1546,6 +1555,10 @@ namespace FFXIV_TexTools
             }
             finally
             {
+                if(localPath != null)
+                {
+                    File.Delete(localPath);
+                }
                 await UnlockUi();
             }
         }

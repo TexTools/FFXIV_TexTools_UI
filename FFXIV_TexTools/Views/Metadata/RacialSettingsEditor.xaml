@@ -18,8 +18,8 @@
 
         </Grid.ColumnDefinitions>
 
-        <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="16" FontWeight="Bold">Racial Settings Editor</TextBlock>
-        <TextBlock Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" FontStyle="Italic" >Select a Race/Gender to customize:.</TextBlock>
+        <Label Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="16" FontWeight="Bold">Racial Settings Editor</Label>
+        <Label Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" FontStyle="Italic" >Select a Race/Gender to customize:.</Label>
 
         <Grid Grid.Row="2" HorizontalAlignment="Center">
             <Grid.RowDefinitions>

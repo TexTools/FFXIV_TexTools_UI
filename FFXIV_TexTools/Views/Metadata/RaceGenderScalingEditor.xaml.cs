@@ -43,7 +43,7 @@ namespace FFXIV_TexTools.Views.Metadata
             _data = await CMP.GetScalingParameter(Race, Gender);
 
             Title = "Racial Settings - " + Race.GetDisplayName() + " - " + Gender.ToString();
-            TitleBox.Text = "Racial Settings: " + Race.GetDisplayName() + " - " + Gender.ToString();
+            TitleBox.Content = "Racial Settings: " + Race.GetDisplayName() + " - " + Gender.ToString();
 
             MinHeightBox.Text = _data.MinSize.ToString();
             MaxHeightBox.Text = _data.MaxSize.ToString();
