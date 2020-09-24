@@ -54,5 +54,6 @@
         
         <Button Grid.Row="7" Grid.Column="2" Grid.ColumnSpan="2" Content="Save" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0" Width="200" x:Name="SaveButton" Click="SaveButton_Click"></Button>
         <Button Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2" Content="Cancel" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0" Width="200" x:Name="CancelButton" Click="CancelButton_Click"></Button>
+        <Button Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="4" Content="Restore Defaults" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,0" Width="200" x:Name="ResetButton" Click="ResetButton_Click"></Button>
     </Grid>
 </Window>

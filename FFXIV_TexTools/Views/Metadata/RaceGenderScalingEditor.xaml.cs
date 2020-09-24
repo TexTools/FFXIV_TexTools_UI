@@ -109,17 +109,56 @@ namespace FFXIV_TexTools.Views.Metadata
                 return;
             }
 
-            SaveButton.IsEnabled = false;
-            SaveButton.Content = "Working...";
+            try
+            {
+                ResetButton.IsEnabled = false;
+                CancelButton.IsEnabled = false;
+                SaveButton.IsEnabled = false;
+                SaveButton.Content = "Working...";
 
-            await CMP.SaveScalingParameter(_data, XivStrings.TexTools);
+                await CMP.SaveScalingParameter(_data, XivStrings.TexTools);
 
-            this.Close();
+                this.Close();
+            } catch(Exception ex)
+            {
+                FlexibleMessageBox.Show("Cannot save changes:\n\nError: " + ex.Message, "Save Scaling Error", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
+
+                ResetButton.IsEnabled = true;
+                CancelButton.IsEnabled = true;
+                SaveButton.IsEnabled = true;
+                SaveButton.Content = "Save";
+                return;
+            }
         }
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
             Close();
+        }
+
+        private async void ResetButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                ResetButton.IsEnabled = false;
+                CancelButton.IsEnabled = false;
+                SaveButton.IsEnabled = false;
+                ResetButton.Content = "Working...";
+
+                await CMP.DisableRgspMod(Race, Gender);
+
+                this.Close();
+            }
+            catch (Exception ex)
+            {
+                FlexibleMessageBox.Show("Cannot save changes:\n\nError: " + ex.Message, "Save Scaling Error", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
+
+                ResetButton.IsEnabled = true;
+                CancelButton.IsEnabled = true;
+                SaveButton.IsEnabled = true;
+                ResetButton.Content = "Restore Defaults";
+                return;
+            }
         }
     }
 }
