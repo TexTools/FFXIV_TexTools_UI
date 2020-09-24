@@ -41,12 +41,12 @@ git push --tags
 echo Returning to Develop branch...
 cd ./lib/xivmoddingframework
 git checkout develop
-git merge beta
+rem git merge beta
 git push
 
 cd ../../
 git checkout develop
-git merge beta
+rem git merge beta
 git push
 
 pause
