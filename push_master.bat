@@ -32,7 +32,6 @@ pause
 cd ../../
 git checkout master
 git merge develop --no-ff --no-commit
-git add lib/*
 git commit -m "Update %patchver%"
 git tag -a %patchver% -m "Update %patchver%"
 git push
