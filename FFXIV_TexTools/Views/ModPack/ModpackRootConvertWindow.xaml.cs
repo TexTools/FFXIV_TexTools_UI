@@ -386,8 +386,25 @@ namespace FFXIV_TexTools.Views
             var mw = MainWindow.GetMainWindow();
             mw.Invoke(() =>
             {
-                var window = new ModpackRootConvertWindow(indexFiles, modlist) { Owner = mw };
-                window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                ModpackRootConvertWindow window;
+                try
+                {
+
+                    if (Application.Current.Windows.Cast<Window>().Any(x => x == mw))
+                    {
+                        window = new ModpackRootConvertWindow(indexFiles, modlist) { Owner = mw };
+                        window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                    } else
+                    {
+                        window = new ModpackRootConvertWindow(indexFiles, modlist);
+                        window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                    }
+                } catch(Exception ex)
+                {
+                    window = new ModpackRootConvertWindow(indexFiles, modlist);
+                    window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                }
+
                 var anyRoots = window.Init(files);
 
                 if(!anyRoots)

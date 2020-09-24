@@ -21,7 +21,7 @@ echo Creating BETA update %patchver% for Framework Repo...
 pause
 cd ./lib/xivmoddingframework
 git checkout beta
-git merge develop --squash
+git merge develop --no-ff --no-commit
 git commit -m "Beta %patchver%"
 git tag -a %patchver% -m "Beta %patchver%"
 git push
@@ -31,7 +31,7 @@ echo Creating BETA update %patchver% for UI Repo...
 pause
 cd ../../
 git checkout beta
-git merge develop --squash
+git merge develop --no-ff --no-commit
 git add lib/*
 git commit -m "Beta %patchver%"
 git tag -a %patchver% -m "Beta %patchver%"
