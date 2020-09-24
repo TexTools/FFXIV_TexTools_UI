@@ -199,6 +199,11 @@ namespace FFXIV_TexTools
                     Application.Current.Shutdown();
                 }
                 return;
+            } else
+            {
+                // No updates needed? We can clear out the update path then.
+                var updateDir = Path.Combine(Environment.CurrentDirectory, "update");
+                Directory.Delete(updateDir, true);
             }
 
             CheckForSettingsUpdate();
@@ -656,6 +661,9 @@ namespace FFXIV_TexTools
         public static void CheckForUpdates()
         {
             AutoUpdater.Synchronous = true;
+            var updateDir = Path.Combine(Environment.CurrentDirectory, "update");
+            Directory.CreateDirectory(updateDir);
+            AutoUpdater.DownloadPath = updateDir;
             try
             {
                 if (IsBetaVersion)
