@@ -314,6 +314,9 @@
     <Compile Include="Views\AutoCompleteTextBox.xaml.cs">
       <DependentUpon>AutoCompleteTextBox.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Controls\ColorsetEditorControl.xaml.cs">
+      <DependentUpon>ColorsetEditorControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Controls\DescribedButton.xaml.cs">
       <DependentUpon>DescribedButton.xaml</DependentUpon>
     </Compile>
@@ -507,6 +510,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\AutoCompleteTextBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Controls\ColorsetEditorControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
