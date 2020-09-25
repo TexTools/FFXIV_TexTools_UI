@@ -1,0 +1,27 @@
+﻿<Window x:Class="FFXIV_TexTools.Views.ModpackRootConvertWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FFXIV_TexTools.Views"
+        mc:Ignorable="d"
+        Title="Import Item Selection" Height="600" Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"></RowDefinition>
+            <RowDefinition Height="30"></RowDefinition>
+            <RowDefinition Height="1*"></RowDefinition>
+            <RowDefinition Height="40"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            
+        </Grid.ColumnDefinitions>
+        <Label VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="18" FontWeight="Bold">Choose Destination Items</Label>
+        <Label VerticalAlignment="Center" Grid.Row="1" HorizontalAlignment="Center" FontStyle="Italic">You may choose new items for this modpack to apply to, if desired.  Press [Continue] when done.</Label>
+        <ScrollViewer Grid.Row="2">
+            <StackPanel x:Name="PrimaryStackPanel"/>
+        </ScrollViewer>
+        <Button x:Name="CancelButton" Grid.Row="3" Content="Cancel" HorizontalAlignment="Left" VerticalAlignment="Center" Width="200" Margin="10,0,0,0" Click="CancelButton_Click"></Button>
+        <Button x:Name="ContinueButton" Grid.Row="3" Content="Continue" HorizontalAlignment="Right" VerticalAlignment="Center" Width="200" Margin="0,0,10,0" Click="ContinueButton_Click"></Button>
+    </Grid>
+</Window>

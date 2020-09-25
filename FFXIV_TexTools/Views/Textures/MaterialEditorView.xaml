@@ -53,6 +53,9 @@
         <Label Content="Preset:" Margin="0,10,10,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14" Height="29" RenderTransformOrigin="0.164,0.793" HorizontalAlignment="Right" Width="86" Grid.Row="1" HorizontalContentAlignment="Right" Grid.Column="1" Grid.ColumnSpan="2"/>
         <Label Content="Colorset:" Margin="0,10,10,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14" Height="29" RenderTransformOrigin="0.164,0.793" HorizontalAlignment="Right" Width="86" Grid.Row="2" HorizontalContentAlignment="Right" Grid.Column="1" Grid.ColumnSpan="2"/>
         <ComboBox x:Name="ColorsetComboBox" Margin="10,13,136,0" VerticalAlignment="Top" Height="26" Grid.Column="3" Grid.Row="2" />
+
+        <Button x:Name="RawValuesButton"  Content="View Raw Values" Grid.Row="3" Grid.Column="3" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" Width="209"></Button>
+
         <Button x:Name="CopyMaterialButton" Content="Copy Material" HorizontalAlignment="Left" Margin="243,12,0,0" VerticalAlignment="Top" Width="102" Grid.Column="3" Grid.Row="1" Click="CopyMaterialButton_Click" Height="27"/>
         <Button x:Name="PasteMaterialButton" Content="Paste Material" HorizontalAlignment="Left" Margin="243,12,0,0" Grid.Row="2" VerticalAlignment="Top" Width="102" Grid.Column="3" Click="PasteMaterialButton_Click" Height="27"/>
         <Button x:Name="DisableButton" Content="Disable/Delete" Margin="52,0,0,10" Grid.Row="8" FontSize="12" HorizontalAlignment="Left" Width="150" Height="30" VerticalAlignment="Bottom" Click="DisableButton_Click" Grid.Column="1"/>

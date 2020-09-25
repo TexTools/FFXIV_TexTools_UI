@@ -68,12 +68,11 @@ namespace FFXIV_TexTools
         private FullModelView _fmv;
         public readonly System.Windows.Forms.IWin32Window Win32Window;
 
-        public static readonly Version BetaVersion = null;
         public static readonly string BetaSuffix = null;
         public static bool IsBetaVersion {
             get
             {
-                return BetaVersion != null;
+                return BetaSuffix != null;
             }
         }
 
@@ -200,6 +199,11 @@ namespace FFXIV_TexTools
                     Application.Current.Shutdown();
                 }
                 return;
+            } else
+            {
+                // No updates needed? We can clear out the update path then.
+                var updateDir = Path.Combine(Environment.CurrentDirectory, "update");
+                Directory.Delete(updateDir, true);
             }
 
             CheckForSettingsUpdate();
@@ -657,9 +661,12 @@ namespace FFXIV_TexTools
         public static void CheckForUpdates()
         {
             AutoUpdater.Synchronous = true;
+            var updateDir = Path.Combine(Environment.CurrentDirectory, "update");
+            Directory.CreateDirectory(updateDir);
+            AutoUpdater.DownloadPath = updateDir;
             try
             {
-                if (BetaVersion != null)
+                if (IsBetaVersion)
                 {
                     AutoUpdater.Start(WebUrl.TexTools_Beta_Update_Url);
                 } else
@@ -1350,7 +1357,12 @@ namespace FFXIV_TexTools
                 }
                 catch(Exception ex)
                 {
-                    var msg = UIMessages.StartOverErrorMessage + "\n\nError:" + ex.Message;
+                    while(ex.InnerException != null)
+                    {
+                        ex = ex.InnerException;
+                    }
+
+                    var msg = UIMessages.StartOverErrorMessage + "\n\nError: " + ex.Message;
                     FlexibleMessageBox.Show(msg,
                         UIMessages.StartOverErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     await UnlockUi();
@@ -1413,7 +1425,7 @@ namespace FFXIV_TexTools
 
             if (IsBetaVersion)
             {
-                fileVersion = BetaVersion.ToString() + " " + BetaSuffix;
+                fileVersion = fileVersion + " " + BetaSuffix;
             }
 
             var tmps = fileVersion.Split('.');
@@ -1469,6 +1481,7 @@ namespace FFXIV_TexTools
             if (result != System.Windows.Forms.DialogResult.OK) return;
 
             await LockUi("Downloading Backups");
+            string localPath = null;
             try
             {
                 await Task.Run(async () =>
@@ -1478,7 +1491,7 @@ namespace FFXIV_TexTools
                     Directory.CreateDirectory(tempDir);
 
                     _lockProgress.Report("Downloading Indexes...");
-                    var localPath = Path.GetTempFileName();
+                    localPath = Path.GetTempFileName();
                     using (var client = new WebClient())
                     {
                         client.DownloadFile(url, localPath);
@@ -1542,6 +1555,10 @@ namespace FFXIV_TexTools
             }
             finally
             {
+                if(localPath != null)
+                {
+                    File.Delete(localPath);
+                }
                 await UnlockUi();
             }
         }
@@ -1654,6 +1671,22 @@ namespace FFXIV_TexTools
             {
                 await UnlockUi();
             }
+        }
+
+        private void Menu_CopyModel_Click(object sender, RoutedEventArgs e)
+        {
+            var wind = new CopyModelDialog() { Owner = this };
+            wind.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            wind.Show();
+        }
+
+
+
+        private void Menu_RacialScaling_Click(object sender, RoutedEventArgs e)
+        {
+            var wind = new RacialSettingsEditor() { Owner = this };
+            wind.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            wind.Show();
         }
     }
 }

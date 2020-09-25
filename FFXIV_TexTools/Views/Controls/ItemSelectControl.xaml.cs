@@ -19,6 +19,7 @@ using xivModdingFramework.Models.FileTypes;
 using System.Windows;
 using FFXIV_TexTools.Helpers;
 using xivModdingFramework.Items;
+using System.Runtime.CompilerServices;
 
 namespace FFXIV_TexTools.Views.Controls
 {
@@ -630,6 +631,10 @@ namespace FFXIV_TexTools.Views.Controls
         {
             ClearSelection(SetElements);
             ClearSelection(CategoryElements);
+        }
+        public void DoFilter()
+        {
+            Search(this, null);
         }
         private void ClearSelection(ObservableCollection<ItemTreeElement> elements = null)
 

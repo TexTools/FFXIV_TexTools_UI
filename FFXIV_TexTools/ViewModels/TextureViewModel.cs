@@ -720,6 +720,12 @@ namespace FFXIV_TexTools.ViewModels
                     }
 
                     _xivMtrl = await _mtrl.GetMtrlData(SelectedMaterial);
+
+                    if(_xivMtrl == null)
+                    {
+                        OnLoadingComplete();
+                        return;
+                    }
                 }
                 catch (Exception ex)
                 {

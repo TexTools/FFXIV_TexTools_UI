@@ -242,71 +242,81 @@ namespace FFXIV_TexTools.Views
         private async void ModPackWizard_CreateModPack(object sender, System.Windows.RoutedEventArgs e)
         {
             _progressController = await this.ShowProgressAsync(UIMessages.ModPackCreationMessage, UIMessages.PleaseStandByMessage);
-
-            var wizPages = modPackWizard.Items;
-
-            var modPackData = new ModPackData
+            try
             {
-                Name = ModPackName.Text,
-                Author = ModPackAuthor.Text,
-                Version = VersionNumber,
-                Description = ModPackDescription.Text,
-                Url = Url,
-                ModPackPages = new List<ModPackData.ModPackPage>()
-            };
 
-            var pageIndex = 0;
-            foreach (var wizPageItem in wizPages)
-            {
-                var wizPage = wizPageItem as WizardPage;
+                var wizPages = modPackWizard.Items;
 
-                if (wizPage.Content is WizardModPackControl control)
+                var modPackData = new ModPackData
                 {
-                    if (control.ModGroupList.Count > 0)
+                    Name = ModPackName.Text,
+                    Author = ModPackAuthor.Text,
+                    Version = VersionNumber,
+                    Description = ModPackDescription.Text,
+                    Url = Url,
+                    ModPackPages = new List<ModPackData.ModPackPage>()
+                };
+
+                var pageIndex = 0;
+                foreach (var wizPageItem in wizPages)
+                {
+                    var wizPage = wizPageItem as WizardPage;
+
+                    if (wizPage.Content is WizardModPackControl control)
                     {
-                        modPackData.ModPackPages.Add(new ModPackData.ModPackPage
+                        if (control.ModGroupList.Count > 0)
                         {
-                            PageIndex = pageIndex,
-                            ModGroups = control.ModGroupList
-                        });
+                            modPackData.ModPackPages.Add(new ModPackData.ModPackPage
+                            {
+                                PageIndex = pageIndex,
+                                ModGroups = control.ModGroupList
+                            });
+                        }
                     }
+                    pageIndex++;
                 }
-                pageIndex++;
-            }
 
-            if (modPackData.ModPackPages.Count > 0)
-            {
-                var progressIndicator = new Progress<double>(ReportProgress);
-                var texToolsModPack = new TTMP(new DirectoryInfo(Properties.Settings.Default.ModPack_Directory), XivStrings.TexTools);
-
-                var modPackPath = Path.Combine(Properties.Settings.Default.ModPack_Directory, $"{modPackData.Name}.ttmp2");
-                var overwriteModpack = false;
-
-                if (File.Exists(modPackPath))
+                if (modPackData.ModPackPages.Count > 0)
                 {
-                    var overwriteDialogResult = FlexibleMessageBox.Show(new Wpf32Window(this), UIMessages.ModPackOverwriteMessage,
-                                                UIMessages.OverwriteTitle, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
-                    if (overwriteDialogResult == System.Windows.Forms.DialogResult.Yes)
+                    var progressIndicator = new Progress<double>(ReportProgress);
+                    var texToolsModPack = new TTMP(new DirectoryInfo(Properties.Settings.Default.ModPack_Directory), XivStrings.TexTools);
+
+                    var modPackPath = Path.Combine(Properties.Settings.Default.ModPack_Directory, $"{modPackData.Name}.ttmp2");
+                    var overwriteModpack = false;
+
+                    if (File.Exists(modPackPath))
                     {
-                        overwriteModpack = true;
+                        var overwriteDialogResult = FlexibleMessageBox.Show(new Wpf32Window(this), UIMessages.ModPackOverwriteMessage,
+                                                    UIMessages.OverwriteTitle, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
+                        if (overwriteDialogResult == System.Windows.Forms.DialogResult.Yes)
+                        {
+                            overwriteModpack = true;
+                        }
+                        else if (overwriteDialogResult == System.Windows.Forms.DialogResult.Cancel)
+                        {
+                            await _progressController.CloseAsync();
+                            return;
+                        }
                     }
-                    else if (overwriteDialogResult == System.Windows.Forms.DialogResult.Cancel)
-                    {
-                        await _progressController.CloseAsync();
-                        return;
-                    }
+
+                    await texToolsModPack.CreateWizardModPack(modPackData, progressIndicator, overwriteModpack);
+
+                    ModPackFileName = $"{ModPackName.Text}";
                 }
-
-                await texToolsModPack.CreateWizardModPack(modPackData, progressIndicator, overwriteModpack);
-
-                ModPackFileName = $"{ModPackName.Text}";
+                else
+                {
+                    ModPackFileName = "NoData";
+                }
             }
-            else
+            catch(Exception ex)
             {
-                ModPackFileName = "NoData";
+                FlexibleMessageBox.Show("Failed to create modpack.\n\nError: " + ex.Message, "Modpack Creation Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
             }
-
-            await _progressController.CloseAsync();
+            finally
+            {
+                await _progressController.CloseAsync();
+            }
 
             DialogResult = true;
         }
@@ -364,7 +374,8 @@ namespace FFXIV_TexTools.Views
                 var tempMPD = Path.GetTempFileName();
                 using (var archive = ZipFile.OpenRead(openFileDialog.FileName))
                 {
-                    using (var zipStream = archive.GetEntry("TTMPD.mpd").Open())
+                    var ttmpd = archive.Entries.First(x => x.FullName.EndsWith(".mpd"));
+                    using (var zipStream = ttmpd.Open())
                     {
                         using (var fileStream = new FileStream(tempMPD, FileMode.OpenOrCreate))
                         {
@@ -372,6 +383,7 @@ namespace FFXIV_TexTools.Views
                         }
                     }
                 }
+
                 this.ModPackAuthor.Text = ttmpData.ModPackJson.Author;
                 this.ModPackName.Text = ttmpData.ModPackJson.Name;
                 this.ModPackVersion.Text= ttmpData.ModPackJson.Version;
@@ -411,19 +423,23 @@ namespace FFXIV_TexTools.Views
                             
                                 using (var zipFile = ZipFile.OpenRead(openFileDialog.FileName))
                                 {
-                                    using (var stream = zipFile.GetEntry(optionJson.ImagePath).Open())
+                                    var entry = zipFile.GetEntry(optionJson.ImagePath);
+                                    if (entry != null)
                                     {
-                                        var tmpImage = Path.GetTempFileName();                                    
-                                        using (var imageStream = File.Open(tmpImage,FileMode.OpenOrCreate))
+                                        using (var stream = entry.Open())
                                         {
-                                            await stream.CopyToAsync(imageStream);
-                                            imageStream.Position = 0;
+                                            var tmpImage = Path.GetTempFileName();
+                                            using (var imageStream = File.Open(tmpImage, FileMode.OpenOrCreate))
+                                            {
+                                                await stream.CopyToAsync(imageStream);
+                                                imageStream.Position = 0;
+                                            }
+                                            var fileNameBak = openFileDialog.FileName;
+                                            openFileDialog.FileName = tmpImage;
+                                            modOption.Image = Image.Load(openFileDialog.FileName);
+                                            modOption.ImageFileName = openFileDialog.FileName;
+                                            openFileDialog.FileName = fileNameBak;
                                         }
-                                        var fileNameBak = openFileDialog.FileName;
-                                        openFileDialog.FileName = tmpImage;
-                                        modOption.Image = Image.Load(openFileDialog.FileName);
-                                        modOption.ImageFileName = openFileDialog.FileName;
-                                        openFileDialog.FileName = fileNameBak;
                                     }
                                 }
                             }
