@@ -369,35 +369,44 @@ namespace FFXIV_TexTools.Controls
         /// <returns></returns>
         public async Task SetMaterial(XivMtrl mtrl, int row = 0)
         {
-            DyeTemplateFile = await STM.GetStainingTemplateFile(false);
-            DyeTemplateCollection.Clear();
+            if (mtrl == null) return;
 
-            DyePreviewIdBox.SelectedValue = -1;
-
-            var keys = DyeTemplateFile.GetKeys();
-            DyeTemplateCollection.Add(new KeyValuePair<ushort, string>(0, "Undyable"));
-            foreach (var key in keys)
+            try
             {
-                DyeTemplateCollection.Add(new KeyValuePair<ushort, string>(key, key.ToString()));
+                DyeTemplateFile = await STM.GetStainingTemplateFile(false);
+                DyeTemplateCollection.Clear();
+
+                DyePreviewIdBox.SelectedValue = -1;
+
+                var keys = DyeTemplateFile.GetKeys();
+                DyeTemplateCollection.Add(new KeyValuePair<ushort, string>(0, "Undyable"));
+                foreach (var key in keys)
+                {
+                    DyeTemplateCollection.Add(new KeyValuePair<ushort, string>(key, key.ToString()));
+                }
+
+                if (CopiedRow == null)
+                {
+                    PasteRowButton.IsEnabled = false;
+                }
+                else
+                {
+                    PasteRowButton.IsEnabled = true;
+                }
+
+
+                _mtrl = mtrl;
+                await _vm.SetMaterial(_mtrl, DyeTemplateFile);
+                for (int i = 0; i < 16; i++)
+                {
+                    await UpdateRowVisual(i);
+                }
+
+                await SetRow(row);
+            } catch(Exception ex)
+            {
+                FlexibleMessageBox.Show("Unable to load material into colorset editor.\n\nError: " + ex.Message, "Colorset Editor Error", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning);
             }
-
-            if(CopiedRow == null)
-            {
-                PasteRowButton.IsEnabled = false;
-            } else
-            {
-                PasteRowButton.IsEnabled = true;
-            }
-
-
-            _mtrl = mtrl;
-            await _vm.SetMaterial(_mtrl, DyeTemplateFile);
-            for (int i = 0; i < 16; i++)
-            {
-                await UpdateRowVisual(i);
-            }
-
-            await SetRow(row);
         }
 
         /// <summary>
