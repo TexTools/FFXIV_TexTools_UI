@@ -42,6 +42,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
@@ -234,6 +235,7 @@ namespace FFXIV_TexTools.ViewModels
 
         public event EventHandler LoadingComplete;
 
+
         public TextureViewModel(TextureView textureView)
         {
             _textureView = textureView;
@@ -246,6 +248,7 @@ namespace FFXIV_TexTools.ViewModels
 
             var mw = MainWindow.GetMainWindow();
             mw.SelectedPrimaryItemValueChanged += Mw_SelectedPrimaryItemValueChanged;
+
         }
 
         /// <summary>
@@ -1092,7 +1095,10 @@ namespace FFXIV_TexTools.ViewModels
             ImageDisplay = null;
             ChannelsEnabled = true;
 
-            if(SelectedMap == null || SelectedMap.Path == null)
+            _textureView.ColorsetEditor.Visibility = Visibility.Collapsed;
+            _textureView.StandardTextureDisplay.Visibility = Visibility.Visible;
+
+            if (SelectedMap == null || SelectedMap.Path == null)
             {
                 return;
             }
@@ -1101,7 +1107,10 @@ namespace FFXIV_TexTools.ViewModels
             var _tex = new Tex(XivCache.GameInfo.GameDirectory);
             var _modding = new Modding(XivCache.GameInfo.GameDirectory);
 
+            // This is intentionally an async/deffered call here.
             LoadParentFileInformation(SelectedMap.Path);
+
+
             try
             {
                 if (SelectedMap.Usage != XivTexType.ColorSet)
@@ -1134,38 +1143,15 @@ namespace FFXIV_TexTools.ViewModels
                 }
                 else
                 {
+                    // Colorset entry.
                     _xivMtrl = await _mtrl.GetMtrlData(_item, SelectedMap.Path);
-                    var floats = Half.ConvertToFloat(_xivMtrl.ColorSetData.ToArray());
+                    await _textureView.ColorsetEditor.SetMaterial(_xivMtrl);
 
-                    var floatArray = Utilities.ToByteArray(floats);
-
-                    _mapData = new MapData
-                    {
-                        MapBytes = floatArray,
-                        Height = 16,
-                        Width = 4,
-                        IsColorSet = true
-                    };
-
-                    _imageEffect = new ColorChannels
-                    {
-                        Channel = new System.Windows.Media.Media3D.Point4D(1.0f, 1.0f, 1.0f, 0.0f)
-                    };
-
-                    SetColorChannelFilter();
-
-                    _textureView.ImageZoombox.CenterContent();
-                    _textureView.ImageZoombox.FitToBounds();
-
-                    PathString = SelectedMap.Path;
-                    TextureFormat = XivTexFormat.A16B16G16R16F.GetTexDisplayName();
-                    TextureDimensions = "4 x 16";
+                    _textureView.ColorsetEditor.Visibility = Visibility.Visible;
+                    _textureView.StandardTextureDisplay.Visibility = Visibility.Collapsed;
                 }
 
                 var mod = await _modding.TryGetModEntry(PathString);
-
-
-
                 if (mod != null && !mod.enabled)
                 {
                     ModStatusToggleEnabled = true;
@@ -2006,6 +1992,8 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         private void ClearAll()
         {
+            _textureView.ColorsetEditor.Visibility = Visibility.Collapsed;
+            _textureView.StandardTextureDisplay.Visibility = Visibility.Visible;
             _hasVfx = false;
             _item = null;
             _uiItem = null;

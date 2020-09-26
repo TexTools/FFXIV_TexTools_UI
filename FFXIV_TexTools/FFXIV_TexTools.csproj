@@ -292,6 +292,7 @@
     </Compile>
     <Compile Include="Textures\ColorChannels.cs" />
     <Compile Include="ViewModels\BaseViewPortViewModel.cs" />
+    <Compile Include="ViewModels\ColorsetEditorViewModel.cs" />
     <Compile Include="ViewModels\CustomizeViewModel.cs" />
     <Compile Include="ViewModels\FullModelViewModel.cs" />
     <Compile Include="ViewModels\FullModelViewport3DViewModel.cs" />
@@ -314,6 +315,9 @@
     <Compile Include="Views\AutoCompleteTextBox.xaml.cs">
       <DependentUpon>AutoCompleteTextBox.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Controls\ColorsetEditorControl.xaml.cs">
+      <DependentUpon>ColorsetEditorControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Controls\DescribedButton.xaml.cs">
       <DependentUpon>DescribedButton.xaml</DependentUpon>
     </Compile>
@@ -328,6 +332,9 @@
     </Compile>
     <Compile Include="Views\Controls\PopupItemSelection.xaml.cs">
       <DependentUpon>PopupItemSelection.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\RawFloatValueDisplay.xaml.cs">
+      <DependentUpon>RawFloatValueDisplay.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\CopyFileDialog.xaml.cs">
       <DependentUpon>CopyFileDialog.xaml</DependentUpon>
@@ -510,6 +517,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\Controls\ColorsetEditorControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\Controls\DescribedButton.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -527,6 +538,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Controls\PopupItemSelection.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Controls\RawFloatValueDisplay.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
