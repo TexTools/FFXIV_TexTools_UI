@@ -292,6 +292,7 @@
     </Compile>
     <Compile Include="Textures\ColorChannels.cs" />
     <Compile Include="ViewModels\BaseViewPortViewModel.cs" />
+    <Compile Include="ViewModels\ColorsetEditorViewModel.cs" />
     <Compile Include="ViewModels\CustomizeViewModel.cs" />
     <Compile Include="ViewModels\FullModelViewModel.cs" />
     <Compile Include="ViewModels\FullModelViewport3DViewModel.cs" />

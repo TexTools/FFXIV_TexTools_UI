@@ -1,5 +1,7 @@
 ﻿using FFXIV_TexTools.Helpers;
 using FFXIV_TexTools.Resources;
+using FFXIV_TexTools.ViewModels;
+using HelixToolkit.Wpf.SharpDX;
 using Newtonsoft.Json;
 using SharpDX;
 using System;
@@ -7,6 +9,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -32,7 +35,9 @@ namespace FFXIV_TexTools.Controls
     {
         List<Image> ColorSetRowImages = new List<Image>();
         StainingTemplateFile DyeTemplateFile;
-        int SelectedRow = 0;
+        int RowId = 0;
+
+        ColorsetEditorViewModel _vm;
 
         XivMtrl _mtrl;
 
@@ -44,6 +49,7 @@ namespace FFXIV_TexTools.Controls
 
         public ColorsetEditorControl()
         {
+            this.DataContext = _vm = new ColorsetEditorViewModel(this);
             InitializeComponent();
 
             for (int i = 0; i < 16; i++)
@@ -53,7 +59,13 @@ namespace FFXIV_TexTools.Controls
                 elem.Width = 192;
                 elem.DataContext = i;
                 ColorSetRowImages.Add(elem);
-                ColorSetRowsPanel.Children.Add(elem);
+
+                var border = new Border();
+                border.Child = elem;
+
+                border.BorderThickness = new Thickness(0);
+
+                ColorSetRowsPanel.Children.Add(border);
 
 
                 elem.MouseLeftButtonDown += ColorsetRow_Clicked;
@@ -101,27 +113,38 @@ namespace FFXIV_TexTools.Controls
             SetRow(rowNumber);
         }
 
-        private void SetRow(int rowNumber) {
-
-            if (_mtrl == null) return;
-
-            _LOADING = true;
-
-            // Triggered when the user clicks on a Colorset row.
-            DetailsGroupBox.Header = "Material - Colorset Row Editor - Row #" + (rowNumber + 1).ToString();
-            SelectedRow = rowNumber;
-            var offset = rowNumber * 16;
-            RowData = new List<Half[]>(4);
-            for(int i = 0; i < 4; i++)
+        private List<Half[]> GetRowData(int row)
+        {
+            var offset = row * 16;
+            var data = new List<Half[]>(4);
+            for (int i = 0; i < 4; i++)
             {
                 var arr = new Half[4];
-                RowData.Add(arr);
-                for(int z = 0; z < 4; z++)
+                data.Add(arr);
+                for (int z = 0; z < 4; z++)
                 {
                     arr[z] = _mtrl.ColorSetData[offset];
                     offset++;
                 }
             }
+            return data;
+        }
+
+        private async Task SetRow(int rowNumber) {
+
+            if (_mtrl == null) return;
+
+            _LOADING = true;
+
+            if (_mtrl.ColorSetDyeData == null || _mtrl.ColorSetDyeData.Length != 32)
+            {
+                _mtrl.ColorSetDyeData = new byte[32];
+            }
+
+            // Triggered when the user clicks on a Colorset row.
+            DetailsGroupBox.Header = "Material - Colorset Row Editor - Row #" + (rowNumber + 1).ToString();
+            RowId = rowNumber;
+            RowData = GetRowData(RowId);
 
             var r = (byte)Math.Round(RowData[0][0] * 255);
             var g = (byte)Math.Round(RowData[0][1] * 255);
@@ -167,10 +190,28 @@ namespace FFXIV_TexTools.Controls
             DyeTileBox.IsChecked = (dyeData & 0x08) > 0;
             DyeGlossBox.IsChecked = (dyeData & 0x10) > 0;
 
+            foreach(var imgElem in ColorSetRowImages)
+            {
+
+                var border = (Border)imgElem.Parent;
+                border.BorderThickness = new Thickness(0);
+                border.BorderBrush = Brushes.Transparent;
+            }
+
+            var elem = (Border)ColorSetRowImages[RowId].Parent;
+            elem.BorderThickness = new Thickness(2);
+            elem.BorderBrush = Brushes.Black;
 
             UpdateDyeStatus();
 
+            await UpdateViewport();
+
             _LOADING = false;
+        }
+
+        private async Task UpdateViewport()
+        {
+            await _vm.SetColorsetRow(RowId);
         }
 
         public async Task UpdateRowVisual(int rowId)
@@ -227,13 +268,13 @@ namespace FFXIV_TexTools.Controls
 
             ColorSetRowImages[rowId].Source = BitmapSource.Create(multiplier * 4, multiplier, 1, 1, PixelFormats.Bgra32, null, npixels, 16 * multiplier);
 
-            if(SelectedRow == rowId)
+            if(RowId == rowId)
             {
                 SelectedColorsetRowImage.Source = ColorSetRowImages[rowId].Source;
             }
         }
 
-        public async Task SetMaterial(XivMtrl mtrl)
+        public async Task SetMaterial(XivMtrl mtrl, int row = 0)
         {
             DyeTemplateFile = await STM.GetStainingTemplateFile(false);
             DyeTemplateCollection.Clear();
@@ -245,6 +286,13 @@ namespace FFXIV_TexTools.Controls
                 DyeTemplateCollection.Add(new KeyValuePair<ushort, string>(key, key.ToString()));
             }
 
+            if(CopiedRow == null)
+            {
+                PasteRowButton.IsEnabled = false;
+            } else
+            {
+                PasteRowButton.IsEnabled = true;
+            }
 
 
             _mtrl = mtrl;
@@ -252,7 +300,9 @@ namespace FFXIV_TexTools.Controls
             {
                 await UpdateRowVisual(i);
             }
-            SetRow(0);
+
+            await _vm.SetMaterial(_mtrl);
+            await SetRow(row);
         }
 
         private async void SaveButton_Click(object sender, RoutedEventArgs e)
@@ -387,7 +437,7 @@ namespace FFXIV_TexTools.Controls
 
                 fl = 0.0f;
                 float.TryParse(TileIdBox.Text, out fl);
-                RowData[2][3] = new Half(fl);
+                RowData[2][3] = new Half((float)((Math.Floor(fl) + 0.5f)/ 64.0f));
 
                 fl = 16.0f;
                 float.TryParse(TileCountXBox.Text, out fl);
@@ -434,13 +484,13 @@ namespace FFXIV_TexTools.Controls
                     _mtrl.ColorSetDyeData = new byte[32];
                 }
 
-                var offset = SelectedRow * 2;
+                var offset = RowId * 2;
 
                 var bytes = BitConverter.GetBytes(modifier);
 
                 Array.Copy(bytes, 0, _mtrl.ColorSetDyeData, offset, 2);
 
-                offset = SelectedRow * 16;
+                offset = RowId * 16;
                 for(int x = 0; x < 4; x++)
                 {
                     for(int y = 0; y < 4; y++)
@@ -451,7 +501,8 @@ namespace FFXIV_TexTools.Controls
                 }
 
                 UpdateDyeStatus();
-                UpdateRowVisual(SelectedRow);
+                UpdateRowVisual(RowId);
+                _vm.SetColorsetRow(RowId);
             }
             catch(Exception ex)
             {
@@ -462,6 +513,103 @@ namespace FFXIV_TexTools.Controls
         private void DyeTemplateIdBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             UpdateDyeStatus();
+        }
+
+
+        private void EditRawDiffuse_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void EditRawSpecular_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+        private void EditRawEmmissive_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        List<Half[]> CopiedRow;
+        byte[] CopiedRowDye;
+        private void CopyRowButton_Click(object sender, RoutedEventArgs e)
+        {
+            CopiedRow = GetRowData(RowId);
+            CopiedRowDye = new byte[2];
+            Array.Copy(_mtrl.ColorSetDyeData, RowId * 2, CopiedRowDye, 0, 2);
+
+            PasteRowButton.IsEnabled = true;
+        }
+
+        private void PasteRowButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (CopiedRow == null) return;
+
+            var offset = RowId * 2;
+            Array.Copy(CopiedRowDye, 0, _mtrl.ColorSetDyeData, offset, 2);
+
+            offset = RowId * 16;
+            for (int x = 0; x < 4; x++)
+            {
+                for (int y = 0; y < 4; y++)
+                {
+                    _mtrl.ColorSetData[offset] = CopiedRow[x][y];
+                    offset++;
+                }
+            }
+
+            UpdateRowVisual(RowId);
+            SetRow(RowId);
+        }
+
+        private async void MoveRowUpButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (RowId == 0) return;
+            var prevRowId = RowId - 1;
+            await SwapRows(RowId, prevRowId);
+        }
+
+        private async void MoveRowDownButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (RowId == 15) return;
+            var prevRowId = RowId + 1;
+            await SwapRows(RowId, prevRowId);
+        }
+
+        private async Task SwapRows(int row1, int row2)
+        {
+            var myRowData = GetRowData(row1);
+            var otherRowData = GetRowData(row2);
+
+            var myData = new Half[16];
+            var otherData = new Half[16];
+            for (int i = 0; i < 4; i++)
+            {
+                Array.Copy(myRowData[i], 0, myData, i * 4, 4);
+                Array.Copy(otherRowData[i], 0, otherData, i * 4, 4);
+            }
+
+            var myOffset = row1 * 16;
+            var otherOffset = row2 * 16;
+
+            var arr = _mtrl.ColorSetData.ToArray();
+            Array.Copy(myData, 0, arr, otherOffset, 16);
+            Array.Copy(otherData, 0, arr, myOffset, 16);
+
+            var offset1 = row1 * 2;
+            var offset2 = row2 * 2;
+
+            var b1 = _mtrl.ColorSetDyeData[offset1];
+            var b2 = _mtrl.ColorSetDyeData[offset1 + 1];
+
+            _mtrl.ColorSetDyeData[offset1] = _mtrl.ColorSetDyeData[offset2];
+            _mtrl.ColorSetDyeData[offset1 + 1] = _mtrl.ColorSetDyeData[offset2 + 1];
+            _mtrl.ColorSetDyeData[offset2] = b1;
+            _mtrl.ColorSetDyeData[offset2 + 1] = b2;
+
+            _mtrl.ColorSetData = arr.ToList();
+
+            await SetMaterial(_mtrl, row2);
         }
     }
 }

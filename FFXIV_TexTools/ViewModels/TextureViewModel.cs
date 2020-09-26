@@ -1095,7 +1095,10 @@ namespace FFXIV_TexTools.ViewModels
             ImageDisplay = null;
             ChannelsEnabled = true;
 
-            if(SelectedMap == null || SelectedMap.Path == null)
+            _textureView.ColorsetEditor.Visibility = Visibility.Collapsed;
+            _textureView.StandardTextureDisplay.Visibility = Visibility.Visible;
+
+            if (SelectedMap == null || SelectedMap.Path == null)
             {
                 return;
             }
