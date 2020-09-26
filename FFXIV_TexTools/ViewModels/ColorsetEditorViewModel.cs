@@ -15,6 +15,7 @@ using System.Windows.Media;
 using xivModdingFramework.Cache;
 using xivModdingFramework.General;
 using xivModdingFramework.Materials.DataContainers;
+using xivModdingFramework.Materials.FileTypes;
 using xivModdingFramework.Textures.DataContainers;
 using xivModdingFramework.Textures.FileTypes;
 
@@ -37,6 +38,8 @@ namespace FFXIV_TexTools.ViewModels
         private XivMtrl _mtrl;
         private int RowId;
 
+        private StainingTemplateFile DyeTemplateFile;
+
         private List<Half[]> RowData;
 
         public ColorsetEditorViewModel(ColorsetEditorControl view)
@@ -50,8 +53,9 @@ namespace FFXIV_TexTools.ViewModels
 
         bool _NeedLights = true;
 
-        public async Task SetMaterial(XivMtrl mtrl, int row = 0) {
+        public async Task SetMaterial(XivMtrl mtrl, StainingTemplateFile dyeFile) {
             _mtrl = mtrl;
+            DyeTemplateFile = dyeFile;
 
             _viewport = _view.ColorsetRowViewport;
             _viewport.BackgroundColor = System.Windows.Media.Colors.Gray;
@@ -79,8 +83,10 @@ namespace FFXIV_TexTools.ViewModels
 
         }
 
-        public async Task SetColorsetRow(int row)
+        public async Task SetColorsetRow(int row, int dyeId = -1)
         {
+            if (_mtrl == null) return;
+
             try
             {
                 RowId = row;
@@ -123,17 +129,75 @@ namespace FFXIV_TexTools.ViewModels
                         (byte)Math.Round(RowData[2][2] * 255f));
                 }
 
-                lmMaterial.SpecularShininess = (RowData[1][3] * RowData[1][3]) * 10;
+                float glossVal = RowData[1][3];
+                Half tileId = RowData[2][3];
+                if (dyeId >= 0 && dyeId < 128)
+                {
+                    var byteOffset = RowId * 2;
+                    var templateId = BitConverter.ToUInt16(_mtrl.ColorSetDyeData, byteOffset) >> 5;
+                    if (templateId == 0) return;
+
+                    var template = DyeTemplateFile.GetTemplate((ushort)templateId);
+                    if(template != null)
+                    {
+
+                        var flags = _mtrl.ColorSetDyeData[byteOffset] & 0x1F;
+
+                        bool useDiffuse = (flags & 0x01) > 0;
+                        bool useSpecular = (flags & 0x02) > 0;
+                        bool useEmissive = (flags & 0x04) > 0;
+                        bool useTile = (flags & 0x08) > 0;
+                        bool useGloss = (flags & 0x10) > 0;
+
+                        if(useDiffuse && template.DiffuseEntries.Count > 0)
+                        {
+                            lmMaterial.DiffuseColor = new SharpDX.Color(
+                            (byte)Math.Round(template.DiffuseEntries[dyeId][0] * 255f),
+                            (byte)Math.Round(template.DiffuseEntries[dyeId][1] * 255f),
+                            (byte)Math.Round(template.DiffuseEntries[dyeId][2] * 255f));
+                        }
+
+                        if (useSpecular && template.SpecularEntries.Count > 0)
+                        {
+                            lmMaterial.SpecularColor = new SharpDX.Color(
+                            (byte)Math.Round(template.SpecularEntries[dyeId][0] * 255f),
+                            (byte)Math.Round(template.SpecularEntries[dyeId][1] * 255f),
+                            (byte)Math.Round(template.SpecularEntries[dyeId][2] * 255f));
+                        }
+
+                        if (useEmissive && template.EmissiveEntries.Count > 0)
+                        {
+                            lmMaterial.EmissiveColor = new SharpDX.Color(
+                            (byte)Math.Round(template.EmissiveEntries[dyeId][0] * 255f),
+                            (byte)Math.Round(template.EmissiveEntries[dyeId][1] * 255f),
+                            (byte)Math.Round(template.EmissiveEntries[dyeId][2] * 255f));
+                        }
+
+                        if(useGloss && template.GlossEntries.Count > 0)
+                        {
+                            glossVal = template.GlossEntries[dyeId];
+                        }
+
+                        if(useTile && template.TileMaterialEntries.Count > 0)
+                        {
+                            tileId = template.TileMaterialEntries[dyeId];
+                        }
+                    }
+                }
+
+                // This is some arbitrary math to make the gloss more or less reflected in the visual.
+                glossVal = (glossVal * glossVal) * 10;
+                lmMaterial.SpecularShininess = glossVal;
 
                 if (TileTextureNormal != null)
                 {
-                    var tm = await MakeTextureModel(TileTextureNormal);
+                    var tm = await MakeTextureModel(TileTextureNormal, tileId);
                     lmMaterial.NormalMap = tm;
                 }
 
                 if (TileTextureDiffuse != null)
                 {
-                    var tm = await MakeTextureModel(TileTextureDiffuse);
+                    var tm = await MakeTextureModel(TileTextureDiffuse, tileId);
                     lmMaterial.DiffuseMap = tm;
                 }
 
@@ -150,10 +214,10 @@ namespace FFXIV_TexTools.ViewModels
             }
         }
 
-        private async Task<TextureModel> MakeTextureModel(XivTex tex)
+        private async Task<TextureModel> MakeTextureModel(XivTex tex, Half tileId)
         {
 
-            var layer = (int)Math.Floor(RowData[2][3] * 64);
+            var layer = (int)Math.Floor(tileId * 64);
             if (layer > 63 || layer < 0) layer = 0;
             var tileX = (float)RowData[3][0];
             var tileY = (float)RowData[3][3];

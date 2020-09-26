@@ -96,7 +96,7 @@
                         <Button x:Name="EditRawEmmissive" Grid.Row="8" Grid.Column="2" Content="Edit Raw" VerticalAlignment="Center" Margin="5,0" Click="EditRawEmmissive_Click"/>
 
                         <Label Content="Tile Material:" Grid.Row="9" HorizontalAlignment="Right" VerticalAlignment="Center" Height="26" Margin="0,2" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Width="78"/>
-                        <TextBox x:Name="TileIdBox" Grid.Row="9" Grid.Column="1" HorizontalAlignment="Left" Width="150" VerticalAlignment="Center" Margin="0,2" Height="26"></TextBox>
+                        <ComboBox x:Name="TileIdBox" Grid.Row="9" Grid.Column="1" HorizontalAlignment="Left" Width="150" VerticalAlignment="Center" Margin="0,2" Height="26"></ComboBox>
 
                         <Grid Grid.Row="11" Grid.ColumnSpan="3">
                             <Grid.ColumnDefinitions>
@@ -129,6 +129,7 @@
                                     <RowDefinition Height="35"></RowDefinition>
                                     <RowDefinition Height="35"></RowDefinition>
                                     <RowDefinition Height="35"></RowDefinition>
+                                    <RowDefinition Height="35"></RowDefinition>
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition></ColumnDefinition>
@@ -137,12 +138,15 @@
 
                                 <Label Content="Dye Template:" VerticalAlignment="Center" HorizontalAlignment="Right"></Label>
                                 <ComboBox x:Name="DyeTemplateIdBox" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left" Width="100" SelectionChanged="DyeTemplateIdBox_SelectionChanged"></ComboBox>
+                                
+                                <Label Content="Preview Dye #" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Right"></Label>
+                                <ComboBox x:Name="DyePreviewIdBox" Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Left" Width="100" SelectionChanged="DyePreviewIdBox_SelectionChanged"></ComboBox>
 
-                                <CheckBox x:Name="DyeDiffuseBox" Content="Apply to Diffuse" Grid.Row="1" Grid.ColumnSpan="1" HorizontalAlignment="Center" VerticalAlignment="Center"></CheckBox>
-                                <CheckBox x:Name="DyeSpecularBox" Content="Apply to Specular" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="1" HorizontalAlignment="Center" VerticalAlignment="Center" ></CheckBox>
-                                <CheckBox x:Name="DyeEmissiveBox" Content="Apply to Emissive" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="1" HorizontalAlignment="Center" VerticalAlignment="Center" ></CheckBox>
-                                <CheckBox x:Name="DyeGlossBox" Content="Apply to Gloss" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="1" HorizontalAlignment="Center" VerticalAlignment="Center" ></CheckBox>
-                                <CheckBox x:Name="DyeTileBox" Content="Apply to Tile Material" Grid.Row="3" Grid.ColumnSpan="1" HorizontalAlignment="Center" VerticalAlignment="Center"></CheckBox>
+                                <CheckBox x:Name="DyeDiffuseBox" Content="Apply to Diffuse" Grid.Row="2" Grid.ColumnSpan="1" HorizontalAlignment="Left" VerticalAlignment="Center"></CheckBox>
+                                <CheckBox x:Name="DyeSpecularBox" Content="Apply to Specular" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="1" HorizontalAlignment="Left" VerticalAlignment="Center" ></CheckBox>
+                                <CheckBox x:Name="DyeEmissiveBox" Content="Apply to Emissive" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="1" HorizontalAlignment="Left" VerticalAlignment="Center" ></CheckBox>
+                                <CheckBox x:Name="DyeGlossBox" Content="Apply to Gloss" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="1" HorizontalAlignment="Left" VerticalAlignment="Center" ></CheckBox>
+                                <CheckBox x:Name="DyeTileBox" Content="Apply to Tile Material" Grid.Row="4" Grid.ColumnSpan="1" HorizontalAlignment="Left" VerticalAlignment="Center"></CheckBox>
 
                             </Grid>
                         </GroupBox>

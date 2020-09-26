@@ -1,6 +1,7 @@
 ﻿using FFXIV_TexTools.Helpers;
 using FFXIV_TexTools.Resources;
 using FFXIV_TexTools.ViewModels;
+using FFXIV_TexTools.Views.Controls;
 using HelixToolkit.Wpf.SharpDX;
 using Newtonsoft.Json;
 using SharpDX;
@@ -46,6 +47,8 @@ namespace FFXIV_TexTools.Controls
         private bool _LOADING = true;
 
         ObservableCollection<KeyValuePair<ushort, string>> DyeTemplateCollection = new ObservableCollection<KeyValuePair<ushort, string>>();
+        ObservableCollection<KeyValuePair<int, string>> PreviewDyeCollection = new ObservableCollection<KeyValuePair<int, string>>();
+        ObservableCollection<KeyValuePair<int, string>> TileMaterialIds = new ObservableCollection<KeyValuePair<int, string>>();
 
         public ColorsetEditorControl()
         {
@@ -83,26 +86,102 @@ namespace FFXIV_TexTools.Controls
             DyeEmissiveBox.Checked += ValueChanged;
             DyeEmissiveBox.Unchecked += ValueChanged;
             DyeGlossBox.Checked += ValueChanged;
+            DyeGlossBox.Unchecked += ValueChanged;
+            DyeTileBox.Checked += ValueChanged;
             DyeTileBox.Unchecked += ValueChanged;
-            DyeTileBox.Unchecked += ValueChanged;
-            DiffuseColorPicker.SelectedColorChanged += ValueChanged;
-            SpecularColorPicker.SelectedColorChanged += ValueChanged;
-            EmissiveColorPicker.SelectedColorChanged += ValueChanged;
+            DiffuseColorPicker.SelectedColorChanged += DiffuseColorPicker_SelectedColorChanged; ;
+            SpecularColorPicker.SelectedColorChanged += SpecularColorPicker_SelectedColorChanged; ;
+            EmissiveColorPicker.SelectedColorChanged += EmissiveColorPicker_SelectedColorChanged; ;
 
             DiffuseSecondaryBox.TextChanged += ValueChanged;
             GlossBox.TextChanged += ValueChanged;
 
-            TileIdBox.TextChanged += ValueChanged;
+            TileIdBox.SelectionChanged += ValueChanged;
             TileSkewXBox.TextChanged += ValueChanged;
             TileSkewYBox.TextChanged += ValueChanged;
             TileCountXBox.TextChanged += ValueChanged;
             TileCountYBox.TextChanged += ValueChanged;
 
+            DyePreviewIdBox.ItemsSource = PreviewDyeCollection;
+            DyePreviewIdBox.DisplayMemberPath = "Value";
+            DyePreviewIdBox.SelectedValuePath = "Key";
+            PreviewDyeCollection.Add(new KeyValuePair<int, string>(-1, "Undyed"));
+            for (int i =0; i < 128; i++)
+            {
+                PreviewDyeCollection.Add(new KeyValuePair<int, string>(i, i.ToString()));
+            }
+
+            TileIdBox.ItemsSource = TileMaterialIds;
+            TileIdBox.DisplayMemberPath = "Value";
+            TileIdBox.SelectedValuePath = "Key";
+            for (int i = 0; i < 64; i++)
+            {
+                TileMaterialIds.Add(new KeyValuePair<int, string>(i, i.ToString()));
+            }
+
         }
+
+
 
         private void ValueChanged(object sender, RoutedEventArgs e)
         {
             UpdateRow();
+        }
+
+        // Color pickers get their own special handling, because technically the raw values can go over
+        // normal 255 byte color ranges, so we need to not stomp them when calling the normal UpdateRow() function.
+        private void DiffuseColorPicker_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<System.Windows.Media.Color?> e)
+        {
+            if(DiffuseColorPicker.SelectedColor.Value.A != 255)
+            {
+                DiffuseColorPicker.SelectedColor = new System.Windows.Media.Color() {
+                    R = DiffuseColorPicker.SelectedColor.Value.R,
+                    B = DiffuseColorPicker.SelectedColor.Value.B,
+                    G = DiffuseColorPicker.SelectedColor.Value.G,
+                    A = 255
+                };
+                return;
+            }
+
+            RowData[0][0] = new Half(DiffuseColorPicker.SelectedColor.Value.R / 255.0f);
+            RowData[0][1] = new Half(DiffuseColorPicker.SelectedColor.Value.G / 255.0f);
+            RowData[0][2] = new Half(DiffuseColorPicker.SelectedColor.Value.B / 255.0f);
+        }
+        private void SpecularColorPicker_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<System.Windows.Media.Color?> e)
+        {
+            if (SpecularColorPicker.SelectedColor.Value.A != 255)
+            {
+                SpecularColorPicker.SelectedColor = new System.Windows.Media.Color()
+                {
+                    R = SpecularColorPicker.SelectedColor.Value.R,
+                    B = SpecularColorPicker.SelectedColor.Value.B,
+                    G = SpecularColorPicker.SelectedColor.Value.G,
+                    A = 255
+                };
+                return;
+            }
+
+            RowData[1][0] = new Half(SpecularColorPicker.SelectedColor.Value.R / 255.0f);
+            RowData[1][1] = new Half(SpecularColorPicker.SelectedColor.Value.G / 255.0f);
+            RowData[1][2] = new Half(SpecularColorPicker.SelectedColor.Value.B / 255.0f);
+        }
+        private void EmissiveColorPicker_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<System.Windows.Media.Color?> e)
+        {
+            if (EmissiveColorPicker.SelectedColor.Value.A != 255)
+            {
+                EmissiveColorPicker.SelectedColor = new System.Windows.Media.Color()
+                {
+                    R = EmissiveColorPicker.SelectedColor.Value.R,
+                    B = EmissiveColorPicker.SelectedColor.Value.B,
+                    G = EmissiveColorPicker.SelectedColor.Value.G,
+                    A = 255
+                };
+                return;
+            }
+
+            RowData[2][0] = new Half(EmissiveColorPicker.SelectedColor.Value.R / 255.0f);
+            RowData[2][1] = new Half(EmissiveColorPicker.SelectedColor.Value.G / 255.0f);
+            RowData[2][2] = new Half(EmissiveColorPicker.SelectedColor.Value.B / 255.0f);
         }
 
         private void ColorsetRow_Clicked(object sender, MouseButtonEventArgs e)
@@ -164,7 +243,7 @@ namespace FFXIV_TexTools.Controls
             DiffuseSecondaryBox.Text = RowData[0][3].ToString();
             GlossBox.Text = RowData[1][3].ToString();
 
-            TileIdBox.Text = (Math.Floor(RowData[2][3] * 64)).ToString();
+            TileIdBox.SelectedValue = (int) (Math.Floor(RowData[2][3] * 64));
 
             TileCountXBox.Text = RowData[3][0].ToString();
             TileCountYBox.Text = RowData[3][3].ToString();
@@ -211,9 +290,17 @@ namespace FFXIV_TexTools.Controls
 
         private async Task UpdateViewport()
         {
-            await _vm.SetColorsetRow(RowId);
+            int dyeId = (int)DyePreviewIdBox.SelectedValue;
+            await _vm.SetColorsetRow(RowId, dyeId);
         }
 
+        /// <summary>
+        /// Updates the visual image display of the row, both in the
+        /// main left-hand listing and in the selected display if the
+        /// row is selected.
+        /// </summary>
+        /// <param name="rowId"></param>
+        /// <returns></returns>
         public async Task UpdateRowVisual(int rowId)
         {
             var pixels = new byte[4 * 4];
@@ -274,10 +361,18 @@ namespace FFXIV_TexTools.Controls
             }
         }
 
+        /// <summary>
+        /// Sets the material and selects a given row (or row 0)
+        /// </summary>
+        /// <param name="mtrl"></param>
+        /// <param name="row"></param>
+        /// <returns></returns>
         public async Task SetMaterial(XivMtrl mtrl, int row = 0)
         {
             DyeTemplateFile = await STM.GetStainingTemplateFile(false);
             DyeTemplateCollection.Clear();
+
+            DyePreviewIdBox.SelectedValue = -1;
 
             var keys = DyeTemplateFile.GetKeys();
             DyeTemplateCollection.Add(new KeyValuePair<ushort, string>(0, "Undyable"));
@@ -296,15 +391,20 @@ namespace FFXIV_TexTools.Controls
 
 
             _mtrl = mtrl;
+            await _vm.SetMaterial(_mtrl, DyeTemplateFile);
             for (int i = 0; i < 16; i++)
             {
                 await UpdateRowVisual(i);
             }
 
-            await _vm.SetMaterial(_mtrl);
             await SetRow(row);
         }
 
+        /// <summary>
+        /// Saves the material to file.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void SaveButton_Click(object sender, RoutedEventArgs e)
         {
             var mw = MainWindow.GetMainWindow();
@@ -328,6 +428,10 @@ namespace FFXIV_TexTools.Controls
             }
         }
 
+
+        /// <summary>
+        /// Updates the status of the dye checkboxes based on template information.
+        /// </summary>
         private void UpdateDyeStatus()
         {
             var value = DyeTemplateIdBox.SelectedValue;
@@ -357,7 +461,7 @@ namespace FFXIV_TexTools.Controls
                 DyeDiffuseBox.IsEnabled = false;
             } else
             {
-                DyeDiffuseBox.IsChecked = true;
+                //DyeDiffuseBox.IsChecked = true;
                 DyeDiffuseBox.IsEnabled = true;
             }
 
@@ -368,7 +472,7 @@ namespace FFXIV_TexTools.Controls
             }
             else
             {
-                DyeSpecularBox.IsChecked = true;
+                //DyeSpecularBox.IsChecked = true;
                 DyeSpecularBox.IsEnabled = true;
             }
 
@@ -379,7 +483,7 @@ namespace FFXIV_TexTools.Controls
             }
             else
             {
-                DyeEmissiveBox.IsChecked = true;
+                //DyeEmissiveBox.IsChecked = true;
                 DyeEmissiveBox.IsEnabled = true;
             }
 
@@ -390,7 +494,7 @@ namespace FFXIV_TexTools.Controls
             }
             else
             {
-                DyeTileBox.IsChecked = true;
+                //DyeTileBox.IsChecked = true;
                 DyeTileBox.IsEnabled = true;
             }
 
@@ -401,12 +505,16 @@ namespace FFXIV_TexTools.Controls
             }
             else
             {
-                DyeGlossBox.IsChecked = true;
+                //DyeGlossBox.IsChecked = true;
                 DyeGlossBox.IsEnabled = true;
             }
         }
 
-        private void UpdateRow()
+        /// <summary>
+        /// Updates all the Row Data based on the current UI State
+        /// EXCEPT for the color pickers, which are handled separately.
+        /// </summary>
+        private async Task UpdateRow()
         {
             if (_mtrl == null) return;
             if (_mtrl.ColorSetData.Count == 0) return;
@@ -414,30 +522,16 @@ namespace FFXIV_TexTools.Controls
 
             try
             {
-                RowData[0][0] = new Half(DiffuseColorPicker.SelectedColor.Value.R / 255.0f);
-                RowData[0][1] = new Half(DiffuseColorPicker.SelectedColor.Value.G / 255.0f);
-                RowData[0][2] = new Half(DiffuseColorPicker.SelectedColor.Value.B / 255.0f);
-                
                 var fl = 1.0f;
                 float.TryParse(DiffuseSecondaryBox.Text, out fl);
                 RowData[0][3] = new Half(fl);
-
-
-                RowData[1][0] = new Half(SpecularColorPicker.SelectedColor.Value.R / 255.0f);
-                RowData[1][1] = new Half(SpecularColorPicker.SelectedColor.Value.G / 255.0f);
-                RowData[1][2] = new Half(SpecularColorPicker.SelectedColor.Value.B / 255.0f);
 
                 fl = 1.0f;
                 float.TryParse(GlossBox.Text, out fl);
                 RowData[1][3] = new Half(fl);
 
-                RowData[2][0] = new Half(EmissiveColorPicker.SelectedColor.Value.R / 255.0f);
-                RowData[2][1] = new Half(EmissiveColorPicker.SelectedColor.Value.G / 255.0f);
-                RowData[2][2] = new Half(EmissiveColorPicker.SelectedColor.Value.B / 255.0f);
-
                 fl = 0.0f;
-                float.TryParse(TileIdBox.Text, out fl);
-                RowData[2][3] = new Half((float)((Math.Floor(fl) + 0.5f)/ 64.0f));
+                RowData[2][3] = new Half((((int)TileIdBox.SelectedValue) + 0.5f) / 64.0f);
 
                 fl = 16.0f;
                 float.TryParse(TileCountXBox.Text, out fl);
@@ -501,8 +595,8 @@ namespace FFXIV_TexTools.Controls
                 }
 
                 UpdateDyeStatus();
-                UpdateRowVisual(RowId);
-                _vm.SetColorsetRow(RowId);
+                await UpdateRowVisual(RowId);
+                await UpdateViewport();
             }
             catch(Exception ex)
             {
@@ -510,24 +604,59 @@ namespace FFXIV_TexTools.Controls
             }
         }
 
-        private void DyeTemplateIdBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void DyeTemplateIdBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            UpdateDyeStatus();
+            await UpdateRow();
         }
-
 
         private void EditRawDiffuse_Click(object sender, RoutedEventArgs e)
         {
+            var result = RawFloatValueDisplay.ShowEditor(RowData[0][0], RowData[0][1], RowData[0][2], "Diffuse");
+            if (float.IsNaN(result.Red)) return;
 
+
+            byte byteRed = (byte)((result.Red < 0 ? 0 : result.Red > 1 ? 1 : result.Red) * 255);
+            byte byteGreen = (byte)((result.Green < 0 ? 0 : result.Green > 1 ? 1 : result.Green) * 255);
+            byte byteBlue = (byte)((result.Blue < 0 ? 0 : result.Blue > 1 ? 1 : result.Blue) * 255);
+
+            DiffuseColorPicker.SelectedColor = new System.Windows.Media.Color() { R = byteRed, G = byteGreen, B = byteBlue, A = 255 };
+
+            RowData[0][0] = result.Red;
+            RowData[0][1] = result.Green;
+            RowData[0][2] = result.Blue;
         }
 
         private void EditRawSpecular_Click(object sender, RoutedEventArgs e)
         {
+            var result = RawFloatValueDisplay.ShowEditor(RowData[1][0], RowData[1][1], RowData[1][2], "Specular");
+            if (float.IsNaN(result.Red)) return;
 
+
+            byte byteRed = (byte)((result.Red < 0 ? 0 : result.Red > 1 ? 1 : result.Red) * 255);
+            byte byteGreen = (byte)((result.Green < 0 ? 0 : result.Green > 1 ? 1 : result.Green) * 255);
+            byte byteBlue = (byte)((result.Blue < 0 ? 0 : result.Blue > 1 ? 1 : result.Blue) * 255);
+
+            SpecularColorPicker.SelectedColor = new System.Windows.Media.Color() { R = byteRed, G = byteGreen, B = byteBlue, A = 255 };
+
+            RowData[1][0] = result.Red;
+            RowData[1][1] = result.Green;
+            RowData[1][2] = result.Blue;
         }
         private void EditRawEmmissive_Click(object sender, RoutedEventArgs e)
         {
+            var result = RawFloatValueDisplay.ShowEditor(RowData[2][0], RowData[2][1], RowData[2][2], "Emissive");
+            if (float.IsNaN(result.Red)) return;
 
+
+            byte byteRed = (byte)((result.Red < 0 ? 0 : result.Red > 1 ? 1 : result.Red) * 255);
+            byte byteGreen = (byte)((result.Green < 0 ? 0 : result.Green > 1 ? 1 : result.Green) * 255);
+            byte byteBlue = (byte)((result.Blue < 0 ? 0 : result.Blue > 1 ? 1 : result.Blue) * 255);
+
+            EmissiveColorPicker.SelectedColor = new System.Windows.Media.Color() { R = byteRed, G = byteGreen, B = byteBlue, A = 255 };
+
+            RowData[2][0] = result.Red;
+            RowData[2][1] = result.Green;
+            RowData[2][2] = result.Blue;
         }
 
         List<Half[]> CopiedRow;
@@ -610,6 +739,11 @@ namespace FFXIV_TexTools.Controls
             _mtrl.ColorSetData = arr.ToList();
 
             await SetMaterial(_mtrl, row2);
+        }
+
+        private async void DyePreviewIdBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            await UpdateViewport();
         }
     }
 }

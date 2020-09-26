@@ -333,6 +333,9 @@
     <Compile Include="Views\Controls\PopupItemSelection.xaml.cs">
       <DependentUpon>PopupItemSelection.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Controls\RawFloatValueDisplay.xaml.cs">
+      <DependentUpon>RawFloatValueDisplay.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\CopyFileDialog.xaml.cs">
       <DependentUpon>CopyFileDialog.xaml</DependentUpon>
     </Compile>
@@ -535,6 +538,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Controls\PopupItemSelection.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Controls\RawFloatValueDisplay.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
