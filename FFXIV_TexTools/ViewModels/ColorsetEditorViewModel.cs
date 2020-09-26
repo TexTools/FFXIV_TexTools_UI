@@ -89,6 +89,7 @@ namespace FFXIV_TexTools.ViewModels
 
             try
             {
+                Models.Clear();
                 RowId = row;
 
                 var offset = RowId * 16;
