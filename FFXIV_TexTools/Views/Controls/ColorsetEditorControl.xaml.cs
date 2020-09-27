@@ -214,6 +214,17 @@ namespace FFXIV_TexTools.Controls
             return data;
         }
 
+        private Half[] RowDataToRaw(List<Half[]> data)
+        {
+            var raw = new Half[16];
+            for(int i = 0; i < 4; i++)
+            {
+                Array.Copy(data[i], 0, raw, i * 4, 4);
+            }
+
+            return raw;
+        }
+
         private async Task SetRow(int rowNumber) {
 
             if (_mtrl == null) return;
@@ -458,7 +469,8 @@ namespace FFXIV_TexTools.Controls
 
             var entry = DyeTemplateFile.GetTemplate((ushort)value);
 
-            if(entry == null)
+            CopyDyeValuesButton.IsEnabled = false;
+            if (entry == null)
             {
 
                 DyeDiffuseBox.IsChecked = false;
@@ -472,6 +484,15 @@ namespace FFXIV_TexTools.Controls
                 DyeGlossBox.IsChecked = false;
                 DyeGlossBox.IsEnabled = false;
                 return;
+            }
+
+            if (DyePreviewIdBox.SelectedValue != null)
+            {
+                var dyeId = (int)DyePreviewIdBox.SelectedValue;
+                if (dyeId >= 0)
+                {
+                    CopyDyeValuesButton.IsEnabled = true;
+                }
             }
 
             if (entry.DiffuseEntries.Count == 0)
@@ -506,7 +527,7 @@ namespace FFXIV_TexTools.Controls
                 DyeEmissiveBox.IsEnabled = true;
             }
 
-            if (entry.DiffuseSecondaryEntries.Count == 0)
+            if (entry.SpecularPowerEntries.Count == 0)
             {
                 DyeSpecularPower.IsChecked = false;
                 DyeSpecularPower.IsEnabled = false;
@@ -767,7 +788,87 @@ namespace FFXIV_TexTools.Controls
 
         private async void DyePreviewIdBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+
+            CopyDyeValuesButton.IsEnabled = false;
+            if (DyePreviewIdBox.SelectedValue != null && DyeTemplateIdBox.SelectedValue != null)
+            {
+                var template = (ushort)DyeTemplateIdBox.SelectedValue;
+                var dyeId = (int)DyePreviewIdBox.SelectedValue;
+                if (dyeId >= 0 && template > 0)
+                {
+                    CopyDyeValuesButton.IsEnabled = true;
+                }
+            }
+
             await UpdateViewport();
+        }
+
+        private async void CopyDyeValuesButton_Click(object sender, RoutedEventArgs e)
+        {
+
+            var offset = RowId * 2;
+            ushort dyeInfo = BitConverter.ToUInt16(_mtrl.ColorSetDyeData, offset);
+            ushort dyeTemplateId = (ushort)(dyeInfo >> 5);
+
+            var flags = dyeInfo & 0x1F;
+
+            bool useDiffuse = (flags & 0x01) > 0;
+            bool useSpec = (flags & 0x02) > 0;
+            bool useEmissive = (flags & 0x04) > 0;
+            bool useGloss = (flags & 0x08) > 0;
+            bool useSpecPower = (flags & 0x10) > 0;
+
+            var template = DyeTemplateFile.GetTemplate(dyeTemplateId);
+            var dyeId = (int) DyePreviewIdBox.SelectedValue;
+
+            if (template == null) return;
+            if (dyeId < 0 || dyeId >= 128) return;
+
+            if (useDiffuse && template.DiffuseEntries.Count > 0)
+            {
+                var diffuse = template.DiffuseEntries[dyeId];
+                RowData[0][0] = diffuse[0];
+                RowData[0][1] = diffuse[1];
+                RowData[0][2] = diffuse[2];
+            }
+            
+            if (useSpec && template.SpecularEntries.Count > 0)
+            {
+                var value = template.SpecularEntries[dyeId];
+                RowData[1][0] = value[0];
+                RowData[1][1] = value[1];
+                RowData[1][2] = value[2];
+            }
+            
+            if (useEmissive && template.EmissiveEntries.Count > 0)
+            {
+                var value = template.EmissiveEntries[dyeId];
+                RowData[2][0] = value[0];
+                RowData[2][1] = value[1];
+                RowData[2][2] = value[2];
+            }
+            
+            if (useGloss && template.GlossEntries.Count > 0)
+            {
+                var value = template.GlossEntries[dyeId];
+                RowData[1][3] = value;
+            }
+
+            if (useSpecPower && template.SpecularPowerEntries.Count > 0)
+            {
+                var value = template.SpecularPowerEntries[dyeId];
+                RowData[0][3] = value;
+            }
+
+            var rawData = RowDataToRaw(RowData);
+            offset = RowId * 16;
+
+            var fullData = _mtrl.ColorSetData.ToArray();
+
+            Array.Copy(rawData, 0, fullData, offset, rawData.Length);
+
+            _mtrl.ColorSetData = fullData.ToList();
+            await SetMaterial(_mtrl, RowId);
         }
     }
 }

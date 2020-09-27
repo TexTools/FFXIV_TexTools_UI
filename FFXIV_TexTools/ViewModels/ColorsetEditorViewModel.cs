@@ -178,9 +178,9 @@ namespace FFXIV_TexTools.ViewModels
                             glossVal = template.GlossEntries[dyeId];
                         }
 
-                        if(useSpecularPower && template.DiffuseSecondaryEntries.Count > 0)
+                        if(useSpecularPower && template.SpecularPowerEntries.Count > 0)
                         {
-                            specularPower = template.DiffuseSecondaryEntries[dyeId];
+                            specularPower = template.SpecularPowerEntries[dyeId];
                         }
                     }
                 }
