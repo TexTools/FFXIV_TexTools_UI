@@ -78,8 +78,8 @@
 
                         <Label Content="Diffuse Color:" Grid.Row="2" HorizontalAlignment="Right" VerticalAlignment="Center" Height="26" Margin="0,2" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Width="81"/>
                         <xctk:ColorPicker x:Name="DiffuseColorPicker" Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left" Width="150" Height="22" Margin="0,4"></xctk:ColorPicker>
-                        <Label Content="Diffuse Secondary:" Grid.Row="3" HorizontalAlignment="Right" VerticalAlignment="Center" Height="26" Margin="0,2" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Width="108"/>
-                        <TextBox x:Name="DiffuseSecondaryBox" Grid.Row="3" Grid.Column="1" HorizontalAlignment="Left" Width="150" VerticalAlignment="Center" Margin="0,2" Height="26"></TextBox>
+                        <Label Content="Specular Power:" Grid.Row="3" HorizontalAlignment="Right" VerticalAlignment="Center" Height="26" Margin="0,2" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Width="108"/>
+                        <TextBox x:Name="SpecularPowerBox" Grid.Row="3" Grid.Column="1" HorizontalAlignment="Left" Width="150" VerticalAlignment="Center" Margin="0,2" Height="26"></TextBox>
                         <Button x:Name="EditRawDiffuse" Grid.Row="2" Grid.Column="2" Content="Edit Raw" VerticalAlignment="Center" Margin="5,0" Click="EditRawDiffuse_Click"/>
 
 
@@ -146,7 +146,7 @@
                                 <CheckBox x:Name="DyeSpecularBox" Content="Apply to Specular" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="1" HorizontalAlignment="Left" VerticalAlignment="Center" ></CheckBox>
                                 <CheckBox x:Name="DyeEmissiveBox" Content="Apply to Emissive" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="1" HorizontalAlignment="Left" VerticalAlignment="Center" ></CheckBox>
                                 <CheckBox x:Name="DyeGlossBox" Content="Apply to Gloss" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="1" HorizontalAlignment="Left" VerticalAlignment="Center" ></CheckBox>
-                                <CheckBox x:Name="DyeTileBox" Content="Apply to Tile Material" Grid.Row="4" Grid.ColumnSpan="1" HorizontalAlignment="Left" VerticalAlignment="Center"></CheckBox>
+                                <CheckBox x:Name="DyeSpecularPower" Content="Apply to Specular Power" Grid.Row="4" Grid.ColumnSpan="1" HorizontalAlignment="Left" VerticalAlignment="Center"></CheckBox>
 
                             </Grid>
                         </GroupBox>

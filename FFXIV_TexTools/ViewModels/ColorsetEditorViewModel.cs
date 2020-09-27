@@ -11,6 +11,7 @@ using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using System.Windows.Media;
 using xivModdingFramework.Cache;
 using xivModdingFramework.General;
@@ -131,15 +132,13 @@ namespace FFXIV_TexTools.ViewModels
                 }
 
                 float glossVal = RowData[1][3];
-                Half tileId = RowData[2][3];
+                float specularPower = RowData[0][3];
                 if (dyeId >= 0 && dyeId < 128)
                 {
                     var byteOffset = RowId * 2;
                     var templateId = BitConverter.ToUInt16(_mtrl.ColorSetDyeData, byteOffset) >> 5;
-                    if (templateId == 0) return;
-
                     var template = DyeTemplateFile.GetTemplate((ushort)templateId);
-                    if(template != null)
+                    if(template != null && templateId != 0)
                     {
 
                         var flags = _mtrl.ColorSetDyeData[byteOffset] & 0x1F;
@@ -147,10 +146,10 @@ namespace FFXIV_TexTools.ViewModels
                         bool useDiffuse = (flags & 0x01) > 0;
                         bool useSpecular = (flags & 0x02) > 0;
                         bool useEmissive = (flags & 0x04) > 0;
-                        bool useTile = (flags & 0x08) > 0;
-                        bool useGloss = (flags & 0x10) > 0;
+                        bool useGloss = (flags & 0x08) > 0;
+                        bool useSpecularPower = (flags & 0x10) > 0;
 
-                        if(useDiffuse && template.DiffuseEntries.Count > 0)
+                        if (useDiffuse && template.DiffuseEntries.Count > 0)
                         {
                             lmMaterial.DiffuseColor = new SharpDX.Color(
                             (byte)Math.Round(template.DiffuseEntries[dyeId][0] * 255f),
@@ -179,9 +178,9 @@ namespace FFXIV_TexTools.ViewModels
                             glossVal = template.GlossEntries[dyeId];
                         }
 
-                        if(useTile && template.TileMaterialEntries.Count > 0)
+                        if(useSpecularPower && template.DiffuseSecondaryEntries.Count > 0)
                         {
-                            tileId = template.TileMaterialEntries[dyeId];
+                            specularPower = template.DiffuseSecondaryEntries[dyeId];
                         }
                     }
                 }
@@ -190,15 +189,24 @@ namespace FFXIV_TexTools.ViewModels
                 glossVal = (glossVal * glossVal) * 10;
                 lmMaterial.SpecularShininess = glossVal;
 
+                if (specularPower == 0)
+                {
+                    glossVal = 1;
+                }
+
+                lmMaterial.SpecularColor = lmMaterial.SpecularColor * specularPower;
+
+
+
                 if (TileTextureNormal != null)
                 {
-                    var tm = await MakeTextureModel(TileTextureNormal, tileId);
+                    var tm = await MakeTextureModel(TileTextureNormal);
                     lmMaterial.NormalMap = tm;
                 }
 
                 if (TileTextureDiffuse != null)
                 {
-                    var tm = await MakeTextureModel(TileTextureDiffuse, tileId);
+                    var tm = await MakeTextureModel(TileTextureDiffuse);
                     lmMaterial.DiffuseMap = tm;
                 }
 
@@ -215,10 +223,10 @@ namespace FFXIV_TexTools.ViewModels
             }
         }
 
-        private async Task<TextureModel> MakeTextureModel(XivTex tex, Half tileId)
+        private async Task<TextureModel> MakeTextureModel(XivTex tex)
         {
 
-            var layer = (int)Math.Floor(tileId * 64);
+            var layer = (int)Math.Floor(RowData[2][3] * 64);
             if (layer > 63 || layer < 0) layer = 0;
             var tileX = (float)RowData[3][0];
             var tileY = (float)RowData[3][3];

@@ -87,13 +87,13 @@ namespace FFXIV_TexTools.Controls
             DyeEmissiveBox.Unchecked += ValueChanged;
             DyeGlossBox.Checked += ValueChanged;
             DyeGlossBox.Unchecked += ValueChanged;
-            DyeTileBox.Checked += ValueChanged;
-            DyeTileBox.Unchecked += ValueChanged;
+            DyeSpecularPower.Checked += ValueChanged;
+            DyeSpecularPower.Unchecked += ValueChanged;
             DiffuseColorPicker.SelectedColorChanged += DiffuseColorPicker_SelectedColorChanged; ;
             SpecularColorPicker.SelectedColorChanged += SpecularColorPicker_SelectedColorChanged; ;
             EmissiveColorPicker.SelectedColorChanged += EmissiveColorPicker_SelectedColorChanged; ;
 
-            DiffuseSecondaryBox.TextChanged += ValueChanged;
+            SpecularPowerBox.TextChanged += ValueChanged;
             GlossBox.TextChanged += ValueChanged;
 
             TileIdBox.SelectionChanged += ValueChanged;
@@ -146,6 +146,7 @@ namespace FFXIV_TexTools.Controls
             RowData[0][0] = new Half(DiffuseColorPicker.SelectedColor.Value.R / 255.0f);
             RowData[0][1] = new Half(DiffuseColorPicker.SelectedColor.Value.G / 255.0f);
             RowData[0][2] = new Half(DiffuseColorPicker.SelectedColor.Value.B / 255.0f);
+            UpdateRow();
         }
         private void SpecularColorPicker_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<System.Windows.Media.Color?> e)
         {
@@ -164,6 +165,7 @@ namespace FFXIV_TexTools.Controls
             RowData[1][0] = new Half(SpecularColorPicker.SelectedColor.Value.R / 255.0f);
             RowData[1][1] = new Half(SpecularColorPicker.SelectedColor.Value.G / 255.0f);
             RowData[1][2] = new Half(SpecularColorPicker.SelectedColor.Value.B / 255.0f);
+            UpdateRow();
         }
         private void EmissiveColorPicker_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<System.Windows.Media.Color?> e)
         {
@@ -182,6 +184,7 @@ namespace FFXIV_TexTools.Controls
             RowData[2][0] = new Half(EmissiveColorPicker.SelectedColor.Value.R / 255.0f);
             RowData[2][1] = new Half(EmissiveColorPicker.SelectedColor.Value.G / 255.0f);
             RowData[2][2] = new Half(EmissiveColorPicker.SelectedColor.Value.B / 255.0f);
+            UpdateRow();
         }
 
         private void ColorsetRow_Clicked(object sender, MouseButtonEventArgs e)
@@ -220,9 +223,10 @@ namespace FFXIV_TexTools.Controls
                 _mtrl.ColorSetDyeData = new byte[32];
             }
 
+            RowId = rowNumber;
+
             // Triggered when the user clicks on a Colorset row.
             DetailsGroupBox.Header = "Material - Colorset Row Editor - Row #" + (rowNumber + 1).ToString();
-            RowId = rowNumber;
             RowData = GetRowData(RowId);
 
             var r = (byte)Math.Round(RowData[0][0] * 255);
@@ -240,7 +244,7 @@ namespace FFXIV_TexTools.Controls
             b = (byte)Math.Round(RowData[2][2] * 255);
             EmissiveColorPicker.SelectedColor = new System.Windows.Media.Color() { R = r, G = g, B = b, A = 255 };
 
-            DiffuseSecondaryBox.Text = RowData[0][3].ToString();
+            SpecularPowerBox.Text = RowData[0][3].ToString();
             GlossBox.Text = RowData[1][3].ToString();
 
             TileIdBox.SelectedValue = (int) (Math.Floor(RowData[2][3] * 64));
@@ -266,10 +270,10 @@ namespace FFXIV_TexTools.Controls
             DyeDiffuseBox.IsChecked = (dyeData & 0x01) > 0;
             DyeSpecularBox.IsChecked = (dyeData & 0x02) > 0;
             DyeEmissiveBox.IsChecked = (dyeData & 0x04) > 0;
-            DyeTileBox.IsChecked = (dyeData & 0x08) > 0;
-            DyeGlossBox.IsChecked = (dyeData & 0x10) > 0;
+            DyeGlossBox.IsChecked = (dyeData & 0x08) > 0;
+            DyeSpecularPower.IsChecked = (dyeData & 0x10) > 0;
 
-            foreach(var imgElem in ColorSetRowImages)
+            foreach (var imgElem in ColorSetRowImages)
             {
 
                 var border = (Border)imgElem.Parent;
@@ -371,6 +375,8 @@ namespace FFXIV_TexTools.Controls
         {
             if (mtrl == null) return;
 
+            _LOADING = true;
+
             try
             {
                 DyeTemplateFile = await STM.GetStainingTemplateFile(false);
@@ -407,6 +413,7 @@ namespace FFXIV_TexTools.Controls
             {
                 FlexibleMessageBox.Show("Unable to load material into colorset editor.\n\nError: " + ex.Message, "Colorset Editor Error", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning);
             }
+            _LOADING = false;
         }
 
         /// <summary>
@@ -457,8 +464,8 @@ namespace FFXIV_TexTools.Controls
                 DyeSpecularBox.IsEnabled = false;
                 DyeEmissiveBox.IsChecked = false;
                 DyeEmissiveBox.IsEnabled = false;
-                DyeTileBox.IsChecked = false;
-                DyeTileBox.IsEnabled = false;
+                DyeSpecularPower.IsChecked = false;
+                DyeSpecularPower.IsEnabled = false;
                 DyeGlossBox.IsChecked = false;
                 DyeGlossBox.IsEnabled = false;
                 return;
@@ -496,15 +503,15 @@ namespace FFXIV_TexTools.Controls
                 DyeEmissiveBox.IsEnabled = true;
             }
 
-            if (entry.TileMaterialEntries.Count == 0)
+            if (entry.DiffuseSecondaryEntries.Count == 0)
             {
-                DyeTileBox.IsChecked = false;
-                DyeTileBox.IsEnabled = false;
+                DyeSpecularPower.IsChecked = false;
+                DyeSpecularPower.IsEnabled = false;
             }
             else
             {
                 //DyeTileBox.IsChecked = true;
-                DyeTileBox.IsEnabled = true;
+                DyeSpecularPower.IsEnabled = true;
             }
 
             if (entry.GlossEntries.Count == 0)
@@ -532,7 +539,7 @@ namespace FFXIV_TexTools.Controls
             try
             {
                 var fl = 1.0f;
-                float.TryParse(DiffuseSecondaryBox.Text, out fl);
+                float.TryParse(SpecularPowerBox.Text, out fl);
                 RowData[0][3] = new Half(fl);
 
                 fl = 1.0f;
@@ -558,7 +565,11 @@ namespace FFXIV_TexTools.Controls
                 float.TryParse(TileSkewYBox.Text, out fl);
                 RowData[3][2] = new Half(fl);
 
-                var templateId= (ushort)DyeTemplateIdBox.SelectedValue;
+                var templateId = 0;
+                if (DyeTemplateIdBox.SelectedValue != null)
+                {
+                    templateId = (ushort)DyeTemplateIdBox.SelectedValue;
+                }
                 ushort modifier = (ushort)(templateId << 5);
 
                 if (DyeDiffuseBox.IsChecked == true)
@@ -573,11 +584,11 @@ namespace FFXIV_TexTools.Controls
                 {
                     modifier = (ushort)(modifier | 0x04);
                 }
-                if (DyeTileBox.IsChecked == true)
+                if (DyeGlossBox.IsChecked == true)
                 {
                     modifier = (ushort)(modifier | 0x08);
                 }
-                if (DyeGlossBox.IsChecked == true)
+                if (DyeSpecularPower.IsChecked == true)
                 {
                     modifier = (ushort)(modifier | 0x10);
                 }
@@ -610,6 +621,7 @@ namespace FFXIV_TexTools.Controls
             catch(Exception ex)
             {
                 // No-Op...?
+                var z = "z";
             }
         }
 
