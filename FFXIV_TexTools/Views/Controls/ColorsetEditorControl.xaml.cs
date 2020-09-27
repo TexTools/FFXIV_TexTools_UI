@@ -46,6 +46,8 @@ namespace FFXIV_TexTools.Controls
 
         private bool _LOADING = true;
 
+        public event EventHandler MaterialSaved;
+
         ObservableCollection<KeyValuePair<ushort, string>> DyeTemplateCollection = new ObservableCollection<KeyValuePair<ushort, string>>();
         ObservableCollection<KeyValuePair<int, string>> PreviewDyeCollection = new ObservableCollection<KeyValuePair<int, string>>();
         ObservableCollection<KeyValuePair<int, string>> TileMaterialIds = new ObservableCollection<KeyValuePair<int, string>>();
@@ -432,6 +434,7 @@ namespace FFXIV_TexTools.Controls
 
                 var item = mw.GetSelectedItem();
                 await mtrlLib.ImportMtrl(_mtrl, item, XivStrings.TexTools);
+                MaterialSaved.Invoke(this, null);
             }
             catch(Exception ex)
             {

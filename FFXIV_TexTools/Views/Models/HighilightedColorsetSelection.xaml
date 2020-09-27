@@ -1,0 +1,26 @@
+﻿<Window x:Class="FFXIV_TexTools.Views.Models.HighilightedColorsetSelection"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FFXIV_TexTools.Views.Models"
+        mc:Ignorable="d"
+        Title="Colorset Row Highlight Selection"
+        SizeToContent="WidthAndHeight">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40"></RowDefinition>
+            <RowDefinition Height="40"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="120"></ColumnDefinition>
+            <ColumnDefinition Width="180"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+
+        <Label Content="Highlighted Row:" VerticalAlignment="Center" Margin="10,0,0,0"></Label>
+        <ComboBox x:Name="SelectionComboBox" Grid.Column="1" Width="150" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="10,0"></ComboBox>
+
+        <Button x:Name="CancelButton" Grid.Column="0" Content="Cancel" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center" Width="100" Margin="10,0" Click="CancelButton_Click"/>
+        <Button x:Name="ConfirmButton" Grid.Column="1" Content="Apply" Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Center" Width="100" Margin="0,0,10,0" Click="ConfirmButton_Click"/>
+    </Grid>
+</Window>

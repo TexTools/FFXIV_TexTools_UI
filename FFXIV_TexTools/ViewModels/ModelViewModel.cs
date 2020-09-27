@@ -77,9 +77,11 @@ namespace FFXIV_TexTools.ViewModels
 
         private string _lightXLabel = "X  |  0", _lightYLabel = "Y  |  0", _lightZLabel = "Z  |  0", _reflectionLabel = $"{UIStrings.Reflection}  |  1", _modToggleText = UIStrings.Enable_Disable, _modelStatusLabel;
         private ComboBoxData _selectedRace, _selectedPart, _selectedNumber, _selectedMesh;
-        private Visibility _numberVisibility, _partVisibility, _lightToggleVisibility = Visibility.Collapsed, _fmvVisibility;
+        private Visibility _numberVisibility, _partVisibility, _lightToggleVisibility = Visibility.Collapsed, _fmvVisibility, _ColorsetVisibility;
         private Visibility _raceVisibility = Visibility.Visible;
         private bool _light1Check = true, _light2Check, _light3Check, _lightRenderToggle, _transparencyToggle, _cullModeToggle, _keepCameraChecked;
+
+        public int HighlightedColorsetRow = -1;
 
         private IItemModel _item;
         private Mdl _mdl;
@@ -104,6 +106,7 @@ namespace FFXIV_TexTools.ViewModels
 
             _view.ExportModelButton.Click += ExportModelButton_Click;
             _view.ExportContextButton.Click += ExportContextButton_Click;
+            _view.HighlightColorsetButton.Click += HighlightColorsetButton_Click;
 
 
             var mw = MainWindow.GetMainWindow();
@@ -111,16 +114,6 @@ namespace FFXIV_TexTools.ViewModels
             //_modelView.ExportContextMenu.Items.Add();
         }
 
-        private void ExportContextButton_Click(object sender, RoutedEventArgs e)
-        {
-            _view.ExportContextMenu.PlacementTarget = _view.ExportModelButton;
-            _view.ExportContextMenu.IsOpen = true;
-        }
-
-        private void ExportModelButton_Click(object sender, RoutedEventArgs e)
-        {
-            ExportModel("fbx");
-        }
 
 
         private void Mw_SelectedPrimaryItemValueChanged(object sender, int e)
@@ -1248,6 +1241,19 @@ namespace FFXIV_TexTools.ViewModels
         }
 
         /// <summary>
+        /// Flag for FMV Highlight button
+        /// </summary>
+        public Visibility ColorsetVisibility
+        {
+            get => _ColorsetVisibility;
+            set
+            {
+                _ColorsetVisibility = value;
+                NotifyPropertyChanged(nameof(ColorsetVisibility));
+            }
+        }
+
+        /// <summary>
         /// Updates the Cull Mode
         /// </summary>
         private void UpdateCullMode(bool noneCull)
@@ -1966,21 +1972,20 @@ namespace FFXIV_TexTools.ViewModels
                 materialNum++;
             }
 
+
+            ColorsetVisibility = Visibility.Collapsed;
             foreach (var xivMtrl in mtrlDictionary)
             {
+                if(xivMtrl.Value.ColorSetData.Count > 0)
+                {
+                    ColorsetVisibility = Visibility.Visible;
+                }
 
                 var colors = ModelTexture.GetCustomColors();
                 colors.InvertNormalGreen = false;
-                if (hasColorChangeShader)
-                {
-                    var modelMaps = await ModelTexture.GetModelMaps(_gameDirectory, xivMtrl.Value, colors);
-                    textureDataDictionary.Add(xivMtrl.Key, modelMaps);
-                }
-                else
-                {
-                    var modelMaps = await ModelTexture.GetModelMaps(_gameDirectory, xivMtrl.Value, colors);
-                    textureDataDictionary.Add(xivMtrl.Key, modelMaps);
-                }
+
+                var modelMaps = await ModelTexture.GetModelMaps(_gameDirectory, xivMtrl.Value, colors, HighlightedColorsetRow);
+                textureDataDictionary.Add(xivMtrl.Key, modelMaps);
             }
 
             return textureDataDictionary;
@@ -2058,6 +2063,30 @@ namespace FFXIV_TexTools.ViewModels
             NumberVisibility = Visibility.Collapsed;
             PartVisibility = Visibility.Collapsed;
             TransparencyToggle = false;
+        }
+        private void ExportContextButton_Click(object sender, RoutedEventArgs e)
+        {
+            _view.ExportContextMenu.PlacementTarget = _view.ExportModelButton;
+            _view.ExportContextMenu.IsOpen = true;
+        }
+
+        private void ExportModelButton_Click(object sender, RoutedEventArgs e)
+        {
+            ExportModel("fbx");
+        }
+
+        private void HighlightColorsetButton_Click(object sender, RoutedEventArgs e)
+        {
+            var wind = new HighilightedColorsetSelection(HighlightedColorsetRow) { Owner = MainWindow.GetMainWindow() };
+            wind.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+
+            var result = wind.ShowDialog();
+
+            if (result != true) return;
+
+            HighlightedColorsetRow = wind.SelectedRow;
+            UpdateViewPort();
+
         }
 
 

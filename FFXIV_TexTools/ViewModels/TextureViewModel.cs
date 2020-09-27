@@ -248,7 +248,13 @@ namespace FFXIV_TexTools.ViewModels
 
             var mw = MainWindow.GetMainWindow();
             mw.SelectedPrimaryItemValueChanged += Mw_SelectedPrimaryItemValueChanged;
+            _textureView.ColorsetEditor.MaterialSaved += ColorsetEditor_MaterialSaved;
 
+        }
+
+        private void ColorsetEditor_MaterialSaved(object sender, EventArgs e)
+        {
+            UpdateImage();
         }
 
         /// <summary>
@@ -1144,6 +1150,7 @@ namespace FFXIV_TexTools.ViewModels
                 else
                 {
                     // Colorset entry.
+                    PathString = SelectedMap.Path;
                     _xivMtrl = await _mtrl.GetMtrlData(_item, SelectedMap.Path);
                     await _textureView.ColorsetEditor.SetMaterial(_xivMtrl);
 

@@ -396,6 +396,9 @@
     <Compile Include="Views\Models\FullModelView.xaml.cs">
       <DependentUpon>FullModelView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Models\HighilightedColorsetSelection.xaml.cs">
+      <DependentUpon>HighilightedColorsetSelection.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Models\ImportModelEditView.xaml.cs">
       <DependentUpon>ImportModelEditView.xaml</DependentUpon>
     </Compile>
@@ -624,6 +627,10 @@
     <Page Include="Views\Models\FullModelView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Models\HighilightedColorsetSelection.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Models\ImportModelEditView.xaml">
       <SubType>Designer</SubType>
