@@ -136,11 +136,12 @@
                                     <ColumnDefinition></ColumnDefinition>
                                 </Grid.ColumnDefinitions>
 
-                                <Label Content="Dye Template:" VerticalAlignment="Center" HorizontalAlignment="Right"></Label>
-                                <ComboBox x:Name="DyeTemplateIdBox" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left" Width="100" SelectionChanged="DyeTemplateIdBox_SelectionChanged"></ComboBox>
-                                
-                                <Label Content="Preview Dye #" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Right"></Label>
-                                <ComboBox x:Name="DyePreviewIdBox" Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Left" Width="100" SelectionChanged="DyePreviewIdBox_SelectionChanged"></ComboBox>
+                                <Label Content="Dye Template:" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.ColumnSpan="2"></Label>
+                                <ComboBox x:Name="DyeTemplateIdBox" VerticalAlignment="Center" HorizontalAlignment="Left" Width="100" SelectionChanged="DyeTemplateIdBox_SelectionChanged" Grid.ColumnSpan="2" Margin="90,0,0,0"/>
+
+                                <Label Content="Preview Dye #" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.ColumnSpan="2" Margin="0,0,10,0" Grid.Row="1"/>
+                                <ComboBox x:Name="DyePreviewIdBox" VerticalAlignment="Center" HorizontalAlignment="Left" Width="100" SelectionChanged="DyePreviewIdBox_SelectionChanged" Grid.ColumnSpan="2" Margin="90,0,0,0" Grid.Row="1"/>
+                                <Button x:Name="CopyDyeValuesButton" Content="Copy Dye Values to Row" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Column="1" Grid.Row="1" Margin="20,0,0,0" Click="CopyDyeValuesButton_Click"></Button>
 
                                 <CheckBox x:Name="DyeDiffuseBox" Content="Apply to Diffuse" Grid.Row="2" Grid.ColumnSpan="1" HorizontalAlignment="Left" VerticalAlignment="Center"></CheckBox>
                                 <CheckBox x:Name="DyeSpecularBox" Content="Apply to Specular" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="1" HorizontalAlignment="Left" VerticalAlignment="Center" ></CheckBox>

@@ -79,10 +79,13 @@
                 <Label x:Name="ViewportDisclaimer" VerticalAlignment="Top" HorizontalAlignment="Center" Content="{Binding Source={x:Static resx:UIStrings.Viewport_Disclaimer}}" Foreground="#FF151515" FontSize="10"/>
                 <Label VerticalAlignment="Bottom" HorizontalAlignment="Center" Content="{Binding ModelStatusLabel}" Foreground="#FF151515" FontSize="18"/>
             </Grid>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="5,5,5,40">
+                <Button x:Name="HighlightColorsetButton" Content="Highlight Colorset Row"  Visibility="{Binding ColorsetVisibility, FallbackValue=Hidden}" />
+            </StackPanel>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="5">
                 <Button x:Name="ViewerOptionsButton" Content="{Binding Source={x:Static resx:UIStrings.Viewer_Options}}" Command="{Binding ViewOptionsCommand}"/>
                 <CheckBox Margin="5,0" Content="{Binding Source={x:Static resx:UIStrings.Keep_Camera_Position}}" IsChecked="{Binding KeepCameraChecked}"/>
-                <Button x:Name="FullModelViewerButton" Content="Add To FMV" Command="{Binding AddToFullModelViewerCommand}" Visibility="{Binding FMVVisibility, FallbackValue=Hidden}" IsEnabled="{Binding FMVEnabled}"/>
+                <Button x:Name="FullModelViewerButton" Content="Add To FMV" Command="{Binding AddToFullModelViewerCommand}" Visibility="{Binding FMVVisibility, FallbackValue=Hidden}" IsEnabled="{Binding FMVEnabled}" Margin="5,0" />
             </StackPanel>
         </Grid>
         <mah:FlyoutsControl Grid.Row="0" Grid.RowSpan="2" HorizontalAlignment="Right">
