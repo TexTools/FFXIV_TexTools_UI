@@ -189,7 +189,7 @@ namespace FFXIV_TexTools.ViewModels
             // Default Settings for specific categories.
             if (item.SecondaryCategory == XivStrings.Face)
             {
-                _view.EnableShapeDataButton.IsChecked = true;
+                _view.UseOriginalShapeDataButton.IsChecked = true;
             }
             if (item.SecondaryCategory == XivStrings.Hair)
             {
@@ -257,7 +257,7 @@ namespace FFXIV_TexTools.ViewModels
             _view.LogTextBox.AppendText("");
 
             var options = new ModelModifierOptions();
-            options.EnableShapeData = _view.EnableShapeDataButton.IsChecked == true ? true : false;
+            options.UseOriginalShapeData = _view.UseOriginalShapeDataButton.IsChecked == true ? true : false;
             options.ForceUVQuadrant = _view.ForceUVsButton.IsChecked == true ? true : false;
             options.ClearUV2 = _view.ClearUV2Button.IsChecked == true ? true : false;
             options.CloneUV2 = _view.CloneUV1Button.IsChecked == true ? true : false;
