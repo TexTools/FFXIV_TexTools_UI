@@ -107,11 +107,6 @@ namespace FFXIV_TexTools.Controls
             DyePreviewIdBox.ItemsSource = PreviewDyeCollection;
             DyePreviewIdBox.DisplayMemberPath = "Value";
             DyePreviewIdBox.SelectedValuePath = "Key";
-            PreviewDyeCollection.Add(new KeyValuePair<int, string>(-1, "Undyed"));
-            for (int i =0; i < 128; i++)
-            {
-                PreviewDyeCollection.Add(new KeyValuePair<int, string>(i, i.ToString()));
-            }
 
             TileIdBox.ItemsSource = TileMaterialIds;
             TileIdBox.DisplayMemberPath = "Value";
@@ -307,7 +302,12 @@ namespace FFXIV_TexTools.Controls
 
         private async Task UpdateViewport()
         {
-            int dyeId = (int)DyePreviewIdBox.SelectedValue;
+            int dyeId = -1;
+            if (DyePreviewIdBox.SelectedValue != null)
+            {
+                dyeId = (int)DyePreviewIdBox.SelectedValue;
+            }
+            
             await _vm.SetColorsetRow(RowId, dyeId);
         }
 
@@ -413,6 +413,20 @@ namespace FFXIV_TexTools.Controls
                     PasteRowButton.IsEnabled = true;
                 }
 
+                var dyes = await STM.GetDyeNames();
+
+                PreviewDyeCollection.Clear();
+                PreviewDyeCollection.Add(new KeyValuePair<int, string>(-1, "Undyed"));
+                for (ushort i = 0; i < 128; i++)
+                {
+                    var name = "Dye " + i.ToString();
+                    if (dyes.ContainsKey(i))
+                    {
+                        name = dyes[i];
+                    }
+                    PreviewDyeCollection.Add(new KeyValuePair<int, string>(i, name));
+                }
+                DyePreviewIdBox.SelectedValue = -1;
 
                 _mtrl = mtrl;
                 await _vm.SetMaterial(_mtrl, DyeTemplateFile);

@@ -129,7 +129,6 @@
                                     <RowDefinition Height="35"></RowDefinition>
                                     <RowDefinition Height="35"></RowDefinition>
                                     <RowDefinition Height="35"></RowDefinition>
-                                    <RowDefinition Height="35"></RowDefinition>
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition></ColumnDefinition>
@@ -138,16 +137,11 @@
 
                                 <Label Content="Dye Template:" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.ColumnSpan="2"></Label>
                                 <ComboBox x:Name="DyeTemplateIdBox" VerticalAlignment="Center" HorizontalAlignment="Left" Width="100" SelectionChanged="DyeTemplateIdBox_SelectionChanged" Grid.ColumnSpan="2" Margin="90,0,0,0"/>
-
-                                <Label Content="Preview Dye #" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.ColumnSpan="2" Margin="0,0,10,0" Grid.Row="1"/>
-                                <ComboBox x:Name="DyePreviewIdBox" VerticalAlignment="Center" HorizontalAlignment="Left" Width="100" SelectionChanged="DyePreviewIdBox_SelectionChanged" Grid.ColumnSpan="2" Margin="90,0,0,0" Grid.Row="1"/>
-                                <Button x:Name="CopyDyeValuesButton" Content="Copy Dye Values to Row" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Column="1" Grid.Row="1" Margin="20,0,0,0" Click="CopyDyeValuesButton_Click"></Button>
-
-                                <CheckBox x:Name="DyeDiffuseBox" Content="Apply to Diffuse" Grid.Row="2" Grid.ColumnSpan="1" HorizontalAlignment="Left" VerticalAlignment="Center"></CheckBox>
-                                <CheckBox x:Name="DyeSpecularBox" Content="Apply to Specular" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="1" HorizontalAlignment="Left" VerticalAlignment="Center" ></CheckBox>
-                                <CheckBox x:Name="DyeEmissiveBox" Content="Apply to Emissive" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="1" HorizontalAlignment="Left" VerticalAlignment="Center" ></CheckBox>
-                                <CheckBox x:Name="DyeGlossBox" Content="Apply to Gloss" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="1" HorizontalAlignment="Left" VerticalAlignment="Center" ></CheckBox>
-                                <CheckBox x:Name="DyeSpecularPower" Content="Apply to Specular Power" Grid.Row="4" Grid.ColumnSpan="1" HorizontalAlignment="Left" VerticalAlignment="Center"></CheckBox>
+                                <CheckBox x:Name="DyeDiffuseBox" Content="Apply to Diffuse" Grid.Row="1" Grid.ColumnSpan="1" HorizontalAlignment="Left" VerticalAlignment="Center"></CheckBox>
+                                <CheckBox x:Name="DyeSpecularBox" Content="Apply to Specular" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="1" HorizontalAlignment="Left" VerticalAlignment="Center" ></CheckBox>
+                                <CheckBox x:Name="DyeEmissiveBox" Content="Apply to Emissive" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="1" HorizontalAlignment="Left" VerticalAlignment="Center" ></CheckBox>
+                                <CheckBox x:Name="DyeGlossBox" Content="Apply to Gloss" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="1" HorizontalAlignment="Left" VerticalAlignment="Center" ></CheckBox>
+                                <CheckBox x:Name="DyeSpecularPower" Content="Apply to Specular Power" Grid.Row="3" Grid.ColumnSpan="1" HorizontalAlignment="Left" VerticalAlignment="Center"></CheckBox>
 
                             </Grid>
                         </GroupBox>
@@ -161,28 +155,40 @@
             </Grid>
         </ScrollViewer>
 
-        <hx:Viewport3DX
+        <Grid Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="35"></RowDefinition>
+                <RowDefinition Height="35"></RowDefinition>
+                <RowDefinition Height="1*"></RowDefinition>
+            </Grid.RowDefinitions>
+
+            <Label Content="Preview Dye #" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.ColumnSpan="2" Margin="10,0" Grid.Row="0"/>
+            <ComboBox x:Name="DyePreviewIdBox" VerticalAlignment="Center" HorizontalAlignment="Left" Width="150" SelectionChanged="DyePreviewIdBox_SelectionChanged" Grid.ColumnSpan="2" Margin="100,0,0,0" Grid.Row="0"/>
+            <Button x:Name="CopyDyeValuesButton" Content="Copy Dye Values to Row" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Column="0" Grid.Row="1" Margin="10,0,0,0" Click="CopyDyeValuesButton_Click"></Button>
+
+            <hx:Viewport3DX
                         x:Name="ColorsetRowViewport"
-                        Grid.Column="2"
+                        Grid.Row="2"
                         EffectsManager="{Binding EffectsManager}"
                         Camera="{Binding Camera}"
                         ZoomExtentsWhenLoaded="True"
                         ZoomDistanceLimitNear="0.0001">
-            <hx:Viewport3DX.InputBindings>
-                <KeyBinding Command="hx:ViewportCommands.ZoomExtents" Gesture="Control+E" />
-                <KeyBinding Command="hx:ViewportCommands.Reset" Gesture="Control+R"/>
-                <MouseBinding Command="hx:ViewportCommands.Rotate" Gesture="RightClick" />
-                <MouseBinding Command="hx:ViewportCommands.Zoom" Gesture="MiddleClick" />
-                <MouseBinding Command="hx:ViewportCommands.Pan" Gesture="LeftClick" />
-            </hx:Viewport3DX.InputBindings>
-            <hx:DirectionalLight3D IsRendering="True" Direction="0, 0, -1" Color="White" />
-            <hx:DirectionalLight3D IsRendering="True" Direction="0, 0, 1" Color="White" />
-            <hx:DirectionalLight3D IsRendering="True" Direction="0, 1, 0" Color="White" />
-            <hx:DirectionalLight3D IsRendering="True" Direction="0, -1, 0" Color="White" />
-            <hx:DirectionalLight3D IsRendering="True" Direction="1, 0, 0" Color="White" />
-            <hx:DirectionalLight3D IsRendering="True" Direction="-1, 0, 0" Color="White" />
-            <hx:GroupModel3D ItemsSource="{Binding Models}"/>
-        </hx:Viewport3DX>
+                <hx:Viewport3DX.InputBindings>
+                    <KeyBinding Command="hx:ViewportCommands.ZoomExtents" Gesture="Control+E" />
+                    <KeyBinding Command="hx:ViewportCommands.Reset" Gesture="Control+R"/>
+                    <MouseBinding Command="hx:ViewportCommands.Rotate" Gesture="RightClick" />
+                    <MouseBinding Command="hx:ViewportCommands.Zoom" Gesture="MiddleClick" />
+                    <MouseBinding Command="hx:ViewportCommands.Pan" Gesture="LeftClick" />
+                </hx:Viewport3DX.InputBindings>
+                <hx:DirectionalLight3D IsRendering="True" Direction="0, 0, -1" Color="White" />
+                <hx:DirectionalLight3D IsRendering="True" Direction="0, 0, 1" Color="White" />
+                <hx:DirectionalLight3D IsRendering="True" Direction="0, 1, 0" Color="White" />
+                <hx:DirectionalLight3D IsRendering="True" Direction="0, -1, 0" Color="White" />
+                <hx:DirectionalLight3D IsRendering="True" Direction="1, 0, 0" Color="White" />
+                <hx:DirectionalLight3D IsRendering="True" Direction="-1, 0, 0" Color="White" />
+                <hx:GroupModel3D ItemsSource="{Binding Models}"/>
+            </hx:Viewport3DX>
+        </Grid>
 
     </Grid>
 </UserControl>
