@@ -79,8 +79,11 @@
                 <Label x:Name="ViewportDisclaimer" VerticalAlignment="Top" HorizontalAlignment="Center" Content="{Binding Source={x:Static resx:UIStrings.Viewport_Disclaimer}}" Foreground="#FF151515" FontSize="10"/>
                 <Label VerticalAlignment="Bottom" HorizontalAlignment="Center" Content="{Binding ModelStatusLabel}" Foreground="#FF151515" FontSize="18"/>
             </Grid>
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="5,5,5,40">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="5,5,5,80">
                 <Button x:Name="HighlightColorsetButton" Content="Highlight Colorset Row"  Visibility="{Binding ColorsetVisibility, FallbackValue=Hidden}" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="5,5,5,40">
+                <Button x:Name="OpenShapesMenu" Content="Apply Deformation Shapes"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="5">
                 <Button x:Name="ViewerOptionsButton" Content="{Binding Source={x:Static resx:UIStrings.Viewer_Options}}" Command="{Binding ViewOptionsCommand}"/>

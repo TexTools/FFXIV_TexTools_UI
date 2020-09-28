@@ -50,6 +50,7 @@ using xivModdingFramework.Materials.DataContainers;
 using xivModdingFramework.Materials.FileTypes;
 using xivModdingFramework.Models.DataContainers;
 using xivModdingFramework.Models.FileTypes;
+using xivModdingFramework.Models.Helpers;
 using xivModdingFramework.Models.ModelTextures;
 using xivModdingFramework.Mods;
 using xivModdingFramework.Mods.Enums;
@@ -93,6 +94,8 @@ namespace FFXIV_TexTools.ViewModels
         public event EventHandler LoadingComplete;
         public event EventHandler AddToFullModelEvent;
 
+        private List<string> ActiveShapes = new List<string>();
+
         private Dictionary<int, ModelTextureData> _materialDictionary;
 
         private DirectoryInfo _gameDirectory;
@@ -107,13 +110,13 @@ namespace FFXIV_TexTools.ViewModels
             _view.ExportModelButton.Click += ExportModelButton_Click;
             _view.ExportContextButton.Click += ExportContextButton_Click;
             _view.HighlightColorsetButton.Click += HighlightColorsetButton_Click;
+            _view.OpenShapesMenu.Click += OpenShapesMenu_Click;
 
 
             var mw = MainWindow.GetMainWindow();
             mw.SelectedPrimaryItemValueChanged += Mw_SelectedPrimaryItemValueChanged;
             //_modelView.ExportContextMenu.Items.Add();
         }
-
 
 
         private void Mw_SelectedPrimaryItemValueChanged(object sender, int e)
@@ -218,6 +221,7 @@ namespace FFXIV_TexTools.ViewModels
         {
 
             ClearAll();
+            ActiveShapes = new List<string>();
 
             // Might as well just make sure we have these updated.
             CustomizeViewModel.UpdateFrameworkColors();
@@ -785,10 +789,13 @@ namespace FFXIV_TexTools.ViewModels
             if(_model == null)
             {
                 _model = new TTModel();
+                _view.OpenShapesMenu.IsEnabled = false;
                 UpdateViewPort();
                 OnLoadingComplete();
                 return;
             }
+
+            _view.OpenShapesMenu.IsEnabled = _model.HasShapeData;
 
             _meshCount = _model.MeshGroups.Count;
 
@@ -1690,6 +1697,8 @@ namespace FFXIV_TexTools.ViewModels
 
                 if (_model == null) return;
 
+                ModelModifiers.ApplyShapes(_model, ActiveShapes);
+
                 _materialDictionary = await GetMaterials();
 
                 ViewPortVM.UpdateModel(_model, _materialDictionary);
@@ -2087,6 +2096,20 @@ namespace FFXIV_TexTools.ViewModels
             HighlightedColorsetRow = wind.SelectedRow;
             UpdateViewPort();
 
+        }
+        private void OpenShapesMenu_Click(object sender, RoutedEventArgs e)
+        {
+            if (_model == null || !_model.HasShapeData) return;
+
+            var wind = new ApplyShapesView(_model, ActiveShapes) { Owner = MainWindow.GetMainWindow() };
+            wind.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+
+            var result = wind.ShowDialog();
+
+            if (result != true) return;
+
+            ActiveShapes = wind.SelectedShapes;
+            UpdateViewPort();
         }
 
 

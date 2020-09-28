@@ -390,6 +390,9 @@
     <Compile Include="Views\Metadata\VisorControl.xaml.cs">
       <DependentUpon>VisorControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Models\ApplyShapesView.xaml.cs">
+      <DependentUpon>ApplyShapesView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Models\FullModelExportDialogView.xaml.cs">
       <DependentUpon>FullModelExportDialogView.xaml</DependentUpon>
     </Compile>
@@ -617,6 +620,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Metadata\VisorControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Models\ApplyShapesView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
