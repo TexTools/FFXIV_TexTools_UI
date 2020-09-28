@@ -430,12 +430,13 @@ namespace FFXIV_TexTools.Controls
 
                 _mtrl = mtrl;
                 await _vm.SetMaterial(_mtrl, DyeTemplateFile);
+                await SetRow(row);
+
                 for (int i = 0; i < 16; i++)
                 {
                     await UpdateRowVisual(i);
                 }
 
-                await SetRow(row);
             } catch(Exception ex)
             {
                 FlexibleMessageBox.Show("Unable to load material into colorset editor.\n\nError: " + ex.Message, "Colorset Editor Error", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning);
@@ -802,6 +803,7 @@ namespace FFXIV_TexTools.Controls
 
         private async void DyePreviewIdBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (_mtrl == null) return;
 
             CopyDyeValuesButton.IsEnabled = false;
             if (DyePreviewIdBox.SelectedValue != null && DyeTemplateIdBox.SelectedValue != null)
@@ -813,6 +815,8 @@ namespace FFXIV_TexTools.Controls
                     CopyDyeValuesButton.IsEnabled = true;
                 }
             }
+
+            if (_LOADING) return;
 
             await UpdateViewport();
         }
