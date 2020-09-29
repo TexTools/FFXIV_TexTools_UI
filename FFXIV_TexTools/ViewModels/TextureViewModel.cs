@@ -717,7 +717,7 @@ namespace FFXIV_TexTools.ViewModels
             {
                 var index = new Index(XivCache.GameInfo.GameDirectory);
 
-                var _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory, IOUtil.GetDataFileFromPath(SelectedMaterial), XivCache.GameInfo.GameLanguage);
+                var _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory);
                 try
                 {
                     // Material doesn't exist for this material set.
@@ -1109,7 +1109,7 @@ namespace FFXIV_TexTools.ViewModels
                 return;
             }
 
-            var _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory, IOUtil.GetDataFileFromPath(SelectedMap.Path), XivCache.GameInfo.GameLanguage);
+            var _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory);
             var _tex = new Tex(XivCache.GameInfo.GameDirectory);
             var _modding = new Modding(XivCache.GameInfo.GameDirectory);
 
@@ -1325,7 +1325,7 @@ namespace FFXIV_TexTools.ViewModels
                 DirectoryInfo savePath = new DirectoryInfo(Settings.Default.Save_Directory);
                 XivTex texData;
                 var df = IOUtil.GetDataFileFromPath(SelectedMap.Path);
-                var _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory, df, XivCache.GameInfo.GameLanguage);
+                var _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory);
                 var _tex = new Tex(XivCache.GameInfo.GameDirectory);
 
                 var ttp = new TexTypePath
@@ -1566,7 +1566,7 @@ namespace FFXIV_TexTools.ViewModels
 
         public async Task Import(string fileName)
         {
-            var _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory, IOUtil.GetDataFileFromPath(SelectedMap.Path), XivCache.GameInfo.GameLanguage);
+            var _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory);
             var _tex = new Tex(XivCache.GameInfo.GameDirectory);
             var _modding = new Modding(XivCache.GameInfo.GameDirectory);
 
@@ -1820,7 +1820,7 @@ namespace FFXIV_TexTools.ViewModels
                     }
 
                     if (matPath == null) return;
-                    var _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory, IOUtil.GetDataFileFromPath(matPath), XivCache.GameInfo.GameLanguage);
+                    var _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory);
 
                     // Load the original material.
                     material = await _mtrl.GetMtrlData(matPath, materialSet);

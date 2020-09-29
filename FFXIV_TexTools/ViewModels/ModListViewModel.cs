@@ -520,7 +520,7 @@ namespace FFXIV_TexTools.ViewModels
                 var selectedItem = category.Item as XivGenericItemModel;
                 if (selectedItem == null) return;
 
-                var mtrl = new Mtrl(_gameDirectory, selectedItem.DataFile, GetLanguage());
+                var mtrl = new Mtrl(_gameDirectory);
                 var modding = new Modding(_gameDirectory);
                 var modList = modding.GetModList();
 
@@ -635,8 +635,6 @@ namespace FFXIV_TexTools.ViewModels
 
                                 try
                                 {
-                                    mtrl.DataFile = XivDataFiles.GetXivDataFile(modItem.datFile);
-
                                     var mtrlData = await mtrl.GetMtrlData(offset, modItem.fullPath, dxVersion);
 
                                     var floats = Half.ConvertToFloat(mtrlData.ColorSetData.ToArray());

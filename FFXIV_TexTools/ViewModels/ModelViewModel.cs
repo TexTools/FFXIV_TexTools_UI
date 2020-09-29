@@ -1760,7 +1760,7 @@ namespace FFXIV_TexTools.ViewModels
             var textureDataDictionary = new Dictionary<int, ModelTextureData>();
             if (_model == null) return textureDataDictionary;
             var mtrlDictionary = new Dictionary<int, XivMtrl>();
-            var mtrl = new Mtrl(_gameDirectory, _item.DataFile, GetLanguage());
+            var mtrl = new Mtrl(XivCache.GameInfo.GameDirectory);
             var mtrlFilePaths = _model.Materials;
             var hasColorChangeShader = false;
             Color? customColor = null;

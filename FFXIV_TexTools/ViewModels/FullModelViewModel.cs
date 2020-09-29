@@ -687,7 +687,7 @@ namespace FFXIV_TexTools.ViewModels
         private async Task UpdateBodyTextures(TTModel ttModel, IItemModel item, Dictionary<int, ModelTextureData> materialDictionary)
         {
             var _imc = new Imc(_gameDirectory);
-            var _mtrl = new Mtrl(_gameDirectory, IOUtil.GetDataFileFromPath(ttModel.Source), XivLanguage.None);
+            var _mtrl = new Mtrl(_gameDirectory);
             var _index = new Index(_gameDirectory);
 
             // Determine which materials in the model need to be replaced
@@ -773,7 +773,7 @@ namespace FFXIV_TexTools.ViewModels
         private async Task UpdateTailTextures(TTModel ttModel, Dictionary<int, ModelTextureData> materialDictionary)
         {
             var _imc = new Imc(_gameDirectory);
-            var _mtrl = new Mtrl(_gameDirectory, IOUtil.GetDataFileFromPath(ttModel.Source), XivLanguage.None);
+            var _mtrl = new Mtrl(_gameDirectory);
             var _index = new Index(_gameDirectory);
 
             // Determine which materials in the model need to be replaced
@@ -834,7 +834,7 @@ namespace FFXIV_TexTools.ViewModels
 
             if (ttModel != null)
             {
-                var _mtrl = new Mtrl(_gameDirectory, IOUtil.GetDataFileFromPath(ttModel.Source), XivLanguage.None);
+                var _mtrl = new Mtrl(_gameDirectory);
                 var _index = new Index(_gameDirectory);
 
                 var faceRegex = new Regex("(f[0-9]{4})");
