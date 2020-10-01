@@ -3,6 +3,7 @@ using FFXIV_TexTools.Resources;
 using FFXIV_TexTools.ViewModels;
 using FFXIV_TexTools.Views.Controls;
 using HelixToolkit.Wpf.SharpDX;
+using MahApps.Metro;
 using Newtonsoft.Json;
 using SharpDX;
 using System;
@@ -107,6 +108,7 @@ namespace FFXIV_TexTools.Controls
             DyePreviewIdBox.ItemsSource = PreviewDyeCollection;
             DyePreviewIdBox.DisplayMemberPath = "Value";
             DyePreviewIdBox.SelectedValuePath = "Key";
+
 
             TileIdBox.ItemsSource = TileMaterialIds;
             TileIdBox.DisplayMemberPath = "Value";
@@ -390,6 +392,37 @@ namespace FFXIV_TexTools.Controls
 
             _LOADING = true;
 
+
+            var appStyle = ThemeManager.DetectAppStyle(Application.Current);
+            Brush bgBrush = MainWindow.GetMainWindow().Background;
+            Brush fgBrush = MainWindow.GetMainWindow().Foreground;
+
+
+            DiffuseColorPicker.Background = bgBrush;
+            DiffuseColorPicker.Foreground = fgBrush;
+            SpecularColorPicker.Background = bgBrush;
+            SpecularColorPicker.Foreground = fgBrush;
+            EmissiveColorPicker.Background = bgBrush;
+            EmissiveColorPicker.Foreground = fgBrush;
+
+            DiffuseColorPicker.DropDownBackground = bgBrush;
+            DiffuseColorPicker.HeaderForeground = fgBrush;
+            DiffuseColorPicker.TabForeground= fgBrush;
+            DiffuseColorPicker.TabBackground = bgBrush;
+            DiffuseColorPicker.HeaderBackground = bgBrush;
+
+            SpecularColorPicker.DropDownBackground = bgBrush;
+            SpecularColorPicker.HeaderForeground = fgBrush;
+            SpecularColorPicker.TabForeground = fgBrush;
+            SpecularColorPicker.TabBackground = bgBrush;
+            SpecularColorPicker.HeaderBackground = bgBrush;
+
+            EmissiveColorPicker.DropDownBackground = bgBrush;
+            EmissiveColorPicker.HeaderForeground = fgBrush;
+            EmissiveColorPicker.TabForeground = fgBrush;
+            EmissiveColorPicker.TabBackground = bgBrush;
+            EmissiveColorPicker.HeaderBackground = bgBrush;
+
             try
             {
                 DyeTemplateFile = await STM.GetStainingTemplateFile(false);
@@ -456,7 +489,7 @@ namespace FFXIV_TexTools.Controls
             try
             {
 
-                var mtrlLib = new Mtrl(XivCache.GameInfo.GameDirectory, IOUtil.GetDataFileFromPath(_mtrl.MTRLPath), XivCache.GameInfo.GameLanguage);
+                var mtrlLib = new Mtrl(XivCache.GameInfo.GameDirectory);
 
                 var item = mw.GetSelectedItem();
                 await mtrlLib.ImportMtrl(_mtrl, item, XivStrings.TexTools);
