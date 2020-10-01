@@ -102,7 +102,7 @@ namespace FFXIV_TexTools.ViewModels
             _item = item;
 
             var gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
-            _mtrl = new Mtrl(gameDirectory, item.DataFile, GetLanguage());
+            _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory);
             _index = new Index(gameDirectory);
             _modding = new Modding(gameDirectory);
             _gear = new Gear(gameDirectory, GetLanguage());

@@ -93,7 +93,7 @@ namespace FFXIV_TexTools.Views.Controls
             var df = IOUtil.GetDataFileFromPath(root.Info.GetRootFile());
 
             var _index = new Index(gd);
-            var _mtrl = new Mtrl(gd, df, lang);
+            var _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory);
             var _mdl = new Mdl(gd, df);
             var _imc = new Imc(gd);
             var raceRegex = new Regex("c([0-9]{4})[^b]");

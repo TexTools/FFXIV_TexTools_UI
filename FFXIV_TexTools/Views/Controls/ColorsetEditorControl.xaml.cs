@@ -456,7 +456,7 @@ namespace FFXIV_TexTools.Controls
             try
             {
 
-                var mtrlLib = new Mtrl(XivCache.GameInfo.GameDirectory, IOUtil.GetDataFileFromPath(_mtrl.MTRLPath), XivCache.GameInfo.GameLanguage);
+                var mtrlLib = new Mtrl(XivCache.GameInfo.GameDirectory);
 
                 var item = mw.GetSelectedItem();
                 await mtrlLib.ImportMtrl(_mtrl, item, XivStrings.TexTools);

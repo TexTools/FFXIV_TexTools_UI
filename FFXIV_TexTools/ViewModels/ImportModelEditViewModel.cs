@@ -278,6 +278,8 @@ namespace FFXIV_TexTools.ViewModels
 
         private void RemoveShapeButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
+            /*
+             * TODO -- FIXFIX
             var shape = (string)_view.ShapesListBox.SelectedValue;
             var m = GetGroup();
 
@@ -286,6 +288,7 @@ namespace FFXIV_TexTools.ViewModels
             var entry = _view.ShapesSource.First(x => x.Key == shape);
             _view.ShapesSource.Remove(entry);
             m.ShapeParts.RemoveAll(x => x.Name == shape);
+            */
         }
 
         private void UpdateMaterialsList()
@@ -539,10 +542,12 @@ namespace FFXIV_TexTools.ViewModels
 
 
             _view.ShapesSource.Clear();
+            /*
+             * TODO -- FIXFIX
             foreach (var shape in m.ShapeParts)
             {
                 _view.ShapesSource.Add(new KeyValuePair<string, string>(shape.Name, GetNiceShapeName(shape.Name)));
-            }
+            }*/
 
             SetMaterial(m.Material == null ? _newModel.Materials[0] : m.Material);
 
