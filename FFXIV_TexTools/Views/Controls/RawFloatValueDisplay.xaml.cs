@@ -23,7 +23,7 @@ namespace FFXIV_TexTools.Views.Controls
         public float Red;
         public float Green;
         public float Blue;
-        public RawFloatValueDisplay(float red, float blue, float green, string name = null)
+        public RawFloatValueDisplay(float red, float green, float blue, string name = null)
         {
             InitializeComponent();
 
