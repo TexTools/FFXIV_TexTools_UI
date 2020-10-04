@@ -2134,9 +2134,14 @@ namespace FFXIV_TexTools.ViewModels
         /// <summary>
         /// Event fired when add to FMV button is clicked
         /// </summary>
-        protected virtual void OnFullModelClick()
+        protected virtual async void OnFullModelClick()
         {
-            var fmea = new fullModelEventArgs { TTModelData = _model, TextureData = _materialDictionary, Item = _item, XivRace = SelectedRace.XivRace};
+            if (_model == null || !_model.IsInternal) return;
+
+            // Load a clean copy of the model.
+            var ttmdl = await _mdl.GetModel(_model.Source);
+
+            var fmea = new fullModelEventArgs { TTModelData = ttmdl, TextureData = _materialDictionary, Item = _item, XivRace = SelectedRace.XivRace};
 
             AddToFullModelEvent?.Invoke(this, fmea);
         }
