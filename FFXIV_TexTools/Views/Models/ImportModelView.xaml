@@ -35,7 +35,7 @@
                 <RowDefinition Height ="1*"></RowDefinition>
                 <RowDefinition Height ="1*"></RowDefinition>
             </Grid.RowDefinitions>
-            <CheckBox x:Name="EnableShapeDataButton" Content="Enable Shape Data" Style="{DynamicResource SimpleCheckBox}" Grid.Row="0" Grid.Column="0" VerticalContentAlignment="Center" VerticalAlignment="Center" ToolTipService.ShowOnDisabled="True" ToolTip="Enable the model's original shape data. (Should be ON for Faces)" />
+            <CheckBox x:Name="UseOriginalShapeDataButton" Content="Use Original Shape Data" Style="{DynamicResource SimpleCheckBox}" Grid.Row="0" Grid.Column="0" VerticalContentAlignment="Center" VerticalAlignment="Center" ToolTipService.ShowOnDisabled="True" ToolTip="Enable the model's original shape data. (Should be ON for Faces)" />
             <CheckBox x:Name="ClearUV2Button" Content="Clear UV2" Style="{DynamicResource SimpleCheckBox}" Grid.Row="0" Grid.Column="1"  VerticalContentAlignment="Center" VerticalAlignment="Center" ToolTipService.ShowOnDisabled="True" ToolTip="Reset the second UV layer to [0,0]" />
             <CheckBox x:Name="ClearVColorButton" Content="Clear Vertex Color" Style="{DynamicResource SimpleCheckBox}" Grid.Row="0" Grid.Column="2"  VerticalContentAlignment="Center" VerticalAlignment="Center" ToolTipService.ShowOnDisabled="True" ToolTip="Reset the Vertex Color to [255,255,255]" />
             <CheckBox x:Name="ForceUVsButton" Content="Force UV1 to [1,-1]" Style="{DynamicResource SimpleCheckBox}" Grid.Row="1" Grid.Column="0"  VerticalContentAlignment="Center" VerticalAlignment="Center" ToolTipService.ShowOnDisabled="True" ToolTip="Move all UV Coordinates into the [1,-1] quadrant."  />

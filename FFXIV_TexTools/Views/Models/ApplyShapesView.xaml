@@ -1,0 +1,23 @@
+﻿<Window x:Class="FFXIV_TexTools.Views.Models.ApplyShapesView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FFXIV_TexTools.Views.Models"
+        mc:Ignorable="d"
+        Title="Apply Deformation Shapes" SizeToContent="WidthAndHeight">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*"></RowDefinition>
+            <RowDefinition Height="40"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200"></ColumnDefinition>
+            <ColumnDefinition Width="200"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <UniformGrid x:Name="ShapesGrid" Rows="2" Grid.ColumnSpan="2"/>
+
+        <Button x:Name="ApplyButton" Click="ApplyButton_Click" Grid.Row="1" Grid.Column="1" Content="Apply Shapes" VerticalAlignment="Center" Margin="10,0" Width="150" HorizontalAlignment="Right"></Button>
+        <Button x:Name="CancelButton" Click="CancelButton_Click" Grid.Row="1" Grid.Column="0" Content="Cancel" VerticalAlignment="Center" Margin="10,0" Width="150" HorizontalAlignment="Left"></Button>
+    </Grid>
+</Window>

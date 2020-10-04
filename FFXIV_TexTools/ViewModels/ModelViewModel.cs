@@ -50,6 +50,7 @@ using xivModdingFramework.Materials.DataContainers;
 using xivModdingFramework.Materials.FileTypes;
 using xivModdingFramework.Models.DataContainers;
 using xivModdingFramework.Models.FileTypes;
+using xivModdingFramework.Models.Helpers;
 using xivModdingFramework.Models.ModelTextures;
 using xivModdingFramework.Mods;
 using xivModdingFramework.Mods.Enums;
@@ -77,9 +78,11 @@ namespace FFXIV_TexTools.ViewModels
 
         private string _lightXLabel = "X  |  0", _lightYLabel = "Y  |  0", _lightZLabel = "Z  |  0", _reflectionLabel = $"{UIStrings.Reflection}  |  1", _modToggleText = UIStrings.Enable_Disable, _modelStatusLabel;
         private ComboBoxData _selectedRace, _selectedPart, _selectedNumber, _selectedMesh;
-        private Visibility _numberVisibility, _partVisibility, _lightToggleVisibility = Visibility.Collapsed, _fmvVisibility;
+        private Visibility _numberVisibility, _partVisibility, _lightToggleVisibility = Visibility.Collapsed, _fmvVisibility, _ColorsetVisibility;
         private Visibility _raceVisibility = Visibility.Visible;
         private bool _light1Check = true, _light2Check, _light3Check, _lightRenderToggle, _transparencyToggle, _cullModeToggle, _keepCameraChecked;
+
+        public int HighlightedColorsetRow = -1;
 
         private IItemModel _item;
         private Mdl _mdl;
@@ -90,6 +93,8 @@ namespace FFXIV_TexTools.ViewModels
 
         public event EventHandler LoadingComplete;
         public event EventHandler AddToFullModelEvent;
+
+        private List<string> ActiveShapes = new List<string>();
 
         private Dictionary<int, ModelTextureData> _materialDictionary;
 
@@ -104,22 +109,13 @@ namespace FFXIV_TexTools.ViewModels
 
             _view.ExportModelButton.Click += ExportModelButton_Click;
             _view.ExportContextButton.Click += ExportContextButton_Click;
+            _view.HighlightColorsetButton.Click += HighlightColorsetButton_Click;
+            _view.OpenShapesMenu.Click += OpenShapesMenu_Click;
 
 
             var mw = MainWindow.GetMainWindow();
             mw.SelectedPrimaryItemValueChanged += Mw_SelectedPrimaryItemValueChanged;
             //_modelView.ExportContextMenu.Items.Add();
-        }
-
-        private void ExportContextButton_Click(object sender, RoutedEventArgs e)
-        {
-            _view.ExportContextMenu.PlacementTarget = _view.ExportModelButton;
-            _view.ExportContextMenu.IsOpen = true;
-        }
-
-        private void ExportModelButton_Click(object sender, RoutedEventArgs e)
-        {
-            ExportModel("fbx");
         }
 
 
@@ -225,6 +221,7 @@ namespace FFXIV_TexTools.ViewModels
         {
 
             ClearAll();
+            ActiveShapes = new List<string>();
 
             // Might as well just make sure we have these updated.
             CustomizeViewModel.UpdateFrameworkColors();
@@ -792,10 +789,13 @@ namespace FFXIV_TexTools.ViewModels
             if(_model == null)
             {
                 _model = new TTModel();
+                _view.OpenShapesMenu.IsEnabled = false;
                 UpdateViewPort();
                 OnLoadingComplete();
                 return;
             }
+
+            _view.OpenShapesMenu.IsEnabled = _model.HasShapeData;
 
             _meshCount = _model.MeshGroups.Count;
 
@@ -1248,6 +1248,19 @@ namespace FFXIV_TexTools.ViewModels
         }
 
         /// <summary>
+        /// Flag for FMV Highlight button
+        /// </summary>
+        public Visibility ColorsetVisibility
+        {
+            get => _ColorsetVisibility;
+            set
+            {
+                _ColorsetVisibility = value;
+                NotifyPropertyChanged(nameof(ColorsetVisibility));
+            }
+        }
+
+        /// <summary>
         /// Updates the Cull Mode
         /// </summary>
         private void UpdateCullMode(bool noneCull)
@@ -1684,6 +1697,8 @@ namespace FFXIV_TexTools.ViewModels
 
                 if (_model == null) return;
 
+                ModelModifiers.ApplyShapes(_model, ActiveShapes);
+
                 _materialDictionary = await GetMaterials();
 
                 ViewPortVM.UpdateModel(_model, _materialDictionary);
@@ -1745,7 +1760,7 @@ namespace FFXIV_TexTools.ViewModels
             var textureDataDictionary = new Dictionary<int, ModelTextureData>();
             if (_model == null) return textureDataDictionary;
             var mtrlDictionary = new Dictionary<int, XivMtrl>();
-            var mtrl = new Mtrl(_gameDirectory, _item.DataFile, GetLanguage());
+            var mtrl = new Mtrl(XivCache.GameInfo.GameDirectory);
             var mtrlFilePaths = _model.Materials;
             var hasColorChangeShader = false;
             Color? customColor = null;
@@ -1966,21 +1981,20 @@ namespace FFXIV_TexTools.ViewModels
                 materialNum++;
             }
 
+
+            ColorsetVisibility = Visibility.Collapsed;
             foreach (var xivMtrl in mtrlDictionary)
             {
+                if(xivMtrl.Value.ColorSetData.Count > 0)
+                {
+                    ColorsetVisibility = Visibility.Visible;
+                }
 
                 var colors = ModelTexture.GetCustomColors();
                 colors.InvertNormalGreen = false;
-                if (hasColorChangeShader)
-                {
-                    var modelMaps = await ModelTexture.GetModelMaps(_gameDirectory, xivMtrl.Value, colors);
-                    textureDataDictionary.Add(xivMtrl.Key, modelMaps);
-                }
-                else
-                {
-                    var modelMaps = await ModelTexture.GetModelMaps(_gameDirectory, xivMtrl.Value, colors);
-                    textureDataDictionary.Add(xivMtrl.Key, modelMaps);
-                }
+
+                var modelMaps = await ModelTexture.GetModelMaps(_gameDirectory, xivMtrl.Value, colors, HighlightedColorsetRow);
+                textureDataDictionary.Add(xivMtrl.Key, modelMaps);
             }
 
             return textureDataDictionary;
@@ -2059,6 +2073,44 @@ namespace FFXIV_TexTools.ViewModels
             PartVisibility = Visibility.Collapsed;
             TransparencyToggle = false;
         }
+        private void ExportContextButton_Click(object sender, RoutedEventArgs e)
+        {
+            _view.ExportContextMenu.PlacementTarget = _view.ExportModelButton;
+            _view.ExportContextMenu.IsOpen = true;
+        }
+
+        private void ExportModelButton_Click(object sender, RoutedEventArgs e)
+        {
+            ExportModel("fbx");
+        }
+
+        private void HighlightColorsetButton_Click(object sender, RoutedEventArgs e)
+        {
+            var wind = new HighilightedColorsetSelection(HighlightedColorsetRow) { Owner = MainWindow.GetMainWindow() };
+            wind.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+
+            var result = wind.ShowDialog();
+
+            if (result != true) return;
+
+            HighlightedColorsetRow = wind.SelectedRow;
+            UpdateViewPort();
+
+        }
+        private void OpenShapesMenu_Click(object sender, RoutedEventArgs e)
+        {
+            if (_model == null || !_model.HasShapeData) return;
+
+            var wind = new ApplyShapesView(_model, ActiveShapes) { Owner = MainWindow.GetMainWindow() };
+            wind.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+
+            var result = wind.ShowDialog();
+
+            if (result != true) return;
+
+            ActiveShapes = wind.SelectedShapes;
+            UpdateViewPort();
+        }
 
 
         /// <summary>
@@ -2082,9 +2134,14 @@ namespace FFXIV_TexTools.ViewModels
         /// <summary>
         /// Event fired when add to FMV button is clicked
         /// </summary>
-        protected virtual void OnFullModelClick()
+        protected virtual async void OnFullModelClick()
         {
-            var fmea = new fullModelEventArgs { TTModelData = _model, TextureData = _materialDictionary, Item = _item, XivRace = SelectedRace.XivRace};
+            if (_model == null || !_model.IsInternal) return;
+
+            // Load a clean copy of the model.
+            var ttmdl = await _mdl.GetModel(_model.Source);
+
+            var fmea = new fullModelEventArgs { TTModelData = ttmdl, TextureData = _materialDictionary, Item = _item, XivRace = SelectedRace.XivRace};
 
             AddToFullModelEvent?.Invoke(this, fmea);
         }

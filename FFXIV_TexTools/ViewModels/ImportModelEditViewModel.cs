@@ -285,7 +285,10 @@ namespace FFXIV_TexTools.ViewModels
 
             var entry = _view.ShapesSource.First(x => x.Key == shape);
             _view.ShapesSource.Remove(entry);
-            m.ShapeParts.RemoveAll(x => x.Name == shape);
+            foreach (var p in m.Parts)
+            {
+                p.ShapeParts.Remove(shape);
+            }
         }
 
         private void UpdateMaterialsList()
@@ -513,7 +516,6 @@ namespace FFXIV_TexTools.ViewModels
         {
             if(_view.MeshNumberBox.SelectedValue == null)
             {
-                // Todo - Clear all the fields.
                 _view.PartNumberBox.SelectedValue = null;
                 _view.ShapesSource.Clear();
                 _view.PartSource.Clear();
@@ -539,9 +541,20 @@ namespace FFXIV_TexTools.ViewModels
 
 
             _view.ShapesSource.Clear();
-            foreach (var shape in m.ShapeParts)
+            SortedSet<string> shapeNames = new SortedSet<string>();
+            foreach (var p in m.Parts)
             {
-                _view.ShapesSource.Add(new KeyValuePair<string, string>(shape.Name, GetNiceShapeName(shape.Name)));
+                foreach (var shpKv in p.ShapeParts)
+                {
+                    var shape = shpKv.Value;
+                    if (!shape.Name.StartsWith("shp_")) continue;
+                    shapeNames.Add(shape.Name);
+                }
+            }
+
+            foreach(var shape in shapeNames)
+            {
+                _view.ShapesSource.Add(new KeyValuePair<string, string>(shape, GetNiceShapeName(shape)));
             }
 
             SetMaterial(m.Material == null ? _newModel.Materials[0] : m.Material);

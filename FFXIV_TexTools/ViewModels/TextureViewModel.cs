@@ -42,6 +42,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
@@ -234,6 +235,7 @@ namespace FFXIV_TexTools.ViewModels
 
         public event EventHandler LoadingComplete;
 
+
         public TextureViewModel(TextureView textureView)
         {
             _textureView = textureView;
@@ -246,6 +248,13 @@ namespace FFXIV_TexTools.ViewModels
 
             var mw = MainWindow.GetMainWindow();
             mw.SelectedPrimaryItemValueChanged += Mw_SelectedPrimaryItemValueChanged;
+            _textureView.ColorsetEditor.MaterialSaved += ColorsetEditor_MaterialSaved;
+
+        }
+
+        private void ColorsetEditor_MaterialSaved(object sender, EventArgs e)
+        {
+            UpdateImage();
         }
 
         /// <summary>
@@ -708,7 +717,7 @@ namespace FFXIV_TexTools.ViewModels
             {
                 var index = new Index(XivCache.GameInfo.GameDirectory);
 
-                var _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory, IOUtil.GetDataFileFromPath(SelectedMaterial), XivCache.GameInfo.GameLanguage);
+                var _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory);
                 try
                 {
                     // Material doesn't exist for this material set.
@@ -1092,16 +1101,22 @@ namespace FFXIV_TexTools.ViewModels
             ImageDisplay = null;
             ChannelsEnabled = true;
 
-            if(SelectedMap == null || SelectedMap.Path == null)
+            _textureView.ColorsetEditor.Visibility = Visibility.Collapsed;
+            _textureView.StandardTextureDisplay.Visibility = Visibility.Visible;
+
+            if (SelectedMap == null || SelectedMap.Path == null)
             {
                 return;
             }
 
-            var _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory, IOUtil.GetDataFileFromPath(SelectedMap.Path), XivCache.GameInfo.GameLanguage);
+            var _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory);
             var _tex = new Tex(XivCache.GameInfo.GameDirectory);
             var _modding = new Modding(XivCache.GameInfo.GameDirectory);
 
+            // This is intentionally an async/deffered call here.
             LoadParentFileInformation(SelectedMap.Path);
+
+
             try
             {
                 if (SelectedMap.Usage != XivTexType.ColorSet)
@@ -1134,38 +1149,16 @@ namespace FFXIV_TexTools.ViewModels
                 }
                 else
                 {
-                    _xivMtrl = await _mtrl.GetMtrlData(_item, SelectedMap.Path);
-                    var floats = Half.ConvertToFloat(_xivMtrl.ColorSetData.ToArray());
-
-                    var floatArray = Utilities.ToByteArray(floats);
-
-                    _mapData = new MapData
-                    {
-                        MapBytes = floatArray,
-                        Height = 16,
-                        Width = 4,
-                        IsColorSet = true
-                    };
-
-                    _imageEffect = new ColorChannels
-                    {
-                        Channel = new System.Windows.Media.Media3D.Point4D(1.0f, 1.0f, 1.0f, 0.0f)
-                    };
-
-                    SetColorChannelFilter();
-
-                    _textureView.ImageZoombox.CenterContent();
-                    _textureView.ImageZoombox.FitToBounds();
-
+                    // Colorset entry.
                     PathString = SelectedMap.Path;
-                    TextureFormat = XivTexFormat.A16B16G16R16F.GetTexDisplayName();
-                    TextureDimensions = "4 x 16";
+                    _xivMtrl = await _mtrl.GetMtrlData(_item, SelectedMap.Path);
+                    await _textureView.ColorsetEditor.SetMaterial(_xivMtrl);
+
+                    _textureView.ColorsetEditor.Visibility = Visibility.Visible;
+                    _textureView.StandardTextureDisplay.Visibility = Visibility.Collapsed;
                 }
 
                 var mod = await _modding.TryGetModEntry(PathString);
-
-
-
                 if (mod != null && !mod.enabled)
                 {
                     ModStatusToggleEnabled = true;
@@ -1332,7 +1325,7 @@ namespace FFXIV_TexTools.ViewModels
                 DirectoryInfo savePath = new DirectoryInfo(Settings.Default.Save_Directory);
                 XivTex texData;
                 var df = IOUtil.GetDataFileFromPath(SelectedMap.Path);
-                var _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory, df, XivCache.GameInfo.GameLanguage);
+                var _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory);
                 var _tex = new Tex(XivCache.GameInfo.GameDirectory);
 
                 var ttp = new TexTypePath
@@ -1573,7 +1566,7 @@ namespace FFXIV_TexTools.ViewModels
 
         public async Task Import(string fileName)
         {
-            var _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory, IOUtil.GetDataFileFromPath(SelectedMap.Path), XivCache.GameInfo.GameLanguage);
+            var _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory);
             var _tex = new Tex(XivCache.GameInfo.GameDirectory);
             var _modding = new Modding(XivCache.GameInfo.GameDirectory);
 
@@ -1827,7 +1820,7 @@ namespace FFXIV_TexTools.ViewModels
                     }
 
                     if (matPath == null) return;
-                    var _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory, IOUtil.GetDataFileFromPath(matPath), XivCache.GameInfo.GameLanguage);
+                    var _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory);
 
                     // Load the original material.
                     material = await _mtrl.GetMtrlData(matPath, materialSet);
@@ -2006,6 +1999,8 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         private void ClearAll()
         {
+            _textureView.ColorsetEditor.Visibility = Visibility.Collapsed;
+            _textureView.StandardTextureDisplay.Visibility = Visibility.Visible;
             _hasVfx = false;
             _item = null;
             _uiItem = null;

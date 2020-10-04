@@ -231,7 +231,7 @@ namespace FFXIV_TexTools.Views.Metadata
 
             var paths = new List<(string title, string path)>();
 
-            var mtrl = new Mtrl(XivCache.GameInfo.GameDirectory, IOUtil.GetDataFileFromPath(_metadata.Root.Info.GetRootFile()), XivCache.GameInfo.GameLanguage);
+            var mtrl = new Mtrl(XivCache.GameInfo.GameDirectory);
             var folder = mtrl.GetMtrlFolder(_metadata.Root.Info, entry.MaterialSet) + "/";
             paths.Add(("Material Folder", folder));
 

@@ -121,7 +121,7 @@ namespace FFXIV_TexTools.Views.Models
             CloneUV1Button.IsEnabled = enabled;
             ClearVColorButton.IsEnabled = enabled;
             ClearVAlphaButton.IsEnabled = enabled;
-            EnableShapeDataButton.IsEnabled = enabled;
+            UseOriginalShapeDataButton.IsEnabled = enabled;
             ForceUVsButton.IsEnabled = enabled;
             FileNameTextBox.IsEnabled = enabled;
             UseExistingButton.IsEnabled = enabled;

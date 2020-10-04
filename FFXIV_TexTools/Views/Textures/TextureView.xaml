@@ -7,7 +7,9 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
     xmlns:local="clr-namespace:FFXIV_TexTools.Views"
-    xmlns:resx="clr-namespace:FFXIV_TexTools.Resources" xmlns:controls="clr-namespace:FFXIV_TexTools.Controls"
+    xmlns:hx="http://helix-toolkit.org/wpf/SharpDX"
+    xmlns:resx="clr-namespace:FFXIV_TexTools.Resources" 
+    xmlns:controls="clr-namespace:FFXIV_TexTools.Controls" 
     x:Class="FFXIV_TexTools.Views.TextureView"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
@@ -66,7 +68,8 @@
                       ItemsSource="{Binding Maps}" DisplayMemberPath="Key" SelectedValuePath="Value" IsEnabled="{Binding MapComboBoxEnabled}"/>
         </Grid>
 
-        <Border Grid.Row="1" Margin="5, 0">
+        <controls:ColorsetEditorControl x:Name="ColorsetEditor" Grid.Row="1" Margin="5,0" Visibility="Collapsed"></controls:ColorsetEditorControl>
+        <Border x:Name="StandardTextureDisplay" Grid.Row="1" Margin="5, 0" Visibility="Visible">
             <Border.Background>
                 <DrawingBrush Viewport="0,0,20,20" ViewportUnits="Absolute" Stretch="None" TileMode="Tile">
                     <DrawingBrush.Drawing>

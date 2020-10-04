@@ -1,0 +1,36 @@
+﻿<Window x:Class="FFXIV_TexTools.Views.Controls.RawFloatValueDisplay"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FFXIV_TexTools.Views.Controls"
+        mc:Ignorable="d"
+        Title="Raw Value Editor"
+        SizeToContent="WidthAndHeight">
+    <Grid Height="160" Width="240">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="79"></ColumnDefinition>
+            <ColumnDefinition Width="161"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="23.5"></RowDefinition>
+            <RowDefinition Height="16.5"/>
+            <RowDefinition Height="40"></RowDefinition>
+            <RowDefinition Height="40"></RowDefinition>
+            <RowDefinition Height="40"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <Label Content="Red" Grid.Row="0" VerticalAlignment="Center" Margin="5,0" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Grid.RowSpan="2" Height="26"></Label>
+        <TextBox x:Name="RedBox" Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Margin="0,0,10,0" Grid.RowSpan="2" Height="26"></TextBox>
+
+        <Label Content="Green" Grid.Row="2" VerticalAlignment="Center" Margin="5,0" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Height="26"></Label>
+        <TextBox x:Name="GreenBox" Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" Margin="0,0,10,0" Height="26"></TextBox>
+
+        <Label Content="Blue" Grid.Row="3" VerticalAlignment="Center" Margin="5,0" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Height="26"></Label>
+        <TextBox x:Name="BlueBox" Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" Margin="0,0,10,0" Height="26"></TextBox>
+
+        <Button x:Name="SaveButton" Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="2"  Content="Save" Click="SaveButton_Click" VerticalAlignment="Center" Margin="0,6,10,6" Height="28" HorizontalAlignment="Right" Width="100"/>
+        <Button x:Name="CancelButton" Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="2" Content="Cancel" Click="CancelButton_Click" VerticalAlignment="Center" Margin="10,6" Height="28" Width="100" HorizontalAlignment="Left" />
+
+    </Grid>
+</Window>
