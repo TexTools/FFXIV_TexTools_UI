@@ -108,27 +108,30 @@ namespace FFXIV_TexTools.ViewModels
 
                 var mg3 = MakeCube();
 
+                var dMax = Math.Max(1.0f, Math.Max(RowData[0][0], Math.Max(RowData[0][1], RowData[0][2])));
+                var sMax = Math.Max(1.0f, Math.Max(RowData[0][0], Math.Max(RowData[0][1], RowData[0][2])));
+                var eMax = Math.Max(1.0f, Math.Max(RowData[0][0], Math.Max(RowData[0][1], RowData[0][2])));
 
                 var lmMaterial = new PhongMaterial()
                 {
                     AmbientColor = SharpDX.Color.Gray,
                     DiffuseColor = new SharpDX.Color(
-                        (byte)Math.Round(RowData[0][0] * 255f),
-                        (byte)Math.Round(RowData[0][1] * 255f),
-                        (byte)Math.Round(RowData[0][2] * 255f)),
+                        (byte)Math.Round((RowData[0][0] / dMax) * 255f),
+                        (byte)Math.Round((RowData[0][1] / dMax) * 255f),
+                        (byte)Math.Round((RowData[0][2]/ dMax) * 255f)),
 
                     SpecularColor = new SharpDX.Color(
-                        (byte)Math.Round(RowData[1][0] * 255f),
-                        (byte)Math.Round(RowData[1][1] * 255f),
-                        (byte)Math.Round(RowData[1][2] * 255f))
+                        (byte)Math.Round((RowData[1][0] / sMax) * 255f),
+                        (byte)Math.Round((RowData[1][1] / sMax) * 255f),
+                        (byte)Math.Round((RowData[1][2] / sMax) * 255f))
                 };
 
                 if (RowData[2][0] != 0 || RowData[2][1] != 0 || RowData[2][2] != 0)
                 {
                     lmMaterial.EmissiveColor = new SharpDX.Color(
-                        (byte)Math.Round(RowData[2][0] * 255f),
-                        (byte)Math.Round(RowData[2][1] * 255f),
-                        (byte)Math.Round(RowData[2][2] * 255f));
+                        (byte)Math.Round((RowData[2][0] / eMax) * 255f),
+                        (byte)Math.Round((RowData[2][1] / eMax) * 255f),
+                        (byte)Math.Round((RowData[2][2] / eMax) * 255f));
                 }
 
                 float glossVal = RowData[1][3];
@@ -151,26 +154,32 @@ namespace FFXIV_TexTools.ViewModels
 
                         if (useDiffuse && template.DiffuseEntries.Count > 0)
                         {
+                            var max = Math.Max(1.0f, Math.Max(template.DiffuseEntries[dyeId][0], Math.Max(template.DiffuseEntries[dyeId][1], template.DiffuseEntries[dyeId][2])));
+
                             lmMaterial.DiffuseColor = new SharpDX.Color(
-                            (byte)Math.Round(template.DiffuseEntries[dyeId][0] * 255f),
-                            (byte)Math.Round(template.DiffuseEntries[dyeId][1] * 255f),
-                            (byte)Math.Round(template.DiffuseEntries[dyeId][2] * 255f));
+                            (byte)Math.Round((template.DiffuseEntries[dyeId][0] / max) * 255f),
+                            (byte)Math.Round((template.DiffuseEntries[dyeId][1] / max) * 255f),
+                            (byte)Math.Round((template.DiffuseEntries[dyeId][2] / max) * 255f));
                         }
 
                         if (useSpecular && template.SpecularEntries.Count > 0)
                         {
+                            var max = Math.Max(1.0f, Math.Max(template.SpecularEntries[dyeId][0], Math.Max(template.SpecularEntries[dyeId][1], template.SpecularEntries[dyeId][2])));
+
                             lmMaterial.SpecularColor = new SharpDX.Color(
-                            (byte)Math.Round(template.SpecularEntries[dyeId][0] * 255f),
-                            (byte)Math.Round(template.SpecularEntries[dyeId][1] * 255f),
-                            (byte)Math.Round(template.SpecularEntries[dyeId][2] * 255f));
+                            (byte)Math.Round((template.SpecularEntries[dyeId][0] / max) * 255f),
+                            (byte)Math.Round((template.SpecularEntries[dyeId][1] / max) * 255f),
+                            (byte)Math.Round((template.SpecularEntries[dyeId][2] / max) * 255f));
                         }
 
                         if (useEmissive && template.EmissiveEntries.Count > 0)
                         {
+                            var max = Math.Max(1.0f, Math.Max(template.EmissiveEntries[dyeId][0], Math.Max(template.EmissiveEntries[dyeId][1], template.EmissiveEntries[dyeId][2])));
+
                             lmMaterial.EmissiveColor = new SharpDX.Color(
-                            (byte)Math.Round(template.EmissiveEntries[dyeId][0] * 255f),
-                            (byte)Math.Round(template.EmissiveEntries[dyeId][1] * 255f),
-                            (byte)Math.Round(template.EmissiveEntries[dyeId][2] * 255f));
+                            (byte)Math.Round((template.EmissiveEntries[dyeId][0] / max) * 255f),
+                            (byte)Math.Round((template.EmissiveEntries[dyeId][1] / max) * 255f),
+                            (byte)Math.Round((template.EmissiveEntries[dyeId][2] / max) * 255f));
                         }
 
                         if(useGloss && template.GlossEntries.Count > 0)
