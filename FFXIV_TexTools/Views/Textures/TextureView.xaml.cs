@@ -20,6 +20,7 @@ using MahApps.Metro.IconPacks;
 using System;
 using System.Windows;
 using System.Windows.Controls;
+using xivModdingFramework.Textures.Enums;
 
 namespace FFXIV_TexTools.Views
 {
@@ -49,14 +50,22 @@ namespace FFXIV_TexTools.Views
         {
             await this.Feedback.Show(PackIconFontAwesomeKind.FileExportSolid);
 
-            if (Settings.Default.ExportTexDDS)
+
+            
+            if (textureViewModel.SelectedMap.Usage == XivTexType.ColorSet)
+            {
                 await this.textureViewModel.Export(TextureViewModel.TextureFormats.DDS);
+            } else
+            {
+                if (Settings.Default.ExportTexDDS)
+                    await this.textureViewModel.Export(TextureViewModel.TextureFormats.DDS);
 
-            if (Settings.Default.ExportTexPNG)
-                await this.textureViewModel.Export(TextureViewModel.TextureFormats.PNG);
+                if (Settings.Default.ExportTexPNG)
+                    await this.textureViewModel.Export(TextureViewModel.TextureFormats.PNG);
 
-            if (Settings.Default.ExportTexBMP)
-                await this.textureViewModel.Export(TextureViewModel.TextureFormats.BMP);
+                if (Settings.Default.ExportTexBMP)
+                    await this.textureViewModel.Export(TextureViewModel.TextureFormats.BMP);
+            }
 
             this.Feedback.Hide();
         }

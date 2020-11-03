@@ -172,7 +172,7 @@ namespace FFXIV_TexTools.ViewModels
                 _textureView.MaterialComboBox.SelectedIndex = idx;
             }
         }
-        private MapInfo SelectedMap
+        public MapInfo SelectedMap
         {
             get
             {
@@ -1319,7 +1319,7 @@ namespace FFXIV_TexTools.ViewModels
             if (!CheckMtrlIsOK())
                 return;
 
-            
+
             if (format == TextureFormats.DDS)
             {
                 DirectoryInfo savePath = new DirectoryInfo(Settings.Default.Save_Directory);
@@ -1378,6 +1378,11 @@ namespace FFXIV_TexTools.ViewModels
             }
             else
             {
+                if(SelectedMap.Usage == XivTexType.ColorSet)
+                {
+                    return;
+                }
+
                 IImageEncoder encoder;
                 if (format == TextureFormats.BMP)
                 {
