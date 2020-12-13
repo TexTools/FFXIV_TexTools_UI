@@ -411,6 +411,9 @@
   <data name="Specular" xml:space="preserve">
     <value>Specular</value>
   </data>
+  <data name="Status" xml:space="preserve">
+    <value>États</value>
+  </data>
   <data name="Tail" xml:space="preserve">
     <value>Queue</value>
   </data>

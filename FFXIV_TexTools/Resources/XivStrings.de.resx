@@ -120,6 +120,9 @@
   <data name="Accessory" xml:space="preserve">
     <value>Accessory</value>
   </data>
+  <data name="Actions" xml:space="preserve">
+    <value>Kommandos</value>
+  </data>
   <data name="All" xml:space="preserve">
     <value>Alle</value>
   </data>
