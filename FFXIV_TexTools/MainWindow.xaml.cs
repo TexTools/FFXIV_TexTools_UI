@@ -416,7 +416,9 @@ namespace FFXIV_TexTools
                         }
 
                     }
-                    FlexibleMessageBox.Show("An error occurred while attempting to rebuild the cache.\n" + ex.Message, "Cache Rebuild Error.", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
+                    FlexibleMessageBox.Show("An error occurred while attempting to rebuild the cache. This may be caused by this version of Final Fantasy XIV " +
+                        "not being supported by this version of TexTools.\n\n" + ex.Message, "Cache Rebuild Error.", MessageBoxButtons.OK,  MessageBoxIcon.Error, 
+                        MessageBoxDefaultButton.Button1);
                 }
 
                 await Dispatcher.Invoke(async () =>

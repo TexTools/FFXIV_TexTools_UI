@@ -120,6 +120,9 @@
   <data name="Accessory" xml:space="preserve">
     <value>アクセサリ</value>
   </data>
+  <data name="Actions" xml:space="preserve">
+    <value>アクション</value>
+  </data>
   <data name="All" xml:space="preserve">
     <value>すべて</value>
   </data>
@@ -410,6 +413,9 @@
   </data>
   <data name="Specular" xml:space="preserve">
     <value>Specular</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>ステータス</value>
   </data>
   <data name="Tail" xml:space="preserve">
     <value>尾</value>

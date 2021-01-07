@@ -451,7 +451,7 @@ namespace FFXIV_TexTools.Views
 
             foreach (string searchTerm in searchTerms)
             {
-                if (item.name.IndexOf(searchTerm.Trim(), StringComparison.OrdinalIgnoreCase) >= 0) return true;
+                if (SimpleModpackEntry.GetFancyName(item.name, item.fullPath).IndexOf(searchTerm.Trim(), StringComparison.OrdinalIgnoreCase) >= 0) return true;
             }
             return false;
         }
