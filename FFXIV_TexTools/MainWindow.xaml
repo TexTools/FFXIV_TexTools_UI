@@ -93,8 +93,6 @@
             </MenuItem>
             <MenuItem Header="{Binding Source={x:Static resx:UIStrings.About}}">
                 <MenuItem x:Name="Menu_About" Header="{Binding Source={x:Static resx:UIStrings.About_TexTools}}" Click="Menu_About_Click"/>
-                <MenuItem x:Name="Menu_Donate" Header="{Binding Source={x:Static resx:UIStrings.Donate}}" Click="Menu_Donate_Click"/>
-                <MenuItem x:Name="Menu_Tutorials" Header="{Binding Source={x:Static resx:UIStrings.Tutorials}}" Click="Menu_Tutorials_Click"/>
 
             </MenuItem>
             <MenuItem Header="{Binding Source={x:Static resx:UIStrings.Mod_Repos}}" HorizontalAlignment="Right">
