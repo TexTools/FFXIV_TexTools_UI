@@ -1389,7 +1389,7 @@ namespace FFXIV_TexTools
 
         private void Menu_Donate_Click(object sender, RoutedEventArgs e)
         {
-            System.Diagnostics.Process.Start(WebUrl.FFXIV_Donate);
+            //System.Diagnostics.Process.Start(WebUrl.FFXIV_Donate);
         }
 
         private async void Menu_Backup_Click(object sender, RoutedEventArgs e)
