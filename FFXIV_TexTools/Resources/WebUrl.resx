@@ -148,10 +148,10 @@
     <value>https://raw.githubusercontent.com/TexTools/FFXIV_TexTools_Updater/master/updater.xml</value>
   </data>
   <data name="TexTools_Website" xml:space="preserve">
-    <value>https://www.github.com/textools/</value>
+    <value>https://www.ffxiv-textools.net/</value>
   </data>
   <data name="Tutorials_Website" xml:space="preserve">
-    <value>https://www.github.com/textools/</value>
+    <value>https://www.ffxiv-textools.net/</value>
   </data>
   <data name="XivModArchive_Website" xml:space="preserve">
     <value>https://www.xivmodarchive.com/</value>

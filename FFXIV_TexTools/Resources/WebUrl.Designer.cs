@@ -151,7 +151,7 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to https://www.github.com/textools/.
+        ///   Looks up a localized string similar to https://www.ffxiv-textools.net/.
         /// </summary>
         internal static string TexTools_Website {
             get {
@@ -160,7 +160,7 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to https://www.github.com/textools/.
+        ///   Looks up a localized string similar to https://www.ffxiv-textools.net/.
         /// </summary>
         internal static string Tutorials_Website {
             get {
