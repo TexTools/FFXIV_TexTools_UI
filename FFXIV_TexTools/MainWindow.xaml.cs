@@ -53,7 +53,9 @@ using xivModdingFramework.Mods.DataContainers;
 using xivModdingFramework.Mods.FileTypes;
 using xivModdingFramework.SqPack.FileTypes;
 using static xivModdingFramework.Cache.XivCache;
+
 using Application = System.Windows.Application;
+using Index = xivModdingFramework.SqPack.FileTypes.Index;
 
 namespace FFXIV_TexTools
 {

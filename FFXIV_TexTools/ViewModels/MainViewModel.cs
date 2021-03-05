@@ -45,6 +45,8 @@ using FFXIV_TexTools.Views;
 using xivModdingFramework.Mods.DataContainers;
 using xivModdingFramework.SqPack.DataContainers;
 
+using Index = xivModdingFramework.SqPack.FileTypes.Index;
+
 namespace FFXIV_TexTools.ViewModels
 {
     public class MainViewModel : INotifyPropertyChanged

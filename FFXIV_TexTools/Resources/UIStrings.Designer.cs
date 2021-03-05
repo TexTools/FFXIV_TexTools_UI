@@ -1179,6 +1179,24 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Lumina Output Directory.
+        /// </summary>
+        public static string Lumina_Directory {
+            get {
+                return ResourceManager.GetString("Lumina_Directory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Lumina Output.
+        /// </summary>
+        public static string Lumina_Output {
+            get {
+                return ResourceManager.GetString("Lumina_Output", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Manage Mod List.
         /// </summary>
         public static string Manage_ModList {

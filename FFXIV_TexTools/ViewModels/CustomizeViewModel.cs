@@ -122,6 +122,15 @@ namespace FFXIV_TexTools.ViewModels
         }
 
         /// <summary>
+        /// The lumina directory
+        /// </summary>
+        public string Lumina_Directory
+        {
+            get => !string.IsNullOrEmpty(Settings.Default.Lumina_Directory) ? Path.GetFullPath(Settings.Default.Lumina_Directory) : string.Empty;
+            set => NotifyPropertyChanged(nameof(Lumina_Directory));
+        }
+
+        /// <summary>
         /// The default author
         /// </summary>
         public string DefaultAuthor
@@ -390,6 +399,28 @@ namespace FFXIV_TexTools.ViewModels
         }
 
         /// <summary>
+        /// Lumina enabled state
+        /// </summary>
+        public bool UseLuminaExports
+        {
+            get => Settings.Default.Lumina_IsEnabled;
+            set
+            {
+                if (UseLuminaExports != value)
+                {
+                    SetLuminaExports(value);
+                    NotifyPropertyChanged(nameof(UseLuminaExports));
+                }
+            }
+        }
+
+        public void SetLuminaExports(bool value)
+        {
+            Settings.Default.Lumina_IsEnabled = value;
+            Settings.Default.Save();
+        }
+
+        /// <summary>
         /// The selected skin type
         /// </summary>
         public bool UseSynchronizedViews
@@ -528,6 +559,7 @@ namespace FFXIV_TexTools.ViewModels
         public ICommand Save_SelectDir => new RelayCommand(SaveSelectDir);
         public ICommand Backup_SelectDir => new RelayCommand(BackupSelectDir);
         public ICommand ModPack_SelectDir => new RelayCommand(ModPackSelectDir);
+        public ICommand Lumina_SelectDir => new RelayCommand(LuminaSelectDir);
         public ICommand Customize_Reset => new RelayCommand(ResetToDefault);
         public ICommand CloseCustomize => new RelayCommand(CustomizeClose);
 
@@ -706,6 +738,60 @@ namespace FFXIV_TexTools.ViewModels
                 FlexibleMessageBox.Show(string.Format(UIMessages.ModPacksLocationChangedMessage, folderSelect.FileName), UIMessages.NewDirectoryTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                 ModPack_Directory = Settings.Default.ModPack_Directory;
+            }
+        }
+
+        /// <summary>
+        /// The select lumina directory command
+        /// </summary>
+        private void LuminaSelectDir(object obj)
+        {
+            var oldSaveLocation = Lumina_Directory;
+            var folderSelect = new FolderSelectDialog
+            {
+                Title = UIMessages.NewSaveLocationTitle,
+                InitialDirectory = oldSaveLocation
+            };
+
+            if (folderSelect.ShowDialog())
+            {
+                if (FlexibleMessageBox.Show(UIMessages.MoveDataMessage,
+                        UIMessages.MoveDataTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                {
+                    try
+                    {
+                        Directory.Move(oldSaveLocation, folderSelect.FileName);
+                    }
+                    catch
+                    {
+                        var newLoc = folderSelect.FileName;
+
+                        foreach (var dirPath in Directory.GetDirectories(oldSaveLocation, "*",
+                            SearchOption.AllDirectories))
+                        {
+                            Directory.CreateDirectory(dirPath.Replace(oldSaveLocation, newLoc));
+                        }
+
+                        foreach (var newPath in Directory.GetFiles(oldSaveLocation, "*.*",
+                            SearchOption.AllDirectories))
+                        {
+                            File.Copy(newPath, newPath.Replace(oldSaveLocation, newLoc), true);
+                        }
+
+                        DeleteDirectory(oldSaveLocation);
+                    }
+                }
+
+                var metaPath = Path.Combine(folderSelect.FileName, "meta.json");
+                if (!File.Exists(metaPath))
+                    File.WriteAllText(metaPath, "{\"FileVersion\":0,\"Name\":\"TexTools Redirected Exports\",\"Author\":\"TexTools\",\"Description\":\"TexTools Redirected Exports\",\"Version\":null,\"Website\":null,\"ChangedItems\":[],\"FileSwaps\":{},\"Groups\":{}}");
+
+                Settings.Default.Lumina_Directory = folderSelect.FileName;
+                Settings.Default.Save();
+
+                FlexibleMessageBox.Show(string.Format(UIMessages.SavedLocationChangedMessage, folderSelect.FileName), UIMessages.NewDirectoryTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                Lumina_Directory = Settings.Default.Lumina_Directory;
             }
         }
 

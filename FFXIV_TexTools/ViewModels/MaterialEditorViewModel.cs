@@ -12,6 +12,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
+using FFXIV_TexTools.Properties;
 using xivModdingFramework.Cache;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Items;
@@ -26,6 +27,8 @@ using xivModdingFramework.Textures.Enums;
 using xivModdingFramework.Variants.DataContainers;
 using xivModdingFramework.Variants.FileTypes;
 using Constants = xivModdingFramework.Helpers.Constants;
+
+using Index = xivModdingFramework.SqPack.FileTypes.Index;
 
 namespace FFXIV_TexTools.ViewModels
 {
@@ -309,7 +312,7 @@ namespace FFXIV_TexTools.ViewModels
                 if (_mode == MaterialEditorMode.NewSingle || _mode == MaterialEditorMode.EditSingle)
                 {
                     // Save the existing MTRL.
-                    await _mtrl.ImportMtrl(_material, _item, XivStrings.TexTools);
+                    await _mtrl.ImportMtrl(_material, _item, XivStrings.TexTools, doLumina: Settings.Default.Lumina_IsEnabled, luminaOutDir: new DirectoryInfo(Settings.Default.Lumina_Directory ?? string.Empty));
                 }
                 else if (_mode == MaterialEditorMode.NewMulti || _mode == MaterialEditorMode.EditMulti || _mode == MaterialEditorMode.NewRace)
                 {
@@ -430,7 +433,7 @@ namespace FFXIV_TexTools.ViewModels
             // We need to save our non-existent base material once before we can continue.
             if (_mode == MaterialEditorMode.NewRace)
             {
-                await _mtrl.ImportMtrl(_material, _item, XivStrings.TexTools);
+                await _mtrl.ImportMtrl(_material, _item, XivStrings.TexTools, doLumina: Settings.Default.Lumina_IsEnabled, luminaOutDir: new DirectoryInfo(Settings.Default.Lumina_Directory ?? string.Empty));
             }
 
             var count = 0;
@@ -524,7 +527,7 @@ namespace FFXIV_TexTools.ViewModels
 
                 count++;
                 // Write the new Material
-                await _mtrl.ImportMtrl(itemXivMtrl, item, XivStrings.TexTools);
+                await _mtrl.ImportMtrl(itemXivMtrl, item, XivStrings.TexTools, doLumina: Settings.Default.Lumina_IsEnabled, luminaOutDir: new DirectoryInfo(Settings.Default.Lumina_Directory ?? string.Empty));
                 _view.SaveStatusLabel.Content = "Updated " + count + "/" + materialSets.Count + " Material Sets...";
             }
 

@@ -55,10 +55,12 @@ using xivModdingFramework.Models.ModelTextures;
 using xivModdingFramework.Mods;
 using xivModdingFramework.Mods.Enums;
 using xivModdingFramework.SqPack.FileTypes;
+
 using Color = SharpDX.Color;
 using ColorConverter = System.Windows.Media.ColorConverter;
 using Timer = System.Timers.Timer;
 using WinColor = System.Windows.Media.Color;
+using Index = xivModdingFramework.SqPack.FileTypes.Index;
 
 namespace FFXIV_TexTools.ViewModels
 {

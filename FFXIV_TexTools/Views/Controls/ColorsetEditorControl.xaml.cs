@@ -23,6 +23,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using FFXIV_TexTools.Properties;
 using xivModdingFramework.Cache;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Materials.DataContainers;
@@ -495,7 +496,7 @@ namespace FFXIV_TexTools.Controls
                 var mtrlLib = new Mtrl(XivCache.GameInfo.GameDirectory);
 
                 var item = mw.GetSelectedItem();
-                await mtrlLib.ImportMtrl(_mtrl, item, XivStrings.TexTools);
+                await mtrlLib.ImportMtrl(_mtrl, item, XivStrings.TexTools, doLumina: Settings.Default.Lumina_IsEnabled, luminaOutDir: new DirectoryInfo(Settings.Default.Lumina_Directory ?? string.Empty));
                 MaterialSaved.Invoke(this, null);
             }
             catch(Exception ex)
