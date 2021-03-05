@@ -167,7 +167,7 @@
                         </Grid.RowDefinitions>
 
                         <Label Grid.Column="0" Grid.Row="1"  Margin="10,0,5,0" Content="Redirect imports to Lumina" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
-                        <CheckBox x:Name="EnableLuminaCheckBox"  Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" Margin="5,0,10,0"  IsChecked="{Binding UseLuminaExports}" ToolTip="Export to the selected folder in Lumina/Umbra/Penumbra formats instead of local game files."></CheckBox>
+                        <CheckBox x:Name="EnableLuminaCheckBox"  Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" Margin="5,0,10,0"  IsChecked="{Binding UseLuminaExports}" ToolTip="Redirect imports and metadata changes to the selected folder in Lumina/Umbra/Penumbra formats instead of local game files."></CheckBox>
                     </Grid>
                 </StackPanel>
             </GroupBox>
