@@ -755,33 +755,6 @@ namespace FFXIV_TexTools.ViewModels
 
             if (folderSelect.ShowDialog())
             {
-                if (FlexibleMessageBox.Show(UIMessages.MoveDataMessage,
-                        UIMessages.MoveDataTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-                {
-                    try
-                    {
-                        Directory.Move(oldSaveLocation, folderSelect.FileName);
-                    }
-                    catch
-                    {
-                        var newLoc = folderSelect.FileName;
-
-                        foreach (var dirPath in Directory.GetDirectories(oldSaveLocation, "*",
-                            SearchOption.AllDirectories))
-                        {
-                            Directory.CreateDirectory(dirPath.Replace(oldSaveLocation, newLoc));
-                        }
-
-                        foreach (var newPath in Directory.GetFiles(oldSaveLocation, "*.*",
-                            SearchOption.AllDirectories))
-                        {
-                            File.Copy(newPath, newPath.Replace(oldSaveLocation, newLoc), true);
-                        }
-
-                        DeleteDirectory(oldSaveLocation);
-                    }
-                }
-
                 var metaPath = Path.Combine(folderSelect.FileName, "meta.json");
                 if (!File.Exists(metaPath))
                     File.WriteAllText(metaPath, "{\"FileVersion\":0,\"Name\":\"TexTools Redirected Exports\",\"Author\":\"TexTools\",\"Description\":\"TexTools Redirected Exports\",\"Version\":null,\"Website\":null,\"ChangedItems\":[],\"FileSwaps\":{},\"Groups\":{}}");
