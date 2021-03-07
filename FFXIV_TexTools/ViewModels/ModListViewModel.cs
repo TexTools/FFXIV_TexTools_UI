@@ -183,12 +183,31 @@ namespace FFXIV_TexTools.ViewModels
                     {
                         if (category.CategoryList.Contains(modItem.name)) continue;
 
-                        categoryItem = new Category
+                        try
                         {
-                            Name = modItem.name,
-                            Item = MakeItemModel(modItem),
-                            ParentCategory = category
-                        };
+                            categoryItem = new Category
+                            {
+                                Name = modItem.name,
+                                Item = MakeItemModel(modItem),
+                                ParentCategory = category
+                            };
+                        } catch(Exception ex)
+                        {
+                            var im = new XivGenericItemModel()
+                            {
+                                Name = "UNIDENTIFIABLE FILE - " + modItem.name,
+                                SecondaryCategory = modItem.category,
+                                DataFile = XivDataFiles.GetXivDataFile(modItem.datFile),
+                                ModelInfo = new XivModelInfo()
+                            };
+
+                            categoryItem = new Category
+                            {
+                                Name = modItem.name,
+                                Item = im,
+                                ParentCategory = category
+                            };
+                        }
 
                         category.Categories.Add(categoryItem);
                         category.CategoryList.Add(modItem.name);
@@ -311,12 +330,33 @@ namespace FFXIV_TexTools.ViewModels
                         {
                             if (category.CategoryList.Contains(modItem.name)) continue;
 
-                            var categoryItem = new Category
+                            Category categoryItem;
+                            try
                             {
-                                Name = modItem.name,
-                                Item = MakeItemModel(modItem),
-                                ParentCategory = category
-                            };
+                                categoryItem = new Category
+                                {
+                                    Name = modItem.name,
+                                    Item = MakeItemModel(modItem),
+                                    ParentCategory = category
+                                };
+                            }
+                            catch (Exception ex)
+                            {
+                                var im = new XivGenericItemModel()
+                                {
+                                    Name = "UNIDENTIFIABLE FILE - " + modItem.name,
+                                    SecondaryCategory = modItem.category,
+                                    DataFile = XivDataFiles.GetXivDataFile(modItem.datFile),
+                                    ModelInfo = new XivModelInfo()
+                                };
+
+                                categoryItem = new Category
+                                {
+                                    Name = modItem.name,
+                                    Item = im,
+                                    ParentCategory = category
+                                };
+                            }
 
                             category.Categories.Add(categoryItem);
                             category.CategoryList.Add(modItem.name);
@@ -341,6 +381,8 @@ namespace FFXIV_TexTools.ViewModels
 
         /// <summary>
         /// Makes an generic item model from a mod item
+        /// 
+        /// NOTE: This function will THROW if it fails to create a valid item model.
         /// </summary>
         /// <param name="modItem">The mod item</param>
         /// <returns>The mod item as a XivGenericItemModel</returns>
