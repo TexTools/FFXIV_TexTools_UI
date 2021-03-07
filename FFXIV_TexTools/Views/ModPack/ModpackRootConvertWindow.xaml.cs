@@ -91,7 +91,13 @@ namespace FFXIV_TexTools.Views
                         }
 
 
-                        Results.Add(root, (root, -1));
+                        if (items[0].ModelInfo != null)
+                        {
+                            Results.Add(root, (root, items[0].ModelInfo.ImcSubsetID));
+                        } else
+                        {
+                            Results.Add(root, (root, -1));
+                        }
                         roots.Add(root);
                     }
                 }
@@ -309,6 +315,12 @@ namespace FFXIV_TexTools.Views
             if (on)
             {
                 ui.SourceItemSelection.IsEnabled = true;
+
+                var item = ((IItemModel)ui.SourceItemSelection.SelectedItem);
+                if (item == null) return;
+
+                var srcItem = ItemSelections[root].SourceItem;
+                Results[root] = (Results[root].Root, item.ModelInfo.ImcSubsetID);
             } else
             {
                 ui.SourceItemSelection.IsEnabled = false;

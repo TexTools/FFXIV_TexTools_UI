@@ -1711,7 +1711,21 @@ namespace FFXIV_TexTools.ViewModels
 
                 ImportEnabled = true;
                 UpdateTexEnabled = true;
+
                 FMVEnabled = true;
+                
+                // Disable FMV button if we're an unsupported type.
+                if (_model.IsInternal)
+                {
+                    var modelRoot = await XivCache.GetFirstRoot(_model.Source);
+                    if(modelRoot == null || 
+                        modelRoot.Info.PrimaryType == XivItemType.demihuman
+                        || modelRoot.Info.PrimaryType == XivItemType.monster
+                        || modelRoot.Info.PrimaryType == XivItemType.weapon)
+                    {
+                        FMVEnabled = false;
+                    }
+                }
 
                 if (!KeepCameraChecked)
                 {
