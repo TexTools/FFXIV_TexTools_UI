@@ -29,6 +29,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -484,12 +485,20 @@ namespace FFXIV_TexTools.ViewModels
                 if (modItem.fullPath.Contains("/hou/"))
                 {
                     item.PrimaryCategory = XivStrings.Housing;
+                    var furnitureRegex = new Regex("\\/general\\/([0-9]{4})\\/");
 
-                    item.ModelInfo = new XivModelInfo
+                    var match = furnitureRegex.Match(fullPath);
+                    if (match.Success)
                     {
-                        PrimaryID = int.Parse(fullPath.Substring(fullPath.LastIndexOf("_m", StringComparison.Ordinal) + 2,
-                            4))
-                    };
+                        item.ModelInfo = new XivModelInfo
+                        {
+                            PrimaryID = int.Parse(match.Groups[1].Value)
+                        };
+                    } else
+                    {
+                        item.ModelInfo = new XivModelInfo();
+                    }
+
                 }
             }
             catch (Exception ex)
