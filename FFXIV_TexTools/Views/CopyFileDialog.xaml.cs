@@ -4,8 +4,11 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
+using FFXIV_TexTools.Properties;
 using xivModdingFramework.Cache;
 using xivModdingFramework.SqPack.FileTypes;
+
+using Index = xivModdingFramework.SqPack.FileTypes.Index;
 
 namespace FFXIV_TexTools.Views
 {
@@ -58,7 +61,7 @@ namespace FFXIV_TexTools.Views
                     if (cancel) return;
                 }
 
-                await _dat.CopyFile(from, to, XivStrings.TexTools, true);
+                await _dat.CopyFile(from, to, XivStrings.TexTools, true, doLumina: Settings.Default.Lumina_IsEnabled, luminaOutDir: new DirectoryInfo(Settings.Default.Lumina_Directory ?? string.Empty));
 
                 Dispatcher.Invoke(() =>
                 {

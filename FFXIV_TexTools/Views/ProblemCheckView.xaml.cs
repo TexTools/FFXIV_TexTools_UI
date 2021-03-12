@@ -33,13 +33,15 @@ using xivModdingFramework.General.Enums;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Mods.DataContainers;
 using xivModdingFramework.SqPack.FileTypes;
-using Application = System.Windows.Application;
 using xivModdingFramework.Cache;
 using xivModdingFramework.Mods;
 using System.Runtime.CompilerServices;
 using System.Linq;
 using FFXIV_TexTools.ViewModels;
 using xivModdingFramework.SqPack.DataContainers;
+
+using Index = xivModdingFramework.SqPack.FileTypes.Index;
+using Application = System.Windows.Application;
 
 namespace FFXIV_TexTools.Views
 {

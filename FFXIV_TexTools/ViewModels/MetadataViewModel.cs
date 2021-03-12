@@ -2,9 +2,11 @@
 using FFXIV_TexTools.Views.Metadata;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FFXIV_TexTools.Properties;
 using xivModdingFramework.Cache;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Helpers;
@@ -119,7 +121,8 @@ namespace FFXIV_TexTools.ViewModels
             {
                 await MainWindow.GetMainWindow().LockUi("Updating Metadata");
 
-                await ItemMetadata.SaveMetadata(_metadata, XivStrings.TexTools);
+                var luminaPath = new DirectoryInfo(Settings.Default.Lumina_Directory ?? string.Empty);
+                await ItemMetadata.SaveMetadata(_metadata, XivStrings.TexTools, doLumina: Settings.Default.Lumina_IsEnabled, luminaOutDir: luminaPath);
 
                 var _mdl = new Mdl(XivCache.GameInfo.GameDirectory, IOUtil.GetDataFileFromPath(_metadata.Root.Info.GetRootFile()));
 
@@ -129,7 +132,7 @@ namespace FFXIV_TexTools.ViewModels
                     if (_original.EqdpEntries[kv.Key].bit1 == true) continue;
 
                     // Here we have a new race, we need to create a model for it.
-                    await _mdl.AddRacialModel(_metadata.Root.Info.PrimaryId, _metadata.Root.Info.Slot, kv.Key, XivStrings.TexTools);
+                    await _mdl.AddRacialModel(_metadata.Root.Info.PrimaryId, _metadata.Root.Info.Slot, kv.Key, XivStrings.TexTools, doLumina: Settings.Default.Lumina_IsEnabled, luminaOutDir: luminaPath);
                 }
 
                 if(_metadata.ImcEntries.Count > 0)
@@ -152,7 +155,7 @@ namespace FFXIV_TexTools.ViewModels
                             {
                                 var dest = material.Replace("v0001", "v" + i.ToString().PadLeft(4, '0'));
 
-                                await _dat.CopyFile(material, dest, XivStrings.TexTools, false, item);
+                                await _dat.CopyFile(material, dest, XivStrings.TexTools, false, item, doLumina: Settings.Default.Lumina_IsEnabled, luminaOutDir: luminaPath);
                             }
                         }
                     }

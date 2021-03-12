@@ -66,7 +66,9 @@ using xivModdingFramework.Textures.Enums;
 using xivModdingFramework.Textures.FileTypes;
 using xivModdingFramework.Variants.DataContainers;
 using xivModdingFramework.Variants.FileTypes;
+
 using BitmapSource = System.Windows.Media.Imaging.BitmapSource;
+using Index = xivModdingFramework.SqPack.FileTypes.Index;
 
 namespace FFXIV_TexTools.ViewModels
 {
@@ -1579,6 +1581,8 @@ namespace FFXIV_TexTools.ViewModels
             var fileDir = new DirectoryInfo(fileName);
             var dxVersion = int.Parse(Settings.Default.DX_Version);
 
+            var luminaOutDir = new DirectoryInfo(Settings.Default.Lumina_Directory ?? string.Empty);
+
             if (fileDir.FullName.ToLower().Contains(".dds"))
             {
                 if (SelectedMap.Usage != XivTexType.ColorSet)
@@ -1600,11 +1604,11 @@ namespace FFXIV_TexTools.ViewModels
                                 saveItem = temp;
                             }
 
-                            await _tex.ImportTex(texData.TextureTypeAndPath.Path, fileDir.FullName, saveItem, XivStrings.TexTools);
+                            await _tex.ImportTex(texData.TextureTypeAndPath.Path, fileDir.FullName, saveItem, XivStrings.TexTools, doLumina: Settings.Default.Lumina_IsEnabled, luminaOutDir: luminaOutDir);
                         }
                         else if (_uiItem != null)
                         {
-                            await _tex.ImportTex(texData.TextureTypeAndPath.Path, fileDir.FullName, _uiItem, XivStrings.TexTools);
+                            await _tex.ImportTex(texData.TextureTypeAndPath.Path, fileDir.FullName, _uiItem, XivStrings.TexTools, doLumina: Settings.Default.Lumina_IsEnabled, luminaOutDir: luminaOutDir);
                         }
                     }
                     catch (Exception ex)
@@ -1619,7 +1623,7 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     try
                     {
-                        var newColorSetOffset = await _tex.TexColorImporter(_xivMtrl, fileDir, _item, XivStrings.TexTools, GetLanguage());
+                        var newColorSetOffset = await _tex.TexColorImporter(_xivMtrl, fileDir, _item, XivStrings.TexTools, GetLanguage(), doLumina: Settings.Default.Lumina_IsEnabled, luminaOutDir: luminaOutDir);
                         _xivMtrl = await _mtrl.GetMtrlData(newColorSetOffset, _xivMtrl.MTRLPath, dxVersion);
                     }
                     catch (Exception ex)
@@ -1651,11 +1655,11 @@ namespace FFXIV_TexTools.ViewModels
                                 saveItem = temp;
                             }
 
-                            await _tex.ImportTex(texData.TextureTypeAndPath.Path, fileDir.FullName, _item, XivStrings.TexTools);
+                            await _tex.ImportTex(texData.TextureTypeAndPath.Path, fileDir.FullName, _item, XivStrings.TexTools, doLumina: Settings.Default.Lumina_IsEnabled, luminaOutDir: luminaOutDir);
                         }
                         else if (_uiItem != null)
                         {
-                            await _tex.ImportTex(texData.TextureTypeAndPath.Path, fileDir.FullName, _uiItem, XivStrings.TexTools);
+                            await _tex.ImportTex(texData.TextureTypeAndPath.Path, fileDir.FullName, _uiItem, XivStrings.TexTools, doLumina: Settings.Default.Lumina_IsEnabled, luminaOutDir: luminaOutDir);
                         }
                     }
                     catch (Exception ex)

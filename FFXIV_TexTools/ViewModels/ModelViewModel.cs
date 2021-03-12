@@ -55,10 +55,12 @@ using xivModdingFramework.Models.ModelTextures;
 using xivModdingFramework.Mods;
 using xivModdingFramework.Mods.Enums;
 using xivModdingFramework.SqPack.FileTypes;
+
 using Color = SharpDX.Color;
 using ColorConverter = System.Windows.Media.ColorConverter;
 using Timer = System.Timers.Timer;
 using WinColor = System.Windows.Media.Color;
+using Index = xivModdingFramework.SqPack.FileTypes.Index;
 
 namespace FFXIV_TexTools.ViewModels
 {
@@ -1615,7 +1617,7 @@ namespace FFXIV_TexTools.ViewModels
             var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
             var index = new Index(gameDirectory);
 
-            if (index.IsIndexLocked(XivDataFile._0A_Exd))
+            if (index.IsIndexLocked(XivDataFile._0A_Exd) && !Settings.Default.Lumina_IsEnabled)
             {
                 FlexibleMessageBox.Show(UIMessages.IndexLockedErrorMessage,
                     UIMessages.IndexLockedErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
