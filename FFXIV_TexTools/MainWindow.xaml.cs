@@ -70,7 +70,7 @@ namespace FFXIV_TexTools
         private FullModelView _fmv;
         public readonly System.Windows.Forms.IWin32Window Win32Window;
 
-        public static readonly string BetaSuffix = null;
+        public static readonly string BetaSuffix = "BETA";
         public static bool IsBetaVersion {
             get
             {
