@@ -10,6 +10,8 @@ using System.Windows.Controls;
 using xivModdingFramework.Cache;
 using xivModdingFramework.SqPack.FileTypes;
 
+using Index = xivModdingFramework.SqPack.FileTypes.Index;
+
 namespace FFXIV_TexTools.Views
 {
     /// <summary>
@@ -103,12 +105,12 @@ namespace FFXIV_TexTools.Views
             {
                 ModelListBox.Items.Add(new StandardModpackFileSelect.FileEntry(file));
             }
-            else if (match.Success && match.Groups[1].Value == "mtrl")
+            else if (match.Success && (match.Groups[1].Value == "mtrl" || match.Groups[1].Value == "avfx"))
             {
 
                 MaterialListBox.Items.Add(new StandardModpackFileSelect.FileEntry(file));
             }
-            else if (match.Success && match.Groups[1].Value == "tex")
+            else if (match.Success && (match.Groups[1].Value == "tex" || match.Groups[1].Value == "atex"))
             {
                 TextureListBox.Items.Add(new StandardModpackFileSelect.FileEntry(file));
             }
@@ -141,12 +143,20 @@ namespace FFXIV_TexTools.Views
         {
             var parentFiles = _entry.MainFiles;
             var files = new SortedSet<string>();
-            foreach(var file in parentFiles)
+            if (_entry.Level == XivDependencyLevel.Root)
             {
-                var children = await XivCache.GetChildrenRecursive(file);
-                foreach(var child in children)
+                var root = await XivCache.GetFirstRoot(_entry.MainFiles[0]);
+                files = await root.GetAllFiles();
+            }
+            else
+            {
+                foreach (var file in parentFiles)
                 {
-                    files.Add(child);
+                    var children = await XivCache.GetChildrenRecursive(file);
+                    foreach (var child in children)
+                    {
+                        files.Add(child);
+                    }
                 }
             }
 

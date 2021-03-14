@@ -4,8 +4,11 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
+using FFXIV_TexTools.Properties;
 using xivModdingFramework.Cache;
 using xivModdingFramework.SqPack.FileTypes;
+
+using Index = xivModdingFramework.SqPack.FileTypes.Index;
 
 namespace FFXIV_TexTools.Views
 {

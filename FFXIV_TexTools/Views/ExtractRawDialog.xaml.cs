@@ -9,6 +9,8 @@ using xivModdingFramework.Helpers;
 using xivModdingFramework.Models.FileTypes;
 using xivModdingFramework.SqPack.FileTypes;
 
+using Index = xivModdingFramework.SqPack.FileTypes.Index;
+
 namespace FFXIV_TexTools.Views
 {
     /// <summary>

@@ -23,6 +23,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using FFXIV_TexTools.Properties;
 using xivModdingFramework.Cache;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Materials.DataContainers;
@@ -131,7 +132,9 @@ namespace FFXIV_TexTools.Controls
         // normal 255 byte color ranges, so we need to not stomp them when calling the normal UpdateRow() function.
         private void DiffuseColorPicker_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<System.Windows.Media.Color?> e)
         {
-            if(DiffuseColorPicker.SelectedColor.Value.A != 255)
+            if (_LOADING) return;
+
+            if (DiffuseColorPicker.SelectedColor.Value.A != 255)
             {
                 DiffuseColorPicker.SelectedColor = new System.Windows.Media.Color() {
                     R = DiffuseColorPicker.SelectedColor.Value.R,
@@ -139,7 +142,6 @@ namespace FFXIV_TexTools.Controls
                     G = DiffuseColorPicker.SelectedColor.Value.G,
                     A = 255
                 };
-                return;
             }
 
             RowData[0][0] = new Half(DiffuseColorPicker.SelectedColor.Value.R / 255.0f);
@@ -149,6 +151,8 @@ namespace FFXIV_TexTools.Controls
         }
         private void SpecularColorPicker_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<System.Windows.Media.Color?> e)
         {
+            if (_LOADING) return;
+
             if (SpecularColorPicker.SelectedColor.Value.A != 255)
             {
                 SpecularColorPicker.SelectedColor = new System.Windows.Media.Color()
@@ -158,7 +162,6 @@ namespace FFXIV_TexTools.Controls
                     G = SpecularColorPicker.SelectedColor.Value.G,
                     A = 255
                 };
-                return;
             }
 
             RowData[1][0] = new Half(SpecularColorPicker.SelectedColor.Value.R / 255.0f);
@@ -168,6 +171,8 @@ namespace FFXIV_TexTools.Controls
         }
         private void EmissiveColorPicker_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<System.Windows.Media.Color?> e)
         {
+            if (_LOADING) return;
+
             if (EmissiveColorPicker.SelectedColor.Value.A != 255)
             {
                 EmissiveColorPicker.SelectedColor = new System.Windows.Media.Color()
@@ -177,7 +182,6 @@ namespace FFXIV_TexTools.Controls
                     G = EmissiveColorPicker.SelectedColor.Value.G,
                     A = 255
                 };
-                return;
             }
 
             RowData[2][0] = new Half(EmissiveColorPicker.SelectedColor.Value.R / 255.0f);
@@ -706,50 +710,89 @@ namespace FFXIV_TexTools.Controls
         {
             var result = RawFloatValueDisplay.ShowEditor(RowData[0][0], RowData[0][1], RowData[0][2], "Diffuse");
             if (float.IsNaN(result.Red)) return;
+            _LOADING = true;
 
+            var max = Math.Max(Math.Max(result.Red, result.Green), result.Blue);
+            if(max <= 1.0f)
+            {
+                max = 1.0f;
+            }
 
-            byte byteRed = (byte)((result.Red < 0 ? 0 : result.Red > 1 ? 1 : result.Red) * 255);
-            byte byteGreen = (byte)((result.Green < 0 ? 0 : result.Green > 1 ? 1 : result.Green) * 255);
-            byte byteBlue = (byte)((result.Blue < 0 ? 0 : result.Blue > 1 ? 1 : result.Blue) * 255);
+            var displayRed = result.Red / max;
+            var displayGreen = result.Green / max;
+            var displayBlue = result.Blue / max;
+
+            byte byteRed = (byte)(displayRed * 255);
+            byte byteGreen = (byte)(displayGreen * 255);
+            byte byteBlue = (byte)(displayBlue * 255);
 
             DiffuseColorPicker.SelectedColor = new System.Windows.Media.Color() { R = byteRed, G = byteGreen, B = byteBlue, A = 255 };
 
             RowData[0][0] = result.Red;
             RowData[0][1] = result.Green;
             RowData[0][2] = result.Blue;
+
+            _LOADING = false;
+            UpdateRow();
         }
 
         private void EditRawSpecular_Click(object sender, RoutedEventArgs e)
         {
             var result = RawFloatValueDisplay.ShowEditor(RowData[1][0], RowData[1][1], RowData[1][2], "Specular");
             if (float.IsNaN(result.Red)) return;
+            _LOADING = true;
 
+            var max = Math.Max(Math.Max(result.Red, result.Green), result.Blue);
+            if (max <= 1.0f)
+            {
+                max = 1.0f;
+            }
 
-            byte byteRed = (byte)((result.Red < 0 ? 0 : result.Red > 1 ? 1 : result.Red) * 255);
-            byte byteGreen = (byte)((result.Green < 0 ? 0 : result.Green > 1 ? 1 : result.Green) * 255);
-            byte byteBlue = (byte)((result.Blue < 0 ? 0 : result.Blue > 1 ? 1 : result.Blue) * 255);
+            var displayRed = result.Red / max;
+            var displayGreen = result.Green / max;
+            var displayBlue = result.Blue / max;
+
+            byte byteRed = (byte)(displayRed * 255);
+            byte byteGreen = (byte)(displayGreen * 255);
+            byte byteBlue = (byte)(displayBlue * 255);
 
             SpecularColorPicker.SelectedColor = new System.Windows.Media.Color() { R = byteRed, G = byteGreen, B = byteBlue, A = 255 };
 
             RowData[1][0] = result.Red;
             RowData[1][1] = result.Green;
             RowData[1][2] = result.Blue;
+
+            _LOADING = false;
+            UpdateRow();
         }
         private void EditRawEmmissive_Click(object sender, RoutedEventArgs e)
         {
             var result = RawFloatValueDisplay.ShowEditor(RowData[2][0], RowData[2][1], RowData[2][2], "Emissive");
             if (float.IsNaN(result.Red)) return;
+            _LOADING = true;
 
+            var max = Math.Max(Math.Max(result.Red, result.Green), result.Blue);
+            if (max <= 1.0f)
+            {
+                max = 1.0f;
+            }
 
-            byte byteRed = (byte)((result.Red < 0 ? 0 : result.Red > 1 ? 1 : result.Red) * 255);
-            byte byteGreen = (byte)((result.Green < 0 ? 0 : result.Green > 1 ? 1 : result.Green) * 255);
-            byte byteBlue = (byte)((result.Blue < 0 ? 0 : result.Blue > 1 ? 1 : result.Blue) * 255);
+            var displayRed = result.Red / max;
+            var displayGreen = result.Green / max;
+            var displayBlue = result.Blue / max;
+
+            byte byteRed = (byte)(displayRed * 255);
+            byte byteGreen = (byte)(displayGreen * 255);
+            byte byteBlue = (byte)(displayBlue * 255);
 
             EmissiveColorPicker.SelectedColor = new System.Windows.Media.Color() { R = byteRed, G = byteGreen, B = byteBlue, A = 255 };
 
             RowData[2][0] = result.Red;
             RowData[2][1] = result.Green;
             RowData[2][2] = result.Blue;
+
+            _LOADING = false;
+            UpdateRow();
         }
 
         List<Half[]> CopiedRow;

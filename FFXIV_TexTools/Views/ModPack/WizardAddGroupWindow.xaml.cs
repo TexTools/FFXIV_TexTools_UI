@@ -53,7 +53,9 @@ using xivModdingFramework.Textures.DataContainers;
 using xivModdingFramework.Textures.Enums;
 using xivModdingFramework.Textures.FileTypes;
 using xivModdingFramework.Variants.FileTypes;
+
 using Image = SixLabors.ImageSharp.Image;
+using Index = xivModdingFramework.SqPack.FileTypes.Index;
 
 namespace FFXIV_TexTools.Views
 {
@@ -636,7 +638,21 @@ namespace FFXIV_TexTools.Views
 
         private async Task AddWithChildren(string file, IItem item, byte[] rawData = null)
         {
-            var children = await XivCache.GetChildrenRecursive(file);
+            var children = new HashSet<string>();
+            if (Path.GetExtension(file) == ".meta")
+            {
+                // If we're the root file, use the proper get all function
+                // which will throw in the AVFX/ATEX stuff as well.
+                var root = await XivCache.GetFirstRoot(file);
+                if(root != null)
+                {
+                    var files = await root.GetAllFiles();
+                    children = files.ToHashSet();
+                }
+            } else
+            {
+                children = await XivCache.GetChildrenRecursive(file);
+            }
 
 
             foreach (var child in children)

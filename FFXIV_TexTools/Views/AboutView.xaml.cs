@@ -50,7 +50,7 @@ namespace FFXIV_TexTools.Views
         /// </summary>
         private void DonateButton_Click(object sender, RoutedEventArgs e)
         {
-            System.Diagnostics.Process.Start(WebUrl.Donate_Website);
+            //System.Diagnostics.Process.Start(WebUrl.Donate_Website);
         }
 
         /// <summary>

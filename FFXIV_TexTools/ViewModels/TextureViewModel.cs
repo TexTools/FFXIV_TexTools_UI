@@ -66,7 +66,9 @@ using xivModdingFramework.Textures.Enums;
 using xivModdingFramework.Textures.FileTypes;
 using xivModdingFramework.Variants.DataContainers;
 using xivModdingFramework.Variants.FileTypes;
+
 using BitmapSource = System.Windows.Media.Imaging.BitmapSource;
+using Index = xivModdingFramework.SqPack.FileTypes.Index;
 
 namespace FFXIV_TexTools.ViewModels
 {
@@ -172,7 +174,7 @@ namespace FFXIV_TexTools.ViewModels
                 _textureView.MaterialComboBox.SelectedIndex = idx;
             }
         }
-        private MapInfo SelectedMap
+        public MapInfo SelectedMap
         {
             get
             {
@@ -1319,7 +1321,7 @@ namespace FFXIV_TexTools.ViewModels
             if (!CheckMtrlIsOK())
                 return;
 
-            
+
             if (format == TextureFormats.DDS)
             {
                 DirectoryInfo savePath = new DirectoryInfo(Settings.Default.Save_Directory);
@@ -1378,6 +1380,11 @@ namespace FFXIV_TexTools.ViewModels
             }
             else
             {
+                if(SelectedMap.Usage == XivTexType.ColorSet)
+                {
+                    return;
+                }
+
                 IImageEncoder encoder;
                 if (format == TextureFormats.BMP)
                 {
@@ -1573,6 +1580,7 @@ namespace FFXIV_TexTools.ViewModels
             ImportEnabled = false;
             var fileDir = new DirectoryInfo(fileName);
             var dxVersion = int.Parse(Settings.Default.DX_Version);
+
 
             if (fileDir.FullName.ToLower().Contains(".dds"))
             {

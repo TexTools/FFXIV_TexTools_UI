@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="BugReport_Website" xml:space="preserve">
-    <value>https://project.dualwield.net/bug_report_page.php</value>
+    <value>https://github.com/TexTools/FFXIV_TexTools_UI/issues</value>
   </data>
   <data name="Discord_China" xml:space="preserve">
     <value>https://discord.gg/jKPqnhk</value>
@@ -127,10 +127,10 @@
     <value>https://discord.gg/ffxivtextools</value>
   </data>
   <data name="Donate_Website" xml:space="preserve">
-    <value>https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&amp;hosted_button_id=B78KX56JPQFMJ&amp;source=url</value>
+    <value />
   </data>
   <data name="FFXIV_Donate" xml:space="preserve">
-    <value>https://textools.dualwield.net/donate/</value>
+    <value />
   </data>
   <data name="Github_Website" xml:space="preserve">
     <value>https://github.com/textools/</value>
@@ -148,10 +148,10 @@
     <value>https://raw.githubusercontent.com/TexTools/FFXIV_TexTools_Updater/master/updater.xml</value>
   </data>
   <data name="TexTools_Website" xml:space="preserve">
-    <value>https://textools.dualwield.net/</value>
+    <value>https://www.ffxiv-textools.net/</value>
   </data>
   <data name="Tutorials_Website" xml:space="preserve">
-    <value>https://textools.dualwield.net/tutorials/</value>
+    <value>https://www.ffxiv-textools.net/</value>
   </data>
   <data name="XivModArchive_Website" xml:space="preserve">
     <value>https://www.xivmodarchive.com/</value>

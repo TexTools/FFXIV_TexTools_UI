@@ -61,7 +61,7 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to https://project.dualwield.net/bug_report_page.php.
+        ///   Looks up a localized string similar to https://github.com/TexTools/FFXIV_TexTools_UI/issues.
         /// </summary>
         internal static string BugReport_Website {
             get {
@@ -88,7 +88,7 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&amp;hosted_button_id=B78KX56JPQFMJ&amp;source=url.
+        ///   Looks up a localized string similar to .
         /// </summary>
         internal static string Donate_Website {
             get {
@@ -97,7 +97,7 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to https://textools.dualwield.net/donate/.
+        ///   Looks up a localized string similar to .
         /// </summary>
         internal static string FFXIV_Donate {
             get {
@@ -151,7 +151,7 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to https://textools.dualwield.net/.
+        ///   Looks up a localized string similar to https://www.ffxiv-textools.net/.
         /// </summary>
         internal static string TexTools_Website {
             get {
@@ -160,7 +160,7 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to https://textools.dualwield.net/tutorials/.
+        ///   Looks up a localized string similar to https://www.ffxiv-textools.net/.
         /// </summary>
         internal static string Tutorials_Website {
             get {

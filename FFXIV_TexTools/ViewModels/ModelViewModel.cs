@@ -55,10 +55,12 @@ using xivModdingFramework.Models.ModelTextures;
 using xivModdingFramework.Mods;
 using xivModdingFramework.Mods.Enums;
 using xivModdingFramework.SqPack.FileTypes;
+
 using Color = SharpDX.Color;
 using ColorConverter = System.Windows.Media.ColorConverter;
 using Timer = System.Timers.Timer;
 using WinColor = System.Windows.Media.Color;
+using Index = xivModdingFramework.SqPack.FileTypes.Index;
 
 namespace FFXIV_TexTools.ViewModels
 {
@@ -1615,7 +1617,7 @@ namespace FFXIV_TexTools.ViewModels
             var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
             var index = new Index(gameDirectory);
 
-            if (index.IsIndexLocked(XivDataFile._0A_Exd))
+            if (index.IsIndexLocked(XivDataFile._0A_Exd) && !XivCache.GameInfo.UseLumina)
             {
                 FlexibleMessageBox.Show(UIMessages.IndexLockedErrorMessage,
                     UIMessages.IndexLockedErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1711,7 +1713,21 @@ namespace FFXIV_TexTools.ViewModels
 
                 ImportEnabled = true;
                 UpdateTexEnabled = true;
+
                 FMVEnabled = true;
+                
+                // Disable FMV button if we're an unsupported type.
+                if (_model.IsInternal)
+                {
+                    var modelRoot = await XivCache.GetFirstRoot(_model.Source);
+                    if(modelRoot == null || 
+                        modelRoot.Info.PrimaryType == XivItemType.demihuman
+                        || modelRoot.Info.PrimaryType == XivItemType.monster
+                        || modelRoot.Info.PrimaryType == XivItemType.weapon)
+                    {
+                        FMVEnabled = false;
+                    }
+                }
 
                 if (!KeepCameraChecked)
                 {
