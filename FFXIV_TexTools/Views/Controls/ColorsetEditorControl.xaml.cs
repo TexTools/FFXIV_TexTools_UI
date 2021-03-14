@@ -496,7 +496,7 @@ namespace FFXIV_TexTools.Controls
                 var mtrlLib = new Mtrl(XivCache.GameInfo.GameDirectory);
 
                 var item = mw.GetSelectedItem();
-                await mtrlLib.ImportMtrl(_mtrl, item, XivStrings.TexTools, doLumina: Settings.Default.Lumina_IsEnabled, luminaOutDir: new DirectoryInfo(Settings.Default.Lumina_Directory ?? string.Empty));
+                await mtrlLib.ImportMtrl(_mtrl, item, XivStrings.TexTools);
                 MaterialSaved.Invoke(this, null);
             }
             catch(Exception ex)

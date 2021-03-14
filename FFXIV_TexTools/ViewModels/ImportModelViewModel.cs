@@ -283,11 +283,11 @@ namespace FFXIV_TexTools.ViewModels
                {
                    if (showEditor)
                    {
-                       await _mdl.ImportModel(_item, _race, path, options, LogMessageReceived, IntermediateStep, XivStrings.TexTools, _submeshId, _dataOnly, Settings.Default.Lumina_IsEnabled, new DirectoryInfo(Settings.Default.Lumina_Directory));
+                       await _mdl.ImportModel(_item, _race, path, options, LogMessageReceived, IntermediateStep, XivStrings.TexTools, _submeshId, _dataOnly);
                    }
                    else
                    {
-                       await _mdl.ImportModel(_item, _race, path, options, LogMessageReceived, null, XivStrings.TexTools, _submeshId, _dataOnly, Settings.Default.Lumina_IsEnabled, new DirectoryInfo(Settings.Default.Lumina_Directory));
+                       await _mdl.ImportModel(_item, _race, path, options, LogMessageReceived, null, XivStrings.TexTools, _submeshId, _dataOnly);
                    }
                    OnImportComplete();
                }

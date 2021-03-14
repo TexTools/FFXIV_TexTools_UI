@@ -61,7 +61,7 @@ namespace FFXIV_TexTools.Views
                     if (cancel) return;
                 }
 
-                await _dat.CopyFile(from, to, XivStrings.TexTools, true, doLumina: Settings.Default.Lumina_IsEnabled, luminaOutDir: new DirectoryInfo(Settings.Default.Lumina_Directory ?? string.Empty));
+                await _dat.CopyFile(from, to, XivStrings.TexTools, true);
 
                 Dispatcher.Invoke(() =>
                 {

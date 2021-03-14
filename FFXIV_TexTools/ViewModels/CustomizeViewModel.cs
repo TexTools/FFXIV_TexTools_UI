@@ -21,6 +21,7 @@ using FFXIV_TexTools.Resources;
 using FFXIV_TexTools.Views;
 using FolderSelect;
 using ForceUpdateAssembly;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -121,14 +122,6 @@ namespace FFXIV_TexTools.ViewModels
             set => NotifyPropertyChanged(nameof(ModPack_Directory));
         }
 
-        /// <summary>
-        /// The lumina directory
-        /// </summary>
-        public string Lumina_Directory
-        {
-            get => !string.IsNullOrEmpty(Settings.Default.Lumina_Directory) ? Path.GetFullPath(Settings.Default.Lumina_Directory) : string.Empty;
-            set => NotifyPropertyChanged(nameof(Lumina_Directory));
-        }
 
         /// <summary>
         /// The default author
@@ -399,6 +392,18 @@ namespace FFXIV_TexTools.ViewModels
         }
 
         /// <summary>
+        /// The lumina directory
+        /// </summary>
+        public string Lumina_Directory
+        {
+            get => !string.IsNullOrEmpty(Settings.Default.Lumina_Directory) ? Path.GetFullPath(Settings.Default.Lumina_Directory) : string.Empty;
+            set {
+                LuminaSettingsUpdated();
+                NotifyPropertyChanged(nameof(Lumina_Directory));
+            }
+        }
+
+        /// <summary>
         /// Lumina enabled state
         /// </summary>
         public bool UseLuminaExports
@@ -409,6 +414,7 @@ namespace FFXIV_TexTools.ViewModels
                 if (UseLuminaExports != value)
                 {
                     SetLuminaExports(value);
+                    LuminaSettingsUpdated();
                     NotifyPropertyChanged(nameof(UseLuminaExports));
                 }
             }
@@ -419,6 +425,28 @@ namespace FFXIV_TexTools.ViewModels
             Settings.Default.Lumina_IsEnabled = value;
             Settings.Default.Save();
         }
+
+        private void LuminaSettingsUpdated()
+        {
+            var gi = XivCache.GameInfo;
+
+            // Update the cache's game info object.
+            // We don't need to revalidate the cache here, as the the Lumina Settings/Operations don't actually interact with the cache itself at all.
+            DirectoryInfo luminaDir = null;
+            var useLumina = Settings.Default.Lumina_IsEnabled;
+            try
+            {
+                luminaDir = new DirectoryInfo(Settings.Default.Lumina_Directory);
+                XivCache.SetGameInfo(gi.GameDirectory, gi.GameLanguage, gi.DxMode, false, true, luminaDir, Settings.Default.Lumina_IsEnabled);
+            } catch(Exception ex)
+            {
+                Helpers.FlexibleMessageBox.Show("Unable to save Lumina settings, invalid Lumina directory.");
+                Settings.Default.Lumina_IsEnabled = false;
+                XivCache.SetGameInfo(gi.GameDirectory, gi.GameLanguage, gi.DxMode, false, true, null, false);
+            }
+
+        }
+
 
         /// <summary>
         /// The selected skin type
