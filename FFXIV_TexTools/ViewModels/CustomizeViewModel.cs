@@ -426,7 +426,7 @@ namespace FFXIV_TexTools.ViewModels
             Settings.Default.Save();
         }
 
-        private void LuminaSettingsUpdated()
+        private static void LuminaSettingsUpdated()
         {
             var gi = XivCache.GameInfo;
 
@@ -990,6 +990,7 @@ namespace FFXIV_TexTools.ViewModels
 
         public static void UpdateCacheSettings()
         {
+            LuminaSettingsUpdated();
             XivCache.SetMetaValue(TTModel._SETTINGS_KEY_EXPORT_ALL_BONES, Settings.Default.ExportAllBones);
         }
 
