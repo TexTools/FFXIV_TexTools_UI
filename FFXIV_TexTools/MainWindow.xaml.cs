@@ -1349,6 +1349,13 @@ namespace FFXIV_TexTools
         /// </summary>
         private async void Menu_StartOver_Click(object sender, RoutedEventArgs e)
         {
+            if(XivCache.GameInfo.UseLumina)
+            {
+                FlexibleMessageBox.Show("Cannot perform Start Over while Lumina Mode is active.", "Lumina Mode Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                return;
+            }
+
             var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
 
             var index = new Index(gameDirectory);
