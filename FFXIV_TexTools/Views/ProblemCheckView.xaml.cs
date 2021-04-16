@@ -33,13 +33,15 @@ using xivModdingFramework.General.Enums;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Mods.DataContainers;
 using xivModdingFramework.SqPack.FileTypes;
-using Application = System.Windows.Application;
 using xivModdingFramework.Cache;
 using xivModdingFramework.Mods;
 using System.Runtime.CompilerServices;
 using System.Linq;
 using FFXIV_TexTools.ViewModels;
 using xivModdingFramework.SqPack.DataContainers;
+
+using Index = xivModdingFramework.SqPack.FileTypes.Index;
+using Application = System.Windows.Application;
 
 namespace FFXIV_TexTools.Views
 {
@@ -654,7 +656,7 @@ namespace FFXIV_TexTools.Views
                         var gi = XivCache.GameInfo;
                         Properties.Settings.Default.DX_Version = "11";
                         Properties.Settings.Default.Save();
-                        XivCache.SetGameInfo(gi.GameDirectory, gi.GameLanguage, 11);
+                        XivCache.SetGameInfo(gi.GameDirectory, gi.GameLanguage, 11, true, true, gi.LuminaDirectory, gi.UseLumina);
                         AddText($"\tChanging TexTools Application Mode to DX11 to match FFXIV settings...", textColor);
                         AddText("\t\u2714\n", "Green");
 
@@ -672,7 +674,7 @@ namespace FFXIV_TexTools.Views
                         var gi = XivCache.GameInfo;
                         Properties.Settings.Default.DX_Version = "9";
                         Properties.Settings.Default.Save();
-                        XivCache.SetGameInfo(gi.GameDirectory, gi.GameLanguage, 9);
+                        XivCache.SetGameInfo(gi.GameDirectory, gi.GameLanguage, 9, true, true, gi.LuminaDirectory, gi.UseLumina);
                         AddText($"\tChanging TexTools Application Mode to DX9 to match FFXIV settings...", textColor);
                         AddText("\t\u2714\n", "Green");
 

@@ -66,7 +66,9 @@ using xivModdingFramework.Textures.Enums;
 using xivModdingFramework.Textures.FileTypes;
 using xivModdingFramework.Variants.DataContainers;
 using xivModdingFramework.Variants.FileTypes;
+
 using BitmapSource = System.Windows.Media.Imaging.BitmapSource;
+using Index = xivModdingFramework.SqPack.FileTypes.Index;
 
 namespace FFXIV_TexTools.ViewModels
 {
@@ -254,7 +256,11 @@ namespace FFXIV_TexTools.ViewModels
 
         private void ColorsetEditor_MaterialSaved(object sender, EventArgs e)
         {
-            UpdateImage();
+            // Don't refresh the UI in Lumina mode.
+            if(!XivCache.GameInfo.UseLumina)
+            {
+                UpdateImage();
+            }
         }
 
         /// <summary>
@@ -1578,6 +1584,7 @@ namespace FFXIV_TexTools.ViewModels
             ImportEnabled = false;
             var fileDir = new DirectoryInfo(fileName);
             var dxVersion = int.Parse(Settings.Default.DX_Version);
+
 
             if (fileDir.FullName.ToLower().Contains(".dds"))
             {

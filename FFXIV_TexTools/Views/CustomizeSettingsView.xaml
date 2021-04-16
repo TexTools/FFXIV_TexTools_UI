@@ -8,7 +8,7 @@
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
         xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
-        Title="{Binding Source={x:Static resx:UIStrings.Customize}}" Height="600" Width="800" ShowMaxRestoreButton="False" ShowMinButton="False" WindowStartupLocation="CenterOwner">
+        Title="{Binding Source={x:Static resx:UIStrings.Customize}}" Height="620" Width="800" ShowMaxRestoreButton="False" ShowMinButton="False" WindowStartupLocation="CenterOwner">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
@@ -87,6 +87,7 @@
         <Grid Grid.Column="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition></RowDefinition>
             </Grid.RowDefinitions>
             <GroupBox Header="{Binding Source={x:Static resx:UIStrings.Colors_Skins}}" Margin="5">
@@ -140,8 +141,38 @@
                     <Button x:Name="DefaultButton" Content="{Binding Source={x:Static resx:UIStrings.Reset_to_Default}}" Command="{Binding Customize_Reset}" Grid.Row="9" Grid.Column="0" Margin="5"/>
                 </Grid>
             </GroupBox>
-            <Button x:Name="CloseButton" Grid.Row="1" Content="{Binding Source={x:Static resx:UIStrings.Close}}" Command="{Binding CloseCustomize}" Margin="10" Click="CloseButton_Click" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="150" />
 
+            <GroupBox Grid.Row="1" Header="{Binding Source={x:Static resx:UIStrings.Lumina_Output}}" Margin="5">
+                <StackPanel>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBox x:Name="LuminaOutDir" Grid.Row="0" Text="{Binding Lumina_Directory}" TextWrapping="NoWrap" IsReadOnly="True" Margin="5" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.Lumina_Directory}}" mah:TextBoxHelper.UseFloatingWatermark="True"/>
+
+                        <Button Content="..." Grid.Row="0" Grid.Column="1" Margin="5" Command="{Binding Lumina_SelectDir}" HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="25" MinHeight="25" HorizontalContentAlignment="Center" VerticalContentAlignment="Top"/>
+                    </Grid>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="175"></ColumnDefinition>
+                            <ColumnDefinition></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="36"/>
+                        </Grid.RowDefinitions>
+
+                        <Label Grid.Column="0" Grid.Row="1"  Margin="10,0,5,0" Content="Redirect imports to Lumina" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
+                        <CheckBox x:Name="EnableLuminaCheckBox"  Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" Margin="5,0,10,0"  IsChecked="{Binding UseLuminaExports}" ToolTip="Redirect imports and metadata changes to the selected folder in Lumina/Umbra/Penumbra formats instead of local game files."></CheckBox>
+                    </Grid>
+                </StackPanel>
+            </GroupBox>
+
+            <Button x:Name="CloseButton" Grid.Row="2" Content="{Binding Source={x:Static resx:UIStrings.Close}}" Command="{Binding CloseCustomize}" Margin="10" Click="CloseButton_Click" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="150" />
         </Grid>
     </Grid>
 </mah:MetroWindow>

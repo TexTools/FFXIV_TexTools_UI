@@ -16,6 +16,8 @@ using xivModdingFramework.Cache;
 using xivModdingFramework.Items.DataContainers;
 using xivModdingFramework.SqPack.FileTypes;
 
+using Index = xivModdingFramework.SqPack.FileTypes.Index;
+
 namespace FFXIV_TexTools.Views
 {
     /// <summary>

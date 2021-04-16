@@ -53,7 +53,9 @@ using xivModdingFramework.Mods.DataContainers;
 using xivModdingFramework.Mods.FileTypes;
 using xivModdingFramework.SqPack.FileTypes;
 using static xivModdingFramework.Cache.XivCache;
+
 using Application = System.Windows.Application;
+using Index = xivModdingFramework.SqPack.FileTypes.Index;
 
 namespace FFXIV_TexTools
 {
@@ -259,7 +261,23 @@ namespace FFXIV_TexTools
                 // Just do a hard synchronous cache initialization for import only mode.
                 var gameDir = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
                 var lang = XivLanguages.GetXivLanguage(Properties.Settings.Default.Application_Language);
-                XivCache.SetGameInfo(gameDir, lang, dxVersion, true, false);
+                DirectoryInfo luminaDir = null;
+                bool useLumina = false;
+                try
+                {
+                    new DirectoryInfo(Properties.Settings.Default.Lumina_Directory);
+                    useLumina = Properties.Settings.Default.Lumina_IsEnabled;
+                } catch (Exception ex)
+                {
+                    if (!String.IsNullOrWhiteSpace(Properties.Settings.Default.Lumina_Directory) && Properties.Settings.Default.Lumina_IsEnabled == true) {
+                        System.Windows.MessageBox.Show("Unable to restore Lumina settings, directory was invalid.", "Lumina Directory Error.");
+                    }
+
+                    luminaDir = null;
+                    useLumina = false;
+                }
+
+                XivCache.SetGameInfo(gameDir, lang, dxVersion, true, false, luminaDir, useLumina);
 
                 _startupArgs = args[0];
                 OnlyImport();
@@ -400,7 +418,26 @@ namespace FFXIV_TexTools
                     }
 
                     XivCache.CacheRebuilding += OnCacheRebuild;
-                    XivCache.SetGameInfo(gameDir, lang, dxVersion);
+
+                    DirectoryInfo luminaDir = null;
+                    bool useLumina = false;
+                    try
+                    {
+                        new DirectoryInfo(Properties.Settings.Default.Lumina_Directory);
+                        useLumina = Properties.Settings.Default.Lumina_IsEnabled;
+                    }
+                    catch (Exception ex)
+                    {
+                        if (!String.IsNullOrWhiteSpace(Properties.Settings.Default.Lumina_Directory)  && Properties.Settings.Default.Lumina_IsEnabled == true)
+                        {
+                            System.Windows.MessageBox.Show("Unable to restore Lumina settings, directory was invalid.", "Lumina Directory Error.");
+                        }
+
+                        luminaDir = null;
+                        useLumina = false;
+                    }
+
+                    XivCache.SetGameInfo(gameDir, lang, dxVersion, true, true, luminaDir, useLumina);
                     CustomizeViewModel.UpdateCacheSettings();
 
                 } catch(Exception ex)
@@ -1321,6 +1358,13 @@ namespace FFXIV_TexTools
         /// </summary>
         private async void Menu_StartOver_Click(object sender, RoutedEventArgs e)
         {
+            if(XivCache.GameInfo.UseLumina)
+            {
+                FlexibleMessageBox.Show("Cannot perform Start Over while Lumina Mode is active.", "Lumina Mode Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                return;
+            }
+
             var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
 
             var index = new Index(gameDirectory);

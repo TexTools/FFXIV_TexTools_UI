@@ -23,6 +23,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using FFXIV_TexTools.Properties;
 using xivModdingFramework.Cache;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Materials.DataContainers;

@@ -41,6 +41,8 @@ using xivModdingFramework.Models.ModelTextures;
 using xivModdingFramework.SqPack.FileTypes;
 using xivModdingFramework.Variants.FileTypes;
 
+using Index = xivModdingFramework.SqPack.FileTypes.Index;
+
 namespace FFXIV_TexTools.ViewModels
 {
     public class FullModelViewModel : INotifyPropertyChanged

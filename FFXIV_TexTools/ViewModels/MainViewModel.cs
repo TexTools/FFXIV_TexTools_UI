@@ -45,6 +45,8 @@ using FFXIV_TexTools.Views;
 using xivModdingFramework.Mods.DataContainers;
 using xivModdingFramework.SqPack.DataContainers;
 
+using Index = xivModdingFramework.SqPack.FileTypes.Index;
+
 namespace FFXIV_TexTools.ViewModels
 {
     public class MainViewModel : INotifyPropertyChanged
@@ -196,7 +198,7 @@ namespace FFXIV_TexTools.ViewModels
                     if(XivCache.Initialized)
                     {
                         var gi = XivCache.GameInfo;
-                        XivCache.SetGameInfo(gi.GameDirectory, gi.GameLanguage, 11);
+                        XivCache.SetGameInfo(gi.GameDirectory, gi.GameLanguage, 11, true, true, gi.LuminaDirectory, gi.UseLumina);
                     }
                 }
             }
@@ -215,7 +217,7 @@ namespace FFXIV_TexTools.ViewModels
                 if (XivCache.Initialized)
                 {
                     var gi = XivCache.GameInfo;
-                    XivCache.SetGameInfo(gi.GameDirectory, gi.GameLanguage, 9);
+                    XivCache.SetGameInfo(gi.GameDirectory, gi.GameLanguage, 9, true, true, gi.LuminaDirectory, gi.UseLumina);
                 }
             }
 
@@ -869,13 +871,13 @@ namespace FFXIV_TexTools.ViewModels
             {
                 Properties.Settings.Default.DX_Version = "9";
                 Properties.Settings.Default.Save();
-                XivCache.SetGameInfo(gi.GameDirectory, gi.GameLanguage, 9);
+                XivCache.SetGameInfo(gi.GameDirectory, gi.GameLanguage, 9, true, true, gi.LuminaDirectory, gi.UseLumina);
             }
             else
             {
                 Properties.Settings.Default.DX_Version = "11";
                 Properties.Settings.Default.Save();
-                XivCache.SetGameInfo(gi.GameDirectory, gi.GameLanguage, 11);
+                XivCache.SetGameInfo(gi.GameDirectory, gi.GameLanguage, 11, true, true, gi.LuminaDirectory, gi.UseLumina);
             }
 
             DXVersionText = $"DX: {Properties.Settings.Default.DX_Version}";
