@@ -269,7 +269,7 @@ namespace FFXIV_TexTools
                     useLumina = Properties.Settings.Default.Lumina_IsEnabled;
                 } catch (Exception ex)
                 {
-                    if (Properties.Settings.Default.Lumina_Directory != null && Properties.Settings.Default.Lumina_Directory != "" && Properties.Settings.Default.Lumina_IsEnabled == true) {
+                    if (!String.IsNullOrWhiteSpace(Properties.Settings.Default.Lumina_Directory) && Properties.Settings.Default.Lumina_IsEnabled == true) {
                         System.Windows.MessageBox.Show("Unable to restore Lumina settings, directory was invalid.", "Lumina Directory Error.");
                     }
 
@@ -428,7 +428,7 @@ namespace FFXIV_TexTools
                     }
                     catch (Exception ex)
                     {
-                        if (Properties.Settings.Default.Lumina_Directory != null && Properties.Settings.Default.Lumina_Directory != "" && Properties.Settings.Default.Lumina_IsEnabled == true)
+                        if (!String.IsNullOrWhiteSpace(Properties.Settings.Default.Lumina_Directory)  && Properties.Settings.Default.Lumina_IsEnabled == true)
                         {
                             System.Windows.MessageBox.Show("Unable to restore Lumina settings, directory was invalid.", "Lumina Directory Error.");
                         }
