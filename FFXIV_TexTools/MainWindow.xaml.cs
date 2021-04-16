@@ -269,6 +269,7 @@ namespace FFXIV_TexTools
                     useLumina = Properties.Settings.Default.Lumina_IsEnabled;
                 } catch (Exception ex)
                 {
+                    System.Windows.MessageBox.Show("Unable to restore Lumina settings, directory was invalid.", "Lumina Directory Error.");
                     luminaDir = null;
                     useLumina = false;
                 }
