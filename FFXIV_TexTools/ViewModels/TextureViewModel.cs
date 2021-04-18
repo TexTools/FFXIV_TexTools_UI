@@ -2125,14 +2125,6 @@ namespace FFXIV_TexTools.ViewModels
             }
         }
 
-        /// <summary>
-        /// Apply the Hi-Res checkbox selection
-        /// </summary>
-        private void SetHiResState()
-        {
-
-        }
-
         #endregion
 
         // Color Channels
