@@ -227,7 +227,7 @@ namespace FFXIV_TexTools.ViewModels
             _typePartWatermark = XivStrings.TypePart, _textureMapWatermark = XivStrings.Texture_Map;
         private string _modToggleText = UIStrings.Enable_Disable;
 
-        private bool _raceEnabled, _materialEnabled, _mapEnabled, _channelsEnabled;
+        private bool _raceEnabled, _materialEnabled, _mapEnabled, _channelsEnabled, _hiResEnabled, _hiResChecked;
         private bool _exportEnabled, _importEnabled, _modStatusEnabled, _moreOptionsEnabled, _addMaterialEnabled=false;
         private bool _materialEditorEnabled = false;
         private bool _redChecked = true, _greenChecked = true, _blueChecked = true, _alphaChecked;
@@ -303,6 +303,8 @@ namespace FFXIV_TexTools.ViewModels
                 await HandleTexOnlyItem(item);
                 return;
             }
+
+            HiResEnabled = false;
 
             _item = (IItemModel) item;
             var gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
@@ -809,7 +811,7 @@ namespace FFXIV_TexTools.ViewModels
                 var uiItem = (XivUi)item;
                 _uiItem = uiItem;
 
-                var paths = await uiItem.GetTexPaths();
+                var paths = await uiItem.GetTexPaths(!HiResChecked, HiResChecked);
                 foreach(var kv in paths)
                 {
                     var mapInfo = new MapInfo();
@@ -822,6 +824,7 @@ namespace FFXIV_TexTools.ViewModels
 
                 }
 
+                HiResEnabled = uiItem.HasHiRes;
             } catch
             {
                 try
@@ -880,6 +883,8 @@ namespace FFXIV_TexTools.ViewModels
                         _mapComboBoxData.Add(new KeyValuePair<string, MapInfo>(Path.GetFileNameWithoutExtension(path), mapInfo));
                     }
                 }
+
+                HiResEnabled = false;
             }
 
             if (_mapComboBoxData.Count > 0)
@@ -2095,6 +2100,40 @@ namespace FFXIV_TexTools.ViewModels
                 NotifyPropertyChanged(nameof(RaceWatermark));
             }
         }
+
+        // HD Assets
+        #region HiResTextures
+
+        public bool HiResEnabled
+        {
+            get => _hiResEnabled;
+            set
+            {
+                _hiResEnabled = value;
+                NotifyPropertyChanged(nameof(HiResEnabled));
+            }
+        }
+
+        public bool HiResChecked
+        {
+            get => _hiResChecked;
+            set
+            {
+                _hiResChecked = value;
+                NotifyPropertyChanged(nameof(HiResChecked));
+                UpdateTexture(_uiItem);
+            }
+        }
+
+        /// <summary>
+        /// Apply the Hi-Res checkbox selection
+        /// </summary>
+        private void SetHiResState()
+        {
+
+        }
+
+        #endregion
 
         // Color Channels
         #region ColorChannels
