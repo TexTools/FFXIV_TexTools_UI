@@ -428,12 +428,29 @@ namespace FFXIV_TexTools.Views
                                 {
                                     try
                                     {
+                                        bool err = false;
                                         // Just test to see if we can get the data at all.
                                         if (extension == ".tex")
                                         {
-                                            await dat.GetType4Data(mod.fullPath, false);
+                                            var data = await dat.GetType4Data(mod.fullPath, false);
+                                            uint size = (uint)data.TexData.Length;
+
+                                            var reportedSize = await dat.GetReportedType4UncompressedSize(XivDataFiles.GetXivDataFile(mod.datFile), mod.data.modOffset);
+
+                                            if(size != reportedSize)
+                                            {
+                                                await dat.UpdateType4UncompressedSize(XivDataFiles.GetXivDataFile(mod.datFile), mod.data.modOffset, size);
+
+                                                err = true;
+                                                textsToAdd.Add(("\t\u2714\n", "Orange"));
+                                                textsToAdd.Add(($"\tMod had an incorrectly reported file size.  The reported size has been corrected.\n", "Orange"));
+                                            }
                                         }
-                                        textsToAdd.Add(("\t\u2714\n", "Green"));
+
+                                        if (!err)
+                                        {
+                                            textsToAdd.Add(("\t\u2714\n", "Green"));
+                                        }
                                     } catch
                                     {
                                         textsToAdd.Add(("\t\u2716\n", "Red"));
