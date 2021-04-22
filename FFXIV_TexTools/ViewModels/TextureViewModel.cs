@@ -1377,6 +1377,10 @@ namespace FFXIV_TexTools.ViewModels
                     if (_primaryIsRace)
                     {
                         _tex.SaveTexAsDDS(_item, texData, savePath, SelectedRace);
+                    } else if( typeof(XivFurniture) == _item.GetType())
+                    {
+                        // Fucking Paintings are cancer.
+                        _tex.SaveTexAsDDS(_item, texData, savePath, SelectedRace);
                     } else
                     {
                         var saveItem = (XivCharacter)((XivCharacter)_item).Clone();
@@ -1554,7 +1558,8 @@ namespace FFXIV_TexTools.ViewModels
 
             if (_item != null)
             {
-                if (!_primaryIsRace)
+                // Did I mention I hate our paintings implementation?
+                if ((!_primaryIsRace) && typeof(XivFurniture) != _item.GetType())
                 {
                     var race = _root == null ? XivRace.All_Races : XivRaces.GetXivRace(_root.Info.PrimaryId);
                     var saveItem = (XivCharacter)((XivCharacter)_item).Clone();
