@@ -1296,7 +1296,7 @@ namespace FFXIV_TexTools
                 {
                     await Task.Run(() =>
                     {
-                        XivCache.RebuildCache();
+                        XivCache.RebuildCache(XivCache.CacheVersion);
                     });
 
                     CustomizeViewModel.UpdateCacheSettings();

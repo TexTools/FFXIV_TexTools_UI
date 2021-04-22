@@ -100,18 +100,23 @@
                         <Image Source="{Binding ImageDisplay}" Effect="{Binding ImageEffect}" VerticalAlignment="Center" HorizontalAlignment="Center" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
                     </Viewbox>
                 </xctk:Zoombox>
-                <Grid Margin="0" Background="#3FFFFFFF" Height="33" VerticalAlignment="Top" HorizontalAlignment="Right" Width="151" IsEnabled="{Binding ChannelsEnabled, FallbackValue=true}">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
-                    <CheckBox x:Name="RedCheckBox" Content="R" HorizontalAlignment="Center" Margin="-2,0,0,0" VerticalAlignment="Center" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" IsChecked="{Binding RedChecked, FallbackValue=true}"/>
-                    <CheckBox x:Name="GreenCheckBox" Content="G" Grid.Column="1" HorizontalAlignment="Center" Margin="0" VerticalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" IsChecked="{Binding GreenChecked, FallbackValue=true}"/>
-                    <CheckBox x:Name="BlueCheckBox" Content="B" Grid.Column="2" HorizontalAlignment="Center" Margin="0" VerticalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" IsChecked="{Binding BlueChecked, FallbackValue=true}"/>
-                    <CheckBox x:Name="AlphaCheckBox" Content="A" Grid.Column="3" HorizontalAlignment="Center" Margin="0" VerticalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" IsChecked="{Binding AlphaChecked}"/>
-                </Grid>
+                <StackPanel Margin="0" Background="#3FFFFFFF" Height="60" VerticalAlignment="Top" HorizontalAlignment="Right" Width="151">
+                    <Grid Margin="0" Height="33" VerticalAlignment="Top" HorizontalAlignment="Right" Width="151" IsEnabled="{Binding ChannelsEnabled, FallbackValue=true}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <CheckBox x:Name="RedCheckBox" Content="R" HorizontalAlignment="Center" Margin="-2,0,0,0" VerticalAlignment="Center" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" IsChecked="{Binding RedChecked, FallbackValue=true}"/>
+                        <CheckBox x:Name="GreenCheckBox" Content="G" Grid.Column="1" HorizontalAlignment="Center" Margin="0" VerticalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" IsChecked="{Binding GreenChecked, FallbackValue=true}"/>
+                        <CheckBox x:Name="BlueCheckBox" Content="B" Grid.Column="2" HorizontalAlignment="Center" Margin="0" VerticalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" IsChecked="{Binding BlueChecked, FallbackValue=true}"/>
+                        <CheckBox x:Name="AlphaCheckBox" Content="A" Grid.Column="3" HorizontalAlignment="Center" Margin="0" VerticalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" IsChecked="{Binding AlphaChecked}"/>
+                    </Grid>
+
+                    <CheckBox x:Name="HiResCheckBox" Content="HD Texture" Margin="2,0,0,0" IsChecked="{Binding HiResChecked}" IsEnabled="{Binding HiResEnabled, FallbackValue=false}"/>
+                </StackPanel>
+                
                 <Label x:Name="TexTypeLabel" Content="{Binding TextureFormat}" Background="#66FFFFFF" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold"/>
                 <Label x:Name="MipMapLabel" Content="{Binding MipMapInfo}" Background="#66FFFFFF" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold" Margin="0,26,0,0"/>
                 <Label x:Name="SharedMaterialLabel"  Background="#66FFFFFF" HorizontalAlignment="Center" VerticalAlignment="Top" Visibility="Collapsed" FontWeight="Bold" Margin="0,5,0,0"/>
