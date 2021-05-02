@@ -75,7 +75,7 @@ namespace FFXIV_TexTools.ViewModels
             }
 
             var values = _material.ShaderParameterList.Select( x=> { 
-                var ret = x.ParameterID.ToString() + " { "; 
+                var ret = x.ParameterId.ToString() + " { "; 
 
                 foreach(var val in x.Args)
                 {
@@ -276,21 +276,21 @@ namespace FFXIV_TexTools.ViewModels
             // Specular / Multi
             if (newShader.HasMulti)
             {
-                newMulti = new MapInfo() { Usage = XivTexType.Multi, Format = MtrlTextureDescriptorFormat.NoColorset, Path = _view.SpecularTextBox.Text };
+                newMulti = new MapInfo() { Usage = XivTexType.Multi, Format = MtrlTextureSamplerFlagSets.NoColorset, Path = _view.SpecularTextBox.Text };
             }
             else
             {
-                newSpecular = new MapInfo() { Usage = XivTexType.Specular, Format = MtrlTextureDescriptorFormat.NoColorset, Path = _view.SpecularTextBox.Text };
+                newSpecular = new MapInfo() { Usage = XivTexType.Specular, Format = MtrlTextureSamplerFlagSets.NoColorset, Path = _view.SpecularTextBox.Text };
             }
 
             // Diffuse / Reflection
             if (newShader.HasDiffuse)
             {
-                newDiffuse = new MapInfo() { Usage = XivTexType.Diffuse, Format = MtrlTextureDescriptorFormat.NoColorset, Path = _view.DiffuseTextBox.Text };
+                newDiffuse = new MapInfo() { Usage = XivTexType.Diffuse, Format = MtrlTextureSamplerFlagSets.NoColorset, Path = _view.DiffuseTextBox.Text };
             }
             else if (newShader.HasReflection)
             { 
-                newReflection = new MapInfo() { Usage = XivTexType.Reflection, Format = MtrlTextureDescriptorFormat.NoColorset, Path = _view.DiffuseTextBox.Text };
+                newReflection = new MapInfo() { Usage = XivTexType.Reflection, Format = MtrlTextureSamplerFlagSets.NoColorset, Path = _view.DiffuseTextBox.Text };
             }
 
             if(_mode == MaterialEditorMode.NewSingle)
