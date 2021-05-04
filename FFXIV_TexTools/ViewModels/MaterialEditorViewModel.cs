@@ -271,26 +271,26 @@ namespace FFXIV_TexTools.ViewModels
             var oldNormal = _material.GetMapInfo(XivTexType.Normal);
 
             // Normal
-            newNormal = new MapInfo() { Usage = XivTexType.Normal, SamplerSettings = oldNormal.SamplerSettings, Path = _view.NormalTextBox.Text };
+            newNormal = new MapInfo() { Usage = XivTexType.Normal, Path = _view.NormalTextBox.Text };
 
             // Specular / Multi
             if (newShader.HasMulti)
             {
-                newMulti = new MapInfo() { Usage = XivTexType.Multi, SamplerSettings = TextureSamplerSettingsPresets.NoColorset, Path = _view.SpecularTextBox.Text };
+                newMulti = new MapInfo() { Usage = XivTexType.Multi, Path = _view.SpecularTextBox.Text };
             }
             else
             {
-                newSpecular = new MapInfo() { Usage = XivTexType.Specular, SamplerSettings = TextureSamplerSettingsPresets.NoColorset, Path = _view.SpecularTextBox.Text };
+                newSpecular = new MapInfo() { Usage = XivTexType.Specular, Path = _view.SpecularTextBox.Text };
             }
 
             // Diffuse / Reflection
             if (newShader.HasDiffuse)
             {
-                newDiffuse = new MapInfo() { Usage = XivTexType.Diffuse, SamplerSettings = TextureSamplerSettingsPresets.NoColorset, Path = _view.DiffuseTextBox.Text };
+                newDiffuse = new MapInfo() { Usage = XivTexType.Diffuse, Path = _view.DiffuseTextBox.Text };
             }
             else if (newShader.HasReflection)
             { 
-                newReflection = new MapInfo() { Usage = XivTexType.Reflection, SamplerSettings = TextureSamplerSettingsPresets.NoColorset, Path = _view.DiffuseTextBox.Text };
+                newReflection = new MapInfo() { Usage = XivTexType.Reflection, Path = _view.DiffuseTextBox.Text };
             }
 
             if(_mode == MaterialEditorMode.NewSingle)
