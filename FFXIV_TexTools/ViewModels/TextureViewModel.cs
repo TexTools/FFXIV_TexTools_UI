@@ -1454,7 +1454,7 @@ namespace FFXIV_TexTools.ViewModels
 
             if (_item != null)
             {
-                if (!_primaryIsRace)
+                if (((!_primaryIsRace) && typeof(XivFurniture) != _item.GetType()))
                 {
                     var race = _root == null ? XivRace.All_Races : XivRaces.GetXivRace(_root.Info.PrimaryId);
                     path = IOUtil.MakeItemSavePath(_item, savePath, race, SelectedPrimary);
@@ -1609,7 +1609,7 @@ namespace FFXIV_TexTools.ViewModels
                         {
                             var saveItem = _item;
 
-                            if (!_primaryIsRace)
+                            if ((!_primaryIsRace) && typeof(XivFurniture) != _item.GetType())
                             {
                                 var temp = (XivCharacter)((XivCharacter)_item).Clone();
                                 temp.Name = saveItem.SecondaryCategory;
@@ -1660,7 +1660,7 @@ namespace FFXIV_TexTools.ViewModels
                         {
                             var saveItem = _item;
 
-                            if (!_primaryIsRace)
+                            if ((!_primaryIsRace) && typeof(XivFurniture) != _item.GetType())
                             {
                                 var temp = (XivCharacter)((XivCharacter)_item).Clone();
                                 temp.Name = saveItem.SecondaryCategory;
