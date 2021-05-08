@@ -174,8 +174,14 @@
   <data name="Diffuse" xml:space="preserve">
     <value>Diffuse</value>
   </data>
-  <data name="Ears" xml:space="preserve">
+  <data name="Dual_Wield" xml:space="preserve">
+    <value>二刀流</value>
+  </data>
+  <data name="Ear" xml:space="preserve">
     <value>耳</value>
+  </data>
+  <data name="Earring" xml:space="preserve">
+    <value>イヤリング</value>
   </data>
   <data name="Elezen" xml:space="preserve">
     <value>エレゼン</value>
@@ -196,7 +202,7 @@
     <value>chara/common/texture/decal_equip</value>
   </data>
   <data name="Equipment" xml:space="preserve">
-    <value>Equipment</value>
+    <value>装備品</value>
   </data>
   <data name="Equipment_Decals" xml:space="preserve">
     <value>クレスト</value>
@@ -282,6 +288,9 @@
   <data name="Ifrit_Egi" xml:space="preserve">
     <value>イフリート・エギ</value>
   </data>
+  <data name="Indoor_Furniture" xml:space="preserve">
+    <value>調度品</value>
+  </data>
   <data name="Iris" xml:space="preserve">
     <value>瞳</value>
   </data>
@@ -318,8 +327,14 @@
   <data name="Maps" xml:space="preserve">
     <value>マップ</value>
   </data>
+  <data name="Map_Symbols" xml:space="preserve">
+    <value>地図シンボル</value>
+  </data>
   <data name="Mask" xml:space="preserve">
-    <value>Mask</value>
+    <value>マスク</value>
+  </data>
+  <data name="Material" xml:space="preserve">
+    <value>素材</value>
   </data>
   <data name="Mesh" xml:space="preserve">
     <value>メッシュ</value>
@@ -357,11 +372,23 @@
   <data name="Off_Hand" xml:space="preserve">
     <value>サブアーム</value>
   </data>
+  <data name="Online_Status" xml:space="preserve">
+    <value>オンライン状態</value>
+  </data>
   <data name="OpenCollada" xml:space="preserve">
-    <value>OpenCOLLADA</value>
+    <value>COLLADAモジュールを開く</value>
+  </data>
+  <data name="Ornaments" xml:space="preserve">
+    <value>ファッションアクセサリ</value>
+  </data>
+  <data name="Outdoor_Furniture" xml:space="preserve">
+    <value>庭具</value>
+  </data>
+  <data name="Paintings" xml:space="preserve">
+    <value>染料</value>
   </data>
   <data name="Part" xml:space="preserve">
-    <value>パート</value>
+    <value>部位</value>
   </data>
   <data name="Pets" xml:space="preserve">
     <value>ペット</value>
@@ -379,7 +406,7 @@
     <value>右</value>
   </data>
   <data name="Rings" xml:space="preserve">
-    <value>指</value>
+    <value>右指</value>
   </data>
   <data name="Ring_Left" xml:space="preserve">
     <value>左指</value>
@@ -412,7 +439,7 @@
     <value>ソウルクリスタル</value>
   </data>
   <data name="Specular" xml:space="preserve">
-    <value>Specular</value>
+    <value>鏡面反射</value>
   </data>
   <data name="Status" xml:space="preserve">
     <value>ステータス</value>
