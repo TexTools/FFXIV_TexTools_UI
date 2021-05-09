@@ -475,8 +475,20 @@
     <Compile Include="Views\ModPack\ModPackWizard.xaml.cs">
       <DependentUpon>ModPackWizard.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Textures\MaterialEditorAdvancedView.xaml.cs">
+      <DependentUpon>MaterialEditorAdvancedView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Textures\MaterialEditorHelpView.xaml.cs">
       <DependentUpon>MaterialEditorHelpView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Textures\MaterialEditorOtherSettingsControl.xaml.cs">
+      <DependentUpon>MaterialEditorOtherSettingsControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Textures\MaterialEditorSamplerSettingsControl.xaml.cs">
+      <DependentUpon>MaterialEditorSamplerSettingsControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Textures\MaterialEditorShaderSettingsControl.xaml.cs">
+      <DependentUpon>MaterialEditorShaderSettingsControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Textures\MaterialEditorView.xaml.cs">
       <DependentUpon>MaterialEditorView.xaml</DependentUpon>
@@ -733,7 +745,23 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\Textures\MaterialEditorAdvancedView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\Textures\MaterialEditorHelpView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Textures\MaterialEditorOtherSettingsControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Textures\MaterialEditorSamplerSettingsControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Textures\MaterialEditorShaderSettingsControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

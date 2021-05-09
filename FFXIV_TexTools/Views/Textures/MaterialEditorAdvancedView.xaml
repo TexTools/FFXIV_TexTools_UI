@@ -1,0 +1,60 @@
+﻿<mah:MetroWindow x:Name="Material_Editor_Advanced" x:Class="FFXIV_TexTools.Views.Textures.MaterialEditorAdvancedView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FFXIV_TexTools.Views"
+        xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
+        xmlns:input="clr-namespace:System.Windows.Input;assembly=PresentationCore"
+        xmlns:tex="clr-namespace:FFXIV_TexTools.Views.Textures"
+        mc:Ignorable="d"
+        Title="Advanced Material Settings" Height="554.656" IsMinButtonEnabled="False" IsMaxRestoreButtonEnabled="False" WindowStartupLocation="CenterOwner" FontSize="14" Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="35"/>
+            <RowDefinition Height="35"/>
+            <RowDefinition/>
+            <RowDefinition Height="60"/>
+        </Grid.RowDefinitions>
+        <TextBlock  Text="Advanced Material Settings" TextAlignment="Right" FontWeight="Bold" Grid.Row="0"  FontSize="14" FontStyle="Italic" Margin="0" VerticalAlignment="Center" HorizontalAlignment="Center" />
+        <Button x:Name="CancelButton" Content="Cancel" Margin="10,0,0,0" Grid.Row="3" FontSize="12" HorizontalAlignment="Left" Width="150" Height="30" VerticalAlignment="Center" Click="CancelButton_Click"/>
+        <Button x:Name="SaveButton" Content="Save" Margin="0,0,10,0" Grid.Row="4" FontSize="12" HorizontalAlignment="Right" Width="150" Height="30" VerticalAlignment="Center" Click="SaveButton_Click"/>
+
+        <Grid x:Name="PrimaryGrid" Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <Grid x:Name="SamplerSettingsGrid" Grid.Row="0">
+                <tex:MaterialEditorSamplerSettingsControl/>
+            </Grid>
+            
+            <Grid x:Name="ShaderSettingsGrid" Grid.Row="1">
+                <tex:MaterialEditorShaderSettingsControl />
+
+            </Grid>
+            <Grid x:Name="OtherSettingsGrid" Grid.Row="2">
+                <tex:MaterialEditorOtherSettingsControl/>
+
+            </Grid>
+        </Grid>
+
+
+
+        <StackPanel Grid.Row="1" Width="400" VerticalAlignment="Center">
+            <TextBlock TextAlignment="Center" TextWrapping="Wrap" FontWeight="Bold" FontSize="10" FontStyle="Italic" Margin="0" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="#FFD40000">
+                <Run Text="Improper use of these settings may result in undefined behavior, including crashing FFXIV, TexTools, or other applications."></Run>
+            </TextBlock>
+        </StackPanel >
+
+
+    </Grid>
+</mah:MetroWindow>
+

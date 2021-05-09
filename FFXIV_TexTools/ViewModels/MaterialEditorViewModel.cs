@@ -74,7 +74,7 @@ namespace FFXIV_TexTools.ViewModels
                 return; 
             }
 
-            var values = _material.ShaderParameterList.Select( x=> { 
+            var values = _material.ShaderConstantList.Select( x=> { 
                 var ret = x.ConstantId.ToString() + " { "; 
 
                 foreach(var val in x.Constants)
@@ -188,9 +188,6 @@ namespace FFXIV_TexTools.ViewModels
             }
 
             // Show Settings
-            _view.TransparencyComboBox.SelectedValue = shader.TransparencyEnabled;
-            _view.BackfacesComboBox.SelectedValue = shader.RenderBackfaces;
-            _view.ColorsetComboBox.SelectedValue = shader.HasColorset;
             _view.ShaderComboBox.SelectedValue = shader.Shader;
             _view.PresetComboBox.SelectedValue = shader.Preset;
 
@@ -255,8 +252,6 @@ namespace FFXIV_TexTools.ViewModels
             var newShader = new ShaderInfo() { 
                 Shader = (MtrlShader) _view.ShaderComboBox.SelectedValue,
                 Preset = (MtrlShaderPreset) _view.PresetComboBox.SelectedValue,
-                TransparencyEnabled = (bool) _view.TransparencyComboBox.SelectedValue,
-                RenderBackfaces = (bool) _view.BackfacesComboBox.SelectedValue
             };
 
             MapInfo newNormal = null;

@@ -69,27 +69,6 @@ namespace FFXIV_TexTools.Views.Textures
 
             PasteMaterialButton.IsEnabled = _copiedMaterial != null;
 
-            Dictionary<bool, string> TransparencySource = new Dictionary<bool, string>();
-            TransparencySource.Add(true, "Enabled");
-            TransparencySource.Add(false, "Disabled");
-            TransparencyComboBox.ItemsSource = TransparencySource;
-            TransparencyComboBox.DisplayMemberPath = "Value";
-            TransparencyComboBox.SelectedValuePath = "Key";
-
-            Dictionary<bool, string> BackfacesSource = new Dictionary<bool, string>();
-            BackfacesSource.Add(true, "Show Backfaces");
-            BackfacesSource.Add(false, "Hide Backfaces");
-            BackfacesComboBox.ItemsSource = BackfacesSource;
-            BackfacesComboBox.DisplayMemberPath = "Value";
-            BackfacesComboBox.SelectedValuePath = "Key";
-
-            Dictionary<bool, string> ColorsetSource = new Dictionary<bool, string>();
-            ColorsetSource.Add(true, "Enabled");
-            ColorsetSource.Add(false, "Disabled");
-            ColorsetComboBox.ItemsSource = ColorsetSource;
-            ColorsetComboBox.DisplayMemberPath = "Value";
-            ColorsetComboBox.SelectedValuePath = "Key";
-            ColorsetComboBox.IsEnabled = false;
 
             DisableButton.IsEnabled = false;
             DisableButton.Visibility = Visibility.Hidden;
@@ -166,11 +145,9 @@ namespace FFXIV_TexTools.Views.Textures
                 NormalTextBox.IsEnabled = false;
                 DiffuseTextBox.IsEnabled = false;
                 SpecularTextBox.IsEnabled = false;
-                ColorsetComboBox.IsEnabled = false;
                 NewSharedButton.IsEnabled = false;
                 NewUniqueButton.IsEnabled = false;
                 PresetComboBox.IsEnabled = false;
-                TransparencyComboBox.IsEnabled = false;
                 ShaderComboBox.IsEnabled = false;
                 SaveButton.IsEnabled = false;
                 SaveButton.Visibility = Visibility.Hidden;
@@ -186,12 +163,9 @@ namespace FFXIV_TexTools.Views.Textures
 
             var shader = (MtrlShader)ShaderComboBox.SelectedValue;
             var preset = (MtrlShaderPreset)PresetComboBox.SelectedValue;
-            var transparency = (bool)TransparencyComboBox.SelectedValue;
 
             // Generate a fresh shader info so we can access some of the calculated fields.
-            var info = new ShaderInfo() { Shader = shader, Preset = preset, TransparencyEnabled = transparency };
-
-            ColorsetComboBox.SelectedValue = info.HasColorset;
+            var info = new ShaderInfo() { Shader = shader, Preset = preset };
 
             if (info.HasMulti)
             {
@@ -236,15 +210,6 @@ namespace FFXIV_TexTools.Views.Textures
                 DiffuseTextBox.Visibility = Visibility.Hidden;
             }
 
-            if(info.ForcedTransparency != null)
-            {
-                TransparencyComboBox.IsEnabled = false;
-                TransparencyComboBox.SelectedValue = info.ForcedTransparency;
-            } else
-            {
-                TransparencyComboBox.IsEnabled = true;
-            }
-
 
 
         }
@@ -258,7 +223,7 @@ namespace FFXIV_TexTools.Views.Textures
 
         private void CopyMaterialButton_Click(object sender, RoutedEventArgs e)
         {
-            _copiedMaterial = _material;
+            _copiedMaterial = (XivMtrl) _material.Clone();
             PasteMaterialButton.IsEnabled = true;
         }
 
@@ -267,8 +232,9 @@ namespace FFXIV_TexTools.Views.Textures
             if (_copiedMaterial != null)
             {
                 // Paste the copied Material into the editor using our current path and item.
-                _copiedMaterial.MTRLPath = _material.MTRLPath;
-                await SetMaterial(_copiedMaterial, _item, _mode);
+                var newCopy = (XivMtrl)_copiedMaterial.Clone();
+                newCopy.MTRLPath = _material.MTRLPath;
+                await SetMaterial(newCopy, _item, _mode);
             }
         }
 
@@ -292,6 +258,23 @@ namespace FFXIV_TexTools.Views.Textures
             SpecularTextBox.Text = uniqueTex;
             NormalTextBox.Text = uniqueTex;
 
+        }
+
+        private void AdvancedDetailsButton_Click(object sender, RoutedEventArgs e)
+        {
+
+            var advancedEditor = new Views.Textures.MaterialEditorAdvancedView() { Owner = Window.GetWindow(this) };
+
+            advancedEditor.SetMaterial(_material);
+            //var open = await editor.SetMaterial(material, item, mode);
+
+            var result = advancedEditor.ShowDialog();
+
+            // If we are saving the changes to the active edit material, bring the edited material back in.
+            if(result == true)
+            {
+                _material = advancedEditor.Material;
+            }
         }
     }
 }
