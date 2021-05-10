@@ -49,7 +49,7 @@ namespace FFXIV_TexTools.Views.Textures
 
             // Setup for the combo boxes.
             ShaderSource = new ObservableCollection<KeyValuePair<MtrlShader, string>>();
-            ShaderSource.Add(new KeyValuePair<MtrlShader, string>(MtrlShader.Standard, "Standard"));
+            ShaderSource.Add(new KeyValuePair<MtrlShader, string>(MtrlShader.Character, "Standard"));
             ShaderSource.Add(new KeyValuePair<MtrlShader, string>(MtrlShader.Glass, "Glass"));
             ShaderSource.Add(new KeyValuePair<MtrlShader, string>(MtrlShader.Skin, "Skin"));
             ShaderSource.Add(new KeyValuePair<MtrlShader, string>(MtrlShader.Hair, "Hair"));
