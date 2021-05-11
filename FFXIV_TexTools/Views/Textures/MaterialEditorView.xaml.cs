@@ -50,12 +50,12 @@ namespace FFXIV_TexTools.Views.Textures
             // Setup for the combo boxes.
             ShaderSource = new ObservableCollection<KeyValuePair<MtrlShader, string>>();
             ShaderSource.Add(new KeyValuePair<MtrlShader, string>(MtrlShader.Character, "Standard"));
-            ShaderSource.Add(new KeyValuePair<MtrlShader, string>(MtrlShader.Glass, "Glass"));
+            ShaderSource.Add(new KeyValuePair<MtrlShader, string>(MtrlShader.CharacterGlass, "Glass"));
             ShaderSource.Add(new KeyValuePair<MtrlShader, string>(MtrlShader.Skin, "Skin"));
             ShaderSource.Add(new KeyValuePair<MtrlShader, string>(MtrlShader.Hair, "Hair"));
             ShaderSource.Add(new KeyValuePair<MtrlShader, string>(MtrlShader.Iris, "Iris"));
-            ShaderSource.Add(new KeyValuePair<MtrlShader, string>(MtrlShader.Furniture, "Furniture"));
-            ShaderSource.Add(new KeyValuePair<MtrlShader, string>(MtrlShader.DyeableFurniture, "Dyeable Furniture"));
+            ShaderSource.Add(new KeyValuePair<MtrlShader, string>(MtrlShader.Bg, "Furniture"));
+            ShaderSource.Add(new KeyValuePair<MtrlShader, string>(MtrlShader.BgColorChange, "Dyeable Furniture"));
             ShaderComboBox.ItemsSource = ShaderSource;
             ShaderComboBox.DisplayMemberPath = "Value";
             ShaderComboBox.SelectedValuePath = "Key";
@@ -139,7 +139,7 @@ namespace FFXIV_TexTools.Views.Textures
             PresetComboBox_SelectionChanged(null, null);
 
 
-            if(shader == MtrlShader.Other || shader == MtrlShader.Furniture || shader == MtrlShader.DyeableFurniture)
+            if(shader == MtrlShader.Other || shader == MtrlShader.Bg || shader == MtrlShader.BgColorChange)
             {
                 // Disable everything.
                 NormalTextBox.IsEnabled = false;
