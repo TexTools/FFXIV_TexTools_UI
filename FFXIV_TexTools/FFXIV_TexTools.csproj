@@ -508,6 +508,9 @@
     <Compile Include="Views\SharedItems\SharedItemsView.xaml.cs">
       <DependentUpon>SharedItemsView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Textures\SamplerSettingsEntryControl.xaml.cs">
+      <DependentUpon>SamplerSettingsEntryControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Textures\TextureView.xaml.cs">
       <DependentUpon>TextureView.xaml</DependentUpon>
     </Compile>
@@ -786,6 +789,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\SharedItems\SharedItemsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Textures\SamplerSettingsEntryControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

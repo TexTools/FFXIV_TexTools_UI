@@ -44,11 +44,16 @@ namespace FFXIV_TexTools.Views.Textures
 
             _material = (XivMtrl) mtrl.Clone();
 
-
+            OtherSettingsControl.SetMatrial(_material);
+            SamplerSettingsControl.SetMatrial(_material);
+            ShaderSettingsControl.SetMatrial(_material);
         }
 
         private void SaveButton_Click(object sender, RoutedEventArgs e)
         {
+            // Finalize the texture paths.
+            SamplerSettingsControl.FinalizeTexturePaths();
+
             DialogResult = true;
         }
 

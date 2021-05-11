@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using xivModdingFramework.Materials.DataContainers;
 
 namespace FFXIV_TexTools.Views.Textures
 {
@@ -20,6 +21,12 @@ namespace FFXIV_TexTools.Views.Textures
     /// </summary>
     public partial class MaterialEditorOtherSettingsControl : UserControl
     {
+        private XivMtrl _material;
+
+        public void SetMatrial(XivMtrl mtrl)
+        {
+            _material = mtrl;
+        }
         public MaterialEditorOtherSettingsControl()
         {
             InitializeComponent();

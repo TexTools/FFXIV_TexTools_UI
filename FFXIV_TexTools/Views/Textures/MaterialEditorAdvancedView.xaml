@@ -10,7 +10,7 @@
         xmlns:input="clr-namespace:System.Windows.Input;assembly=PresentationCore"
         xmlns:tex="clr-namespace:FFXIV_TexTools.Views.Textures"
         mc:Ignorable="d"
-        Title="Advanced Material Settings" Height="554.656" IsMinButtonEnabled="False" IsMaxRestoreButtonEnabled="False" WindowStartupLocation="CenterOwner" FontSize="14" Width="800">
+        Title="Advanced Material Settings" Height="800" IsMinButtonEnabled="False" IsMaxRestoreButtonEnabled="False" WindowStartupLocation="CenterOwner" FontSize="14" Width="800">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="35"/>
@@ -33,15 +33,15 @@
             </Grid.RowDefinitions>
 
             <Grid x:Name="SamplerSettingsGrid" Grid.Row="0">
-                <tex:MaterialEditorSamplerSettingsControl/>
+                <tex:MaterialEditorSamplerSettingsControl x:Name="SamplerSettingsControl"/>
             </Grid>
             
             <Grid x:Name="ShaderSettingsGrid" Grid.Row="1">
-                <tex:MaterialEditorShaderSettingsControl />
+                <tex:MaterialEditorShaderSettingsControl x:Name="ShaderSettingsControl" />
 
             </Grid>
             <Grid x:Name="OtherSettingsGrid" Grid.Row="2">
-                <tex:MaterialEditorOtherSettingsControl/>
+                <tex:MaterialEditorOtherSettingsControl x:Name="OtherSettingsControl"/>
 
             </Grid>
         </Grid>
