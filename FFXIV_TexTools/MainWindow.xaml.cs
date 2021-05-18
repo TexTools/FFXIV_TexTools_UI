@@ -1302,6 +1302,11 @@ namespace FFXIV_TexTools
                     CustomizeViewModel.UpdateCacheSettings();
                 } catch(Exception ex)
                 {
+                    while(ex.InnerException != null)
+                    {
+                        ex = ex.InnerException;
+                    }
+
                     FlexibleMessageBox.Show("Unable to rebuild cache file.\n\nError:" + ex.Message, "Cache Rebuild Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 await UnlockUi();
