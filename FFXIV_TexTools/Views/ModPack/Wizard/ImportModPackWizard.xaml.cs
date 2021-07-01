@@ -87,7 +87,7 @@ namespace FFXIV_TexTools.Views
                 }
             }
 
-            _modPackEntry = new ModPack{name = modPackJson.Name, author = modPackJson.Author, version = modPackJson.Version};
+            _modPackEntry = new ModPack{name = modPackJson.Name, author = modPackJson.Author, version = modPackJson.Version, url = modPackJson.Url};
 
             _pageCount = modPackJson.ModPackPages.Count;
 

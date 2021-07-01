@@ -301,6 +301,7 @@
       <DependentUpon>XivStrings.resx</DependentUpon>
     </Compile>
     <Compile Include="Textures\ColorChannels.cs" />
+    <Compile Include="ViewModels\BackupModpackViewModel.cs" />
     <Compile Include="ViewModels\BaseViewPortViewModel.cs" />
     <Compile Include="ViewModels\ColorsetEditorViewModel.cs" />
     <Compile Include="ViewModels\CustomizeViewModel.cs" />
@@ -424,6 +425,9 @@
     <Compile Include="Views\Models\ModelInspector.xaml.cs">
       <DependentUpon>ModelInspector.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\ModPack\Backup\BackupModpackCreator.xaml.cs">
+      <DependentUpon>BackupModpackCreator.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\ModPack\ModpackRootConvertWindow.xaml.cs">
       <DependentUpon>ModpackRootConvertWindow.xaml</DependentUpon>
     </Compile>
@@ -448,7 +452,7 @@
     <Compile Include="Views\ModPack\Standard\StandardModpackLevelSelect.xaml.cs">
       <DependentUpon>StandardModpackLevelSelect.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\ModPack\ImportModPackWizard.xaml.cs">
+    <Compile Include="Views\ModPack\Wizard\ImportModPackWizard.xaml.cs">
       <DependentUpon>ImportModPackWizard.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ModPack\Standard\StandardModpackSharedItems.xaml.cs">
@@ -457,7 +461,7 @@
     <Compile Include="Views\Textures\ImportTextureOptionsView.xaml.cs">
       <DependentUpon>ImportTextureOptionsView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\ModPack\ImportWizardModPackControl.xaml.cs">
+    <Compile Include="Views\ModPack\Wizard\ImportWizardModPackControl.xaml.cs">
       <DependentUpon>ImportWizardModPackControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\LanguageOptionsView.xaml.cs">
@@ -472,7 +476,7 @@
     <Compile Include="Views\ModListView.xaml.cs">
       <DependentUpon>ModListView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\ModPack\ModPackWizard.xaml.cs">
+    <Compile Include="Views\ModPack\Wizard\ModPackWizard.xaml.cs">
       <DependentUpon>ModPackWizard.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Textures\MaterialEditorHelpView.xaml.cs">
@@ -487,10 +491,10 @@
     <Compile Include="Views\ProblemCheckView.xaml.cs">
       <DependentUpon>ProblemCheckView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\ModPack\SimpleModPackCreator.xaml.cs">
+    <Compile Include="Views\ModPack\Simple\SimpleModPackCreator.xaml.cs">
       <DependentUpon>SimpleModPackCreator.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\ModPack\SimpleModPackImporter.xaml.cs">
+    <Compile Include="Views\ModPack\Simple\SimpleModPackImporter.xaml.cs">
       <DependentUpon>SimpleModPackImporter.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\SharedItems\SharedItemsView.xaml.cs">
@@ -499,10 +503,10 @@
     <Compile Include="Views\Textures\TextureView.xaml.cs">
       <DependentUpon>TextureView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\ModPack\WizardAddGroupWindow.xaml.cs">
+    <Compile Include="Views\ModPack\Wizard\WizardAddGroupWindow.xaml.cs">
       <DependentUpon>WizardAddGroupWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\ModPack\WizardModPackControl.xaml.cs">
+    <Compile Include="Views\ModPack\Wizard\WizardModPackControl.xaml.cs">
       <DependentUpon>WizardModPackControl.xaml</DependentUpon>
     </Compile>
     <Page Include="Controls\FeedbackControl.xaml">
@@ -665,6 +669,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\ModPack\Backup\BackupModpackCreator.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\ModPack\ModpackRootConvertWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -697,7 +705,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\ModPack\ImportModPackWizard.xaml">
+    <Page Include="Views\ModPack\Wizard\ImportModPackWizard.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -709,7 +717,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\ModPack\ImportWizardModPackControl.xaml">
+    <Page Include="Views\ModPack\Wizard\ImportWizardModPackControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -729,7 +737,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\ModPack\ModPackWizard.xaml">
+    <Page Include="Views\ModPack\Wizard\ModPackWizard.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -749,11 +757,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\ModPack\SimpleModPackCreator.xaml">
+    <Page Include="Views\ModPack\Simple\SimpleModPackCreator.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\ModPack\SimpleModPackImporter.xaml">
+    <Page Include="Views\ModPack\Simple\SimpleModPackImporter.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -765,11 +773,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\ModPack\WizardAddGroupWindow.xaml">
+    <Page Include="Views\ModPack\Wizard\WizardAddGroupWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\ModPack\WizardModPackControl.xaml">
+    <Page Include="Views\ModPack\Wizard\WizardModPackControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -897,6 +905,7 @@
       <Name>xivModdingFramework</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>mkdir $(TargetDir)lib

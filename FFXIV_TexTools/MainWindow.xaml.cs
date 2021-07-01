@@ -1096,6 +1096,12 @@ namespace FFXIV_TexTools
             
         }
 
+        private async void Menu_MakeBackupModpack_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new BackupModpackCreator { Owner = this };
+            var result = dialog.ShowDialog();
+        }
+
         /// <summary>
         /// Event handler for the import mod pack menu item clicked
         /// </summary>
