@@ -7,17 +7,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Forms;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Mods.DataContainers;
 using xivModdingFramework.Mods.FileTypes;
@@ -49,27 +42,18 @@ namespace FFXIV_TexTools.Views
             MakeModpackList();            
         }
 
+        #region Public Properties
         public int TotalModsImported { get; private set; }
         public int TotalModsErrored { get; private set; }
         public float ImportDuration { get; private set; }
 
-        private void MakeModpackList()
-        {
-            var modPackNames = new List<string>();
-            foreach (var modsJson in _modsJsons)
-            {
-                var modpackName = modsJson.ModPackEntry?.name ?? UIStrings.Standalone_Non_ModPack;
-                if (!modPackNames.Contains(modpackName))
-                {
-                    modPackNames.Add(modpackName);
+        #endregion
 
-                    var entry = new BackupModpackItemEntry(modpackName);
-                    ((List<BackupModpackItemEntry>)ModpackList.ItemsSource).Add(entry);
-                }
-            }
-            ModpackList.SelectedIndex = 0;
-        }
+        #region Event Handlers
 
+        /// <summary>
+        /// Event handler for when the select all button is clicked
+        /// </summary>
         private void SelectAllButton_Click(object sender, RoutedEventArgs e)
         {
             foreach (var entry in (List<BackupModpackItemEntry>)ModpackList.ItemsSource)
@@ -78,6 +62,9 @@ namespace FFXIV_TexTools.Views
             }
         }
 
+        /// <summary>
+        /// Event handler for when the clear selected button is clicked
+        /// </summary>
         private void ClearSelectedButton_Click(object sender, RoutedEventArgs e)
         {
             foreach (var entry in (List<BackupModpackItemEntry>)ModpackList.ItemsSource)
@@ -86,14 +73,20 @@ namespace FFXIV_TexTools.Views
             }
         }
 
+        /// <summary>
+        /// Event handler for when the cancel button is clicked
+        /// </summary>
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
             Close();
         }
 
+        /// <summary>
+        /// Event handler for when the import modpack button is clicked
+        /// </summary>
         private async void ImportModPackButton_Click(object sender, RoutedEventArgs e)
         {
-            _progressController = await this.ShowProgressAsync(UIMessages.ModPackImportTitle, UIMessages.PleaseStandByMessage);            
+            _progressController = await this.ShowProgressAsync(UIMessages.ModPackImportTitle, UIMessages.PleaseStandByMessage);
 
             try
             {
@@ -160,6 +153,9 @@ namespace FFXIV_TexTools.Views
             DialogResult = true;
         }
 
+        /// <summary>
+        /// Event handler for when the selection in the modpack list changes
+        /// </summary>
         private void ModpackList_SelectionChanged(object sender, RoutedEventArgs e)
         {
             List<ModsJson> selectedModsJsons = new List<ModsJson>();
@@ -186,6 +182,9 @@ namespace FFXIV_TexTools.Views
             (DataContext as BackupModpackViewModel).UpdateDescription(selectedModpack, modsInModpack);
         }
 
+        /// <summary>
+        /// Event handler to open the browser when the modpack URL is clicked
+        /// </summary>
         private void DescriptionModPackUrl_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             var url = IOUtil.ValidateUrl((DataContext as BackupModpackViewModel).DescriptionModpackUrl);
@@ -198,6 +197,34 @@ namespace FFXIV_TexTools.Views
             e.Handled = true;
         }
 
+        #endregion
+
+        #region Private Methods
+
+        /// <summary>
+        /// Fills the modpack list using the JSON from the modpack
+        /// </summary>
+        private void MakeModpackList()
+        {
+            var modPackNames = new List<string>();
+            foreach (var modsJson in _modsJsons)
+            {
+                var modpackName = modsJson.ModPackEntry?.name ?? UIStrings.Standalone_Non_ModPack;
+                if (!modPackNames.Contains(modpackName))
+                {
+                    modPackNames.Add(modpackName);
+
+                    var entry = new BackupModpackItemEntry(modpackName);
+                    ((List<BackupModpackItemEntry>)ModpackList.ItemsSource).Add(entry);
+                }
+            }
+            ModpackList.SelectedIndex = 0;
+        }        
+
+        /// <summary>
+        /// Updates the progress bar
+        /// </summary>
+        /// <param name="value">The progress value</param>
         private void ReportProgress((int current, int total, string message) report)
         {
             if (!report.message.Equals(string.Empty))
@@ -214,5 +241,8 @@ namespace FFXIV_TexTools.Views
                 _progressController.SetProgress(value);
             }
         }
+
+        #endregion
+
     }
 }

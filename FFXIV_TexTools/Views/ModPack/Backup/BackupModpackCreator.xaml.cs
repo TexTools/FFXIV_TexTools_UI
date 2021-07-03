@@ -4,21 +4,12 @@ using FFXIV_TexTools.ViewModels;
 using MahApps.Metro.Controls.Dialogs;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Forms;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Mods;
 using xivModdingFramework.Mods.DataContainers;
@@ -58,11 +49,20 @@ namespace FFXIV_TexTools.Views
             ModpackList.SelectedIndex = 0;
         }
 
+        #region Public Properties
+
         /// <summary>
         /// The mod pack file name
         /// </summary>
         public string ModPackFileName { get; set; }
 
+        #endregion
+
+        #region Event Handlers
+
+        /// <summary>
+        /// Event handler for when the select all button is clicked
+        /// </summary>
         private void SelectAllButton_Click(object sender, RoutedEventArgs e)
         {
             foreach (var entry in (List<BackupModpackItemEntry>)ModpackList.ItemsSource)
@@ -71,6 +71,9 @@ namespace FFXIV_TexTools.Views
             }
         }
 
+        /// <summary>
+        /// Event handler for when the clear selected button is clicked
+        /// </summary>
         private void ClearSelectedButton_Click(object sender, RoutedEventArgs e)
         {
             foreach (var entry in (List<BackupModpackItemEntry>)ModpackList.ItemsSource)
@@ -79,11 +82,17 @@ namespace FFXIV_TexTools.Views
             }
         }
 
+        /// <summary>
+        /// Event handler for when the cancel button is clicked
+        /// </summary>
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
             Close();
         }
 
+        /// <summary>
+        /// Event handler for when the create modpack button is clicked, this method creates a modpack with "Backup dd-MM-yy" as its name
+        /// </summary>
         private async void CreateModPackButton_Click(object sender, RoutedEventArgs e)
         {
             _progressController = await this.ShowProgressAsync(UIMessages.ModPackCreationMessage, UIMessages.PleaseStandByMessage);
@@ -140,7 +149,7 @@ namespace FFXIV_TexTools.Views
 
                         backupModpackData.ModsToBackup.Add(backupModData);
                     }
-                    
+
                 }
 
                 var texToolsModPack = new TTMP(new DirectoryInfo(Properties.Settings.Default.ModPack_Directory), XivStrings.TexTools);
@@ -182,6 +191,9 @@ namespace FFXIV_TexTools.Views
             DialogResult = true;
         }
 
+        /// <summary>
+        /// Event handler for when selection in the modpack list changes
+        /// </summary>
         private void ModpackList_SelectionChanged(object sender, RoutedEventArgs e)
         {
             ModPack selectedModpack = null;
@@ -193,7 +205,7 @@ namespace FFXIV_TexTools.Views
                 modsInModpack = (from mods in _modList.Mods
                                  where !mods.name.Equals(string.Empty) && mods.modPack == null
                                  select mods).ToList();
-            } 
+            }
             else
             {
                 selectedModpack = _modList.ModPacks.First(modPack => modPack.name == selectedModpackName);
@@ -204,6 +216,9 @@ namespace FFXIV_TexTools.Views
             (DataContext as BackupModpackViewModel).UpdateDescription(selectedModpack, modsInModpack);
         }
 
+        /// <summary>
+        /// Event handler to open the browser when the modpack URL is clicked
+        /// </summary>
         private void DescriptionModPackUrl_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             var url = IOUtil.ValidateUrl((DataContext as BackupModpackViewModel).DescriptionModpackUrl);
@@ -216,6 +231,14 @@ namespace FFXIV_TexTools.Views
             e.Handled = true;
         }
 
+        #endregion
+
+        #region Private Methods
+
+        /// <summary>
+        /// Updates the progress bar
+        /// </summary>
+        /// <param name="value">The progress value</param>
         private void ReportProgress((int current, int total, string message) report)
         {
             if (!report.message.Equals(string.Empty))
@@ -232,5 +255,7 @@ namespace FFXIV_TexTools.Views
                 _progressController.SetProgress(value);
             }
         }
+
+        #endregion
     }
 }

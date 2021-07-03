@@ -1089,6 +1089,7 @@ namespace FFXIV_TexTools
                 }
             }
         }
+
         private async void Menu_MakeStandardModpack_Click(object sender, RoutedEventArgs e)
         {
             var dialog = new StandardModpackCreator { Owner = this };
@@ -1096,6 +1097,9 @@ namespace FFXIV_TexTools
             
         }
 
+        /// <summary>
+        /// Event handler for when the create backup modpack menu item is clicked
+        /// </summary>
         private async void Menu_MakeBackupModpack_Click(object sender, RoutedEventArgs e)
         {
             var backupCreator = new BackupModPackCreator { Owner = this };
@@ -1183,19 +1187,18 @@ namespace FFXIV_TexTools
                 var ttmp = new TTMP(modPackDirectory, XivStrings.TexTools);
                 var ttmpData = await ttmp.GetModPackJsonData(path);
 
+                var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
+                var index = new Index(gameDirectory);
+
+                if (index.IsIndexLocked(XivDataFile._0A_Exd))
+                {
+                    FlexibleMessageBox.Show(UIMessages.IndexLockedErrorMessage, UIMessages.IndexLockedErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                    return (0, 1, 0);
+                }
+
                 if (ttmpData.ModPackJson.TTMPVersion.Contains("w"))
                 {
-
-                    var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
-                    var index = new Index(gameDirectory);
-
-                    if (index.IsIndexLocked(XivDataFile._0A_Exd))
-                    {
-                        FlexibleMessageBox.Show(UIMessages.IndexLockedErrorMessage, UIMessages.IndexLockedErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                        return (0, 1, 0);
-                    }
-
                     try
                     {
                         var importWizard = new ImportModPackWizard(ttmpData.ModPackJson, ttmpData.ImageDictionary,
@@ -1252,22 +1255,29 @@ namespace FFXIV_TexTools
                 }
                 else if(ttmpData.ModPackJson.TTMPVersion.Contains("b"))
                 {
-                    var backupImport = new BackupModPackImporter(path, ttmpData.ModPackJson, messageInImport);
-
-                    if (messageInImport)
+                    try
                     {
-                        backupImport.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                        var backupImport = new BackupModPackImporter(path, ttmpData.ModPackJson, messageInImport);
+
+                        if (messageInImport)
+                        {
+                            backupImport.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                        }
+                        else
+                        {
+                            backupImport.Owner = this;
+                        }
+
+                        var result = backupImport.ShowDialog();
+
+                        if (result == true)
+                        {
+                            return (backupImport.TotalModsImported, backupImport.TotalModsErrored, backupImport.ImportDuration);
+                        }
                     }
-                    else
+                    catch
                     {
-                        backupImport.Owner = this;
-                    }
-
-                    var result = backupImport.ShowDialog();
-
-                    if (result == true)
-                    {
-                        return (backupImport.TotalModsImported, backupImport.TotalModsErrored, backupImport.ImportDuration);
+                        importError = true;
                     }
                 }
             }
