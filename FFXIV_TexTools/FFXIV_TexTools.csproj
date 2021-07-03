@@ -425,8 +425,11 @@
     <Compile Include="Views\Models\ModelInspector.xaml.cs">
       <DependentUpon>ModelInspector.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\ModPack\Backup\BackupModpackCreator.xaml.cs">
-      <DependentUpon>BackupModpackCreator.xaml</DependentUpon>
+    <Compile Include="Views\ModPack\Backup\BackupModPackCreator.xaml.cs">
+      <DependentUpon>BackupModPackCreator.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ModPack\Backup\BackupModPackImporter.xaml.cs">
+      <DependentUpon>BackupModPackImporter.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ModPack\ModpackRootConvertWindow.xaml.cs">
       <DependentUpon>ModpackRootConvertWindow.xaml</DependentUpon>
@@ -669,7 +672,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\ModPack\Backup\BackupModpackCreator.xaml">
+    <Page Include="Views\ModPack\Backup\BackupModPackCreator.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ModPack\Backup\BackupModPackImporter.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

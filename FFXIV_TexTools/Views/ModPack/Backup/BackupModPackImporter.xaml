@@ -1,4 +1,4 @@
-﻿<mah:MetroWindow x:Class="FFXIV_TexTools.Views.BackupModPackCreator"
+﻿<mah:MetroWindow x:Class="FFXIV_TexTools.Views.BackupModPackImporter"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -9,14 +9,23 @@
         xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
         xmlns:input="clr-namespace:System.Windows.Input;assembly=PresentationCore"
         mc:Ignorable="d"
-        Title="{Binding Source={x:Static resx:UIStrings.Backup_Modpack_Creator}}" Height="600" Width="800" IsMinButtonEnabled="False" IsMaxRestoreButtonEnabled="False" WindowStartupLocation="CenterOwner">
+        Title="{Binding Source={x:Static resx:UIStrings.Backup_Modpack_Importer}}" Height="600" Width="800" IsMinButtonEnabled="False" IsMaxRestoreButtonEnabled="False" WindowStartupLocation="CenterOwner">
 
     <Grid x:Name="ContentArea">
         <Grid.RowDefinitions>
+            <RowDefinition Height="38"/>
             <RowDefinition/>
             <RowDefinition Height="38"/>
         </Grid.RowDefinitions>
         <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Label Grid.Column="0" Content="{Binding Source={x:Static resx:UIStrings.Name_colon}}" VerticalAlignment="Center"/>
+            <Label x:Name="ModPackName" Grid.Column="1" VerticalAlignment="Center" FontWeight="Bold"/>
+        </Grid>
+        <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
@@ -76,7 +85,7 @@
                 </Grid>
             </GroupBox>
         </Grid>
-        <Grid Grid.Row="1">
+        <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width=".5*"/>
                 <ColumnDefinition Width=".5*"/>
@@ -86,7 +95,7 @@
             <Button x:Name="ClearSelectedButton" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="1" Content="{Binding Source={x:Static resx:UIStrings.Clear_Selected}}" Click="ClearSelectedButton_Click" Margin="5"/>
             <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
                 <Button x:Name="CancelButton" Content="{Binding Source={x:Static resx:UIStrings.Cancel}}" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="5" Click="CancelButton_Click"/>
-                <Button x:Name="CreateModPackButton" Content="{Binding Source={x:Static resx:UIStrings.Create_Modpack}}" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="5" Click="CreateModPackButton_Click" />
+                <Button x:Name="CreateModPackButton" Content="{Binding Source={x:Static resx:UIStrings.Import_ModPack}}" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="5" Click="ImportModPackButton_Click" />
             </StackPanel>
         </Grid>
     </Grid>

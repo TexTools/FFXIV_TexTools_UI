@@ -1098,8 +1098,13 @@ namespace FFXIV_TexTools
 
         private async void Menu_MakeBackupModpack_Click(object sender, RoutedEventArgs e)
         {
-            var dialog = new BackupModpackCreator { Owner = this };
-            var result = dialog.ShowDialog();
+            var backupCreator = new BackupModPackCreator { Owner = this };
+            var result = backupCreator.ShowDialog();
+
+            if (result == true)
+            {
+                await this.ShowMessageAsync(UIMessages.ModPackCreationCompleteTitle, string.Format(UIMessages.ModPackCreationCompleteMessage, backupCreator.ModPackFileName));
+            }
         }
 
         /// <summary>
@@ -1243,6 +1248,26 @@ namespace FFXIV_TexTools
                     catch
                     {
                         importError = true;
+                    }
+                }
+                else if(ttmpData.ModPackJson.TTMPVersion.Contains("b"))
+                {
+                    var backupImport = new BackupModPackImporter(path, ttmpData.ModPackJson, messageInImport);
+
+                    if (messageInImport)
+                    {
+                        backupImport.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                    }
+                    else
+                    {
+                        backupImport.Owner = this;
+                    }
+
+                    var result = backupImport.ShowDialog();
+
+                    if (result == true)
+                    {
+                        return (backupImport.TotalModsImported, backupImport.TotalModsErrored, backupImport.ImportDuration);
                     }
                 }
             }

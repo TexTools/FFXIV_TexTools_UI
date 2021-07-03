@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FFXIV_TexTools.Resources;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -12,62 +13,56 @@ namespace FFXIV_TexTools.ViewModels
 {
     public class BackupModpackViewModel: INotifyPropertyChanged
     {
-        private readonly ModList _modList;
-        private string _modpackName;
-        private string _modpackAuthor;
-        private string _modpackVersion;
-        private string _modpackUrl;
-        private string _modpackContent;
+        private string _descriptionModpackName;
+        private string _descriptionModpackAuthor;
+        private string _descriptionModpackVersion;
+        private string _descriptionModpackUrl;
+        private string _descriptionModpackContent;
 
-        public BackupModpackViewModel(ModList modList)
+        public BackupModpackViewModel()
         {
-            _modList = modList;
         }
 
-        public string ModpackName 
+        public string DescriptionModpackName 
         { 
-            get => _modpackName; 
-            set { _modpackName = value; OnPropertyChanged(nameof(ModpackName)); } 
+            get => _descriptionModpackName; 
+            set { _descriptionModpackName = value; OnPropertyChanged(nameof(DescriptionModpackName)); } 
         }
 
-        public string ModpackAuthor 
+        public string DescriptionModpackAuthor
         { 
-            get => _modpackAuthor;
-            set { _modpackAuthor = value; OnPropertyChanged(nameof(ModpackAuthor)); }
+            get => _descriptionModpackAuthor;
+            set { _descriptionModpackAuthor = value; OnPropertyChanged(nameof(DescriptionModpackAuthor)); }
         }
 
-        public string ModpackVersion 
+        public string DescriptionModpackVersion
         { 
-            get => _modpackVersion;
-            set { _modpackVersion = value; OnPropertyChanged(nameof(ModpackVersion)); }
+            get => _descriptionModpackVersion;
+            set { _descriptionModpackVersion = value; OnPropertyChanged(nameof(DescriptionModpackVersion)); }
         }
 
-        public string ModpackUrl 
+        public string DescriptionModpackUrl
         { 
-            get => _modpackUrl;
-            set { _modpackUrl = value; OnPropertyChanged(nameof(ModpackUrl)); }
+            get => _descriptionModpackUrl;
+            set { _descriptionModpackUrl = value; OnPropertyChanged(nameof(DescriptionModpackUrl)); }
         }
 
-        public string ModpackContent 
+        public string DescriptionModpackContent
         { 
-            get => _modpackContent;
-            set { _modpackContent = value; OnPropertyChanged(nameof(ModpackContent)); }
+            get => _descriptionModpackContent;
+            set { _descriptionModpackContent = value; OnPropertyChanged(nameof(DescriptionModpackContent)); }
         }
 
-        public void UpdateDescription(ModPack selectedModpack)
+        public void UpdateDescription(ModPack selectedModpack, List<Mod> modsInModpack)
         {
-            ModpackName = selectedModpack.name;
-            ModpackAuthor = selectedModpack.author;
-            ModpackVersion = selectedModpack.version;
-            ModpackUrl = selectedModpack.url;
-            ModpackContent = string.Empty;
+            DescriptionModpackName = selectedModpack?.name ?? UIStrings.Standalone_Non_ModPack;
+            DescriptionModpackAuthor = selectedModpack?.author ?? "N/A";
+            DescriptionModpackVersion = selectedModpack?.version ?? "N/A";
+            DescriptionModpackUrl = selectedModpack?.url ?? "";
+            DescriptionModpackContent = string.Empty;
 
             Task.Run(() =>
             {
-                var modsInModpack = (from mods in _modList.Mods
-                                     where (mods.modPack != null && mods.modPack.name == selectedModpack.name)
-                                     select mods).ToList();
-
                 var modNameDict = new Dictionary<string, int>();
 
                 foreach (var mod in modsInModpack)
@@ -91,7 +86,7 @@ namespace FFXIV_TexTools.ViewModels
                     contentString += $"[{ mod.Value}] {mod.Key}\n";
                 }
 
-                ModpackContent = Application.Current.Dispatcher.Invoke(() => contentString);
+                DescriptionModpackContent = Application.Current.Dispatcher.Invoke(() => contentString);
             });
         }
 
@@ -102,23 +97,16 @@ namespace FFXIV_TexTools.ViewModels
         }
     }
 
-    public class BackupModpackItemEntry
+    public class BackupModpackItemEntry : INotifyPropertyChanged
     {
-        public BackupModpackItemEntry(ModPack modPack)
-        {
-            _modpackName = modPack.name;
-            _modpackAuthor = modPack.author;
-            _modpackUrl = modPack.url;
-            _modpackVersion = modPack.version;
-            _modpackContent = string.Empty;
-        }
-
         private string _modpackName;
-        private string _modpackAuthor;
-        private string _modpackVersion;
-        private string _modpackUrl;
-        private string _modpackContent;
         private bool _isChecked;
+
+        public BackupModpackItemEntry(string modPackName)
+        {
+            _modpackName = modPackName;
+            _isChecked = true;
+        }
 
         public string ModpackName
         {
@@ -126,34 +114,16 @@ namespace FFXIV_TexTools.ViewModels
             set { _modpackName = value; }
         }
 
-        public string ModpackAuthor
-        {
-            get => _modpackAuthor;
-            set { _modpackAuthor = value; }
-        }
-
-        public string ModpackVersion
-        {
-            get => _modpackVersion;
-            set { _modpackVersion = value; }
-        }
-
-        public string ModpackUrl
-        {
-            get => _modpackUrl;
-            set { _modpackUrl = value; }
-        }
-
-        public string ModpackContent
-        {
-            get => _modpackContent;
-            set { _modpackContent = value; }
-        }
-
         public bool IsChecked
         {
             get => _isChecked;
-            set { _isChecked = value; }
+            set { _isChecked = value; OnPropertyChanged(nameof(IsChecked)); }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }
