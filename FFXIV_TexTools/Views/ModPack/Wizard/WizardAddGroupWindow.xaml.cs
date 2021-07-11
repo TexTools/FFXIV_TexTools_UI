@@ -488,7 +488,7 @@ namespace FFXIV_TexTools.Views
                     {
                         // This is a UI item or otherwise an item which has no root, and only has textures.
                         var uiItem = (XivUi)item;
-                        var paths = await uiItem.GetTexPaths();
+                        var paths = await uiItem.GetTexPaths(true, true);
                         foreach (var kv in paths)
                         {
                             textures.Add(kv.Value);

@@ -136,6 +136,13 @@ namespace FFXIV_TexTools.ViewModels
 
                 foreach (var modListModPack in modList.ModPacks)
                 {
+                    var modsInModpackCount = (from mod in modList.Mods
+                                              where mod.modPack != null && mod.modPack.name.Equals(modListModPack.name)
+                                              select mod).Count();
+
+                    // If the modpack has no mods associated with it, don't bother listing it
+                    if (modsInModpackCount == 0) continue;
+
                     categoryItem = new Category
                     {
                         Name = modListModPack.name,
@@ -258,6 +265,13 @@ namespace FFXIV_TexTools.ViewModels
 
                 foreach (var modListModPack in modList.ModPacks)
                 {
+                    var modsInModpackCount = (from mod in modList.Mods
+                                           where mod.modPack != null && mod.modPack.name.Equals(modListModPack.name)
+                                           select mod).Count();
+
+                    // If the modpack has no mods associated with it, don't bother listing it
+                    if (modsInModpackCount == 0) continue;
+
                     category = new Category
                     {
                         Name = modListModPack.name,

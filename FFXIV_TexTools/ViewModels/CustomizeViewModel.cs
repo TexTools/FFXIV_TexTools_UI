@@ -440,7 +440,10 @@ namespace FFXIV_TexTools.ViewModels
                 XivCache.SetGameInfo(gi.GameDirectory, gi.GameLanguage, gi.DxMode, false, true, luminaDir, Settings.Default.Lumina_IsEnabled);
             } catch(Exception ex)
             {
-                Helpers.FlexibleMessageBox.Show("Unable to save Lumina settings, invalid Lumina directory.");
+                if (!String.IsNullOrWhiteSpace(Properties.Settings.Default.Lumina_Directory) && Properties.Settings.Default.Lumina_IsEnabled == true)
+                {
+                    Helpers.FlexibleMessageBox.Show("Unable to save Lumina settings, invalid Lumina directory.");
+                }
                 Settings.Default.Lumina_IsEnabled = false;
                 XivCache.SetGameInfo(gi.GameDirectory, gi.GameLanguage, gi.DxMode, false, true, null, false);
             }

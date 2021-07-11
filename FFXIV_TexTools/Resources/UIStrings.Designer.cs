@@ -243,6 +243,33 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Backup Modpack.
+        /// </summary>
+        public static string Backup_Modpack {
+            get {
+                return ResourceManager.GetString("Backup_Modpack", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Backup Modpack Creator.
+        /// </summary>
+        public static string Backup_Modpack_Creator {
+            get {
+                return ResourceManager.GetString("Backup_Modpack_Creator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Backup Modpack Importer.
+        /// </summary>
+        public static string Backup_Modpack_Importer {
+            get {
+                return ResourceManager.GetString("Backup_Modpack_Importer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Backups Directory.
         /// </summary>
         public static string Backups_Directory {
@@ -1589,6 +1616,15 @@ namespace FFXIV_TexTools.Resources {
         public static string ModPackGeneralInfo {
             get {
                 return ResourceManager.GetString("ModPackGeneralInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Modpacks to Include.
+        /// </summary>
+        public static string Modpacks_To_Include {
+            get {
+                return ResourceManager.GetString("Modpacks_To_Include", resourceCulture);
             }
         }
         

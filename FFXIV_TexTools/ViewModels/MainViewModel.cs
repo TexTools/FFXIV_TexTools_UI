@@ -331,7 +331,7 @@ namespace FFXIV_TexTools.ViewModels
                 var fileLastModifiedTime = File.GetLastWriteTime(
                     $"{Properties.Settings.Default.FFXIV_Directory}\\{XivDataFile._0A_Exd.GetDataFileName()}.win32.dat0");
 
-                if (fileLastModifiedTime.Year < 2020)
+                if (fileLastModifiedTime.Year < 2021)
                 {
                     SetDirectories(false);
                 }
@@ -374,7 +374,7 @@ namespace FFXIV_TexTools.ViewModels
                     var fileLastModifiedTime = File.GetLastWriteTime(
                         $"{installDirectory}\\{XivDataFile._0A_Exd.GetDataFileName()}.win32.dat0");
 
-                    if (fileLastModifiedTime.Year < 2019)
+                    if (fileLastModifiedTime.Year < 2021)
                     {
                         SetDirectories(false);
                     }
@@ -456,9 +456,19 @@ namespace FFXIV_TexTools.ViewModels
             FlexibleMessageBox.Show(_mainWindow.Win32Window, UIMessages.PatchDetectedMessage, "Post Patch Cleanup Starting", MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
             MainWindow.MakeHighlander();
 
+            var resetLumina = false;
 
             await _mainWindow.LockUi("Performing Post-Patch Maintenence", "This may take a few minutes if you have many mods installed.", this);
+
+            var gi = XivCache.GameInfo;
+            if (XivCache.GameInfo.UseLumina)
+            {
+                resetLumina = true;
+                XivCache.SetGameInfo(gi.GameDirectory, gi.GameLanguage, gi.DxMode, false, false, gi.LuminaDirectory, gi.UseLumina);
+            }
+
             var workerStatus = XivCache.CacheWorkerEnabled;
+
             if(workerStatus)
             {
                 // Stop the cache worker if it's running.
@@ -466,6 +476,7 @@ namespace FFXIV_TexTools.ViewModels
             }
             try
             {
+
                 var modding = new Modding(_gameDirectory);
                 var _index = new Index(_gameDirectory);
                 var _dat = new Dat(_gameDirectory);
@@ -764,6 +775,13 @@ namespace FFXIV_TexTools.ViewModels
             }
             finally
             {
+
+                if(resetLumina)
+                {
+                    // Reset lumina mode back to on if we disabled it to perform update checks.
+                    XivCache.SetGameInfo(gi.GameDirectory, gi.GameLanguage, gi.DxMode, true, false, gi.LuminaDirectory, true);
+                }
+
                 XivCache.CacheWorkerEnabled = workerStatus;
                 await _mainWindow.UnlockUi(this);
             }

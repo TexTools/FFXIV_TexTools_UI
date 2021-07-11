@@ -227,7 +227,7 @@ namespace FFXIV_TexTools.ViewModels
             _typePartWatermark = XivStrings.TypePart, _textureMapWatermark = XivStrings.Texture_Map;
         private string _modToggleText = UIStrings.Enable_Disable;
 
-        private bool _raceEnabled, _materialEnabled, _mapEnabled, _channelsEnabled;
+        private bool _raceEnabled, _materialEnabled, _mapEnabled, _channelsEnabled, _hiResEnabled, _hiResChecked;
         private bool _exportEnabled, _importEnabled, _modStatusEnabled, _moreOptionsEnabled, _addMaterialEnabled=false;
         private bool _materialEditorEnabled = false;
         private bool _redChecked = true, _greenChecked = true, _blueChecked = true, _alphaChecked;
@@ -303,6 +303,8 @@ namespace FFXIV_TexTools.ViewModels
                 await HandleTexOnlyItem(item);
                 return;
             }
+
+            HiResEnabled = false;
 
             _item = (IItemModel) item;
             var gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
@@ -809,7 +811,7 @@ namespace FFXIV_TexTools.ViewModels
                 var uiItem = (XivUi)item;
                 _uiItem = uiItem;
 
-                var paths = await uiItem.GetTexPaths();
+                var paths = await uiItem.GetTexPaths(!HiResChecked, HiResChecked);
                 foreach(var kv in paths)
                 {
                     var mapInfo = new MapInfo();
@@ -822,6 +824,7 @@ namespace FFXIV_TexTools.ViewModels
 
                 }
 
+                HiResEnabled = uiItem.HasHiRes;
             } catch
             {
                 try
@@ -880,6 +883,8 @@ namespace FFXIV_TexTools.ViewModels
                         _mapComboBoxData.Add(new KeyValuePair<string, MapInfo>(Path.GetFileNameWithoutExtension(path), mapInfo));
                     }
                 }
+
+                HiResEnabled = false;
             }
 
             if (_mapComboBoxData.Count > 0)
@@ -1372,6 +1377,10 @@ namespace FFXIV_TexTools.ViewModels
                     if (_primaryIsRace)
                     {
                         _tex.SaveTexAsDDS(_item, texData, savePath, SelectedRace);
+                    } else if( typeof(XivFurniture) == _item.GetType())
+                    {
+                        // Fucking Paintings are cancer.
+                        _tex.SaveTexAsDDS(_item, texData, savePath, SelectedRace);
                     } else
                     {
                         var saveItem = (XivCharacter)((XivCharacter)_item).Clone();
@@ -1445,7 +1454,7 @@ namespace FFXIV_TexTools.ViewModels
 
             if (_item != null)
             {
-                if (!_primaryIsRace)
+                if (((!_primaryIsRace) && typeof(XivFurniture) != _item.GetType()))
                 {
                     var race = _root == null ? XivRace.All_Races : XivRaces.GetXivRace(_root.Info.PrimaryId);
                     path = IOUtil.MakeItemSavePath(_item, savePath, race, SelectedPrimary);
@@ -1549,7 +1558,8 @@ namespace FFXIV_TexTools.ViewModels
 
             if (_item != null)
             {
-                if (!_primaryIsRace)
+                // Did I mention I hate our paintings implementation?
+                if ((!_primaryIsRace) && typeof(XivFurniture) != _item.GetType())
                 {
                     var race = _root == null ? XivRace.All_Races : XivRaces.GetXivRace(_root.Info.PrimaryId);
                     var saveItem = (XivCharacter)((XivCharacter)_item).Clone();
@@ -1599,7 +1609,7 @@ namespace FFXIV_TexTools.ViewModels
                         {
                             var saveItem = _item;
 
-                            if (!_primaryIsRace)
+                            if ((!_primaryIsRace) && typeof(XivFurniture) != _item.GetType())
                             {
                                 var temp = (XivCharacter)((XivCharacter)_item).Clone();
                                 temp.Name = saveItem.SecondaryCategory;
@@ -1619,6 +1629,7 @@ namespace FFXIV_TexTools.ViewModels
                         FlexibleMessageBox.Show(
                             string.Format(UIMessages.TextureImportErrorMessage, ex.Message), UIMessages.TextureImportErrorTitle,
                             MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        ImportEnabled = true;
                         return;
                     }
                 }
@@ -1634,6 +1645,7 @@ namespace FFXIV_TexTools.ViewModels
                         FlexibleMessageBox.Show(
                             string.Format(UIMessages.TextureImportErrorMessage, ex.Message), UIMessages.TextureImportErrorTitle,
                             MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        ImportEnabled = true;
                         return;
                     }                        
                 }
@@ -1650,7 +1662,7 @@ namespace FFXIV_TexTools.ViewModels
                         {
                             var saveItem = _item;
 
-                            if (!_primaryIsRace)
+                            if ((!_primaryIsRace) && typeof(XivFurniture) != _item.GetType())
                             {
                                 var temp = (XivCharacter)((XivCharacter)_item).Clone();
                                 temp.Name = saveItem.SecondaryCategory;
@@ -1670,6 +1682,7 @@ namespace FFXIV_TexTools.ViewModels
                         FlexibleMessageBox.Show(
                             string.Format(UIMessages.TextureImportErrorMessage, ex.Message), UIMessages.TextureImportErrorTitle,
                             MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        ImportEnabled = true;
                         return;
                     }
                 }
@@ -1678,6 +1691,7 @@ namespace FFXIV_TexTools.ViewModels
                     FlexibleMessageBox.Show(
                         UIMessages.ColorSetBMPNotSupportedMessage, UIMessages.TextureImportErrorTitle,
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    ImportEnabled = true;
                     return;
                 }
             }
@@ -2095,6 +2109,32 @@ namespace FFXIV_TexTools.ViewModels
                 NotifyPropertyChanged(nameof(RaceWatermark));
             }
         }
+
+        // HD Assets
+        #region HiResTextures
+
+        public bool HiResEnabled
+        {
+            get => _hiResEnabled;
+            set
+            {
+                _hiResEnabled = value;
+                NotifyPropertyChanged(nameof(HiResEnabled));
+            }
+        }
+
+        public bool HiResChecked
+        {
+            get => _hiResChecked;
+            set
+            {
+                _hiResChecked = value;
+                NotifyPropertyChanged(nameof(HiResChecked));
+                UpdateTexture(_uiItem);
+            }
+        }
+
+        #endregion
 
         // Color Channels
         #region ColorChannels
