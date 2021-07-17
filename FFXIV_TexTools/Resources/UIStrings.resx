@@ -1027,4 +1027,16 @@ If you would like to enable this, first import a texture for the selected item.<
   <data name="Recover_Space" xml:space="preserve">
     <value>Recover Unused Space</value>
   </data>
+  <data name="Backup_Modpack_Creator" xml:space="preserve">
+    <value>Backup Modpack Creator</value>
+  </data>
+  <data name="Backup_Modpack_Importer" xml:space="preserve">
+    <value>Backup Modpack Importer</value>
+  </data>
+  <data name="Modpacks_To_Include" xml:space="preserve">
+    <value>Modpacks to Include</value>
+  </data>
+  <data name="Backup_Modpack" xml:space="preserve">
+    <value>Backup Modpack</value>
+  </data>
 </root>

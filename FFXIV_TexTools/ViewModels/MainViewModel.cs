@@ -331,7 +331,7 @@ namespace FFXIV_TexTools.ViewModels
                 var fileLastModifiedTime = File.GetLastWriteTime(
                     $"{Properties.Settings.Default.FFXIV_Directory}\\{XivDataFile._0A_Exd.GetDataFileName()}.win32.dat0");
 
-                if (fileLastModifiedTime.Year < 2020)
+                if (fileLastModifiedTime.Year < 2021)
                 {
                     SetDirectories(false);
                 }
@@ -374,7 +374,7 @@ namespace FFXIV_TexTools.ViewModels
                     var fileLastModifiedTime = File.GetLastWriteTime(
                         $"{installDirectory}\\{XivDataFile._0A_Exd.GetDataFileName()}.win32.dat0");
 
-                    if (fileLastModifiedTime.Year < 2019)
+                    if (fileLastModifiedTime.Year < 2021)
                     {
                         SetDirectories(false);
                     }
