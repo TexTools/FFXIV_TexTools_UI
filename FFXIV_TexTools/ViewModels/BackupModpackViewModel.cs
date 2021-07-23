@@ -7,7 +7,7 @@ using xivModdingFramework.Mods.DataContainers;
 
 namespace FFXIV_TexTools.ViewModels
 {
-    public class BackupModpackViewModel: INotifyPropertyChanged
+    public class BackupModpackViewModel : INotifyPropertyChanged
     {
         private string _descriptionModpackName;
         private string _descriptionModpackAuthor;
@@ -22,17 +22,17 @@ namespace FFXIV_TexTools.ViewModels
         /// <summary>
         /// The name of the selected modpack to display in the description
         /// </summary>
-        public string DescriptionModpackName 
-        { 
-            get => _descriptionModpackName; 
-            set { _descriptionModpackName = value; OnPropertyChanged(nameof(DescriptionModpackName)); } 
+        public string DescriptionModpackName
+        {
+            get => _descriptionModpackName;
+            set { _descriptionModpackName = value; OnPropertyChanged(nameof(DescriptionModpackName)); }
         }
 
         /// <summary>
         /// The author of the selected modpack to display in the description
         /// </summary>
         public string DescriptionModpackAuthor
-        { 
+        {
             get => _descriptionModpackAuthor;
             set { _descriptionModpackAuthor = value; OnPropertyChanged(nameof(DescriptionModpackAuthor)); }
         }
@@ -41,7 +41,7 @@ namespace FFXIV_TexTools.ViewModels
         /// The version of the selected modpack to display in the description
         /// </summary>
         public string DescriptionModpackVersion
-        { 
+        {
             get => _descriptionModpackVersion;
             set { _descriptionModpackVersion = value; OnPropertyChanged(nameof(DescriptionModpackVersion)); }
         }
@@ -50,7 +50,7 @@ namespace FFXIV_TexTools.ViewModels
         /// The URL of the selected modpack to display in the description
         /// </summary>
         public string DescriptionModpackUrl
-        { 
+        {
             get => _descriptionModpackUrl;
             set { _descriptionModpackUrl = value; OnPropertyChanged(nameof(DescriptionModpackUrl)); }
         }
@@ -59,7 +59,7 @@ namespace FFXIV_TexTools.ViewModels
         /// The contents of the selected modpack to display in the description
         /// </summary>
         public string DescriptionModpackContent
-        { 
+        {
             get => _descriptionModpackContent;
             set { _descriptionModpackContent = value; OnPropertyChanged(nameof(DescriptionModpackContent)); }
         }
@@ -134,10 +134,10 @@ namespace FFXIV_TexTools.ViewModels
         public bool IsChecked
         {
             get => _isChecked;
-            set 
-            { 
-                _isChecked = value; 
-                OnPropertyChanged(nameof(IsChecked)); 
+            set
+            {
+                _isChecked = value;
+                OnPropertyChanged(nameof(IsChecked));
             }
         }
 
