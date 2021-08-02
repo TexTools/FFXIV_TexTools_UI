@@ -186,21 +186,43 @@ namespace FFXIV_TexTools.ViewModels
             _view.OverrideRaceButton.Checked += OverrideRaceButton_Checked;
             _view.OverrideRaceButton.Unchecked += OverrideRaceButton_Unchecked;
 
-            // Default Settings for specific categories.
+            // Default Settings for specific categories, event handlers are added to allow users to opt out of these defaults
             if (item.SecondaryCategory == XivStrings.Face)
             {
-                _view.UseOriginalShapeDataButton.IsChecked = true;
+                _view.UseOriginalShapeDataButton.IsChecked = Settings.Default.UseOriginalShapeDataForFace;
+                _view.UseOriginalShapeDataButton.Click += UseOriginalShapeDataButton_Clicked;
             }
             if (item.SecondaryCategory == XivStrings.Hair)
             {
-                _view.CloneUV1Button.IsChecked = true;
+                _view.CloneUV1Button.IsChecked = Settings.Default.CloneUV1toUV2ForHair;
+                _view.CloneUV1Button.Click += CloneUV1Button_Clicked;
             }
 
             var iType = item.GetPrimaryItemType();
             if (iType == xivModdingFramework.Items.Enums.XivItemType.equipment || iType == xivModdingFramework.Items.Enums.XivItemType.accessory || iType == xivModdingFramework.Items.Enums.XivItemType.weapon) {
-                _view.ForceUVsButton.IsChecked = true;
+                _view.ForceUVsButton.IsChecked = Settings.Default.ForceUV1QuadrantForGear;
+                _view.ForceUVsButton.Click += ForceUVsButton_Clicked;
             }
         }
+
+        private void UseOriginalShapeDataButton_Clicked(object sender, RoutedEventArgs e)
+        {
+            Settings.Default.UseOriginalShapeDataForFace = _view.UseOriginalShapeDataButton.IsChecked == true;
+            Settings.Default.Save();
+        }
+
+        private void CloneUV1Button_Clicked(object sender, RoutedEventArgs e)
+        {
+            Settings.Default.CloneUV1toUV2ForHair = _view.CloneUV1Button.IsChecked == true;
+            Settings.Default.Save();
+        }
+
+        private void ForceUVsButton_Clicked(object sender, RoutedEventArgs e)
+        {
+            Settings.Default.ForceUV1QuadrantForGear = _view.ForceUVsButton.IsChecked == true;
+            Settings.Default.Save();
+        }
+
 
         private void OverrideRaceButton_Checked(object sender, RoutedEventArgs e)
         {
