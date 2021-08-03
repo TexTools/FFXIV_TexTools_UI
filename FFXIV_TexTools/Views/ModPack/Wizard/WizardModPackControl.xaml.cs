@@ -19,6 +19,7 @@ using MahApps.Metro.Controls;
 using SixLabors.ImageSharp.Formats;
 using SixLabors.ImageSharp.Formats.Bmp;
 using SixLabors.ImageSharp.Formats.Png;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -225,23 +226,30 @@ namespace FFXIV_TexTools.Views
             {
                 OptionDescriptionTextBox.Text = option.Description ?? string.Empty;
 
-                if (option.Image != null && !option.Image.IsDisposed)
+                if (option.Image != null)
                 {
-                    BitmapImage bmp;
-
-                    using (var ms = new MemoryStream())
+                    try
                     {
-                        option.Image.Save(ms, new BmpEncoder());
+                        BitmapImage bmp;
 
-                        bmp = new BitmapImage();
-                        bmp.BeginInit();
-                        bmp.StreamSource = ms;
-                        bmp.CacheOption = BitmapCacheOption.OnLoad;
-                        bmp.EndInit();
-                        bmp.Freeze();
+                        using (var ms = new MemoryStream())
+                        {
+                            option.Image.Save(ms, new BmpEncoder());
+
+                            bmp = new BitmapImage();
+                            bmp.BeginInit();
+                            bmp.StreamSource = ms;
+                            bmp.CacheOption = BitmapCacheOption.OnLoad;
+                            bmp.EndInit();
+                            bmp.Freeze();
+                        }
+
+                        OptionPreviewImage.Source = bmp;
                     }
-
-                    OptionPreviewImage.Source = bmp;
+                    catch(ObjectDisposedException)
+                    {
+                        OptionPreviewImage.Source = null;
+                    }
                 }
                 else
                 {
