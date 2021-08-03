@@ -12,7 +12,7 @@ namespace FFXIV_TexTools.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.8.1.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.10.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -278,24 +278,24 @@ namespace FFXIV_TexTools.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool ForceUV1Quadrant {
+        public bool ForceUV1QuadrantForGear {
             get {
-                return ((bool)(this["ForceUV1Quadrant"]));
+                return ((bool)(this["ForceUV1QuadrantForGear"]));
             }
             set {
-                this["ForceUV1Quadrant"] = value;
+                this["ForceUV1QuadrantForGear"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool CloneUV1toUV2 {
+        public bool CloneUV1toUV2ForHair {
             get {
-                return ((bool)(this["CloneUV1toUV2"]));
+                return ((bool)(this["CloneUV1toUV2ForHair"]));
             }
             set {
-                this["CloneUV1toUV2"] = value;
+                this["CloneUV1toUV2ForHair"] = value;
             }
         }
         
@@ -452,6 +452,18 @@ namespace FFXIV_TexTools.Properties {
             }
             set {
                 this["Lumina_IsEnabled"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool UseOriginalShapeDataForFace {
+            get {
+                return ((bool)(this["UseOriginalShapeDataForFace"]));
+            }
+            set {
+                this["UseOriginalShapeDataForFace"] = value;
             }
         }
     }

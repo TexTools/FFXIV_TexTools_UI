@@ -1629,6 +1629,7 @@ namespace FFXIV_TexTools.ViewModels
                         FlexibleMessageBox.Show(
                             string.Format(UIMessages.TextureImportErrorMessage, ex.Message), UIMessages.TextureImportErrorTitle,
                             MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        ImportEnabled = true;
                         return;
                     }
                 }
@@ -1644,6 +1645,7 @@ namespace FFXIV_TexTools.ViewModels
                         FlexibleMessageBox.Show(
                             string.Format(UIMessages.TextureImportErrorMessage, ex.Message), UIMessages.TextureImportErrorTitle,
                             MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        ImportEnabled = true;
                         return;
                     }                        
                 }
@@ -1680,6 +1682,7 @@ namespace FFXIV_TexTools.ViewModels
                         FlexibleMessageBox.Show(
                             string.Format(UIMessages.TextureImportErrorMessage, ex.Message), UIMessages.TextureImportErrorTitle,
                             MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        ImportEnabled = true;
                         return;
                     }
                 }
@@ -1688,6 +1691,7 @@ namespace FFXIV_TexTools.ViewModels
                     FlexibleMessageBox.Show(
                         UIMessages.ColorSetBMPNotSupportedMessage, UIMessages.TextureImportErrorTitle,
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    ImportEnabled = true;
                     return;
                 }
             }
