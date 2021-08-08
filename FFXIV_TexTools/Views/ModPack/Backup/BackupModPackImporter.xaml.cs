@@ -31,6 +31,8 @@ namespace FFXIV_TexTools.Views
         {
             InitializeComponent();
 
+            MainWindow.MakeHighlander();
+
             _modpackDirectory = modPackDirectory;
             _modsJsons = modPackJson.SimpleModsList;
             _messageInImport = messageInImport;
@@ -39,7 +41,7 @@ namespace FFXIV_TexTools.Views
             ModPackName.Content = modPackJson.Name;
             ModpackList.ItemsSource = new List<BackupModpackItemEntry>();
 
-            MakeModpackList();            
+            MakeModpackList();
         }
 
         #region Public Properties
