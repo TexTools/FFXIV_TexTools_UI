@@ -558,6 +558,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Deselect All.
+        /// </summary>
+        public static string Deselect_All {
+            get {
+                return ResourceManager.GetString("Deselect_All", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Directories.
         /// </summary>
         public static string Directories {
@@ -1688,6 +1697,15 @@ namespace FFXIV_TexTools.Resources {
         public static string New_Page {
             get {
                 return ResourceManager.GetString("New_Page", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Next Page &gt;.
+        /// </summary>
+        public static string Next_Page {
+            get {
+                return ResourceManager.GetString("Next_Page", resourceCulture);
             }
         }
         
