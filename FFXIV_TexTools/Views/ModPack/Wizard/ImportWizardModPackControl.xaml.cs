@@ -142,6 +142,28 @@ namespace FFXIV_TexTools.Views
                 // No-Op
             }
         }
+
+        private void SelectAllButton_Click(object sender, RoutedEventArgs e)
+        {
+            SelectAllOptions(true);
+        }
+
+        private void DeselectAllButton_Click(object sender, RoutedEventArgs e)
+        {
+            SelectAllOptions(false);
+        }
+
+        private void SelectAllOptions(bool isSelected)
+        {
+            foreach (var item in OptionsList.ItemsSource)
+            {
+                var modOption = (ModOptionJson)item;
+                if (!modOption.SelectionType.Equals("Single"))
+                {
+                    modOption.IsChecked = isSelected;
+                }
+            }
+        }
     }
 
     /// <summary>
