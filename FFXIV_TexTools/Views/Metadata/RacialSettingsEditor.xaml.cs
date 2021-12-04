@@ -44,7 +44,6 @@ namespace FFXIV_TexTools.Views.Metadata
                 }
 
                 var baseRace = race.GetBaseRace();
-                if (baseRace != XivBaseRace.Viera)
                 {
                     var maleButton = MakeButton(race, XivGender.Male);
                     maleButton.SetValue(Grid.RowProperty, rowIdx);

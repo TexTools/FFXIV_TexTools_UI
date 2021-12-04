@@ -68,6 +68,7 @@ namespace FFXIV_TexTools.ViewModels
                 XivRace.Lalafell_Female.GetDisplayName(),
                 XivRace.AuRa_Male.GetDisplayName(),
                 XivRace.AuRa_Female.GetDisplayName(),
+                XivRace.Viera_Male.GetDisplayName(),
                 XivRace.Viera_Female.GetDisplayName(),
                 XivRace.Hrothgar_Male.GetDisplayName()
             };
