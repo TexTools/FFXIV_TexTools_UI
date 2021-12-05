@@ -43,22 +43,17 @@ namespace FFXIV_TexTools.Views.Metadata
                     rowIdx++;
                 }
 
-                var baseRace = race.GetBaseRace();
-                {
-                    var maleButton = MakeButton(race, XivGender.Male);
-                    maleButton.SetValue(Grid.RowProperty, rowIdx);
-                    maleButton.SetValue(Grid.ColumnProperty, clanId);
-                    MaleGrid.Children.Add(maleButton);
-                }
+                var maleButton = MakeButton(race, XivGender.Male);
+                maleButton.SetValue(Grid.RowProperty, rowIdx);
+                maleButton.SetValue(Grid.ColumnProperty, clanId);
+                MaleGrid.Children.Add(maleButton);
 
+                var baseRace = race.GetBaseRace();
                 if (baseRace != XivBaseRace.Hrothgar)
                 {
                     var femaleButton = MakeButton(race, XivGender.Female);
-
-
                     femaleButton.SetValue(Grid.RowProperty, rowIdx);
                     femaleButton.SetValue(Grid.ColumnProperty, clanId);
-
                     FemaleGrid.Children.Add(femaleButton);
                 }
 
