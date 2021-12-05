@@ -7,7 +7,7 @@
              mc:Ignorable="d" >
     <GroupBox Header="Extra Skeleton Settings">
         <Grid>
-            <UniformGrid x:Name="RacialGrid" Rows="10" Columns="4" Width="600" HorizontalAlignment="Left" Margin="10" />
+            <UniformGrid x:Name="RacialGrid" Rows="11" Columns="4" Width="600" HorizontalAlignment="Left" Margin="10" />
         </Grid>
     </GroupBox>
 </UserControl>
