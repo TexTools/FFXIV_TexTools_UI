@@ -190,7 +190,6 @@ namespace FFXIV_TexTools.Views
             {
                 ModPackUrl.Text = "";
             }
-            Url = ModPackUrl.Text;
 
 
             var index = wizPages.IndexOf(modPackWizard.CurrentPage);
@@ -253,7 +252,7 @@ namespace FFXIV_TexTools.Views
                     Author = ModPackAuthor.Text,
                     Version = VersionNumber,
                     Description = ModPackDescription.Text,
-                    Url = Url,
+                    Url = ModPackUrl.Text,
                     ModPackPages = new List<ModPackData.ModPackPage>()
                 };
 
@@ -294,7 +293,6 @@ namespace FFXIV_TexTools.Views
                         }
                         else if (overwriteDialogResult == System.Windows.Forms.DialogResult.Cancel)
                         {
-                            await _progressController.CloseAsync();
                             return;
                         }
                     }
@@ -384,11 +382,12 @@ namespace FFXIV_TexTools.Views
                     }
                 }
 
-                this.ModPackAuthor.Text = ttmpData.ModPackJson.Author;
-                this.ModPackName.Text = ttmpData.ModPackJson.Name;
-                this.ModPackVersion.Text= ttmpData.ModPackJson.Version;
-                this.ModPackDescription.Text = ttmpData.ModPackJson.Description;
-                this.ModPackUrl.Text = ttmpData.ModPackJson.Url;
+                ModPackAuthor.Text = ttmpData.ModPackJson.Author;
+                ModPackName.Text = ttmpData.ModPackJson.Name;
+                ModPackVersion.Text= ttmpData.ModPackJson.Version;
+                VersionNumber = Version.Parse(ttmpData.ModPackJson.Version);
+                ModPackDescription.Text = ttmpData.ModPackJson.Description;
+                ModPackUrl.Text = ttmpData.ModPackJson.Url;
                 for (var i = modPackWizard.Items.Count - 1; i > 0; i--)
                 {
                     modPackWizard.Items.RemoveAt(i);
@@ -486,11 +485,6 @@ namespace FFXIV_TexTools.Views
             {
                 await UnlockUi();
             }
-        }
-
-        private void UrlBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-
         }
     }
 }
