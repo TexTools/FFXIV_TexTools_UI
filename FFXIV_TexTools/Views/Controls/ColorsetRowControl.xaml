@@ -11,7 +11,7 @@
             <ColumnDefinition Width="1*" ></ColumnDefinition>
             <ColumnDefinition Width="4*" ></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <Label Grid.Column="0" Name="RowNumber" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" />
+        <Label Grid.Column="0" Name="RowNumber" HorizontalContentAlignment="Right" Padding="0, 4, 2, 0" />
         <Image Grid.Column="1" Name="RowImage" HorizontalAlignment="Left" Margin="5, 0, 0, 0"/>
     </Grid>
 </UserControl>
