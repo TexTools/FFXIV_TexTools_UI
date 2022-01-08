@@ -78,6 +78,7 @@ namespace FFXIV_TexTools.Views
             ModPackName.Focus();
 
             ModPackAuthor.Text = String.IsNullOrWhiteSpace(Settings.Default.Default_Author) ? "TexTools User" : Settings.Default.Default_Author;
+            ModPackUrl.Text = Settings.Default.Default_Modpack_Url;
             ModPackVersion.Text = "1.0.0";
         }
 
