@@ -40,6 +40,7 @@ namespace FFXIV_TexTools.ViewModels
         private string _submeshId;
         private System.Timers.Timer _closeTimer;
         private bool _anyWarnings = false;
+        private string _lastImportFilePath;
 
 
         private bool _success = false;
@@ -114,7 +115,7 @@ namespace FFXIV_TexTools.ViewModels
         }
 
 
-        public ImportModelViewModel(ImportModelView view, IItemModel item, XivRace race, string submeshId, bool dataOnly, Action onComplete = null)
+        public ImportModelViewModel(ImportModelView view, IItemModel item, XivRace race, string submeshId, bool dataOnly, Action onComplete = null, string lastImportFilePath = null)
         {
             _view = view;
             _item = item;
@@ -122,6 +123,7 @@ namespace FFXIV_TexTools.ViewModels
             _submeshId = submeshId;
             _dataOnly = dataOnly;
             _onComplete = onComplete;
+            _lastImportFilePath = lastImportFilePath;
 
             if(typeof(XivCharacter) == _item.GetType())
             {
@@ -143,8 +145,7 @@ namespace FFXIV_TexTools.ViewModels
             // We need to explicitly fork this onto a new thread to avoid deadlock.
             Task.Run(AssignPath).Wait();
 
-            var defaultPath = $"{IOUtil.MakeItemSavePath(_item, saveDirectory, _race)}\\3D";
-            defaultPath = defaultPath.Replace("/", "\\");
+            var defaultPath = $"{IOUtil.MakeItemSavePath(_item, saveDirectory, _race)}\\3D".Replace("/", "\\");
             var modelName = Path.GetFileNameWithoutExtension(_internalPath);
 
 
@@ -157,6 +158,7 @@ namespace FFXIV_TexTools.ViewModels
             {
                 foundValidFile = true;
             }
+
             if (!foundValidFile)
             {
                 foreach (var suffix in _importers)
@@ -172,7 +174,8 @@ namespace FFXIV_TexTools.ViewModels
 
             if (!foundValidFile)
             {
-                startingPath = "";
+                // Auto-fill the last import file path if the file still exists, otherwise just default to reusing the existing model
+                startingPath = File.Exists(_lastImportFilePath) ? _lastImportFilePath : "";
             }
 
 

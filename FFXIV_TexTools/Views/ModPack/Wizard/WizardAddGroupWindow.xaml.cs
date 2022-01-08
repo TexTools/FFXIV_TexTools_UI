@@ -749,13 +749,12 @@ namespace FFXIV_TexTools.Views
         {
             var selectedFile = ModelTypeComboBox.SelectedItem as FileEntry;
             var itemModel = (IItemModel) SelectedItem;
-            var mdl = new Mdl(_gameDirectory, IOUtil.GetDataFileFromPath(selectedFile.Path));
             try
             {
                 // TODO - Include Submesh ID ?
                 // Do we even have any kind of UI To specify this in the wizard?
                 // Submeshes are only used for Furniture anyways, so it might be a 'will not fix'
-                bool success = await ImportModelView.ImportModel(itemModel, IOUtil.GetRaceFromPath(selectedFile.Path), null, this, null, true);
+                (bool success, string _) = await ImportModelView.ImportModel(itemModel, IOUtil.GetRaceFromPath(selectedFile.Path), null, this, null, true);
                 if (!success)
                 {
                     return;
