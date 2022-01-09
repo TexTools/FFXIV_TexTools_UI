@@ -18,11 +18,6 @@
             <Button x:Name="ChinaDiscordButton" Content="{Binding Source={x:Static resx:UIStrings.ChinaDiscord}}" Visibility="Collapsed" Click="ChinaDiscordButton_Click"/>
             <Button Content="{Binding DXVersionText}" Command="{Binding DXVersionCommand}" />
             <Button x:Name="LanguageButton" Content="{Binding Source={x:Static resx:UIStrings.Language}}" Click="LanguageButton_Click"/>
-        </Controls:WindowCommands>
-    </Controls:MetroWindow.RightWindowCommands>
-
-    <Controls:MetroWindow.LeftWindowCommands>
-        <Controls:WindowCommands>
             <Button x:Name="DiscordButton" ToolTip="{Binding Source={x:Static resx:UIStrings.Join_us_on_Discord}}" Click="DiscordButton_Click">
                 <iconPacks:PackIconSimpleIcons Kind="Discord" VerticalAlignment="Center" HorizontalAlignment="Center"/>
             </Button>
@@ -30,7 +25,8 @@
                 <iconPacks:PackIconSimpleIcons Kind="GitHub" VerticalAlignment="Center" HorizontalAlignment="Center"/>
             </Button>
         </Controls:WindowCommands>
-    </Controls:MetroWindow.LeftWindowCommands>
+    </Controls:MetroWindow.RightWindowCommands>
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition/>

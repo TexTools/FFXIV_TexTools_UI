@@ -40,7 +40,7 @@
                         </StackPanel>
                         <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
                             <Label Content="Url:"  VerticalAlignment="Center"/>
-                            <TextBlock Name="ModPackUrlLabel" VerticalAlignment="Center" HorizontalAlignment="Center" TextDecorations="Underline" FontStyle="Italic" FontFamily="Courier New" Foreground="#FF0000EE"></TextBlock>
+                            <TextBlock Name="ModPackUrlLabel" VerticalAlignment="Center" HorizontalAlignment="Center" TextDecorations="Underline" FontStyle="Italic" FontFamily="Courier New" Foreground="#FF809FFF"></TextBlock>
                         </StackPanel>
                     </Grid>
                 </Grid>

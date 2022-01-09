@@ -339,6 +339,9 @@
     <Compile Include="Views\Controls\ColorsetEditorControl.xaml.cs">
       <DependentUpon>ColorsetEditorControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Controls\ColorsetRowControl.xaml.cs">
+      <DependentUpon>ColorsetRowControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Controls\DescribedButton.xaml.cs">
       <DependentUpon>DescribedButton.xaml</DependentUpon>
     </Compile>
@@ -551,6 +554,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Controls\ColorsetEditorControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Controls\ColorsetRowControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

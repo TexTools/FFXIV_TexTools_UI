@@ -30,6 +30,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using xivModdingFramework.Cache;
 using xivModdingFramework.General.Enums;
+using xivModdingFramework.Helpers;
 using xivModdingFramework.Models.DataContainers;
 using xivModdingFramework.Models.ModelTextures;
 
@@ -38,6 +39,7 @@ namespace FFXIV_TexTools.ViewModels
     public class CustomizeViewModel : INotifyPropertyChanged
     {
         private string _defaultAuthor = Settings.Default.Default_Author;
+        private string _defaultModpackUrl = Settings.Default.Default_Modpack_Url;
         const string _bgColorDefault = "#FF777777";
         private CustomizeSettingsView _view;
 
@@ -134,6 +136,25 @@ namespace FFXIV_TexTools.ViewModels
             {
                 _defaultAuthor = value;
                 NotifyPropertyChanged(nameof(DefaultAuthor));
+            }
+        }
+
+        ///<summary>
+        /// The default modpack url
+        /// </summary>
+        public string DefaultModpackUrl
+        {
+            get => _defaultModpackUrl;
+            set
+            {
+                _defaultModpackUrl = value;
+                NotifyPropertyChanged(nameof(DefaultModpackUrl));
+
+                if (String.IsNullOrWhiteSpace(value) || IOUtil.ValidateUrl(value) != null)
+                {
+                    Settings.Default.Default_Modpack_Url = value?.Trim();
+                    Settings.Default.Save();
+                }
             }
         }
 

@@ -57,28 +57,40 @@
                         <RowDefinition Height="36"/>
                         <RowDefinition Height="36"/>
                         <RowDefinition Height="36"/>
+                        <RowDefinition Height="36"/>
                     </Grid.RowDefinitions>
 
                     <Label Grid.Column="0" Grid.Row="0"  Margin="10,0,5,0" Content="Default Author" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
-                    <TextBox x:Name="AuthorTextBox" Grid.Column="1" Text="{Binding DefaultAuthor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="5" VerticalContentAlignment="Center"/>
+                    <TextBox x:Name="AuthorTextBox" Grid.Column="1" Grid.Row="0" Text="{Binding DefaultAuthor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="5" VerticalContentAlignment="Center"/>
 
-                    <Label Grid.Column="0" Grid.Row="1"  Margin="10,0,5,0" Content="Synchronize View Tabs" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
-                    <CheckBox x:Name="SynchronizeViewsBox"  Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" Margin="5,0,10,0"  IsChecked="{Binding UseSynchronizedViews}" ToolTip="Synchronize the model/texture/metadata view tabs to use the same Race/'Number' selection."></CheckBox>
+                    <Label Grid.Column="0" Grid.Row="1"  Margin="10,0,5,0" Content="Default Modpack URL" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
+                    <TextBox x:Name="UrlTextBox" Grid.Column="1" Grid.Row="1" Margin="5" VerticalContentAlignment="Center">
+                        <TextBox.Text>
+                            <Binding  NotifyOnValidationError="True" UpdateSourceTrigger="PropertyChanged" Path="DefaultModpackUrl" Mode="TwoWay">
+                                <Binding.ValidationRules>
+                                    <local:UrlValidator/>
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox.Text>
+                    </TextBox>
 
-                    <Label Grid.Column="0" Grid.Row="2"  Margin="10,0,5,0" Content="Remember Race Selection" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
-                    <CheckBox x:Name="RememberSelectionBox"  Grid.Column="2" Grid.Row="2" VerticalAlignment="Center" Margin="5,0,10,0" ToolTip="Remember the Race/'Number' Selection when changing between items."  IsChecked="{Binding RememberRaceSelection}"></CheckBox>
+                    <Label Grid.Column="0" Grid.Row="2"  Margin="10,0,5,0" Content="Synchronize View Tabs" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
+                    <CheckBox x:Name="SynchronizeViewsBox"  Grid.Column="1" Grid.Row="2" VerticalAlignment="Center" Margin="5,0,10,0"  IsChecked="{Binding UseSynchronizedViews}" ToolTip="Synchronize the model/texture/metadata view tabs to use the same Race/'Number' selection."></CheckBox>
 
-                    <Label Grid.Column="0" Grid.Row="3" Margin="10,0,5,0" Content="Default Race" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
-                    <ComboBox x:Name="DefaultRacesBox" Grid.Column="1" Grid.Row="3"  VerticalAlignment="Center" ItemsSource="{Binding DefaultRaces}" IsEnabled="{Binding DefaultRaceEnabled}" SelectedItem="{Binding SelectedDefaultRace}" Margin="5,0,10,0" ToolTip="Always attempt to switch to this race when changing items."/>
+                    <Label Grid.Column="0" Grid.Row="3"  Margin="10,0,5,0" Content="Remember Race Selection" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
+                    <CheckBox x:Name="RememberSelectionBox"  Grid.Column="1" Grid.Row="3" VerticalAlignment="Center" Margin="5,0,10,0" ToolTip="Remember the Race/'Number' Selection when changing between items."  IsChecked="{Binding RememberRaceSelection}"></CheckBox>
 
-                    <Label Grid.Column="0" Grid.Row="4" Margin="10,0,5,0" Content="External Model Viewer Type" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
-                    <ComboBox x:Name="Target3DProgramBox" Grid.Column="1" Grid.Row="4"  VerticalAlignment="Center" ItemsSource="{Binding Target3DPrograms}" SelectedItem="{Binding Selected3DProgram}" Margin="5,0,10,0" />
+                    <Label Grid.Column="0" Grid.Row="4" Margin="10,0,5,0" Content="Default Race" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
+                    <ComboBox x:Name="DefaultRacesBox" Grid.Column="1" Grid.Row="4"  VerticalAlignment="Center" ItemsSource="{Binding DefaultRaces}" IsEnabled="{Binding DefaultRaceEnabled}" SelectedItem="{Binding SelectedDefaultRace}" Margin="5,0,10,0" ToolTip="Always attempt to switch to this race when changing items."/>
 
-                    <Label Grid.Column="0" Grid.Row="5" Margin="10,0,5,0" Content="Export Complete Skeletons" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
-                    <CheckBox x:Name="ExportAllBonesBox"  Grid.Column="2" Grid.Row="5" VerticalAlignment="Center" Margin="5,0,10,0" ToolTip="Should model exports include unused bones in the associated skeletons?"  IsChecked="{Binding ExportAllBones}"></CheckBox>
+                    <Label Grid.Column="0" Grid.Row="5" Margin="10,0,5,0" Content="External Model Viewer Type" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
+                    <ComboBox x:Name="Target3DProgramBox" Grid.Column="1" Grid.Row="5"  VerticalAlignment="Center" ItemsSource="{Binding Target3DPrograms}" SelectedItem="{Binding Selected3DProgram}" Margin="5,0,10,0" />
 
-                    <Label Grid.Column="0" Grid.Row="6" Margin="10,0,5,0" Content="TexTools Version" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
-                    <ComboBox x:Name="UpdateBranchBox" Grid.Column="1" Grid.Row="6"  VerticalAlignment="Center" ItemsSource="{Binding UpdateBranches}" SelectedItem="{Binding UpdateBranch}" Margin="5,0,10,0" />
+                    <Label Grid.Column="0" Grid.Row="6" Margin="10,0,5,0" Content="Export Complete Skeletons" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
+                    <CheckBox x:Name="ExportAllBonesBox"  Grid.Column="1" Grid.Row="6" VerticalAlignment="Center" Margin="5,0,10,0" ToolTip="Should model exports include unused bones in the associated skeletons?"  IsChecked="{Binding ExportAllBones}"></CheckBox>
+
+                    <Label Grid.Column="0" Grid.Row="7" Margin="10,0,5,0" Content="TexTools Version" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
+                    <ComboBox x:Name="UpdateBranchBox" Grid.Column="1" Grid.Row="7"  VerticalAlignment="Center" ItemsSource="{Binding UpdateBranches}" SelectedItem="{Binding UpdateBranch}" Margin="5,0,10,0" />
 
                 </Grid>
             </GroupBox>

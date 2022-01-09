@@ -36,7 +36,7 @@ namespace FFXIV_TexTools.Controls
     /// </summary>
     public partial class ColorsetEditorControl : UserControl
     {
-        List<Image> ColorSetRowImages = new List<Image>();
+        List<ColorsetRowControl> ColorSetRowControls = new List<ColorsetRowControl>();
         StainingTemplateFile DyeTemplateFile;
         int RowId = 0;
 
@@ -61,19 +61,21 @@ namespace FFXIV_TexTools.Controls
 
             for (int i = 0; i < 16; i++)
             {
-                var elem = new System.Windows.Controls.Image();
-                elem.Height = 24;
-                elem.Width = 192;
-                elem.DataContext = i;
-                ColorSetRowImages.Add(elem);
+                var elem = new ColorsetRowControl(i)
+                {
+                    Height = 24,
+                    Width = 160
+                };
 
-                var border = new Border();
-                border.Child = elem;
+                ColorSetRowControls.Add(elem);
 
-                border.BorderThickness = new Thickness(0);
+                var border = new Border
+                {
+                    Child = elem,
+                    BorderThickness = new Thickness(0)
+                };
 
                 ColorSetRowsPanel.Children.Add(border);
-
 
                 elem.MouseLeftButtonDown += ColorsetRow_Clicked;
             }
@@ -192,9 +194,9 @@ namespace FFXIV_TexTools.Controls
 
         private void ColorsetRow_Clicked(object sender, MouseButtonEventArgs e)
         {
-            var selectedImage = (System.Windows.Controls.Image)e.Source;
-            SelectedColorsetRowImage.Source = selectedImage.Source;
-            var rowNumber = (int)selectedImage.DataContext;
+            var selectedRowControl = (ColorsetRowControl)e.Source;
+            SelectedColorsetRowImage.Source = selectedRowControl.RowImageSource;
+            var rowNumber = (int)selectedRowControl.DataContext;
             SetRow(rowNumber);
         }
 
@@ -287,17 +289,19 @@ namespace FFXIV_TexTools.Controls
             DyeGlossBox.IsChecked = (dyeData & 0x08) > 0;
             DyeSpecularPower.IsChecked = (dyeData & 0x10) > 0;
 
-            foreach (var imgElem in ColorSetRowImages)
+            foreach (var control in ColorSetRowControls)
             {
-
-                var border = (Border)imgElem.Parent;
+                control.Margin = new Thickness(0);
+                var border = (Border)control.Parent;
                 border.BorderThickness = new Thickness(0);
                 border.BorderBrush = Brushes.Transparent;
             }
 
-            var elem = (Border)ColorSetRowImages[RowId].Parent;
-            elem.BorderThickness = new Thickness(2);
-            elem.BorderBrush = Brushes.Black;
+            var rowControl = ColorSetRowControls[RowId];
+            rowControl.Margin = new Thickness(-2, 0, -2, 0);
+            var rowBorder = (Border)rowControl.Parent;
+            rowBorder.BorderThickness = new Thickness(2);
+            rowBorder.BorderBrush = Brushes.Black;
 
             UpdateDyeStatus();
 
@@ -376,11 +380,11 @@ namespace FFXIV_TexTools.Controls
                 npixels[x + 3] = pixels[originalOffset + 3];
             }
 
-            ColorSetRowImages[rowId].Source = BitmapSource.Create(multiplier * 4, multiplier, 1, 1, PixelFormats.Bgra32, null, npixels, 16 * multiplier);
+            ColorSetRowControls[rowId].RowImageSource = BitmapSource.Create(multiplier * 4, multiplier, 1, 1, PixelFormats.Bgra32, null, npixels, 16 * multiplier);
 
             if(RowId == rowId)
             {
-                SelectedColorsetRowImage.Source = ColorSetRowImages[rowId].Source;
+                SelectedColorsetRowImage.Source = ColorSetRowControls[rowId].RowImageSource;
             }
         }
 
