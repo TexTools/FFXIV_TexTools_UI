@@ -745,6 +745,7 @@ namespace FFXIV_TexTools.ViewModels
             // Misc
             { "atr_tlh", "Non-Tail Races Only" },
             { "atr_tls", "Tail Races Only" },
+            { "atr_eye_a", "Reaper Transformation"},
 
             // Unknown/unverified
             
@@ -870,6 +871,7 @@ namespace FFXIV_TexTools.ViewModels
                 "atr_fv_a",
                 "atr_fv_b",
                 "atr_fv_c",
+                "atr_eye_a",
             } },
             { "hir", new List<string> () {
                 "atr_kam",
