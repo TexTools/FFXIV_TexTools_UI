@@ -53,6 +53,10 @@ namespace FFXIV_TexTools.Views.Models
 
 
             SizeMultiplierSource.Add(new KeyValuePair<double, string>(1.0D, "1x"));
+            SizeMultiplierSource.Add(new KeyValuePair<double, string>(2.0D, "2x"));
+            SizeMultiplierSource.Add(new KeyValuePair<double, string>(3.0D, "3x"));
+            SizeMultiplierSource.Add(new KeyValuePair<double, string>(4.0D, "4x"));
+            SizeMultiplierSource.Add(new KeyValuePair<double, string>(5.0D, "5x"));
             SizeMultiplierSource.Add(new KeyValuePair<double, string>(10.0D, "10x"));
             SizeMultiplierSource.Add(new KeyValuePair<double, string>(100.0D, "100x"));
             SizeMultiplierSource.Add(new KeyValuePair<double, string>(.1D, "0.1x"));
