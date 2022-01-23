@@ -283,14 +283,19 @@ namespace FFXIV_TexTools.ViewModels
             }
         }
 
-        public bool DefaultRaceEnabled { get
+        public bool DefaultRaceEnabled
+        {
+            get
             {
                 return Settings.Default.Remember_Race_Selection == false;
-            } set
+            }
+            set
             {
                 // --
             }
         }
+
+
 
         const string maxName = "3DS Max/Unreal";
         const string blenderName = "Blender/Maya/Unity";
@@ -406,12 +411,33 @@ namespace FFXIV_TexTools.ViewModels
 
             }
         }
-
         public void SetRememberRaceSelection(bool value)
         {
             Settings.Default.Remember_Race_Selection = value;
             Settings.Default.Save();
         }
+
+        public bool AutoMaterialFix
+        {
+            get => Settings.Default.AutoMaterialFix;
+            set
+            {
+                if (AutoMaterialFix != value)
+                {
+                    SetAutoMaterialFix(value);
+                    NotifyPropertyChanged(nameof(AutoMaterialFix));
+                }
+
+            }
+        }
+
+        public void SetAutoMaterialFix(bool value)
+        {
+            Settings.Default.AutoMaterialFix = value;
+            Settings.Default.Save();
+        }
+
+
 
         /// <summary>
         /// The lumina directory
