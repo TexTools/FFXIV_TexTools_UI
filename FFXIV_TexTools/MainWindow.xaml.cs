@@ -1596,7 +1596,7 @@ namespace FFXIV_TexTools
         private async Task DownloadIndexBackups()
         {
             var url = UIStrings.Index_Backups_Url;
-            if (url == "INVALID" || String.IsNullOrWhiteSpace(url))
+            if (url == "NONE" || String.IsNullOrWhiteSpace(url))
             {
                 FlexibleMessageBox.Show("Index backup download is not currently supported for your client language.", "Web Download Error", MessageBoxButtons.OK, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1);
                 return;
