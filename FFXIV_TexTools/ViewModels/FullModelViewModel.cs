@@ -362,7 +362,7 @@ namespace FFXIV_TexTools.ViewModels
 
             // Show the face combo box if a face with different textures is added
             if (item.SecondaryCategory.Equals(XivStrings.Face) && (SelectedSkeleton.XivRace == XivRace.AuRa_Female || SelectedSkeleton.XivRace == XivRace.AuRa_Male ||
-                SelectedSkeleton.XivRace == XivRace.Viera || SelectedSkeleton.XivRace == XivRace.Hrothgar))
+                SelectedSkeleton.XivRace == XivRace.Viera_Female || SelectedSkeleton.XivRace == XivRace.Viera_Male || SelectedSkeleton.XivRace == XivRace.Hrothgar_Male))
             {
                 Faces.Clear();
                 FaceComboboxVisibility = Visibility.Visible;
@@ -440,8 +440,9 @@ namespace FFXIV_TexTools.ViewModels
                 XivRace.Lalafell_Female,
                 XivRace.AuRa_Male,
                 XivRace.AuRa_Female,
-                XivRace.Hrothgar,
-                XivRace.Viera
+                XivRace.Hrothgar_Male,
+                XivRace.Viera_Male,
+                XivRace.Viera_Female
             };
 
             foreach (var xivRace in deformRaceList)
@@ -486,11 +487,12 @@ namespace FFXIV_TexTools.ViewModels
                     Faces.Add(XivStringRaces.Raen);
                     Faces.Add(XivStringRaces.Xaela);
                     break;
-                case XivRace.Viera:
+                case XivRace.Viera_Male:
+                case XivRace.Viera_Female:
                     Faces.Add(XivStringRaces.Rava);
                     Faces.Add(XivStringRaces.Veena);
                     break;
-                case XivRace.Hrothgar:
+                case XivRace.Hrothgar_Male:
                     Faces.Add(XivStringRaces.Helion);
                     Faces.Add(XivStringRaces.Lost);
                     break;

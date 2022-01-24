@@ -36,6 +36,7 @@ namespace FFXIV_TexTools.Views
 
             DataContext = new BackupModpackViewModel();
             ModpackList.ItemsSource = new List<BackupModpackItemEntry>();
+            ModPackName.Text = string.Format("Backup_{0}", DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss"));
 
             // Manually add an entry for the mods that don't belong to a modpack
             ((List<BackupModpackItemEntry>)ModpackList.ItemsSource).Add(new BackupModpackItemEntry(UIStrings.Standalone_Non_ModPack));
@@ -101,12 +102,12 @@ namespace FFXIV_TexTools.Views
             {
                 var backupModpackData = new BackupModPackData
                 {
-                    Name = string.Format("Backup {0}", DateTime.Now.Date.ToString("dd-MM-yy")),
+                    Name = ModPackName.Text,
                     ModsToBackup = new List<BackupModData>()
                 };
 
                 var selectedEntries = from modpack in (List<BackupModpackItemEntry>)ModpackList.ItemsSource
-                                      where (modpack.IsChecked)
+                                      where modpack.IsChecked
                                       select modpack;
                 if (selectedEntries.Count() == 0) throw new Exception("No selected modpacks detected.");
 

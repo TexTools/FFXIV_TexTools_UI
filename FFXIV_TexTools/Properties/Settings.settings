@@ -65,10 +65,10 @@
     <Setting Name="ModList_Filter" Type="System.String" Scope="User">
       <Value Profile="(Default)">Item</Value>
     </Setting>
-    <Setting Name="ForceUV1Quadrant" Type="System.Boolean" Scope="User">
+    <Setting Name="ForceUV1QuadrantForGear" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="CloneUV1toUV2" Type="System.Boolean" Scope="User">
+    <Setting Name="CloneUV1toUV2ForHair" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="ExportTexDDS" Type="System.Boolean" Scope="User">
@@ -108,6 +108,15 @@
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="Lumina_IsEnabled" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="UseOriginalShapeDataForFace" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="Default_Modpack_Url" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="AutoMaterialFix" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
   </Settings>

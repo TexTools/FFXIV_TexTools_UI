@@ -29,28 +29,40 @@
         </Grid.ColumnDefinitions>
         <Grid Grid.Column="0">
             <GroupBox Grid.Row="0" Header="{Binding Source={x:Static resx:UIStrings.Options_List}}" Margin="5">
-                <ListBox x:Name="OptionsList" SelectionChanged="OptionsList_SelectionChanged" ScrollViewer.CanContentScroll="False">
-                    <ListBox.GroupStyle>
-                        <GroupStyle>
-                            <GroupStyle.HeaderTemplate>
-                                <DataTemplate>
-                                    <Border BorderThickness="0,0,0,1">
-                                        <Border.BorderBrush>
-                                            <LinearGradientBrush EndPoint="1,0" MappingMode="RelativeToBoundingBox" StartPoint="0,1">
-                                                <GradientStop Color="Black" Offset="0"/>
-                                                <GradientStop Color="White" Offset="1"/>
-                                            </LinearGradientBrush>
-                                        </Border.BorderBrush>
-                                        <TextBlock FontWeight="Bold" Text="{Binding Name}"/>
-                                    </Border>
-                                </DataTemplate>
-                            </GroupStyle.HeaderTemplate>
-                        </GroupStyle>
-                    </ListBox.GroupStyle>
-                    <ListBox.ItemTemplateSelector>
-                        <local:ImportSelectionTemplateSelector RadioButtonTemplate="{StaticResource RadioButtonTemplate}" CheckBoxTemplate="{StaticResource CheckBoxTemplate}"/>
-                    </ListBox.ItemTemplateSelector>
-                </ListBox>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="25"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Button x:Name="SelectAllButton" Content="{Binding Source={x:Static resx:UIStrings.Select_All}}" Grid.Column="0" Click="SelectAllButton_Click"/>
+                    <Button x:Name="DeselectAllButton" Content="{Binding Source={x:Static resx:UIStrings.Deselect_All}}" Grid.Column="1" Click="DeselectAllButton_Click"/>
+                    <ListBox x:Name="OptionsList" SelectionChanged="OptionsList_SelectionChanged" ScrollViewer.CanContentScroll="False" Grid.Row="1" Grid.ColumnSpan="2">
+                        <ListBox.GroupStyle>
+                            <GroupStyle>
+                                <GroupStyle.HeaderTemplate>
+                                    <DataTemplate>
+                                        <Border BorderThickness="0,0,0,1">
+                                            <Border.BorderBrush>
+                                                <LinearGradientBrush EndPoint="1,0" MappingMode="RelativeToBoundingBox" StartPoint="0,1">
+                                                    <GradientStop Color="Black" Offset="0"/>
+                                                    <GradientStop Color="White" Offset="1"/>
+                                                </LinearGradientBrush>
+                                            </Border.BorderBrush>
+                                            <TextBlock FontWeight="Bold" Text="{Binding Name}"/>
+                                        </Border>
+                                    </DataTemplate>
+                                </GroupStyle.HeaderTemplate>
+                            </GroupStyle>
+                        </ListBox.GroupStyle>
+                        <ListBox.ItemTemplateSelector>
+                            <local:ImportSelectionTemplateSelector RadioButtonTemplate="{StaticResource RadioButtonTemplate}" CheckBoxTemplate="{StaticResource CheckBoxTemplate}"/>
+                        </ListBox.ItemTemplateSelector>
+                    </ListBox>
+                </Grid>
             </GroupBox>
         </Grid>
         <Grid Column="1">

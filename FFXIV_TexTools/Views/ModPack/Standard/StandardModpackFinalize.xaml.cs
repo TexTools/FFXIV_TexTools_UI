@@ -38,6 +38,7 @@ namespace FFXIV_TexTools.Views
             var firstItem = _vm.Entries[0].Item;
             ModPackName.Text = firstItem.Name + " Modpack";
             ModPackAuthor.Text = String.IsNullOrWhiteSpace(Settings.Default.Default_Author) ? "TexTools User" : Settings.Default.Default_Author;
+            ModPackUrl.Text = Settings.Default.Default_Modpack_Url;
             ModPackVersion.Text = "1.0.0";
             BackButton.Click += BackButton_Click;
             CreateModpackButton.Click += CreateModpackButton_Click;

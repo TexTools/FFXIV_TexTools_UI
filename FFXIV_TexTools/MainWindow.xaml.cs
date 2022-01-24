@@ -48,6 +48,7 @@ using xivModdingFramework.General.Enums;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Items.Categories;
 using xivModdingFramework.Items.Interfaces;
+using xivModdingFramework.Models.FileTypes;
 using xivModdingFramework.Mods;
 using xivModdingFramework.Mods.DataContainers;
 using xivModdingFramework.Mods.FileTypes;
@@ -981,6 +982,39 @@ namespace FFXIV_TexTools
         }
 
         /// <summary>
+        /// Event handler for the icon id search clicked
+        /// </summary>
+        private async void Menu_AutoSkinUpdate_Click(object sender, RoutedEventArgs e)
+        {
+            var r = FlexibleMessageBox.Show("This will auto-assign the skin materials for all moded player models.\n Are you sure you wish to proceed?", "Skin Auto-Assign Confirmation", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1);
+            if (r == System.Windows.Forms.DialogResult.OK)
+            {
+                await LockUi("Updating skin materials for all modded models...","This may take a few minutes if you have many mods.");
+                try
+                {
+                    var changed = 0;
+                    await Task.Run(async () =>
+                    {
+                        var _mdl = new Mdl(XivCache.GameInfo.GameDirectory, XivDataFile._04_Chara);
+                        changed = await _mdl.CheckAllModsSkinAssignments();
+                    });
+
+                    FlexibleMessageBox.Show("Skin Auto-Assigment is complete.\n\n" + changed + " Models updated.", "Skin Auto - Assign Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                }
+                catch (Exception ex)
+                {
+                    while (ex.InnerException != null)
+                    {
+                        ex = ex.InnerException;
+                    }
+                    FlexibleMessageBox.Show("An error occured while trying to update player models.\nYour mods/game files have not been altered.\n\nError:" + ex.Message, "Skin Auto-Assign Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                await UnlockUi();
+            }
+        }
+
+        /// <summary>
         /// Event handler for the about menu item clicked
         /// </summary>
         private void Menu_About_Click(object sender, RoutedEventArgs e)
@@ -1562,7 +1596,7 @@ namespace FFXIV_TexTools
         private async Task DownloadIndexBackups()
         {
             var url = UIStrings.Index_Backups_Url;
-            if (url == "INVALID" || String.IsNullOrWhiteSpace(url))
+            if (url == "NONE" || String.IsNullOrWhiteSpace(url))
             {
                 FlexibleMessageBox.Show("Index backup download is not currently supported for your client language.", "Web Download Error", MessageBoxButtons.OK, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1);
                 return;
