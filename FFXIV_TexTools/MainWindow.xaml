@@ -61,6 +61,7 @@
                 <MenuItem x:Name="Menu_RacialScaling" Header="Edit Racial Settings" Click="Menu_RacialScaling_Click"/>
                 <MenuItem x:Name="Menu_FullModelViewer" Header="Full Model Viewer" Click="FullModelViewer_Click"/>
                 <MenuItem x:Name="Menu_IconSearch" Header="{Binding Source={x:Static resx:UIStrings.Icon_Search}}" Click="Menu_IconIDSearch_Click"/>
+                <MenuItem x:Name="Menu_AutoSkinUpdate" Header="Auto-Assign Skin Materials" Click="Menu_AutoSkinUpdate_Click"/>
                 <MenuItem Header="{Binding Source={x:Static resx:UIStrings.Raw_File_Operations}}">
                     <MenuItem x:Name="Menu_ExtractRaw" Header="{Binding Source={x:Static resx:UIStrings.Extract_Raw}}" Click="Menu_ExtractRaw_Click"/>
                     <MenuItem x:Name="Menu_ImportRaw" Header="{Binding Source={x:Static resx:UIStrings.Import_Raw}}" Click="Menu_ImportRaw_Click"/>
