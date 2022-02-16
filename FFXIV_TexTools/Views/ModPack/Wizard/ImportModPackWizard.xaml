@@ -9,7 +9,7 @@
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
         Title="{Binding Source={x:Static resx:UIStrings.Import_ModPack_Wizard}}" Height="600" Width="800" ShowMaxRestoreButton="False" ShowMinButton="False" WindowStartupLocation="CenterOwner" Closing="MetroWindow_Closing">
-    <xctk:Wizard x:Name="importModPackWizard" NextButtonContent="{Binding Source={x:Static resx:UIStrings.New_Page}}" BackButtonContent="{Binding Source={x:Static resx:UIStrings.Previous_Page}}"  Next="ImportModPackWizard_Next" CanHelp="False" HelpButtonVisibility="Collapsed" Finish="ImportModPackWizard_Finish" Previous="ImportModPackWizard_Previous" FinishButtonClosesWindow="False" FinishButtonContent="{Binding Source={x:Static resx:UIStrings.Finish}}" CancelButtonContent="{Binding Source={x:Static resx:UIStrings.Cancel}}" Background="{x:Null}">
+    <xctk:Wizard x:Name="importModPackWizard" NextButtonContent="{Binding Source={x:Static resx:UIStrings.Next_Page}}" BackButtonContent="{Binding Source={x:Static resx:UIStrings.Previous_Page}}"  Next="ImportModPackWizard_Next" CanHelp="False" HelpButtonVisibility="Collapsed" Finish="ImportModPackWizard_Finish" Previous="ImportModPackWizard_Previous" FinishButtonClosesWindow="False" FinishButtonContent="{Binding Source={x:Static resx:UIStrings.Finish}}" CancelButtonContent="{Binding Source={x:Static resx:UIStrings.Cancel}}" Background="{x:Null}">
         <xctk:WizardPage Title="{Binding Source={x:Static resx:UIStrings.Mod_Pack_Importer}}" Description="{Binding Source={x:Static resx:UIStrings.Go_through_the_wizard_and_select_relevant_options_to_import_mod_pack}}" PageType="Interior" Background="{x:Null}" HeaderBackground="{x:Null}">
             <Grid>
                 <Grid.RowDefinitions>
@@ -40,7 +40,7 @@
                         </StackPanel>
                         <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
                             <Label Content="Url:"  VerticalAlignment="Center"/>
-                            <TextBlock Name="ModPackUrlLabel" VerticalAlignment="Center" HorizontalAlignment="Center" TextDecorations="Underline" FontStyle="Italic" FontFamily="Courier New" Foreground="#FF0000EE"></TextBlock>
+                            <TextBlock Name="ModPackUrlLabel" VerticalAlignment="Center" HorizontalAlignment="Center" TextDecorations="Underline" FontStyle="Italic" FontFamily="Courier New" Foreground="#FF809FFF"></TextBlock>
                         </StackPanel>
                     </Grid>
                 </Grid>

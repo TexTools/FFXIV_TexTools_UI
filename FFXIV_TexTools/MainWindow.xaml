@@ -18,11 +18,6 @@
             <Button x:Name="ChinaDiscordButton" Content="{Binding Source={x:Static resx:UIStrings.ChinaDiscord}}" Visibility="Collapsed" Click="ChinaDiscordButton_Click"/>
             <Button Content="{Binding DXVersionText}" Command="{Binding DXVersionCommand}" />
             <Button x:Name="LanguageButton" Content="{Binding Source={x:Static resx:UIStrings.Language}}" Click="LanguageButton_Click"/>
-        </Controls:WindowCommands>
-    </Controls:MetroWindow.RightWindowCommands>
-
-    <Controls:MetroWindow.LeftWindowCommands>
-        <Controls:WindowCommands>
             <Button x:Name="DiscordButton" ToolTip="{Binding Source={x:Static resx:UIStrings.Join_us_on_Discord}}" Click="DiscordButton_Click">
                 <iconPacks:PackIconSimpleIcons Kind="Discord" VerticalAlignment="Center" HorizontalAlignment="Center"/>
             </Button>
@@ -30,7 +25,8 @@
                 <iconPacks:PackIconSimpleIcons Kind="GitHub" VerticalAlignment="Center" HorizontalAlignment="Center"/>
             </Button>
         </Controls:WindowCommands>
-    </Controls:MetroWindow.LeftWindowCommands>
+    </Controls:MetroWindow.RightWindowCommands>
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition/>
@@ -65,6 +61,7 @@
                 <MenuItem x:Name="Menu_RacialScaling" Header="Edit Racial Settings" Click="Menu_RacialScaling_Click"/>
                 <MenuItem x:Name="Menu_FullModelViewer" Header="Full Model Viewer" Click="FullModelViewer_Click"/>
                 <MenuItem x:Name="Menu_IconSearch" Header="{Binding Source={x:Static resx:UIStrings.Icon_Search}}" Click="Menu_IconIDSearch_Click"/>
+                <MenuItem x:Name="Menu_AutoSkinUpdate" Header="Auto-Assign Skin Materials" Click="Menu_AutoSkinUpdate_Click"/>
                 <MenuItem Header="{Binding Source={x:Static resx:UIStrings.Raw_File_Operations}}">
                     <MenuItem x:Name="Menu_ExtractRaw" Header="{Binding Source={x:Static resx:UIStrings.Extract_Raw}}" Click="Menu_ExtractRaw_Click"/>
                     <MenuItem x:Name="Menu_ImportRaw" Header="{Binding Source={x:Static resx:UIStrings.Import_Raw}}" Click="Menu_ImportRaw_Click"/>

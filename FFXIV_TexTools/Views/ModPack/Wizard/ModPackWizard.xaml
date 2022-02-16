@@ -54,7 +54,7 @@
                             <TextBox x:Name="ModPackAuthor" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.Mod_Pack_Author}}" Grid.Column="1" Margin="5" TabIndex="1"/>
 
                             <Label Content="Url:" Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" HorizontalContentAlignment="Right"/>
-                            <TextBox x:Name="ModPackUrl" mah:TextBoxHelper.Watermark="Mod Page Link" Grid.Column="3" Grid.Row="1" Margin="5" TextChanged="UrlBox_TextChanged" TabIndex="0"/>
+                            <TextBox x:Name="ModPackUrl" mah:TextBoxHelper.Watermark="Mod Page Link" Grid.Column="3" Grid.Row="1" Margin="5" TabIndex="0"/>
 
                             <Button x:Name="LoadFromButton" Click="LoadFromButton_Click" Content="{Binding Source={x:Static resx:UIStrings.Load_From}}" Grid.Column="1" Margin="5" Grid.Row="2"></Button>
                         </Grid>

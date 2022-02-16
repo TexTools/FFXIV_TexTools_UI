@@ -35,10 +35,10 @@ namespace FFXIV_TexTools.Views.Models
 
         // Height to expand to when opening the log window.
 
-        public ImportModelView(IItemModel item, XivRace race, Action onComplete, string submeshId = null, bool dataOnly = false)
+        public ImportModelView(IItemModel item, XivRace race, Action onComplete, string submeshId = null, bool dataOnly = false, string lastImportFilePath = null)
         {
             InitializeComponent();
-            _viewModel = new ImportModelViewModel(this, item, race, submeshId, dataOnly, onComplete);
+            _viewModel = new ImportModelViewModel(this, item, race, submeshId, dataOnly, onComplete, lastImportFilePath);
             DataContext = _viewModel;
         }
 
@@ -90,8 +90,9 @@ namespace FFXIV_TexTools.Views.Models
         /// <param name="windowOwner">Window parent, default uses TexTools main window.</param>
         /// <param name="onComplete">Function to be called after import completes, but before user has closed the window. (Task handler returns when window is closed)</param>
         /// <param name="dataOnly">If this should be just load the data to memory and not import the resultant MDL.  Data can be accessed with ImportModelView.GetData()</param>
-        /// <returns></returns>
-        public static async Task<bool> ImportModel(IItemModel item, XivRace race, string submeshId = null, Window windowOwner = null, Action onComplete = null, bool dataOnly = false)
+        /// <param name="lastImportFilePath">The path to the file that was last imported for path auto-fill purposes in case the user repeatedly wants to import the same file</param>
+        /// <returns>A tuple containing a boolean indicating whether or not the import was successful or not and a string containing the path to the imported model file</returns>
+        public static async Task<(bool, string)> ImportModel(IItemModel item, XivRace race, string submeshId = null, Window windowOwner = null, Action onComplete = null, bool dataOnly = false, string lastImportFilePath = null)
         {
 
             if (windowOwner == null)
@@ -100,15 +101,12 @@ namespace FFXIV_TexTools.Views.Models
                 windowOwner = MainWindow.GetMainWindow();
             }
 
-            var imView = new ImportModelView(item, race, onComplete, submeshId, dataOnly) { Owner = windowOwner };
+            var imView = new ImportModelView(item, race, onComplete, submeshId, dataOnly, lastImportFilePath) { Owner = windowOwner };
 
             // This blocks until the dialog closes.
             var result = imView.ShowDialog();
 
-            // Coalesce
-            bool ret = result == true ? true : false;
-
-            return ret;
+            return (result == true, imView.FileNameTextBox.Text);
         }
 
 

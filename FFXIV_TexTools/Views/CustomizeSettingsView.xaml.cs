@@ -14,8 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+using System;
+using System.Globalization;
 using FFXIV_TexTools.ViewModels;
 using System.Windows;
+using System.Windows.Controls;
+using xivModdingFramework.Helpers;
 
 namespace FFXIV_TexTools.Views
 {
@@ -37,6 +41,16 @@ namespace FFXIV_TexTools.Views
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
             Close();
+        }
+    }
+
+    public class UrlValidator : ValidationRule
+    {
+        public override ValidationResult Validate(object value, CultureInfo cultureInfo)
+        {
+            return value != null && !String.IsNullOrWhiteSpace(value.ToString()) && IOUtil.ValidateUrl(value.ToString()) == null
+                ? new ValidationResult(false, "Invalid URL.")
+                : ValidationResult.ValidResult;
         }
     }
 }

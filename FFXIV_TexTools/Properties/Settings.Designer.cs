@@ -466,5 +466,29 @@ namespace FFXIV_TexTools.Properties {
                 this["UseOriginalShapeDataForFace"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string Default_Modpack_Url {
+            get {
+                return ((string)(this["Default_Modpack_Url"]));
+            }
+            set {
+                this["Default_Modpack_Url"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool AutoMaterialFix {
+            get {
+                return ((bool)(this["AutoMaterialFix"]));
+            }
+            set {
+                this["AutoMaterialFix"] = value;
+            }
+        }
     }
 }

@@ -101,6 +101,9 @@ namespace FFXIV_TexTools.ViewModels
 
         private bool _updateNeeded = false;
 
+        // This dictionary stores the paths to the files that were last imported for each race to auto-fill the path in the import dialog
+        private readonly Dictionary<XivRace, string> _lastFileImportPathDictionary = new Dictionary<XivRace, string>();
+
         public ModelViewModel(ModelView modelView)
         {
             ViewPortVM = new Viewport3DViewModel(this);
@@ -1624,18 +1627,29 @@ namespace FFXIV_TexTools.ViewModels
 
             var type = _item.GetPrimaryItemType();
             string submeshId = GetSubmeshId();
-            bool success = await ImportModelView.ImportModel(_item, SelectedRace.XivRace, submeshId, null, () =>
-            {
-                _view.Dispatcher.BeginInvoke((ThreadStart)delegate ()
-                {
-                    // Go ahead and reload the model as soon as the import process is done, even if they haven't closed the window.
-                    ModStatusToggleEnabled = true;
-
-                    GetMeshes();
-                });
-            });
             
+            // Check if the user imported files for this race before to potentially auto-fill the path for them
+            bool pathFound = _lastFileImportPathDictionary.TryGetValue(SelectedRace.XivRace, out string previousImportPath);
 
+            (bool success, string importedFilePath) = await ImportModelView.ImportModel(
+                _item, SelectedRace.XivRace, submeshId, 
+                lastImportFilePath: pathFound ? previousImportPath : null,
+                onComplete: () =>
+                {
+                    _view.Dispatcher.BeginInvoke((ThreadStart)delegate ()
+                    {
+                        // Go ahead and reload the model as soon as the import process is done, even if they haven't closed the window.
+                        ModStatusToggleEnabled = true;
+                        GetMeshes();
+                    });
+                }
+            );
+
+            if (success)
+            {
+                // Add the file path to the dictionary to auto-fill for easy repeated imports
+                _lastFileImportPathDictionary[SelectedRace.XivRace] = importedFilePath;
+            }
         }
         #endregion
 
@@ -1751,9 +1765,7 @@ namespace FFXIV_TexTools.ViewModels
                     FlexibleMessageBox.Show(
                         string.Format(UIMessages.ModToggleErrorMessage, e.Message), UIMessages.ModToggleErrorTitle,
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }                
-
-                return;
+                }
             }
             finally
             {
@@ -2081,6 +2093,7 @@ namespace FFXIV_TexTools.ViewModels
             SelectedNumberIndex = -1;
             _item = null;
             _materialDictionary = null;
+            _lastFileImportPathDictionary.Clear();
 
             NumberVisibility = Visibility.Collapsed;
             PartVisibility = Visibility.Collapsed;
