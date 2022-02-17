@@ -51,6 +51,7 @@ namespace FFXIV_TexTools.Views.Models
                 }
             }
 
+
             SizeMultiplierSource.Add(new KeyValuePair<double, string>(1.0D, "1x"));
             SizeMultiplierSource.Add(new KeyValuePair<double, string>(2.0D, "2x"));
             SizeMultiplierSource.Add(new KeyValuePair<double, string>(3.0D, "3x"));
@@ -61,8 +62,7 @@ namespace FFXIV_TexTools.Views.Models
             SizeMultiplierSource.Add(new KeyValuePair<double, string>(.1D, "0.1x"));
             SizeMultiplierSource.Add(new KeyValuePair<double, string>(.01D, "0.01x"));
             SizeMultiplierSource.Add(new KeyValuePair<double, string>(0.03937007874D, "0.039x (Legacy Fix)"));
-            SizeMultiplierSource.Add(new KeyValuePair<double, string>(0, "Custom"));
-
+            
             MeshNumberBox.ItemsSource = MeshSource;
             MeshNumberBox.DisplayMemberPath = "Value";
             MeshNumberBox.SelectedValuePath = "Key";
@@ -101,9 +101,9 @@ namespace FFXIV_TexTools.Views.Models
 
         private void ImportButton_Click(object sender, RoutedEventArgs e)
         {
-            if (_viewModel.ModelSize != 1.0)
+            if (Convert.ToDouble(ScaleComboBox.SelectedValue) != 1.0)
             {
-                ModelModifiers.ScaleModel(_newModel, _viewModel.ModelSize);
+                ModelModifiers.ScaleModel(_newModel, (double)ScaleComboBox.SelectedValue);
             }
             DialogResult = true;
         }
