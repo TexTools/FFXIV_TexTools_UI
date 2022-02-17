@@ -51,7 +51,7 @@
         <ComboBox x:Name="ScaleComboBox" HorizontalAlignment="Left" Margin="98,10,0,0" Width="138" VerticalContentAlignment="Top" BorderBrush="Gray" Grid.Row="3" VerticalAlignment="Top">
             <ComboBoxItem Content="TEST"/>
         </ComboBox>
-        <TextBox x:Name="ScaleCustomSize" IsEnabled="False" HorizontalAlignment="Left" Margin="242,10,0,0" Grid.Row="3" TextWrapping="NoWrap" MaxLength="5" Text="" VerticalAlignment="Top" Width="40"/>
+        <TextBox x:Name="ScaleCustomSize" IsEnabled="False" HorizontalAlignment="Left" Margin="242,10,0,0" Grid.Row="3" TextWrapping="NoWrap" MaxLength="4" Text="" VerticalAlignment="Top" Width="40"/>
         <Label Margin="0,0,200,40" Grid.Row="3" FontStyle="Italic" FontSize="11" Content="Old Model Size:" HorizontalContentAlignment="Right" Height="24" Grid.Column="1" VerticalAlignment="Center"/>
         <TextBlock x:Name="ScaleWarningBox" Margin="10,45,10,0" Grid.Row="3" FontStyle="Italic" FontSize="12" Text="Warning Text Goes Here" HorizontalAlignment="Center" TextAlignment="Center" Width="554" Height="20" VerticalAlignment="Top" Grid.ColumnSpan="2" Grid.RowSpan="2"/>
         <Label x:Name="OldModelSizeBox" Margin="89,0,3,40" Grid.Row="3" FontStyle="Italic" FontSize="11" Content="11 Meters" Grid.Column="1" Height="24" HorizontalAlignment="Left" VerticalAlignment="Center"/>
