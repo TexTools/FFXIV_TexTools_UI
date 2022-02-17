@@ -54,6 +54,10 @@ namespace FFXIV_TexTools.ViewModels
 
         private XivDependencyRoot _root;
 
+        public bool UseCustomModelScaling { get; private set; }
+        public float ModelSize { get; private set; } = 0; // Handles the Model Scaling Size
+        public bool HasValidCustomScaleValue { get; private set; }
+
         private TTMeshGroup GetGroup()
         {
             if (_view.MeshNumberBox.SelectedValue == null)
@@ -194,22 +198,75 @@ namespace FFXIV_TexTools.ViewModels
             _view.AddAttributeTextBox.KeyDown += AddAttributeTextBox_KeyDown;
 
             _view.ScaleComboBox.SelectionChanged += ScaleComboBox_SelectionChanged;
+            _view.ScaleCustomSize.TextChanged += ScaleCustomSize_TextChanged;
 
             _view.MeshNumberBox.SelectedIndex = 0;
         }
 
         private void ScaleComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
+            // Determines when to enable/disable the Custom Scaling Textbox
+            KeyValuePair<double, string> scaleComboItem = (KeyValuePair<double, string>)_view.ScaleComboBox.SelectedItem;
+            if (scaleComboItem.Value.ToLower() == "custom")
+            {
+                UseCustomModelScaling = true;
+                _view.ScaleCustomSize.IsEnabled = true;
+                _view.ScaleCustomSize.Text = MinAcceptableSize.ToString("0.00");
+            }
+            else
+            {
+                UseCustomModelScaling = false;
+                _view.ScaleCustomSize.IsEnabled = false;
+                _view.ScaleCustomSize.Text = "";
+            }
+
+            UpdateModelSizeWarning();
+        }
+
+        private void ScaleCustomSize_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        {
             UpdateModelSizeWarning();
         }
 
         private void UpdateModelSizeWarning()
         {
-            float size = (float)(NewModelSize * (Convert.ToDouble(_view.ScaleComboBox.SelectedValue)));
+            if (UseCustomModelScaling)
+            {
+                // Set the new ModelSize Custom value otherwise display warning
+                float customScalingValue;
+                if (!String.IsNullOrEmpty(_view.ScaleCustomSize.Text) &&
+                    float.TryParse(_view.ScaleCustomSize.Text, out customScalingValue) &&
+                    (customScalingValue >= 0.01 && customScalingValue <= 100))
+                {
+                    ModelSize = (float)(NewModelSize * (Convert.ToDouble(customScalingValue)));
+                    HasValidCustomScaleValue = true;
+                }
+                else
+                {
+                    ModelSize = 0;
+                    HasValidCustomScaleValue = false;
+                }
+            }
+            else
+            {
+                ModelSize = (float)(NewModelSize * (Convert.ToDouble(_view.ScaleComboBox.SelectedValue)));
+            }
+            
             _view.OldModelSizeBox.Content = OldModelSize.ToString("0.00") + " meters";
-            _view.NewModelSizeBox.Content = size.ToString("0.00") + " meters";
+            _view.NewModelSizeBox.Content = ModelSize.ToString("0.00") + " meters";
 
-            if (size < MinAcceptableSize * OldModelSize)
+            if (UseCustomModelScaling && !HasValidCustomScaleValue)
+            {
+                _view.ScaleWarningBox.Foreground = System.Windows.Media.Brushes.DarkGoldenrod;
+                _view.ScaleWarningBox.FontWeight = FontWeights.Bold;
+                _view.ScaleWarningBox.Text = "Custom Scale must be between 0.01 and 100.";
+
+                _view.NewModelSizeBox.Foreground = System.Windows.Media.Brushes.DarkGoldenrod;
+                _view.NewModelSizeBox.FontWeight = FontWeights.Bold;
+                
+                _view.ImportButton.IsEnabled = false;
+            }
+            else if (ModelSize < MinAcceptableSize * OldModelSize)
             {
                 _view.ScaleWarningBox.Foreground = System.Windows.Media.Brushes.DarkGoldenrod;
                 _view.ScaleWarningBox.FontWeight = FontWeights.Bold;
@@ -217,8 +274,10 @@ namespace FFXIV_TexTools.ViewModels
 
                 _view.NewModelSizeBox.Foreground = System.Windows.Media.Brushes.DarkGoldenrod;
                 _view.NewModelSizeBox.FontWeight = FontWeights.Bold;
+
+                _view.ImportButton.IsEnabled = true;
             }
-            else if (size > MaxAcceptableSize * OldModelSize)
+            else if (ModelSize > MaxAcceptableSize * OldModelSize)
             {
                 _view.ScaleWarningBox.Foreground = System.Windows.Media.Brushes.DarkGoldenrod;
                 _view.ScaleWarningBox.FontWeight = FontWeights.Bold;
@@ -227,6 +286,7 @@ namespace FFXIV_TexTools.ViewModels
                 _view.NewModelSizeBox.Foreground = System.Windows.Media.Brushes.DarkGoldenrod;
                 _view.NewModelSizeBox.FontWeight = FontWeights.Bold;
 
+                _view.ImportButton.IsEnabled = true;
             }
             else
             {
@@ -236,6 +296,8 @@ namespace FFXIV_TexTools.ViewModels
 
                 _view.NewModelSizeBox.Foreground = System.Windows.Media.Brushes.Black;
                 _view.NewModelSizeBox.FontWeight = FontWeights.Normal;
+
+                _view.ImportButton.IsEnabled = true;
             }
         }
 
