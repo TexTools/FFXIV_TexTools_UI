@@ -31,4 +31,4 @@ Bugs can reported on our Github [Issues Page](https://github.com/TexTools/FFXIV_
 - [XIV Mod Archive Website](https://www.xivmodarchive.com/)
 
 
-# TexTools and the TexTools Github Group are in no way affiliated with SQUARE ENIX CO., LTD.
+## TexTools and the TexTools Github Group are in no way affiliated with SQUARE ENIX CO., LTD.
