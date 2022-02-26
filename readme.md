@@ -23,3 +23,12 @@ Bugs can reported on our Github [Issues Page](https://github.com/TexTools/FFXIV_
   - Update to latest MSIAB or standalone RTSS release.
 - Nahimic OSD is known to cause GUI corruption, this is a flaw in Nahimic itself and affects all WPF applications to some degree or other.
   - Nahimic v3 1.8.6 and later is reported to resolve the issue, this will be obtainable from your Mainboard, or audio device vendor in their respective sound software.
+- Microsoft OneDrive based user profiles can cause files saved into the default location to be reverted. 
+  - You can either exclude this folder from the OneDrive interface, or change the Modpacks, Index(Backups) and Saved locations to another foldere from the customise screen)
+
+## Useful Links
+- [Official TexTools Discord](https://discord.gg/ffxivtextools)
+- [XIV Mod Archive Website](https://www.xivmodarchive.com/)
+
+
+# TexTools and the TexTools Github Group are in no way affiliated with SQUARE ENIX CO., LTD.
