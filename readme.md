@@ -11,6 +11,7 @@ Bugs can reported on our Github [Issues Page](https://github.com/TexTools/FFXIV_
 
 
 ## System Requirements
+The installer will attempt to install the most common missing dependencies.
 
 - Windows 7 SP1, Windows 8.1 and Windows 10 19h1 (18362) or higher (32 or 64 bit)
 - All users require [Visual C++ 2019+ x64 and x86 as well as Visual Studio 2012 Update 4 Redistributables](https://docs.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170)
