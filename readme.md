@@ -23,7 +23,7 @@ Bugs can reported on our Github [Issues Page](https://github.com/TexTools/FFXIV_
 
 - The installer will attempt to install the most common missing dependencies.
 - Most mods are intended for the DX11 client, requiring a 64bit Windows install.
-- There are possible issues with Rivatune Statistics Server 7.2.2 and older following a Windows update that has changed Windows D3D runtime files. 
+- There are possible issues with Rivatuner Statistics Server 7.2.2 and older following a Windows update that has changed Windows D3D runtime files. 
   - Update to latest MSIAB or standalone RTSS release.
 - Nahimic OSD is known to cause GUI corruption, this is a flaw in Nahimic itself and affects all WPF applications to some degree or other.
   - Nahimic v3 1.8.6 and later is reported to resolve the issue, this will be obtainable from your Mainboard, or Audio device vendor in their respective sound software.
