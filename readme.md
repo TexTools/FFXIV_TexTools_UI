@@ -1,4 +1,6 @@
-# TexTools is a FFXIV Modding Framework for both mod creation and use/installation. It was originally created by Liinko in 2016, but has since been greatly updated and extended by the TexTools Github Group.
+# FFXIV TexTools
+
+TexTools is a FFXIV Modding Framework for both mod creation and use/installation. It was originally created by Liinko in 2016, but has since been greatly updated and extended by the TexTools Github Group.
 
 You can download TexTool Installer from the Releases Page.
 
