@@ -25,6 +25,8 @@ Bugs can reported on our Github [Issues Page](https://github.com/TexTools/FFXIV_
   - Nahimic v3 1.8.6 and later is reported to resolve the issue, this will be obtainable from your Mainboard, or Audio device vendor in their respective sound software.
 - Microsoft OneDrive based user profiles can cause files saved into the default location to be reverted. 
   - You can either exclude this folder from the OneDrive interface, or change the Modpacks, Index(Backups) and Saved locations to another folder from the customise screen.
+- Regions currently on 5.5x will experience issues using versions of TexTools updated for Global 6.0
+  - Using an older, or custom version of the current client is the only Workaround. 
 
 ## Useful Links
 - [Official TexTools Discord](https://discord.gg/ffxivtextools)
