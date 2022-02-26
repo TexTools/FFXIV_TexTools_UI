@@ -18,6 +18,7 @@ Bugs can reported on our Github [Issues Page](https://github.com/TexTools/FFXIV_
   - Windows 10 19h1 has this included, users on early versions of Windows 10 are advised to update instead of installing the 4.8 installable. 
 - Windows 7 SP1 requires the [Platform Update for Windows 7 (KB2670838)](https://www.microsoft.com/en-au/download/details.aspx?id=36805)
   - Some users will need to uninstall this KB patch and reinstall it due to known/resolved cases where some of the subdependencies were blocked due to outdated/broken display drivers.
+  - The installation of this update will also result in a number of other KB updates to present themselves on Windows update, install these to resolve Font clarity, security and stability issues.
 
 ### Technical Notes
 
