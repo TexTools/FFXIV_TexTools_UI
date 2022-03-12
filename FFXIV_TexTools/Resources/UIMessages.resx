@@ -428,7 +428,7 @@ TexTools will attempt to start over without using backups.</value>
 
 Please locate the following directory.
 
-Standalone: .../Program Files/FINAL FANTASY XIV - A Realm Reborn
+Standalone: .../Program Files (x86)/FINAL FANTASY XIV - A Realm Reborn
 Steam: .../steamapps/common/FINAL FANTASY XIV Online
       and navigate to .../game/sqpack/ffxiv
 
