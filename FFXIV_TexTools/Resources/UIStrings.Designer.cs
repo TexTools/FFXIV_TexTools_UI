@@ -1215,7 +1215,7 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Lumina Output Directory.
+        ///   Looks up a localized string similar to Penumbra Output Directory.
         /// </summary>
         public static string Lumina_Directory {
             get {
@@ -1224,7 +1224,7 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Lumina Output.
+        ///   Looks up a localized string similar to Penumbra Output.
         /// </summary>
         public static string Lumina_Output {
             get {

@@ -301,7 +301,7 @@
     <value>Colors &amp; Skins</value>
   </data>
   <data name="Lumina_Output" xml:space="preserve">
-    <value>Lumina Output</value>
+    <value>Penumbra Output</value>
   </data>
   <data name="Count" xml:space="preserve">
     <value>Count</value>
@@ -364,7 +364,7 @@
     <value>FFXIV Directory</value>
   </data>
   <data name="Lumina_Directory" xml:space="preserve">
-    <value>Lumina Output Directory</value>
+    <value>Penumbra Output Directory</value>
   </data>
   <data name="Filter_By_colon" xml:space="preserve">
     <value>Filter By:</value>
