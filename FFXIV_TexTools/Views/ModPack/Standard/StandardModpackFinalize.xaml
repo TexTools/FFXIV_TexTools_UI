@@ -8,6 +8,7 @@
       xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
       xmlns:input="clr-namespace:System.Windows.Input;assembly=PresentationCore"
       mc:Ignorable="d"
+      resx:Localization.Enabled="True"       
       Title="StandardModpackFinalize" MinWidth="400" MinHeight="200" Height="395.333" Width="574.666">
 
     <Grid>

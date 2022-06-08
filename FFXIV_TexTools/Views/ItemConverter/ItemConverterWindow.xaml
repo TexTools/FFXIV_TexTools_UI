@@ -7,6 +7,8 @@
         xmlns:local="clr-namespace:FFXIV_TexTools.Views.ItemConverter"
         xmlns:Controls="clr-namespace:FFXIV_TexTools.Views.Controls" x:Class="FFXIV_TexTools.Views.ItemConverter.ItemConverterWindow"
         mc:Ignorable="d"
+        xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
+        resx:Localization.Enabled="True"    
         Title="Item Converter" Height="600" Width="400
     " ResizeMode="NoResize">
     <Grid>

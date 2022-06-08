@@ -242,7 +242,7 @@ namespace FFXIV_TexTools.Controls
             RowId = rowNumber;
 
             // Triggered when the user clicks on a Colorset row.
-            DetailsGroupBox.Header = "Material - Colorset Row Editor - Row #" + (rowNumber + 1).ToString();
+            DetailsGroupBox.Header = $"Material - Colorset Row Editor - Row #{(rowNumber + 1)._()}".L();
             RowData = GetRowData(RowId);
 
             var r = (byte)Math.Round(RowData[0][0] * 255);
@@ -439,7 +439,7 @@ namespace FFXIV_TexTools.Controls
                 DyePreviewIdBox.SelectedValue = -1;
 
                 var keys = DyeTemplateFile.GetKeys();
-                DyeTemplateCollection.Add(new KeyValuePair<ushort, string>(0, "Undyable"));
+                DyeTemplateCollection.Add(new KeyValuePair<ushort, string>(0, "Undyable".L()));
                 foreach (var key in keys)
                 {
                     DyeTemplateCollection.Add(new KeyValuePair<ushort, string>(key, key.ToString()));
@@ -457,7 +457,7 @@ namespace FFXIV_TexTools.Controls
                 var dyes = await STM.GetDyeNames();
 
                 PreviewDyeCollection.Clear();
-                PreviewDyeCollection.Add(new KeyValuePair<int, string>(-1, "Undyed"));
+                PreviewDyeCollection.Add(new KeyValuePair<int, string>(-1, "Undyed".L()));
                 for (ushort i = 0; i < 128; i++)
                 {
                     var name = "Dye " + i.ToString();
@@ -480,7 +480,7 @@ namespace FFXIV_TexTools.Controls
 
             } catch(Exception ex)
             {
-                FlexibleMessageBox.Show("Unable to load material into colorset editor.\n\nError: " + ex.Message, "Colorset Editor Error", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning);
+                FlexibleMessageBox.Show("Unable to load material into colorset editor.\n\nError: ".L() + ex.Message, "Colorset Editor Error".L(), System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning);
             }
             _LOADING = false;
         }
@@ -505,7 +505,7 @@ namespace FFXIV_TexTools.Controls
             }
             catch(Exception ex)
             {
-                FlexibleMessageBox.Show("Unable to save Material.\n\nError: " + ex.Message, "Material Save Error", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
+                FlexibleMessageBox.Show("Unable to save Material.\n\nError: ".L() + ex.Message, "Material Save Error".L(), System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
                 return;
             }
             finally

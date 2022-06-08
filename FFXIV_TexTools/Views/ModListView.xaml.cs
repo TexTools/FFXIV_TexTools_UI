@@ -113,7 +113,7 @@ namespace FFXIV_TexTools.Views
             }
             catch(Exception ex)
             {
-                Debug.WriteLine($"Loading Canceled\n\n{ex.Message}");
+                Debug.WriteLine($"Loading Canceled\n\n{ex.Message._()}".L());
             }
 
         }
@@ -143,10 +143,10 @@ namespace FFXIV_TexTools.Views
             var gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
             var modding = new Modding(gameDirectory);
 
-            await LockUi("Changing Mod Status", "Please wait...", this);
+            await LockUi("Changing Mod Status".L(), "Please wait...".L(), this);
             try
             {
-                if ((ModListTreeView.SelectedItem as Category).ParentCategory.Name.Equals("ModPacks"))
+                if ((ModListTreeView.SelectedItem as Category).ParentCategory.Name.Equals("ModPacks".L()))
                 {
                     var selectedItem = (ModListTreeView.SelectedItem as Category);
 
@@ -159,7 +159,7 @@ namespace FFXIV_TexTools.Views
                         }
                         catch (Exception ex)
                         {
-                            FlexibleMessageBox.Show("Unable to fully disable Modpack.\nPlease use Help => Download Index Backups/Help => Start Over\n" + "Error: " + ex.Message, "Mod Disable Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            FlexibleMessageBox.Show("Unable to fully disable Modpack.\nPlease use Help => Download Index Backups/Help => Start Over\nError: ".L() + ex.Message, "Mod Disable Error".L(), MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
                     }
                     else
@@ -171,7 +171,7 @@ namespace FFXIV_TexTools.Views
                         }
                         catch (Exception ex)
                         {
-                            FlexibleMessageBox.Show("Unable to fully enable Modpack.\n\n" + "Error: " + ex.Message, "Mod Enable Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            FlexibleMessageBox.Show("Unable to fully enable Modpack.\n\nError: ".L() + ex.Message, "Mod Enable Error".L(), MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
                     }
 
@@ -192,7 +192,7 @@ namespace FFXIV_TexTools.Views
                             }
                             catch (Exception ex)
                             {
-                                FlexibleMessageBox.Show("Unable to disable mod.\nPlease use Help => Download Index Backups/Help => Start Over\n" + "Error: " + ex.Message, "Mod Disable Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                FlexibleMessageBox.Show("Unable to disable mod.\nPlease use Help => Download Index Backups/Help => Start Over\nError: ".L() + ex.Message, "Mod Disable Error".L(), MessageBoxButtons.OK, MessageBoxIcon.Error);
                             }
                             if (success)
                             {
@@ -212,7 +212,7 @@ namespace FFXIV_TexTools.Views
                             }
                             catch (Exception ex)
                             {
-                                FlexibleMessageBox.Show("Unable to enable mod.\n\n" + "Error: " + ex.Message, "Mod Disable Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                FlexibleMessageBox.Show("Unable to enable mod.\n\nError: ".L() + ex.Message, "Mod Enable Error".L(), MessageBoxButtons.OK, MessageBoxIcon.Error);
                             }
                             if (success)
                             {
@@ -240,10 +240,10 @@ namespace FFXIV_TexTools.Views
             var gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
             var modding = new Modding(gameDirectory);
 
-            await LockUi("Deleting Mod", "Please wait...", this);
+            await LockUi("Deleting Mod".L(), "Please wait...".L(), this);
             try
             {
-                if ((ModListTreeView.SelectedItem as Category).ParentCategory.Name.Equals("ModPacks"))
+                if ((ModListTreeView.SelectedItem as Category).ParentCategory.Name.Equals("ModPacks".L()))
                 {
                     if (FlexibleMessageBox.Show(
                             UIMessages.DeleteModPackMessage,
@@ -269,7 +269,7 @@ namespace FFXIV_TexTools.Views
             }
             catch (Exception Ex)
             {
-                FlexibleMessageBox.Show("Unable to delete Mod or Modpack.\n\nError: " + Ex.Message, "Mod Delete Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                FlexibleMessageBox.Show("Unable to delete Mod or Modpack.\n\nError: ".L() + Ex.Message, "Mod Delete Error".L(), MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally {
                 await UnlockUi(this);

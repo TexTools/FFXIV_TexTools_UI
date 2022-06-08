@@ -340,7 +340,7 @@ namespace FFXIV_TexTools.ViewModels
                     var race = _root == null ? XivRace.All_Races : XivRaces.GetXivRace(_root.Info.PrimaryId);
                     _textureView.SharedMaterialLabel.Visibility = Visibility.Visible;
                     var skinRace = XivRaceTree.GetSkinRace(race);
-                    _textureView.SharedMaterialLabel.Content = "This race uses " + skinRace.GetDisplayName() + "'s body material(s).";
+                    _textureView.SharedMaterialLabel.Content = $"This race uses {skinRace.GetDisplayName()._()}'s body material(s).".L();
                 }
             }
             else
@@ -534,7 +534,7 @@ namespace FFXIV_TexTools.ViewModels
             sharedRace = await GetMaterialSharedRace(race);
             if (sharedRace != XivRace.All_Races && sharedRace != race)
             {
-                _textureView.SharedMaterialLabel.Content = "This race's model uses " + sharedRace.GetDisplayName() + "'s material(s).";
+                _textureView.SharedMaterialLabel.Content = $"This race's model uses {sharedRace.GetDisplayName()._()}'s material(s).".L();
                 _textureView.SharedMaterialLabel.Visibility = Visibility.Visible;
                 MoreOptionsEnabled = true;
                 AddMaterialEnabled = true;
@@ -594,10 +594,10 @@ namespace FFXIV_TexTools.ViewModels
                 if (ext == ".avfx")
                 {
 
-                    _materialComboBoxData.Add(new KeyValuePair<string, string>("VFX: " + mName, material));
+                    _materialComboBoxData.Add(new KeyValuePair<string, string>("VFX: ".L() + mName, material));
                 } else if(ext == ".ui")
                 {
-                    _materialComboBoxData.Add(new KeyValuePair<string, string>("UI Elements", material));
+                    _materialComboBoxData.Add(new KeyValuePair<string, string>("UI Elements".L(), material));
                 }
                 else if(ext == ".mtrl")
                 {
@@ -659,7 +659,7 @@ namespace FFXIV_TexTools.ViewModels
 
                     if (displayedSuffix != mName)
                     {
-                        displayedSuffix = "Material: " + displayedSuffix.ToUpper() + " - " + mSetString + mName;
+                        displayedSuffix = "Material: ".L() + displayedSuffix.ToUpper() + " - " + mSetString + mName;
                     }
 
 
@@ -702,7 +702,7 @@ namespace FFXIV_TexTools.ViewModels
                     var mi = new MapInfo();
                     mi.Path = path.Path;
                     mi.Usage = XivTexType.Vfx;
-                    _mapComboBoxData.Add(new KeyValuePair<string, MapInfo>("VFX - " + Path.GetFileNameWithoutExtension(mi.Path), mi));
+                    _mapComboBoxData.Add(new KeyValuePair<string, MapInfo>("VFX - ".L() + Path.GetFileNameWithoutExtension(mi.Path), mi));
                     items++;
                 }
 
@@ -717,7 +717,7 @@ namespace FFXIV_TexTools.ViewModels
                     var mi = new MapInfo();
                     mi.Path = ttp.Path;
                     mi.Usage = XivTexType.UI;
-                    _mapComboBoxData.Add(new KeyValuePair<string, MapInfo>(ttp.Name, mi));
+                    _mapComboBoxData.Add(new KeyValuePair<string, MapInfo>(ttp.Name.L(), mi));
                     items++;
                 }
             }
@@ -746,7 +746,7 @@ namespace FFXIV_TexTools.ViewModels
                 }
                 catch (Exception ex)
                 {
-                    FlexibleMessageBox.Show("An error occured while loading the material:\n" + ex.Message, "Item Load Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    FlexibleMessageBox.Show("An error occured while loading the material:\n".L() + ex.Message, "Item Load Error".L(), MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     OnLoadingComplete();
                     return;
                 }
@@ -763,7 +763,7 @@ namespace FFXIV_TexTools.ViewModels
 
                 foreach (var map in maps)
                 {
-                    _mapComboBoxData.Add(new KeyValuePair<string, MapInfo>(map.Usage.ToString() + " - " + Path.GetFileNameWithoutExtension(map.Path), map));
+                    _mapComboBoxData.Add(new KeyValuePair<string, MapInfo>(map.Usage.ToString().L() + " - " + Path.GetFileNameWithoutExtension(map.Path), map));
                 }
 
 
@@ -941,7 +941,7 @@ namespace FFXIV_TexTools.ViewModels
         }
         public void ClearImage()
         {
-            PathString = "No Texture Selected";
+            PathString = "No Texture Selected".L();
             TextureFormat = "N/A";
             TextureDimensions = "0x0";
             MipMapInfo = "No";
@@ -994,7 +994,7 @@ namespace FFXIV_TexTools.ViewModels
 
                 _textureView.SharedVariantLabel.Visibility = Visibility.Visible;
                 _textureView.SharedTextureLabel.Visibility = Visibility.Collapsed;
-                _textureView.SharedVariantLabel.Content = "Loading usage data...";
+                _textureView.SharedVariantLabel.Content = "Loading usage data...".L();
 
                 List<string> parents = new List<string>();
                 List<XivImc> entries = null;
@@ -1083,7 +1083,7 @@ namespace FFXIV_TexTools.ViewModels
 
                 if (SelectedMap != null && SelectedMap.Path == path)
                 {
-                    _textureView.SharedVariantLabel.Content = $"Used by {variantSum}/{vCount} Variants";
+                    _textureView.SharedVariantLabel.Content = $"Used by {variantSum._()}/{vCount._()} Variants".L();
                     _textureView.SharedVariantLabel.Visibility = Visibility.Visible;
                 }
 
@@ -1094,7 +1094,7 @@ namespace FFXIV_TexTools.ViewModels
                     var count = differentFiles.Count - 1;
                     if (SelectedMap != null && SelectedMap.Path == path)
                     {
-                        _textureView.SharedTextureLabel.Content = "Used by " + count + " Other Materials";
+                        _textureView.SharedTextureLabel.Content = $"Used by {count._()} Other Materials".L();
                         _textureView.SharedTextureLabel.Visibility = Visibility.Visible;
                     }
                 }
@@ -1222,7 +1222,7 @@ namespace FFXIV_TexTools.ViewModels
                 }
             } catch (Exception ex)
             {
-                FlexibleMessageBox.Show("Unable to load texture file:\n\nError:" + ex.Message, "Texture File Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                FlexibleMessageBox.Show("Unable to load texture file:\n\nError:".L() + ex.Message, "Texture File Error".L(), MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
 
             OnLoadingComplete();
@@ -1416,7 +1416,7 @@ namespace FFXIV_TexTools.ViewModels
                 }
                 else
                 {
-                    throw new Exception($"Texture format not supported: {format}");
+                    throw new Exception($"Texture format not supported: {format._()}".L());
                 }
 
                 Image img;
@@ -1510,7 +1510,7 @@ namespace FFXIV_TexTools.ViewModels
             if (path == null)
                 return;
 
-            var openFileDialog = new OpenFileDialog { InitialDirectory = path.FullName, Filter = "Texture Files(*.DDS;*.BMP;*.PNG) |*.DDS;*.BMP;*.PNG" };
+            var openFileDialog = new OpenFileDialog { InitialDirectory = path.FullName, Filter = "Texture Files(*.DDS;*.BMP;*.PNG) |*.DDS;*.BMP;*.PNG".L() };
 
             if (openFileDialog.ShowDialog() != DialogResult.OK)
                 return;
@@ -1579,7 +1579,7 @@ namespace FFXIV_TexTools.ViewModels
             }
             else
             {
-                throw new Exception("Unsupported item type");
+                throw new Exception("Unsupported item type".L());
             }
 
             return path;
@@ -2048,13 +2048,13 @@ namespace FFXIV_TexTools.ViewModels
         /// <summary>
         /// The watermark for the part combobox
         /// </summary>
-        public string PartWatermark
+        public string MaterialWatermark
         {
             get => _partWatermark;
             set
             {
                 _partWatermark = value;
-                NotifyPropertyChanged(nameof(PartWatermark));
+                NotifyPropertyChanged(nameof(MaterialWatermark));
             }
         }
 
@@ -2306,7 +2306,7 @@ namespace FFXIV_TexTools.ViewModels
             if(SelectedMap == null)
             {
                 // We shouldn't really ever get here, but if we do, it's definitely f*d.
-                TextureFormat = "ERROR: FILE DOES NOT EXIST/HAS NO INDEX ENTRY -- PLEASE RE-ENABLE MODDED TEXTURE, OR DISABLE MODDED MATERIAL REFERENCING IT.";
+                TextureFormat = "ERROR: FILE DOES NOT EXIST/HAS NO INDEX ENTRY -- PLEASE RE-ENABLE MODDED TEXTURE, OR DISABLE MODDED MATERIAL REFERENCING IT.".L();
                 return false;
             }
 

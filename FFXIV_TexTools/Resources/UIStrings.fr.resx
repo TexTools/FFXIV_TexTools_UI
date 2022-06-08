@@ -881,4 +881,955 @@ Pour activer cette option, veuillez d'abord importer une Texture pour l'objet s√
   <data name="XIV_Mod_Archive" xml:space="preserve">
     <value>XIV Mod Archive</value>
   </data>
+    <data name="..." xml:space="preserve">
+    <value>...</value >
+  </data >
+  <data name="A" xml:space="preserve">
+    <value>A</value >
+  </data >
+  <data name="B" xml:space="preserve">
+    <value>B</value >
+  </data >
+  <data name="By Category" xml:space="preserve">
+    <value>By Category</value >
+  </data >
+  <data name="By Set" xml:space="preserve">
+    <value>By Set</value >
+  </data >
+  <data name="DDS" xml:space="preserve">
+    <value>DDS</value >
+  </data >
+  <data name="DX: 9" xml:space="preserve">
+    <value>DX: 9</value >
+  </data >
+  <data name="G" xml:space="preserve">
+    <value>G</value >
+  </data >
+  <data name="HD Texture" xml:space="preserve">
+    <value>HD Texture</value >
+  </data >
+  <data name="Metadata" xml:space="preserve">
+    <value>Metadata</value >
+  </data >
+  <data name="r" xml:space="preserve">
+    <value>r</value >
+  </data >
+  <data name="Tex Path" xml:space="preserve">
+    <value>Tex Path</value >
+  </data >
+  <data name="Maintained and Updated by" xml:space="preserve">
+    <value>Maintained and Updated by</value >
+  </data >  
+  <data name="Copy From:" xml:space="preserve">
+    <value>Copy From:</value>
+  </data>
+  <data name="A" xml:space="preserve">
+    <value>A</value >
+  </data >
+  <data name="B" xml:space="preserve">
+    <value>B</value >
+  </data >
+  <data name="By Category" xml:space="preserve">
+    <value>By Category</value >
+  </data >
+  <data name="By Set" xml:space="preserve">
+    <value>By Set</value >
+  </data >
+  <data name="DDS" xml:space="preserve">
+    <value>DDS</value >
+  </data >
+  <data name="DX: 9" xml:space="preserve">
+    <value>DX: 9</value >
+  </data >
+  <data name="G" xml:space="preserve">
+    <value>G</value >
+  </data >
+  <data name="HD Texture" xml:space="preserve">
+    <value>HD Texture</value >
+  </data >
+  <data name="Metadata" xml:space="preserve">
+    <value>Metadata</value >
+  </data >
+  <data name="r" xml:space="preserve">
+    <value>r</value >
+  </data >
+  <data name="Tex Path" xml:space="preserve">
+    <value>Tex Path</value >
+  </data >
+  <data name="Maintained and Updated by" xml:space="preserve">
+    <value>Maintained and Updated by</value >
+  </data >  
+  <data name="Copy From:" xml:space="preserve">
+    <value>Copy From:</value>
+  </data>
+  <data name="B" xml:space="preserve">
+    <value>B</value >
+  </data >
+  <data name="By Category" xml:space="preserve">
+    <value>By Category</value >
+  </data >
+  <data name="By Set" xml:space="preserve">
+    <value>By Set</value >
+  </data >
+  <data name="DDS" xml:space="preserve">
+    <value>DDS</value >
+  </data >
+  <data name="DX: 9" xml:space="preserve">
+    <value>DX: 9</value >
+  </data >
+  <data name="G" xml:space="preserve">
+    <value>G</value >
+  </data >
+  <data name="HD Texture" xml:space="preserve">
+    <value>HD Texture</value >
+  </data >
+  <data name="Metadata" xml:space="preserve">
+    <value>Metadata</value >
+  </data >
+  <data name="r" xml:space="preserve">
+    <value>r</value >
+  </data >
+  <data name="Tex Path" xml:space="preserve">
+    <value>Tex Path</value >
+  </data >
+  <data name="Maintained and Updated by" xml:space="preserve">
+    <value>Maintained and Updated by</value >
+  </data >  
+  <data name="Copy From:" xml:space="preserve">
+    <value>Copy From:</value>
+  </data>
+  <data name="By Category" xml:space="preserve">
+    <value>By Category</value >
+  </data >
+  <data name="By Set" xml:space="preserve">
+    <value>By Set</value >
+  </data >
+  <data name="DDS" xml:space="preserve">
+    <value>DDS</value >
+  </data >
+  <data name="DX: 9" xml:space="preserve">
+    <value>DX: 9</value >
+  </data >
+  <data name="G" xml:space="preserve">
+    <value>G</value >
+  </data >
+  <data name="HD Texture" xml:space="preserve">
+    <value>HD Texture</value >
+  </data >
+  <data name="Metadata" xml:space="preserve">
+    <value>Metadata</value >
+  </data >
+  <data name="r" xml:space="preserve">
+    <value>r</value >
+  </data >
+  <data name="Tex Path" xml:space="preserve">
+    <value>Tex Path</value >
+  </data >
+  <data name="Maintained and Updated by" xml:space="preserve">
+    <value>Maintained and Updated by</value >
+  </data >  
+  <data name="Copy From:" xml:space="preserve">
+    <value>Copy From:</value>
+  </data>
+  <data name="By Set" xml:space="preserve">
+    <value>By Set</value >
+  </data >
+  <data name="DDS" xml:space="preserve">
+    <value>DDS</value >
+  </data >
+  <data name="DX: 9" xml:space="preserve">
+    <value>DX: 9</value >
+  </data >
+  <data name="G" xml:space="preserve">
+    <value>G</value >
+  </data >
+  <data name="HD Texture" xml:space="preserve">
+    <value>HD Texture</value >
+  </data >
+  <data name="Metadata" xml:space="preserve">
+    <value>Metadata</value >
+  </data >
+  <data name="r" xml:space="preserve">
+    <value>r</value >
+  </data >
+  <data name="Tex Path" xml:space="preserve">
+    <value>Tex Path</value >
+  </data >
+  <data name="Maintained and Updated by" xml:space="preserve">
+    <value>Maintained and Updated by</value >
+  </data >  
+  <data name="Copy From:" xml:space="preserve">
+    <value>Copy From:</value>
+  </data>
+  <data name="DDS" xml:space="preserve">
+    <value>DDS</value >
+  </data >
+  <data name="DX: 9" xml:space="preserve">
+    <value>DX: 9</value >
+  </data >
+  <data name="G" xml:space="preserve">
+    <value>G</value >
+  </data >
+  <data name="HD Texture" xml:space="preserve">
+    <value>HD Texture</value >
+  </data >
+  <data name="Metadata" xml:space="preserve">
+    <value>Metadata</value >
+  </data >
+  <data name="r" xml:space="preserve">
+    <value>r</value >
+  </data >
+  <data name="Tex Path" xml:space="preserve">
+    <value>Tex Path</value >
+  </data >
+  <data name="Maintained and Updated by" xml:space="preserve">
+    <value>Maintained and Updated by</value >
+  </data >  
+  <data name="Copy From:" xml:space="preserve">
+    <value>Copy From:</value>
+  </data>
+  <data name="DX: 9" xml:space="preserve">
+    <value>DX: 9</value >
+  </data >
+  <data name="G" xml:space="preserve">
+    <value>G</value >
+  </data >
+  <data name="HD Texture" xml:space="preserve">
+    <value>HD Texture</value >
+  </data >
+  <data name="Metadata" xml:space="preserve">
+    <value>Metadata</value >
+  </data >
+  <data name="r" xml:space="preserve">
+    <value>r</value >
+  </data >
+  <data name="Tex Path" xml:space="preserve">
+    <value>Tex Path</value >
+  </data >
+  <data name="Maintained and Updated by" xml:space="preserve">
+    <value>Maintained and Updated by</value >
+  </data >  
+  <data name="Copy From:" xml:space="preserve">
+    <value>Copy From:</value>
+  </data>
+  <data name="G" xml:space="preserve">
+    <value>G</value >
+  </data >
+  <data name="HD Texture" xml:space="preserve">
+    <value>HD Texture</value >
+  </data >
+  <data name="Metadata" xml:space="preserve">
+    <value>Metadata</value >
+  </data >
+  <data name="r" xml:space="preserve">
+    <value>r</value >
+  </data >
+  <data name="Tex Path" xml:space="preserve">
+    <value>Tex Path</value >
+  </data >
+  <data name="Maintained and Updated by" xml:space="preserve">
+    <value>Maintained and Updated by</value >
+  </data >  
+  <data name="Copy From:" xml:space="preserve">
+    <value>Copy From:</value>
+  </data>
+  <data name="HD Texture" xml:space="preserve">
+    <value>HD Texture</value >
+  </data >
+  <data name="Metadata" xml:space="preserve">
+    <value>Metadata</value >
+  </data >
+  <data name="r" xml:space="preserve">
+    <value>r</value >
+  </data >
+  <data name="Tex Path" xml:space="preserve">
+    <value>Tex Path</value >
+  </data >
+  <data name="Maintained and Updated by" xml:space="preserve">
+    <value>Maintained and Updated by</value >
+  </data >  
+  <data name="Copy From:" xml:space="preserve">
+    <value>Copy From:</value>
+  </data>
+  <data name="Metadata" xml:space="preserve">
+    <value>Metadata</value >
+  </data >
+  <data name="r" xml:space="preserve">
+    <value>r</value >
+  </data >
+  <data name="Tex Path" xml:space="preserve">
+    <value>Tex Path</value >
+  </data >
+  <data name="Maintained and Updated by" xml:space="preserve">
+    <value>Maintained and Updated by</value >
+  </data >  
+  <data name="Copy From:" xml:space="preserve">
+    <value>Copy From:</value>
+  </data>
+  <data name="r" xml:space="preserve">
+    <value>r</value >
+  </data >
+  <data name="Tex Path" xml:space="preserve">
+    <value>Tex Path</value >
+  </data >
+  <data name="Maintained and Updated by" xml:space="preserve">
+    <value>Maintained and Updated by</value >
+  </data >  
+  <data name="Copy From:" xml:space="preserve">
+    <value>Copy From:</value>
+  </data>
+  <data name="Tex Path" xml:space="preserve">
+    <value>Tex Path</value >
+  </data >
+  <data name="Maintained and Updated by" xml:space="preserve">
+    <value>Maintained and Updated by</value >
+  </data >  
+  <data name="Copy From:" xml:space="preserve">
+    <value>Copy From:</value>
+  </data>
+  <data name="Maintained and Updated by" xml:space="preserve">
+    <value>Maintained and Updated by</value >
+  </data >  
+  <data name="Copy From:" xml:space="preserve">
+    <value>Copy From:</value>
+  </data>
+  <data name="Copy From:" xml:space="preserve">
+    <value>Copy From:</value>
+  </data>
+  <data name="Copy To:" xml:space="preserve">
+    <value>Copy To:</value>
+  </data>
+  <data name="Copy File" xml:space="preserve">
+    <value>Copy File</value>
+  </data>
+  <data name="Copy Model" xml:space="preserve">
+    <value>Copy Model</value>
+  </data>
+  <data name="Default Modpack URL" xml:space="preserve">
+    <value>Default Modpack URL</value>
+  </data>
+  <data name="Synchronize View Tabs" xml:space="preserve">
+    <value>Synchronize View Tabs</value>
+  </data>
+  <data name="Remember Race Selection" xml:space="preserve">
+    <value>Remember Race Selection</value>
+  </data>
+  <data name="Default Race" xml:space="preserve">
+    <value>Default Race</value>
+  </data>
+  <data name="External Model Viewer Type" xml:space="preserve">
+    <value>External Model Viewer Type</value>
+  </data>
+  <data name="Export Complete Skeletons" xml:space="preserve">
+    <value>Export Complete Skeletons</value>
+  </data>
+  <data name="TexTools Version" xml:space="preserve">
+    <value>TexTools Version</value>
+  </data>
+  <data name="Body Material Auto-Assign" xml:space="preserve">
+    <value>Body Material Auto-Assign</value>
+  </data>
+  <data name="/FILE PATH/" xml:space="preserve">
+    <value>/FILE PATH/</value>
+  </data>
+  <data name="File Name:" xml:space="preserve">
+    <value>File Name:</value>
+  </data>
+  <data name="FILENAME" xml:space="preserve">
+    <value>FILENAME</value>
+  </data>
+  <data name="First Root Name:" xml:space="preserve">
+    <value>First Root Name:</value>
+  </data>
+  <data name="Model Level Item:" xml:space="preserve">
+    <value>Model Level Item:</value>
+  </data>
+  <data name="MODEL_ITEM_NAME" xml:space="preserve">
+    <value>MODEL_ITEM_NAME</value>
+  </data>
+  <data name="Material Level Item:" xml:space="preserve">
+    <value>Material Level Item:</value>
+  </data>
+  <data name="MATERIAL_ITEM_NAME" xml:space="preserve">
+    <value>MATERIAL_ITEM_NAME</value>
+  </data>
+  <data name="Warning Text" xml:space="preserve">
+    <value>Warning Text</value>
+  </data>
+  <data name="Affected Items" xml:space="preserve">
+    <value>Affected Items</value>
+  </data>
+  <data name="Parent Files" xml:space="preserve">
+    <value>Parent Files</value>
+  </data>
+  <data name="Sibling Files" xml:space="preserve">
+    <value>Sibling Files</value>
+  </data>
+  <data name="Child Files" xml:space="preserve">
+    <value>Child Files</value>
+  </data>
+  <data name="Extract Raw File" xml:space="preserve">
+    <value>Extract Raw File</value>
+  </data>
+  <data name="Copy Raw File" xml:space="preserve">
+    <value>Copy Raw File</value>
+  </data>
+  <data name="Copy Model File" xml:space="preserve">
+    <value>Copy Model File</value>
+  </data>
+  <data name="File Info" xml:space="preserve">
+    <value>File Info</value>
+  </data>
+  <data name="File Path:" xml:space="preserve">
+    <value>File Path:</value>
+  </data>
+  <data name="Extract File" xml:space="preserve">
+    <value>Extract File</value>
+  </data>
+  <data name="Import Raw File" xml:space="preserve">
+    <value>Import Raw File</value>
+  </data>
+  <data name="Destination Path:" xml:space="preserve">
+    <value>Destination Path:</value>
+  </data>
+  <data name="File is Decompressed Type 2 Data" xml:space="preserve">
+    <value>File is Decompressed Type 2 Data</value>
+  </data>
+  <data name="Import File" xml:space="preserve">
+    <value>Import File</value>
+  </data>
+  <data name="Copy Row" xml:space="preserve">
+    <value>Copy Row</value>
+  </data>
+  <data name="Paste Row" xml:space="preserve">
+    <value>Paste Row</value>
+  </data>
+  <data name="Material - Colorset Row Settings - Row ~" xml:space="preserve">
+    <value>Material - Colorset Row Settings - Row ~</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="Diffuse Color:" xml:space="preserve">
+    <value>Diffuse Color:</value>
+  </data>
+  <data name="Specular Power:" xml:space="preserve">
+    <value>Specular Power:</value>
+  </data>
+  <data name="Edit Raw" xml:space="preserve">
+    <value>Edit Raw</value>
+  </data>
+  <data name="Specular Color:" xml:space="preserve">
+    <value>Specular Color:</value>
+  </data>
+  <data name="Gloss:" xml:space="preserve">
+    <value>Gloss:</value>
+  </data>
+  <data name="Emissive Color:" xml:space="preserve">
+    <value>Emissive Color:</value>
+  </data>
+  <data name="Tile Material:" xml:space="preserve">
+    <value>Tile Material:</value>
+  </data>
+  <data name="Tile Count X:" xml:space="preserve">
+    <value>Tile Count X:</value>
+  </data>
+  <data name="Tile Count Y:" xml:space="preserve">
+    <value>Tile Count Y:</value>
+  </data>
+  <data name="Tile Skew X:" xml:space="preserve">
+    <value>Tile Skew X:</value>
+  </data>
+  <data name="Tile Skew Y:" xml:space="preserve">
+    <value>Tile Skew Y:</value>
+  </data>
+  <data name="Dye Settings" xml:space="preserve">
+    <value>Dye Settings</value>
+  </data>
+  <data name="Dye Template:" xml:space="preserve">
+    <value>Dye Template:</value>
+  </data>
+  <data name="Apply to Diffuse" xml:space="preserve">
+    <value>Apply to Diffuse</value>
+  </data>
+  <data name="Apply to Specular" xml:space="preserve">
+    <value>Apply to Specular</value>
+  </data>
+  <data name="Apply to Emissive" xml:space="preserve">
+    <value>Apply to Emissive</value>
+  </data>
+  <data name="Apply to Gloss" xml:space="preserve">
+    <value>Apply to Gloss</value>
+  </data>
+  <data name="Apply to Specular Power" xml:space="preserve">
+    <value>Apply to Specular Power</value>
+  </data>
+  <data name="Preview Dye #" xml:space="preserve">
+    <value>Preview Dye #</value>
+  </data>
+  <data name="Copy Dye Values to Row" xml:space="preserve">
+    <value>Copy Dye Values to Row</value>
+  </data>
+  <data name="RowNumber" xml:space="preserve">
+    <value>RowNumber</value>
+  </data>
+  <data name="Set: e0123" xml:space="preserve">
+    <value>Set: e0123</value>
+  </data>
+  <data name="Slot: Head(met)" xml:space="preserve">
+    <value>Slot: Head(met)</value>
+  </data>
+  <data name="Variant: 5" xml:space="preserve">
+    <value>Variant: 5</value>
+  </data>
+  <data name="Material Set: 3" xml:space="preserve">
+    <value>Material Set: 3</value>
+  </data>
+  <data name="Race Information" xml:space="preserve">
+    <value>Race Information</value>
+  </data>
+  <data name="Model Used" xml:space="preserve">
+    <value>Model Used</value>
+  </data>
+  <data name="Material Used" xml:space="preserve">
+    <value>Material Used</value>
+  </data>
+  <data name="Items in Variant (Identical Items)" xml:space="preserve">
+    <value>Items in Variant (Identical Items)</value>
+  </data>
+  <data name="Items with same Material Set" xml:space="preserve">
+    <value>Items with same Material Set</value>
+  </data>
+  <data name="Items with same Model" xml:space="preserve">
+    <value>Items with same Model</value>
+  </data>
+  <data name="Select Item" xml:space="preserve">
+    <value>Select Item</value>
+  </data>
+  <data name="Item Selection" xml:space="preserve">
+    <value>Item Selection</value>
+  </data>
+  <data name="Raw Value Editor" xml:space="preserve">
+    <value>Raw Value Editor</value>
+  </data>
+  <data name="Red" xml:space="preserve">
+    <value>Red</value>
+  </data>
+  <data name="Green" xml:space="preserve">
+    <value>Green</value>
+  </data>
+  <data name="Blue" xml:space="preserve">
+    <value>Blue</value>
+  </data>
+  <data name="Item Converter" xml:space="preserve">
+    <value>Item Converter</value>
+  </data>
+  <data name="Select Source Item" xml:space="preserve">
+    <value>Select Source Item</value>
+  </data>
+  <data name="Source:" xml:space="preserve">
+    <value>Source:</value>
+  </data>
+  <data name="Destination:" xml:space="preserve">
+    <value>Destination:</value>
+  </data>
+  <data name="Source Variants:" xml:space="preserve">
+    <value>Source Variants:</value>
+  </data>
+  <data name="Destination Variants:" xml:space="preserve">
+    <value>Destination Variants:</value>
+  </data>
+  <data name="Make all destination variants identical" xml:space="preserve">
+    <value>Make all destination variants identical</value>
+  </data>
+  <data name="Create Modpack from Affected Items" xml:space="preserve">
+    <value>Create Modpack from Affected Items</value>
+  </data>
+  <data name="Affected Files" xml:space="preserve">
+    <value>Affected Files</value>
+  </data>
+  <data name="Simple" xml:space="preserve">
+    <value>Simple</value>
+  </data>
+  <data name="Preset:" xml:space="preserve">
+    <value>Preset:</value>
+  </data>
+  <data name="Copy Visibility Settings" xml:space="preserve">
+    <value>Copy Visibility Settings</value>
+  </data>
+  <data name="Paste Visibility Settings" xml:space="preserve">
+    <value>Paste Visibility Settings</value>
+  </data>
+  <data name="Advanced" xml:space="preserve">
+    <value>Advanced</value>
+  </data>
+  <data name="IMC Variant:" xml:space="preserve">
+    <value>IMC Variant:</value>
+  </data>
+  <data name="[3] Some Cool Item Name" xml:space="preserve">
+    <value>[3] Some Cool Item Name</value>
+  </data>
+  <data name="Material Set:" xml:space="preserve">
+    <value>Material Set:</value>
+  </data>
+  <data name="VFX ID:" xml:space="preserve">
+    <value>VFX ID:</value>
+  </data>
+  <data name="SFX ID:" xml:space="preserve">
+    <value>SFX ID:</value>
+  </data>
+  <data name="Decal ID:" xml:space="preserve">
+    <value>Decal ID:</value>
+  </data>
+  <data name="Anim ID:" xml:space="preserve">
+    <value>Anim ID:</value>
+  </data>
+  <data name="Visible Variant Parts" xml:space="preserve">
+    <value>Visible Variant Parts</value>
+  </data>
+  <data name="Apply to All Variants" xml:space="preserve">
+    <value>Apply to All Variants</value>
+  </data>
+  <data name="Show Paths" xml:space="preserve">
+    <value>Show Paths</value>
+  </data>
+  <data name="Set:" xml:space="preserve">
+    <value>Set:</value>
+  </data>
+  <data name="Slot:" xml:space="preserve">
+    <value>Slot:</value>
+  </data>
+  <data name="Hands(glv)" xml:space="preserve">
+    <value>Hands(glv)</value>
+  </data>
+  <data name="[7] Bogarter's Gloves of Doing Cool Things" xml:space="preserve">
+    <value>[7] Bogarter's Gloves of Doing Cool Things</value>
+  </data>
+  <data name="RaceGenderScalingEditor" xml:space="preserve">
+    <value>RaceGenderScalingEditor</value>
+  </data>
+  <data name="Racial Settings: Miqo'te - Seeker - Female" xml:space="preserve">
+    <value>Racial Settings: Miqo'te - Seeker - Female</value>
+  </data>
+  <data name="Minimum Height Multiplier:" xml:space="preserve">
+    <value>Minimum Height Multiplier:</value>
+  </data>
+  <data name="Maximum Height Multiplier:" xml:space="preserve">
+    <value>Maximum Height Multiplier:</value>
+  </data>
+  <data name="Minimum Tail/Ear Multiplier:" xml:space="preserve">
+    <value>Minimum Tail/Ear Multiplier:</value>
+  </data>
+  <data name="Maximum Tail/Ear Multiplier:" xml:space="preserve">
+    <value>Maximum Tail/Ear Multiplier:</value>
+  </data>
+  <data name="Minimum Bust X Multiplier:" xml:space="preserve">
+    <value>Minimum Bust X Multiplier:</value>
+  </data>
+  <data name="Maximum Bust X Multiplier:" xml:space="preserve">
+    <value>Maximum Bust X Multiplier:</value>
+  </data>
+  <data name="Minimum Bust Y Multiplier:" xml:space="preserve">
+    <value>Minimum Bust Y Multiplier:</value>
+  </data>
+  <data name="Maximum Bust Y Multiplier:" xml:space="preserve">
+    <value>Maximum Bust Y Multiplier:</value>
+  </data>
+  <data name="Minimum Bust Z Multiplier:" xml:space="preserve">
+    <value>Minimum Bust Z Multiplier:</value>
+  </data>
+  <data name="Maximum Bust Z Multiplier:" xml:space="preserve">
+    <value>Maximum Bust Z Multiplier:</value>
+  </data>
+  <data name="Restore Defaults" xml:space="preserve">
+    <value>Restore Defaults</value>
+  </data>
+  <data name="Racial Settings Editor" xml:space="preserve">
+    <value>Racial Settings Editor</value>
+  </data>
+  <data name="Select a Race/Gender to customize:." xml:space="preserve">
+    <value>Select a Race/Gender to customize:.</value>
+  </data>
+  <data name="Extra Skeleton Settings" xml:space="preserve">
+    <value>Extra Skeleton Settings</value>
+  </data>
+  <data name="Each race must have an extra skeleton set in order to have /visor settings work in-game." xml:space="preserve">
+    <value>Each race must have an extra skeleton set in order to have /visor settings work in-game.</value>
+  </data>
+  <data name="Animation Type:" xml:space="preserve">
+    <value>Animation Type:</value>
+  </data>
+  <data name="Rotation A:" xml:space="preserve">
+    <value>Rotation A:</value>
+  </data>
+  <data name="Rotation of the j_ex_met_va bone in degrees." xml:space="preserve">
+    <value>Rotation of the j_ex_met_va bone in degrees.</value>
+  </data>
+  <data name="Rotation of the j_ex_met_vb bone in degrees." xml:space="preserve">
+    <value>Rotation of the j_ex_met_vb bone in degrees.</value>
+  </data>
+  <data name="Rotation B:" xml:space="preserve">
+    <value>Rotation B:</value>
+  </data>
+  <data name="Rotation C:" xml:space="preserve">
+    <value>Rotation C:</value>
+  </data>
+  <data name="Unknown High:" xml:space="preserve">
+    <value>Unknown High:</value>
+  </data>
+  <data name="Unknown Low:" xml:space="preserve">
+    <value>Unknown Low:</value>
+  </data>
+  <data name="Rotation of the j_ex_met_vc bone in degrees." xml:space="preserve">
+    <value>Rotation of the j_ex_met_vc bone in degrees.</value>
+  </data>
+  <data name="Racial Models" xml:space="preserve">
+    <value>Racial Models</value>
+  </data>
+  <data name="Visibility Settings" xml:space="preserve">
+    <value>Visibility Settings</value>
+  </data>
+  <data name="Variant Settings" xml:space="preserve">
+    <value>Variant Settings</value>
+  </data>
+  <data name="Apply Deformation Shapes" xml:space="preserve">
+    <value>Apply Deformation Shapes</value>
+  </data>
+  <data name="Apply Shapes" xml:space="preserve">
+    <value>Apply Shapes</value>
+  </data>
+  <data name="Export Full Model" xml:space="preserve">
+    <value>Export Full Model</value>
+  </data>
+  <data name="Full Model Viewer" xml:space="preserve">
+    <value>Full Model Viewer</value>
+  </data>
+  <data name="Colorset Row Highlight Selection" xml:space="preserve">
+    <value>Colorset Row Highlight Selection</value>
+  </data>
+  <data name="Highlighted Row:" xml:space="preserve">
+    <value>Highlighted Row:</value>
+  </data>
+  <data name="Apply" xml:space="preserve">
+    <value>Apply</value>
+  </data>
+  <data name="Model Editor" xml:space="preserve">
+    <value>Model Editor</value>
+  </data>
+  <data name="Group:" xml:space="preserve">
+    <value>Group:</value>
+  </data>
+  <data name="Part:" xml:space="preserve">
+    <value>Part:</value>
+  </data>
+  <data name="Remove Shape" xml:space="preserve">
+    <value>Remove Shape</value>
+  </data>
+  <data name="Remove Attribute" xml:space="preserve">
+    <value>Remove Attribute</value>
+  </data>
+  <data name="Model Scale:" xml:space="preserve">
+    <value>Model Scale:</value>
+  </data>
+  <data name="Old Model Size:" xml:space="preserve">
+    <value>Old Model Size:</value>
+  </data>
+  <data name="Warning Text Goes Here" xml:space="preserve">
+    <value>Warning Text Goes Here</value>
+  </data>
+  <data name="11 Meters" xml:space="preserve">
+    <value>11 Meters</value>
+  </data>
+  <data name="New Model Size:" xml:space="preserve">
+    <value>New Model Size:</value>
+  </data>
+  <data name="Model Importer" xml:space="preserve">
+    <value>Model Importer</value>
+  </data>
+  <data name="Use Existing" xml:space="preserve">
+    <value>Use Existing</value>
+  </data>
+  <data name="Use Original Shape Data" xml:space="preserve">
+    <value>Use Original Shape Data</value>
+  </data>
+  <data name="Clear UV2" xml:space="preserve">
+    <value>Clear UV2</value>
+  </data>
+  <data name="Clear Vertex Color" xml:space="preserve">
+    <value>Clear Vertex Color</value>
+  </data>
+  <data name="Force UV1 to [1,-1]" xml:space="preserve">
+    <value>Force UV1 to [1,-1]</value>
+  </data>
+  <data name="Clone UV1 to UV2" xml:space="preserve">
+    <value>Clone UV1 to UV2</value>
+  </data>
+  <data name="Clear Vertex Alpha" xml:space="preserve">
+    <value>Clear Vertex Alpha</value>
+  </data>
+  <data name="Automatically Adjust Scale" xml:space="preserve">
+    <value>Automatically Adjust Scale</value>
+  </data>
+  <data name="Override Incoming Race:" xml:space="preserve">
+    <value>Override Incoming Race:</value>
+  </data>
+  <data name="Open Editor" xml:space="preserve">
+    <value>Open Editor</value>
+  </data>
+  <data name="Viewer Options" xml:space="preserve">
+    <value>Viewer Options</value>
+  </data>
+  <data name="Models" xml:space="preserve">
+    <value>Models</value>
+  </data>
+  <data name="Variants" xml:space="preserve">
+    <value>Variants</value>
+  </data>
+  <data name="Standard Modpack Creator" xml:space="preserve">
+    <value>Standard Modpack Creator</value>
+  </data>
+  <data name="StandardModpackCreatorItemSelect" xml:space="preserve">
+    <value>StandardModpackCreatorItemSelect</value>
+  </data>
+  <data name="Final Review" xml:space="preserve">
+    <value>Final Review</value>
+  </data>
+  <data name="Currently Added Items" xml:space="preserve">
+    <value>Currently Added Items</value>
+  </data>
+  <data name="105 Total Files" xml:space="preserve">
+    <value>105 Total Files</value>
+  </data>
+  <data name="Item Name" xml:space="preserve">
+    <value>Item Name</value>
+  </data>
+  <data name="Selected [7] Model Files" xml:space="preserve">
+    <value>Selected [7] Model Files</value>
+  </data>
+  <data name="Remove Item" xml:space="preserve">
+    <value>Remove Item</value>
+  </data>
+  <data name="StandardModpackFileSelect" xml:space="preserve">
+    <value>StandardModpackFileSelect</value>
+  </data>
+  <data name="Item Level" xml:space="preserve">
+    <value>Item Level</value>
+  </data>
+  <data name="Next" xml:space="preserve">
+    <value>Next</value>
+  </data>
+  <data name="CompleteModpackFilesReview" xml:space="preserve">
+    <value>CompleteModpackFilesReview</value>
+  </data>
+  <data name="Metadata Files" xml:space="preserve">
+    <value>Metadata Files</value>
+  </data>
+  <data name="Model Files" xml:space="preserve">
+    <value>Model Files</value>
+  </data>
+  <data name="Material Files" xml:space="preserve">
+    <value>Material Files</value>
+  </data>
+  <data name="Texture Files" xml:space="preserve">
+    <value>Texture Files</value>
+  </data>
+  <data name="File Count" xml:space="preserve">
+    <value>File Count</value>
+  </data>
+  <data name="Confirm" xml:space="preserve">
+    <value>Confirm</value>
+  </data>
+  <data name="StandardModpackFinalize" xml:space="preserve">
+    <value>StandardModpackFinalize</value>
+  </data>
+  <data name="Create Modpack" xml:space="preserve">
+    <value>Create Modpack</value>
+  </data>
+  <data name="Create As:" xml:space="preserve">
+    <value>Create As:</value>
+  </data>
+  <data name="CompleteModpackLevelSelect" xml:space="preserve">
+    <value>CompleteModpackLevelSelect</value>
+  </data>
+  <data name="Select Modification Level" xml:space="preserve">
+    <value>Select Modification Level</value>
+  </data>
+  <data name="All Files" xml:space="preserve">
+    <value>All Files</value>
+  </data>
+  <data name="StandardModpackSharedItems" xml:space="preserve">
+    <value>StandardModpackSharedItems</value>
+  </data>
+  <data name="Modifications at this level will affect the following items:" xml:space="preserve">
+    <value>Modifications at this level will affect the following items:</value>
+  </data>
+  <data name="Include Child Files" xml:space="preserve">
+    <value>Include Child Files</value>
+  </data>
+  <data name="Add New" xml:space="preserve">
+    <value>Add New</value>
+  </data>
+  <data name="Choose Destination Items" xml:space="preserve">
+    <value>Choose Destination Items</value>
+  </data>
+  <data name="You may choose new items for this modpack to apply to, if desired.  Press [Continue] when done." xml:space="preserve">
+    <value>You may choose new items for this modpack to apply to, if desired.  Press [Continue] when done.</value>
+  </data>
+  <data name="Continue" xml:space="preserve">
+    <value>Continue</value>
+  </data>
+  <data name="Texture File Name Reference" xml:space="preserve">
+    <value>Texture File Name Reference</value>
+  </data>
+  <data name="Normal:" xml:space="preserve">
+    <value>Normal:</value>
+  </data>
+  <data name="Specular:" xml:space="preserve">
+    <value>Specular:</value>
+  </data>
+  <data name="Diffuse:" xml:space="preserve">
+    <value>Diffuse:</value>
+  </data>
+  <data name="Transparency:" xml:space="preserve">
+    <value>Transparency:</value>
+  </data>
+  <data name="Shader:" xml:space="preserve">
+    <value>Shader:</value>
+  </data>
+  <data name="Material Path" xml:space="preserve">
+    <value>Material Path</value>
+  </data>
+  <data name="Use Shared Textures" xml:space="preserve">
+    <value>Use Shared Textures</value>
+  </data>
+  <data name="USe Unique Textures" xml:space="preserve">
+    <value>USe Unique Textures</value>
+  </data>
+  <data name="Colorset:" xml:space="preserve">
+    <value>Colorset:</value>
+  </data>
+  <data name="View Raw Values" xml:space="preserve">
+    <value>View Raw Values</value>
+  </data>
+  <data name="Copy Material" xml:space="preserve">
+    <value>Copy Material</value>
+  </data>
+  <data name="Paste Material" xml:space="preserve">
+    <value>Paste Material</value>
+  </data>
+  <data name="Disable/Delete" xml:space="preserve">
+    <value>Disable/Delete</value>
+  </data>
+  <data name="Backfaces:" xml:space="preserve">
+    <value>Backfaces:</value>
+  </data>
+  <data name="ADD NEW MATERIAL" xml:space="preserve">
+    <value>ADD NEW MATERIAL</value>
+  </data>
+  <data name="EDIT ALL MATERIAL SETS" xml:space="preserve">
+    <value>EDIT ALL MATERIAL SETS</value>
+  </data>
+  <data name="EDIT MATERIAL" xml:space="preserve">
+    <value>EDIT MATERIAL</value>
+  </data>
 </root>

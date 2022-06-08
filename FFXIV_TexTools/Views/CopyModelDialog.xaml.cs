@@ -65,7 +65,7 @@ namespace FFXIV_TexTools.Views
 
                 if(df != df2)
                 {
-                    MaterialCopyNotice.Text = "Source and target files must exist within the same data file.";
+                    MaterialCopyNotice.Text = "Source and target files must exist within the same data file.".L();
                     MaterialCopyNotice.Foreground = Brushes.Red;
 
                     RaceChangeNotice.Text = "--";
@@ -77,7 +77,7 @@ namespace FFXIV_TexTools.Views
 
             } catch
             {
-                MaterialCopyNotice.Text = "At least one file path is not a valid internal FFXIV file path.";
+                MaterialCopyNotice.Text = "At least one file path is not a valid internal FFXIV file path.".L();
                 MaterialCopyNotice.Foreground = Brushes.Red;
 
                 RaceChangeNotice.Text = "--";
@@ -93,15 +93,15 @@ namespace FFXIV_TexTools.Views
 
             if (toRoot == null || fromRoot == null)
             {
-                MaterialCopyNotice.Text = "Unknown File Root - Materials and textures will not be copied.";
+                MaterialCopyNotice.Text = "Unknown File Root - Materials and textures will not be copied.".L();
                 MaterialCopyNotice.Foreground = Brushes.DarkGoldenrod;
 
-                RaceChangeNotice.Text = "Unknown File Root - Model will not be racially adjusted.";
+                RaceChangeNotice.Text = "Unknown File Root - Model will not be racially adjusted.".L();
                 RaceChangeNotice.Foreground = Brushes.DarkGoldenrod;
                 return;
             } else
             {
-                MaterialCopyNotice.Text = "Materials and textures will be copied to destination root folder.";
+                MaterialCopyNotice.Text = "Materials and textures will be copied to destination root folder.".L();
                 MaterialCopyNotice.Foreground = Brushes.Green;
             }
 
@@ -112,7 +112,7 @@ namespace FFXIV_TexTools.Views
 
             if (!toMatch.Success || !fromMatch.Success)
             {
-                RaceChangeNotice.Text = "Model is not racial - Model will not be racially adjusted.";
+                RaceChangeNotice.Text = "Model is not racial - Model will not be racially adjusted.".L();
                 RaceChangeNotice.Foreground = Brushes.Black;
                 return;
             }
@@ -122,13 +122,13 @@ namespace FFXIV_TexTools.Views
 
             if(toRace == fromRace)
             {
-                RaceChangeNotice.Text = "Model races are identical - Model will not be racially adjusted.";
+                RaceChangeNotice.Text = "Model races are identical - Model will not be racially adjusted.".L();
                 RaceChangeNotice.Foreground = Brushes.Black;
                 return;
             }
 
 
-            RaceChangeNotice.Text = "Model will be adjusted from " + fromRace.GetDisplayName() + " to " + toRace.GetDisplayName() + ".";
+            RaceChangeNotice.Text = $"Model will be adjusted from {fromRace.GetDisplayName()._()} to {toRace.GetDisplayName()._()}.".L();
             RaceChangeNotice.Foreground = Brushes.Green;
 
 
@@ -157,12 +157,12 @@ namespace FFXIV_TexTools.Views
                 var _mdl = new Mdl(XivCache.GameInfo.GameDirectory, df);
 
                 await _mdl.CopyModel(from, to, XivStrings.TexTools, true);
-                FlexibleMessageBox.Show("Model Copied Successfully.", "Model Copy Confirmation", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Information);
+                FlexibleMessageBox.Show("Model Copied Successfully.".L(), "Model Copy Confirmation".L(), System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Information);
                 Close();
             }
             catch(Exception ex)
             {
-                FlexibleMessageBox.Show("Model Copied Failed.\n\nError: " + ex.Message, "Model Copy Error", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
+                FlexibleMessageBox.Show("Model Copied Failed.\n\nError: ".L() + ex.Message, "Model Copy Error".L(), System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
             }
 
         }

@@ -5,8 +5,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:FFXIV_TexTools.Views"
              xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls" x:Class="FFXIV_TexTools.Views.ModelViewerOptionsView"
-             xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
              mc:Ignorable="d" 
+             xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
+             resx:Localization.Enabled="True"    
              d:DesignHeight="450" d:DesignWidth="250">
     <Grid >
         <Grid.RowDefinitions>

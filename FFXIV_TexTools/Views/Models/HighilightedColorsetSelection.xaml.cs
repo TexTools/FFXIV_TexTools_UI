@@ -30,7 +30,7 @@ namespace FFXIV_TexTools.Views.Models
             SelectionComboBox.SelectedValuePath = "Key";
             SelectionComboBox.ItemsSource = Values;
 
-            Values.Add(new KeyValuePair<int, string>(-1, "None"));
+            Values.Add(new KeyValuePair<int, string>(-1, "None".L()));
             for (int i = 0; i < 16; i++)
             {
                 Values.Add(new KeyValuePair<int, string>(i, (i+1).ToString()));

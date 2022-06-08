@@ -57,7 +57,7 @@ namespace FFXIV_TexTools.Views
             var type = BitConverter.ToInt32(data, 4);
             if (type < 2 || type > 4)
             {
-                FlexibleMessageBox.Show("Invalid Data Type.\nGeneric binary files should be imported as decompressed type 2 Data.", "Data Type Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                FlexibleMessageBox.Show("Invalid Data Type.\nGeneric binary files should be imported as decompressed type 2 Data.".L(), "Data Type Error".L(), MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
@@ -70,12 +70,12 @@ namespace FFXIV_TexTools.Views
             }
             catch(Exception Ex)
             {
-                FlexibleMessageBox.Show("Unable to import file.\n\nError: " + Ex.Message, "Import Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                FlexibleMessageBox.Show("Unable to import file.\n\nError: ".L() + Ex.Message, "Import Error".L(), MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
 
             }
 
-            FlexibleMessageBox.Show("File Imported Successfully.", "Import Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            FlexibleMessageBox.Show("File Imported Successfully.".L(), "Import Success".L(), MessageBoxButtons.OK, MessageBoxIcon.Information);
             this.Close();
         }
     }

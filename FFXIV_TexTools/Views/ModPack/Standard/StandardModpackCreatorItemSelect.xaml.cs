@@ -141,7 +141,7 @@ namespace FFXIV_TexTools.Views
 
         private void UpdateTotalFiles()
         {
-            TotalFilesLabel.Content = _vm.TotalFileCount + " Total File(s)";
+            TotalFilesLabel.Content = _vm.TotalFileCount + " Total File(s)".L();
             if(_vm.TotalFileCount == 0)
             {
                 FinalReviewButton.IsEnabled = false;

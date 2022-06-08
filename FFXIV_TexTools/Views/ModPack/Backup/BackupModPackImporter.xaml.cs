@@ -231,7 +231,7 @@ namespace FFXIV_TexTools.Views
         {
             if (!report.message.Equals(string.Empty))
             {
-                _progressController.SetMessage(report.message);
+                _progressController.SetMessage(report.message.L());
                 _progressController.SetIndeterminate();
             }
             else

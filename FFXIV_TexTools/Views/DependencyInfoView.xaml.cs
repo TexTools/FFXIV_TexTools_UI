@@ -42,7 +42,7 @@ namespace FFXIV_TexTools.Views
 
         public async Task LockUi()
         {
-            _lockProgressController = await this.ShowProgressAsync("Loading", "Please Wait...");
+            _lockProgressController = await this.ShowProgressAsync("Loading".L(), "Please Wait...".L());
 
             _lockProgressController.SetIndeterminate();
 
@@ -103,7 +103,7 @@ namespace FFXIV_TexTools.Views
             if(root == null)
             {
                 RootNameBox.Text = "NULL";
-                WarningLabel.Text = "File dependency information not supported for this item.";
+                WarningLabel.Text = "File dependency information not supported for this item.".L();
                 await UnlockUi();
                 return;
             }

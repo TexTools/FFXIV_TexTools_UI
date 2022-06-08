@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FFXIV_TexTools.Views"
         xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
+        resx:Localization.Enabled="True"
         xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
         mc:Ignorable="d"
         Title="{Binding Source={x:Static resx:UIStrings.About}}" Height="476.25" Width="870.312" WindowStartupLocation="CenterOwner" ResizeMode="NoResize" ShowMaxRestoreButton="False" ShowMinButton="False">

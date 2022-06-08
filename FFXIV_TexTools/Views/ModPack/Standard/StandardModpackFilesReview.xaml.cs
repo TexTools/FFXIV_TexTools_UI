@@ -39,8 +39,8 @@ namespace FFXIV_TexTools.Views
             InitializeComponent();
             ConfirmButton.IsEnabled = false;
 
-            ItemName.Content = "Final Modpack Review";
-            FilesReviewLabel.Content = "Review [" + _vm.TotalFileCount + "] Total File(s)";
+            ItemName.Content = "Final Modpack Review".L();
+            FilesReviewLabel.Content = $"Review [{_vm.TotalFileCount._()}] Total File(s)".L();
             SharedInit();
             LoadVMFiles();
         }
@@ -51,8 +51,8 @@ namespace FFXIV_TexTools.Views
             InitializeComponent();
             ConfirmButton.IsEnabled = false;
 
-            ItemName.Content = _entry.Item.Name + " - " + StandardModpackCreator.GetNiceLevelName(_entry.Level) + " Level";
-            FilesReviewLabel.Content = "[Loading]";
+            ItemName.Content = $"{_entry.Item.Name._()} - {StandardModpackCreator.GetNiceLevelName(_entry.Level)._()} Level".L();
+            FilesReviewLabel.Content = "[Loading]".L();
 
             SharedInit();
             LoadFiles();
@@ -124,18 +124,18 @@ namespace FFXIV_TexTools.Views
         private void UpdateCounts()
         {
 
-            MetaLabel.Content = MetaListBox.Items.Count + " Meta File(s)";
-            ModelLabel.Content = ModelListBox.Items.Count + " Model File(s)";
-            MaterialLabel.Content = MaterialListBox.Items.Count + " Material File(s)";
-            TextureLabel.Content = TextureListBox.Items.Count + " Texture File(s)";
+            MetaLabel.Content = $"{MetaListBox.Items.Count._()} Meta File(s)".L();
+            ModelLabel.Content = $"{ModelListBox.Items.Count._()} Model File(s)".L();
+            MaterialLabel.Content =$"{MaterialListBox.Items.Count._()} Material File(s)".L();
+            TextureLabel.Content = $"{TextureListBox.Items.Count._()} Texture File(s)".L();
 
             if (FinalReviewMode)
             {
-                FilesReviewLabel.Content = "Review [" + _vm.AllFiles.Count + "] Total File(s)";
+                FilesReviewLabel.Content = $"Review [{_vm.AllFiles.Count._()}] Total File(s)".L();
             }
             else
             {
-                FilesReviewLabel.Content = "Review [" + _entry.AllFiles.Count + "] Total File(s)";
+                FilesReviewLabel.Content = $"Review [{_entry.AllFiles.Count._()}] Total File(s)".L();
             }
 
         }
