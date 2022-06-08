@@ -243,7 +243,7 @@ namespace FFXIV_TexTools.Views
             await LockUi("Deleting Mod".L(), "Please wait...".L(), this);
             try
             {
-                if ((ModListTreeView.SelectedItem as Category).ParentCategory.Name.Equals("ModPacks".L()))
+                if ((ModListTreeView.SelectedItem as Category).ParentCategory.Name.Equals("ModPacks"))
                 {
                     if (FlexibleMessageBox.Show(
                             UIMessages.DeleteModPackMessage,
