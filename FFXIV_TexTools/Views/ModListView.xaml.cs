@@ -146,7 +146,7 @@ namespace FFXIV_TexTools.Views
             await LockUi("Changing Mod Status".L(), "Please wait...".L(), this);
             try
             {
-                if ((ModListTreeView.SelectedItem as Category).ParentCategory.Name.Equals("ModPacks".L()))
+                if ((ModListTreeView.SelectedItem as Category).ParentCategory.Name.Equals("ModPacks"))
                 {
                     var selectedItem = (ModListTreeView.SelectedItem as Category);
 
