@@ -6,6 +6,8 @@
              xmlns:local="clr-namespace:FFXIV_TexTools.Views.Metadata"
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              mc:Ignorable="d" 
+             xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
+             resx:Localization.Enabled="True"             
              d:DesignHeight="300" d:DesignWidth="800" MinWidth="800">
     <GroupBox Header="Variant Settings">
         <Grid>

@@ -119,7 +119,7 @@ namespace FFXIV_TexTools.ViewModels
             var success = false;
             try
             {
-                await MainWindow.GetMainWindow().LockUi("Updating Metadata");
+                await MainWindow.GetMainWindow().LockUi("Updating Metadata".L());
 
                 await ItemMetadata.SaveMetadata(_metadata, XivStrings.TexTools);
 
@@ -163,7 +163,7 @@ namespace FFXIV_TexTools.ViewModels
                 success = true;
             } catch(Exception Ex)
             {
-                Helpers.FlexibleMessageBox.Show("An Error occured while saving the Metadata: \n" + Ex.Message, "Metadata Error", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error, System.Windows.Forms.MessageBoxDefaultButton.Button1);
+                Helpers.FlexibleMessageBox.Show("An Error occured while saving the Metadata: \n".L() + Ex.Message, "Metadata Error".L(), System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error, System.Windows.Forms.MessageBoxDefaultButton.Button1);
             }
             finally
             {

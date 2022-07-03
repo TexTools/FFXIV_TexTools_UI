@@ -333,7 +333,7 @@ namespace FFXIV_TexTools.ViewModels
         {
             MainWindow.MakeHighlander();
 
-            var result = FlexibleMessageBox.Show("TexTools will now change to the selected update branch.", "Branch Change Notice", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
+            var result = FlexibleMessageBox.Show("TexTools will now change to the selected update branch.".L(), "Branch Change Notice".L(), MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
             if (result != DialogResult.OK) return;
 
             var beta = false;
@@ -490,7 +490,7 @@ namespace FFXIV_TexTools.ViewModels
             {
                 if (!String.IsNullOrWhiteSpace(Properties.Settings.Default.Lumina_Directory) && Properties.Settings.Default.Lumina_IsEnabled == true)
                 {
-                    Helpers.FlexibleMessageBox.Show("Unable to save Lumina settings, invalid Lumina directory.");
+                    Helpers.FlexibleMessageBox.Show("Unable to save Lumina settings, invalid Lumina directory.".L());
                 }
                 Settings.Default.Lumina_IsEnabled = false;
                 XivCache.SetGameInfo(gi.GameDirectory, gi.GameLanguage, gi.DxMode, false, true, null, false);
@@ -669,7 +669,7 @@ namespace FFXIV_TexTools.ViewModels
 
             FFXIV_Directory = Settings.Default.FFXIV_Directory;
 
-            Helpers.FlexibleMessageBox.Show("TexTools will now restart.");
+            Helpers.FlexibleMessageBox.Show("TexTools will now restart.".L());
             _view.Close();
             MainWindow.GetMainWindow().Restart();
         }

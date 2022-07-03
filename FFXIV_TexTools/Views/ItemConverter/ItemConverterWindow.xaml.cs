@@ -55,7 +55,7 @@ namespace FFXIV_TexTools.Views.ItemConverter
 
             _lockProgress = new Progress<string>((update) =>
             {
-                _lockProgressController.SetMessage(update);
+                _lockProgressController.SetMessage(update.L());
             });
         }
         public async Task UnlockUi(object sender)
@@ -91,49 +91,49 @@ namespace FFXIV_TexTools.Views.ItemConverter
 
             if(State == ItemConverterState.SourceSelect)
             {
-                TitleLabel.Content = "Select Source Item";
+                TitleLabel.Content = "Select Source Item".L();
                 ItemSelectGrid.Visibility = Visibility.Visible;
                 ConfirmationGrid.Visibility = Visibility.Collapsed;
 
-                ItemSelect.SelectButton.Content = "Select Source Item";
+                ItemSelect.SelectButton.Content = "Select Source Item".L();
 
 
                 ItemSelect.ClearSelection();
 
-                BackButton.Content = "Cancel";
+                BackButton.Content = "Cancel".L();
                 NextButton.Visibility = Visibility.Collapsed;
 
             } else if(State == ItemConverterState.DestinationSelect)
             {
-                TitleLabel.Content = "Select Destination Item";
+                TitleLabel.Content = "Select Destination Item".L();
                 ItemSelectGrid.Visibility = Visibility.Visible;
                 ConfirmationGrid.Visibility = Visibility.Collapsed;
 
                 ItemSelect.ClearSelection();
 
-                ItemSelect.SelectButton.Content = "Select Destination Item";
+                ItemSelect.SelectButton.Content = "Select Destination Item".L();
 
-                BackButton.Content = "Back";
+                BackButton.Content = "Back".L();
                 NextButton.Visibility = Visibility.Collapsed;
 
 
             } else if(State == ItemConverterState.Confirmation)
             {
-                TitleLabel.Content = "Final Confirmation";
+                TitleLabel.Content = "Final Confirmation".L();
                 ItemSelectGrid.Visibility = Visibility.Collapsed;
                 ConfirmationGrid.Visibility = Visibility.Visible;
 
-                BackButton.Content = "Back";
+                BackButton.Content = "Back".L();
                 NextButton.Visibility = Visibility.Visible;
 
                 ShowConversionStats();
             } else
             {
-                TitleLabel.Content = "Loading...";
+                TitleLabel.Content = "Loading...".L();
                 ItemSelectGrid.Visibility = Visibility.Collapsed;
                 ConfirmationGrid.Visibility = Visibility.Collapsed;
 
-                BackButton.Content = "Cancel";
+                BackButton.Content = "Cancel".L();
                 NextButton.Visibility = Visibility.Collapsed;
                 return;
             }
@@ -192,24 +192,24 @@ namespace FFXIV_TexTools.Views.ItemConverter
             if (!IsSupported(root))
             {
                 ItemSelect.SelectButton.IsEnabled = false;
-                ItemSelect.SelectButton.Content = "Unsupported";
+                ItemSelect.SelectButton.Content = "Unsupported".L();
                 return;
             }
 
             if(State == ItemConverterState.DestinationSelect && !DestinationOk(root))
             {
                 ItemSelect.SelectButton.IsEnabled = false;
-                ItemSelect.SelectButton.Content = "Invalid Destination";
+                ItemSelect.SelectButton.Content = "Invalid Destination".L();
                 return;
             }
 
             ItemSelect.SelectButton.IsEnabled = true;
             if(State == ItemConverterState.SourceSelect)
             {
-                ItemSelect.SelectButton.Content = "Select Source Item";
+                ItemSelect.SelectButton.Content = "Select Source Item".L();
             } else
             {
-                ItemSelect.SelectButton.Content = "Select Destination Item";
+                ItemSelect.SelectButton.Content = "Select Destination Item".L();
             }
         }
 
@@ -316,7 +316,7 @@ namespace FFXIV_TexTools.Views.ItemConverter
         private async void NextButton_Click(object sender, RoutedEventArgs e)
         {
             var windowHandle = new WindowWrapper(new WindowInteropHelper(this).Handle);
-            await LockUi("Cloning Items", "Please wait...", this);
+            await LockUi("Cloning Items".L(), "Please wait...".L(), this);
 
             try
             {
@@ -362,12 +362,12 @@ namespace FFXIV_TexTools.Views.ItemConverter
                 }
 
                 await UnlockUi(this);
-                FlexibleMessageBox.Show(windowHandle, "Unable to convert items:\n\nError: " + ex.Message, "Item Conversion Error", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
+                FlexibleMessageBox.Show(windowHandle, "Unable to convert items:\n\nError: ".L() + ex.Message, "Item Conversion Error".L(), System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
                 return;
 
             }
             await UnlockUi(this);
-            FlexibleMessageBox.Show(windowHandle, "Items converted successfully.", "Item Conversion Successful", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Information);
+            FlexibleMessageBox.Show(windowHandle, "Items converted successfully.".L(), "Item Conversion Successful".L(), System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Information);
             Close();
         }
 
@@ -474,9 +474,9 @@ namespace FFXIV_TexTools.Views.ItemConverter
                     {
 
 
-                        var msg = "In order to fully convert this item, the following items may also need to be converted with it.\n\n" + itemConversions + "\nPerform these conversions as well?";
+                        var msg = $"In order to fully convert this item, the following items may also need to be converted with it.\n\n{itemConversions._()}\nPerform these conversions as well?".L();
 
-                        var result = FlexibleMessageBox.Show(msg, "Multi-Slot Convert Required", System.Windows.Forms.MessageBoxButtons.YesNoCancel, System.Windows.Forms.MessageBoxIcon.Warning);
+                        var result = FlexibleMessageBox.Show(msg, "Multi-Slot Convert Required".L(), System.Windows.Forms.MessageBoxButtons.YesNoCancel, System.Windows.Forms.MessageBoxIcon.Warning);
 
                         if (result == System.Windows.Forms.DialogResult.Yes)
                         {
@@ -521,9 +521,9 @@ namespace FFXIV_TexTools.Views.ItemConverter
                     extraConversions.Add(sourceAltRoot, destAltRoot);
                 }
 
-                var msg = "In order to properly convert this item, the following item may also need to be converted with it:\n\n" + itemConversions +"\nPerform these conversions as well?";
+                var msg = $"In order to properly convert this item, the following item may also need to be converted with it:\n\n{itemConversions._()}\nPerform these conversions as well?".L();
 
-                var result = FlexibleMessageBox.Show(msg, "Off-Ring Conversion Required", System.Windows.Forms.MessageBoxButtons.YesNoCancel, System.Windows.Forms.MessageBoxIcon.Warning);
+                var result = FlexibleMessageBox.Show(msg, "Off-Ring Conversion Required".L(), System.Windows.Forms.MessageBoxButtons.YesNoCancel, System.Windows.Forms.MessageBoxIcon.Warning);
 
                 if (result == System.Windows.Forms.DialogResult.Yes)
                 {
@@ -556,9 +556,9 @@ namespace FFXIV_TexTools.Views.ItemConverter
                     extraConversions.Add(sourceOffhand, destOffhand);
                     itemConversions += sourceGear.PairedItem.Name + " => " + destGear.PairedItem.Name + "\n";
 
-                    var msg = "In order to properly convert this item, the following item may also need to be converted with it:\n\n" + itemConversions + "\nPerform these conversions as well?";
+                    var msg = $"In order to properly convert this item, the following item may also need to be converted with it:\n\n{itemConversions}\nPerform these conversions as well?".L();
 
-                    var result = FlexibleMessageBox.Show(msg, "Dual-Wield Conversion Required", System.Windows.Forms.MessageBoxButtons.YesNoCancel, System.Windows.Forms.MessageBoxIcon.Warning);
+                    var result = FlexibleMessageBox.Show(msg, "Dual-Wield Conversion Required".L(), System.Windows.Forms.MessageBoxButtons.YesNoCancel, System.Windows.Forms.MessageBoxIcon.Warning);
 
                     if (result == System.Windows.Forms.DialogResult.Yes)
                     {

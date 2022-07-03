@@ -75,7 +75,7 @@ namespace FFXIV_TexTools.ViewModels
             }
 
             var values = _material.ShaderParameterList.Select( x=> { 
-                var ret = x.ParameterID.ToString() + " { "; 
+                var ret = x.ParameterID.ToString().L() + " { "; 
 
                 foreach(var val in x.Args)
                 {
@@ -154,16 +154,16 @@ namespace FFXIV_TexTools.ViewModels
                     _view.MaterialPathLabel.Text = _material.MTRLPath;
                     break;
                 case MaterialEditorMode.EditMulti:
-                    _view.MaterialPathLabel.Text = "Editing Multiple Materials: Material " + _material.GetMaterialIdentifier();
+                    _view.MaterialPathLabel.Text = "Editing Multiple Materials: Material ".L() + _material.GetMaterialIdentifier();
                     break;
                 case MaterialEditorMode.NewSingle:
-                    _view.MaterialPathLabel.Text = "New Material";
+                    _view.MaterialPathLabel.Text = "New Material".L();
                     break;
                 case MaterialEditorMode.NewMulti:
-                    _view.MaterialPathLabel.Text = "New Materials";
+                    _view.MaterialPathLabel.Text = "New Materials".L();
                     break;
                 case MaterialEditorMode.NewRace:
-                    _view.MaterialPathLabel.Text = "New Racial Material";
+                    _view.MaterialPathLabel.Text = "New Racial Material".L();
                     break;
             }
 
@@ -184,7 +184,7 @@ namespace FFXIV_TexTools.ViewModels
             // Add Other option if needed.
             if (shader.Shader == MtrlShader.Other)
             {
-                _view.ShaderSource.Add(new KeyValuePair<MtrlShader, string>(MtrlShader.Other, "Other"));
+                _view.ShaderSource.Add(new KeyValuePair<MtrlShader, string>(MtrlShader.Other, "Other".L()));
             }
 
             // Show Settings
@@ -199,11 +199,11 @@ namespace FFXIV_TexTools.ViewModels
             {
                 // Bump up the material identifier letter.
                 _newMaterialIdentifier = await GetNewMaterialIdentifier();
-                _view.MaterialPathLabel.Text = "New Materials: Material " + _newMaterialIdentifier;
+                _view.MaterialPathLabel.Text = "New Materials: Material ".L() + _newMaterialIdentifier;
             } else if(_mode == MaterialEditorMode.NewSingle)
             {
                 _newMaterialIdentifier = await GetNewMaterialIdentifier();
-                _view.MaterialPathLabel.Text = "New Material: Material " + _newMaterialIdentifier;
+                _view.MaterialPathLabel.Text = "New Material: Material ".L() + _newMaterialIdentifier;
             }
 
             // Get the mod entry.
@@ -328,7 +328,7 @@ namespace FFXIV_TexTools.ViewModels
                 }
             } catch (Exception Ex)
             {
-                FlexibleMessageBox.Show("An error occurred when saving the Material.");
+                FlexibleMessageBox.Show("An error occurred when saving the Material.".L());
             }
             return _material;
         }
@@ -369,7 +369,7 @@ namespace FFXIV_TexTools.ViewModels
                 }
                 else
                 {
-                    throw new NotSupportedException("Maximum Material Limit Reached.");
+                    throw new NotSupportedException("Maximum Material Limit Reached.".L());
                 }
             }
             return newIdentifier;
@@ -528,7 +528,7 @@ namespace FFXIV_TexTools.ViewModels
                 count++;
                 // Write the new Material
                 await _mtrl.ImportMtrl(itemXivMtrl, item, XivStrings.TexTools);
-                _view.SaveStatusLabel.Content = "Updated " + count + "/" + materialSets.Count + " Material Sets...";
+                _view.SaveStatusLabel.Content = $"Updated {count._()}/{materialSets.Count._()} Material Sets...".L();
             }
 
         }
@@ -587,7 +587,7 @@ namespace FFXIV_TexTools.ViewModels
                 }
             } catch(Exception ex)
             {
-                FlexibleMessageBox.Show("Unable to delete Mod.\n\nError: " + ex.Message, "Mod Delete Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                FlexibleMessageBox.Show("Unable to delete Mod.\n\nError: ".L() + ex.Message, "Mod Delete Error".L(), MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             _view.Close(false);
         }

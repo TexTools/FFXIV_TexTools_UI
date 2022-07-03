@@ -33,11 +33,11 @@ namespace FFXIV_TexTools.Views
             ItemNameLabel.Content = entry.Item.Name;
             if (entry.Level == xivModdingFramework.Cache.XivDependencyLevel.Root)
             {
-                ItemLevelLabel.Content = "Selected All Files - [" + Entry.AllFiles.Count + "] Total File(s)";
+                ItemLevelLabel.Content = $"Selected All Files - [{Entry.AllFiles.Count._()}] Total File(s)".L();
             } else
             {
 
-                ItemLevelLabel.Content = "Selected [" + Entry.MainFiles.Count + "] " + StandardModpackCreator.GetNiceLevelName(entry.Level) + " File(s) - [" + Entry.AllFiles.Count + "] Total File(s)";
+                ItemLevelLabel.Content = $"Selected [{Entry.MainFiles.Count._()}] {StandardModpackCreator.GetNiceLevelName(entry.Level)._()} File(s) - [{Entry.AllFiles.Count._()}] Total File(s)".L();
             }
 
             RemoveButton.Click += RemoveButton_Click;

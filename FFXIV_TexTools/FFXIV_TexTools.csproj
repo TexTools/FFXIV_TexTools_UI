@@ -272,6 +272,7 @@
     <Compile Include="Helpers\Reflector.cs" />
     <Compile Include="Helpers\RelayCommand.cs" />
     <Compile Include="Helpers\Wpf32Window.cs" />
+    <Compile Include="Localizations\Localization.cs" />
     <Compile Include="Models\Category.cs" />
     <Compile Include="Models\SimpleModpackEntry.cs" />
     <Compile Include="Properties\Annotations.cs" />
@@ -839,7 +840,9 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>UIMessages.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resources\UIMessages.zh.resx" />
+    <EmbeddedResource Include="Resources\UIMessages.zh.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Resources\UIStrings.de.resx" />
     <EmbeddedResource Include="Resources\UIStrings.fr.resx" />
     <EmbeddedResource Include="Resources\UIStrings.ja.resx" />

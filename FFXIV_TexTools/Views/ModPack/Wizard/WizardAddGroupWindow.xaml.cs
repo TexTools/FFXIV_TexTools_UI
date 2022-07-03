@@ -98,7 +98,7 @@ namespace FFXIV_TexTools.Views
 
         public async Task LockUi(string title, string message, object sender)
         {
-            _lockProgressController = await this.ShowProgressAsync("Loading", "Please Wait...");
+            _lockProgressController = await this.ShowProgressAsync("Loading".L(), "Please Wait...".L());
 
             _lockProgressController.SetIndeterminate();
 
@@ -385,7 +385,7 @@ namespace FFXIV_TexTools.Views
         {
             var openFileDialog = new OpenFileDialog
             {
-                Filter = "Image Files(*.BMP;*.JPG;*.GIF;*.PNG)|*.BMP;*.JPG;*.GIF;*.PNG"
+                Filter = "Image Files(*.BMP;*.JPG;*.GIF;*.PNG)|*.BMP;*.JPG;*.GIF;*.PNG".L()
             };
 
 
@@ -602,7 +602,7 @@ namespace FFXIV_TexTools.Views
                 var offset = await index.GetDataOffset(file.Path);
                 if (offset <= 0)
                 {
-                    FlexibleMessageBox.Show("Cannot include file, file offset invalid.",
+                    FlexibleMessageBox.Show("Cannot include file, file offset invalid.".L(),
                         UIMessages.ModDataReadErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
@@ -611,7 +611,7 @@ namespace FFXIV_TexTools.Views
 
                 if (rawData == null)
                 {
-                    FlexibleMessageBox.Show("Cannot include file, file offset invalid.",
+                    FlexibleMessageBox.Show("Cannot include file, file offset invalid.".L(),
                         UIMessages.ModDataReadErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
@@ -684,7 +684,7 @@ namespace FFXIV_TexTools.Views
         {
             var selectedFile = TextureMapComboBox.SelectedItem as FileEntry;
 
-            var openFileDialog = new OpenFileDialog { Filter = "Texture Files(*.DDS;*.BMP;*.PNG) |*.DDS;*.BMP;*.PNG" };
+            var openFileDialog = new OpenFileDialog { Filter = "Texture Files(*.DDS;*.BMP;*.PNG) |*.DDS;*.BMP;*.PNG".L() };
 
 
             var result = openFileDialog.ShowDialog();
@@ -916,20 +916,20 @@ namespace FFXIV_TexTools.Views
                     filename = m.Value + filename;
                 }
 
-                niceName = "Material";
+                niceName = "Material".L();
             } else if(ext == ".atex")
             {
                 niceName = "VFX";
             } else if(ext == ".mdl")
             {
-                niceName = "Model";
+                niceName = "Model".L();
             } else if(ext == ".tex")
             {
                 var type = SimpleModpackEntry.GuessTextureUsage(path);
-                niceName = type.ToString() + " Texture";
+                niceName = $"{type.ToString()._()} Texture".L();
             } else if(ext == ".meta")
             {
-                niceName = "Metadata";
+                niceName = "Metadata".L();
             }
 
 

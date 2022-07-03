@@ -53,7 +53,7 @@ namespace FFXIV_TexTools.Views
 
         public async Task LockUi()
         {
-            _lockProgressController = await this.ShowProgressAsync("Loading", "Please Wait...");
+            _lockProgressController = await this.ShowProgressAsync("Loading".L(), "Please Wait...".L());
 
             _lockProgressController.SetIndeterminate();
 
@@ -77,7 +77,7 @@ namespace FFXIV_TexTools.Views
             modPackWizard.CanHelp = false;
             ModPackName.Focus();
 
-            ModPackAuthor.Text = String.IsNullOrWhiteSpace(Settings.Default.Default_Author) ? "TexTools User" : Settings.Default.Default_Author;
+            ModPackAuthor.Text = String.IsNullOrWhiteSpace(Settings.Default.Default_Author) ? "TexTools User".L() : Settings.Default.Default_Author;
             ModPackUrl.Text = Settings.Default.Default_Modpack_Url;
             ModPackVersion.Text = "1.0.0";
         }
@@ -154,7 +154,7 @@ namespace FFXIV_TexTools.Views
                         UIMessages.NoAuthorFoundTitle, MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) ==
                     System.Windows.Forms.DialogResult.OK)
                 {
-                    ModPackAuthor.Text = "TexTools User";
+                    ModPackAuthor.Text = "TexTools User".L();
                 }
                 else
                 {
@@ -309,7 +309,7 @@ namespace FFXIV_TexTools.Views
             }
             catch(Exception ex)
             {
-                FlexibleMessageBox.Show("Failed to create modpack.\n\nError: " + ex.Message, "Modpack Creation Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                FlexibleMessageBox.Show("Failed to create modpack.\n\nError: ".L() + ex.Message, "Modpack Creation Error".L(), MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
             finally
@@ -351,7 +351,7 @@ namespace FFXIV_TexTools.Views
 
         private async void LoadFromButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            var openFileDialog = new OpenFileDialog { Filter = "Texture Files(*.ttmp2)|*.ttmp2", InitialDirectory = Settings.Default.ModPack_Directory };
+            var openFileDialog = new OpenFileDialog { Filter = "Texture Files(*.ttmp2)|*.ttmp2".L(), InitialDirectory = Settings.Default.ModPack_Directory };
             if (openFileDialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
             {
                 return;

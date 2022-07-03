@@ -6,6 +6,8 @@
              xmlns:local="clr-namespace:FFXIV_TexTools.Views.Metadata"
              xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls" x:Class="FFXIV_TexTools.Views.Metadata.EqpControl"
              mc:Ignorable="d" 
+             xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
+             resx:Localization.Enabled="True"    
              d:DesignHeight="450" d:DesignWidth="800">
     <GroupBox Header="Visibility Settings">
         <TabControl SelectedIndex="0" x:Name="TabSelection">

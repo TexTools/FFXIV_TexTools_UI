@@ -3,9 +3,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
-             xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:FFXIV_TexTools.Views.Controls"
+             xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
+             resx:Localization.Enabled="True"             
              mc:Ignorable="d" Height="449.791" Width="568.146">
     <Grid x:Name="GridPanel">
         <Grid.ColumnDefinitions>

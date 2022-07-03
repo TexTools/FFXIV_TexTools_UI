@@ -6,10 +6,11 @@
         xmlns:local="clr-namespace:FFXIV_TexTools.Views"
         xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:models="clr-namespace:FFXIV_TexTools.Models"
-        xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
         xmlns:Controls="clr-namespace:FFXIV_TexTools.Views.Controls"
         x:Class="FFXIV_TexTools.Views.WizardAddGroupWindow"
         mc:Ignorable="d"
+        xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
+        resx:Localization.Enabled="True"              
         Title="{Binding Source={x:Static resx:UIStrings.Add_Group}}" Height="1000" Width="1000" WindowStartupLocation="CenterOwner" ShowMaxRestoreButton="False" ShowMinButton="False" Closing="MetroWindow_Closing">
     <Grid>
         <Grid.RowDefinitions>

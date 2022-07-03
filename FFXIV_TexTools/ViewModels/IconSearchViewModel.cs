@@ -101,7 +101,7 @@ namespace FFXIV_TexTools.ViewModels
             var iconInt = -1;
             try
             {
-                if (IconText.Length < 7)
+                if (IconText?.Length < 7)
                 {
                     iconInt = int.Parse(IconText);
                     IconStatusLabel = string.Empty;

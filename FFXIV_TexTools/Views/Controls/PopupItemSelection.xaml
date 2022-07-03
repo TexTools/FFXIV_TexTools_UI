@@ -6,5 +6,7 @@
         xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:local="clr-namespace:FFXIV_TexTools.Views.Controls"
         mc:Ignorable="d"
+        xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
+        resx:Localization.Enabled="True"                
         Title="Item Selection" Height="500" Width="350">
 </mah:MetroWindow>

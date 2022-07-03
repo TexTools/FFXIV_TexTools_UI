@@ -438,7 +438,7 @@ namespace FFXIV_TexTools.Views.Controls
                 }
                 catch (Exception ex)
                 {
-                    FlexibleMessageBox.Show("An error occurred while loading the item list.\n" + ex.Message, "Item List Error", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning);
+                    FlexibleMessageBox.Show("An error occurred while loading the item list.\n".L() + ex.Message, "Item List Error".L(), System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning);
                     return;
                 }
 
@@ -586,7 +586,7 @@ namespace FFXIV_TexTools.Views.Controls
                 }
                 else
                 {
-                    if (item.Name == e.Item.Name)
+                    if (item.Name == e.Item?.Name)
                     {
                         return e;
                     }

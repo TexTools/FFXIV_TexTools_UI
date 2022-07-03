@@ -268,7 +268,7 @@ namespace FFXIV_TexTools.ViewModels
                 catch(Exception ex)
                 {
                     // Invalid directory.
-                    FlexibleMessageBox.Show("The given file path is invalid.", "Import Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    FlexibleMessageBox.Show("The given file path is invalid.".L(), "Import Error".L(), MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
             }
@@ -328,7 +328,7 @@ namespace FFXIV_TexTools.ViewModels
                            _anyWarnings = true;
                            WriteToLog("> [ERROR] " + ex.Message, Brushes.DarkRed);
                            WriteToLog("> Previous log messages may include more information.", Brushes.DarkRed);
-                           FlexibleMessageBox.Show("An error occurred during import:\n" + ex.Message + "\n\nThe import has been cancelled.\nPlease see the text log for more information.", "Import Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                           FlexibleMessageBox.Show($"An error occurred during import:\n{ex.Message._()}\n\nThe import has been cancelled.\nPlease see the text log for more information.".L(), "Import Error".L(), MessageBoxButtons.OK, MessageBoxIcon.Error);
                        }
 
                        _view.EnableAll(true);
@@ -498,7 +498,7 @@ namespace FFXIV_TexTools.ViewModels
             }
             filter = filter.Substring(0, filter.Length - 1);
 
-            openFileDialog.Filter = "3D Models (" + filter + ")|" + filter;
+            openFileDialog.Filter = $"3D Models ({filter._()})|{filter._()}";
             openFileDialog.RestoreDirectory = false;
 
             if (openFileDialog.ShowDialog() == DialogResult.OK)

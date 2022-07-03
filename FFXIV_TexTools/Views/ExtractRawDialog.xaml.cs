@@ -38,7 +38,7 @@ namespace FFXIV_TexTools.Views
             {
                 ext = ext.Substring(1);
 
-                sd.Filter = $"{ext.ToUpper()} Files (*.{ext})|*.{ext}";
+                sd.Filter = $"{ext.ToUpper()._()} Files (*.{ext._()})|*.{ext._()}".L();
             }
 
             sd.FileName = Path.GetFileName(path);
@@ -55,14 +55,14 @@ namespace FFXIV_TexTools.Views
                 var df = IOUtil.GetDataFileFromPath(path);
                 if (offset <= 0)
                 {
-                    FlexibleMessageBox.Show("File does not exist.\n\nFile: " + path, "File Not Found", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    FlexibleMessageBox.Show("File does not exist.\n\nFile: ".L() + path, "File Not Found".L(), MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
                 var type = _dat.GetFileType(offset, df);
                 if (type < 2 || type > 4)
                 {
-                    throw new InvalidDataException("Invalid or Unknown Data Type.");
+                    throw new InvalidDataException("Invalid or Unknown Data Type.".L());
                 }
 
                 var size = await _dat.GetCompressedFileSize(offset, df);
@@ -92,12 +92,12 @@ namespace FFXIV_TexTools.Views
                     stream.Write(data);
                 }
 
-                FlexibleMessageBox.Show("Raw file extracted successfully to path:\n" + sd.FileName, "Extraction Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                FlexibleMessageBox.Show("Raw file extracted successfully to path:\n".L() + sd.FileName, "Extraction Success".L(), MessageBoxButtons.OK, MessageBoxIcon.Information);
                 this.Close();
 
             } catch(Exception Ex)
             {
-                FlexibleMessageBox.Show("Unable to decompress or read file:\n" + path + "\n\nError: " + Ex.Message, "File Not Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                FlexibleMessageBox.Show($"Unable to decompress or read file:\n{path._()}\n\nError: ".L() + Ex.Message, "File Not Found".L(), MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
         }

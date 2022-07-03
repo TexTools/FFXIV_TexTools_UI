@@ -127,14 +127,14 @@ namespace FFXIV_TexTools.Views.Metadata
 
             {
                 var label = new Label();
-                label.Content = "Set All Together:";
+                label.Content = "Set All Together:".L();
                 label.Width = 150;
                 label.HorizontalAlignment = HorizontalAlignment.Right;
                 label.HorizontalContentAlignment = HorizontalAlignment.Right;
 
                 var cb = new ComboBox();
                 cb.Width = 150;
-                cb.ToolTip = "Note: Some skeletons are not available for some races.";
+                cb.ToolTip = "Note: Some skeletons are not available for some races.".L();
                 cb.SelectionChanged += AllBoxChanged;
 
                 label.SetValue(Grid.RowProperty, 0);
@@ -237,7 +237,7 @@ namespace FFXIV_TexTools.Views.Metadata
 
                 var allEntries = options[race];
 
-                RacialItemSources[race].Add(new KeyValuePair<int, string>(0, "None"));
+                RacialItemSources[race].Add(new KeyValuePair<int, string>(0, "None".L()));
 
                 // Add all the entries.
                 foreach (var skel in allEntries)
@@ -271,7 +271,7 @@ namespace FFXIV_TexTools.Views.Metadata
             if (!SingleRaceMode)
             {
                 RacialItemSources[XivRace.All_Races].Add(new KeyValuePair<int, string>(-1, "--"));
-                RacialItemSources[XivRace.All_Races].Add(new KeyValuePair<int, string>(0, "None"));
+                RacialItemSources[XivRace.All_Races].Add(new KeyValuePair<int, string>(0, "None".L()));
 
                 RacialComboBoxes[XivRace.All_Races].SelectedIndex = 0;
                 // Add all the entries.

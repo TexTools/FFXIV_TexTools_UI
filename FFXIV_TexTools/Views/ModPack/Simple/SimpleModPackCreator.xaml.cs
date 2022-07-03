@@ -260,7 +260,7 @@ namespace FFXIV_TexTools.Views
         {
             if (!report.message.Equals(string.Empty))
             {
-                _progressController.SetMessage(report.message);
+                _progressController.SetMessage(report.message.L());
                 _progressController.SetIndeterminate();
             }
             else
@@ -301,7 +301,7 @@ namespace FFXIV_TexTools.Views
                         UIMessages.NoNameFoundTitle, MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) ==
                     System.Windows.Forms.DialogResult.OK)
                 {
-                    ModPackName.Text = "ModPack";
+                    ModPackName.Text = "ModPack".L();
                 }
                 else
                 {
@@ -354,7 +354,7 @@ namespace FFXIV_TexTools.Views
                         UIMessages.NoAuthorFoundTitle, MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) ==
                     System.Windows.Forms.DialogResult.OK)
                 {
-                    ModPackAuthor.Text = "TexTools User";
+                    ModPackAuthor.Text = "TexTools User".L();
                 }
                 else
                 {

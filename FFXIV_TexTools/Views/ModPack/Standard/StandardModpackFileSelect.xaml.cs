@@ -74,8 +74,8 @@ namespace FFXIV_TexTools.Views
             _level = level;
 
 
-            ItemName.Content = _item.Name + " - " + StandardModpackCreator.GetNiceLevelName(_level) + " Level";
-            ItemLevel.Content = "Select " + StandardModpackCreator.GetNiceLevelName(_level) + " Files";
+            ItemName.Content = $"{_item.Name._()} - {StandardModpackCreator.GetNiceLevelName(_level)._()} Level".L();
+            ItemLevel.Content = $"Select {StandardModpackCreator.GetNiceLevelName(_level)._()} Files".L();
 
             FilesListBox.ItemsSource = Files;
             FilesListBox.DisplayMemberPath = "DisplayName";
