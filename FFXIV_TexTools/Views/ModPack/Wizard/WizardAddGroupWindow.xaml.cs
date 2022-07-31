@@ -91,6 +91,9 @@ namespace FFXIV_TexTools.Views
             OptionDescription.IsEnabled = false;
             OptionImageButton.IsEnabled = false;
             RemoveOptionButton.IsEnabled = false;
+            RenameOptionButton.IsEnabled = false;
+            MoveOptionUpButton.IsEnabled = false;
+            MoveOptionDownButton.IsEnabled = false;
         }
 
         private ProgressDialogController _lockProgressController;
@@ -149,7 +152,7 @@ namespace FFXIV_TexTools.Views
 
             foreach (var modOption in modGroup.OptionList)
             {
-                OptionList.Items.Add(modOption.Name);
+                OptionList.Items.Add(new EditableOptionControl(modOption.Name, modOption));
             }
         }
 
@@ -222,9 +225,9 @@ namespace FFXIV_TexTools.Views
         {
             if (String.IsNullOrWhiteSpace(OptionNameTextBox.Text)) return;
 
-            var optionListItems = OptionList.Items.Cast<string>().ToList();
+            var optionListItems = OptionList.Items.Cast<EditableOptionControl>().ToList();
 
-            if (optionListItems.IndexOf(optionText) != -1)
+            if (optionListItems.Exists((option) => option.ToString() == optionText))
             {
                 AddOption($"{OptionNameTextBox.Text} {optionNum + 1}", optionNum + 1);
             }
@@ -237,7 +240,7 @@ namespace FFXIV_TexTools.Views
 
                 _modOptions.Add(modOption);
 
-                OptionList.Items.Add(optionText);
+                OptionList.Items.Add(new EditableOptionControl(optionText, modOption));
                 OptionList.SelectedIndex = OptionList.Items.Count - 1;
             }
 
@@ -285,6 +288,61 @@ namespace FFXIV_TexTools.Views
                     OptionList.Items.Remove(item);
                     break;
                 }
+            }
+        }
+
+        /// <summary>
+        /// The event handler for the rename options button clicked
+        /// </summary>
+        private void RenameOptionButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (OptionList.SelectedItem != null)
+            {
+                (OptionList.SelectedItem as EditableOptionControl).EditMode();
+            }
+        }
+
+        /// <summary>
+        /// The event handler for the move option up button clicked
+        /// </summary>
+        private void MoveOptionUpButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (OptionList.SelectedIndex > 0)
+            {
+                var oldIndex = OptionList.SelectedIndex;
+                var newIndex = OptionList.SelectedIndex - 1;
+
+                var modOption = _modOptions[oldIndex];
+                _modOptions.RemoveAt(oldIndex);
+                _modOptions.Insert(newIndex, modOption);
+
+                var editableOptionControl = OptionList.Items.GetItemAt(oldIndex) as EditableOptionControl;
+                OptionList.Items.RemoveAt(oldIndex);
+                OptionList.Items.Insert(newIndex, editableOptionControl);
+
+                OptionList.SelectedIndex = newIndex;
+            }
+        }
+
+        /// <summary>
+        /// The event handler for the move option down button clicked
+        /// </summary>
+        private void MoveOptionDownButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (OptionList.SelectedIndex != -1 && OptionList.SelectedIndex < (OptionList.Items.Count - 1))
+            {
+                var oldIndex = OptionList.SelectedIndex;
+                var newIndex = OptionList.SelectedIndex + 1;
+
+                var option = _modOptions[oldIndex];
+                _modOptions.RemoveAt(oldIndex);
+                _modOptions.Insert(newIndex, option);
+
+                var editableOptionControl = OptionList.Items.GetItemAt(oldIndex) as EditableOptionControl;
+                OptionList.Items.RemoveAt(oldIndex);
+                OptionList.Items.Insert(newIndex, editableOptionControl);
+
+                OptionList.SelectedIndex = newIndex;
             }
         }
 
@@ -349,10 +407,39 @@ namespace FFXIV_TexTools.Views
                     }
                 }
 
+                if (OptionList.Items.Count > 1)
+                {
+                    // Enable the move up button only when the option isn't already first
+                    if (OptionList.SelectedIndex > 0)
+                    {
+                        MoveOptionUpButton.IsEnabled = true;
+                    }
+                    else
+                    {
+                        MoveOptionUpButton.IsEnabled = false;
+                    }
+
+                    // Enable the move down button only when the option isn't already last
+                    if (OptionList.SelectedIndex < (OptionList.Items.Count - 1))
+                    {
+                        MoveOptionDownButton.IsEnabled = true;
+                    }
+                    else
+                    {
+                        MoveOptionDownButton.IsEnabled = false;
+                    }
+                }
+                else
+                {
+                    MoveOptionUpButton.IsEnabled = false;
+                    MoveOptionDownButton.IsEnabled = false;
+                }
+
                 ModListGrid.IsEnabled = true;
                 OptionDescription.IsEnabled = true;
                 OptionImageButton.IsEnabled = true;
                 RemoveOptionButton.IsEnabled = true;
+                RenameOptionButton.IsEnabled = true;
             }
             else
             {
@@ -360,6 +447,9 @@ namespace FFXIV_TexTools.Views
                 OptionDescription.IsEnabled = false;
                 OptionImageButton.IsEnabled = false;
                 RemoveOptionButton.IsEnabled = false;
+                MoveOptionUpButton.IsEnabled = false;
+                MoveOptionDownButton.IsEnabled = false;
+                RenameOptionButton.IsEnabled = false;
             }
 
             if (SelectedItem != null)

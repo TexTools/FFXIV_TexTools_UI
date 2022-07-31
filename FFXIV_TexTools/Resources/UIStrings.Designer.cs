@@ -2823,5 +2823,16 @@ namespace FFXIV_TexTools.Resources {
                 return ResourceManager.GetString("XIV_Mod_Archive", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   查找类似 Rename 的本地化字符串。
+        /// </summary>
+        public static string Rename
+        {
+            get
+            {
+                return ResourceManager.GetString("Rename", resourceCulture);
+            }
+        }
     }
 }

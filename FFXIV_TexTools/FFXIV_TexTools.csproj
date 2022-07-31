@@ -469,6 +469,9 @@
     <Compile Include="Views\ModPack\Standard\StandardModpackLevelSelect.xaml.cs">
       <DependentUpon>StandardModpackLevelSelect.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\ModPack\Wizard\EditableOptionControl.xaml.cs">
+      <DependentUpon>EditableOptionControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\ModPack\Wizard\ImportModPackWizard.xaml.cs">
       <DependentUpon>ImportModPackWizard.xaml</DependentUpon>
     </Compile>
@@ -730,6 +733,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\ModPack\Wizard\EditableOptionControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\ModPack\Wizard\ImportModPackWizard.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -846,7 +853,9 @@
     <EmbeddedResource Include="Resources\UIStrings.de.resx" />
     <EmbeddedResource Include="Resources\UIStrings.fr.resx" />
     <EmbeddedResource Include="Resources\UIStrings.ja.resx" />
-    <EmbeddedResource Include="Resources\UIStrings.ko.resx" />
+    <EmbeddedResource Include="Resources\UIStrings.ko.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Resources\UIStrings.zh.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>UIStrings.zh.Designer.cs</LastGenOutput>

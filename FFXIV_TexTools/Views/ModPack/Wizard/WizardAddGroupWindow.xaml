@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:FFXIV_TexTools.Views"
         xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:models="clr-namespace:FFXIV_TexTools.Models"
+        xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         xmlns:Controls="clr-namespace:FFXIV_TexTools.Views.Controls"
         x:Class="FFXIV_TexTools.Views.WizardAddGroupWindow"
         mc:Ignorable="d"
@@ -67,7 +68,18 @@
                                 <Button x:Name="AddOptionButton" Grid.Column="1" Content="{Binding Source={x:Static resx:UIStrings.Add}}" Click="AddOptionButton_Click"/>
                             </Grid>
                             <ListBox x:Name="OptionList" Grid.Row="1" SelectionChanged="OptionList_SelectionChanged" Margin="5"/>
-                            <Button x:Name="RemoveOptionButton" Grid.Row="2" Content="{Binding Source={x:Static resx:UIStrings.Remove}}" Click="RemoveOptionButton_Click" IsEnabled="False"/>
+                            <Grid Grid.Row="2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <Button x:Name="RemoveOptionButton" Grid.Column="0" Content="{Binding Source={x:Static resx:UIStrings.Remove}}" Click="RemoveOptionButton_Click" IsEnabled="False"/>
+                                <Button x:Name="RenameOptionButton" Grid.Column="1" Content="{Binding Source={x:Static resx:UIStrings.Rename}}" Click="RenameOptionButton_Click" IsEnabled="False"/>
+                                <Button x:Name="MoveOptionUpButton" Grid.Column="2" Content="{iconPacks:FontAwesome Kind=ArrowUpSolid}" Click="MoveOptionUpButton_Click" IsEnabled="False"/>
+                                <Button x:Name="MoveOptionDownButton" Grid.Column="3" Content="{iconPacks:FontAwesome Kind=ArrowDownSolid}" Click="MoveOptionDownButton_Click" IsEnabled="False"/>
+                            </Grid>                            
                         </Grid>
                     </GroupBox>
 

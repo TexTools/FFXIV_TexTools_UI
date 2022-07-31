@@ -2856,4 +2856,7 @@
   <data name="You may choose new items for this modpack to apply to, if desired. Press [Continue] when done." xml:space="preserve">
     <value>如果需要，您可以选择此mod包要应用的新道具.完成后按[继续].</value>
   </data>
+  <data name="Rename" xml:space="preserve">
+    <value>改名</value>
+  </data>
 </root>
