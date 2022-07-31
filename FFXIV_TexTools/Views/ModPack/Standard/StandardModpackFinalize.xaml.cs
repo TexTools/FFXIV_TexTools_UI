@@ -36,8 +36,8 @@ namespace FFXIV_TexTools.Views
             InitializeComponent();
 
             var firstItem = _vm.Entries[0].Item;
-            ModPackName.Text = firstItem.Name + " Modpack";
-            ModPackAuthor.Text = String.IsNullOrWhiteSpace(Settings.Default.Default_Author) ? "TexTools User" : Settings.Default.Default_Author;
+            ModPackName.Text = firstItem.Name + " Modpack".L();
+            ModPackAuthor.Text = String.IsNullOrWhiteSpace(Settings.Default.Default_Author) ? "TexTools User".L() : Settings.Default.Default_Author;
             ModPackUrl.Text = Settings.Default.Default_Modpack_Url;
             ModPackVersion.Text = "1.0.0";
             BackButton.Click += BackButton_Click;
@@ -53,7 +53,7 @@ namespace FFXIV_TexTools.Views
                         UIMessages.NoNameFoundTitle, MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) ==
                     System.Windows.Forms.DialogResult.OK)
                 {
-                    ModPackName.Text = "ModPack";
+                    ModPackName.Text = "ModPack".L();
                 }
                 else
                 {
@@ -106,7 +106,7 @@ namespace FFXIV_TexTools.Views
                         UIMessages.NoAuthorFoundTitle, MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) ==
                     System.Windows.Forms.DialogResult.OK)
                 {
-                    ModPackAuthor.Text = "TexTools User";
+                    ModPackAuthor.Text = "TexTools User".L();
                 }
                 else
                 {

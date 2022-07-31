@@ -79,10 +79,10 @@ namespace FFXIV_TexTools.ViewModels
             topLevelItem.Header = "";
             if(im.ModelInfo.PrimaryID > 0)
             {
-                topLevelItem.Header += CapFirst(item.GetPrimaryItemType().ToString()) + " #" + im.ModelInfo.PrimaryID.ToString().PadLeft(4, '0');
+                topLevelItem.Header += CapFirst(item.GetPrimaryItemType().ToString().L()) + " #" + im.ModelInfo.PrimaryID.ToString().PadLeft(4, '0');
             } else
             {
-                topLevelItem.Header += CapFirst(item.GetPrimaryItemType().ToString());
+                topLevelItem.Header += CapFirst(item.GetPrimaryItemType().ToString().L());
             }
             _tree.Items.Add(topLevelItem);
 
@@ -152,13 +152,13 @@ namespace FFXIV_TexTools.ViewModels
                 if (!imcVariantHeaders.ContainsKey(imcVariant))
                 {
                     imcVariantHeaders.Add(imcVariant, new TreeViewItem());
-                    imcVariantHeaders[imcVariant].Header = "Variant " + i.ModelInfo.ImcSubsetID;
+                    imcVariantHeaders[imcVariant].Header = "Variant ".L() + i.ModelInfo.ImcSubsetID;
                     imcVariantHeaders[imcVariant].DataContext = i.ModelInfo.ImcSubsetID;
 
-                    imcVariantHeaders[imcVariant].Header += " - Material Set: " + mtrlVariant;
+                    imcVariantHeaders[imcVariant].Header += " - Material Set: ".L() + mtrlVariant;
 
                     var hiddenParts = MaskToHidenParts(info.Mask);
-                    imcVariantHeaders[i.ModelInfo.ImcSubsetID].Header += " | Hidden Parts: ";
+                    imcVariantHeaders[i.ModelInfo.ImcSubsetID].Header += " | Hidden Parts: ".L();
 
                     if (hiddenParts.Count > 0)
                     {
@@ -166,7 +166,7 @@ namespace FFXIV_TexTools.ViewModels
                     }
                     else
                     {
-                        imcVariantHeaders[imcVariant].Header += "None";
+                        imcVariantHeaders[imcVariant].Header += "None".L();
                     }
 
                     imcVariantHeaders[imcVariant].Header += " - [%] " + i.Name;

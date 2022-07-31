@@ -271,7 +271,7 @@ namespace FFXIV_TexTools
                 } catch (Exception ex)
                 {
                     if (!String.IsNullOrWhiteSpace(Properties.Settings.Default.Lumina_Directory) && Properties.Settings.Default.Lumina_IsEnabled == true) {
-                        System.Windows.MessageBox.Show("Unable to restore Lumina settings, directory was invalid.", "Lumina Directory Error.");
+                        System.Windows.MessageBox.Show("Unable to restore Lumina settings, directory was invalid.".L(), "Lumina Directory Error.".L());
                     }
 
                     luminaDir = null;
@@ -371,7 +371,7 @@ namespace FFXIV_TexTools
             // version update process after it's done.
             if(IsUiLocked)
             {
-                _lockProgress.Report("Rebuilding Cache... This may take up to 60 seconds.  (Rebuild Reason: " + reason.ToString() + ")");
+                _lockProgress.Report($"Rebuilding Cache... This may take up to 60 seconds.  (Rebuild Reason: {reason.ToString()._()})".L());
             }
 
             if (reason == CacheRebuildReason.FFXIVUpdate)
@@ -431,7 +431,7 @@ namespace FFXIV_TexTools
                     {
                         if (!String.IsNullOrWhiteSpace(Properties.Settings.Default.Lumina_Directory)  && Properties.Settings.Default.Lumina_IsEnabled == true)
                         {
-                            System.Windows.MessageBox.Show("Unable to restore Lumina settings, directory was invalid.", "Lumina Directory Error.");
+                            System.Windows.MessageBox.Show("Unable to restore Lumina settings, directory was invalid.".L(), "Lumina Directory Error.".L());
                         }
 
                         luminaDir = null;
@@ -454,8 +454,8 @@ namespace FFXIV_TexTools
                         }
 
                     }
-                    FlexibleMessageBox.Show("An error occurred while attempting to rebuild the cache. This may be caused by this version of Final Fantasy XIV " +
-                        "not being supported by this version of TexTools.\n\n" + ex.Message, "Cache Rebuild Error.", MessageBoxButtons.OK,  MessageBoxIcon.Error, 
+                    FlexibleMessageBox.Show(("An error occurred while attempting to rebuild the cache. This may be caused by this version of Final Fantasy XIV " +
+                        "not being supported by this version of TexTools.\n\n").L() + ex.Message, "Cache Rebuild Error.".L(), MessageBoxButtons.OK,  MessageBoxIcon.Error, 
                         MessageBoxDefaultButton.Button1);
                 }
 
@@ -479,7 +479,7 @@ namespace FFXIV_TexTools
                         var backupsDirectory = new DirectoryInfo(Properties.Settings.Default.Backup_Directory);
 
 
-                        await LockUi("Creating Initial Backups", "This should only take a moment...");
+                        await LockUi("Creating Initial Backups".L(), "This should only take a moment...".L());
                         try
                         {
                             await problemChecker.BackupIndexFiles(backupsDirectory);
@@ -542,7 +542,7 @@ namespace FFXIV_TexTools
 
                 await UnlockUi();
 
-                ShowStatusMessage("Item Loaded Successfully.");
+                ShowStatusMessage("Item Loaded Successfully.".L());
                 if (ItemChanged != null)
                 {
                     ItemChanged.Invoke(this, null);
@@ -755,7 +755,7 @@ namespace FFXIV_TexTools
 
                 if (toKill.Count > 0)
                 {
-                    FlexibleMessageBox.Show("More than one TexTools process detected.  Shutting down other TexTools copies.", "Multi-Application Shutdown.", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    FlexibleMessageBox.Show("More than one TexTools process detected.  Shutting down other TexTools copies.".L(), "Multi-Application Shutdown.".L(), MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
                     foreach (var p in toKill)
                     {
@@ -836,7 +836,7 @@ namespace FFXIV_TexTools
                 Properties.Settings.Default.Default_Race_Selection = XivRace.Hyur_Midlander_Male.GetDisplayName();
             }
 
-            ShowStatusMessage("Item List Loaded Successfully.");
+            ShowStatusMessage("Item List Loaded Successfully.".L());
             if (TreeRefreshed != null)
             {
                 TreeRefreshed.Invoke(this, null);
@@ -986,10 +986,10 @@ namespace FFXIV_TexTools
         /// </summary>
         private async void Menu_AutoSkinUpdate_Click(object sender, RoutedEventArgs e)
         {
-            var r = FlexibleMessageBox.Show("This will auto-assign the skin materials for all moded player models.\n Are you sure you wish to proceed?", "Skin Auto-Assign Confirmation", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1);
+            var r = FlexibleMessageBox.Show("This will auto-assign the skin materials for all moded player models.\n Are you sure you wish to proceed?".L(), "Skin Auto-Assign Confirmation".L(), MessageBoxButtons.OKCancel, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1);
             if (r == System.Windows.Forms.DialogResult.OK)
             {
-                await LockUi("Updating skin materials for all modded models...","This may take a few minutes if you have many mods.");
+                await LockUi("Updating skin materials for all modded models...".L(),"This may take a few minutes if you have many mods.".L());
                 try
                 {
                     var changed = 0;
@@ -999,7 +999,7 @@ namespace FFXIV_TexTools
                         changed = await _mdl.CheckAllModsSkinAssignments();
                     });
 
-                    FlexibleMessageBox.Show("Skin Auto-Assigment is complete.\n\n" + changed + " Models updated.", "Skin Auto - Assign Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    FlexibleMessageBox.Show($"Skin Auto-Assigment is complete.\n\n{changed._()} Models updated.".L(), "Skin Auto - Assign Complete".L(), MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                 }
                 catch (Exception ex)
@@ -1008,7 +1008,7 @@ namespace FFXIV_TexTools
                     {
                         ex = ex.InnerException;
                     }
-                    FlexibleMessageBox.Show("An error occured while trying to update player models.\nYour mods/game files have not been altered.\n\nError:" + ex.Message, "Skin Auto-Assign Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    FlexibleMessageBox.Show("An error occured while trying to update player models.\nYour mods/game files have not been altered.\n\nError:".L() + ex.Message, "Skin Auto-Assign Error".L(), MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 await UnlockUi();
             }
@@ -1152,7 +1152,7 @@ namespace FFXIV_TexTools
         {
             var modPackDirectory = new DirectoryInfo(Settings.Default.ModPack_Directory);
 
-            var openFileDialog = new OpenFileDialog {InitialDirectory = modPackDirectory.FullName, Filter = "TexToolsModPack TTMP (*.ttmp;*.ttmp2)|*.ttmp;*.ttmp2", Multiselect = true};
+            var openFileDialog = new OpenFileDialog {InitialDirectory = modPackDirectory.FullName, Filter = "TexToolsModPack TTMP (*.ttmp;*.ttmp2)|*.ttmp;*.ttmp2".L(), Multiselect = true};
 
             if (openFileDialog.ShowDialog() != System.Windows.Forms.DialogResult.OK) 
                 return;
@@ -1226,7 +1226,7 @@ namespace FFXIV_TexTools
 
                 if (index.IsIndexLocked(XivDataFile._0A_Exd))
                 {
-                    FlexibleMessageBox.Show(UIMessages.IndexLockedErrorMessage, UIMessages.IndexLockedErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    FlexibleMessageBox.Show("Error Accessing Index File\n\n\nPlease exit the game before proceeding.\n---------------------------------------------------- - ".L(), "Index Access Error".L(), MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                     return (0, 1, 0);
                 }
@@ -1363,10 +1363,10 @@ namespace FFXIV_TexTools
 
         private async void Menu_RebuildCache_Click(object sender, RoutedEventArgs e)
         {
-            var r = FlexibleMessageBox.Show("This will rebuild the TexTools cache.\nThis may take up to 5 minutes if you have many mods installed.", "Cache Rebuild Confirmation", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1);
+            var r = FlexibleMessageBox.Show("This will rebuild the TexTools cache.\nThis may take up to 5 minutes if you have many mods installed.".L(), "Cache Rebuild Confirmation".L(), MessageBoxButtons.OKCancel, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1);
             if (r == System.Windows.Forms.DialogResult.OK)
             {
-                await LockUi("Rebuilding Cache");
+                await LockUi("Rebuilding Cache".L());
                 try
                 {
                     await Task.Run(() =>
@@ -1382,7 +1382,7 @@ namespace FFXIV_TexTools
                         ex = ex.InnerException;
                     }
 
-                    FlexibleMessageBox.Show("Unable to rebuild cache file.\n\nError:" + ex.Message, "Cache Rebuild Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    FlexibleMessageBox.Show("Unable to rebuild cache file.\n\nError:".L() + ex.Message, "Cache Rebuild Error".L(), MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 await UnlockUi();
                 await RefreshTree(this);
@@ -1390,10 +1390,10 @@ namespace FFXIV_TexTools
         }
         private async void Menu_ScanForSets_Click(object sender, RoutedEventArgs e)
         {
-            var r = FlexibleMessageBox.Show("This will scan the entire FFXIV file system for new item sets.\n\nThis operation can take up to an hour.\nAre you sure you wish to proceed?.", "Set Scan Confirmation", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1);
+            var r = FlexibleMessageBox.Show("This will scan the entire FFXIV file system for new item sets.\n\nThis operation can take up to an hour.\nAre you sure you wish to proceed?.".L(), "Set Scan Confirmation".L(), MessageBoxButtons.OKCancel, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1);
             if (r == System.Windows.Forms.DialogResult.OK)
             {
-                await LockUi("Scanning for new Item Sets", "This can take up to roughly an hour, depending on computer specs.");
+                await LockUi("Scanning for new Item Sets".L(), "This can take up to roughly an hour, depending on computer specs.".L());
 
                 // Stop the worker, in case it was reading from the file for some reason.
                 XivCache.CacheWorkerEnabled = false;
@@ -1403,7 +1403,7 @@ namespace FFXIV_TexTools
                     await Task.Run(XivCache.RebuildAllRoots);
                 } catch(Exception ex)
                 {
-                    FlexibleMessageBox.Show( "An error occured while trying to scan for new item sets.\n\n" + ex.Message, "Item Scan Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    FlexibleMessageBox.Show( "An error occured while trying to scan for new item sets.\n\n".L() + ex.Message, "Item Scan Error".L(), MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 await UnlockUi();
                 await RefreshTree();
@@ -1427,7 +1427,7 @@ namespace FFXIV_TexTools
                     File.Delete(targetPath.FullName);
                     File.Copy(filePath, targetPath.FullName);
 
-                    FlexibleMessageBox.Show("Item Sets loaded.\nRestarting TexTools.", "TexTools Restarting", MessageBoxButtons.OK);
+                    FlexibleMessageBox.Show("Item Sets loaded.\nRestarting TexTools.".L(), "TexTools Restarting".L(), MessageBoxButtons.OK);
                     Restart();
                 }
             }
@@ -1440,7 +1440,7 @@ namespace FFXIV_TexTools
         {
             if(XivCache.GameInfo.UseLumina)
             {
-                FlexibleMessageBox.Show("Cannot perform Start Over while Lumina Mode is active.", "Lumina Mode Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                FlexibleMessageBox.Show("Cannot perform Start Over while Lumina Mode is active.".L(), "Lumina Mode Error".L(), MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                 return;
             }
@@ -1488,7 +1488,7 @@ namespace FFXIV_TexTools
                         ex = ex.InnerException;
                     }
 
-                    var msg = UIMessages.StartOverErrorMessage + "\n\nError: " + ex.Message;
+                    var msg = UIMessages.StartOverErrorMessage + "\n\nError: ".L() + ex.Message;
                     FlexibleMessageBox.Show(msg,
                         UIMessages.StartOverErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     await UnlockUi();
@@ -1525,7 +1525,7 @@ namespace FFXIV_TexTools
                 var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);                
                 var problemChecker = new ProblemChecker(gameDirectory);
                 var backupsDirectory = new DirectoryInfo(Properties.Settings.Default.Backup_Directory);
-                await LockUi("Backing Up Indexes", "If you have many mods enabled, this may take some time...");
+                await LockUi("Backing Up Indexes".L(), "If you have many mods enabled, this may take some time...".L());
                 try
                 {
                     await problemChecker.BackupIndexFiles(backupsDirectory);
@@ -1598,15 +1598,15 @@ namespace FFXIV_TexTools
             var url = UIStrings.Index_Backups_Url;
             if (url == "NONE" || String.IsNullOrWhiteSpace(url))
             {
-                FlexibleMessageBox.Show("Index backup download is not currently supported for your client language.", "Web Download Error", MessageBoxButtons.OK, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1);
+                FlexibleMessageBox.Show("Index backup download is not currently supported for your client language.".L(), "Web Download Error".L(), MessageBoxButtons.OK, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1);
                 return;
             }
 
-            var result = FlexibleMessageBox.Show("This will download index backups from the internet. Proceed?", "Web Download Confirmation",MessageBoxButtons.OKCancel, MessageBoxIcon.Information, MessageBoxDefaultButton.Button2);
+            var result = FlexibleMessageBox.Show("This will download index backups from the internet. Proceed?".L(), "Web Download Confirmation".L(),MessageBoxButtons.OKCancel, MessageBoxIcon.Information, MessageBoxDefaultButton.Button2);
 
             if (result != System.Windows.Forms.DialogResult.OK) return;
 
-            await LockUi("Downloading Backups");
+            await LockUi("Downloading Backups".L());
             string localPath = null;
             try
             {
@@ -1616,7 +1616,7 @@ namespace FFXIV_TexTools
                     tempDir += "/index_backup";
                     Directory.CreateDirectory(tempDir);
 
-                    _lockProgress.Report("Downloading Indexes...");
+                    _lockProgress.Report("Downloading Indexes...".L());
                     localPath = Path.GetTempFileName();
                     using (var client = new WebClient())
                     {
@@ -1631,20 +1631,20 @@ namespace FFXIV_TexTools
                     }
 
 
-                    _lockProgress.Report("Unzipping new Indexes...");
+                    _lockProgress.Report("Unzipping new Indexes...".L());
                     ZipFile.ExtractToDirectory(localPath, tempDir);
 
-                    _lockProgress.Report("Checking downloaded index version...");
+                    _lockProgress.Report("Checking downloaded index version...".L());
                     var versionRaw = File.ReadAllText(tempDir + "/ffxivgame.ver");
                     
                     Version version = new Version(versionRaw.Substring(0, versionRaw.LastIndexOf(".", StringComparison.Ordinal)));
 
                     if (version != XivCache.GameInfo.GameVersion)
                     {
-                        throw new Exception("Downloaded Index version does not match game version.");
+                        throw new Exception("Downloaded Index version does not match game version.".L());
                     }
 
-                    _lockProgress.Report("Removing old Backups...");
+                    _lockProgress.Report("Removing old Backups...".L());
                     var backupDir = new DirectoryInfo(Settings.Default.Backup_Directory);
                     foreach (FileInfo file in backupDir.GetFiles())
                     {
@@ -1652,7 +1652,7 @@ namespace FFXIV_TexTools
                     }
 
 
-                    _lockProgress.Report("Copying new indexes to backup directory...");
+                    _lockProgress.Report("Copying new indexes to backup directory...".L());
                     var newFiles = Directory.GetFiles(tempDi.FullName);
                     foreach (var nFile in newFiles)
                     {
@@ -1665,18 +1665,18 @@ namespace FFXIV_TexTools
                         }
                         catch (Exception ex)
                         {
-                            throw new Exception("Failed to copy index files.\n\n" + ex.Message);
+                            throw new Exception("Failed to copy index files.\n\n".L() + ex.Message);
                         }
                     }
 
 
-                    _lockProgress.Report("Job Done.");
+                    _lockProgress.Report("Job Done.".L());
                 });
-                FlexibleMessageBox.Show("Successfully downloaded fresh index backups.\nYou may now use [Start Over] to apply them, if desired.", "Backup Download Success", MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
+                FlexibleMessageBox.Show("Successfully downloaded fresh index backups.\nYou may now use [Start Over] to apply them, if desired.".L(), "Backup Download Success".L(), MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
             }
             catch(Exception Ex)
             {
-                FlexibleMessageBox.Show("Unable to download Index Backups.\n\n" + Ex.Message, "Web Download Error", MessageBoxButtons.OK, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1);
+                FlexibleMessageBox.Show("Unable to download Index Backups.\n\n".L() + Ex.Message, "Web Download Error".L(), MessageBoxButtons.OK, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1);
 
             }
             finally
@@ -1718,7 +1718,7 @@ namespace FFXIV_TexTools
                 _lockProgressController.SetIndeterminate();
             }
 
-            _lockProgress.Report(data.Message + $" ({data.Count}/{data.Total})");
+            _lockProgress.Report(data.Message.L() + $" ({data.Count}/{data.Total})");
         }
         private async void Menu_CleanUpModList_Click(object sender, RoutedEventArgs e)
         {
@@ -1727,15 +1727,15 @@ namespace FFXIV_TexTools
             System.Windows.Forms.DialogResult result;
             if(queueLength > 100)
             {
-                result = FlexibleMessageBox.Show("This will update the Modlist to ensure all modded files are\nlabeled under the correct items.\n\nAs the Queue currently has a large amount of files still processing,\nthis operation may take an extended amount of time to complete.\n(Up to one hour)", "Modlist Cleanup Confirmation", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
+                result = FlexibleMessageBox.Show("This will update the Modlist to ensure all modded files are\nlabeled under the correct items.\n\nAs the Queue currently has a large amount of files still processing,\nthis operation may take an extended amount of time to complete.\n(Up to one hour)".L(), "Modlist Cleanup Confirmation".L(), MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
             } else
             {
-                result = FlexibleMessageBox.Show("This will update the Modlist to ensure all modded files are\nlabeled under the correct items.\n\nThis may take up to 5 minutes to complete.", "Modlist Cleanup Confirmation", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
+                result = FlexibleMessageBox.Show("This will update the Modlist to ensure all modded files are\nlabeled under the correct items.\n\nThis may take up to 5 minutes to complete.".L(), "Modlist Cleanup Confirmation".L(), MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
             }
 
             if (result != System.Windows.Forms.DialogResult.OK) return;
 
-            await LockUi("Cleaning up Modlist");
+            await LockUi("Cleaning up Modlist".L());
             try
             {
                 Progress<(int Count, int Total, string Message)> reporter = new Progress<(int Count, int Total, string Message)>(ReportNumericProgress);
@@ -1745,11 +1745,11 @@ namespace FFXIV_TexTools
                     var modding = new Modding(XivCache.GameInfo.GameDirectory);
                     await modding.CleanUpModlist(reporter);
                 });
-                FlexibleMessageBox.Show("The Modlist was cleaned up successfully.", "Cleanup Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                FlexibleMessageBox.Show("The Modlist was cleaned up successfully.".L(), "Cleanup Complete".L(), MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch(Exception ex)
             {
-                FlexibleMessageBox.Show("An error occurred during the cleanup process.\n\nError: " + ex.Message, "Cleanup Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                FlexibleMessageBox.Show("An error occurred during the cleanup process.\n\nError: ".L() + ex.Message, "Cleanup Error".L(), MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally
             {
@@ -1771,10 +1771,10 @@ namespace FFXIV_TexTools
 
         private async void Menu_RecoverSpace_Click(object sender, RoutedEventArgs e)
         {
-            var result = FlexibleMessageBox.Show("This will recover unused space in the game files by defragmenting the modded DAT files.\n\nPlease do not close TexTools or open FFXIV until this operation is complete", "Recover Space Confirmation", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
+            var result = FlexibleMessageBox.Show("This will recover unused space in the game files by defragmenting the modded DAT files.\n\nPlease do not close TexTools or open FFXIV until this operation is complete".L(), "Recover Space Confirmation".L(), MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
 
             if (result != System.Windows.Forms.DialogResult.OK) return;
-            await LockUi("Defragmenting DAT Files");
+            await LockUi("Defragmenting DAT Files".L());
             try
             {
                 long savedBytes = 0;
@@ -1787,11 +1787,11 @@ namespace FFXIV_TexTools
                 });
 
                 var savedSpace = FormatBytes(savedBytes);
-                FlexibleMessageBox.Show($"DAT File Defragmentation completed successfully.\n\n{savedSpace} of unused space has been recovered.", "Defragmentation Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                FlexibleMessageBox.Show($"DAT File Defragmentation completed successfully.\n\n{savedSpace._()} of unused space has been recovered.".L(), "Defragmentation Complete".L(), MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
-                FlexibleMessageBox.Show("An error occurred during the defragmentation process.\n\nError: " + ex.Message, "Modlist Defragmentation Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                FlexibleMessageBox.Show("An error occurred during the defragmentation process.\n\nError: ".L() + ex.Message, "Modlist Defragmentation Error".L(), MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally
             {

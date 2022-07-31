@@ -7,8 +7,9 @@
              xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls" 
              xmlns:hx="http://helix-toolkit.org/wpf/SharpDX"
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
-             xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
              mc:Ignorable="d" 
+             xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
+             resx:Localization.Enabled="True"             
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
         <hx:RenderTechniqueConverter x:Key="RenderTechniqueConverter"/>

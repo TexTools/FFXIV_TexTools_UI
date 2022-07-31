@@ -87,7 +87,7 @@ namespace FFXIV_TexTools.Views
 
             AddText($"{UIStrings.ProblemCheck_Initialize}\n\n", textColor);
 
-            AddText($"{UIStrings.ProblemCheck_IndexDat}\n", secondaryTextColor);
+            AddText($"{UIStrings.ProblemCheck_IndexDat}\n\n", secondaryTextColor);
 
             if (await CheckIndexDatCounts())
             {
@@ -117,7 +117,7 @@ namespace FFXIV_TexTools.Views
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Loading Canceled\n\n{ex.Message}");
+                Debug.WriteLine($"Loading Canceled\n\n{ex.Message._()}".L());
             }
 
 
@@ -129,7 +129,7 @@ namespace FFXIV_TexTools.Views
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Loading Canceled\n\n{ex.Message}");
+                Debug.WriteLine($"Loading Canceled\n\n{ex.Message._()}".L());
             }
 
             ProgressBar.Value = 0;
@@ -149,7 +149,7 @@ namespace FFXIV_TexTools.Views
 
             foreach (var file in filesToCheck)
             {
-                AddText($"\t{file.GetDataFileName()} Index Files", textColor);
+                AddText($"\t{file.GetDataFileName()._()} Index Files".L(), textColor);
 
                 try
                 {
@@ -208,7 +208,7 @@ namespace FFXIV_TexTools.Views
 
             foreach (var file in filesToCheck)
             {
-                AddText($"\t{file.GetDataFileName()} Dat Files", textColor);
+                AddText($"\t{file.GetDataFileName()._()} Dat Files".L(), textColor);
 
                 try
                 {
@@ -258,12 +258,12 @@ namespace FFXIV_TexTools.Views
 
                 // Someone somehow had their entire modlist filled with 0's causing the deserealization to 
                 // just return null so this was added to still detect that as a corrupted modlist
-                if (modList == null) throw new Exception("How did this even happen?");
+                if (modList == null) throw new Exception("How did this even happen?".L());
             }
             catch
             {
                 FlexibleMessageBox.Show(
-                    $"{UIStrings.ProblemCheck_ErrorsFound}\n", "Corrupted ModList Detected",
+                    $"{UIStrings.ProblemCheck_ErrorsFound}\n", "Corrupted ModList Detected".L(),
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                 await Task.Run( async () =>
@@ -275,15 +275,14 @@ namespace FFXIV_TexTools.Views
                         await problemChecker.PerformStartOver(indexBackupsDirectory, null, XivLanguages.GetXivLanguage(Properties.Settings.Default.Application_Language));
 
                         Dispatcher.Invoke(() => AddText("\t\u2714", "Green"));
-                        Dispatcher.Invoke(() => AddText("\tModList restored", "Green"));
+                        Dispatcher.Invoke(() => AddText("\tModList restored".L(), "Green"));
                     }
                     catch
                     {
                         Dispatcher.Invoke(() => AddText("\t\u2716", "Red"));
-                        Dispatcher.Invoke(() => AddText($"\tModList Corrupted\n", "Red"));
+                        Dispatcher.Invoke(() => AddText($"\tModList Corrupted\n".L(), "Red"));
 
-                        FlexibleMessageBox.Show("Unable to repair TexTools\n\n" +
-                            "Please manually update your index backups.", "Repair Failed",
+                        FlexibleMessageBox.Show("Unable to repair TexTools\n\nPlease manually update your index backups.".L(), "Repair Failed".L(),
                             MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 });
@@ -309,7 +308,7 @@ namespace FFXIV_TexTools.Views
                 if(removedBlocks > 0)
                 {
 
-                    Dispatcher.Invoke(() => AddText($"\tPurged {removedBlocks} invalid unused mod data slots.\n", "Orange"));
+                    Dispatcher.Invoke(() => AddText($"\tPurged {removedBlocks._()} invalid unused mod data slots.\n".L(), "Orange"));
                 }
 
 
@@ -363,13 +362,13 @@ namespace FFXIV_TexTools.Views
                         if (mod.data.originalOffset <= 0)
                         {
                             textsToAdd.Add(("\t\u2716\n", "Red"));
-                            textsToAdd.Add(($"\tOriginal FFXIV Offset is Invalid.  Unrecoverable ModList state.\n\t Please use [Download Index Backups] =>  [Start Over].\n", "Red"));
+                            textsToAdd.Add(($"\tOriginal FFXIV Offset is Invalid.  Unrecoverable ModList state.\n\t Please use [Download Index Backups] =>  [Start Over].\n".L(), "Red"));
                             unresolvedCriticalErrors++;
                         }
                         else if (mod.data.modOffset <= 0)
                         {
                             textsToAdd.Add(("\t\u2716\n", "Red"));
-                            textsToAdd.Add(($"\tMod Data Offset is invalid. \n\t The Mod will be disabled, deleted, and the mod slot will be purged from the ModList.\n", "Red"));
+                            textsToAdd.Add(($"\tMod Data Offset is invalid. \n\t The Mod will be disabled, deleted, and the mod slot will be purged from the ModList.\n".L(), "Red"));
                             purgeMod = true;
                         }
                         else
@@ -393,7 +392,7 @@ namespace FFXIV_TexTools.Views
                         {
                             textsToAdd.Add(("\t\u2716\n", "Red"));
                             textsToAdd.Add(($"\t{string.Format(UIStrings.ProblemCheck_UnkType, fileType)} [{mod.data.modOffset}, {((mod.data.modOffset / 8) & 0x0F) / 2}]\n", "Red"));
-                            textsToAdd.Add(($"\tThe Mod will automatically be disabled and deleted.\n", "Red"));
+                            textsToAdd.Add(($"\tThe Mod will automatically be disabled and deleted.\n".L(), "Red"));
                             purgeMod = true;
                         }
                         else
@@ -406,7 +405,7 @@ namespace FFXIV_TexTools.Views
                         {
 
                             textsToAdd.Add(("\t\u2716\n", "Orange"));
-                            textsToAdd.Add(($"Index 1/2 Mismatch: Index 2 entry will be updated to match Index 1.\n", "Orange"));
+                            textsToAdd.Add(($"Index 1/2 Mismatch: Index 2 entry will be updated to match Index 1.\n".L(), "Orange"));
                             index2CorrectionNeeded = true;
                         }
                         else
@@ -443,7 +442,7 @@ namespace FFXIV_TexTools.Views
 
                                                 err = true;
                                                 textsToAdd.Add(("\t\u2714\n", "Orange"));
-                                                textsToAdd.Add(($"\tMod had an incorrectly reported file size.  The reported size has been corrected.\n", "Orange"));
+                                                textsToAdd.Add(($"\tMod had an incorrectly reported file size.  The reported size has been corrected.\n".L(), "Orange"));
                                             }
                                         }
 
@@ -454,7 +453,7 @@ namespace FFXIV_TexTools.Views
                                     } catch
                                     {
                                         textsToAdd.Add(("\t\u2716\n", "Red"));
-                                        textsToAdd.Add(($"\tUnable to decompress Texture file.  File is most likely corrupt.  The mod will be deleted.\n", "Red"));
+                                        textsToAdd.Add(($"\tUnable to decompress Texture file.  File is most likely corrupt.  The mod will be deleted.\n".L(), "Red"));
                                         purgeMod = true;
                                     }
                                 } else
@@ -475,7 +474,7 @@ namespace FFXIV_TexTools.Views
                                 {
 
                                     textsToAdd.Add(("\t\u2716\n", "Red"));
-                                    textsToAdd.Add(($"\tUnable to resolve child files for mod.  File is mod likely corrupt. The mod will be deleted.\n", "Red"));
+                                    textsToAdd.Add(($"\tUnable to resolve child files for mod.  File is mod likely corrupt. The mod will be deleted.\n".L(), "Red"));
                                     purgeMod = true;
                                     skip = true;
                                 }
@@ -506,24 +505,24 @@ namespace FFXIV_TexTools.Views
                                         textsToAdd.Add(("\t\u2716\n", color));
                                         foreach (var file in missingFiles)
                                         {
-                                            textsToAdd.Add(($"Missing File: {file}\n", color));
+                                            textsToAdd.Add(($"Missing File: {file._()}\n".L(), color));
                                         }
-                                        textsToAdd.Add(($"\tSome files this mod references are missing or disabled.\n", color));
+                                        textsToAdd.Add(($"\tSome files this mod references are missing or disabled.\n".L(), color));
 
                                         if (extension == ".mdl")
                                         {
-                                            textsToAdd.Add(($"\tThis may cause some variants of this model to be invisible in game.\n", color));
+                                            textsToAdd.Add(($"\tThis may cause some variants of this model to be invisible in game.\n".L(), color));
                                             unresolvedWarnings++;
 
                                         }
                                         else if (extension == ".mtrl")
                                         {
-                                            textsToAdd.Add(($"\tThis may cause some variants of this model to be invisible in game.\n", color));
+                                            textsToAdd.Add(($"\tThis may cause some variants of this model to be invisible in game.\n".L(), color));
                                             unresolvedWarnings++;
                                         }
                                         else if (extension == ".meta")
                                         {
-                                            textsToAdd.Add(($"\tThis may cause some racial models to be invisible in game.\n", color));
+                                            textsToAdd.Add(($"\tThis may cause some racial models to be invisible in game.\n".L(), color));
                                             unresolvedWarnings++;
                                         }
 
@@ -559,7 +558,7 @@ namespace FFXIV_TexTools.Views
                             }
                             catch
                             {
-                                textsToAdd.Add(($"Critical Error: Unable to Correct Index Discrepency for Mod: {mod.fullPath}\n\tPlease use [Download Index Backups] =>  [Start Over]", "Red"));
+                                textsToAdd.Add(($"Critical Error: Unable to Correct Index Discrepency for Mod: {mod.fullPath._()}\n\tPlease use [Download Index Backups] =>  [Start Over]".L(), "Red"));
                                 unresolvedCriticalErrors++;
                             }
                         }
@@ -578,7 +577,7 @@ namespace FFXIV_TexTools.Views
                             }
                             catch
                             {
-                                textsToAdd.Add(($"Critical Error: Unable to Disable or Delete Mod: {mod.fullPath}\n\tPlease use [Download Index Backups] =>  [Start Over]", "Red"));
+                                textsToAdd.Add(($"Critical Error: Unable to Disable or Delete Mod: {mod.fullPath._()}\n\tPlease use [Download Index Backups] =>  [Start Over]".L(), "Red"));
                                 unresolvedCriticalErrors++;
                             }
                         }
@@ -600,19 +599,19 @@ namespace FFXIV_TexTools.Views
 
                 await Dispatcher.InvokeAsync(() =>
                 {
-                    AddText($"Scanned {modNum} modded files.\n", textColor);
+                    AddText($"Scanned {modNum._()} modded files.\n".L(), textColor);
                     if(unresolvedCriticalErrors > 0)
                     {
-                        AddText($"\t{unresolvedCriticalErrors} Unresolved Critical Errors (May cause crashes in game)\n", "Red");
+                        AddText($"\t{unresolvedCriticalErrors._()} Unresolved Critical Errors (May cause crashes in game)\n".L(), "Red");
                     }
                     if (unresolvedWarnings > 0)
                     {
-                        AddText($"\t{unresolvedWarnings} Warnings (May cause invisible items/models in game)\n", "Orange");
+                        AddText($"\t{unresolvedWarnings._()} Warnings (May cause invisible items/models in game)\n".L(), "Orange");
                     }
 
                     if(resolvedErrors > 0)
                     {
-                        AddText($"\t{resolvedErrors} Resolved Errors (Mod files disabled/deleted)\n", textColor);
+                        AddText($"\t{resolvedErrors._()} Resolved Errors (Mod files disabled/deleted)\n".L(), textColor);
                     }
                 });
                 }, cts.Token);
@@ -625,15 +624,29 @@ namespace FFXIV_TexTools.Views
         {
             var dir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) +
                       "\\My Games\\FINAL FANTASY XIV - A Realm Reborn";
-
             var problem = false;
+
+            if (!Directory.Exists(dir))
+            {
+                dir = _gameDirectory + "\\..\\..\\My Games\\FINAL FANTASY XIV - A Realm Reborn";
+            }
 
             if (Directory.Exists(dir))
             {
                 var DX11 = await Task.Run(() =>
                 {
                     var dx = false;
-
+                    if (!File.Exists($"{dir}\\FFXIV_BOOT.cfg"))
+                    {
+                        if (File.Exists($"{_gameDirectory}\\..\\..\\..\\sdo\\sdologin\\GamePlugin\\GameSetting.xml"))
+                        {
+                            var text = File.ReadAllText($"{_gameDirectory}\\..\\..\\..\\sdo\\sdologin\\GamePlugin\\GameSetting.xml");
+                            if (text.IndexOf("<DX11Option value=\"1\"")!=-1)
+                            {
+                                return true;
+                            }
+                        }
+                    }
                     if (File.Exists($"{dir}\\FFXIV_BOOT.cfg"))
                     {
                         var lines = File.ReadAllLines($"{dir}\\FFXIV_BOOT.cfg");
@@ -664,7 +677,7 @@ namespace FFXIV_TexTools.Views
 
                 if (DX11)
                 {
-                    AddText($"\tFFXIV set to DX11 Mode", textColor);
+                    AddText($"\tFFXIV set to DX11 Mode".L(), textColor);
                     AddText("\t\u2714\n", "Green");
 
                     if (Properties.Settings.Default.DX_Version != "11")
@@ -674,16 +687,16 @@ namespace FFXIV_TexTools.Views
                         Properties.Settings.Default.DX_Version = "11";
                         Properties.Settings.Default.Save();
                         XivCache.SetGameInfo(gi.GameDirectory, gi.GameLanguage, 11, true, true, gi.LuminaDirectory, gi.UseLumina);
-                        AddText($"\tChanging TexTools Application Mode to DX11 to match FFXIV settings...", textColor);
+                        AddText($"\tChanging TexTools Application Mode to DX11 to match FFXIV settings...".L(), textColor);
                         AddText("\t\u2714\n", "Green");
 
                         ((MainViewModel)MainWindow.GetMainWindow().DataContext).DXVersionText = "DX: 11";
                     }
                 } else
                 {
-                    AddText($"\tFFXIV set to DX11 Mode", textColor);
+                    AddText($"\tFFXIV set to DX9 Mode".L(), textColor);
                     AddText("\t\u2716\n", "Red");
-                    AddText($"\tFFXIV is set to DX9 Mode.  This may cause issues with some mods and will reduce the available mod data limit.\n", "Orange");
+                    AddText($"\tFFXIV is set to DX9 Mode.  This may cause issues with some mods and will reduce the available mod data limit.\n".L(), "Orange");
 
                     if (Properties.Settings.Default.DX_Version != "9")
                     {
@@ -692,7 +705,7 @@ namespace FFXIV_TexTools.Views
                         Properties.Settings.Default.DX_Version = "9";
                         Properties.Settings.Default.Save();
                         XivCache.SetGameInfo(gi.GameDirectory, gi.GameLanguage, 9, true, true, gi.LuminaDirectory, gi.UseLumina);
-                        AddText($"\tChanging TexTools Application Mode to DX9 to match FFXIV settings...", textColor);
+                        AddText($"\tChanging TexTools Application Mode to DX9 to match FFXIV settings...".L(), textColor);
                         AddText("\t\u2714\n", "Green");
 
                         ((MainViewModel)MainWindow.GetMainWindow().DataContext).DXVersionText = "DX: 9";
@@ -706,18 +719,18 @@ namespace FFXIV_TexTools.Views
                 var datSizeLimit = Dat.GetMaximumDatSize();
                 double gb = ((double)datSizeLimit) / 1024D / 1024D / 1024D;
                 string datSize = gb.ToString("0.00") + " GB";
-                AddText($"\tPer-DAT File Size Limit: {datSize}\n", textColor);
+                AddText($"\tPer-DAT File Size Limit: {datSize._()}\n".L(), textColor);
 
                 var _modding = new Modding(XivCache.GameInfo.GameDirectory);
                 var totalModSize = await _modding.GetTotalModDataSize();
                 gb = ((double)datSizeLimit) / 1024D / 1024D / 1024D;
                 string modSize = gb.ToString("0.00") + " GB";
-                AddText($"\tSum Total Mod Files Size: {modSize}\n", textColor);
+                AddText($"\tSum Total Mod Files Size: {modSize._()}\n".L(), textColor);
 
                 var runningIn32bMode = IntPtr.Size == 4;
                 if (runningIn32bMode)
                 {
-                    AddText($"TexTools is running in 32bit Mode. This will reduce the available mod data limit.\n", "Orange");
+                    AddText($"TexTools is running in 32bit Mode. This will reduce the available mod data limit.\n".L(), "Orange");
                 }
 
                 if (File.Exists($"{dir}\\FFXIV.cfg"))
@@ -796,7 +809,7 @@ namespace FFXIV_TexTools.Views
 
             foreach (var file in filesToCheck)
             {
-                AddText($"\t{file.GetDataFileName()} Index Files", textColor);
+                AddText($"\t{file.GetDataFileName()._()} Index Files".L(), textColor);
 
                 try
                 {
@@ -823,7 +836,7 @@ namespace FFXIV_TexTools.Views
                 catch (Exception ex)
                 {
                     FlexibleMessageBox.Show(
-                        $"{UIStrings.ProblemCheck_BackupError}\n{ex.Message}", "Problem Check Error",
+                        $"{UIStrings.ProblemCheck_BackupError}\n{ex.Message}", "Problem Check Error".L(),
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }

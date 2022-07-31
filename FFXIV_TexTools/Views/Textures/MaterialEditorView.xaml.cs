@@ -49,20 +49,20 @@ namespace FFXIV_TexTools.Views.Textures
 
             // Setup for the combo boxes.
             ShaderSource = new ObservableCollection<KeyValuePair<MtrlShader, string>>();
-            ShaderSource.Add(new KeyValuePair<MtrlShader, string>(MtrlShader.Standard, "Standard"));
-            ShaderSource.Add(new KeyValuePair<MtrlShader, string>(MtrlShader.Glass, "Glass"));
-            ShaderSource.Add(new KeyValuePair<MtrlShader, string>(MtrlShader.Skin, "Skin"));
-            ShaderSource.Add(new KeyValuePair<MtrlShader, string>(MtrlShader.Hair, "Hair"));
-            ShaderSource.Add(new KeyValuePair<MtrlShader, string>(MtrlShader.Iris, "Iris"));
-            ShaderSource.Add(new KeyValuePair<MtrlShader, string>(MtrlShader.Furniture, "Furniture"));
-            ShaderSource.Add(new KeyValuePair<MtrlShader, string>(MtrlShader.DyeableFurniture, "Dyeable Furniture"));
+            ShaderSource.Add(new KeyValuePair<MtrlShader, string>(MtrlShader.Standard, "Standard".L()));
+            ShaderSource.Add(new KeyValuePair<MtrlShader, string>(MtrlShader.Glass, "Glass".L()));
+            ShaderSource.Add(new KeyValuePair<MtrlShader, string>(MtrlShader.Skin, "Skin".L()));
+            ShaderSource.Add(new KeyValuePair<MtrlShader, string>(MtrlShader.Hair, "Hair".L()));
+            ShaderSource.Add(new KeyValuePair<MtrlShader, string>(MtrlShader.Iris, "Iris".L()));
+            ShaderSource.Add(new KeyValuePair<MtrlShader, string>(MtrlShader.Furniture, "Furniture".L()));
+            ShaderSource.Add(new KeyValuePair<MtrlShader, string>(MtrlShader.DyeableFurniture, "Dyeable Furniture".L()));
             ShaderComboBox.ItemsSource = ShaderSource;
             ShaderComboBox.DisplayMemberPath = "Value";
             ShaderComboBox.SelectedValuePath = "Key";
 
 
             PresetSource = new ObservableCollection<KeyValuePair<MtrlShaderPreset, string>>();
-            PresetSource.Add(new KeyValuePair<MtrlShaderPreset, string>(MtrlShaderPreset.Default, "Default"));
+            PresetSource.Add(new KeyValuePair<MtrlShaderPreset, string>(MtrlShaderPreset.Default, "Default".L()));
             PresetComboBox.ItemsSource = PresetSource;
             PresetComboBox.DisplayMemberPath = "Value";
             PresetComboBox.SelectedValuePath = "Key";
@@ -70,22 +70,22 @@ namespace FFXIV_TexTools.Views.Textures
             PasteMaterialButton.IsEnabled = _copiedMaterial != null;
 
             Dictionary<bool, string> TransparencySource = new Dictionary<bool, string>();
-            TransparencySource.Add(true, "Enabled");
-            TransparencySource.Add(false, "Disabled");
+            TransparencySource.Add(true, "Enabled".L());
+            TransparencySource.Add(false, "Disabled".L());
             TransparencyComboBox.ItemsSource = TransparencySource;
             TransparencyComboBox.DisplayMemberPath = "Value";
             TransparencyComboBox.SelectedValuePath = "Key";
 
             Dictionary<bool, string> BackfacesSource = new Dictionary<bool, string>();
-            BackfacesSource.Add(true, "Show Backfaces");
-            BackfacesSource.Add(false, "Hide Backfaces");
+            BackfacesSource.Add(true, "Show Backfaces".L());
+            BackfacesSource.Add(false, "Hide Backfaces".L());
             BackfacesComboBox.ItemsSource = BackfacesSource;
             BackfacesComboBox.DisplayMemberPath = "Value";
             BackfacesComboBox.SelectedValuePath = "Key";
 
             Dictionary<bool, string> ColorsetSource = new Dictionary<bool, string>();
-            ColorsetSource.Add(true, "Enabled");
-            ColorsetSource.Add(false, "Disabled");
+            ColorsetSource.Add(true, "Enabled".L());
+            ColorsetSource.Add(false, "Disabled".L());
             ColorsetComboBox.ItemsSource = ColorsetSource;
             ColorsetComboBox.DisplayMemberPath = "Value";
             ColorsetComboBox.SelectedValuePath = "Key";
@@ -142,7 +142,7 @@ namespace FFXIV_TexTools.Views.Textures
             PresetSource.Clear();
             foreach (var p in presets)
             {
-                PresetSource.Add(new KeyValuePair<MtrlShaderPreset, string>(p, p.ToString()));
+                PresetSource.Add(new KeyValuePair<MtrlShaderPreset, string>(p, p.ToString().L()));
             }
 
             // Disable the box if the user has no choice anyways.
@@ -195,20 +195,20 @@ namespace FFXIV_TexTools.Views.Textures
 
             if (info.HasMulti)
             {
-                SpecularLabel.Content = "Multi:";
+                SpecularLabel.Content = "Multi:".L();
                 SpecularTextBox.IsEnabled = true;
                 SpecularLabel.Visibility = Visibility.Visible;
                 SpecularTextBox.Visibility = Visibility.Visible;
             } else if(info.HasSpec)
             {
-                SpecularLabel.Content = "Specular:";
+                SpecularLabel.Content = "Specular:".L();
                 SpecularTextBox.IsEnabled = true;
                 SpecularLabel.Visibility = Visibility.Visible;
                 SpecularTextBox.Visibility = Visibility.Visible;
             } else
             {
                 // This path is never actually reached currently.
-                SpecularLabel.Content = "Specular:";
+                SpecularLabel.Content = "Specular:".L();
                 SpecularTextBox.IsEnabled = false;
                 SpecularLabel.Visibility = Visibility.Hidden;
                 SpecularTextBox.Visibility = Visibility.Hidden;
@@ -216,21 +216,21 @@ namespace FFXIV_TexTools.Views.Textures
 
             if (info.HasDiffuse)
             {
-                DiffuseLabel.Content = "Diffuse:";
+                DiffuseLabel.Content = "Diffuse:".L();
                 DiffuseTextBox.IsEnabled = true;
                 DiffuseLabel.Visibility = Visibility.Visible;
                 DiffuseTextBox.Visibility = Visibility.Visible;
             }
             else if(info.HasReflection)
             {
-                DiffuseLabel.Content = "Reflection:";
+                DiffuseLabel.Content = "Reflection:".L();
                 DiffuseTextBox.IsEnabled = true;
                 DiffuseLabel.Visibility = Visibility.Visible;
                 DiffuseTextBox.Visibility = Visibility.Visible;
 
             } else
             {
-                DiffuseLabel.Content = "Diffuse:";
+                DiffuseLabel.Content = "Diffuse:".L();
                 DiffuseTextBox.IsEnabled = false;
                 DiffuseLabel.Visibility = Visibility.Hidden;
                 DiffuseTextBox.Visibility = Visibility.Hidden;

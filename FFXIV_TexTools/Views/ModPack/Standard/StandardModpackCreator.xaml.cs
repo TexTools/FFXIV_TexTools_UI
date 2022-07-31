@@ -50,23 +50,23 @@ namespace FFXIV_TexTools.Views
         }
         public static string GetNiceLevelName(XivDependencyLevel level, bool pluralize = false, bool everything = false)
         {
-            string ret = "Unknown";
+            string ret = "Unknown".L();
             switch (level)
             {
                 case XivDependencyLevel.Root:
-                    ret = everything ? "Everything" : "Metadata";
+                    ret = everything ? "Everything".L() : "Metadata".L();
                     break;
                 case XivDependencyLevel.Model:
-                    ret = "Model";
+                    ret = "Model".L();
                     break;
                 case XivDependencyLevel.Material:
-                    ret = "Material";
+                    ret = "Material".L();
                     break;
                 case XivDependencyLevel.Texture:
-                    ret = "Texture";
+                    ret = "Texture".L();
                     break;
                 default:
-                    ret = "Unknown";
+                    ret = "Unknown".L();
                     break;
             }
 
@@ -226,7 +226,7 @@ namespace FFXIV_TexTools.Views
                 var entryRoot = entry.Item.GetRootInfo();
                 if (root == entryRoot)
                 {
-                    var result = FlexibleMessageBox.Show("Adding this item will overwrite your existing entry for item: " + entry.Item.Name + "\nAre you sure you wish to proceed?", "Item Overwrite Confirmation", System.Windows.Forms.MessageBoxButtons.OKCancel, System.Windows.Forms.MessageBoxIcon.Warning, System.Windows.Forms.MessageBoxDefaultButton.Button1);
+                    var result = FlexibleMessageBox.Show($"Adding this item will overwrite your existing entry for item: {entry.Item.Name._()}\nAre you sure you wish to proceed?".L(), "Item Overwrite Confirmation".L(), System.Windows.Forms.MessageBoxButtons.OKCancel, System.Windows.Forms.MessageBoxIcon.Warning, System.Windows.Forms.MessageBoxDefaultButton.Button1);
                     if(result == System.Windows.Forms.DialogResult.Cancel)
                     {
                         return;
@@ -360,7 +360,7 @@ namespace FFXIV_TexTools.Views
                         GroupName = group.GroupName,
                         IsChecked = true,
                         Name = GetNiceLevelName(e.Level, true, true),
-                        Description = "Item: " + item.Name + "\nInclusion Level: " + GetNiceLevelName(e.Level) + "\nPrimary Files:" + e.MainFiles.Count + "\nTotal Files:" + e.AllFiles.Count,
+                        Description = $"Item: {item.Name._()}\nInclusion Level: {GetNiceLevelName(e.Level)._()}\nPrimary Files:{e.MainFiles.Count._()}\nTotal Files:{e.AllFiles.Count._()}".L(),
                         SelectionType = "Multi",
                     };
                     group.OptionList.Add(option);
@@ -398,14 +398,14 @@ namespace FFXIV_TexTools.Views
                 // Okay modpack is now created internally, just need to save it.
                 var progressIndicator = new Progress<double>(ReportProgressAdv);
                 await texToolsModPack.CreateWizardModPack(wizardData, progressIndicator , true);
-                FlexibleMessageBox.Show(new Wpf32Window(this), "Modpack Created Successfully.",
-                                               "Modpack Created", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                FlexibleMessageBox.Show(new Wpf32Window(this), "Modpack Created Successfully.".L(),
+                                               "Modpack Created".L(), MessageBoxButtons.OK, MessageBoxIcon.Information);
                 await UnlockUi(this);
                 DialogResult = true;
             } catch(Exception ex)
             {
-                FlexibleMessageBox.Show(new Wpf32Window(this), "An Error occured while creating the modpack.\n\n" + ex.Message,
-                                               "Modpack Creation Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                FlexibleMessageBox.Show(new Wpf32Window(this), "An Error occured while creating the modpack.\n\n".L() + ex.Message,
+                                               "Modpack Creation Error".L(), MessageBoxButtons.OK, MessageBoxIcon.Error);
                 await UnlockUi(this);
             }
         }
@@ -483,15 +483,15 @@ namespace FFXIV_TexTools.Views
                 await LockUi(UIStrings.Creating_Modpack, null, null);
                 Progress<(int current, int total, string message)> progressIndicator = new Progress<(int current, int total, string message)>(ReportProgress);
                 await texToolsModPack.CreateSimpleModPack(simpleModPackData, XivCache.GameInfo.GameDirectory, progressIndicator, true);
-                FlexibleMessageBox.Show(new Wpf32Window(this), "Modpack Created Successfully.",
-                                               "Modpack Created", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                FlexibleMessageBox.Show(new Wpf32Window(this), "Modpack Created Successfully.".L(),
+                                               "Modpack Created".L(), MessageBoxButtons.OK, MessageBoxIcon.Information);
                 await UnlockUi(this);
                 DialogResult = true;
             }
             catch(Exception ex)
             {
-                FlexibleMessageBox.Show(new Wpf32Window(this), "An Error occured while creating the modpack.\n\n"+ ex.Message,
-                                               "Modpack Creation Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                FlexibleMessageBox.Show(new Wpf32Window(this), "An Error occured while creating the modpack.\n\n".L()+ ex.Message,
+                                               "Modpack Creation Error".L(), MessageBoxButtons.OK, MessageBoxIcon.Error);
                 await UnlockUi(this);
             }
 

@@ -33,13 +33,13 @@ namespace FFXIV_TexTools.Views
             if (MainWindow.IsBetaVersion)
             {
                 var fileVersion = FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location).FileVersion;
-                VersionTextBox.Text = $"Version {fileVersion} {MainWindow.BetaSuffix}";
+                VersionTextBox.Text = $"Version {fileVersion._()} {MainWindow.BetaSuffix._()}".L();
 
             }
             else
             {
                 var fileVersion = FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location).FileVersion;
-                VersionTextBox.Text = $"Version {fileVersion}";
+                VersionTextBox.Text = $"Version {fileVersion._()}".L();
             }
 
 

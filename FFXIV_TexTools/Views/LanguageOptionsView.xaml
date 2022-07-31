@@ -4,8 +4,9 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:FFXIV_TexTools.Views"
-             xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
              mc:Ignorable="d" 
+             xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
+             resx:Localization.Enabled="True"             
              d:DesignHeight="400" d:DesignWidth="200">
     <StackPanel>
         <Grid>

@@ -133,15 +133,15 @@ namespace FFXIV_TexTools.ViewModels
                 }
                 else
                 {
-                    throw new HelixToolkitException("Camera Model Error.");
+                    throw new HelixToolkitException("Camera Model Error.".L());
                 }
             };
 
             // default camera model
             CameraModel = Perspective;
 
-            Title = "Demo (HelixToolkitDX)";
-            SubTitle = "Default Base View Model";
+            Title = "Demo (HelixToolkitDX)".L();
+            SubTitle = "Default Base View Model".L();
         }
 
         public void OnCameraModelChanged()

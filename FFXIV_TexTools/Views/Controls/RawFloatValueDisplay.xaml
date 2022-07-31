@@ -5,6 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FFXIV_TexTools.Views.Controls"
         mc:Ignorable="d"
+        xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
+        resx:Localization.Enabled="True"
         Title="Raw Value Editor"
         SizeToContent="WidthAndHeight">
     <Grid Height="160" Width="240">

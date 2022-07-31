@@ -228,7 +228,7 @@ namespace FFXIV_TexTools.ViewModels
                 Models.Add(mgm3);
             } catch(Exception ex)
             {
-                FlexibleMessageBox.Show("Unable to update 3D Viewport.\n\nError: " + ex.Message, "Viewport Error", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning);
+                FlexibleMessageBox.Show("Unable to update 3D Viewport.\n\nError: ".L() + ex.Message, "Viewport Error".L(), System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning);
             }
         }
 

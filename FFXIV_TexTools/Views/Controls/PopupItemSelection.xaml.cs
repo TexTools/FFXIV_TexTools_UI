@@ -113,10 +113,10 @@ namespace FFXIV_TexTools.Views.Controls
 
                 if (result)
                 {
-                    ItemSelect.SelectButton.Content = "Select Item";
+                    ItemSelect.SelectButton.Content = "Select Item".L();
                 } else
                 {
-                    ItemSelect.SelectButton.Content = "Invalid Selection";
+                    ItemSelect.SelectButton.Content = "Invalid Selection".L();
                 }
             }
         }

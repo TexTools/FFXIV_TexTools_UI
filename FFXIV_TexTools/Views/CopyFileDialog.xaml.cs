@@ -45,7 +45,7 @@ namespace FFXIV_TexTools.Views
                 var exists = await _index.FileExists(from);
                 if(!exists)
                 {
-                    throw new InvalidDataException("Source file does not exist.");
+                    throw new InvalidDataException("Source file does not exist.".L());
                 }
 
                 exists = await _index.FileExists(to);
@@ -54,7 +54,7 @@ namespace FFXIV_TexTools.Views
                     var cancel = false;
                     Dispatcher.Invoke(() =>
                     {
-                        var result = FlexibleMessageBox.Show("Destination file already exists.  Overwrite?", "Overwrite Confirmation", System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Warning);
+                        var result = FlexibleMessageBox.Show("Destination file already exists.  Overwrite?".L(), "Overwrite Confirmation".L(), System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Warning);
                         cancel = result == System.Windows.Forms.DialogResult.No;
                     });
 
@@ -65,12 +65,12 @@ namespace FFXIV_TexTools.Views
 
                 Dispatcher.Invoke(() =>
                 {
-                    FlexibleMessageBox.Show("File Copied Successfully.", "Copy Success", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Information);
+                    FlexibleMessageBox.Show("File Copied Successfully.".L(), "Copy Success".L(), System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Information);
                     Close();
                 });
             } catch(Exception ex)
             {
-                FlexibleMessageBox.Show("File Copy Failed:\n" + ex.Message, "Copy Failure", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
+                FlexibleMessageBox.Show("File Copy Failed:\n".L() + ex.Message, "Copy Failure".L(), System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
             }
         }
     }

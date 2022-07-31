@@ -26,8 +26,8 @@ namespace FFXIV_TexTools.Views
 
             InitializeComponent();
 
-            ItemName.Content = _item.Name + " - " + StandardModpackCreator.GetNiceLevelName(_level) + " Level";
-            ItemLevel.Content = "Review Affected Items";
+            ItemName.Content = $"{_item.Name._()} - {StandardModpackCreator.GetNiceLevelName(_level)._()} Level".L();
+            ItemLevel.Content = "Review Affected Items".L();
 
             NextButton.Click += NextButton_Click;
             BackButton.Click += BackButton_Click;
@@ -53,7 +53,7 @@ namespace FFXIV_TexTools.Views
             {
                 SharedItemsListBox.Items.Add(i.Name);
             }
-            SharedItemsLabel.Content = "Modifications at the " + StandardModpackCreator.GetNiceLevelName(_level) + " level will affect (at least) the following [" + items.Count + "] item(s):";
+            SharedItemsLabel.Content = $"Modifications at the {StandardModpackCreator.GetNiceLevelName(_level)._()} level will affect (at least) the following [{items.Count._()}] item(s):".L();
             
         }
 

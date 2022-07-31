@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:FFXIV_TexTools.Views"
         xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
+        resx:Localization.Enabled="True"
         mc:Ignorable="d"
         Title="{Binding Source={x:Static resx:UIStrings.Problem_Checker}}" Height="600" Width="800" WindowStartupLocation="CenterOwner" ShowMaxRestoreButton="False" ShowMinButton="False" Closing="MetroWindow_Closing">
     <Grid>

@@ -143,15 +143,15 @@ namespace FFXIV_TexTools.Views.Metadata
             if(mod == null)
             {
                 ToggleButton.IsEnabled = false;
-                ToggleButton.Content = "Enable";
+                ToggleButton.Content = "Enable".L();
             } else
             {
                 ToggleButton.IsEnabled = true;
                 if(mod.enabled)
                 {
-                    ToggleButton.Content = "Disable";
+                    ToggleButton.Content = "Disable".L();
                 } else {
-                    ToggleButton.Content = "Enable";
+                    ToggleButton.Content = "Enable".L();
                 }
             }
 
@@ -263,24 +263,24 @@ namespace FFXIV_TexTools.Views.Metadata
             if (mod == null) return;
             var enabled = mod.enabled;
 
-            await MainWindow.GetMainWindow().LockUi("Updating Metadata");
+            await MainWindow.GetMainWindow().LockUi("Updating Metadata".L());
 
             try
             {
                 if (enabled)
                 {
                     await _modding.ToggleModStatus(path, false);
-                    ToggleButton.Content = "Enable";
+                    ToggleButton.Content = "Enable".L();
                 }
                 else
                 {
                     await _modding.ToggleModStatus(path, true);
-                    ToggleButton.Content = "Disable";
+                    ToggleButton.Content = "Disable".L();
                 }
             }
             catch(Exception ex)
             {
-                FlexibleMessageBox.Show("Unable to toggle mod status.\n\nError: " + ex.Message, "Mod Toggle Error", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
+                FlexibleMessageBox.Show("Unable to toggle mod status.\n\nError: ".L() + ex.Message, "Mod Toggle Error".L(), System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
             }
             finally
             {
