@@ -123,52 +123,152 @@
   <data name="About_TexTools" xml:space="preserve">
     <value>TexTools에 대하여</value>
   </data>
+  <data name="Backup_Index_Files" xml:space="preserve">
+    <value>색인 파일 백업</value>
+  </data>
+  <data name="Batch" xml:space="preserve">
+    <value>일괄 작업</value>
+  </data>
+  <data name="Check_For_Problems" xml:space="preserve">
+    <value>문제 확인</value>
+  </data>
+  <data name="Create_Modpack" xml:space="preserve">
+    <value>모드팩 만들기</value>
+  </data>
+  <data name="Customize" xml:space="preserve">
+    <value>설정</value>
+  </data>
+  <data name="Disable" xml:space="preserve">
+    <value>끄기</value>
+  </data>
+  <data name="Disable_All_Mods" xml:space="preserve">
+    <value>모드 모두 끄기</value>
+  </data>
+  <data name="Donate" xml:space="preserve">
+    <value>기부</value>
+  </data>
+  <data name="Enable" xml:space="preserve">
+    <value>켜기</value>
+  </data>
+  <data name="Enable_All_Mods" xml:space="preserve">
+    <value>모드 모두 켜기</value>
+  </data>
+  <data name="Enable_Disable" xml:space="preserve">
+    <value>켜기/끄기</value>
+  </data>
+  <data name="Export" xml:space="preserve">
+    <value>내보내기</value>
+  </data>
+  <data name="Help" xml:space="preserve">
+    <value>도움말</value>
+  </data>
+  <data name="Icon_ID" xml:space="preserve">
+    <value>아이콘 ID</value>
+  </data>
+  <data name="Import" xml:space="preserve">
+    <value>가져오기</value>
+  </data>
+  <data name="Import_ModPacks" xml:space="preserve">
+    <value>모드팩 가져오기</value>
+  </data>
+  <data name="Item_List" xml:space="preserve">
+    <value>아이템 목록</value>
+  </data>
+  <data name="Join_us_on_Discord" xml:space="preserve">
+    <value>Discord에 참가하기</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>언어 (Language)</value>
+  </data>
+  <data name="Model" xml:space="preserve">
+    <value>모델</value>
+  </data>
+  <data name="Model_ID" xml:space="preserve">
+    <value>모델 ID</value>
+  </data>
+  <data name="ModPack_Wizard" xml:space="preserve">
+    <value>고급 모드팩</value>
+  </data>
+  <data name="Mods" xml:space="preserve">
+    <value>모드</value>
+  </data>
+  <data name="Mod_List" xml:space="preserve">
+    <value>모드 목록</value>
+  </data>
+  <data name="Mod_Repos" xml:space="preserve">
+    <value>모드 저장소</value>
+  </data>
+  <data name="More_Options" xml:space="preserve">
+    <value>추가 옵션</value>
+  </data>
+  <data name="Nexus_Mods" xml:space="preserve">
+    <value>Nexus Mods</value>
+  </data>
+  <data name="Options" xml:space="preserve">
+    <value>옵션</value>
+  </data>
+  <data name="PrettyKitty_Emporium" xml:space="preserve">
+    <value>PrettyKitty Emporium</value>
+  </data>
+  <data name="Report_Bug" xml:space="preserve">
+    <value>버그 보고</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>검색</value>
+  </data>
+  <data name="Search_dot" xml:space="preserve">
+    <value>검색...</value>
+  </data>
+  <data name="Select_Language" xml:space="preserve">
+    <value>언어 선택</value>
+  </data>
+  <data name="Simple_ModPack" xml:space="preserve">
+    <value>기본 모드팩</value>
+  </data>
+  <data name="Texture" xml:space="preserve">
+    <value>텍스처</value>
+  </data>
+  <data name="Theme" xml:space="preserve">
+    <value>테마</value>
+  </data>
+  <data name="Tutorials" xml:space="preserve">
+    <value>튜토리얼</value>
+  </data>
+  <data name="View_Github_Repo" xml:space="preserve">
+    <value>Github 저장소 보기</value>
+  </data>
+  <data name="XIV_Mod_Archive" xml:space="preserve">
+    <value>XIV Mod Archive</value>
+  </data>
   <data name="Active" xml:space="preserve">
-    <value>활성화</value>
+    <value>활성</value>
   </data>
   <data name="Add" xml:space="preserve">
     <value>추가</value>
-  </data>
-  <data name="Added_Mesh" xml:space="preserve">
-    <value>메쉬가 추가되었습니다. 
- 필요에따라 재질 값을 바꿔주세요.</value>
-  </data>
-  <data name="Added_MeshParts" xml:space="preserve">
-    <value>이 메쉬에 메쉬파트를 추가했습니다. 
- 필요에따라 새 파트의 속성을 변경해주세요.</value>
-  </data>
-  <data name="Add_a_Model_using_advanced_options" xml:space="preserve">
-    <value>고급 옵션을 사용하여 모델 추가</value>
-  </data>
-  <data name="Add_Group" xml:space="preserve">
-    <value>그룹 추가</value>
   </data>
   <data name="Add_Remove" xml:space="preserve">
     <value>추가/제거</value>
   </data>
   <data name="Add_To_Part_Attribute" xml:space="preserve">
-    <value>구성 요소 속성 추가</value>
-  </data>
-  <data name="Add_w_Adv_Options" xml:space="preserve">
-    <value>고급 추가</value>
+    <value>파트 속성에 추가</value>
   </data>
   <data name="Advanced_Import" xml:space="preserve">
-    <value>고급 들여오기</value>
+    <value>고급 가져오기</value>
   </data>
   <data name="Advanced_Model_Import" xml:space="preserve">
-    <value>고급 모델 들여오기</value>
+    <value>고급 모델 가져오기</value>
   </data>
   <data name="Advanced_Model_Options" xml:space="preserve">
-    <value>고급 모델 옵션</value>
+    <value>고급 모델 설정</value>
   </data>
   <data name="Attributes" xml:space="preserve">
     <value>속성</value>
   </data>
   <data name="Author_colon" xml:space="preserve">
-    <value>작성자:</value>
+    <value>만든이:</value>
   </data>
   <data name="Available_Attributes" xml:space="preserve">
-    <value>사용 가능 속성</value>
+    <value>이용 가능 속성</value>
   </data>
   <data name="Back" xml:space="preserve">
     <value>뒤로</value>
@@ -176,14 +276,8 @@
   <data name="Backups_Directory" xml:space="preserve">
     <value>백업 경로</value>
   </data>
-  <data name="Backup_Index_Files" xml:space="preserve">
-    <value>Index 파일 백업</value>
-  </data>
-  <data name="Batch" xml:space="preserve">
-    <value>활성화 옵션</value>
-  </data>
   <data name="BG_Color" xml:space="preserve">
-    <value>배경색</value>
+    <value>배경 색상</value>
   </data>
   <data name="Body" xml:space="preserve">
     <value>몸</value>
@@ -192,22 +286,13 @@
     <value>골격</value>
   </data>
   <data name="Bone_addition_is_automatic" xml:space="preserve">
-    <value>골격 추가는 자동으로 이루어집니다</value>
+    <value>골격은 자동으로 추가됨</value>
   </data>
   <data name="Cancel" xml:space="preserve">
     <value>취소</value>
   </data>
-  <data name="Check_For_Problems" xml:space="preserve">
-    <value>문제 확인</value>
-  </data>
-  <data name="ChinaDiscord" xml:space="preserve">
-    <value>중국 모드 디스코드</value>
-  </data>
   <data name="Clear_Selected" xml:space="preserve">
-    <value>선택 해제</value>
-  </data>
-  <data name="Clic_here_to_add_a_preview_image" xml:space="preserve">
-    <value>미리보기 이미지를 추가하려면 클릭하십시오</value>
+    <value>선택 모두 해제</value>
   </data>
   <data name="Close" xml:space="preserve">
     <value>닫기</value>
@@ -215,35 +300,23 @@
   <data name="Colors_Skins" xml:space="preserve">
     <value>색상 및 피부</value>
   </data>
+  <data name="Lumina_Output" xml:space="preserve">
+    <value>Penumbra 출력</value>
+  </data>
   <data name="Count" xml:space="preserve">
     <value>합계</value>
   </data>
   <data name="Count_colon" xml:space="preserve">
     <value>합계:</value>
   </data>
-  <data name="Create_Modpack" xml:space="preserve">
-    <value>모드팩 생성</value>
-  </data>
   <data name="Create_ModPack_Wizard" xml:space="preserve">
-    <value>모드팩 마법사로 생성</value>
+    <value>모드팩 마법사 만들기</value>
   </data>
   <data name="Cull_Mode" xml:space="preserve">
-    <value>Cull 모드</value>
+    <value>컬 모드</value>
   </data>
   <data name="Current_Language_colon" xml:space="preserve">
     <value>현재 언어:</value>
-  </data>
-  <data name="Customize" xml:space="preserve">
-    <value>커스터마이즈</value>
-  </data>
-  <data name="Customize_DefaultRace" xml:space="preserve">
-    <value>텍스쳐나 모델을 볼때, TexTool은 지정한 종족을 기본으로 선택합니다.</value>
-  </data>
-  <data name="DAE_file_to_import" xml:space="preserve">
-    <value>들여오기 할 DAE 파일</value>
-  </data>
-  <data name="DAE_Info" xml:space="preserve">
-    <value>DAE 정보</value>
   </data>
   <data name="Default_Skin" xml:space="preserve">
     <value>기본 피부</value>
@@ -251,65 +324,26 @@
   <data name="Delete" xml:space="preserve">
     <value>삭제</value>
   </data>
-  <data name="Description" xml:space="preserve">
-    <value>설명</value>
-  </data>
   <data name="Directories" xml:space="preserve">
     <value>경로</value>
   </data>
-  <data name="Disable" xml:space="preserve">
-    <value>비활성화</value>
-  </data>
   <data name="Disabled" xml:space="preserve">
-    <value>비활성화</value>
-  </data>
-  <data name="Disable_All_Mods" xml:space="preserve">
-    <value>모든 모드 비활성화</value>
+    <value>꺼짐</value>
   </data>
   <data name="Disable_Shape_Data" xml:space="preserve">
-    <value>Shape Data 비활성화</value>
-  </data>
-  <data name="Donate" xml:space="preserve">
-    <value>후원</value>
-  </data>
-  <data name="Done" xml:space="preserve">
-    <value>완료</value>
-  </data>
-  <data name="Edit" xml:space="preserve">
-    <value>수정</value>
-  </data>
-  <data name="Edit_Group" xml:space="preserve">
-    <value>그룹 수정</value>
-  </data>
-  <data name="Enable" xml:space="preserve">
-    <value>활성화</value>
+    <value>형태 데이터 끄기</value>
   </data>
   <data name="Enabled" xml:space="preserve">
-    <value>활성화</value>
-  </data>
-  <data name="Enable_All_Mods" xml:space="preserve">
-    <value>모든 모드 활성화</value>
-  </data>
-  <data name="Enable_Disable" xml:space="preserve">
-    <value>활성화/비활성화</value>
+    <value>켜짐</value>
   </data>
   <data name="Enter_a_brief_description_of_your_Mod_Pack" xml:space="preserve">
-    <value>간략한 설명을 입력하십시오</value>
-  </data>
-  <data name="Enter_a_description_for_the_selected_option_here_dot" xml:space="preserve">
-    <value>선택한 옵션에 대한 설명을 입력하십시오</value>
+    <value>모드팩에 대한 간략한 설명을 입력하세요.</value>
   </data>
   <data name="Enter_a_Model_ID_dot" xml:space="preserve">
-    <value>모델 ID 입력</value>
-  </data>
-  <data name="Enter_a_Name_for_the_Group_here" xml:space="preserve">
-    <value>그룹 이름을 입력하십시오</value>
+    <value>모델 ID 입력...</value>
   </data>
   <data name="Etc_Color" xml:space="preserve">
     <value>기타 색상</value>
-  </data>
-  <data name="Export" xml:space="preserve">
-    <value>내보내기</value>
   </data>
   <data name="Export_BMP" xml:space="preserve">
     <value>BMP로 내보내기</value>
@@ -317,242 +351,110 @@
   <data name="Export_Both" xml:space="preserve">
     <value>동시에 내보내기</value>
   </data>
-  <data name="Export_DAE_file" xml:space="preserve">
-    <value>DAE로 내보내기</value>
-  </data>
-  <data name="Export_DAE_Materials" xml:space="preserve">
-    <value>DAE + Material로 내보내기</value>
-  </data>
   <data name="Export_DDS" xml:space="preserve">
     <value>DDS로 내보내기</value>
   </data>
   <data name="Export_OBJ_files" xml:space="preserve">
-    <value>OBJ로 내보내기</value>
+    <value>OBJ 파일로 내보내기</value>
   </data>
   <data name="Export_Settings" xml:space="preserve">
-    <value>설정 내보내기</value>
+    <value>내보내기 설정</value>
   </data>
   <data name="FFXIV_Directory" xml:space="preserve">
     <value>FFXIV 경로</value>
   </data>
+  <data name="Lumina_Directory" xml:space="preserve">
+    <value>Penumbra 출력 경로</value>
+  </data>
   <data name="Filter_By_colon" xml:space="preserve">
-    <value>필터 :</value>
-  </data>
-  <data name="Finalizing" xml:space="preserve">
-    <value>Finalizing...</value>
-  </data>
-  <data name="Finish" xml:space="preserve">
-    <value>완료</value>
+    <value>필터:</value>
   </data>
   <data name="Flip_Alpha" xml:space="preserve">
-    <value>알파채널 반전</value>
-  </data>
-  <data name="For_Translucency_or_ColorSet" xml:space="preserve">
-    <value>(반투명 또는 ColorSet용)</value>
-  </data>
-  <data name="Go_through_the_wizard_and_select_relevant_options_to_import_mod_pack" xml:space="preserve">
-    <value>마법사를 통해 관련 옵션을 선택하여 모드팩 가져오기</value>
-  </data>
-  <data name="Group_Options" xml:space="preserve">
-    <value>그룹 옵션</value>
-  </data>
-  <data name="Group_Settings" xml:space="preserve">
-    <value>그룹 세팅</value>
-  </data>
-  <data name="Group_Title_colon" xml:space="preserve">
-    <value>그룹명:</value>
+    <value>꼭짓점 알파 뒤집기</value>
   </data>
   <data name="Hair_Color" xml:space="preserve">
-    <value>머리카락 색</value>
-  </data>
-  <data name="Help" xml:space="preserve">
-    <value>도움</value>
-  </data>
-  <data name="Icon_ID" xml:space="preserve">
-    <value>아이콘 ID</value>
+    <value>머리카락 색상</value>
   </data>
   <data name="Icon_Search" xml:space="preserve">
     <value>아이콘 검색</value>
   </data>
-  <data name="Import" xml:space="preserve">
-    <value>들여오기</value>
-  </data>
   <data name="Import_BMP" xml:space="preserve">
-    <value>BMP로 들여오기</value>
+    <value>BMP 가져오기</value>
   </data>
   <data name="Import_DDS" xml:space="preserve">
-    <value>DDS로 들여오기</value>
+    <value>DDS 가져오기</value>
   </data>
   <data name="Import_From_dot" xml:space="preserve">
-    <value>다른 위치에서 들여오기...</value>
-  </data>
-  <data name="Import_ModPack" xml:space="preserve">
-    <value>모드팩 들여오기</value>
-  </data>
-  <data name="Import_ModPacks" xml:space="preserve">
-    <value>모드팩 들여오기</value>
-  </data>
-  <data name="Import_ModPack_Wizard" xml:space="preserve">
-    <value>모드팩 마법사 들여오기</value>
-  </data>
-  <data name="Included_Mods_in_Option" xml:space="preserve">
-    <value>옵션을 포함한 모드</value>
-  </data>
-  <data name="Index_Backups_Url" xml:space="preserve">
-    <value>NONE</value>
-  </data>
-  <data name="Index_Locked" xml:space="preserve">
-    <value>게임이 실행중에는 들여올수 없습니다.</value>
+    <value>다음에서 가져오기...</value>
   </data>
   <data name="Iris_Color" xml:space="preserve">
-    <value>눈동자 색</value>
+    <value>눈동자 색상</value>
   </data>
   <data name="Item" xml:space="preserve">
     <value>아이템</value>
   </data>
-  <data name="Item_List" xml:space="preserve">
-    <value>아이템 목록</value>
-  </data>
-  <data name="Join_us_on_Discord" xml:space="preserve">
-    <value>디스코드 참여</value>
-  </data>
-  <data name="Keep_Camera_Position" xml:space="preserve">
-    <value>카메라 위치 고정</value>
-  </data>
-  <data name="Language" xml:space="preserve">
-    <value>언어</value>
-  </data>
   <data name="Level_Of_Detail" xml:space="preserve">
-    <value>세부 수준</value>
+    <value>Level Of Detail</value>
   </data>
   <data name="Lights" xml:space="preserve">
     <value>조명</value>
   </data>
-  <data name="Loading" xml:space="preserve">
-    <value>로딩 중</value>
-  </data>
   <data name="Map" xml:space="preserve">
     <value>맵</value>
   </data>
-  <data name="Material" xml:space="preserve">
-    <value>메테리얼</value>
-  </data>
   <data name="Materials" xml:space="preserve">
-    <value>메테리얼</value>
-  </data>
-  <data name="Material_Options" xml:space="preserve">
-    <value>메테리얼 옵션</value>
-  </data>
-  <data name="MeshPart_No_Difference" xml:space="preserve">
-    <value>이 메쉬의 메쉬 파트 개수는 차이가 없습니다.</value>
+    <value>머티리얼</value>
   </data>
   <data name="Mesh_Data" xml:space="preserve">
-    <value>메쉬 데이터</value>
+    <value>메시 데이터</value>
   </data>
   <data name="Mesh_Inspector" xml:space="preserve">
-    <value>메쉬 검색</value>
+    <value>메시 인스펙터</value>
   </data>
   <data name="Mesh_MetaData" xml:space="preserve">
-    <value>메쉬 메타데이터</value>
-  </data>
-  <data name="Mesh_No_Difference" xml:space="preserve">
-    <value>메쉬 개수는 차이가 없습니다.</value>
+    <value>메시 메타데이터</value>
   </data>
   <data name="Mesh_Parts" xml:space="preserve">
-    <value>메쉬 파트</value>
+    <value>메시 파트</value>
   </data>
   <data name="Modded_Items" xml:space="preserve">
-    <value>모드가 적용된 아이템</value>
-  </data>
-  <data name="Model" xml:space="preserve">
-    <value>모델</value>
-  </data>
-  <data name="ModelSearch_EnterID" xml:space="preserve">
-    <value>모델 ID 입력...</value>
-  </data>
-  <data name="ModelSearch_ItemsFound" xml:space="preserve">
-    <value>{0}개의 아이템을 찾았습니다.</value>
-  </data>
-  <data name="ModelSearch_NoItemsFound" xml:space="preserve">
-    <value>아이템을 찾지 못했습니다.</value>
-  </data>
-  <data name="ModelSearch_Numeric" xml:space="preserve">
-    <value>반드시 숫자를 입력해야 합니다</value>
-  </data>
-  <data name="ModelStatus_Loading" xml:space="preserve">
-    <value>모델 로딩 성공</value>
-  </data>
-  <data name="ModelStatus_Success" xml:space="preserve">
-    <value>모델 업데이트 성공</value>
-  </data>
-  <data name="ModelStatus_UpdateSuccess" xml:space="preserve">
-    <value>Model Updated Successfully</value>
-  </data>
-  <data name="Model_ID" xml:space="preserve">
-    <value>모델 ID</value>
+    <value>모드 아이템</value>
   </data>
   <data name="Model_Inspector" xml:space="preserve">
-    <value>모델 검색</value>
+    <value>모델 인스펙터</value>
   </data>
   <data name="Model_MetaData" xml:space="preserve">
     <value>모델 메타데이터</value>
   </data>
-  <data name="Model_Options" xml:space="preserve">
-    <value>모델 옵션</value>
-  </data>
   <data name="Model_Search" xml:space="preserve">
     <value>모델 검색</value>
   </data>
-  <data name="Model_Type" xml:space="preserve">
-    <value>모델 타입</value>
-  </data>
   <data name="ModPackDescription" xml:space="preserve">
-    <value>(예: 이 모드팩은 무엇을 추가하고, 수정하고 어떤 특성을 가지고 있습니다.)</value>
+    <value>(예: 이 모드팩은 옵션에 따라 이걸 수정하고 저걸 대체할 수 있습니다.)</value>
   </data>
   <data name="ModPackGeneralInfo" xml:space="preserve">
-    <value>모드팩의 기본적 정보를 작성하십시오.</value>
-  </data>
-  <data name="ModPack_Wizard" xml:space="preserve">
-    <value>모드팩 마법사</value>
-  </data>
-  <data name="Mods" xml:space="preserve">
-    <value>모드</value>
+    <value>만들고자 하는 모드팩에 대한 정보를 입력하세요.</value>
   </data>
   <data name="Mod_Count_colon" xml:space="preserve">
-    <value>모드 개수:</value>
-  </data>
-  <data name="Mod_List" xml:space="preserve">
-    <value>모드 목록</value>
+    <value>모드 수:</value>
   </data>
   <data name="Mod_Pack" xml:space="preserve">
     <value>모드팩</value>
   </data>
   <data name="Mod_Pack_Author" xml:space="preserve">
-    <value>모드팩 제작자</value>
+    <value>모드팩 만든이</value>
   </data>
   <data name="Mod_Pack_Content" xml:space="preserve">
-    <value>모드팩 내용</value>
+    <value>모드팩 콘텐츠</value>
   </data>
   <data name="Mod_Pack_Directory" xml:space="preserve">
-    <value>모드팩 경로</value>
+    <value>모드팩 디렉터리</value>
   </data>
   <data name="Mod_Pack_General_Info" xml:space="preserve">
     <value>모드팩 정보</value>
   </data>
-  <data name="Mod_Pack_Importer" xml:space="preserve">
-    <value>모드팩 가져오기</value>
-  </data>
   <data name="Mod_Pack_Name" xml:space="preserve">
     <value>모드팩 이름</value>
-  </data>
-  <data name="Mod_Repos" xml:space="preserve">
-    <value>모드팩 기록</value>
-  </data>
-  <data name="More_Options" xml:space="preserve">
-    <value>추가 옵션</value>
-  </data>
-  <data name="Multi_Selection" xml:space="preserve">
-    <value>다중 선택</value>
   </data>
   <data name="Name" xml:space="preserve">
     <value>이름</value>
@@ -560,277 +462,104 @@
   <data name="Name_colon" xml:space="preserve">
     <value>이름:</value>
   </data>
-  <data name="New_Mesh_MeshPart_Count" xml:space="preserve">
-    <value>이 새 메쉬는 {0} 값을 포함합니다.</value>
-  </data>
   <data name="New_Page" xml:space="preserve">
-    <value>다음 페이지 &gt;</value>
-  </data>
-  <data name="Nexus_Mods" xml:space="preserve">
-    <value>Nexus Mods</value>
+    <value>새 페이지 &gt;</value>
   </data>
   <data name="None" xml:space="preserve">
     <value>없음</value>
   </data>
-  <data name="No_3D_Mods" xml:space="preserve">
-    <value>3D 모델 모드가 없습니다.
-이 기능을 사용하려면 선택한 항목에 대한 3D 모델값을 가져와야 합니다.</value>
-  </data>
-  <data name="No_Material_Mods" xml:space="preserve">
-    <value>메테리얼 모드가 없습니다.
-이 기능을 사용하려면 선택한 항목에 대한 메테리얼값을 가져와야 합니다.</value>
-  </data>
-  <data name="No_Texture_Mods" xml:space="preserve">
-    <value>텍스쳐 모드가 없습니다.
-이 기능을 사용하려면 선택한 항목에 대한 텍스쳐값을 가져와야 합니다.</value>
-  </data>
   <data name="Num" xml:space="preserve">
-    <value>번호</value>
+    <value>Num</value>
   </data>
   <data name="Open" xml:space="preserve">
     <value>열기</value>
   </data>
   <data name="Open_Mesh_Inspector" xml:space="preserve">
-    <value>메쉬 속성 열기</value>
-  </data>
-  <data name="Options" xml:space="preserve">
-    <value>옵션</value>
-  </data>
-  <data name="Options_List" xml:space="preserve">
-    <value>옵션 목록</value>
-  </data>
-  <data name="Option_Description" xml:space="preserve">
-    <value>설명 옵션</value>
-  </data>
-  <data name="Option_List" xml:space="preserve">
-    <value>목록 옵션</value>
-  </data>
-  <data name="Option_Name" xml:space="preserve">
-    <value>이름 옵션</value>
-  </data>
-  <data name="Option_Preview_Image" xml:space="preserve">
-    <value>미리보기 이미지 옵션</value>
+    <value>메시 인스펙터 열기</value>
   </data>
   <data name="Other_Data" xml:space="preserve">
     <value>기타 데이터</value>
   </data>
   <data name="Part" xml:space="preserve">
-    <value>파츠</value>
+    <value>파트</value>
   </data>
   <data name="Part_Attributes" xml:space="preserve">
-    <value>파츠 외형</value>
+    <value>파트 속성</value>
   </data>
   <data name="Part_Count" xml:space="preserve">
-    <value>파츠 갯수</value>
+    <value>파트 수</value>
   </data>
   <data name="Part_Data" xml:space="preserve">
-    <value>파츠 데이터</value>
+    <value>파트 데이터</value>
   </data>
   <data name="Paths" xml:space="preserve">
     <value>경로</value>
   </data>
-  <data name="PrettyKitty_Emporium" xml:space="preserve">
-    <value>PrettyKitty Emporium</value>
-  </data>
-  <data name="Preview" xml:space="preserve">
-    <value>미리보기</value>
-  </data>
   <data name="Previe_List" xml:space="preserve">
-    <value>미리보기 목록</value>
+    <value>목록 미리보기</value>
   </data>
   <data name="Previous_Page" xml:space="preserve">
     <value>&lt; 이전 페이지</value>
   </data>
-  <data name="ProblemCheck_BackupError" xml:space="preserve">
-    <value>백업된 Index 파일 확인 중 문제가 발견되었습니다.</value>
-  </data>
-  <data name="ProblemCheck_Dat" xml:space="preserve">
-    <value>Dat 확인중....</value>
-  </data>
-  <data name="ProblemCheck_DatMissing" xml:space="preserve">
-    <value>Dat 파일( 060000.win32.dat1 )을 찾을 수 없습니다.</value>
-  </data>
-  <data name="ProblemCheck_ErrorsFound" xml:space="preserve">
-    <value>복구 중 에러가 발견되었습니다.</value>
-  </data>
-  <data name="ProblemCheck_ExtraDats" xml:space="preserve">
-    <value>추가 Dat파일이 발견되었습니다. 재시작을 권장합니다.</value>
-  </data>
-  <data name="ProblemCheck_IndexBackups" xml:space="preserve">
-    <value>Index 백업 확인중....</value>
-  </data>
-  <data name="ProblemCheck_IndexDat" xml:space="preserve">
-    <value>Index Dat 값 확인중...</value>
-  </data>
-  <data name="ProblemCheck_IndexLocked" xml:space="preserve">
-    <value>게임 실행중엔 복구 작업을 할 수 없습니다. 게임을 종료하고 다시 시도하십시오.</value>
-  </data>
-  <data name="ProblemCheck_Initialize" xml:space="preserve">
-    <value>문제 확인 초기화....</value>
-  </data>
-  <data name="ProblemCheck_LoD" xml:space="preserve">
-    <value>LoD 설정 확인중....</value>
-  </data>
-  <data name="ProblemCheck_LoDIssue" xml:space="preserve">
-    <value>특정 모드에 LoD ON 문제가 있습니다.</value>
-  </data>
-  <data name="ProblemCheck_LoDOff" xml:space="preserve">
-    <value>LoD 비활성화</value>
-  </data>
-  <data name="ProblemCheck_LoDOffDone" xml:space="preserve">
-    <value>LoD 비활성화 됨, 확인중....</value>
-  </data>
-  <data name="ProblemCheck_MissingData" xml:space="preserve">
-    <value>Dat 파일 ( 060000.win32.dat1 )이 손상되었습니다.</value>
-  </data>
-  <data name="ProblemCheck_ModList" xml:space="preserve">
-    <value>모드 목록 확인중....</value>
-  </data>
-  <data name="ProblemCheck_ModZero" xml:space="preserve">
-    <value>Mod Offset이 0입니다. 파일 &gt; 모드 목록 에서 모드를 해제하고 다시 들여오십시오.</value>
-  </data>
-  <data name="ProblemCheck_NoBackup" xml:space="preserve">
-    <value>백업이 발견되지 않았습니다.</value>
-  </data>
-  <data name="ProblemCheck_NoEntries" xml:space="preserve">
-    <value>모드 목록에 항목이 없습니다.</value>
-  </data>
-  <data name="ProblemCheck_OriginalZero" xml:space="preserve">
-    <value>원 오프셋은 0이었습니다. 원래 상태로 되돌릴 수 없습니다. 재시작을 고려하십시오.</value>
-  </data>
-  <data name="ProblemCheck_OutOfDate" xml:space="preserve">
-    <value>오래된 Index 입니다.</value>
-  </data>
-  <data name="ProblemCheck_RepairComplete" xml:space="preserve">
-    <value>복구 완료</value>
-  </data>
-  <data name="ProblemCheck_UnkType" xml:space="preserve">
-    <value>알수없는 파일 유형 ( {0} ) 오프셋이  손상되었을수 있습니다.</value>
-  </data>
   <data name="Problem_Checker" xml:space="preserve">
-    <value>문제 체커</value>
+    <value>문제 검색기</value>
   </data>
   <data name="Race" xml:space="preserve">
     <value>종족</value>
   </data>
   <data name="Reflection" xml:space="preserve">
-    <value>반사광</value>
-  </data>
-  <data name="Remove" xml:space="preserve">
-    <value>삭제</value>
-  </data>
-  <data name="Removed_Mesh" xml:space="preserve">
-    <value>메쉬를 제거했습니다. 
-제거 된 메쉬 번호 :</value>
-  </data>
-  <data name="Removed_MeshParts" xml:space="preserve">
-    <value>이 메쉬의 메쉬 파트를 제거했습니다. 
-제거 된 메쉬 파트 번호 :</value>
-  </data>
-  <data name="Removed_MeshParts_Note" xml:space="preserve">
-    <value>아래 제거된 메쉬 파트에 대한 변경 사항은 아무 영향을 끼치지 않습니다.</value>
-  </data>
-  <data name="Removed_Mesh_Note" xml:space="preserve">
-    <value>위 제거된 메쉬에 대한 변경 사항은 아무 영향을 끼치지 않습니다.</value>
+    <value>반사</value>
   </data>
   <data name="Remove_Part_Attribute" xml:space="preserve">
-    <value>파트 속성 삭제</value>
-  </data>
-  <data name="Report_Bug" xml:space="preserve">
-    <value>버그 보고</value>
+    <value>파트 속성 제거</value>
   </data>
   <data name="Reset_to_Default" xml:space="preserve">
-    <value>초기화</value>
+    <value>색상 초기화</value>
   </data>
   <data name="Save_Directory" xml:space="preserve">
-    <value>저장 경로</value>
-  </data>
-  <data name="Search" xml:space="preserve">
-    <value>검색</value>
-  </data>
-  <data name="Search_dot" xml:space="preserve">
-    <value>찾기...</value>
+    <value>디렉터리 저장</value>
   </data>
   <data name="Select_Active" xml:space="preserve">
-    <value>활성화 된 객체 선택</value>
+    <value>활성 선택</value>
   </data>
   <data name="Select_All" xml:space="preserve">
-    <value>전체 선택</value>
-  </data>
-  <data name="Select_a_file_dot" xml:space="preserve">
-    <value>파일 선택...</value>
-  </data>
-  <data name="Select_Language" xml:space="preserve">
-    <value>언어 선택</value>
-  </data>
-  <data name="Select_Mod" xml:space="preserve">
-    <value>모드 선택</value>
+    <value>모두 선택</value>
   </data>
   <data name="ShapeDescription1_line1" xml:space="preserve">
-    <value>이 메쉬에 대한 모든 shape data가 비활성화 됩니다.</value>
+    <value>이 메시에 대한 모든 형태 데이터가 꺼지게 됩니다.</value>
   </data>
   <data name="ShapeDescription1_line2" xml:space="preserve">
-    <value>이 옵션은 다른 아이템을 장착할 때 구멍이 보이면 사용합니다.</value>
+    <value>다른 아이템을 장착했을 때 뚫린 구멍이 보인다면 이 옵션을 이용하세요.</value>
   </data>
   <data name="ShapeDescription1_line3" xml:space="preserve">
-    <value>shape data에 대한 더 많은 설정은 추후 버전에서 가능합니다.</value>
+    <value>형태 데이터에 대한 더욱 다양한 옵션은 향후 버전에서 출시될 예정입니다.</value>
   </data>
   <data name="ShapeDescription2_line1" xml:space="preserve">
-    <value>이 메쉬에 대한 shape data가 없습니다.</value>
+    <value>이 메시에 형태 데이터가 없습니다.</value>
   </data>
   <data name="ShapeDescription2_line2" xml:space="preserve">
-    <value>옵션이 비활성화 되었습니다.</value>
+    <value>옵션을 이용할 수 없습니다.</value>
   </data>
   <data name="Shapes" xml:space="preserve">
     <value>형태</value>
   </data>
-  <data name="Simple_ModPack" xml:space="preserve">
-    <value>심플 모드팩</value>
-  </data>
   <data name="Simple_ModPack_Creator" xml:space="preserve">
-    <value>심플 모드팩 제작자</value>
-  </data>
-  <data name="Simple_ModPack_Importer" xml:space="preserve">
-    <value>심플 모드팩 들여오기</value>
-  </data>
-  <data name="Single_Selection" xml:space="preserve">
-    <value>단일 선택</value>
+    <value>기본 모드팩 만들기</value>
   </data>
   <data name="Size_colon" xml:space="preserve">
-    <value>크기 :</value>
+    <value>크기:</value>
   </data>
   <data name="Skin_Color" xml:space="preserve">
-    <value>피부색</value>
+    <value>피부 색상</value>
   </data>
   <data name="Skin_Color_Note_Info" xml:space="preserve">
-    <value>참고 : 피부색은 텍스쳐에 있는 기본 피부색과 혼합됩니다. 이외 다른 모든 색상은 바로 보여지는 색 입니다.</value>
+    <value>참고: 피부 색상은 텍스처에 있던 기본 색상과 혼합됩니다. 이외 다른 색상은 바로 보여지게 됩니다.</value>
   </data>
   <data name="Slot" xml:space="preserve">
     <value>슬롯</value>
   </data>
   <data name="Standalone_Non_ModPack" xml:space="preserve">
-    <value>독립 (비 모드팩)</value>
-  </data>
-  <data name="Start_Over" xml:space="preserve">
-    <value>재시작</value>
-  </data>
-  <data name="TD_Model" xml:space="preserve">
-    <value>3D모델</value>
-  </data>
-  <data name="Texture" xml:space="preserve">
-    <value>텍스쳐</value>
-  </data>
-  <data name="Textures" xml:space="preserve">
-    <value>텍스쳐</value>
-  </data>
-  <data name="Texture_Map" xml:space="preserve">
-    <value>텍스쳐 맵</value>
-  </data>
-  <data name="Texture_Options" xml:space="preserve">
-    <value>텍스쳐 옵션</value>
-  </data>
-  <data name="Theme" xml:space="preserve">
-    <value>테마</value>
+    <value>스탠드얼론 (모드팩 아님)</value>
   </data>
   <data name="This_will_only_affect_shared_races" xml:space="preserve">
     <value>공통된 모델을 쓰는 종족에만 영향을 줍니다.</value>
@@ -838,50 +567,483 @@
   <data name="Translucency" xml:space="preserve">
     <value>반투명</value>
   </data>
-  <data name="Tutorials" xml:space="preserve">
-    <value>튜토리얼</value>
-  </data>
   <data name="Type" xml:space="preserve">
-    <value>타입</value>
-  </data>
-  <data name="UI_SearchStatus_Max" xml:space="preserve">
-    <value>아이콘의 최댓값은 6자리입니다. 다시 시도하십시오.</value>
-  </data>
-  <data name="UI_SearchStatus_Numeric" xml:space="preserve">
-    <value>입력값은 숫자만 가능합니다. 다시 시도하십시오.</value>
-  </data>
-  <data name="UI_Search_NothingFound" xml:space="preserve">
-    <value>icon {0}의 데이터를 찾지 못했습니다. 다시 시도해주세요.</value>
+    <value>유형</value>
   </data>
   <data name="Update_TEX" xml:space="preserve">
-    <value>TexTool 업데이트</value>
-  </data>
-  <data name="Use_Currently_Modded_Item" xml:space="preserve">
-    <value>현재 모딩된 아이템 사용</value>
+    <value>TEX 업데이트</value>
   </data>
   <data name="Variant" xml:space="preserve">
-    <value>변수</value>
+    <value>변종</value>
   </data>
   <data name="Version_colon" xml:space="preserve">
     <value>버전:</value>
   </data>
   <data name="Vertex_Colors" xml:space="preserve">
-    <value>Vertex Colors</value>
+    <value>꼭짓점 색상</value>
   </data>
   <data name="Vertex_Data_Structure" xml:space="preserve">
-    <value>Vertex Data Structure</value>
+    <value>꼭짓점 데이터 구조</value>
   </data>
   <data name="Viewer_Options" xml:space="preserve">
     <value>뷰어 옵션</value>
   </data>
-  <data name="View_Github_Repo" xml:space="preserve">
-    <value>Github Repo 보기</value>
-  </data>
   <data name="Visit_Website" xml:space="preserve">
     <value>웹사이트 방문</value>
   </data>
-  <data name="XIV_Mod_Archive" xml:space="preserve">
-    <value>XIV Mod Archive</value>
+  <data name="Add_a_Model_using_advanced_options" xml:space="preserve">
+    <value>고급 옵션을 이용하여 모델 추가</value>
+  </data>
+  <data name="Add_Group" xml:space="preserve">
+    <value>그룹 추가</value>
+  </data>
+  <data name="Add_w_Adv_Options" xml:space="preserve">
+    <value>고급 옵션 없이 추가</value>
+  </data>
+  <data name="Clic_here_to_add_a_preview_image" xml:space="preserve">
+    <value>미리보기 이미지를 추가하려면 여기를 클릭하세요</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>설명</value>
+  </data>
+  <data name="Done" xml:space="preserve">
+    <value>완료</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>수정</value>
+  </data>
+  <data name="Enter_a_description_for_the_selected_option_here_dot" xml:space="preserve">
+    <value>선택한 옵션에 대한 설명을 입력하세요...</value>
+  </data>
+  <data name="Enter_a_Name_for_the_Group_here" xml:space="preserve">
+    <value>그룹 이름을 입력하세요</value>
+  </data>
+  <data name="Finish" xml:space="preserve">
+    <value>완료</value>
+  </data>
+  <data name="For_Translucency_or_ColorSet" xml:space="preserve">
+    <value>(반투명 또는 컬러 세트용)</value>
+  </data>
+  <data name="Go_through_the_wizard_and_select_relevant_options_to_import_mod_pack" xml:space="preserve">
+    <value>마법사를 통해 모드팩에서 옵션을 선택하고 가져올 수 있습니다</value>
+  </data>
+  <data name="Group_Options" xml:space="preserve">
+    <value>그룹 옵션</value>
+  </data>
+  <data name="Group_Settings" xml:space="preserve">
+    <value>그룹 설정</value>
+  </data>
+  <data name="Group_Title_colon" xml:space="preserve">
+    <value>그룹 제목:</value>
+  </data>
+  <data name="Import_ModPack" xml:space="preserve">
+    <value>모드팩 가져오기</value>
+  </data>
+  <data name="Import_ModPack_Wizard" xml:space="preserve">
+    <value>모드팩 가져오기 마법사</value>
+  </data>
+  <data name="Included_Mods_in_Option" xml:space="preserve">
+    <value>옵션에서 모드 포함</value>
+  </data>
+  <data name="Material" xml:space="preserve">
+    <value>머티리얼</value>
+  </data>
+  <data name="Material_Options" xml:space="preserve">
+    <value>머티리얼 옵션</value>
+  </data>
+  <data name="Model_Options" xml:space="preserve">
+    <value>모델 옵션</value>
+  </data>
+  <data name="Model_Type" xml:space="preserve">
+    <value>모델 유형</value>
+  </data>
+  <data name="Mod_Pack_Importer" xml:space="preserve">
+    <value>모드팩 가져오기</value>
+  </data>
+  <data name="Multi_Selection" xml:space="preserve">
+    <value>다중 선택</value>
+  </data>
+  <data name="Options_List" xml:space="preserve">
+    <value>옵션 목록</value>
+  </data>
+  <data name="Option_Description" xml:space="preserve">
+    <value>옵션 설명</value>
+  </data>
+  <data name="Option_List" xml:space="preserve">
+    <value>옵션 목록</value>
+  </data>
+  <data name="Option_Name" xml:space="preserve">
+    <value>옵션 이름</value>
+  </data>
+  <data name="Option_Preview_Image" xml:space="preserve">
+    <value>옵션 미리보기 이미지</value>
+  </data>
+  <data name="Preview" xml:space="preserve">
+    <value>미리보기</value>
+  </data>
+  <data name="Remove" xml:space="preserve">
+    <value>제거</value>
+  </data>
+  <data name="Select_a_file_dot" xml:space="preserve">
+    <value>파일 선택...</value>
+  </data>
+  <data name="Select_Mod" xml:space="preserve">
+    <value>Select Mod</value>
+  </data>
+  <data name="Simple_ModPack_Importer" xml:space="preserve">
+    <value>기본 모드팩 가져오기</value>
+  </data>
+  <data name="Single_Selection" xml:space="preserve">
+    <value>단일 선택</value>
+  </data>
+  <data name="TD_Model" xml:space="preserve">
+    <value>모델</value>
+  </data>
+  <data name="Textures" xml:space="preserve">
+    <value>텍스처</value>
+  </data>
+  <data name="Texture_Map" xml:space="preserve">
+    <value>텍스처 맵</value>
+  </data>
+  <data name="Texture_Options" xml:space="preserve">
+    <value>텍스처 옵션</value>
+  </data>
+  <data name="Use_Currently_Modded_Item" xml:space="preserve">
+    <value>현재 모딩된 아이템 사용</value>
+  </data>
+  <data name="ChinaDiscord" xml:space="preserve">
+    <value>중국 Discord</value>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>불러오는 중</value>
+  </data>
+  <data name="Keep_Camera_Position" xml:space="preserve">
+    <value>카메라 위치 고정</value>
+  </data>
+  <data name="Added_Mesh" xml:space="preserve">
+    <value>메시를 추가했습니다.
+필요에 따라 메시의 머티리얼을 변경하세요</value>
+  </data>
+  <data name="Added_MeshParts" xml:space="preserve">
+    <value>이 메시에 메시 파트를 추가했습니다.
+필요에 따라 새 메시 파트의 속성을 변경하세요.</value>
+  </data>
+  <data name="MeshPart_No_Difference" xml:space="preserve">
+    <value>이 메시의 파트 개수에 차이가 없습니다.</value>
+  </data>
+  <data name="Mesh_No_Difference" xml:space="preserve">
+    <value>메시 수에 차이가 없습니다.</value>
+  </data>
+  <data name="ModelSearch_EnterID" xml:space="preserve">
+    <value>모델 ID 입력...</value>
+  </data>
+  <data name="ModelSearch_ItemsFound" xml:space="preserve">
+    <value>아이템 {0}개를 찾았습니다.</value>
+  </data>
+  <data name="ModelSearch_NoItemsFound" xml:space="preserve">
+    <value>아이템을 찾을 수 없습니다.</value>
+  </data>
+  <data name="ModelSearch_Numeric" xml:space="preserve">
+    <value>반드시 숫자여야 합니다</value>
+  </data>
+  <data name="ModelStatus_Success" xml:space="preserve">
+    <value>모델을 불러왔습니다.</value>
+  </data>
+  <data name="ModelStatus_UpdateSuccess" xml:space="preserve">
+    <value>모델을 갱신했습니다.</value>
+  </data>
+  <data name="New_Mesh_MeshPart_Count" xml:space="preserve">
+    <value>이 새 메시에 파트 {0}개가 있습니다.</value>
+  </data>
+  <data name="Removed_Mesh" xml:space="preserve">
+    <value>메시를 제거했습니다.
+제거된 메시 수:</value>
+  </data>
+  <data name="Removed_MeshParts" xml:space="preserve">
+    <value>이 메시의 메시 파트를 제거했습니다.
+제거된 메시 수:</value>
+  </data>
+  <data name="Removed_MeshParts_Note" xml:space="preserve">
+    <value>제거된 파트에 대한 변경사항은 결과물에 적용되지 않습니다.</value>
+  </data>
+  <data name="Removed_Mesh_Note" xml:space="preserve">
+    <value>제거된 메시에 대한 변경사항은 결과물에 적용되지 않습니다.</value>
+  </data>
+  <data name="Start_Over" xml:space="preserve">
+    <value>다시 시작</value>
+  </data>
+  <data name="UI_SearchStatus_Max" xml:space="preserve">
+    <value>아이콘의 값은 최대 6자리 숫자입니다. 다시 시도해주세요.</value>
+  </data>
+  <data name="UI_SearchStatus_Numeric" xml:space="preserve">
+    <value>입력은 숫자만 가능합니다. 다시 시도해주세요.</value>
+  </data>
+  <data name="UI_Search_NothingFound" xml:space="preserve">
+    <value>{0} 아이콘에서 데이터를 찾을 수 없습니다. 다른 아이콘으로 시도해주세요.</value>
+  </data>
+  <data name="Edit_Group" xml:space="preserve">
+    <value>그룹 수정</value>
+  </data>
+  <data name="Index_Locked" xml:space="preserve">
+    <value>게임이 실행 중일 때는 가져올 수 없습니다.</value>
+  </data>
+  <data name="No_3D_Mods" xml:space="preserve">
+    <value>3D 모델 모드가 없습니다.
+
+이 기능을 켜려면 먼저 선택한 아이템의 모델을 가져오세요.</value>
+  </data>
+  <data name="No_Material_Mods" xml:space="preserve">
+    <value>머티리얼 모드가 없습니다.
+
+이 기능을 켜려면 먼저 선택한 아이템의 머티리얼을 가져오세요.</value>
+  </data>
+  <data name="No_Texture_Mods" xml:space="preserve">
+    <value>텍스처 모드가 없습니다.
+
+이 기능을 켜려면 먼저 선택한 아이템의 텍스처를 가져오세요.</value>
+  </data>
+  <data name="Customize_DefaultRace" xml:space="preserve">
+    <value>가능한 경우, 텍스처와 모델을 볼 때 TexTools이 종족을 자동으로 선택합니다.</value>
+  </data>
+  <data name="ProblemCheck_BackupError" xml:space="preserve">
+    <value>백업 색인 파일 확인 중 문제를 발견했습니다.</value>
+  </data>
+  <data name="ProblemCheck_Dat" xml:space="preserve">
+    <value>Dat 확인 중...</value>
+  </data>
+  <data name="ProblemCheck_DatMissing" xml:space="preserve">
+    <value>Dat 파일 ( 060000.win32.dat1 ) 을 찾을 수 없습니다.</value>
+  </data>
+  <data name="ProblemCheck_ErrorsFound" xml:space="preserve">
+    <value>복구 중 오류가 발생했습니다...</value>
+  </data>
+  <data name="ProblemCheck_ExtraDats" xml:space="preserve">
+    <value>추가 Dat 파일을 찾았습니다. '다시 시작' 기능을 이용하는 것을 권장합니다.</value>
+  </data>
+  <data name="ProblemCheck_IndexBackups" xml:space="preserve">
+    <value>색인 백업 확인 중...</value>
+  </data>
+  <data name="ProblemCheck_IndexDat" xml:space="preserve">
+    <value>색인 Dat 값 확인 중...</value>
+  </data>
+  <data name="ProblemCheck_IndexLocked" xml:space="preserve">
+    <value>게임이 실행 중일 때는 복구를 시도할 수 없습니다. 게임 종료 후 문제 검색기를 다시 실행해주세요.</value>
+  </data>
+  <data name="ProblemCheck_Initialize" xml:space="preserve">
+    <value>문제 검색기 초기화 중...</value>
+  </data>
+  <data name="ProblemCheck_LoD" xml:space="preserve">
+    <value>LoD 설정 확인 중...</value>
+  </data>
+  <data name="ProblemCheck_LoDIssue" xml:space="preserve">
+    <value>LoD가 켜져 있을 때 일부 모드에서 문제가 있습니다.</value>
+  </data>
+  <data name="ProblemCheck_LoDOff" xml:space="preserve">
+    <value>LoD 끄는 중...</value>
+  </data>
+  <data name="ProblemCheck_LoDOffDone" xml:space="preserve">
+    <value>LoD를 껐습니다. 검색기 실행 중...</value>
+  </data>
+  <data name="ProblemCheck_MissingData" xml:space="preserve">
+    <value>Dat 파일 ( 060000.win32.dat1 ) 의 데이터가 누락되었습니다.</value>
+  </data>
+  <data name="ProblemCheck_ModList" xml:space="preserve">
+    <value>모드 목록 확인 중...</value>
+  </data>
+  <data name="ProblemCheck_ModZero" xml:space="preserve">
+    <value>모드 오프셋이 0입니다. '파일 &gt; 모드 목록'에서 모드를 끈 후 다시 가져오세요.</value>
+  </data>
+  <data name="ProblemCheck_NoBackup" xml:space="preserve">
+    <value>백업을 찾을 수 없습니다.</value>
+  </data>
+  <data name="ProblemCheck_NoEntries" xml:space="preserve">
+    <value>모드 목록에 항목이 없습니다.</value>
+  </data>
+  <data name="ProblemCheck_OriginalZero" xml:space="preserve">
+    <value>원 오프셋이 0입니다. 원래 상태로 되돌릴 수 없습니다. '다시 시작' 기능을 이용하는 것을 권장합니다.</value>
+  </data>
+  <data name="ProblemCheck_OutOfDate" xml:space="preserve">
+    <value>오래된 색인입니다.</value>
+  </data>
+  <data name="ProblemCheck_RepairComplete" xml:space="preserve">
+    <value>복구 완료</value>
+  </data>
+  <data name="ProblemCheck_UnkType" xml:space="preserve">
+    <value>알 수 없는 파일 유형을 발견했습니다 ( {0} ). 오프셋이 손상되었을 가능성이 높습니다.</value>
+  </data>
+  <data name="ModelStatus_Loading" xml:space="preserve">
+    <value>모델 불러오는 중...</value>
+  </data>
+  <data name="Finalizing" xml:space="preserve">
+    <value>마무리 중...</value>
+  </data>
+  <data name="ProblemCheck_DatSize" xml:space="preserve">
+    <value>비어 있는 Dat 파일 확인 중...</value>
+  </data>
+  <data name="Add_NewTexturePart" xml:space="preserve">
+    <value>새 텍스처 파트 추가</value>
+  </data>
+  <data name="Load_From" xml:space="preserve">
+    <value>다음에서 불러오기...</value>
+  </data>
+  <data name="Mod_Converter" xml:space="preserve">
+    <value>모드 변환기</value>
+  </data>
+  <data name="Convert" xml:space="preserve">
+    <value>변환</value>
+  </data>
+  <data name="Convert_To" xml:space="preserve">
+    <value>다음으로 변환</value>
+  </data>
+  <data name="Sort_By_colon" xml:space="preserve">
+    <value>정렬:</value>
+  </data>
+  <data name="Date" xml:space="preserve">
+    <value>날짜</value>
+  </data>
+  <data name="Clone_UV1_to_UV2" xml:space="preserve">
+    <value>UV1을 UV2로 복제</value>
+  </data>
+  <data name="Extra_Import_Settings" xml:space="preserve">
+    <value>가져오기 추가 설정</value>
+  </data>
+  <data name="Force_UV_Quadrant" xml:space="preserve">
+    <value>UV1을 U1V-1으로 강제</value>
+  </data>
+  <data name="Material_Editor" xml:space="preserve">
+    <value>머티리얼 편집기</value>
+  </data>
+  <data name="MaterialEditorHelp" xml:space="preserve">
+    <value>머티리얼 편집기 도움말</value>
+  </data>
+  <data name="Models" xml:space="preserve">
+    <value>모델</value>
+  </data>
+  <data name="Variants" xml:space="preserve">
+    <value>변종</value>
+  </data>
+  <data name="Rebuild_Cache" xml:space="preserve">
+    <value>캐시 재구축</value>
+  </data>
+  <data name="Cache" xml:space="preserve">
+    <value>캐시 작업</value>
+  </data>
+  <data name="Load_Sets" xml:space="preserve">
+    <value>아이템 세트 파일 불러오기</value>
+  </data>
+  <data name="Scan_For_Sets" xml:space="preserve">
+    <value>새 아이템 세트 검색</value>
+  </data>
+  <data name="Standard_Modpack" xml:space="preserve">
+    <value>기본 모드팩</value>
+  </data>
+  <data name="FileName" xml:space="preserve">
+    <value>파일 이름</value>
+  </data>
+  <data name="Inspect" xml:space="preserve">
+    <value>인스펙트</value>
+  </data>
+  <data name="ItemPlural" xml:space="preserve">
+    <value>아이템</value>
+  </data>
+  <data name="Usage" xml:space="preserve">
+    <value>용도</value>
+  </data>
+  <data name="Skeleton" xml:space="preserve">
+    <value>스켈레톤</value>
+  </data>
+  <data name="FullModel_Export_Location" xml:space="preserve">
+    <value>내보내기 경로:</value>
+  </data>
+  <data name="Full_Model_Name" xml:space="preserve">
+    <value>전체 모델 이름</value>
+  </data>
+  <data name="Model_Skeleton" xml:space="preserve">
+    <value>모델 스켈레톤:</value>
+  </data>
+  <data name="Creating_Modpack" xml:space="preserve">
+    <value>모드팩 만드는 중</value>
+  </data>
+  <data name="Loading_Items" xml:space="preserve">
+    <value>아이템 목록 불러오는 중</value>
+  </data>
+  <data name="Please_Wait" xml:space="preserve">
+    <value>잠시 기다려주세요...</value>
+  </data>
+  <data name="Updating_Cache" xml:space="preserve">
+    <value>캐시 갱신 중</value>
+  </data>
+  <data name="Updating_Cache_Message" xml:space="preserve">
+    <value>모드를 많이 설치했다면 약 30~60초 가량 소요될 수 있습니다...</value>
+  </data>
+  <data name="Working_Ellipsis" xml:space="preserve">
+    <value>작업 중...</value>
+  </data>
+  <data name="Face" xml:space="preserve">
+    <value>얼굴</value>
+  </data>
+  <data name="Skin" xml:space="preserve">
+    <value>피부</value>
+  </data>
+  <data name="Download_Backups" xml:space="preserve">
+    <value>색인 백업 다운로드</value>
+  </data>
+  <data name="Index_Backups_Url" xml:space="preserve">
+    <value>https://textools.sfo2.digitaloceanspaces.com/Index_Backups.zip</value>
+  </data>
+  <data name="Viewport_Disclaimer" xml:space="preserve">
+    <value>TexTools 모델 표시는 근사치이며, 게임 내 비주얼과 100% 일치하지 않을 수 있습니다.</value>
+  </data>
+  <data name="Copy_File" xml:space="preserve">
+    <value>미가공 파일 복사</value>
+  </data>
+  <data name="Item_Converter" xml:space="preserve">
+    <value>아이템 변환기</value>
+  </data>
+  <data name="Tools" xml:space="preserve">
+    <value>도구</value>
+  </data>
+  <data name="Version_Latest" xml:space="preserve">
+    <value>최신 베타 버전</value>
+  </data>
+  <data name="Version_Stable" xml:space="preserve">
+    <value>안정화 버전</value>
+  </data>
+  <data name="Extract_Raw" xml:space="preserve">
+    <value>미가공 파일 추출</value>
+  </data>
+  <data name="Import_Raw" xml:space="preserve">
+    <value>미가공 파일 가져오기</value>
+  </data>
+  <data name="Raw_File_Operations" xml:space="preserve">
+    <value>미가공 파일 작업</value>
+  </data>
+  <data name="Clean_Up_ModList" xml:space="preserve">
+    <value>모드 목록 비우기</value>
+  </data>
+  <data name="Manage_ModList" xml:space="preserve">
+    <value>모드 목록 관리</value>
+  </data>
+  <data name="Recover_Space" xml:space="preserve">
+    <value>유휴공간 복구</value>
+  </data>
+  <data name="Backup_Modpack_Creator" xml:space="preserve">
+    <value>백업 모드팩 만들기</value>
+  </data>
+  <data name="Backup_Modpack_Importer" xml:space="preserve">
+    <value>백업 모드팩 가져오기</value>
+  </data>
+  <data name="Modpacks_To_Include" xml:space="preserve">
+    <value>추가할 모드팩</value>
+  </data>
+  <data name="Backup_Modpack" xml:space="preserve">
+    <value>모드팩 백업</value>
+  </data>
+  <data name="Deselect_All" xml:space="preserve">
+    <value>모두 선택 해제</value>
+  </data>
+  <data name="Next_Page" xml:space="preserve">
+    <value>다음 페이지 &gt;</value>
   </data>
   <data name="..." xml:space="preserve">
     <value>...</value>
