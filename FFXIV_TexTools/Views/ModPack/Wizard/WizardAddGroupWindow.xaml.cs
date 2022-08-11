@@ -677,7 +677,7 @@ namespace FFXIV_TexTools.Views
 
             if (includedModsList.Any(f => f.Path.Equals(file.Path)))
             {
-                if (FlexibleMessageBox.Show(
+                if (FlexibleMessageBox.Show(new Wpf32Window(this),
                         string.Format(UIMessages.ExistingOption, file.Name),
                         UIMessages.OverwriteTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Question) !=
                     System.Windows.Forms.DialogResult.Yes)
@@ -692,7 +692,7 @@ namespace FFXIV_TexTools.Views
                 var offset = await index.GetDataOffset(file.Path);
                 if (offset <= 0)
                 {
-                    FlexibleMessageBox.Show("Cannot include file, file offset invalid.".L(),
+                    FlexibleMessageBox.Show(new Wpf32Window(this), "Cannot include file, file offset invalid.".L(),
                         UIMessages.ModDataReadErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
@@ -701,7 +701,7 @@ namespace FFXIV_TexTools.Views
 
                 if (rawData == null)
                 {
-                    FlexibleMessageBox.Show("Cannot include file, file offset invalid.".L(),
+                    FlexibleMessageBox.Show(new Wpf32Window(this), "Cannot include file, file offset invalid.".L(),
                         UIMessages.ModDataReadErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
@@ -791,7 +791,7 @@ namespace FFXIV_TexTools.Views
             }
             catch (Exception ex)
             {
-                FlexibleMessageBox.Show(
+                FlexibleMessageBox.Show(new Wpf32Window(this),
                     string.Format(UIMessages.TextureImportErrorMessage, ex.Message), UIMessages.TextureImportErrorTitle,
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
@@ -852,7 +852,7 @@ namespace FFXIV_TexTools.Views
             }
             catch (Exception ex)
             {
-                FlexibleMessageBox.Show(ex.Message, UIMessages.AdvancedImportErrorTitle,
+                FlexibleMessageBox.Show(new Wpf32Window(this), ex.Message, UIMessages.AdvancedImportErrorTitle,
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
@@ -896,7 +896,7 @@ namespace FFXIV_TexTools.Views
                 ModGroupTitle.BorderBrush = Brushes.Red;
                 ControlsHelper.SetFocusBorderBrush(ModGroupTitle, Brushes.Red);
 
-                FlexibleMessageBox.Show(
+                FlexibleMessageBox.Show(new Wpf32Window(this),
                     $"\"{ModGroupTitle.Text}\" {UIMessages.ExistingGroupMessage}",
                     UIMessages.ExistingGroupTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
