@@ -73,6 +73,9 @@ namespace FFXIV_TexTools.Views
         private bool _editMode;
         private IItem SelectedItem;
 
+        private DirectoryInfo _basicModpackDirectory;
+        private List<byte> _basicModpackData;
+
         public WizardAddGroupWindow(List<string> groupNames)
         {
             InitializeComponent();
@@ -99,7 +102,7 @@ namespace FFXIV_TexTools.Views
         private ProgressDialogController _lockProgressController;
         private IProgress<string> _lockProgress;
 
-        public async Task LockUi(string title, string message, object sender)
+        public async Task LockUi(string title = null, string message = null, object sender = null)
         {
             _lockProgressController = await this.ShowProgressAsync("Loading".L(), "Please Wait...".L());
 
@@ -110,7 +113,7 @@ namespace FFXIV_TexTools.Views
                 _lockProgressController.SetMessage(update);
             });
         }
-        public async Task UnlockUi(object sender)
+        public async Task UnlockUi(object sender = null)
         {
             await _lockProgressController.CloseAsync();
             _lockProgressController = null;
@@ -1030,6 +1033,91 @@ namespace FFXIV_TexTools.Views
                 ret = niceName + " (" + filename + ")";
             }
             return ret;
+        }
+
+        private async void LoadSimpleModpackButton_Click(object sender, RoutedEventArgs e)
+        {
+            var openFileDialog = new OpenFileDialog
+            {
+                Filter = "Basic Modpack(*.ttmp2;)|*.ttmp2;".L()
+            };
+
+            if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                ModpackContents.Items.Clear();
+                _basicModpackData = new List<byte>();
+
+                SelectAllButton.IsEnabled = true;
+                DeselectAllButton.IsEnabled = true;
+
+                _basicModpackDirectory = new DirectoryInfo(openFileDialog.FileName);
+
+                var (modpackJson, _) = await TTMP.GetModPackJsonData(_basicModpackDirectory);
+                if (modpackJson.TTMPVersion.Contains("s"))
+                {
+                    foreach (var modsJson in modpackJson.SimpleModsList)
+                    {
+                        ModpackContents.Items.Add(modsJson);
+                    }
+
+                    // Resize columns to fit content
+                    foreach (var column in GridViewCol.Columns)
+                    {
+                        if (double.IsNaN(column.Width))
+                        {
+                            column.Width = column.ActualWidth;
+                        }
+                        column.Width = double.NaN;
+                    }
+
+                    await LockUi();
+                    var modData = await TTMP.GetModPackData(_basicModpackDirectory);
+                    _basicModpackData.AddRange(modData);
+                    UnlockUi();
+                } 
+                else
+                {
+                    FlexibleMessageBox.Show(new Wpf32Window(this), "You can only load basic modpacks".L(),
+                        "Modpack Type Not Supported".L(), MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+            }
+        }
+
+        private void SelectAllButton_Click(object sender, RoutedEventArgs e)
+        {
+            ModpackContents.SelectAll();
+        }
+
+        private void DeselectAllButton_Click(object sender, RoutedEventArgs e)
+        {
+            ModpackContents.UnselectAll();
+        }
+
+        private void AddButton_Click(object sender, RoutedEventArgs e)
+        {
+            foreach (var item in ModpackContents.SelectedItems)
+            {
+                var modsJson = (ModsJson)item;                
+
+                var file = new FileEntry()
+                {
+                    Name = MakeFriendlyFileName(modsJson.FullPath),
+                    Path = modsJson.FullPath
+                };
+
+                var xivItem = new XivGenericItemModel()
+                {
+                    Name = modsJson.Name,
+                    SecondaryCategory = modsJson.Category
+                };
+
+                AddFile(file, xivItem, _basicModpackData.GetRange((int)modsJson.ModOffset, modsJson.ModSize).ToArray());
+            }
+        }
+
+        private void ModpackContents_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            AddButton.IsEnabled = ModpackContents.SelectedItems.Count > 0;
         }
     }
 }

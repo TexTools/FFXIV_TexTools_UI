@@ -2834,5 +2834,27 @@ namespace FFXIV_TexTools.Resources {
                 return ResourceManager.GetString("Rename", resourceCulture);
             }
         }
+		
+        /// <summary>
+        ///   查找类似 Modpack Options 的本地化字符串。
+        /// </summary>
+        public static string Modpack_Options
+        {
+            get
+            {
+                return ResourceManager.GetString("Modpack_Options", resourceCulture);
+            }
+        }
+		
+		        /// <summary>
+        ///   查找类似 Load Modpack 的本地化字符串。
+        /// </summary>
+        public static string Load_Modpack
+        {
+            get
+            {
+                return ResourceManager.GetString("Load_Modpack", resourceCulture);
+            }
+        }
     }
 }

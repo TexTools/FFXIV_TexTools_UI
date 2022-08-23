@@ -360,8 +360,7 @@ namespace FFXIV_TexTools.Views
             await LockUi();
             try
             {
-                var ttmp = new TTMP(new DirectoryInfo(Settings.Default.ModPack_Directory), XivStrings.TexTools);
-                var ttmpData = await ttmp.GetModPackJsonData(new DirectoryInfo(openFileDialog.FileName));
+                var ttmpData = await TTMP.GetModPackJsonData(new DirectoryInfo(openFileDialog.FileName));
                 if (!ttmpData.ModPackJson.TTMPVersion.Contains("w"))
                 {
                     FlexibleMessageBox.Show(new Wpf32Window(this),
