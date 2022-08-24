@@ -1075,8 +1075,8 @@ If you would like to enable this, first import a texture for the selected item.<
   <data name="Metadata" xml:space="preserve">
     <value>Metadata</value >
   </data >
-  <data name="r" xml:space="preserve">
-    <value>r</value >
+  <data name="R" xml:space="preserve">
+    <value>R</value >
   </data >
   <data name="Tex Path" xml:space="preserve">
     <value>Tex Path</value >
@@ -1114,9 +1114,6 @@ If you would like to enable this, first import a texture for the selected item.<
   <data name="Metadata" xml:space="preserve">
     <value>Metadata</value >
   </data >
-  <data name="r" xml:space="preserve">
-    <value>r</value >
-  </data >
   <data name="Tex Path" xml:space="preserve">
     <value>Tex Path</value >
   </data >
@@ -1150,9 +1147,6 @@ If you would like to enable this, first import a texture for the selected item.<
   <data name="Metadata" xml:space="preserve">
     <value>Metadata</value >
   </data >
-  <data name="r" xml:space="preserve">
-    <value>r</value >
-  </data >
   <data name="Tex Path" xml:space="preserve">
     <value>Tex Path</value >
   </data >
@@ -1183,9 +1177,6 @@ If you would like to enable this, first import a texture for the selected item.<
   <data name="Metadata" xml:space="preserve">
     <value>Metadata</value >
   </data >
-  <data name="r" xml:space="preserve">
-    <value>r</value >
-  </data >
   <data name="Tex Path" xml:space="preserve">
     <value>Tex Path</value >
   </data >
@@ -1213,9 +1204,6 @@ If you would like to enable this, first import a texture for the selected item.<
   <data name="Metadata" xml:space="preserve">
     <value>Metadata</value >
   </data >
-  <data name="r" xml:space="preserve">
-    <value>r</value >
-  </data >
   <data name="Tex Path" xml:space="preserve">
     <value>Tex Path</value >
   </data >
@@ -1240,9 +1228,6 @@ If you would like to enable this, first import a texture for the selected item.<
   <data name="Metadata" xml:space="preserve">
     <value>Metadata</value >
   </data >
-  <data name="r" xml:space="preserve">
-    <value>r</value >
-  </data >
   <data name="Tex Path" xml:space="preserve">
     <value>Tex Path</value >
   </data >
@@ -1264,9 +1249,6 @@ If you would like to enable this, first import a texture for the selected item.<
   <data name="Metadata" xml:space="preserve">
     <value>Metadata</value >
   </data >
-  <data name="r" xml:space="preserve">
-    <value>r</value >
-  </data >
   <data name="Tex Path" xml:space="preserve">
     <value>Tex Path</value >
   </data >
@@ -1285,9 +1267,6 @@ If you would like to enable this, first import a texture for the selected item.<
   <data name="Metadata" xml:space="preserve">
     <value>Metadata</value >
   </data >
-  <data name="r" xml:space="preserve">
-    <value>r</value >
-  </data >
   <data name="Tex Path" xml:space="preserve">
     <value>Tex Path</value >
   </data >
@@ -1303,9 +1282,6 @@ If you would like to enable this, first import a texture for the selected item.<
   <data name="Metadata" xml:space="preserve">
     <value>Metadata</value >
   </data >
-  <data name="r" xml:space="preserve">
-    <value>r</value >
-  </data >
   <data name="Tex Path" xml:space="preserve">
     <value>Tex Path</value >
   </data >
@@ -1318,9 +1294,6 @@ If you would like to enable this, first import a texture for the selected item.<
   <data name="Metadata" xml:space="preserve">
     <value>Metadata</value >
   </data >
-  <data name="r" xml:space="preserve">
-    <value>r</value >
-  </data >
   <data name="Tex Path" xml:space="preserve">
     <value>Tex Path</value >
   </data >
@@ -1330,9 +1303,6 @@ If you would like to enable this, first import a texture for the selected item.<
   <data name="Copy From:" xml:space="preserve">
     <value>Copy From:</value>
   </data>
-  <data name="r" xml:space="preserve">
-    <value>r</value >
-  </data >
   <data name="Tex Path" xml:space="preserve">
     <value>Tex Path</value >
   </data >
@@ -1968,5 +1938,11 @@ If you would like to enable this, first import a texture for the selected item.<
   </data>
   <data name="Rename" xml:space="preserve">
     <value>Rename</value>
+  </data>
+  <data name="Modpack_Options" xml:space="preserve">
+    <value>Basic Modpack Options</value>
+  </data>
+    <data name="Load_Modpack" xml:space="preserve">
+    <value>Load Basic Modpack</value>
   </data>
 </root>

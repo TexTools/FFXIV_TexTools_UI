@@ -1218,8 +1218,7 @@ namespace FFXIV_TexTools
 
             try
             {
-                var ttmp = new TTMP(modPackDirectory, XivStrings.TexTools);
-                var ttmpData = await ttmp.GetModPackJsonData(path);
+                var ttmpData = await TTMP.GetModPackJsonData(path);
 
                 var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
                 var index = new Index(gameDirectory);
