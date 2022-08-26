@@ -790,7 +790,6 @@ namespace FFXIV_TexTools.Views.Controls
                 {XivStrings.Body_Hands_Legs_Feet },
                 {XivStrings.Legs_Feet },
                 {XivStrings.Food },
-                {XivStrings.Soul_Crystal },
                 {XivStrings.All }
                 
             } },
