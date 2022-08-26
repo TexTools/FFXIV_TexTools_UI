@@ -783,13 +783,16 @@ namespace FFXIV_TexTools.Views.Controls
                 {XivStrings.Neck },
                 {XivStrings.Wrists },
                 {XivStrings.Rings },
-                {XivStrings.Body_Hands_Legs_Feet },
+                {XivStrings.Head_Body },
+                {XivStrings.Body_Hands },               
                 {XivStrings.Body_Hands_Legs },
                 {XivStrings.Body_Legs_Feet },
-                {XivStrings.Head_Body },
+                {XivStrings.Body_Hands_Legs_Feet },
                 {XivStrings.Legs_Feet },
-                {XivStrings.All },
-                {XivStrings.Food }
+                {XivStrings.Food },
+                {XivStrings.Soul_Crystal },
+                {XivStrings.All }
+                
             } },
             { XivStrings.Character, new List<string>() {
                 /*{ XivStrings.Body },
