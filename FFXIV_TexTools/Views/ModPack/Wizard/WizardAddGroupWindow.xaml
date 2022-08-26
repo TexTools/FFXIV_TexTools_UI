@@ -6,10 +6,12 @@
         xmlns:local="clr-namespace:FFXIV_TexTools.Views"
         xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:models="clr-namespace:FFXIV_TexTools.Models"
-        xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
+        xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         xmlns:Controls="clr-namespace:FFXIV_TexTools.Views.Controls"
         x:Class="FFXIV_TexTools.Views.WizardAddGroupWindow"
         mc:Ignorable="d"
+        xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
+        resx:Localization.Enabled="True"              
         Title="{Binding Source={x:Static resx:UIStrings.Add_Group}}" Height="1000" Width="1000" WindowStartupLocation="CenterOwner" ShowMaxRestoreButton="False" ShowMinButton="False" Closing="MetroWindow_Closing">
     <Grid>
         <Grid.RowDefinitions>
@@ -66,7 +68,18 @@
                                 <Button x:Name="AddOptionButton" Grid.Column="1" Content="{Binding Source={x:Static resx:UIStrings.Add}}" Click="AddOptionButton_Click"/>
                             </Grid>
                             <ListBox x:Name="OptionList" Grid.Row="1" SelectionChanged="OptionList_SelectionChanged" Margin="5"/>
-                            <Button x:Name="RemoveOptionButton" Grid.Row="2" Content="{Binding Source={x:Static resx:UIStrings.Remove}}" Click="RemoveOptionButton_Click" IsEnabled="False"/>
+                            <Grid Grid.Row="2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <Button x:Name="RemoveOptionButton" Grid.Column="0" Content="{Binding Source={x:Static resx:UIStrings.Remove}}" Click="RemoveOptionButton_Click" IsEnabled="False"/>
+                                <Button x:Name="RenameOptionButton" Grid.Column="1" Content="{Binding Source={x:Static resx:UIStrings.Rename}}" Click="RenameOptionButton_Click" IsEnabled="False"/>
+                                <Button x:Name="MoveOptionUpButton" Grid.Column="2" Content="{iconPacks:FontAwesome Kind=ArrowUpSolid}" Click="MoveOptionUpButton_Click" IsEnabled="False"/>
+                                <Button x:Name="MoveOptionDownButton" Grid.Column="3" Content="{iconPacks:FontAwesome Kind=ArrowDownSolid}" Click="MoveOptionDownButton_Click" IsEnabled="False"/>
+                            </Grid>
                         </Grid>
                     </GroupBox>
 
@@ -192,6 +205,37 @@
                                 <Button x:Name="AddCustomTextureButton" Grid.Column="2" Grid.Row="1" Content="Add New" VerticalAlignment="Center" Click="AddCustomTextureButton_Click" Margin="5,0" IsEnabled="False"/>
                             </Grid>
                         </GroupBox>
+                    </TabItem>
+                    <TabItem x:Name="ModpackTabItem" Header="Modpack">
+                        <GroupBox Header="{Binding Source={x:Static resx:UIStrings.Modpack_Options}}">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="40"/>
+                                    <RowDefinition />
+                                </Grid.RowDefinitions>
+                                <Grid Grid.Row="0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition />
+                                        <ColumnDefinition />
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
+                                    <Button x:Name="LoadSimpleModpackButton" Content="{Binding Source={x:Static resx:UIStrings.Load_Modpack}}" Click="LoadSimpleModpackButton_Click" HorizontalAlignment="Left" VerticalAlignment="Center" Width="150" Margin="5,0" />
+                                    <Button x:Name="SelectAllButton" Click="SelectAllButton_Click" Content="{Binding Source={x:Static resx:UIStrings.Select_All}}" Grid.Column="1" VerticalAlignment="Center" Margin="5,0" IsEnabled="False" />
+                                    <Button x:Name="DeselectAllButton" Click="DeselectAllButton_Click" Content="{Binding Source={x:Static resx:UIStrings.Deselect_All}}" Grid.Column="2" VerticalAlignment="Center" Margin="5,0" IsEnabled="False" />
+                                    <Button x:Name="AddButton" Click="AddButton_Click" Content="{Binding Source={x:Static resx:UIStrings.Add}}" Grid.Column="3" VerticalAlignment="Center" Margin="5,0" IsEnabled="False" />
+                                </Grid>
+                                <ListView Style="{x:Null}" x:Name="ModpackContents" Grid.Row="1" SelectionMode="Multiple" SelectionChanged="ModpackContents_SelectionChanged" BorderBrush="Black" BorderThickness="0,1" AlternationCount="2">
+                                    <ListView.View>
+                                    <GridView  x:Name="GridViewCol">
+                                        <GridViewColumn Header="{Binding Source={x:Static resx:UIStrings.ItemPlural}}" DisplayMemberBinding="{Binding Name}"/>
+                                        <GridViewColumn Header="{Binding Source={x:Static resx:UIStrings.FileName}}" DisplayMemberBinding="{Binding FullPath}"/>
+                                    </GridView>
+                                    </ListView.View>
+                                </ListView>
+                            </Grid>
+                        </GroupBox>
+
                     </TabItem>
                 </mah:MetroTabControl>
             </GroupBox>

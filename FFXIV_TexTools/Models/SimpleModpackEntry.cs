@@ -31,6 +31,7 @@ using xivModdingFramework.Models.FileTypes;
 using xivModdingFramework.Mods.Enums;
 using xivModdingFramework.Textures.DataContainers;
 using xivModdingFramework.Textures.Enums;
+using FFXIV_TexTools;
 
 namespace xivModdingFramework.Mods.DataContainers
 {
@@ -471,22 +472,22 @@ namespace xivModdingFramework.Mods.DataContainers
             var exRaw = Path.GetExtension(modPath);
             if(string.IsNullOrEmpty(exRaw))
             {
-                return "Unknown";
+                return "Unknown".L();
             }
             var ext = exRaw.Substring(1);
             if(ext == "mdl")
             {
-                return "Model";
+                return "Model".L();
             } else if ( ext == "meta") {
-                return "Metadata";
+                return "Metadata".L();
             } else if (ext == "mtrl") {
-                return "Material";
+                return "Material".L();
             } else if(ext == "tex")
             {
-                return "Texture - " + GuessTextureUsage(modPath).ToString();
+                return "Texture - ".L() + GuessTextureUsage(modPath).ToString().L();
             } else
             {
-                return ext.ToUpper();
+                return ext.ToUpper().L();
             }
         }
 

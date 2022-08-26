@@ -157,7 +157,7 @@ namespace FFXIV_TexTools.Views.Models
 
             if (code != 0)
             {
-                throw new Exception("Exporter threw error code: " + proc.ExitCode);
+                throw new Exception("Exporter threw error code: ".L() + proc.ExitCode);
             }
 
             var outputFile = converterFolder + "\\result." + fileFormat;

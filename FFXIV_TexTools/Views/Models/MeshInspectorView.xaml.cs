@@ -82,59 +82,59 @@ namespace FFXIV_TexTools.Views.Models
             var textBox = MeshMetaDataRichTextBox;
 
             // Vertex Count
-            AddText(textBox, "Vertex Count:\t\t", _textColor, false);
+            AddText(textBox, "Vertex Count:\t\t".L(), _textColor, false);
             AddText(textBox, $"{mesh.VertexCount}\n\n", _textColor, true);
 
             // Index Count
-            AddText(textBox, "Index Count:\t\t", _textColor, false);
+            AddText(textBox, "Index Count:\t\t".L(), _textColor, false);
             AddText(textBox, $"{mesh.IndexCount}\n\n", _textColor, true);
 
             // Material Index
-            AddText(textBox, "Material Index:\t", _textColor, false);
+            AddText(textBox, "Material Index:\t".L(), _textColor, false);
             AddText(textBox, $"{mesh.MaterialIndex}\n\n", _textColor, true);
 
             // Mesh Part Index
-            AddText(textBox, "Mesh Part Index:\t", _textColor, false);
+            AddText(textBox, "Mesh Part Index:\t".L(), _textColor, false);
             AddText(textBox, $"{mesh.MeshPartIndex}\n\n", _textColor, true);
 
             // Mesh Part Count
-            AddText(textBox, "Mesh Part Count:\t", _textColor, false);
+            AddText(textBox, "Mesh Part Count:\t".L(), _textColor, false);
             AddText(textBox, $"{mesh.MeshPartCount}\n\n", _textColor, true);
 
             // Bone List Index
-            AddText(textBox, "Bone List Index:\t", _textColor, false);
+            AddText(textBox, "Bone List Index:\t".L(), _textColor, false);
             AddText(textBox, $"{mesh.BoneSetIndex}\n\n", _textColor, true);
 
             // Index Data Offset
-            AddText(textBox, "Index Data Offset:\t", _textColor, false);
+            AddText(textBox, "Index Data Offset:\t".L(), _textColor, false);
             AddText(textBox, $"{mesh.IndexDataOffset}\n\n", _textColor, true);
 
             // Vertex Data Offset 0
-            AddText(textBox, "Vertex Data Offset 0:\t", _textColor, false);
+            AddText(textBox, "Vertex Data Offset 0:\t".L(), _textColor, false);
             AddText(textBox, $"{mesh.VertexDataOffset0}\n\n", _textColor, true);
 
             // Vertex Data Offset 1
-            AddText(textBox, "Vertex Data Offset 1:\t", _textColor, false);
+            AddText(textBox, "Vertex Data Offset 1:\t".L(), _textColor, false);
             AddText(textBox, $"{mesh.VertexDataOffset1}\n\n", _textColor, true);
 
             // Vertex Data Offset 2
-            AddText(textBox, "Vertex Data Offset 2:\t", _textColor, false);
+            AddText(textBox, "Vertex Data Offset 2:\t".L(), _textColor, false);
             AddText(textBox, $"{mesh.VertexDataOffset2}\n\n", _textColor, true);
 
             // Vertex Entry Size 0
-            AddText(textBox, "Vertex Entry Size 0:\t", _textColor, false);
+            AddText(textBox, "Vertex Entry Size 0:\t".L(), _textColor, false);
             AddText(textBox, $"{mesh.VertexDataEntrySize0}\n\n", _textColor, true);
 
             // Vertex Entry Size 1
-            AddText(textBox, "Vertex Entry Size 1:\t", _textColor, false);
+            AddText(textBox, "Vertex Entry Size 1:\t".L(), _textColor, false);
             AddText(textBox, $"{mesh.VertexDataEntrySize1}\n\n", _textColor, true);
 
             // Vertex Entry Size 2
-            AddText(textBox, "Vertex Entry Size 2:\t", _textColor, false);
+            AddText(textBox, "Vertex Entry Size 2:\t".L(), _textColor, false);
             AddText(textBox, $"{mesh.VertexDataEntrySize2}\n\n", _textColor, true);
 
             // Vertex Data Block Count
-            AddText(textBox, "Data Block Count:\t", _textColor, false);
+            AddText(textBox, "Data Block Count:\t".L(), _textColor, false);
             AddText(textBox, $"{mesh.VertexDataBlockCount}\n\n", _textColor, true);
 
 
@@ -178,23 +178,23 @@ namespace FFXIV_TexTools.Views.Models
             var textBox = MeshPartsRichTextBox;
 
             // Index Offset
-            AddText(textBox, "Index Offset:\t\t", _textColor, false);
+            AddText(textBox, "Index Offset:\t\t".L(), _textColor, false);
             AddText(textBox, $"{meshPart.IndexOffset}\n\n", _textColor, true);
 
             // Index Count
-            AddText(textBox, "Index Count:\t\t", _textColor, false);
+            AddText(textBox, "Index Count:\t\t".L(), _textColor, false);
             AddText(textBox, $"{meshPart.IndexCount}\n\n", _textColor, true);
 
             // Attribute Index
-            AddText(textBox, "Attribute Index:\t", _textColor, false);
+            AddText(textBox, "Attribute Index:\t".L(), _textColor, false);
             AddText(textBox, $"{meshPart.AttributeBitmask}\n\n", _textColor, true);
 
             // Bone Start Offset
-            AddText(textBox, "Bone Start Offset:\t", _textColor, false);
+            AddText(textBox, "Bone Start Offset:\t".L(), _textColor, false);
             AddText(textBox, $"{meshPart.BoneStartOffset}\n\n", _textColor, true);
 
             // Bone Count
-            AddText(textBox, "Bone Count:\t\t", _textColor, false);
+            AddText(textBox, "Bone Count:\t\t".L(), _textColor, false);
             AddText(textBox, $"{meshPart.BoneCount}\n\n", _textColor, true);
         }
 
@@ -239,19 +239,19 @@ namespace FFXIV_TexTools.Views.Models
             var textBox = DataStructRichTextBox;
 
             // Data Block
-            AddText(textBox, "Data Block:\t\t", _textColor, false);
+            AddText(textBox, "Data Block:\t\t".L(), _textColor, false);
             AddText(textBox, $"{vertexStruct.DataBlock}\n\n", _textColor, true);
 
             // Data Offset
-            AddText(textBox, "Data Offset:\t\t", _textColor, false);
+            AddText(textBox, "Data Offset:\t\t".L(), _textColor, false);
             AddText(textBox, $"{vertexStruct.DataOffset}\n\n", _textColor, true);
 
             // Data Type
-            AddText(textBox, "Data Type:\t\t", _textColor, false);
+            AddText(textBox, "Data Type:\t\t".L(), _textColor, false);
             AddText(textBox, $"{vertexStruct.DataType}\n\n", _textColor, true);
 
             // Data Usage
-            AddText(textBox, "Data Usage:\t\t", _textColor, false);
+            AddText(textBox, "Data Usage:\t\t".L(), _textColor, false);
             AddText(textBox, $"{vertexStruct.DataUsage}\n\n", _textColor, true);
         }
 

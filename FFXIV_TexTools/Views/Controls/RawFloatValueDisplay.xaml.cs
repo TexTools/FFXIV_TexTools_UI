@@ -29,7 +29,7 @@ namespace FFXIV_TexTools.Views.Controls
 
             if (name != null)
             {
-                this.Title = "Raw " + name + " Value Editor";
+                this.Title = "Raw ".L() + name.L() + " Value Editor".L();
 
             }
 
@@ -50,7 +50,7 @@ namespace FFXIV_TexTools.Views.Controls
                 DialogResult = true;
             } catch
             {
-                FlexibleMessageBox.Show("Unable to set values.  Some values are invalid.", "Invalid Values Error", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning);
+                FlexibleMessageBox.Show("Unable to set values.  Some values are invalid.".L(), "Invalid Values Error".L(), System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning);
             }
         }
 

@@ -6,9 +6,10 @@
                       xmlns:local="clr-namespace:FFXIV_TexTools.Views.Models"
                       xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
                       xmlns:hx="http://helix-toolkit.org/wpf/SharpDX"
-                      xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
                       xmlns:views="clr-namespace:FFXIV_TexTools.Views"
                       mc:Ignorable="d"
+                      xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
+                      resx:Localization.Enabled="True"                     
                       Title="Full Model Viewer" Height="800" Width="550" Closing="MetroWindow_Closing">
     <Grid>
         <Grid.RowDefinitions>

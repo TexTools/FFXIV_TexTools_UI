@@ -12,6 +12,7 @@
         xmlns:resx="clr-namespace:FFXIV_TexTools.Resources" 
         xmlns:items="clr-namespace:FFXIV_TexTools.Views.Controls"
                       mc:Ignorable="d"
+        resx:Localization.Enabled="True"
         Title="FFXIV TexTools" Height="720" Width="1280" WindowStartupLocation="CenterScreen" Closing="MetroWindow_Closing" Loaded="MetroWindow_Loaded">
     <Controls:MetroWindow.RightWindowCommands>
         <Controls:WindowCommands>

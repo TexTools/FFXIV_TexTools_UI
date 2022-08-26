@@ -150,7 +150,7 @@ namespace FFXIV_TexTools.Views
 
 
             var destinationCheckbox = new CheckBox();
-            destinationCheckbox.Content = "Change Destination Item";
+            destinationCheckbox.Content = "Change Destination Item".L();
             destinationCheckbox.IsChecked = false;
 
             g.Children.Add(destinationCheckbox);
@@ -161,7 +161,7 @@ namespace FFXIV_TexTools.Views
             destinationCheckbox.VerticalAlignment = VerticalAlignment.Center;
 
             var variantCheckbox = new CheckBox();
-            variantCheckbox.Content = "Make All Variants Identical";
+            variantCheckbox.Content = "Make All Variants Identical".L();
             variantCheckbox.IsChecked = true;
 
             g.Children.Add(variantCheckbox);
@@ -185,7 +185,7 @@ namespace FFXIV_TexTools.Views
             srcCb.SelectedItem = selected.SourceItem;
             srcCb.Margin = new Thickness(5, 0, 5, 0);
             srcCb.IsEnabled = false;
-            srcCb.ToolTip = "The original item(s) this mod applied to.";
+            srcCb.ToolTip = "The original item(s) this mod applied to.".L();
 
 
             var dst = new TextBox();
@@ -197,7 +197,7 @@ namespace FFXIV_TexTools.Views
             dst.IsReadOnly = true;
             dst.Margin = new Thickness(5, 0, 5, 0);
             dst.IsEnabled = false;
-            dst.ToolTip = "The new item(s) this mod will apply to instead.";
+            dst.ToolTip = "The new item(s) this mod will apply to instead.".L();
 
             var lb = new Label();
             g.Children.Add(lb);
@@ -213,7 +213,7 @@ namespace FFXIV_TexTools.Views
             btn.SetValue(Grid.RowProperty, 1);
             btn.SetValue(Grid.ColumnProperty, 3);
             btn.Margin = new Thickness(5,0,5,0);
-            btn.Content = "Choose New Item";
+            btn.Content = "Choose New Item".L();
             btn.IsEnabled = false;
 
             var btn2 = new Button();
@@ -222,7 +222,7 @@ namespace FFXIV_TexTools.Views
             btn2.SetValue(Grid.RowProperty, 0);
             btn2.SetValue(Grid.ColumnProperty, 3);
             btn2.Margin = new Thickness(5, 0, 5, 0);
-            btn2.Content = "Show Affected Items";
+            btn2.Content = "Show Affected Items".L();
             btn2.IsEnabled = true;
 
             variantCheckbox.Checked += VariantBox_Checked;
@@ -260,7 +260,7 @@ namespace FFXIV_TexTools.Views
 
             var strings = items.Select(x => x.Name).ToList();
 
-            var wind = new AffectedFilesView(strings, "Affected Items") { Owner = this };
+            var wind = new AffectedFilesView(strings, "Affected Items".L()) { Owner = this };
             wind.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             wind.Show();
 
@@ -434,7 +434,7 @@ namespace FFXIV_TexTools.Views
                 var dialogResult = window.ShowDialog();
                 if (dialogResult != true)
                 {
-                    throw new OperationCanceledException("User Cancelled Import Process.");
+                    throw new OperationCanceledException("User Cancelled Import Process.".L());
                 }
 
                 result = window.Results;

@@ -108,7 +108,7 @@ namespace FFXIV_TexTools.ViewModels
             var count = XivCache.GetDependencyQueueLength();
             if (count > 0)
             {
-                _mainWindow.ShowStatusMessage("Queue Length: " + count + "");
+                _mainWindow.ShowStatusMessage($"Queue Length: {count._()}".L());
             }
         }
 
@@ -243,20 +243,20 @@ namespace FFXIV_TexTools.ViewModels
             }
             catch (Exception ex)
             {
-                var result = FlexibleMessageBox.Show("A critical error occurred when attempting to read the FFXIV index files.\n\nWould you like to restore your index backups?\n\nError: " + ex.Message, "Critical Index Error", MessageBoxButtons.YesNo, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
+                var result = FlexibleMessageBox.Show("A critical error occurred when attempting to read the FFXIV index files.\n\nWould you like to restore your index backups?\n\nError: ".L() + ex.Message, "Critical Index Error".L(), MessageBoxButtons.YesNo, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
                 if (result == DialogResult.Yes)
                 {
                     var indexBackupsDirectory = new DirectoryInfo(Settings.Default.Backup_Directory);
                     var success = await problemChecker.RestoreBackups(indexBackupsDirectory);
                     if(!success)
                     {
-                        FlexibleMessageBox.Show("Unable to restore Index Backups, shutting down TexTools.", "Critical Error Shutdown", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
+                        FlexibleMessageBox.Show("Unable to restore Index Backups, shutting down TexTools.".L(), "Critical Error Shutdown".L(), MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
                         return false;
                     }
                 }
                 else
                 {
-                    FlexibleMessageBox.Show("Shutting Down TexTools.", "Critical Error Shutdown",  MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
+                    FlexibleMessageBox.Show("Shutting Down TexTools.".L(), "Critical Error Shutdown".L(),  MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
                     return false;
                 }
             }
@@ -453,12 +453,12 @@ namespace FFXIV_TexTools.ViewModels
         public async Task DoPostPatchCleanup()
         {
 
-            FlexibleMessageBox.Show(_mainWindow.Win32Window, UIMessages.PatchDetectedMessage, "Post Patch Cleanup Starting", MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
+            FlexibleMessageBox.Show(_mainWindow.Win32Window, UIMessages.PatchDetectedMessage, "Post Patch Cleanup Starting".L(), MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
             MainWindow.MakeHighlander();
 
             var resetLumina = false;
 
-            await _mainWindow.LockUi("Performing Post-Patch Maintenence", "This may take a few minutes if you have many mods installed.", this);
+            await _mainWindow.LockUi("Performing Post-Patch Maintenence".L(), "This may take a few minutes if you have many mods installed.".L(), this);
 
             var gi = XivCache.GameInfo;
             if (XivCache.GameInfo.UseLumina)
@@ -553,12 +553,12 @@ namespace FFXIV_TexTools.ViewModels
                                         else
                                         {
                                             // We be fucked.
-                                            throw new Exception("Unable to determine working original offset for file:" + mod.fullPath);
+                                            throw new Exception("Unable to determine working original offset for file:".L() + mod.fullPath);
                                         }
                                     } else
                                     {
                                         // We be fucked.
-                                        throw new Exception("Unable to determine working original offset for file:" + mod.fullPath);
+                                        throw new Exception("Unable to determine working original offset for file:".L() + mod.fullPath);
                                     }
                                 }
                             }
@@ -590,7 +590,7 @@ namespace FFXIV_TexTools.ViewModels
                                 else
                                 {
                                     // We be fucked.
-                                    throw new Exception("Unable to determine working original offset for file:" + mod.fullPath);
+                                    throw new Exception("Unable to determine working original offset for file:".L() + mod.fullPath);
                                 }
                             }
                         }
@@ -640,7 +640,7 @@ namespace FFXIV_TexTools.ViewModels
                             else
                             {
                                 // Update ended up with us unable to find a working offset.  Double fun.
-                                throw new Exception("Unable to determine working offset for file:" + mod.fullPath);
+                                throw new Exception("Unable to determine working offset for file:".L() + mod.fullPath);
                             }
                         }
                     }
@@ -695,7 +695,7 @@ namespace FFXIV_TexTools.ViewModels
                             {
                                 // This is awkward.  We have a mod whose data got bashed, but has no valid original offset to restore.
                                 // So the indexes here are fucked if we do, fucked if we don't.
-                                throw new Exception("Patch-Broken file has no valid index to restore.  Clean Index Restoration required.");
+                                throw new Exception("Patch-Broken file has no valid index to restore.  Clean Index Restoration required.".L());
                             }
 
                             modList.Mods.Remove(mod);
@@ -735,16 +735,16 @@ namespace FFXIV_TexTools.ViewModels
                     {
                         var text = String.Format(UIMessages.PatchDestroyedFiles, removedString);
 
-                        FlexibleMessageBox.Show(_mainWindow.Win32Window, text, "Destroyed Files Notification", MessageBoxButtons.OK, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1);
+                        FlexibleMessageBox.Show(_mainWindow.Win32Window, text, "Destroyed Files Notification".L(), MessageBoxButtons.OK, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1);
                     }
                 }
 
                 // Always create clean index backups after this process is completed.
 
-                _mainWindow.LockProgress.Report("Disabling Mods...");
+                _mainWindow.LockProgress.Report("Disabling Mods...".L());
                 await modding.ToggleAllMods(false);
 
-                _mainWindow.LockProgress.Report("Creating Index Backups...");
+                _mainWindow.LockProgress.Report("Creating Index Backups...".L());
                 var pc = new ProblemChecker(_gameDirectory);
                 DirectoryInfo backupDir;
                 try
@@ -754,7 +754,7 @@ namespace FFXIV_TexTools.ViewModels
                 }
                 catch
                 {
-                    throw new Exception("Unable to create index backups.\nThe Index Backup directory is invalid or inaccessible: " + Settings.Default.Backup_Directory);
+                    throw new Exception("Unable to create index backups.\nThe Index Backup directory is invalid or inaccessible: ".L() + Settings.Default.Backup_Directory);
                 }
 
                 await pc.BackupIndexFiles(backupDir);
@@ -765,13 +765,13 @@ namespace FFXIV_TexTools.ViewModels
                 // Re-enable things.
                 await modding.ToggleMods(true, enabledMods.Select(x => x.fullPath));
 
-                FlexibleMessageBox.Show(_mainWindow.Win32Window, UIMessages.PostPatchComplete, "Post-Patch Process Complete", MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
+                FlexibleMessageBox.Show(_mainWindow.Win32Window, UIMessages.PostPatchComplete, "Post-Patch Process Complete".L(), MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
 
             }
             catch(Exception Ex)
             {
                 // Show the user the error, then let them go about their business of fixing things.
-                FlexibleMessageBox.Show(_mainWindow.Win32Window, String.Format(UIMessages.PostPatchError, Ex.Message), "Post-Patch Failure", MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
+                FlexibleMessageBox.Show(_mainWindow.Win32Window, String.Format(UIMessages.PostPatchError, Ex.Message), "Post-Patch Failure".L(), MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
             }
             finally
             {
@@ -929,7 +929,7 @@ namespace FFXIV_TexTools.ViewModels
                     await modding.ToggleAllMods(true, progressIndicator);
                 } catch(Exception ex)
                 {
-                    FlexibleMessageBox.Show("Failed to Enable all Mods: \n\nError:" + ex.Message, "Enable Mod Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    FlexibleMessageBox.Show("Failed to Enable all Mods: \n\nError:".L() + ex.Message, "Enable Mod Error".L(), MessageBoxButtons.OK, MessageBoxIcon.Error);
                     err = true;
                 }
 
@@ -969,7 +969,7 @@ namespace FFXIV_TexTools.ViewModels
                     await modding.ToggleAllMods(false, progressIndicator);
                 } catch (Exception ex)
                 {
-                    FlexibleMessageBox.Show("Failed to Disable all Mods: \n\nError:" + ex.Message, "Disable Mod Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    FlexibleMessageBox.Show("Failed to Disable all Mods: \n\nError:".L() + ex.Message, "Disable Mod Error".L(), MessageBoxButtons.OK, MessageBoxIcon.Error);
                     err = true;
                 }
 
@@ -995,7 +995,7 @@ namespace FFXIV_TexTools.ViewModels
         {
             if (!report.message.Equals(string.Empty))
             {
-                _progressController.SetMessage(report.message);
+                _progressController.SetMessage(report.message.L());
                 _progressController.SetIndeterminate();
             }
             else

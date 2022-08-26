@@ -73,6 +73,9 @@ namespace FFXIV_TexTools.Views
         private bool _editMode;
         private IItem SelectedItem;
 
+        private DirectoryInfo _basicModpackDirectory;
+        private List<byte> _basicModpackData;
+
         public WizardAddGroupWindow(List<string> groupNames)
         {
             InitializeComponent();
@@ -91,14 +94,17 @@ namespace FFXIV_TexTools.Views
             OptionDescription.IsEnabled = false;
             OptionImageButton.IsEnabled = false;
             RemoveOptionButton.IsEnabled = false;
+            RenameOptionButton.IsEnabled = false;
+            MoveOptionUpButton.IsEnabled = false;
+            MoveOptionDownButton.IsEnabled = false;
         }
 
         private ProgressDialogController _lockProgressController;
         private IProgress<string> _lockProgress;
 
-        public async Task LockUi(string title, string message, object sender)
+        public async Task LockUi(string title = null, string message = null, object sender = null)
         {
-            _lockProgressController = await this.ShowProgressAsync("Loading", "Please Wait...");
+            _lockProgressController = await this.ShowProgressAsync("Loading".L(), "Please Wait...".L());
 
             _lockProgressController.SetIndeterminate();
 
@@ -107,7 +113,7 @@ namespace FFXIV_TexTools.Views
                 _lockProgressController.SetMessage(update);
             });
         }
-        public async Task UnlockUi(object sender)
+        public async Task UnlockUi(object sender = null)
         {
             await _lockProgressController.CloseAsync();
             _lockProgressController = null;
@@ -149,7 +155,7 @@ namespace FFXIV_TexTools.Views
 
             foreach (var modOption in modGroup.OptionList)
             {
-                OptionList.Items.Add(modOption.Name);
+                OptionList.Items.Add(new EditableOptionControl(modOption.Name, modOption));
             }
         }
 
@@ -222,9 +228,9 @@ namespace FFXIV_TexTools.Views
         {
             if (String.IsNullOrWhiteSpace(OptionNameTextBox.Text)) return;
 
-            var optionListItems = OptionList.Items.Cast<string>().ToList();
+            var optionListItems = OptionList.Items.Cast<EditableOptionControl>().ToList();
 
-            if (optionListItems.IndexOf(optionText) != -1)
+            if (optionListItems.Exists((option) => option.ToString() == optionText))
             {
                 AddOption($"{OptionNameTextBox.Text} {optionNum + 1}", optionNum + 1);
             }
@@ -237,7 +243,7 @@ namespace FFXIV_TexTools.Views
 
                 _modOptions.Add(modOption);
 
-                OptionList.Items.Add(optionText);
+                OptionList.Items.Add(new EditableOptionControl(optionText, modOption));
                 OptionList.SelectedIndex = OptionList.Items.Count - 1;
             }
 
@@ -285,6 +291,61 @@ namespace FFXIV_TexTools.Views
                     OptionList.Items.Remove(item);
                     break;
                 }
+            }
+        }
+
+        /// <summary>
+        /// The event handler for the rename options button clicked
+        /// </summary>
+        private void RenameOptionButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (OptionList.SelectedItem != null)
+            {
+                (OptionList.SelectedItem as EditableOptionControl).EditMode();
+            }
+        }
+
+        /// <summary>
+        /// The event handler for the move option up button clicked
+        /// </summary>
+        private void MoveOptionUpButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (OptionList.SelectedIndex > 0)
+            {
+                var oldIndex = OptionList.SelectedIndex;
+                var newIndex = OptionList.SelectedIndex - 1;
+
+                var modOption = _modOptions[oldIndex];
+                _modOptions.RemoveAt(oldIndex);
+                _modOptions.Insert(newIndex, modOption);
+
+                var editableOptionControl = OptionList.Items.GetItemAt(oldIndex) as EditableOptionControl;
+                OptionList.Items.RemoveAt(oldIndex);
+                OptionList.Items.Insert(newIndex, editableOptionControl);
+
+                OptionList.SelectedIndex = newIndex;
+            }
+        }
+
+        /// <summary>
+        /// The event handler for the move option down button clicked
+        /// </summary>
+        private void MoveOptionDownButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (OptionList.SelectedIndex != -1 && OptionList.SelectedIndex < (OptionList.Items.Count - 1))
+            {
+                var oldIndex = OptionList.SelectedIndex;
+                var newIndex = OptionList.SelectedIndex + 1;
+
+                var option = _modOptions[oldIndex];
+                _modOptions.RemoveAt(oldIndex);
+                _modOptions.Insert(newIndex, option);
+
+                var editableOptionControl = OptionList.Items.GetItemAt(oldIndex) as EditableOptionControl;
+                OptionList.Items.RemoveAt(oldIndex);
+                OptionList.Items.Insert(newIndex, editableOptionControl);
+
+                OptionList.SelectedIndex = newIndex;
             }
         }
 
@@ -349,10 +410,39 @@ namespace FFXIV_TexTools.Views
                     }
                 }
 
+                if (OptionList.Items.Count > 1)
+                {
+                    // Enable the move up button only when the option isn't already first
+                    if (OptionList.SelectedIndex > 0)
+                    {
+                        MoveOptionUpButton.IsEnabled = true;
+                    }
+                    else
+                    {
+                        MoveOptionUpButton.IsEnabled = false;
+                    }
+
+                    // Enable the move down button only when the option isn't already last
+                    if (OptionList.SelectedIndex < (OptionList.Items.Count - 1))
+                    {
+                        MoveOptionDownButton.IsEnabled = true;
+                    }
+                    else
+                    {
+                        MoveOptionDownButton.IsEnabled = false;
+                    }
+                }
+                else
+                {
+                    MoveOptionUpButton.IsEnabled = false;
+                    MoveOptionDownButton.IsEnabled = false;
+                }
+
                 ModListGrid.IsEnabled = true;
                 OptionDescription.IsEnabled = true;
                 OptionImageButton.IsEnabled = true;
                 RemoveOptionButton.IsEnabled = true;
+                RenameOptionButton.IsEnabled = true;
             }
             else
             {
@@ -360,6 +450,9 @@ namespace FFXIV_TexTools.Views
                 OptionDescription.IsEnabled = false;
                 OptionImageButton.IsEnabled = false;
                 RemoveOptionButton.IsEnabled = false;
+                MoveOptionUpButton.IsEnabled = false;
+                MoveOptionDownButton.IsEnabled = false;
+                RenameOptionButton.IsEnabled = false;
             }
 
             if (SelectedItem != null)
@@ -385,7 +478,7 @@ namespace FFXIV_TexTools.Views
         {
             var openFileDialog = new OpenFileDialog
             {
-                Filter = "Image Files(*.BMP;*.JPG;*.GIF;*.PNG)|*.BMP;*.JPG;*.GIF;*.PNG"
+                Filter = "Image Files(*.BMP;*.JPG;*.GIF;*.PNG)|*.BMP;*.JPG;*.GIF;*.PNG".L()
             };
 
 
@@ -587,7 +680,7 @@ namespace FFXIV_TexTools.Views
 
             if (includedModsList.Any(f => f.Path.Equals(file.Path)))
             {
-                if (FlexibleMessageBox.Show(
+                if (FlexibleMessageBox.Show(new Wpf32Window(this),
                         string.Format(UIMessages.ExistingOption, file.Name),
                         UIMessages.OverwriteTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Question) !=
                     System.Windows.Forms.DialogResult.Yes)
@@ -602,7 +695,7 @@ namespace FFXIV_TexTools.Views
                 var offset = await index.GetDataOffset(file.Path);
                 if (offset <= 0)
                 {
-                    FlexibleMessageBox.Show("Cannot include file, file offset invalid.",
+                    FlexibleMessageBox.Show(new Wpf32Window(this), "Cannot include file, file offset invalid.".L(),
                         UIMessages.ModDataReadErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
@@ -611,7 +704,7 @@ namespace FFXIV_TexTools.Views
 
                 if (rawData == null)
                 {
-                    FlexibleMessageBox.Show("Cannot include file, file offset invalid.",
+                    FlexibleMessageBox.Show(new Wpf32Window(this), "Cannot include file, file offset invalid.".L(),
                         UIMessages.ModDataReadErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
@@ -684,7 +777,7 @@ namespace FFXIV_TexTools.Views
         {
             var selectedFile = TextureMapComboBox.SelectedItem as FileEntry;
 
-            var openFileDialog = new OpenFileDialog { Filter = "Texture Files(*.DDS;*.BMP;*.PNG) |*.DDS;*.BMP;*.PNG" };
+            var openFileDialog = new OpenFileDialog { Filter = "Texture Files(*.DDS;*.BMP;*.PNG) |*.DDS;*.BMP;*.PNG".L() };
 
 
             var result = openFileDialog.ShowDialog();
@@ -701,7 +794,7 @@ namespace FFXIV_TexTools.Views
             }
             catch (Exception ex)
             {
-                FlexibleMessageBox.Show(
+                FlexibleMessageBox.Show(new Wpf32Window(this),
                     string.Format(UIMessages.TextureImportErrorMessage, ex.Message), UIMessages.TextureImportErrorTitle,
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
@@ -762,7 +855,7 @@ namespace FFXIV_TexTools.Views
             }
             catch (Exception ex)
             {
-                FlexibleMessageBox.Show(ex.Message, UIMessages.AdvancedImportErrorTitle,
+                FlexibleMessageBox.Show(new Wpf32Window(this), ex.Message, UIMessages.AdvancedImportErrorTitle,
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
@@ -806,7 +899,7 @@ namespace FFXIV_TexTools.Views
                 ModGroupTitle.BorderBrush = Brushes.Red;
                 ControlsHelper.SetFocusBorderBrush(ModGroupTitle, Brushes.Red);
 
-                FlexibleMessageBox.Show(
+                FlexibleMessageBox.Show(new Wpf32Window(this),
                     $"\"{ModGroupTitle.Text}\" {UIMessages.ExistingGroupMessage}",
                     UIMessages.ExistingGroupTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
@@ -916,20 +1009,20 @@ namespace FFXIV_TexTools.Views
                     filename = m.Value + filename;
                 }
 
-                niceName = "Material";
+                niceName = "Material".L();
             } else if(ext == ".atex")
             {
                 niceName = "VFX";
             } else if(ext == ".mdl")
             {
-                niceName = "Model";
+                niceName = "Model".L();
             } else if(ext == ".tex")
             {
                 var type = SimpleModpackEntry.GuessTextureUsage(path);
-                niceName = type.ToString() + " Texture";
+                niceName = $"{type.ToString()._()} Texture".L();
             } else if(ext == ".meta")
             {
-                niceName = "Metadata";
+                niceName = "Metadata".L();
             }
 
 
@@ -940,6 +1033,91 @@ namespace FFXIV_TexTools.Views
                 ret = niceName + " (" + filename + ")";
             }
             return ret;
+        }
+
+        private async void LoadSimpleModpackButton_Click(object sender, RoutedEventArgs e)
+        {
+            var openFileDialog = new OpenFileDialog
+            {
+                Filter = "Basic Modpack(*.ttmp2;)|*.ttmp2;".L()
+            };
+
+            if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                ModpackContents.Items.Clear();
+                _basicModpackData = new List<byte>();
+
+                SelectAllButton.IsEnabled = true;
+                DeselectAllButton.IsEnabled = true;
+
+                _basicModpackDirectory = new DirectoryInfo(openFileDialog.FileName);
+
+                var (modpackJson, _) = await TTMP.GetModPackJsonData(_basicModpackDirectory);
+                if (modpackJson.TTMPVersion.Contains("s"))
+                {
+                    foreach (var modsJson in modpackJson.SimpleModsList)
+                    {
+                        ModpackContents.Items.Add(modsJson);
+                    }
+
+                    // Resize columns to fit content
+                    foreach (var column in GridViewCol.Columns)
+                    {
+                        if (double.IsNaN(column.Width))
+                        {
+                            column.Width = column.ActualWidth;
+                        }
+                        column.Width = double.NaN;
+                    }
+
+                    await LockUi();
+                    var modData = await TTMP.GetModPackData(_basicModpackDirectory);
+                    _basicModpackData.AddRange(modData);
+                    UnlockUi();
+                } 
+                else
+                {
+                    FlexibleMessageBox.Show(new Wpf32Window(this), "You can only load basic modpacks".L(),
+                        "Modpack Type Not Supported".L(), MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+            }
+        }
+
+        private void SelectAllButton_Click(object sender, RoutedEventArgs e)
+        {
+            ModpackContents.SelectAll();
+        }
+
+        private void DeselectAllButton_Click(object sender, RoutedEventArgs e)
+        {
+            ModpackContents.UnselectAll();
+        }
+
+        private void AddButton_Click(object sender, RoutedEventArgs e)
+        {
+            foreach (var item in ModpackContents.SelectedItems)
+            {
+                var modsJson = (ModsJson)item;                
+
+                var file = new FileEntry()
+                {
+                    Name = MakeFriendlyFileName(modsJson.FullPath),
+                    Path = modsJson.FullPath
+                };
+
+                var xivItem = new XivGenericItemModel()
+                {
+                    Name = modsJson.Name,
+                    SecondaryCategory = modsJson.Category
+                };
+
+                AddFile(file, xivItem, _basicModpackData.GetRange((int)modsJson.ModOffset, modsJson.ModSize).ToArray());
+            }
+        }
+
+        private void ModpackContents_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            AddButton.IsEnabled = ModpackContents.SelectedItems.Count > 0;
         }
     }
 }

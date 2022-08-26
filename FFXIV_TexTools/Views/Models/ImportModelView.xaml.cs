@@ -53,7 +53,7 @@ namespace FFXIV_TexTools.Views.Models
         public void EnableClose()
         {
             ImportButton.IsEnabled = true;
-            ImportButton.Content = "Close";
+            ImportButton.Content = "Close".L();
             ImportButton.Click += Close_Click;
             IsCloseButtonEnabled = true;
         }

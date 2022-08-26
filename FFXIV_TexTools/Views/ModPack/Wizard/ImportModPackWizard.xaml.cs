@@ -80,7 +80,7 @@ namespace FFXIV_TexTools.Views
                     {
 
                         var Win32Window = new WindowWrapper(new WindowInteropHelper(this).Handle);
-                        FlexibleMessageBox.Show(Win32Window, "This Modpack requires a more recent version of TexTools to install.", "Framework Version Error", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
+                        FlexibleMessageBox.Show(Win32Window, "This Modpack requires a more recent version of TexTools to install.".L(), "Framework Version Error".L(), MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
                         Close();
                         return;
                     }
@@ -215,7 +215,7 @@ namespace FFXIV_TexTools.Views
         {
             if (!report.message.Equals(string.Empty))
             {
-                _progressController.SetMessage(report.message);
+                _progressController.SetMessage(report.message.L());
                 _progressController.SetIndeterminate();
             }
             else

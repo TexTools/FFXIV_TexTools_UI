@@ -41,7 +41,7 @@ namespace FFXIV_TexTools.Views.Models
                 var m = _newModel.MeshGroups[mIdx];
                 if(m.Name == null)
                 {
-                    MeshSource.Add(new KeyValuePair<int, string>(mIdx, "#" + mIdx.ToString() + ": " + "Unknown"));
+                    MeshSource.Add(new KeyValuePair<int, string>(mIdx, "#".L() + mIdx.ToString() + ": " + "Unknown".L()));
 
                 } else
                 {
@@ -61,7 +61,7 @@ namespace FFXIV_TexTools.Views.Models
             SizeMultiplierSource.Add(new KeyValuePair<double, string>(100.0D, "100x"));
             SizeMultiplierSource.Add(new KeyValuePair<double, string>(.1D, "0.1x"));
             SizeMultiplierSource.Add(new KeyValuePair<double, string>(.01D, "0.01x"));
-            SizeMultiplierSource.Add(new KeyValuePair<double, string>(0.03937007874D, "0.039x (Legacy Fix)"));
+            SizeMultiplierSource.Add(new KeyValuePair<double, string>(0.03937007874D, "0.039x (Legacy Fix)".L()));
             
             MeshNumberBox.ItemsSource = MeshSource;
             MeshNumberBox.DisplayMemberPath = "Value";

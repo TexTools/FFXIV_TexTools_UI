@@ -4,6 +4,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+        xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
+        resx:Localization.Enabled="True"                     
         mc:Ignorable="d"
         Title="Model Importer" Height="250" IsMinButtonEnabled="False" IsMaxRestoreButtonEnabled="False" WindowStartupLocation="CenterOwner" FontSize="14" Width="640" ResizeMode="NoResize">
     <Grid>

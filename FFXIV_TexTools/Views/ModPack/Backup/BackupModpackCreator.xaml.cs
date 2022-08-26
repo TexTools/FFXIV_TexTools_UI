@@ -109,7 +109,7 @@ namespace FFXIV_TexTools.Views
                 var selectedEntries = from modpack in (List<BackupModpackItemEntry>)ModpackList.ItemsSource
                                       where modpack.IsChecked
                                       select modpack;
-                if (selectedEntries.Count() == 0) throw new Exception("No selected modpacks detected.");
+                if (selectedEntries.Count() == 0) throw new Exception("No selected modpacks detected.".L());
 
                 foreach (var modpackEntry in selectedEntries)
                 {
@@ -181,7 +181,7 @@ namespace FFXIV_TexTools.Views
             }
             catch (Exception ex)
             {
-                FlexibleMessageBox.Show("Failed to create modpack.\n\nError: " + ex.Message, "Modpack Creation Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                FlexibleMessageBox.Show("Failed to create modpack.\n\nError: ".L() + ex.Message, "Modpack Creation Error".L(), MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
             finally
@@ -244,7 +244,7 @@ namespace FFXIV_TexTools.Views
         {
             if (!report.message.Equals(string.Empty))
             {
-                _progressController.SetMessage(report.message);
+                _progressController.SetMessage(report.message.L());
                 _progressController.SetIndeterminate();
             }
             else

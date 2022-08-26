@@ -8,8 +8,9 @@
     xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
     xmlns:local="clr-namespace:FFXIV_TexTools.Views"
     xmlns:hx="http://helix-toolkit.org/wpf/SharpDX"
-    xmlns:resx="clr-namespace:FFXIV_TexTools.Resources" 
     xmlns:controls="clr-namespace:FFXIV_TexTools.Controls" 
+    xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
+    resx:Localization.Enabled="True"    
     x:Class="FFXIV_TexTools.Views.TextureView"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">

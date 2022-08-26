@@ -233,15 +233,15 @@ namespace FFXIV_TexTools.Views.Metadata
 
             var mtrl = new Mtrl(XivCache.GameInfo.GameDirectory);
             var folder = mtrl.GetMtrlFolder(_metadata.Root.Info, entry.MaterialSet) + "/";
-            paths.Add(("Material Folder", folder));
+            paths.Add(("Material Folder".L(), folder));
 
             if (entry.Vfx > 0)
             {
                 var pair = await ATex.GetVfxPath(_metadata.Root.Info, entry.Vfx);
-                paths.Add(("VFX File Path", pair.Folder + "/" + pair.File));
+                paths.Add(("VFX File Path".L(), pair.Folder + "/" + pair.File));
             } else
             {
-                paths.Add(("VFX File Path", "--"));
+                paths.Add(("VFX File Path".L(), "--"));
             }
 
 
