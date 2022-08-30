@@ -1,0 +1,88 @@
+name: Bug report
+description: >-
+  If you experience a bug in FFXIV TexTools, please open an
+  issue here and fill out the template.
+title: '[Bug]: '
+labels:
+  - bug
+  - triage
+assignees:
+  - null
+body:
+  - type: markdown
+    attributes: 
+      value: '## FAQs and a warning'
+  - type: markdown
+    attributes: 
+      value: >-
+        Please join the Discord first and ask for support there first.
+        If the issue should require an open GitHub issue, somebody will ask
+        you to open one.
+        
+        We have a lot of people in the Discord who are more then
+        happy to help you with any issues you may be having!
+
+        Please avoid opening issues if you do not meet the minimum requirements
+        for FFXIV TexTools. These are outlined in the README for this repository.
+  - type: textarea
+    id: what-should-happen
+    attributes: 
+      label: Expected behavior?
+      description: How was FFXIV TextTools supposed to behave.
+      placeholder: Tell us what you expect to see!; use screenshots if necessary.
+      value: null
+    validations: 
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes: 
+      label: Actual behavior?
+      description: Describe the issue you encountered.
+      placeholder: Tell us what you see!; use screenshots if necessary.
+      value: null
+    validations: 
+      required: true
+  - type: textarea
+    id: repro
+    attributes: 
+      label: Steps to reproduce the problem
+      description: How do you trigger this bug? Please walk us through it step by step.
+      value: |
+        1.
+        2.
+        3.
+        4.
+        5.
+        ...
+    validations: 
+      required: true
+  - type: textarea
+    id: error-messages
+    attributes: 
+      label: Error messages?
+      description: Was there an error message?
+      placeholder: List any error messages here!; use screenshots if necessary.
+      value: null
+    validations: 
+      required: false
+  - type: textarea
+    id: client_details
+    attributes: 
+      label: What aspect of FFXIV TexTools were you using, and what Item were you interacting with?
+      description: What were you doing when you encountered an issue?
+      value: |
+        Title:
+        Item:
+    validations: 
+      required: false
+  - type: checkboxes
+    id: Real_Bug
+    attributes: 
+      label: This has been confirmed as a bug.
+      description: >-
+        Please do not lodge bugs that have not been confirmed first, 
+        this especially includes Exception errors following a major game patch
+        as these are more than likely a result of inconsistent game data.
+      options:
+        - label: This has been confirmed to be a legitimate issue and not caused by bad game data.
+          required: true
