@@ -1,7 +1,7 @@
 name: Bug report
 description: >-
-  If you experience a bug in FFXIV TexTools, please open an
-  issue here and fill out the template.
+  If you have experienced a bug in FFXIV TexTools and been directed here, please open an
+  issue and fill out the template.
 title: '[Bug]: '
 labels:
   - bug
