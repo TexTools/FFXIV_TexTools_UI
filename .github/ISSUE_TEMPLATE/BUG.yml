@@ -78,7 +78,7 @@ body:
   - type: checkboxes
     id: Real_Bug
     attributes: 
-      label: This has been confirmed as a bug.
+      label: Has this has been confirmed as an actual bug?
       description: >-
         Please do not lodge bugs that have not been confirmed first, 
         this especially includes Exception errors following a major game patch
