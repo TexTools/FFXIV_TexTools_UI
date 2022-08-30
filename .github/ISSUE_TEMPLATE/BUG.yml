@@ -71,7 +71,7 @@ body:
       label: What aspect of FFXIV TexTools were you using, and what Item were you interacting with?
       description: What were you doing when you encountered an issue?
       value: |
-        Component: (Full model  viewer, Item Converter, Importer, Exporter, etc)
+        Component: (Full model  viewer, Item Converter, Importer, Modpack Creator (and which one), etc)
         Item: (Gear, Race, Furnishing, etc)
     validations: 
       required: false
