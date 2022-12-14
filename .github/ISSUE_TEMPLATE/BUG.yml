@@ -15,11 +15,11 @@ body:
   - type: markdown
     attributes: 
       value: >-
-        Please join the Discord first and ask for support there first.
+        Please join the Discord and ask for support there first.
         If the issue should require an open GitHub issue, somebody will ask
         you to open one.
         
-        We have a lot of people in the Discord who are more then
+        We have a lot of people in the Discord who are more than
         happy to help you with any issues you may be having!
 
         Please avoid opening issues if you do not meet the minimum requirements
