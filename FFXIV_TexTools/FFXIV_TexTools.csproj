@@ -1,24 +1,10 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\packages\Microsoft.Net.Compilers.Toolset.3.10.0\build\Microsoft.Net.Compilers.Toolset.props" Condition="Exists('..\packages\Microsoft.Net.Compilers.Toolset.3.10.0\build\Microsoft.Net.Compilers.Toolset.props')" />
-  <Import Project="..\packages\EntityFramework.6.4.4\build\EntityFramework.props" Condition="Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.props')" />
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{4A5F7AB1-F296-450B-8F57-2FB82465964E}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>FFXIV_TexTools</RootNamespace>
-    <AssemblyName>FFXIV_TexTools</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
+    <TargetFramework>net472</TargetFramework>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <WarningLevel>4</WarningLevel>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <Deterministic>true</Deterministic>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
-    <TargetFrameworkProfile />
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
@@ -34,27 +20,25 @@
     <ApplicationVersion>2.0.0.0</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <AssemblyTitle>FFXIV_TexTools</AssemblyTitle>
+    <Product>FFXIV_TexTools</Product>
+    <Copyright>Copyright ©  2022</Copyright>
+    <AssemblyVersion>2.3.8.3</AssemblyVersion>
+    <FileVersion>2.3.8.3</FileVersion>
+    <OutputPath>bin\$(Configuration)\</OutputPath>
+    <UseWPF>true</UseWPF>
+    <PostBuildEvent>mkdir $(TargetDir)lib
+move $(TargetDir)*.dll $(TargetDir)lib</PostBuildEvent>
+    <PostBuildEvent>mkdir $(TargetDir)lib
+move $(TargetDir)*.dll $(TargetDir)lib</PostBuildEvent>
+    <PostBuildEvent>mkdir $(TargetDir)lib
+move $(TargetDir)*.dll $(TargetDir)lib</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>ffxiv2.ico</ApplicationIcon>
@@ -62,841 +46,109 @@
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
+  <PropertyGroup>
+    <PostBuildEvent>mkdir $(TargetDir)lib
+move $(TargetDir)*.dll $(TargetDir)lib</PostBuildEvent>
+  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AutoUpdater.NET, Version=1.7.0.0, Culture=neutral, PublicKeyToken=501435c91b35f4bc, processorArchitecture=MSIL">
-      <HintPath>..\packages\Autoupdater.NET.Official.1.7.0\lib\net45\AutoUpdater.NET.dll</HintPath>
-    </Reference>
-    <Reference Include="ControlzEx, Version=3.0.2.4, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\ControlzEx.3.0.2.4\lib\net462\ControlzEx.dll</HintPath>
-    </Reference>
-    <Reference Include="Cyotek.Drawing.BitmapFont, Version=1.0.0.0, Culture=neutral, PublicKeyToken=58daa28b0b2de221, processorArchitecture=MSIL">
-      <HintPath>..\packages\Cyotek.Drawing.BitmapFont.2.0.2\lib\net472\Cyotek.Drawing.BitmapFont.dll</HintPath>
-    </Reference>
-    <Reference Include="DotNetZip, Version=1.15.0.0, Culture=neutral, PublicKeyToken=6583c7c814667745, processorArchitecture=MSIL">
-      <HintPath>..\packages\DotNetZip.1.15.0\lib\net40\DotNetZip.dll</HintPath>
-    </Reference>
-    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\packages\EntityFramework.6.4.4\lib\net45\EntityFramework.dll</HintPath>
-    </Reference>
-    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\packages\EntityFramework.6.4.4\lib\net45\EntityFramework.SqlServer.dll</HintPath>
-    </Reference>
-    <Reference Include="HelixToolkit, Version=2.17.0.0, Culture=neutral, PublicKeyToken=52aa3500039caf0d, processorArchitecture=MSIL">
-      <HintPath>..\packages\HelixToolkit.2.17.0\lib\netstandard1.1\HelixToolkit.dll</HintPath>
-    </Reference>
-    <Reference Include="HelixToolkit.SharpDX.Core, Version=2.17.0.0, Culture=neutral, PublicKeyToken=52aa3500039caf0d, processorArchitecture=MSIL">
-      <HintPath>..\packages\HelixToolkit.SharpDX.Core.2.17.0\lib\netstandard1.3\HelixToolkit.SharpDX.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="HelixToolkit.Wpf, Version=2.17.0.0, Culture=neutral, PublicKeyToken=52aa3500039caf0d, processorArchitecture=MSIL">
-      <HintPath>..\packages\HelixToolkit.Wpf.2.17.0\lib\net45\HelixToolkit.Wpf.dll</HintPath>
-    </Reference>
-    <Reference Include="HelixToolkit.Wpf.SharpDX, Version=2.17.0.0, Culture=neutral, PublicKeyToken=52aa3500039caf0d, processorArchitecture=MSIL">
-      <HintPath>..\packages\HelixToolkit.Wpf.SharpDX.2.17.0\lib\net45\HelixToolkit.Wpf.SharpDX.dll</HintPath>
-    </Reference>
-    <Reference Include="IndexRange, Version=1.0.0.0, Culture=neutral, PublicKeyToken=35e6a3c4212514c6, processorArchitecture=MSIL">
-      <HintPath>..\packages\IndexRange.1.0.0\lib\net471\IndexRange.dll</HintPath>
-    </Reference>
-    <Reference Include="Lumina, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Lumina.3.3.0\lib\netstandard2.0\Lumina.dll</HintPath>
-    </Reference>
-    <Reference Include="MahApps.Metro, Version=1.6.5.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MahApps.Metro.1.6.5\lib\net47\MahApps.Metro.dll</HintPath>
-    </Reference>
-    <Reference Include="MahApps.Metro.IconPacks, Version=2.3.0.4, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MahApps.Metro.IconPacks.2.3.0\lib\net46\MahApps.Metro.IconPacks.dll</HintPath>
-    </Reference>
-    <Reference Include="MahApps.Metro.IconPacks.Material, Version=2.3.0.4, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MahApps.Metro.IconPacks.Material.2.3.0\lib\net46\MahApps.Metro.IconPacks.Material.dll</HintPath>
-    </Reference>
-    <Reference Include="MahApps.Metro.IconPacks.Modern, Version=2.3.0.4, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MahApps.Metro.IconPacks.Modern.2.3.0\lib\net46\MahApps.Metro.IconPacks.Modern.dll</HintPath>
-    </Reference>
+    <PackageReference Include="Autoupdater.NET.Official" Version="1.7.0" />
+    <PackageReference Include="ControlzEx" Version="3.0.2.4" />
+    <PackageReference Include="Cyotek.Drawing.BitmapFont" Version="2.0.2" />
+    <PackageReference Include="DotNetZip" Version="1.15.0" />
+    <PackageReference Include="EntityFramework" Version="6.4.4" />
+    <PackageReference Include="Extended.Wpf.Toolkit" Version="4.1.0" />
+    <PackageReference Include="HelixToolkit" Version="2.17.0" />
+    <PackageReference Include="HelixToolkit.SharpDX.Core" Version="2.17.0" />
+    <PackageReference Include="HelixToolkit.Wpf" Version="2.17.0" />
+    <PackageReference Include="HelixToolkit.Wpf.SharpDX" Version="2.17.0" />
+    <PackageReference Include="IndexRange" Version="1.0.0" />
+    <PackageReference Include="Lumina" Version="3.3.0" />
+    <PackageReference Include="MahApps.Metro" Version="1.6.5" />
+    <PackageReference Include="MahApps.Metro.IconPacks" Version="2.3.0" />
+    <PackageReference Include="MahApps.Metro.IconPacks.Material" Version="2.3.0" />
+    <PackageReference Include="MahApps.Metro.IconPacks.Modern" Version="2.3.0" />
+    <PackageReference Include="Microsoft.HLSL.CSharpVB" Version="1.0.2" />
+    <PackageReference Include="Microsoft.Net.Compilers.Toolset" Version="3.10.0">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="SharpDX" Version="4.2.0" />
+    <PackageReference Include="SharpDX.D3DCompiler" Version="4.2.0" />
+    <PackageReference Include="SharpDX.Direct2D1" Version="4.2.0" />
+    <PackageReference Include="SharpDX.Direct3D11" Version="4.2.0" />
+    <PackageReference Include="SharpDX.Direct3D9" Version="4.2.0" />
+    <PackageReference Include="SharpDX.DXGI" Version="4.2.0" />
+    <PackageReference Include="SharpDX.Mathematics" Version="4.2.0" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="1.0.3" />
+    <PackageReference Include="Stub.System.Data.SQLite.Core.NetFramework" Version="1.0.114.0" />
+    <PackageReference Include="System.Buffers" Version="4.5.1" />
+    <PackageReference Include="System.Collections.NonGeneric" Version="4.3.0" />
+    <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
+    <PackageReference Include="System.ComponentModel.Primitives" Version="4.3.0" />
+    <PackageReference Include="System.ComponentModel.TypeConverter" Version="4.3.0" />
+    <PackageReference Include="System.Data.SQLite" Version="1.0.114.4" />
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.114.3" />
+    <PackageReference Include="System.Data.SQLite.EF6" Version="1.0.114.0" />
+    <PackageReference Include="System.Data.SQLite.Linq" Version="1.0.114.0" />
+    <PackageReference Include="System.Drawing.Primitives" Version="4.3.0" />
+    <PackageReference Include="System.Memory" Version="4.5.4" />
+    <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
+    <PackageReference Include="System.Private.DataContractSerialization" Version="4.3.0" />
+    <PackageReference Include="System.Reflection" Version="4.3.0" />
+    <PackageReference Include="System.Reflection.TypeExtensions" Version="4.7.0" />
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="5.0.0" />
+    <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
+    <PackageReference Include="System.Runtime.Serialization.Xml" Version="4.3.0" />
+    <PackageReference Include="System.Threading.Tasks.Parallel" Version="4.3.0" />
+    <PackageReference Include="System.Xml.XmlDocument" Version="4.3.0" />
+    <PackageReference Include="TeximpNet" Version="1.4.3" />
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="netstandard, Version=2.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51" />
-    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
-      <HintPath>..\packages\SharpDX.4.2.0\lib\net45\SharpDX.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.D3DCompiler, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
-      <HintPath>..\packages\SharpDX.D3DCompiler.4.2.0\lib\net45\SharpDX.D3DCompiler.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.Direct2D1, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
-      <HintPath>..\packages\SharpDX.Direct2D1.4.2.0\lib\net45\SharpDX.Direct2D1.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.Direct3D11, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
-      <HintPath>..\packages\SharpDX.Direct3D11.4.2.0\lib\net45\SharpDX.Direct3D11.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.Direct3D9, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
-      <HintPath>..\packages\SharpDX.Direct3D9.4.2.0\lib\net45\SharpDX.Direct3D9.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.DXGI, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
-      <HintPath>..\packages\SharpDX.DXGI.4.2.0\lib\net45\SharpDX.DXGI.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.Mathematics, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
-      <HintPath>..\packages\SharpDX.Mathematics.4.2.0\lib\net45\SharpDX.Mathematics.dll</HintPath>
-    </Reference>
-    <Reference Include="SixLabors.ImageSharp, Version=1.0.0.0, Culture=neutral, PublicKeyToken=d998eea7b14cab13, processorArchitecture=MSIL">
-      <HintPath>..\packages\SixLabors.ImageSharp.1.0.3\lib\net472\SixLabors.ImageSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Collections.NonGeneric, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Collections.NonGeneric.4.3.0\lib\net46\System.Collections.NonGeneric.dll</HintPath>
-      <Private>True</Private>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.ComponentModel.Annotations, Version=4.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.ComponentModel.Annotations.5.0.0\lib\net461\System.ComponentModel.Annotations.dll</HintPath>
-    </Reference>
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
-    <Reference Include="System.ComponentModel.Primitives, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.ComponentModel.Primitives.4.3.0\lib\net45\System.ComponentModel.Primitives.dll</HintPath>
-      <Private>True</Private>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.ComponentModel.TypeConverter, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.ComponentModel.TypeConverter.4.3.0\lib\net462\System.ComponentModel.TypeConverter.dll</HintPath>
-      <Private>True</Private>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Data" />
-    <Reference Include="System.Data.SQLite, Version=1.0.114.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
-      <HintPath>..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.114.0\lib\net46\System.Data.SQLite.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Data.SQLite.EF6, Version=1.0.114.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Data.SQLite.EF6.1.0.114.0\lib\net46\System.Data.SQLite.EF6.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Data.SQLite.Linq, Version=1.0.114.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Data.SQLite.Linq.1.0.114.0\lib\net46\System.Data.SQLite.Linq.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Drawing.Primitives, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Drawing.Primitives.4.3.0\lib\net45\System.Drawing.Primitives.dll</HintPath>
-      <Private>True</Private>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System.IO.Compression" />
-    <Reference Include="System.IO.Compression.FileSystem" />
-    <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Memory.4.5.4\lib\net461\System.Memory.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Numerics" />
-    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Private.DataContractSerialization, Version=4.1.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Private.DataContractSerialization.4.3.0\lib\netstandard1.3\System.Private.DataContractSerialization.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Reflection, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Reflection.4.3.0\lib\net462\System.Reflection.dll</HintPath>
-      <Private>True</Private>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Reflection.TypeExtensions, Version=4.1.5.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Reflection.TypeExtensions.4.7.0\lib\net461\System.Reflection.TypeExtensions.dll</HintPath>
-    </Reference>
     <Reference Include="System.Runtime" />
-    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.5.0.0\lib\net45\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
-    </Reference>
     <Reference Include="System.Runtime.InteropServices" />
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Runtime.Serialization.Primitives, Version=4.1.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Runtime.Serialization.Primitives.4.3.0\lib\net46\System.Runtime.Serialization.Primitives.dll</HintPath>
-      <Private>True</Private>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Runtime.Serialization.Xml, Version=4.1.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Runtime.Serialization.Xml.4.3.0\lib\net46\System.Runtime.Serialization.Xml.dll</HintPath>
-      <Private>True</Private>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System.Threading.Thread" />
     <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\ControlzEx.3.0.2.4\lib\net462\System.Windows.Interactivity.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Xaml">
-      <RequiredTargetFramework>4.0</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Xml.XmlDocument, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Xml.XmlDocument.4.3.0\lib\net46\System.Xml.XmlDocument.dll</HintPath>
-      <Private>True</Private>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="TeximpNet, Version=1.4.3.0, Culture=neutral, PublicKeyToken=978ca55aa4aa29a3, processorArchitecture=MSIL">
-      <HintPath>..\packages\TeximpNet.1.4.3\lib\net40\TeximpNet.dll</HintPath>
-    </Reference>
+    <Reference Include="System.Xaml" />
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-    <Reference Include="Xceed.Wpf.AvalonDock, Version=4.1.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
-      <HintPath>..\packages\Extended.Wpf.Toolkit.4.1.0\lib\net40\Xceed.Wpf.AvalonDock.dll</HintPath>
-    </Reference>
-    <Reference Include="Xceed.Wpf.AvalonDock.Themes.Aero, Version=4.1.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
-      <HintPath>..\packages\Extended.Wpf.Toolkit.4.1.0\lib\net40\Xceed.Wpf.AvalonDock.Themes.Aero.dll</HintPath>
-    </Reference>
-    <Reference Include="Xceed.Wpf.AvalonDock.Themes.Metro, Version=4.1.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
-      <HintPath>..\packages\Extended.Wpf.Toolkit.4.1.0\lib\net40\Xceed.Wpf.AvalonDock.Themes.Metro.dll</HintPath>
-    </Reference>
-    <Reference Include="Xceed.Wpf.AvalonDock.Themes.VS2010, Version=4.1.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
-      <HintPath>..\packages\Extended.Wpf.Toolkit.4.1.0\lib\net40\Xceed.Wpf.AvalonDock.Themes.VS2010.dll</HintPath>
-    </Reference>
-    <Reference Include="Xceed.Wpf.Toolkit, Version=4.1.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
-      <HintPath>..\packages\Extended.Wpf.Toolkit.4.1.0\lib\net40\Xceed.Wpf.Toolkit.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ApplicationDefinition Include="App.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </ApplicationDefinition>
-    <Compile Include="Controls\FeedbackControl.xaml.cs">
-      <DependentUpon>FeedbackControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Custom\CustomBoneSkinMeshGeometry3D.cs" />
-    <Compile Include="Custom\CustomEffectsManager.cs" />
-    <Compile Include="Custom\CustomMeshGeometryModel3D.cs" />
-    <Compile Include="Helpers\FlexibleMessageBox.cs" />
-    <Compile Include="Helpers\FolderSelectDialog.cs" />
-    <Compile Include="Helpers\ObservableObject.cs" />
-    <Compile Include="Helpers\Reflector.cs" />
-    <Compile Include="Helpers\RelayCommand.cs" />
-    <Compile Include="Helpers\Wpf32Window.cs" />
-    <Compile Include="Localizations\Localization.cs" />
-    <Compile Include="Models\Category.cs" />
-    <Compile Include="Models\SimpleModpackEntry.cs" />
-    <Compile Include="Properties\Annotations.cs" />
-    <Compile Include="Resources\CommonInstallDirectories.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>CommonInstallDirectories.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Resources\UIMessages.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>UIMessages.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Resources\UIStrings.zh.Designer.cs">
-      <DependentUpon>UIStrings.zh.resx</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="Resources\UIStrings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>UIStrings.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Resources\WebUrl.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>WebUrl.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Resources\XivStringRaces.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>XivStringRaces.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Resources\XivStrings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>XivStrings.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Textures\ColorChannels.cs" />
-    <Compile Include="ViewModels\BackupModpackViewModel.cs" />
-    <Compile Include="ViewModels\BaseViewPortViewModel.cs" />
-    <Compile Include="ViewModels\ColorsetEditorViewModel.cs" />
-    <Compile Include="ViewModels\CustomizeViewModel.cs" />
-    <Compile Include="ViewModels\FullModelViewModel.cs" />
-    <Compile Include="ViewModels\FullModelViewport3DViewModel.cs" />
-    <Compile Include="ViewModels\IconSearchViewModel.cs" />
-    <Compile Include="ViewModels\ImportModelEditViewModel.cs" />
-    <Compile Include="ViewModels\ImportModelViewModel.cs" />
-    <Compile Include="ViewModels\MainViewModel.cs" />
-    <Compile Include="ViewModels\MaterialEditorViewModel.cs" />
-    <Compile Include="ViewModels\MetadataViewModel.cs" />
-    <Compile Include="ViewModels\ModelViewModel.cs" />
-    <Compile Include="ViewModels\ModListViewModel.cs" />
-    <Compile Include="ViewModels\SharedItemsViewModel.cs" />
-    <Compile Include="ViewModels\StandardModpackViewModel.cs" />
-    <Compile Include="ViewModels\TextureViewModel.cs" />
-    <Compile Include="ViewModels\Viewport3DViewModel.cs" />
-    <Compile Include="Views\AboutView.xaml.cs">
-      <DependentUpon>AboutView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\AutoCompleteEntry.cs" />
-    <Compile Include="Views\AutoCompleteTextBox.xaml.cs">
-      <DependentUpon>AutoCompleteTextBox.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Controls\ColorsetEditorControl.xaml.cs">
-      <DependentUpon>ColorsetEditorControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Controls\ColorsetRowControl.xaml.cs">
-      <DependentUpon>ColorsetRowControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Controls\DescribedButton.xaml.cs">
-      <DependentUpon>DescribedButton.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Controls\ItemInfoDisplay.xaml.cs">
-      <DependentUpon>ItemInfoDisplay.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Controls\ItemSelectControl.xaml.cs">
-      <DependentUpon>ItemSelectControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Controls\PathDisplay.xaml.cs">
-      <DependentUpon>PathDisplay.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Controls\PopupItemSelection.xaml.cs">
-      <DependentUpon>PopupItemSelection.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Controls\RawFloatValueDisplay.xaml.cs">
-      <DependentUpon>RawFloatValueDisplay.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\CopyFileDialog.xaml.cs">
-      <DependentUpon>CopyFileDialog.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\CopyModelDialog.xaml.cs">
-      <DependentUpon>CopyModelDialog.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\CustomizeSettingsView.xaml.cs">
-      <DependentUpon>CustomizeSettingsView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\DependencyInfoView.xaml.cs">
-      <DependentUpon>DependencyInfoView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\ExtractRawDialog.xaml.cs">
-      <DependentUpon>ExtractRawDialog.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\IconSearchView.xaml.cs">
-      <DependentUpon>IconSearchView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\ImportRawDialog.xaml.cs">
-      <DependentUpon>ImportRawDialog.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\ItemConverter\ItemConverterWindow.xaml.cs">
-      <DependentUpon>ItemConverterWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\LanguageSelectView.xaml.cs">
-      <DependentUpon>LanguageSelectView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Metadata\AffectedFilesView.xaml.cs">
-      <DependentUpon>AffectedFilesView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Metadata\EqdpControl.xaml.cs">
-      <DependentUpon>EqdpControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Metadata\EqpControl.xaml.cs">
-      <DependentUpon>EqpControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Metadata\ImcControl.xaml.cs">
-      <DependentUpon>ImcControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Metadata\MetadataView.xaml.cs">
-      <DependentUpon>MetadataView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Metadata\RaceGenderScalingEditor.xaml.cs">
-      <DependentUpon>RaceGenderScalingEditor.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Metadata\RacialSettingsEditor.xaml.cs">
-      <DependentUpon>RacialSettingsEditor.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Metadata\SkeletonControl.xaml.cs">
-      <DependentUpon>SkeletonControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Metadata\VisorControl.xaml.cs">
-      <DependentUpon>VisorControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Models\ApplyShapesView.xaml.cs">
-      <DependentUpon>ApplyShapesView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Models\FullModelExportDialogView.xaml.cs">
-      <DependentUpon>FullModelExportDialogView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Models\FullModelView.xaml.cs">
-      <DependentUpon>FullModelView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Models\HighilightedColorsetSelection.xaml.cs">
-      <DependentUpon>HighilightedColorsetSelection.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Models\ImportModelEditView.xaml.cs">
-      <DependentUpon>ImportModelEditView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Models\ImportModelView.xaml.cs">
-      <DependentUpon>ImportModelView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Models\MeshInspectorView.xaml.cs">
-      <DependentUpon>MeshInspectorView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Models\ModelInspector.xaml.cs">
-      <DependentUpon>ModelInspector.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\ModPack\Backup\BackupModPackCreator.xaml.cs">
-      <DependentUpon>BackupModPackCreator.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\ModPack\Backup\BackupModPackImporter.xaml.cs">
-      <DependentUpon>BackupModPackImporter.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\ModPack\ModpackRootConvertWindow.xaml.cs">
-      <DependentUpon>ModpackRootConvertWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\ModPack\Standard\StandardModpackCreatorItemSelect.xaml.cs">
-      <DependentUpon>StandardModpackCreatorItemSelect.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\ModPack\Standard\StandardModpackEntryControl.xaml.cs">
-      <DependentUpon>StandardModpackEntryControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\ModPack\Standard\StandardModpackCreator.xaml.cs">
-      <DependentUpon>StandardModpackCreator.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\ModPack\Standard\StandardModpackFileSelect.xaml.cs">
-      <DependentUpon>StandardModpackFileSelect.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\ModPack\Standard\StandardModpackFilesReview.xaml.cs">
-      <DependentUpon>StandardModpackFilesReview.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\ModPack\Standard\StandardModpackFinalize.xaml.cs">
-      <DependentUpon>StandardModpackFinalize.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\ModPack\Standard\StandardModpackLevelSelect.xaml.cs">
-      <DependentUpon>StandardModpackLevelSelect.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\ModPack\Wizard\EditableOptionControl.xaml.cs">
-      <DependentUpon>EditableOptionControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\ModPack\Wizard\ImportModPackWizard.xaml.cs">
-      <DependentUpon>ImportModPackWizard.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\ModPack\Standard\StandardModpackSharedItems.xaml.cs">
-      <DependentUpon>StandardModpackSharedItems.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Textures\ImportTextureOptionsView.xaml.cs">
-      <DependentUpon>ImportTextureOptionsView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\ModPack\Wizard\ImportWizardModPackControl.xaml.cs">
-      <DependentUpon>ImportWizardModPackControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\LanguageOptionsView.xaml.cs">
-      <DependentUpon>LanguageOptionsView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Models\ModelView.xaml.cs">
-      <DependentUpon>ModelView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Models\ModelViewerOptionsView.xaml.cs">
-      <DependentUpon>ModelViewerOptionsView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\ModListView.xaml.cs">
-      <DependentUpon>ModListView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\ModPack\Wizard\ModPackWizard.xaml.cs">
-      <DependentUpon>ModPackWizard.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Textures\MaterialEditorHelpView.xaml.cs">
-      <DependentUpon>MaterialEditorHelpView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Textures\MaterialEditorView.xaml.cs">
-      <DependentUpon>MaterialEditorView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Textures\MoreTextureOptionsView.xaml.cs">
-      <DependentUpon>MoreTextureOptionsView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\ProblemCheckView.xaml.cs">
-      <DependentUpon>ProblemCheckView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\ModPack\Simple\SimpleModPackCreator.xaml.cs">
-      <DependentUpon>SimpleModPackCreator.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\ModPack\Simple\SimpleModPackImporter.xaml.cs">
-      <DependentUpon>SimpleModPackImporter.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\SharedItems\SharedItemsView.xaml.cs">
-      <DependentUpon>SharedItemsView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Textures\TextureView.xaml.cs">
-      <DependentUpon>TextureView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\ModPack\Wizard\WizardAddGroupWindow.xaml.cs">
-      <DependentUpon>WizardAddGroupWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\ModPack\Wizard\WizardModPackControl.xaml.cs">
-      <DependentUpon>WizardModPackControl.xaml</DependentUpon>
-    </Compile>
-    <Page Include="Controls\FeedbackControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="MainWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Compile Include="App.xaml.cs">
-      <DependentUpon>App.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Page Include="Simple Styles.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\AboutView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\AutoCompleteTextBox.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Controls\ColorsetEditorControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Controls\ColorsetRowControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Controls\DescribedButton.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Controls\ItemInfoDisplay.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Controls\ItemSelectControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Controls\PathDisplay.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Controls\PopupItemSelection.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Controls\RawFloatValueDisplay.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\CopyFileDialog.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\CopyModelDialog.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\CustomizeSettingsView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\DependencyInfoView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\ExtractRawDialog.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\IconSearchView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\ImportRawDialog.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\ItemConverter\ItemConverterWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\LanguageSelectView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Metadata\AffectedFilesView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Metadata\EqdpControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Metadata\EqpControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Metadata\ImcControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Metadata\MetadataView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Metadata\RaceGenderScalingEditor.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Metadata\RacialSettingsEditor.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Metadata\SkeletonControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\Metadata\VisorControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Models\ApplyShapesView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Models\FullModelExportDialogView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Models\FullModelView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\Models\HighilightedColorsetSelection.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Models\ImportModelEditView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Models\ImportModelView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Models\MeshInspectorView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Models\ModelInspector.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\ModPack\Backup\BackupModPackCreator.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\ModPack\Backup\BackupModPackImporter.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\ModPack\ModpackRootConvertWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\ModPack\Standard\StandardModpackCreatorItemSelect.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\ModPack\Standard\StandardModpackEntryControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\ModPack\Standard\StandardModpackCreator.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\ModPack\Standard\StandardModpackFileSelect.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\ModPack\Standard\StandardModpackFilesReview.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\ModPack\Standard\StandardModpackFinalize.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\ModPack\Standard\StandardModpackLevelSelect.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\ModPack\Wizard\EditableOptionControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\ModPack\Wizard\ImportModPackWizard.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\ModPack\Standard\StandardModpackSharedItems.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Textures\ImportTextureOptionsView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\ModPack\Wizard\ImportWizardModPackControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\LanguageOptionsView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Models\ModelView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Models\ModelViewerOptionsView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\ModListView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\ModPack\Wizard\ModPackWizard.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Textures\MaterialEditorHelpView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Textures\MaterialEditorView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\Textures\MoreTextureOptionsView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\ProblemCheckView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\ModPack\Simple\SimpleModPackCreator.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\ModPack\Simple\SimpleModPackImporter.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\SharedItems\SharedItemsView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Textures\TextureView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\ModPack\Wizard\WizardAddGroupWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\ModPack\Wizard\WizardModPackControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Properties\AssemblyInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
-    <EmbeddedResource Include="..\lib\xivModdingFramework\xivModdingFramework\Resources\XivStrings.zh.resx">
-      <Link>Resources\XivStrings.zh.resx</Link>
+    <EmbeddedResource Include="..\lib\xivModdingFramework\xivModdingFramework\Resources\XivStrings.zh.resx" Link="Resources\XivStrings.zh.resx">
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\CommonInstallDirectories.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>CommonInstallDirectories.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\UIMessages.de.resx" />
-    <EmbeddedResource Include="Resources\UIMessages.fr.resx" />
-    <EmbeddedResource Include="Resources\UIMessages.ja.resx" />
-    <EmbeddedResource Include="Resources\UIMessages.ko.resx" />
-    <EmbeddedResource Include="Resources\UIMessages.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>UIMessages.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\UIMessages.zh.resx">
+    <EmbeddedResource Update="Resources\UIMessages.zh.resx">
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resources\UIStrings.de.resx" />
-    <EmbeddedResource Include="Resources\UIStrings.fr.resx" />
-    <EmbeddedResource Include="Resources\UIStrings.ja.resx" />
-    <EmbeddedResource Include="Resources\UIStrings.ko.resx">
+    <EmbeddedResource Update="Resources\UIStrings.ko.resx">
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resources\UIStrings.zh.resx">
+    <EmbeddedResource Update="Resources\UIStrings.zh.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>UIStrings.zh.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resources\UIStrings.resx">
+    <EmbeddedResource Update="Resources\UIStrings.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>UIStrings.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resources\WebUrl.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>WebUrl.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\XivStringRaces.zh.resx">
+    <EmbeddedResource Update="Resources\XivStringRaces.zh.resx">
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resources\XivStringRaces.resx">
+    <EmbeddedResource Update="Resources\XivStringRaces.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>XivStringRaces.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resources\XivStrings.de.resx" />
-    <EmbeddedResource Include="Resources\XivStrings.fr.resx" />
-    <EmbeddedResource Include="Resources\XivStrings.ja.resx" />
-    <EmbeddedResource Include="Resources\XivStrings.ko.resx" />
-    <EmbeddedResource Include="Resources\XivStrings.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>XivStrings.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
     <None Include="app.manifest" />
-    <None Include="packages.config" />
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
     <Resource Include="Resources\rgbaChannels.cso" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\ffxiv2.ico" />
@@ -904,24 +156,6 @@
     <Resource Include="Resources\3DModel.png" />
     <Resource Include="ffxiv2.ico" />
     <Resource Include="Resources\textureDNE.png" />
-    <PixelShader Include="Resources\Shaders\psCustomMeshBlinnPhongOIT.hlsl">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </PixelShader>
-    <PixelShader Include="Resources\Shaders\psCustomMeshBlinnPhong.hlsl">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </PixelShader>
-  </ItemGroup>
-  <ItemGroup>
-    <BootstrapperPackage Include=".NETFramework,Version=v4.6">
-      <Visible>False</Visible>
-      <ProductName>Microsoft .NET Framework 4.6 %28x86 and x64%29</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\PaypalDonateButton.png" />
@@ -933,34 +167,7 @@
     <Content Include="Resources\Shaders\psCommon.hlsl" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ForceUpdateAssembly\ForceUpdateAssembly.csproj">
-      <Project>{734acc29-8f05-4193-b981-f5266150f11f}</Project>
-      <Name>ForceUpdateAssembly</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\lib\xivModdingFramework\xivModdingFramework\xivModdingFramework.csproj">
-      <Project>{cdc45cc3-60e7-4cb1-a267-be1cb3bde340}</Project>
-      <Name>xivModdingFramework</Name>
-    </ProjectReference>
+    <ProjectReference Include="..\ForceUpdateAssembly\ForceUpdateAssembly.csproj" />
+    <ProjectReference Include="..\lib\xivModdingFramework\xivModdingFramework\xivModdingFramework.csproj" />
   </ItemGroup>
-  <ItemGroup />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>mkdir $(TargetDir)lib
-move $(TargetDir)*.dll $(TargetDir)lib</PostBuildEvent>
-  </PropertyGroup>
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.4.4\build\EntityFramework.props'))" />
-    <Error Condition="!Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.4.4\build\EntityFramework.targets'))" />
-    <Error Condition="!Exists('..\packages\Microsoft.Net.Compilers.Toolset.3.10.0\build\Microsoft.Net.Compilers.Toolset.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Net.Compilers.Toolset.3.10.0\build\Microsoft.Net.Compilers.Toolset.props'))" />
-    <Error Condition="!Exists('..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.114.0\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.114.0\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets'))" />
-    <Error Condition="!Exists('..\packages\TeximpNet.1.4.3\build\TeximpNet.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\TeximpNet.1.4.3\build\TeximpNet.targets'))" />
-    <Error Condition="!Exists('..\packages\Microsoft.HLSL.CSharpVB.1.0.2\build\Microsoft.HLSL.CSharpVB.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.HLSL.CSharpVB.1.0.2\build\Microsoft.HLSL.CSharpVB.targets'))" />
-  </Target>
-  <Import Project="..\packages\EntityFramework.6.4.4\build\EntityFramework.targets" Condition="Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.targets')" />
-  <Import Project="..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.114.0\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets" Condition="Exists('..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.114.0\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets')" />
-  <Import Project="..\packages\TeximpNet.1.4.3\build\TeximpNet.targets" Condition="Exists('..\packages\TeximpNet.1.4.3\build\TeximpNet.targets')" />
-  <Import Project="..\packages\Microsoft.HLSL.CSharpVB.1.0.2\build\Microsoft.HLSL.CSharpVB.targets" Condition="Exists('..\packages\Microsoft.HLSL.CSharpVB.1.0.2\build\Microsoft.HLSL.CSharpVB.targets')" />
 </Project>
