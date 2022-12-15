@@ -170,4 +170,12 @@ move $(TargetDir)*.dll $(TargetDir)lib</PostBuildEvent>
     <ProjectReference Include="..\ForceUpdateAssembly\ForceUpdateAssembly.csproj" />
     <ProjectReference Include="..\lib\xivModdingFramework\xivModdingFramework\xivModdingFramework.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <None Update="Resources\Shaders\psCustomMeshBlinnPhong.hlsl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\Shaders\psCustomMeshBlinnPhongOIT.hlsl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>
