@@ -51,6 +51,10 @@ move $(TargetDir)*.dll $(TargetDir)lib</PostBuildEvent>
 move $(TargetDir)*.dll $(TargetDir)lib</PostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Resources\Shaders\psCustomMeshBlinnPhong.hlsl" />
+    <None Remove="Resources\Shaders\psCustomMeshBlinnPhongOIT.hlsl" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Autoupdater.NET.Official" Version="1.7.0" />
     <PackageReference Include="ControlzEx" Version="3.0.2.4" />
     <PackageReference Include="Cyotek.Drawing.BitmapFont" Version="2.0.2" />
@@ -167,15 +171,15 @@ move $(TargetDir)*.dll $(TargetDir)lib</PostBuildEvent>
     <Content Include="Resources\Shaders\psCommon.hlsl" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ForceUpdateAssembly\ForceUpdateAssembly.csproj" />
-    <ProjectReference Include="..\lib\xivModdingFramework\xivModdingFramework\xivModdingFramework.csproj" />
+    <PixelShader Include="Resources\Shaders\psCustomMeshBlinnPhong.hlsl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </PixelShader>
+    <PixelShader Include="Resources\Shaders\psCustomMeshBlinnPhongOIT.hlsl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </PixelShader>
   </ItemGroup>
   <ItemGroup>
-    <None Update="Resources\Shaders\psCustomMeshBlinnPhong.hlsl">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Resources\Shaders\psCustomMeshBlinnPhongOIT.hlsl">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <ProjectReference Include="..\ForceUpdateAssembly\ForceUpdateAssembly.csproj" />
+    <ProjectReference Include="..\lib\xivModdingFramework\xivModdingFramework\xivModdingFramework.csproj" />
   </ItemGroup>
 </Project>
