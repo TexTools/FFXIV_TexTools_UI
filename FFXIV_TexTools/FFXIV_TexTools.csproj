@@ -2,7 +2,7 @@
   <PropertyGroup>
     <ProjectGuid>{4A5F7AB1-F296-450B-8F57-2FB82465964E}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net472</TargetFramework>
+    <TargetFramework>net481</TargetFramework>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <IsWebBootstrapper>false</IsWebBootstrapper>
@@ -55,27 +55,27 @@ move $(TargetDir)*.dll $(TargetDir)lib</PostBuildEvent>
     <None Remove="Resources\Shaders\psCustomMeshBlinnPhongOIT.hlsl" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Autoupdater.NET.Official" Version="1.7.0" />
+    <PackageReference Include="Autoupdater.NET.Official" Version="1.7.6" />
     <PackageReference Include="ControlzEx" Version="3.0.2.4" />
-    <PackageReference Include="Cyotek.Drawing.BitmapFont" Version="2.0.2" />
-    <PackageReference Include="DotNetZip" Version="1.15.0" />
+    <PackageReference Include="Cyotek.Drawing.BitmapFont" Version="2.0.4" />
+    <PackageReference Include="DotNetZip" Version="1.16.0" />
     <PackageReference Include="EntityFramework" Version="6.4.4" />
-    <PackageReference Include="Extended.Wpf.Toolkit" Version="4.1.0" />
+    <PackageReference Include="Extended.Wpf.Toolkit" Version="4.5.0" />
     <PackageReference Include="HelixToolkit" Version="2.17.0" />
     <PackageReference Include="HelixToolkit.SharpDX.Core" Version="2.17.0" />
     <PackageReference Include="HelixToolkit.Wpf" Version="2.17.0" />
     <PackageReference Include="HelixToolkit.Wpf.SharpDX" Version="2.17.0" />
-    <PackageReference Include="IndexRange" Version="1.0.0" />
+    <PackageReference Include="IndexRange" Version="1.0.2" />
     <PackageReference Include="Lumina" Version="3.3.0" />
     <PackageReference Include="MahApps.Metro" Version="1.6.5" />
     <PackageReference Include="MahApps.Metro.IconPacks" Version="2.3.0" />
     <PackageReference Include="MahApps.Metro.IconPacks.Material" Version="2.3.0" />
     <PackageReference Include="MahApps.Metro.IconPacks.Modern" Version="2.3.0" />
     <PackageReference Include="Microsoft.HLSL.CSharpVB" Version="1.0.2" />
-    <PackageReference Include="Microsoft.Net.Compilers.Toolset" Version="3.10.0">
+    <PackageReference Include="Microsoft.Net.Compilers.Toolset" Version="4.4.0">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
     <PackageReference Include="SharpDX" Version="4.2.0" />
     <PackageReference Include="SharpDX.D3DCompiler" Version="4.2.0" />
     <PackageReference Include="SharpDX.Direct2D1" Version="4.2.0" />
@@ -83,24 +83,24 @@ move $(TargetDir)*.dll $(TargetDir)lib</PostBuildEvent>
     <PackageReference Include="SharpDX.Direct3D9" Version="4.2.0" />
     <PackageReference Include="SharpDX.DXGI" Version="4.2.0" />
     <PackageReference Include="SharpDX.Mathematics" Version="4.2.0" />
-    <PackageReference Include="SixLabors.ImageSharp" Version="1.0.3" />
-    <PackageReference Include="Stub.System.Data.SQLite.Core.NetFramework" Version="1.0.114.0" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="1.0.4" />
+    <PackageReference Include="Stub.System.Data.SQLite.Core.NetFramework" Version="1.0.117" />
     <PackageReference Include="System.Buffers" Version="4.5.1" />
     <PackageReference Include="System.Collections.NonGeneric" Version="4.3.0" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
     <PackageReference Include="System.ComponentModel.Primitives" Version="4.3.0" />
     <PackageReference Include="System.ComponentModel.TypeConverter" Version="4.3.0" />
-    <PackageReference Include="System.Data.SQLite" Version="1.0.114.4" />
-    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.114.3" />
-    <PackageReference Include="System.Data.SQLite.EF6" Version="1.0.114.0" />
-    <PackageReference Include="System.Data.SQLite.Linq" Version="1.0.114.0" />
+    <PackageReference Include="System.Data.SQLite" Version="1.0.117" />
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.117" />
+    <PackageReference Include="System.Data.SQLite.EF6" Version="1.0.117" />
+    <PackageReference Include="System.Data.SQLite.Linq" Version="1.0.117" />
     <PackageReference Include="System.Drawing.Primitives" Version="4.3.0" />
-    <PackageReference Include="System.Memory" Version="4.5.4" />
+    <PackageReference Include="System.Memory" Version="4.5.5" />
     <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
     <PackageReference Include="System.Private.DataContractSerialization" Version="4.3.0" />
     <PackageReference Include="System.Reflection" Version="4.3.0" />
     <PackageReference Include="System.Reflection.TypeExtensions" Version="4.7.0" />
-    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="5.0.0" />
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.0.0" />
     <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
     <PackageReference Include="System.Runtime.Serialization.Xml" Version="4.3.0" />
     <PackageReference Include="System.Threading.Tasks.Parallel" Version="4.3.0" />
