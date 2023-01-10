@@ -428,7 +428,13 @@ TexTools will attempt to start over without using backups.</value>
 
 Please locate the following directory.
 
-.../FINAL FANTASY XIV - A Realm Reborn/game/sqpack/ffxiv</value>
+Standalone: .../Program Files (x86)/FINAL FANTASY XIV - A Realm Reborn
+Steam: .../steamapps/common/FINAL FANTASY XIV Online
+      and navigate to .../game/sqpack/ffxiv
+
+Standalone clients may be installed elsewhere and named differently.
+This is NOT the directory under Documents/My Games.
+    </value>
   </data>
   <data name="OutOfDateInstallTitle" xml:space="preserve">
     <value>Install Directory Out Of Date</value>
