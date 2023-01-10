@@ -37,7 +37,7 @@ Bugs can reported on our Github [Issues Page](https://github.com/TexTools/FFXIV_
 
 We do not support the use of Textools from, or with application directories placed inside a Onedrive folder, This includes the default User Profile folder created if users blindly click through the first time wizard on a new Windows install.
 
-- These services can cause import files, and mods themselves to revert or only partially synchronise, resulting in file corruption.
+- These services can cause backup files, and mods themselves to revert or only partially synchronise, resulting in file corruption.
 - In other cases, files are not able to be loaded at all because the one drive service has been disabled or uninstalled, in this case a big error message that includes the line "Cloud File Provider is not running." to be thrown when attempting to import, export or create packs.
 
 ## Useful Links
