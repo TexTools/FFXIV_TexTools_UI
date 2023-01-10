@@ -31,7 +31,14 @@ Bugs can reported on our Github [Issues Page](https://github.com/TexTools/FFXIV_
 - Microsoft OneDrive based user profiles can cause files saved into the default location to be reverted. 
   - You can either exclude this folder from the OneDrive interface, or change the Modpacks, Index(Backups) and Saved locations to another folder from the customise screen.
 - Regions currently on 5.5x will experience issues using versions of TexTools updated for Global 6.0
-  - Using an older, or custom version of the current client is the only Workaround. 
+  - Using an older, or custom version of the current client is the only Workaround.
+  
+### WARNING
+
+We do not support the use of Textools from, or with application directories placed inside a Onedrive folder, This includes the default User Profile folder created if users blindly click through the first time wizard on a new Windows install.
+
+- These services can cause backup files, and mods themselves to revert or only partially synchronise, resulting in file corruption.
+- In other cases, files are not able to be loaded at all because the one drive service has been disabled or uninstalled, in this case a big error message that includes the line "Cloud File Provider is not running." to be thrown when attempting to import, export or create packs.
 
 ## Useful Links
 - [Official TexTools Discord](https://discord.gg/ffxivtextools)
