@@ -56,7 +56,7 @@ move $(TargetDir)*.dll $(TargetDir)lib</PostBuildEvent>
     <None Remove="Resources\Shaders\psCustomMeshBlinnPhongOIT.hlsl" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Autoupdater.NET.Official" Version="1.7.7" />
+    <PackageReference Include="Autoupdater.NET.Official" Version="1.7.0" />
     <PackageReference Include="ControlzEx" Version="3.0.2.4" />
     <PackageReference Include="Cyotek.Drawing.BitmapFont" Version="2.0.4" />
     <PackageReference Include="DotNetZip" Version="1.16.0" />
