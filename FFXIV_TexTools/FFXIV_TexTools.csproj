@@ -49,6 +49,7 @@ move $(TargetDir)*.dll $(TargetDir)lib</PostBuildEvent>
   <PropertyGroup>
     <PostBuildEvent>mkdir $(TargetDir)lib
 move $(TargetDir)*.dll $(TargetDir)lib</PostBuildEvent>
+    <Version>2.3.8.5</Version>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Resources\Shaders\psCustomMeshBlinnPhong.hlsl" />
