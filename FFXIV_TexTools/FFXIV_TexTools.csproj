@@ -23,8 +23,8 @@
     <AssemblyTitle>FFXIV_TexTools</AssemblyTitle>
     <Product>FFXIV_TexTools</Product>
     <Copyright>Copyright ©  2022</Copyright>
-    <AssemblyVersion>2.3.8.4</AssemblyVersion>
-    <FileVersion>2.3.8.4</FileVersion>
+    <AssemblyVersion>2.3.8.5</AssemblyVersion>
+    <FileVersion>2.3.8.5</FileVersion>
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <UseWPF>true</UseWPF>
     <PostBuildEvent>mkdir $(TargetDir)lib
@@ -55,7 +55,7 @@ move $(TargetDir)*.dll $(TargetDir)lib</PostBuildEvent>
     <None Remove="Resources\Shaders\psCustomMeshBlinnPhongOIT.hlsl" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Autoupdater.NET.Official" Version="1.7.6" />
+    <PackageReference Include="Autoupdater.NET.Official" Version="1.7.7" />
     <PackageReference Include="ControlzEx" Version="3.0.2.4" />
     <PackageReference Include="Cyotek.Drawing.BitmapFont" Version="2.0.4" />
     <PackageReference Include="DotNetZip" Version="1.16.0" />
@@ -72,10 +72,10 @@ move $(TargetDir)*.dll $(TargetDir)lib</PostBuildEvent>
     <PackageReference Include="MahApps.Metro.IconPacks.Material" Version="2.3.0" />
     <PackageReference Include="MahApps.Metro.IconPacks.Modern" Version="2.3.0" />
     <PackageReference Include="Microsoft.HLSL.CSharpVB" Version="1.0.2" />
-    <PackageReference Include="Microsoft.Net.Compilers.Toolset" Version="4.4.0">
+    <PackageReference Include="Microsoft.Net.Compilers.Toolset" Version="4.5.0">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="SharpDX" Version="4.2.0" />
     <PackageReference Include="SharpDX.D3DCompiler" Version="4.2.0" />
     <PackageReference Include="SharpDX.Direct2D1" Version="4.2.0" />
