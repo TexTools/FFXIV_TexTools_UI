@@ -494,7 +494,7 @@ namespace FFXIV_TexTools.ViewModels
                 }
 
 
-                var validator = new Regex("[^a-z_]");
+                var validator = new Regex("[^a-z0-9._=]");
                 attr = validator.Replace(attr, "");
                 if (attr == "") return;
 
