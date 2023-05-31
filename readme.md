@@ -14,7 +14,7 @@ Bugs can reported on our Github [Issues Page](https://github.com/TexTools/FFXIV_
 
 - Windows 7 SP1, Windows 8.1 and Windows 10 19h1 (18362) or higher (32 or 64 bit)
 - All users require [Visual C++ 2022+ x64 and x86 as well as Visual Studio 2012 Update 4 Redistributables](https://docs.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170)
-- All Users need to have [.Net Framework 4.8.1](https://dotnet.microsoft.com/download/dotnet-framework/net481) installed.
+- All Users need to have [.Net Framework 4.8](https://dotnet.microsoft.com/download/dotnet-framework/net48) installed.
 - Windows 7 SP1 requires the [Platform Update for Windows 7 (KB2670838)](https://www.microsoft.com/en-au/download/details.aspx?id=36805)
   - Some users will need to uninstall this KB patch and reinstall it due to known/resolved cases where some of the subdependencies were blocked due to outdated/broken display drivers.
   - The installation of this update will also result in a number of other KB updates to present themselves on Windows update, install these to resolve Font clarity, security and stability issues.
