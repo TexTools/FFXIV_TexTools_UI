@@ -23,11 +23,13 @@ using SharpDX.Direct3D11;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Windows.Media.Media3D;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Models.DataContainers;
@@ -49,6 +51,7 @@ namespace FFXIV_TexTools.ViewModels
         private bool _renderLight3;
         private readonly ModelViewModel _modelViewModel;
         protected List<Stream> streamList = new List<Stream>();
+        private static readonly Regex bodyMaterial = new Regex("[bf][0-9]{4}", RegexOptions.IgnoreCase);
 
         public ObservableElement3DCollection Models { get; } = new ObservableElement3DCollection();
 
@@ -69,9 +72,10 @@ namespace FFXIV_TexTools.ViewModels
             BackgroundColor = Properties.Settings.Default.BG_Color;
         }
 
-        private MeshGeometry3D GetMeshGeometry(TTModel model, int meshGroupId)
+        private (MeshGeometry3D, bool) GetMeshGeometry(TTModel model, int meshGroupId)
         {
             var group = model.MeshGroups[meshGroupId];
+            var isBodyMaterial = bodyMaterial.IsMatch(group.Material);
             var mg = new MeshGeometry3D
             {
                 Positions = new Vector3Collection((int)group.VertexCount),
@@ -123,7 +127,7 @@ namespace FFXIV_TexTools.ViewModels
                 vertCount += p.Vertices.Count;
                 indexCount += p.TriangleIndices.Count;
             }
-            return mg;
+            return (mg, isBodyMaterial);
         }
 
         /// <summary>
@@ -140,7 +144,7 @@ namespace FFXIV_TexTools.ViewModels
 
             for (var i = 0; i < totalMeshCount; i++)
             {
-                var meshGeometry3D = GetMeshGeometry(model, i);
+                var (meshGeometry3D, isBodyMaterial) = GetMeshGeometry(model, i);
                 
                 if(!textureDataDictionary.ContainsKey(model.GetMaterialIndex(i)))
                 {
@@ -155,6 +159,10 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     using (var img = Image.LoadPixelData<Rgba32>(textureData.Diffuse, textureData.Width, textureData.Height))
                     {
+                        if (!isBodyMaterial) 
+                        {
+                            NormalizePixelData(img);
+                        }
                         diffuse = new MemoryStream();
                         img.Save(diffuse, new PngEncoder());
                     }
@@ -166,6 +174,10 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     using (var img = Image.LoadPixelData<Rgba32>(textureData.Specular, textureData.Width, textureData.Height))
                     {
+                        if (!isBodyMaterial) 
+                        {
+                            NormalizePixelData(img);
+                        }
                         specular = new MemoryStream();
                         img.Save(specular, new PngEncoder());
                     }
@@ -199,6 +211,10 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     using (var img = Image.LoadPixelData<Rgba32>(textureData.Emissive, textureData.Width, textureData.Height))
                     {
+                        if (!isBodyMaterial) 
+                        {
+                            NormalizePixelData(img);
+                        }
                         emissive = new MemoryStream();
                         img.Save(emissive, new PngEncoder());
                     }
@@ -242,6 +258,21 @@ namespace FFXIV_TexTools.ViewModels
             Light3Direction = new Vector3D(_lightX, _lightY, _lightZ);
             Camera.UpDirection = new Vector3D(0, 1, 0);
             Camera.CameraInternal.PropertyChanged += CameraInternal_PropertyChanged;
+        }
+
+        /// <summary>
+        /// Take the square root of every pixels' RGB datapoints to match the behavior of the FF14 engine
+        /// </summary>
+        /// <param name="img"></param>
+        private static void NormalizePixelData(Image<Rgba32> img)
+        {
+            img.Mutate(c => c.ProcessPixelRowsAsVector4(row =>
+            {
+                for (int x = 0; x < row.Length; x++)
+                {
+                    row[x] = System.Numerics.Vector4.SquareRoot(row[x]);
+                }
+            }));
         }
 
         /// <summary>
