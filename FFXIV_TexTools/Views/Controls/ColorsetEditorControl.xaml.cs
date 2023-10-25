@@ -28,6 +28,7 @@ using xivModdingFramework.Cache;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Materials.DataContainers;
 using xivModdingFramework.Materials.FileTypes;
+using System.Numerics;
 
 namespace FFXIV_TexTools.Controls
 {
@@ -146,9 +147,13 @@ namespace FFXIV_TexTools.Controls
                 };
             }
 
-            RowData[0][0] = new Half(DiffuseColorPicker.SelectedColor.Value.R / 255.0f);
-            RowData[0][1] = new Half(DiffuseColorPicker.SelectedColor.Value.G / 255.0f);
-            RowData[0][2] = new Half(DiffuseColorPicker.SelectedColor.Value.B / 255.0f);
+            var r = DiffuseColorPicker.SelectedColor.Value.R;
+            var g = DiffuseColorPicker.SelectedColor.Value.G;
+            var b = DiffuseColorPicker.SelectedColor.Value.B;
+
+            RowData[0][0] = new Half((r * r) / 255.0f);
+            RowData[0][1] = new Half((g * g) / 255.0f);
+            RowData[0][2] = new Half((b * b) / 255.0f);
             UpdateRow();
         }
         private void SpecularColorPicker_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<System.Windows.Media.Color?> e)
@@ -166,9 +171,13 @@ namespace FFXIV_TexTools.Controls
                 };
             }
 
-            RowData[1][0] = new Half(SpecularColorPicker.SelectedColor.Value.R / 255.0f);
-            RowData[1][1] = new Half(SpecularColorPicker.SelectedColor.Value.G / 255.0f);
-            RowData[1][2] = new Half(SpecularColorPicker.SelectedColor.Value.B / 255.0f);
+            var r = SpecularColorPicker.SelectedColor.Value.R;
+            var g = SpecularColorPicker.SelectedColor.Value.G;
+            var b = SpecularColorPicker.SelectedColor.Value.B;
+
+            RowData[1][0] = new Half((r * r) / 255.0f);
+            RowData[1][1] = new Half((g * g) / 255.0f);
+            RowData[1][2] = new Half((b * b) / 255.0f);
             UpdateRow();
         }
         private void EmissiveColorPicker_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<System.Windows.Media.Color?> e)
@@ -186,9 +195,13 @@ namespace FFXIV_TexTools.Controls
                 };
             }
 
-            RowData[2][0] = new Half(EmissiveColorPicker.SelectedColor.Value.R / 255.0f);
-            RowData[2][1] = new Half(EmissiveColorPicker.SelectedColor.Value.G / 255.0f);
-            RowData[2][2] = new Half(EmissiveColorPicker.SelectedColor.Value.B / 255.0f);
+            var r = EmissiveColorPicker.SelectedColor.Value.R;
+            var g = EmissiveColorPicker.SelectedColor.Value.G;
+            var b = EmissiveColorPicker.SelectedColor.Value.B;
+
+            RowData[2][0] = new Half((r * r) / 255.0f);
+            RowData[2][1] = new Half((g * g) / 255.0f);
+            RowData[2][2] = new Half((b * b) / 255.0f);
             UpdateRow();
         }
 
@@ -245,19 +258,19 @@ namespace FFXIV_TexTools.Controls
             DetailsGroupBox.Header = $"Material - Colorset Row Editor - Row #{(rowNumber + 1)._()}".L();
             RowData = GetRowData(RowId);
 
-            var r = (byte)Math.Round(RowData[0][0] * 255);
-            var g = (byte)Math.Round(RowData[0][1] * 255);
-            var b = (byte)Math.Round(RowData[0][2] * 255);
+            var r = (byte)Math.Round(Math.Sqrt(RowData[0][0]) * 255);
+            var g = (byte)Math.Round(Math.Sqrt(RowData[0][1]) * 255);
+            var b = (byte)Math.Round(Math.Sqrt(RowData[0][2]) * 255);
             DiffuseColorPicker.SelectedColor = new System.Windows.Media.Color() { R = r, G = g, B = b, A = 255 };
 
-            r = (byte)Math.Round(RowData[1][0] * 255);
-            g = (byte)Math.Round(RowData[1][1] * 255);
-            b = (byte)Math.Round(RowData[1][2] * 255);
+            r = (byte)Math.Round(Math.Sqrt(RowData[1][0]) * 255);
+            g = (byte)Math.Round(Math.Sqrt(RowData[1][1]) * 255);
+            b = (byte)Math.Round(Math.Sqrt(RowData[1][2]) * 255);
             SpecularColorPicker.SelectedColor = new System.Windows.Media.Color() { R = r, G = g, B = b, A = 255 };
 
-            r = (byte)Math.Round(RowData[2][0] * 255);
-            g = (byte)Math.Round(RowData[2][1] * 255);
-            b = (byte)Math.Round(RowData[2][2] * 255);
+            r = (byte)Math.Round(Math.Sqrt(RowData[2][0]) * 255);
+            g = (byte)Math.Round(Math.Sqrt(RowData[2][1]) * 255);
+            b = (byte)Math.Round(Math.Sqrt(RowData[2][2]) * 255);
             EmissiveColorPicker.SelectedColor = new System.Windows.Media.Color() { R = r, G = g, B = b, A = 255 };
 
             SpecularPowerBox.Text = RowData[0][3].ToString();
@@ -337,7 +350,8 @@ namespace FFXIV_TexTools.Controls
                 {
                     var offset = (y + (x * 4) + (rowId * 16));
                     var half = _mtrl.ColorSetData[offset];
-                    var b = half * 255;
+                    
+                    var b = Math.Sqrt(half) * 255;
                     b = b > 255 ? 255 : b;
                     b = b < 0 ? 0 : b;
 
@@ -712,7 +726,10 @@ namespace FFXIV_TexTools.Controls
 
         private void EditRawDiffuse_Click(object sender, RoutedEventArgs e)
         {
-            var result = RawFloatValueDisplay.ShowEditor(RowData[0][0], RowData[0][1], RowData[0][2], "Diffuse");
+            var (r, g, b) = ((float)Math.Sqrt(RowData[0][0]), (float)Math.Sqrt(RowData[0][1]), (float)Math.Sqrt(RowData[0][2]));
+
+            var result = RawFloatValueDisplay.ShowEditor(r, g, b, "Diffuse");
+
             if (float.IsNaN(result.Red)) return;
             _LOADING = true;
 
@@ -732,9 +749,9 @@ namespace FFXIV_TexTools.Controls
 
             DiffuseColorPicker.SelectedColor = new System.Windows.Media.Color() { R = byteRed, G = byteGreen, B = byteBlue, A = 255 };
 
-            RowData[0][0] = result.Red;
-            RowData[0][1] = result.Green;
-            RowData[0][2] = result.Blue;
+            RowData[0][0] = result.Red * result.Red;
+            RowData[0][1] = result.Green * result.Green;
+            RowData[0][2] = result.Blue * result.Blue;
 
             _LOADING = false;
             UpdateRow();
@@ -742,7 +759,10 @@ namespace FFXIV_TexTools.Controls
 
         private void EditRawSpecular_Click(object sender, RoutedEventArgs e)
         {
-            var result = RawFloatValueDisplay.ShowEditor(RowData[1][0], RowData[1][1], RowData[1][2], "Specular");
+            var (r, g, b) = ((float)Math.Sqrt(RowData[1][0]), (float)Math.Sqrt(RowData[1][1]), (float)Math.Sqrt(RowData[1][2]));
+
+            var result = RawFloatValueDisplay.ShowEditor(r, g, b, "Specular");
+
             if (float.IsNaN(result.Red)) return;
             _LOADING = true;
 
@@ -762,16 +782,19 @@ namespace FFXIV_TexTools.Controls
 
             SpecularColorPicker.SelectedColor = new System.Windows.Media.Color() { R = byteRed, G = byteGreen, B = byteBlue, A = 255 };
 
-            RowData[1][0] = result.Red;
-            RowData[1][1] = result.Green;
-            RowData[1][2] = result.Blue;
+            RowData[1][0] = result.Red * result.Red;
+            RowData[1][1] = result.Green * result.Green;
+            RowData[1][2] = result.Blue * result.Blue;
 
             _LOADING = false;
             UpdateRow();
         }
         private void EditRawEmmissive_Click(object sender, RoutedEventArgs e)
         {
-            var result = RawFloatValueDisplay.ShowEditor(RowData[2][0], RowData[2][1], RowData[2][2], "Emissive");
+            var (r, g, b) = ((float)Math.Sqrt(RowData[2][0]), (float)Math.Sqrt(RowData[2][1]), (float)Math.Sqrt(RowData[2][2]));
+
+            var result = RawFloatValueDisplay.ShowEditor(r, g, b, "Emissive");
+
             if (float.IsNaN(result.Red)) return;
             _LOADING = true;
 
@@ -791,9 +814,9 @@ namespace FFXIV_TexTools.Controls
 
             EmissiveColorPicker.SelectedColor = new System.Windows.Media.Color() { R = byteRed, G = byteGreen, B = byteBlue, A = 255 };
 
-            RowData[2][0] = result.Red;
-            RowData[2][1] = result.Green;
-            RowData[2][2] = result.Blue;
+            RowData[2][0] = result.Red * result.Red;
+            RowData[2][1] = result.Green * result.Green;
+            RowData[2][2] = result.Blue * result.Blue;
 
             _LOADING = false;
             UpdateRow();

@@ -116,22 +116,21 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     AmbientColor = SharpDX.Color.Gray,
                     DiffuseColor = new SharpDX.Color(
-                        (byte)Math.Round((RowData[0][0] / dMax) * 255f),
-                        (byte)Math.Round((RowData[0][1] / dMax) * 255f),
-                        (byte)Math.Round((RowData[0][2]/ dMax) * 255f)),
-
+                        (byte)Math.Round(Math.Sqrt(RowData[0][0] / dMax) * 255f),
+                        (byte)Math.Round(Math.Sqrt(RowData[0][1] / dMax) * 255f),
+                        (byte)Math.Round(Math.Sqrt(RowData[0][2] / dMax) * 255f)),
                     SpecularColor = new SharpDX.Color(
-                        (byte)Math.Round((RowData[1][0] / sMax) * 255f),
-                        (byte)Math.Round((RowData[1][1] / sMax) * 255f),
-                        (byte)Math.Round((RowData[1][2] / sMax) * 255f))
+                        (byte)Math.Round(Math.Sqrt(RowData[1][0] / sMax) * 255f),
+                        (byte)Math.Round(Math.Sqrt(RowData[1][1] / sMax) * 255f),
+                        (byte)Math.Round(Math.Sqrt(RowData[1][2] / sMax) * 255f))
                 };
 
                 if (RowData[2][0] != 0 || RowData[2][1] != 0 || RowData[2][2] != 0)
                 {
                     lmMaterial.EmissiveColor = new SharpDX.Color(
-                        (byte)Math.Round((RowData[2][0] / eMax) * 255f),
-                        (byte)Math.Round((RowData[2][1] / eMax) * 255f),
-                        (byte)Math.Round((RowData[2][2] / eMax) * 255f));
+                        (byte)Math.Round(Math.Sqrt(RowData[2][0] / eMax) * 255f),
+                        (byte)Math.Round(Math.Sqrt(RowData[2][1] / eMax) * 255f),
+                        (byte)Math.Round(Math.Sqrt(RowData[2][2] / eMax) * 255f));
                 }
 
                 float glossVal = RowData[1][3];
