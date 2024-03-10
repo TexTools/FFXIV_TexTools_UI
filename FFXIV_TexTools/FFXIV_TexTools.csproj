@@ -22,9 +22,9 @@
     <BootstrapperEnabled>true</BootstrapperEnabled>
     <AssemblyTitle>FFXIV_TexTools</AssemblyTitle>
     <Product>FFXIV_TexTools</Product>
-    <Copyright>Copyright ©  2022</Copyright>
-    <AssemblyVersion>2.3.8.5</AssemblyVersion>
-    <FileVersion>2.3.8.5</FileVersion>
+    <Copyright>Copyright ©  2024</Copyright>
+    <AssemblyVersion>2.3.8.6</AssemblyVersion>
+    <FileVersion>2.3.8.6</FileVersion>
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <UseWPF>true</UseWPF>
     <PostBuildEvent>mkdir $(TargetDir)lib
@@ -49,7 +49,7 @@ move $(TargetDir)*.dll $(TargetDir)lib</PostBuildEvent>
   <PropertyGroup>
     <PostBuildEvent>mkdir $(TargetDir)lib
 move $(TargetDir)*.dll $(TargetDir)lib</PostBuildEvent>
-    <Version>2.3.8.5</Version>
+    <Version>2.3.8.6</Version>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Resources\Shaders\psCustomMeshBlinnPhong.hlsl" />
