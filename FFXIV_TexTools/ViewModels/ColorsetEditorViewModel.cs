@@ -47,8 +47,11 @@ namespace FFXIV_TexTools.ViewModels
         {
             _view = view;
 
-
-            EffectsManager = new DefaultEffectsManager();
+            // Eat exception to not immediately crash in VirtualBox
+            try
+            {
+                EffectsManager = new DefaultEffectsManager();
+            } catch { }
             Camera = new PerspectiveCamera();
         }
 

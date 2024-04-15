@@ -72,7 +72,8 @@ namespace FFXIV_TexTools.ViewModels
                 XivRace.AuRa_Female.GetDisplayName(),
                 XivRace.Viera_Male.GetDisplayName(),
                 XivRace.Viera_Female.GetDisplayName(),
-                XivRace.Hrothgar_Male.GetDisplayName()
+                XivRace.Hrothgar_Male.GetDisplayName(),
+                XivRace.Hrothgar_Female.GetDisplayName()
             };
 
             UpdateBranches  = new List<string>
