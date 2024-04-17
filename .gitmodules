@@ -1,4 +1,4 @@
 [submodule "lib/xivModdingFramework"]
 	path = lib/xivModdingFramework
-	url = https://github.com/TexTools/xivModdingFramework
-	branch = develop
+	url = https://github.com/senko-forks/xivModdingFramework
+	branch = dtbranch-wip2
