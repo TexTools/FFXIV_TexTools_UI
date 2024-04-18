@@ -641,7 +641,8 @@ namespace FFXIV_TexTools.Controls
                 RowData[1][3] = new Half(fl);
 
                 fl = 0.0f;
-                RowData[2][3] = new Half((((int)TileIdBox.SelectedValue) + 0.5f) / 64.0f);
+                //RowData[2][3] = new Half((((int)TileIdBox.SelectedValue) + 0.5f) / 64.0f);
+                RowData[2][3] = 0.5f;
 
                 fl = 16.0f;
                 float.TryParse(TileCountXBox.Text, out fl);

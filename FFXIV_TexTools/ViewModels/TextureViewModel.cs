@@ -2293,7 +2293,7 @@ namespace FFXIV_TexTools.ViewModels
             {
                 var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
                 var index = new Index(gameDirectory);
-                var offset = index.GetDataOffset(HashGenerator.GetHash(Path.GetDirectoryName(_xivMtrl.MTRLPath).Replace("\\", "/")), HashGenerator.GetHash(Path.GetFileName(_xivMtrl.MTRLPath)), _item.DataFile).GetAwaiter().GetResult();
+                var offset = index.GetDataOffset(_xivMtrl.MTRLPath).GetAwaiter().GetResult();
                 if (offset == 0)
                 {
                     return false;
@@ -2321,7 +2321,7 @@ namespace FFXIV_TexTools.ViewModels
                 dataFile = _item.DataFile;
             if (dataFile == null)
                 return true;
-            var offset = index.GetDataOffset(HashGenerator.GetHash(Path.GetDirectoryName(path).Replace("\\", "/")), HashGenerator.GetHash(Path.GetFileName(path)),dataFile.Value).GetAwaiter().GetResult();
+            var offset = index.GetDataOffset(path).GetAwaiter().GetResult();
             if (offset>0)
             {
                 return true;
