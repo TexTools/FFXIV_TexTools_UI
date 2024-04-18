@@ -184,7 +184,7 @@ namespace FFXIV_TexTools
             var cwd = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
             Directory.SetCurrentDirectory(cwd);
 
-            CheckForUpdates();
+            //CheckForUpdates();
 
             // This slightly unusual contrivance is to ensure that we actually exit program on updates
             // *before* performing the rest of the startup initialization.  If we let it continue
@@ -205,8 +205,8 @@ namespace FFXIV_TexTools
             } else
             {
                 // No updates needed? We can clear out the update path then.
-                var updateDir = Path.Combine(Environment.CurrentDirectory, "update");
-                Directory.Delete(updateDir, true);
+                //var updateDir = Path.Combine(Environment.CurrentDirectory, "update");
+                //Directory.Delete(updateDir, true);
             }
 
             CheckForSettingsUpdate();
