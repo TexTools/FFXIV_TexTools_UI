@@ -1411,7 +1411,7 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     encoder = new PngEncoder()
                     {
-                        BitDepth = PngBitDepth.Bit16
+                        BitDepth = _mapData.IsColorSet ? PngBitDepth.Bit16 : PngBitDepth.Bit8
                     };
                 }
                 else
@@ -2222,7 +2222,10 @@ namespace FFXIV_TexTools.ViewModels
 
             if (AlphaChecked)
             {
-                imageEncoder = new PngEncoder();
+                imageEncoder = new PngEncoder()
+                {
+                    BitDepth = _mapData.IsColorSet ? PngBitDepth.Bit16 : PngBitDepth.Bit8
+                };
             }
             else
             {
