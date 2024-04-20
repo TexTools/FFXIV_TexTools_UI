@@ -50,6 +50,7 @@ namespace FFXIV_TexTools.Views
         private readonly bool _messageInImport;
         private TextureViewModel _textureViewModel;
         private ModelViewModel _modelViewModel;
+        private ModPackJson _modPackJson;
 
         public ImportModPackWizard(ModPackJson modPackJson, Dictionary<string, Image> imageDictionary, DirectoryInfo modPackDirectory, TextureViewModel textureViewModel, ModelViewModel modelViewModel, bool messageInImport = false)
         {
@@ -60,6 +61,7 @@ namespace FFXIV_TexTools.Views
             _messageInImport = messageInImport;
             _textureViewModel = textureViewModel;
             _modelViewModel = modelViewModel;
+            _modPackJson = modPackJson;
 
             ModPackNameLabel.Content = modPackJson.Name;
             ModPackAuthorLabel.Content = modPackJson.Author;
@@ -273,7 +275,7 @@ namespace FFXIV_TexTools.Views
                 {
                     return await texToolsModPack.ImportModPackAsync(_modPackDirectory, importList,
                     gameDirectory, modListDirectory, progressIndicator, ModpackRootConvertWindow.GetRootConversions,
-                    Properties.Settings.Default.AutoMaterialFix);
+                    Properties.Settings.Default.AutoMaterialFix, _modPackJson, Properties.Settings.Default.FixPreDawntrailOnImport, Properties.Settings.Default.FixToNewShaders);
                 });
 
 

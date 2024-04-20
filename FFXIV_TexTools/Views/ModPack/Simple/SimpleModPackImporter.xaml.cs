@@ -365,7 +365,8 @@ namespace FFXIV_TexTools.Views
                 {
                     return await _texToolsModPack.ImportModPackAsync(_modPackDirectory, importList,
                     _gameDirectory, modListDirectory, progressIndicator, ModpackRootConvertWindow.GetRootConversions,
-                    Properties.Settings.Default.AutoMaterialFix);
+                    Properties.Settings.Default.AutoMaterialFix, _packJson, 
+                    Properties.Settings.Default.FixPreDawntrailOnImport, Properties.Settings.Default.FixToNewShaders);
                 });
 
                 TotalModsErrored = importResults.ErrorCount;

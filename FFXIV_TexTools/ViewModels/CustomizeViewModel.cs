@@ -283,6 +283,41 @@ namespace FFXIV_TexTools.ViewModels
                 }
             }
         }
+        
+        public bool AutoFixDawntrail
+        {
+            get => Settings.Default.FixPreDawntrailOnImport;
+            set
+            {
+                if (AutoFixDawntrail != value)
+                {
+                    SetAutoFixDawntrail(value);
+                    NotifyPropertyChanged(nameof(AutoFixDawntrail));
+                }
+            }
+        }
+        private void SetAutoFixDawntrail(bool value)
+        {
+            Settings.Default.FixPreDawntrailOnImport = value;
+            Settings.Default.Save();
+        }
+        public bool UpdateShaders
+        {
+            get => Settings.Default.FixToNewShaders;
+            set
+            {
+                if (UpdateShaders != value)
+                {
+                    SetUpdateShaders(value);
+                    NotifyPropertyChanged(nameof(UpdateShaders));
+                }
+            }
+        }
+        private void SetUpdateShaders(bool value)
+        {
+            Settings.Default.FixToNewShaders = value;
+            Settings.Default.Save();
+        }
 
         public bool DefaultRaceEnabled
         {
@@ -1003,6 +1038,7 @@ namespace FFXIV_TexTools.ViewModels
             Settings.Default.Save();
             UpdateFrameworkColors();
         }
+
         #endregion
 
 

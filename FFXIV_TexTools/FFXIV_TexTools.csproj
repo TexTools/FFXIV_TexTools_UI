@@ -23,8 +23,8 @@
     <AssemblyTitle>FFXIV_TexTools</AssemblyTitle>
     <Product>FFXIV_TexTools</Product>
     <Copyright>Copyright ©  2024</Copyright>
-    <AssemblyVersion>2.3.9.0</AssemblyVersion>
-    <FileVersion>2.3.9.0</FileVersion>
+    <AssemblyVersion>2.3.9.1</AssemblyVersion>
+    <FileVersion>2.3.9.1</FileVersion>
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <UseWPF>true</UseWPF>
     <PostBuildEvent>mkdir $(TargetDir)lib
@@ -49,7 +49,7 @@ move $(TargetDir)*.dll $(TargetDir)lib</PostBuildEvent>
   <PropertyGroup>
     <PostBuildEvent>mkdir $(TargetDir)lib
 move $(TargetDir)*.dll $(TargetDir)lib</PostBuildEvent>
-    <Version>2.3.9.0</Version>
+    <Version>2.3.9.1</Version>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Resources\Shaders\psCustomMeshBlinnPhong.hlsl" />
@@ -182,5 +182,18 @@ move $(TargetDir)*.dll $(TargetDir)lib</PostBuildEvent>
   <ItemGroup>
     <ProjectReference Include="..\ForceUpdateAssembly\ForceUpdateAssembly.csproj" />
     <ProjectReference Include="..\lib\xivModdingFramework\xivModdingFramework\xivModdingFramework.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Properties\Settings.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
   </ItemGroup>
 </Project>

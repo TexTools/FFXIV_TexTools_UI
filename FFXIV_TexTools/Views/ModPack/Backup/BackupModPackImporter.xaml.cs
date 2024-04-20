@@ -26,6 +26,7 @@ namespace FFXIV_TexTools.Views
         private List<ModsJson> _modsJsons;
         private bool _messageInImport;
         private DirectoryInfo _modpackDirectory;
+        private ModPackJson _modPackJson;
 
         public BackupModPackImporter(DirectoryInfo modPackDirectory, ModPackJson modPackJson, bool messageInImport = false)
         {
@@ -36,6 +37,7 @@ namespace FFXIV_TexTools.Views
             _modpackDirectory = modPackDirectory;
             _modsJsons = modPackJson.SimpleModsList;
             _messageInImport = messageInImport;
+            _modPackJson = modPackJson;
 
             DataContext = new BackupModpackViewModel();
             ModPackName.Content = modPackJson.Name;
@@ -118,7 +120,7 @@ namespace FFXIV_TexTools.Views
 
                 var importResults = await Task.Run(async () =>
                 {
-                    return await texToolsModPack.ImportModPackAsync(_modpackDirectory, importList, gameDirectory, modListDirectory, progressIndicator);
+                    return await texToolsModPack.ImportModPackAsync(_modpackDirectory, importList, gameDirectory, modListDirectory, progressIndicator, null, false, _modPackJson, Properties.Settings.Default.FixPreDawntrailOnImport, Properties.Settings.Default.FixToNewShaders);
                 });
 
                 TotalModsImported = importResults.ImportCount;

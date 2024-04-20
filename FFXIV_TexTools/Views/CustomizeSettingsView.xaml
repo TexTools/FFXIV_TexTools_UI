@@ -9,7 +9,7 @@
         mc:Ignorable="d"
         xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
         resx:Localization.Enabled="True"
-        Title="{Binding Source={x:Static resx:UIStrings.Customize}}" Height="647.333" Width="800" ShowMaxRestoreButton="False" ShowMinButton="False" WindowStartupLocation="CenterOwner">
+        Title="{Binding Source={x:Static resx:UIStrings.Customize}}" Height="694" Width="800" ShowMaxRestoreButton="False" ShowMinButton="False" WindowStartupLocation="CenterOwner">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
@@ -60,6 +60,8 @@
                         <RowDefinition Height="36"/>
                         <RowDefinition Height="36"/>
                         <RowDefinition Height="36"/>
+                        <RowDefinition Height="36"/>
+                        <RowDefinition Height="36"/>
                     </Grid.RowDefinitions>
 
                     <Label Grid.Column="0" Grid.Row="0"  Margin="10,0,5,0" Content="Default Author" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
@@ -96,6 +98,12 @@
                     
                     <Label Grid.Column="0" Grid.Row="8" Margin="10,0,5,0" Content="Body Material Auto-Assign" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
                     <CheckBox x:Name="AutoMatFixBox"  Grid.Column="1" Grid.Row="8" VerticalAlignment="Center" Margin="5,0,10,0" ToolTip="Automatically assign imported body models to the correct skin material."  IsChecked="{Binding AutoMaterialFix}"></CheckBox>
+
+                    <Label Grid.Column="0" Grid.Row="9" Margin="10,0,5,0" Content="Auto-Fix Pre-DT Modpacks" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
+                    <CheckBox x:Name="DawntrailFixBox"  Grid.Column="1" Grid.Row="9" VerticalAlignment="Center" Margin="5,0,10,0" ToolTip="Automatically fix Pre-Dawntrail modpacks on Import."  IsChecked="{Binding AutoFixDawntrail}"></CheckBox>
+
+                    <Label Grid.Column="0" Grid.Row="10" Margin="10,0,5,0" Content="Update Pre-DT Shaders" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
+                    <CheckBox x:Name="ShaderUpgradeBox"  Grid.Column="1" Grid.Row="10" VerticalAlignment="Center" Margin="5,0,10,0" ToolTip="Automatically update pre-Dawntrail modpacks to use Dawntrail shaders, instead of Endwalker shaders."  IsChecked="{Binding UpdateShaders}"></CheckBox>
 
                 </Grid>
             </GroupBox>
