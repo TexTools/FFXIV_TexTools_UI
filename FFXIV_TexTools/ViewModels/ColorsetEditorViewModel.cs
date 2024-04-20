@@ -11,6 +11,7 @@ using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using xivModdingFramework.Cache;
@@ -89,7 +90,7 @@ namespace FFXIV_TexTools.ViewModels
 
         }
 
-        public async Task SetColorsetRow(int row, int dyeId = -1)
+        public async Task SetColorsetRow(int row, int columnCount, int dyeId = -1)
         {
             if (_mtrl == null) return;
 
@@ -98,9 +99,9 @@ namespace FFXIV_TexTools.ViewModels
                 Models.Clear();
                 RowId = row;
 
-                var offset = RowId * 16;
-                RowData = new List<Half[]>(4);
-                for (int i = 0; i < 4; i++)
+                var offset = RowId * columnCount * 4;
+                RowData = new List<Half[]>(columnCount);
+                for (int i = 0; i < columnCount; i++)
                 {
                     var arr = new Half[4];
                     RowData.Add(arr);
@@ -117,17 +118,20 @@ namespace FFXIV_TexTools.ViewModels
                 var sMax = Math.Max(1.0f, Math.Max(RowData[0][0], Math.Max(RowData[0][1], RowData[0][2])));
                 var eMax = Math.Max(1.0f, Math.Max(RowData[0][0], Math.Max(RowData[0][1], RowData[0][2])));
 
+                var dColor = new SharpDX.Color(
+                        (byte)Math.Round(Math.Sqrt(RowData[0][0] / dMax) * 255f),
+                        (byte)Math.Round(Math.Sqrt(RowData[0][1] / dMax) * 255f),
+                        (byte)Math.Round(Math.Sqrt(RowData[0][2] / dMax) * 255f));
+                var sColor = new SharpDX.Color(
+                        (byte)Math.Round(Math.Sqrt(RowData[1][0] / sMax) * 255f),
+                        (byte)Math.Round(Math.Sqrt(RowData[1][1] / sMax) * 255f),
+                        (byte)Math.Round(Math.Sqrt(RowData[1][2] / sMax) * 255f));
+
                 var lmMaterial = new PhongMaterial()
                 {
                     AmbientColor = SharpDX.Color.Gray,
-                    DiffuseColor = new SharpDX.Color(
-                        (byte)Math.Round(Math.Sqrt(RowData[0][0] / dMax) * 255f),
-                        (byte)Math.Round(Math.Sqrt(RowData[0][1] / dMax) * 255f),
-                        (byte)Math.Round(Math.Sqrt(RowData[0][2] / dMax) * 255f)),
-                    SpecularColor = new SharpDX.Color(
-                        (byte)Math.Round(Math.Sqrt(RowData[1][0] / sMax) * 255f),
-                        (byte)Math.Round(Math.Sqrt(RowData[1][1] / sMax) * 255f),
-                        (byte)Math.Round(Math.Sqrt(RowData[1][2] / sMax) * 255f))
+                    DiffuseColor = dColor,
+                    SpecularColor = sColor
                 };
 
                 if (RowData[2][0] != 0 || RowData[2][1] != 0 || RowData[2][2] != 0)
@@ -140,7 +144,7 @@ namespace FFXIV_TexTools.ViewModels
 
                 float glossVal = RowData[1][3];
                 float specularPower = RowData[0][3];
-                if (dyeId >= 0 && dyeId < 128)
+                if (dyeId >= 0 && dyeId < 128 && _mtrl.ColorSetDyeData != null)
                 {
                     var byteOffset = RowId * 2;
                     var templateId = BitConverter.ToUInt16(_mtrl.ColorSetDyeData, byteOffset) >> 5;
@@ -214,13 +218,20 @@ namespace FFXIV_TexTools.ViewModels
                 if (TileTextureNormal != null)
                 {
                     var tm = await MakeTextureModel(TileTextureNormal);
-                    lmMaterial.NormalMap = tm;
+                    if (tm != null)
+                    {
+                        lmMaterial.NormalMap = tm;
+                    }
                 }
 
-                if (TileTextureDiffuse != null)
+                // Disabled currently since this is no longer a diffuse map, and now an _orm map.
+                if (TileTextureDiffuse != null && false)
                 {
                     var tm = await MakeTextureModel(TileTextureDiffuse);
-                    lmMaterial.DiffuseMap = tm;
+                    if (tm != null)
+                    {
+                        lmMaterial.DiffuseMap = tm;
+                    }
                 }
 
                 MeshGeometryModel3D mgm3 = new MeshGeometryModel3D()
@@ -247,7 +258,14 @@ namespace FFXIV_TexTools.ViewModels
             var tileSkewY = (float)RowData[3][2];
 
             var _tex = new Tex(XivCache.GameInfo.GameDirectory);
-            var data = await _tex.GetImageData(tex, layer);
+            byte[] data;
+            try
+            {
+                data = await _tex.GetImageData(tex, layer);
+            } catch
+            {
+                return null;
+            }
 
             var ogW = 32;
             var ogH = 32;

@@ -29,6 +29,8 @@ using xivModdingFramework.Helpers;
 using xivModdingFramework.Materials.DataContainers;
 using xivModdingFramework.Materials.FileTypes;
 using System.Numerics;
+using ControlzEx.Standard;
+using Xceed.Wpf.Toolkit;
 
 namespace FFXIV_TexTools.Controls
 {
@@ -42,6 +44,9 @@ namespace FFXIV_TexTools.Controls
         int RowId = 0;
 
         ColorsetEditorViewModel _vm;
+
+        private int _rowCount = 32;
+        private int _columnCount = 8;
 
         XivMtrl _mtrl;
 
@@ -60,13 +65,24 @@ namespace FFXIV_TexTools.Controls
             this.DataContext = _vm = new ColorsetEditorViewModel(this);
             InitializeComponent();
 
-            for (int i = 0; i < 16; i++)
+            for (int i = 0; i < _rowCount; i++)
             {
-                var elem = new ColorsetRowControl(i)
+                ColorsetRowControl elem;
+                if (_rowCount == 32)
                 {
-                    Height = 24,
-                    Width = 160
-                };
+                    elem = new ColorsetRowControl(i)
+                    {
+                        Height = 12,
+                        Width = 160
+                    };
+                } else
+                {
+                    elem = new ColorsetRowControl(i)
+                    {
+                        Height = 24,
+                        Width = 160
+                    };
+                }
 
                 ColorSetRowControls.Add(elem);
 
@@ -131,6 +147,7 @@ namespace FFXIV_TexTools.Controls
             UpdateRow();
         }
 
+
         // Color pickers get their own special handling, because technically the raw values can go over
         // normal 255 byte color ranges, so we need to not stomp them when calling the normal UpdateRow() function.
         private void DiffuseColorPicker_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<System.Windows.Media.Color?> e)
@@ -147,13 +164,9 @@ namespace FFXIV_TexTools.Controls
                 };
             }
 
-            var r = DiffuseColorPicker.SelectedColor.Value.R;
-            var g = DiffuseColorPicker.SelectedColor.Value.G;
-            var b = DiffuseColorPicker.SelectedColor.Value.B;
-
-            RowData[0][0] = new Half((r * r) / 255.0f);
-            RowData[0][1] = new Half((g * g) / 255.0f);
-            RowData[0][2] = new Half((b * b) / 255.0f);
+            RowData[0][0] = ByteToHalf(DiffuseColorPicker.SelectedColor.Value.R);
+            RowData[0][1] = ByteToHalf(DiffuseColorPicker.SelectedColor.Value.G);
+            RowData[0][2] = ByteToHalf(DiffuseColorPicker.SelectedColor.Value.B);
             UpdateRow();
         }
         private void SpecularColorPicker_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<System.Windows.Media.Color?> e)
@@ -175,9 +188,10 @@ namespace FFXIV_TexTools.Controls
             var g = SpecularColorPicker.SelectedColor.Value.G;
             var b = SpecularColorPicker.SelectedColor.Value.B;
 
-            RowData[1][0] = new Half((r * r) / 255.0f);
-            RowData[1][1] = new Half((g * g) / 255.0f);
-            RowData[1][2] = new Half((b * b) / 255.0f);
+
+            RowData[1][0] = ByteToHalf(DiffuseColorPicker.SelectedColor.Value.R);
+            RowData[1][1] = ByteToHalf(DiffuseColorPicker.SelectedColor.Value.G);
+            RowData[1][2] = ByteToHalf(DiffuseColorPicker.SelectedColor.Value.B);
             UpdateRow();
         }
         private void EmissiveColorPicker_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<System.Windows.Media.Color?> e)
@@ -195,13 +209,10 @@ namespace FFXIV_TexTools.Controls
                 };
             }
 
-            var r = EmissiveColorPicker.SelectedColor.Value.R;
-            var g = EmissiveColorPicker.SelectedColor.Value.G;
-            var b = EmissiveColorPicker.SelectedColor.Value.B;
 
-            RowData[2][0] = new Half((r * r) / 255.0f);
-            RowData[2][1] = new Half((g * g) / 255.0f);
-            RowData[2][2] = new Half((b * b) / 255.0f);
+            RowData[2][0] = ByteToHalf(DiffuseColorPicker.SelectedColor.Value.R);
+            RowData[2][1] = ByteToHalf(DiffuseColorPicker.SelectedColor.Value.G);
+            RowData[2][2] = ByteToHalf(DiffuseColorPicker.SelectedColor.Value.B);
             UpdateRow();
         }
 
@@ -215,9 +226,9 @@ namespace FFXIV_TexTools.Controls
 
         private List<Half[]> GetRowData(int row)
         {
-            var offset = row * 16;
+            var offset = row * _columnCount * 4;
             var data = new List<Half[]>(4);
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < _columnCount; i++)
             {
                 var arr = new Half[4];
                 data.Add(arr);
@@ -232,8 +243,8 @@ namespace FFXIV_TexTools.Controls
 
         private Half[] RowDataToRaw(List<Half[]> data)
         {
-            var raw = new Half[16];
-            for(int i = 0; i < 4; i++)
+            var raw = new Half[_columnCount * 4];
+            for(int i = 0; i < _columnCount; i++)
             {
                 Array.Copy(data[i], 0, raw, i * 4, 4);
             }
@@ -258,33 +269,43 @@ namespace FFXIV_TexTools.Controls
             DetailsGroupBox.Header = $"Material - Colorset Row Editor - Row #{(rowNumber + 1)._()}".L();
             RowData = GetRowData(RowId);
 
-            var r = (byte)Math.Round(Math.Sqrt(RowData[0][0]) * 255);
-            var g = (byte)Math.Round(Math.Sqrt(RowData[0][1]) * 255);
-            var b = (byte)Math.Round(Math.Sqrt(RowData[0][2]) * 255);
+            var r = (byte)Math.Round(RowData[0][0] * 255);
+            var g = (byte)Math.Round(RowData[0][1] * 255);
+            var b = (byte)Math.Round(RowData[0][2] * 255);
             DiffuseColorPicker.SelectedColor = new System.Windows.Media.Color() { R = r, G = g, B = b, A = 255 };
 
-            r = (byte)Math.Round(Math.Sqrt(RowData[1][0]) * 255);
-            g = (byte)Math.Round(Math.Sqrt(RowData[1][1]) * 255);
-            b = (byte)Math.Round(Math.Sqrt(RowData[1][2]) * 255);
+            r = (byte)Math.Round(RowData[1][0] * 255);
+            g = (byte)Math.Round(RowData[1][1] * 255);
+            b = (byte)Math.Round(RowData[1][2] * 255);
             SpecularColorPicker.SelectedColor = new System.Windows.Media.Color() { R = r, G = g, B = b, A = 255 };
 
-            r = (byte)Math.Round(Math.Sqrt(RowData[2][0]) * 255);
-            g = (byte)Math.Round(Math.Sqrt(RowData[2][1]) * 255);
-            b = (byte)Math.Round(Math.Sqrt(RowData[2][2]) * 255);
+            r = (byte)Math.Round(RowData[2][0] * 255);
+            g = (byte)Math.Round(RowData[2][1] * 255);
+            b = (byte)Math.Round(RowData[2][2] * 255);
             EmissiveColorPicker.SelectedColor = new System.Windows.Media.Color() { R = r, G = g, B = b, A = 255 };
 
             SpecularPowerBox.Text = RowData[0][3].ToString();
             GlossBox.Text = RowData[1][3].ToString();
 
-            TileIdBox.SelectedValue = (int) (Math.Floor(RowData[2][3] * 64));
+            if (_columnCount== 4)
+            {
+                TileIdBox.SelectedValue = (int)(Math.Floor(RowData[2][3] * 64));
+                TileCountXBox.Text = RowData[3][0].ToString();
+                TileCountYBox.Text = RowData[3][3].ToString();
+                TileSkewXBox.Text = RowData[3][1].ToString();
+                TileSkewYBox.Text = RowData[3][2].ToString();
+            } else
+            {
+                TileIdBox.SelectedValue = (int)(Math.Floor(RowData[6][1] * 64));
+                TileCountXBox.Text = RowData[7][0].ToString();
+                TileCountYBox.Text = RowData[7][3].ToString();
+                TileSkewXBox.Text = RowData[7][1].ToString();
+                TileSkewYBox.Text = RowData[7][2].ToString();
+            }
 
-            TileCountXBox.Text = RowData[3][0].ToString();
-            TileCountYBox.Text = RowData[3][3].ToString();
-            TileSkewXBox.Text = RowData[3][1].ToString();
-            TileSkewYBox.Text = RowData[3][2].ToString();
 
             ushort dyeData = 0;
-            if (_mtrl.ColorSetDyeData.Length != 0) {
+            if (_mtrl.ColorSetDyeData.Length != 0 && false) {
                 dyeData = BitConverter.ToUInt16(_mtrl.ColorSetDyeData, rowNumber * 2);
             }
 
@@ -331,7 +352,21 @@ namespace FFXIV_TexTools.Controls
                 dyeId = (int)DyePreviewIdBox.SelectedValue;
             }
             
-            await _vm.SetColorsetRow(RowId, dyeId);
+            await _vm.SetColorsetRow(RowId, _columnCount, dyeId);
+        }
+
+        private byte HalfToByte(Half half)
+        {
+            var b = half * 255;
+            b = b > 255 ? 255 : b;
+            b = b < 0 ? 0 : b;
+            return (byte)b;
+        }
+
+        private Half ByteToHalf(byte b)
+        {
+            var val = b / 255.0f;
+            return (Half)(val);
         }
 
         /// <summary>
@@ -343,60 +378,37 @@ namespace FFXIV_TexTools.Controls
         /// <returns></returns>
         public async Task UpdateRowVisual(int rowId)
         {
-            var pixels = new byte[4 * 4];
-            for (int x = 0; x < 4; x++)
+            var pixels = new byte[_columnCount * 4];
+            for (int x = 0; x < _columnCount; x++)
             {
-                for (int y = 0; y < 4; y++)
-                {
-                    var offset = (y + (x * 4) + (rowId * 16));
-                    var half = _mtrl.ColorSetData[offset];
-                    
-                    var b = Math.Sqrt(half) * 255;
-                    b = b > 255 ? 255 : b;
-                    b = b < 0 ? 0 : b;
+                var valueOffset = (rowId * _columnCount * 4) + (x * 4);
+                var half = _mtrl.ColorSetData[valueOffset];
 
-                    var bitoffset = x * 4;
-                    if (y == 0)
-                    {
-                        bitoffset += 2;
-                    }
-                    else if (y == 1)
-                    {
-                        bitoffset += 1;
-                    }
-                    else if (y == 2)
-                    {
-                        bitoffset += 0;
-                    }
-                    else
-                    {
-                        bitoffset += 3;
-                    }
-                    pixels[bitoffset] = (byte)b;
+                // Convert RGBA to BGRA
+                byte[] pixel = new byte[4];
+                var destinationOffset = x * 4;
+                pixels[destinationOffset + 0] = HalfToByte(_mtrl.ColorSetData[valueOffset + 2]);
+                pixels[destinationOffset + 1] = HalfToByte(_mtrl.ColorSetData[valueOffset + 1]);
+                pixels[destinationOffset + 2] = HalfToByte(_mtrl.ColorSetData[valueOffset + 0]);
+                pixels[destinationOffset + 3] = HalfToByte(_mtrl.ColorSetData[valueOffset + 3]);
+            }
+
+            const int expansionSize = 8;
+            var expandedPixels = new byte[pixels.Length * expansionSize * expansionSize];
+            for(int z = 0; z < expansionSize; z++)
+            {
+                for (int w = 0; w < expansionSize * _columnCount; w++)
+                {
+                    var offset = ((z * expansionSize * _columnCount) + w) * 4;
+                    expandedPixels[offset + 0] = pixels[(w / expansionSize) * 4 + 0];
+                    expandedPixels[offset + 1] = pixels[(w / expansionSize) * 4 + 1];
+                    expandedPixels[offset + 2] = pixels[(w / expansionSize) * 4 + 2];
+                    expandedPixels[offset + 3] = pixels[(w / expansionSize) * 4 + 3];
                 }
             }
 
-            var multiplier = 8;
-            var perRow = 4 * multiplier;
-
-            var npixels = new byte[pixels.Length * multiplier * multiplier];
-            for (int x = 0; x < npixels.Length; x += 4)
-            {
-                var px = x / 4;
-                var col = px % perRow;
-                var originalCol = col / multiplier;
-
-                var originalOffset = (originalCol * 4);
-
-                npixels[x] = pixels[originalOffset];
-                npixels[x + 1] = pixels[originalOffset + 1];
-                npixels[x + 2] = pixels[originalOffset + 2];
-                npixels[x + 3] = pixels[originalOffset + 3];
-            }
-
-            ColorSetRowControls[rowId].RowImageSource = BitmapSource.Create(multiplier * 4, multiplier, 1, 1, PixelFormats.Bgra32, null, npixels, 16 * multiplier);
-
-            if(RowId == rowId)
+            ColorSetRowControls[rowId].RowImageSource = BitmapSource.Create(_columnCount * expansionSize, 1 * expansionSize, 1, 1, PixelFormats.Bgra32, null, expandedPixels, expansionSize * _columnCount * 4);
+            if (RowId == rowId)
             {
                 SelectedColorsetRowImage.Source = ColorSetRowControls[rowId].RowImageSource;
             }
@@ -413,6 +425,16 @@ namespace FFXIV_TexTools.Controls
             if (mtrl == null) return;
 
             _LOADING = true;
+
+            if(mtrl.ColorSetData.Count == 256)
+            {
+                _columnCount = 4;
+                _rowCount = 16;
+            } else
+            {
+                _columnCount = 8;
+                _rowCount = 32;
+            }
 
 
             var appStyle = ThemeManager.DetectAppStyle(Application.Current);
@@ -487,7 +509,7 @@ namespace FFXIV_TexTools.Controls
                 await _vm.SetMaterial(_mtrl, DyeTemplateFile);
                 await SetRow(row);
 
-                for (int i = 0; i < 16; i++)
+                for (int i = 0; i < _rowCount; i++)
                 {
                     await UpdateRowVisual(i);
                 }
@@ -641,24 +663,24 @@ namespace FFXIV_TexTools.Controls
                 RowData[1][3] = new Half(fl);
 
                 fl = 0.0f;
-                //RowData[2][3] = new Half((((int)TileIdBox.SelectedValue) + 0.5f) / 64.0f);
-                RowData[2][3] = 0.5f;
+                RowData[6][1] = new Half((((int)TileIdBox.SelectedValue) + 0.5f) / 64.0f);
+                //RowData[2][3] = 0.5f;
 
                 fl = 16.0f;
                 float.TryParse(TileCountXBox.Text, out fl);
-                RowData[3][0] = new Half(fl);
+                RowData[7][0] = new Half(fl);
 
                 fl = 16.0f;
                 float.TryParse(TileCountYBox.Text, out fl);
-                RowData[3][3] = new Half(fl);
+                RowData[7][3] = new Half(fl);
 
                 fl = 0f;
                 float.TryParse(TileSkewXBox.Text, out fl);
-                RowData[3][1] = new Half(fl);
+                RowData[7][1] = new Half(fl);
 
                 fl = 0f;
                 float.TryParse(TileSkewYBox.Text, out fl);
-                RowData[3][2] = new Half(fl);
+                RowData[7][2] = new Half(fl);
 
                 var templateId = 0;
                 if (DyeTemplateIdBox.SelectedValue != null)
@@ -699,8 +721,8 @@ namespace FFXIV_TexTools.Controls
 
                 Array.Copy(bytes, 0, _mtrl.ColorSetDyeData, offset, 2);
 
-                offset = RowId * 16;
-                for(int x = 0; x < 4; x++)
+                offset = RowId * _columnCount * 4;
+                for(int x = 0; x < _columnCount; x++)
                 {
                     for(int y = 0; y < 4; y++)
                     {
@@ -725,102 +747,127 @@ namespace FFXIV_TexTools.Controls
             await UpdateRow();
         }
 
-        private void EditRawDiffuse_Click(object sender, RoutedEventArgs e)
+
+
+        private void RawAssignColorPixel(int col, string name, ColorPicker picker)
         {
-            var (r, g, b) = ((float)Math.Sqrt(RowData[0][0]), (float)Math.Sqrt(RowData[0][1]), (float)Math.Sqrt(RowData[0][2]));
-
-            var result = RawFloatValueDisplay.ShowEditor(r, g, b, "Diffuse");
-
-            if (float.IsNaN(result.Red)) return;
+            if (!RawEditPixel(col, name, false))
+            {
+                return;
+            }
             _LOADING = true;
 
-            var max = Math.Max(Math.Max(result.Red, result.Green), result.Blue);
-            if(max <= 1.0f)
-            {
-                max = 1.0f;
-            }
-
-            var displayRed = result.Red / max;
-            var displayGreen = result.Green / max;
-            var displayBlue = result.Blue / max;
-
-            byte byteRed = (byte)(displayRed * 255);
-            byte byteGreen = (byte)(displayGreen * 255);
-            byte byteBlue = (byte)(displayBlue * 255);
-
-            DiffuseColorPicker.SelectedColor = new System.Windows.Media.Color() { R = byteRed, G = byteGreen, B = byteBlue, A = 255 };
-
-            RowData[0][0] = result.Red * result.Red;
-            RowData[0][1] = result.Green * result.Green;
-            RowData[0][2] = result.Blue * result.Blue;
-
+            var c = GetDisplayColor(col);
+            picker.SelectedColor = new System.Windows.Media.Color() { 
+                R = c.r,
+                G = c.g, 
+                B = c.b, 
+                A = 255 
+            };
             _LOADING = false;
             UpdateRow();
         }
 
-        private void EditRawSpecular_Click(object sender, RoutedEventArgs e)
+        private void AssignPixel(int col, float r, float g, float b, float a = float.NaN)
         {
-            var (r, g, b) = ((float)Math.Sqrt(RowData[1][0]), (float)Math.Sqrt(RowData[1][1]), (float)Math.Sqrt(RowData[1][2]));
-
-            var result = RawFloatValueDisplay.ShowEditor(r, g, b, "Specular");
-
-            if (float.IsNaN(result.Red)) return;
             _LOADING = true;
+            RowData[col][0] = r;
+            RowData[col][1] = g;
+            RowData[col][2] = b;
 
-            var max = Math.Max(Math.Max(result.Red, result.Green), result.Blue);
+            if(a != float.NaN)
+            {
+                RowData[col][3] = a;
+            }
+            _LOADING = false;
+        }
+        private (byte r, byte g, byte b) GetDisplayColor(int col)
+        {
+            var hr = RowData[col][0];
+            var hg = RowData[col][1];
+            var hb = RowData[col][2];
+
+            var max = Math.Max(Math.Max(hr, hg), hb);
             if (max <= 1.0f)
             {
                 max = 1.0f;
             }
 
-            var displayRed = result.Red / max;
-            var displayGreen = result.Green / max;
-            var displayBlue = result.Blue / max;
+            var displayRed = hr / max;
+            var displayGreen = hg / max;
+            var displayBlue = hb / max;
 
             byte byteRed = (byte)(displayRed * 255);
             byte byteGreen = (byte)(displayGreen * 255);
             byte byteBlue = (byte)(displayBlue * 255);
 
-            SpecularColorPicker.SelectedColor = new System.Windows.Media.Color() { R = byteRed, G = byteGreen, B = byteBlue, A = 255 };
+            return (byteRed, byteGreen, byteBlue);
 
-            RowData[1][0] = result.Red * result.Red;
-            RowData[1][1] = result.Green * result.Green;
-            RowData[1][2] = result.Blue * result.Blue;
+        }
 
-            _LOADING = false;
-            UpdateRow();
+        private bool RawEditPixel(int col, string title, bool includeAlpha = false)
+        {
+            if(col >= _columnCount)
+            {
+                return false;
+            }
+
+            if (includeAlpha)
+            {
+                var (r, g, b, a) = (RowData[col][0], RowData[col][1], RowData[col][2], RowData[col][3]);
+                var result = RawFloatValueDisplay.ShowEditor(r, g, b, a, title);
+                if (float.IsNaN(result.Red)) return false;
+                AssignPixel(col, result.Red, result.Green, result.Blue, result.Alpha);
+            }
+            else
+            {
+                var (r, g, b) = (RowData[col][0], RowData[col][1], RowData[col][2]);
+                var result = RawFloatValueDisplay.ShowEditor(r, g, b, title);
+                if (float.IsNaN(result.Red)) return false;
+                AssignPixel(col, result.Red, result.Green, result.Blue);
+            }
+            return true;
+        }
+        private void EditCol4_Click(object sender, RoutedEventArgs e)
+        {
+            if (RawEditPixel(3, "Pixel #4", true))
+            {
+                UpdateRow();
+            }
+        }
+        private void EditCol5_Click(object sender, RoutedEventArgs e)
+        {
+            if (RawEditPixel(4, "Pixel #5", true))
+            {
+                UpdateRow();
+            }
+        }
+        private void EditCol6_Click(object sender, RoutedEventArgs e)
+        {
+            if (RawEditPixel(5, "Pixel #6", true))
+            {
+                UpdateRow();
+            }
+        }
+        private void EditCol7_Click(object sender, RoutedEventArgs e)
+        {
+            if (RawEditPixel(6, "Pixel #7", true))
+            {
+                UpdateRow();
+            }
+        }
+
+        private void EditRawDiffuse_Click(object sender, RoutedEventArgs e)
+        {
+            RawAssignColorPixel(0, "Diffuse Pixel", DiffuseColorPicker);
+        }
+        private void EditRawSpecular_Click(object sender, RoutedEventArgs e)
+        {
+            RawAssignColorPixel(1, "Specular Pixel", DiffuseColorPicker);
         }
         private void EditRawEmmissive_Click(object sender, RoutedEventArgs e)
         {
-            var (r, g, b) = ((float)Math.Sqrt(RowData[2][0]), (float)Math.Sqrt(RowData[2][1]), (float)Math.Sqrt(RowData[2][2]));
-
-            var result = RawFloatValueDisplay.ShowEditor(r, g, b, "Emissive");
-
-            if (float.IsNaN(result.Red)) return;
-            _LOADING = true;
-
-            var max = Math.Max(Math.Max(result.Red, result.Green), result.Blue);
-            if (max <= 1.0f)
-            {
-                max = 1.0f;
-            }
-
-            var displayRed = result.Red / max;
-            var displayGreen = result.Green / max;
-            var displayBlue = result.Blue / max;
-
-            byte byteRed = (byte)(displayRed * 255);
-            byte byteGreen = (byte)(displayGreen * 255);
-            byte byteBlue = (byte)(displayBlue * 255);
-
-            EmissiveColorPicker.SelectedColor = new System.Windows.Media.Color() { R = byteRed, G = byteGreen, B = byteBlue, A = 255 };
-
-            RowData[2][0] = result.Red * result.Red;
-            RowData[2][1] = result.Green * result.Green;
-            RowData[2][2] = result.Blue * result.Blue;
-
-            _LOADING = false;
-            UpdateRow();
+            RawAssignColorPixel(2, "Emissive Pixel", DiffuseColorPicker);
         }
 
         List<Half[]> CopiedRow;
@@ -839,10 +886,13 @@ namespace FFXIV_TexTools.Controls
             if (CopiedRow == null) return;
 
             var offset = RowId * 2;
-            Array.Copy(CopiedRowDye, 0, _mtrl.ColorSetDyeData, offset, 2);
+            // Disable Dye copying for now since that's not set up yet.
 
-            offset = RowId * 16;
-            for (int x = 0; x < 4; x++)
+            // BENCHMARK TODO:
+            //Array.Copy(CopiedRowDye, 0, _mtrl.ColorSetDyeData, offset, 2);
+
+            offset = RowId * _columnCount * 4;
+            for (int x = 0; x < _columnCount; x++)
             {
                 for (int y = 0; y < 4; y++)
                 {
@@ -874,20 +924,20 @@ namespace FFXIV_TexTools.Controls
             var myRowData = GetRowData(row1);
             var otherRowData = GetRowData(row2);
 
-            var myData = new Half[16];
-            var otherData = new Half[16];
-            for (int i = 0; i < 4; i++)
+            var myData = new Half[4 * _columnCount];
+            var otherData = new Half[4 * _columnCount];
+            for (int i = 0; i < _columnCount; i++)
             {
                 Array.Copy(myRowData[i], 0, myData, i * 4, 4);
                 Array.Copy(otherRowData[i], 0, otherData, i * 4, 4);
             }
 
-            var myOffset = row1 * 16;
-            var otherOffset = row2 * 16;
+            var myOffset = row1 * 4 * _columnCount;
+            var otherOffset = row2 * 4 * _columnCount;
 
             var arr = _mtrl.ColorSetData.ToArray();
-            Array.Copy(myData, 0, arr, otherOffset, 16);
-            Array.Copy(otherData, 0, arr, myOffset, 16);
+            Array.Copy(myData, 0, arr, otherOffset, 4 * _columnCount);
+            Array.Copy(otherData, 0, arr, myOffset, 4 * _columnCount);
 
             var offset1 = row1 * 2;
             var offset2 = row2 * 2;
@@ -983,7 +1033,7 @@ namespace FFXIV_TexTools.Controls
             }
 
             var rawData = RowDataToRaw(RowData);
-            offset = RowId * 16;
+            offset = RowId * _columnCount * 4;
 
             var fullData = _mtrl.ColorSetData.ToArray();
 

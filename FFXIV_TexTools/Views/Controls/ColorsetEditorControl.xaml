@@ -10,7 +10,7 @@
              mc:Ignorable="d" 
              xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
              resx:Localization.Enabled="True" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="600" d:DesignWidth="800">
 
     <Grid x:Name="MaterialGrid" Visibility="Visible">
         <Grid.ColumnDefinitions>
@@ -65,7 +65,7 @@
                             <RowDefinition Height="10"></RowDefinition>
                             <RowDefinition Height="70"></RowDefinition>
 
-                            <RowDefinition Height="10"></RowDefinition>
+                            <RowDefinition Height="70"></RowDefinition>
                             <RowDefinition Height="1*"></RowDefinition>
 
                         </Grid.RowDefinitions>
@@ -147,6 +147,10 @@
 
                             </Grid>
                         </GroupBox>
+                        <Button x:Name="EditCol4" Grid.Row="12" Content="Edit Col4" VerticalAlignment="Top" Margin="9,8,21,0" Click="EditCol4_Click"/>
+                        <Button x:Name="EditCol5" Grid.Row="12" Content="Edit Col5" VerticalAlignment="Top" Margin="95,8,95,0" Click="EditCol5_Click" Grid.ColumnSpan="2"/>
+                        <Button x:Name="EditCol6" Grid.Row="12" Content="Edit Col6" VerticalAlignment="Top" Margin="69,8,10,0" Click="EditCol6_Click" Grid.Column="1"/>
+                        <Button x:Name="EditCol7" Grid.Row="12" Content="Edit Col7" VerticalAlignment="Top" Margin="155,8,30,0" Click="EditCol7_Click" Grid.Column="1" Grid.ColumnSpan="2"/>
 
 
 

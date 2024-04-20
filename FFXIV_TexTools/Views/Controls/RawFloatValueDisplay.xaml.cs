@@ -23,6 +23,7 @@ namespace FFXIV_TexTools.Views.Controls
         public float Red;
         public float Green;
         public float Blue;
+        public float Alpha;
         public RawFloatValueDisplay(float red, float green, float blue, string name = null)
         {
             InitializeComponent();
@@ -36,6 +37,22 @@ namespace FFXIV_TexTools.Views.Controls
             RedBox.Text = red.ToString();
             GreenBox.Text = green.ToString();
             BlueBox.Text = blue.ToString();
+            AlphaBox.Visibility = Visibility.Collapsed;
+
+        }
+        public RawFloatValueDisplay(float red, float green, float blue, float alpha, string name = null)
+        {
+            InitializeComponent();
+
+            if (name != null)
+            {
+                this.Title = "Raw ".L() + name.L() + " Value Editor".L();
+
+            }
+            RedBox.Text = red.ToString();
+            GreenBox.Text = green.ToString();
+            BlueBox.Text = blue.ToString();
+            AlphaBox.Text = alpha.ToString();
 
         }
 
@@ -46,6 +63,7 @@ namespace FFXIV_TexTools.Views.Controls
                 Red = float.Parse(RedBox.Text);
                 Green = float.Parse(GreenBox.Text);
                 Blue = float.Parse(BlueBox.Text);
+                Alpha = float.Parse(AlphaBox.Text);
 
                 DialogResult = true;
             } catch
@@ -71,6 +89,22 @@ namespace FFXIV_TexTools.Views.Controls
             } else
             {
                 return (float.NaN, float.NaN, float.NaN);
+            }
+
+        }
+        public static (float Red, float Green, float Blue, float Alpha) ShowEditor(float red, float green, float blue, float alpha, string name = null)
+        {
+            var wind = new RawFloatValueDisplay(red, green, blue, alpha, name);
+            wind.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            var result = wind.ShowDialog();
+
+            if (result == true)
+            {
+                return (wind.Red, wind.Green, wind.Blue, wind.Alpha);
+            }
+            else
+            {
+                return (float.NaN, float.NaN, float.NaN, float.NaN);
             }
 
         }
