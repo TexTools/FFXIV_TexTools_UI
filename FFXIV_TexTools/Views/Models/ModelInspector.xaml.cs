@@ -456,7 +456,7 @@ namespace FFXIV_TexTools.Views.Models
 
             // Unknown 4
             AddText(textBox, "Unknown 4:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{lod.Unknown4}\n\n", _textColor, true);
+            AddText(textBox, $"{lod.MeshGroupTotal}\n\n", _textColor, true);
 
             // Unknown 5
             AddText(textBox, "Unknown 5:\t\t".L(), _textColor, false);
