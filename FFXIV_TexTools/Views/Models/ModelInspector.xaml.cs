@@ -64,6 +64,10 @@ namespace FFXIV_TexTools.Views.Models
             var modelData = _xivMdl.ModelData;
 
             // Unknown 0
+            AddText(textBox, "Mdl Version:\t\t".L(), _textColor, false);
+            AddText(textBox, $"{_xivMdl.MdlVersion.ToString()}\n\n", _textColor, true);
+
+            // Unknown 0
             AddText(textBox, "Unknown 0:\t\t".L(), _textColor, false);
             AddText(textBox, $"{modelData.Unknown0.ToString()}\n\n", _textColor, true);
 
