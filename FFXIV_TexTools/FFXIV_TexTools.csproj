@@ -28,6 +28,7 @@
     <LangVersion>9.0</LangVersion>
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <UseWPF>true</UseWPF>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <PostBuildEvent>mkdir $(TargetDir)lib
 move $(TargetDir)*.dll $(TargetDir)lib</PostBuildEvent>
     <PostBuildEvent>mkdir $(TargetDir)lib

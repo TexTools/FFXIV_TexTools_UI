@@ -75,10 +75,15 @@ namespace FFXIV_TexTools.Controls
 
         private List<CheckBox> DyeBoxes = new List<CheckBox>();
 
+        private Helpers.ViewportCanvasRenderer canvasRenderer = null;
+
         public ColorsetEditorControl()
         {
             this.DataContext = _vm = new ColorsetEditorViewModel(this);
             InitializeComponent();
+
+            if (Configuration.EnvironmentConfiguration.TT_Unshared_Rendering)
+                canvasRenderer = new Helpers.ViewportCanvasRenderer(ColorsetRowViewport, AlternateViewportCanvas);
 
             for (int i = 0; i < _rowCount; i++)
             {
