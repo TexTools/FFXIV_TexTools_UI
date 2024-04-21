@@ -7,30 +7,31 @@
         xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
         resx:Localization.Enabled="True"                     
         mc:Ignorable="d"
-        Title="Model Editor" Height="523.022" IsMinButtonEnabled="False" IsMaxRestoreButtonEnabled="False" WindowStartupLocation="CenterOwner" FontSize="14" Width="580" ResizeMode="NoResize">
+        Title="Model Editor" Height="600" IsMinButtonEnabled="False" IsMaxRestoreButtonEnabled="False" WindowStartupLocation="CenterOwner" FontSize="14" Width="580" ResizeMode="NoResize">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="285*"/>
             <ColumnDefinition Width="289*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="43*"/>
-            <RowDefinition Height="122*"/>
-            <RowDefinition Height="215*"/>
-            <RowDefinition Height="65*"/>
-            <RowDefinition Height="49*"/>
+            <RowDefinition Height="45*"/>
+            <RowDefinition Height="120*"/>
+            <RowDefinition Height="250*"/>
+            <RowDefinition Height="45*"/>
+            <RowDefinition Height="45*"/>
+            <RowDefinition Height="58*"/>
         </Grid.RowDefinitions>
-        <Button x:Name="CancelButton" Content="Cancel" HorizontalAlignment="Left" Width="201" Margin="10,10,0,9" Grid.Row="4" VerticalContentAlignment="Center" Click="CancelButton_Click"/>
-        <Button x:Name="ImportButton" Content="Import" HorizontalAlignment="Right" Width="201" Margin="0,10,10,9" Grid.Row="4" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Grid.Column="1" Click="ImportButton_Click"/>
-        <ComboBox x:Name="MeshNumberBox" HorizontalAlignment="Left" Margin="70,12,0,0" Width="200" VerticalContentAlignment="Center" BorderBrush="Gray" VerticalAlignment="Top" Height="26">
+        <Button x:Name="CancelButton" Content="Cancel" HorizontalAlignment="Left" Width="201" Margin="10,10,0,9" Grid.Row="5" VerticalContentAlignment="Center" Click="CancelButton_Click"/>
+        <Button x:Name="ImportButton" Content="Import" HorizontalAlignment="Left" Width="201" Margin="81,10,0,9" Grid.Row="5" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Grid.Column="1" Click="ImportButton_Click"/>
+        <ComboBox x:Name="MeshNumberBox" HorizontalAlignment="Left" Margin="70,0,0,0" Width="200" VerticalContentAlignment="Center" BorderBrush="Gray" VerticalAlignment="Center" Height="26">
             <ComboBoxItem Content="TEST"/>
         </ComboBox>
-        <ComboBox x:Name="PartNumberBox" HorizontalAlignment="Left" Margin="55,12,0,0" Width="215" VerticalContentAlignment="Center" BorderBrush="Gray" Grid.Column="1" VerticalAlignment="Top" Height="26">
+        <ComboBox x:Name="PartNumberBox" HorizontalAlignment="Left" Margin="55,0,0,0" Width="215" VerticalContentAlignment="Center" BorderBrush="Gray" Grid.Column="1" VerticalAlignment="Center" Height="26">
             <ComboBoxItem Content="TEST"/>
         </ComboBox>
         <Label Content="Group:" HorizontalAlignment="Left" Margin="16,10,0,0" Width="54" VerticalContentAlignment="Center" VerticalAlignment="Top" RenderTransformOrigin="-0.1,0.5" Height="28" FontWeight="Bold"/>
         <Label Content="Part:" HorizontalAlignment="Left" Margin="15,10,0,0" Width="40" VerticalContentAlignment="Center" VerticalAlignment="Top" Height="28" FontWeight="Bold" Grid.Column="1"/>
-        <Rectangle Grid.Row="1" Stroke="Gray" Margin="10,5"/>
+        <Rectangle Grid.Row="1" Stroke="Gray" Margin="10,5,10,5"/>
         <Rectangle Grid.Row="2" Stroke="Gray" Margin="10,5,10,10"/>
         <Rectangle Grid.Row="1" Stroke="Gray" Margin="10,5,10,10" Grid.Column="1" Grid.RowSpan="2"/>
         <Label Content="Material" Margin="10,10,10,0" Grid.Row="1" VerticalAlignment="Top" HorizontalContentAlignment="Center" FontSize="18" FontWeight="Bold" Height="34"/>
@@ -40,23 +41,27 @@
         <TextBox x:Name="MaterialPathTextBox" Height="26" Margin="20,81,20,0" Grid.Row="1" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" IsEnabled="False"/>
         <ListBox x:Name="ShapesListBox" Margin="20,49,20,52" Grid.Row="2" Style="{DynamicResource SimpleListBox}">
         </ListBox>
-        <ListBox x:Name="AttributesListBox" Margin="20,0,20,52" Grid.Row="2" Style="{DynamicResource SimpleListBox}" Grid.Column="1"/>
-        <Button x:Name="RemoveShapeButton" Content="Remove Shape" Margin="20,0,20,20" Grid.Row="2" Height="27" VerticalAlignment="Bottom" IsEnabled="False"/>
-        <Button x:Name="RemoveAttributeButton" Content="Remove Attribute" Margin="20,0,20,20" Grid.Row="2" Height="27" VerticalAlignment="Bottom" Grid.Column="1" IsEnabled="False"/>
+        <ListBox x:Name="AttributesListBox" Margin="20,144,20,52" Grid.Row="1" Style="{DynamicResource SimpleListBox}" Grid.Column="1" Grid.RowSpan="2"/>
+        <Button x:Name="RemoveShapeButton" Content="Remove Shape" Margin="20,207,20,0" Grid.Row="2" Height="27" VerticalAlignment="Top" IsEnabled="False"/>
+        <Button x:Name="RemoveAttributeButton" Content="Remove Attribute" Margin="20,207,20,0" Grid.Row="2" Height="27" VerticalAlignment="Top" Grid.Column="1" IsEnabled="False"/>
         <ComboBox x:Name="AddAttributeBox" Margin="20,50,19,0" Grid.Row="1" VerticalAlignment="Top" Height="26" Grid.Column="1"/>
         <TextBox x:Name="AddAttributeTextBox" Height="26" Margin="20,84,20,0" Grid.Row="1" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" IsEnabled="False" Grid.Column="1"/>
 
         <Rectangle Fill="Gray" Stroke="Gray" Margin="284,2,288,2" RenderTransformOrigin="0.5,0.5" Grid.ColumnSpan="2" Grid.RowSpan="3"/>
-        <StackPanel Orientation="Horizontal" Panel.ZIndex="100">
-        </StackPanel>
-        <Label Content="Model Scale:" HorizontalAlignment="Left" Margin="14,0,0,28" Grid.Row="3" Width="98" VerticalAlignment="Bottom" Height="29"/>
-        <ComboBox x:Name="ScaleComboBox" HorizontalAlignment="Left" Margin="100,10,0,0" Width="175" VerticalContentAlignment="Top" BorderBrush="Gray" Grid.Row="3" VerticalAlignment="Top">
+        <StackPanel Orientation="Horizontal" Panel.ZIndex="100" Grid.ColumnSpan="2" Margin="0,0,292,0"/>
+        <Label Content="Model Scale:" HorizontalAlignment="Left" Margin="10,0,0,10" Grid.Row="3" Width="98" VerticalAlignment="Bottom" Height="29"/>
+        <ComboBox x:Name="ScaleComboBox" HorizontalAlignment="Left" Margin="100,10,0,0" Width="175" VerticalContentAlignment="Top" BorderBrush="Gray" Grid.Row="3" VerticalAlignment="Top" Grid.RowSpan="2" Height="26">
             <ComboBoxItem Content="TEST"/>
         </ComboBox>
-        <Label Margin="0,0,200,40" Grid.Row="3" FontStyle="Italic" FontSize="11" Content="Old Model Size:" HorizontalContentAlignment="Right" Height="24" Grid.Column="1" VerticalAlignment="Center"/>
-        <TextBlock x:Name="ScaleWarningBox" Margin="10,45,10,0" Grid.Row="3" FontStyle="Italic" FontSize="12" Text="Warning Text Goes Here" HorizontalAlignment="Center" TextAlignment="Center" Width="554" Height="20" VerticalAlignment="Top" Grid.ColumnSpan="2" Grid.RowSpan="2"/>
-        <Label x:Name="OldModelSizeBox" Margin="89,0,3,40" Grid.Row="3" FontStyle="Italic" FontSize="11" Content="11 Meters" Grid.Column="1" Height="24" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-        <Label Margin="0,18,200,16" Grid.Row="3" FontStyle="Italic" FontSize="11" Content="New Model Size:" HorizontalContentAlignment="Right" Height="24" Grid.Column="1" VerticalAlignment="Center"/>
-        <Label x:Name="NewModelSizeBox" Margin="89,18,3,16" Grid.Row="3" FontStyle="Italic" FontSize="11" Content="11 Meters" Grid.Column="1" Height="24" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+        <Label Margin="0,3,200,0" Grid.Row="3" FontStyle="Italic" FontSize="11" Content="Old Model Size:" HorizontalContentAlignment="Right" Height="24" Grid.Column="1" VerticalAlignment="Top"/>
+        <TextBlock x:Name="ScaleWarningBox" Margin="13,34,0,0" Grid.Row="4" FontStyle="Italic" FontSize="12" Text="Warning Text Goes Here" HorizontalAlignment="Left" TextAlignment="Center" Width="554" Height="20" VerticalAlignment="Top" Grid.ColumnSpan="2" Grid.RowSpan="2"/>
+        <Label x:Name="OldModelSizeBox" Margin="89,3,0,0" Grid.Row="3" FontStyle="Italic" FontSize="11" Content="11 Meters" Grid.Column="1" Height="24" HorizontalAlignment="Left" VerticalAlignment="Top" Width="56"/>
+        <Label Margin="0,19,200,0" Grid.Row="3" FontStyle="Italic" FontSize="11" Content="New Model Size:" HorizontalContentAlignment="Right" Height="24" Grid.Column="1" VerticalAlignment="Top"/>
+        <Label x:Name="NewModelSizeBox" Margin="89,19,0,0" Grid.Row="3" FontStyle="Italic" FontSize="11" Content="11 Meters" Grid.Column="1" Height="24" HorizontalAlignment="Left" VerticalAlignment="Top" Width="56"/>
+
+        <Label Content="Mdl Version:" HorizontalAlignment="Left" Margin="10,0,0,10" Grid.Row="4" Width="98" VerticalAlignment="Bottom" Height="29"/>
+        <ComboBox x:Name="MdlVersionComboBox" HorizontalAlignment="Left" Margin="100,10,0,0" Width="175" VerticalContentAlignment="Top" BorderBrush="Gray" Grid.Row="4" VerticalAlignment="Top" Grid.RowSpan="2" Height="26">
+            <ComboBoxItem Content="TEST"/>
+        </ComboBox>
     </Grid>
 </mah:MetroWindow>

@@ -25,6 +25,7 @@ namespace FFXIV_TexTools.Views.Models
         public ObservableCollection<KeyValuePair<string, string>> MaterialsSource = new ObservableCollection<KeyValuePair<string, string>>();
         public ObservableCollection<KeyValuePair<string, string>> AllAttributesSource = new ObservableCollection<KeyValuePair<string, string>>();
         public ObservableCollection<KeyValuePair<double, string>> SizeMultiplierSource = new ObservableCollection<KeyValuePair<double, string>>();
+        public ObservableCollection<KeyValuePair<int, string>> MdlVersionSource = new ObservableCollection<KeyValuePair<int, string>>();
 
         public ImportModelEditView(TTModel newModel, TTModel oldModel)
         {
@@ -34,6 +35,7 @@ namespace FFXIV_TexTools.Views.Models
             MeshNumberBox.Items.Clear();
             PartNumberBox.Items.Clear();
             ScaleComboBox.Items.Clear();
+            MdlVersionComboBox.Items.Clear();
 
             var itemName = Path.GetFileNameWithoutExtension(oldModel.Source);
             for (var mIdx = 0; mIdx < _newModel.MeshGroups.Count; mIdx++)
@@ -62,7 +64,9 @@ namespace FFXIV_TexTools.Views.Models
             SizeMultiplierSource.Add(new KeyValuePair<double, string>(.1D, "0.1x"));
             SizeMultiplierSource.Add(new KeyValuePair<double, string>(.01D, "0.01x"));
             SizeMultiplierSource.Add(new KeyValuePair<double, string>(0.03937007874D, "0.039x (Legacy Fix)".L()));
-            
+            MdlVersionSource.Add(new KeyValuePair<int, string>(5, "5"));
+            MdlVersionSource.Add(new KeyValuePair<int, string>(6, "6"));
+
             MeshNumberBox.ItemsSource = MeshSource;
             MeshNumberBox.DisplayMemberPath = "Value";
             MeshNumberBox.SelectedValuePath = "Key";
@@ -92,7 +96,21 @@ namespace FFXIV_TexTools.Views.Models
             ScaleComboBox.DisplayMemberPath = "Value";
             ScaleComboBox.SelectedValuePath = "Key";
 
+            MdlVersionComboBox.ItemsSource = MdlVersionSource;
+            MdlVersionComboBox.DisplayMemberPath = "Value";
+            MdlVersionComboBox.SelectedValuePath = "Key";
+
             ScaleComboBox.SelectedValue = 1.0f;
+            var version = 6;
+            if(_newModel.MdlVersion > 0)
+            {
+                version = _newModel.MdlVersion;
+            } else if(_oldModel.MdlVersion > 0)
+            {
+                version = _oldModel.MdlVersion;
+            }
+
+            MdlVersionComboBox.SelectedValue = version;
 
 
             _viewModel = new ImportModelEditViewModel(this, _newModel, _oldModel);
@@ -105,6 +123,8 @@ namespace FFXIV_TexTools.Views.Models
             {
                 ModelModifiers.ScaleModel(_newModel, (double)ScaleComboBox.SelectedValue);
             }
+            var val = (int) MdlVersionComboBox.SelectedValue;
+            _newModel.MdlVersion = (ushort) val;
             DialogResult = true;
         }
 
