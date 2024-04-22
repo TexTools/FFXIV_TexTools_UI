@@ -14,6 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using MahApps.Metro;
+using SharpDX.Direct2D1.Effects;
 using System;
 using System.Collections.Generic;
 using System.Windows;
@@ -54,6 +55,44 @@ namespace FFXIV_TexTools.Views.Models
             FillLoDComboBox();
         }
 
+        private void PrintVar<T>(RichTextBox textBox, T source, string name)
+        {
+            object value;
+            var property = typeof(T).GetProperty(name);
+
+            if (property != null)
+            {
+                value = property.GetValue(source);
+            } else
+            {
+                var field = typeof(T).GetField(name);
+                if(field == null)
+                {
+                    return;
+                } else
+                {
+                    value = field.GetValue(source);
+                }
+
+            }
+
+            AddText(textBox, name + " :\t\t".L(), _textColor, false);
+            AddText(textBox, $"{value.ToString()}\n\n", _textColor, true);
+        }
+        private void PrintAllProps<T>(RichTextBox textBox, T source)
+        {
+            var dataType = typeof(T);
+            var props = dataType.GetProperties();
+            
+            foreach(var p in props)
+            {
+                if(p.PropertyType.IsValueType)
+                {
+                    PrintVar(textBox, source, p.Name);
+                }
+            }
+        }
+
         /// <summary>
         /// Fills the combobox with the available model metadata
         /// </summary>
@@ -67,113 +106,7 @@ namespace FFXIV_TexTools.Views.Models
             AddText(textBox, "Mdl Version:\t\t".L(), _textColor, false);
             AddText(textBox, $"{_xivMdl.MdlVersion.ToString()}\n\n", _textColor, true);
 
-            // Unknown 0
-            AddText(textBox, "Unknown 0:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{modelData.Unknown0.ToString()}\n\n", _textColor, true);
-
-            // Mesh Count
-            AddText(textBox, "Mesh Count:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{modelData.MeshCount.ToString()}\n\n", _textColor, true);
-
-            // Attribute Count
-            AddText(textBox, "Attribute Count:\t".L(), _textColor, false);
-            AddText(textBox, $"{modelData.AttributeCount.ToString()}\n\n", _textColor, true);
-
-            // Mesh Part Count
-            AddText(textBox, "Mesh Part Count:\t".L(), _textColor, false);
-            AddText(textBox, $"{modelData.MeshPartCount.ToString()}\n\n", _textColor, true);
-
-            // Material Count
-            AddText(textBox, "Material Count:\t".L(), _textColor, false);
-            AddText(textBox, $"{modelData.MaterialCount.ToString()}\n\n", _textColor, true);
-
-            // Bone Count
-            AddText(textBox, "Bone Count:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{modelData.BoneCount.ToString()}\n\n", _textColor, true);
-
-            // Bone List Count
-            AddText(textBox, "Bone List Count:\t".L(), _textColor, false);
-            AddText(textBox, $"{modelData.BoneListCount.ToString()}\n\n", _textColor, true);
-
-            // Mesh Shape Info Count
-            AddText(textBox, "Shape Info Count:\t".L(), _textColor, false);
-            AddText(textBox, $"{modelData.ShapeCount.ToString()}\n\n", _textColor, true);
-
-            // Mesh Shape Data Count
-            //AddText(textBox, "Shape Data Count:\t", _textColor, false);
-            //AddText(textBox, $"{modelData.ShapePartCount.ToString()}\n\n", _textColor, true);
-
-            // Unknown 1
-            AddText(textBox, "Unknown 1:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{modelData.Unknown1.ToString()}\n\n", _textColor, true);
-
-            // Unknown 2
-            AddText(textBox, "Unknown 2:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{modelData.Unknown2.ToString()}\n\n", _textColor, true);
-
-            // Unknown 3
-            AddText(textBox, "Unknown 3:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{modelData.Unknown3.ToString()}\n\n", _textColor, true);
-
-            // Unknown 4
-            AddText(textBox, "Unknown 4:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{modelData.Unknown4.ToString()}\n\n", _textColor, true);
-
-            // Unknown 5
-            AddText(textBox, "Unknown 5:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{modelData.Unknown5.ToString()}\n\n", _textColor, true);
-
-            // Unknown 6
-            AddText(textBox, "Unknown 6:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{modelData.Unknown6.ToString()}\n\n", _textColor, true);
-
-            // Unknown 7
-            AddText(textBox, "Unknown 7:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{modelData.Unknown7.ToString()}\n\n", _textColor, true);
-
-            // Unknown 8
-            AddText(textBox, "Unknown 8:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{modelData.Unknown8.ToString()}\n\n", _textColor, true);
-
-            // Unknown 9
-            AddText(textBox, "Unknown 9:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{modelData.Unknown9.ToString()}\n\n", _textColor, true);
-
-            // Unknown 10a
-            AddText(textBox, "Unknown 10a:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{modelData.Unknown10a.ToString()}\n\n", _textColor, true);
-
-            // Unknown 10b
-            AddText(textBox, "Unknown 10b:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{modelData.Unknown10b.ToString()}\n\n", _textColor, true);
-
-            // Unknown 11
-            AddText(textBox, "Unknown 11:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{modelData.Unknown11.ToString()}\n\n", _textColor, true);
-
-            // Unknown 12
-            AddText(textBox, "Unknown 12:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{modelData.Unknown12.ToString()}\n\n", _textColor, true);
-
-            // Unknown 13
-            AddText(textBox, "Unknown 13:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{modelData.Unknown13.ToString()}\n\n", _textColor, true);
-
-            // Unknown 14
-            AddText(textBox, "Unknown 14:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{modelData.Unknown14.ToString()}\n\n", _textColor, true);
-
-            // Unknown 15
-            AddText(textBox, "Unknown 15:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{modelData.Unknown15.ToString()}\n\n", _textColor, true);
-
-            // Unknown 16
-            AddText(textBox, "Unknown 16:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{modelData.Unknown16.ToString()}\n\n", _textColor, true);
-
-            // Unknown 17
-            AddText(textBox, "Unknown 17:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{modelData.Unknown17.ToString()}\n\n", _textColor, true);
+            PrintAllProps(textBox, modelData);
 
             // Extra LoD Count
             if (_xivMdl.ExtraLoDList != null)
@@ -421,78 +354,7 @@ namespace FFXIV_TexTools.Views.Models
             var selectedLoD = (int) LoDComboBox.SelectedItem;
 
             var lod = _xivMdl.LoDList[selectedLoD];
-
-            // Mesh Offset
-            AddText(textBox, "Mesh Offset:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{lod.MeshOffset}\n\n", _textColor, true);
-
-            // Mesh Count
-            AddText(textBox, "Mesh Count:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{lod.MeshCount}\n\n", _textColor, true);
-
-            // Unknown 0
-            AddText(textBox, "Unknown 0:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{lod.Unknown0}\n\n", _textColor, true);
-
-            // Unknown 1
-            AddText(textBox, "Unknown 1:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{lod.Unknown1}\n\n", _textColor, true);
-
-            // Mesh End
-            AddText(textBox, "Mesh End:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{lod.MeshEnd}\n\n", _textColor, true);
-
-            // Extra Mesh Count
-            AddText(textBox, "Extra Mesh Count:\t".L(), _textColor, false);
-            AddText(textBox, $"{lod.ExtraMeshCount}\n\n", _textColor, true);
-
-            // Mesh Sum
-            AddText(textBox, "Mesh Sum:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{lod.MeshSum}\n\n", _textColor, true);
-
-            // Unknown 2
-            AddText(textBox, "Unknown 2:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{lod.Unknown2}\n\n", _textColor, true);
-
-            // Unknown 3
-            AddText(textBox, "Unknown 3:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{lod.Unknown3}\n\n", _textColor, true);
-
-            // Unknown 4
-            AddText(textBox, "Unknown 4:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{lod.MeshGroupTotal}\n\n", _textColor, true);
-
-            // Unknown 5
-            AddText(textBox, "Unknown 5:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{lod.Unknown5}\n\n", _textColor, true);
-
-            // Index Start
-            AddText(textBox, "Index Start:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{lod.IndexDataStart}\n\n", _textColor, true);
-
-            // Unknown 6
-            AddText(textBox, "Unknown 6:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{lod.Unknown6}\n\n", _textColor, true);
-
-            // Unknown 7
-            AddText(textBox, "Unknown 7:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{lod.Unknown7}\n\n", _textColor, true);
-
-            // Vertex Size
-            AddText(textBox, "Vertex Size:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{lod.VertexDataSize}\n\n".L(), _textColor, true);
-
-            // Index Size
-            AddText(textBox, "Index Size:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{lod.IndexDataSize}\n\n", _textColor, true);
-
-            // Vertex Offset
-            AddText(textBox, "Vertex Offset:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{lod.VertexDataOffset}\n\n", _textColor, true);
-
-            // Index Offset
-            AddText(textBox, "Index Offset:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{lod.IndexDataOffset}\n\n", _textColor, true);
+            PrintAllProps(textBox, lod);
         }
 
         /// <summary>

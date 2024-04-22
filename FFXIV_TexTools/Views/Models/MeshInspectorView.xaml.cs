@@ -135,7 +135,7 @@ namespace FFXIV_TexTools.Views.Models
 
             // Vertex Data Block Count
             AddText(textBox, "Data Block Count:\t".L(), _textColor, false);
-            AddText(textBox, $"{mesh.VertexDataBlockCount}\n\n", _textColor, true);
+            AddText(textBox, $"{mesh.VertexStreamCountUnknown}\n\n", _textColor, true);
 
 
             FillMeshPartComboBox();
