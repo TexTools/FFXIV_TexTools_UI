@@ -27,9 +27,9 @@ namespace FFXIV_TexTools.Custom
         {
             var node = base.OnCreateSceneNode();
 
-            node.OnSetRenderTechnique = host =>
+            node.OnSetRenderTechnique = effectsManager =>
             {
-                return host.EffectsManager[CustomEffectsManager.CustomShaderNames.CustomShader];
+                return effectsManager[CustomEffectsManager.CustomShaderNames.CustomShader];
             };
 
             return node;
