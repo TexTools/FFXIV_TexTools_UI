@@ -2222,7 +2222,7 @@ namespace FFXIV_TexTools.ViewModels
 
             if (AlphaChecked)
             {
-                imageEncoder = new PngEncoder();
+                imageEncoder = new PngEncoder() { CompressionLevel = 0 };
             }
             else
             {

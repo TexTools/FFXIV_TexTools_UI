@@ -168,7 +168,7 @@ namespace FFXIV_TexTools.ViewModels
                             NormalizePixelData(img);
                         }
                         diffuse = new MemoryStream();
-                        img.Save(diffuse, new PngEncoder());
+                        img.Save(diffuse, new PngEncoder() { CompressionLevel = 0 });
                     }
 
                     streamList.Add(diffuse);
@@ -183,7 +183,7 @@ namespace FFXIV_TexTools.ViewModels
                             NormalizePixelData(img);
                         }
                         specular = new MemoryStream();
-                        img.Save(specular, new PngEncoder());
+                        img.Save(specular, new PngEncoder() { CompressionLevel = 0 });
                     }
 
                     streamList.Add(specular);
@@ -194,7 +194,7 @@ namespace FFXIV_TexTools.ViewModels
                     using (var img = Image.LoadPixelData<Rgba32>(textureData.Normal, textureData.Width, textureData.Height))
                     {
                         normal = new MemoryStream();
-                        img.Save(normal, new PngEncoder());
+                        img.Save(normal, new PngEncoder() { CompressionLevel = 0 });
                     }
 
                     streamList.Add(normal);
@@ -205,7 +205,7 @@ namespace FFXIV_TexTools.ViewModels
                     using (var img = Image.LoadPixelData<Rgba32>(textureData.Alpha, textureData.Width, textureData.Height))
                     {
                         alpha = new MemoryStream();
-                        img.Save(alpha, new PngEncoder());
+                        img.Save(alpha, new PngEncoder() { CompressionLevel = 0 });
                     }
 
                     streamList.Add(alpha);
@@ -220,7 +220,7 @@ namespace FFXIV_TexTools.ViewModels
                             NormalizePixelData(img);
                         }
                         emissive = new MemoryStream();
-                        img.Save(emissive, new PngEncoder());
+                        img.Save(emissive, new PngEncoder() { CompressionLevel = 0 });
                     }
 
                     streamList.Add(emissive);
