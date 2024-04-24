@@ -55,7 +55,7 @@ namespace FFXIV_TexTools.Views.Models
             FillLoDComboBox();
         }
 
-        private void PrintVar<T>(RichTextBox textBox, T source, string name)
+        private void PrintVar<T>(RichTextBox textBox, T source, string name, bool doubleSpace = true)
         {
             object value;
             var property = typeof(T).GetProperty(name);
@@ -76,10 +76,11 @@ namespace FFXIV_TexTools.Views.Models
 
             }
 
+            var spaces = doubleSpace ? "\n\n" : "\n";
             AddText(textBox, name + " :\t\t".L(), _textColor, false);
-            AddText(textBox, $"{value.ToString()}\n\n", _textColor, true);
+            AddText(textBox, $"{value.ToString()}" + spaces, _textColor, true);
         }
-        private void PrintAllProps<T>(RichTextBox textBox, T source)
+        private void PrintAllProps<T>(RichTextBox textBox, T source, bool doubleSpace = true)
         {
             var dataType = typeof(T);
             var props = dataType.GetProperties();
@@ -88,7 +89,7 @@ namespace FFXIV_TexTools.Views.Models
             {
                 if(p.PropertyType.IsValueType)
                 {
-                    PrintVar(textBox, source, p.Name);
+                    PrintVar(textBox, source, p.Name, doubleSpace);
                 }
             }
         }
@@ -169,6 +170,7 @@ namespace FFXIV_TexTools.Views.Models
         {
             var otherList = new List<string>();
 
+            otherList.Add("Vertex Structure".L());
             otherList.Add("Unknown".L());
             otherList.Add("Data Blocks".L());
 
@@ -277,6 +279,23 @@ namespace FFXIV_TexTools.Views.Models
                 {
                     AddText(textBox, "Bone Offset Count:\t".L(), _textColor, false);
                     AddText(textBox, $"{_xivMdl.BoneDataBlock.BonePathOffsetList.Count}\n\n", _textColor, true);
+                }
+            }
+
+            if (selectedItem.Equals("Vertex Structure".L()))
+            {
+                for (int li = 0; li < _xivMdl.LoDList.Count; li++)
+                {
+                    AddText(textBox, "==== LoD Level " + li.ToString() + " ====\n\n", _textColor, true);
+                    for (int mi = 0; mi < _xivMdl.LoDList[li].MeshDataList.Count; mi++)
+                    {
+                        AddText(textBox, "  == Mesh #" + mi.ToString() + " ==\n\n", _textColor, true);
+                        foreach (var st in _xivMdl.LoDList[li].MeshDataList[mi].VertexDataStructList)
+                        {
+                            PrintAllProps(textBox, st, false);
+                            AddText(textBox, "\n", _textColor, true);
+                        }
+                    }
                 }
             }
 

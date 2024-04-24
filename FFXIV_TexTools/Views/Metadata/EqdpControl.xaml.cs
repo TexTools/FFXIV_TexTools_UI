@@ -80,8 +80,11 @@ namespace FFXIV_TexTools.Views.Metadata
 
             foreach (var kv in RacialCheckboxes)
             {
-                var entry = m.EqdpEntries[kv.Key];
-                kv.Value.IsChecked = entry.bit1;
+                if (m.EqdpEntries.ContainsKey(kv.Key))
+                {
+                    var entry = m.EqdpEntries[kv.Key];
+                    kv.Value.IsChecked = entry.bit1;
+                }
             }
 
             _metadata = m;
