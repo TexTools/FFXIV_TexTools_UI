@@ -20,10 +20,6 @@ using HelixToolkit.Wpf.SharpDX;
 using HelixToolkit.Wpf.SharpDX.Cameras;
 using SharpDX;
 using SharpDX.Direct3D11;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Formats.Png;
-using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp.Processing;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -38,6 +34,7 @@ using xivModdingFramework.Models.Helpers;
 using MeshBuilder = HelixToolkit.Wpf.SharpDX.MeshBuilder;
 using MeshGeometry3D = HelixToolkit.Wpf.SharpDX.MeshGeometry3D;
 using PerspectiveCamera = HelixToolkit.Wpf.SharpDX.PerspectiveCamera;
+using Vector4 = System.Numerics.Vector4;
 
 namespace FFXIV_TexTools.ViewModels
 {
@@ -50,7 +47,6 @@ namespace FFXIV_TexTools.ViewModels
         protected double _lightX, _light1X, _light2X, _lightY, _light1Y, _light2Y, _lightZ, _light1Z, _light2Z;
         private bool _renderLight3;
         private readonly ModelViewModel _modelViewModel;
-        protected List<Stream> streamList = new List<Stream>();
         private static readonly Regex bodyMaterial = new Regex("[bf][0-9]{4}", RegexOptions.IgnoreCase);
 
         public ObservableElement3DCollection Models { get; } = new ObservableElement3DCollection();
@@ -157,74 +153,33 @@ namespace FFXIV_TexTools.ViewModels
                 }
                 var textureData = textureDataDictionary[model.GetMaterialIndex(i)];
 
-                Stream diffuse = null, specular = null, normal = null, alpha = null, emissive = null;
+                TextureModel diffuse = null, specular = null, normal = null, alpha = null, emissive = null;
 
-                if (textureData.Diffuse != null && textureData.Diffuse.Length > 0)
+                if (!isBodyMaterial)
                 {
-                    using (var img = Image.LoadPixelData<Rgba32>(textureData.Diffuse, textureData.Width, textureData.Height))
-                    {
-                        if (!isBodyMaterial) 
-                        {
-                            NormalizePixelData(img);
-                        }
-                        diffuse = new MemoryStream();
-                        img.Save(diffuse, new PngEncoder() { CompressionLevel = 0 });
-                    }
+                    if (textureData.Diffuse != null && textureData.Diffuse.Length > 0)
+                        diffuse = new TextureModel(NormalizePixelData(textureData.Diffuse), textureData.Width, textureData.Height);
 
-                    streamList.Add(diffuse);
+                    if (textureData.Specular != null && textureData.Specular.Length > 0)
+                        specular = new TextureModel(NormalizePixelData(textureData.Specular), textureData.Width, textureData.Height);
                 }
-
-                if (textureData.Specular != null && textureData.Specular.Length > 0)
+                else
                 {
-                    using (var img = Image.LoadPixelData<Rgba32>(textureData.Specular, textureData.Width, textureData.Height))
-                    {
-                        if (!isBodyMaterial) 
-                        {
-                            NormalizePixelData(img);
-                        }
-                        specular = new MemoryStream();
-                        img.Save(specular, new PngEncoder() { CompressionLevel = 0 });
-                    }
+                    if (textureData.Diffuse != null && textureData.Diffuse.Length > 0)
+                        diffuse = new TextureModel(textureData.Diffuse, SharpDX.DXGI.Format.R8G8B8A8_UNorm, textureData.Width, textureData.Height);
 
-                    streamList.Add(specular);
+                    if (textureData.Specular != null && textureData.Specular.Length > 0)
+                        specular = new TextureModel(textureData.Specular, SharpDX.DXGI.Format.R8G8B8A8_UNorm, textureData.Width, textureData.Height);
                 }
 
                 if (textureData.Normal != null && textureData.Normal.Length > 0)
-                {
-                    using (var img = Image.LoadPixelData<Rgba32>(textureData.Normal, textureData.Width, textureData.Height))
-                    {
-                        normal = new MemoryStream();
-                        img.Save(normal, new PngEncoder() { CompressionLevel = 0 });
-                    }
-
-                    streamList.Add(normal);
-                }
+                    normal = new TextureModel(textureData.Normal, SharpDX.DXGI.Format.R8G8B8A8_UNorm, textureData.Width, textureData.Height);
 
                 if (textureData.Alpha != null && textureData.Alpha.Length > 0)
-                {
-                    using (var img = Image.LoadPixelData<Rgba32>(textureData.Alpha, textureData.Width, textureData.Height))
-                    {
-                        alpha = new MemoryStream();
-                        img.Save(alpha, new PngEncoder() { CompressionLevel = 0 });
-                    }
-
-                    streamList.Add(alpha);
-                }
+                    alpha = new TextureModel(textureData.Alpha, SharpDX.DXGI.Format.R8G8B8A8_UNorm, textureData.Width, textureData.Height);
 
                 if (textureData.Emissive != null && textureData.Emissive.Length > 0)
-                {
-                    using (var img = Image.LoadPixelData<Rgba32>(textureData.Emissive, textureData.Width, textureData.Height))
-                    {
-                        if (!isBodyMaterial) 
-                        {
-                            NormalizePixelData(img);
-                        }
-                        emissive = new MemoryStream();
-                        img.Save(emissive, new PngEncoder() { CompressionLevel = 0 });
-                    }
-
-                    streamList.Add(emissive);
-                }
+                    emissive = new TextureModel(textureData.Emissive, SharpDX.DXGI.Format.R8G8B8A8_UNorm, textureData.Width, textureData.Height);
 
                 var material = new PhongMaterial
                 {
@@ -268,15 +223,20 @@ namespace FFXIV_TexTools.ViewModels
         /// Take the square root of every pixels' RGB datapoints to match the behavior of the FF14 engine
         /// </summary>
         /// <param name="img"></param>
-        private static void NormalizePixelData(Image<Rgba32> img)
+        private static Color4[] NormalizePixelData(byte[] img)
         {
-            img.Mutate(c => c.ProcessPixelRowsAsVector4(row =>
+            Color4[] result = new Color4[img.Length / 4];
+            for (int i = 0; i < img.Length - 3; i += 4)
             {
-                for (int x = 0; x < row.Length; x++)
-                {
-                    row[x] = System.Numerics.Vector4.SquareRoot(row[x]);
-                }
-            }));
+                var tmp = Vector4.SquareRoot(new Vector4(
+                    img[i] / 255.0f,
+                    img[i + 1] / 255.0f,
+                    img[i + 2] / 255.0f,
+                    img[i + 3] / 255.0f
+                ));
+                result[i / 4] = new Color4(tmp.X, tmp.Y, tmp.Z, tmp.W);
+            }
+            return result;
         }
 
         /// <summary>
@@ -411,12 +371,6 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         public void ClearModels()
         {
-            foreach (var stream in streamList)
-            {
-                stream.Dispose();
-            }
-
-            streamList.Clear();
             Models.Clear();
         }
 
