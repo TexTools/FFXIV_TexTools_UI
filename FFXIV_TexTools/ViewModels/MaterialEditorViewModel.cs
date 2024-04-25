@@ -29,6 +29,7 @@ using xivModdingFramework.Variants.FileTypes;
 using Constants = xivModdingFramework.Helpers.Constants;
 
 using Index = xivModdingFramework.SqPack.FileTypes.Index;
+using static xivModdingFramework.Materials.DataContainers.ShaderHelpers;
 
 namespace FFXIV_TexTools.ViewModels
 {
@@ -129,24 +130,6 @@ namespace FFXIV_TexTools.ViewModels
                 }
             }
 
-            /*
-            // Debug code for finding unknown Shader Parameters.
-            var unknowns = new List<ShaderParameterStruct>();
-            foreach(var sp in material.ShaderParameterList)
-            {
-                if (!Enum.IsDefined(typeof(MtrlShaderParameterId), sp.ParameterID))
-                {
-                    unknowns.Add(sp);
-                }
-            }
-            if(unknowns.Count > 0)
-            {
-                // Debug line
-                var json = JsonConvert.SerializeObject(unknowns.ToArray());
-            }
-            */
-
-
             // Update to new material name
             switch(_mode)
             {
@@ -167,32 +150,24 @@ namespace FFXIV_TexTools.ViewModels
                     break;
             }
 
-            var shader = _material.GetShaderInfo();
-            var normal = _material.GetMapInfo(XivTexType.Normal);
-            var diffuse = _material.GetMapInfo(XivTexType.Diffuse);
-            var specular = _material.GetMapInfo(XivTexType.Specular);
-            var multi = _material.GetMapInfo(XivTexType.Multi);
-            var reflection = _material.GetMapInfo(XivTexType.Reflection);
+            var normal = _material.Textures.FirstOrDefault( x => x.Usage == XivTexType.Normal);
+            var diffuse = _material.Textures.FirstOrDefault(x => x.Usage == XivTexType.Diffuse);
+            var specular = _material.Textures.FirstOrDefault(x => x.Usage == XivTexType.Specular);
+            var multi = _material.Textures.FirstOrDefault(x => x.Usage == XivTexType.Mask);
+            var reflection = _material.Textures.FirstOrDefault(x => x.Usage == XivTexType.Reflection);
 
             // Show Paths
-            _view.NormalTextBox.Text = normal == null ? "" : normal.Path;
-            _view.SpecularTextBox.Text = specular == null ? "" : specular.Path;
-            _view.SpecularTextBox.Text = multi == null ? _view.SpecularTextBox.Text : multi.Path;
-            _view.DiffuseTextBox.Text = diffuse == null ? "" : diffuse.Path;
-            _view.DiffuseTextBox.Text = reflection == null ? _view.DiffuseTextBox.Text : reflection.Path;
-
-            // Add Other option if needed.
-            if (shader.Shader == MtrlShader.Other)
-            {
-                _view.ShaderSource.Add(new KeyValuePair<MtrlShader, string>(MtrlShader.Other, "Other".L()));
-            }
+            _view.NormalTextBox.Text = normal == null ? "" : normal.TexturePath;
+            _view.SpecularTextBox.Text = specular == null ? "" : specular.TexturePath;
+            _view.SpecularTextBox.Text = multi == null ? _view.SpecularTextBox.Text : multi.TexturePath;
+            _view.DiffuseTextBox.Text = diffuse == null ? "" : diffuse.TexturePath;
+            _view.DiffuseTextBox.Text = reflection == null ? _view.DiffuseTextBox.Text : reflection.TexturePath;
 
             // Show Settings
-            _view.TransparencyComboBox.SelectedValue = shader.TransparencyEnabled;
-            _view.BackfacesComboBox.SelectedValue = shader.RenderBackfaces;
-            _view.ColorsetComboBox.SelectedValue = shader.HasColorset;
-            _view.ShaderComboBox.SelectedValue = shader.Shader;
-            _view.PresetComboBox.SelectedValue = shader.Preset;
+            //_view.TransparencyComboBox.SelectedValue = shader.TransparencyEnabled;
+            //_view.BackfacesComboBox.SelectedValue = shader.RenderBackfaces;
+            _view.ColorsetComboBox.SelectedValue = _material.ColorSetData.Count > 0;
+            _view.ShaderComboBox.SelectedValue = _material.Shader;
 
 
             if(_mode == MaterialEditorMode.NewMulti )
@@ -251,61 +226,11 @@ namespace FFXIV_TexTools.ViewModels
             _view.DiffuseTextBox.Text = SanitizePath(_view.DiffuseTextBox.Text);
             _view.SpecularTextBox.Text = SanitizePath(_view.SpecularTextBox.Text);
 
-            // New Data
-            var newShader = new ShaderInfo() { 
-                Shader = (MtrlShader) _view.ShaderComboBox.SelectedValue,
-                Preset = (MtrlShaderPreset) _view.PresetComboBox.SelectedValue,
-                TransparencyEnabled = (bool) _view.TransparencyComboBox.SelectedValue,
-                RenderBackfaces = (bool) _view.BackfacesComboBox.SelectedValue
-            };
-
-            MapInfo newNormal = null;
-            MapInfo newDiffuse = null;
-            MapInfo newSpecular = null;
-            MapInfo newMulti = null;
-            MapInfo newReflection = null;
-
-            // Don't know what defines the normal's format between the two types.
-            // But setting it to the UseColorset value all the time causes extremely rare crashes
-            // in the Try On menu sometimes.  Possibly GFX card/Driver related?
-            var oldNormal = _material.GetMapInfo(XivTexType.Normal);
-
-            // Normal
-            newNormal = new MapInfo() { Usage = XivTexType.Normal, Format = oldNormal.Format, Path = _view.NormalTextBox.Text };
-
-            // Specular / Multi
-            if (newShader.HasMulti)
-            {
-                newMulti = new MapInfo() { Usage = XivTexType.Multi, Format = MtrlTextureSamplerFormatPresets.NoColorset, Path = _view.SpecularTextBox.Text };
-            }
-            else
-            {
-                newSpecular = new MapInfo() { Usage = XivTexType.Specular, Format = MtrlTextureSamplerFormatPresets.NoColorset, Path = _view.SpecularTextBox.Text };
-            }
-
-            // Diffuse / Reflection
-            if (newShader.HasDiffuse)
-            {
-                newDiffuse = new MapInfo() { Usage = XivTexType.Diffuse, Format = MtrlTextureSamplerFormatPresets.NoColorset, Path = _view.DiffuseTextBox.Text };
-            }
-            else if (newShader.HasReflection)
-            { 
-                newReflection = new MapInfo() { Usage = XivTexType.Reflection, Format = MtrlTextureSamplerFormatPresets.NoColorset, Path = _view.DiffuseTextBox.Text };
-            }
-
             if(_mode == MaterialEditorMode.NewSingle)
             {
                 // This needs to be updated BEFORE setting texture paths.
                 _material.MTRLPath = Regex.Replace(_material.MTRLPath, "_([a-z0-9])\\.mtrl", "_" + _newMaterialIdentifier + ".mtrl");
             }
-
-            _material.SetShaderInfo(newShader); // This should be set BEFORE changing the maps over.
-            _material.SetMapInfo(XivTexType.Normal, newNormal);
-            _material.SetMapInfo(XivTexType.Specular, newSpecular);
-            _material.SetMapInfo(XivTexType.Multi, newMulti);
-            _material.SetMapInfo(XivTexType.Diffuse, newDiffuse);
-            _material.SetMapInfo(XivTexType.Reflection, newReflection);
-
 
             try
             {
@@ -385,11 +310,7 @@ namespace FFXIV_TexTools.ViewModels
             // Get tokenized map info structs.
             // This will let us set them in the new Materials and
             // Detokenize them using the new paths.
-            var mapInfos = _material.GetAllMapInfos(true);
-
-
-            // Shader info likewise will be pumped into each new material.
-            var shaderInfo = _material.GetShaderInfo();
+            //var mapInfos = _material.GetAllMapInfos(true);
 
             // Add new Materials for shared model items.    
             var oldMaterialIdentifier = _material.GetMaterialIdentifier();
@@ -401,7 +322,6 @@ namespace FFXIV_TexTools.ViewModels
 
             var oldVariantString = "/v" + _material.GetVariant().ToString().PadLeft(4, '0') + '/';
             var modifiedVariants = new List<int>();
-
 
             var mtrlReplacementRegex = "_" + oldMaterialIdentifier + ".mtrl";
             var mtrlReplacementRegexResult = "_" + _newMaterialIdentifier + ".mtrl";
@@ -428,7 +348,6 @@ namespace FFXIV_TexTools.ViewModels
                 materialSets.Clear();
                 materialSets.Add(0);
             }
-
 
             // We need to save our non-existent base material once before we can continue.
             if (_mode == MaterialEditorMode.NewRace)
@@ -506,13 +425,13 @@ namespace FFXIV_TexTools.ViewModels
                 }
 
                 // Load the Shader Settings
-                itemXivMtrl.SetShaderInfo(shaderInfo, true);
+                //itemXivMtrl.SetShaderInfo(shaderInfo, true);
 
                 // Loop our tokenized map infos and pump them back in
                 // using the new modified material to detokenize them.
-                foreach (var info in mapInfos)
+                //foreach (var info in mapInfos)
                 {
-                    itemXivMtrl.SetMapInfo(info.Usage, (MapInfo)info.Clone());
+                    //itemXivMtrl.SetMapInfo(info.Usage, (MapInfo)info.Clone());
                 }
 
 

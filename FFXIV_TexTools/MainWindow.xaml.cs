@@ -48,6 +48,7 @@ using xivModdingFramework.General.Enums;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Items.Categories;
 using xivModdingFramework.Items.Interfaces;
+using xivModdingFramework.Materials.DataContainers;
 using xivModdingFramework.Models.FileTypes;
 using xivModdingFramework.Mods;
 using xivModdingFramework.Mods.DataContainers;
@@ -175,6 +176,7 @@ namespace FFXIV_TexTools
         }
         public MainWindow(string[] args)
         {
+            ShaderHelpers.GetShpkFromString("asdf");
             _mainWindow = this;
 
             AutoUpdater.ApplicationExitEvent += AutoUpdater_ApplicationExitEvent;

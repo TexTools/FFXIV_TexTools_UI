@@ -551,7 +551,7 @@ namespace xivModdingFramework.Mods.DataContainers
             }
             else if (_multiRegex.IsMatch(path))
             {
-                return XivTexType.Multi;
+                return XivTexType.Mask;
             }
             else if (_reflectionRegex.IsMatch(path))
             {

@@ -390,7 +390,10 @@ namespace FFXIV_TexTools.Controls
                 pixels[destinationOffset + 0] = HalfToByte(_mtrl.ColorSetData[valueOffset + 2]);
                 pixels[destinationOffset + 1] = HalfToByte(_mtrl.ColorSetData[valueOffset + 1]);
                 pixels[destinationOffset + 2] = HalfToByte(_mtrl.ColorSetData[valueOffset + 0]);
-                pixels[destinationOffset + 3] = HalfToByte(_mtrl.ColorSetData[valueOffset + 3]);
+                //pixels[destinationOffset + 3] = HalfToByte(_mtrl.ColorSetData[valueOffset + 3]);
+
+                // Turn off Alpha, it looks horrible and confusing.
+                pixels[destinationOffset + 3] = 255;
             }
 
             const int expansionSize = 8;
@@ -751,7 +754,7 @@ namespace FFXIV_TexTools.Controls
 
         private void RawAssignColorPixel(int col, string name, ColorPicker picker)
         {
-            if (!RawEditPixel(col, name, false))
+            if (!RawEditPixel(col, name, true))
             {
                 return;
             }

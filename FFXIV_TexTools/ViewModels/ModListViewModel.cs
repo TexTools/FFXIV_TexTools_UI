@@ -769,7 +769,7 @@ namespace FFXIV_TexTools.ViewModels
                                     }
                                     else
                                     {
-                                        texData = await tex.GetTexData(ttp);
+                                        texData = await tex.GetTexData(ttp.Path, ttp.Type);
                                     }
 
                                 }

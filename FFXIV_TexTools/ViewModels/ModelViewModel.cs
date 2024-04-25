@@ -1996,7 +1996,7 @@ namespace FFXIV_TexTools.ViewModels
                     continue;
                 }
 
-                if (mtrlData.Shader.Contains("colorchange"))
+                if (mtrlData.ShaderPackRaw.Contains("colorchange"))
                 {
                     hasColorChangeShader = true;
                 }

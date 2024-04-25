@@ -74,14 +74,36 @@ namespace FFXIV_TexTools.ViewModels
 {
     public class TextureViewModel : INotifyPropertyChanged
     {
+        public class MapComboBoxEntry
+        {
+            public string TexturePath;
+            public XivTexType Usage;
+
+            public MapComboBoxEntry() { }
+            public MapComboBoxEntry(string texturePath, XivTexType type)
+            {
+                TexturePath = texturePath;
+                Usage = type;
+            }
+            public static List<MapComboBoxEntry> FromTextures(List<MtrlTexture> list)
+            {
+                return list.Select(x =>  new MapComboBoxEntry(x.TexturePath, x.Usage)).ToList();
+            }
+
+            public MtrlTexture GetTexture(XivMtrl mtrl)
+            {
+                return mtrl.Textures.FirstOrDefault(x => x.TexturePath == TexturePath);
+            }
+        }
+
         // The actual underlying observeables for the UI boxes.
         private ObservableCollection<KeyValuePair<string, int>> _primaryComboBoxData = new ObservableCollection<KeyValuePair<string, int>>();
         private ObservableCollection<KeyValuePair<string, string>> _materialComboBoxData = new ObservableCollection<KeyValuePair<string, string>>();
-        private ObservableCollection<KeyValuePair<string, MapInfo>> _mapComboBoxData = new ObservableCollection<KeyValuePair<string, MapInfo>>();
+        private ObservableCollection<KeyValuePair<string, MapComboBoxEntry>> _mapComboBoxData = new ObservableCollection<KeyValuePair<string, MapComboBoxEntry>>();
 
         public ObservableCollection<KeyValuePair<string, int>> Races { get { return _primaryComboBoxData; } }
         public ObservableCollection<KeyValuePair<string, string>> Materials { get { return _materialComboBoxData; } }
-        public ObservableCollection<KeyValuePair<string, MapInfo>> Maps { get { return _mapComboBoxData; } }
+        public ObservableCollection<KeyValuePair<string, MapComboBoxEntry>> Maps { get { return _mapComboBoxData; } }
 
         private string _lastCategory = null;
         private int _lastPrimary = -1;
@@ -174,7 +196,7 @@ namespace FFXIV_TexTools.ViewModels
                 _textureView.MaterialComboBox.SelectedIndex = idx;
             }
         }
-        public MapInfo SelectedMap
+        public MapComboBoxEntry SelectedMap
         {
             get
             {
@@ -184,7 +206,7 @@ namespace FFXIV_TexTools.ViewModels
                     return null;
                 }
 
-                return (MapInfo)val;
+                return (MapComboBoxEntry)val;
             }
             set
             {
@@ -197,7 +219,7 @@ namespace FFXIV_TexTools.ViewModels
                 var idx = -1;
                 for (int i = 0; i < _mapComboBoxData.Count; i++)
                 {
-                    if (_mapComboBoxData[i].Value.Path == value.Path)
+                    if (_mapComboBoxData[i].Value.TexturePath == value.TexturePath)
                     {
                         idx = i;
                         break;
@@ -699,10 +721,10 @@ namespace FFXIV_TexTools.ViewModels
 
                 foreach (var path in paths)
                 {
-                    var mi = new MapInfo();
-                    mi.Path = path.Path;
+                    var mi = new MapComboBoxEntry();
+                    mi.TexturePath = path.Path;
                     mi.Usage = XivTexType.Vfx;
-                    _mapComboBoxData.Add(new KeyValuePair<string, MapInfo>("VFX - ".L() + Path.GetFileNameWithoutExtension(mi.Path), mi));
+                    _mapComboBoxData.Add(new KeyValuePair<string, MapComboBoxEntry>("VFX - ".L() + Path.GetFileNameWithoutExtension(mi.TexturePath), mi));
                     items++;
                 }
 
@@ -714,10 +736,10 @@ namespace FFXIV_TexTools.ViewModels
 
                 foreach (var ttp in icons)
                 {
-                    var mi = new MapInfo();
-                    mi.Path = ttp.Path;
+                    var mi = new MapComboBoxEntry();
+                    mi.TexturePath = ttp.Path;
                     mi.Usage = XivTexType.UI;
-                    _mapComboBoxData.Add(new KeyValuePair<string, MapInfo>(ttp.Name.L(), mi));
+                    _mapComboBoxData.Add(new KeyValuePair<string, MapComboBoxEntry>(ttp.Name.L(), mi));
                     items++;
                 }
             }
@@ -750,20 +772,18 @@ namespace FFXIV_TexTools.ViewModels
                     OnLoadingComplete();
                     return;
                 }
-                var maps = _xivMtrl.GetAllMapInfos(false);
-                var shInfo = _xivMtrl.GetShaderInfo();
-
-                if (shInfo.HasColorset && _xivMtrl.ColorSetDataSize > 0)
+                var maps = MapComboBoxEntry.FromTextures(_xivMtrl.Textures);
+                if (_xivMtrl.ColorSetDataSize > 0)
                 {
-                    var cSetMap = new MapInfo();
-                    cSetMap.Path = SelectedMaterial;
+                    var cSetMap = new MapComboBoxEntry();
+                    cSetMap.TexturePath = SelectedMaterial;
                     cSetMap.Usage = XivTexType.ColorSet;
                     maps.Add(cSetMap);
                 }
 
                 foreach (var map in maps)
                 {
-                    _mapComboBoxData.Add(new KeyValuePair<string, MapInfo>(map.Usage.ToString().L() + " - " + Path.GetFileNameWithoutExtension(map.Path), map));
+                    _mapComboBoxData.Add(new KeyValuePair<string, MapComboBoxEntry>(map.Usage.ToString().L() + " - " + Path.GetFileNameWithoutExtension(map.TexturePath), map));
                 }
 
 
@@ -814,13 +834,13 @@ namespace FFXIV_TexTools.ViewModels
                 var paths = await uiItem.GetTexPaths(!HiResChecked, HiResChecked);
                 foreach(var kv in paths)
                 {
-                    var mapInfo = new MapInfo();
+                    var mapInfo = new MapComboBoxEntry();
 
 
-                    mapInfo.Path = kv.Value;
+                    mapInfo.TexturePath = kv.Value;
                     mapInfo.Usage = XivTexType.UI;
 
-                    _mapComboBoxData.Add(new KeyValuePair<string, MapInfo>(kv.Key, mapInfo));
+                    _mapComboBoxData.Add(new KeyValuePair<string, MapComboBoxEntry>(kv.Key, mapInfo));
 
                 }
 
@@ -842,12 +862,12 @@ namespace FFXIV_TexTools.ViewModels
                     _item = paintingItem;
 
                     // There has got to be a function somewhere that does this already, but I couldn't find it.
-                    var mapInfo = new MapInfo();
+                    var mapInfo = new MapComboBoxEntry();
                     var block = paintingItem.ModelInfo.PrimaryID - (paintingItem.ModelInfo.PrimaryID % 1000);
-                    mapInfo.Path = "ui/icon/" + block.ToString().PadLeft(6, '0') + "/" + paintingItem.ModelInfo.PrimaryID.ToString().PadLeft(6, '0') + ".tex";
+                    mapInfo.TexturePath = "ui/icon/" + block.ToString().PadLeft(6, '0') + "/" + paintingItem.ModelInfo.PrimaryID.ToString().PadLeft(6, '0') + ".tex";
                     mapInfo.Usage = XivTexType.UI;
 
-                    _mapComboBoxData.Add(new KeyValuePair<string, MapInfo>(item.Name, mapInfo));
+                    _mapComboBoxData.Add(new KeyValuePair<string, MapComboBoxEntry>(item.Name, mapInfo));
                     SelectedMap = mapInfo;
                 }
                 else if (item.SecondaryCategory == XivStrings.Face_Paint)
@@ -858,13 +878,13 @@ namespace FFXIV_TexTools.ViewModels
 
                     foreach (var path in paths)
                     {
-                        var mapInfo = new MapInfo();
+                        var mapInfo = new MapComboBoxEntry();
 
 
-                        mapInfo.Path = path;
+                        mapInfo.TexturePath = path;
                         mapInfo.Usage = XivTexType.UI;
 
-                        _mapComboBoxData.Add(new KeyValuePair<string, MapInfo>(Path.GetFileNameWithoutExtension(path), mapInfo));
+                        _mapComboBoxData.Add(new KeyValuePair<string, MapComboBoxEntry>(Path.GetFileNameWithoutExtension(path), mapInfo));
 
                     }
 
@@ -875,12 +895,12 @@ namespace FFXIV_TexTools.ViewModels
                     var paths = await _character.GetDecalPaths(Character.XivDecalType.Equipment);
                     foreach (var path in paths)
                     {
-                        var mapInfo = new MapInfo();
+                        var mapInfo = new MapComboBoxEntry();
 
-                        mapInfo.Path = path;
+                        mapInfo.TexturePath = path;
                         mapInfo.Usage = XivTexType.UI;
 
-                        _mapComboBoxData.Add(new KeyValuePair<string, MapInfo>(Path.GetFileNameWithoutExtension(path), mapInfo));
+                        _mapComboBoxData.Add(new KeyValuePair<string, MapComboBoxEntry>(Path.GetFileNameWithoutExtension(path), mapInfo));
                     }
                 }
 
@@ -1017,7 +1037,7 @@ namespace FFXIV_TexTools.ViewModels
                 // Invalid IMC set, cancel.
                 if (item.ModelInfo.ImcSubsetID > entries.Count)
                 {
-                    if (SelectedMap != null && SelectedMap.Path == path)
+                    if (SelectedMap != null && SelectedMap.TexturePath == path)
                     {
                         _textureView.SharedVariantLabel.Visibility = Visibility.Collapsed;
                         _textureView.SharedTextureLabel.Visibility = Visibility.Collapsed;
@@ -1044,7 +1064,7 @@ namespace FFXIV_TexTools.ViewModels
 
                 if (parents == null || parents.Count == 0)
                 {
-                    if (SelectedMap != null && SelectedMap.Path == path)
+                    if (SelectedMap != null && SelectedMap.TexturePath == path)
                     {
                         _textureView.SharedVariantLabel.Content = "";
                         _textureView.SharedVariantLabel.Visibility = Visibility.Collapsed;
@@ -1081,7 +1101,7 @@ namespace FFXIV_TexTools.ViewModels
                     }
                 }
 
-                if (SelectedMap != null && SelectedMap.Path == path)
+                if (SelectedMap != null && SelectedMap.TexturePath == path)
                 {
                     _textureView.SharedVariantLabel.Content = $"Used by {variantSum._()}/{vCount._()} Variants".L();
                     _textureView.SharedVariantLabel.Visibility = Visibility.Visible;
@@ -1092,7 +1112,7 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     var differentFiles = parents.Select(x => Path.GetFileName(x)).ToHashSet();
                     var count = differentFiles.Count - 1;
-                    if (SelectedMap != null && SelectedMap.Path == path)
+                    if (SelectedMap != null && SelectedMap.TexturePath == path)
                     {
                         _textureView.SharedTextureLabel.Content = $"Used by {count._()} Other Materials".L();
                         _textureView.SharedTextureLabel.Visibility = Visibility.Visible;
@@ -1115,7 +1135,7 @@ namespace FFXIV_TexTools.ViewModels
             _textureView.ColorsetEditor.Visibility = Visibility.Collapsed;
             _textureView.StandardTextureDisplay.Visibility = Visibility.Visible;
 
-            if (SelectedMap == null || SelectedMap.Path == null)
+            if (SelectedMap == null || SelectedMap.TexturePath == null)
             {
                 return;
             }
@@ -1125,14 +1145,14 @@ namespace FFXIV_TexTools.ViewModels
             var _modding = new Modding(XivCache.GameInfo.GameDirectory);
 
             // This is intentionally an async/deffered call here.
-            LoadParentFileInformation(SelectedMap.Path);
+            LoadParentFileInformation(SelectedMap.TexturePath);
 
 
             try
             {
                 if (SelectedMap.Usage != XivTexType.ColorSet)
                 {
-                    var texData = await _tex.GetTexData(SelectedMap);
+                    var texData = await _tex.GetTexData(SelectedMap.TexturePath, SelectedMap.Usage);
 
                     var mapBytes = await _tex.GetImageData(texData);
 
@@ -1161,8 +1181,8 @@ namespace FFXIV_TexTools.ViewModels
                 else
                 {
                     // Colorset entry.
-                    PathString = SelectedMap.Path;
-                    _xivMtrl = await _mtrl.GetMtrlData(_item, SelectedMap.Path);
+                    PathString = SelectedMap.TexturePath;
+                    _xivMtrl = await _mtrl.GetMtrlData(_item, SelectedMap.TexturePath);
                     await _textureView.ColorsetEditor.SetMaterial(_xivMtrl);
 
                     _textureView.ColorsetEditor.Visibility = Visibility.Visible;
@@ -1335,13 +1355,13 @@ namespace FFXIV_TexTools.ViewModels
             {
                 DirectoryInfo savePath = new DirectoryInfo(Settings.Default.Save_Directory);
                 XivTex texData;
-                var df = IOUtil.GetDataFileFromPath(SelectedMap.Path);
+                var df = IOUtil.GetDataFileFromPath(SelectedMap.TexturePath);
                 var _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory);
                 var _tex = new Tex(XivCache.GameInfo.GameDirectory);
 
                 var ttp = new TexTypePath
                 {
-                    Path = SelectedMap.Path,
+                    Path = SelectedMap.TexturePath,
                     Type = SelectedMap.Usage,
                     DataFile = df
                 };
@@ -1365,7 +1385,7 @@ namespace FFXIV_TexTools.ViewModels
                 }
                 else
                 {
-                    texData = await _tex.GetTexData(ttp);
+                    texData = await _tex.GetTexData(ttp.Path, ttp.Type);
                 }
 
                 if (_uiItem != null)
@@ -1488,7 +1508,7 @@ namespace FFXIV_TexTools.ViewModels
         {
             if (SelectedMap != null && SelectedMap != null) 
             { 
-                var path = SelectedMap.Path;
+                var path = SelectedMap.TexturePath;
                 var view = new DependencyInfoView(path);
                 view.ShowDialog();
             }
@@ -1543,7 +1563,7 @@ namespace FFXIV_TexTools.ViewModels
             if (format == TextureFormats.PNG)
                 extension = "png";
 
-            DirectoryInfo fullPath = new DirectoryInfo($"{path}\\{Path.GetFileNameWithoutExtension(SelectedMap.Path)}.{extension}");
+            DirectoryInfo fullPath = new DirectoryInfo($"{path}\\{Path.GetFileNameWithoutExtension(SelectedMap.TexturePath)}.{extension}");
             return fullPath;
         }
 
@@ -1601,7 +1621,7 @@ namespace FFXIV_TexTools.ViewModels
                 if (SelectedMap.Usage != XivTexType.ColorSet)
                 {
                     
-                    var texData = await _tex.GetTexData(SelectedMap);
+                    var texData = await _tex.GetTexData(SelectedMap.TexturePath, SelectedMap.Usage);
 
                     try
                     {
@@ -1654,7 +1674,7 @@ namespace FFXIV_TexTools.ViewModels
             {
                 if (SelectedMap.Usage != XivTexType.ColorSet)
                 {
-                    var texData = await _tex.GetTexData(SelectedMap);
+                    var texData = await _tex.GetTexData(SelectedMap.TexturePath, SelectedMap.Usage);
 
                     try
                     {
@@ -1727,11 +1747,11 @@ namespace FFXIV_TexTools.ViewModels
             {
                 if (ModToggleText.Equals(UIStrings.Enable))
                 {
-                    await modlist.ToggleModStatus(SelectedMap.Path, true);
+                    await modlist.ToggleModStatus(SelectedMap.TexturePath, true);
                 }
                 else if (ModToggleText.Equals(UIStrings.Disable))
                 {
-                    await modlist.ToggleModStatus(SelectedMap.Path, false);
+                    await modlist.ToggleModStatus(SelectedMap.TexturePath, false);
                 }
             }
             catch (Exception ex)
@@ -2296,7 +2316,7 @@ namespace FFXIV_TexTools.ViewModels
                 return false;
             }
 
-            var path = SelectedMap.Path;
+            var path = SelectedMap.TexturePath;
             var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
             var index = new Index(gameDirectory);
 
