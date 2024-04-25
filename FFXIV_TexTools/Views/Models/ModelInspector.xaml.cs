@@ -184,12 +184,12 @@ namespace FFXIV_TexTools.Views.Models
                 otherList.Add($"Bone Index (Part)".L());
             }
 
-            if (_xivMdl.BoundBox != null)
+            if (_xivMdl.BoundingBoxes != null)
             {
                 otherList.Add("Bounding Box".L());
             }
 
-            if (_xivMdl.BoneTransformDataList.Count > 0)
+            if (_xivMdl.BoneBoundingBoxes.Count > 0)
             {
                 otherList.Add("Transforms".L());
             }
@@ -327,36 +327,6 @@ namespace FFXIV_TexTools.Views.Models
                 {
                     AddText(textBox, $"{i}:\t", _textColor, false);
                     AddText(textBox, $"{boneIndex.BoneIndices[i]}\n\n", _textColor, true);
-                }
-            }
-
-            if (selectedItem.Equals("Bounding Box".L()))
-            {
-                var boundBox = _xivMdl.BoundBox;
-
-                AddText(textBox, "Vector Count:\t".L(), _textColor, false);
-                AddText(textBox, $"{boundBox.PointList.Count}\n\n", _textColor, true);
-
-                for (var i = 0; i < boundBox.PointList.Count; i++)
-                {
-                    AddText(textBox, $"{i}:\t", _textColor, false);
-                    AddText(textBox, $"{boundBox.PointList[i]}\n\n", _textColor, true);
-                }
-            }
-
-            if (selectedItem.Equals("Transforms".L()))
-            {
-                var transforms = _xivMdl.BoneTransformDataList;
-
-                AddText(textBox, "Transform Count:\t".L(), _textColor, false);
-                AddText(textBox, $"{transforms.Count}\n\n", _textColor, true);
-
-                for (var i = 0; i < transforms.Count; i++)
-                {
-                    AddText(textBox, $"{i} T0:\t", _textColor, false);
-                    AddText(textBox, $"{transforms[i].Transform0}\n", _textColor, true);
-                    AddText(textBox, $"{i} T1:\t", _textColor, false);
-                    AddText(textBox, $"{transforms[i].Transform1}\n\n", _textColor, true);
                 }
             }
         }
