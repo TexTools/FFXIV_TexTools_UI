@@ -74,10 +74,10 @@ namespace FFXIV_TexTools.ViewModels
                 return; 
             }
 
-            var values = _material.ShaderParameterList.Select( x=> { 
-                var ret = x.ParameterID.ToString().L() + " { "; 
+            var values = _material.ShaderConstants.Select( x=> { 
+                var ret = x.ConstantId.ToString().L() + " { "; 
 
-                foreach(var val in x.Args)
+                foreach(var val in x.Values)
                 {
                     ret += val.ToString("0.000") + ", ";
                 }
@@ -276,21 +276,21 @@ namespace FFXIV_TexTools.ViewModels
             // Specular / Multi
             if (newShader.HasMulti)
             {
-                newMulti = new MapInfo() { Usage = XivTexType.Multi, Format = MtrlTextureDescriptorFormat.NoColorset, Path = _view.SpecularTextBox.Text };
+                newMulti = new MapInfo() { Usage = XivTexType.Multi, Format = MtrlTextureSamplerFormatPresets.NoColorset, Path = _view.SpecularTextBox.Text };
             }
             else
             {
-                newSpecular = new MapInfo() { Usage = XivTexType.Specular, Format = MtrlTextureDescriptorFormat.NoColorset, Path = _view.SpecularTextBox.Text };
+                newSpecular = new MapInfo() { Usage = XivTexType.Specular, Format = MtrlTextureSamplerFormatPresets.NoColorset, Path = _view.SpecularTextBox.Text };
             }
 
             // Diffuse / Reflection
             if (newShader.HasDiffuse)
             {
-                newDiffuse = new MapInfo() { Usage = XivTexType.Diffuse, Format = MtrlTextureDescriptorFormat.NoColorset, Path = _view.DiffuseTextBox.Text };
+                newDiffuse = new MapInfo() { Usage = XivTexType.Diffuse, Format = MtrlTextureSamplerFormatPresets.NoColorset, Path = _view.DiffuseTextBox.Text };
             }
             else if (newShader.HasReflection)
             { 
-                newReflection = new MapInfo() { Usage = XivTexType.Reflection, Format = MtrlTextureDescriptorFormat.NoColorset, Path = _view.DiffuseTextBox.Text };
+                newReflection = new MapInfo() { Usage = XivTexType.Reflection, Format = MtrlTextureSamplerFormatPresets.NoColorset, Path = _view.DiffuseTextBox.Text };
             }
 
             if(_mode == MaterialEditorMode.NewSingle)
