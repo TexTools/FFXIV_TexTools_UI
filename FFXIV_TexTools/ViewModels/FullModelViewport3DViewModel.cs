@@ -24,9 +24,6 @@ using HelixToolkit.Wpf.SharpDX.Model.Scene;
 using Newtonsoft.Json;
 using SharpDX;
 using SharpDX.Direct3D11;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Formats.Png;
-using SixLabors.ImageSharp.PixelFormats;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -115,62 +112,22 @@ namespace FFXIV_TexTools.ViewModels
 
                 var textureData = textureDataDictionary[model.GetMaterialIndex(i)];
 
-                Stream diffuse = null, specular = null, normal = null, alpha = null, emissive = null;
+                TextureModel diffuse = null, specular = null, normal = null, alpha = null, emissive = null;
 
                 if (textureData.Diffuse != null && textureData.Diffuse.Length > 0)
-                {
-                    using (var img = Image.LoadPixelData<Rgba32>(textureData.Diffuse, textureData.Width, textureData.Height))
-                    {
-                        diffuse = new MemoryStream();
-                        img.Save(diffuse, new PngEncoder());
-                    }
-
-                    streamList.Add(diffuse);
-                }
+                    diffuse = new TextureModel(textureData.Diffuse, SharpDX.DXGI.Format.R8G8B8A8_UNorm, textureData.Width, textureData.Height);
 
                 if (textureData.Specular != null && textureData.Specular.Length > 0)
-                {
-                    using (var img = Image.LoadPixelData<Rgba32>(textureData.Specular, textureData.Width, textureData.Height))
-                    {
-                        specular = new MemoryStream();
-                        img.Save(specular, new PngEncoder());
-                    }
-
-                    streamList.Add(specular);
-                }
+                    specular = new TextureModel(textureData.Specular, SharpDX.DXGI.Format.R8G8B8A8_UNorm, textureData.Width, textureData.Height);
 
                 if (textureData.Normal != null && textureData.Normal.Length > 0)
-                {
-                    using (var img = Image.LoadPixelData<Rgba32>(textureData.Normal, textureData.Width, textureData.Height))
-                    {
-                        normal = new MemoryStream();
-                        img.Save(normal, new PngEncoder());
-                    }
-
-                    streamList.Add(normal);
-                }
+                    normal = new TextureModel(textureData.Normal, SharpDX.DXGI.Format.R8G8B8A8_UNorm, textureData.Width, textureData.Height);
 
                 if (textureData.Alpha != null && textureData.Alpha.Length > 0)
-                {
-                    using (var img = Image.LoadPixelData<Rgba32>(textureData.Alpha, textureData.Width, textureData.Height))
-                    {
-                        alpha = new MemoryStream();
-                        img.Save(alpha, new PngEncoder());
-                    }
-
-                    streamList.Add(alpha);
-                }
+                    alpha = new TextureModel(textureData.Alpha, SharpDX.DXGI.Format.R8G8B8A8_UNorm, textureData.Width, textureData.Height);
 
                 if (textureData.Emissive != null && textureData.Emissive.Length > 0)
-                {
-                    using (var img = Image.LoadPixelData<Rgba32>(textureData.Emissive, textureData.Width, textureData.Height))
-                    {
-                        emissive = new MemoryStream();
-                        img.Save(emissive, new PngEncoder());
-                    }
-
-                    streamList.Add(emissive);
-                }
+                    emissive = new TextureModel(textureData.Emissive, SharpDX.DXGI.Format.R8G8B8A8_UNorm, textureData.Width, textureData.Height);
 
                 var material = new PhongMaterial
                 {

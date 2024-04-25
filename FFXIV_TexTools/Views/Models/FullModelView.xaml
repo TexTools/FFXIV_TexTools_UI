@@ -46,7 +46,7 @@
                 EffectsManager="{Binding EffectsManager}"
                 DataContext="{Binding ViewPortVM}"
                 FXAALevel="Medium" MSAA="Two" ZoomExtentsWhenLoaded="True" 
-                EnableOITRendering="True" OITWeightMode="Linear0" ZoomDistanceLimitNear="0.0001">
+                OITRenderMode="DepthPeeling" OITWeightMode="Linear0" ZoomDistanceLimitNear="0.0001">
                     <hx:Viewport3DX.InputBindings>
                         <KeyBinding Key="B" Command="hx:ViewportCommands.BackView" />
                         <KeyBinding Key="F" Command="hx:ViewportCommands.FrontView" />

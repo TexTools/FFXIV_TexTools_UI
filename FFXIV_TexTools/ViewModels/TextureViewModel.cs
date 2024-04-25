@@ -2205,6 +2205,28 @@ namespace FFXIV_TexTools.ViewModels
             }
         }
 
+        private static void SwapRedBlue(byte[] imageData)
+        {
+            for (int i = 0; i < imageData.Length; i += 4)
+            {
+                byte x = imageData[i];
+                byte y = imageData[i + 2];
+                imageData[i] = y;
+                imageData[i + 2] = x;
+            }
+        }
+
+        private static void MultiplyAlpha(byte[] imageData)
+        {
+            for (int i = 0; i < imageData.Length; i += 4)
+            {
+                byte a = imageData[i + 3];
+                imageData[i] = (byte)(imageData[i] * a / 256);
+                imageData[i + 1] = (byte)(imageData[i + 1] * a / 256);
+                imageData[i + 2] = (byte)(imageData[i + 2] * a / 256);
+            }
+        }
+
         /// <summary>
         /// Sets the color channel filter on currently displayed image based on selected color checkboxes.
         /// </summary>
@@ -2218,55 +2240,19 @@ namespace FFXIV_TexTools.ViewModels
             _imageEffect.Channel = new System.Windows.Media.Media3D.Point4D(r, g, b, a);
             NotifyPropertyChanged(nameof(ImageEffect));
 
-            IImageEncoder imageEncoder;
+            var bmpFormat = _mapData.IsColorSet ? PixelFormats.Rgba128Float : PixelFormats.Pbgra32;
+            var mapBytes = _mapData.MapBytes;
 
-            if (AlphaChecked)
+            if (bmpFormat == PixelFormats.Pbgra32)
             {
-                imageEncoder = new PngEncoder();
+                mapBytes = (byte[])mapBytes.Clone();
+                SwapRedBlue(mapBytes);
+
+                if (AlphaChecked)
+                    MultiplyAlpha(mapBytes);
             }
-            else
-            {
-                imageEncoder = new BmpEncoder();
-            }
 
-            if (!_mapData.IsColorSet)
-            {
-                using (var img = Image.LoadPixelData<Rgba32>(_mapData.MapBytes, _mapData.Width, _mapData.Height))
-                {
-                    using (var ms = new MemoryStream())
-                    {
-                        img.Save(ms, imageEncoder);
-
-                        var bmp = new BitmapImage();
-                        bmp.BeginInit();
-                        bmp.StreamSource = ms;
-                        bmp.CacheOption = BitmapCacheOption.OnLoad;
-                        bmp.EndInit();
-                        bmp.Freeze();
-
-                        ImageDisplay = bmp;
-                    }
-                }
-            }
-            else
-            {
-                using (var img = Image.LoadPixelData<RgbaVector>(_mapData.MapBytes, _mapData.Width, _mapData.Height))
-                {
-                    using (var ms = new MemoryStream())
-                    {
-                        img.Save(ms, imageEncoder);
-
-                        var bmp = new BitmapImage();
-                        bmp.BeginInit();
-                        bmp.StreamSource = ms;
-                        bmp.CacheOption = BitmapCacheOption.OnLoad;
-                        bmp.EndInit();
-                        bmp.Freeze();
-
-                        ImageDisplay = bmp;
-                    }
-                }
-            }
+            ImageDisplay = BitmapSource.Create(_mapData.Width, _mapData.Height, 96.0, 96.0, bmpFormat, null, mapBytes, _mapData.Width * bmpFormat.BitsPerPixel / 8);
         }
         #endregion
 
