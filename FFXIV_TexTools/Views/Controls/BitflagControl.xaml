@@ -1,0 +1,32 @@
+﻿<UserControl x:Class="FFXIV_TexTools.Views.Controls.BitflagControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:FFXIV_TexTools.Views.Controls"
+             mc:Ignorable="d" 
+             d:DesignHeight="400" d:DesignWidth="200">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+        </Grid.RowDefinitions>
+        <CheckBox x:Name="Checkbox0" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,5,10,5" Content="Bit 0" />
+        <CheckBox x:Name="Checkbox1" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,5,10,5" Content="Bit 1" />
+        <CheckBox x:Name="Checkbox2" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,5,10,5" Content="Bit 2" />
+        <CheckBox x:Name="Checkbox3" Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,5,10,5" Content="Bit 3" />
+        <CheckBox x:Name="Checkbox4" Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,5,10,5" Content="Bit 4" />
+        <CheckBox x:Name="Checkbox5" Grid.Row="5" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,5,10,5" Content="Bit 5" />
+        <CheckBox x:Name="Checkbox6" Grid.Row="6" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,5,10,5" Content="Bit 6" />
+        <CheckBox x:Name="Checkbox7" Grid.Row="7" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,5,10,5" Content="Bit 7" />
+    </Grid>
+</UserControl>

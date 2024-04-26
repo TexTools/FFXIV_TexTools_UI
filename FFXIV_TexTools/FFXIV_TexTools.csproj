@@ -196,4 +196,7 @@ move $(TargetDir)*.dll $(TargetDir)lib</PostBuildEvent>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Views\MaterialEditor\" />
+  </ItemGroup>
 </Project>

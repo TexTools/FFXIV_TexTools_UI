@@ -10,56 +10,85 @@
         mc:Ignorable="d"
         xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
         resx:Localization.Enabled="True"                  
-        Title="{Binding Source={x:Static resx:UIStrings.Material_Editor}}" Height="451.576" IsMinButtonEnabled="False" IsMaxRestoreButtonEnabled="False" WindowStartupLocation="CenterOwner" FontSize="14" Width="766.682">
+        Title="{Binding Source={x:Static resx:UIStrings.Material_Editor}}" Height="600" IsMinButtonEnabled="False" IsMaxRestoreButtonEnabled="False" WindowStartupLocation="CenterOwner" FontSize="14" Width="800"
+                 MinWidth="800" MinHeight="600">
+    <mah:MetroWindow.Resources>
+        <DataTemplate x:Key="MtrlTextureTemplate">
+            <Border Name="border" BorderBrush="Gray" BorderThickness="1"
+          Padding="5" Margin="5" Height="90">
+                <Grid Height="80">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="40"/>
+                        <RowDefinition Height="40"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition Width="1*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Texture Path:" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Path=TexturePath}" Grid.ColumnSpan="2" VerticalAlignment="Center" Margin="10,0,10,0" 
+                             TextChanged="TexturePathBox_TextChanged"/>
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Estimated Usage:" VerticalAlignment="Center" Margin="10,0,10,0" HorizontalAlignment="Right"/>
+                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Path=Sampler.SamplerId}" VerticalAlignment="Center"  Margin="10,0,10,0"/>
+
+                    <Button Grid.Row="1" Grid.Column="1" Content="Edit Usage" VerticalAlignment="Center" Margin="10,0,170,0" HorizontalAlignment="Right" Width="150" Click="EditUsage_Click"/>
+                    <Button Grid.Row="1" Grid.Column="1" Content="Remove Texture" VerticalAlignment="Center" Margin="10,0,10,0" HorizontalAlignment="Right" Width="150" Click="RemoveTexture_Click"/>
+                </Grid>
+            </Border>
+        </DataTemplate>
+    </mah:MetroWindow.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="113*"/>
-            <ColumnDefinition Width="209*"/>
-            <ColumnDefinition Width="82*"/>
-            <ColumnDefinition Width="355*"/>
+            <ColumnDefinition Width="340"/>
+            <ColumnDefinition MinWidth="220"/>
+            <ColumnDefinition Width="220"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="50*"/>
-            <RowDefinition Height="50*"/>
-            <RowDefinition Height="50*"/>
-            <RowDefinition Height="50*"/>
-            <RowDefinition Height="50*"/>
-            <RowDefinition Height="50*"/>
-            <RowDefinition Height="50*"/>
-            <RowDefinition Height="50*"/>
-            <RowDefinition Height="50*"/>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="40"/>
         </Grid.RowDefinitions>
-        <ComboBox x:Name="ShaderComboBox" Margin="10,13,10,0" VerticalAlignment="Top" Height="26" Grid.Column="1" Grid.Row="1" SelectionChanged="ShaderComboBox_SelectionChanged" />
-        <Label Content="Normal:" Margin="10,14,10,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14" Height="29" Grid.Row="5" RenderTransformOrigin="0.164,0.793" HorizontalContentAlignment="Right"/>
-        <Label x:Name="SpecularLabel" Content="Specular:" Margin="10,13,10,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14" Height="29" Grid.Row="6" RenderTransformOrigin="0.164,0.793" HorizontalContentAlignment="Right"/>
-        <Label x:Name="DiffuseLabel" Content="Diffuse:" Margin="10,13,10,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14" Height="29" Grid.Row="7" RenderTransformOrigin="0.164,0.793" HorizontalContentAlignment="Right"/>
-        <Label Content="Transparency:" Margin="0,10,10,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14" Height="29" Grid.Row="2" RenderTransformOrigin="0.164,0.793" HorizontalAlignment="Right" Width="100" HorizontalContentAlignment="Right"/>
-        <ComboBox x:Name="TransparencyComboBox" Margin="10,13,10,0" VerticalAlignment="Top" Height="26" Grid.Column="1" Grid.Row="2" />
-        <Button x:Name="SaveButton" Content="Save" Grid.Column="3" Margin="0,0,10,10" Grid.Row="8" FontSize="12" HorizontalAlignment="Right" Width="150" Height="30" VerticalAlignment="Bottom"/>
-        <Label Content="Shader:" Margin="0,10,10,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14" Height="29" RenderTransformOrigin="0.164,0.793" HorizontalAlignment="Right" Width="63" Grid.Row="1" HorizontalContentAlignment="Right"/>
-        <TextBox x:Name="NormalTextBox" Grid.Column="1" Height="26" Margin="10,17,10,0" TextWrapping="Wrap" Text="Content" VerticalAlignment="Top" RenderTransformOrigin="0.802,0.545" FontWeight="Bold" Grid.Row="5" Grid.ColumnSpan="3"/>
-        <TextBox x:Name="SpecularTextBox" Grid.Column="1" Height="26" Margin="10,16,10,0" TextWrapping="Wrap" Text="Content" VerticalAlignment="Top" RenderTransformOrigin="0.802,0.545" FontWeight="Bold" Grid.Row="6" Grid.ColumnSpan="3"/>
-        <TextBox x:Name="DiffuseTextBox" Grid.Column="1" Height="26" Margin="10,16,10,0" TextWrapping="Wrap" Text="Content" VerticalAlignment="Top" RenderTransformOrigin="0.802,0.545" FontWeight="Bold" Grid.Row="7" Grid.ColumnSpan="3"/>
-        <Label Margin="0" Grid.ColumnSpan="4" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="14" FontWeight="Bold" FontStyle="Italic">
-            <TextBlock x:Name="MaterialPathLabel"  Text="Material Path" TextAlignment="Right" FontWeight="Bold" FontSize="14" FontStyle="Italic" />
-        </Label>
-        <Button x:Name="CancelButton" Content="Cancel" Margin="10,0,0,10" Grid.Row="8" FontSize="12" Click="CancelButton_Click" HorizontalAlignment="Left" Width="150" Height="30" VerticalAlignment="Bottom" Grid.ColumnSpan="2" Cursor="" RenderTransformOrigin="0.415,1.067"/>
-        <Label Content="Textures" Margin="0" Grid.Row="4" HorizontalContentAlignment="Center" VerticalContentAlignment="Bottom" Cursor="Arrow" Grid.ColumnSpan="4" FontWeight="Bold" FontStyle="Italic"/>
+        <TextBox x:Name="MaterialPathTextBox" IsReadOnly="True" VerticalAlignment="Center" Grid.Column="0" Margin="10,0,10,0" Grid.ColumnSpan="2"  Height="26" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="14" FontWeight="Bold" FontStyle="Italic"/>
 
-        <Button x:Name="NewSharedButton" Content="Use Shared Textures" HorizontalAlignment="Left" Margin="10,16,0,0" VerticalAlignment="Top" Width="137" Height="27" Grid.Row="4" Grid.ColumnSpan="2" Click="NewSharedButton_Click"/>
-        <Button x:Name="NewUniqueButton" Content="USe Unique Textures" HorizontalAlignment="Left" Margin="160,16,0,0" VerticalAlignment="Top" Width="137" Height="27" Grid.Row="4" Grid.ColumnSpan="2" Click="NewUniqueButton_Click"/>
+        <Label Content="Shader:" Margin="41,0,0,0" VerticalAlignment="Center" FontWeight="Bold" FontSize="14" Height="28" HorizontalAlignment="Left" Width="63" Grid.Row="1" HorizontalContentAlignment="Right"/>
+        <ComboBox x:Name="ShaderComboBox" Margin="124,0,10,0" VerticalAlignment="Center" Height="26" Grid.Row="1" SelectionChanged="ShaderComboBox_SelectionChanged" />
 
-        <Button Content="Help" Grid.Column="3" HorizontalAlignment="Left" Margin="243,16,0,0" Grid.Row="4" VerticalAlignment="Top" Width="102" Click="HelpButton_Click" Height="27"/>
-        <Label Content="Colorset:" Margin="0,10,10,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14" Height="29" RenderTransformOrigin="0.164,0.793" HorizontalAlignment="Right" Width="86" Grid.Row="2" HorizontalContentAlignment="Right" Grid.Column="1" Grid.ColumnSpan="2"/>
-        <ComboBox x:Name="ColorsetComboBox" Margin="10,13,136,0" VerticalAlignment="Top" Height="26" Grid.Column="3" Grid.Row="2" />
+        <Button x:Name="CopyMaterialButton" Content="Copy Material" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Center" Width="100" Grid.Column="2" Click="CopyMaterialButton_Click" Height="28"/>
+        <Button x:Name="PasteMaterialButton" Content="Paste Material" HorizontalAlignment="Left"  Margin="110,0,0,0" VerticalAlignment="Center" Width="100" Grid.Column="2" Click="PasteMaterialButton_Click" Height="28"/>
 
-        <Button x:Name="RawValuesButton"  Content="View Raw Values" Grid.Row="3" Grid.Column="3" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" Width="209"></Button>
+        <Button x:Name="SavePresetButton" Content="Save Preset" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Center" Width="100" Grid.Column="2" Click="SavePresetButton_Click" Height="28" Grid.Row="1"/>
+        <Button x:Name="LoadPresetButton" Content="Load Preset" HorizontalAlignment="Left" Margin="110,0,0,0" VerticalAlignment="Center" Width="100" Grid.Column="2" Click="LoadPresetButton_Click" Height="28" Grid.Row="1"/>
 
-        <Button x:Name="CopyMaterialButton" Content="Copy Material" HorizontalAlignment="Left" Margin="243,12,0,0" VerticalAlignment="Top" Width="102" Grid.Column="3" Grid.Row="1" Click="CopyMaterialButton_Click" Height="27"/>
-        <Button x:Name="PasteMaterialButton" Content="Paste Material" HorizontalAlignment="Left" Margin="243,12,0,0" Grid.Row="2" VerticalAlignment="Top" Width="102" Grid.Column="3" Click="PasteMaterialButton_Click" Height="27"/>
-        <Button x:Name="DisableButton" Content="Disable/Delete" Margin="52,0,0,10" Grid.Row="8" FontSize="12" HorizontalAlignment="Left" Width="150" Height="30" VerticalAlignment="Bottom" Click="DisableButton_Click" Grid.Column="1"/>
-        <Label x:Name="SaveStatusLabel" Content="" Grid.Column="2" HorizontalAlignment="Left" Margin="29,7,0,0" Grid.Row="8" VerticalAlignment="Top" Grid.ColumnSpan="2" Width="243" HorizontalContentAlignment="Right" FontStyle="Italic" Height="29"/>
-        <Label Content="Backfaces:" Margin="0,10,10,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14" Height="29" Grid.Row="3" RenderTransformOrigin="0.164,0.793" HorizontalAlignment="Right" Width="100" HorizontalContentAlignment="Right"/>
-        <ComboBox x:Name="BackfacesComboBox" Margin="10,13,10,0" VerticalAlignment="Top" Height="26" Grid.Column="1" Grid.Row="3" />
+        
+        <Button x:Name="EditShaderFlagsButton" Content="Edit Material Flags" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center" Width="150" Height="28" Grid.Row="2" Grid.ColumnSpan="2" Click="EditShaderFlags_Click"/>
+        <Button x:Name="EditShaderKeysButton" Content="Edit Shader Keys" HorizontalAlignment="Left" Margin="170,0,0,0" VerticalAlignment="Center" Width="150" Height="28" Grid.Row="2" Grid.ColumnSpan="2" Click="EditShaderKeys_Click"/>
+        <Button x:Name="EditShaderConstantsButton" Content="Edit Shader Constants" HorizontalAlignment="Left" Margin="330,0,0,0" VerticalAlignment="Center" Width="150" Height="28" Grid.Row="2" Grid.ColumnSpan="2" Click="EditShaderConstants_Click"/>
+
+        <Separator Grid.Row="3" Grid.ColumnSpan="3" VerticalAlignment="Top" Margin="0,5,0,0"></Separator>
+        
+        
+        <Label Content="Textures" Grid.Row="3" HorizontalContentAlignment="Center" VerticalContentAlignment="Top" Cursor="Arrow" Grid.ColumnSpan="3" FontWeight="Bold" FontStyle="Italic" Margin="0,10,0,0" Grid.RowSpan="1"/>
+
+        <Button Content="Add Texture" Grid.Row="4" Grid.Column="2" HorizontalAlignment="Right" Margin="0,0,10,0" VerticalAlignment="Center" Width="150" Click="AddTexture_Click" Height="27" Grid.RowSpan="1"/>
+        <Button Content="Help" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" HorizontalAlignment="Right" Margin="0,0,170,0" VerticalAlignment="Center" Width="150" Click="HelpButton_Click" Height="27" Grid.RowSpan="1"/>
+
+        <Button x:Name="NewSharedButton" Content="Make Textures Shared" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center" Width="150" Height="28" Grid.Row="4" Click="NewSharedButton_Click"/>
+        <Button x:Name="NewUniqueButton" Content="Make Textures Unique" HorizontalAlignment="Left" Margin="170,0,0,0" VerticalAlignment="Center" Width="150" Height="28" Grid.Row="4" Click="NewUniqueButton_Click"/>
+
+        <Button x:Name="SaveButton" Content="Save" Grid.Column="2" Margin="0,0,10,0" Grid.Row="6" FontSize="12" HorizontalAlignment="Right" Width="150" Height="30" VerticalAlignment="Center"/>
+        <Label x:Name="SaveStatusLabel" Content="" Grid.Column="1" HorizontalAlignment="Right" Margin="0,0,170,0" Grid.Row="6" VerticalAlignment="Center" Grid.ColumnSpan="2" Width="243" HorizontalContentAlignment="Right" FontStyle="Italic" Height="29"/>
+        <Button x:Name="CancelButton" Content="Cancel" Margin="10,0,0,0" Grid.Row="6" FontSize="12" Click="CancelButton_Click" HorizontalAlignment="Left" Width="150" Height="30" VerticalAlignment="Center" Cursor="" RenderTransformOrigin="0.415,1.067"/>
+        <Button x:Name="DisableButton" Content="Disable/Delete" Margin="175,0,0,0" Grid.Row="6" FontSize="12" HorizontalAlignment="Left" Width="150" Height="30" VerticalAlignment="Center" Click="DisableButton_Click"/>
+
+
+        <ListBox x:Name="TexturesList" Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="3" Margin="10"
+                    ItemTemplate="{StaticResource MtrlTextureTemplate}">
+        </ListBox>
+
     </Grid>
 </mah:MetroWindow>

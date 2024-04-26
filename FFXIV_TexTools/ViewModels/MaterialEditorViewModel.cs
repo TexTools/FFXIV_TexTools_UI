@@ -30,6 +30,8 @@ using Constants = xivModdingFramework.Helpers.Constants;
 
 using Index = xivModdingFramework.SqPack.FileTypes.Index;
 using static xivModdingFramework.Materials.DataContainers.ShaderHelpers;
+using System.Globalization;
+using System.Windows.Data;
 
 namespace FFXIV_TexTools.ViewModels
 {
@@ -65,33 +67,6 @@ namespace FFXIV_TexTools.ViewModels
         public MaterialEditorViewModel(MaterialEditorView view)
         {
             _view = view;
-            _view.RawValuesButton.Click += RawValuesButton_Click;
-        }
-
-        private void RawValuesButton_Click(object sender, RoutedEventArgs e)
-        {
-            if(_material == null)
-            {
-                return; 
-            }
-
-            var values = _material.ShaderConstants.Select( x=> { 
-                var ret = x.ConstantId.ToString().L() + " { "; 
-
-                foreach(var val in x.Values)
-                {
-                    ret += val.ToString("0.000") + ", ";
-                }
-
-                ret = ret.Substring(0, ret.Length - 2);
-                ret += " }";
-
-                return ret;
-            }).ToList();
-
-            var wind = new AffectedFilesView(values, "Raw Shader Parameters") { Owner = _view };
-            wind.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-            wind.Show();
         }
 
         public async Task<bool> SetMaterial(XivMtrl material, IItemModel item, MaterialEditorMode mode)
@@ -134,19 +109,19 @@ namespace FFXIV_TexTools.ViewModels
             switch(_mode)
             {
                 case MaterialEditorMode.EditSingle:
-                    _view.MaterialPathLabel.Text = _material.MTRLPath;
+                    _view.MaterialPathTextBox.Text = _material.MTRLPath;
                     break;
                 case MaterialEditorMode.EditMulti:
-                    _view.MaterialPathLabel.Text = "Editing Multiple Materials: Material ".L() + _material.GetMaterialIdentifier();
+                    _view.MaterialPathTextBox.Text = "Editing Multiple Materials: Material ".L() + _material.GetMaterialIdentifier();
                     break;
                 case MaterialEditorMode.NewSingle:
-                    _view.MaterialPathLabel.Text = "New Material".L();
+                    _view.MaterialPathTextBox.Text = "New Material".L();
                     break;
                 case MaterialEditorMode.NewMulti:
-                    _view.MaterialPathLabel.Text = "New Materials".L();
+                    _view.MaterialPathTextBox.Text = "New Materials".L();
                     break;
                 case MaterialEditorMode.NewRace:
-                    _view.MaterialPathLabel.Text = "New Racial Material".L();
+                    _view.MaterialPathTextBox.Text = "New Racial Material".L();
                     break;
             }
 
@@ -156,17 +131,10 @@ namespace FFXIV_TexTools.ViewModels
             var multi = _material.Textures.FirstOrDefault(x => x.Usage == XivTexType.Mask);
             var reflection = _material.Textures.FirstOrDefault(x => x.Usage == XivTexType.Reflection);
 
-            // Show Paths
-            _view.NormalTextBox.Text = normal == null ? "" : normal.TexturePath;
-            _view.SpecularTextBox.Text = specular == null ? "" : specular.TexturePath;
-            _view.SpecularTextBox.Text = multi == null ? _view.SpecularTextBox.Text : multi.TexturePath;
-            _view.DiffuseTextBox.Text = diffuse == null ? "" : diffuse.TexturePath;
-            _view.DiffuseTextBox.Text = reflection == null ? _view.DiffuseTextBox.Text : reflection.TexturePath;
-
             // Show Settings
             //_view.TransparencyComboBox.SelectedValue = shader.TransparencyEnabled;
             //_view.BackfacesComboBox.SelectedValue = shader.RenderBackfaces;
-            _view.ColorsetComboBox.SelectedValue = _material.ColorSetData.Count > 0;
+            //_view.ColorsetComboBox.SelectedValue = _material.ColorSetData.Count > 0;
             _view.ShaderComboBox.SelectedValue = _material.Shader;
 
 
@@ -174,11 +142,11 @@ namespace FFXIV_TexTools.ViewModels
             {
                 // Bump up the material identifier letter.
                 _newMaterialIdentifier = await GetNewMaterialIdentifier();
-                _view.MaterialPathLabel.Text = "New Materials: Material ".L() + _newMaterialIdentifier;
+                _view.MaterialPathTextBox.Text = "New Materials: Material ".L() + _newMaterialIdentifier;
             } else if(_mode == MaterialEditorMode.NewSingle)
             {
                 _newMaterialIdentifier = await GetNewMaterialIdentifier();
-                _view.MaterialPathLabel.Text = "New Material: Material ".L() + _newMaterialIdentifier;
+                _view.MaterialPathTextBox.Text = "New Material: Material ".L() + _newMaterialIdentifier;
             }
 
             // Get the mod entry.
@@ -222,9 +190,9 @@ namespace FFXIV_TexTools.ViewModels
             _view.CancelButton.IsEnabled = false;
             _view.DisableButton.IsEnabled = false;
             _view.SaveButton.Content = UIStrings.Working_Ellipsis;
-            _view.NormalTextBox.Text = SanitizePath(_view.NormalTextBox.Text);
-            _view.DiffuseTextBox.Text = SanitizePath(_view.DiffuseTextBox.Text);
-            _view.SpecularTextBox.Text = SanitizePath(_view.SpecularTextBox.Text);
+            //_view.NormalTextBox.Text = SanitizePath(_view.NormalTextBox.Text);
+            //_view.DiffuseTextBox.Text = SanitizePath(_view.DiffuseTextBox.Text);
+            //_view.SpecularTextBox.Text = SanitizePath(_view.SpecularTextBox.Text);
 
             if(_mode == MaterialEditorMode.NewSingle)
             {

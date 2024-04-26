@@ -700,7 +700,7 @@ namespace FFXIV_TexTools.ViewModels
 
                                 try
                                 {
-                                    var mtrlData = await mtrl.GetMtrlData(offset, modItem.fullPath, dxVersion);
+                                    var mtrlData = await mtrl.GetMtrlData(offset, modItem.fullPath);
 
                                     var floats = Half.ConvertToFloat(mtrlData.ColorSetData.ToArray());
 

@@ -1,0 +1,42 @@
+﻿<Window x:Class="FFXIV_TexTools.Views.Controls.ShaderKeysEditor"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FFXIV_TexTools.Views.Controls"
+        mc:Ignorable="d"
+        xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
+        resx:Localization.Enabled="True"
+        Title="Shader Keys Editor"
+        ResizeMode="NoResize"
+        SizeToContent="WidthAndHeight">
+    <Grid Height="400" Width="600">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="60"></RowDefinition>
+            <RowDefinition Height="1*"></RowDefinition>
+            <RowDefinition Height="40"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*"></RowDefinition>
+                <RowDefinition Height="1*"></RowDefinition>
+            </Grid.RowDefinitions>
+        </Grid>
+        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="5" TextAlignment="Center" FontStyle="Italic" FontSize="10">
+            <Run Text="Shader Keys enable various Shader functionality.  They are specific to each Shader Pack."/><LineBreak/>
+            <Run Text="Shader Keys only work in specific (not entirely known) combinations, with specific values."/><LineBreak/>
+            <Run Text="Shader Key Names are tentative guesses based upon their usage."/>
+        </TextBlock>
+
+        <Button x:Name="ConfirmButton" Content="Confirm" Grid.Row="2" Width="100" Height="30" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10,0,10,0" Click="Confirm_Click"/>
+        <Button x:Name="CancelButton" Content="Cancel" Grid.Row="2" Width="100" Height="30" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,10,0" Click="Cancel_Click"/>
+    </Grid>
+</Window>
