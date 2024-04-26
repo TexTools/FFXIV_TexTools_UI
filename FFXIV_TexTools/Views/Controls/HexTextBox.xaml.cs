@@ -46,15 +46,29 @@ namespace FFXIV_TexTools.Views.Controls
             return new ValidationResult(true, null);
         }
     }
-    public class HexValueConverter : IValueConverter
+
+    // Kind of hacky, but whatever.  Binding values for converters is a nightmare.
+    public class HalfHexValueConverter : HexValueConverter
     {
+        protected override int GetLength()
+        {
+            return 4;
+        }
+    }
+    public  class HexValueConverter : IValueConverter
+    {
+        protected virtual int GetLength()
+        {
+            return 8;
+        }
+
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             try
             {
                 var val = System.Convert.ToInt64(value);
                 var hexSt = String.Format("{0:X}", val);
-                while (hexSt.Length < 8)
+                while (hexSt.Length < GetLength())
                 {
                     hexSt = "0" + hexSt;
                 }

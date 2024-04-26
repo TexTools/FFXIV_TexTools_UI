@@ -36,10 +36,11 @@ namespace FFXIV_TexTools.Views.Controls
             Close();
         }
 
-        public static List<ShaderConstant> ShowConstantsEditor(List<ShaderConstant> constants)
+        public static List<ShaderConstant> ShowConstantsEditor(List<ShaderConstant> constants, Window owner = null)
         {
             var wind = new ShaderConstantsEditor(constants);
             wind.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            wind.Owner = owner != null ? owner : System.Windows.Application.Current.MainWindow;
             var result = wind.ShowDialog();
             if(result != true)
             {

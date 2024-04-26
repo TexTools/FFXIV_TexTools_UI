@@ -61,7 +61,7 @@ namespace FFXIV_TexTools.ViewModels
         private Modding _modding;
         private XivMtrl _material;
         private IItemModel _item;
-        private char _newMaterialIdentifier;
+        private string _newMaterialIdentifier;
         private XivRace _overrideDestinationRace;
 
         public MaterialEditorViewModel(MaterialEditorView view)
@@ -226,7 +226,7 @@ namespace FFXIV_TexTools.ViewModels
             return _material;
         }
 
-        public async Task<char> GetNewMaterialIdentifier()
+        public async Task<string> GetNewMaterialIdentifier()
         {
 
             // Get new Material Identifier
@@ -236,36 +236,39 @@ namespace FFXIV_TexTools.ViewModels
             var materialIdentifier = _material.GetMaterialIdentifier();
 
             var newIdentifier = '\0';
-            var rex = new Regex("_([a-z0-9])\\.mtrl");
+            var rex = new Regex("_([a-z0-9])+\\.mtrl");
             if (!rex.IsMatch(_material.MTRLPath))
             {
-                return 'a';
+                return "a";
             }
-            for (var i = 1; i < alphabet.Length; i++)
+            for (var i = 0; i < alphabet.Length; i++)
             {
                 var identifier = alphabet[i];
-                var newPath = Regex.Replace(_material.MTRLPath, "_([a-z0-9])\\.mtrl", "_" + identifier + ".mtrl");
+                var newPath = Regex.Replace(_material.MTRLPath, "_([a-z0-9])+\\.mtrl", "_" + identifier + ".mtrl");
                 var exists = await _index.FileExists(newPath);
                 if(!exists)
                 {
-                    return identifier;
+                    return identifier.ToString();
                 }
             }
 
-            // No empty material names left.
-            // Note - This can be fixed.  Materials don't need to be named a-z, but realisitcally is anyone going to have more than 26 materials?
-            if (newIdentifier == '\0')
+            // Really? Fine... Twoooo alphabets
+            for (var a = 0; a < alphabet.Length; a++)
             {
-                if (materialIdentifier == '\0')
+                for (var b = 0; b < alphabet.Length; b++)
                 {
-                    newIdentifier = 'a';
-                }
-                else
-                {
-                    throw new NotSupportedException("Maximum Material Limit Reached.".L());
+                    var identifier = alphabet[a] + alphabet[b];
+                    var newPath = Regex.Replace(_material.MTRLPath, "_([a-z0-9])+\\.mtrl", "_" + identifier + ".mtrl");
+                    var exists = await _index.FileExists(newPath);
+                    if (!exists)
+                    {
+                        return identifier.ToString();
+                    }
                 }
             }
-            return newIdentifier;
+
+            // If you got this far, you can suffer memes.
+            return "why";
 
         }
 

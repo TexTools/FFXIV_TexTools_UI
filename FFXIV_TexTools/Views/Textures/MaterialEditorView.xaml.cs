@@ -3,6 +3,7 @@ using FFXIV_TexTools.Views.Controls;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,6 +17,7 @@ using xivModdingFramework.Materials.DataContainers;
 using xivModdingFramework.Materials.FileTypes;
 using xivModdingFramework.Mods;
 using xivModdingFramework.SqPack.FileTypes;
+using xivModdingFramework.Textures.Enums;
 using static xivModdingFramework.Materials.DataContainers.ShaderHelpers;
 
 namespace FFXIV_TexTools.Views.Textures
@@ -33,20 +35,56 @@ namespace FFXIV_TexTools.Views.Textures
     /// </summary>
     public partial class MaterialEditorView
     {
+        public class WrappedTexture : INotifyPropertyChanged
+        {
+            public event PropertyChangedEventHandler PropertyChanged;
+            public MtrlTexture Texture { get; set; }
+
+            public MaterialEditorView View;
+
+            public XivTexType Usage
+            {
+                get
+                {
+                    return Texture.Usage;
+                }
+            }
+
+            public string TexturePath
+            {
+                get
+                {
+                    return View.Material.TokenizePath(Texture.TexturePath, Texture.Usage);
+                }
+                set
+                {
+                    Texture.TexturePath = View.Material.DetokenizePath(value, Texture.Usage);
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TexturePath)));
+                }
+            }
+
+            public WrappedTexture(MtrlTexture tex, MaterialEditorView view)
+            {
+                Texture = tex;
+                View = view;
+            }
+        }
+
         private MaterialEditorViewModel viewModel;
-        private XivMtrl _material;
         private IItemModel _item;
         private MaterialEditorMode _mode;
 
         public ObservableCollection<KeyValuePair<string, EShaderPack>> ShaderSource;
 
-        public ObservableCollection<MtrlTexture> TextureSource;
+        public ObservableCollection<WrappedTexture> TextureSource;
         private static XivMtrl _copiedMaterial;
+
+        private XivMtrl _Material;
         public XivMtrl Material
         {
             get
             {
-                return _material;
+                return _Material;
             }
         }
 
@@ -54,7 +92,7 @@ namespace FFXIV_TexTools.Views.Textures
         {
             InitializeComponent();
             viewModel = new MaterialEditorViewModel(this);
-            TextureSource = new ObservableCollection<MtrlTexture>();
+            TextureSource = new ObservableCollection<WrappedTexture>();
 
             // Setup for the combo boxes.
             ShaderSource = new ObservableCollection<KeyValuePair<string, EShaderPack>>();
@@ -84,11 +122,11 @@ namespace FFXIV_TexTools.Views.Textures
 
         public async Task<bool> SetMaterial(XivMtrl material, IItemModel item, MaterialEditorMode mode = MaterialEditorMode.EditSingle)
         {
-            _material = material;
+            _Material = material;
             _item = item;
             _mode = mode;
 
-            ShaderComboBox.SelectedValue = _material.Shader;
+            ShaderComboBox.SelectedValue = Material.Shader;
             UpdateTextureList();
             return await viewModel.SetMaterial(material, item, mode);
         }
@@ -99,7 +137,12 @@ namespace FFXIV_TexTools.Views.Textures
         /// </summary>
         public void UpdateTextureList()
         {
-            TextureSource = new ObservableCollection<MtrlTexture>(_material.Textures);
+            TextureSource = new ObservableCollection<WrappedTexture>();
+            foreach(var tx in Material.Textures)
+            {
+                var wt = new WrappedTexture(tx, this);
+                TextureSource.Add(wt);
+            }
             TexturesList.ItemsSource = TextureSource;
         }
 
@@ -116,7 +159,7 @@ namespace FFXIV_TexTools.Views.Textures
         }
         private async void SaveButton_Click(object sender, RoutedEventArgs e)
         {
-            _material = await viewModel.SaveChanges();
+            _Material = await viewModel.SaveChanges();
             Close(true);
         }
 
@@ -141,7 +184,7 @@ namespace FFXIV_TexTools.Views.Textures
 
         private void CopyMaterialButton_Click(object sender, RoutedEventArgs e)
         {
-            _copiedMaterial = (XivMtrl) _material.Clone();
+            _copiedMaterial = (XivMtrl) Material.Clone();
             PasteMaterialButton.IsEnabled = true;
         }
 
@@ -150,7 +193,7 @@ namespace FFXIV_TexTools.Views.Textures
             if (_copiedMaterial != null)
             {
                 // Paste the copied Material into the editor using our current path and item.
-                _copiedMaterial.MTRLPath = _material.MTRLPath;
+                _copiedMaterial.MTRLPath = Material.MTRLPath;
                 await SetMaterial(_copiedMaterial, _item, _mode);
             }
         }
@@ -173,27 +216,27 @@ namespace FFXIV_TexTools.Views.Textures
 
         private void TexturePathBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            var tb = (TextBox)sender;
-            var tex = (MtrlTexture)tb.DataContext;
-            tex.TexturePath = tb.Text;
+            //var tb = (TextBox)sender;
+            //var tex = (WrappedTexture)tb.DataContext;
+            //tex.TexturePath = tb.Text;
         }
 
         private void SavePresetButton_Click(object sender, RoutedEventArgs e)
         {
-            var path = SavePresetDialog.ShowSavePresetDialog(_material.Shader, System.IO.Path.GetFileNameWithoutExtension(Material.MTRLPath));
+            var path = SavePresetDialog.ShowSavePresetDialog(Material.Shader, System.IO.Path.GetFileNameWithoutExtension(Material.MTRLPath));
             if (path == "")
             {
                 return;
             }
 
             var _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory);
-            var bytes = _mtrl.CreateMtrlFile((XivMtrl)_material.Clone());
+            var bytes = _mtrl.CreateMtrlFile((XivMtrl)Material.Clone());
             System.IO.File.WriteAllBytes(path, bytes);
         }
 
         private async void LoadPresetButton_Click(object sender, RoutedEventArgs e)
         {
-            var path = LoadPresetDialog.ShowLoadPresetDialog(_material.Shader);
+            var path = LoadPresetDialog.ShowLoadPresetDialog(Material.Shader);
             if(path == "")
             {
                 return;
@@ -201,13 +244,13 @@ namespace FFXIV_TexTools.Views.Textures
 
             var _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory);
             var bytes = System.IO.File.ReadAllBytes(path);
-            var newMtrl = _mtrl.GetMtrlData(bytes, _material.MTRLPath);
+            var newMtrl = _mtrl.GetMtrlData(bytes, Material.MTRLPath);
 
             // Carry our colorset information through.
-            if(newMtrl.ColorSetData.Count > 0 && _material.ColorSetData.Count > 0)
+            if(newMtrl.ColorSetData.Count > 0 && Material.ColorSetData.Count > 0)
             {
-                newMtrl.ColorSetData = _material.ColorSetData;
-                newMtrl.ColorSetDyeData = _material.ColorSetDyeData;
+                newMtrl.ColorSetData = Material.ColorSetData;
+                newMtrl.ColorSetDyeData = Material.ColorSetDyeData;
             }
 
             await SetMaterial(newMtrl, _item, _mode);
@@ -215,48 +258,45 @@ namespace FFXIV_TexTools.Views.Textures
 
         private void EditShaderFlags_Click(object sender, RoutedEventArgs e)
         {
-            var result = MaterialFlagsEditor.ShowFlagsEditor(_material.MaterialFlags, _material.MaterialFlags2);
+            var result = MaterialFlagsEditor.ShowFlagsEditor(Material.MaterialFlags, Material.MaterialFlags2, this);
             if(result.Success == true)
             {
-                _material.MaterialFlags = result.Flags;
-                _material.MaterialFlags2 = result.Unknown;
+                Material.MaterialFlags = result.Flags;
+                Material.MaterialFlags2 = result.Unknown;
             }
         }
         private void EditShaderKeys_Click(object sender, RoutedEventArgs e)
         {
-            var result = ShaderKeysEditor.ShowKeysEditor(_material.ShaderKeys);
+            var result = ShaderKeysEditor.ShowKeysEditor(Material.ShaderKeys, this);
             if(result != null)
             {
-                _material.ShaderKeys = result;
+                Material.ShaderKeys = result;
             }
         }
 
         private void EditShaderConstants_Click(object sender, RoutedEventArgs e)
         {
-            var result = ShaderConstantsEditor.ShowConstantsEditor(_material.ShaderConstants);
+            var result = ShaderConstantsEditor.ShowConstantsEditor(Material.ShaderConstants, this);
             if(result != null)
             {
-                _material.ShaderConstants = result;
+                Material.ShaderConstants = result;
             }
         }
 
         private void EditUsage_Click(object sender, RoutedEventArgs e)
         {
-            var tex = (MtrlTexture)((Button)sender).DataContext;
-            var result = TextureSamplerSettings.ShowSamplerSettings(tex);
-            if(result != null)
+            var tex = (WrappedTexture)((Button)sender).DataContext;
+            var result = TextureSamplerSettings.ShowSamplerSettings(Material, tex.Texture, this);
+            if(result == true)
             {
-                var idx = _material.Textures.IndexOf(tex);
-                _material.Textures.RemoveAt(idx);
-                _material.Textures.Insert(idx, result);
                 UpdateTextureList();
             }
         }
         
         private void RemoveTexture_Click(object sender, RoutedEventArgs e)
         {
-            var tex = (MtrlTexture) ((Button)sender).DataContext;
-            _material.Textures.Remove(tex);
+            var tex = (WrappedTexture) ((Button)sender).DataContext;
+            Material.Textures.Remove(tex.Texture);
             UpdateTextureList();
         }
         private void AddTexture_Click(object sender, RoutedEventArgs e)
@@ -264,7 +304,7 @@ namespace FFXIV_TexTools.Views.Textures
             var tex = new MtrlTexture();
             tex.Sampler = new TextureSampler();
             tex.Sampler.SamplerId = ESamplerId.g_SamplerNormal;
-            _material.Textures.Add(tex);
+            Material.Textures.Add(tex);
             UpdateTextureList();
         }
 

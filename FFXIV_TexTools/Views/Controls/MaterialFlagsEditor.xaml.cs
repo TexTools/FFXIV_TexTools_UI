@@ -139,10 +139,11 @@ namespace FFXIV_TexTools.Views.Controls
             Close();
         }
 
-        public static (bool Success, ushort Flags, ushort Unknown) ShowFlagsEditor(ushort flags, ushort flags2)
+        public static (bool Success, ushort Flags, ushort Unknown) ShowFlagsEditor(ushort flags, ushort flags2, Window owner = null)
         {
             var wind = new MaterialFlagsEditor(flags, flags2);
             wind.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            wind.Owner = owner != null ? owner : System.Windows.Application.Current.MainWindow;
             var result = wind.ShowDialog();
             if(result != true)
             {

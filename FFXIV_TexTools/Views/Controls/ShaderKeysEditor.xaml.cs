@@ -33,9 +33,10 @@ namespace FFXIV_TexTools.Views.Controls
             Close();
         }
 
-        public static List<ShaderKey> ShowKeysEditor(List<ShaderKey> keys)
+        public static List<ShaderKey> ShowKeysEditor(List<ShaderKey> keys, Window owner = null)
         {
             var wind = new ShaderKeysEditor(keys);
+            wind.Owner = owner != null ? owner : System.Windows.Application.Current.MainWindow;
             wind.WindowStartupLocation = WindowStartupLocation.CenterScreen;
             var result = wind.ShowDialog();
             if(result != true)

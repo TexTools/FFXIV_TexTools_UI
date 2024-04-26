@@ -54,10 +54,11 @@ namespace FFXIV_TexTools.Views.Controls
             DialogResult = false;
         }
 
-        public static string ShowLoadPresetDialog(EShaderPack shpk)
+        public static string ShowLoadPresetDialog(EShaderPack shpk, Window owner = null)
         {
             var wind = new LoadPresetDialog(shpk);
             wind.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            wind.Owner = owner != null ? owner : System.Windows.Application.Current.MainWindow;
             var result = wind.ShowDialog();
 
             return wind.SelectedPath;

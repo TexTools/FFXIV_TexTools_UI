@@ -30,7 +30,7 @@
                              TextChanged="TexturePathBox_TextChanged"/>
 
                     <TextBlock Grid.Row="1" Grid.Column="0" Text="Estimated Usage:" VerticalAlignment="Center" Margin="10,0,10,0" HorizontalAlignment="Right"/>
-                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Path=Sampler.SamplerId}" VerticalAlignment="Center"  Margin="10,0,10,0"/>
+                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Path=Usage}" VerticalAlignment="Center"  Margin="10,0,10,0"/>
 
                     <Button Grid.Row="1" Grid.Column="1" Content="Edit Usage" VerticalAlignment="Center" Margin="10,0,170,0" HorizontalAlignment="Right" Width="150" Click="EditUsage_Click"/>
                     <Button Grid.Row="1" Grid.Column="1" Content="Remove Texture" VerticalAlignment="Center" Margin="10,0,10,0" HorizontalAlignment="Right" Width="150" Click="RemoveTexture_Click"/>

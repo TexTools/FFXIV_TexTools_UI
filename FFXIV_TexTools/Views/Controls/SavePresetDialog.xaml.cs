@@ -48,10 +48,11 @@ namespace FFXIV_TexTools.Views.Controls
             DialogResult = false;
         }
 
-        public static string ShowSavePresetDialog(EShaderPack shpk, string defaultName = "New Preset")
+        public static string ShowSavePresetDialog(EShaderPack shpk, string defaultName = "New Preset", Window owner = null)
         {
             var wind = new SavePresetDialog(shpk, defaultName);
             wind.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            wind.Owner = owner != null ? owner : System.Windows.Application.Current.MainWindow;
             var result = wind.ShowDialog();
 
             return wind.SelectedPath;

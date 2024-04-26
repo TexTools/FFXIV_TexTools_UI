@@ -1876,7 +1876,7 @@ namespace FFXIV_TexTools.ViewModels
                     mode = MaterialEditorMode.NewRace;
                 }
 
-                var editor = new Views.Textures.MaterialEditorView() { Owner = Window.GetWindow(_textureView) };
+                var editor = new Views.Textures.MaterialEditorView() { Owner = System.Windows.Application.Current.MainWindow };
                 var open = await editor.SetMaterial(material, item, mode);
                 
                 // If we failed to open the dialog, just cancel entirely.

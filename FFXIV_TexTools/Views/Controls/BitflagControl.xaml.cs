@@ -70,6 +70,17 @@ namespace FFXIV_TexTools.Views.Controls
                 }
             }
         }
+        public void SetTooltips(List<string> names)
+        {
+            for (int i = 0; i < names.Count; i++)
+            {
+
+                if (!String.IsNullOrWhiteSpace(names[i]))
+                {
+                    Boxes[i].ToolTip = names[i];
+                }
+            }
+        }
 
         private void Checked(object sender, RoutedEventArgs e)
         {
