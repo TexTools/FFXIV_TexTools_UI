@@ -1,16 +1,20 @@
-﻿using FFXIV_TexTools.ViewModels;
+﻿using FFXIV_TexTools.Helpers;
+using FFXIV_TexTools.ViewModels;
 using FFXIV_TexTools.Views.Controls;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Forms;
 using System.Windows.Media;
 using xivModdingFramework.Cache;
+using xivModdingFramework.Exd.FileTypes;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Items.Interfaces;
 using xivModdingFramework.Materials.DataContainers;
@@ -19,6 +23,7 @@ using xivModdingFramework.Mods;
 using xivModdingFramework.SqPack.FileTypes;
 using xivModdingFramework.Textures.Enums;
 using static xivModdingFramework.Materials.DataContainers.ShaderHelpers;
+using Button = System.Windows.Controls.Button;
 
 namespace FFXIV_TexTools.Views.Textures
 {
@@ -236,33 +241,20 @@ namespace FFXIV_TexTools.Views.Textures
 
         private async void LoadPresetButton_Click(object sender, RoutedEventArgs e)
         {
-            var path = LoadPresetDialog.ShowLoadPresetDialog(Material.Shader);
-            if(path == "")
+            var result = LoadPresetDialog.ShowLoadPresetDialog(Material);
+            if(result != null)
             {
-                return;
+                await SetMaterial(result, _item, _mode);
             }
 
-            var _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory);
-            var bytes = System.IO.File.ReadAllBytes(path);
-            var newMtrl = _mtrl.GetMtrlData(bytes, Material.MTRLPath);
-
-            // Carry our colorset information through.
-            if(newMtrl.ColorSetData.Count > 0 && Material.ColorSetData.Count > 0)
-            {
-                newMtrl.ColorSetData = Material.ColorSetData;
-                newMtrl.ColorSetDyeData = Material.ColorSetDyeData;
-            }
-
-            await SetMaterial(newMtrl, _item, _mode);
         }
 
         private void EditShaderFlags_Click(object sender, RoutedEventArgs e)
         {
-            var result = MaterialFlagsEditor.ShowFlagsEditor(Material.MaterialFlags, Material.MaterialFlags2, this);
-            if(result.Success == true)
+            var result = MaterialFlagsEditor.ShowFlagsEditor(Material, this);
+            if(result)
             {
-                Material.MaterialFlags = result.Flags;
-                Material.MaterialFlags2 = result.Unknown;
+                // Don't really need to do anything here, since the editor handles updating the material.
             }
         }
         private void EditShaderKeys_Click(object sender, RoutedEventArgs e)
@@ -308,6 +300,40 @@ namespace FFXIV_TexTools.Views.Textures
             UpdateTextureList();
         }
 
+        private async void LoadRawButton_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new OpenFileDialog();
+            dialog.Filter = "Material Files (*.mtrl)|*.mtrl|All Files (*.*)|*.*";
+            if (dialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+                return;
+            try
+            {
+                var _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory);
+                var bytes = File.ReadAllBytes(dialog.FileName);
+                await SetMaterial(_mtrl.GetMtrlData(bytes, _Material.MTRLPath), _item, _mode);
+            }
+            catch (Exception ex)
+            {
+                FlexibleMessageBox.Show("Unable to load file:".L() + ex.Message, "Material Save Error".L(), MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
 
+        private void SaveRawButton_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new SaveFileDialog();
+            dialog.Filter = "Material Files (*.mtrl)|*.mtrl|All Files (*.*)|*.*";
+            dialog.FileName = Path.GetFileName(Material.MTRLPath);
+            if (dialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+                return;
+            try
+            {
+                var _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory);
+                var bytes = _mtrl.CreateMtrlFile(Material);
+                File.WriteAllBytes(dialog.FileName, bytes);
+            } catch(Exception ex)
+            {
+                FlexibleMessageBox.Show("Unable to save file:".L() + ex.Message, "Material Save Error".L(), MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
     }
 }

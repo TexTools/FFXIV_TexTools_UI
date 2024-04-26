@@ -11,51 +11,105 @@
         ResizeMode="NoResize"
         SizeToContent="WidthAndHeight">
     <Window.Resources>
+        <ToolTip x:Key="MaterialFlagsTooltip">
+            <TextBlock>
+            <Run Text="Material Flags are toggles that turn on/off specific behaviors."/><LineBreak/>
+            <Run Text="Many flags do not (as of yet) have known purposes."/><LineBreak/>
+            </TextBlock>
+        </ToolTip>
+        <ToolTip x:Key="MaterialFlagsHexTooltip">
+            <TextBlock>
+            <Run Text="Hex representation of the Material Flags"/><LineBreak/>
+            <Run Text="For use when copy-pasting to other tools. (Ex. Penumbra)"/><LineBreak/>
+            </TextBlock>
+        </ToolTip>
+        <ToolTip x:Key="AdditionalDataTooltip">
+            <TextBlock>
+            <Run Text="Additional Data that exists in the Material File."/><LineBreak/>
+            <Run Text="Its purpose is not currently known."/><LineBreak/>
+            </TextBlock>
+        </ToolTip>
+        <ToolTip x:Key="AdditionalDataHexTooltip">
+            <TextBlock>
+            <Run Text="Hex representation of the Additional Data"/><LineBreak/>
+            <Run Text="For use when copy-pasting to other tools. (Ex. Penumbra)"/><LineBreak/>
+            </TextBlock>
+        </ToolTip>
     </Window.Resources>
     <Grid Height="400" Width="800">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1*"></ColumnDefinition>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="60"></RowDefinition>
             <RowDefinition Height="1*"></RowDefinition>
+            <RowDefinition Height="90"></RowDefinition>
             <RowDefinition Height="40"></RowDefinition>
         </Grid.RowDefinitions>
-        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="5" TextAlignment="Center" FontStyle="Italic" FontSize="10">
-            <Run Text="Material Flags are toggles that turn on/off specific behaviors."/><LineBreak/>
-            <Run Text="Many flags do not (as of yet) have known purposes."/><LineBreak/>
-        </TextBlock>
+
+        <Border Grid.Row="0" Grid.Column="0" BorderBrush="Gray" Padding="0" Margin="5" BorderThickness="1">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="40"></RowDefinition>
+                    <RowDefinition Height="1*"></RowDefinition>
+                    <RowDefinition Height="40"></RowDefinition>
+                </Grid.RowDefinitions>
+
+                <Label Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" Grid.ColumnSpan="4" ToolTip="{Binding MaterialFlagsTooltip}">Material Flags</Label>
+                <local:BitflagControl x:Name="BitControl0" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" Grid.Column="0" Grid.Row="1"/>
+                <local:BitflagControl x:Name="BitControl1" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" Grid.Column="1" Grid.Row="1"/>
+                <local:BitflagControl x:Name="BitControl2" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" Grid.Column="2" Grid.Row="1"/>
+                <local:BitflagControl x:Name="BitControl3" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" Grid.Column="3" Grid.Row="1"/>
+
+                <Label Grid.Row="2" Grid.Column="1" HorizontalContentAlignment="right" HorizontalAlignment="right" VerticalAlignment="Center"  Content="Flags Hex Representation:" ToolTip="{Binding MaterialFlagsHexTooltip}" ></Label>
+
+                <TextBox x:Name="HexBox" Grid.Row="2" Grid.Column="2" HorizontalAlignment="Left" VerticalAlignment="Center" Height="30" Width="100" PreviewTextInput="HexInput" ToolTip="{Binding MaterialFlagsHexTooltip}" >
+                    <Binding Path="FullInt" UpdateSourceTrigger="PropertyChanged">
+                        <Binding.ValidationRules>
+                            <local:HexValidationRule />
+                        </Binding.ValidationRules>
+                        <Binding.Converter>
+                            <local:HexValueConverter />
+                        </Binding.Converter>
+                    </Binding>
+                </TextBox>
+            </Grid>
+        </Border>
 
 
-        <Grid Grid.Row="1" Margin="10">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1*"></ColumnDefinition>
-                <ColumnDefinition Width="1*"></ColumnDefinition>
-                <ColumnDefinition Width="1*"></ColumnDefinition>
-                <ColumnDefinition Width="1*"></ColumnDefinition>
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="240"></RowDefinition>
-                <RowDefinition Height="40"></RowDefinition>
-            </Grid.RowDefinitions>
-            <local:BitflagControl x:Name="BitControl0" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" Grid.Column="0"/>
-            <local:BitflagControl x:Name="BitControl1" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" Grid.Column="1"/>
-            <local:BitflagControl x:Name="BitControl2" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" Grid.Column="2"/>
-            <local:BitflagControl x:Name="BitControl3" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" Grid.Column="3"/>
+        <Border Grid.Row="1" Grid.Column="0" BorderBrush="Gray" Padding="0" Margin="5" BorderThickness="1">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="40"></RowDefinition>
+                    <RowDefinition Height="40"></RowDefinition>
+                </Grid.RowDefinitions>
 
-            <Label Grid.Row="2" Grid.Column="1" HorizontalContentAlignment="right" HorizontalAlignment="right" VerticalAlignment="Center"  Content="Hex Representation:"></Label>
+                <Label Grid.Row="0" Grid.Column="0" HorizontalContentAlignment="right" HorizontalAlignment="right" VerticalAlignment="Center"  Content="Additional Data Size (Bytes):" ToolTip="{Binding AdditionalDataTooltip}"></Label>
+                <TextBox x:Name="AdditionalDataLengthBox" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" Height="30" Width="50" VerticalAlignment="Center" ToolTip="{Binding AdditionalDataTooltip}" PreviewTextInput="NumberValidationTextBox" />
 
-            <TextBox x:Name="HexBox" Grid.Row="2" Grid.Column="2" HorizontalAlignment="Left" Height="30" Width="100" >
-                <Binding Path="FullInt" UpdateSourceTrigger="PropertyChanged">
+                <Label Grid.Row="1" Grid.Column="0" HorizontalContentAlignment="right" HorizontalAlignment="right" VerticalAlignment="Center"  Content="Additional Data:" ToolTip="{Binding AdditionalDataTooltip}"></Label>
+                <TextBox Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" Height="30" Width="150"  VerticalAlignment="Center" ToolTip="{Binding AdditionalDataTooltip}" PreviewTextInput="HexInput">
+                <Binding Path="AdditionalDataRaw" UpdateSourceTrigger="PropertyChanged">
                     <Binding.ValidationRules>
                         <local:HexValidationRule />
                     </Binding.ValidationRules>
                     <Binding.Converter>
-                        <local:HexValueConverter />
+                            <local:HexValueConverter />
                     </Binding.Converter>
                 </Binding>
-            </TextBox>
-        </Grid>
+                </TextBox>
+            </Grid>
+        </Border>
+        
         <Button x:Name="ConfirmButton" Content="Confirm" Grid.Row="2" Width="100" Height="30" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10,0,10,0" Click="Confirm_Click"/>
         <Button x:Name="CancelButton" Content="Cancel" Grid.Row="2" Width="100" Height="30" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,10,0" Click="Cancel_Click"/>
     </Grid>

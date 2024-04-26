@@ -24,13 +24,11 @@ namespace FFXIV_TexTools.Views.Controls
         private void Confirm_Click(object sender, RoutedEventArgs e)
         {
             DialogResult = true;
-            Close();
         }
 
         private void Cancel_Click(object sender, RoutedEventArgs e)
         {
             DialogResult = false;
-            Close();
         }
 
         public static List<ShaderKey> ShowKeysEditor(List<ShaderKey> keys, Window owner = null)

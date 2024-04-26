@@ -134,7 +134,7 @@
 
 
             <Label VerticalAlignment="Center" HorizontalContentAlignment="Right" HorizontalAlignment="Left" Content="Hex Representation:" Grid.Row="10" ToolTip="{StaticResource SamplerHexTooltip}" Height="26" Margin="4,0,0,0"/>
-            <TextBox x:Name="HexBox" Grid.Row="10" Grid.Column="1" HorizontalAlignment="Center" Width="100" VerticalAlignment="Center" ToolTip="{StaticResource SamplerHexTooltip}" Height="26">
+            <TextBox x:Name="HexBox" Grid.Row="10" Grid.Column="1" HorizontalAlignment="Center" Width="100" VerticalAlignment="Center" ToolTip="{StaticResource SamplerHexTooltip}" Height="26" PreviewTextInput="HexInput">
                 <Binding Path="SamplerSettingsRaw" UpdateSourceTrigger="PropertyChanged">
                     <Binding.ValidationRules>
                         <local:HexValidationRule />
@@ -166,7 +166,7 @@
                     <local:BitflagControl x:Name="BitControl1" HorizontalAlignment="Left" Grid.Row="2" Grid.Column="1"/>
 
                     <Label VerticalAlignment="Center" HorizontalContentAlignment="Right" HorizontalAlignment="Left" Content="Hex Representation:" Grid.Row="3" ToolTip="{StaticResource TextureHexTooltip}" Height="26" Margin="0,0,0,0"/>
-                    <TextBox Grid.Row="3" Grid.Column="1" HorizontalAlignment="Center" Width="100" VerticalAlignment="Center" ToolTip="{StaticResource TextureHexTooltip}" Height="26">
+                    <TextBox Grid.Row="3" Grid.Column="1" HorizontalAlignment="Center" Width="100" VerticalAlignment="Center" ToolTip="{StaticResource TextureHexTooltip}" Height="26" PreviewTextInput="HexInput">
                         <Binding Path="TextureFlagsRaw" UpdateSourceTrigger="PropertyChanged">
                             <Binding.ValidationRules>
                                 <local:HexValidationRule />

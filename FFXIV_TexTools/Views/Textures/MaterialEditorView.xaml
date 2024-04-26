@@ -64,7 +64,11 @@
         <Button x:Name="SavePresetButton" Content="Save Preset" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Center" Width="100" Grid.Column="2" Click="SavePresetButton_Click" Height="28" Grid.Row="1"/>
         <Button x:Name="LoadPresetButton" Content="Load Preset" HorizontalAlignment="Left" Margin="110,0,0,0" VerticalAlignment="Center" Width="100" Grid.Column="2" Click="LoadPresetButton_Click" Height="28" Grid.Row="1"/>
 
-        
+        <Button x:Name="SaveRawButton" Content="Save Raw" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Center" Width="100" Grid.Column="2" Click="SaveRawButton_Click" Height="28" Grid.Row="2"/>
+        <Button x:Name="LoadRawButton" Content="Load Raw" HorizontalAlignment="Left" Margin="110,0,0,0" VerticalAlignment="Center" Width="100" Grid.Column="2" Click="LoadRawButton_Click" Height="28" Grid.Row="2"/>
+
+
+
         <Button x:Name="EditShaderFlagsButton" Content="Edit Material Flags" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center" Width="150" Height="28" Grid.Row="2" Grid.ColumnSpan="2" Click="EditShaderFlags_Click"/>
         <Button x:Name="EditShaderKeysButton" Content="Edit Shader Keys" HorizontalAlignment="Left" Margin="170,0,0,0" VerticalAlignment="Center" Width="150" Height="28" Grid.Row="2" Grid.ColumnSpan="2" Click="EditShaderKeys_Click"/>
         <Button x:Name="EditShaderConstantsButton" Content="Edit Shader Constants" HorizontalAlignment="Left" Margin="330,0,0,0" VerticalAlignment="Center" Width="150" Height="28" Grid.Row="2" Grid.ColumnSpan="2" Click="EditShaderConstants_Click"/>

@@ -27,13 +27,11 @@ namespace FFXIV_TexTools.Views.Controls
         private void Confirm_Click(object sender, RoutedEventArgs e)
         {
             DialogResult = true;
-            Close();
         }
 
         private void Cancel_Click(object sender, RoutedEventArgs e)
         {
             DialogResult = false;
-            Close();
         }
 
         public static List<ShaderConstant> ShowConstantsEditor(List<ShaderConstant> constants, Window owner = null)

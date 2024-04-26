@@ -5,12 +5,14 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows;
 using static xivModdingFramework.Materials.DataContainers.ShaderHelpers;
-using System.IO;
-using System.Linq;
-using HelixToolkit.SharpDX.Core.Shaders;
+using xivModdingFramework.Materials;
 using xivModdingFramework.Materials.DataContainers;
 using System.ComponentModel;
 using System.Xml.Linq;
+using System.Text.RegularExpressions;
+using System.Windows.Input;
+using System.Linq;
+using System.Windows.Controls;
 
 namespace FFXIV_TexTools.Views.Controls
 {
@@ -21,8 +23,11 @@ namespace FFXIV_TexTools.Views.Controls
     {
         public ushort Flags;
         public ushort Flags2;
+        public ulong AdditionalData;
 
         public event PropertyChangedEventHandler PropertyChanged;
+
+        private XivMtrl _Material;
 
         public ulong FullInt { get
             {
@@ -37,12 +42,37 @@ namespace FFXIV_TexTools.Views.Controls
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(FullInt)));
             }
         }
-        public MaterialFlagsEditor(ushort flags, ushort flags2)
+        public ulong AdditionalDataRaw
         {
-            InitializeComponent();
+            get
+            {
+                return AdditionalData;
+            }
+            set
+            {
+                AdditionalData = value;
+                UpdateCheckBoxes();
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AdditionalDataRaw)));
+            }
+        }
+        public MaterialFlagsEditor(XivMtrl material)
+        {
+            _Material = material;
             DataContext = this;
-            Flags = flags;
-            Flags2 = flags2;
+            Flags = _Material.MaterialFlags;
+            Flags2 = _Material.MaterialFlags2;
+
+            var data = _Material.AdditionalData;
+            if(_Material.AdditionalData.Length < 8)
+            {
+                data = new byte[8];
+                _Material.AdditionalData.CopyTo(data, 0);
+            }
+
+            AdditionalData = BitConverter.ToUInt64(data,0);
+
+            InitializeComponent();
+            AdditionalDataLengthBox.Text = _Material.AdditionalData.Length.ToString();
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(FullInt)));
             BitControl0.SetNames(new List<string>()
             {
@@ -111,7 +141,9 @@ namespace FFXIV_TexTools.Views.Controls
         {
             Flags = (ushort)((BitControl1.DisplayByte << 8) | BitControl0.DisplayByte);
             Flags2 = (ushort)((BitControl3.DisplayByte << 8) | BitControl2.DisplayByte);
+
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(FullInt)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AdditionalDataRaw)));
         }
 
         private void UpdateCheckBoxes()
@@ -123,34 +155,55 @@ namespace FFXIV_TexTools.Views.Controls
             BitControl3.DisplayByte = (byte)(Flags2 >> 8);
             _Updating = false;
         }
-
+        private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
+        {
+            Regex regex = new Regex("[^0-9]+");
+            e.Handled = regex.IsMatch(e.Text);
+        }
+        private void HexInput(object sender, TextCompositionEventArgs e)
+        {
+            Regex regex = new Regex("[^0-9a-f]+",RegexOptions.IgnoreCase);
+            e.Handled = regex.IsMatch(e.Text);
+        }
         private void Confirm_Click(object sender, RoutedEventArgs e)
         {
-            DialogResult = true;
             UpdateValues();
-            Close();
+
+            _Material.MaterialFlags = Flags;
+            _Material.MaterialFlags2 = Flags2;
+
+            int val = 0;
+            var success = Int32.TryParse(AdditionalDataLengthBox.Text, out val);
+            if(!success)
+            {
+                val = _Material.AdditionalData.Length;
+            }
+            var data = BitConverter.GetBytes(AdditionalData);
+            _Material.AdditionalData = data.Take(val).ToArray();
+
+            DialogResult = true;
         }
 
         private void Cancel_Click(object sender, RoutedEventArgs e)
         {
-            DialogResult = false;
             Flags = 0;
             Flags2 = 0;
-            Close();
+            AdditionalData = 0;
+            DialogResult = false;
         }
 
-        public static (bool Success, ushort Flags, ushort Unknown) ShowFlagsEditor(ushort flags, ushort flags2, Window owner = null)
+        public static bool ShowFlagsEditor(XivMtrl mtrl, Window owner = null)
         {
-            var wind = new MaterialFlagsEditor(flags, flags2);
+            var wind = new MaterialFlagsEditor(mtrl);
             wind.WindowStartupLocation = WindowStartupLocation.CenterScreen;
             wind.Owner = owner != null ? owner : System.Windows.Application.Current.MainWindow;
             var result = wind.ShowDialog();
             if(result != true)
             {
-                return (false, 0, 0);
+                return false;
             }
-            return (true, wind.Flags, wind.Flags2);
-
+            return true;
         }
+
     }
 }

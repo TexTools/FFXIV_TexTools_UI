@@ -11,6 +11,7 @@ using System.ComponentModel;
 using static xivModdingFramework.Materials.DataContainers.TextureSampler;
 using SharpDX;
 using xivModdingFramework.Textures.FileTypes;
+using System.Text.RegularExpressions;
 
 namespace FFXIV_TexTools.Views.Controls
 {
@@ -302,13 +303,11 @@ namespace FFXIV_TexTools.Views.Controls
             _Material.Textures.Insert(idx, Texture);
 
             DialogResult = true;
-            Close();
         }
 
         private void Cancel_Click(object sender, RoutedEventArgs e)
         {
             DialogResult = false;
-            Close();
         }
 
         public static bool ShowSamplerSettings(XivMtrl mtrl, MtrlTexture tex, Window owner = null)
@@ -323,6 +322,12 @@ namespace FFXIV_TexTools.Views.Controls
             }
 
             return true;
+        }
+
+        private void HexInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
+        {
+            Regex regex = new Regex("[^0-9a-f]+", RegexOptions.IgnoreCase);
+            e.Handled = regex.IsMatch(e.Text);
         }
     }
 }

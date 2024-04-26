@@ -44,7 +44,6 @@ namespace FFXIV_TexTools.Views.Controls
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
             SelectedPath = "";
-            Close();
             DialogResult = false;
         }
 

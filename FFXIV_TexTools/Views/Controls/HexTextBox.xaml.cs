@@ -55,6 +55,13 @@ namespace FFXIV_TexTools.Views.Controls
             return 4;
         }
     }
+    public class UnlimitedHexValueConverter : HexValueConverter
+    {
+        protected override int GetLength()
+        {
+            return -1;
+        }
+    }
     public  class HexValueConverter : IValueConverter
     {
         protected virtual int GetLength()
@@ -68,9 +75,12 @@ namespace FFXIV_TexTools.Views.Controls
             {
                 var val = System.Convert.ToInt64(value);
                 var hexSt = String.Format("{0:X}", val);
-                while (hexSt.Length < GetLength())
+                if (GetLength() > 0)
                 {
-                    hexSt = "0" + hexSt;
+                    while (hexSt.Length < GetLength())
+                    {
+                        hexSt = "0" + hexSt;
+                    }
                 }
                 return hexSt;
             }

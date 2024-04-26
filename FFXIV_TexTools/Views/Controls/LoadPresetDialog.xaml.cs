@@ -7,6 +7,10 @@ using System.Windows;
 using static xivModdingFramework.Materials.DataContainers.ShaderHelpers;
 using System.IO;
 using System.Linq;
+using xivModdingFramework.Materials.DataContainers;
+using xivModdingFramework.Cache;
+using xivModdingFramework.Materials.FileTypes;
+using MahApps.Metro.IconPacks;
 
 namespace FFXIV_TexTools.Views.Controls
 {
@@ -17,10 +21,11 @@ namespace FFXIV_TexTools.Views.Controls
     {
         public const string _PresetsPath = "./Resources/MaterialPresets";
 
-        public string SelectedPath = "";
+        XivMtrl Material;
 
-        public LoadPresetDialog(EShaderPack shpk)
+        public LoadPresetDialog(XivMtrl material)
         {
+            Material = material;
             InitializeComponent();
             var collection = new ObservableCollection<KeyValuePair<string,string>>();
             var files = Directory.GetFiles(_PresetsPath, "*",SearchOption.AllDirectories).Where(x => x.EndsWith(".mtrl"));
@@ -43,25 +48,66 @@ namespace FFXIV_TexTools.Views.Controls
 
         private void LoadButton_Click(object sender, RoutedEventArgs e)
         {
-            SelectedPath = (string) PresetsList.SelectedValue;
+            var path = (string) PresetsList.SelectedValue;
+
+            var _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory);
+            var bytes = System.IO.File.ReadAllBytes(path);
+            var newMtrl = _mtrl.GetMtrlData(bytes, Material.MTRLPath);
+
+            // Carry our colorset information through.
+            if (ColorsetBox.IsChecked == false)
+            {
+                if (newMtrl.ColorSetData.Count > 0 && Material.ColorSetData.Count > 0)
+                {
+                    newMtrl.ColorSetData = Material.ColorSetData;
+                    newMtrl.ColorSetDyeData = Material.ColorSetDyeData;
+                }
+            }
+
+            // Carry our Shader information through.
+            if(ShaderBox.IsChecked == false)
+            {
+                newMtrl.Shader = Material.Shader;
+                newMtrl.ShaderConstants = Material.ShaderConstants;
+                newMtrl.ShaderKeys = Material.ShaderKeys;
+            }
+
+            // Carry our Other information through.
+            if(OtherBox.IsChecked == false)
+            {
+                newMtrl.MaterialFlags = Material.MaterialFlags;
+                newMtrl.MaterialFlags2 = Material.MaterialFlags2;
+                newMtrl.AdditionalData = Material.AdditionalData;
+            }
+
+            // Carry our Texture information through.
+            if(TextureBox.IsChecked == false)
+            {
+                newMtrl.Textures = Material.Textures;
+            }
+
+            Material = newMtrl;
             DialogResult = true;
         }
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
-            SelectedPath = "";
-            Close();
+            Material = null;
             DialogResult = false;
         }
 
-        public static string ShowLoadPresetDialog(EShaderPack shpk, Window owner = null)
+        public static XivMtrl ShowLoadPresetDialog(XivMtrl material, Window owner = null)
         {
-            var wind = new LoadPresetDialog(shpk);
+            var wind = new LoadPresetDialog(material);
             wind.WindowStartupLocation = WindowStartupLocation.CenterScreen;
             wind.Owner = owner != null ? owner : System.Windows.Application.Current.MainWindow;
             var result = wind.ShowDialog();
+            if(result != true)
+            {
+                return null;
+            }
 
-            return wind.SelectedPath;
+            return wind.Material;
         }
     }
 }
