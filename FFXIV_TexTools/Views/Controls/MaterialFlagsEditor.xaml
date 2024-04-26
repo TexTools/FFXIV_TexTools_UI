@@ -45,7 +45,7 @@
 
             <Label Grid.Row="2" Grid.Column="1" HorizontalContentAlignment="right" HorizontalAlignment="right" VerticalAlignment="Center"  Content="Hex Representation:"></Label>
 
-            <TextBox x:Name="HexBox" Grid.Row="2" Grid.Column="2" HorizontalAlignment="Left" Height="30" Width="100" TextChanged="HexBox_TextChanged" >
+            <TextBox x:Name="HexBox" Grid.Row="2" Grid.Column="2" HorizontalAlignment="Left" Height="30" Width="100" >
                 <Binding Path="FullInt" UpdateSourceTrigger="PropertyChanged">
                     <Binding.ValidationRules>
                         <local:HexValidationRule />
