@@ -37,6 +37,7 @@ namespace FFXIV_TexTools.Views.Controls
             // Remove the ".shpk" part of the shader name.
             folder = folder.Substring(0, folder.Length - 5);
 
+            System.IO.Directory.CreateDirectory(LoadPresetDialog._PresetsPath + "/" + folder);
             SelectedPath = LoadPresetDialog._PresetsPath + "/" + folder + "/" + PresetName.Text + ".mtrl";
             DialogResult = true;
         }
