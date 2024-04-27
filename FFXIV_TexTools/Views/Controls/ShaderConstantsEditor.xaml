@@ -22,7 +22,8 @@
         
         <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="5" TextAlignment="Center" FontStyle="Italic" FontSize="10">
             <Run Text="Shader Constants adjust individual effects."/><LineBreak/>
-            <Run Text="Some, but not all Constants have known names.  Others are described by their effect."/><LineBreak/>
+            <Run Text="Some, but not all Constants have known names.  Others are described by their effect."/>
+            <LineBreak/><Run Text="This menu is not yet complete."/>
         </TextBlock>
 
         <Grid Grid.Row="1">
@@ -35,6 +36,8 @@
                 <RowDefinition Height="1*"></RowDefinition>
             </Grid.RowDefinitions>
         </Grid>
+
+        <Grid Grid.Row="1" Grid.Column="0" Margin="10"/>
 
         <Button x:Name="ConfirmButton" Content="Confirm" Grid.Row="2" Width="100" Height="30" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10,0,10,0" Click="Confirm_Click"/>
         <Button x:Name="CancelButton" Content="Cancel" Grid.Row="2" Width="100" Height="30" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,10,0" Click="Cancel_Click"/>

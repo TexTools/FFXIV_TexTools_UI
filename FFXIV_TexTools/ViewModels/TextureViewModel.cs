@@ -1876,30 +1876,31 @@ namespace FFXIV_TexTools.ViewModels
                     mode = MaterialEditorMode.NewRace;
                 }
 
-                var editor = new Views.Textures.MaterialEditorView() { Owner = System.Windows.Application.Current.MainWindow };
-                var open = await editor.SetMaterial(material, item, mode);
-                
-                // If we failed to open the dialog, just cancel entirely.
-                // We probably weren't done loading.
-                if(!open)
+                XivMtrl newMaterial;
+                if (mode == MaterialEditorMode.EditSingle || mode == MaterialEditorMode.EditMulti)
                 {
-                    return;
+                    var editor = new Views.Textures.MaterialEditorView() { Owner = System.Windows.Application.Current.MainWindow };
+                    var created = await editor.SetMaterial(material, item, mode);
+                    // If we failed to create the dialog, just cancel entirely.
+                    // We probably weren't done loading.
+                    if (!created)
+                    {
+                        return;
+                    }
+                    _textureView.BottomFlyout.IsOpen = false;
+                    var result = editor.ShowDialog();
+                    if(result != true)
+                    {
+                        // User cancelled the menu.
+                        return;
+                    }
+                    newMaterial = editor.Material;
+                } else
+                {
+                    newMaterial = await CreateMaterialDialog.ShowCreateMaterialDialog(material, item, System.Windows.Application.Current.MainWindow);
                 }
-
-
-                _textureView.BottomFlyout.IsOpen = false;
-                var result = editor.ShowDialog();
 
                 var prim = SelectedPrimary;
-
-                var newMaterial = editor.Material;
-
-                if (result != true)
-                {
-                    // User cancelled the process or deleted/removed the material.
-                    // Just reset us back to the top level and reload the UI.
-                    newMaterial = null;
-                }
 
 
                 // Just re-set the primary selector to update the view.

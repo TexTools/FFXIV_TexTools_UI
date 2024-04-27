@@ -62,7 +62,6 @@ namespace FFXIV_TexTools.ViewModels
         private XivMtrl _material;
         private IItemModel _item;
         private string _newMaterialIdentifier;
-        private XivRace _overrideDestinationRace;
 
         public MaterialEditorViewModel(MaterialEditorView view)
         {
@@ -98,9 +97,6 @@ namespace FFXIV_TexTools.ViewModels
                     if (_mode == MaterialEditorMode.EditMulti)
                     {
                         _mode = MaterialEditorMode.EditSingle;
-                    } else
-                    {
-                        _mode = MaterialEditorMode.NewSingle;
                     }
                 }
             }
@@ -113,9 +109,6 @@ namespace FFXIV_TexTools.ViewModels
                     break;
                 case MaterialEditorMode.EditMulti:
                     _view.MaterialPathTextBox.Text = "Editing Multiple Materials: Material ".L() + _material.GetMaterialIdentifier();
-                    break;
-                case MaterialEditorMode.NewSingle:
-                    _view.MaterialPathTextBox.Text = "New Material".L();
                     break;
                 case MaterialEditorMode.NewMulti:
                     _view.MaterialPathTextBox.Text = "New Materials".L();
@@ -140,13 +133,8 @@ namespace FFXIV_TexTools.ViewModels
 
             if(_mode == MaterialEditorMode.NewMulti )
             {
-                // Bump up the material identifier letter.
-                _newMaterialIdentifier = await GetNewMaterialIdentifier();
+                _newMaterialIdentifier = _material.GetMaterialIdentifier();
                 _view.MaterialPathTextBox.Text = "New Materials: Material ".L() + _newMaterialIdentifier;
-            } else if(_mode == MaterialEditorMode.NewSingle)
-            {
-                _newMaterialIdentifier = await GetNewMaterialIdentifier();
-                _view.MaterialPathTextBox.Text = "New Material: Material ".L() + _newMaterialIdentifier;
             }
 
             // Get the mod entry.
@@ -165,20 +153,7 @@ namespace FFXIV_TexTools.ViewModels
 
         public XivMtrl GetMaterial()
         {
-            //return _materialSettings.Material;
             return _material;
-        }
-
-        /// <summary>
-        /// Sanitizes a path string
-        /// </summary>
-        /// <param name="path"></param>
-        /// <returns></returns>
-        private string SanitizePath(string path)
-        {
-            path = path.ToLower();
-            path = Regex.Replace(path, "[^a-z0-9-_/\\.{}]", "");
-            return path;
         }
 
         /// <summary>
@@ -190,19 +165,10 @@ namespace FFXIV_TexTools.ViewModels
             _view.CancelButton.IsEnabled = false;
             _view.DisableButton.IsEnabled = false;
             _view.SaveButton.Content = UIStrings.Working_Ellipsis;
-            //_view.NormalTextBox.Text = SanitizePath(_view.NormalTextBox.Text);
-            //_view.DiffuseTextBox.Text = SanitizePath(_view.DiffuseTextBox.Text);
-            //_view.SpecularTextBox.Text = SanitizePath(_view.SpecularTextBox.Text);
-
-            if(_mode == MaterialEditorMode.NewSingle)
-            {
-                // This needs to be updated BEFORE setting texture paths.
-                _material.MTRLPath = Regex.Replace(_material.MTRLPath, "_([a-z0-9])\\.mtrl", "_" + _newMaterialIdentifier + ".mtrl");
-            }
 
             try
             {
-                if (_mode == MaterialEditorMode.NewSingle || _mode == MaterialEditorMode.EditSingle)
+                if (_mode == MaterialEditorMode.EditSingle)
                 {
                     // Save the existing MTRL.
                     await _mtrl.ImportMtrl(_material, _item, XivStrings.TexTools);
@@ -211,13 +177,6 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     // Ship it to the more complex save function.
                     await SaveMulti();
-
-                    // Change this after calling SaveMulti.  Updated so that the external classes looking for the material after
-                    // can find the right type identifier and such.
-                    if (_mode != MaterialEditorMode.NewRace)
-                    {
-                        _material.MTRLPath = Regex.Replace(_material.MTRLPath, "_([a-z0-9])\\.mtrl", "_" + _newMaterialIdentifier + ".mtrl");
-                    }
                 }
             } catch (Exception Ex)
             {
@@ -226,51 +185,6 @@ namespace FFXIV_TexTools.ViewModels
             return _material;
         }
 
-        public async Task<string> GetNewMaterialIdentifier()
-        {
-
-            // Get new Material Identifier
-            var alphabet = Constants.Alphabet;
-            List<string> partList = new List<string>();
-
-            var materialIdentifier = _material.GetMaterialIdentifier();
-
-            var newIdentifier = '\0';
-            var rex = new Regex("_([a-z0-9])+\\.mtrl");
-            if (!rex.IsMatch(_material.MTRLPath))
-            {
-                return "a";
-            }
-            for (var i = 0; i < alphabet.Length; i++)
-            {
-                var identifier = alphabet[i];
-                var newPath = Regex.Replace(_material.MTRLPath, "_([a-z0-9])+\\.mtrl", "_" + identifier + ".mtrl");
-                var exists = await _index.FileExists(newPath);
-                if(!exists)
-                {
-                    return identifier.ToString();
-                }
-            }
-
-            // Really? Fine... Twoooo alphabets
-            for (var a = 0; a < alphabet.Length; a++)
-            {
-                for (var b = 0; b < alphabet.Length; b++)
-                {
-                    var identifier = alphabet[a] + alphabet[b];
-                    var newPath = Regex.Replace(_material.MTRLPath, "_([a-z0-9])+\\.mtrl", "_" + identifier + ".mtrl");
-                    var exists = await _index.FileExists(newPath);
-                    if (!exists)
-                    {
-                        return identifier.ToString();
-                    }
-                }
-            }
-
-            // If you got this far, you can suffer memes.
-            return "why";
-
-        }
 
         public async Task SaveMulti()
         {
@@ -369,18 +283,8 @@ namespace FFXIV_TexTools.ViewModels
                 // Don't create materials for set 0.  (SE sets the material ID to 0 when that particular set-slot doesn't actually exist as an item)
                 if (materialSetId == 0 && imcEntries.Count > 0) continue;
 
-                var dxVersion = 11;
-                XivMtrl itemXivMtrl;
-
-                // Get mtrl path
-                if(await _index.FileExists(oldMaterialPath))
-                {
-                    // Use the Material from this variant as a base?
-                    itemXivMtrl = await _mtrl.GetMtrlData(_item, oldMaterialPath, dxVersion);
-                } else
-                {
-                    itemXivMtrl = await _mtrl.GetMtrlData(_item, _material.MTRLPath, dxVersion);
-                }
+                // We have clone, just use clone.
+                XivMtrl itemXivMtrl = (XivMtrl) _material.Clone();
 
                 // If we're an item that doesn't use IMC variants, make sure we don't accidentally move the material around.
                 if (materialSetId != 0)
@@ -394,17 +298,6 @@ namespace FFXIV_TexTools.ViewModels
                     // Change the MTRL part identifier.
                     itemXivMtrl.MTRLPath = Regex.Replace(itemXivMtrl.MTRLPath, mtrlReplacementRegex, mtrlReplacementRegexResult);
                 }
-
-                // Load the Shader Settings
-                //itemXivMtrl.SetShaderInfo(shaderInfo, true);
-
-                // Loop our tokenized map infos and pump them back in
-                // using the new modified material to detokenize them.
-                //foreach (var info in mapInfos)
-                {
-                    //itemXivMtrl.SetMapInfo(info.Usage, (MapInfo)info.Clone());
-                }
-
 
                 IItem item;
                 try

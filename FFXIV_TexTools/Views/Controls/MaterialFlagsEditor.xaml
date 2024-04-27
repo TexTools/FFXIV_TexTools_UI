@@ -14,29 +14,29 @@
         <ToolTip x:Key="MaterialFlagsTooltip">
             <TextBlock>
             <Run Text="Material Flags are toggles that turn on/off specific behaviors."/><LineBreak/>
-            <Run Text="Many flags do not (as of yet) have known purposes."/><LineBreak/>
+            <Run Text="Many flags do not (as of yet) have known purposes."/>
             </TextBlock>
         </ToolTip>
         <ToolTip x:Key="MaterialFlagsHexTooltip">
             <TextBlock>
             <Run Text="Hex representation of the Material Flags"/><LineBreak/>
-            <Run Text="For use when copy-pasting to other tools. (Ex. Penumbra)"/><LineBreak/>
+            <Run Text="For use when copy-pasting to other tools. (Ex. Penumbra)"/>
             </TextBlock>
         </ToolTip>
         <ToolTip x:Key="AdditionalDataTooltip">
             <TextBlock>
             <Run Text="Additional Data that exists in the Material File."/><LineBreak/>
-            <Run Text="Its purpose is not currently known."/><LineBreak/>
+            <Run Text="Its purpose is not currently known."/>
             </TextBlock>
         </ToolTip>
         <ToolTip x:Key="AdditionalDataHexTooltip">
             <TextBlock>
             <Run Text="Hex representation of the Additional Data"/><LineBreak/>
-            <Run Text="For use when copy-pasting to other tools. (Ex. Penumbra)"/><LineBreak/>
+            <Run Text="For use when copy-pasting to other tools. (Ex. Penumbra)"/>
             </TextBlock>
         </ToolTip>
     </Window.Resources>
-    <Grid Height="400" Width="800">
+    <Grid Height="460" Width="800">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1*"></ColumnDefinition>
         </Grid.ColumnDefinitions>
@@ -60,15 +60,15 @@
                     <RowDefinition Height="40"></RowDefinition>
                 </Grid.RowDefinitions>
 
-                <Label Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" Grid.ColumnSpan="4" ToolTip="{Binding MaterialFlagsTooltip}">Material Flags</Label>
+                <Label Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" Grid.ColumnSpan="4" ToolTip="{StaticResource MaterialFlagsTooltip}">Material Flags</Label>
                 <local:BitflagControl x:Name="BitControl0" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" Grid.Column="0" Grid.Row="1"/>
                 <local:BitflagControl x:Name="BitControl1" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" Grid.Column="1" Grid.Row="1"/>
                 <local:BitflagControl x:Name="BitControl2" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" Grid.Column="2" Grid.Row="1"/>
                 <local:BitflagControl x:Name="BitControl3" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" Grid.Column="3" Grid.Row="1"/>
 
-                <Label Grid.Row="2" Grid.Column="1" HorizontalContentAlignment="right" HorizontalAlignment="right" VerticalAlignment="Center"  Content="Flags Hex Representation:" ToolTip="{Binding MaterialFlagsHexTooltip}" ></Label>
+                <Label Grid.Row="2" Grid.Column="1" HorizontalContentAlignment="right" HorizontalAlignment="right" VerticalAlignment="Center"  Content="Material Flags Hex Representation:" ToolTip="{StaticResource MaterialFlagsHexTooltip}" ></Label>
 
-                <TextBox x:Name="HexBox" Grid.Row="2" Grid.Column="2" HorizontalAlignment="Left" VerticalAlignment="Center" Height="30" Width="100" PreviewTextInput="HexInput" ToolTip="{Binding MaterialFlagsHexTooltip}" >
+                <TextBox x:Name="HexBox" Grid.Row="2" Grid.Column="2" HorizontalAlignment="Left" VerticalAlignment="Center" Height="30" Width="100" PreviewTextInput="HexInput" ToolTip="{StaticResource MaterialFlagsHexTooltip}" >
                     <Binding Path="FullInt" UpdateSourceTrigger="PropertyChanged">
                         <Binding.ValidationRules>
                             <local:HexValidationRule />
@@ -93,11 +93,11 @@
                     <RowDefinition Height="40"></RowDefinition>
                 </Grid.RowDefinitions>
 
-                <Label Grid.Row="0" Grid.Column="0" HorizontalContentAlignment="right" HorizontalAlignment="right" VerticalAlignment="Center"  Content="Additional Data Size (Bytes):" ToolTip="{Binding AdditionalDataTooltip}"></Label>
-                <TextBox x:Name="AdditionalDataLengthBox" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" Height="30" Width="50" VerticalAlignment="Center" ToolTip="{Binding AdditionalDataTooltip}" PreviewTextInput="NumberValidationTextBox" />
+                <Label Grid.Row="0" Grid.Column="0" HorizontalContentAlignment="right" HorizontalAlignment="right" VerticalAlignment="Center"  Content="Additional Data Size (Bytes):" ToolTip="{StaticResource AdditionalDataTooltip}"></Label>
+                <TextBox x:Name="AdditionalDataLengthBox" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" Height="30" Width="50" VerticalAlignment="Center" ToolTip="{StaticResource AdditionalDataTooltip}" PreviewTextInput="NumberValidationTextBox" />
 
-                <Label Grid.Row="1" Grid.Column="0" HorizontalContentAlignment="right" HorizontalAlignment="right" VerticalAlignment="Center"  Content="Additional Data:" ToolTip="{Binding AdditionalDataTooltip}"></Label>
-                <TextBox Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" Height="30" Width="150"  VerticalAlignment="Center" ToolTip="{Binding AdditionalDataTooltip}" PreviewTextInput="HexInput">
+                <Label Grid.Row="1" Grid.Column="0" HorizontalContentAlignment="right" HorizontalAlignment="right" VerticalAlignment="Center"  Content="Additional Data:" ToolTip="{StaticResource AdditionalDataTooltip}"></Label>
+                <TextBox Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" Height="30" Width="150"  VerticalAlignment="Center" ToolTip="{StaticResource AdditionalDataTooltip}" PreviewTextInput="HexInput">
                 <Binding Path="AdditionalDataRaw" UpdateSourceTrigger="PropertyChanged">
                     <Binding.ValidationRules>
                         <local:HexValidationRule />

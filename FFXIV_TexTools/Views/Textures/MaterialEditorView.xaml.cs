@@ -29,10 +29,17 @@ namespace FFXIV_TexTools.Views.Textures
 {
     public enum MaterialEditorMode
     {
+        // Simple single-edit mode.  The most common option.
         EditSingle,
+        
+        // Used when editing all variants of a material simultaneously.
         EditMulti,
-        NewSingle,
+
+        // Used when adding a new racial skin.
         NewRace,
+
+        // Used when adding a new material to a gear set.
+        // Triggers adding the material to all variants of the gear for safety.
         NewMulti
     }
     /// <summary>
@@ -127,6 +134,11 @@ namespace FFXIV_TexTools.Views.Textures
 
         public async Task<bool> SetMaterial(XivMtrl material, IItemModel item, MaterialEditorMode mode = MaterialEditorMode.EditSingle)
         {
+            if(material == null)
+            {
+                Close();
+                return false;
+            }
             _Material = material;
             _item = item;
             _mode = mode;
@@ -210,13 +222,22 @@ namespace FFXIV_TexTools.Views.Textures
 
         private void NewSharedButton_Click(object sender, RoutedEventArgs e)
         {
-            var sharedTex = "{item_folder}/{default_name}";
+            foreach(var tex in Material.Textures)
+            {
+                var path = Material.GetTextureRootDirectoy() + "/" + Material.GetDefaultTexureName(tex.Usage, true);
+                tex.TexturePath = path;
+            }
+            UpdateTextureList();
         }
 
         private void NewUniqueButton_Click(object sender, RoutedEventArgs e)
         {
-            var uniqueTex = "{item_folder}/{variant}_{default_name}";
-
+            foreach (var tex in Material.Textures)
+            {
+                var path = Material.GetTextureRootDirectoy() + "/" + Material.GetDefaultTexureName(tex.Usage, false);
+                tex.TexturePath = path;
+            }
+            UpdateTextureList();
         }
 
         private void TexturePathBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -259,19 +280,19 @@ namespace FFXIV_TexTools.Views.Textures
         }
         private void EditShaderKeys_Click(object sender, RoutedEventArgs e)
         {
-            var result = ShaderKeysEditor.ShowKeysEditor(Material.ShaderKeys, this);
-            if(result != null)
+            var result = ShaderKeysEditor.ShowKeysEditor(Material, this);
+            if(result == true)
             {
-                Material.ShaderKeys = result;
+                // Don't really need to do anything here, since the editor handles updating the material.
             }
         }
 
         private void EditShaderConstants_Click(object sender, RoutedEventArgs e)
         {
-            var result = ShaderConstantsEditor.ShowConstantsEditor(Material.ShaderConstants, this);
-            if(result != null)
+            var result = ShaderConstantsEditor.ShowConstantsEditor(Material, this);
+            if(result == true)
             {
-                Material.ShaderConstants = result;
+                // Don't really need to do anything here, since the editor handles updating the material.
             }
         }
 

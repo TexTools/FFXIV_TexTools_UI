@@ -34,7 +34,10 @@
             <Run Text="Shader Keys enable various Shader functionality.  They are specific to each Shader Pack."/><LineBreak/>
             <Run Text="Shader Keys only work in specific (not entirely known) combinations, with specific values."/><LineBreak/>
             <Run Text="Shader Key Names are tentative guesses based upon their usage."/>
+            <LineBreak/><Run Text="This menu is not yet complete."/>
         </TextBlock>
+        
+        <Grid Grid.Row="1" Grid.Column="0" Margin="10"/>
 
         <Button x:Name="ConfirmButton" Content="Confirm" Grid.Row="2" Width="100" Height="30" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10,0,10,0" Click="Confirm_Click"/>
         <Button x:Name="CancelButton" Content="Cancel" Grid.Row="2" Width="100" Height="30" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,10,0" Click="Cancel_Click"/>

@@ -10,7 +10,7 @@
         mc:Ignorable="d"
         xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
         resx:Localization.Enabled="True"                 
-        Title="{Binding Source={x:Static resx:UIStrings.MaterialEditorHelp}}" Height="627.364" IsMinButtonEnabled="False" IsMaxRestoreButtonEnabled="False" WindowStartupLocation="CenterOwner" FontSize="14" Width="635.747">
+        Title="{Binding Source={x:Static resx:UIStrings.MaterialEditorHelp}}" Height="600" IsMinButtonEnabled="False" IsMaxRestoreButtonEnabled="False" WindowStartupLocation="CenterOwner" FontSize="14" Width="635.747">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="141*"/>
@@ -20,8 +20,6 @@
             <RowDefinition Height="30*"/>
             <RowDefinition Height="50*"/>
             <RowDefinition Height="30*"/>
-            <RowDefinition Height="50*"/>
-            <RowDefinition Height="50*"/>
             <RowDefinition Height="50*"/>
             <RowDefinition Height="50*"/>
             <RowDefinition Height="50*"/>
@@ -44,16 +42,6 @@
         <Label Margin="10" Grid.Row="5" HorizontalContentAlignment="Right" FontSize="12" VerticalContentAlignment="Center">
             <TextBlock Text="{}{variant}" TextAlignment="Right" FontWeight="Bold" FontSize="14" FontStyle="Italic" />
         </Label>
-        <Label Margin="10" Grid.Row="6" HorizontalContentAlignment="Right" FontSize="12" VerticalContentAlignment="Center">
-            <TextBlock Text="{}{default_name}" TextAlignment="Right" FontWeight="Bold" FontSize="14" FontStyle="Italic" />
-        </Label>
-        <TextBlock Margin="10" Grid.Row="6" TextWrapping="Wrap" Text="Use the default texture name, rather than a custom one.  Unique per Item/Material/Texture Type." Grid.Column="1"/>
-        <TextBlock Margin="10" Grid.Row="8" TextWrapping="Wrap" Text="Paths may only contain lowercase characters, numbers, tokens and &#xA;the following special characters: /.-_" Grid.ColumnSpan="2" TextAlignment="Center"/>
-        <TextBlock Margin="10,10,10,9" Grid.Row="9" TextWrapping="Wrap" Grid.ColumnSpan="2" TextAlignment="Center">
-
-            <Hyperlink NavigateUri="https://docs.google.com/document/d/1bRW48y20n9eqkA7HdSlbP0Hr4lNV1S5t9-3zVfhwJbg/edit?usp=sharing" RequestNavigate="Hyperlink_RequestNavigate">
-                Click here for the full Material Editor Guide.
-            </Hyperlink>
-        </TextBlock>
+        <TextBlock Margin="10" Grid.Row="6" TextWrapping="Wrap" Text="Paths may only contain lowercase characters, numbers, tokens and &#xA;the following special characters: /.-_" Grid.ColumnSpan="2" TextAlignment="Center"/>
     </Grid>
 </mah:MetroWindow>

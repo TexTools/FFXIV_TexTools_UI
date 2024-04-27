@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using HelixToolkit.SharpDX.Core.Shaders;
 using xivModdingFramework.Materials.DataContainers;
+using Newtonsoft.Json;
 
 namespace FFXIV_TexTools.Views.Controls
 {
@@ -18,10 +19,13 @@ namespace FFXIV_TexTools.Views.Controls
     public partial class ShaderConstantsEditor : Window
     {
         public List<ShaderConstant> Constants;
-        public ShaderConstantsEditor(List<ShaderConstant> constants)
+
+        private XivMtrl Material;
+        public ShaderConstantsEditor(XivMtrl material)
         {
+            Material = material;
             InitializeComponent();
-            Constants = constants.ToList();
+            //Constants = constants.ToList();
         }
 
         private void Confirm_Click(object sender, RoutedEventArgs e)
@@ -34,18 +38,18 @@ namespace FFXIV_TexTools.Views.Controls
             DialogResult = false;
         }
 
-        public static List<ShaderConstant> ShowConstantsEditor(List<ShaderConstant> constants, Window owner = null)
+        public static bool ShowConstantsEditor(XivMtrl material, Window owner = null)
         {
-            var wind = new ShaderConstantsEditor(constants);
+            var wind = new ShaderConstantsEditor(material);
             wind.WindowStartupLocation = WindowStartupLocation.CenterScreen;
             wind.Owner = owner != null ? owner : System.Windows.Application.Current.MainWindow;
             var result = wind.ShowDialog();
             if(result != true)
             {
-                return null;
+                return false;
             }
 
-            return wind.Constants;
+            return true;
         }
     }
 }

@@ -9,16 +9,19 @@ using System.IO;
 using System.Linq;
 using HelixToolkit.SharpDX.Core.Shaders;
 using xivModdingFramework.Materials.DataContainers;
+using Newtonsoft.Json;
 
 namespace FFXIV_TexTools.Views.Controls
 {
     public partial class ShaderKeysEditor : Window
     {
         private List<ShaderKey> Keys;
-        public ShaderKeysEditor(List<ShaderKey> keys)
+
+        private XivMtrl Material;
+        public ShaderKeysEditor(XivMtrl material)
         {
+            Material = material;
             InitializeComponent();
-            Keys = keys.ToList();
         }
 
         private void Confirm_Click(object sender, RoutedEventArgs e)
@@ -31,17 +34,17 @@ namespace FFXIV_TexTools.Views.Controls
             DialogResult = false;
         }
 
-        public static List<ShaderKey> ShowKeysEditor(List<ShaderKey> keys, Window owner = null)
+        public static bool ShowKeysEditor(XivMtrl material, Window owner = null)
         {
-            var wind = new ShaderKeysEditor(keys);
+            var wind = new ShaderKeysEditor(material);
             wind.Owner = owner != null ? owner : System.Windows.Application.Current.MainWindow;
             wind.WindowStartupLocation = WindowStartupLocation.CenterScreen;
             var result = wind.ShowDialog();
             if(result != true)
             {
-                return null;
+                return false;
             }
-            return wind.Keys;
+            return true;
         }
     }
 }

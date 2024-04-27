@@ -85,6 +85,17 @@ namespace FFXIV_TexTools.Views.Controls
                 "Bit 6",
                 "Bit 7",
             });
+            BitControl0.SetTooltips(new List<string>()
+            {
+                "Use 2-sided triangles when rendering/displaying the attached model.",
+                "",
+                "",
+                "",
+                "",
+                "Allow continuous Alpha/Opacity values between 0 and 1 when rendering the attached model, rather than only 1/0 discretely.",
+                "",
+                "",
+            });
             BitControl1.SetNames(new List<string>()
             {
                 "Bit 8",
