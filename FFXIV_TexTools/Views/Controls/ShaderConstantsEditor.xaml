@@ -10,7 +10,7 @@
         Title="Shader Constants Editor"
         ResizeMode="NoResize"
         SizeToContent="WidthAndHeight">
-    <Grid Height="400" Width="750">
+    <Grid Height="600" Width="750">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1*"></ColumnDefinition>
         </Grid.ColumnDefinitions>

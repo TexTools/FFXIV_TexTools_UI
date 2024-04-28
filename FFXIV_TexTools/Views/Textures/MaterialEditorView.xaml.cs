@@ -252,9 +252,9 @@ namespace FFXIV_TexTools.Views.Textures
 
         private void NewSharedButton_Click(object sender, RoutedEventArgs e)
         {
-            foreach(var tex in Material.Textures)
+            foreach (var tex in Material.Textures)
             {
-                var path = Material.GetTextureRootDirectoy() + "/" + Material.GetDefaultTexureName(tex.Usage, true);
+                var path = Material.GetTextureRootDirectoy() + "/" + Material.GetDefaultTexureName(tex.Usage, false);
                 tex.TexturePath = path;
             }
             UpdateTextureList();
@@ -264,7 +264,7 @@ namespace FFXIV_TexTools.Views.Textures
         {
             foreach (var tex in Material.Textures)
             {
-                var path = Material.GetTextureRootDirectoy() + "/" + Material.GetDefaultTexureName(tex.Usage, false);
+                var path = Material.GetTextureRootDirectoy() + "/" + Material.GetDefaultTexureName(tex.Usage, true);
                 tex.TexturePath = path;
             }
             UpdateTextureList();
