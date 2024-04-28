@@ -125,6 +125,7 @@ namespace FFXIV_TexTools.Views.Controls
                     {
                         col.Add(new KeyValuePair<string, uint>(KeyId.ToString("X8"), KeyId));
                     }
+                    col = new ObservableCollection<KeyValuePair<string, uint>>(col.OrderBy(x => x.Key));
                     return col;
                 }
             }
@@ -139,6 +140,13 @@ namespace FFXIV_TexTools.Views.Controls
             DataContext = this;
             _OriginalMaterial = material;
             Material = (XivMtrl) material.Clone();
+
+            if(!ShaderKeys.ContainsKey(Material.Shader))
+            {
+                // Safety catch.
+                ShaderKeys[Material.Shader] = new Dictionary<uint, ShaderKeyInfo>();
+            }
+
             InitializeComponent();
             UpdateList();
         }

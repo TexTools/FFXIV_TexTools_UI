@@ -139,6 +139,7 @@ namespace FFXIV_TexTools.Views.Textures
                 Close();
                 return false;
             }
+            material = (XivMtrl) material.Clone();
             _Material = material;
             _item = item;
             _mode = mode;
