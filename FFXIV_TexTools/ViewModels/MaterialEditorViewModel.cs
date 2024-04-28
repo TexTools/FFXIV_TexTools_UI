@@ -128,7 +128,7 @@ namespace FFXIV_TexTools.ViewModels
             //_view.TransparencyComboBox.SelectedValue = shader.TransparencyEnabled;
             //_view.BackfacesComboBox.SelectedValue = shader.RenderBackfaces;
             //_view.ColorsetComboBox.SelectedValue = _material.ColorSetData.Count > 0;
-            _view.ShaderComboBox.SelectedValue = _material.Shader;
+            _view.ShaderComboBox.SelectedValue = _material.ShaderPack;
 
 
             if(_mode == MaterialEditorMode.NewMulti )

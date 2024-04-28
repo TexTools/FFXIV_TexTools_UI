@@ -11,7 +11,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Forms;
 using System.Windows.Media;
 using xivModdingFramework.Cache;
 using xivModdingFramework.Exd.FileTypes;
@@ -144,7 +143,7 @@ namespace FFXIV_TexTools.Views.Textures
             _item = item;
             _mode = mode;
 
-            ShaderComboBox.SelectedValue = Material.Shader;
+            ShaderComboBox.SelectedValue = Material.ShaderPack;
             UpdateTextureList();
             return await viewModel.SetMaterial(material, item, mode);
         }
@@ -186,13 +185,43 @@ namespace FFXIV_TexTools.Views.Textures
             Close(false);
         }
 
+        private EShaderPack _LastShpk;
 
         private void ShaderComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            Material.ShaderPack = (EShaderPack)((ComboBox)sender).SelectedValue;
             if (ShaderComboBox.SelectedValue == null)
             {
+                _LastShpk = Material.ShaderPack;
                 return;
             }
+            if(_LastShpk == EShaderPack.Invalid || Material.ShaderPack == EShaderPack.Invalid)
+            {
+                // Don't mess with anything if we were on a broken state before, or are transitioning to one.
+                _LastShpk = Material.ShaderPack;
+                return;
+            }
+
+            var lastDes = ShaderHelpers.GetEnumDescription(_LastShpk);
+            var curDes = ShaderHelpers.GetEnumDescription(Material.ShaderPack);
+
+            var lastWithoutLegacy = lastDes.Replace("legacy", "");
+            var curWithoutLegacy = curDes.Replace("legacy", "");
+
+            if(lastWithoutLegacy == curWithoutLegacy)
+            {
+                // If just flipping between legacy modes, leave the shader keys/constants intact.
+                // We don't know exactly which of them is valid or not on each mode, so from a use frustration standpoint it makes more sense to keep them,
+                // Rather than wipe them and force the user to manually remake.
+                _LastShpk = Material.ShaderPack;
+                return;
+            }
+
+            // Reset shader vars.
+            Material.ShaderKeys = new List<ShaderKey>();
+            Material.ShaderConstants = new List<ShaderConstant>();
+
+            _LastShpk = Material.ShaderPack;
         }
         private void HelpButton_Click(object sender, RoutedEventArgs e)
         {
@@ -250,7 +279,7 @@ namespace FFXIV_TexTools.Views.Textures
 
         private void SavePresetButton_Click(object sender, RoutedEventArgs e)
         {
-            var path = SavePresetDialog.ShowSavePresetDialog(Material.Shader, System.IO.Path.GetFileNameWithoutExtension(Material.MTRLPath));
+            var path = SavePresetDialog.ShowSavePresetDialog(Material.ShaderPack, System.IO.Path.GetFileNameWithoutExtension(Material.MTRLPath));
             if (path == "")
             {
                 return;
@@ -324,7 +353,7 @@ namespace FFXIV_TexTools.Views.Textures
 
         private async void LoadRawButton_Click(object sender, RoutedEventArgs e)
         {
-            var dialog = new OpenFileDialog();
+            var dialog = new System.Windows.Forms.OpenFileDialog();
             dialog.Filter = "Material Files (*.mtrl)|*.mtrl|All Files (*.*)|*.*";
             if (dialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
                 return;
@@ -336,13 +365,13 @@ namespace FFXIV_TexTools.Views.Textures
             }
             catch (Exception ex)
             {
-                FlexibleMessageBox.Show("Unable to load file:".L() + ex.Message, "Material Save Error".L(), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                FlexibleMessageBox.Show("Unable to load file:".L() + ex.Message, "Material Save Error".L(), System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
             }
         }
 
         private void SaveRawButton_Click(object sender, RoutedEventArgs e)
         {
-            var dialog = new SaveFileDialog();
+            var dialog = new System.Windows.Forms.SaveFileDialog();
             dialog.Filter = "Material Files (*.mtrl)|*.mtrl|All Files (*.*)|*.*";
             dialog.FileName = Path.GetFileName(Material.MTRLPath);
             if (dialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
@@ -354,7 +383,7 @@ namespace FFXIV_TexTools.Views.Textures
                 File.WriteAllBytes(dialog.FileName, bytes);
             } catch(Exception ex)
             {
-                FlexibleMessageBox.Show("Unable to save file:".L() + ex.Message, "Material Save Error".L(), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                FlexibleMessageBox.Show("Unable to save file:".L() + ex.Message, "Material Save Error".L(), System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
             }
         }
     }

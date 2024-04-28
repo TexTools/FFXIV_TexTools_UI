@@ -37,6 +37,13 @@
                 </Grid>
             </Border>
         </DataTemplate>
+        <ToolTip x:Key="ShpkTooltip">
+            <TextBlock>
+                The shader pack/collection used by this material.
+                <LineBreak/>Altering this will reset your Shader Keys/Shader Constants. *
+                <LineBreak/>* (Unless switching between Legacy and non-legacy of the same type.)
+            </TextBlock>
+        </ToolTip>
     </mah:MetroWindow.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
@@ -55,8 +62,8 @@
         </Grid.RowDefinitions>
         <TextBox x:Name="MaterialPathTextBox" IsReadOnly="True" VerticalAlignment="Center" Grid.Column="0" Margin="10,0,10,0" Grid.ColumnSpan="2"  Height="26" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="14" FontWeight="Bold" FontStyle="Italic"/>
 
-        <Label Content="Shader:" Margin="41,0,0,0" VerticalAlignment="Center" FontWeight="Bold" FontSize="14" Height="28" HorizontalAlignment="Left" Width="63" Grid.Row="1" HorizontalContentAlignment="Right"/>
-        <ComboBox x:Name="ShaderComboBox" Margin="124,0,10,0" VerticalAlignment="Center" Height="26" Grid.Row="1" SelectionChanged="ShaderComboBox_SelectionChanged" />
+        <Label Content="Shader Pack:" Margin="10,0,0,0" VerticalAlignment="Center" FontWeight="Bold" FontSize="14" Height="28" HorizontalAlignment="Left" Grid.Row="1" HorizontalContentAlignment="Right" ToolTip="{StaticResource ShpkTooltip}"/>
+        <ComboBox x:Name="ShaderComboBox" Margin="110,0,10,0" VerticalAlignment="Center" Height="26" Grid.Row="1" SelectionChanged="ShaderComboBox_SelectionChanged" ToolTip="{StaticResource ShpkTooltip}"/>
 
         <Button x:Name="CopyMaterialButton" Content="Copy Material" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Center" Width="100" Grid.Column="2" Click="CopyMaterialButton_Click" Height="28"/>
         <Button x:Name="PasteMaterialButton" Content="Paste Material" HorizontalAlignment="Left"  Margin="110,0,0,0" VerticalAlignment="Center" Width="100" Grid.Column="2" Click="PasteMaterialButton_Click" Height="28"/>

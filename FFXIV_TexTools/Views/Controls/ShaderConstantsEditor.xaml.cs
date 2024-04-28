@@ -58,7 +58,7 @@ namespace FFXIV_TexTools.Views.Controls
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Val2Enabled)));
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Val3Enabled)));
 
-                    var ninfo = Constant.GetConstantInfo(_Editor.Material.Shader);
+                    var ninfo = Constant.GetConstantInfo(_Editor.Material.ShaderPack);
                     if (ninfo != null)
                     {
                         Values = ninfo.Value.DefaultValues;
@@ -85,7 +85,7 @@ namespace FFXIV_TexTools.Views.Controls
             {
                 get
                 {
-                    var ninfo = Constant.GetConstantInfo(_Editor.Material.Shader);
+                    var ninfo = Constant.GetConstantInfo(_Editor.Material.ShaderPack);
                     var keystring = ConstantId.ToString("X8");
                     if (ninfo == null)
                     {
@@ -100,7 +100,7 @@ namespace FFXIV_TexTools.Views.Controls
                 get
                 {
                     var col = new ObservableCollection<KeyValuePair<string, uint>>();
-                    foreach (var kv in ShaderConstants[_Editor.Material.Shader])
+                    foreach (var kv in ShaderConstants[_Editor.Material.ShaderPack])
                     {
                         var info = kv.Value;
                         var kvp = new KeyValuePair<string, uint>(info.UIName, info.Id);
@@ -302,9 +302,9 @@ namespace FFXIV_TexTools.Views.Controls
         {
             var newConst = new ShaderConstant();
 
-            if (ShaderKeys[Material.Shader].Count > 0)
+            if (ShaderKeys[Material.ShaderPack].Count > 0)
             {
-                var info = ShaderConstants[Material.Shader].First().Value;
+                var info = ShaderConstants[Material.ShaderPack].First().Value;
                 newConst.ConstantId = info.Id;
                 newConst.Values = info.DefaultValues;
             }

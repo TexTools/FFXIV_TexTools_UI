@@ -67,7 +67,7 @@ namespace FFXIV_TexTools.Views.Controls
             // Carry our Shader information through.
             if(ShaderBox.IsChecked == false)
             {
-                newMtrl.Shader = Material.Shader;
+                newMtrl.ShaderPack = Material.ShaderPack;
                 newMtrl.ShaderConstants = Material.ShaderConstants;
                 newMtrl.ShaderKeys = Material.ShaderKeys;
             }

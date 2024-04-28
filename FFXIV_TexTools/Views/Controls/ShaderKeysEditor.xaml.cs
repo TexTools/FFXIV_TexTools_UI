@@ -45,7 +45,7 @@ namespace FFXIV_TexTools.Views.Controls
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Name)));
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(KnownValues)));
 
-                    var ninfo = Key.GetKeyInfo(_Editor.Material.Shader);
+                    var ninfo = Key.GetKeyInfo(_Editor.Material.ShaderPack);
                     if (ninfo != null)
                     {
                         Value = ninfo.Value.DefaultValue;
@@ -72,7 +72,7 @@ namespace FFXIV_TexTools.Views.Controls
             {
                 get
                 {
-                    var ninfo = Key.GetKeyInfo(_Editor.Material.Shader);
+                    var ninfo = Key.GetKeyInfo(_Editor.Material.ShaderPack);
                     var keystring = KeyId.ToString("X8");
                     if (ninfo == null)
                     {
@@ -85,7 +85,7 @@ namespace FFXIV_TexTools.Views.Controls
             public ObservableCollection<KeyValuePair<string, uint>> KnownValues {
                 get
                 {
-                    var ninfo = Key.GetKeyInfo(_Editor.Material.Shader);
+                    var ninfo = Key.GetKeyInfo(_Editor.Material.ShaderPack);
                     var values = new ObservableCollection<KeyValuePair<string, uint>>();
                     if (ninfo == null)
                     {
@@ -114,7 +114,7 @@ namespace FFXIV_TexTools.Views.Controls
                 get
                 {
                     var col = new ObservableCollection<KeyValuePair<string, uint>>();
-                    foreach(var kv in ShaderKeys[_Editor.Material.Shader])
+                    foreach(var kv in ShaderKeys[_Editor.Material.ShaderPack])
                     {
                         var info = kv.Value;
                         var kvp = new KeyValuePair<string, uint>(info.UIName, info.Key);
@@ -141,10 +141,10 @@ namespace FFXIV_TexTools.Views.Controls
             _OriginalMaterial = material;
             Material = (XivMtrl) material.Clone();
 
-            if(!ShaderKeys.ContainsKey(Material.Shader))
+            if(!ShaderKeys.ContainsKey(Material.ShaderPack))
             {
                 // Safety catch.
-                ShaderKeys[Material.Shader] = new Dictionary<uint, ShaderKeyInfo>();
+                ShaderKeys[Material.ShaderPack] = new Dictionary<uint, ShaderKeyInfo>();
             }
 
             InitializeComponent();
@@ -197,9 +197,9 @@ namespace FFXIV_TexTools.Views.Controls
         {
             var newKey = new ShaderKey();
 
-            if(ShaderKeys[Material.Shader].Count > 0)
+            if(ShaderKeys[Material.ShaderPack].Count > 0)
             {
-                var info = ShaderKeys[Material.Shader].First().Value;
+                var info = ShaderKeys[Material.ShaderPack].First().Value;
                 newKey.KeyId = info.Key;
                 newKey.Value = info.DefaultValue;
             }
