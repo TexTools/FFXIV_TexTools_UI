@@ -142,8 +142,15 @@ namespace FFXIV_TexTools.ViewModels
                         (byte)Math.Round(Math.Sqrt(RowData[2][2] / eMax) * 255f));
                 }
 
+
                 float glossVal = RowData[1][3];
                 float specularPower = RowData[0][3];
+                if (_mtrl.ColorSetData.Count > 512)
+                {
+                    // Values flipped in Dawntrail.
+                    glossVal = RowData[0][3];
+                    specularPower = RowData[1][3];
+                }
                 if (dyeId >= 0 && dyeId < 128 && _mtrl.ColorSetDyeData != null)
                 {
                     var byteOffset = RowId * 2;

@@ -284,8 +284,18 @@ namespace FFXIV_TexTools.Controls
             b = (byte)Math.Round(RowData[2][2] * 255);
             EmissiveColorPicker.SelectedColor = new System.Windows.Media.Color() { R = r, G = g, B = b, A = 255 };
 
-            SpecularPowerBox.Text = RowData[0][3].ToString();
-            GlossBox.Text = RowData[1][3].ToString();
+
+
+            if (_mtrl.ColorSetData.Count > 512)
+            {
+                // Dawntrail flipped these two values.
+                SpecularPowerBox.Text = RowData[1][3].ToString();
+                GlossBox.Text = RowData[0][3].ToString();
+            } else
+            {
+                SpecularPowerBox.Text = RowData[0][3].ToString();
+                GlossBox.Text = RowData[1][3].ToString();
+            }
 
             if (_columnCount== 4)
             {
@@ -509,6 +519,22 @@ namespace FFXIV_TexTools.Controls
                 DyePreviewIdBox.SelectedValue = -1;
 
                 _mtrl = mtrl;
+
+                if(_mtrl.ShaderPack != ShaderHelpers.EShaderPack.CharacterLegacy)
+                {
+                    // Gloss/Spec Power only work on legacy shaders.
+                    GlossBox.Visibility = Visibility.Collapsed;
+                    GlossLabel.Visibility = Visibility.Collapsed;
+                    SpecularPowerBox.Visibility = Visibility.Collapsed;
+                    SpecularPowerLabel.Visibility = Visibility.Collapsed;
+                } else
+                {
+                    GlossBox.Visibility = Visibility.Visible;
+                    GlossLabel.Visibility = Visibility.Visible;
+                    SpecularPowerBox.Visibility = Visibility.Visible;
+                    SpecularPowerLabel.Visibility = Visibility.Visible;
+                }
+
                 await _vm.SetMaterial(_mtrl, DyeTemplateFile);
                 await SetRow(row);
 
@@ -657,17 +683,29 @@ namespace FFXIV_TexTools.Controls
 
             try
             {
-                var fl = 1.0f;
-                float.TryParse(SpecularPowerBox.Text, out fl);
-                RowData[0][3] = new Half(fl);
+                float fl;
+                if (_mtrl.ColorSetData.Count > 512 && _mtrl.ShaderPack == ShaderHelpers.EShaderPack.CharacterLegacy)
+                {
+                    // Values flipped on Dawntrail Materials.
+                    fl = 1.0f;
+                    float.TryParse(SpecularPowerBox.Text, out fl);
+                    RowData[1][3] = new Half(fl);
 
-                fl = 1.0f;
-                float.TryParse(GlossBox.Text, out fl);
-                RowData[1][3] = new Half(fl);
+                    fl = 1.0f;
+                    float.TryParse(GlossBox.Text, out fl);
+                    RowData[0][3] = new Half(fl);
+                } else if (_mtrl.ColorSetData.Count <= 512)
+                {
+                    fl = 1.0f;
+                    float.TryParse(SpecularPowerBox.Text, out fl);
+                    RowData[0][3] = new Half(fl);
 
-                fl = 0.0f;
+                    fl = 1.0f;
+                    float.TryParse(GlossBox.Text, out fl);
+                    RowData[1][3] = new Half(fl);
+                }
+
                 RowData[6][1] = new Half((((int)TileIdBox.SelectedValue) + 0.5f) / 64.0f);
-                //RowData[2][3] = 0.5f;
 
                 fl = 16.0f;
                 float.TryParse(TileCountXBox.Text, out fl);
@@ -722,7 +760,7 @@ namespace FFXIV_TexTools.Controls
 
                 var bytes = BitConverter.GetBytes(modifier);
 
-                Array.Copy(bytes, 0, _mtrl.ColorSetDyeData, offset, 2);
+                //Array.Copy(bytes, 0, _mtrl.ColorSetDyeData, offset, 2);
 
                 offset = RowId * _columnCount * 4;
                 for(int x = 0; x < _columnCount; x++)
@@ -765,7 +803,7 @@ namespace FFXIV_TexTools.Controls
                 R = c.r,
                 G = c.g, 
                 B = c.b, 
-                A = 255 
+                A = 255,
             };
             _LOADING = false;
             UpdateRow();
@@ -866,11 +904,11 @@ namespace FFXIV_TexTools.Controls
         }
         private void EditRawSpecular_Click(object sender, RoutedEventArgs e)
         {
-            RawAssignColorPixel(1, "Specular Pixel", DiffuseColorPicker);
+            RawAssignColorPixel(1, "Specular Pixel", SpecularColorPicker);
         }
         private void EditRawEmmissive_Click(object sender, RoutedEventArgs e)
         {
-            RawAssignColorPixel(2, "Emissive Pixel", DiffuseColorPicker);
+            RawAssignColorPixel(2, "Emissive Pixel", EmissiveColorPicker);
         }
 
         List<Half[]> CopiedRow;
