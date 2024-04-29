@@ -88,6 +88,7 @@
                     <MenuItem x:Name="Menu_RebuildCache" Header="{Binding Source={x:Static resx:UIStrings.Rebuild_Cache}}" Click="Menu_RebuildCache_Click" />
                     <MenuItem x:Name="Menu_LoadSets" Header="{Binding Source={x:Static resx:UIStrings.Load_Sets}}" Click="Menu_LoadSets_Click" />
                     <MenuItem x:Name="Menu_ScanForSets" Header="{Binding Source={x:Static resx:UIStrings.Scan_For_Sets}}" Click="Menu_ScanForSets_Click" />
+                    <MenuItem x:Name="Menu_ShaderScan" Header="Scan for Shader Data" Click="ScanShaders_Click" />
                 </MenuItem>
             </MenuItem>
             <MenuItem Header="{Binding Source={x:Static resx:UIStrings.About}}">

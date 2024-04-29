@@ -29,16 +29,20 @@ using MahApps.Metro.Controls.Dialogs;
 using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Documents;
 using System.Windows.Forms;
 using System.Windows.Interop;
 using System.Windows.Threading;
@@ -49,10 +53,12 @@ using xivModdingFramework.Helpers;
 using xivModdingFramework.Items.Categories;
 using xivModdingFramework.Items.Interfaces;
 using xivModdingFramework.Materials.DataContainers;
+using xivModdingFramework.Materials.FileTypes;
 using xivModdingFramework.Models.FileTypes;
 using xivModdingFramework.Mods;
 using xivModdingFramework.Mods.DataContainers;
 using xivModdingFramework.Mods.FileTypes;
+using xivModdingFramework.SqPack.DataContainers;
 using xivModdingFramework.SqPack.FileTypes;
 using static xivModdingFramework.Cache.XivCache;
 
@@ -1816,5 +1822,30 @@ namespace FFXIV_TexTools
             wind.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             wind.Show();
         }
+
+        private async void ScanShaders_Click(object sender, RoutedEventArgs e)
+        {
+
+            await LockUi("Updating Shader References...".L(), "This may take up to 5 minutes depending on your computer specs...".L(), this);
+            try
+            {
+                var _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory);
+                await Task.Run(async () => { 
+                    // TODO - This should be [false] when switching off the benchmark install.
+                    // ( Controls whether it uses Index 1 or Index 2 for the search )
+                    await _mtrl.UpdateShaderDB(true);
+                    await ShaderHelpers.LoadShaderInfo();
+                });
+            } catch(Exception ex)
+            {
+                FlexibleMessageBox.Show("An error occurred durin the shader update process.\n\nError: ".L() + ex.Message, "Shader Update Error".L(), MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                await UnlockUi(this);
+            }
+        }
+
+
     }
 }
