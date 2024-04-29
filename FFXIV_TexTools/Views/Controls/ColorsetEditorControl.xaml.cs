@@ -31,6 +31,8 @@ using xivModdingFramework.Materials.FileTypes;
 using System.Numerics;
 using ControlzEx.Standard;
 using Xceed.Wpf.Toolkit;
+using System.Data.Entity.Core.Common.CommandTrees.ExpressionBuilder;
+using xivModdingFramework.Mods.DataContainers;
 
 namespace FFXIV_TexTools.Controls
 {
@@ -59,6 +61,9 @@ namespace FFXIV_TexTools.Controls
         ObservableCollection<KeyValuePair<ushort, string>> DyeTemplateCollection = new ObservableCollection<KeyValuePair<ushort, string>>();
         ObservableCollection<KeyValuePair<int, string>> PreviewDyeCollection = new ObservableCollection<KeyValuePair<int, string>>();
         ObservableCollection<KeyValuePair<int, string>> TileMaterialIds = new ObservableCollection<KeyValuePair<int, string>>();
+        ObservableCollection<KeyValuePair<uint, string>> DyeChannelCollection = new ObservableCollection<KeyValuePair<uint, string>>();
+
+        private List<CheckBox> DyeBoxes = new List<CheckBox>();
 
         public ColorsetEditorControl()
         {
@@ -102,16 +107,16 @@ namespace FFXIV_TexTools.Controls
             DyeTemplateIdBox.SelectedValuePath = "Key";
 
             // Binding handlers for any time the data is changed in the UI.
-            DyeDiffuseBox.Checked += ValueChanged;
-            DyeDiffuseBox.Unchecked += ValueChanged;
-            DyeSpecularBox.Checked += ValueChanged;
-            DyeSpecularBox.Unchecked += ValueChanged;
-            DyeEmissiveBox.Checked += ValueChanged;
-            DyeEmissiveBox.Unchecked += ValueChanged;
-            DyeGlossBox.Checked += ValueChanged;
-            DyeGlossBox.Unchecked += ValueChanged;
-            DyeSpecularPower.Checked += ValueChanged;
-            DyeSpecularPower.Unchecked += ValueChanged;
+            const int _DYE_BITS = 12;
+            for(int i = 0; i < _DYE_BITS; i++)
+            {
+                var st = "DyeBit" + i;
+                var box = (CheckBox) FindName(st);
+                box.Checked += ValueChanged;
+                box.Unchecked += ValueChanged;
+                DyeBoxes.Add(box);
+            }
+
             DiffuseColorPicker.SelectedColorChanged += DiffuseColorPicker_SelectedColorChanged; ;
             SpecularColorPicker.SelectedColorChanged += SpecularColorPicker_SelectedColorChanged; ;
             EmissiveColorPicker.SelectedColorChanged += EmissiveColorPicker_SelectedColorChanged; ;
@@ -124,6 +129,9 @@ namespace FFXIV_TexTools.Controls
             TileSkewYBox.TextChanged += ValueChanged;
             TileCountXBox.TextChanged += ValueChanged;
             TileCountYBox.TextChanged += ValueChanged;
+            TileOpacityBox.TextChanged += ValueChanged;
+            AnisotropyBlendingBox.TextChanged += ValueChanged;
+            ShaderTemplateBox.TextChanged += ValueChanged;
 
             DyePreviewIdBox.ItemsSource = PreviewDyeCollection;
             DyePreviewIdBox.DisplayMemberPath = "Value";
@@ -136,6 +144,14 @@ namespace FFXIV_TexTools.Controls
             for (int i = 0; i < 64; i++)
             {
                 TileMaterialIds.Add(new KeyValuePair<int, string>(i, i.ToString()));
+            }
+
+            DyeChannelBox.ItemsSource = DyeChannelCollection;
+            DyeChannelBox.DisplayMemberPath = "Value";
+            DyeChannelBox.SelectedValuePath = "Key";
+            for (uint i = 0; i < 4; i++)
+            {
+                DyeChannelCollection.Add(new KeyValuePair<uint, string>(i, (i + 1).ToString()));
             }
 
         }
@@ -258,9 +274,10 @@ namespace FFXIV_TexTools.Controls
 
             _LOADING = true;
 
-            if (_mtrl.ColorSetDyeData == null || _mtrl.ColorSetDyeData.Length != 32)
+            var dyeLen = _mtrl.ColorSetData.Count == 512 ? 32 : 128;
+            if (_mtrl.ColorSetDyeData == null || _mtrl.ColorSetDyeData.Length != dyeLen)
             {
-                _mtrl.ColorSetDyeData = new byte[32];
+                _mtrl.ColorSetDyeData = new byte[dyeLen];
             }
 
             RowId = rowNumber;
@@ -311,27 +328,44 @@ namespace FFXIV_TexTools.Controls
                 TileCountYBox.Text = RowData[7][3].ToString();
                 TileSkewXBox.Text = RowData[7][1].ToString();
                 TileSkewYBox.Text = RowData[7][2].ToString();
+
+
+                ShaderTemplateBox.Text = RowData[6][0].ToString();
+                TileOpacityBox.Text = RowData[6][2].ToString();
+                AnisotropyBlendingBox.Text = RowData[4][3].ToString();
             }
 
+            
 
-            ushort dyeData = 0;
-            if (_mtrl.ColorSetDyeData.Length != 0 && false) {
-                dyeData = BitConverter.ToUInt16(_mtrl.ColorSetDyeData, rowNumber * 2);
+
+            uint dyeData = 0;
+            if (_mtrl.ColorSetDyeData.Length != 0) {
+                dyeData = BitConverter.ToUInt32(_mtrl.ColorSetDyeData, rowNumber * 4);
             }
 
-            if(dyeData == ushort.MaxValue)
+            if(dyeData == uint.MaxValue)
             {
                 dyeData = 0;
             }
 
-            ushort dyeTemplateId = (ushort)(dyeData >> 5);
+            ushort dyeTemplateId = STM.GetTemplateKeyFromMaterialData(_mtrl, RowId);
             DyeTemplateIdBox.SelectedValue = dyeTemplateId;
 
-            DyeDiffuseBox.IsChecked = (dyeData & 0x01) > 0;
-            DyeSpecularBox.IsChecked = (dyeData & 0x02) > 0;
-            DyeEmissiveBox.IsChecked = (dyeData & 0x04) > 0;
-            DyeGlossBox.IsChecked = (dyeData & 0x08) > 0;
-            DyeSpecularPower.IsChecked = (dyeData & 0x10) > 0;
+            for(int i = 0; i < DyeBoxes.Count; i++)
+            {
+                var shifted = 0x01 << i;
+                var active = (dyeData & shifted) > 0;
+                DyeBoxes[i].IsChecked = active;
+            }
+
+            if (dyeData > 0)
+            {
+                uint dyeChannel = dyeData << 3 >> 30;
+                DyeChannelBox.SelectedValue = dyeChannel;
+            } else
+            {
+                DyeChannelBox.SelectedValue = (uint)0;
+            }
 
             foreach (var control in ColorSetRowControls)
             {
@@ -438,8 +472,9 @@ namespace FFXIV_TexTools.Controls
             if (mtrl == null) return;
 
             _LOADING = true;
+            _mtrl = mtrl;
 
-            if(mtrl.ColorSetData.Count == 256)
+            if (mtrl.ColorSetData.Count == 256)
             {
                 _columnCount = 4;
                 _rowCount = 16;
@@ -482,7 +517,8 @@ namespace FFXIV_TexTools.Controls
 
             try
             {
-                DyeTemplateFile = await STM.GetStainingTemplateFile(false);
+                var templateType = _mtrl.ShaderPack == ShaderHelpers.EShaderPack.CharacterLegacy ? STM.EStainingTemplate.Endwalker : STM.EStainingTemplate.Dawntrail;
+                DyeTemplateFile = await STM.GetStainingTemplateFile(templateType);
                 DyeTemplateCollection.Clear();
 
                 DyePreviewIdBox.SelectedValue = -1;
@@ -518,7 +554,6 @@ namespace FFXIV_TexTools.Controls
                 }
                 DyePreviewIdBox.SelectedValue = -1;
 
-                _mtrl = mtrl;
 
                 if(_mtrl.ShaderPack != ShaderHelpers.EShaderPack.CharacterLegacy)
                 {
@@ -593,17 +628,11 @@ namespace FFXIV_TexTools.Controls
             CopyDyeValuesButton.IsEnabled = false;
             if (entry == null)
             {
-
-                DyeDiffuseBox.IsChecked = false;
-                DyeDiffuseBox.IsEnabled = false;
-                DyeSpecularBox.IsChecked = false;
-                DyeSpecularBox.IsEnabled = false;
-                DyeEmissiveBox.IsChecked = false;
-                DyeEmissiveBox.IsEnabled = false;
-                DyeSpecularPower.IsChecked = false;
-                DyeSpecularPower.IsEnabled = false;
-                DyeGlossBox.IsChecked = false;
-                DyeGlossBox.IsEnabled = false;
+                for(int i = 0; i < DyeBoxes.Count; i++)
+                {
+                    DyeBoxes[i].IsEnabled = false;
+                    DyeBoxes[i].IsChecked = false;
+                }
                 return;
             }
 
@@ -616,58 +645,22 @@ namespace FFXIV_TexTools.Controls
                 }
             }
 
-            if (entry.DiffuseEntries.Count == 0)
+            for(int i = 0; i < DyeBoxes.Count; i++)
             {
-                DyeDiffuseBox.IsChecked = false;
-                DyeDiffuseBox.IsEnabled = false;
-            } else
-            {
-                //DyeDiffuseBox.IsChecked = true;
-                DyeDiffuseBox.IsEnabled = true;
+                UpdateDyeBox(DyeBoxes[i], entry, i);
             }
+        }
 
-            if (entry.SpecularEntries.Count == 0)
+        private void UpdateDyeBox(CheckBox dyeBox, StainingTemplateEntry entry, int usedOffset)
+        {
+            if (entry.GetData(usedOffset) == null)
             {
-                DyeSpecularBox.IsChecked = false;
-                DyeSpecularBox.IsEnabled = false;
+                dyeBox.IsChecked = false;
+                dyeBox.IsEnabled = false;
             }
             else
             {
-                //DyeSpecularBox.IsChecked = true;
-                DyeSpecularBox.IsEnabled = true;
-            }
-
-            if (entry.EmissiveEntries.Count == 0)
-            {
-                DyeEmissiveBox.IsChecked = false;
-                DyeEmissiveBox.IsEnabled = false;
-            }
-            else
-            {
-                //DyeEmissiveBox.IsChecked = true;
-                DyeEmissiveBox.IsEnabled = true;
-            }
-
-            if (entry.SpecularPowerEntries.Count == 0)
-            {
-                DyeSpecularPower.IsChecked = false;
-                DyeSpecularPower.IsEnabled = false;
-            }
-            else
-            {
-                //DyeTileBox.IsChecked = true;
-                DyeSpecularPower.IsEnabled = true;
-            }
-
-            if (entry.GlossEntries.Count == 0)
-            {
-                DyeGlossBox.IsChecked = false;
-                DyeGlossBox.IsEnabled = false;
-            }
-            else
-            {
-                //DyeGlossBox.IsChecked = true;
-                DyeGlossBox.IsEnabled = true;
+                dyeBox.IsEnabled = true;
             }
         }
 
@@ -705,7 +698,15 @@ namespace FFXIV_TexTools.Controls
                     RowData[1][3] = new Half(fl);
                 }
 
+                fl = 0.0f;
+                float.TryParse(ShaderTemplateBox.Text, out fl);
+                RowData[6][0] = new Half(fl);
+
                 RowData[6][1] = new Half((((int)TileIdBox.SelectedValue) + 0.5f) / 64.0f);
+
+                fl = 0.0f;
+                float.TryParse(TileOpacityBox.Text, out fl);
+                RowData[6][2] = new Half(fl);
 
                 fl = 16.0f;
                 float.TryParse(TileCountXBox.Text, out fl);
@@ -723,44 +724,45 @@ namespace FFXIV_TexTools.Controls
                 float.TryParse(TileSkewYBox.Text, out fl);
                 RowData[7][2] = new Half(fl);
 
-                var templateId = 0;
+                fl = 0.0f;
+                float.TryParse(AnisotropyBlendingBox.Text, out fl);
+                RowData[4][3] = new Half(fl);
+
+                uint modifier = (uint)0;
                 if (DyeTemplateIdBox.SelectedValue != null)
                 {
-                    templateId = (ushort)DyeTemplateIdBox.SelectedValue;
-                }
-                ushort modifier = (ushort)(templateId << 5);
+                    var v = (ushort) DyeTemplateIdBox.SelectedValue;
+                    uint templateId = v;
+                    var shifted = templateId << 16;
+                    modifier |= shifted;
 
-                if (DyeDiffuseBox.IsChecked == true)
-                {
-                    modifier = (ushort)(modifier | 0x01);
-                }
-                if (DyeSpecularBox.IsChecked == true)
-                {
-                    modifier = (ushort)(modifier | 0x02);
-                }
-                if (DyeEmissiveBox.IsChecked == true)
-                {
-                    modifier = (ushort)(modifier | 0x04);
-                }
-                if (DyeGlossBox.IsChecked == true)
-                {
-                    modifier = (ushort)(modifier | 0x08);
-                }
-                if (DyeSpecularPower.IsChecked == true)
-                {
-                    modifier = (ushort)(modifier | 0x10);
+                    var channel = (uint)DyeChannelBox.SelectedValue;
+                    shifted = channel << 27;
+                    modifier |= shifted;
+
+                    for (int i = 0; i < DyeBoxes.Count; i++)
+                    {
+                        if (DyeBoxes[i].IsChecked == true)
+                        {
+                            shifted = (uint)(0x01 << i);
+                            modifier |= shifted;
+                        }
+                    }
                 }
 
-                if (_mtrl.ColorSetDyeData.Length != 32)
+
+
+                var _dyeSize = 2;
+                if (_mtrl.ColorSetData.Count > 512)
                 {
-                    _mtrl.ColorSetDyeData = new byte[32];
+                    _dyeSize = 4;
                 }
 
-                var offset = RowId * 2;
 
+                var offset = RowId * _dyeSize;
                 var bytes = BitConverter.GetBytes(modifier);
 
-                //Array.Copy(bytes, 0, _mtrl.ColorSetDyeData, offset, 2);
+                Array.Copy(bytes, 0, _mtrl.ColorSetDyeData, offset, _dyeSize);
 
                 offset = RowId * _columnCount * 4;
                 for(int x = 0; x < _columnCount; x++)
@@ -783,7 +785,7 @@ namespace FFXIV_TexTools.Controls
             }
         }
 
-        private async void DyeTemplateIdBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void DataChanged(object sender, SelectionChangedEventArgs e)
         {
             await UpdateRow();
         }
@@ -1019,68 +1021,47 @@ namespace FFXIV_TexTools.Controls
         private async void CopyDyeValuesButton_Click(object sender, RoutedEventArgs e)
         {
 
-            var offset = RowId * 2;
-            ushort dyeInfo = BitConverter.ToUInt16(_mtrl.ColorSetDyeData, offset);
-            ushort dyeTemplateId = (ushort)(dyeInfo >> 5);
-
-            var flags = dyeInfo & 0x1F;
-
-            bool useDiffuse = (flags & 0x01) > 0;
-            bool useSpec = (flags & 0x02) > 0;
-            bool useEmissive = (flags & 0x04) > 0;
-            bool useGloss = (flags & 0x08) > 0;
-            bool useSpecPower = (flags & 0x10) > 0;
-
+            ushort dyeTemplateId = STM.GetTemplateKeyFromMaterialData(_mtrl.ColorSetDyeData, RowId);
             var template = DyeTemplateFile.GetTemplate(dyeTemplateId);
             var dyeId = (int) DyePreviewIdBox.SelectedValue;
+
+            uint dyeSettings = BitConverter.ToUInt32(_mtrl.ColorSetDyeData, RowId * 4);
+
+            var templateType = _mtrl.ShaderPack == ShaderHelpers.EShaderPack.CharacterLegacy ? STM.EStainingTemplate.Endwalker : STM.EStainingTemplate.Dawntrail;
 
             if (template == null) return;
             if (dyeId < 0 || dyeId >= 128) return;
 
-            if (useDiffuse && template.DiffuseEntries.Count > 0)
+            for(int i = 0; i < DyeBoxes.Count; i++)
             {
-                var diffuse = template.DiffuseEntries[dyeId];
-                RowData[0][0] = diffuse[0];
-                RowData[0][1] = diffuse[1];
-                RowData[0][2] = diffuse[2];
-            }
-            
-            if (useSpec && template.SpecularEntries.Count > 0)
-            {
-                var value = template.SpecularEntries[dyeId];
-                RowData[1][0] = value[0];
-                RowData[1][1] = value[1];
-                RowData[1][2] = value[2];
-            }
-            
-            if (useEmissive && template.EmissiveEntries.Count > 0)
-            {
-                var value = template.EmissiveEntries[dyeId];
-                RowData[2][0] = value[0];
-                RowData[2][1] = value[1];
-                RowData[2][2] = value[2];
-            }
-            
-            if (useGloss && template.GlossEntries.Count > 0)
-            {
-                var value = template.GlossEntries[dyeId];
-                RowData[1][3] = value;
+                var shifted = (uint) (0x1 << i);
+                if((dyeSettings & shifted) > 0)
+                {
+                    // Apply this template dye value to the row.
+                    var data = template.GetData(i, dyeId);
+
+                    // Have to used our cursed translation table here.
+                    var targetOffset = StainingTemplateEntry.TemplateEntryOffsetToColorsetOffset[templateType][i];
+                    var destinationPixel = targetOffset / 4;
+                    var destinationColorIndex = targetOffset % 4;
+                    
+                    for(int z = 0; z < data.Length; z++)
+                    {
+                        RowData[destinationPixel][destinationColorIndex + z] = data[z];
+                    }
+                }
             }
 
-            if (useSpecPower && template.SpecularPowerEntries.Count > 0)
-            {
-                var value = template.SpecularPowerEntries[dyeId];
-                RowData[0][3] = value;
-            }
 
+
+            // Copy RowData into the main colorset array.
             var rawData = RowDataToRaw(RowData);
-            offset = RowId * _columnCount * 4;
-
             var fullData = _mtrl.ColorSetData.ToArray();
-
+            var offset = RowId * _columnCount * 4;
             Array.Copy(rawData, 0, fullData, offset, rawData.Length);
-
             _mtrl.ColorSetData = fullData.ToList();
+
+            // Reload the UI.
             await SetMaterial(_mtrl, RowId);
         }
     }

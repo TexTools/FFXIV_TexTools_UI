@@ -153,59 +153,51 @@ namespace FFXIV_TexTools.ViewModels
                 }
                 if (dyeId >= 0 && dyeId < 128 && _mtrl.ColorSetDyeData != null)
                 {
-                    var byteOffset = RowId * 2;
-                    var templateId = BitConverter.ToUInt16(_mtrl.ColorSetDyeData, byteOffset) >> 5;
-                    var template = DyeTemplateFile.GetTemplate((ushort)templateId);
+                    var templateId = STM.GetTemplateKeyFromMaterialData(_mtrl, RowId);
+                    var template = DyeTemplateFile.GetTemplate(templateId);
+
+                    var data = BitConverter.ToUInt32(_mtrl.ColorSetDyeData, 0);
                     if(template != null && templateId != 0)
                     {
 
-                        var flags = _mtrl.ColorSetDyeData[byteOffset] & 0x1F;
+                        
+                        bool useDiffuse = (data & 0x01) > 0;
+                        bool useSpecular = (data & 0x02) > 0;
+                        bool useEmissive = (data & 0x04) > 0;
 
-                        bool useDiffuse = (flags & 0x01) > 0;
-                        bool useSpecular = (flags & 0x02) > 0;
-                        bool useEmissive = (flags & 0x04) > 0;
-                        bool useGloss = (flags & 0x08) > 0;
-                        bool useSpecularPower = (flags & 0x10) > 0;
-
-                        if (useDiffuse && template.DiffuseEntries.Count > 0)
+                        var diffuse = template.GetDiffuseData(dyeId);
+                        var spec = template.GetSpecularData(dyeId);
+                        var emissive = template.GetEmissiveData(dyeId);
+                        if (useDiffuse && diffuse != null)
                         {
-                            var max = Math.Max(1.0f, Math.Max(template.DiffuseEntries[dyeId][0], Math.Max(template.DiffuseEntries[dyeId][1], template.DiffuseEntries[dyeId][2])));
+                            var max = Math.Max(1.0f, Math.Max(diffuse[0], Math.Max(diffuse[1], diffuse[2])));
 
                             lmMaterial.DiffuseColor = new SharpDX.Color(
-                            (byte)Math.Round((template.DiffuseEntries[dyeId][0] / max) * 255f),
-                            (byte)Math.Round((template.DiffuseEntries[dyeId][1] / max) * 255f),
-                            (byte)Math.Round((template.DiffuseEntries[dyeId][2] / max) * 255f));
+                            (byte)Math.Round((diffuse[0] / max) * 255f),
+                            (byte)Math.Round((diffuse[1] / max) * 255f),
+                            (byte)Math.Round((diffuse[2] / max) * 255f));
                         }
 
-                        if (useSpecular && template.SpecularEntries.Count > 0)
+                        if (useSpecular && spec != null)
                         {
-                            var max = Math.Max(1.0f, Math.Max(template.SpecularEntries[dyeId][0], Math.Max(template.SpecularEntries[dyeId][1], template.SpecularEntries[dyeId][2])));
+                            var max = Math.Max(1.0f, Math.Max(spec[0], Math.Max(spec[1], spec[2])));
 
                             lmMaterial.SpecularColor = new SharpDX.Color(
-                            (byte)Math.Round((template.SpecularEntries[dyeId][0] / max) * 255f),
-                            (byte)Math.Round((template.SpecularEntries[dyeId][1] / max) * 255f),
-                            (byte)Math.Round((template.SpecularEntries[dyeId][2] / max) * 255f));
+                            (byte)Math.Round((spec[0] / max) * 255f),
+                            (byte)Math.Round((spec[1] / max) * 255f),
+                            (byte)Math.Round((spec[2] / max) * 255f));
                         }
 
-                        if (useEmissive && template.EmissiveEntries.Count > 0)
+                        if (useEmissive && emissive != null) ;
                         {
-                            var max = Math.Max(1.0f, Math.Max(template.EmissiveEntries[dyeId][0], Math.Max(template.EmissiveEntries[dyeId][1], template.EmissiveEntries[dyeId][2])));
+                            var max = Math.Max(1.0f, Math.Max(emissive[0], Math.Max(emissive[1], emissive[2])));
 
                             lmMaterial.EmissiveColor = new SharpDX.Color(
-                            (byte)Math.Round((template.EmissiveEntries[dyeId][0] / max) * 255f),
-                            (byte)Math.Round((template.EmissiveEntries[dyeId][1] / max) * 255f),
-                            (byte)Math.Round((template.EmissiveEntries[dyeId][2] / max) * 255f));
+                            (byte)Math.Round((emissive[0] / max) * 255f),
+                            (byte)Math.Round((emissive[1] / max) * 255f),
+                            (byte)Math.Round((emissive[2] / max) * 255f));
                         }
-
-                        if(useGloss && template.GlossEntries.Count > 0)
-                        {
-                            glossVal = template.GlossEntries[dyeId];
-                        }
-
-                        if(useSpecularPower && template.SpecularPowerEntries.Count > 0)
-                        {
-                            specularPower = template.SpecularPowerEntries[dyeId];
-                        }
+                                                
                     }
                 }
 

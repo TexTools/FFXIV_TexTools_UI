@@ -180,7 +180,7 @@ namespace FFXIV_TexTools.ViewModels
                 }
             } catch (Exception Ex)
             {
-                FlexibleMessageBox.Show("An error occurred when saving the Material.".L());
+                FlexibleMessageBox.Show("An error occurred when saving the Material: " + Ex.Message.L());
             }
             return _material;
         }
