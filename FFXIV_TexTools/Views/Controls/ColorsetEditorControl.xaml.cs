@@ -2,37 +2,22 @@
 using FFXIV_TexTools.Resources;
 using FFXIV_TexTools.ViewModels;
 using FFXIV_TexTools.Views.Controls;
-using HelixToolkit.Wpf.SharpDX;
 using MahApps.Metro;
-using Newtonsoft.Json;
 using SharpDX;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using FFXIV_TexTools.Properties;
 using xivModdingFramework.Cache;
-using xivModdingFramework.Helpers;
 using xivModdingFramework.Materials.DataContainers;
 using xivModdingFramework.Materials.FileTypes;
-using System.Numerics;
-using ControlzEx.Standard;
 using Xceed.Wpf.Toolkit;
-using System.Data.Entity.Core.Common.CommandTrees.ExpressionBuilder;
-using xivModdingFramework.Mods.DataContainers;
 
 namespace FFXIV_TexTools.Controls
 {
