@@ -52,7 +52,7 @@
 
                             <RowDefinition Height="115"></RowDefinition>
                             
-                            <RowDefinition Height="120"></RowDefinition>
+                            <RowDefinition Height="45"></RowDefinition>
 
                             <RowDefinition Height="50"></RowDefinition>
                             <RowDefinition Height="1*"></RowDefinition>
@@ -143,8 +143,6 @@
                                 <ColumnDefinition Width="100" ></ColumnDefinition>
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="35"></RowDefinition>
-                                <RowDefinition Height="35"></RowDefinition>
                                 <RowDefinition Height="35"></RowDefinition>
                             </Grid.RowDefinitions>
 

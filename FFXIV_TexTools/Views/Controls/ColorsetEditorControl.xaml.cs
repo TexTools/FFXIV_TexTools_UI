@@ -903,8 +903,15 @@ namespace FFXIV_TexTools.Controls
         private void CopyRowButton_Click(object sender, RoutedEventArgs e)
         {
             CopiedRow = GetRowData(RowId);
-            CopiedRowDye = new byte[2];
-            Array.Copy(_mtrl.ColorSetDyeData, RowId * 2, CopiedRowDye, 0, 2);
+
+            var dyeSize = 2;
+            if(_mtrl.ColorSetData.Count > 512)
+            {
+                dyeSize = 4;
+            }
+
+            CopiedRowDye = new byte[dyeSize];
+            Array.Copy(_mtrl.ColorSetDyeData, RowId * dyeSize, CopiedRowDye, 0, dyeSize);
 
             PasteRowButton.IsEnabled = true;
         }
@@ -913,11 +920,15 @@ namespace FFXIV_TexTools.Controls
         {
             if (CopiedRow == null) return;
 
-            var offset = RowId * 2;
             // Disable Dye copying for now since that's not set up yet.
 
-            // BENCHMARK TODO:
-            //Array.Copy(CopiedRowDye, 0, _mtrl.ColorSetDyeData, offset, 2);
+            var dyeSize = 2;
+            if (_mtrl.ColorSetData.Count > 512)
+            {
+                dyeSize = 4;
+            }
+            var offset = RowId * dyeSize;
+            Array.Copy(CopiedRowDye, 0, _mtrl.ColorSetDyeData, offset, dyeSize);
 
             offset = RowId * _columnCount * 4;
             for (int x = 0; x < _columnCount; x++)
