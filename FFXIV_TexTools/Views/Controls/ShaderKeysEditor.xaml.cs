@@ -99,7 +99,12 @@ namespace FFXIV_TexTools.Views.Controls
 
                     foreach (var val in info.KnownValues)
                     {
-                        values.Add(new KeyValuePair<string, uint>(val.ToString("X8"), val));
+                        var name = val.Key.ToString("X8");
+                        if(!String.IsNullOrWhiteSpace(val.Value))
+                        {
+                            name += " - " + val.Value;
+                        }
+                        values.Add(new KeyValuePair<string, uint>(name, val.Key));
                     }
 
                     if (!values.Any(x => x.Value == Value))

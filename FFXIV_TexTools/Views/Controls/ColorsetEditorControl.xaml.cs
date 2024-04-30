@@ -259,7 +259,7 @@ namespace FFXIV_TexTools.Controls
 
             _LOADING = true;
 
-            var dyeLen = _mtrl.ColorSetData.Count == 512 ? 32 : 128;
+            var dyeLen = _mtrl.ColorSetData.Count == 256 ? 32 : 128;
             if (_mtrl.ColorSetDyeData == null || _mtrl.ColorSetDyeData.Length != dyeLen)
             {
                 _mtrl.ColorSetDyeData = new byte[dyeLen];
@@ -288,7 +288,7 @@ namespace FFXIV_TexTools.Controls
 
 
 
-            if (_mtrl.ColorSetData.Count > 512)
+            if (_mtrl.ColorSetData.Count > 256)
             {
                 // Dawntrail flipped these two values.
                 SpecularPowerBox.Text = RowData[1][3].ToString();
@@ -662,7 +662,7 @@ namespace FFXIV_TexTools.Controls
             try
             {
                 float fl;
-                if (_mtrl.ColorSetData.Count > 512 && _mtrl.ShaderPack == ShaderHelpers.EShaderPack.CharacterLegacy)
+                if (_mtrl.ColorSetData.Count > 256 && _mtrl.ShaderPack == ShaderHelpers.EShaderPack.CharacterLegacy)
                 {
                     // Values flipped on Dawntrail Materials.
                     fl = 1.0f;
@@ -672,7 +672,7 @@ namespace FFXIV_TexTools.Controls
                     fl = 1.0f;
                     float.TryParse(GlossBox.Text, out fl);
                     RowData[0][3] = new Half(fl);
-                } else if (_mtrl.ColorSetData.Count <= 512)
+                } else if (_mtrl.ColorSetData.Count <= 256)
                 {
                     fl = 1.0f;
                     float.TryParse(SpecularPowerBox.Text, out fl);
@@ -738,7 +738,7 @@ namespace FFXIV_TexTools.Controls
 
 
                 var _dyeSize = 2;
-                if (_mtrl.ColorSetData.Count > 512)
+                if (_mtrl.ColorSetData.Count > 256)
                 {
                     _dyeSize = 4;
                 }
@@ -905,7 +905,7 @@ namespace FFXIV_TexTools.Controls
             CopiedRow = GetRowData(RowId);
 
             var dyeSize = 2;
-            if(_mtrl.ColorSetData.Count > 512)
+            if(_mtrl.ColorSetData.Count > 256)
             {
                 dyeSize = 4;
             }
@@ -923,7 +923,7 @@ namespace FFXIV_TexTools.Controls
             // Disable Dye copying for now since that's not set up yet.
 
             var dyeSize = 2;
-            if (_mtrl.ColorSetData.Count > 512)
+            if (_mtrl.ColorSetData.Count > 256)
             {
                 dyeSize = 4;
             }
