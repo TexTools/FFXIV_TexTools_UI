@@ -980,7 +980,7 @@ namespace FFXIV_TexTools.Views
 
             var _dat = new Dat(_gameDirectory);
             var meta = await ItemMetadata.GetMetadata(path);
-            var data = await _dat.CreateType2Data(await ItemMetadata.Serialize(meta));
+            var data = await _dat.CompressType2Data(await ItemMetadata.Serialize(meta));
 
             if (addChildren)
             {

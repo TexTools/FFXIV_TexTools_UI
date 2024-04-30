@@ -231,7 +231,7 @@ namespace FFXIV_TexTools.ViewModels
             _item = (IItemModel)itemModel.Clone();
 
             _gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
-            _mdl = new Mdl(_gameDirectory, _item.DataFile);
+            _mdl = new Mdl(_gameDirectory);
 
 
             // Add the list of exporters to the menu.

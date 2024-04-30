@@ -772,6 +772,29 @@ namespace FFXIV_TexTools.ViewModels
                                         texData = await tex.GetTexData(ttp.Path, ttp.Type);
                                     }
 
+                                    var mapBytes = await tex.GetImageData(texData);
+
+                                    using (var img = Image.LoadPixelData<Rgba32>(mapBytes, texData.Width, texData.Height))
+                                    {
+                                        img.Mutate(x => x.Opacity(1));
+
+                                        BitmapImage bmp;
+
+                                        using (var ms = new MemoryStream())
+                                        {
+                                            img.Save(ms, new BmpEncoder());
+
+                                            bmp = new BitmapImage();
+                                            bmp.BeginInit();
+                                            bmp.StreamSource = ms;
+                                            bmp.CacheOption = BitmapCacheOption.OnLoad;
+                                            bmp.EndInit();
+                                            bmp.Freeze();
+                                        }
+
+                                        modListModel.Image =
+                                            Application.Current.Dispatcher.Invoke(() => bmp);
+                                    }
                                 }
                                 catch (Exception ex)
                                 {
@@ -779,31 +802,6 @@ namespace FFXIV_TexTools.ViewModels
                                         string.Format(UIMessages.TextureFileReadErrorMessage, ttp.Path, ex.Message),
                                         UIMessages.TextureDataReadErrorTitle,
                                         MessageBoxButtons.OK, MessageBoxIcon.Error);
-                                    return;
-                                }
-
-                                var mapBytes = await tex.GetImageData(texData);
-
-                                using (var img = Image.LoadPixelData<Rgba32>(mapBytes, texData.Width, texData.Height))
-                                {
-                                    img.Mutate(x => x.Opacity(1));
-
-                                    BitmapImage bmp;
-
-                                    using (var ms = new MemoryStream())
-                                    {
-                                        img.Save(ms, new BmpEncoder());
-
-                                        bmp = new BitmapImage();
-                                        bmp.BeginInit();
-                                        bmp.StreamSource = ms;
-                                        bmp.CacheOption = BitmapCacheOption.OnLoad;
-                                        bmp.EndInit();
-                                        bmp.Freeze();
-                                    }
-
-                                    modListModel.Image =
-                                        Application.Current.Dispatcher.Invoke(() => bmp);
                                 }
                             }
 

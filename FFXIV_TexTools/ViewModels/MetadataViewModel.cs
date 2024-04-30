@@ -123,7 +123,7 @@ namespace FFXIV_TexTools.ViewModels
 
                 await ItemMetadata.SaveMetadata(_metadata, XivStrings.TexTools);
 
-                var _mdl = new Mdl(XivCache.GameInfo.GameDirectory, IOUtil.GetDataFileFromPath(_metadata.Root.Info.GetRootFile()));
+                var _mdl = new Mdl(XivCache.GameInfo.GameDirectory);
 
                 foreach (var kv in _metadata.EqdpEntries)
                 {

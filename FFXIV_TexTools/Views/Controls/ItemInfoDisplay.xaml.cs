@@ -96,7 +96,7 @@ namespace FFXIV_TexTools.Views.Controls
 
             var _index = new Index(gd);
             var _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory);
-            var _mdl = new Mdl(gd, df);
+            var _mdl = new Mdl(gd);
             var _imc = new Imc(gd);
             var raceRegex = new Regex("c([0-9]{4})[^b]");
 

@@ -1004,7 +1004,7 @@ namespace FFXIV_TexTools
                     var changed = 0;
                     await Task.Run(async () =>
                     {
-                        var _mdl = new Mdl(XivCache.GameInfo.GameDirectory, XivDataFile._04_Chara);
+                        var _mdl = new Mdl(XivCache.GameInfo.GameDirectory);
                         changed = await _mdl.CheckAllModsSkinAssignments();
                     });
 

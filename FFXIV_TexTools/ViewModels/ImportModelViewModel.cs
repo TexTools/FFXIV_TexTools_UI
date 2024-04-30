@@ -136,7 +136,7 @@ namespace FFXIV_TexTools.ViewModels
             var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
             var saveDirectory = new DirectoryInfo(Settings.Default.Save_Directory);
             var dataFile = IOUtil.GetDataFileFromPath(_item.GetItemRootFolder());
-            _mdl = new Mdl(gameDirectory, dataFile);
+            _mdl = new Mdl(gameDirectory);
             _importers = _mdl.GetAvailableImporters();
 
             SetupRaces();
