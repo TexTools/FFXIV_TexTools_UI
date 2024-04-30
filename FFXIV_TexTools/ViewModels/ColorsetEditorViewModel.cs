@@ -145,7 +145,7 @@ namespace FFXIV_TexTools.ViewModels
 
                 float glossVal = RowData[1][3];
                 float specularPower = RowData[0][3];
-                if (_mtrl.ColorSetData.Count > 512)
+                if (_mtrl.ColorSetData.Count > 256)
                 {
                     // Values flipped in Dawntrail.
                     glossVal = RowData[0][3];
