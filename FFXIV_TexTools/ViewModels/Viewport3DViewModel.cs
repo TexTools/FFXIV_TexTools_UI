@@ -20,12 +20,14 @@ using HelixToolkit.Wpf.SharpDX;
 using HelixToolkit.Wpf.SharpDX.Cameras;
 using SharpDX;
 using SharpDX.Direct3D11;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows.Media.Media3D;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Models.DataContainers;
@@ -145,7 +147,7 @@ namespace FFXIV_TexTools.ViewModels
             for (var i = 0; i < totalMeshCount; i++)
             {
                 var (meshGeometry3D, isBodyMaterial) = GetMeshGeometry(model, i);
-                
+
                 if(!textureDataDictionary.ContainsKey(model.GetMaterialIndex(i)))
                 {
                     // This material didn't exist, was corrupt or otherwise didn't get loaded.  Skip it.
@@ -154,7 +156,6 @@ namespace FFXIV_TexTools.ViewModels
                 var textureData = textureDataDictionary[model.GetMaterialIndex(i)];
 
                 TextureModel diffuse = null, specular = null, normal = null, alpha = null, emissive = null;
-
                 if (!isBodyMaterial)
                 {
                     if (textureData.Diffuse != null && textureData.Diffuse.Length > 0)
@@ -226,16 +227,20 @@ namespace FFXIV_TexTools.ViewModels
         private static Color4[] NormalizePixelData(byte[] img)
         {
             Color4[] result = new Color4[img.Length / 4];
-            for (int i = 0; i < img.Length - 3; i += 4)
+            Parallel.ForEach(Partitioner.Create(0, img.Length / 4), range =>
             {
-                var tmp = Vector4.SquareRoot(new Vector4(
-                    img[i] / 255.0f,
-                    img[i + 1] / 255.0f,
-                    img[i + 2] / 255.0f,
-                    img[i + 3] / 255.0f
-                ));
-                result[i / 4] = new Color4(tmp.X, tmp.Y, tmp.Z, tmp.W);
-            }
+                for (int i = range.Item1 * 4; i < range.Item2 * 4; i += 4)
+                {
+                    // This is the only way to do a true single-precision sqrt in .NET Framework
+                    var tmp = Vector4.SquareRoot(new Vector4(
+                        img[i] / 255.0f,
+                        img[i + 1] / 255.0f,
+                        img[i + 2] / 255.0f,
+                        img[i + 3] / 255.0f
+                    ));
+                    result[i / 4] = new Color4(tmp.X, tmp.Y, tmp.Z, tmp.W);
+                }
+            });
             return result;
         }
 
