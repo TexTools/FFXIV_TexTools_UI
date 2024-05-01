@@ -85,9 +85,20 @@ namespace FFXIV_TexTools.ViewModels
                 TexturePath = texturePath;
                 Usage = type;
             }
-            public static List<MapComboBoxEntry> FromTextures(List<MtrlTexture> list)
+            public static List<MapComboBoxEntry> FromTextures(List<MtrlTexture> list, XivMtrl _mtrl = null)
             {
-                return list.Select(x =>  new MapComboBoxEntry(x.TexturePath, x.Usage)).ToList();
+                if (_mtrl != null)
+                {
+                    // Use the smarter resolution path if we have the available data.
+                    return list.Select(x => new MapComboBoxEntry(
+                        x.TexturePath, 
+                        _mtrl.ResolveFullUsage(x)
+                        )).ToList();
+                }
+                else
+                {
+                    return list.Select(x => new MapComboBoxEntry(x.TexturePath, x.Usage)).ToList();
+                }
             }
 
             public MtrlTexture GetTexture(XivMtrl mtrl)
@@ -772,7 +783,7 @@ namespace FFXIV_TexTools.ViewModels
                     OnLoadingComplete();
                     return;
                 }
-                var maps = MapComboBoxEntry.FromTextures(_xivMtrl.Textures);
+                var maps = MapComboBoxEntry.FromTextures(_xivMtrl.Textures, _xivMtrl);
                 if (_xivMtrl.ColorSetDataSize > 0)
                 {
                     var cSetMap = new MapComboBoxEntry();

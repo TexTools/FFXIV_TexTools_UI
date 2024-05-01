@@ -118,12 +118,6 @@ namespace FFXIV_TexTools.ViewModels
                     break;
             }
 
-            var normal = _material.Textures.FirstOrDefault( x => x.Usage == XivTexType.Normal);
-            var diffuse = _material.Textures.FirstOrDefault(x => x.Usage == XivTexType.Diffuse);
-            var specular = _material.Textures.FirstOrDefault(x => x.Usage == XivTexType.Specular);
-            var multi = _material.Textures.FirstOrDefault(x => x.Usage == XivTexType.Mask);
-            var reflection = _material.Textures.FirstOrDefault(x => x.Usage == XivTexType.Reflection);
-
             // Show Settings
             //_view.TransparencyComboBox.SelectedValue = shader.TransparencyEnabled;
             //_view.BackfacesComboBox.SelectedValue = shader.RenderBackfaces;
