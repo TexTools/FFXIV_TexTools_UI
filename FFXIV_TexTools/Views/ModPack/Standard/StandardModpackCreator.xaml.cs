@@ -321,7 +321,7 @@ namespace FFXIV_TexTools.Views
                 var index = new Index(XivCache.GameInfo.GameDirectory);
                 var dat = new Dat(XivCache.GameInfo.GameDirectory);
                 var modding = new Modding(XivCache.GameInfo.GameDirectory);
-                var ModList = modding.GetModList();
+                var ModList = await modding.GetModList();
 
                 var wizardData = new ModPackData()
                 {
@@ -427,7 +427,7 @@ namespace FFXIV_TexTools.Views
             var index = new Index(XivCache.GameInfo.GameDirectory);
             var dat = new Dat(XivCache.GameInfo.GameDirectory);
             var modding = new Modding(XivCache.GameInfo.GameDirectory);
-            var ModList = modding.GetModList();
+            var ModList = await modding.GetModList();
 
             SimpleModPackData simpleModPackData = new SimpleModPackData
             {

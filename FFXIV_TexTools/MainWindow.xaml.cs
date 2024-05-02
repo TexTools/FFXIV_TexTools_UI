@@ -375,7 +375,7 @@ namespace FFXIV_TexTools
 
         private bool _FFXIV_PATCHED = false;
         private bool _NEW_INSTALL = false;
-        private void OnCacheRebuild(object sender, CacheRebuildReason reason)
+        private async void OnCacheRebuild(object sender, CacheRebuildReason reason)
         {
             // If the cache is cycling because of a FFXIV version mismatch, we need to trigger the 
             // version update process after it's done.
@@ -394,7 +394,7 @@ namespace FFXIV_TexTools
                 // If the user had no cache, and no modlist, they're a new install (or close enough to one)
                 var gameDir = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
                 var modding = new Modding(gameDir);
-                var modList = modding.GetModList();
+                var modList = await modding.GetModList();
 
                 if(modList.Mods.Count == 0)
                 {

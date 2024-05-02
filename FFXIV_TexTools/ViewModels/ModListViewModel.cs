@@ -88,7 +88,10 @@ namespace FFXIV_TexTools.ViewModels
                 SetFilter("ModPackFilter");
             }
 
-            _modListParents = XivCache.GetModListParents();
+            var task = XivCache.GetModListParents();
+            task.Wait();
+
+            _modListParents = task.Result;
         }
 
         /// <summary>
@@ -111,10 +114,10 @@ namespace FFXIV_TexTools.ViewModels
         {
             Categories = new ObservableCollection<Category>();
 
-            return Task.Run(() =>
+            return Task.Run(async () =>
             {
                 var modding = new Modding(_gameDirectory);
-                var modList = modding.GetModList();
+                var modList = await modding.GetModList();
 
                 if (modList == null) return;
 
@@ -237,10 +240,10 @@ namespace FFXIV_TexTools.ViewModels
         {
             Categories = new ObservableCollection<Category>();
 
-            return Task.Run(() =>
+            return Task.Run(async () =>
             {
                 var modding = new Modding(_gameDirectory);
-                var modList = modding.GetModList();
+                var modList = await modding.GetModList();
 
                 var modPackCatDict = new Dictionary<string, Category>();
 
@@ -587,7 +590,7 @@ namespace FFXIV_TexTools.ViewModels
 
                 var mtrl = new Mtrl(_gameDirectory);
                 var modding = new Modding(_gameDirectory);
-                var modList = modding.GetModList();
+                var modList = await modding.GetModList();
 
                 var modItems = new List<Mod>();
 
@@ -850,7 +853,9 @@ namespace FFXIV_TexTools.ViewModels
             ProgressText = string.Empty;
 
             var modding = new Modding(_gameDirectory);
-            var modList = modding.GetModList();
+
+            // Block until modlist is retreived.
+            var modList = modding.GetModList().Result;
             List<Mod> modPackModList = null;
 
             if (category.Name.Equals(UIStrings.Standalone_Non_ModPack))
@@ -933,7 +938,9 @@ namespace FFXIV_TexTools.ViewModels
         public void RemoveItem(ModListModel item, Category category)
         {
             var modding = new Modding(_gameDirectory);
-            var modList = modding.GetModList();
+
+            // Block until modlist is retrieved.
+            var modList = modding.GetModList().Result;
 
             var remainingList = (from items in modList.Mods
                                 where items.name == item.ModItem.name

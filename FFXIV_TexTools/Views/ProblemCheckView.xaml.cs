@@ -254,7 +254,7 @@ namespace FFXIV_TexTools.Views
 
             try
             {
-                modList = modding.GetModList();
+                modList = await modding.GetModList();
 
                 // Someone somehow had their entire modlist filled with 0's causing the deserealization to 
                 // just return null so this was added to still detect that as a corrupted modlist

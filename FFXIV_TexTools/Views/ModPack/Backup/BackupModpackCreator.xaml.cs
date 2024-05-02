@@ -32,7 +32,9 @@ namespace FFXIV_TexTools.Views
 
             _gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
             var modding = new Modding(_gameDirectory);
-            _modList = modding.GetModList();
+
+            // Block until modlist is retrieved.
+            _modList = modding.GetModList().Result;
 
             DataContext = new BackupModpackViewModel();
             ModpackList.ItemsSource = new List<BackupModpackItemEntry>();

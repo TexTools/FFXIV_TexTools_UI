@@ -195,7 +195,7 @@ namespace FFXIV_TexTools.Views
             DirectoryInfo modListDirectory = new DirectoryInfo(Path.Combine(_gameDirectory.Parent.Parent.FullName, XivStrings.ModlistFilePath));
             Modding modding = new Modding(_gameDirectory);
 
-            this.ModList = modding.GetModList();
+            this.ModList = await modding.GetModList();
 
             // Don't show or list internal mods at all in this menu.
             this.ModList.Mods.RemoveAll(x => x.IsInternal());
@@ -219,7 +219,7 @@ namespace FFXIV_TexTools.Views
                 }
             }
 
-            this.ParentsDictionary = XivCache.GetModListParents();
+            this.ParentsDictionary = await XivCache.GetModListParents();
 
 
             List<SimpleModpackEntry> entries = new List<SimpleModpackEntry>();
