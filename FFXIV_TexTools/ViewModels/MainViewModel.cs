@@ -468,12 +468,8 @@ namespace FFXIV_TexTools.ViewModels
             }
 
             var workerStatus = XivCache.CacheWorkerEnabled;
+            XivCache.CacheWorkerEnabled = false;
 
-            if(workerStatus)
-            {
-                // Stop the cache worker if it's running.
-                XivCache.CacheWorkerEnabled = false;
-            }
             try
             {
 
@@ -487,255 +483,250 @@ namespace FFXIV_TexTools.ViewModels
                 // 1.  Save a list of what mods were enabled.
                 // 2.  Go through and validate everything that says it is enabled actually is enabled, or mark it as disabled and update its original index offset if it is not.
                 // 3.  Prompt the user for either a full disable and backup creation, or a restore to normal state (re-enable anything that was enabled before but is not now)
-                var modList = modding.GetModList();
 
-                Dictionary<XivDataFile, IndexFile> indexFiles = new Dictionary<XivDataFile, IndexFile>();
-
-
-                // Cache our currently enabled stuff.
-                List<Mod> enabledMods = modList.Mods.Where(x => x.enabled == true).ToList();
                 var toRemove = new List<Mod>();
-
-                foreach (var mod in modList.Mods)
+                List<Mod> enabledMods;
+                // Cache our currently enabled stuff.
+                using (var tx = ModTransaction.BeginTransaction())
                 {
-                    if (!String.IsNullOrEmpty(mod.fullPath))
+                    var modList = await tx.GetModList();
+                    enabledMods = modList.Mods.Where(x => x.enabled == true).ToList();
+
+                    foreach (var mod in modList.Mods)
                     {
-                        var df = IOUtil.GetDataFileFromPath(mod.fullPath);
-                        if (!indexFiles.ContainsKey(df))
+                        if (!String.IsNullOrEmpty(mod.fullPath))
                         {
-                            indexFiles[df] = await _index.GetIndexFile(df);
-                        }
+                            var df = IOUtil.GetDataFileFromPath(mod.fullPath);
+                            var index = await tx.GetIndexFile(df);
 
-                        var index1Value = indexFiles[df].Get8xDataOffset(mod.fullPath);
-                        var index2Value = indexFiles[df].Get8xDataOffsetIndex2(mod.fullPath);
-                        var oldOriginalOffset = mod.data.originalOffset;
-                        var modOffset = mod.data.modOffset;
+                            var index1Value = index.Get8xDataOffset(mod.fullPath);
+                            var index2Value = index.Get8xDataOffsetIndex2(mod.fullPath);
+                            var oldOriginalOffset = mod.data.originalOffset;
+                            var modOffset = mod.data.modOffset;
 
 
-                        // In any event where an offset does not match either of our saved offsets, we must assume this is a new
-                        // default file offset for post-patch.
-                        if (index1Value != oldOriginalOffset && index1Value != modOffset && index1Value != 0)
-                        {
-                            // Index 1 value is our new base offset.
-                            var type = _dat.GetFileType(index1Value, df);
-
-                            // Make sure the file it's trying to point to is actually valid.
-                            if (validTypes.Contains(type))
+                            // In any event where an offset does not match either of our saved offsets, we must assume this is a new
+                            // default file offset for post-patch.
+                            if (index1Value != oldOriginalOffset && index1Value != modOffset && index1Value != 0)
                             {
-                                mod.data.originalOffset = index1Value;
-                                mod.enabled = false;
-                            } else
-                            {
-                                // Oh dear.  The new index is fucked.  Is the old Index Ok?
-                                type = _dat.GetFileType(oldOriginalOffset, df);
+                                // Index 1 value is our new base offset.
+                                var type = _dat.GetFileType(index1Value, df);
 
-                                if (validTypes.Contains(type) && oldOriginalOffset != 0)
+                                // Make sure the file it's trying to point to is actually valid.
+                                if (validTypes.Contains(type))
                                 {
-                                    // Old index is fine, so keep using that.
-
-                                    // But mark the index value as invalid, so that we stomp on the index value after this.
-                                    index1Value = -1;
+                                    mod.data.originalOffset = index1Value;
                                     mod.enabled = false;
-                                } else
+                                }
+                                else
                                 {
-                                    // Okay... Maybe the new Index2 Value?
-                                    if (index2Value != 0)
-                                    {
-                                        type = _dat.GetFileType(index2Value, df);
-                                        if (validTypes.Contains(type))
-                                        {
-                                            // Set the index 1 value to invalid so that the if later down the chain stomps the index1 value.
-                                            index1Value = -1;
+                                    // Oh dear.  The new index is fucked.  Is the old Index Ok?
+                                    type = _dat.GetFileType(oldOriginalOffset, df);
 
-                                            mod.data.originalOffset = index2Value;
-                                            mod.enabled = false;
+                                    if (validTypes.Contains(type) && oldOriginalOffset != 0)
+                                    {
+                                        // Old index is fine, so keep using that.
+
+                                        // But mark the index value as invalid, so that we stomp on the index value after this.
+                                        index1Value = -1;
+                                        mod.enabled = false;
+                                    }
+                                    else
+                                    {
+                                        // Okay... Maybe the new Index2 Value?
+                                        if (index2Value != 0)
+                                        {
+                                            type = _dat.GetFileType(index2Value, df);
+                                            if (validTypes.Contains(type))
+                                            {
+                                                // Set the index 1 value to invalid so that the if later down the chain stomps the index1 value.
+                                                index1Value = -1;
+
+                                                mod.data.originalOffset = index2Value;
+                                                mod.enabled = false;
+                                            }
+                                            else
+                                            {
+                                                // We be fucked.
+                                                throw new Exception("Unable to determine working original offset for file:".L() + mod.fullPath);
+                                            }
                                         }
                                         else
                                         {
                                             // We be fucked.
                                             throw new Exception("Unable to determine working original offset for file:".L() + mod.fullPath);
                                         }
-                                    } else
+                                    }
+                                }
+                            }
+                            else if (index2Value != oldOriginalOffset && index2Value != modOffset && index2Value != 0)
+                            {
+                                // Our Index 1 was normal, but our Index 2 is changed to an unknown value.
+                                // If the index 2 points to a valid file, we must assume that this new file 
+                                // is our new base data offset.
+
+                                var type = _dat.GetFileType(index2Value, df);
+
+                                if (validTypes.Contains(type) && index2Value != 0)
+                                {
+                                    mod.data.originalOffset = index2Value;
+                                    mod.enabled = false;
+                                }
+                                else
+                                {
+                                    // Oh dear.  The new index is fucked.  Is the old Index Ok?
+                                    type = _dat.GetFileType(oldOriginalOffset, df);
+
+                                    if (validTypes.Contains(type) && oldOriginalOffset != 0)
+                                    {
+                                        // Old index is fine, so keep using that, but set the index2 value to invalid to ensure we 
+                                        // stomp on the current broken index value.
+                                        index2Value = -1;
+                                    }
+                                    else
                                     {
                                         // We be fucked.
                                         throw new Exception("Unable to determine working original offset for file:".L() + mod.fullPath);
                                     }
                                 }
                             }
-                        }
-                        else if (index2Value != oldOriginalOffset && index2Value != modOffset && index2Value != 0)
-                        {
-                            // Our Index 1 was normal, but our Index 2 is changed to an unknown value.
-                            // If the index 2 points to a valid file, we must assume that this new file 
-                            // is our new base data offset.
 
-                            var type = _dat.GetFileType(index2Value, df);
-
-                            if (validTypes.Contains(type) && index2Value != 0)
+                            // Indexes don't match.  This can occur if SE adds something to index2 that didn't exist in index2 before.
+                            if (index1Value != index2Value && index2Value != 0)
                             {
-                                mod.data.originalOffset = index2Value;
+                                // We should never actually get to this state for file-addition mods.  If we do, uh.. I guess correct the indexes and yolo?
+                                // ( Only way we get here is if SE added a new file at the same name as a file the user had created via modding, in which case, it's technically no longer a file addition mod )
+                                index.SetDataOffset(mod.fullPath, mod.data.originalOffset);
+
+                                index1Value = mod.data.originalOffset;
+                                index2Value = mod.data.originalOffset;
+
                                 mod.enabled = false;
+                            }
+
+                            // Set it to the corrected state.
+                            if (index1Value == mod.data.modOffset)
+                            {
+                                mod.enabled = true;
                             }
                             else
                             {
-                                // Oh dear.  The new index is fucked.  Is the old Index Ok?
-                                type = _dat.GetFileType(oldOriginalOffset, df);
+                                mod.enabled = false;
+                            }
 
-                                if (validTypes.Contains(type) && oldOriginalOffset != 0)
+                            // Perform a basic file type check on our results.
+                            var fileType = _dat.GetFileType(mod.data.modOffset, IOUtil.GetDataFileFromPath(mod.fullPath));
+                            var originalFileType = _dat.GetFileType(mod.data.modOffset, IOUtil.GetDataFileFromPath(mod.fullPath));
+
+                            if (!validTypes.Contains(fileType) || mod.data.modOffset == 0)
+                            {
+                                // Mod data is busted.  Fun.
+                                toRemove.Add(mod);
+                            }
+
+                            if ((!validTypes.Contains(originalFileType)) || mod.data.originalOffset == 0)
+                            {
+                                if (mod.IsCustomFile())
                                 {
-                                    // Old index is fine, so keep using that, but set the index2 value to invalid to ensure we 
-                                    // stomp on the current broken index value.
-                                    index2Value = -1;
+                                    // Okay, in this case this is recoverable as the mod is a custom addition anyways, so we can just delete it.
+                                    if (!toRemove.Contains(mod))
+                                    {
+                                        toRemove.Add(mod);
+                                    }
                                 }
                                 else
                                 {
-                                    // We be fucked.
-                                    throw new Exception("Unable to determine working original offset for file:".L() + mod.fullPath);
+                                    // Update ended up with us unable to find a working offset.  Double fun.
+                                    throw new Exception("Unable to determine working offset for file:".L() + mod.fullPath);
                                 }
                             }
                         }
 
-                        // Indexes don't match.  This can occur if SE adds something to index2 that didn't exist in index2 before.
-                        if (index1Value != index2Value && index2Value != 0)
-                        {
-                            // We should never actually get to this state for file-addition mods.  If we do, uh.. I guess correct the indexes and yolo?
-                            // ( Only way we get here is if SE added a new file at the same name as a file the user had created via modding, in which case, it's technically no longer a file addition mod )
-                            indexFiles[df].SetDataOffset(mod.fullPath, mod.data.originalOffset);
-                            index1Value = mod.data.originalOffset;
-                            index2Value = mod.data.originalOffset;
+                        // Okay, this mod is now represented in the modlist in it's actual post-patch index state.
+                        var datNum = (int)((mod.data.modOffset / 8) & 0x0F) / 2;
+                        var dat = XivDataFiles.GetXivDataFile(mod.datFile);
 
-                            mod.enabled = false;
-                        }
+                        var originalDats = await _dat.GetUnmoddedDatList(dat);
+                        var datPath = $"{dat.GetDataFileName()}{Dat.DatExtension}{datNum}";
 
-                        // Set it to the corrected state.
-                        if (index1Value == mod.data.modOffset)
+                        // Test for SE Dat file rollover.
+                        if (originalDats.Contains(datPath))
                         {
-                            mod.enabled = true;
-                        }
-                        else
-                        {
-                            mod.enabled = false;
-                        }
-
-                        // Perform a basic file type check on our results.
-                        var fileType = _dat.GetFileType(mod.data.modOffset, IOUtil.GetDataFileFromPath(mod.fullPath));
-                        var originalFileType = _dat.GetFileType(mod.data.modOffset, IOUtil.GetDataFileFromPath(mod.fullPath));
-
-                        if (!validTypes.Contains(fileType) || mod.data.modOffset == 0)
-                        {
-                            // Mod data is busted.  Fun.
+                            // Shit.  This means that the dat file where this mod lived got eaten by SE.  We have to destroy the modlist entry at this point.
                             toRemove.Add(mod);
                         }
-
-                        if ((!validTypes.Contains(originalFileType)) || mod.data.originalOffset == 0)
-                        {
-                            if (mod.IsCustomFile())
-                            {
-                                // Okay, in this case this is recoverable as the mod is a custom addition anyways, so we can just delete it.
-                                if(!toRemove.Contains(mod))
-                                {
-                                    toRemove.Add(mod);
-                                }
-                            }
-                            else
-                            {
-                                // Update ended up with us unable to find a working offset.  Double fun.
-                                throw new Exception("Unable to determine working offset for file:".L() + mod.fullPath);
-                            }
-                        }
                     }
 
-                    // Okay, this mod is now represented in the modlist in it's actual post-patch index state.
-                    var datNum = (int)((mod.data.modOffset / 8) & 0x0F) / 2;
-                    var dat = XivDataFiles.GetXivDataFile(mod.datFile);
+                    await ModTransaction.CommitTransaction(tx);
 
-                    var originalDats = await _dat.GetUnmoddedDatList(dat);
-                    var datPath = $"{dat.GetDataFileName()}{Dat.DatExtension}{datNum}";
-
-                    // Test for SE Dat file rollover.
-                    if (originalDats.Contains(datPath))
-                    {
-                        // Shit.  This means that the dat file where this mod lived got eaten by SE.  We have to destroy the modlist entry at this point.
-                        toRemove.Add(mod);
-                    }
+                    // Internal files always need to be purged and rebuilt.
+                    var internalFiles = modList.Mods.Where(x => x.IsInternal());
+                    toRemove.AddRange(internalFiles);
                 }
-
-                // Save any index changes we made.
-                foreach(var dkv in indexFiles)
-                {
-                    await _index.SaveIndexFile(dkv.Value);
-                }
-
-                // The modlist is now saved in its current index-represented post patch state.
-                modding.SaveModList(modList);
 
                 // We now need to clear out any mods that are irreparably fucked, and clear out all of our
                 // internal data files so we can rebuild them later.
-
-                var internalFiles = modList.Mods.Where(x => x.IsInternal());
-                toRemove.AddRange(internalFiles);
-
                 if (toRemove.Count > 0)
                 {
-                    var removedString = "";
-
-                    // Soft-Disable all metadata mods, since we're going to purge their internal file entries.
-                    var metadata = modList.Mods.Where(x => x.fullPath.EndsWith(".meta") || x.fullPath.EndsWith(".rgsp"));
-                    foreach (var mod in metadata)
+                    using (var tx = ModTransaction.BeginTransaction())
                     {
-                        var df = IOUtil.GetDataFileFromPath(mod.fullPath);
-                        await modding.ToggleModUnsafe(false, mod, true, false, indexFiles[df], modList);
-                    }
+                        var modList = await tx.GetModList();
 
-                    foreach (var mod in toRemove)
-                    {
-                        if (mod.data.modOffset == 0 || mod.data.originalOffset == 0)
+                        var removedString = "";
+
+                        // Soft-Disable all metadata mods, since we're going to purge their internal file entries.
+                        var metadata = modList.Mods.Where(x => x.fullPath.EndsWith(".meta") || x.fullPath.EndsWith(".rgsp"));
+                        foreach (var mod in metadata)
                         {
-                            if(mod.data.originalOffset == 0 && mod.enabled)
-                            {
-                                // This is awkward.  We have a mod whose data got bashed, but has no valid original offset to restore.
-                                // So the indexes here are fucked if we do, fucked if we don't.
-                                throw new Exception("Patch-Broken file has no valid index to restore.  Clean Index Restoration required.".L());
-                            }
-
-                            modList.Mods.Remove(mod);
-                            enabledMods.Remove(mod);
-                            removedString += mod.fullPath + "\n";
+                            var df = IOUtil.GetDataFileFromPath(mod.fullPath);
+                            await modding.ToggleModUnsafe(false, mod, true, false, tx);
                         }
-                        else
+
+                        foreach (var mod in toRemove)
                         {
-
-                            if (mod.enabled)
+                            if (mod.data.modOffset == 0 || mod.data.originalOffset == 0)
                             {
-                                var df = IOUtil.GetDataFileFromPath(mod.fullPath);
-                                await modding.ToggleModUnsafe(false, mod, true, false, indexFiles[df], modList);
-                            }
+                                if (mod.data.originalOffset == 0 && mod.enabled)
+                                {
+                                    // This is awkward.  We have a mod whose data got bashed, but has no valid original offset to restore.
+                                    // So the indexes here are fucked if we do, fucked if we don't.
+                                    throw new Exception("Patch-Broken file has no valid index to restore.  Clean Index Restoration required.".L());
+                                }
 
-                            modList.Mods.Remove(mod);
-
-                            // Since we're deleting this entry entirely, we can't leave it in the other cached list either to get re-enabled later.
-                            enabledMods.Remove(mod);
-
-                            if (!mod.IsInternal())
-                            {
+                                modList.Mods.Remove(mod);
+                                enabledMods.Remove(mod);
                                 removedString += mod.fullPath + "\n";
                             }
+                            else
+                            {
+
+                                if (mod.enabled)
+                                {
+                                    var df = IOUtil.GetDataFileFromPath(mod.fullPath);
+                                    await modding.ToggleModUnsafe(false, mod, true, false, tx);
+                                }
+
+                                modList.Mods.Remove(mod);
+
+                                // Since we're deleting this entry entirely, we can't leave it in the other cached list either to get re-enabled later.
+                                enabledMods.Remove(mod);
+
+                                if (!mod.IsInternal())
+                                {
+                                    removedString += mod.fullPath + "\n";
+                                }
+                            }
                         }
-                    }
 
-                    // Save the index files and modlist again now that we've removed all the invalid entries.
-                    foreach (var dkv in indexFiles)
-                    {
-                        await _index.SaveIndexFile(dkv.Value);
-                    }
-                    modding.SaveModList(modList);
+                        await ModTransaction.CommitTransaction(tx);
 
-                    // Show the user a message if we purged any real files.
-                    if (toRemove.Any(x => !String.IsNullOrEmpty(x.fullPath) && !x.IsInternal()))
-                    {
-                        var text = String.Format(UIMessages.PatchDestroyedFiles, removedString);
+                        // Show the user a message if we purged any real files.
+                        if (toRemove.Any(x => !String.IsNullOrEmpty(x.fullPath) && !x.IsInternal()))
+                        {
+                            var text = String.Format(UIMessages.PatchDestroyedFiles, removedString);
 
-                        FlexibleMessageBox.Show(_mainWindow.Win32Window, text, "Destroyed Files Notification".L(), MessageBoxButtons.OK, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1);
+                            FlexibleMessageBox.Show(_mainWindow.Win32Window, text, "Destroyed Files Notification".L(), MessageBoxButtons.OK, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1);
+                        }
                     }
                 }
 

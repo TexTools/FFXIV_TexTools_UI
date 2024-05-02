@@ -689,6 +689,7 @@ namespace FFXIV_TexTools.ViewModels
 
 
                         // Added files which are currently disabled cannot be previewed, as their index file entries don't exist.
+                        // (???) The above comment is wrong.  The data still exists in the Dats, and we have the offset in the modlist file...
                         if (!(modItem.data.originalOffset == modItem.data.modOffset && !modItem.enabled))
                         {
                             // Image
@@ -763,14 +764,7 @@ namespace FFXIV_TexTools.ViewModels
                                 XivTex texData;
                                 try
                                 {
-                                    if (modItems.Count > 10)
-                                    {
-                                        texData = await tex.GetTexDataPreFetchedIndex(ttp);
-                                    }
-                                    else
-                                    {
-                                        texData = await tex.GetTexData(ttp.Path, ttp.Type);
-                                    }
+                                    texData = await tex.GetTexDataByOffset(ttp, modItem.data.modOffset);
 
                                     var mapBytes = await tex.GetImageData(texData);
 

@@ -512,7 +512,14 @@ namespace FFXIV_TexTools.ViewModels
             // Kick this into a new thread since it can take a bit.
             await Task.Run(async () =>
             {
-                materials = await _root.GetMaterialFiles(materialSet);
+                try
+                {
+                    materials = await _root.GetMaterialFiles(materialSet);
+                }
+                catch(Exception ex)
+                {
+                    materials = new List<string>();
+                }
 
                 if (_root.Info.PrimaryType == XivItemType.equipment || _root.Info.PrimaryType == XivItemType.weapon)
                 {

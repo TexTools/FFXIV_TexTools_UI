@@ -5,6 +5,7 @@ using MahApps.Metro.Controls;
 using SharpDX;
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -35,26 +36,24 @@ namespace FFXIV_TexTools.Views
     {
         Dictionary<XivDependencyRoot, List<IItemModel>> Items;
 
-        ModList _modlist;
-        Dictionary<XivDataFile, IndexFile> _indexFiles;
+        ModTransaction _Transaction;
 
         public Dictionary<XivDependencyRoot, (XivDependencyRoot Root, int Variant)> Results;
         public Dictionary<XivDependencyRoot, (IItemModel SourceItem, IItemModel DestinationItem)> ItemSelections;
         public Dictionary<XivDependencyRoot, (ComboBox SourceItemSelection, TextBox DestinationItemBox, CheckBox EnabledCheckBox, CheckBox VariantCheckBox, Button SearchButton)> UiElements;
 
 
-        public ModpackRootConvertWindow(Dictionary<XivDataFile, IndexFile> indexFiles, ModList modList)
+        public ModpackRootConvertWindow(ModTransaction tx)
         {
             var appStyle = ThemeManager.DetectAppStyle(Application.Current);
             var theme = ((AppTheme)appStyle.Item1);
             if (theme.Name.Equals("BaseDark"))
             {
             }
+            _Transaction = tx;
 
             InitializeComponent();
 
-            _indexFiles = indexFiles;
-            _modlist = modList;
 
             Results = new Dictionary<XivDependencyRoot, (XivDependencyRoot Root, int Variant)>();
             Items = new Dictionary<XivDependencyRoot, List<IItemModel>>();
@@ -82,7 +81,7 @@ namespace FFXIV_TexTools.Views
 
                         var df = IOUtil.GetDataFileFromPath(root.Info.GetRootFile());
 
-                        var models = await root.GetModelFiles(_indexFiles[df], _modlist);
+                        var models = await root.GetModelFiles(_Transaction);
 
                         // If any models are missing, don't allow conversions.
                         if(models.Any(x => !filePaths.Contains(x)))
@@ -399,7 +398,7 @@ namespace FFXIV_TexTools.Views
         /// <param name="indexFiles"></param>
         /// <param name="modlist"></param>
         /// <returns></returns>
-        public static async Task<Dictionary<XivDependencyRoot, (XivDependencyRoot Root, int Variant)>> GetRootConversions(HashSet<string> files, Dictionary<XivDataFile, IndexFile> indexFiles, ModList modlist)
+        public static async Task<Dictionary<XivDependencyRoot, (XivDependencyRoot Root, int Variant)>> GetRootConversions(HashSet<string> files, ModTransaction tx)
         {
             Dictionary<XivDependencyRoot, (XivDependencyRoot Root, int Variant)> result = null;
             var mw = MainWindow.GetMainWindow();
@@ -411,16 +410,16 @@ namespace FFXIV_TexTools.Views
 
                     if (Application.Current.Windows.Cast<Window>().Any(x => x == mw))
                     {
-                        window = new ModpackRootConvertWindow(indexFiles, modlist) { Owner = mw };
+                        window = new ModpackRootConvertWindow(tx) { Owner = mw };
                         window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
                     } else
                     {
-                        window = new ModpackRootConvertWindow(indexFiles, modlist);
+                        window = new ModpackRootConvertWindow(tx);
                         window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
                     }
                 } catch(Exception ex)
                 {
-                    window = new ModpackRootConvertWindow(indexFiles, modlist);
+                    window = new ModpackRootConvertWindow(tx);
                     window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
                 }
 
