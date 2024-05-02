@@ -58,6 +58,7 @@ using xivModdingFramework.Models.FileTypes;
 using xivModdingFramework.Mods;
 using xivModdingFramework.Mods.DataContainers;
 using xivModdingFramework.Mods.FileTypes;
+using xivModdingFramework.Mods.FileTypes.PMP;
 using xivModdingFramework.SqPack.DataContainers;
 using xivModdingFramework.SqPack.FileTypes;
 using static xivModdingFramework.Cache.XivCache;
@@ -1161,7 +1162,7 @@ namespace FFXIV_TexTools
         {
             var modPackDirectory = new DirectoryInfo(Settings.Default.ModPack_Directory);
 
-            var openFileDialog = new OpenFileDialog {InitialDirectory = modPackDirectory.FullName, Filter = "TexToolsModPack TTMP (*.ttmp;*.ttmp2)|*.ttmp;*.ttmp2".L(), Multiselect = true};
+            var openFileDialog = new OpenFileDialog {InitialDirectory = modPackDirectory.FullName, Filter = "Mods (*.ttmp;*.ttmp2,*.pmp,*.json)|*.ttmp;*.ttmp2;*.pmp;*.json".L(), Multiselect = true};
 
             if (openFileDialog.ShowDialog() != System.Windows.Forms.DialogResult.OK) 
                 return;
@@ -1175,6 +1176,16 @@ namespace FFXIV_TexTools
             foreach (var fileName in openFileDialog.FileNames)
             {
                 var fileInfo = new FileInfo(fileName);
+
+                if(fileName.EndsWith(".pmp") || fileName.EndsWith(".json"))
+                {
+                    var results = await PMP.ImportPMP(fileName, null, null, XivStrings.TexTools);
+                    if (results > 0)
+                    {
+                        modsImported += results;
+                    }
+                    continue;
+                }
 
                 if (fileInfo.Length == 0)
                 {
@@ -1402,9 +1413,6 @@ namespace FFXIV_TexTools
             if (r == System.Windows.Forms.DialogResult.OK)
             {
                 await LockUi("Scanning for new Item Sets".L(), "This can take up to roughly an hour, depending on computer specs.".L());
-
-                // Stop the worker, in case it was reading from the file for some reason.
-                XivCache.CacheWorkerEnabled = false;
 
                 try
                 {
