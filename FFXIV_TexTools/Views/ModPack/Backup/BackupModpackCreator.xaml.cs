@@ -26,7 +26,7 @@ namespace FFXIV_TexTools.Views
         private readonly ModList _modList;
         private ProgressDialogController _progressController;
 
-        public BackupModPackCreator()
+        public BackupModPackCreator(ModList modlist)
         {
             InitializeComponent();
 
@@ -34,7 +34,7 @@ namespace FFXIV_TexTools.Views
             var modding = new Modding(_gameDirectory);
 
             // Block until modlist is retrieved.
-            _modList = modding.GetModList().Result;
+            _modList = modlist;
 
             DataContext = new BackupModpackViewModel();
             ModpackList.ItemsSource = new List<BackupModpackItemEntry>();

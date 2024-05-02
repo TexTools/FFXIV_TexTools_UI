@@ -841,7 +841,7 @@ namespace FFXIV_TexTools.ViewModels
         /// The info grid shows mod pack details
         /// </remarks>
         /// <param name="category">The category to update the info grid for</param>
-        public void UpdateInfoGrid(Category category)
+        public async void UpdateInfoGrid(Category category)
         {
             ListVisibility = Visibility.Collapsed;
             InfoGridVisibility = Visibility.Visible;
@@ -854,8 +854,7 @@ namespace FFXIV_TexTools.ViewModels
 
             var modding = new Modding(_gameDirectory);
 
-            // Block until modlist is retreived.
-            var modList = modding.GetModList().Result;
+            var modList = await modding.GetModList();
             List<Mod> modPackModList = null;
 
             if (category.Name.Equals(UIStrings.Standalone_Non_ModPack))
@@ -935,12 +934,11 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         /// <param name="item">The mod item to remove</param>
         /// <param name="category">The Category object for the item</param>
-        public void RemoveItem(ModListModel item, Category category)
+        public async Task RemoveItem(ModListModel item, Category category)
         {
             var modding = new Modding(_gameDirectory);
 
-            // Block until modlist is retrieved.
-            var modList = modding.GetModList().Result;
+            var modList = await modding.GetModList();
 
             var remainingList = (from items in modList.Mods
                                 where items.name == item.ModItem.name

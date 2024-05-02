@@ -1146,7 +1146,9 @@ namespace FFXIV_TexTools
         /// </summary>
         private async void Menu_MakeBackupModpack_Click(object sender, RoutedEventArgs e)
         {
-            var backupCreator = new BackupModPackCreator { Owner = this };
+            var _modding = new Modding(XivCache.GameInfo.GameDirectory);
+            var modList = await _modding.GetModList();
+            var backupCreator = new BackupModPackCreator(modList) { Owner = this };
             var result = backupCreator.ShowDialog();
 
             if (result == true)

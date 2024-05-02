@@ -263,7 +263,7 @@ namespace FFXIV_TexTools.Views
                     foreach (var selectedModItem in selectedItems)
                     {
                         await modding.DeleteMod(selectedModItem.ModItem.fullPath);
-                        (DataContext as ModListViewModel).RemoveItem(selectedModItem, (Category)ModListTreeView.SelectedItem);
+                        await (DataContext as ModListViewModel).RemoveItem(selectedModItem, (Category)ModListTreeView.SelectedItem);
                     }
                 }
             }
