@@ -88,8 +88,11 @@ namespace FFXIV_TexTools.ViewModels
                 SetFilter("ModPackFilter");
             }
 
-            var task = XivCache.GetModListParents();
-            task.Wait();
+            var task = Task.Run(async () =>
+            {
+                // Run this on another thread to ensure we don't hard-lock.
+                return await XivCache.GetModListParents();
+            });
 
             _modListParents = task.Result;
         }
