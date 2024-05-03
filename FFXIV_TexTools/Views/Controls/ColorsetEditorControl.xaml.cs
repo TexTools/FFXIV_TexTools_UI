@@ -165,9 +165,9 @@ namespace FFXIV_TexTools.Controls
                 };
             }
 
-            RowData[0][0] = ByteToHalf(DiffuseColorPicker.SelectedColor.Value.R);
-            RowData[0][1] = ByteToHalf(DiffuseColorPicker.SelectedColor.Value.G);
-            RowData[0][2] = ByteToHalf(DiffuseColorPicker.SelectedColor.Value.B);
+            RowData[0][0] = ColorByteToHalf(DiffuseColorPicker.SelectedColor.Value.R);
+            RowData[0][1] = ColorByteToHalf(DiffuseColorPicker.SelectedColor.Value.G);
+            RowData[0][2] = ColorByteToHalf(DiffuseColorPicker.SelectedColor.Value.B);
             UpdateRow();
         }
         private void SpecularColorPicker_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<System.Windows.Media.Color?> e)
@@ -190,9 +190,9 @@ namespace FFXIV_TexTools.Controls
             var b = SpecularColorPicker.SelectedColor.Value.B;
 
 
-            RowData[1][0] = ByteToHalf(DiffuseColorPicker.SelectedColor.Value.R);
-            RowData[1][1] = ByteToHalf(DiffuseColorPicker.SelectedColor.Value.G);
-            RowData[1][2] = ByteToHalf(DiffuseColorPicker.SelectedColor.Value.B);
+            RowData[1][0] = ColorByteToHalf(DiffuseColorPicker.SelectedColor.Value.R);
+            RowData[1][1] = ColorByteToHalf(DiffuseColorPicker.SelectedColor.Value.G);
+            RowData[1][2] = ColorByteToHalf(DiffuseColorPicker.SelectedColor.Value.B);
             UpdateRow();
         }
         private void EmissiveColorPicker_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<System.Windows.Media.Color?> e)
@@ -211,9 +211,9 @@ namespace FFXIV_TexTools.Controls
             }
 
 
-            RowData[2][0] = ByteToHalf(DiffuseColorPicker.SelectedColor.Value.R);
-            RowData[2][1] = ByteToHalf(DiffuseColorPicker.SelectedColor.Value.G);
-            RowData[2][2] = ByteToHalf(DiffuseColorPicker.SelectedColor.Value.B);
+            RowData[2][0] = ColorByteToHalf(DiffuseColorPicker.SelectedColor.Value.R);
+            RowData[2][1] = ColorByteToHalf(DiffuseColorPicker.SelectedColor.Value.G);
+            RowData[2][2] = ColorByteToHalf(DiffuseColorPicker.SelectedColor.Value.B);
             UpdateRow();
         }
 
@@ -271,19 +271,19 @@ namespace FFXIV_TexTools.Controls
             DetailsGroupBox.Header = $"Material - Colorset Row Editor - Row #{(rowNumber + 1)._()}".L();
             RowData = GetRowData(RowId);
 
-            var r = (byte)Math.Round(RowData[0][0] * 255);
-            var g = (byte)Math.Round(RowData[0][1] * 255);
-            var b = (byte)Math.Round(RowData[0][2] * 255);
+            var r = ColorHalfToByte(RowData[0][0]);
+            var g = ColorHalfToByte(RowData[0][1]);
+            var b = ColorHalfToByte(RowData[0][2]);
             DiffuseColorPicker.SelectedColor = new System.Windows.Media.Color() { R = r, G = g, B = b, A = 255 };
 
-            r = (byte)Math.Round(RowData[1][0] * 255);
-            g = (byte)Math.Round(RowData[1][1] * 255);
-            b = (byte)Math.Round(RowData[1][2] * 255);
+            r = ColorHalfToByte(RowData[1][0]);
+            g = ColorHalfToByte(RowData[1][1]);
+            b = ColorHalfToByte(RowData[1][2]);
             SpecularColorPicker.SelectedColor = new System.Windows.Media.Color() { R = r, G = g, B = b, A = 255 };
 
-            r = (byte)Math.Round(RowData[2][0] * 255);
-            g = (byte)Math.Round(RowData[2][1] * 255);
-            b = (byte)Math.Round(RowData[2][2] * 255);
+            r = ColorHalfToByte(RowData[2][0]);
+            g = ColorHalfToByte(RowData[2][1]);
+            b = ColorHalfToByte(RowData[2][2]);
             EmissiveColorPicker.SelectedColor = new System.Windows.Media.Color() { R = r, G = g, B = b, A = 255 };
 
 
@@ -384,18 +384,18 @@ namespace FFXIV_TexTools.Controls
             await _vm.SetColorsetRow(RowId, _columnCount, dyeId);
         }
 
-        private byte HalfToByte(Half half)
+        private byte ColorHalfToByte(Half half)
         {
-            var b = half * 255;
-            b = b > 255 ? 255 : b;
-            b = b < 0 ? 0 : b;
-            return (byte)b;
+            var b = (byte) Math.Round((Math.Sqrt(half) * 255));
+
+            return b;
         }
 
-        private Half ByteToHalf(byte b)
+        private Half ColorByteToHalf(byte b)
         {
-            var val = b / 255.0f;
-            return (Half)(val);
+            var f = (b / 255.0f);
+            var half = f * f;
+            return (Half)(half);
         }
 
         /// <summary>
@@ -416,9 +416,9 @@ namespace FFXIV_TexTools.Controls
                 // Convert RGBA to BGRA
                 byte[] pixel = new byte[4];
                 var destinationOffset = x * 4;
-                pixels[destinationOffset + 0] = HalfToByte(_mtrl.ColorSetData[valueOffset + 2]);
-                pixels[destinationOffset + 1] = HalfToByte(_mtrl.ColorSetData[valueOffset + 1]);
-                pixels[destinationOffset + 2] = HalfToByte(_mtrl.ColorSetData[valueOffset + 0]);
+                pixels[destinationOffset + 0] = ColorHalfToByte(_mtrl.ColorSetData[valueOffset + 2]);
+                pixels[destinationOffset + 1] = ColorHalfToByte(_mtrl.ColorSetData[valueOffset + 1]);
+                pixels[destinationOffset + 2] = ColorHalfToByte(_mtrl.ColorSetData[valueOffset + 0]);
                 //pixels[destinationOffset + 3] = HalfToByte(_mtrl.ColorSetData[valueOffset + 3]);
 
                 // Turn off Alpha, it looks horrible and confusing.
@@ -814,22 +814,9 @@ namespace FFXIV_TexTools.Controls
             var hr = RowData[col][0];
             var hg = RowData[col][1];
             var hb = RowData[col][2];
+            
 
-            var max = Math.Max(Math.Max(hr, hg), hb);
-            if (max <= 1.0f)
-            {
-                max = 1.0f;
-            }
-
-            var displayRed = hr / max;
-            var displayGreen = hg / max;
-            var displayBlue = hb / max;
-
-            byte byteRed = (byte)(displayRed * 255);
-            byte byteGreen = (byte)(displayGreen * 255);
-            byte byteBlue = (byte)(displayBlue * 255);
-
-            return (byteRed, byteGreen, byteBlue);
+            return (ColorHalfToByte(hr), ColorHalfToByte(hb), ColorHalfToByte(hg));
 
         }
 
