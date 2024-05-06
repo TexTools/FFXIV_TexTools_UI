@@ -1617,14 +1617,6 @@ namespace FFXIV_TexTools.ViewModels
             var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
             var index = new Index(gameDirectory);
 
-            if (index.IsIndexLocked(XivDataFile._0A_Exd) && !XivCache.GameInfo.UseLumina)
-            {
-                FlexibleMessageBox.Show(UIMessages.IndexLockedErrorMessage,
-                    UIMessages.IndexLockedErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                return;
-            }
-
             var type = _item.GetPrimaryItemType();
             string submeshId = GetSubmeshId();
             

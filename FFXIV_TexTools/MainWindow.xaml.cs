@@ -1181,10 +1181,17 @@ namespace FFXIV_TexTools
 
                 if(fileName.EndsWith(".pmp") || fileName.EndsWith(".json"))
                 {
-                    var results = await PMP.ImportPMP(fileName, null, XivStrings.TexTools);
-                    if (results > 0)
+                    try
                     {
-                        modsImported += results;
+                        var results = await PMP.ImportPMP(fileName, null, XivStrings.TexTools);
+                        if (results > 0)
+                        {
+                            modsImported += results;
+                        }
+                    }
+                    catch(Exception ex)
+                    {
+                        FlexibleMessageBox.Show(UIMessages.ImportErrorTitle, UIMessages.ModelImportErrorMessage + "\n\n" + ex.Message, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                     continue;
                 }
