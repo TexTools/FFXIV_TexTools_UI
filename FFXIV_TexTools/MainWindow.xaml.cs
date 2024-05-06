@@ -1181,7 +1181,7 @@ namespace FFXIV_TexTools
 
                 if(fileName.EndsWith(".pmp") || fileName.EndsWith(".json"))
                 {
-                    var results = await PMP.ImportPMP(fileName, null, null, XivStrings.TexTools);
+                    var results = await PMP.ImportPMP(fileName, null, XivStrings.TexTools);
                     if (results > 0)
                     {
                         modsImported += results;
