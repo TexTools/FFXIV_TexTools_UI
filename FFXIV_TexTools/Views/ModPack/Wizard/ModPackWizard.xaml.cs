@@ -360,7 +360,7 @@ namespace FFXIV_TexTools.Views
             await LockUi();
             try
             {
-                var ttmpData = await TTMP.GetModPackJsonData(new DirectoryInfo(openFileDialog.FileName));
+                var ttmpData = await TTMP.LEGACY_GetModPackJsonData(new DirectoryInfo(openFileDialog.FileName));
                 if (!ttmpData.ModPackJson.TTMPVersion.Contains("w"))
                 {
                     FlexibleMessageBox.Show(new Wpf32Window(this),

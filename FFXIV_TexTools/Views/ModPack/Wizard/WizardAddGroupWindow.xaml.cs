@@ -1052,7 +1052,7 @@ namespace FFXIV_TexTools.Views
 
                 _basicModpackDirectory = new DirectoryInfo(openFileDialog.FileName);
 
-                var (modpackJson, _) = await TTMP.GetModPackJsonData(_basicModpackDirectory);
+                var (modpackJson, _) = await TTMP.LEGACY_GetModPackJsonData(_basicModpackDirectory);
                 if (modpackJson.TTMPVersion.Contains("s"))
                 {
                     foreach (var modsJson in modpackJson.SimpleModsList)

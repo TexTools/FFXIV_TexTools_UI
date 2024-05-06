@@ -22,6 +22,7 @@ using FFXIV_TexTools.Views;
 using FFXIV_TexTools.Views.ItemConverter;
 using FFXIV_TexTools.Views.Metadata;
 using FFXIV_TexTools.Views.Models;
+using FFXIV_TexTools.Views.Wizard;
 using FolderSelect;
 using ForceUpdateAssembly;
 using MahApps.Metro;
@@ -793,7 +794,9 @@ namespace FFXIV_TexTools
             {
                 var modPackDirectory = new DirectoryInfo(Settings.Default.ModPack_Directory);
 
-                await ImportModpack(new DirectoryInfo(_startupArgs), modPackDirectory, false, true);
+                throw new NotImplementedException();
+                // TODO: Reimplement this.
+                //await ImportModpack();
             }
 
             Application.Current.Shutdown();
@@ -1168,50 +1171,10 @@ namespace FFXIV_TexTools
 
             if (openFileDialog.ShowDialog() != System.Windows.Forms.DialogResult.OK) 
                 return;
-            
-            var importMultiple = openFileDialog.FileNames.Length > 1;
-
-            var modsImported = 0;
-            var modsErrored = 0;
-            float duration = 0;
 
             foreach (var fileName in openFileDialog.FileNames)
             {
-                var fileInfo = new FileInfo(fileName);
-
-                if(fileName.EndsWith(".pmp") || fileName.EndsWith(".json"))
-                {
-                    try
-                    {
-                        var results = await PMP.ImportPMP(fileName, null, XivStrings.TexTools);
-                        if (results > 0)
-                        {
-                            modsImported += results;
-                        }
-                    }
-                    catch(Exception ex)
-                    {
-                        FlexibleMessageBox.Show(UIMessages.ImportErrorTitle, UIMessages.ModelImportErrorMessage + "\n\n" + ex.Message, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                    continue;
-                }
-
-                if (fileInfo.Length == 0)
-                {
-                    FlexibleMessageBox.Show(string.Format(UIMessages.EmptyTTMPFileErrorMessage, Path.GetFileNameWithoutExtension(fileName)), UIMessages.ImportErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    continue;
-                }
-
-                var r = await ImportModpack(new DirectoryInfo(fileName), modPackDirectory, importMultiple);
-                modsImported += r.Imported;
-                modsErrored += r.Errors;
-                duration += r.Duration;
-            }
-
-            if (modsImported > 0)
-            {
-                var durationString = duration.ToString("0.00");
-                await this.ShowMessageAsync(UIMessages.ImportCompleteTitle, string.Format(UIMessages.SuccessfulImportCountMessage, modsImported, modsErrored, durationString));
+                await ImportModpack(fileName);
             }
         }
 
@@ -1221,158 +1184,51 @@ namespace FFXIV_TexTools
         /// <param name="path">The path to the modpack</param>
         /// <param name="silent">If the modpack wizard should be shown or the modpack should just be imported without any user interaction</param>
         /// <returns></returns>
-        private async Task<(int Imported, int Errors, float Duration)> ImportModpack(DirectoryInfo path, DirectoryInfo modPackDirectory, bool silent = false, bool messageInImport = false)
+        private async Task ImportModpack(string path)
         {
-            var importError = false;
-            TextureView textureView = null;
-            TextureViewModel textureViewModel = null;
-            ModelView modelView = null;
-            ModelViewModel modelViewModel = null;
-
-            if(TextureTabItem != null && ModelTabItem != null)
-            {
-                textureView = TextureTabItem.Content as TextureView;
-                textureViewModel = textureView.DataContext as TextureViewModel;
-                modelView = ModelTabItem.Content as ModelView;
-                modelViewModel = modelView.DataContext as ModelViewModel;
-            }
-
-            if (!path.Extension.Contains("ttmp"))
-            {
-                FlexibleMessageBox.Show(string.Format(UIMessages.UnsupportedFileExtensionErrorMessage, path.Extension), 
-                    UIMessages.UnsupportedFileExtensionErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                return (0, 1, 0);
-            }
-
             try
             {
-                var ttmpData = await TTMP.GetModPackJsonData(path);
-
-                var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
-                var index = new Index(gameDirectory);
-
-                if (index.IsIndexLocked(XivDataFile._0A_Exd))
+                var modpackType = TTMP.GetModpackType(path);
+                if(modpackType == TTMP.EModpackType.Invalid)
                 {
-                    FlexibleMessageBox.Show("Error Accessing Index File\n\n\nPlease exit the game before proceeding.\n---------------------------------------------------- - ".L(), "Index Access Error".L(), MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                    return (0, 1, 0);
+                    throw new Exception("Modpack was not a valid PMP or TTMP file, or cannot be read on this version of TexTools.");
                 }
 
-                if (ttmpData.ModPackJson.TTMPVersion.Contains("w"))
+                if (modpackType == TTMP.EModpackType.TtmpWizard || modpackType == TTMP.EModpackType.Pmp)
                 {
-                    try
-                    {
-                        var importWizard = new ImportModPackWizard(ttmpData.ModPackJson, ttmpData.ImageDictionary,
-                            path, textureViewModel, modelViewModel, messageInImport);
-
-                        if (messageInImport)
-                        {
-                            importWizard.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-                        }
-                        else
-                        {
-                            importWizard.Owner = this;
-                        }
-
-                        var result = importWizard.ShowDialog();
-
-                        if (result == true)
-                        {
-                            return (importWizard.TotalModsImported, importWizard.TotalModsErrored, importWizard.ImportDuration);
-                        }
-                    }
-                    catch
-                    {
-                        importError = true;
-                    }
+                    await SimpleWizardWindow.ImportModpack(path, this);
                 }
-                else if(ttmpData.ModPackJson.TTMPVersion.Contains("s"))
+                else if(modpackType == TTMP.EModpackType.TtmpSimple)
                 {
-                    try
-                    {
-                        var simpleImport = new SimpleModPackImporter(path,
-                            ttmpData.ModPackJson, textureViewModel, modelViewModel, silent, messageInImport);
+                    var mpl = await TTMP.GetModpackList(path);
+                    var simpleImport = new SimpleModPackImporter(new DirectoryInfo(path), mpl, false, false);
 
-                        if (messageInImport)
-                        {
-                            simpleImport.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-                        }
-                        else
-                        {
-                            simpleImport.Owner = this;
-                        }
-
-                        var result = simpleImport.ShowDialog();
-
-                        if (result == true)
-                        {
-                            return (simpleImport.TotalModsImported, simpleImport.TotalModsErrored, simpleImport.ImportDuration);
-                        }
-                    }
-                    catch
-                    {
-                        importError = true;
-                    }
-                }
-                else if(ttmpData.ModPackJson.TTMPVersion.Contains("b"))
-                {
-                    try
-                    {
-                        var backupImport = new BackupModPackImporter(path, ttmpData.ModPackJson, messageInImport);
-
-                        if (messageInImport)
-                        {
-                            backupImport.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-                        }
-                        else
-                        {
-                            backupImport.Owner = this;
-                        }
-
-                        var result = backupImport.ShowDialog();
-
-                        if (result == true)
-                        {
-                            return (backupImport.TotalModsImported, backupImport.TotalModsErrored, backupImport.ImportDuration);
-                        }
-                    }
-                    catch
-                    {
-                        importError = true;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                if (!importError)
-                {
-                    var simpleImport = new SimpleModPackImporter(path, null, textureViewModel, modelViewModel, silent, messageInImport);
-
-                    if (messageInImport)
-                    {
-                        simpleImport.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-                    }
-                    else
-                    {
-                        simpleImport.Owner = this;
-                    }
+                    simpleImport.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                    simpleImport.Owner = this;
 
                     var result = simpleImport.ShowDialog();
 
                     if (result == true)
                     {
-                        return (simpleImport.TotalModsImported, simpleImport.TotalModsErrored, simpleImport.ImportDuration);
+                        return;
                     }
                 }
-                else
+                else if(modpackType == TTMP.EModpackType.TtmpBackup)
                 {
-                    FlexibleMessageBox.Show(string.Format(UIMessages.ModPackImportErrorMessage, path.FullName, ex.Message), UIMessages.ModPackImportErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return (0, 1, 0);
+                    var mpl = await TTMP.GetModpackList(path);
+                    var backupImport = new BackupModPackImporter(new DirectoryInfo(path), mpl, false);
+
+                    backupImport.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                    backupImport.Owner = this;
+
+                    var result = backupImport.ShowDialog();
+                    return;
                 }
             }
-
-            return (0, 0, 0);
+            catch (Exception ex)
+            {
+                FlexibleMessageBox.Show(string.Format(UIMessages.ModPackImportErrorMessage, path, ex.Message), UIMessages.ModPackImportErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);                  
+            }
         }
 
         /// <summary>

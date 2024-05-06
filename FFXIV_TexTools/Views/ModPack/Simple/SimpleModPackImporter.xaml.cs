@@ -61,8 +61,6 @@ namespace FFXIV_TexTools.Views
         private readonly TTMP _texToolsModPack;
         private long _modSize;
         private bool _messageInImport, _indexLockStatus;
-        private TextureViewModel _textureViewModel;
-        private ModelViewModel _modelViewModel;
         private ModPackJson _packJson;
         private bool _silent = false;
         public Modding _modding;
@@ -97,7 +95,7 @@ namespace FFXIV_TexTools.Views
         }
 
 
-        public SimpleModPackImporter(DirectoryInfo modPackDirectory, ModPackJson modPackJson, TextureViewModel textureViewModel, ModelViewModel modelViewModel, bool silent = false, bool messageInImport = false)
+        public SimpleModPackImporter(DirectoryInfo modPackDirectory, ModPackJson modPackJson, bool silent = false, bool messageInImport = false)
         {
             this.DataContext = this;
 
@@ -112,8 +110,6 @@ namespace FFXIV_TexTools.Views
             _texToolsModPack = new TTMP(new DirectoryInfo(Properties.Settings.Default.ModPack_Directory),
                 XivStrings.TexTools);
             _messageInImport = messageInImport;
-            _textureViewModel = textureViewModel;
-            _modelViewModel = modelViewModel;
 
             var index = new Index(_gameDirectory);
 
@@ -352,8 +348,6 @@ namespace FFXIV_TexTools.Views
 
             var importList = SelectedEntries.Select(x => JsonEntries[x]).ToList();
 
-            var modListDirectory = new DirectoryInfo(Path.Combine(_gameDirectory.Parent.Parent.FullName, XivStrings.ModlistFilePath));
-
             var progressIndicator = new Progress<(int current, int total, string message)>(ReportProgress);
             var eCount = 0;
 
@@ -363,10 +357,8 @@ namespace FFXIV_TexTools.Views
                 // Specifically run this in a new thread to make sure there's no issue with windows treating us as not-responding.
                 var importResults = await Task.Run(async () =>
                 {
-                    return await _texToolsModPack.ImportModPackAsync(_modPackDirectory, importList,
-                    _gameDirectory, modListDirectory, progressIndicator, ModpackRootConvertWindow.GetRootConversions,
-                    Properties.Settings.Default.AutoMaterialFix, _packJson, 
-                    Properties.Settings.Default.FixPreDawntrailOnImport);
+                    return await TTMP.ImportModPackAsync(_modPackDirectory.FullName, importList, XivStrings.TexTools, progressIndicator, ModpackRootConvertWindow.GetRootConversions,
+                    Properties.Settings.Default.AutoMaterialFix, Properties.Settings.Default.FixPreDawntrailOnImport);
                 });
 
                 TotalModsErrored = importResults.ErrorCount;

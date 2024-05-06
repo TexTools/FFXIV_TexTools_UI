@@ -113,14 +113,11 @@ namespace FFXIV_TexTools.Views
                                     select modsJson);
 
 
-                var texToolsModPack = new TTMP(new DirectoryInfo(Properties.Settings.Default.ModPack_Directory), XivStrings.TexTools);
-                var gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
-                var modListDirectory = new DirectoryInfo(System.IO.Path.Combine(gameDirectory.Parent.Parent.FullName, XivStrings.ModlistFilePath));
                 var progressIndicator = new Progress<(int current, int total, string message)>(ReportProgress);
 
                 var importResults = await Task.Run(async () =>
                 {
-                    return await texToolsModPack.ImportModPackAsync(_modpackDirectory, importList, gameDirectory, modListDirectory, progressIndicator, null, false, _modPackJson, Properties.Settings.Default.FixPreDawntrailOnImport);
+                    return await TTMP.ImportModPackAsync(_modpackDirectory.FullName, importList, XivStrings.TexTools, progressIndicator, null, false, Properties.Settings.Default.FixPreDawntrailOnImport);
                 });
 
                 TotalModsImported = importResults.ImportCount;
