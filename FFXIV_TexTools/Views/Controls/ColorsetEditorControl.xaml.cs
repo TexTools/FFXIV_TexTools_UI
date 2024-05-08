@@ -190,9 +190,9 @@ namespace FFXIV_TexTools.Controls
             var b = SpecularColorPicker.SelectedColor.Value.B;
 
 
-            RowData[1][0] = ColorByteToHalf(DiffuseColorPicker.SelectedColor.Value.R);
-            RowData[1][1] = ColorByteToHalf(DiffuseColorPicker.SelectedColor.Value.G);
-            RowData[1][2] = ColorByteToHalf(DiffuseColorPicker.SelectedColor.Value.B);
+            RowData[1][0] = ColorByteToHalf(SpecularColorPicker.SelectedColor.Value.R);
+            RowData[1][1] = ColorByteToHalf(SpecularColorPicker.SelectedColor.Value.G);
+            RowData[1][2] = ColorByteToHalf(SpecularColorPicker.SelectedColor.Value.B);
             UpdateRow();
         }
         private void EmissiveColorPicker_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<System.Windows.Media.Color?> e)
@@ -211,9 +211,9 @@ namespace FFXIV_TexTools.Controls
             }
 
 
-            RowData[2][0] = ColorByteToHalf(DiffuseColorPicker.SelectedColor.Value.R);
-            RowData[2][1] = ColorByteToHalf(DiffuseColorPicker.SelectedColor.Value.G);
-            RowData[2][2] = ColorByteToHalf(DiffuseColorPicker.SelectedColor.Value.B);
+            RowData[2][0] = ColorByteToHalf(EmissiveColorPicker.SelectedColor.Value.R);
+            RowData[2][1] = ColorByteToHalf(EmissiveColorPicker.SelectedColor.Value.G);
+            RowData[2][2] = ColorByteToHalf(EmissiveColorPicker.SelectedColor.Value.B);
             UpdateRow();
         }
 
