@@ -22,7 +22,7 @@
         <Label Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" Content="File Path:" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
         <TextBox x:Name="FromBox" Grid.Column="1" Grid.Row="0" Margin="5,0" VerticalAlignment="Center"></TextBox>
 
-        <CheckBox x:Name="DecompressType2Box" IsChecked="True" Grid.Row="1" Grid.Column="1" Margin="5,0" Content="Decompress Type 2 Data"></CheckBox>
+        <CheckBox x:Name="DecompressBox" IsChecked="True" Grid.Row="1" Grid.Column="1" Margin="5,0" Content="Decompress file before extraction"></CheckBox>
 
         <Button x:Name="ExtractButton"  Grid.Row="2" Grid.Column="1" Content="Extract File" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0" Width="150" Click="ExtractButton_Click"></Button>
 

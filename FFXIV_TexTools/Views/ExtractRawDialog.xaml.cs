@@ -5,8 +5,10 @@ using System.IO;
 using System.Windows;
 using System.Windows.Forms;
 using xivModdingFramework.Cache;
+using xivModdingFramework.Exd.FileTypes;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Models.FileTypes;
+using xivModdingFramework.Mods;
 using xivModdingFramework.SqPack.FileTypes;
 
 using Index = xivModdingFramework.SqPack.FileTypes.Index;
@@ -33,10 +35,25 @@ namespace FFXIV_TexTools.Views
             var _index = new Index(XivCache.GameInfo.GameDirectory);
             byte[] data = null;
 
+            var tx = ModTransaction.BeginTransaction(true);
+
+            if(!await tx.FileExists(path))
+            {
+                FlexibleMessageBox.Show($"File does not exist:\n{path._()}".L(), "File Not Found".L(), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+
             var sd = new SaveFileDialog();
             if (ext.Length > 0)
             {
                 ext = ext.Substring(1);
+
+                if (DecompressBox.IsChecked == false)
+                {
+                    // Add SQPack extension onto the end.
+                    ext += ".sqpack";
+                }
 
                 sd.Filter = $"{ext.ToUpper()._()} Files (*.{ext._()})|*.{ext._()}".L();
             }
@@ -59,31 +76,12 @@ namespace FFXIV_TexTools.Views
                     return;
                 }
 
-                var type = _dat.GetFileType(offset, df);
-                if (type < 2 || type > 4)
+                if (DecompressBox.IsChecked == true)
                 {
-                    throw new InvalidDataException("Invalid or Unknown Data Type.".L());
-                }
-
-                var size = await _dat.GetCompressedFileSize(offset, df);
-
-                if (type == 2)
+                    data = await _dat.GetUncompressedData(path);
+                } else
                 {
-                    if (DecompressType2Box.IsChecked == true)
-                    {
-                        data = await _dat.ReadSqPackType2(offset, df);
-                    } else
-                    {
-                        data = _dat.GetCompressedData(offset, df, size);
-                    }
-                }
-                if (type == 3)
-                {
-                    data = _dat.GetCompressedData(offset, df, size);
-                }
-                if (type == 4)
-                {
-                    data = _dat.GetCompressedData(offset, df, size);
+                    data = await _dat.GetCompressedData(path);
                 }
 
 
