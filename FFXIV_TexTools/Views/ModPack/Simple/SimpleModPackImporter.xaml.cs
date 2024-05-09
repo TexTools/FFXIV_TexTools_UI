@@ -361,16 +361,9 @@ namespace FFXIV_TexTools.Views
                     Properties.Settings.Default.AutoMaterialFix, Properties.Settings.Default.FixPreDawntrailOnImport);
                 });
 
-                TotalModsErrored = importResults.ErrorCount;
-                TotalModsImported = importResults.ImportCount;
+                TotalModsErrored = importResults.Imported.Count;
+                TotalModsImported = importResults.NotImported.Count;
                 ImportDuration = importResults.Duration;
-
-                if (!string.IsNullOrEmpty(importResults.Errors))
-                {
-                    FlexibleMessageBox.Show(
-                        $"{UIMessages.ErrorImportingModsMessage}\n\n{importResults.Errors}", UIMessages.ErrorImportingModsTitle,
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
             }
             catch (Exception ex)
             {

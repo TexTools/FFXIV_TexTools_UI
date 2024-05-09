@@ -45,16 +45,20 @@ namespace FFXIV_TexTools.Views.Wizard
     /// </summary>
     public partial class SimpleWizardWindow
     {
-        private int _currentPage;
-        private readonly int _pageCount;
-        private ProgressDialogController _progressController;
-        private readonly bool _messageInImport;
+        private int _CurrentPage;
+        private readonly int _PageCount;
+        private ProgressDialogController _ProgressController;
 
-        public SimpleWizardWindow(WizardData data)
+        private readonly WizardData _Data;
+        private readonly string _Path;
+
+        public SimpleWizardWindow(WizardData data, string path)
         {
             InitializeComponent();
 
-            //_modPackJson = modPackJson;
+            _Data = data;
+            _Path = path;
+
 
             ModPackNameLabel.Content = data.MetaPage.Name;
             ModPackAuthorLabel.Content = data.MetaPage.Author;
@@ -63,11 +67,11 @@ namespace FFXIV_TexTools.Views.Wizard
             ModPackUrlLabel.Text = data.MetaPage.Url;
             ModPackUrlLabel.PreviewMouseLeftButtonDown += ModPackUrlLabel_PreviewMouseLeftButtonDown;
 
-            _pageCount = data.OptionPages.Count;
+            _PageCount = data.OptionPages.Count;
 
             var wizPages = importModPackWizard.Items;
 
-            for (var i = 0; i < _pageCount; i++)
+            for (var i = 0; i < _PageCount; i++)
             {
                 wizPages.Add(new WizardPage
                 {
@@ -116,9 +120,9 @@ namespace FFXIV_TexTools.Views.Wizard
         /// </summary>
         private void ImportModPackWizard_Next(object sender, Xceed.Wpf.Toolkit.Core.CancelRoutedEventArgs e)
         {
-            _currentPage++;
+            _CurrentPage++;
 
-            if (_currentPage == _pageCount)
+            if (_CurrentPage == _PageCount)
             {
                 importModPackWizard.FinishButtonVisibility = Visibility.Visible;
                 importModPackWizard.CanFinish = true;
@@ -130,7 +134,7 @@ namespace FFXIV_TexTools.Views.Wizard
         /// </summary>
         private void ImportModPackWizard_Previous(object sender, Xceed.Wpf.Toolkit.Core.CancelRoutedEventArgs e)
         {
-            _currentPage--;
+            _CurrentPage--;
 
             importModPackWizard.FinishButtonVisibility = Visibility.Collapsed;
             importModPackWizard.CanFinish = false;
@@ -149,16 +153,22 @@ namespace FFXIV_TexTools.Views.Wizard
         {
             if (!report.message.Equals(string.Empty))
             {
-                _progressController.SetMessage(report.message.L());
-                _progressController.SetIndeterminate();
+                _ProgressController.SetMessage(report.message.L());
             }
             else
             {
-                _progressController.SetMessage(
-                    $"{UIMessages.PleaseStandByMessage} ({report.current} / {report.total})");
+                _ProgressController.SetMessage($"{UIMessages.PleaseStandByMessage}");
+                //({report.current} / {report.total})
+            }
 
+            if (report.total > 0)
+            {
                 var value = (double)report.current / (double)report.total;
-                _progressController.SetProgress(value);
+                _ProgressController.SetProgress(value);
+            }
+            else
+            {
+                _ProgressController.SetIndeterminate();
             }
         }
 
@@ -167,26 +177,40 @@ namespace FFXIV_TexTools.Views.Wizard
         /// </summary>
         private async void FinalizeImport()
         {
-            _progressController = await this.ShowProgressAsync(UIMessages.ModPackImportTitle, UIMessages.PleaseStandByMessage);
+            _ProgressController = await this.ShowProgressAsync(UIMessages.ModPackImportTitle, UIMessages.PleaseStandByMessage);
+            var progressIndicator = new Progress<(int current, int total, string message)>(ReportProgress);
 
-            await _progressController.CloseAsync();
-            float ImportDuration = 0;
-            int TotalModsImported = 0;
-            int TotalModsErrored = 0;
-
-            if (_messageInImport)
+            (List<string> Imported, List<string> NotImported, float Duration) res = (null, null, 0);
+            if (_Data.ModpackType == TTMP.EModpackType.Pmp)
             {
-                var durationString = ImportDuration.ToString("0.00");
-                await this.ShowMessageAsync(UIMessages.ImportCompleteTitle,
-                    string.Format(UIMessages.SuccessfulImportCountMessage, TotalModsImported, TotalModsErrored, durationString));
+                res = await FinalizePmp(_Data, _Path, progressIndicator);
+            }
+            else if (_Data.ModpackType == TTMP.EModpackType.TtmpWizard)
+            {
+                res = await FinalizeTtmp(_Data, _Path, progressIndicator);
             }
 
+            await _ProgressController.CloseAsync();
+            float ImportDuration = res.Duration;
+            int TotalModsImported = res.Imported.Count;
+            int TotalModsErrored = res.NotImported.Count;
+
+            var durationString = ImportDuration.ToString("0.00");
+            await this.ShowMessageAsync(UIMessages.ImportCompleteTitle,
+                string.Format(UIMessages.SuccessfulImportCountMessage, TotalModsImported, TotalModsErrored, durationString));
             DialogResult = true;
         }
 
         #endregion
 
 
+        /// <summary>
+        /// Core static function for displaying the import wizard, fully self contained, including the final modpack import.
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="owner"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public static async Task ImportModpack(string path, Window owner)
         {
             var modpackType = TTMP.GetModpackType(path);
@@ -204,7 +228,7 @@ namespace FFXIV_TexTools.Views.Wizard
                 throw new Exception("Cannot import non-wizard capable modpack with the wizard modpack importer.");
             }
 
-            var wind = new SimpleWizardWindow(data);
+            var wind = new SimpleWizardWindow(data, path);
             wind.Owner = owner;
             if (owner != null)
             {
@@ -219,16 +243,6 @@ namespace FFXIV_TexTools.Views.Wizard
             {
                 // User cancelled import process.
                 return;
-            }
-
-
-            if (modpackType == TTMP.EModpackType.Pmp)
-            {
-                await FinalizePmp(data, path);
-            }
-            else if (modpackType == TTMP.EModpackType.TtmpWizard)
-            {
-                await FinalizeTtmp(data, path);
             }
         }
 
@@ -248,24 +262,25 @@ namespace FFXIV_TexTools.Views.Wizard
             return data;
         }
 
-        private static async Task FinalizeTtmp(WizardData data, string path)
+        private async Task<(List<string> Imported, List<string> NotImported, float Duration)> FinalizeTtmp(WizardData data, string path, IProgress<(int, int, string)> progress)
         {
             var mods = data.FinalizeTttmpSelections();
             // Time for the chaos that is the TTMP import function.
             var mpl = await TTMP.GetModpackList(path);
 
-            await TTMP.ImportModPackAsync(path, mods, XivStrings.TexTools,
-            null, ModpackRootConvertWindow.GetRootConversions,
+            var res = await TTMP.ImportModPackAsync(path, mods, XivStrings.TexTools,
+            progress, ModpackRootConvertWindow.GetRootConversions,
             Properties.Settings.Default.AutoMaterialFix, Properties.Settings.Default.FixPreDawntrailOnImport);
-            return;
+            return res;
         }
-        private static async Task FinalizePmp(WizardData data, string path)
+        private async Task<(List<string> Imported, List<string> NotImported, float Duration)> FinalizePmp(WizardData data, string path, IProgress<(int, int, string)> progress)
         {
             try
             {
                 data.FinalizePmpSelections();
                 var pmp = data.RawSource as PMPJson;
-                await PMP.ImportPMP(pmp, path, XivStrings.TexTools);
+                var res = await PMP.ImportPMP(pmp, path, XivStrings.TexTools, progress);
+                return res;
             }
             finally {
                 // Clean up the temp directory if we used one.

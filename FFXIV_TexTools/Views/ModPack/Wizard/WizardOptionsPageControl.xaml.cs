@@ -22,6 +22,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using xivModdingFramework.Mods.DataContainers;
 using Image = SixLabors.ImageSharp.Image;
@@ -59,38 +60,21 @@ namespace FFXIV_TexTools.Views.Wizard
         /// </summary>
         private void OptionsList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            // Display new preview image and description in the main display.
+            var opt = OptionsList.SelectedItem as WizardOptionDisplay;
+            if (opt == null) return;
 
-            /*
-            if (OptionsList.SelectedItem is ModOptionJson option)
+            OptionDescriptionTextBox.Text = opt.Description;
+            //opt.ImagePath;
+
+            if (!String.IsNullOrWhiteSpace(opt.ImagePath))
             {
-                OptionDescriptionTextBox.Text = option.Description ?? string.Empty;
-
-                if (!option.ImagePath.Equals(string.Empty))
-                {
-                    if(_imgageTempFileDictionary.ContainsKey(option.ImagePath))
-                    {
-                        try
-                        {
-                            var path = _imgageTempFileDictionary[option.ImagePath];
-                            BitmapImage bi3 = new BitmapImage();
-                            bi3.BeginInit();
-                            bi3.UriSource = new Uri(path, UriKind.Absolute);
-                            bi3.EndInit();
-
-                            OptionPreviewImage.Source = bi3;
-                        } catch(Exception ex)
-                        {
-                            // No-Op
-                        }
-                    }
-                }
-                else
-                {
-                    OptionPreviewImage.Source = null;
-                }
+                var uri = new Uri(opt.ImagePath);
+                OptionPreviewImage.Source = new BitmapImage(uri);
             }
-            */
+            else
+            {
+                OptionPreviewImage.Source = null;
+            }
         }
 
         private void SelectAllButton_Click(object sender, RoutedEventArgs e)

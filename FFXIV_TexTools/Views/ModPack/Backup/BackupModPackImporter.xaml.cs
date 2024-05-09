@@ -120,16 +120,9 @@ namespace FFXIV_TexTools.Views
                     return await TTMP.ImportModPackAsync(_modpackDirectory.FullName, importList, XivStrings.TexTools, progressIndicator, null, false, Properties.Settings.Default.FixPreDawntrailOnImport);
                 });
 
-                TotalModsImported = importResults.ImportCount;
-                TotalModsErrored = importResults.ErrorCount;
+                TotalModsImported = importResults.Imported.Count;
+                TotalModsErrored = importResults.NotImported.Count;
                 ImportDuration = importResults.Duration;
-
-                if (!string.IsNullOrEmpty(importResults.Errors))
-                {
-                    FlexibleMessageBox.Show(
-                        $"{UIMessages.ErrorImportingModsMessage}\n\n{importResults.Errors}", UIMessages.ErrorImportingModsTitle,
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
             }
             catch (Exception ex)
             {

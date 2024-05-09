@@ -104,7 +104,10 @@ namespace FFXIV_TexTools.Views.Wizard
                 var wizOp = new WizardOptionDisplay(group);
                 wizOp.Name = o.Name;
                 wizOp.Description = o.Description;
-                wizOp.ImagePath = Path.Combine(unzipPath, o.ImagePath);
+                if(!String.IsNullOrWhiteSpace(o.ImagePath))
+                {
+                    wizOp.ImagePath = Path.Combine(unzipPath, o.ImagePath);
+                }
                 wizOp.Selected = o.IsChecked;
                 group.Options.Add(wizOp);
             }
@@ -326,7 +329,7 @@ namespace FFXIV_TexTools.Views.Wizard
                 foreach(var g in p.Groups)
                 {
                     var pmpGroup = g.ModOption as PMPGroupJson;
-                    if(pmpGroup != null)
+                    if(pmpGroup == null)
                     {
                         continue;
                     }
