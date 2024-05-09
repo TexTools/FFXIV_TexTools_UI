@@ -389,7 +389,7 @@ namespace FFXIV_TexTools.Views
                             Category = e.Item.SecondaryCategory,
                             FullPath = file,
                             IsDefault = !modded,
-                            ModDataBytes = dat.GetRawData(offset, dataFile, compressedSize)
+                            ModDataBytes = dat.GetCompressedData(offset, dataFile, compressedSize)
                         };
                         option.Mods.Add(file, fData);
                     }

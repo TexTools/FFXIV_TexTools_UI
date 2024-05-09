@@ -2316,13 +2316,15 @@ namespace FFXIV_TexTools.ViewModels
         {
             if (_xivMtrl != null)
             {
-                var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
-                var index = new Index(gameDirectory);
-                var offset = index.GetDataOffset(_xivMtrl.MTRLPath).GetAwaiter().GetResult();
-                if (offset == 0)
+                // Task.Run wrapper to ensure we don't hardlock the render thread.
+                var task = Task.Run(async () =>
                 {
-                    return false;
-                }
+                    using (var tx = ModTransaction.BeginTransaction(true))
+                    {
+                        return await tx.FileExists(_xivMtrl.MTRLPath);
+                    }
+                });
+                return task.Result;
             }
             return CheckMapIsOK();
         }
@@ -2335,23 +2337,15 @@ namespace FFXIV_TexTools.ViewModels
                 return false;
             }
 
-            var path = SelectedMap.TexturePath;
-            var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
-            var index = new Index(gameDirectory);
-
-            XivDataFile? dataFile = null;
-            if (path.StartsWith("ui/"))
-                dataFile = XivDataFile._06_Ui;
-            else if (_item != null)
-                dataFile = _item.DataFile;
-            if (dataFile == null)
-                return true;
-            var offset = index.GetDataOffset(path).GetAwaiter().GetResult();
-            if (offset>0)
+            // Task.Run wrapper to ensure we don't hardlock the render thread.
+            var task = Task.Run(async () =>
             {
-                return true;
-            }
-            return false;
+                using (var tx = ModTransaction.BeginTransaction(true))
+                {
+                    return await tx.FileExists(SelectedMap.TexturePath);
+                }
+            });
+            return task.Result;
         }
 
         private class MapData

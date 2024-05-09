@@ -754,8 +754,7 @@ namespace FFXIV_TexTools.ViewModels
                 bTex.MaterialPath = newMaterial;
 
                 var mtrlPath = _mtrl.GetMtrlPath(tempMdlPath, newMaterial, mtrlVariant);
-                var mtrlOffset = await _index.GetDataOffset(mtrlPath);
-                var mtrl = await _mtrl.GetMtrlData(mtrlOffset, mtrlPath);
+                var mtrl = await _mtrl.GetMtrlData(mtrlPath);
 
                 var colors = ModelTexture.GetCustomColors();
                 colors.InvertNormalGreen = false;
@@ -801,8 +800,7 @@ namespace FFXIV_TexTools.ViewModels
                 materialDictionary[0].MaterialPath = newMaterial;
 
                 var mtrlPath = _mtrl.GetMtrlPath(tempMdlPath, newMaterial, mtrlVariant);
-                var mtrlOffset = await _index.GetDataOffset(mtrlPath);
-                var mtrl = await _mtrl.GetMtrlData(mtrlOffset, mtrlPath);
+                var mtrl = await _mtrl.GetMtrlData(mtrlPath);
                 var colors = ModelTexture.GetCustomColors();
                 colors.InvertNormalGreen = false;
                 var modelMaps = await ModelTexture.GetModelMaps(_gameDirectory, mtrl, colors);
@@ -875,8 +873,7 @@ namespace FFXIV_TexTools.ViewModels
                     try
                     {
                         var mtrlPath = _mtrl.GetMtrlPath(tempMdlPath, material);
-                        var mtrlOffset = await _index.GetDataOffset(mtrlPath);
-                        var mtrl = await _mtrl.GetMtrlData(mtrlOffset, mtrlPath);
+                        var mtrl = await _mtrl.GetMtrlData(mtrlPath);
                         var colors = ModelTexture.GetCustomColors();
                         colors.InvertNormalGreen = false;
                         var modelMaps = await ModelTexture.GetModelMaps(_gameDirectory, mtrl, colors);

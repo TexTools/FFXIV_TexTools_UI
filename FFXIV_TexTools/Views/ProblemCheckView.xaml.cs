@@ -221,7 +221,8 @@ namespace FFXIV_TexTools.Views
                             AddText($"\n\t{datNum} \t\u2716\t", "Red");
                             AddText($"\nFixing...", "Black");
 
-                            File.Delete($"{_gameDirectory}\\{file.GetDataFileName()}.win32.dat{datNum}");
+                            var datPath = Dat.GetDatPath(file, datNum);
+                            File.Delete(datPath);
 
                             AddText($"\t\u2714\n", "Green");
                         }

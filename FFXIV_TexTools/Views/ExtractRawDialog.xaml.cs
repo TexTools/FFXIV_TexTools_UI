@@ -74,16 +74,16 @@ namespace FFXIV_TexTools.Views
                         data = await _dat.GetType2Data(offset, df);
                     } else
                     {
-                        data = _dat.GetRawData(offset, df, size);
+                        data = _dat.GetCompressedData(offset, df, size);
                     }
                 }
                 if (type == 3)
                 {
-                    data = _dat.GetRawData(offset, df, size);
+                    data = _dat.GetCompressedData(offset, df, size);
                 }
                 if (type == 4)
                 {
-                    data = _dat.GetRawData(offset, df, size);
+                    data = _dat.GetCompressedData(offset, df, size);
                 }
 
 

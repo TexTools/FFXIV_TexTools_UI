@@ -700,7 +700,7 @@ namespace FFXIV_TexTools.Views
                     return;
                 }
                 var size = await dat.GetCompressedFileSize(offset, df);
-                rawData = dat.GetRawData(offset, df, size);
+                rawData = dat.GetCompressedData(offset, df, size);
 
                 if (rawData == null)
                 {

@@ -46,6 +46,7 @@ using xivModdingFramework.Mods.DataContainers;
 using xivModdingFramework.SqPack.DataContainers;
 
 using Index = xivModdingFramework.SqPack.FileTypes.Index;
+using System.Drawing.Imaging;
 
 namespace FFXIV_TexTools.ViewModels
 {
@@ -328,8 +329,8 @@ namespace FFXIV_TexTools.ViewModels
                 }
 
                 // Check if it is an old Directory
-                var fileLastModifiedTime = File.GetLastWriteTime(
-                    $"{Properties.Settings.Default.FFXIV_Directory}\\{XivDataFile._0A_Exd.GetDataFileName()}.win32.dat0");
+                var datPath = Dat.GetDatPath(XivDataFile._0A_Exd, 0);
+                var fileLastModifiedTime = File.GetLastWriteTime(datPath);
 
                 if (fileLastModifiedTime.Year < 2021)
                 {
@@ -371,8 +372,8 @@ namespace FFXIV_TexTools.ViewModels
                     }
 
                     // Check if it is an old Directory
-                    var fileLastModifiedTime = File.GetLastWriteTime(
-                        $"{installDirectory}\\{XivDataFile._0A_Exd.GetDataFileName()}.win32.dat0");
+                    var datPath = Dat.GetDatPath(XivDataFile._0A_Exd, 0);
+                    var fileLastModifiedTime = File.GetLastWriteTime(datPath);
 
                     if (fileLastModifiedTime.Year < 2021)
                     {
@@ -647,7 +648,7 @@ namespace FFXIV_TexTools.ViewModels
                         var dat = XivDataFiles.GetXivDataFile(mod.datFile);
 
                         var originalDats = await _dat.GetUnmoddedDatList(dat);
-                        var datPath = $"{dat.GetDataFileName()}{Dat.DatExtension}{datNum}";
+                        var datPath = Dat.GetDatPath(dat, datNum);
 
                         // Test for SE Dat file rollover.
                         if (originalDats.Contains(datPath))
