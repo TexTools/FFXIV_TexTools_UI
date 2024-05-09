@@ -1172,7 +1172,7 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     var texData = await _tex.GetTexData(SelectedMap.TexturePath, SelectedMap.Usage);
 
-                    var mapBytes = await _tex.GetImageData(texData);
+                    var mapBytes = await _tex.GetRawPixels(texData);
 
                     _mapData = new MapData
                     {

@@ -772,7 +772,7 @@ namespace FFXIV_TexTools.ViewModels
                                 {
                                     texData = await tex.GetTexDataByOffset(ttp, modItem.data.modOffset);
 
-                                    var mapBytes = await tex.GetImageData(texData);
+                                    var mapBytes = await tex.GetRawPixels(texData);
 
                                     using (var img = Image.LoadPixelData<Rgba32>(mapBytes, texData.Width, texData.Height))
                                     {

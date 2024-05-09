@@ -260,7 +260,7 @@ namespace FFXIV_TexTools.ViewModels
             byte[] data;
             try
             {
-                data = await _tex.GetImageData(tex, layer);
+                data = await _tex.GetRawPixels(tex, layer);
             } catch
             {
                 return null;
