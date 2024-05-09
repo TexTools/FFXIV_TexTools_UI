@@ -437,7 +437,7 @@ namespace FFXIV_TexTools.Views
                                             // Just test to see if we can get the data at all.
                                             if (extension == ".tex")
                                             {
-                                                var data = await dat.GetType4Data(mod.fullPath, false);
+                                                var data = await dat.GetTexFromDat(mod.fullPath, false);
                                                 uint size = (uint)data.TexData.Length;
 
                                                 var reportedSize = await dat.GetReportedType4UncompressedSize(XivDataFiles.GetXivDataFile(mod.datFile), mod.data.modOffset);

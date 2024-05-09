@@ -71,7 +71,7 @@ namespace FFXIV_TexTools.Views
                 {
                     if (DecompressType2Box.IsChecked == true)
                     {
-                        data = await _dat.GetType2Data(offset, df);
+                        data = await _dat.ReadSqPackType2(offset, df);
                     } else
                     {
                         data = _dat.GetCompressedData(offset, df, size);

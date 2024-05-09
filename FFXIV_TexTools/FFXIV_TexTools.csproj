@@ -25,6 +25,7 @@
     <Copyright>Copyright ©  2024</Copyright>
     <AssemblyVersion>2.3.9.1</AssemblyVersion>
     <FileVersion>2.3.9.1</FileVersion>
+    <LangVersion>9.0</LangVersion>
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <UseWPF>true</UseWPF>
     <PostBuildEvent>mkdir $(TargetDir)lib
@@ -67,7 +68,6 @@ move $(TargetDir)*.dll $(TargetDir)lib</PostBuildEvent>
     <PackageReference Include="HelixToolkit.Wpf" Version="2.25.0" />
     <PackageReference Include="HelixToolkit.Wpf.SharpDX" Version="2.25.0" />
     <PackageReference Include="IndexRange" Version="1.0.2" />
-    <PackageReference Include="Lumina" Version="3.3.0" />
     <PackageReference Include="MahApps.Metro" Version="1.6.5" />
     <PackageReference Include="MahApps.Metro.IconPacks" Version="2.3.0" />
     <PackageReference Include="MahApps.Metro.IconPacks.Material" Version="2.3.0" />
