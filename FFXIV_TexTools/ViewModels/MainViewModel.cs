@@ -328,15 +328,6 @@ namespace FFXIV_TexTools.ViewModels
                     }
                 }
 
-                // Check if it is an old Directory
-                var datPath = Dat.GetDatPath(XivDataFile._0A_Exd, 0);
-                var fileLastModifiedTime = File.GetLastWriteTime(datPath);
-
-                if (fileLastModifiedTime.Year < 2021)
-                {
-                    SetDirectories(false);
-                }
-
                 SetSaveDirectory();
 
                 SetBackupsDirectory();
