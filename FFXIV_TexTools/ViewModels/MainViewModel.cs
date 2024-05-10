@@ -269,6 +269,11 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         private void SetDirectories(bool valid)
         {
+            if (valid && !Properties.Settings.Default.FFXIV_Directory.EndsWith("ffxiv"))
+            {
+                SetDirectories(false);
+                return;
+            }
             if (valid)
             {
                 var resourceManager = CommonInstallDirectories.ResourceManager;
@@ -362,19 +367,8 @@ namespace FFXIV_TexTools.ViewModels
                         }
                     }
 
-                    // Check if it is an old Directory
-                    var datPath = Dat.GetDatPath(XivDataFile._0A_Exd, 0);
-                    var fileLastModifiedTime = File.GetLastWriteTime(datPath);
-
-                    if (fileLastModifiedTime.Year < 2021)
-                    {
-                        SetDirectories(false);
-                    }
-                    else
-                    {
-                        Properties.Settings.Default.FFXIV_Directory = installDirectory;
-                        Properties.Settings.Default.Save();
-                    }
+                    Properties.Settings.Default.FFXIV_Directory = installDirectory;
+                    Properties.Settings.Default.Save();
                 }
                 else
                 {

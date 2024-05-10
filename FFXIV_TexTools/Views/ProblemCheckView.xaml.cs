@@ -89,21 +89,6 @@ namespace FFXIV_TexTools.Views
 
             AddText($"{UIStrings.ProblemCheck_IndexDat}\n\n", secondaryTextColor);
 
-            if (await CheckIndexDatCounts())
-            {
-                AddText($"\n{UIStrings.ProblemCheck_ErrorsFound}\n", secondaryTextColor);
-                if (!index.IsIndexLocked(XivDataFile._0A_Exd))
-                {
-                    await FixIndexDatCounts();
-                    AddText($"{UIStrings.ProblemCheck_RepairComplete}\n", "Green");
-                    await CheckIndexDatCounts();
-                }
-                else
-                {
-                    AddText($"\n{UIStrings.ProblemCheck_IndexLocked} \n", "Red");
-                }
-            }
-
             AddText($"\n{UIStrings.ProblemCheck_IndexBackups}\n", secondaryTextColor);
             await CheckBackups();
 
@@ -134,59 +119,6 @@ namespace FFXIV_TexTools.Views
 
             ProgressBar.Value = 0;
             ProgressLabel.Content = UIStrings.Done;
-        }
-
-        /// <summary>
-        /// Checks the dat counts in the index file
-        /// </summary>
-        /// <returns>Flag for problem found</returns>
-        private async Task<bool> CheckIndexDatCounts()
-        {
-            var problemFound = false;
-
-            var filesToCheck = new XivDataFile[]
-                {XivDataFile._0A_Exd, XivDataFile._01_Bgcommon, XivDataFile._04_Chara, XivDataFile._06_Ui};
-
-            foreach (var file in filesToCheck)
-            {
-                AddText($"\t{file.GetDataFileName()._()} Index Files".L(), textColor);
-
-                try
-                {
-                    var result = await _problemChecker.CheckIndexDatCounts(file);
-
-                    if (result)
-                    {
-                        _indexDatRepairList.Add(file);
-                        AddText("\t\u2716\t", "Red");
-                        problemFound = true;
-                    }
-                    else
-                    {
-                        AddText("\t\u2714\t", "Green");
-                    }
-
-                    result = await _problemChecker.CheckForLargeDats(file);
-
-                    if (result)
-                    {
-                        AddText($"\t\u2716\n{UIStrings.ProblemCheck_ExtraDats}\n", "Red");
-                        problemFound = true;
-                    }
-                    else
-                    {
-                        AddText("\t\u2714\n", "Green");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    FlexibleMessageBox.Show(
-                        $"{UIMessages.ProblemCheckDatIssueMessage}\n{ex.Message}", UIMessages.ProblemCheckErrorTitle,
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
-
-            return problemFound;
         }
 
         /// <summary>
@@ -321,9 +253,6 @@ namespace FFXIV_TexTools.Views
                     var files = modList.Mods.Select(x => x.fullPath).ToList();
 
                     
-                    var index1Offsets = await _index.GetDataOffsets(files);
-                    var index2Offsets = await _index.GetDataOffsetsIndex2(files);
-
                     using (var tx = ModTransaction.BeginTransaction())
                     {
                         foreach (var mod in modList.Mods)
@@ -336,19 +265,10 @@ namespace FFXIV_TexTools.Views
                                 return;
                             }
 
-
-                            long index1Offset = 0;
-                            long index2Offset = 0;
-
-                            if (index1Offsets.ContainsKey(mod.fullPath))
-                            {
-                                index1Offset = index1Offsets[mod.fullPath];
-                            }
-
-                            if (index2Offsets.ContainsKey(mod.fullPath))
-                            {
-                                index2Offset = index2Offsets[mod.fullPath];
-                            }
+                            var df = IOUtil.GetDataFileFromPath(mod.fullPath);
+                            var iFile = await tx.GetIndexFile(df);
+                            long index1Offset = iFile.Get8xDataOffsetIndex1(mod.fullPath);
+                            long index2Offset = iFile.Get8xDataOffsetIndex2(mod.fullPath);
 
                             var fileName = Path.GetFileName(mod.fullPath);
 
@@ -412,7 +332,7 @@ namespace FFXIV_TexTools.Views
                             {
 
                                 textsToAdd.Add(("\t\u2716\n", "Orange"));
-                                textsToAdd.Add(($"Index 1/2 Mismatch: Index 2 entry will be updated to match Index 1.\n".L(), "Orange"));
+                                textsToAdd.Add(($"Index 1/2 Mismatch: Index Values will be repaired.\n".L(), "Orange"));
                                 index2CorrectionNeeded = true;
                             }
                             else
@@ -555,13 +475,12 @@ namespace FFXIV_TexTools.Views
                             {
                                 try
                                 {
-                                    var df = IOUtil.GetDataFileFromPath(mod.fullPath);
-                                    var indexFile = await tx.GetIndexFile(df);
-                                    indexFile.SetDataOffset(mod.fullPath, index1Offset);
+                                    iFile.RepairIndexValue(mod.fullPath);
                                     resolvedErrors++;
                                 }
-                                catch
+                                catch(Exception ex)
                                 {
+                                    textsToAdd.Add((ex.Message, "Red"));
                                     textsToAdd.Add(($"Critical Error: Unable to Correct Index Discrepency for Mod: {mod.fullPath._()}\n\tPlease use [Download Index Backups] =>  [Start Over]".L(), "Red"));
                                     unresolvedCriticalErrors++;
                                 }
