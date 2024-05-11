@@ -106,7 +106,7 @@ namespace FFXIV_TexTools.Views
 
         private async Task LoadItems()
         {
-
+            var tx = MainWindow.DefaultTransaction;
             List<string> children = new List<string>();
             var root = _item.GetRoot();
             if (root != null)
@@ -167,10 +167,9 @@ namespace FFXIV_TexTools.Views
                 }
             }
 
-            var index = new Index(XivCache.GameInfo.GameDirectory);
             foreach(var file in children)
             {
-                var exists = await index.FileExists(file);
+                var exists = await tx.FileExists(file);
                 if (!exists) continue;
 
                 Files.Add(new FileEntry(file));

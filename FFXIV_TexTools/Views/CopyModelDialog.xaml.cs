@@ -156,7 +156,7 @@ namespace FFXIV_TexTools.Views
 
                 var _mdl = new Mdl(XivCache.GameInfo.GameDirectory);
 
-                await _mdl.CopyModel(from, to, XivStrings.TexTools, true);
+                await _mdl.CopyModel(from, to, XivStrings.TexTools, true, MainWindow.UserTransaction);
                 FlexibleMessageBox.Show("Model Copied Successfully.".L(), "Model Copy Confirmation".L(), System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Information);
                 Close();
             }

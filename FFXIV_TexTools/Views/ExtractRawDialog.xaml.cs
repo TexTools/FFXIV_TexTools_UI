@@ -72,7 +72,7 @@ namespace FFXIV_TexTools.Views
 
             try
             {
-                var offset = await tx.GetDataOffset(path);
+                var offset = await tx.GetRawOffset(path);
                 var df = IOUtil.GetDataFileFromPath(path);
                 if (offset <= 0)
                 {

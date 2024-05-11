@@ -123,6 +123,18 @@ namespace FFXIV_TexTools
             set;
         }
 
+        public static ModTransaction DefaultTransaction
+        {
+            get
+            {
+                if(UserTransaction != null)
+                {
+                    return UserTransaction;
+                }
+                return ModTransaction.BeginTransaction(true);
+            }
+        }
+
 
 
         /// <summary>

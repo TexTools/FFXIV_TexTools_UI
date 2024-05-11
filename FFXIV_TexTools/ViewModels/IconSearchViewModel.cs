@@ -24,6 +24,7 @@ using System.Windows.Input;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Items.DataContainers;
+using xivModdingFramework.Mods;
 using xivModdingFramework.SqPack.FileTypes;
 
 namespace FFXIV_TexTools.ViewModels
@@ -90,6 +91,7 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         private async void OpenIcon()
         {
+            var tx = MainWindow.UserTransaction != null ? MainWindow.UserTransaction : ModTransaction.BeginTransaction(true);
             if (_mainView.TabsControl.SelectedIndex == 1)
             {
                 _mainView.TabsControl.SelectedIndex = 0;
@@ -127,7 +129,7 @@ namespace FFXIV_TexTools.ViewModels
                 var iconFolderString = $"ui/icon/{iconFolderInt.ToString().PadLeft(6, '0')}";
                 var path = iconFolderString + "/" + iconFileString;
 
-                if (await index.FileExists(path, XivDataFile._06_Ui))
+                if (await tx.FileExists(path))
                 {
                     var textureView = _mainView.TextureTabItem.Content as TextureView;
                     var textureViewModel = textureView.DataContext as TextureViewModel;
@@ -148,7 +150,7 @@ namespace FFXIV_TexTools.ViewModels
                 else
                 {
                     var iconLangFolderString = $"ui/icon/{iconFolderInt.ToString().PadLeft(6, '0')}/en";
-                    if (await index.FileExists(path, XivDataFile._06_Ui))
+                    if (await tx.FileExists(path))
                     {
                         var textureView = _mainView.TextureTabItem.Content as TextureView;
                         var textureViewModel = textureView.DataContext as TextureViewModel;

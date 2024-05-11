@@ -461,6 +461,7 @@ namespace FFXIV_TexTools.ViewModels
             _textureView.SharedVariantLabel.Visibility = Visibility.Collapsed;
             _textureView.SharedTextureLabel.Visibility = Visibility.Collapsed;
             _textureView.SharedMaterialLabel.Visibility = Visibility.Collapsed;
+            var tx = MainWindow.DefaultTransaction;
 
             if (_item == null)
             {
@@ -514,7 +515,7 @@ namespace FFXIV_TexTools.ViewModels
             {
                 try
                 {
-                    materials = await _root.GetMaterialFiles(materialSet);
+                    materials = await _root.GetMaterialFiles(materialSet, tx);
                 }
                 catch(Exception ex)
                 {
@@ -527,7 +528,7 @@ namespace FFXIV_TexTools.ViewModels
                     var vfxPath = await ATex.GetVfxPath(_item);
                     var index = new Index(XivCache.GameInfo.GameDirectory);
                     _vfxPath = vfxPath.Folder + "/" + vfxPath.File;
-                    _hasVfx = await index.FileExists(_vfxPath);
+                    _hasVfx = await tx.FileExists(_vfxPath);
                 }
 
             });
@@ -564,7 +565,7 @@ namespace FFXIV_TexTools.ViewModels
             }
 
             var _tex = new Tex(XivCache.GameInfo.GameDirectory);
-            var icons = await _tex.GetItemIcons(_item);
+            var icons = await _tex.GetItemIcons(_item, MainWindow.UserTransaction);
             if (icons.Count > 0)
             {
                 finalList.Add("icons.ui");
@@ -750,7 +751,7 @@ namespace FFXIV_TexTools.ViewModels
             else if (ext == ".ui")
             {
                 var _tex = new Tex(XivCache.GameInfo.GameDirectory);
-                var icons = await _tex.GetItemIcons(_item);
+                var icons = await _tex.GetItemIcons(_item, MainWindow.UserTransaction);
 
                 foreach (var ttp in icons)
                 {
@@ -763,13 +764,11 @@ namespace FFXIV_TexTools.ViewModels
             }
             else if (ext == ".mtrl")
             {
-                var index = new Index(XivCache.GameInfo.GameDirectory);
-
                 var _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory);
                 try
                 {
                     // Material doesn't exist for this material set.
-                    var exists = await index.FileExists(SelectedMaterial);
+                    var exists = await MainWindow.DefaultTransaction.FileExists(SelectedMaterial);
                     if(!exists)
                     {
                         OnLoadingComplete();

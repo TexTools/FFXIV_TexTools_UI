@@ -30,6 +30,7 @@ namespace FFXIV_TexTools.Views
 
         private async Task DoCopy()
         {
+            var tx = MainWindow.DefaultTransaction;
 
             var from = FromBox.Text;
             var to = ToBox.Text;
@@ -37,18 +38,17 @@ namespace FFXIV_TexTools.Views
             if (String.IsNullOrWhiteSpace(to) || String.IsNullOrWhiteSpace(to)) return;
 
             var _dat = new Dat(XivCache.GameInfo.GameDirectory);
-            var _index = new Index(XivCache.GameInfo.GameDirectory);
 
 
             try
             {
-                var exists = await _index.FileExists(from);
+                var exists = await tx.FileExists(from);
                 if(!exists)
                 {
                     throw new InvalidDataException("Source file does not exist.".L());
                 }
 
-                exists = await _index.FileExists(to);
+                exists = await tx.FileExists(to);
                 if (exists)
                 {
                     var cancel = false;

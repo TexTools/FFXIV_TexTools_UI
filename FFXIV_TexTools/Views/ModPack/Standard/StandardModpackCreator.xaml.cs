@@ -382,7 +382,7 @@ namespace FFXIV_TexTools.Views
                             await ItemMetadata.SaveMetadata(meta, XivStrings.TexTools);
                         }
 
-                        var offset = await tx.GetDataOffset(file);
+                        var offset = await tx.Get8xDataOffset(file);
                         var dataFile = IOUtil.GetDataFileFromPath(file);
                         var compressedSize = await dat.GetCompressedFileSize(offset, dataFile);
                         ModList.ModDictionary.TryGetValue(file, out var modEntry);
@@ -464,7 +464,7 @@ namespace FFXIV_TexTools.Views
                         await ItemMetadata.SaveMetadata(meta, XivStrings.TexTools);
                     }
 
-                    var offset = await tx.GetDataOffset(file);
+                    var offset = await tx.Get8xDataOffset(file);
                     var dataFile = IOUtil.GetDataFileFromPath(file);
                     var compressedSize = await dat.GetCompressedFileSize(offset, dataFile);
                     ModList.ModDictionary.TryGetValue(file, out var modEntry);

@@ -536,7 +536,7 @@ namespace FFXIV_TexTools.Views
                     textures = await root.GetTextureFiles(mSet);
 
                     var _tex = new Tex(XivCache.GameInfo.GameDirectory);
-                    var icons = await _tex.GetItemIcons(im);
+                    var icons = await _tex.GetItemIcons(im, MainWindow.UserTransaction);
 
                     foreach (var icon in icons)
                     {
@@ -697,7 +697,7 @@ namespace FFXIV_TexTools.Views
             if (rawData == null)
             {
                 var df = IOUtil.GetDataFileFromPath(file.Path);
-                var offset = await tx.GetDataOffset(file.Path);
+                var offset = await tx.Get8xDataOffset(file.Path);
                 if (offset <= 0)
                 {
                     FlexibleMessageBox.Show(new Wpf32Window(this), "Cannot include file, file offset invalid.".L(),

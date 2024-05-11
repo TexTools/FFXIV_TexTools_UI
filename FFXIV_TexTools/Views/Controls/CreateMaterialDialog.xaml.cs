@@ -74,14 +74,11 @@ namespace FFXIV_TexTools.Views.Controls
 
         public async Task<string> GetNewMaterialIdentifier()
         {
-
+            var tx = MainWindow.DefaultTransaction;
             // Get new Material Identifier
             var alphabet = Constants.Alphabet;
             List<string> partList = new List<string>();
 
-            var materialIdentifier = _material.GetMaterialIdentifier();
-
-            var _index = new Index(XivCache.GameInfo.GameDirectory);
 
             if (!SuffixRegex.IsMatch(_material.MTRLPath))
             {
@@ -92,7 +89,7 @@ namespace FFXIV_TexTools.Views.Controls
                 var identifier = alphabet[i];
                 
                 var newPath = SuffixRegex.Replace(_material.MTRLPath, "_" + identifier + ".mtrl");
-                var exists = await _index.FileExists(newPath);
+                var exists = await tx.FileExists(newPath);
                 if (!exists)
                 {
                     return identifier.ToString();
@@ -106,7 +103,7 @@ namespace FFXIV_TexTools.Views.Controls
                 {
                     var identifier = alphabet[a] + alphabet[b];
                     var newPath = SuffixRegex.Replace(_material.MTRLPath, "_" + identifier + ".mtrl");
-                    var exists = await _index.FileExists(newPath);
+                    var exists = await tx.FileExists(newPath);
                     if (!exists)
                     {
                         return identifier.ToString();
@@ -121,8 +118,7 @@ namespace FFXIV_TexTools.Views.Controls
         public static async Task<XivMtrl> ShowCreateMaterialDialog(XivMtrl material, IItemModel item, Window owner = null)
         {
 
-            var _index = new Index(XivCache.GameInfo.GameDirectory);
-            var exists = await _index.FileExists(material.MTRLPath);
+            var exists = await MainWindow.DefaultTransaction.FileExists(material.MTRLPath);
 
 
             var newMtrl = (XivMtrl)material.Clone();

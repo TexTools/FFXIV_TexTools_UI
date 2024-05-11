@@ -415,7 +415,7 @@ namespace FFXIV_TexTools.Views
                                         List<string> missingFiles = new List<string>();
                                         foreach (var child in children)
                                         {
-                                            var result = await _index.FileExists(child);
+                                            var result = await tx.FileExists(child);
                                             if (!result)
                                             {
                                                 missingFiles.Add(child);
