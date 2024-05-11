@@ -735,7 +735,7 @@ namespace FFXIV_TexTools.ViewModels
             var items = 0;
             if (ext == ".avfx")
             {
-                var _atex = new ATex(XivCache.GameInfo.GameDirectory, IOUtil.GetDataFileFromPath(SelectedMaterial));
+                var _atex = new ATex(XivCache.GameInfo.GameDirectory);
                 var paths = await _atex.GetAtexPaths(_item, false, MainWindow.UserTransaction);
 
                 foreach (var path in paths)
@@ -1169,9 +1169,9 @@ namespace FFXIV_TexTools.ViewModels
             {
                 if (SelectedMap.Usage != XivTexType.ColorSet)
                 {
-                    var texData = await _tex.GetTexData(SelectedMap.TexturePath, SelectedMap.Usage);
+                    var texData = await _tex.GetXivTex(SelectedMap.TexturePath, SelectedMap.Usage);
 
-                    var mapBytes = await _tex.GetRawPixels(texData);
+                    var mapBytes = await texData.GetRawPixels();
 
                     _mapData = new MapData
                     {
@@ -1402,7 +1402,7 @@ namespace FFXIV_TexTools.ViewModels
                 }
                 else
                 {
-                    texData = await _tex.GetTexData(ttp.Path, ttp.Type);
+                    texData = await _tex.GetXivTex(ttp.Path, ttp.Type);
                 }
 
                 if (_uiItem != null)
@@ -1638,7 +1638,7 @@ namespace FFXIV_TexTools.ViewModels
                 if (SelectedMap.Usage != XivTexType.ColorSet)
                 {
                     
-                    var texData = await _tex.GetTexData(SelectedMap.TexturePath, SelectedMap.Usage);
+                    var texData = await _tex.GetXivTex(SelectedMap.TexturePath, SelectedMap.Usage);
 
                     try
                     {
@@ -1674,7 +1674,7 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     try
                     {
-                        var newColorSetOffset = await _tex.ImportColorsetTexture(_xivMtrl, fileDir, _item, XivStrings.TexTools, GetLanguage());
+                        var newColorSetOffset = await _tex.ImportColorsetTexture(_xivMtrl, fileDir.FullName, _item, XivStrings.TexTools);
                         _xivMtrl = await _mtrl.GetMtrlData(newColorSetOffset, _xivMtrl.MTRLPath, MainWindow.DefaultTransaction);
                     }
                     catch (Exception ex)
@@ -1691,7 +1691,7 @@ namespace FFXIV_TexTools.ViewModels
             {
                 if (SelectedMap.Usage != XivTexType.ColorSet)
                 {
-                    var texData = await _tex.GetTexData(SelectedMap.TexturePath, SelectedMap.Usage);
+                    var texData = await _tex.GetXivTex(SelectedMap.TexturePath, SelectedMap.Usage);
 
                     try
                     {

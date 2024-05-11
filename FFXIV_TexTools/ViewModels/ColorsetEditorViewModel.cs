@@ -81,10 +81,10 @@ namespace FFXIV_TexTools.ViewModels
             if (TileTextureNormal == null)
             {
                 var _tex = new Tex(XivCache.GameInfo.GameDirectory);
-                TileTextureNormal = await _tex.GetTexData("chara/common/texture/tile_norm_array.tex");
+                TileTextureNormal = await _tex.GetXivTex("chara/common/texture/tile_norm_array.tex");
 
                 // This is not the correct usage, but works for the moment.
-                TileTextureDiffuse = await _tex.GetTexData("chara/common/texture/tile_orb_array.tex");
+                TileTextureDiffuse = await _tex.GetXivTex("chara/common/texture/tile_orb_array.tex");
             }
 
 
@@ -256,11 +256,10 @@ namespace FFXIV_TexTools.ViewModels
             var tileSkewX = (float)RowData[3][1];
             var tileSkewY = (float)RowData[3][2];
 
-            var _tex = new Tex(XivCache.GameInfo.GameDirectory);
             byte[] data;
             try
             {
-                data = await _tex.GetRawPixels(tex, layer);
+                data = await tex.GetRawPixels(layer);
             } catch
             {
                 return null;

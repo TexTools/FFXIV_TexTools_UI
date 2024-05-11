@@ -543,7 +543,7 @@ namespace FFXIV_TexTools.Views
                         textures.Add(icon.Path);
                     }
 
-                    var _atex = new ATex(XivCache.GameInfo.GameDirectory, df);
+                    var _atex = new ATex(XivCache.GameInfo.GameDirectory);
                     var paths = await _atex.GetAtexPaths(im, false, MainWindow.UserTransaction);
                     foreach (var path in paths)
                     {
@@ -794,7 +794,7 @@ namespace FFXIV_TexTools.Views
 
             try
             {
-                var data = await _tex.MakeTexData(selectedFile.Path, openFileDialog.FileName);
+                var data = await _tex.MakeCompressedTex(selectedFile.Path, openFileDialog.FileName);
                 await AddFile(selectedFile, SelectedItem, data);
             }
             catch (Exception ex)
