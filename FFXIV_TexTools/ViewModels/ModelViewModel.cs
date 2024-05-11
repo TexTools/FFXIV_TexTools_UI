@@ -617,7 +617,7 @@ namespace FFXIV_TexTools.ViewModels
             else if (_item.PrimaryCategory.Equals(XivStrings.Housing))
             {
                 var housing = new Housing(_gameDirectory, GetLanguage());
-                var partsDictionary = await housing.GetFurnitureModelParts(_item);
+                var partsDictionary = await housing.GetFurnitureModelParts(_item, MainWindow.UserTransaction);
 
                 foreach (var part in partsDictionary)
                 {
@@ -2010,7 +2010,7 @@ namespace FFXIV_TexTools.ViewModels
                 var colors = ModelTexture.GetCustomColors();
                 colors.InvertNormalGreen = false;
 
-                var modelMaps = await ModelTexture.GetModelMaps(_gameDirectory, xivMtrl.Value, colors, HighlightedColorsetRow);
+                var modelMaps = await ModelTexture.GetModelMaps(_gameDirectory, xivMtrl.Value, colors, HighlightedColorsetRow, MainWindow.UserTransaction);
                 textureDataDictionary.Add(xivMtrl.Key, modelMaps);
             }
 

@@ -735,7 +735,7 @@ namespace FFXIV_TexTools.ViewModels
             if (ext == ".avfx")
             {
                 var _atex = new ATex(XivCache.GameInfo.GameDirectory, IOUtil.GetDataFileFromPath(SelectedMaterial));
-                var paths = await _atex.GetAtexPaths(_item);
+                var paths = await _atex.GetAtexPaths(_item, false, MainWindow.UserTransaction);
 
                 foreach (var path in paths)
                 {

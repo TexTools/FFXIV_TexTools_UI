@@ -544,7 +544,7 @@ namespace FFXIV_TexTools.Views
                     }
 
                     var _atex = new ATex(XivCache.GameInfo.GameDirectory, df);
-                    var paths = await _atex.GetAtexPaths(im);
+                    var paths = await _atex.GetAtexPaths(im, false, MainWindow.UserTransaction);
                     foreach (var path in paths)
                     {
                         textures.Add(path.Path);
@@ -671,8 +671,13 @@ namespace FFXIV_TexTools.Views
 
         private async Task AddFile(FileEntry file, IItem item, byte[] rawData = null)
         {
+            var tx = MainWindow.UserTransaction;
+            if (tx == null)
+            {
+                // Readonly TX if we don't have one.
+                tx = ModTransaction.BeginTransaction(true);
+            }
             var dat = new Dat(_gameDirectory);
-            var index = new Index(_gameDirectory);
 
             if (file == null || file.Path == null || _selectedModOption == null) return;
 
@@ -692,7 +697,7 @@ namespace FFXIV_TexTools.Views
             if (rawData == null)
             {
                 var df = IOUtil.GetDataFileFromPath(file.Path);
-                var offset = await index.GetDataOffset(file.Path);
+                var offset = await tx.GetDataOffset(file.Path);
                 if (offset <= 0)
                 {
                     FlexibleMessageBox.Show(new Wpf32Window(this), "Cannot include file, file offset invalid.".L(),

@@ -35,7 +35,11 @@ namespace FFXIV_TexTools.Views
             var _index = new Index(XivCache.GameInfo.GameDirectory);
             byte[] data = null;
 
-            var tx = ModTransaction.BeginTransaction(true);
+            var tx = MainWindow.UserTransaction;
+            if (tx == null)
+            {
+                tx = ModTransaction.BeginTransaction(true);
+            }
 
             if(!await tx.FileExists(path))
             {
@@ -68,7 +72,7 @@ namespace FFXIV_TexTools.Views
 
             try
             {
-                var offset = await _index.GetDataOffset(path);
+                var offset = await tx.GetDataOffset(path);
                 var df = IOUtil.GetDataFileFromPath(path);
                 if (offset <= 0)
                 {

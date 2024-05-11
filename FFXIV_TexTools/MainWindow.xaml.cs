@@ -113,6 +113,16 @@ namespace FFXIV_TexTools
             }
         }
 
+        /// <summary>
+        /// The current active, end-user-controlled, write-enabled transaction, if there is one.
+        /// Probably should go somewhere else later, but for now this is accessible until a final location is sorted.
+        /// </summary>
+        public static ModTransaction UserTransaction
+        {
+            get;
+            set;
+        }
+
 
 
         /// <summary>

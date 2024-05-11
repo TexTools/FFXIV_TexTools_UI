@@ -301,6 +301,12 @@ namespace FFXIV_TexTools.Views
         }
         private async Task CreateAdvanced()
         {
+            var tx = MainWindow.UserTransaction;
+            if(tx == null)
+            {
+                // Readonly TX if we don't have one.
+                tx = ModTransaction.BeginTransaction(true);
+            }
 
             string modPackPath = Path.Combine(Properties.Settings.Default.ModPack_Directory, $"{ViewModel.Name}.ttmp2");
 
@@ -318,7 +324,6 @@ namespace FFXIV_TexTools.Views
             try
             {
                 TTMP texToolsModPack = new TTMP(new DirectoryInfo(Settings.Default.ModPack_Directory), XivStrings.TexTools);
-                var index = new Index(XivCache.GameInfo.GameDirectory);
                 var dat = new Dat(XivCache.GameInfo.GameDirectory);
                 var modding = new Modding(XivCache.GameInfo.GameDirectory);
                 var ModList = await modding.GetModList();
@@ -367,7 +372,7 @@ namespace FFXIV_TexTools.Views
 
                     foreach (var file in e.AllFiles)
                     {
-                        var exists = await index.FileExists(file);
+                        var exists = await tx.FileExists(file);
 
                         // This is a funny case where in order to create the modpack we actually have to write a default meta entry to the dats first.
                         // If we had the right functions we could just load and serialize the data, but we don't atm.
@@ -377,7 +382,7 @@ namespace FFXIV_TexTools.Views
                             await ItemMetadata.SaveMetadata(meta, XivStrings.TexTools);
                         }
 
-                        var offset = await index.GetDataOffset(file);
+                        var offset = await tx.GetDataOffset(file);
                         var dataFile = IOUtil.GetDataFileFromPath(file);
                         var compressedSize = await dat.GetCompressedFileSize(offset, dataFile);
                         ModList.ModDictionary.TryGetValue(file, out var modEntry);
@@ -423,8 +428,14 @@ namespace FFXIV_TexTools.Views
                 }
             }
 
+            var tx = MainWindow.UserTransaction;
+            if (tx == null)
+            {
+                // Readonly TX if we don't have one.
+                tx = ModTransaction.BeginTransaction(true);
+            }
+
             TTMP texToolsModPack = new TTMP(new DirectoryInfo(Settings.Default.ModPack_Directory), XivStrings.TexTools);
-            var index = new Index(XivCache.GameInfo.GameDirectory);
             var dat = new Dat(XivCache.GameInfo.GameDirectory);
             var modding = new Modding(XivCache.GameInfo.GameDirectory);
             var ModList = await modding.GetModList();
@@ -443,7 +454,7 @@ namespace FFXIV_TexTools.Views
             {
                 foreach(var file in entry.AllFiles)
                 {
-                    var exists = await index.FileExists(file);
+                    var exists = await tx.FileExists(file);
 
                     // This is a funny case where in order to create the modpack we actually have to write a default meta entry to the dats first.
                     // If we had the right functions we could just load and serialize the data, but we don't atm.
@@ -453,7 +464,7 @@ namespace FFXIV_TexTools.Views
                         await ItemMetadata.SaveMetadata(meta, XivStrings.TexTools);
                     }
 
-                    var offset = await index.GetDataOffset(file);
+                    var offset = await tx.GetDataOffset(file);
                     var dataFile = IOUtil.GetDataFileFromPath(file);
                     var compressedSize = await dat.GetCompressedFileSize(offset, dataFile);
                     ModList.ModDictionary.TryGetValue(file, out var modEntry);
