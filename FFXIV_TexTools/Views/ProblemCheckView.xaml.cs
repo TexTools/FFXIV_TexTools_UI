@@ -182,7 +182,7 @@ namespace FFXIV_TexTools.Views
             var addTextLock = new object();
             var modListDirectory =
                 new DirectoryInfo(Path.Combine(_gameDirectory.Parent.Parent.FullName, XivStrings.ModlistFilePath));
-            var modList = new ModList();
+            ModList modList;
             var modding = new Modding(_gameDirectory);
 
             try
@@ -227,7 +227,8 @@ namespace FFXIV_TexTools.Views
 
 
             // Filter out empty entries in the mod list
-            modList.Mods.RemoveAll(mod => mod.name.Equals(string.Empty));
+            var toRemove = modList.Mods.Where(mod => mod.name.Equals(string.Empty));
+            modList.RemoveMods(toRemove);
 
             int resolvedErrors = 0;
             int unresolvedCriticalErrors = 0;
@@ -250,9 +251,9 @@ namespace FFXIV_TexTools.Views
                 var modNum = 0;
                 if (modList.Mods.Count > 0)
                 {
-                    var files = modList.Mods.Select(x => x.fullPath).ToList();
+                    var files = modList.ModDictionary.Keys.ToList();
 
-                    
+
                     using (var tx = ModTransaction.BeginTransaction())
                     {
                         foreach (var mod in modList.Mods)

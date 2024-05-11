@@ -42,6 +42,7 @@ using SharpDX.Direct2D1;
 using xivModdingFramework.Cache;
 using xivModdingFramework.SqPack.FileTypes;
 using xivModdingFramework.Helpers;
+using System.Linq;
 
 namespace FFXIV_TexTools.Views
 {
@@ -198,7 +199,8 @@ namespace FFXIV_TexTools.Views
             this.ModList = await modding.GetModList();
 
             // Don't show or list internal mods at all in this menu.
-            this.ModList.Mods.RemoveAll(x => x.IsInternal());
+            var internals = ModList.Mods.Where(x => x.IsInternal());
+            ModList.RemoveMods(internals);
 
             // Rip through the mod list and get the correct raw compressed sizes for all the mods.
             var _dat = new Dat(XivCache.GameInfo.GameDirectory);

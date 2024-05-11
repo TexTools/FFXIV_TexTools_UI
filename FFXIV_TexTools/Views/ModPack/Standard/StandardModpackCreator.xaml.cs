@@ -380,7 +380,7 @@ namespace FFXIV_TexTools.Views
                         var offset = await index.GetDataOffset(file);
                         var dataFile = IOUtil.GetDataFileFromPath(file);
                         var compressedSize = await dat.GetCompressedFileSize(offset, dataFile);
-                        var modEntry = ModList.Mods.FirstOrDefault(x => x.fullPath == file);
+                        ModList.ModDictionary.TryGetValue(file, out var modEntry);
                         var modded = modEntry != null && modEntry.enabled == true;
 
                         var fData = new ModData
@@ -456,7 +456,7 @@ namespace FFXIV_TexTools.Views
                     var offset = await index.GetDataOffset(file);
                     var dataFile = IOUtil.GetDataFileFromPath(file);
                     var compressedSize = await dat.GetCompressedFileSize(offset, dataFile);
-                    var modEntry = ModList.Mods.FirstOrDefault(x => x.fullPath == file);
+                    ModList.ModDictionary.TryGetValue(file, out var modEntry);
                     var modded = modEntry != null && modEntry.enabled == true;
 
 

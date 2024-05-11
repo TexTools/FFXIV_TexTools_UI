@@ -679,7 +679,7 @@ namespace FFXIV_TexTools.ViewModels
                                     throw new Exception("Patch-Broken file has no valid index to restore.  Clean Index Restoration required.".L());
                                 }
 
-                                modList.Mods.Remove(mod);
+                                modList.RemoveMod(mod);
                                 enabledMods.Remove(mod);
                                 removedString += mod.fullPath + "\n";
                             }
@@ -692,7 +692,7 @@ namespace FFXIV_TexTools.ViewModels
                                     await modding.ToggleModUnsafe(false, mod, true, false, tx);
                                 }
 
-                                modList.Mods.Remove(mod);
+                                modList.RemoveMod(mod);
 
                                 // Since we're deleting this entry entirely, we can't leave it in the other cached list either to get re-enabled later.
                                 enabledMods.Remove(mod);
