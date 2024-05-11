@@ -306,15 +306,16 @@ namespace FFXIV_TexTools.ViewModels
            {
                try
                {
+                   byte[] data = null;
                    if (showEditor)
                    {
-                       await _mdl.ImportModel(_item, _race, path, options, LogMessageReceived, IntermediateStep, XivStrings.TexTools, _submeshId, _dataOnly);
+                       data = await _mdl.ImportModel(_item, _race, path, options, LogMessageReceived, IntermediateStep, XivStrings.TexTools, _submeshId, _dataOnly);
                    }
                    else
                    {
-                       await _mdl.ImportModel(_item, _race, path, options, LogMessageReceived, null, XivStrings.TexTools, _submeshId, _dataOnly);
+                       data = await _mdl.ImportModel(_item, _race, path, options, LogMessageReceived, null, XivStrings.TexTools, _submeshId, _dataOnly);
                    }
-                   OnImportComplete();
+                   OnImportComplete(data);
                }
                catch (Exception ex)
                {
@@ -404,12 +405,12 @@ namespace FFXIV_TexTools.ViewModels
         /// <summary>
         /// This is called when the import is successfully completed.
         /// </summary>
-        private void OnImportComplete()
+        private void OnImportComplete(byte[] data)
         {
             _view.Dispatcher.BeginInvoke((ThreadStart)delegate ()
             {
                 WriteToLog("> [SUCCESS] Model Imported Successfully.", Brushes.DarkGreen);
-                _view.SetData(_mdl.GetRawData());
+                _view.SetData(data);
                 _success = true;
 
                 // Remove the old import button handler since it gets reused as a close button.
