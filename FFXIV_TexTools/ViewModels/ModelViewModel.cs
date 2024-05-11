@@ -739,7 +739,7 @@ namespace FFXIV_TexTools.ViewModels
             {
                 if (_item.PrimaryCategory.Equals(XivStrings.Gear))
                 {
-                    _model = await _mdl.GetModel(_item, SelectedRace.XivRace);
+                    _model = await _mdl.GetTTModel(_item, SelectedRace.XivRace);
                 }
                 else if (_item.PrimaryCategory.Equals(XivStrings.Character))
                 {
@@ -754,7 +754,7 @@ namespace FFXIV_TexTools.ViewModels
 
                     ((XivCharacter)_item).TertiaryCategory = SelectedPart.Name;
 
-                    _model = await _mdl.GetModel(_item, SelectedRace.XivRace);
+                    _model = await _mdl.GetTTModel(_item, SelectedRace.XivRace);
                 }
                 else if (_item.PrimaryCategory.Equals(XivStrings.Companions))
                 {
@@ -770,12 +770,12 @@ namespace FFXIV_TexTools.ViewModels
                         ((XivMount)_item).TertiaryCategory = SelectedPart.Name;
                     }
 
-                    _model = await _mdl.GetModel(_item, SelectedRace.XivRace);
+                    _model = await _mdl.GetTTModel(_item, SelectedRace.XivRace);
                 }
                 else if (_item.PrimaryCategory.Equals(XivStrings.Housing))
                 {
                     string submeshId = GetSubmeshId();
-                    _model = await _mdl.GetModel(_item, SelectedRace.XivRace, submeshId);
+                    _model = await _mdl.GetTTModel(_item, SelectedRace.XivRace, submeshId);
                 }
             }
             catch (Exception ex)
@@ -2157,7 +2157,7 @@ namespace FFXIV_TexTools.ViewModels
             if (_model == null || !_model.IsInternal) return;
 
             // Load a clean copy of the model.
-            var ttmdl = await _mdl.GetModel(_model.Source);
+            var ttmdl = await _mdl.GetTTModel(_model.Source);
 
             var fmea = new fullModelEventArgs { TTModelData = ttmdl, TextureData = _materialDictionary, Item = _item, XivRace = SelectedRace.XivRace};
 
