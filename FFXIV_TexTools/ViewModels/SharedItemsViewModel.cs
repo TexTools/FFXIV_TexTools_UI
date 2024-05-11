@@ -127,7 +127,15 @@ namespace FFXIV_TexTools.ViewModels
                 return false;
 
             }
-            var sharedList = await im.GetSharedModelItems();
+            var sharedList = new List<IItemModel>();
+            try
+            {
+                sharedList = await im.GetSharedModelItems();
+            }
+            catch
+            {
+                // No-Op.  If this broke the user is already getting bombarded with errors.
+            }
 
             var myMaterialSetNumber = fullInfo.GetEntry(im.ModelInfo.ImcSubsetID, im.GetItemSlotAbbreviation()).MaterialSet;
             var myImcNumber = im.ModelInfo.ImcSubsetID;

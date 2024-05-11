@@ -1420,7 +1420,7 @@ namespace FFXIV_TexTools.ViewModels
 
         private async Task<XivMdl> GetRawMdl()
         {
-            return (await _model.GetRawMdl(_mdl));
+            return (await _model.GetRawMdl(_mdl, MainWindow.DefaultTransaction));
         }
 
         private void OpenModelInspector(object obj)

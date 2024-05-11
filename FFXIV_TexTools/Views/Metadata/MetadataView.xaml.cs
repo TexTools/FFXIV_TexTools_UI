@@ -1,7 +1,9 @@
 ﻿using FFXIV_TexTools.Helpers;
+using FFXIV_TexTools.Resources;
 using FFXIV_TexTools.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,16 +11,19 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
+using System.Windows.Forms;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 using xivModdingFramework.Cache;
+using xivModdingFramework.Exd.FileTypes;
 using xivModdingFramework.Items.Enums;
 using xivModdingFramework.Items.Interfaces;
 using xivModdingFramework.Models.FileTypes;
 using xivModdingFramework.Mods;
+using UserControl = System.Windows.Controls.UserControl;
 
 namespace FFXIV_TexTools.Views.Metadata
 {
@@ -106,56 +111,66 @@ namespace FFXIV_TexTools.Views.Metadata
         {
             _root = root;
             if (_root == null) return false;
-
-            if(root.Info.PrimaryType == XivItemType.human)
+            try
             {
-                if(_lastNumber > 0 )
+                if (root.Info.PrimaryType == XivItemType.human)
                 {
-                    if (_lastNumber != (int)root.Info.SecondaryId)
+                    if (_lastNumber > 0)
                     {
-                        // Change root to the new "number" root.
-                        var nRoot = new XivDependencyRootInfo()
+                        if (_lastNumber != (int)root.Info.SecondaryId)
                         {
-                            PrimaryId = _root.Info.PrimaryId,
-                            PrimaryType = _root.Info.PrimaryType,
-                            SecondaryId = _lastNumber,
-                            SecondaryType = _root.Info.SecondaryType,
-                            Slot = _root.Info.Slot
-                        };
-                        _root = nRoot.ToFullRoot();
+                            // Change root to the new "number" root.
+                            var nRoot = new XivDependencyRootInfo()
+                            {
+                                PrimaryId = _root.Info.PrimaryId,
+                                PrimaryType = _root.Info.PrimaryType,
+                                SecondaryId = _lastNumber,
+                                SecondaryType = _root.Info.SecondaryType,
+                                Slot = _root.Info.Slot
+                            };
+                            _root = nRoot.ToFullRoot();
+                        }
+                    }
+                    if (_root.Info.SecondaryId > 0)
+                    {
+                        _lastNumber = (int)_root.Info.SecondaryId;
                     }
                 }
-                if(_root.Info.SecondaryId > 0) {
-                    _lastNumber = (int)_root.Info.SecondaryId;
-                }
-            }
-            
-            SetLabel.Content = XivItemTypes.GetSystemPrefix(root.Info.PrimaryType) + root.Info.PrimaryId.ToString().PadLeft(4, '0');
-            SlotLabel.Content = Mdl.SlotAbbreviationDictionary.FirstOrDefault(x => x.Value == _root.Info.Slot).Key + "(" + _root.Info.Slot + ")";
 
-            var items = await _root.GetAllItems();
-            ItemNameBox.Text  = "[" + items.Count + "] " + items[0].Name;
+                SetLabel.Content = XivItemTypes.GetSystemPrefix(root.Info.PrimaryType) + root.Info.PrimaryId.ToString().PadLeft(4, '0');
+                SlotLabel.Content = Mdl.SlotAbbreviationDictionary.FirstOrDefault(x => x.Value == _root.Info.Slot).Key + "(" + _root.Info.Slot + ")";
 
-            var _modding = new Modding(XivCache.GameInfo.GameDirectory);
-            var path = _root.Info.GetRootFile();
-            var mod = await _modding.TryGetModEntry(path);
+                var items = await _root.GetAllItems();
+                ItemNameBox.Text = "[" + items.Count + "] " + items[0].Name;
 
-            if(mod == null)
-            {
-                ToggleButton.IsEnabled = false;
-                ToggleButton.Content = "Enable".L();
-            } else
-            {
-                ToggleButton.IsEnabled = true;
-                if(mod.enabled)
+                var _modding = new Modding(XivCache.GameInfo.GameDirectory);
+                var path = _root.Info.GetRootFile();
+                var mod = await _modding.TryGetModEntry(path);
+
+                if (mod == null)
                 {
-                    ToggleButton.Content = "Disable".L();
-                } else {
+                    ToggleButton.IsEnabled = false;
                     ToggleButton.Content = "Enable".L();
                 }
+                else
+                {
+                    ToggleButton.IsEnabled = true;
+                    if (mod.enabled)
+                    {
+                        ToggleButton.Content = "Disable".L();
+                    }
+                    else
+                    {
+                        ToggleButton.Content = "Enable".L();
+                    }
+                }
+                return await _vm.SetRoot(_root, defaultVariant);
             }
-
-            return await _vm.SetRoot(_root, defaultVariant);
+            catch(Exception ex) 
+            {
+                FlexibleMessageBox.Show("Unabled to load item Metadata: \n\n".L() + ex.Message, "Metatdata Load Error".L() ,MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
         }
 
         private void PreviousSlotButton_Click(object sender, RoutedEventArgs e)

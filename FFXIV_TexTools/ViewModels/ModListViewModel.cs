@@ -634,6 +634,7 @@ namespace FFXIV_TexTools.ViewModels
                 tex = new Tex(_gameDirectory);
 
                 var modNum = 0;
+                var tx = MainWindow.DefaultTransaction;
 
                 await Task.Run(async () =>
                 {
@@ -707,7 +708,7 @@ namespace FFXIV_TexTools.ViewModels
 
                                 try
                                 {
-                                    var mtrlData = await mtrl.GetMtrlData(offset, modItem.fullPath);
+                                    var mtrlData = await mtrl.GetMtrlData(offset, modItem.fullPath, tx);
 
                                     var floats = Half.ConvertToFloat(mtrlData.ColorSetData.ToArray());
 
@@ -770,7 +771,7 @@ namespace FFXIV_TexTools.ViewModels
                                 XivTex texData;
                                 try
                                 {
-                                    texData = await tex.GetTexDataByOffset(ttp, modItem.data.modOffset);
+                                    texData = await tex.GetTexDataByOffset(ttp, modItem.data.modOffset, tx);
 
                                     var mapBytes = await tex.GetRawPixels(texData);
 
