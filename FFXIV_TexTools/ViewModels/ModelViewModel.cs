@@ -1981,7 +1981,7 @@ namespace FFXIV_TexTools.ViewModels
                 }
 
                 var dxVersion = int.Parse(Settings.Default.DX_Version);
-                var mtrlData = await mtrl.GetMtrlData(mtrlItem, filePath, dxVersion);
+                var mtrlData = await mtrl.GetXivMtrl(filePath, mtrlItem);
 
                 if(mtrlData == null)
                 {

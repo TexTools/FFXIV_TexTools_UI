@@ -702,13 +702,9 @@ namespace FFXIV_TexTools.ViewModels
                             // Image
                             if (itemPath.Contains(".mtrl"))
                             {
-                                var dxVersion = int.Parse(Properties.Settings.Default.DX_Version);
-
-                                long offset = modItem.enabled ? modItem.data.modOffset : modItem.data.originalOffset;
-
                                 try
                                 {
-                                    var mtrlData = await mtrl.GetMtrlData(offset, modItem.fullPath, tx);
+                                    var mtrlData = await mtrl.GetXivMtrl(modItem.fullPath, false, tx);
 
                                     var floats = Half.ConvertToFloat(mtrlData.ColorSetData.ToArray());
 

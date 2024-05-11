@@ -775,7 +775,7 @@ namespace FFXIV_TexTools.ViewModels
                         return;
                     }
 
-                    _xivMtrl = await _mtrl.GetMtrlData(SelectedMaterial);
+                    _xivMtrl = await _mtrl.GetXivMtrl(SelectedMaterial);
 
                     if(_xivMtrl == null)
                     {
@@ -1199,7 +1199,7 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     // Colorset entry.
                     PathString = SelectedMap.TexturePath;
-                    _xivMtrl = await _mtrl.GetMtrlData(_item, SelectedMap.TexturePath);
+                    _xivMtrl = await _mtrl.GetXivMtrl(SelectedMap.TexturePath, _item);
                     await _textureView.ColorsetEditor.SetMaterial(_xivMtrl);
 
                     _textureView.ColorsetEditor.Visibility = Visibility.Visible;
@@ -1386,10 +1386,10 @@ namespace FFXIV_TexTools.ViewModels
                 if (SelectedMap.Usage== XivTexType.ColorSet)
                 {
 
-                    texData = await _mtrl.MtrlToXivTex(_xivMtrl, ttp);
+                    texData = await _mtrl.GetColorsetXivTex(_xivMtrl);
                     if (_primaryIsRace)
                     {
-                        _mtrl.SaveColorSetExtraData(_item, _xivMtrl, savePath, SelectedRace);
+                        _mtrl.SaveColorsetDyeData(_item, _xivMtrl, savePath, SelectedRace);
                     }
                     else
                     {
@@ -1397,7 +1397,7 @@ namespace FFXIV_TexTools.ViewModels
                         saveItem.ModelInfo.SecondaryID = SelectedPrimary;
                         saveItem.Name = saveItem.SecondaryCategory;
                         var race = _root == null ? XivRace.All_Races : XivRaces.GetXivRace(_root.Info.PrimaryId);
-                        _mtrl.SaveColorSetExtraData(saveItem, _xivMtrl, savePath, race);
+                        _mtrl.SaveColorsetDyeData(saveItem, _xivMtrl, savePath, race);
                     }
                 }
                 else
@@ -1675,7 +1675,7 @@ namespace FFXIV_TexTools.ViewModels
                     try
                     {
                         var newColorSetOffset = await _tex.ImportColorsetTexture(_xivMtrl, fileDir.FullName, _item, XivStrings.TexTools);
-                        _xivMtrl = await _mtrl.GetMtrlData(newColorSetOffset, _xivMtrl.MTRLPath, MainWindow.DefaultTransaction);
+                        _xivMtrl = await _mtrl.GetXivMtrl(_xivMtrl.MTRLPath, false, MainWindow.DefaultTransaction);
                     }
                     catch (Exception ex)
                     {
@@ -1886,7 +1886,7 @@ namespace FFXIV_TexTools.ViewModels
                     var _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory);
 
                     // Load the original material.
-                    material = await _mtrl.GetMtrlData(matPath, materialSet);
+                    material = await _mtrl.GetXivMtrl(matPath);
 
                     // And replace the path.
                     material.MTRLPath = material.MTRLPath.Replace(original, target);

@@ -286,7 +286,7 @@ namespace FFXIV_TexTools.Views.Textures
             }
 
             var _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory);
-            var bytes = _mtrl.CreateMtrlFile((XivMtrl)Material.Clone());
+            var bytes = _mtrl.XivMtrlToUncompressedMtrl((XivMtrl)Material.Clone());
             System.IO.File.WriteAllBytes(path, bytes);
         }
 
@@ -361,7 +361,7 @@ namespace FFXIV_TexTools.Views.Textures
             {
                 var _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory);
                 var bytes = File.ReadAllBytes(dialog.FileName);
-                await SetMaterial(_mtrl.GetMtrlData(bytes, _Material.MTRLPath), _item, _mode);
+                await SetMaterial(_mtrl.GetXivMtrl(bytes, _Material.MTRLPath), _item, _mode);
             }
             catch (Exception ex)
             {
@@ -379,7 +379,7 @@ namespace FFXIV_TexTools.Views.Textures
             try
             {
                 var _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory);
-                var bytes = _mtrl.CreateMtrlFile(Material);
+                var bytes = _mtrl.XivMtrlToUncompressedMtrl(Material);
                 File.WriteAllBytes(dialog.FileName, bytes);
             } catch(Exception ex)
             {

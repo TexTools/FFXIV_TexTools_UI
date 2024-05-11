@@ -52,7 +52,7 @@ namespace FFXIV_TexTools.Views.Controls
 
             var _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory);
             var bytes = System.IO.File.ReadAllBytes(path);
-            var newMtrl = _mtrl.GetMtrlData(bytes, Material.MTRLPath);
+            var newMtrl = _mtrl.GetXivMtrl(bytes, Material.MTRLPath);
 
             // Carry our colorset information through.
             if (ColorsetBox.IsChecked == false)
