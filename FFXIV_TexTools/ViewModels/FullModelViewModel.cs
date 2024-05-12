@@ -441,7 +441,9 @@ namespace FFXIV_TexTools.ViewModels
                 XivRace.AuRa_Male,
                 XivRace.AuRa_Female,
                 XivRace.Hrothgar_Male,
+#if DAWNTRAIL
                 XivRace.Hrothgar_Female,
+#endif
                 XivRace.Viera_Male,
                 XivRace.Viera_Female
             };
@@ -494,7 +496,9 @@ namespace FFXIV_TexTools.ViewModels
                     Faces.Add(XivStringRaces.Veena);
                     break;
                 case XivRace.Hrothgar_Male:
+#if DAWNTRAIL
                 case XivRace.Hrothgar_Female:
+#endif
                     Faces.Add(XivStringRaces.Helion);
                     Faces.Add(XivStringRaces.Lost);
                     break;
@@ -932,7 +936,7 @@ namespace FFXIV_TexTools.ViewModels
             }
         }
 
-        #endregion
+#endregion
 
 
         #region ViewPortOptions

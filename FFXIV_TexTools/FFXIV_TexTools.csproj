@@ -34,11 +34,18 @@ move $(TargetDir)*.dll $(TargetDir)lib</PostBuildEvent>
 move $(TargetDir)*.dll $(TargetDir)lib</PostBuildEvent>
     <PostBuildEvent>mkdir $(TargetDir)lib
 move $(TargetDir)*.dll $(TargetDir)lib</PostBuildEvent>
+    <Configurations>Debug;Release;Endwalker Debug;Endwalker Release</Configurations>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>full</DebugType>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Endwalker Debug|AnyCPU'">
+    <DebugType>full</DebugType>
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Endwalker Release|AnyCPU'">
     <DebugType>pdbonly</DebugType>
   </PropertyGroup>
   <PropertyGroup>
