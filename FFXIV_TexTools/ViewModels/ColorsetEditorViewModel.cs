@@ -81,10 +81,19 @@ namespace FFXIV_TexTools.ViewModels
             if (TileTextureNormal == null)
             {
                 var _tex = new Tex(XivCache.GameInfo.GameDirectory);
-                TileTextureNormal = await _tex.GetXivTex("chara/common/texture/tile_norm_array.tex");
+                try
+                {
+                    TileTextureNormal = await _tex.GetXivTex("chara/common/texture/tile_norm_array.tex");
 
-                // This is not the correct usage, but works for the moment.
-                TileTextureDiffuse = await _tex.GetXivTex("chara/common/texture/tile_orb_array.tex");
+                    // This is not the correct usage, but works for the moment.
+                    TileTextureDiffuse = await _tex.GetXivTex("chara/common/texture/tile_orb_array.tex");
+                }
+                catch
+                {
+                    // Endwalker tile materials.
+                    TileTextureNormal = await _tex.GetXivTex("chara/common/texture/-tile_n.tex");
+                    TileTextureDiffuse = await _tex.GetXivTex("chara/common/texture/-tile_d.tex");
+                }
             }
 
 

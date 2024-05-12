@@ -324,8 +324,10 @@ namespace FFXIV_TexTools.Controls
 
 
             uint dyeData = 0;
-            if (_mtrl.ColorSetDyeData.Length != 0) {
-                dyeData = BitConverter.ToUInt32(_mtrl.ColorSetDyeData, rowNumber * 4);
+            if (_mtrl.ColorSetDyeData.Length != 0) { 
+                if (_mtrl.ColorSetDyeData.Length > (rowNumber * 4) + 4) {
+                    dyeData = BitConverter.ToUInt32(_mtrl.ColorSetDyeData, rowNumber * 4);
+                }
             }
 
             if(dyeData == uint.MaxValue)
@@ -459,12 +461,15 @@ namespace FFXIV_TexTools.Controls
             _LOADING = true;
             _mtrl = mtrl;
 
+            STM.EStainingTemplate stainingTemplate;
             if (mtrl.ColorSetData.Count == 256)
             {
+                stainingTemplate = STM.EStainingTemplate.Endwalker;
                 _columnCount = 4;
                 _rowCount = 16;
             } else
             {
+                stainingTemplate = STM.EStainingTemplate.Dawntrail;
                 _columnCount = 8;
                 _rowCount = 32;
             }
@@ -502,8 +507,7 @@ namespace FFXIV_TexTools.Controls
 
             try
             {
-                var templateType = _mtrl.ShaderPack == ShaderHelpers.EShaderPack.CharacterLegacy ? STM.EStainingTemplate.Endwalker : STM.EStainingTemplate.Dawntrail;
-                DyeTemplateFile = await STM.GetStainingTemplateFile(templateType);
+                DyeTemplateFile = await STM.GetStainingTemplateFile(stainingTemplate);
                 DyeTemplateCollection.Clear();
 
                 DyePreviewIdBox.SelectedValue = -1;
