@@ -38,15 +38,19 @@ move $(TargetDir)*.dll $(TargetDir)lib</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>full</DebugType>
+    <DefineConstants>$(DefineConstants);DAWNTRAIL</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Endwalker Debug|AnyCPU'">
     <DebugType>full</DebugType>
+    <DefineConstants>$(DefineConstants);ENDWALKER</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
+    <DefineConstants>$(DefineConstants);DAWNTRAIL</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Endwalker Release|AnyCPU'">
     <DebugType>pdbonly</DebugType>
+    <DefineConstants>$(DefineConstants);ENDWALKER</DefineConstants>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>ffxiv2.ico</ApplicationIcon>
