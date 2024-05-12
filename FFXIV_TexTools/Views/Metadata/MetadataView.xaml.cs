@@ -145,7 +145,7 @@ namespace FFXIV_TexTools.Views.Metadata
 
                 var _modding = new Modding(XivCache.GameInfo.GameDirectory);
                 var path = _root.Info.GetRootFile();
-                var mod = await _modding.TryGetModEntry(path);
+                var mod = await MainWindow.DefaultTransaction.GetMod(path);
 
                 if (mod == null)
                 {
@@ -273,7 +273,7 @@ namespace FFXIV_TexTools.Views.Metadata
         {
             var _modding = new Modding(XivCache.GameInfo.GameDirectory);
             var path = _root.Info.GetRootFile();
-            var mod = await _modding.TryGetModEntry(path);
+            var mod = await _modding.LEGACY_TryGetModEntry(path);
 
             if (mod == null) return;
             var enabled = mod.enabled;

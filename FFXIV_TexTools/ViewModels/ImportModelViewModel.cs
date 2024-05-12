@@ -53,10 +53,8 @@ namespace FFXIV_TexTools.ViewModels
             }
         }
 
-        private bool _showEditor;
-
         private async Task AssignPath() {
-            var result = await _mdl.GetMdlPath(_item, _race, _submeshId);
+            var result = await _mdl.GetMdlPath(_item, _race, _submeshId, MainWindow.DefaultTransaction);
             _internalPath = result;
         }
 

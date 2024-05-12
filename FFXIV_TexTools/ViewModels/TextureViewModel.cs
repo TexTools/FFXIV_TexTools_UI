@@ -1206,7 +1206,7 @@ namespace FFXIV_TexTools.ViewModels
                     _textureView.StandardTextureDisplay.Visibility = Visibility.Collapsed;
                 }
 
-                var mod = await _modding.TryGetModEntry(PathString);
+                var mod = await MainWindow.DefaultTransaction.GetMod(PathString);
                 if (mod != null && !mod.enabled)
                 {
                     ModStatusToggleEnabled = true;

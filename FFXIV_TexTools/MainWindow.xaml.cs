@@ -131,6 +131,8 @@ namespace FFXIV_TexTools
                 {
                     return UserTransaction;
                 }
+
+                // Default to a new readonly transaction.
                 return ModTransaction.BeginTransaction(true);
             }
         }

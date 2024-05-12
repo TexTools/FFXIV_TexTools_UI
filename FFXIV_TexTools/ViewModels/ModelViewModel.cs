@@ -814,8 +814,7 @@ namespace FFXIV_TexTools.ViewModels
 
             var modList = new Modding(_gameDirectory);
 
-            var mod = await modList.TryGetModEntry(PathString);
-            //var modStatus = await modList.IsModEnabled(PathString, false);
+            var mod = await MainWindow.DefaultTransaction.GetMod(PathString);
 
             if(mod == null)
             {

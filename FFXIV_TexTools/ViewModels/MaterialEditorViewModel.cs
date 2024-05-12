@@ -134,7 +134,7 @@ namespace FFXIV_TexTools.ViewModels
             // Get the mod entry.
             if (_mode == MaterialEditorMode.EditSingle || _mode == MaterialEditorMode.EditMulti)
             {
-                var mod = await _modding.TryGetModEntry(_material.MTRLPath);
+                var mod = await _modding.LEGACY_TryGetModEntry(_material.MTRLPath);
                 if (mod != null && mod.enabled)
                 {
                     _view.DisableButton.IsEnabled = true;
@@ -345,7 +345,7 @@ namespace FFXIV_TexTools.ViewModels
             {
                 foreach (var file in files)
                 {
-                    var modEntry = await _modding.TryGetModEntry(file);
+                    var modEntry = await _modding.LEGACY_TryGetModEntry(file);
 
                     if (modEntry == null)
                     {
