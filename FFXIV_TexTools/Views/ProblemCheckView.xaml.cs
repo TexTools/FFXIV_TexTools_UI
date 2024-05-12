@@ -77,6 +77,12 @@ namespace FFXIV_TexTools.Views
 
         private async void RunChecks()
         {
+            if (!Dat.AllowDatAlteration)
+            {
+                // A few of the constituent functions alter the DATs in the process of fixing known errors.
+                throw new Exception("Cannot run problem checker when DAT writing is disabled.");
+            }
+
             var index = new Index(_gameDirectory);
 
             IProgress<(int current, int total)> progress = new Progress<(int current, int total)>((update) =>
@@ -135,6 +141,11 @@ namespace FFXIV_TexTools.Views
 
         private async Task CheckDatSizes()
         {
+            if (!Dat.AllowDatAlteration)
+            {
+                throw new Exception("Cannot clean up DAT sizes while DAT writing is disabled.");
+            }
+
             var filesToCheck = new XivDataFile[]
                 {XivDataFile._0A_Exd, XivDataFile._01_Bgcommon, XivDataFile._04_Chara, XivDataFile._06_Ui};
 
@@ -751,7 +762,7 @@ namespace FFXIV_TexTools.Views
                         continue;
                     }
 
-                    var result = await _problemChecker.CheckForOutdatedBackups(file, backupDirectory);
+                    var result = await _problemChecker.ValidateIndexBackup(file, backupDirectory);
 
                     if (!result)
                     {

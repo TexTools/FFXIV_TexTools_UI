@@ -417,6 +417,20 @@ namespace FFXIV_TexTools.ViewModels
             var workerStatus = XivCache.CacheWorkerEnabled;
             XivCache.CacheWorkerEnabled = false;
 
+            var readonlyTx = ModTransaction.BeginTransaction(true);
+            if ((await readonlyTx.GetModList()).Mods.Count == 0)
+            {
+                // No mods.  Just create backups and move on with our life.
+                await BackupIndexFiles();
+                return;
+            }
+
+            if (!Dat.AllowDatAlteration)
+            {
+                // We have mods on file, we'll need write access here.
+                throw new Exception("Cannot perform Post-Patch Cleanup with ");
+            }
+
             try
             {
 
@@ -678,24 +692,10 @@ namespace FFXIV_TexTools.ViewModels
                 }
 
                 // Always create clean index backups after this process is completed.
-
                 _mainWindow.LockProgress.Report("Disabling Mods...".L());
                 await modding.ToggleAllMods(false);
 
-                _mainWindow.LockProgress.Report("Creating Index Backups...".L());
-                var pc = new ProblemChecker(_gameDirectory);
-                DirectoryInfo backupDir;
-                try
-                {
-                    Directory.CreateDirectory(Settings.Default.Backup_Directory);
-                    backupDir = new DirectoryInfo(Settings.Default.Backup_Directory);
-                }
-                catch
-                {
-                    throw new Exception("Unable to create index backups.\nThe Index Backup directory is invalid or inaccessible: ".L() + Settings.Default.Backup_Directory);
-                }
-
-                await pc.BackupIndexFiles(backupDir);
+                await BackupIndexFiles();
 
                 // Now restore the modlist enable/disable state back to how the user had it before.
                 _mainWindow.LockProgress.Report("Re-Enabling mods...");
@@ -725,6 +725,24 @@ namespace FFXIV_TexTools.ViewModels
             }
         }
 
+        private async Task BackupIndexFiles()
+        {
+            _mainWindow.LockProgress?.Report("Creating Index Backups...".L());
+            var pc = new ProblemChecker(_gameDirectory);
+            DirectoryInfo backupDir;
+            try
+            {
+                Directory.CreateDirectory(Settings.Default.Backup_Directory);
+                backupDir = new DirectoryInfo(Settings.Default.Backup_Directory);
+            }
+            catch
+            {
+                throw new Exception("Unable to create index backups.\nThe Index Backup directory is invalid or inaccessible: ".L() + Settings.Default.Backup_Directory);
+            }
+
+            await pc.BackupIndexFiles(backupDir);
+
+        }
 
         /// <summary>
         /// The DX Version
