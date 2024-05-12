@@ -71,7 +71,7 @@ namespace FFXIV_TexTools.ViewModels
         {
             _mainWindow = mainWindow;
             // This is actually synchronous and can just be called immediately...
-            SetDirectories(true);
+            SetDirectories();
 
             _gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
             _index = new Index(_gameDirectory);
@@ -265,116 +265,77 @@ namespace FFXIV_TexTools.ViewModels
         }
 
         /// <summary>
-        /// Asks for game directory and sets default save directory
+        /// Validates the various directories TexTools relies on.
         /// </summary>
-        private void SetDirectories(bool valid)
+        private void SetDirectories()
         {
-            if (valid && !Properties.Settings.Default.FFXIV_Directory.EndsWith("ffxiv"))
+
+            var resourceManager = CommonInstallDirectories.ResourceManager;
+            var resourceSet = resourceManager.GetResourceSet(CultureInfo.CurrentCulture, true, true);
+
+            if (!Properties.Settings.Default.FFXIV_Directory.EndsWith("ffxiv"))
             {
-                SetDirectories(false);
-                return;
+                Properties.Settings.Default.FFXIV_Directory = "";
             }
-            if (valid)
-            {
-                var resourceManager = CommonInstallDirectories.ResourceManager;
-                var resourceSet = resourceManager.GetResourceSet(CultureInfo.CurrentCulture, true, true);
 
-                if (Properties.Settings.Default.FFXIV_Directory.Equals(""))
+            if (Settings.Default.FFXIV_Directory == "") 
+            { 
+                var installDirectory = "";
+                foreach (DictionaryEntry commonInstallPath in resourceSet)
                 {
-                    var saveDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "/TexTools/Saved";
-                    Directory.CreateDirectory(saveDirectory);
-                    Properties.Settings.Default.Save_Directory = saveDirectory;
-                    Properties.Settings.Default.Save();
+                    if (!Directory.Exists(commonInstallPath.Value.ToString())) continue;
 
-                    var installDirectory = "";
-                    foreach (DictionaryEntry commonInstallPath in resourceSet)
+                    if (FlexibleMessageBox.Show(string.Format(UIMessages.InstallDirectoryFoundMessage, commonInstallPath.Value), UIMessages.InstallDirectoryFoundTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                     {
-                        if (!Directory.Exists(commonInstallPath.Value.ToString())) continue;
-
-                        if (FlexibleMessageBox.Show(string.Format(UIMessages.InstallDirectoryFoundMessage, commonInstallPath.Value), UIMessages.InstallDirectoryFoundTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-                        {
-                            installDirectory = commonInstallPath.Value.ToString();
-                            Properties.Settings.Default.FFXIV_Directory = installDirectory;
-                            Properties.Settings.Default.Save();
-                            break;
-                        }
+                        installDirectory = commonInstallPath.Value.ToString();
+                        Properties.Settings.Default.FFXIV_Directory = installDirectory;
+                        Properties.Settings.Default.Save();
+                        break;
                     }
+                }
 
-                    if (string.IsNullOrEmpty(installDirectory))
+                if (string.IsNullOrEmpty(installDirectory))
+                {
+                    if (FlexibleMessageBox.Show(UIMessages.InstallDirectoryNotFoundMessage, UIMessages.InstallDirectoryNotFoundTitle, MessageBoxButtons.OK, MessageBoxIcon.Question) == DialogResult.OK)
                     {
-                        if (FlexibleMessageBox.Show(UIMessages.InstallDirectoryNotFoundMessage, UIMessages.InstallDirectoryNotFoundTitle, MessageBoxButtons.OK, MessageBoxIcon.Question) == DialogResult.OK)
+                        while (!installDirectory.EndsWith("ffxiv"))
                         {
-                            while (!installDirectory.Contains("ffxiv"))
+                            var folderSelect = new FolderSelectDialog()
                             {
-                                var folderSelect = new FolderSelectDialog()
-                                {
-                                    Title = UIMessages.SelectffxivFolderTitle
-                                };
+                                Title = UIMessages.SelectffxivFolderTitle
+                            };
 
-                                var result = folderSelect.ShowDialog();
+                            var result = folderSelect.ShowDialog();
 
-                                if (result)
-                                {
-                                    installDirectory = folderSelect.FileName;
-                                }
-                                else
-                                {
-                                    Environment.Exit(0);
-                                }
+                            if (result)
+                            {
+                                installDirectory = folderSelect.FileName;
                             }
+                            else
+                            {
+                                Environment.Exit(0);
+                            }
+                        }
 
-                            Properties.Settings.Default.FFXIV_Directory = installDirectory;
-                            Properties.Settings.Default.Save();
-                        }
-                        else
-                        {
-                            Environment.Exit(0);
-                        }
+                        Properties.Settings.Default.FFXIV_Directory = installDirectory;
+                        Properties.Settings.Default.Save();
                     }
-                }
-
-                SetSaveDirectory();
-
-                SetBackupsDirectory();
-
-                SetModPackDirectory();
-
-                var modding = new Modding(new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory));
-                modding.CreateModlist();
-            }
-            else
-            {
-                if (FlexibleMessageBox.Show(UIMessages.OutOfDateInstallMessage, UIMessages.OutOfDateInstallTitle, MessageBoxButtons.OK, MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.OK)
-                {
-                    var installDirectory = "";
-
-                    while (!installDirectory.Contains("ffxiv"))
+                    else
                     {
-                        var folderSelect = new FolderSelectDialog()
-                        {
-                            Title = UIMessages.SelectffxivFolderTitle
-                        };
-
-                        var result = folderSelect.ShowDialog();
-
-                        if (result)
-                        {
-                            installDirectory = folderSelect.FileName;
-                        }
-                        else
-                        {
-                            Environment.Exit(0);
-                        }
+                        Environment.Exit(0);
                     }
-
-                    Properties.Settings.Default.FFXIV_Directory = installDirectory;
-                    Properties.Settings.Default.Save();
-                }
-                else
-                {
-                    Environment.Exit(0);
                 }
             }
+
+            // Create/assign directories if they don't exist already.
+            SetSaveDirectory();
+
+            SetBackupsDirectory();
+
+            SetModPackDirectory();
+
+            var modding = new Modding(new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory));
+            modding.CreateModlist();
         }
 
         private void SetSaveDirectory()
