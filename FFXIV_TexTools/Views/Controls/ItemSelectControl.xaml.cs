@@ -300,12 +300,12 @@ namespace FFXIV_TexTools.Views.Controls
 
             var items = await XivCache.GetFullItemList();
 
-            foreach(var item in items)
+            foreach (var item in items)
             {
                 // Find what node we should be attached to.
                 ItemTreeElement catParent = null;
                 var topLevel = CategoryElements.FirstOrDefault(x => x.DisplayName == item.PrimaryCategory);
-                if(topLevel == null)
+                if (topLevel == null)
                 {
                     topLevel = new ItemTreeElement(null, null, item.PrimaryCategory);
                     CategoryElements.Add(topLevel);
@@ -325,8 +325,40 @@ namespace FFXIV_TexTools.Views.Controls
                         topLevel.Children.Add(secondLevel);
                     }
                 }
-
                 catParent = secondLevel;
+
+                // If we have a Tertiary Category...
+                if (!String.IsNullOrWhiteSpace(item.TertiaryCategory)) {
+
+                    // Parent doesn't already have a Tertiary to attach to...
+                    var thirdLevel = secondLevel.Children.FirstOrDefault(x => x.DisplayName == item.TertiaryCategory);
+                    if (thirdLevel == null)
+                    {
+                        // Add tertiary
+                        thirdLevel = new ItemTreeElement(topLevel, null, item.TertiaryCategory);
+                        secondLevel.Children.Add(thirdLevel);
+                    }
+                    catParent = thirdLevel;
+
+                    if (item.SecondaryCategory == XivStrings.Maps)
+                    {
+                        var ui = (XivUi)item;
+
+                        if (!String.IsNullOrWhiteSpace(ui.MapZoneCategory))
+                        {
+                            // Parent doesn't already have a map group to attach to...
+                            var fourthLevel = thirdLevel.Children.FirstOrDefault(x => x.DisplayName == ui.MapZoneCategory);
+                            if (fourthLevel == null)
+                            {
+                                // Add tertiary
+                                fourthLevel = new ItemTreeElement(topLevel, null, ui.MapZoneCategory);
+                                thirdLevel.Children.Add(fourthLevel);
+                            }
+                            catParent = fourthLevel;
+                        }
+                    }
+                }
+
 
                 ItemTreeElement setParent = null;
 
@@ -727,6 +759,11 @@ namespace FFXIV_TexTools.Views.Controls
             var e = (ItemTreeElement)o;
             var groups = SearchBar.Text.Split('|');
             var iMatch = false;
+
+            if(e.DisplayName == null)
+            {
+                return false;
+            }
 
             foreach (var group in groups)
             {

@@ -189,6 +189,11 @@ move $(TargetDir)*.dll $(TargetDir)lib</PostBuildEvent>
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Update="Resources\UIStrings.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>UIStrings.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Update="Properties\Settings.settings">

@@ -132,9 +132,6 @@
   <data name="Check_For_Problems" xml:space="preserve">
     <value>Check For Problems</value>
   </data>
-  <data name="Create_Modpack" xml:space="preserve">
-    <value>Create Modpack</value>
-  </data>
   <data name="Customize" xml:space="preserve">
     <value>Customize</value>
   </data>
@@ -585,9 +582,6 @@
   <data name="Vertex_Data_Structure" xml:space="preserve">
     <value>Vertex Data Structure</value>
   </data>
-  <data name="Viewer_Options" xml:space="preserve">
-    <value>Viewer Options</value>
-  </data>
   <data name="Visit_Website" xml:space="preserve">
     <value>Visit Website</value>
   </data>
@@ -994,12 +988,6 @@ If you would like to enable this, first import a texture for the selected item.<
   <data name="Viewport_Disclaimer" xml:space="preserve">
     <value>TexTools model displays are only an approximation, and may not be 100% accurate to in-game visuals.</value>
   </data>
-  <data name="Copy_File" xml:space="preserve">
-    <value>Copy Raw File</value>
-  </data>
-  <data name="Item_Converter" xml:space="preserve">
-    <value>Item Converter</value>
-  </data>
   <data name="Tools" xml:space="preserve">
     <value>Tools</value>
   </data>
@@ -1046,286 +1034,43 @@ If you would like to enable this, first import a texture for the selected item.<
     <value>Next Page &gt;</value>
   </data>
   <data name="..." xml:space="preserve">
-    <value>...</value >
-  </data >
+    <value>...</value>
+  </data>
   <data name="A" xml:space="preserve">
-    <value>A</value >
-  </data >
+    <value>A</value>
+  </data>
   <data name="B" xml:space="preserve">
-    <value>B</value >
-  </data >
+    <value>B</value>
+  </data>
   <data name="By Category" xml:space="preserve">
-    <value>By Category</value >
-  </data >
+    <value>By Category</value>
+  </data>
   <data name="By Set" xml:space="preserve">
-    <value>By Set</value >
-  </data >
+    <value>By Set</value>
+  </data>
   <data name="DDS" xml:space="preserve">
-    <value>DDS</value >
-  </data >
+    <value>DDS</value>
+  </data>
   <data name="DX: 9" xml:space="preserve">
-    <value>DX: 9</value >
-  </data >
+    <value>DX: 9</value>
+  </data>
   <data name="G" xml:space="preserve">
-    <value>G</value >
-  </data >
+    <value>G</value>
+  </data>
   <data name="HD Texture" xml:space="preserve">
-    <value>HD Texture</value >
-  </data >
+    <value>HD Texture</value>
+  </data>
   <data name="Metadata" xml:space="preserve">
-    <value>Metadata</value >
-  </data >
+    <value>Metadata</value>
+  </data>
   <data name="R" xml:space="preserve">
-    <value>R</value >
-  </data >
-  <data name="Tex Path" xml:space="preserve">
-    <value>Tex Path</value >
-  </data >
-  <data name="Maintained and Updated by" xml:space="preserve">
-    <value>Maintained and Updated by</value >
-  </data >
-  <data name="Copy From:" xml:space="preserve">
-    <value>Copy From:</value>
-  </data>
-  <data name="A" xml:space="preserve">
-    <value>A</value >
-  </data >
-  <data name="B" xml:space="preserve">
-    <value>B</value >
-  </data >
-  <data name="By Category" xml:space="preserve">
-    <value>By Category</value >
-  </data >
-  <data name="By Set" xml:space="preserve">
-    <value>By Set</value >
-  </data >
-  <data name="DDS" xml:space="preserve">
-    <value>DDS</value >
-  </data >
-  <data name="DX: 9" xml:space="preserve">
-    <value>DX: 9</value >
-  </data >
-  <data name="G" xml:space="preserve">
-    <value>G</value >
-  </data >
-  <data name="HD Texture" xml:space="preserve">
-    <value>HD Texture</value >
-  </data >
-  <data name="Metadata" xml:space="preserve">
-    <value>Metadata</value >
-  </data >
-  <data name="Tex Path" xml:space="preserve">
-    <value>Tex Path</value >
-  </data >
-  <data name="Maintained and Updated by" xml:space="preserve">
-    <value>Maintained and Updated by</value >
-  </data >
-  <data name="Copy From:" xml:space="preserve">
-    <value>Copy From:</value>
-  </data>
-  <data name="B" xml:space="preserve">
-    <value>B</value >
-  </data >
-  <data name="By Category" xml:space="preserve">
-    <value>By Category</value >
-  </data >
-  <data name="By Set" xml:space="preserve">
-    <value>By Set</value >
-  </data >
-  <data name="DDS" xml:space="preserve">
-    <value>DDS</value >
-  </data >
-  <data name="DX: 9" xml:space="preserve">
-    <value>DX: 9</value >
-  </data >
-  <data name="G" xml:space="preserve">
-    <value>G</value >
-  </data >
-  <data name="HD Texture" xml:space="preserve">
-    <value>HD Texture</value >
-  </data >
-  <data name="Metadata" xml:space="preserve">
-    <value>Metadata</value >
-  </data >
-  <data name="Tex Path" xml:space="preserve">
-    <value>Tex Path</value >
-  </data >
-  <data name="Maintained and Updated by" xml:space="preserve">
-    <value>Maintained and Updated by</value >
-  </data >
-  <data name="Copy From:" xml:space="preserve">
-    <value>Copy From:</value>
-  </data>
-  <data name="By Category" xml:space="preserve">
-    <value>By Category</value >
-  </data >
-  <data name="By Set" xml:space="preserve">
-    <value>By Set</value >
-  </data >
-  <data name="DDS" xml:space="preserve">
-    <value>DDS</value >
-  </data >
-  <data name="DX: 9" xml:space="preserve">
-    <value>DX: 9</value >
-  </data >
-  <data name="G" xml:space="preserve">
-    <value>G</value >
-  </data >
-  <data name="HD Texture" xml:space="preserve">
-    <value>HD Texture</value >
-  </data >
-  <data name="Metadata" xml:space="preserve">
-    <value>Metadata</value >
-  </data >
-  <data name="Tex Path" xml:space="preserve">
-    <value>Tex Path</value >
-  </data >
-  <data name="Maintained and Updated by" xml:space="preserve">
-    <value>Maintained and Updated by</value >
-  </data >
-  <data name="Copy From:" xml:space="preserve">
-    <value>Copy From:</value>
-  </data>
-  <data name="By Set" xml:space="preserve">
-    <value>By Set</value >
-  </data >
-  <data name="DDS" xml:space="preserve">
-    <value>DDS</value >
-  </data >
-  <data name="DX: 9" xml:space="preserve">
-    <value>DX: 9</value >
-  </data >
-  <data name="G" xml:space="preserve">
-    <value>G</value >
-  </data >
-  <data name="HD Texture" xml:space="preserve">
-    <value>HD Texture</value >
-  </data >
-  <data name="Metadata" xml:space="preserve">
-    <value>Metadata</value >
-  </data >
-  <data name="Tex Path" xml:space="preserve">
-    <value>Tex Path</value >
-  </data >
-  <data name="Maintained and Updated by" xml:space="preserve">
-    <value>Maintained and Updated by</value >
-  </data >
-  <data name="Copy From:" xml:space="preserve">
-    <value>Copy From:</value>
-  </data>
-  <data name="DDS" xml:space="preserve">
-    <value>DDS</value >
-  </data >
-  <data name="DX: 9" xml:space="preserve">
-    <value>DX: 9</value >
-  </data >
-  <data name="G" xml:space="preserve">
-    <value>G</value >
-  </data >
-  <data name="HD Texture" xml:space="preserve">
-    <value>HD Texture</value >
-  </data >
-  <data name="Metadata" xml:space="preserve">
-    <value>Metadata</value >
-  </data >
-  <data name="Tex Path" xml:space="preserve">
-    <value>Tex Path</value >
-  </data >
-  <data name="Maintained and Updated by" xml:space="preserve">
-    <value>Maintained and Updated by</value >
-  </data >
-  <data name="Copy From:" xml:space="preserve">
-    <value>Copy From:</value>
-  </data>
-  <data name="DX: 9" xml:space="preserve">
-    <value>DX: 9</value >
-  </data >
-  <data name="G" xml:space="preserve">
-    <value>G</value >
-  </data >
-  <data name="HD Texture" xml:space="preserve">
-    <value>HD Texture</value >
-  </data >
-  <data name="Metadata" xml:space="preserve">
-    <value>Metadata</value >
-  </data >
-  <data name="Tex Path" xml:space="preserve">
-    <value>Tex Path</value >
-  </data >
-  <data name="Maintained and Updated by" xml:space="preserve">
-    <value>Maintained and Updated by</value >
-  </data >
-  <data name="Copy From:" xml:space="preserve">
-    <value>Copy From:</value>
-  </data>
-  <data name="G" xml:space="preserve">
-    <value>G</value >
-  </data >
-  <data name="HD Texture" xml:space="preserve">
-    <value>HD Texture</value >
-  </data >
-  <data name="Metadata" xml:space="preserve">
-    <value>Metadata</value >
-  </data >
-  <data name="Tex Path" xml:space="preserve">
-    <value>Tex Path</value >
-  </data >
-  <data name="Maintained and Updated by" xml:space="preserve">
-    <value>Maintained and Updated by</value >
-  </data >
-  <data name="Copy From:" xml:space="preserve">
-    <value>Copy From:</value>
-  </data>
-  <data name="HD Texture" xml:space="preserve">
-    <value>HD Texture</value >
-  </data >
-  <data name="Metadata" xml:space="preserve">
-    <value>Metadata</value >
-  </data >
-  <data name="Tex Path" xml:space="preserve">
-    <value>Tex Path</value >
-  </data >
-  <data name="Maintained and Updated by" xml:space="preserve">
-    <value>Maintained and Updated by</value >
-  </data >
-  <data name="Copy From:" xml:space="preserve">
-    <value>Copy From:</value>
-  </data>
-  <data name="Metadata" xml:space="preserve">
-    <value>Metadata</value >
-  </data >
-  <data name="Tex Path" xml:space="preserve">
-    <value>Tex Path</value >
-  </data >
-  <data name="Maintained and Updated by" xml:space="preserve">
-    <value>Maintained and Updated by</value >
-  </data >
-  <data name="Copy From:" xml:space="preserve">
-    <value>Copy From:</value>
+    <value>R</value>
   </data>
   <data name="Tex Path" xml:space="preserve">
-    <value>Tex Path</value >
-  </data >
-  <data name="Maintained and Updated by" xml:space="preserve">
-    <value>Maintained and Updated by</value >
-  </data >
-  <data name="Copy From:" xml:space="preserve">
-    <value>Copy From:</value>
-  </data>
-  <data name="Tex Path" xml:space="preserve">
-    <value>Tex Path</value >
-  </data >
-  <data name="Maintained and Updated by" xml:space="preserve">
-    <value>Maintained and Updated by</value >
-  </data >
-  <data name="Copy From:" xml:space="preserve">
-    <value>Copy From:</value>
+    <value>Tex Path</value>
   </data>
   <data name="Maintained and Updated by" xml:space="preserve">
-    <value>Maintained and Updated by</value >
-  </data >
-  <data name="Copy From:" xml:space="preserve">
-    <value>Copy From:</value>
+    <value>Maintained and Updated by</value>
   </data>
   <data name="Copy From:" xml:space="preserve">
     <value>Copy From:</value>
@@ -1942,7 +1687,16 @@ If you would like to enable this, first import a texture for the selected item.<
   <data name="Modpack_Options" xml:space="preserve">
     <value>Basic Modpack Options</value>
   </data>
-    <data name="Load_Modpack" xml:space="preserve">
+  <data name="Load_Modpack" xml:space="preserve">
     <value>Load Basic Modpack</value>
+  </data>
+  <data name="Beneficial" xml:space="preserve">
+    <value>Beneficial</value>
+  </data>
+  <data name="Detrimental" xml:space="preserve">
+    <value>Detrimental</value>
+  </data>
+  <data name="Other" xml:space="preserve">
+    <value>Other</value>
   </data>
 </root>
