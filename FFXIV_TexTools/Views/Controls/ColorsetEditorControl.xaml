@@ -118,7 +118,7 @@
                             <Label Content="Tile Material:" Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Center" Height="26" Margin="0,2" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Width="78"/>
                             <ComboBox x:Name="TileIdBox" Grid.Row="0" Grid.Column="1" Width="100" VerticalAlignment="Center" Margin="0,2" Height="26"></ComboBox>
 
-                            <Label Content="Tile Opacity:" Grid.Row="0" Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" Height="26" Margin="0,2" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Width="78"/>
+                            <Label x:Name="TileOpacityLabel" Content="Tile Opacity:" Grid.Row="0" Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" Height="26" Margin="0,2" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Width="78"/>
                             <TextBox x:Name="TileOpacityBox" Grid.Row="0" Grid.Column="3" VerticalAlignment="Center" Width="100"/>
 
                             <Label Content="Tile Count X:" Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Center"></Label>
@@ -146,10 +146,10 @@
                                 <RowDefinition Height="35"></RowDefinition>
                             </Grid.RowDefinitions>
 
-                            <Label Grid.Column="0" Grid.Row="0" HorizontalContentAlignment="Right" VerticalAlignment="Center">Shader Template:</Label>
+                            <Label x:Name="ShaderTemplateLabel" Grid.Column="0" Grid.Row="0" HorizontalContentAlignment="Right" VerticalAlignment="Center">Shader Template:</Label>
                             <TextBox x:Name="ShaderTemplateBox" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Width="100"></TextBox>
 
-                            <Label Grid.Column="2" Grid.Row="0" HorizontalContentAlignment="Right" VerticalAlignment="Center">Anisotropy Blending:</Label>
+                            <Label x:Name="AnisotropyBlendingLabel" Grid.Column="2" Grid.Row="0" HorizontalContentAlignment="Right" VerticalAlignment="Center">Anisotropy Blending:</Label>
                             <TextBox x:Name="AnisotropyBlendingBox" Grid.Column="3" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Width="100"></TextBox>
                         </Grid>
                         
@@ -186,7 +186,7 @@
                                 <Label Content="Template:" VerticalAlignment="Center" HorizontalAlignment="Left" ></Label>
                                 <ComboBox x:Name="DyeTemplateIdBox" VerticalAlignment="Center" HorizontalAlignment="Left" Width="100" SelectionChanged="DataChanged" Margin="70,0,0,0"/>
 
-                                <Label Content="Channel:" VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Left" ></Label>
+                                <Label x:Name="DyeChannelLabel" Content="Channel:" VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Left" ></Label>
                                 <ComboBox x:Name="DyeChannelBox" VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Left" Width="100" SelectionChanged="DataChanged" Margin="70,0,0,0"/>
                                 
                                 <CheckBox x:Name="DyeBit0" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Content="Dye Bit 0"></CheckBox>

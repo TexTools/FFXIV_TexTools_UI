@@ -183,15 +183,26 @@ namespace FFXIV_TexTools.Controls
                 DyeBit9.Content = "Dye Col 4.a";
                 DyeBit10.Content = "Dye Col 6.a";
                 DyeBit11.Content = "Dye Col 5.g";
+                DyeBit5.Visibility = Visibility.Visible;
+                DyeBit6.Visibility = Visibility.Visible;
+                DyeBit7.Visibility = Visibility.Visible;
+                DyeBit8.Visibility = Visibility.Visible;
+                DyeBit9.Visibility = Visibility.Visible;
+                DyeBit10.Visibility = Visibility.Visible;
+                DyeBit11.Visibility = Visibility.Visible;
 
-                ShaderTemplateBox.IsEnabled = true;
-                AnisotropyBlendingBox.IsEnabled = true;
-                EditCol4.IsEnabled = true;
-                EditCol5.IsEnabled = true;
-                EditCol6.IsEnabled = true;
-                EditCol7.IsEnabled = true;
-                TileOpacityBox.IsEnabled = true;
-                DyeChannelBox.IsEnabled = true;
+                ShaderTemplateBox.Visibility = Visibility.Visible;
+                ShaderTemplateBox.Visibility = Visibility.Visible;
+                AnisotropyBlendingBox.Visibility = Visibility.Visible;
+                AnisotropyBlendingLabel.Visibility = Visibility.Visible;
+                EditCol4.Visibility = Visibility.Visible;
+                EditCol5.Visibility = Visibility.Visible;
+                EditCol6.Visibility = Visibility.Visible;
+                EditCol7.Visibility = Visibility.Visible;
+                TileOpacityBox.Visibility = Visibility.Visible;
+                TileOpacityLabel.Visibility = Visibility.Visible;
+                DyeChannelBox.Visibility = Visibility.Visible;
+                DyeChannelLabel.Visibility = Visibility.Visible;
             } else
             {
                 DyeBit0.Content = "Dye Diffuse";
@@ -200,23 +211,26 @@ namespace FFXIV_TexTools.Controls
                 DyeBit3.Content = "Dye Specular Power";
                 DyeBit4.Content = "Dye Gloss";
 
+                DyeBit5.Visibility = Visibility.Collapsed;
+                DyeBit6.Visibility = Visibility.Collapsed;
+                DyeBit7.Visibility = Visibility.Collapsed;
+                DyeBit8.Visibility = Visibility.Collapsed;
+                DyeBit9.Visibility = Visibility.Collapsed;
+                DyeBit10.Visibility = Visibility.Collapsed;
+                DyeBit11.Visibility = Visibility.Collapsed;
 
-                DyeBit5.Content = "--";
-                DyeBit6.Content = "--";
-                DyeBit7.Content = "--";
-                DyeBit8.Content = "--";
-                DyeBit9.Content = "--";
-                DyeBit10.Content = "--";
-                DyeBit11.Content = "--";
-
-                ShaderTemplateBox.IsEnabled = false;
-                AnisotropyBlendingBox.IsEnabled = false;
-                EditCol4.IsEnabled = false;
-                EditCol5.IsEnabled = false;
-                EditCol6.IsEnabled = false;
-                EditCol7.IsEnabled = false;
-                TileOpacityBox.IsEnabled = false;
-                DyeChannelBox.IsEnabled = false;
+                ShaderTemplateBox.Visibility = Visibility.Collapsed;
+                ShaderTemplateLabel.Visibility = Visibility.Collapsed;
+                AnisotropyBlendingBox.Visibility = Visibility.Collapsed;
+                AnisotropyBlendingLabel.Visibility = Visibility.Collapsed;
+                EditCol4.Visibility = Visibility.Collapsed;
+                EditCol5.Visibility = Visibility.Collapsed;
+                EditCol6.Visibility = Visibility.Collapsed;
+                EditCol7.Visibility = Visibility.Collapsed;
+                TileOpacityBox.Visibility = Visibility.Collapsed;
+                TileOpacityLabel.Visibility = Visibility.Collapsed;
+                DyeChannelBox.Visibility = Visibility.Collapsed;
+                DyeChannelLabel.Visibility = Visibility.Collapsed;
             }
         }
 
@@ -629,15 +643,15 @@ namespace FFXIV_TexTools.Controls
                 DyePreviewIdBox.SelectedValue = -1;
 
 
-                if(_mtrl.ShaderPack != ShaderHelpers.EShaderPack.CharacterLegacy)
+                if(!LegacyShader)
                 {
-                    // Gloss/Spec Power only work on legacy shaders.
                     GlossBox.Visibility = Visibility.Collapsed;
                     GlossLabel.Visibility = Visibility.Collapsed;
                     SpecularPowerBox.Visibility = Visibility.Collapsed;
                     SpecularPowerLabel.Visibility = Visibility.Collapsed;
                 } else
                 {
+                    // Gloss/Spec Power only work on legacy shaders.
                     GlossBox.Visibility = Visibility.Visible;
                     GlossLabel.Visibility = Visibility.Visible;
                     SpecularPowerBox.Visibility = Visibility.Visible;
@@ -1123,23 +1137,49 @@ namespace FFXIV_TexTools.Controls
             var template = DyeTemplateFile.GetTemplate(dyeTemplateId);
             var dyeId = (int) DyePreviewIdBox.SelectedValue;
 
-            uint dyeSettings = BitConverter.ToUInt32(_mtrl.ColorSetDyeData, RowId * 4);
+            uint dyeData = 0;
+            if (_mtrl.ColorSetDyeData.Length == 0)
+            {
+                return;
+            }
+            if (DawnTrail)
+            {
+                dyeData = BitConverter.ToUInt32(_mtrl.ColorSetDyeData, RowId * 4);
+            }
+            else
+            {
+                dyeData = BitConverter.ToUInt16(_mtrl.ColorSetDyeData, RowId * 2);
+            }
 
-            var templateType = _mtrl.ShaderPack == ShaderHelpers.EShaderPack.CharacterLegacy ? STM.EStainingTemplate.Endwalker : STM.EStainingTemplate.Dawntrail;
+            var templateType = LegacyShader ? STM.EStainingTemplate.Endwalker : STM.EStainingTemplate.Dawntrail;
 
             if (template == null) return;
             if (dyeId < 0 || dyeId >= 128) return;
 
-            for(int i = 0; i < DyeBoxes.Count; i++)
+            var dyeCount = LegacyShader ? 5 : DyeBoxes.Count;
+            for(int i = 0; i < dyeCount; i++)
             {
                 var shifted = (uint) (0x1 << i);
-                if((dyeSettings & shifted) > 0)
+                if((dyeData & shifted) > 0)
                 {
                     // Apply this template dye value to the row.
                     var data = template.GetData(i, dyeId);
 
                     // Have to used our cursed translation table here.
                     var targetOffset = StainingTemplateEntry.TemplateEntryOffsetToColorsetOffset[templateType][i];
+
+                    if((i == 3 || i == 4) && !DawnTrail)
+                    {
+                        // Handling for gloss/spec being flipped.
+                        if(i == 3)
+                        {
+                            targetOffset = 7;
+                        } else
+                        {
+                            targetOffset = 3;
+                        }
+                    }
+
                     var destinationPixel = targetOffset / 4;
                     var destinationColorIndex = targetOffset % 4;
                     
