@@ -271,7 +271,6 @@ namespace FFXIV_TexTools.ViewModels
                 }
             }
 
-            _showEditor = showEditor;
             _view.Height = ExpandedHeight;
             _view.EnableAll(false);
 
