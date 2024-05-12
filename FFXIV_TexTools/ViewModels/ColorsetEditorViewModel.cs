@@ -44,6 +44,37 @@ namespace FFXIV_TexTools.ViewModels
 
         private List<Half[]> RowData;
 
+        private bool DawnTrail
+        {
+            get
+            {
+                if (_mtrl == null) return true;
+
+                if(_mtrl.ColorSetData.Count >= 1024)
+                {
+                    return true;
+                }
+                return false;
+            }
+        }
+
+        private bool LegacyShader
+        {
+            get
+            {
+                if(_mtrl == null) return false;  
+
+                if(DawnTrail)
+                {
+                    return _mtrl.ShaderPack == ShaderHelpers.EShaderPack.CharacterLegacy;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+        }
+
         public ColorsetEditorViewModel(ColorsetEditorControl view)
         {
             _view = view;
@@ -83,16 +114,18 @@ namespace FFXIV_TexTools.ViewModels
                 var _tex = new Tex(XivCache.GameInfo.GameDirectory);
                 try
                 {
+#if DAWNTRAIL
                     TileTextureNormal = await _tex.GetXivTex("chara/common/texture/tile_norm_array.tex");
-
                     // This is not the correct usage, but works for the moment.
                     TileTextureDiffuse = await _tex.GetXivTex("chara/common/texture/tile_orb_array.tex");
-                }
-                catch
-                {
+#else
                     // Endwalker tile materials.
                     TileTextureNormal = await _tex.GetXivTex("chara/common/texture/-tile_n.tex");
                     TileTextureDiffuse = await _tex.GetXivTex("chara/common/texture/-tile_d.tex");
+#endif
+                }
+                catch
+                {
                 }
             }
 
@@ -154,29 +187,48 @@ namespace FFXIV_TexTools.ViewModels
 
                 float glossVal = RowData[1][3];
                 float specularPower = RowData[0][3];
-                if (_mtrl.ColorSetData.Count > 256)
+
+                if (DawnTrail)
                 {
                     // Values flipped in Dawntrail.
                     glossVal = RowData[0][3];
                     specularPower = RowData[1][3];
                 }
+
                 if (dyeId >= 0 && dyeId < 128 && _mtrl.ColorSetDyeData != null)
                 {
                     var templateId = STM.GetTemplateKeyFromMaterialData(_mtrl, RowId);
                     var template = DyeTemplateFile.GetTemplate(templateId);
 
-                    var data = BitConverter.ToUInt32(_mtrl.ColorSetDyeData, 0);
+
+                    uint data;
+                    if (_mtrl.ColorSetDyeData.Length > 32)
+                    {
+                        var dyeRowSize = 4;
+                        data = BitConverter.ToUInt32(_mtrl.ColorSetDyeData, dyeRowSize * RowId);
+                    }
+                    else
+                    {
+                        var dyeRowSize = 2;
+                        data = BitConverter.ToUInt16(_mtrl.ColorSetDyeData, dyeRowSize * RowId);
+                    }
+
                     if(template != null && templateId != 0)
                     {
 
-                        
                         bool useDiffuse = (data & 0x01) > 0;
                         bool useSpecular = (data & 0x02) > 0;
                         bool useEmissive = (data & 0x04) > 0;
 
+                        bool useSpecPower = (data & 0x08) > 0;
+                        bool useGloss = (data & 0x10) > 0;
+
                         var diffuse = template.GetDiffuseData(dyeId);
                         var spec = template.GetSpecularData(dyeId);
                         var emissive = template.GetEmissiveData(dyeId);
+                        var gloss = template.GetGlossData(dyeId);
+                        var specPower = template.GetSpecularPowerData(dyeId);
+
                         if (useDiffuse && diffuse != null)
                         {
                             var max = Math.Max(1.0f, Math.Max(diffuse[0], Math.Max(diffuse[1], diffuse[2])));
@@ -197,7 +249,7 @@ namespace FFXIV_TexTools.ViewModels
                             (byte)Math.Round((spec[2] / max) * 255f));
                         }
 
-                        if (useEmissive && emissive != null) ;
+                        if (useEmissive && emissive != null)
                         {
                             var max = Math.Max(1.0f, Math.Max(emissive[0], Math.Max(emissive[1], emissive[2])));
 
@@ -205,6 +257,16 @@ namespace FFXIV_TexTools.ViewModels
                             (byte)Math.Round((emissive[0] / max) * 255f),
                             (byte)Math.Round((emissive[1] / max) * 255f),
                             (byte)Math.Round((emissive[2] / max) * 255f));
+                        }
+
+                        if(useGloss && LegacyShader && gloss != null)
+                        {
+                            glossVal = gloss[0];
+                        }
+                        
+                        if(useSpecPower && LegacyShader && specPower != null)
+                        {
+                            specularPower = specPower[0];
                         }
                                                 
                     }
