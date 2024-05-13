@@ -557,7 +557,7 @@ namespace FFXIV_TexTools.ViewModels
                             {
                                 // We should never actually get to this state for file-addition mods.  If we do, uh.. I guess correct the indexes and yolo?
                                 // ( Only way we get here is if SE added a new file at the same name as a file the user had created via modding, in which case, it's technically no longer a file addition mod )
-                                index.SetDataOffset(mod.fullPath, mod.data.originalOffset);
+                                index.Set8xDataOffset(mod.fullPath, mod.data.originalOffset);
 
                                 index1Value = mod.data.originalOffset;
                                 index2Value = mod.data.originalOffset;

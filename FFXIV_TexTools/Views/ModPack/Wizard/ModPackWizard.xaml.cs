@@ -279,7 +279,7 @@ namespace FFXIV_TexTools.Views
                 if (modPackData.ModPackPages.Count > 0)
                 {
                     var progressIndicator = new Progress<double>(ReportProgress);
-                    var texToolsModPack = new TTMP(new DirectoryInfo(Properties.Settings.Default.ModPack_Directory), XivStrings.TexTools);
+                    var texToolsModPack = new TTMP(new DirectoryInfo(Properties.Settings.Default.ModPack_Directory));
 
                     var modPackPath = Path.Combine(Properties.Settings.Default.ModPack_Directory, $"{modPackData.Name}.ttmp2");
                     var overwriteModpack = false;

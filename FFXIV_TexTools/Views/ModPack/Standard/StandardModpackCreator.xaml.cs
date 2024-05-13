@@ -23,6 +23,7 @@ using xivModdingFramework.Mods.FileTypes;
 using xivModdingFramework.SqPack.FileTypes;
 
 using Index = xivModdingFramework.SqPack.FileTypes.Index;
+using AutoUpdaterDotNET;
 
 namespace FFXIV_TexTools.Views
 {
@@ -323,7 +324,7 @@ namespace FFXIV_TexTools.Views
             await LockUi(UIStrings.Creating_Modpack, null, null);
             try
             {
-                TTMP texToolsModPack = new TTMP(new DirectoryInfo(Settings.Default.ModPack_Directory), XivStrings.TexTools);
+                TTMP texToolsModPack = new TTMP(new DirectoryInfo(Settings.Default.ModPack_Directory));
                 var dat = new Dat(XivCache.GameInfo.GameDirectory);
                 var modding = new Modding(XivCache.GameInfo.GameDirectory);
                 var ModList = await modding.GetModList();
@@ -382,9 +383,6 @@ namespace FFXIV_TexTools.Views
                             await ItemMetadata.SaveMetadata(meta, XivStrings.TexTools);
                         }
 
-                        var offset = await tx.Get8xDataOffset(file);
-                        var dataFile = IOUtil.GetDataFileFromPath(file);
-                        var compressedSize = await dat.GetCompressedFileSize(offset, dataFile);
                         ModList.ModDictionary.TryGetValue(file, out var modEntry);
                         var modded = modEntry != null && modEntry.enabled == true;
 
@@ -394,7 +392,7 @@ namespace FFXIV_TexTools.Views
                             Category = e.Item.SecondaryCategory,
                             FullPath = file,
                             IsDefault = !modded,
-                            ModDataBytes = dat.GetCompressedData(offset, dataFile, compressedSize)
+                            ModDataBytes = await tx.ReadFile(file, false, true)
                         };
                         option.Mods.Add(file, fData);
                     }
@@ -435,7 +433,7 @@ namespace FFXIV_TexTools.Views
                 tx = ModTransaction.BeginTransaction(true);
             }
 
-            TTMP texToolsModPack = new TTMP(new DirectoryInfo(Settings.Default.ModPack_Directory), XivStrings.TexTools);
+            TTMP texToolsModPack = new TTMP(new DirectoryInfo(Settings.Default.ModPack_Directory));
             var dat = new Dat(XivCache.GameInfo.GameDirectory);
             var modding = new Modding(XivCache.GameInfo.GameDirectory);
             var ModList = await modding.GetModList();
@@ -465,8 +463,8 @@ namespace FFXIV_TexTools.Views
                     }
 
                     var offset = await tx.Get8xDataOffset(file);
+                    var compressedSize = await tx.GetCompressedFileSize(file);
                     var dataFile = IOUtil.GetDataFileFromPath(file);
-                    var compressedSize = await dat.GetCompressedFileSize(offset, dataFile);
                     ModList.ModDictionary.TryGetValue(file, out var modEntry);
                     var modded = modEntry != null && modEntry.enabled == true;
 
@@ -493,7 +491,8 @@ namespace FFXIV_TexTools.Views
             {
                 await LockUi(UIStrings.Creating_Modpack, null, null);
                 Progress<(int current, int total, string message)> progressIndicator = new Progress<(int current, int total, string message)>(ReportProgress);
-                await texToolsModPack.CreateSimpleModPack(simpleModPackData, XivCache.GameInfo.GameDirectory, progressIndicator, true);
+                await texToolsModPack.CreateSimpleModPack(simpleModPackData, progressIndicator, true);
+
                 FlexibleMessageBox.Show(new Wpf32Window(this), "Modpack Created Successfully.".L(),
                                                "Modpack Created".L(), MessageBoxButtons.OK, MessageBoxIcon.Information);
                 await UnlockUi(this);

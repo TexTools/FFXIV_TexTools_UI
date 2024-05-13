@@ -346,6 +346,7 @@ namespace FFXIV_TexTools
 
                 InitializeCache();
             }
+            PenumbraAPI.Redraw();
         }
 
         private void TabsControl_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)

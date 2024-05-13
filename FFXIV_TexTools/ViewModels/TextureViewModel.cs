@@ -289,11 +289,7 @@ namespace FFXIV_TexTools.ViewModels
 
         private void ColorsetEditor_MaterialSaved(object sender, EventArgs e)
         {
-            // Don't refresh the UI in Lumina mode.
-            if(!XivCache.GameInfo.UseLumina)
-            {
-                UpdateImage();
-            }
+            UpdateImage();
         }
 
         /// <summary>

@@ -696,17 +696,15 @@ namespace FFXIV_TexTools.Views
 
             if (rawData == null)
             {
-                var df = IOUtil.GetDataFileFromPath(file.Path);
-                var offset = await tx.Get8xDataOffset(file.Path);
-                if (offset <= 0)
+                if (!await tx.FileExists(file.Path))
                 {
                     FlexibleMessageBox.Show(new Wpf32Window(this), "Cannot include file, file offset invalid.".L(),
                         UIMessages.ModDataReadErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
-                var size = await dat.GetCompressedFileSize(offset, df);
-                rawData = dat.GetCompressedData(offset, df, size);
 
+                // Get the compressed file.
+                rawData = await tx.ReadFile(file.Path, false, true);
                 if (rawData == null)
                 {
                     FlexibleMessageBox.Show(new Wpf32Window(this), "Cannot include file, file offset invalid.".L(),

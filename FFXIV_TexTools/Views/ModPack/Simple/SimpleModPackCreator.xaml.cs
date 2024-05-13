@@ -201,6 +201,7 @@ namespace FFXIV_TexTools.Views
             // Don't show or list internal mods at all in this menu.
             var internals = ModList.Mods.Where(x => x.IsInternal());
             ModList.RemoveMods(internals);
+            var tx = MainWindow.DefaultTransaction;
 
             // Rip through the mod list and get the correct raw compressed sizes for all the mods.
             var _dat = new Dat(XivCache.GameInfo.GameDirectory);
@@ -210,14 +211,13 @@ namespace FFXIV_TexTools.Views
                 var compressedSize = mod.data.modSize;
                 try
                 {
-                    compressedSize = await _dat.GetCompressedFileSize(mod.data.modOffset, IOUtil.GetDataFileFromPath(mod.fullPath));
+                    compressedSize = await tx.GetCompressedFileSize(IOUtil.GetDataFileFromPath(mod.fullPath), mod.data.modOffset);
                     mod.data.modSize = compressedSize;
                 }
                 catch
                 {
-                    // If the calculation failed, just use the original size I guess?
-                    // The main way this happens though is if the data is broken, so maybe we should error?
-                    // Though there's possibly filetypes from other framework applications in here that we don't know how to measure?
+                    // Don't allow creation of modpacks with broken files.
+                    throw new Exception("Unable to determine compressed file size of modded file: " + mod.fullPath);
                 }
             }
 
@@ -311,6 +311,8 @@ namespace FFXIV_TexTools.Views
                 }
             }
 
+            var tx = MainWindow.DefaultTransaction;
+
             char[] invalidChars = { '/', '\\', ':', '*', '?', '"', '<', '>', '|' };
 
             if (ModPackName.Text.IndexOfAny(invalidChars) >= 0)
@@ -367,7 +369,7 @@ namespace FFXIV_TexTools.Views
             _progressController = await this.ShowProgressAsync(UIMessages.ModPackCreationMessage, UIMessages.PleaseStandByMessage);
             ModPackFileName = ModPackName.Text;
 
-            TTMP texToolsModPack = new TTMP(new DirectoryInfo(Properties.Settings.Default.ModPack_Directory), XivStrings.TexTools);
+            TTMP texToolsModPack = new TTMP(new DirectoryInfo(Properties.Settings.Default.ModPack_Directory));
 
             SimpleModPackData simpleModPackData = new SimpleModPackData
             {
@@ -383,12 +385,12 @@ namespace FFXIV_TexTools.Views
                 var compressedSize = mod.data.modSize;
                 try
                 {
-                    compressedSize = await _dat.GetCompressedFileSize(mod.data.modOffset, IOUtil.GetDataFileFromPath(mod.fullPath));
+                    // Use the explicit offset here, because we want to include the mod data even if the mod is disabled.
+                    compressedSize = await tx.GetCompressedFileSize(IOUtil.GetDataFileFromPath(mod.fullPath), mod.data.modOffset);
                 } catch
                 {
-                    // If the calculation failed, just use the original size I guess?
-                    // The main way this happens though is if the data is broken, so maybe we should error?
-                    // Though there's possibly filetypes from other framework applications in here that we don't know how to measure?
+                    // Don't allow creation of modpacks with broken files.
+                    throw new Exception("Unable to determine compressed file size of modded file: " + mod.fullPath);
                 }
 
                 SimpleModData simpleData = new SimpleModData
@@ -424,7 +426,7 @@ namespace FFXIV_TexTools.Views
                 }
             }
 
-            await texToolsModPack.CreateSimpleModPack(simpleModPackData, _gameDirectory, progressIndicator, overwriteModpack);
+            await texToolsModPack.CreateSimpleModPack(simpleModPackData, progressIndicator, overwriteModpack);
 
             await _progressController.CloseAsync();
 

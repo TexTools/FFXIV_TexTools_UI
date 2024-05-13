@@ -107,8 +107,7 @@ namespace FFXIV_TexTools.Views
             _modPackDirectory = modPackDirectory;
             _gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
             _modding = new Modding(_gameDirectory);
-            _texToolsModPack = new TTMP(new DirectoryInfo(Properties.Settings.Default.ModPack_Directory),
-                XivStrings.TexTools);
+            _texToolsModPack = new TTMP(new DirectoryInfo(Properties.Settings.Default.ModPack_Directory));
             _messageInImport = messageInImport;
 
             var index = new Index(_gameDirectory);
