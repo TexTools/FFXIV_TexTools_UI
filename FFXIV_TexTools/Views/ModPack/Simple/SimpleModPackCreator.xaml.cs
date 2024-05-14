@@ -207,7 +207,7 @@ namespace FFXIV_TexTools.Views
             // Rip through the mod list and get the correct raw compressed sizes for all the mods.
             var _dat = new Dat(XivCache.GameInfo.GameDirectory);
 
-            this.ParentsDictionary = await XivCache.GetModListParents();
+            this.ParentsDictionary = await XivCache.GetModListParents(tx);
 
 
             List<SimpleModpackEntry> entries = new List<SimpleModpackEntry>();

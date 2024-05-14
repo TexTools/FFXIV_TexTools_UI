@@ -421,7 +421,7 @@ namespace FFXIV_TexTools.ViewModels
                 var _chara = new Character(XivCache.GameInfo.GameDirectory, XivCache.GameInfo.GameLanguage);
                 var charaItem = (XivCharacter)_item;
                 int[] numbers = new int[0];
-                numbers = await _chara.GetNumbersForCharacterItem(charaItem, false);
+                numbers = await _chara.GetNumbersForCharacterItem(charaItem, false, MainWindow.DefaultTransaction);
 
                 var toSelect = 0;
                 var idx = 0;

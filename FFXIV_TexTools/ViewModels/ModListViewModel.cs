@@ -93,7 +93,7 @@ namespace FFXIV_TexTools.ViewModels
             var task = Task.Run(async () =>
             {
                 // Run this on another thread to ensure we don't hard-lock.
-                return await XivCache.GetModListParents();
+                return await XivCache.GetModListParents(MainWindow.DefaultTransaction);
             });
 
             _modListParents = task.Result;

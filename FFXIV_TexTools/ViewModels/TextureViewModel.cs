@@ -355,7 +355,7 @@ namespace FFXIV_TexTools.ViewModels
 
 
                 var _character = new Character(XivCache.GameInfo.GameDirectory, XivCache.GameInfo.GameLanguage);
-                var numbers = await _character.GetNumbersForCharacterItem((XivCharacter) _item);
+                var numbers = await _character.GetNumbersForCharacterItem((XivCharacter) _item, true, MainWindow.DefaultTransaction);
 
                 foreach (var i in numbers)
                 {

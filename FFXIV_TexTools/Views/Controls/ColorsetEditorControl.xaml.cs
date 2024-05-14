@@ -627,7 +627,7 @@ namespace FFXIV_TexTools.Controls
                     PasteRowButton.IsEnabled = true;
                 }
 
-                var dyes = await STM.GetDyeNames();
+                var dyes = await STM.GetDyeNames(MainWindow.DefaultTransaction);
 
                 PreviewDyeCollection.Clear();
                 PreviewDyeCollection.Add(new KeyValuePair<int, string>(-1, "Undyed".L()));
