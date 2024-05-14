@@ -238,7 +238,7 @@ namespace FFXIV_TexTools.ViewModels
             var workerStatus = XivCache.CacheWorkerEnabled;
             XivCache.CacheWorkerEnabled = false;
 
-            var readonlyTx = ModTransaction.BeginTransaction(true);
+            var readonlyTx = ModTransaction.BeginTransaction();
             if ((await readonlyTx.GetModList()).Mods.Count == 0)
             {
                 // No mods.  Just create backups and move on with our life.
@@ -267,7 +267,7 @@ namespace FFXIV_TexTools.ViewModels
                 List<Mod> enabledMods;
                 // Cache our currently enabled stuff.
                 throw new NotImplementedException("Post-Patch Cleanup is currently non-implemented.");
-                using (var tx = ModTransaction.BeginTransaction())
+                using (var tx = ModTransaction.BeginTransaction(true))
                 {
                     var modList = await tx.GetModList();
                     var allMods = modList.GetMods();
@@ -437,7 +437,7 @@ namespace FFXIV_TexTools.ViewModels
                 // internal data files so we can rebuild them later.
                 if (toRemove.Count > 0)
                 {
-                    using (var tx = ModTransaction.BeginTransaction())
+                    using (var tx = ModTransaction.BeginTransaction(true))
                     {
                         var modList = await tx.GetModList();
 

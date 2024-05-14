@@ -2310,7 +2310,7 @@ namespace FFXIV_TexTools.ViewModels
                 // Task.Run wrapper to ensure we don't hardlock the render thread.
                 var task = Task.Run(async () =>
                 {
-                    using (var tx = ModTransaction.BeginTransaction(true))
+                    using (var tx = ModTransaction.BeginTransaction())
                     {
                         return await tx.FileExists(_xivMtrl.MTRLPath);
                     }
@@ -2331,7 +2331,7 @@ namespace FFXIV_TexTools.ViewModels
             // Task.Run wrapper to ensure we don't hardlock the render thread.
             var task = Task.Run(async () =>
             {
-                using (var tx = ModTransaction.BeginTransaction(true))
+                using (var tx = ModTransaction.BeginTransaction())
                 {
                     return await tx.FileExists(SelectedMap.TexturePath);
                 }

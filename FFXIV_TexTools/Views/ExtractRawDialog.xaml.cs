@@ -35,7 +35,7 @@ namespace FFXIV_TexTools.Views
             var tx = MainWindow.UserTransaction;
             if (tx == null)
             {
-                tx = ModTransaction.BeginTransaction(true);
+                tx = ModTransaction.BeginTransaction();
             }
 
             if(!await tx.FileExists(path))

@@ -672,7 +672,7 @@ namespace FFXIV_TexTools.Views
             if (tx == null)
             {
                 // Readonly TX if we don't have one.
-                tx = ModTransaction.BeginTransaction(true);
+                tx = ModTransaction.BeginTransaction();
             }
             var dat = new Dat(_gameDirectory);
 
