@@ -511,8 +511,6 @@ namespace FFXIV_TexTools.Views
             }
 
 
-            var modding = new Modding(_gameDirectory);
-            //var modList = modding.GetModList();
             var _imc = new Imc(_gameDirectory);
 
             int mSet = -1;

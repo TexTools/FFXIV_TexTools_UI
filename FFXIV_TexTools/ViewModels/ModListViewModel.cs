@@ -38,10 +38,12 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using xivModdingFramework.Cache;
 using xivModdingFramework.General.Enums;
+using xivModdingFramework.Helpers;
 using xivModdingFramework.Items.DataContainers;
 using xivModdingFramework.Materials.FileTypes;
 using xivModdingFramework.Mods;
 using xivModdingFramework.Mods.DataContainers;
+using xivModdingFramework.Mods.Enums;
 using xivModdingFramework.Textures.DataContainers;
 using xivModdingFramework.Textures.Enums;
 using xivModdingFramework.Textures.FileTypes;
@@ -119,8 +121,7 @@ namespace FFXIV_TexTools.ViewModels
 
             return Task.Run(async () =>
             {
-                var modding = new Modding(_gameDirectory);
-                var modList = await modding.GetModList();
+                var modList = await Modding.GetModList();
 
                 if (modList == null) return;
 
@@ -140,18 +141,17 @@ namespace FFXIV_TexTools.ViewModels
 
                 category.Categories.Add(categoryItem);
 
-                foreach (var modListModPack in modList.ModPacks)
+                foreach (var mpkv in modList.ModPacks)
                 {
-                    var modsInModpackCount = (from mod in modList.Mods
-                                              where mod.modPack != null && mod.modPack.name.Equals(modListModPack.name)
-                                              select mod).Count();
+                    var modsInModpack = mpkv.Value.Mods;
+
 
                     // If the modpack has no mods associated with it, don't bother listing it
-                    if (modsInModpackCount == 0) continue;
+                    if (modsInModpack.Count == 0) continue;
 
                     categoryItem = new Category
                     {
-                        Name = modListModPack.name,
+                        Name = mpkv.Value.Name,
                         ParentCategory = category
                     };
 
@@ -169,12 +169,13 @@ namespace FFXIV_TexTools.ViewModels
                 // Mods
                 var mainCategories = new HashSet<string>();
 
-                foreach (var modEntry in modList.Mods)
+                var allmods = modList.GetMods();
+                foreach (var modEntry in allmods)
                 {
                     if (modEntry.IsInternal()) continue;
-                    if (!modEntry.name.Equals(string.Empty))
+                    if (!modEntry.ItemName.Equals(string.Empty))
                     {
-                        mainCategories.Add(modEntry.category);
+                        mainCategories.Add(modEntry.ItemCategory);
                     }
                 }
 
@@ -188,19 +189,19 @@ namespace FFXIV_TexTools.ViewModels
                     };
 
                     var modItems =
-                        from mod in modList.Mods
-                        where mod.category.Equals(mainCategory)
+                        from mod in allmods
+                        where mod.ItemCategory.Equals(mainCategory)
                         select mod;
 
                     foreach (var modItem in modItems)
                     {
-                        if (category.CategoryList.Contains(modItem.name)) continue;
+                        if (category.CategoryList.Contains(modItem.ItemName)) continue;
 
                         try
                         {
                             categoryItem = new Category
                             {
-                                Name = modItem.name,
+                                Name = modItem.ItemName,
                                 Item = MakeItemModel(modItem),
                                 ParentCategory = category
                             };
@@ -208,22 +209,22 @@ namespace FFXIV_TexTools.ViewModels
                         {
                             var im = new XivGenericItemModel()
                             {
-                                Name = "UNIDENTIFIABLE FILE - " + modItem.name,
-                                SecondaryCategory = modItem.category,
-                                DataFile = XivDataFiles.GetXivDataFile(modItem.datFile),
+                                Name = "UNIDENTIFIABLE FILE - " + modItem.ItemName,
+                                SecondaryCategory = modItem.ItemCategory,
+                                DataFile = IOUtil.GetDataFileFromPath(modItem.FilePath),
                                 ModelInfo = new XivModelInfo()
                             };
 
                             categoryItem = new Category
                             {
-                                Name = modItem.name,
+                                Name = modItem.ItemName,
                                 Item = im,
                                 ParentCategory = category
                             };
                         }
 
                         category.Categories.Add(categoryItem);
-                        category.CategoryList.Add(modItem.name);
+                        category.CategoryList.Add(modItem.ItemName);
                     }
 
                     if (_nameSort)
@@ -245,8 +246,7 @@ namespace FFXIV_TexTools.ViewModels
 
             return Task.Run(async () =>
             {
-                var modding = new Modding(_gameDirectory);
-                var modList = await modding.GetModList();
+                var modList = await Modding.GetModList();
 
                 var modPackCatDict = new Dictionary<string, Category>();
 
@@ -269,18 +269,16 @@ namespace FFXIV_TexTools.ViewModels
 
                 modPackCatDict.Add(category.Name, category);
 
-                foreach (var modListModPack in modList.ModPacks)
+                var allModPacks = modList.ModPacks.Select(x => x.Value);
+                var allMods = modList.GetMods();
+                foreach (var mp in allModPacks)
                 {
-                    var modsInModpackCount = (from mod in modList.Mods
-                                           where mod.modPack != null && mod.modPack.name.Equals(modListModPack.name)
-                                           select mod).Count();
-
                     // If the modpack has no mods associated with it, don't bother listing it
-                    if (modsInModpackCount == 0) continue;
+                    if (mp.Mods.Count == 0) continue;
 
                     category = new Category
                     {
-                        Name = modListModPack.name,
+                        Name = mp.Name,
                         Categories = new ObservableCollection<Category>(),
                         CategoryList = new List<string>(),
                         ParentCategory = modPacksParent
@@ -307,17 +305,14 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     List<Mod> modsInModpack;
 
-                    if (!modPackCategory.Key.Equals(UIStrings.Standalone_Non_ModPack))
+                    var mp = modList.GetModPack(modPackCategory.Key);
+
+                    if (mp != null)
                     {
-                        modsInModpack = (from mod in modList.Mods
-                            where mod.modPack != null && mod.modPack.name.Equals(modPackCategory.Key)
-                            select mod).ToList();
-                    }
-                    else
+                        modsInModpack = mp.Value.GetMods(modList).ToList();
+                    } else
                     {
-                        modsInModpack = (from mod in modList.Mods
-                            where mod.modPack == null
-                            select mod).ToList();
+                        modsInModpack = modList.GetMods(x => x.ModPack == "").ToList();
                     }
 
                     var mainCategories = new HashSet<string>();
@@ -325,9 +320,9 @@ namespace FFXIV_TexTools.ViewModels
                     foreach (var modEntry in modsInModpack)
                     {
                         if (modEntry.IsInternal()) continue;
-                        if (!modEntry.name.Equals(string.Empty))
+                        if (!modEntry.ItemName.Equals(string.Empty))
                         {
-                            mainCategories.Add(modEntry.category);
+                            mainCategories.Add(modEntry.ItemCategory);
                         }
                     }
 
@@ -343,19 +338,19 @@ namespace FFXIV_TexTools.ViewModels
 
                         var modItems =
                             from mod in modsInModpack
-                            where mod.category.Equals(mainCategory)
+                            where mod.ItemCategory.Equals(mainCategory)
                             select mod;
 
                         foreach (var modItem in modItems)
                         {
-                            if (category.CategoryList.Contains(modItem.name)) continue;
+                            if (category.CategoryList.Contains(modItem.ItemName)) continue;
 
                             Category categoryItem;
                             try
                             {
                                 categoryItem = new Category
                                 {
-                                    Name = modItem.name,
+                                    Name = modItem.ItemName,
                                     Item = MakeItemModel(modItem),
                                     ParentCategory = category
                                 };
@@ -364,22 +359,22 @@ namespace FFXIV_TexTools.ViewModels
                             {
                                 var im = new XivGenericItemModel()
                                 {
-                                    Name = "UNIDENTIFIABLE FILE - " + modItem.name,
-                                    SecondaryCategory = modItem.category,
-                                    DataFile = XivDataFiles.GetXivDataFile(modItem.datFile),
+                                    Name = "UNIDENTIFIABLE FILE - " + modItem.ItemName,
+                                    SecondaryCategory = modItem.ItemCategory,
+                                    DataFile = modItem.DataFile,
                                     ModelInfo = new XivModelInfo()
                                 };
 
                                 categoryItem = new Category
                                 {
-                                    Name = modItem.name,
+                                    Name = modItem.ItemName,
                                     Item = im,
                                     ParentCategory = category
                                 };
                             }
 
                             category.Categories.Add(categoryItem);
-                            category.CategoryList.Add(modItem.name);
+                            category.CategoryList.Add(modItem.ItemName);
 
                         }
 
@@ -408,18 +403,18 @@ namespace FFXIV_TexTools.ViewModels
         /// <returns>The mod item as a XivGenericItemModel</returns>
         private static XivGenericItemModel MakeItemModel(Mod modItem)
         {
-            var fullPath = modItem.fullPath;
+            var fullPath = modItem.FilePath;
 
             var item = new XivGenericItemModel
             {
-                Name = modItem.name,
-                SecondaryCategory = modItem.category,
-                DataFile = XivDataFiles.GetXivDataFile(modItem.datFile)
+                Name = modItem.ItemName,
+                SecondaryCategory = modItem.ItemCategory,
+                DataFile = modItem.DataFile
             };
 
             try
             {
-                if (modItem.fullPath.Contains("chara/equipment") || modItem.fullPath.Contains("chara/accessory"))
+                if (modItem.FilePath.Contains("chara/equipment") || modItem.FilePath.Contains("chara/accessory"))
                 {
                     item.PrimaryCategory = XivStrings.Gear;
                     item.ModelInfo = new XivModelInfo
@@ -428,7 +423,7 @@ namespace FFXIV_TexTools.ViewModels
                     };
                 }
 
-                if (modItem.fullPath.Contains("chara/weapon"))
+                if (modItem.FilePath.Contains("chara/weapon"))
                 {
                     item.PrimaryCategory = XivStrings.Gear;
                     item.ModelInfo = new XivModelInfo
@@ -437,7 +432,7 @@ namespace FFXIV_TexTools.ViewModels
                     };
                 }
 
-                if (modItem.fullPath.Contains("chara/human"))
+                if (modItem.FilePath.Contains("chara/human"))
                 {
                     item.PrimaryCategory = XivStrings.Character;
 
@@ -476,7 +471,7 @@ namespace FFXIV_TexTools.ViewModels
                     }
                 }
 
-                if (modItem.fullPath.Contains("chara/common"))
+                if (modItem.FilePath.Contains("chara/common"))
                 {
                     item.PrimaryCategory = XivStrings.Character;
 
@@ -500,7 +495,7 @@ namespace FFXIV_TexTools.ViewModels
                     }
                 }
 
-                if (modItem.fullPath.Contains("chara/monster"))
+                if (modItem.FilePath.Contains("chara/monster"))
                 {
                     item.PrimaryCategory = XivStrings.Companions;
 
@@ -511,7 +506,7 @@ namespace FFXIV_TexTools.ViewModels
                     };
                 }
 
-                if (modItem.fullPath.Contains("chara/demihuman"))
+                if (modItem.FilePath.Contains("chara/demihuman"))
                 {
                     item.PrimaryCategory = XivStrings.Companions;
 
@@ -523,11 +518,11 @@ namespace FFXIV_TexTools.ViewModels
                     };
                 }
 
-                if (modItem.fullPath.Contains("ui/"))
+                if (modItem.FilePath.Contains("ui/"))
                 {
                     item.PrimaryCategory = XivStrings.UI;
 
-                    if (modItem.fullPath.Contains("ui/uld") || modItem.fullPath.Contains("ui/map") || modItem.fullPath.Contains("ui/loadingimage"))
+                    if (modItem.FilePath.Contains("ui/uld") || modItem.FilePath.Contains("ui/map") || modItem.FilePath.Contains("ui/loadingimage"))
                     {
                         item.ModelInfo = new XivModelInfo
                         {
@@ -544,7 +539,7 @@ namespace FFXIV_TexTools.ViewModels
                     }
                 }
 
-                if (modItem.fullPath.Contains("/hou/"))
+                if (modItem.FilePath.Contains("/hou/"))
                 {
                     item.PrimaryCategory = XivStrings.Housing;
                     var furnitureRegex = new Regex("\\/general\\/([0-9]{4})\\/");
@@ -565,7 +560,7 @@ namespace FFXIV_TexTools.ViewModels
             }
             catch (Exception ex)
             {
-                throw new Exception(string.Format(UIMessages.ModelDataErrorMessage, modItem.name, modItem.fullPath));
+                throw new Exception(string.Format(UIMessages.ModelDataErrorMessage, modItem.ItemName, modItem.FilePath));
             }
 
             return item;
@@ -592,11 +587,11 @@ namespace FFXIV_TexTools.ViewModels
                 if (selectedItem == null) return;
 
                 var mtrl = new Mtrl(_gameDirectory);
-                var modding = new Modding(_gameDirectory);
-                var modList = await modding.GetModList();
+                var modList = await Modding.GetModList();
 
                 var modItems = new List<Mod>();
 
+                var allMods = modList.GetMods();
                 if (ModPackFilter)
                 {
                     var modPackCategory = category;
@@ -606,16 +601,13 @@ namespace FFXIV_TexTools.ViewModels
                         modPackCategory = modPackCategory.ParentCategory;
                     }
 
-                    foreach (var mod in modList.Mods)
+                    foreach (var mod in allMods)
                     {
-                        if (!mod.name.Equals(selectedItem.Name)) continue;
+                        if (!mod.ItemName.Equals(selectedItem.Name)) continue;
 
-                        if (mod.modPack != null)
+                        if (mod.ModPack == modPackCategory.Name)
                         {
-                            if (mod.modPack.name == modPackCategory.Name)
-                            {
-                                modItems.Add(mod);
-                            }
+                            modItems.Add(mod);
                         }
                         else
                         {
@@ -626,8 +618,8 @@ namespace FFXIV_TexTools.ViewModels
                 else
                 {
                     modItems =
-                        (from mod in modList.Mods
-                         where mod.name.Equals(selectedItem.Name)
+                        (from mod in allMods
+                         where mod.ItemName.Equals(selectedItem.Name)
                          select mod).ToList();
                 }
 
@@ -642,7 +634,7 @@ namespace FFXIV_TexTools.ViewModels
                     {
                         if (modItem.IsInternal()) continue;
 
-                        var itemPath = modItem.fullPath;
+                        var itemPath = modItem.FilePath;
 
                         var modListModel = new ModListModel
                         {
@@ -650,15 +642,15 @@ namespace FFXIV_TexTools.ViewModels
                         };
 
                         string parent = null;
-                        if(_modListParents.ContainsKey(modItem.fullPath) && _modListParents[modItem.fullPath] != null && _modListParents[modItem.fullPath].Count > 0)
+                        if(_modListParents.ContainsKey(modItem.FilePath) && _modListParents[modItem.FilePath] != null && _modListParents[modItem.FilePath].Count > 0)
                         {
-                            parent = _modListParents[modItem.fullPath][0];
+                            parent = _modListParents[modItem.FilePath][0];
                         }
 
                         var suffix = "";
                         try
                         {
-                            suffix = Path.GetExtension(modItem.fullPath).Substring(1);
+                            suffix = Path.GetExtension(modItem.FilePath).Substring(1);
                         }
                         catch
                         {
@@ -666,13 +658,13 @@ namespace FFXIV_TexTools.ViewModels
                         }
 
                         // Race
-                        modListModel.ItemName = SimpleModpackEntry.GetFancyName(modItem.name, modItem.fullPath);
+                        modListModel.ItemName = SimpleModpackEntry.GetFancyName(modItem.ItemName, modItem.FilePath);
 
                         // File Name
-                        modListModel.FileName = Path.GetFileName(modItem.fullPath);
+                        modListModel.FileName = Path.GetFileName(modItem.FilePath);
 
                         // Type
-                        modListModel.Type = SimpleModpackEntry.GetType(modItem.fullPath);
+                        modListModel.Type = SimpleModpackEntry.GetType(modItem.FilePath);
 
                         // Material
                         if (suffix == "tex" && parent != null)
@@ -681,7 +673,7 @@ namespace FFXIV_TexTools.ViewModels
                         }
                         else
                         {
-                            modListModel.Material = SimpleModpackEntry.GetMaterialId(modItem.fullPath);
+                            modListModel.Material = SimpleModpackEntry.GetMaterialId(modItem.FilePath);
                         }
 
                         // Race
@@ -691,57 +683,62 @@ namespace FFXIV_TexTools.ViewModels
                         }
                         else
                         {
-                            modListModel.Race = SimpleModpackEntry.GetRace(modItem.fullPath).GetDisplayName();
+                            modListModel.Race = SimpleModpackEntry.GetRace(modItem.FilePath).GetDisplayName();
                         }
 
 
                         // Added files which are currently disabled cannot be previewed, as their index file entries don't exist.
                         // (???) The above comment is wrong.  The data still exists in the Dats, and we have the offset in the modlist file...
-                        if (!(modItem.data.originalOffset == modItem.data.modOffset && !modItem.enabled))
+                        var state = await modItem.GetState(tx);
+                        if (!(modItem.OriginalOffset8x == modItem.ModOffset8x && state != EModState.Enabled))
                         {
                             // Image
                             if (itemPath.Contains(".mtrl"))
                             {
                                 try
                                 {
-                                    var mtrlData = await mtrl.GetXivMtrl(modItem.fullPath, false, tx);
-
-                                    var floats = Half.ConvertToFloat(mtrlData.ColorSetData.ToArray());
-
-                                    var floatArray = Utilities.ToByteArray(floats);
-
-                                    if (floatArray.Length > 0)
+                                    var mtrlData = await mtrl.GetXivMtrl(modItem.FilePath, false, tx);
+                                    if (mtrlData != null)
                                     {
-                                        using (var img = Image.LoadPixelData<RgbaVector>(floatArray, 4, 16))
+
+                                        var floats = Half.ConvertToFloat(mtrlData.ColorSetData.ToArray());
+
+                                        var floatArray = Utilities.ToByteArray(floats);
+
+                                        if (floatArray.Length > 0)
                                         {
-                                            img.Mutate(x => x.Opacity(1));
-
-                                            BitmapImage bmp;
-
-                                            using (var ms = new MemoryStream())
+                                            using (var img = Image.LoadPixelData<RgbaVector>(floatArray, 4, 16))
                                             {
-                                                img.Save(ms, new BmpEncoder());
+                                                img.Mutate(x => x.Opacity(1));
 
-                                                bmp = new BitmapImage();
-                                                bmp.BeginInit();
-                                                bmp.StreamSource = ms;
-                                                bmp.CacheOption = BitmapCacheOption.OnLoad;
-                                                bmp.EndInit();
-                                                bmp.Freeze();
+                                                BitmapImage bmp;
+
+                                                using (var ms = new MemoryStream())
+                                                {
+                                                    img.Save(ms, new BmpEncoder());
+
+                                                    bmp = new BitmapImage();
+                                                    bmp.BeginInit();
+                                                    bmp.StreamSource = ms;
+                                                    bmp.CacheOption = BitmapCacheOption.OnLoad;
+                                                    bmp.EndInit();
+                                                    bmp.Freeze();
+                                                }
+
+                                                modListModel.Image =
+                                                    Application.Current.Dispatcher.Invoke(() => bmp);
                                             }
-
-                                            modListModel.Image =
-                                                Application.Current.Dispatcher.Invoke(() => bmp);
                                         }
                                     }
                                 }
                                 catch (Exception ex)
                                 {
-                                    FlexibleMessageBox.Show(
-                                        string.Format(UIMessages.MaterialFileReadErrorMessage, modItem.fullPath,
+                                    // User doesn't need to be bombarded with error messages if something is broken here.
+                                    /*FlexibleMessageBox.Show(
+                                        string.Format(UIMessages.MaterialFileReadErrorMessage, modItem.FilePath,
                                             ex.Message),
                                         UIMessages.MaterialDataReadErrorTitle,
-                                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                        MessageBoxButtons.OK, MessageBoxIcon.Error);*/
                                 }
 
                             }
@@ -760,14 +757,14 @@ namespace FFXIV_TexTools.ViewModels
                                 var ttp = new TexTypePath
                                 {
                                     Type = XivTexType.Diffuse,
-                                    DataFile = XivDataFiles.GetXivDataFile(modItem.datFile),
-                                    Path = modItem.fullPath
+                                    DataFile = modItem.DataFile,
+                                    Path = modItem.FilePath
                                 };
 
                                 XivTex texData;
                                 try
                                 {
-                                    texData = await tex.GetXivTex(modItem.fullPath, false, tx);
+                                    texData = await tex.GetXivTex(modItem.FilePath, false, tx);
 
                                     var mapBytes = await texData.GetRawPixels();
 
@@ -795,17 +792,18 @@ namespace FFXIV_TexTools.ViewModels
                                 }
                                 catch (Exception ex)
                                 {
+                                    /*
                                     FlexibleMessageBox.Show(
                                         string.Format(UIMessages.TextureFileReadErrorMessage, ttp.Path, ex.Message),
                                         UIMessages.TextureDataReadErrorTitle,
-                                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                        MessageBoxButtons.OK, MessageBoxIcon.Error);*/
                                 }
                             }
 
                         }
 
                         // Status
-                        if (modItem.enabled)
+                        if (state == EModState.Enabled)
                         {
                             modListModel.ActiveBorder = Brushes.Green;
                             modListModel.Active = Brushes.Transparent;
@@ -852,15 +850,17 @@ namespace FFXIV_TexTools.ViewModels
             ProgressValue = 0;
             ProgressText = string.Empty;
 
-            var modding = new Modding(_gameDirectory);
+            var tx = MainWindow.DefaultTransaction;
 
-            var modList = await modding.GetModList();
+            var modList = await Modding.GetModList();
             List<Mod> modPackModList = null;
+            var allMods = modList.GetMods();
+            var allModpacks = modList.GetModPacks();
 
             if (category.Name.Equals(UIStrings.Standalone_Non_ModPack))
             {
-                modPackModList = (from items in modList.Mods
-                    where !items.name.Equals(string.Empty) && items.modPack == null
+                modPackModList = (from items in allMods
+                    where !items.ItemName.Equals(string.Empty) && items.ModPack == null
                     select items).ToList();
 
                 ModPackModAuthorLabel = "[ N/A ]";
@@ -868,16 +868,16 @@ namespace FFXIV_TexTools.ViewModels
             }
             else
             {
-                var modPackData = (from data in modList.ModPacks
-                    where data.name == category.Name
+                var modPackData = (from data in allModpacks
+                     where data.Name == category.Name
                     select data).FirstOrDefault();
 
-                modPackModList = (from items in modList.Mods
-                    where (items.modPack != null && items.modPack.name == category.Name)
+                modPackModList = (from items in allMods
+                where (items.ModPack != null && items.ModPack == category.Name)
                     select items).ToList();
 
-                ModPackModAuthorLabel = modPackData.author;
-                ModPackModVersionLabel = modPackData.version;
+                ModPackModAuthorLabel = modPackData.Author;
+                ModPackModVersionLabel = modPackData.Version;
             }
 
             ModPackTitle = category.Name;
@@ -891,7 +891,7 @@ namespace FFXIV_TexTools.ViewModels
 
                 count++;
 
-                if (mod.enabled)
+                if (await mod.GetState(tx) == EModState.Enabled)
                 {
                     enabledCount++;
                 }
@@ -900,13 +900,13 @@ namespace FFXIV_TexTools.ViewModels
                     disabledCount++;
                 }
 
-                if (!modNameDict.ContainsKey(mod.name))
+                if (!modNameDict.ContainsKey(mod.ItemName))
                 {
-                    modNameDict.Add(mod.name, 1);
+                    modNameDict.Add(mod.ItemName, 1);
                 }
                 else
                 {
-                    modNameDict[mod.name] += 1;
+                    modNameDict[mod.ItemName] += 1;
                 }
             }
             ModPackModCountLabel = count.ToString();
@@ -936,12 +936,12 @@ namespace FFXIV_TexTools.ViewModels
         /// <param name="category">The Category object for the item</param>
         public async Task RemoveItem(ModListModel item, Category category)
         {
-            var modding = new Modding(_gameDirectory);
 
-            var modList = await modding.GetModList();
+            var modList = await Modding.GetModList();
 
-            var remainingList = (from items in modList.Mods
-                                where items.name == item.ModItem.name
+            var allMods = modList.GetMods();
+            var remainingList = (from items in allMods
+                                 where items.ItemName == item.ModItem.ItemName
                                 select items).ToList();
 
             if (remainingList.Count == 0)
@@ -952,7 +952,7 @@ namespace FFXIV_TexTools.ViewModels
                     foreach (var modPackCategory in Categories)
                     {
                         parentCategory = (from parent in modPackCategory.Categories
-                            where parent.Name.Equals(item.ModItem.category)
+                            where parent.Name.Equals(item.ModItem.ItemCategory)
                             select parent).FirstOrDefault();
 
                         if (parentCategory != null)
@@ -964,7 +964,7 @@ namespace FFXIV_TexTools.ViewModels
                 else
                 {
                     parentCategory = (from parent in Categories
-                        where parent.Name.Equals(item.ModItem.category)
+                        where parent.Name.Equals(item.ModItem.ItemCategory)
                         select parent).FirstOrDefault();
                 }
 

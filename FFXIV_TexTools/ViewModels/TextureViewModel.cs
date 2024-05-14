@@ -1155,9 +1155,8 @@ namespace FFXIV_TexTools.ViewModels
 
             var _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory);
             var _tex = new Tex(XivCache.GameInfo.GameDirectory);
-            var _modding = new Modding(XivCache.GameInfo.GameDirectory);
 
-            // This is intentionally an async/deffered call here.
+            // This is intentionally an async/deferred call here.
             LoadParentFileInformation(SelectedMap.TexturePath);
 
 
@@ -1202,8 +1201,11 @@ namespace FFXIV_TexTools.ViewModels
                     _textureView.StandardTextureDisplay.Visibility = Visibility.Collapsed;
                 }
 
-                var mod = await MainWindow.DefaultTransaction.GetMod(PathString);
-                if (mod != null && !mod.enabled)
+                var tx = MainWindow.DefaultTransaction;
+                var mod = await tx.GetMod(PathString);
+                var state = await Modding.GetModState(PathString, tx);
+
+                if (mod != null && state == EModState.Disabled)
                 {
                     ModStatusToggleEnabled = true;
                     ModToggleText = UIStrings.Enable;
@@ -1211,7 +1213,7 @@ namespace FFXIV_TexTools.ViewModels
                 }
                 else if (mod != null)
                 {
-                    if (mod.data.modOffset == mod.data.originalOffset)
+                    if (mod.Value.IsCustomFile())
                     {
                         // This is a file addition material or texture.
                         // Don't let them disable it via this menu, because it'll blow the UI the fuck up.
@@ -1622,7 +1624,6 @@ namespace FFXIV_TexTools.ViewModels
         {
             var _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory);
             var _tex = new Tex(XivCache.GameInfo.GameDirectory);
-            var _modding = new Modding(XivCache.GameInfo.GameDirectory);
 
             ImportEnabled = false;
             var fileDir = new DirectoryInfo(fileName);
@@ -1754,17 +1755,16 @@ namespace FFXIV_TexTools.ViewModels
             if (!CheckMtrlIsOK())
                 return;
             var gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
-            var modlist = new Modding(gameDirectory);
 
             try
             {
                 if (ModToggleText.Equals(UIStrings.Enable))
                 {
-                    await modlist.ToggleModStatus(SelectedMap.TexturePath, true);
+                    await Modding.ToggleModStatus(SelectedMap.TexturePath, true);
                 }
                 else if (ModToggleText.Equals(UIStrings.Disable))
                 {
-                    await modlist.ToggleModStatus(SelectedMap.TexturePath, false);
+                    await Modding.ToggleModStatus(SelectedMap.TexturePath, false);
                 }
             }
             catch (Exception ex)

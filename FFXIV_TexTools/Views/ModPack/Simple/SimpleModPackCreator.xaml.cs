@@ -43,6 +43,7 @@ using xivModdingFramework.Cache;
 using xivModdingFramework.SqPack.FileTypes;
 using xivModdingFramework.Helpers;
 using System.Linq;
+using xivModdingFramework.Mods.Enums;
 
 namespace FFXIV_TexTools.Views
 {
@@ -57,6 +58,7 @@ namespace FFXIV_TexTools.Views
         private long _modSize;
 
         public Dictionary<string, List<string>> ParentsDictionary;
+        public ModTransaction Transaction;
         public long ModpackSize { 
             get
             {
@@ -92,14 +94,15 @@ namespace FFXIV_TexTools.Views
         public ModList ModList;
 
         // List of selected mods, by index.
-        public HashSet<int> SelectedMods;
+        public HashSet<string> SelectedMods;
 
         #endregion
 
         public SimpleModPackCreator()
         {
+            Transaction = MainWindow.DefaultTransaction;
             InitializeComponent();
-            SelectedMods = new HashSet<int>();
+            SelectedMods = new HashSet<string>();
 
             this.ContentArea.DataContext = this;
 
@@ -194,40 +197,23 @@ namespace FFXIV_TexTools.Views
         private async Task MakeSimpleDataList()
         {
             DirectoryInfo modListDirectory = new DirectoryInfo(Path.Combine(_gameDirectory.Parent.Parent.FullName, XivStrings.ModlistFilePath));
-            Modding modding = new Modding(_gameDirectory);
 
-            this.ModList = await modding.GetModList();
+            this.ModList = await Modding.GetModList();
 
             // Don't show or list internal mods at all in this menu.
-            var internals = ModList.Mods.Where(x => x.IsInternal());
-            ModList.RemoveMods(internals);
             var tx = MainWindow.DefaultTransaction;
+            var allMods = ModList.GetMods(x => !x.IsInternal()).ToList();
 
             // Rip through the mod list and get the correct raw compressed sizes for all the mods.
             var _dat = new Dat(XivCache.GameInfo.GameDirectory);
-            foreach (var mod in ModList.Mods)
-            {
-
-                var compressedSize = mod.data.modSize;
-                try
-                {
-                    compressedSize = await tx.GetCompressedFileSize(IOUtil.GetDataFileFromPath(mod.fullPath), mod.data.modOffset);
-                    mod.data.modSize = compressedSize;
-                }
-                catch
-                {
-                    // Don't allow creation of modpacks with broken files.
-                    throw new Exception("Unable to determine compressed file size of modded file: " + mod.fullPath);
-                }
-            }
 
             this.ParentsDictionary = await XivCache.GetModListParents();
 
 
             List<SimpleModpackEntry> entries = new List<SimpleModpackEntry>();
-            for(int i = 0; i < this.ModList.Mods.Count; i++)
+            foreach(var m in allMods)
             { 
-                SimpleModpackEntry entry = MakeEntry(i);
+                SimpleModpackEntry entry = MakeEntry(m.FilePath);
                 if (entry == null)
                     continue;
 
@@ -243,13 +229,11 @@ namespace FFXIV_TexTools.Views
             });
         }
 
-        private SimpleModpackEntry MakeEntry(int i)
+        private SimpleModpackEntry MakeEntry(string path)
         {
-            var mod = this.ModList.Mods[i];
-            if (mod.fullPath.Equals(string.Empty))
-                return null;
+            var mod = this.ModList.Mods[path];
 
-            SimpleModpackEntry entry = new SimpleModpackEntry(i, this);
+            SimpleModpackEntry entry = new SimpleModpackEntry(path, this);
 
             return entry;
         }
@@ -382,25 +366,25 @@ namespace FFXIV_TexTools.Views
             foreach (var idx in SelectedMods)
             {
                 var mod = ModList.Mods[idx];
-                var compressedSize = mod.data.modSize;
+                var compressedSize = mod.FileSize;
                 try
                 {
                     // Use the explicit offset here, because we want to include the mod data even if the mod is disabled.
-                    compressedSize = await tx.GetCompressedFileSize(IOUtil.GetDataFileFromPath(mod.fullPath), mod.data.modOffset);
+                    compressedSize = await tx.GetCompressedFileSize(mod.DataFile, mod.ModOffset8x);
                 } catch
                 {
                     // Don't allow creation of modpacks with broken files.
-                    throw new Exception("Unable to determine compressed file size of modded file: " + mod.fullPath);
+                    throw new Exception("Unable to determine compressed file size of modded file: " + mod.FilePath);
                 }
 
                 SimpleModData simpleData = new SimpleModData
                 {
-                    Name = mod.name,
-                    Category = mod.category,
-                    FullPath = mod.fullPath,
-                    ModOffset = mod.data.modOffset,
+                    Name = mod.ItemName,
+                    Category = mod.ItemCategory,
+                    FullPath = mod.FilePath,
+                    ModOffset = mod.ModOffset8x,
                     ModSize = compressedSize,
-                    DatFile = mod.datFile
+                    DatFile = mod.DataFile.ToString()
                 };
 
                 simpleModPackData.SimpleModDataList.Add(simpleData);
@@ -455,7 +439,7 @@ namespace FFXIV_TexTools.Views
 
             foreach (string searchTerm in searchTerms)
             {
-                if (SimpleModpackEntry.GetFancyName(item.name, item.fullPath).IndexOf(searchTerm.Trim(), StringComparison.OrdinalIgnoreCase) >= 0) return true;
+                if (SimpleModpackEntry.GetFancyName(item.ItemName, item.FilePath).IndexOf(searchTerm.Trim(), StringComparison.OrdinalIgnoreCase) >= 0) return true;
             }
             return false;
         }
@@ -467,21 +451,16 @@ namespace FFXIV_TexTools.Views
         {
 
             long addedSize = 0;
-            for (var i = 0; i < ModList.Mods.Count; i++)
+            foreach(var mod in ModList.GetMods())
             {
-                var mod = ModList.Mods[i];
-
-                // Ignore invalid.
-                if (mod.fullPath.Equals(string.Empty)) continue;
-
                 // Ignore things not in the filter.
                 if (!MatchesFilter(mod)) continue;
 
                 // Ignore things that are already selected.
-                if (SelectedMods.Contains(i)) continue;
+                if (SelectedMods.Contains(mod.FilePath)) continue;
 
-                SelectedMods.Add(i);
-                addedSize += mod.data.modSize;
+                SelectedMods.Add(mod.FilePath);
+                addedSize += mod.FileSize;
             }
             ModpackSize += addedSize;
 
@@ -496,28 +475,23 @@ namespace FFXIV_TexTools.Views
         /// <summary>
         /// The event handler for the select active button clicked
         /// </summary>
-        private void SelectActiveButton_Click(object sender, RoutedEventArgs e)
+        private async void SelectActiveButton_Click(object sender, RoutedEventArgs e)
         {
             long addedSize = 0;
-            for(var i = 0; i < ModList.Mods.Count; i++)
+            var tx = MainWindow.DefaultTransaction;
+            foreach (var mod in ModList.GetMods())
             {
-                var mod = ModList.Mods[i];
-
-                // Ignore invalid.
-                if (mod.fullPath.Equals(string.Empty)) continue;
-
                 // Ignore disabled mods
-                if (!mod.enabled) continue;
+                if (await mod.GetState(tx) != EModState.Enabled) continue;
 
                 // Ignore things not in the filter.
                 if (!MatchesFilter(mod)) continue;
 
                 // Ignore things that are already selected.
-                if (SelectedMods.Contains(i)) continue;
+                if (SelectedMods.Contains(mod.FilePath)) continue;
 
-
-                SelectedMods.Add(i);
-                addedSize += mod.data.modSize;
+                SelectedMods.Add(mod.FilePath);
+                addedSize += mod.FileSize;
             }
             ModpackSize += addedSize;
 
@@ -536,24 +510,23 @@ namespace FFXIV_TexTools.Views
         /// <summary>
         /// The event handler for the clear selected button clicked
         /// </summary>
-        private void ClearSelectedButton_Click(object sender, RoutedEventArgs e)
+        private async void ClearSelectedButton_Click(object sender, RoutedEventArgs e)
         {
             long removedSize = 0;
-            for (var i = 0; i < ModList.Mods.Count; i++)
+            var tx = MainWindow.DefaultTransaction;
+            foreach (var mod in ModList.GetMods())
             {
-                var mod = ModList.Mods[i];
-
-                // Ignore invalid.
-                if (mod.fullPath.Equals(string.Empty)) continue;
+                // Ignore disabled mods
+                if (await mod.GetState(tx) != EModState.Enabled) continue;
 
                 // Ignore things not in the filter.
                 if (!MatchesFilter(mod)) continue;
 
-                // Ignore things that are not selected.
-                if (!SelectedMods.Contains(i)) continue;
+                // Ignore things that are already selected.
+                if (SelectedMods.Contains(mod.FilePath)) continue;
 
-                SelectedMods.Remove(i);
-                removedSize += mod.data.modSize;
+                SelectedMods.Remove(mod.FilePath);
+                removedSize += mod.FileSize;
             }
             ModpackSize -= removedSize;
 

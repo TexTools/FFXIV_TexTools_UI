@@ -812,24 +812,25 @@ namespace FFXIV_TexTools.ViewModels
             MeshComboboxEnabled = _meshCount > 1;
             SelectedMeshIndex = 0;
 
-            var modList = new Modding(_gameDirectory);
+            var tx = MainWindow.DefaultTransaction;
+            var state = await Modding.GetModState(PathString);
+            
 
-            var mod = await MainWindow.DefaultTransaction.GetMod(PathString);
-
-            if(mod == null)
+            if(state == EModState.Invalid || state == EModState.UnModded)
             {
 
                 ModStatusToggleEnabled = false;
                 ModToggleText = UIStrings.Enable_Disable;
-            } else if(!mod.enabled)
+            } else if(state == EModState.Disabled)
             {
                 ModStatusToggleEnabled = true;
                 ModToggleText = UIStrings.Enable;
 
-            } else if(mod.enabled)
+            } else if(state == EModState.Enabled)
             {
+                var mod = await tx.GetMod(PathString);
                 ModToggleText = UIStrings.Disable;
-                if(mod.IsCustomFile())
+                if(mod.Value.IsCustomFile())
                 {
                     // Don't let users disable custom racial models from this menu since it'll blow up the sun.
                     ModStatusToggleEnabled = false;
@@ -1504,17 +1505,15 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         private async void ModStatusToggle(object obj)
         {
-            var modlist = new Modding(_gameDirectory);
-
             try
             {
                 if (ModToggleText.Equals(UIStrings.Enable))
                 {
-                    await modlist.ToggleModStatus(PathString, true);
+                    await Modding.ToggleModStatus(PathString, true);
                 }
                 else if (ModToggleText.Equals(UIStrings.Disable))
                 {
-                    await modlist.ToggleModStatus(PathString, false);
+                    await Modding.ToggleModStatus(PathString, false);
                 }
             }
             catch (Exception ex)
@@ -1744,11 +1743,9 @@ namespace FFXIV_TexTools.ViewModels
                      string.Format(UIMessages.ViewportErrorMessage, ex.Message), UIMessages.ViewportErrorTitle,
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-                var modlist = new Modding(_gameDirectory);
-
                 try
                 {
-                    await modlist.ToggleModStatus(PathString, false);
+                    await Modding.ToggleModStatus(PathString, false);
                     GetMeshes();
                 }
                 catch (Exception e)

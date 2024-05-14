@@ -32,6 +32,7 @@ using Index = xivModdingFramework.SqPack.FileTypes.Index;
 using static xivModdingFramework.Materials.DataContainers.ShaderHelpers;
 using System.Globalization;
 using System.Windows.Data;
+using xivModdingFramework.Mods.Enums;
 
 namespace FFXIV_TexTools.ViewModels
 {
@@ -58,7 +59,6 @@ namespace FFXIV_TexTools.ViewModels
         private Mtrl _mtrl;
         private Index _index;
         private Gear _gear;
-        private Modding _modding;
         private XivMtrl _material;
         private IItemModel _item;
         private string _newMaterialIdentifier;
@@ -82,7 +82,6 @@ namespace FFXIV_TexTools.ViewModels
             var gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
             _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory);
             _index = new Index(gameDirectory);
-            _modding = new Modding(gameDirectory);
             _gear = new Gear(gameDirectory, GetLanguage());
 
 
@@ -134,12 +133,19 @@ namespace FFXIV_TexTools.ViewModels
             // Get the mod entry.
             if (_mode == MaterialEditorMode.EditSingle || _mode == MaterialEditorMode.EditMulti)
             {
-                var mod = await _modding.LEGACY_TryGetModEntry(_material.MTRLPath);
-                if (mod != null && mod.enabled)
+                var mod = await MainWindow.DefaultTransaction.GetMod(_material.MTRLPath);
+                var _ = Task.Run(async () =>
                 {
-                    _view.DisableButton.IsEnabled = true;
-                    _view.DisableButton.Visibility = System.Windows.Visibility.Visible;
-                }
+                    if (mod == null) return;
+
+                    var tx = MainWindow.DefaultTransaction;
+                    var enabled = await mod.Value.GetState(tx) == EModState.Enabled;
+                    if (enabled)
+                    {
+                        _view.DisableButton.IsEnabled = true;
+                        _view.DisableButton.Visibility = System.Windows.Visibility.Visible;
+                    }
+                });
             }
 
             return true;
@@ -343,9 +349,10 @@ namespace FFXIV_TexTools.ViewModels
 
             try
             {
+                var tx = MainWindow.DefaultTransaction;
                 foreach (var file in files)
                 {
-                    var modEntry = await _modding.LEGACY_TryGetModEntry(file);
+                    var modEntry = await tx.GetMod(file);
 
                     if (modEntry == null)
                     {
@@ -353,13 +360,13 @@ namespace FFXIV_TexTools.ViewModels
                     }
 
                     // If the file is a custom addition, and not a modification.
-                    if (modEntry.IsCustomFile())
+                    if (modEntry.Value.IsCustomFile())
                     {
-                        await _modding.DeleteMod(file);
+                        await Modding.DeleteMod(file);
                     }
                     else
                     {
-                        await _modding.ToggleModStatus(file, false);
+                        await Modding.ToggleModStatus(file, false);
                     }
                 }
             } catch(Exception ex)

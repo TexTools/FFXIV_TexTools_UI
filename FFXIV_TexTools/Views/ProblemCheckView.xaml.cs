@@ -42,6 +42,7 @@ using xivModdingFramework.SqPack.DataContainers;
 
 using Index = xivModdingFramework.SqPack.FileTypes.Index;
 using Application = System.Windows.Application;
+using xivModdingFramework.Mods.Enums;
 
 namespace FFXIV_TexTools.Views
 {
@@ -194,11 +195,10 @@ namespace FFXIV_TexTools.Views
             var modListDirectory =
                 new DirectoryInfo(Path.Combine(_gameDirectory.Parent.Parent.FullName, XivStrings.ModlistFilePath));
             ModList modList;
-            var modding = new Modding(_gameDirectory);
 
             try
             {
-                modList = await modding.GetModList();
+                modList = await Modding.GetModList();
 
                 // Someone somehow had their entire modlist filled with 0's causing the deserialization to 
                 // just return null so this was added to still detect that as a corrupted modlist
@@ -237,37 +237,23 @@ namespace FFXIV_TexTools.Views
             var _index = new Index(_gameDirectory);
 
 
-            // Filter out empty entries in the mod list
-            var toRemove = modList.Mods.Where(mod => mod.name.Equals(string.Empty));
-            modList.RemoveMods(toRemove);
-
             int resolvedErrors = 0;
             int unresolvedCriticalErrors = 0;
             int unresolvedWarnings = 0;
 
             await Task.Run(async () =>
             {
-                using (var tx = ModTransaction.BeginTransaction())
-                {
-                    // Do a quick scan for any invalid empty blocks.
-                    int removedBlocks = await modding.PurgeInvalidEmptyBlocks(tx);
-                    if (removedBlocks > 0)
-                    {
-                        await ModTransaction.CommitTransaction(tx);
-                        Dispatcher.Invoke(() => AddText($"\tPurged {removedBlocks._()} invalid unused mod data slots.\n".L(), "Orange"));
-                        
-                    }
-                }
-
                 var modNum = 0;
                 if (modList.Mods.Count > 0)
                 {
-                    var files = modList.ModDictionary.Keys.ToList();
+                    var files = modList.Mods.Keys.ToList();
 
 
                     using (var tx = ModTransaction.BeginTransaction())
                     {
-                        foreach (var mod in modList.Mods)
+                        modList = await tx.GetModList();
+                        var allMods = modList.GetMods();
+                        foreach (var mod in allMods)
                         {
                             bool index2CorrectionNeeded = false;
                             List<(string text, string color)> textsToAdd = new List<(string text, string color)>();
@@ -277,12 +263,12 @@ namespace FFXIV_TexTools.Views
                                 return;
                             }
 
-                            var df = IOUtil.GetDataFileFromPath(mod.fullPath);
+                            var df = IOUtil.GetDataFileFromPath(mod.FilePath);
                             var iFile = await tx.GetIndexFile(df);
-                            long index1Offset = iFile.Get8xDataOffsetIndex1(mod.fullPath);
-                            long index2Offset = iFile.Get8xDataOffsetIndex2(mod.fullPath);
+                            long index1Offset = iFile.Get8xDataOffsetIndex1(mod.FilePath);
+                            long index2Offset = iFile.Get8xDataOffsetIndex2(mod.FilePath);
 
-                            var fileName = Path.GetFileName(mod.fullPath);
+                            var fileName = Path.GetFileName(mod.FilePath);
 
                             var tabs = "";
                             if (fileName.Length < 21 && fileName.Length > 12)
@@ -298,13 +284,13 @@ namespace FFXIV_TexTools.Views
 
                             textsToAdd.Add(($"\t{fileName}{tabs}", textColor));
 
-                            if (mod.data.originalOffset <= 0)
+                            if (mod.OriginalOffset8x <= 0)
                             {
                                 textsToAdd.Add(("\t\u2716\n", "Red"));
                                 textsToAdd.Add(($"\tOriginal FFXIV Offset is Invalid.  Unrecoverable ModList state.\n\t Please use [Download Index Backups] =>  [Start Over].\n".L(), "Red"));
                                 unresolvedCriticalErrors++;
                             }
-                            else if (mod.data.modOffset <= 0)
+                            else if (mod.ModOffset8x <= 0)
                             {
                                 textsToAdd.Add(("\t\u2716\n", "Red"));
                                 textsToAdd.Add(($"\tMod Data Offset is invalid. \n\t The Mod will be disabled, deleted, and the mod slot will be purged from the ModList.\n".L(), "Red"));
@@ -318,8 +304,7 @@ namespace FFXIV_TexTools.Views
                             var fileType = 0;
                             try
                             {
-                                fileType = dat.GetFileType(mod.data.modOffset,
-                                    XivDataFiles.GetXivDataFile(mod.datFile));
+                                fileType = dat.GetFileType(mod.ModOffset8x, mod.DataFile);
                             }
                             catch (Exception ex)
                             {
@@ -330,7 +315,7 @@ namespace FFXIV_TexTools.Views
                             if (fileType != 2 && fileType != 3 && fileType != 4)
                             {
                                 textsToAdd.Add(("\t\u2716\n", "Red"));
-                                textsToAdd.Add(($"\t{string.Format(UIStrings.ProblemCheck_UnkType, fileType)} [{mod.data.modOffset}, {((mod.data.modOffset / 8) & 0x0F) / 2}]\n", "Red"));
+                                textsToAdd.Add(($"\t{string.Format(UIStrings.ProblemCheck_UnkType, fileType)} [{mod.ModOffset8x}, {((mod.ModOffset8x / 8) & 0x0F) / 2}]\n", "Red"));
                                 textsToAdd.Add(($"\tThe Mod will automatically be disabled and deleted.\n".L(), "Red"));
                                 purgeMod = true;
                             }
@@ -352,53 +337,47 @@ namespace FFXIV_TexTools.Views
                                 textsToAdd.Add(("\t\u2714", "Green"));
                             }
 
+                            var state = await mod.GetState(tx);
                             // Can only reliably check child files on enabled stuff.
-                            if (mod.enabled)
+                            if (state == EModState.Enabled)
                             {
-                                var extension = Path.GetExtension(mod.fullPath);
+                                var extension = Path.GetExtension(mod.FilePath);
 
                                 if (extension == ".tex" || extension == ".atex")
                                 {
                                     // For these, there are no child files to resolve.  Just test if we can at least load the binary uncompressed data for validation.
 
-                                    if (mod.enabled)
+                                    try
                                     {
-                                        try
+                                        bool err = false;
+                                        // Just test to see if we can get the data at all.
+                                        if (extension == ".tex")
                                         {
-                                            bool err = false;
-                                            // Just test to see if we can get the data at all.
-                                            if (extension == ".tex")
+                                            var data = await dat.GetTexFromDat(mod.FilePath, false, tx);
+                                            uint size = (uint)data.TexData.Length;
+
+                                            var reportedSize = await dat.GetReportedType4UncompressedSize(mod.DataFile, mod.ModOffset8x);
+
+                                            if (size != reportedSize)
                                             {
-                                                var data = await dat.GetTexFromDat(mod.fullPath, false, tx);
-                                                uint size = (uint)data.TexData.Length;
+                                                await dat.UpdateType4UncompressedSize(mod.DataFile, mod.ModOffset8x, size);
 
-                                                var reportedSize = await dat.GetReportedType4UncompressedSize(XivDataFiles.GetXivDataFile(mod.datFile), mod.data.modOffset);
-
-                                                if (size != reportedSize)
-                                                {
-                                                    await dat.UpdateType4UncompressedSize(XivDataFiles.GetXivDataFile(mod.datFile), mod.data.modOffset, size);
-
-                                                    err = true;
-                                                    textsToAdd.Add(("\t\u2714\n", "Orange"));
-                                                    textsToAdd.Add(($"\tMod had an incorrectly reported file size.  The reported size has been corrected.\n".L(), "Orange"));
-                                                }
-                                            }
-
-                                            if (!err)
-                                            {
-                                                textsToAdd.Add(("\t\u2714\n", "Green"));
+                                                err = true;
+                                                textsToAdd.Add(("\t\u2714\n", "Orange"));
+                                                textsToAdd.Add(($"\tMod had an incorrectly reported file size.  The reported size has been corrected.\n".L(), "Orange"));
                                             }
                                         }
-                                        catch
+
+                                        if (!err)
                                         {
-                                            textsToAdd.Add(("\t\u2716\n", "Red"));
-                                            textsToAdd.Add(($"\tUnable to decompress Texture file.  File is most likely corrupt.  The mod will be deleted.\n".L(), "Red"));
-                                            purgeMod = true;
+                                            textsToAdd.Add(("\t\u2714\n", "Green"));
                                         }
                                     }
-                                    else
+                                    catch
                                     {
-                                        textsToAdd.Add(("\t\u2714\n", "Green"));
+                                        textsToAdd.Add(("\t\u2716\n", "Red"));
+                                        textsToAdd.Add(($"\tUnable to decompress Texture file.  File is most likely corrupt.  The mod will be deleted.\n".L(), "Red"));
+                                        purgeMod = true;
                                     }
                                 }
                                 else
@@ -408,7 +387,7 @@ namespace FFXIV_TexTools.Views
                                     var children = new List<string>();
                                     try
                                     {
-                                        children = await XivCache.GetChildFiles(mod.fullPath);
+                                        children = await XivCache.GetChildFiles(mod.FilePath);
                                     }
                                     catch
                                     {
@@ -487,13 +466,13 @@ namespace FFXIV_TexTools.Views
                             {
                                 try
                                 {
-                                    iFile.RepairIndexValue(mod.fullPath);
+                                    iFile.RepairIndexValue(mod.FilePath);
                                     resolvedErrors++;
                                 }
                                 catch(Exception ex)
                                 {
                                     textsToAdd.Add((ex.Message, "Red"));
-                                    textsToAdd.Add(($"Critical Error: Unable to Correct Index Discrepency for Mod: {mod.fullPath._()}\n\tPlease use [Download Index Backups] =>  [Start Over]".L(), "Red"));
+                                    textsToAdd.Add(($"Critical Error: Unable to Correct Index Discrepency for Mod: {mod.FilePath._()}\n\tPlease use [Download Index Backups] =>  [Start Over]".L(), "Red"));
                                     unresolvedCriticalErrors++;
                                 }
                             }
@@ -504,15 +483,15 @@ namespace FFXIV_TexTools.Views
                                 try
                                 {
                                     // Disable the mod first.
-                                    await modding.ToggleModStatus(mod.fullPath, false, tx);
+                                    await Modding.ToggleModStatus(mod.FilePath, false, tx);
 
                                     // Then delete the mod entry.  This will purge the frame as well if the offset is invalid.
-                                    await modding.DeleteMod(mod.fullPath, false, tx);
+                                    await Modding.DeleteMod(mod.FilePath, false, tx);
                                     resolvedErrors++;
                                 }
                                 catch
                                 {
-                                    textsToAdd.Add(($"Critical Error: Unable to Disable or Delete Mod: {mod.fullPath._()}\n\tPlease use [Download Index Backups] =>  [Start Over]".L(), "Red"));
+                                    textsToAdd.Add(($"Critical Error: Unable to Disable or Delete Mod: {mod.FilePath._()}\n\tPlease use [Download Index Backups] =>  [Start Over]".L(), "Red"));
                                     unresolvedCriticalErrors++;
                                 }
                             }
@@ -661,8 +640,7 @@ namespace FFXIV_TexTools.Views
                 string datSize = gb.ToString("0.00") + " GB";
                 AddText($"\tPer-DAT File Size Limit: {datSize._()}\n".L(), textColor);
 
-                var _modding = new Modding(XivCache.GameInfo.GameDirectory);
-                var totalModSize = await _modding.GetTotalModDataSize();
+                var totalModSize = await Modding.GetTotalModDataSize();
                 gb = ((double)datSizeLimit) / 1024D / 1024D / 1024D;
                 string modSize = gb.ToString("0.00") + " GB";
                 AddText($"\tSum Total Mod Files Size: {modSize._()}\n".L(), textColor);

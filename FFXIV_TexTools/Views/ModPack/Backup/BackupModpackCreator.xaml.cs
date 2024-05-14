@@ -31,7 +31,6 @@ namespace FFXIV_TexTools.Views
             InitializeComponent();
 
             _gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
-            var modding = new Modding(_gameDirectory);
 
             // Block until modlist is retrieved.
             _modList = modlist;
@@ -43,9 +42,10 @@ namespace FFXIV_TexTools.Views
             // Manually add an entry for the mods that don't belong to a modpack
             ((List<BackupModpackItemEntry>)ModpackList.ItemsSource).Add(new BackupModpackItemEntry(UIStrings.Standalone_Non_ModPack));
 
-            foreach (var modpack in _modList.ModPacks)
+            var allModPacks = _modList.GetModPacks();
+            foreach (var modpack in allModPacks)
             {
-                var entry = new BackupModpackItemEntry(modpack.name);
+                var entry = new BackupModpackItemEntry(modpack.Name);
                 ((List<BackupModpackItemEntry>)ModpackList.ItemsSource).Add(entry);
             }
 
@@ -113,22 +113,24 @@ namespace FFXIV_TexTools.Views
                                       select modpack;
                 if (selectedEntries.Count() == 0) throw new Exception("No selected modpacks detected.".L());
 
+                var allMods = _modList.GetMods();
+                var allModPacks = _modList.GetModPacks();
                 foreach (var modpackEntry in selectedEntries)
                 {
-                    ModPack selectedModpack = null;
+                    ModPack? selectedModpack = null;
                     IEnumerable<Mod> modsInModpack = new List<Mod>();
 
                     if (modpackEntry.ModpackName == UIStrings.Standalone_Non_ModPack)
                     {
-                        modsInModpack = from mods in _modList.Mods
-                                        where !mods.name.Equals(string.Empty) && mods.modPack == null
+                        modsInModpack = from mods in allMods
+                                        where !mods.ItemName.Equals(string.Empty) && mods.ModPack == null
                                         select mods;
                     }
                     else
                     {
-                        selectedModpack = _modList.ModPacks.First(modPack => modPack.name == modpackEntry.ModpackName);
-                        modsInModpack = from mods in _modList.Mods
-                                        where (mods.modPack != null && mods.modPack.name == selectedModpack.name)
+                        selectedModpack = allModPacks.First(modPack => modPack.Name == modpackEntry.ModpackName);
+                        modsInModpack = from mods in allMods
+                                        where (mods.ModPack != null && mods.ModPack == selectedModpack?.Name)
                                         select mods;
                     }
 
@@ -136,12 +138,12 @@ namespace FFXIV_TexTools.Views
                     {
                         var simpleModData = new SimpleModData
                         {
-                            Name = mod.name,
-                            Category = mod.category,
-                            FullPath = mod.fullPath,
-                            ModOffset = mod.data.modOffset,
-                            ModSize = mod.data.modSize,
-                            DatFile = mod.datFile
+                            Name = mod.ItemName,
+                            Category = mod.ItemCategory,
+                            FullPath = mod.FilePath,
+                            ModOffset = mod.ModOffset8x,
+                            ModSize = mod.FileSize,
+                            DatFile = mod.DataFile.ToString()
                         };
 
                         var backupModData = new BackupModData
@@ -199,21 +201,24 @@ namespace FFXIV_TexTools.Views
         /// </summary>
         private void ModpackList_SelectionChanged(object sender, RoutedEventArgs e)
         {
-            ModPack selectedModpack = null;
+            ModPack? selectedModpack = null;
             List<Mod> modsInModpack = new List<Mod>();
 
             var selectedModpackName = ((BackupModpackItemEntry)ModpackList.SelectedItem).ModpackName;
+            var allMods = _modList.GetMods();
+            var allModPacks = _modList.GetModPacks();
+
             if (selectedModpackName == UIStrings.Standalone_Non_ModPack)
             {
-                modsInModpack = (from mods in _modList.Mods
-                                 where !mods.name.Equals(string.Empty) && mods.modPack == null
+                modsInModpack = (from mods in allMods
+                                 where !mods.ItemName.Equals(string.Empty) && mods.ModPack == null
                                  select mods).ToList();
             }
             else
             {
-                selectedModpack = _modList.ModPacks.First(modPack => modPack.name == selectedModpackName);
-                modsInModpack = (from mods in _modList.Mods
-                                 where (mods.modPack != null && mods.modPack.name == selectedModpack.name)
+                selectedModpack = allModPacks.First(modPack => modPack.Name == selectedModpackName);
+                modsInModpack = (from mods in allMods
+                                 where (mods.ModPack != null && mods.ModPack == selectedModpack?.Name)
                                  select mods).ToList();
             }
             (DataContext as BackupModpackViewModel).UpdateDescription(selectedModpack, modsInModpack);

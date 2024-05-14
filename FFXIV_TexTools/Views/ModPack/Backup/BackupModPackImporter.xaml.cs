@@ -109,7 +109,7 @@ namespace FFXIV_TexTools.Views
                 }
 
                 importList.AddRange(from modsJson in _modsJsons
-                                    where (selectedModpackNames.Contains(modsJson.ModPackEntry?.name))
+                                    where (selectedModpackNames.Contains(modsJson.ModPackEntry?.Name))
                                     select modsJson);
 
 
@@ -153,7 +153,7 @@ namespace FFXIV_TexTools.Views
         private void ModpackList_SelectionChanged(object sender, RoutedEventArgs e)
         {
             List<ModsJson> selectedModsJsons = new List<ModsJson>();
-            ModPack selectedModpack = null;
+            ModPack? selectedModpack = null;
 
             var selectedModpackName = ((BackupModpackItemEntry)ModpackList.SelectedItem).ModpackName;
             if (selectedModpackName == UIStrings.Standalone_Non_ModPack)
@@ -162,7 +162,7 @@ namespace FFXIV_TexTools.Views
             }
             else
             {
-                selectedModsJsons = _modsJsons.FindAll(modsJson => modsJson.ModPackEntry?.name == selectedModpackName);
+                selectedModsJsons = _modsJsons.FindAll(modsJson => modsJson.ModPackEntry?.Name == selectedModpackName);
                 selectedModpack = selectedModsJsons[0].ModPackEntry;
             }
 
@@ -203,7 +203,7 @@ namespace FFXIV_TexTools.Views
             var modPackNames = new List<string>();
             foreach (var modsJson in _modsJsons)
             {
-                var modpackName = modsJson.ModPackEntry?.name ?? UIStrings.Standalone_Non_ModPack;
+                var modpackName = modsJson.ModPackEntry?.Name ?? UIStrings.Standalone_Non_ModPack;
                 if (!modPackNames.Contains(modpackName))
                 {
                     modPackNames.Add(modpackName);

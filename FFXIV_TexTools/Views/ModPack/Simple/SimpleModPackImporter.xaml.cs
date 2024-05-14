@@ -63,13 +63,13 @@ namespace FFXIV_TexTools.Views
         private bool _messageInImport, _indexLockStatus;
         private ModPackJson _packJson;
         private bool _silent = false;
-        public Modding _modding;
 
         [DllImport("Shlwapi.dll", CharSet = CharSet.Auto)]
         public static extern long StrFormatByteSize(long fileSize, [MarshalAs(UnmanagedType.LPTStr)] StringBuilder buffer, int bufferSize);
 
-        public List<ModsJson> JsonEntries;
-        public HashSet<int> SelectedEntries;
+        public Dictionary<string, ModsJson> JsonEntries;
+        public HashSet<string> SelectedEntries;
+        public ModTransaction Transaction;
 
         public long ModSize
         {
@@ -97,16 +97,16 @@ namespace FFXIV_TexTools.Views
 
         public SimpleModPackImporter(DirectoryInfo modPackDirectory, ModPackJson modPackJson, bool silent = false, bool messageInImport = false)
         {
+            Transaction = MainWindow.DefaultTransaction;
             this.DataContext = this;
 
             InitializeComponent();
 
-            JsonEntries = new List<ModsJson>();
-            SelectedEntries = new HashSet<int>();
+            JsonEntries = new Dictionary<string, ModsJson>();
+            SelectedEntries = new HashSet<string>();
 
             _modPackDirectory = modPackDirectory;
             _gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
-            _modding = new Modding(_gameDirectory);
             _texToolsModPack = new TTMP(new DirectoryInfo(Properties.Settings.Default.ModPack_Directory));
             _messageInImport = messageInImport;
 
@@ -189,7 +189,6 @@ namespace FFXIV_TexTools.Views
         /// <param name="modPackJson">The mod pack json</param>
         private async Task ImportSimpleModPack(ModPackJson modPackJson)
         {
-            var modding = new Modding(_gameDirectory);
             Dispatcher.Invoke(() =>
             {
                 // This does not need to be an async task set.
@@ -203,14 +202,14 @@ namespace FFXIV_TexTools.Views
                         // Manually add the modpack entry that this mod is a part of
                         jsonItem.ModPackEntry = new ModPack
                         {
-                            name = modPackJson.Name,
-                            author = modPackJson.Author,
-                            version = modPackJson.Version
+                            Name = modPackJson.Name,
+                            Author = modPackJson.Author,
+                            Version = modPackJson.Version
                         };
                     }
 
-                    JsonEntries.Add(jsonItem);
-                    Entries.Add(new SimpleModpackEntry(JsonEntries.Count - 1, this));
+                    JsonEntries.Add(jsonItem.FullPath, jsonItem);
+                    Entries.Add(new SimpleModpackEntry(jsonItem.FullPath, this));
                 }
 
                 if (!String.IsNullOrEmpty(modPackJson.MinimumFrameworkVersion))
@@ -240,10 +239,10 @@ namespace FFXIV_TexTools.Views
 
                 SelectedEntries.Clear();
                 long size = 0;
-                for (int i = 0; i < JsonEntries.Count; i++)
+                foreach(var entry in JsonEntries)
                 {
-                    SelectedEntries.Add(i);
-                    size += JsonEntries[i].ModSize;
+                    SelectedEntries.Add(entry.Value.FullPath);
+                    size += JsonEntries[entry.Value.FullPath].ModSize;
                 }
                 ModListView.SelectAll();
                 ModSize = size;
@@ -288,13 +287,13 @@ namespace FFXIV_TexTools.Views
                         ModSize = modsJson.ModSize,
                         ModPackEntry = new ModPack
                         {
-                            name = Path.GetFileNameWithoutExtension(_modPackDirectory.FullName),
-                            author = "N/A",
-                            version = "1.0.0"
+                            Name = Path.GetFileNameWithoutExtension(_modPackDirectory.FullName),
+                            Author = "N/A",
+                            Version = "1.0.0"
                         }
                     };
-                    JsonEntries.Add(jsonEntry);
-                    Entries.Add(new SimpleModpackEntry(JsonEntries.Count - 1, this));
+                    JsonEntries.Add(jsonEntry.FullPath, jsonEntry);
+                    Entries.Add(new SimpleModpackEntry(jsonEntry.FullPath, this));
 
                 }
 
@@ -307,10 +306,10 @@ namespace FFXIV_TexTools.Views
                 cv.SortDescriptions.Add(new SortDescription(nameof(SimpleModpackEntry.ItemName), _lastDirection));
 
                 long size = 0;
-                for (int i = 0; i < JsonEntries.Count; i++)
+                foreach (var entry in JsonEntries)
                 {
-                    SelectedEntries.Add(i);
-                    size += JsonEntries[i].ModSize;
+                    SelectedEntries.Add(entry.Value.FullPath);
+                    size += JsonEntries[entry.Value.FullPath].ModSize;
                 }
                 ModListView.SelectAll();
                 ModSize = size;
@@ -460,10 +459,10 @@ namespace FFXIV_TexTools.Views
         private void SelectAllButton_Click(object sender, RoutedEventArgs e)
         {
             long newSize = 0;
-            for (int i = 0; i < JsonEntries.Count; i++)
+            foreach (var entry in JsonEntries)
             {
-                SelectedEntries.Add(i);
-                newSize += JsonEntries[i].ModSize;
+                SelectedEntries.Add(entry.Value.FullPath);
+                newSize += JsonEntries[entry.Value.FullPath].ModSize;
             }
             foreach (var entry in Entries)
             {

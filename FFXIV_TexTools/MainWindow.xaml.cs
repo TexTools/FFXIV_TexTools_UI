@@ -346,7 +346,6 @@ namespace FFXIV_TexTools
 
                 InitializeCache();
             }
-            PenumbraAPI.Redraw();
         }
 
         private void TabsControl_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
@@ -419,8 +418,7 @@ namespace FFXIV_TexTools
             {
                 // If the user had no cache, and no modlist, they're a new install (or close enough to one)
                 var gameDir = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
-                var modding = new Modding(gameDir);
-                var modList = await modding.GetModList();
+                var modList = await Modding.GetModList();
 
                 if(modList.Mods.Count == 0)
                 {
@@ -1174,8 +1172,7 @@ namespace FFXIV_TexTools
         /// </summary>
         private async void Menu_MakeBackupModpack_Click(object sender, RoutedEventArgs e)
         {
-            var _modding = new Modding(XivCache.GameInfo.GameDirectory);
-            var modList = await _modding.GetModList();
+            var modList = await Modding.GetModList();
             var backupCreator = new BackupModPackCreator(modList) { Owner = this };
             var result = backupCreator.ShowDialog();
 
@@ -1648,8 +1645,7 @@ namespace FFXIV_TexTools
                 // Run in new thread so UI doesn't lock.
                 await Task.Run(async () =>
                 {
-                    var modding = new Modding(XivCache.GameInfo.GameDirectory);
-                    await modding.CleanUpModlist(reporter);
+                    await Modding.CleanUpModlist(reporter);
                 });
                 FlexibleMessageBox.Show("The Modlist was cleaned up successfully.".L(), "Cleanup Complete".L(), MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
@@ -1688,8 +1684,7 @@ namespace FFXIV_TexTools
                 // Run in new thread so UI doesn't lock.
                 await Task.Run(async () =>
                 {
-                    var modding = new Modding(XivCache.GameInfo.GameDirectory);
-                    savedBytes = await modding.DefragmentModdedDats(reporter);
+                    savedBytes = await Modding.DefragmentModdedDats(reporter);
                 });
 
                 var savedSpace = FormatBytes(savedBytes);

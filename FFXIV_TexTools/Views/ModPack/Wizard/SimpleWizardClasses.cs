@@ -263,11 +263,11 @@ namespace FFXIV_TexTools.Views.Wizard
             data.OptionPages = new List<WizardOptionsPage>();
             data.ModpackType = EModpackType.Pmp;
 
-            var mp = new ModPack();
-            mp.author = data.MetaPage.Author;
-            mp.version = data.MetaPage.Version;
-            mp.name = data.MetaPage.Name;
-            mp.url = data.MetaPage.Url;
+            var mp = new ModPack(null);
+            mp.Author = data.MetaPage.Author;
+            mp.Version = data.MetaPage.Version;
+            mp.Name = data.MetaPage.Name;
+            mp.Url = data.MetaPage.Url;
             data.ModPack = mp;
             data.RawSource = pmp;
 
@@ -302,11 +302,11 @@ namespace FFXIV_TexTools.Views.Wizard
             data.ModpackType = EModpackType.TtmpWizard;
             data.MetaPage = WizardMetaPage.FromWizardModpack(ttmp, unzipPath);
 
-            var mp = new ModPack();
-            mp.author = data.MetaPage.Author;
-            mp.version = data.MetaPage.Version;
-            mp.name = data.MetaPage.Name;
-            mp.url = data.MetaPage.Url;
+            var mp = new ModPack(null);
+            mp.Author = data.MetaPage.Author;
+            mp.Version = data.MetaPage.Version;
+            mp.Name = data.MetaPage.Name;
+            mp.Url = data.MetaPage.Url;
             data.ModPack = mp;
             data.RawSource = ttmp;
 

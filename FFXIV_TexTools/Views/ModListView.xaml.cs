@@ -32,6 +32,7 @@ using MahApps.Metro.Controls.Dialogs;
 using xivModdingFramework.Mods;
 using ListBox = System.Windows.Controls.ListBox;
 using System.Threading.Tasks;
+using xivModdingFramework.Mods.Enums;
 
 namespace FFXIV_TexTools.Views
 {
@@ -121,13 +122,16 @@ namespace FFXIV_TexTools.Views
         /// <summary>
         /// Event handler for listbox selection changed
         /// </summary>
-        private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var listbox = sender as ListBox;
 
             if (listbox.SelectedItem is ModListViewModel.ModListModel selectedModItem)
             {
-                (DataContext as ModListViewModel).ModToggleText = selectedModItem.ModItem.enabled ? FFXIV_TexTools.Resources.UIStrings.Disable : FFXIV_TexTools.Resources.UIStrings.Enable;
+                var tx = MainWindow.DefaultTransaction;
+                var enabled = await selectedModItem.ModItem.GetState(tx) == EModState.Enabled;
+
+                (DataContext as ModListViewModel).ModToggleText = enabled ? FFXIV_TexTools.Resources.UIStrings.Disable : FFXIV_TexTools.Resources.UIStrings.Enable;
 
                 modToggleButton.IsEnabled = true;
                 modDeleteButton.IsEnabled = true;
@@ -141,9 +145,9 @@ namespace FFXIV_TexTools.Views
         private async void modToggleButton_Click(object sender, RoutedEventArgs e)
         {
             var gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
-            var modding = new Modding(gameDirectory);
 
             await LockUi("Changing Mod Status".L(), "Please wait...".L(), this);
+            var tx = MainWindow.DefaultTransaction;
             try
             {
                 if ((ModListTreeView.SelectedItem as Category).ParentCategory.Name.Equals("ModPacks"))
@@ -154,7 +158,7 @@ namespace FFXIV_TexTools.Views
                     {
                         try
                         {
-                            await modding.ToggleModPackStatus(selectedItem.Name, true);
+                            await Modding.ToggleModPackStatus(selectedItem.Name, true);
                             (DataContext as ModListViewModel).ModToggleText = FFXIV_TexTools.Resources.UIStrings.Disable;
                         }
                         catch (Exception ex)
@@ -166,7 +170,7 @@ namespace FFXIV_TexTools.Views
                     {
                         try
                         {
-                            await modding.ToggleModPackStatus(selectedItem.Name, false);
+                            await Modding.ToggleModPackStatus(selectedItem.Name, false);
                             (DataContext as ModListViewModel).ModToggleText = FFXIV_TexTools.Resources.UIStrings.Enable;
                         }
                         catch (Exception ex)
@@ -182,13 +186,13 @@ namespace FFXIV_TexTools.Views
                     var items = ModItemList.SelectedItems;
                     foreach (ModListViewModel.ModListModel selectedModItem in items)
                     {
-                        if (selectedModItem.ModItem.enabled)
+                        if (await selectedModItem.ModItem.GetState(tx) == EModState.Enabled)
                         {
 
                             var success = false;
                             try
                             {
-                                success = await modding.ToggleModStatus(selectedModItem.ModItem.fullPath, false);
+                                success = await Modding.ToggleModStatus(selectedModItem.ModItem.FilePath, false);
                             }
                             catch (Exception ex)
                             {
@@ -200,7 +204,8 @@ namespace FFXIV_TexTools.Views
                                 selectedModItem.ActiveBorder = Brushes.Red;
                                 selectedModItem.Active = Brushes.Gray;
                                 selectedModItem.ActiveOpacity = 0.5f;
-                                selectedModItem.ModItem.enabled = false;
+                                var m = selectedModItem.ModItem;
+                                selectedModItem.ModItem = m;
                             }
                         }
                         else
@@ -208,7 +213,7 @@ namespace FFXIV_TexTools.Views
                             var success = false;
                             try
                             {
-                                success = await modding.ToggleModStatus(selectedModItem.ModItem.fullPath, true);
+                                success = await Modding.ToggleModStatus(selectedModItem.ModItem.FilePath, true);
                             }
                             catch (Exception ex)
                             {
@@ -220,7 +225,8 @@ namespace FFXIV_TexTools.Views
                                 selectedModItem.ActiveBorder = Brushes.Green;
                                 selectedModItem.Active = Brushes.Transparent;
                                 selectedModItem.ActiveOpacity = 1;
-                                selectedModItem.ModItem.enabled = true;
+                                var m = selectedModItem.ModItem;
+                                selectedModItem.ModItem = m;
                             }
                         }
                     }
@@ -238,7 +244,6 @@ namespace FFXIV_TexTools.Views
         private async void modDeleteButton_Click(object sender, RoutedEventArgs e)
         {
             var gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
-            var modding = new Modding(gameDirectory);
 
             await LockUi("Deleting Mod".L(), "Please wait...".L(), this);
             try
@@ -250,7 +255,7 @@ namespace FFXIV_TexTools.Views
                             UIMessages.DeleteModPackTitle,
                             MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == System.Windows.Forms.DialogResult.Yes)
                     {
-                        await modding.DeleteModPack((ModListTreeView.SelectedItem as Category).Name);
+                        await Modding.DeleteModPack((ModListTreeView.SelectedItem as Category).Name);
                         (DataContext as ModListViewModel).RemoveModPack();
                     }
 
@@ -262,7 +267,7 @@ namespace FFXIV_TexTools.Views
 
                     foreach (var selectedModItem in selectedItems)
                     {
-                        await modding.DeleteMod(selectedModItem.ModItem.fullPath);
+                        await Modding.DeleteMod(selectedModItem.ModItem.FilePath);
                         await (DataContext as ModListViewModel).RemoveItem(selectedModItem, (Category)ModListTreeView.SelectedItem);
                     }
                 }

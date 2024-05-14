@@ -23,6 +23,7 @@ using xivModdingFramework.Items.Enums;
 using xivModdingFramework.Items.Interfaces;
 using xivModdingFramework.Models.FileTypes;
 using xivModdingFramework.Mods;
+using xivModdingFramework.Mods.Enums;
 using UserControl = System.Windows.Controls.UserControl;
 
 namespace FFXIV_TexTools.Views.Metadata
@@ -143,7 +144,6 @@ namespace FFXIV_TexTools.Views.Metadata
                 var items = await _root.GetAllItems();
                 ItemNameBox.Text = "[" + items.Count + "] " + items[0].Name;
 
-                var _modding = new Modding(XivCache.GameInfo.GameDirectory);
                 var path = _root.Info.GetRootFile();
                 var mod = await MainWindow.DefaultTransaction.GetMod(path);
 
@@ -154,15 +154,21 @@ namespace FFXIV_TexTools.Views.Metadata
                 }
                 else
                 {
-                    ToggleButton.IsEnabled = true;
-                    if (mod.enabled)
+                    ToggleButton.IsEnabled = false;
+                    var _ = new Task(async () =>
                     {
-                        ToggleButton.Content = "Disable".L();
-                    }
-                    else
-                    {
-                        ToggleButton.Content = "Enable".L();
-                    }
+                        var tx = MainWindow.DefaultTransaction;
+                        var enabled = await mod.Value.GetState(tx) == EModState.Enabled;
+                        ToggleButton.IsEnabled = true;
+                        if (enabled)
+                        {
+                            ToggleButton.Content = "Disable".L();
+                        }
+                        else
+                        {
+                            ToggleButton.Content = "Enable".L();
+                        }
+                    });
                 }
                 return await _vm.SetRoot(_root, defaultVariant);
             }
@@ -271,12 +277,13 @@ namespace FFXIV_TexTools.Views.Metadata
 
         private async void ToggleButton_Click(object sender, RoutedEventArgs e)
         {
-            var _modding = new Modding(XivCache.GameInfo.GameDirectory);
             var path = _root.Info.GetRootFile();
-            var mod = await _modding.LEGACY_TryGetModEntry(path);
+            var tx = MainWindow.DefaultTransaction;
+            var mod = await tx.GetMod(path);
 
             if (mod == null) return;
-            var enabled = mod.enabled;
+
+            var enabled = await mod.Value.GetState(tx) == EModState.Enabled;
 
             await MainWindow.GetMainWindow().LockUi("Updating Metadata".L());
 
@@ -284,12 +291,12 @@ namespace FFXIV_TexTools.Views.Metadata
             {
                 if (enabled)
                 {
-                    await _modding.ToggleModStatus(path, false);
+                    await Modding.ToggleModStatus(path, false);
                     ToggleButton.Content = "Enable".L();
                 }
                 else
                 {
-                    await _modding.ToggleModStatus(path, true);
+                    await Modding.ToggleModStatus(path, true);
                     ToggleButton.Content = "Disable".L();
                 }
             }

@@ -302,12 +302,7 @@ namespace FFXIV_TexTools.Views
         }
         private async Task CreateAdvanced()
         {
-            var tx = MainWindow.UserTransaction;
-            if(tx == null)
-            {
-                // Readonly TX if we don't have one.
-                tx = ModTransaction.BeginTransaction(true);
-            }
+            var tx = MainWindow.DefaultTransaction;
 
             string modPackPath = Path.Combine(Properties.Settings.Default.ModPack_Directory, $"{ViewModel.Name}.ttmp2");
 
@@ -326,8 +321,7 @@ namespace FFXIV_TexTools.Views
             {
                 TTMP texToolsModPack = new TTMP(new DirectoryInfo(Settings.Default.ModPack_Directory));
                 var dat = new Dat(XivCache.GameInfo.GameDirectory);
-                var modding = new Modding(XivCache.GameInfo.GameDirectory);
-                var ModList = await modding.GetModList();
+                var ModList = await Modding.GetModList();
 
                 var wizardData = new ModPackData()
                 {
@@ -346,7 +340,6 @@ namespace FFXIV_TexTools.Views
                 };
 
                 wizardData.ModPackPages.Add(page);
-
 
                 foreach (var e in ViewModel.Entries)
                 {
@@ -383,15 +376,14 @@ namespace FFXIV_TexTools.Views
                             await ItemMetadata.SaveMetadata(meta, XivStrings.TexTools);
                         }
 
-                        ModList.ModDictionary.TryGetValue(file, out var modEntry);
-                        var modded = modEntry != null && modEntry.enabled == true;
+                        var isDef = await Modding.GetModState(file) == xivModdingFramework.Mods.Enums.EModState.UnModded;
 
                         var fData = new ModData
                         {
                             Name = e.Item.Name,
                             Category = e.Item.SecondaryCategory,
                             FullPath = file,
-                            IsDefault = !modded,
+                            IsDefault = isDef,
                             ModDataBytes = await tx.ReadFile(file, false, true)
                         };
                         option.Mods.Add(file, fData);
@@ -435,8 +427,7 @@ namespace FFXIV_TexTools.Views
 
             TTMP texToolsModPack = new TTMP(new DirectoryInfo(Settings.Default.ModPack_Directory));
             var dat = new Dat(XivCache.GameInfo.GameDirectory);
-            var modding = new Modding(XivCache.GameInfo.GameDirectory);
-            var ModList = await modding.GetModList();
+            var ModList = await Modding.GetModList();
 
             SimpleModPackData simpleModPackData = new SimpleModPackData
             {
@@ -465,8 +456,10 @@ namespace FFXIV_TexTools.Views
                     var offset = await tx.Get8xDataOffset(file);
                     var compressedSize = await tx.GetCompressedFileSize(file);
                     var dataFile = IOUtil.GetDataFileFromPath(file);
-                    ModList.ModDictionary.TryGetValue(file, out var modEntry);
-                    var modded = modEntry != null && modEntry.enabled == true;
+                    ModList.Mods.TryGetValue(file, out var modEntry);
+
+
+                    var isDef = await Modding.GetModState(file) == xivModdingFramework.Mods.Enums.EModState.UnModded;
 
 
                     SimpleModData simpleData = new SimpleModData
@@ -476,7 +469,7 @@ namespace FFXIV_TexTools.Views
                         FullPath = file,
                         ModOffset = offset,
                         ModSize = compressedSize,
-                        IsDefault = !modded,
+                        IsDefault = isDef,
                         DatFile = dataFile.GetDataFileName()
                     };
 

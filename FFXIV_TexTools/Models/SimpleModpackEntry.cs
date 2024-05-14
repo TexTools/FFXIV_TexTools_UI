@@ -44,20 +44,20 @@ namespace xivModdingFramework.Mods.DataContainers
         /// The raw index from whatever list we came from.
         /// For re-resolution/book keeeping.
         /// </summary>
-        private int _index;
+        private string _path;
 
-        private Mod _mod;
+        private Mod? _mod;
         private SimpleModPackCreator _creatorView;
         private SimpleModPackImporter _importerView;
 
-        public SimpleModpackEntry(int index, SimpleModPackCreator view)
+        public SimpleModpackEntry(string path, SimpleModPackCreator view)
         {
-            _index = index;
+            _path = path;
             _creatorView = view;
         }
-        public SimpleModpackEntry(int index, SimpleModPackImporter view)
+        public SimpleModpackEntry(string index, SimpleModPackImporter view)
         {
-            _index = index;
+            _path = index;
             _importerView = view;
         }
         public SimpleModpackEntry(Mod mod)
@@ -66,14 +66,14 @@ namespace xivModdingFramework.Mods.DataContainers
         }
 
 
-        public Mod Mod
+        public Mod? Mod
         {
             get
             {
-                if (_mod != null) return Mod;
+                if (_mod != null) return _mod;
 
                 if (_creatorView == null) return null;
-                return _creatorView.ModList.Mods[Index];
+                return _creatorView.ModList.GetMod(_path);
             }
         }
         public ModsJson Json
@@ -81,7 +81,7 @@ namespace xivModdingFramework.Mods.DataContainers
             get
             {
                 if (_importerView == null) return null;
-                return _importerView.JsonEntries[Index];
+                return _importerView.JsonEntries[Path];
             }
         }
 
@@ -103,10 +103,10 @@ namespace xivModdingFramework.Mods.DataContainers
             get {
                 if (_creatorView != null)
                 {
-                    return _creatorView.SelectedMods.Contains(Index);
+                    return _creatorView.SelectedMods.Contains(Path);
                 } else
                 {
-                    return _importerView.SelectedEntries.Contains(Index);
+                    return _importerView.SelectedEntries.Contains(Path);
                 }
             }
             set
@@ -115,17 +115,17 @@ namespace xivModdingFramework.Mods.DataContainers
                 {
                     if (value)
                     {
-                        var result = _creatorView.SelectedMods.Add(Index);
+                        var result = _creatorView.SelectedMods.Add(Path);
                         if (result)
                         {
-                            _creatorView.ModpackSize += Mod.data.modSize;
+                            _creatorView.ModpackSize += Mod.Value.FileSize;
                         }
                     } else
                     {
-                        var result = _creatorView.SelectedMods.Remove(Index);
+                        var result = _creatorView.SelectedMods.Remove(Path);
                         if (result)
                         {
-                            _creatorView.ModpackSize -= Mod.data.modSize;
+                            _creatorView.ModpackSize -= Mod.Value.FileSize;
                         }
                     }
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsSelected)));
@@ -134,7 +134,7 @@ namespace xivModdingFramework.Mods.DataContainers
                 {
                     if (value)
                     {
-                        var result = _importerView.SelectedEntries.Add(Index);
+                        var result = _importerView.SelectedEntries.Add(Path);
                         if (result)
                         {
                             _importerView.ModSize += Json.ModSize;
@@ -142,7 +142,7 @@ namespace xivModdingFramework.Mods.DataContainers
                     }
                     else
                     {
-                        var result = _importerView.SelectedEntries.Remove(Index);
+                        var result = _importerView.SelectedEntries.Remove(Path);
                         if (result)
                         {
                             _importerView.ModSize -= Json.ModSize;
@@ -159,13 +159,13 @@ namespace xivModdingFramework.Mods.DataContainers
         public string ItemName { get
             {
                 var name = "";
-                if (Mod == null)
+                if (Mod == null || !Mod.Value.Valid)
                 {
                     name = Json.Name;
                 }
                 else
                 {
-                    name = Mod.name;
+                    name = Mod?.ItemName;
                 }
 
                 return GetFancyName(name, FileName);
@@ -178,7 +178,7 @@ namespace xivModdingFramework.Mods.DataContainers
             {
                 try
                 {
-                    return Path.GetExtension(FilePath).Substring(1);
+                    return System.IO.Path.GetExtension(FilePath).Substring(1);
                 }
                 catch
                 {
@@ -220,7 +220,7 @@ namespace xivModdingFramework.Mods.DataContainers
                 }
                 else
                 {
-                    return Mod.fullPath;
+                    return Mod?.FilePath;
                 }
             }
         }
@@ -232,7 +232,7 @@ namespace xivModdingFramework.Mods.DataContainers
         {
             get
             {
-                return Path.GetFileName(FilePath);
+                return System.IO.Path.GetFileName(FilePath);
             }
         }
 
@@ -307,9 +307,20 @@ namespace xivModdingFramework.Mods.DataContainers
         private bool? _isActive;
 
 
-        private async Task<XivModStatus> GetModStatus()
+        private async Task<EModState> GetModStatus()
         {
-            return await _importerView._modding.IsModEnabled(Json.FullPath, false);
+            if(Json != null)
+            {
+                var tx = _creatorView == null ? _importerView.Transaction : _creatorView.Transaction;
+                return await Modding.GetModState(Json.FullPath, tx);
+            } else if (Mod != null)
+            {
+                var tx = _creatorView == null ? _importerView.Transaction : _creatorView.Transaction;
+                return await Modding.GetModState(Mod.Value.FilePath, tx);
+            } else
+            {
+                return EModState.UnModded;
+            }
         }
 
         public string ActiveText
@@ -327,23 +338,17 @@ namespace xivModdingFramework.Mods.DataContainers
         {
             get
             {
-                if (Mod == null)
+                if (_isActive == null)
                 {
-                    if (_isActive == null)
-                    {
-                        var task = Task.Run(GetModStatus);
-                        task.Wait();
-                        var status = task.Result;
-                        _isActive = status == Enums.XivModStatus.Enabled ? true : false;
-                        return (bool)_isActive;
-                    } else
-                    {
-                        return (bool)_isActive;
-                    }
-                }
-                else
+                    var tx = _creatorView == null ? _importerView.Transaction : _creatorView.Transaction;
+                    var task = Task.Run(GetModStatus);
+                    task.Wait();
+                    var status = task.Result;
+                    _isActive = status == Enums.EModState.Enabled ? true : false;
+                    return (bool)_isActive;
+                } else
                 {
-                    return Mod.enabled;
+                    return (bool)_isActive;
                 }
             }
         }
@@ -364,10 +369,10 @@ namespace xivModdingFramework.Mods.DataContainers
         /// <summary>
         /// The actual raw index to the modlist entry.
         /// </summary>
-        public int Index
+        public string Path
         {
             get {
-                return _index;
+                return _path;
             }
         }
 
@@ -411,7 +416,7 @@ namespace xivModdingFramework.Mods.DataContainers
                 name += " - " + id;
 
 
-                var suffix = Path.GetExtension(internalPath);
+                var suffix = System.IO.Path.GetExtension(internalPath);
                 if (string.IsNullOrEmpty(suffix))
                 {
                     suffix = "Unknown";
@@ -469,7 +474,7 @@ namespace xivModdingFramework.Mods.DataContainers
         /// <returns>The type</returns>
         public static string GetType(string modPath)
         {
-            var exRaw = Path.GetExtension(modPath);
+            var exRaw = System.IO.Path.GetExtension(modPath);
             if(string.IsNullOrEmpty(exRaw))
             {
                 return "Unknown".L();

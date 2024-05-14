@@ -69,12 +69,12 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         /// <param name="selectedModpack"></param>
         /// <param name="modsInModpack"></param>
-        public void UpdateDescription(ModPack selectedModpack, List<Mod> modsInModpack)
+        public void UpdateDescription(ModPack? selectedModpack, List<Mod> modsInModpack)
         {
-            DescriptionModpackName = selectedModpack?.name ?? UIStrings.Standalone_Non_ModPack;
-            DescriptionModpackAuthor = selectedModpack?.author ?? "N/A";
-            DescriptionModpackVersion = selectedModpack?.version ?? "N/A";
-            DescriptionModpackUrl = selectedModpack?.url ?? "";
+            DescriptionModpackName = selectedModpack?.Name ?? UIStrings.Standalone_Non_ModPack;
+            DescriptionModpackAuthor = selectedModpack?.Author ?? "N/A";
+            DescriptionModpackVersion = selectedModpack?.Version ?? "N/A";
+            DescriptionModpackUrl = selectedModpack?.Url ?? "";
             DescriptionModpackContent = string.Empty;
 
             Task.Run(() =>
@@ -85,13 +85,13 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     if (mod.IsInternal()) continue;
 
-                    if (!modNameDict.ContainsKey(mod.name))
+                    if (!modNameDict.ContainsKey(mod.ItemName))
                     {
-                        modNameDict.Add(mod.name, 1);
+                        modNameDict.Add(mod.ItemName, 1);
                     }
                     else
                     {
-                        modNameDict[mod.name] += 1;
+                        modNameDict[mod.ItemName] += 1;
                     }
                 }
 
