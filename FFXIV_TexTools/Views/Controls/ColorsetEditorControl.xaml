@@ -251,6 +251,7 @@
                 <hx:DirectionalLight3D IsRendering="True" Direction="-1, 0, 0" Color="White" />
                 <hx:GroupModel3D ItemsSource="{Binding Models}"/>
             </hx:Viewport3DX>
+            <Canvas Grid.Row="2" Name="AlternateViewportCanvas" Visibility="Hidden" IsHitTestVisible="False"/>
         </Grid>
 
     </Grid>

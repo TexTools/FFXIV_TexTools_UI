@@ -46,9 +46,14 @@ namespace FFXIV_TexTools.Views.Models
 
         public static FullModelView Instance => lazy.Value;
 
+        private Helpers.ViewportCanvasRenderer canvasRenderer = null;
+
         private FullModelView()
         {
             InitializeComponent();
+
+            if (Configuration.EnvironmentConfiguration.TT_Unshared_Rendering)
+                canvasRenderer = new Helpers.ViewportCanvasRenderer(viewport3DX, AlternateViewportCanvas);
 
             _gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
             _fmvm = new FullModelViewModel(this);
