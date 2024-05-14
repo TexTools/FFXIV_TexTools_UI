@@ -45,7 +45,6 @@ using FFXIV_TexTools.Views;
 using xivModdingFramework.Mods.DataContainers;
 using xivModdingFramework.SqPack.DataContainers;
 
-using Index = xivModdingFramework.SqPack.FileTypes.Index;
 using System.Drawing.Imaging;
 
 namespace FFXIV_TexTools.ViewModels

@@ -24,6 +24,7 @@ using xivModdingFramework.Items.Interfaces;
 using xivModdingFramework.Models.FileTypes;
 using xivModdingFramework.Mods;
 using xivModdingFramework.Mods.Enums;
+using xivModdingFramework.Variants.FileTypes;
 using UserControl = System.Windows.Controls.UserControl;
 
 namespace FFXIV_TexTools.Views.Metadata
@@ -94,16 +95,14 @@ namespace FFXIV_TexTools.Views.Metadata
         public async Task<bool> SetItem(IItem item)
         {
             var defaultVariant = 0;
-            try
+            var im = item as IItemModel;
+            if(im == null || !Imc.UsesImc(im))
             {
-                var im = (IItemModel)item;
-                if (im != null && im.ModelInfo != null)
-                {
-                    defaultVariant = im.ModelInfo.ImcSubsetID >= 0 ? im.ModelInfo.ImcSubsetID : 0;
-                }
-            } catch
+                //No-Op
+            }
+            else if(im.ModelInfo != null)
             {
-                // No-op
+                defaultVariant = im.ModelInfo.ImcSubsetID >= 0 ? im.ModelInfo.ImcSubsetID : 0;
             }
 
             return await SetRoot(item.GetRoot(), defaultVariant);

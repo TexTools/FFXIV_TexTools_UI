@@ -61,11 +61,9 @@ namespace FFXIV_TexTools.ViewModels
             }
             _item = item;
             _tree.Items.Clear();
-            IItemModel im = null;
-            try
-            {
-                im = (IItemModel)item;
-            } catch(Exception ex)
+            IItemModel im = item as IItemModel;
+
+            if (im == null || !Imc.UsesImc(im))
             {
                 return false;
             }

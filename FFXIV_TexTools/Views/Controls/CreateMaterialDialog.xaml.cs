@@ -14,7 +14,6 @@ using System.Threading.Tasks;
 using xivModdingFramework.Helpers;
 using System.Text.RegularExpressions;
 using xivModdingFramework.SqPack.FileTypes;
-using Index = xivModdingFramework.SqPack.FileTypes.Index;
 using xivModdingFramework.Cache;
 using AutoUpdaterDotNET;
 

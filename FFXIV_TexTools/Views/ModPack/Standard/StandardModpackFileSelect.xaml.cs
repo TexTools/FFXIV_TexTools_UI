@@ -21,7 +21,6 @@ using xivModdingFramework.Items.Interfaces;
 using xivModdingFramework.SqPack.FileTypes;
 using xivModdingFramework.Variants.FileTypes;
 
-using Index = xivModdingFramework.SqPack.FileTypes.Index;
 
 namespace FFXIV_TexTools.Views
 {

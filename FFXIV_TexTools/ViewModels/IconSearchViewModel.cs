@@ -122,8 +122,6 @@ namespace FFXIV_TexTools.ViewModels
 
             if (iconInt > -1)
             {
-                var index = new Index(new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory));
-
                 var iconFileString = $"{IconText.PadLeft(6, '0')}.tex";
                 var iconFolderInt = (iconInt / 1000) * 1000;
                 var iconFolderString = $"ui/icon/{iconFolderInt.ToString().PadLeft(6, '0')}";

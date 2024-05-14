@@ -41,8 +41,6 @@ using xivModdingFramework.Models.ModelTextures;
 using xivModdingFramework.SqPack.FileTypes;
 using xivModdingFramework.Variants.FileTypes;
 
-using Index = xivModdingFramework.SqPack.FileTypes.Index;
-
 namespace FFXIV_TexTools.ViewModels
 {
     public class FullModelViewModel : INotifyPropertyChanged
@@ -698,7 +696,6 @@ namespace FFXIV_TexTools.ViewModels
         {
             var _imc = new Imc(_gameDirectory);
             var _mtrl = new Mtrl(_gameDirectory);
-            var _index = new Index(_gameDirectory);
 
             // Determine which materials in the model need to be replaced
             var bodyMaterialIndex = GetBodyTextureIndex(ttModel);
@@ -781,9 +778,7 @@ namespace FFXIV_TexTools.ViewModels
         /// <param name="materialDictionary">The dictionary of materials for the current model</param>
         private async Task UpdateTailTextures(TTModel ttModel, Dictionary<int, ModelTextureData> materialDictionary)
         {
-            var _imc = new Imc(_gameDirectory);
             var _mtrl = new Mtrl(_gameDirectory);
-            var _index = new Index(_gameDirectory);
 
             // Determine which materials in the model need to be replaced
             var currTailNum = GetTailNum(ttModel);
@@ -843,7 +838,6 @@ namespace FFXIV_TexTools.ViewModels
             if (ttModel != null)
             {
                 var _mtrl = new Mtrl(_gameDirectory);
-                var _index = new Index(_gameDirectory);
 
                 var faceRegex = new Regex("(f[0-9]{4})");
                 var facePartRegex = new Regex("(_[a-z]{3}_)");

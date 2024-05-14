@@ -519,19 +519,28 @@ namespace FFXIV_TexTools.ViewModels
             // Update the cache's game info object.
             DirectoryInfo luminaDir = null;
             var useLumina = Settings.Default.Lumina_IsEnabled;
-            try
+            if (string.IsNullOrWhiteSpace(Settings.Default.Lumina_Directory))
             {
-                // We don't need to revalidate the cache here, as the the Lumina Settings/Operations don't actually interact with the cache itself at all.
-                luminaDir = new DirectoryInfo(Settings.Default.Lumina_Directory);
-                XivCache.SetGameInfo(gi.GameDirectory, gi.GameLanguage, gi.DxMode, false, true, luminaDir, Settings.Default.Lumina_IsEnabled);
-            } catch(Exception ex)
-            {
-                if (!String.IsNullOrWhiteSpace(Properties.Settings.Default.Lumina_Directory) && Properties.Settings.Default.Lumina_IsEnabled == true)
-                {
-                    Helpers.FlexibleMessageBox.Show("Unable to save Lumina settings, invalid Lumina directory.".L());
-                }
                 Settings.Default.Lumina_IsEnabled = false;
                 XivCache.SetGameInfo(gi.GameDirectory, gi.GameLanguage, gi.DxMode, false, true, null, false);
+            }
+            else
+            {
+                try
+                {
+                    // We don't need to revalidate the cache here, as the the Lumina Settings/Operations don't actually interact with the cache itself at all.
+                    luminaDir = new DirectoryInfo(Settings.Default.Lumina_Directory);
+                    XivCache.SetGameInfo(gi.GameDirectory, gi.GameLanguage, gi.DxMode, false, true, luminaDir, Settings.Default.Lumina_IsEnabled);
+                }
+                catch (Exception ex)
+                {
+                    if (Properties.Settings.Default.Lumina_IsEnabled == true)
+                    {
+                        Helpers.FlexibleMessageBox.Show("Unable to save Lumina settings, invalid Lumina directory.".L());
+                    }
+                    Settings.Default.Lumina_IsEnabled = false;
+                    XivCache.SetGameInfo(gi.GameDirectory, gi.GameLanguage, gi.DxMode, false, true, null, false);
+                }
             }
 
         }

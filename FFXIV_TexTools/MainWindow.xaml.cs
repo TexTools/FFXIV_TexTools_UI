@@ -454,20 +454,29 @@ namespace FFXIV_TexTools
 
                     DirectoryInfo luminaDir = null;
                     bool useLumina = false;
-                    try
-                    {
-                        new DirectoryInfo(Properties.Settings.Default.Lumina_Directory);
-                        useLumina = Properties.Settings.Default.Lumina_IsEnabled;
-                    }
-                    catch (Exception ex)
-                    {
-                        if (!String.IsNullOrWhiteSpace(Properties.Settings.Default.Lumina_Directory)  && Properties.Settings.Default.Lumina_IsEnabled == true)
-                        {
-                            System.Windows.MessageBox.Show("Unable to restore Lumina settings, directory was invalid.".L(), "Lumina Directory Error.".L());
-                        }
 
+                    if (String.IsNullOrWhiteSpace(Settings.Default.Lumina_Directory))
+                    {
                         luminaDir = null;
                         useLumina = false;
+                    }
+                    else
+                    {
+                        try
+                        {
+                            new DirectoryInfo(Properties.Settings.Default.Lumina_Directory);
+                            useLumina = Properties.Settings.Default.Lumina_IsEnabled;
+                        }
+                        catch (Exception ex)
+                        {
+                            if (Settings.Default.Lumina_IsEnabled == true)
+                            {
+                                System.Windows.MessageBox.Show("Unable to restore Lumina settings, directory was invalid.".L(), "Lumina Directory Error.".L());
+                            }
+
+                            luminaDir = null;
+                            useLumina = false;
+                        }
                     }
 
                     XivCache.SetGameInfo(gameDir, lang, dxVersion, true, true, luminaDir, useLumina);
