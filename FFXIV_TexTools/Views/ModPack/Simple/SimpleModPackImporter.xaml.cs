@@ -342,7 +342,7 @@ namespace FFXIV_TexTools.Views
                 var importResults = await Task.Run(async () =>
                 {
                     return await TTMP.ImportModPackAsync(_modPackDirectory.FullName, importList, XivStrings.TexTools, progressIndicator, ModpackRootConvertWindow.GetRootConversions,
-                    Properties.Settings.Default.AutoMaterialFix, Properties.Settings.Default.FixPreDawntrailOnImport);
+                    Properties.Settings.Default.AutoMaterialFix, Properties.Settings.Default.FixPreDawntrailOnImport, MainWindow.UserTransaction);
                 });
 
                 TotalModsErrored = importResults.Imported.Count;

@@ -270,7 +270,7 @@ namespace FFXIV_TexTools.Views.Wizard
 
             var res = await TTMP.ImportModPackAsync(path, mods, XivStrings.TexTools,
             progress, ModpackRootConvertWindow.GetRootConversions,
-            Properties.Settings.Default.AutoMaterialFix, Properties.Settings.Default.FixPreDawntrailOnImport);
+            Properties.Settings.Default.AutoMaterialFix, Properties.Settings.Default.FixPreDawntrailOnImport, MainWindow.UserTransaction);
             return res;
         }
         private async Task<(List<string> Imported, List<string> NotImported, float Duration)> FinalizePmp(WizardData data, string path, IProgress<(int, int, string)> progress)

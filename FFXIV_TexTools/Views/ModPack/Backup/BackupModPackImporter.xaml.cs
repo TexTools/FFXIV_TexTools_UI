@@ -117,7 +117,7 @@ namespace FFXIV_TexTools.Views
 
                 var importResults = await Task.Run(async () =>
                 {
-                    return await TTMP.ImportModPackAsync(_modpackDirectory.FullName, importList, XivStrings.TexTools, progressIndicator, null, false, Properties.Settings.Default.FixPreDawntrailOnImport);
+                    return await TTMP.ImportModPackAsync(_modpackDirectory.FullName, importList, XivStrings.TexTools, progressIndicator, null, false, Properties.Settings.Default.FixPreDawntrailOnImport, MainWindow.UserTransaction);
                 });
 
                 TotalModsImported = importResults.Imported.Count;
