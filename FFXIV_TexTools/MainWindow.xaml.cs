@@ -1670,7 +1670,7 @@ namespace FFXIV_TexTools
                 // Run in new thread so UI doesn't lock.
                 await Task.Run(async () =>
                 {
-                    savedBytes = await Modding.DefragmentModdedDats(reporter);
+                    savedBytes = await Dat.DefragmentModdedDats(reporter);
                 });
 
                 var savedSpace = FormatBytes(savedBytes);

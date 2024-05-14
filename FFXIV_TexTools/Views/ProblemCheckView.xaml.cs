@@ -153,25 +153,7 @@ namespace FFXIV_TexTools.Views
 
                 try
                 {
-                    var result = await _problemChecker.CheckForEmptyDatFiles(file);
-
-                    if (result.Count > 0)
-                    {
-                        foreach (var datNum in result)
-                        {
-                            AddText($"\n\t{datNum} \t\u2716\t", "Red");
-                            AddText($"\nFixing...", "Black");
-
-                            var datPath = Dat.GetDatPath(file, datNum);
-                            File.Delete(datPath);
-
-                            AddText($"\t\u2714\n", "Green");
-                        }
-                    }
-                    else
-                    {
-                        AddText("\t\u2714\n", "Green");
-                    }
+                    await Dat.RemoveEmptyDats(file);
                 }
                 catch (Exception ex)
                 {
@@ -298,10 +280,10 @@ namespace FFXIV_TexTools.Views
                                 textsToAdd.Add(("\t\u2714", "Green"));
                             }
 
-                            var fileType = 0;
+                            uint fileType = 0;
                             try
                             {
-                                fileType = dat.GetFileType(mod.ModOffset8x, mod.DataFile);
+                                fileType = await tx.GetSqPackType(mod.DataFile, mod.ModOffset8x);
                             }
                             catch (Exception ex)
                             {
@@ -350,15 +332,10 @@ namespace FFXIV_TexTools.Views
                                         // Just test to see if we can get the data at all.
                                         if (extension == ".tex")
                                         {
-                                            var data = await dat.GetTexFromDat(mod.FilePath, false, tx);
-                                            uint size = (uint)data.TexData.Length;
+                                            var updated = await dat.UpdateType4UncompressedSize(mod.FilePath, mod.DataFile, mod.ModOffset8x, tx, XivStrings.TexTools);
 
-                                            var reportedSize = await dat.GetReportedType4UncompressedSize(mod.DataFile, mod.ModOffset8x);
-
-                                            if (size != reportedSize)
+                                            if (updated)
                                             {
-                                                await dat.UpdateType4UncompressedSize(mod.DataFile, mod.ModOffset8x, size);
-
                                                 err = true;
                                                 textsToAdd.Add(("\t\u2714\n", "Orange"));
                                                 textsToAdd.Add(($"\tMod had an incorrectly reported file size.  The reported size has been corrected.\n".L(), "Orange"));
@@ -637,7 +614,7 @@ namespace FFXIV_TexTools.Views
                 string datSize = gb.ToString("0.00") + " GB";
                 AddText($"\tPer-DAT File Size Limit: {datSize._()}\n".L(), textColor);
 
-                var totalModSize = await Modding.GetTotalModDataSize();
+                var totalModSize = await Dat.GetTotalModDataSize();
                 gb = ((double)datSizeLimit) / 1024D / 1024D / 1024D;
                 string modSize = gb.ToString("0.00") + " GB";
                 AddText($"\tSum Total Mod Files Size: {modSize._()}\n".L(), textColor);

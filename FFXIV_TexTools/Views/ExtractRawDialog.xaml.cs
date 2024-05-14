@@ -32,11 +32,7 @@ namespace FFXIV_TexTools.Views
             var _dat = new Dat(XivCache.GameInfo.GameDirectory);
             byte[] data = null;
 
-            var tx = MainWindow.UserTransaction;
-            if (tx == null)
-            {
-                tx = ModTransaction.BeginTransaction();
-            }
+            var tx = MainWindow.DefaultTransaction;
 
             if(!await tx.FileExists(path))
             {
@@ -79,10 +75,10 @@ namespace FFXIV_TexTools.Views
 
                 if (DecompressBox.IsChecked == true)
                 {
-                    data = await _dat.GetUncompressedData(path);
+                    data = await tx.ReadFile(path);
                 } else
                 {
-                    data = await _dat.GetCompressedData(path);
+                    data = await tx.ReadFile(path, false, true );
                 }
 
 
