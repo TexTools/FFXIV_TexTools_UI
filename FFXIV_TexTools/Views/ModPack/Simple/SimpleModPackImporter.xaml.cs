@@ -45,7 +45,6 @@ using xivModdingFramework.SqPack.FileTypes;
 using xivModdingFramework.Textures.Enums;
 
 using Path = System.IO.Path;
-using Index = xivModdingFramework.SqPack.FileTypes.Index;
 
 namespace FFXIV_TexTools.Views
 {
@@ -60,7 +59,7 @@ namespace FFXIV_TexTools.Views
         private ProgressDialogController _progressController;
         private readonly TTMP _texToolsModPack;
         private long _modSize;
-        private bool _messageInImport, _indexLockStatus;
+        private bool _messageInImport;
         private ModPackJson _packJson;
         private bool _silent = false;
 
@@ -86,10 +85,7 @@ namespace FFXIV_TexTools.Views
                 ModCountLabel.Content = SelectedEntries.Count;
                 ModSizeLabel.Content = byteFormatedString.ToString();
 
-                if (!_indexLockStatus)
-                {
-                    ImportModPackButton.IsEnabled = SelectedEntries.Count > 0;
-                }
+                ImportModPackButton.IsEnabled = SelectedEntries.Count > 0;
 
             }
         }
@@ -109,11 +105,6 @@ namespace FFXIV_TexTools.Views
             _gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
             _texToolsModPack = new TTMP(new DirectoryInfo(Properties.Settings.Default.ModPack_Directory));
             _messageInImport = messageInImport;
-
-            var index = new Index(_gameDirectory);
-
-            _indexLockStatus = index.IsIndexLocked(XivDataFile._0A_Exd);
-
 
             _packJson = modPackJson;
             _silent = silent;
@@ -170,11 +161,6 @@ namespace FFXIV_TexTools.Views
                 LockedStatusLabel.Foreground = Brushes.Red;
                 LockedStatusLabel.Content = string.Empty;
                 ModListView.IsEnabled = true;
-
-                if (_indexLockStatus)
-                {
-                    LockedStatusLabel.Content = UIStrings.Index_Locked;
-                }
 
                 if (_silent)
                 {

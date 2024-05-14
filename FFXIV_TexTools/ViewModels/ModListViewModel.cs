@@ -118,10 +118,11 @@ namespace FFXIV_TexTools.ViewModels
         private Task GetCategoriesItemFilter()
         {
             Categories = new ObservableCollection<Category>();
+            var tx = MainWindow.DefaultTransaction;
 
             return Task.Run(async () =>
             {
-                var modList = await Modding.GetModList();
+                var modList = await tx.GetModList();
 
                 if (modList == null) return;
 
@@ -244,9 +245,10 @@ namespace FFXIV_TexTools.ViewModels
         {
             Categories = new ObservableCollection<Category>();
 
+            var tx = MainWindow.DefaultTransaction;
             return Task.Run(async () =>
             {
-                var modList = await Modding.GetModList();
+                var modList = await tx.GetModList();
 
                 var modPackCatDict = new Dictionary<string, Category>();
 
@@ -583,11 +585,12 @@ namespace FFXIV_TexTools.ViewModels
 
             return Task.Run(async () =>
             {
+                var tx = MainWindow.DefaultTransaction;
                 var selectedItem = category.Item as XivGenericItemModel;
                 if (selectedItem == null) return;
 
                 var mtrl = new Mtrl(_gameDirectory);
-                var modList = await Modding.GetModList();
+                var modList = await tx.GetModList();
 
                 var modItems = new List<Mod>();
 
@@ -626,7 +629,6 @@ namespace FFXIV_TexTools.ViewModels
                 tex = new Tex(_gameDirectory);
 
                 var modNum = 0;
-                var tx = MainWindow.DefaultTransaction;
 
                 await Task.Run(async () =>
                 {
@@ -852,7 +854,7 @@ namespace FFXIV_TexTools.ViewModels
 
             var tx = MainWindow.DefaultTransaction;
 
-            var modList = await Modding.GetModList();
+            var modList = await tx.GetModList();
             List<Mod> modPackModList = null;
             var allMods = modList.GetMods();
             var allModpacks = modList.GetModPacks();
@@ -937,7 +939,8 @@ namespace FFXIV_TexTools.ViewModels
         public async Task RemoveItem(ModListModel item, Category category)
         {
 
-            var modList = await Modding.GetModList();
+            var tx = MainWindow.DefaultTransaction;
+            var modList = await tx.GetModList();
 
             var allMods = modList.GetMods();
             var remainingList = (from items in allMods

@@ -57,7 +57,6 @@ using Color = SharpDX.Color;
 using ColorConverter = System.Windows.Media.ColorConverter;
 using Timer = System.Timers.Timer;
 using WinColor = System.Windows.Media.Color;
-using Index = xivModdingFramework.SqPack.FileTypes.Index;
 
 namespace FFXIV_TexTools.ViewModels
 {
@@ -1613,7 +1612,6 @@ namespace FFXIV_TexTools.ViewModels
         public async void Import(object obj)
         {
             var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
-            var index = new Index(gameDirectory);
 
             var type = _item.GetPrimaryItemType();
             string submeshId = GetSubmeshId();

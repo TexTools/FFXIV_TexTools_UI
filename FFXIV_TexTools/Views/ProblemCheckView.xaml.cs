@@ -40,7 +40,6 @@ using System.Linq;
 using FFXIV_TexTools.ViewModels;
 using xivModdingFramework.SqPack.DataContainers;
 
-using Index = xivModdingFramework.SqPack.FileTypes.Index;
 using Application = System.Windows.Application;
 using xivModdingFramework.Mods.Enums;
 
@@ -83,8 +82,6 @@ namespace FFXIV_TexTools.Views
                 // A few of the constituent functions alter the DATs in the process of fixing known errors.
                 throw new Exception("Cannot run problem checker when DAT writing is disabled.");
             }
-
-            var index = new Index(_gameDirectory);
 
             IProgress<(int current, int total)> progress = new Progress<(int current, int total)>((update) =>
             {
@@ -196,9 +193,10 @@ namespace FFXIV_TexTools.Views
                 new DirectoryInfo(Path.Combine(_gameDirectory.Parent.Parent.FullName, XivStrings.ModlistFilePath));
             ModList modList;
 
+            var tx = MainWindow.DefaultTransaction;
             try
             {
-                modList = await Modding.GetModList();
+                modList = await tx.GetModList();
 
                 // Someone somehow had their entire modlist filled with 0's causing the deserialization to 
                 // just return null so this was added to still detect that as a corrupted modlist
@@ -234,7 +232,6 @@ namespace FFXIV_TexTools.Views
             }
 
             var dat = new Dat(_gameDirectory);
-            var _index = new Index(_gameDirectory);
 
 
             int resolvedErrors = 0;

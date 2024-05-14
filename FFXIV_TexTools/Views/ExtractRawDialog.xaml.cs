@@ -11,8 +11,6 @@ using xivModdingFramework.Models.FileTypes;
 using xivModdingFramework.Mods;
 using xivModdingFramework.SqPack.FileTypes;
 
-using Index = xivModdingFramework.SqPack.FileTypes.Index;
-
 namespace FFXIV_TexTools.Views
 {
     /// <summary>
@@ -32,7 +30,6 @@ namespace FFXIV_TexTools.Views
             var path = FromBox.Text;
             var ext = Path.GetExtension(path);
             var _dat = new Dat(XivCache.GameInfo.GameDirectory);
-            var _index = new Index(XivCache.GameInfo.GameDirectory);
             byte[] data = null;
 
             var tx = MainWindow.UserTransaction;

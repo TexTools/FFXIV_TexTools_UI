@@ -65,7 +65,6 @@ using xivModdingFramework.SqPack.FileTypes;
 using static xivModdingFramework.Cache.XivCache;
 
 using Application = System.Windows.Application;
-using Index = xivModdingFramework.SqPack.FileTypes.Index;
 
 namespace FFXIV_TexTools
 {
@@ -417,10 +416,9 @@ namespace FFXIV_TexTools
             if(reason == CacheRebuildReason.NoCache)
             {
                 // If the user had no cache, and no modlist, they're a new install (or close enough to one)
-                var gameDir = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
-                var modList = await Modding.GetModList();
+                var tx = MainWindow.DefaultTransaction;
 
-                if(modList.Mods.Count == 0)
+                if((await tx.GetModList()).Mods.Count == 0)
                 {
                     // New install prompt time after rebuild is done.
                     _NEW_INSTALL = true;
@@ -807,20 +805,6 @@ namespace FFXIV_TexTools
         private async void OnlyImport()
         {
             var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
-            var index = new Index(gameDirectory);
-
-            if (index.IsIndexLocked(XivDataFile._0A_Exd))
-            {
-                FlexibleMessageBox.Show(UIMessages.IndexLockedErrorMessage, UIMessages.IndexLockedErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            else
-            {
-                var modPackDirectory = new DirectoryInfo(Settings.Default.ModPack_Directory);
-
-                throw new NotImplementedException();
-                // TODO: Reimplement this.
-                //await ImportModpack();
-            }
 
             Application.Current.Shutdown();
         }
@@ -1172,8 +1156,9 @@ namespace FFXIV_TexTools
         /// </summary>
         private async void Menu_MakeBackupModpack_Click(object sender, RoutedEventArgs e)
         {
-            var modList = await Modding.GetModList();
-            var backupCreator = new BackupModPackCreator(modList) { Owner = this };
+            var tx = MainWindow.DefaultTransaction;
+            var ml = await tx.GetModList();
+            var backupCreator = new BackupModPackCreator(ml) { Owner = this };
             var result = backupCreator.ShowDialog();
 
             if (result == true)
@@ -1350,14 +1335,6 @@ namespace FFXIV_TexTools
 
             var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
 
-            var index = new Index(gameDirectory);
-
-            if (index.IsIndexLocked(XivDataFile._0A_Exd))
-            {
-                FlexibleMessageBox.Show(UIMessages.IndexLockedErrorMessage, UIMessages.IndexLockedErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                return;
-            }
 
             var result = FlexibleMessageBox.Show(UIMessages.StartOverMessage, UIMessages.StartOverTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Information);
 

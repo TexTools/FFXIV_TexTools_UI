@@ -52,7 +52,6 @@ namespace FFXIV_TexTools.ViewModels
 {
     public class MainViewModel : INotifyPropertyChanged
     {
-        private DirectoryInfo _gameDirectory;
         private readonly MainWindow _mainWindow;
 
         private ObservableCollection<Category> _categories = new ObservableCollection<Category>();
@@ -61,7 +60,6 @@ namespace FFXIV_TexTools.ViewModels
         private string _dxVersionText = $"DX: {Properties.Settings.Default.DX_Version}";
         private int _progressValue;
         private Visibility _progressBarVisible, _progressLabelVisible;
-        private Index _index;
         private ProgressDialogController _progressController;
         public System.Timers.Timer CacheTimer = new System.Timers.Timer(3000);
 
@@ -73,35 +71,13 @@ namespace FFXIV_TexTools.ViewModels
             // This is actually synchronous and can just be called immediately...
             SetDirectories();
 
-            _gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
-            _index = new Index(_gameDirectory);
             if (ProgressLabel == null)
             {
                 ProgressLabel = "";
             }
 
-            // And the rest of this can be pushed into a new thread.
-            var task = Task.Run(Initialize);
-
-            // Now we can wait on it.  But we have to thread-safety it.
-            task.Wait();
-
-            var exception = task.Exception;
-            if(exception != null)
-            {
-                throw exception;
-            }
-            var result = task.Result;
-            if (!result)
-            {
-                // We need to die NOW, and not risk any other functions possibly
-                // fucking with broken files.
-                Process.GetCurrentProcess().Kill();
-                return;
-            }
 
             CacheTimer.Elapsed += UpdateDependencyQueueCount;
-
         }
 
         public void UpdateDependencyQueueCount(object sender, System.Timers.ElapsedEventArgs e)
@@ -111,157 +87,6 @@ namespace FFXIV_TexTools.ViewModels
             {
                 _mainWindow.ShowStatusMessage($"Queue Length: {count._()}".L());
             }
-        }
-
-        /// <summary>
-        /// This function is called on a separate thread, *while* the main thread is blocked.
-        /// This means a few things.
-        ///   1.  You cannot access the view's UI elements (Thread safety error & uninitialized) 
-        ///   2.  You cannot use Dispatcher.Invoke (Deadlock)
-        ///   3.  You cannot spawn a new full-fledged windows form (Thread safety error) (Basic default popups are OK)
-        ///   4.  You cannot shut down the application (Thread safety error)
-        ///   
-        /// As such, the return value indicates if we want to gracefully shut down the application.
-        /// (True for success/continue, False for failure/graceful shutdown.)
-        /// 
-        /// Exceptions are checked and rethrown on the main thread.
-        /// 
-        /// This is really 100% only for things that can be safely checked and sanitized
-        /// without external code references or UI interaction beyond basic windows dialogs.
-        /// </summary>
-        /// <returns></returns>
-        public async Task<bool> Initialize()
-        {
-
-            var success =  await CheckIndexFiles();
-            if (!success)
-            {
-                return false;
-            }
-
-            try
-            {
-                await CheckGameDxVersion();
-            } catch
-            {
-                // Unable to determine version, skip it.
-            }
-
-            return true;
-
-        }
-
-        /// <summary>
-        /// Checks FFXIV's selected DirectX version and changes TexTools to the appropriate mode if it does not already match.
-        /// </summary>
-        /// <returns></returns>
-        private async Task CheckGameDxVersion()
-        {
-
-            var dir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) +
-                      "\\My Games\\FINAL FANTASY XIV - A Realm Reborn";
-
-            var DX11 = await Task.Run(() =>
-            {
-                var dx = false;
-
-                if (File.Exists($"{dir}\\FFXIV_BOOT.cfg"))
-                {
-                    var lines = File.ReadAllLines($"{dir}\\FFXIV_BOOT.cfg");
-
-                    foreach (var line in lines)
-                    {
-                        if (line.Contains("DX11Enabled"))
-                        {
-                            var val = line.Substring(line.Length - 1, 1);
-                            if (val.Equals("1"))
-                            {
-                                dx = true;
-                            }
-
-                            break;
-                        }
-                    }
-                }
-
-                return dx;
-            });
-
-            if (DX11)
-            {
-                if (Properties.Settings.Default.DX_Version != "11")
-                {
-                    // Set the User's DX Mode to 11 in TexTools to match 
-                    Properties.Settings.Default.DX_Version = "11";
-                    Properties.Settings.Default.Save();
-                    DXVersionText = "DX: 11";
-
-                    if(XivCache.Initialized)
-                    {
-                        var gi = XivCache.GameInfo;
-                        XivCache.SetGameInfo(gi.GameDirectory, gi.GameLanguage, 11, true, true, gi.LuminaDirectory, gi.UseLumina);
-                    }
-                }
-            }
-            else
-            {
-
-                if (Properties.Settings.Default.DX_Version != "9")
-                {
-                    // Set the User's DX Mode to 9 in TexTools to match 
-                    var gi = XivCache.GameInfo;
-                    Properties.Settings.Default.DX_Version = "9";
-                    Properties.Settings.Default.Save();
-                    DXVersionText = "DX: 9";
-                }
-
-                if (XivCache.Initialized)
-                {
-                    var gi = XivCache.GameInfo;
-                    XivCache.SetGameInfo(gi.GameDirectory, gi.GameLanguage, 9, true, true, gi.LuminaDirectory, gi.UseLumina);
-                }
-            }
-
-        }
-
-
-        private async Task<bool> CheckIndexFiles()
-        {
-            var xivDataFiles = new XivDataFile[] { XivDataFile._0A_Exd, XivDataFile._01_Bgcommon, XivDataFile._04_Chara, XivDataFile._06_Ui };
-            var problemChecker = new ProblemChecker(_gameDirectory);
-
-            try
-            {
-                foreach (var xivDataFile in xivDataFiles)
-                {
-                    var errorFound = await problemChecker.CheckIndexDatCounts(xivDataFile);
-
-                    if (errorFound)
-                    {
-                        await problemChecker.RepairIndexDatCounts(xivDataFile);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                var result = FlexibleMessageBox.Show("A critical error occurred when attempting to read the FFXIV index files.\n\nWould you like to restore your index backups?\n\nError: ".L() + ex.Message, "Critical Index Error".L(), MessageBoxButtons.YesNo, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
-                if (result == DialogResult.Yes)
-                {
-                    var indexBackupsDirectory = new DirectoryInfo(Settings.Default.Backup_Directory);
-                    var success = await problemChecker.RestoreBackups(indexBackupsDirectory);
-                    if(!success)
-                    {
-                        FlexibleMessageBox.Show("Unable to restore Index Backups, shutting down TexTools.".L(), "Critical Error Shutdown".L(), MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
-                        return false;
-                    }
-                }
-                else
-                {
-                    FlexibleMessageBox.Show("Shutting Down TexTools.".L(), "Critical Error Shutdown".L(),  MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
-                    return false;
-                }
-            }
-            return true;
         }
 
         /// <summary>
@@ -431,8 +256,6 @@ namespace FFXIV_TexTools.ViewModels
             try
             {
 
-                var _index = new Index(_gameDirectory);
-                var _dat = new Dat(_gameDirectory);
 
                 var validTypes = new List<int>() { 2, 3, 4 };
 
@@ -700,7 +523,7 @@ namespace FFXIV_TexTools.ViewModels
         private async Task BackupIndexFiles()
         {
             _mainWindow.LockProgress?.Report("Creating Index Backups...".L());
-            var pc = new ProblemChecker(_gameDirectory);
+            var pc = new ProblemChecker(XivCache.GameInfo.GameDirectory);
             DirectoryInfo backupDir;
             try
             {
@@ -837,13 +660,6 @@ namespace FFXIV_TexTools.ViewModels
         /// <param name="obj"></param>
         private async void EnableAllMods(object obj)
         {
-            if (_index.IsIndexLocked(XivDataFile._0A_Exd))
-            {
-                FlexibleMessageBox.Show(UIMessages.IndexLockedErrorMessage, UIMessages.IndexLockedErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                return;
-            }
-
             _progressController = await _mainWindow.ShowProgressAsync(UIMessages.EnablingModsTitle, UIMessages.PleaseWaitMessage);
             var progressIndicator = new Progress<(int current, int total, string message)>(ReportProgress);
 
@@ -877,13 +693,6 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         private async void DisableAllMods(object obj)
         {
-            if (_index.IsIndexLocked(XivDataFile._0A_Exd))
-            {
-                FlexibleMessageBox.Show(UIMessages.IndexLockedErrorMessage, UIMessages.IndexLockedErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                return;
-            }
-
             _progressController = await _mainWindow.ShowProgressAsync(UIMessages.DisablingModsTitle, UIMessages.PleaseWaitMessage);
             var progressIndicator = new Progress<(int current, int total, string message)>(ReportProgress);
 

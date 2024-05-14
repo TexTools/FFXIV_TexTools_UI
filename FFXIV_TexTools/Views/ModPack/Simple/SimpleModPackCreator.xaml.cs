@@ -198,10 +198,10 @@ namespace FFXIV_TexTools.Views
         {
             DirectoryInfo modListDirectory = new DirectoryInfo(Path.Combine(_gameDirectory.Parent.Parent.FullName, XivStrings.ModlistFilePath));
 
-            this.ModList = await Modding.GetModList();
+            var tx = MainWindow.DefaultTransaction;
+            this.ModList = await tx.GetModList();
 
             // Don't show or list internal mods at all in this menu.
-            var tx = MainWindow.DefaultTransaction;
             var allMods = ModList.GetMods(x => !x.IsInternal()).ToList();
 
             // Rip through the mod list and get the correct raw compressed sizes for all the mods.

@@ -321,7 +321,7 @@ namespace FFXIV_TexTools.Views
             {
                 TTMP texToolsModPack = new TTMP(new DirectoryInfo(Settings.Default.ModPack_Directory));
                 var dat = new Dat(XivCache.GameInfo.GameDirectory);
-                var ModList = await Modding.GetModList();
+                var ModList = await tx.GetModList();
 
                 var wizardData = new ModPackData()
                 {
@@ -418,16 +418,11 @@ namespace FFXIV_TexTools.Views
                 }
             }
 
-            var tx = MainWindow.UserTransaction;
-            if (tx == null)
-            {
-                // Readonly TX if we don't have one.
-                tx = ModTransaction.BeginTransaction(true);
-            }
+            var tx = MainWindow.DefaultTransaction;
 
             TTMP texToolsModPack = new TTMP(new DirectoryInfo(Settings.Default.ModPack_Directory));
             var dat = new Dat(XivCache.GameInfo.GameDirectory);
-            var ModList = await Modding.GetModList();
+            var ModList = await tx.GetModList();
 
             SimpleModPackData simpleModPackData = new SimpleModPackData
             {

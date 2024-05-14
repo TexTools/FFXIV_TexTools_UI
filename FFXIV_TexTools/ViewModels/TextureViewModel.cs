@@ -68,7 +68,6 @@ using xivModdingFramework.Variants.DataContainers;
 using xivModdingFramework.Variants.FileTypes;
 
 using BitmapSource = System.Windows.Media.Imaging.BitmapSource;
-using Index = xivModdingFramework.SqPack.FileTypes.Index;
 
 namespace FFXIV_TexTools.ViewModels
 {
@@ -522,7 +521,6 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     // Need to test to see if they have VFX files too.
                     var vfxPath = await ATex.GetVfxPath(_item);
-                    var index = new Index(XivCache.GameInfo.GameDirectory);
                     _vfxPath = vfxPath.Folder + "/" + vfxPath.File;
                     _hasVfx = await tx.FileExists(_vfxPath);
                 }
@@ -1584,8 +1582,6 @@ namespace FFXIV_TexTools.ViewModels
 
         private DirectoryInfo GetDefaultPath()
         {
-            DirectoryInfo gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
-            Index index = new Index(gameDirectory);
 
 
             DirectoryInfo savePath = new DirectoryInfo(Settings.Default.Save_Directory);

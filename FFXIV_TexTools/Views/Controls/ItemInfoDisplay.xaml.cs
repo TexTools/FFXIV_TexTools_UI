@@ -26,7 +26,6 @@ using xivModdingFramework.Models.FileTypes;
 using xivModdingFramework.SqPack.FileTypes;
 using xivModdingFramework.Variants.FileTypes;
 
-using Index = xivModdingFramework.SqPack.FileTypes.Index;
 
 namespace FFXIV_TexTools.Views.Controls
 {
@@ -94,7 +93,6 @@ namespace FFXIV_TexTools.Views.Controls
             var lang = XivCache.GameInfo.GameLanguage;
             var df = IOUtil.GetDataFileFromPath(root.Info.GetRootFile());
 
-            var _index = new Index(gd);
             var _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory);
             var _mdl = new Mdl(gd);
             var _imc = new Imc(gd);

@@ -28,7 +28,6 @@ using xivModdingFramework.Variants.DataContainers;
 using xivModdingFramework.Variants.FileTypes;
 using Constants = xivModdingFramework.Helpers.Constants;
 
-using Index = xivModdingFramework.SqPack.FileTypes.Index;
 using static xivModdingFramework.Materials.DataContainers.ShaderHelpers;
 using System.Globalization;
 using System.Windows.Data;
@@ -81,7 +80,6 @@ namespace FFXIV_TexTools.ViewModels
 
             var gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
             _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory);
-            _index = new Index(gameDirectory);
             _gear = new Gear(gameDirectory, GetLanguage());
 
 
@@ -190,7 +188,6 @@ namespace FFXIV_TexTools.ViewModels
         {
 
             var _imc = new Imc(XivCache.GameInfo.GameDirectory);
-            var _index = new Index(XivCache.GameInfo.GameDirectory);
 
             // Get tokenized map info structs.
             // This will let us set them in the new Materials and
