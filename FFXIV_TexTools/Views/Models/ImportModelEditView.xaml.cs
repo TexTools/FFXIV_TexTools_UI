@@ -18,6 +18,7 @@ namespace FFXIV_TexTools.Views.Models
         private TTModel _newModel;
         private TTModel _oldModel;
 
+        public ObservableCollection<KeyValuePair<EMeshType, string>> MeshTypeSource = new ObservableCollection<KeyValuePair<EMeshType, string>>();
         public ObservableCollection<KeyValuePair<int, string>> MeshSource = new ObservableCollection<KeyValuePair<int, string>>();
         public ObservableCollection<KeyValuePair<int, string>> PartSource = new ObservableCollection<KeyValuePair<int, string>>();
         public ObservableCollection<KeyValuePair<string, string>> ShapesSource = new ObservableCollection<KeyValuePair<string, string>>();
@@ -52,6 +53,17 @@ namespace FFXIV_TexTools.Views.Models
                     MeshSource.Add(new KeyValuePair<int, string>(mIdx, "#" + mIdx.ToString() + ": " + name));
                 }
             }
+
+            var values = Enum.GetValues(typeof(EMeshType));
+            foreach(var v in values)
+            {
+                var e = (EMeshType)v;
+                MeshTypeSource.Add(new KeyValuePair<EMeshType, string>(e, e.ToString()));
+            }
+            ModelTypeComboBox.ItemsSource = MeshTypeSource;
+            ModelTypeComboBox.DisplayMemberPath = "Value";
+            ModelTypeComboBox.SelectedValuePath = "Key";
+
 
 
             SizeMultiplierSource.Add(new KeyValuePair<double, string>(1.0D, "1x"));

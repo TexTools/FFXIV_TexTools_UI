@@ -83,6 +83,7 @@ namespace FFXIV_TexTools.ViewModels
 
 
 
+
             // Get all the materials available.
 
             // Merge all the default skin materials together, since FFXIV auto-handles them anyways.
@@ -151,6 +152,10 @@ namespace FFXIV_TexTools.ViewModels
 
             OldModelSize = Vector3.Distance(min, max);
 
+            if(newModel.MeshGroups.Count > 0)
+            {
+                _view.ModelTypeComboBox.SelectedValue = newModel.MeshGroups[0].MeshType;
+            }
 
             AsyncInit();
         }
@@ -195,8 +200,11 @@ namespace FFXIV_TexTools.ViewModels
 
             _view.ScaleComboBox.SelectionChanged += ScaleComboBox_SelectionChanged;
 
+            _view.ModelTypeComboBox.SelectionChanged += ModelTypeComboBox_SelectionChanged;
+
             _view.MeshNumberBox.SelectedIndex = 0;
         }
+
 
         private void ScaleComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
@@ -262,6 +270,12 @@ namespace FFXIV_TexTools.ViewModels
             {
                 _view.RemoveShapeButton.IsEnabled = false;
             }
+        }
+        private void ModelTypeComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            var val = (EMeshType)_view.ModelTypeComboBox.SelectedValue;
+            var m = GetGroup();
+            m.MeshType = val;
         }
 
         private void RemoveAttributeButton_Click(object sender, System.Windows.RoutedEventArgs e)
