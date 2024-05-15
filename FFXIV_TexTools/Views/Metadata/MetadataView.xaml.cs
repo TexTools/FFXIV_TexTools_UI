@@ -154,20 +154,17 @@ namespace FFXIV_TexTools.Views.Metadata
                 else
                 {
                     ToggleButton.IsEnabled = false;
-                    var _ = new Task(async () =>
+                    var tx = MainWindow.DefaultTransaction;
+                    var enabled = await mod.Value.GetState(tx) == EModState.Enabled;
+                    ToggleButton.IsEnabled = true;
+                    if (enabled)
                     {
-                        var tx = MainWindow.DefaultTransaction;
-                        var enabled = await mod.Value.GetState(tx) == EModState.Enabled;
-                        ToggleButton.IsEnabled = true;
-                        if (enabled)
-                        {
-                            ToggleButton.Content = "Disable".L();
-                        }
-                        else
-                        {
-                            ToggleButton.Content = "Enable".L();
-                        }
-                    });
+                        ToggleButton.Content = "Disable".L();
+                    }
+                    else
+                    {
+                        ToggleButton.Content = "Enable".L();
+                    }
                 }
                 return await _vm.SetRoot(_root, defaultVariant);
             }
