@@ -46,6 +46,8 @@ using xivModdingFramework.Mods.DataContainers;
 using xivModdingFramework.SqPack.DataContainers;
 
 using System.Drawing.Imaging;
+using xivModdingFramework.Mods.Enums;
+using System.ComponentModel.Composition.Primitives;
 
 namespace FFXIV_TexTools.ViewModels
 {
@@ -60,6 +62,7 @@ namespace FFXIV_TexTools.ViewModels
         private int _progressValue;
         private Visibility _progressBarVisible, _progressLabelVisible;
         private ProgressDialogController _progressController;
+
         public System.Timers.Timer CacheTimer = new System.Timers.Timer(3000);
 
         private const string WarningIdentifier = "!!";
@@ -449,7 +452,7 @@ namespace FFXIV_TexTools.ViewModels
                         foreach (var mod in metadata)
                         {
                             var df = IOUtil.GetDataFileFromPath(mod.FilePath);
-                            await Modding.ToggleModUnsafe(false, mod, true, false, tx);
+                            //await Modding.ToggleModRaw(false, mod, true, false, tx);
                         }
 
                         foreach (var mod in toRemove)
@@ -462,7 +465,7 @@ namespace FFXIV_TexTools.ViewModels
                             else
                             {
                                 var df = IOUtil.GetDataFileFromPath(mod.FilePath);
-                                await Modding.ToggleModUnsafe(false, mod, true, false, tx);
+                                //await Modding.ToggleModRaw(false, mod, true, false, tx);
 
                                 modList.RemoveMod(mod);
 
@@ -487,7 +490,7 @@ namespace FFXIV_TexTools.ViewModels
 
                 // Always create clean index backups after this process is completed.
                 _mainWindow.LockProgress.Report("Disabling Mods...".L());
-                await Modding.ToggleAllMods(false);
+                //await Modding.SetAllModStates(false);
 
                 await BackupIndexFiles();
 
@@ -660,7 +663,6 @@ namespace FFXIV_TexTools.ViewModels
         private async void EnableAllMods(object obj)
         {
             _progressController = await _mainWindow.ShowProgressAsync(UIMessages.EnablingModsTitle, UIMessages.PleaseWaitMessage);
-            var progressIndicator = new Progress<(int current, int total, string message)>(ReportProgress);
 
             if (FlexibleMessageBox.Show(
                     UIMessages.EnableAllModsMessage, UIMessages.EnablingModsTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
@@ -668,7 +670,11 @@ namespace FFXIV_TexTools.ViewModels
                 bool err = false;
                 try
                 {
-                    await Modding.ToggleAllMods(true, progressIndicator);
+                    // Run on new thread so we don't block.
+                    await Task.Run(async () =>
+                    {
+                        await Modding.SetAllModStates(EModState.Enabled, ViewHelpers.BindReportProgress(_progressController));
+                    });
                 } catch(Exception ex)
                 {
                     FlexibleMessageBox.Show("Failed to Enable all Mods: \n\nError:".L() + ex.Message, "Enable Mod Error".L(), MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -693,14 +699,18 @@ namespace FFXIV_TexTools.ViewModels
         private async void DisableAllMods(object obj)
         {
             _progressController = await _mainWindow.ShowProgressAsync(UIMessages.DisablingModsTitle, UIMessages.PleaseWaitMessage);
-            var progressIndicator = new Progress<(int current, int total, string message)>(ReportProgress);
 
             if (FlexibleMessageBox.Show(
                     UIMessages.DisableAllModsMessage, UIMessages.DisableAllModsTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
                 bool err = false;
-                try { 
-                    await Modding.ToggleAllMods(false, progressIndicator);
+                try
+                {
+                    // Run on new thread so we don't block.
+                    await Task.Run(async () =>
+                    {
+                        await Modding.SetAllModStates(EModState.Disabled, ViewHelpers.BindReportProgress(_progressController));
+                    });
                 } catch (Exception ex)
                 {
                     FlexibleMessageBox.Show("Failed to Disable all Mods: \n\nError:".L() + ex.Message, "Disable Mod Error".L(), MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -719,27 +729,6 @@ namespace FFXIV_TexTools.ViewModels
                 await _progressController.CloseAsync();
             }
 
-        }
-
-        /// <summary>
-        /// Updates the progress bar
-        /// </summary>
-        /// <param name="value">The progress value</param>
-        private void ReportProgress((int current, int total, string message) report)
-        {
-            if (!report.message.Equals(string.Empty))
-            {
-                _progressController.SetMessage(report.message.L());
-                _progressController.SetIndeterminate();
-            }
-            else
-            {
-                _progressController.SetMessage(
-                    $"{UIMessages.PleaseStandByMessage} ({report.current} / {report.total})");
-
-                var value = (double)report.current / (double)report.total;
-                _progressController.SetProgress(value);
-            }
         }
 
         #endregion

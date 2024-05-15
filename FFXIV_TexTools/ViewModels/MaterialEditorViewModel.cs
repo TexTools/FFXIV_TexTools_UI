@@ -346,25 +346,38 @@ namespace FFXIV_TexTools.ViewModels
 
             try
             {
-                var tx = MainWindow.DefaultTransaction;
-                foreach (var file in files)
+                var tx = MainWindow.UserTransaction;
+                var ownTx = false;
+                if (tx == null)
                 {
-                    var modEntry = await tx.GetMod(file);
+                    ownTx = true;
+                    tx = ModTransaction.BeginTransaction(true);
+                }
+                try
+                {
+                    foreach (var file in files)
+                    {
+                        var modEntry = await tx.GetMod(file);
 
-                    if (modEntry == null)
-                    {
-                        continue;
+                        if (modEntry == null)
+                        {
+                            continue;
+                        }
+                        await Modding.SetModState(EModState.Disabled, modEntry.Value.FilePath, tx);
                     }
 
-                    // If the file is a custom addition, and not a modification.
-                    if (modEntry.Value.IsCustomFile())
+                    if (ownTx)
                     {
-                        await Modding.DeleteMod(file);
+                        await ModTransaction.CommitTransaction(tx);
                     }
-                    else
+                }
+                catch
+                {
+                    if (ownTx)
                     {
-                        await Modding.ToggleModStatus(file, false);
+                        ModTransaction.CancelTransaction(tx);
                     }
+                    throw;
                 }
             } catch(Exception ex)
             {

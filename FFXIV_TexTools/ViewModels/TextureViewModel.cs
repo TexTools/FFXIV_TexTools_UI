@@ -1750,21 +1750,38 @@ namespace FFXIV_TexTools.ViewModels
         {
             if (!CheckMtrlIsOK())
                 return;
-            var gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
+
+            var tx = MainWindow.UserTransaction;
+            var ownTx = false;
+            if(tx == null)
+            {
+                ownTx = true;
+                tx = ModTransaction.BeginTransaction(true);
+            }
 
             try
             {
                 if (ModToggleText.Equals(UIStrings.Enable))
                 {
-                    await Modding.ToggleModStatus(SelectedMap.TexturePath, true);
+                    await Modding.SetModState(EModState.Enabled, SelectedMap.TexturePath, tx);
                 }
                 else if (ModToggleText.Equals(UIStrings.Disable))
                 {
-                    await Modding.ToggleModStatus(SelectedMap.TexturePath, false);
+                    await Modding.SetModState(EModState.Disabled, SelectedMap.TexturePath, tx);
+                }
+
+                if (ownTx)
+                {
+                    await ModTransaction.CommitTransaction(tx);
                 }
             }
             catch (Exception ex)
             {
+                if (ownTx)
+                {
+                    ModTransaction.CancelTransaction(tx);
+                }
+
                 FlexibleMessageBox.Show(
                     string.Format(UIMessages.ModToggleErrorMessage, ex.Message), UIMessages.ModToggleErrorTitle,
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -2310,7 +2327,7 @@ namespace FFXIV_TexTools.ViewModels
                 // Task.Run wrapper to ensure we don't hardlock the render thread.
                 var task = Task.Run(async () =>
                 {
-                    using (var tx = ModTransaction.BeginTransaction())
+                    using (var tx = MainWindow.DefaultTransaction)
                     {
                         return await tx.FileExists(_xivMtrl.MTRLPath);
                     }

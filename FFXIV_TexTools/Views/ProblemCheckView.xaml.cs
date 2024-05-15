@@ -456,11 +456,8 @@ namespace FFXIV_TexTools.Views
                                 // Attempt to disable the mod.
                                 try
                                 {
-                                    // Disable the mod first.
-                                    await Modding.ToggleModStatus(mod.FilePath, false, tx);
-
-                                    // Then delete the mod entry.  This will purge the frame as well if the offset is invalid.
-                                    await Modding.DeleteMod(mod.FilePath, false, tx);
+                                    // Delete the Mod
+                                    await Modding.DeleteMod(mod.FilePath, tx);
                                     resolvedErrors++;
                                 }
                                 catch

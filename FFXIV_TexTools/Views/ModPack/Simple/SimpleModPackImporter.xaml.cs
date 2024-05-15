@@ -303,27 +303,6 @@ namespace FFXIV_TexTools.Views
         }
 
         /// <summary>
-        /// Updates the progress bar
-        /// </summary>
-        /// <param name="value">The progress value</param>
-        private void ReportProgress((int current, int total, string message) report)
-        {
-            if (report.total == 0)
-            {
-                _progressController.SetMessage(report.message.L());
-                _progressController.SetIndeterminate();
-            }
-            else
-            {
-                var message = report.message == null ? "Please wait...".L() : report.message;
-                _progressController.SetMessage(report.message.L() + $"({report.current} / {report.total})");
-
-                var value = (double)report.current / (double)report.total;
-                _progressController.SetProgress(value);
-            }
-        }
-
-        /// <summary>
         /// Writes all selected mods to game data
         /// </summary>
         private async void FinalizeImport()
@@ -332,7 +311,6 @@ namespace FFXIV_TexTools.Views
 
             var importList = SelectedEntries.Select(x => JsonEntries[x]).ToList();
 
-            var progressIndicator = new Progress<(int current, int total, string message)>(ReportProgress);
             var eCount = 0;
 
             try
@@ -341,7 +319,7 @@ namespace FFXIV_TexTools.Views
                 // Specifically run this in a new thread to make sure there's no issue with windows treating us as not-responding.
                 var importResults = await Task.Run(async () =>
                 {
-                    return await TTMP.ImportModPackAsync(_modPackDirectory.FullName, importList, XivStrings.TexTools, progressIndicator, ModpackRootConvertWindow.GetRootConversions,
+                    return await TTMP.ImportModPackAsync(_modPackDirectory.FullName, importList, XivStrings.TexTools, ViewHelpers.BindReportProgress(_progressController), ModpackRootConvertWindow.GetRootConversions,
                     Properties.Settings.Default.AutoMaterialFix, Properties.Settings.Default.FixPreDawntrailOnImport, MainWindow.UserTransaction);
                 });
 

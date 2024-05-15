@@ -276,31 +276,47 @@ namespace FFXIV_TexTools.Views.Metadata
 
         private async void ToggleButton_Click(object sender, RoutedEventArgs e)
         {
-            var path = _root.Info.GetRootFile();
-            var tx = MainWindow.DefaultTransaction;
-            var mod = await tx.GetMod(path);
+            var tx = MainWindow.UserTransaction;
 
-            if (mod == null) return;
-
-            var enabled = await mod.Value.GetState(tx) == EModState.Enabled;
-
-            await MainWindow.GetMainWindow().LockUi("Updating Metadata".L());
-
+            var ownTx = false;
+            if(tx == null)
+            {
+                tx = ModTransaction.BeginTransaction(true);
+                ownTx = true;
+            }
             try
             {
+                var path = _root.Info.GetRootFile();
+                var mod = await tx.GetMod(path);
+
+                if (mod == null) return;
+
+                var enabled = await mod.Value.GetState(tx) == EModState.Enabled;
+
+                await MainWindow.GetMainWindow().LockUi("Updating Metadata".L());
+
                 if (enabled)
                 {
-                    await Modding.ToggleModStatus(path, false);
+                    await Modding.SetModState(EModState.Disabled, path, tx);
                     ToggleButton.Content = "Enable".L();
                 }
                 else
                 {
-                    await Modding.ToggleModStatus(path, true);
+                    await Modding.SetModState(EModState.Enabled, path, tx);
                     ToggleButton.Content = "Disable".L();
+                }
+
+                if (ownTx)
+                {
+                    await ModTransaction.CommitTransaction(tx);
                 }
             }
             catch(Exception ex)
             {
+                if (ownTx)
+                {
+                    ModTransaction.CancelTransaction(tx);
+                }
                 FlexibleMessageBox.Show("Unable to toggle mod status.\n\nError: ".L() + ex.Message, "Mod Toggle Error".L(), System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
             }
             finally

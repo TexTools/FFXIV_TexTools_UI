@@ -1504,19 +1504,36 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         private async void ModStatusToggle(object obj)
         {
+            var tx = MainWindow.UserTransaction;
+            var ownTx = false;
+            if (tx == null)
+            {
+                ownTx = true;
+                tx = ModTransaction.BeginTransaction(true);
+            }
             try
             {
                 if (ModToggleText.Equals(UIStrings.Enable))
                 {
-                    await Modding.ToggleModStatus(PathString, true);
+                    await Modding.SetModState(EModState.Enabled, PathString, tx);
                 }
                 else if (ModToggleText.Equals(UIStrings.Disable))
                 {
-                    await Modding.ToggleModStatus(PathString, false);
+                    await Modding.SetModState(EModState.Disabled, PathString, tx);
+                }
+
+                if (ownTx)
+                {
+                    await ModTransaction.CommitTransaction(tx);
                 }
             }
             catch (Exception ex)
             {
+                if (ownTx)
+                {
+                    ModTransaction.CancelTransaction(tx);
+                }
+
                 FlexibleMessageBox.Show(
                     string.Format(UIMessages.ModToggleErrorMessage, ex.Message), UIMessages.ModToggleErrorTitle,
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1743,7 +1760,30 @@ namespace FFXIV_TexTools.ViewModels
 
                 try
                 {
-                    await Modding.ToggleModStatus(PathString, false);
+                    var tx = MainWindow.UserTransaction;
+                    var ownTx = false;
+                    if (tx == null)
+                    {
+                        ownTx = true;
+                        tx = ModTransaction.BeginTransaction(true);
+                    }
+                    try
+                    {
+                        await Modding.SetModState(EModState.Disabled, PathString, tx);
+                        if (ownTx)
+                        {
+                            await ModTransaction.CommitTransaction(tx);
+                        }
+                    }
+                    catch
+                    {
+                        if (ownTx)
+                        {
+                            ModTransaction.CancelTransaction(tx);
+                        }
+                        throw;
+                    }
+
                     GetMeshes();
                 }
                 catch (Exception e)

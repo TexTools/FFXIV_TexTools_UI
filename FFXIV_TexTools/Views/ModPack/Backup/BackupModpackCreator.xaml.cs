@@ -177,11 +177,9 @@ namespace FFXIV_TexTools.Views
                     }
                 }
 
-                var progressIndicator = new Progress<(int current, int total, string message)>(ReportProgress);
-
                 ModPackFileName = backupModpackData.Name;
 
-                await texToolsModPack.CreateBackupModpack(backupModpackData, progressIndicator, overwriteModpack);
+                await texToolsModPack.CreateBackupModpack(backupModpackData, ViewHelpers.BindReportProgress(_progressController), overwriteModpack);
             }
             catch (Exception ex)
             {
@@ -237,31 +235,6 @@ namespace FFXIV_TexTools.Views
 
             Process.Start(new ProcessStartInfo(url));
             e.Handled = true;
-        }
-
-        #endregion
-
-        #region Private Methods
-
-        /// <summary>
-        /// Updates the progress bar
-        /// </summary>
-        /// <param name="value">The progress value</param>
-        private void ReportProgress((int current, int total, string message) report)
-        {
-            if (!report.message.Equals(string.Empty))
-            {
-                _progressController.SetMessage(report.message.L());
-                _progressController.SetIndeterminate();
-            }
-            else
-            {
-                _progressController.SetMessage(
-                    $"{UIMessages.TTMPGettingData} ({report.current} / {report.total})");
-
-                double value = (double)report.current / (double)report.total;
-                _progressController.SetProgress(value);
-            }
         }
 
         #endregion

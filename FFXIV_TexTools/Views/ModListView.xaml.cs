@@ -33,6 +33,7 @@ using xivModdingFramework.Mods;
 using ListBox = System.Windows.Controls.ListBox;
 using System.Threading.Tasks;
 using xivModdingFramework.Mods.Enums;
+using System.Windows.Shapes;
 
 namespace FFXIV_TexTools.Views
 {
@@ -144,21 +145,28 @@ namespace FFXIV_TexTools.Views
         /// </summary>
         private async void modToggleButton_Click(object sender, RoutedEventArgs e)
         {
-            var gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
-
             await LockUi("Changing Mod Status".L(), "Please wait...".L(), this);
-            var tx = MainWindow.DefaultTransaction;
+
+            Category selectedItem = null;
+
+            var tx = MainWindow.UserTransaction;
+            var ownTx = false;
+            if(tx == null)
+            {
+                tx = ModTransaction.BeginTransaction(true);
+                ownTx = true;
+            }
             try
             {
                 if ((ModListTreeView.SelectedItem as Category).ParentCategory.Name.Equals("ModPacks"))
                 {
-                    var selectedItem = (ModListTreeView.SelectedItem as Category);
+                    selectedItem = (ModListTreeView.SelectedItem as Category);
 
                     if ((DataContext as ModListViewModel).ModToggleText == FFXIV_TexTools.Resources.UIStrings.Enable)
                     {
                         try
                         {
-                            await Modding.ToggleModPackStatus(selectedItem.Name, true);
+                            await Modding.SetModpackState(EModState.Enabled, selectedItem.Name, tx);
                             (DataContext as ModListViewModel).ModToggleText = FFXIV_TexTools.Resources.UIStrings.Disable;
                         }
                         catch (Exception ex)
@@ -170,7 +178,7 @@ namespace FFXIV_TexTools.Views
                     {
                         try
                         {
-                            await Modding.ToggleModPackStatus(selectedItem.Name, false);
+                            await Modding.SetModpackState(EModState.Disabled, selectedItem.Name, tx);
                             (DataContext as ModListViewModel).ModToggleText = FFXIV_TexTools.Resources.UIStrings.Enable;
                         }
                         catch (Exception ex)
@@ -178,8 +186,6 @@ namespace FFXIV_TexTools.Views
                             FlexibleMessageBox.Show("Unable to fully enable Modpack.\n\nError: ".L() + ex.Message, "Mod Enable Error".L(), MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
                     }
-
-                    (DataContext as ModListViewModel).UpdateInfoGrid(selectedItem);
                 }
                 else
                 {
@@ -192,7 +198,8 @@ namespace FFXIV_TexTools.Views
                             var success = false;
                             try
                             {
-                                success = await Modding.ToggleModStatus(selectedModItem.ModItem.FilePath, false);
+                                await Modding.SetModState(EModState.Disabled, selectedModItem.ModItem.FilePath, tx);
+                                success = true;
                             }
                             catch (Exception ex)
                             {
@@ -213,7 +220,8 @@ namespace FFXIV_TexTools.Views
                             var success = false;
                             try
                             {
-                                success = await Modding.ToggleModStatus(selectedModItem.ModItem.FilePath, true);
+                                await Modding.SetModState(EModState.Enabled, selectedModItem.ModItem.FilePath, tx);
+                                success = true;
                             }
                             catch (Exception ex)
                             {
@@ -231,9 +239,27 @@ namespace FFXIV_TexTools.Views
                         }
                     }
                 }
+
+                if (ownTx)
+                {
+                    await ModTransaction.CommitTransaction(tx);
+                }
+            }
+            catch
+            {
+                if (ownTx)
+                {
+                    ModTransaction.CancelTransaction(tx);
+                }
+                throw;
             }
             finally
             {
+
+                if (selectedItem != null)
+                {
+                    (DataContext as ModListViewModel).UpdateInfoGrid(selectedItem);
+                }
                 await UnlockUi(this);
             }
         }

@@ -113,11 +113,9 @@ namespace FFXIV_TexTools.Views
                                     select modsJson);
 
 
-                var progressIndicator = new Progress<(int current, int total, string message)>(ReportProgress);
-
                 var importResults = await Task.Run(async () =>
                 {
-                    return await TTMP.ImportModPackAsync(_modpackDirectory.FullName, importList, XivStrings.TexTools, progressIndicator, null, false, Properties.Settings.Default.FixPreDawntrailOnImport, MainWindow.UserTransaction);
+                    return await TTMP.ImportModPackAsync(_modpackDirectory.FullName, importList, XivStrings.TexTools, ViewHelpers.BindReportProgress(_progressController), null, false, Properties.Settings.Default.FixPreDawntrailOnImport, MainWindow.UserTransaction);
                 });
 
                 TotalModsImported = importResults.Imported.Count;
@@ -215,26 +213,6 @@ namespace FFXIV_TexTools.Views
             ModpackList.SelectedIndex = 0;
         }        
 
-        /// <summary>
-        /// Updates the progress bar
-        /// </summary>
-        /// <param name="value">The progress value</param>
-        private void ReportProgress((int current, int total, string message) report)
-        {
-            if (!report.message.Equals(string.Empty))
-            {
-                _progressController.SetMessage(report.message.L());
-                _progressController.SetIndeterminate();
-            }
-            else
-            {
-                _progressController.SetMessage(
-                    $"{UIMessages.TTMPGettingData} ({report.current} / {report.total})");
-
-                double value = (double)report.current / (double)report.total;
-                _progressController.SetProgress(value);
-            }
-        }
 
         #endregion
 

@@ -146,48 +146,20 @@ namespace FFXIV_TexTools.Views.Wizard
         #region Private Methods
 
         /// <summary>
-        /// Updates the progress bar
-        /// </summary>
-        /// <param name="value">The progress value</param>
-        private void ReportProgress((int current, int total, string message) report)
-        {
-            if (!report.message.Equals(string.Empty))
-            {
-                _ProgressController.SetMessage(report.message.L());
-            }
-            else
-            {
-                _ProgressController.SetMessage($"{UIMessages.PleaseStandByMessage}");
-                //({report.current} / {report.total})
-            }
-
-            if (report.total > 0)
-            {
-                var value = (double)report.current / (double)report.total;
-                _ProgressController.SetProgress(value);
-            }
-            else
-            {
-                _ProgressController.SetIndeterminate();
-            }
-        }
-
-        /// <summary>
         /// Writes all selected mods to game data
         /// </summary>
         private async void FinalizeImport()
         {
             _ProgressController = await this.ShowProgressAsync(UIMessages.ModPackImportTitle, UIMessages.PleaseStandByMessage);
-            var progressIndicator = new Progress<(int current, int total, string message)>(ReportProgress);
 
             (List<string> Imported, List<string> NotImported, float Duration) res = (null, null, 0);
             if (_Data.ModpackType == TTMP.EModpackType.Pmp)
             {
-                res = await FinalizePmp(_Data, _Path, progressIndicator);
+                res = await FinalizePmp(_Data, _Path, ViewHelpers.BindReportProgress(_ProgressController));
             }
             else if (_Data.ModpackType == TTMP.EModpackType.TtmpWizard)
             {
-                res = await FinalizeTtmp(_Data, _Path, progressIndicator);
+                res = await FinalizeTtmp(_Data, _Path, ViewHelpers.BindReportProgress(_ProgressController));
             }
 
             await _ProgressController.CloseAsync();
@@ -217,13 +189,15 @@ namespace FFXIV_TexTools.Views.Wizard
 
             // Load the pages.
             WizardData data;
-            if(modpackType == TTMP.EModpackType.Pmp)
+            if (modpackType == TTMP.EModpackType.Pmp)
             {
                 data = await SetupPMP(path);
-            } else if(modpackType == TTMP.EModpackType.TtmpWizard)
+            }
+            else if (modpackType == TTMP.EModpackType.TtmpWizard)
             {
                 data = await SetupTtmp(path);
-            } else
+            }
+            else
             {
                 throw new Exception("Cannot import non-wizard capable modpack with the wizard modpack importer.");
             }
@@ -233,16 +207,26 @@ namespace FFXIV_TexTools.Views.Wizard
             if (owner != null)
             {
                 wind.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterOwner;
-            } else
+            }
+            else
             {
                 wind.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
             }
-
-            var result = wind.ShowDialog();
-            if(result != true)
+            try
             {
-                // User cancelled import process.
-                return;
+                var result = wind.ShowDialog();
+                if (result != true)
+                {
+                    // User cancelled import process.
+                    return;
+                }
+            }
+            catch
+            {
+                if (wind != null)
+                {
+                    wind.Close();
+                }
             }
         }
 
@@ -279,7 +263,8 @@ namespace FFXIV_TexTools.Views.Wizard
             {
                 data.FinalizePmpSelections();
                 var pmp = data.RawSource as PMPJson;
-                var res = await PMP.ImportPMP(pmp, path, XivStrings.TexTools, progress);
+                var res = await PMP.ImportPMP(pmp, path, MainWindow.UserTransaction, XivStrings.TexTools, 
+                    progress, ModpackRootConvertWindow.GetRootConversions);
                 return res;
             }
             finally {

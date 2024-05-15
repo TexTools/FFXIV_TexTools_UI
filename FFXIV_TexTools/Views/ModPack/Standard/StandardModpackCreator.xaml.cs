@@ -476,8 +476,7 @@ namespace FFXIV_TexTools.Views
             try
             {
                 await LockUi(UIStrings.Creating_Modpack, null, null);
-                Progress<(int current, int total, string message)> progressIndicator = new Progress<(int current, int total, string message)>(ReportProgress);
-                await texToolsModPack.CreateSimpleModPack(simpleModPackData, progressIndicator, true);
+                await texToolsModPack.CreateSimpleModPack(simpleModPackData, ViewHelpers.BindReportProgress(_lockProgressController), true);
 
                 FlexibleMessageBox.Show(new Wpf32Window(this), "Modpack Created Successfully.".L(),
                                                "Modpack Created".L(), MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -499,27 +498,6 @@ namespace FFXIV_TexTools.Views
             // No-op
         }
 
-        /// <summary>
-        /// Updates the progress bar
-        /// </summary>
-        /// <param name="value">The progress value</param>
-        private void ReportProgress((int current, int total, string message) report)
-        {
-            if (!report.message.Equals(string.Empty))
-            {
-
-                _lockProgressController.SetMessage(report.message);
-                _lockProgressController.SetIndeterminate();
-            }
-            else
-            {
-                _lockProgressController.SetMessage(
-                    $"{UIMessages.TTMPGettingData} ({report.current} / {report.total})");
-
-                double value = (double)report.current / (double)report.total;
-                _lockProgressController.SetProgress(value);
-            }
-        }
 
     }
 }
