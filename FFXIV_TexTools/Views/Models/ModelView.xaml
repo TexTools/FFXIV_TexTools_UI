@@ -77,6 +77,7 @@
                     Color="White" />
                     <hx:GroupModel3D ItemsSource="{Binding Models}"/>
                 </hx:Viewport3DX>
+                <Canvas Name="AlternateViewportCanvas" Visibility="Hidden" IsHitTestVisible="False"/>
                 <Label x:Name="ViewportDisclaimer" VerticalAlignment="Top" HorizontalAlignment="Center" Content="{Binding Source={x:Static resx:UIStrings.Viewport_Disclaimer}}" Foreground="#FF151515" FontSize="10"/>
                 <Label VerticalAlignment="Bottom" HorizontalAlignment="Center" Content="{Binding ModelStatusLabel}" Foreground="#FF151515" FontSize="18"/>
             </Grid>
