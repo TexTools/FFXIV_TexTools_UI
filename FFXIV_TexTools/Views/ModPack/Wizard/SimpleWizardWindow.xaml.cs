@@ -252,9 +252,12 @@ namespace FFXIV_TexTools.Views.Wizard
             // Time for the chaos that is the TTMP import function.
             var mpl = await TTMP.GetModpackList(path);
 
-            var res = await TTMP.ImportModPackAsync(path, mods, XivStrings.TexTools,
+            var res = await Task.Run(async () =>
+            {
+                return await TTMP.ImportModPackAsync(path, mods, XivStrings.TexTools,
             progress, ModpackRootConvertWindow.GetRootConversions,
             Properties.Settings.Default.AutoMaterialFix, Properties.Settings.Default.FixPreDawntrailOnImport, MainWindow.UserTransaction);
+            });
             return res;
         }
         private async Task<(List<string> Imported, List<string> NotImported, float Duration)> FinalizePmp(WizardData data, string path, IProgress<(int, int, string)> progress)
@@ -263,8 +266,11 @@ namespace FFXIV_TexTools.Views.Wizard
             {
                 data.FinalizePmpSelections();
                 var pmp = data.RawSource as PMPJson;
-                var res = await PMP.ImportPMP(pmp, path, MainWindow.UserTransaction, XivStrings.TexTools, 
+                var res = await Task.Run(async () =>
+                {
+                    return await PMP.ImportPMP(pmp, path, MainWindow.UserTransaction, XivStrings.TexTools,
                     progress, ModpackRootConvertWindow.GetRootConversions);
+                });
                 return res;
             }
             finally {

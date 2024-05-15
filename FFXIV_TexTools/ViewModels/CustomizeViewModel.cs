@@ -522,7 +522,7 @@ namespace FFXIV_TexTools.ViewModels
             if (string.IsNullOrWhiteSpace(Settings.Default.Lumina_Directory))
             {
                 Settings.Default.Lumina_IsEnabled = false;
-                XivCache.SetGameInfo(gi.GameDirectory, gi.GameLanguage, gi.DxMode, false, true, null, false);
+                XivCache.SetGameInfo(gi.GameDirectory, gi.GameLanguage, true, null, false);
             }
             else
             {
@@ -530,7 +530,7 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     // We don't need to revalidate the cache here, as the the Lumina Settings/Operations don't actually interact with the cache itself at all.
                     luminaDir = new DirectoryInfo(Settings.Default.Lumina_Directory);
-                    XivCache.SetGameInfo(gi.GameDirectory, gi.GameLanguage, gi.DxMode, false, true, luminaDir, Settings.Default.Lumina_IsEnabled);
+                    XivCache.SetGameInfo(gi.GameDirectory, gi.GameLanguage, true, luminaDir, Settings.Default.Lumina_IsEnabled);
                 }
                 catch (Exception ex)
                 {
@@ -539,7 +539,7 @@ namespace FFXIV_TexTools.ViewModels
                         Helpers.FlexibleMessageBox.Show("Unable to save Lumina settings, invalid Lumina directory.".L());
                     }
                     Settings.Default.Lumina_IsEnabled = false;
-                    XivCache.SetGameInfo(gi.GameDirectory, gi.GameLanguage, gi.DxMode, false, true, null, false);
+                    XivCache.SetGameInfo(gi.GameDirectory, gi.GameLanguage, true, null, false);
                 }
             }
 

@@ -312,7 +312,7 @@ namespace FFXIV_TexTools
                     useLumina = false;
                 }
 
-                XivCache.SetGameInfo(gameDir, lang, dxVersion, true, false, luminaDir, useLumina);
+                XivCache.SetGameInfo(gameDir, lang, false, luminaDir, useLumina);
 
                 _startupArgs = args[0];
                 OnlyImport();
@@ -344,8 +344,11 @@ namespace FFXIV_TexTools
                 ItemSelect.ItemsLoaded += OnTreeLoaded;
 
                 InitializeCache();
+
+                ModTransaction.ActiveTransactionBlocked += ModTransaction_ActiveTransactionBlocked;
             }
         }
+
 
         private void TabsControl_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
@@ -479,7 +482,7 @@ namespace FFXIV_TexTools
                         }
                     }
 
-                    XivCache.SetGameInfo(gameDir, lang, dxVersion, true, true, luminaDir, useLumina);
+                    XivCache.SetGameInfo(gameDir, lang, true, luminaDir, useLumina);
                     CustomizeViewModel.UpdateCacheSettings();
 
                 } catch(Exception ex)
@@ -1432,6 +1435,8 @@ namespace FFXIV_TexTools
 
         private void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            // Ensure the cache worker shuts down.
+            XivCache.CacheWorkerEnabled = false;
         }
 
         private void MetroWindow_Loaded(object sender, RoutedEventArgs e)
@@ -1723,6 +1728,18 @@ namespace FFXIV_TexTools
             {
                 await UnlockUi(this);
             }
+        }
+
+
+        private void ModTransaction_ActiveTransactionBlocked(ModTransaction sender)
+        {
+            var result = FlexibleMessageBox.Show("The current action in TexTools is blocked due to the game files currently being in use.\n\nYou may cancel the action by pressing CANCEL, or wait for the files to become accessible by pressing OK.", "Transaction Blocked", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
+
+            if(result == System.Windows.Forms.DialogResult.Cancel)
+            {
+                ModTransaction.CancelBlockedTransaction();
+            }
+
         }
 
 

@@ -18,24 +18,29 @@ namespace FFXIV_TexTools.Views
         {
             Action<(int current, int total, string message)> f = ((int current, int total, string message) report) =>
             {
+                var message = "";
                 if (!report.message.Equals(string.Empty))
                 {
-                    controller.SetMessage(report.message.L());
+                    message =report.message.L();
                 }
                 else
                 {
-                    controller.SetMessage($"{UIMessages.PleaseStandByMessage}");
+                    message = $"{UIMessages.PleaseStandByMessage}";
                 }
 
                 if (report.total > 0)
                 {
                     var value = (double)report.current / (double)report.total;
                     controller.SetProgress(value);
+
+                    message += "\n\n " + report.current + "/" + report.total;
                 }
                 else
                 {
                     controller.SetIndeterminate();
                 }
+
+                controller.SetMessage(message);
             };
 
             return f;

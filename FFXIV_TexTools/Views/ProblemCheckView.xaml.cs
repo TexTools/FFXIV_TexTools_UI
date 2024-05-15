@@ -569,37 +569,11 @@ namespace FFXIV_TexTools.Views
                 {
                     AddText($"\tFFXIV set to DX11 Mode".L(), textColor);
                     AddText("\t\u2714\n", "Green");
-
-                    if (Properties.Settings.Default.DX_Version != "11")
-                    {
-                        // Set the User's DX Mode to 11 in TexTools to match 
-                        var gi = XivCache.GameInfo;
-                        Properties.Settings.Default.DX_Version = "11";
-                        Properties.Settings.Default.Save();
-                        XivCache.SetGameInfo(gi.GameDirectory, gi.GameLanguage, 11, true, true, gi.LuminaDirectory, gi.UseLumina);
-                        AddText($"\tChanging TexTools Application Mode to DX11 to match FFXIV settings...".L(), textColor);
-                        AddText("\t\u2714\n", "Green");
-
-                        ((MainViewModel)MainWindow.GetMainWindow().DataContext).DXVersionText = "DX: 11";
-                    }
                 } else
                 {
                     AddText($"\tFFXIV set to DX9 Mode".L(), textColor);
                     AddText("\t\u2716\n", "Red");
-                    AddText($"\tFFXIV is set to DX9 Mode.  This may cause issues with some mods and will reduce the available mod data limit.\n".L(), "Orange");
-
-                    if (Properties.Settings.Default.DX_Version != "9")
-                    {
-                        // Set the User's DX Mode to 9 in TexTools to match 
-                        var gi = XivCache.GameInfo;
-                        Properties.Settings.Default.DX_Version = "9";
-                        Properties.Settings.Default.Save();
-                        XivCache.SetGameInfo(gi.GameDirectory, gi.GameLanguage, 9, true, true, gi.LuminaDirectory, gi.UseLumina);
-                        AddText($"\tChanging TexTools Application Mode to DX9 to match FFXIV settings...".L(), textColor);
-                        AddText("\t\u2714\n", "Green");
-
-                        ((MainViewModel)MainWindow.GetMainWindow().DataContext).DXVersionText = "DX: 9";
-                    }
+                    AddText($"\tFFXIV is set to DX9 Mode.  This may cause issues.\n".L(), "Orange");
                 }
 
 

@@ -94,6 +94,7 @@ namespace FFXIV_TexTools.Views
             ModelLevelBox.Text = "";
             MaterialLevelBox.Text = "";
 
+            var tx = MainWindow.DefaultTransaction;
 
 
             FilePathLabel.Text = filePath;
@@ -131,9 +132,9 @@ namespace FFXIV_TexTools.Views
             ModelLevelBox.Text = modelItem.Name;
 
 
-            var children = await XivCache.GetChildFiles(filePath);
-            var parents = await XivCache.GetParentFiles(filePath);
-            var siblings = await XivCache.GetSiblingFiles(filePath);
+            var children = await XivCache.GetChildFiles(filePath, tx);
+            var parents = await XivCache.GetParentFiles(filePath, tx);
+            var siblings = await XivCache.GetSiblingFiles(filePath, tx);
 
             if (children == null || parents == null || siblings == null)
             {

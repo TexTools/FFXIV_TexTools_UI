@@ -586,7 +586,7 @@ namespace FFXIV_TexTools.ViewModels
                 var character = new Character(_gameDirectory, GetLanguage());
 
                 var parts = await character.GetTypeForModels(_item as XivCharacter, SelectedRace.XivRace,
-                    int.Parse(SelectedNumber.Name));
+                    int.Parse(SelectedNumber.Name), MainWindow.DefaultTransaction);
 
                 foreach (var part in parts)
                 {
@@ -598,7 +598,7 @@ namespace FFXIV_TexTools.ViewModels
                 if (_item.GetPrimaryItemType() == XivItemType.demihuman)
                 {
                     var companions = new Companions(_gameDirectory, GetLanguage());
-                    var parts = await companions.GetDemiHumanMountModelEquipPartList(_item);
+                    var parts = await companions.GetDemiHumanMountModelEquipPartList(_item, MainWindow.DefaultTransaction);
 
                     foreach (var part in parts)
                     {
@@ -738,7 +738,7 @@ namespace FFXIV_TexTools.ViewModels
             {
                 if (_item.PrimaryCategory.Equals(XivStrings.Gear))
                 {
-                    _model = await _mdl.GetTTModel(_item, SelectedRace.XivRace);
+                    _model = await _mdl.GetTTModel(_item, SelectedRace.XivRace, null, false, MainWindow.DefaultTransaction);
                 }
                 else if (_item.PrimaryCategory.Equals(XivStrings.Character))
                 {
@@ -753,7 +753,7 @@ namespace FFXIV_TexTools.ViewModels
 
                     ((XivCharacter)_item).TertiaryCategory = SelectedPart.Name;
 
-                    _model = await _mdl.GetTTModel(_item, SelectedRace.XivRace);
+                    _model = await _mdl.GetTTModel(_item, SelectedRace.XivRace, null, false, MainWindow.DefaultTransaction);
                 }
                 else if (_item.PrimaryCategory.Equals(XivStrings.Companions))
                 {
@@ -774,7 +774,7 @@ namespace FFXIV_TexTools.ViewModels
                 else if (_item.PrimaryCategory.Equals(XivStrings.Housing))
                 {
                     string submeshId = GetSubmeshId();
-                    _model = await _mdl.GetTTModel(_item, SelectedRace.XivRace, submeshId);
+                    _model = await _mdl.GetTTModel(_item, SelectedRace.XivRace, submeshId, false, MainWindow.DefaultTransaction);
                 }
             }
             catch (Exception ex)

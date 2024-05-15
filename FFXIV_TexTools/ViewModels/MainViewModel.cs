@@ -235,7 +235,7 @@ namespace FFXIV_TexTools.ViewModels
             if (XivCache.GameInfo.UseLumina)
             {
                 resetLumina = true;
-                XivCache.SetGameInfo(gi.GameDirectory, gi.GameLanguage, gi.DxMode, false, false, gi.LuminaDirectory, gi.UseLumina);
+                XivCache.SetGameInfo(gi.GameDirectory, gi.GameLanguage, false, gi.LuminaDirectory, gi.UseLumina);
             }
 
             var workerStatus = XivCache.CacheWorkerEnabled;
@@ -514,7 +514,7 @@ namespace FFXIV_TexTools.ViewModels
                 if(resetLumina)
                 {
                     // Reset lumina mode back to on if we disabled it to perform update checks.
-                    XivCache.SetGameInfo(gi.GameDirectory, gi.GameLanguage, gi.DxMode, true, false, gi.LuminaDirectory, true);
+                    XivCache.SetGameInfo(gi.GameDirectory, gi.GameLanguage, false, gi.LuminaDirectory, true);
                 }
 
                 XivCache.CacheWorkerEnabled = workerStatus;
@@ -627,33 +627,8 @@ namespace FFXIV_TexTools.ViewModels
         }
 
         #region MenuItems
-
-        public ICommand DXVersionCommand => new RelayCommand(SetDXVersion);
         public ICommand EnableAllModsCommand => new RelayCommand(EnableAllMods);
         public ICommand DisableAllModsCommand => new RelayCommand(DisableAllMods);
-
-        /// <summary>
-        /// Sets the DX version for the application
-        /// </summary>
-        private void SetDXVersion(object obj)
-        {
-            var gi = XivCache.GameInfo;
-            if (DXVersionText.Contains("11"))
-            {
-                Properties.Settings.Default.DX_Version = "9";
-                Properties.Settings.Default.Save();
-                XivCache.SetGameInfo(gi.GameDirectory, gi.GameLanguage, 9, true, true, gi.LuminaDirectory, gi.UseLumina);
-            }
-            else
-            {
-                Properties.Settings.Default.DX_Version = "11";
-                Properties.Settings.Default.Save();
-                XivCache.SetGameInfo(gi.GameDirectory, gi.GameLanguage, 11, true, true, gi.LuminaDirectory, gi.UseLumina);
-            }
-
-            DXVersionText = $"DX: {Properties.Settings.Default.DX_Version}";
-        }
-
 
 
         /// <summary>

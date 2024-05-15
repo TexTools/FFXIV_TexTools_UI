@@ -221,7 +221,7 @@ namespace FFXIV_TexTools.ViewModels
             var materialSets = new HashSet<byte>();
             try
             {
-                var imcInfo = await _imc.GetFullImcInfo(_item);
+                var imcInfo = await _imc.GetFullImcInfo(_item, false, MainWindow.DefaultTransaction);
                 imcEntries = imcInfo.GetAllEntries(root.Slot, true);
                 materialSets = imcEntries.Select(x => x.MaterialSet).ToHashSet();
             } catch
@@ -234,7 +234,7 @@ namespace FFXIV_TexTools.ViewModels
             // We need to save our non-existent base material once before we can continue.
             if (_mode == MaterialEditorMode.NewRace)
             {
-                await _mtrl.ImportMtrl(_material, _item, XivStrings.TexTools);
+                await _mtrl.ImportMtrl(_material, _item, XivStrings.TexTools, true, MainWindow.UserTransaction);
             }
 
             var count = 0;
@@ -307,7 +307,7 @@ namespace FFXIV_TexTools.ViewModels
 
                 count++;
                 // Write the new Material
-                await _mtrl.ImportMtrl(itemXivMtrl, item, XivStrings.TexTools);
+                await _mtrl.ImportMtrl(itemXivMtrl, item, XivStrings.TexTools, true, MainWindow.UserTransaction);
                 _view.SaveStatusLabel.Content = $"Updated {count._()}/{materialSets.Count._()} Material Sets...".L();
             }
 
@@ -329,7 +329,7 @@ namespace FFXIV_TexTools.ViewModels
             } else
             {
                 var imc = new Imc(XivCache.GameInfo.GameDirectory);
-                var info = await imc.GetFullImcInfo(_item);
+                var info = await imc.GetFullImcInfo(_item, false, MainWindow.DefaultTransaction);
                 var entries = info.GetAllEntries(root.Info.Slot);
                 var materialSets = entries.Select(x => x.MaterialSet).ToHashSet();
 

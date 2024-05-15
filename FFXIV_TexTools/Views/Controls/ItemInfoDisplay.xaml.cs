@@ -98,6 +98,7 @@ namespace FFXIV_TexTools.Views.Controls
             var _imc = new Imc(gd);
             var raceRegex = new Regex("c([0-9]{4})[^b]");
 
+            var tx = MainWindow.DefaultTransaction;
             ItemNameBox.Text = _item.Name;
 
             var setName = root.Info.GetBaseFileName(false);
@@ -127,7 +128,7 @@ namespace FFXIV_TexTools.Views.Controls
                 VariantLabel.Text = $"Variant: --".L();
             }
 
-            var mSet = await _imc.GetMaterialSetId(_item);
+            var mSet = await _imc.GetMaterialSetId(_item, false, tx);
             if (mSet > 0)
             {
                 MaterialSetLabel.Text = $"Material Set: {mSet._()}".L();
@@ -138,8 +139,8 @@ namespace FFXIV_TexTools.Views.Controls
 
             var races = XivRaces.PlayableRaces;
 
-            var models = await root.GetModelFiles();
-            var materials = await root.GetMaterialFiles(mSet);
+            var models = await root.GetModelFiles(tx);
+            var materials = await root.GetMaterialFiles(mSet, tx);
 
             #region Race Chart
             var rowIdx = 1;
@@ -270,7 +271,7 @@ namespace FFXIV_TexTools.Views.Controls
             {
                 var myImcSubsetId = _item.ModelInfo.ImcSubsetID;
                 var allItems = await root.GetAllItems();
-                var fInfo = await _imc.GetFullImcInfo(_item);
+                var fInfo = await _imc.GetFullImcInfo(_item, false, tx);
                 var entries = fInfo.GetAllEntries(_item.GetItemSlotAbbreviation(), true);
 
                 foreach (var item in allItems)

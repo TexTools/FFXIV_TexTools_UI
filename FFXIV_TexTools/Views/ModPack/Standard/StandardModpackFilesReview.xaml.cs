@@ -151,7 +151,7 @@ namespace FFXIV_TexTools.Views
             {
                 foreach (var file in parentFiles)
                 {
-                    var children = await XivCache.GetChildrenRecursive(file);
+                    var children = await XivCache.GetChildrenRecursive(file, MainWindow.DefaultTransaction);
                     foreach (var child in children)
                     {
                         files.Add(child);

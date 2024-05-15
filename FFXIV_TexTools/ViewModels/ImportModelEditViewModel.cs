@@ -163,8 +163,8 @@ namespace FFXIV_TexTools.ViewModels
             if (_root != null && _root.Info.PrimaryType != XivItemType.indoor && _root.Info.PrimaryType != XivItemType.outdoor)
             {
                 // Get all the materials in this root, and add them to the selectable list.
-                
-                var materials = await _root.GetMaterialFiles();
+                var tx = MainWindow.DefaultTransaction;
+                var materials = await _root.GetMaterialFiles(-1, tx);
                 foreach (var m in materials)
                 {
                     var mName = Path.GetFileName(m);

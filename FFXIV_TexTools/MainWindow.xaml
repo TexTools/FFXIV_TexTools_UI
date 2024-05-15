@@ -95,9 +95,9 @@
                 <MenuItem x:Name="Menu_About" Header="{Binding Source={x:Static resx:UIStrings.About_TexTools}}" Click="Menu_About_Click"/>
 
             </MenuItem>
-            <MenuItem Header="{Binding Source={x:Static resx:UIStrings.Mod_Repos}}" HorizontalAlignment="Right">
-                <MenuItem x:Name="PKEmporium" Header="{Binding Source={x:Static resx:UIStrings.PrettyKitty_Emporium}}" Click="PKEmporium_Click"/>
+            <MenuItem Header="{Binding Source={x:Static resx:UIStrings.Mod_Repos}}">
                 <MenuItem x:Name="XivModArchive" Header="{Binding Source={x:Static resx:UIStrings.XIV_Mod_Archive}}" Click="XivModArchive_Click"/>
+                <MenuItem x:Name="PKEmporium" Header="{Binding Source={x:Static resx:UIStrings.PrettyKitty_Emporium}}" Click="PKEmporium_Click"/>
                 <MenuItem x:Name="NexusMods" Header="{Binding Source={x:Static resx:UIStrings.Nexus_Mods}}" Click="NexusMods_Click"/>
             </MenuItem>
         </Menu>

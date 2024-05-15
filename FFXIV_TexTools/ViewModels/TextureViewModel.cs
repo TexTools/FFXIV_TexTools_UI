@@ -522,7 +522,10 @@ namespace FFXIV_TexTools.ViewModels
                     // Need to test to see if they have VFX files too.
                     var vfxPath = await ATex.GetVfxPath(_item);
                     _vfxPath = vfxPath.Folder + "/" + vfxPath.File;
-                    _hasVfx = await tx.FileExists(_vfxPath);
+                    if (!string.IsNullOrWhiteSpace(vfxPath.Folder))
+                    {
+                        _hasVfx = await tx.FileExists(_vfxPath);
+                    }
                 }
 
             });
@@ -842,7 +845,7 @@ namespace FFXIV_TexTools.ViewModels
                 var uiItem = (XivUi)item;
                 _uiItem = uiItem;
 
-                var paths = await uiItem.GetTexPaths(!HiResChecked, HiResChecked);
+                var paths = await uiItem.GetTexPaths(!HiResChecked, HiResChecked, MainWindow.DefaultTransaction);
                 foreach(var kv in paths)
                 {
                     var mapInfo = new MapComboBoxEntry();
@@ -885,7 +888,7 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     var _character = new Character(XivCache.GameInfo.GameDirectory, XivCache.GameInfo.GameLanguage);
 
-                    var paths = await _character.GetDecalPaths(Character.XivDecalType.FacePaint);
+                    var paths = await _character.GetDecalPaths(Character.XivDecalType.FacePaint, MainWindow.DefaultTransaction);
 
                     foreach (var path in paths)
                     {
@@ -903,7 +906,7 @@ namespace FFXIV_TexTools.ViewModels
                 else if (item.SecondaryCategory == XivStrings.Equipment_Decals)
                 {
                     var _character = new Character(XivCache.GameInfo.GameDirectory, XivCache.GameInfo.GameLanguage);
-                    var paths = await _character.GetDecalPaths(Character.XivDecalType.Equipment);
+                    var paths = await _character.GetDecalPaths(Character.XivDecalType.Equipment, MainWindow.DefaultTransaction);
                     foreach (var path in paths)
                     {
                         var mapInfo = new MapComboBoxEntry();
@@ -1028,11 +1031,16 @@ namespace FFXIV_TexTools.ViewModels
                 _textureView.SharedVariantLabel.Content = "Loading usage data...".L();
 
                 List<string> parents = new List<string>();
-                List<XivImc> entries = null;
+                List<XivImc> entries = new List<XivImc>();
                 await Task.Run(async () =>
                 {
                     var _imc = new Imc(XivCache.GameInfo.GameDirectory);
-                    var info = (await _imc.GetFullImcInfo(item));
+                    var info = (await _imc.GetFullImcInfo(item, false, MainWindow.DefaultTransaction));
+                    if(info == null)
+                    {
+                        return;
+                    }
+
                     entries = info.GetAllEntries(item.GetItemSlotAbbreviation(), true);
 
                     if (Path.GetExtension(path) == ".mtrl")
@@ -1795,7 +1803,8 @@ namespace FFXIV_TexTools.ViewModels
         {
             var raceCode = race.GetRaceCode();
             //SharedMaterialLabel
-            var racialModels = (await _root.GetModelFiles()).Where(x => x.Contains("c" + raceCode)).ToList();
+            var tx = MainWindow.DefaultTransaction;
+            var racialModels = (await _root.GetModelFiles(tx)).Where(x => x.Contains("c" + raceCode)).ToList();
             if (racialModels.Count > 0)
             {
                 // This item has no materials, but it *does* have a racial model, which has materials...
@@ -1868,6 +1877,7 @@ namespace FFXIV_TexTools.ViewModels
         {
             try
             {
+                var tx = MainWindow.DefaultTransaction;
 
                 var race = SelectedRace;
                 var sharedRace = await GetMaterialSharedRace(race);
@@ -1878,8 +1888,8 @@ namespace FFXIV_TexTools.ViewModels
                     var original = "c" + sharedRace.GetRaceCode();
                     var target = "c" + race.GetRaceCode();
 
-                    var materialSet = await Mtrl.GetMaterialSetId(_item);
-                    var materials = await _root.GetMaterialFiles(materialSet);
+                    var materialSet = await Mtrl.GetMaterialSetId(_item, false, tx);
+                    var materials = await _root.GetMaterialFiles(materialSet, tx);
 
                     string matPath = null;
                     foreach(var mat in materials)
@@ -1895,7 +1905,7 @@ namespace FFXIV_TexTools.ViewModels
                     var _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory);
 
                     // Load the original material.
-                    material = await _mtrl.GetXivMtrl(matPath);
+                    material = await _mtrl.GetXivMtrl(matPath, false, tx);
 
                     // And replace the path.
                     material.MTRLPath = material.MTRLPath.Replace(original, target);

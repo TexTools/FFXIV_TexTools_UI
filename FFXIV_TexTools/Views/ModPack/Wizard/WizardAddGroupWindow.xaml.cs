@@ -512,6 +512,7 @@ namespace FFXIV_TexTools.Views
 
             var _imc = new Imc(_gameDirectory);
 
+            var tx = MainWindow.DefaultTransaction;
             int mSet = -1;
             string metadataFile = null;
             var models = new List<string>();
@@ -526,14 +527,15 @@ namespace FFXIV_TexTools.Views
                     var im = (IItemModel)item;
                     var df = IOUtil.GetDataFileFromPath(root.Info.GetRootFile());
 
+
                     metadataFile = root.Info.GetRootFile();
-                    mSet = await _imc.GetMaterialSetId(im);
-                    models = await root.GetModelFiles();
-                    materials = await root.GetMaterialFiles(mSet);
-                    textures = await root.GetTextureFiles(mSet);
+                    mSet = await _imc.GetMaterialSetId(im, false, tx);
+                    models = await root.GetModelFiles(tx);
+                    materials = await root.GetMaterialFiles(mSet, tx);
+                    textures = await root.GetTextureFiles(mSet, tx);
 
                     var _tex = new Tex(XivCache.GameInfo.GameDirectory);
-                    var icons = await _tex.GetItemIcons(im, MainWindow.UserTransaction);
+                    var icons = await _tex.GetItemIcons(im, tx);
 
                     foreach (var icon in icons)
                     {
@@ -541,7 +543,7 @@ namespace FFXIV_TexTools.Views
                     }
 
                     var _atex = new ATex(XivCache.GameInfo.GameDirectory);
-                    var paths = await _atex.GetAtexPaths(im, false, MainWindow.UserTransaction);
+                    var paths = await _atex.GetAtexPaths(im, false, tx);
                     foreach (var path in paths)
                     {
                         textures.Add(path.Path);
@@ -556,7 +558,7 @@ namespace FFXIV_TexTools.Views
                         {
                             var _character = new Character(XivCache.GameInfo.GameDirectory, XivCache.GameInfo.GameLanguage);
 
-                            var paths = await _character.GetDecalPaths(Character.XivDecalType.FacePaint);
+                            var paths = await _character.GetDecalPaths(Character.XivDecalType.FacePaint, tx);
 
                             foreach (var path in paths)
                             {
@@ -567,7 +569,7 @@ namespace FFXIV_TexTools.Views
                         else if (item.SecondaryCategory == XivStrings.Equipment_Decals)
                         {
                             var _character = new Character(XivCache.GameInfo.GameDirectory, XivCache.GameInfo.GameLanguage);
-                            var paths = await _character.GetDecalPaths(Character.XivDecalType.Equipment);
+                            var paths = await _character.GetDecalPaths(Character.XivDecalType.Equipment, tx);
                             foreach (var path in paths)
                             {
                                 textures.Add(path);
@@ -578,7 +580,7 @@ namespace FFXIV_TexTools.Views
                     {
                         // This is a UI item or otherwise an item which has no root, and only has textures.
                         var uiItem = (XivUi)item;
-                        var paths = await uiItem.GetTexPaths(true, true);
+                        var paths = await uiItem.GetTexPaths(true, true, tx);
                         foreach (var kv in paths)
                         {
                             textures.Add(kv.Value);
@@ -744,7 +746,7 @@ namespace FFXIV_TexTools.Views
                 }
             } else
             {
-                children = await XivCache.GetChildrenRecursive(file);
+                children = await XivCache.GetChildrenRecursive(file, MainWindow.DefaultTransaction);
             }
 
 

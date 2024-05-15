@@ -51,6 +51,7 @@ namespace FFXIV_TexTools.ViewModels
         /// <returns></returns>
         public async Task<bool> SetItem(IItem item, MainWindow mainWindow = null)
         {
+            var tx = MainWindow.DefaultTransaction;
             var gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
             _imc = new Imc(gameDirectory);
             _gear = new Gear(gameDirectory, XivLanguages.GetXivLanguage(Properties.Settings.Default.Application_Language));
@@ -108,7 +109,11 @@ namespace FFXIV_TexTools.ViewModels
             FullImcInfo fullInfo = null;
             try
             {
-                 fullInfo = await _imc.GetFullImcInfo(im);
+                fullInfo = await _imc.GetFullImcInfo(im, false, tx);
+                if(fullInfo == null)
+                {
+                    return false;
+                }
             } catch(Exception ex)
             {
                 // This item has no IMC file.
@@ -128,7 +133,7 @@ namespace FFXIV_TexTools.ViewModels
             var sharedList = new List<IItemModel>();
             try
             {
-                sharedList = await im.GetSharedModelItems();
+                sharedList = await im.GetSharedModelItems(tx);
             }
             catch
             {

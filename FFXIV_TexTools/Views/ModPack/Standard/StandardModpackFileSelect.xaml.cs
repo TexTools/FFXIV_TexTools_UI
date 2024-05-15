@@ -112,15 +112,15 @@ namespace FFXIV_TexTools.Views
             {
                 if (_level == XivDependencyLevel.Model)
                 {
-                    children = await root.GetModelFiles();
+                    children = await root.GetModelFiles(tx);
                 }
                 else if (_level == XivDependencyLevel.Material)
                 {
                     var imc = new Imc(XivCache.GameInfo.GameDirectory);
                     try
                     {
-                        var entry = await imc.GetImcInfo((IItemModel)_item);
-                        children = await root.GetMaterialFiles(entry.MaterialSet);
+                        var entry = await imc.GetImcInfo((IItemModel)_item, false, tx);
+                        children = await root.GetMaterialFiles(entry.MaterialSet, tx);
                     } catch
                     {
                         if(root.Info.SecondaryType == XivItemType.hair
@@ -129,10 +129,10 @@ namespace FFXIV_TexTools.Views
                         {
                             // These types don't have IMC entries, but have a material variant number.
                             // Kind of weird, but whatever.
-                            children = await root.GetMaterialFiles(1);
+                            children = await root.GetMaterialFiles(1, tx);
                         } else
                         {
-                            children = await root.GetMaterialFiles(0);
+                            children = await root.GetMaterialFiles(0, tx);
                         }
                     }
                 }
@@ -141,8 +141,8 @@ namespace FFXIV_TexTools.Views
                     try
                     {
                         var imc = new Imc(XivCache.GameInfo.GameDirectory);
-                        var entry = await imc.GetImcInfo((IItemModel)_item);
-                        children = await root.GetTextureFiles(entry.MaterialSet);
+                        var entry = await imc.GetImcInfo((IItemModel)_item, false, tx);
+                        children = await root.GetTextureFiles(entry.MaterialSet, tx);
                     }
                     catch
                     {
@@ -152,11 +152,11 @@ namespace FFXIV_TexTools.Views
                         {
                             // These types don't have IMC entries, but have a material variant number.
                             // Kind of weird, but whatever.
-                            children = await root.GetTextureFiles(1);
+                            children = await root.GetTextureFiles(1, tx);
                         }
                         else
                         {
-                            children = await root.GetTextureFiles(0);
+                            children = await root.GetTextureFiles(0, tx);
                         }
                     }
                 }
