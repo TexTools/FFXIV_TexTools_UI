@@ -222,7 +222,7 @@ namespace FFXIV_TexTools.Views.Metadata
 
             var type = Est.GetEstType(_metadata.Root);
 
-            var options = await Est.GetAllExtraSkeletons(type);
+            var options = await Est.GetAllExtraSkeletons(type,XivRace.All_Races, null, false, MainWindow.DefaultTransaction);
 
             var prefix = Est.GetSystemPrefix(type);
 

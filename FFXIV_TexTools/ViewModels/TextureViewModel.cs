@@ -840,13 +840,14 @@ namespace FFXIV_TexTools.ViewModels
                 return;
             }
 
-            try 
+            var uiItem = item as XivUi;
+            var iModel = item as IItemModel;
+            if (uiItem != null)
             {
-                var uiItem = (XivUi)item;
                 _uiItem = uiItem;
 
                 var paths = await uiItem.GetTexPaths(!HiResChecked, HiResChecked, MainWindow.DefaultTransaction);
-                foreach(var kv in paths)
+                foreach (var kv in paths)
                 {
                     var mapInfo = new MapComboBoxEntry();
 
@@ -859,15 +860,8 @@ namespace FFXIV_TexTools.ViewModels
                 }
 
                 HiResEnabled = uiItem.HasHiRes;
-            } catch
-            {
-                try
-                {
-                    _item = (IItemModel)item;
-                } catch
-                {
-
-                }
+            } else {
+                _item = iModel;
                  
                 if (item.SecondaryCategory == XivStrings.Paintings)
                 {
