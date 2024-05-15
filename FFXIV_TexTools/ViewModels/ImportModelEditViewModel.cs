@@ -575,6 +575,7 @@ namespace FFXIV_TexTools.ViewModels
 
             _view.ShapesListBox.SelectedItem = null;
             _view.AttributesListBox.SelectedItem = null;
+            _view.ModelTypeComboBox.SelectedValue = m.MeshType;
 
             // Set selected part.
             if (m.Parts.Count > 0) {

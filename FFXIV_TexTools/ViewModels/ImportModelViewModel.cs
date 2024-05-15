@@ -469,7 +469,10 @@ namespace FFXIV_TexTools.ViewModels
                 }
                 try
                 {
-                    _view.DialogResult = Success;
+                    if (_view.IsActive)
+                    {
+                        _view.DialogResult = Success;
+                    }
                 }
                 catch (Exception ex)
                 {
