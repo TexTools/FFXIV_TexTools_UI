@@ -207,7 +207,7 @@ namespace FFXIV_TexTools.ViewModels
                 Models.Add(mgm3d);
             }
 
-            SpecularShine = 1;
+            SpecularShine = 5;
 
             var center = boundingBox.GetValueOrDefault().Center;
 
