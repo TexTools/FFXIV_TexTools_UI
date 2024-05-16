@@ -2350,11 +2350,12 @@ namespace FFXIV_TexTools.ViewModels
             }
 
             // Task.Run wrapper to ensure we don't hardlock the render thread.
+            var tex = SelectedMap.TexturePath;
             var task = Task.Run(async () =>
             {
                 using (var tx = ModTransaction.BeginTransaction())
                 {
-                    return await tx.FileExists(SelectedMap.TexturePath);
+                    return await tx.FileExists(tex);
                 }
             });
             return task.Result;
