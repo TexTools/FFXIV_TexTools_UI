@@ -211,7 +211,6 @@ namespace FFXIV_TexTools
         }
         public MainWindow(string[] args)
         {
-            ShaderHelpers.GetShpkFromString("asdf");
             _mainWindow = this;
 
             AutoUpdater.ApplicationExitEvent += AutoUpdater_ApplicationExitEvent;
