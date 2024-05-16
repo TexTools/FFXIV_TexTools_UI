@@ -79,7 +79,11 @@ namespace FFXIV_TexTools
         private FullModelView _fmv;
         public readonly System.Windows.Forms.IWin32Window Win32Window;
 
-        public static readonly string BetaSuffix = "- DT Benchmark Build 20";
+#if ENDWALKER
+        public static readonly string BetaSuffix = "- CursedTools Build 21 (ENDWALKER)";
+#else
+        public static readonly string BetaSuffix = "- CursedTools Build 21 (DAWNTRAIL)";
+#endif
         public static bool IsBetaVersion {
             get
             {

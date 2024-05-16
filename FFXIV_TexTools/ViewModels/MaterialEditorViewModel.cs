@@ -131,19 +131,18 @@ namespace FFXIV_TexTools.ViewModels
             // Get the mod entry.
             if (_mode == MaterialEditorMode.EditSingle || _mode == MaterialEditorMode.EditMulti)
             {
-                var mod = await MainWindow.DefaultTransaction.GetMod(_material.MTRLPath);
-                var _ = Task.Run(async () =>
+                var tx = MainWindow.DefaultTransaction;
+                var mod = await tx.GetMod(_material.MTRLPath);
+                if (mod != null)
                 {
-                    if (mod == null) return;
 
-                    var tx = MainWindow.DefaultTransaction;
                     var enabled = await mod.Value.GetState(tx) == EModState.Enabled;
                     if (enabled)
                     {
                         _view.DisableButton.IsEnabled = true;
                         _view.DisableButton.Visibility = System.Windows.Visibility.Visible;
                     }
-                });
+                }
             }
 
             return true;
