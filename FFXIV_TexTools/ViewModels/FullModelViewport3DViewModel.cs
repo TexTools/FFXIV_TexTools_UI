@@ -24,6 +24,7 @@ using HelixToolkit.Wpf.SharpDX.Model.Scene;
 using Newtonsoft.Json;
 using SharpDX;
 using SharpDX.Direct3D11;
+using System.Collections.Concurrent;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -31,6 +32,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 using System.Windows.Media.Media3D;
 using HelixToolkit.Wpf.SharpDX.Cameras;
 using xivModdingFramework.General.Enums;
@@ -39,6 +42,7 @@ using xivModdingFramework.Models.DataContainers;
 using xivModdingFramework.Models.Helpers;
 using Color = SharpDX.Color;
 using PerspectiveCamera = HelixToolkit.Wpf.SharpDX.PerspectiveCamera;
+using Vector4 = System.Numerics.Vector4;
 
 namespace FFXIV_TexTools.ViewModels
 {
@@ -46,6 +50,8 @@ namespace FFXIV_TexTools.ViewModels
     {
 
         private readonly FullModelViewModel _modelViewModel;
+        private static readonly Regex bodyMaterial = new Regex("[bf][0-9]{4}", RegexOptions.IgnoreCase);
+
         private HashSet<string> shownBonesList = new HashSet<string>();
         private XivRace _targetRace;
         public Dictionary<string, DisplayedModelData> shownModels = new Dictionary<string, DisplayedModelData>();
@@ -108,17 +114,31 @@ namespace FFXIV_TexTools.ViewModels
 
             for (var i = 0; i < totalMeshCount; i++)
             {
-                var meshGeometry3D = GetMeshGeometry(model, i);
+                var (meshGeometry3D, isBodyMaterial) = GetMeshGeometry(model, i);
 
                 var textureData = textureDataDictionary[model.GetMaterialIndex(i)];
 
                 TextureModel diffuse = null, specular = null, normal = null, alpha = null, emissive = null;
 
-                if (textureData.Diffuse != null && textureData.Diffuse.Length > 0)
-                    diffuse = new TextureModel(textureData.Diffuse, SharpDX.DXGI.Format.R8G8B8A8_UNorm, textureData.Width, textureData.Height);
+                if (!isBodyMaterial)
+                {
+                    if (textureData.Diffuse != null && textureData.Diffuse.Length > 0)
+                        diffuse = new TextureModel(NormalizePixelData(textureData.Diffuse), textureData.Width, textureData.Height);
 
-                if (textureData.Specular != null && textureData.Specular.Length > 0)
-                    specular = new TextureModel(textureData.Specular, SharpDX.DXGI.Format.R8G8B8A8_UNorm, textureData.Width, textureData.Height);
+                    if (textureData.Specular != null && textureData.Specular.Length > 0)
+                        specular = new TextureModel(NormalizePixelData(textureData.Specular), textureData.Width, textureData.Height);
+
+                    if (textureData.Emissive != null && textureData.Emissive.Length > 0)
+                        emissive = new TextureModel(NormalizePixelData(textureData.Emissive), textureData.Width, textureData.Height);
+                }
+                else
+                {
+                    if (textureData.Diffuse != null && textureData.Diffuse.Length > 0)
+                        diffuse = new TextureModel(textureData.Diffuse, SharpDX.DXGI.Format.R8G8B8A8_UNorm, textureData.Width, textureData.Height);
+
+                    if (textureData.Specular != null && textureData.Specular.Length > 0)
+                        specular = new TextureModel(textureData.Specular, SharpDX.DXGI.Format.R8G8B8A8_UNorm, textureData.Width, textureData.Height);
+                }
 
                 if (textureData.Normal != null && textureData.Normal.Length > 0)
                     normal = new TextureModel(textureData.Normal, SharpDX.DXGI.Format.R8G8B8A8_UNorm, textureData.Width, textureData.Height);
@@ -186,7 +206,30 @@ namespace FFXIV_TexTools.ViewModels
         }
 
         /// <summary>
-        /// Adds the skeleton node to the viewport
+        /// Take the square root of every pixels' RGB datapoints to match the behavior of the FF14 engine
+        /// </summary>
+        /// <param name="img"></param>
+        private static Color4[] NormalizePixelData(byte[] img)
+        {
+            Color4[] result = new Color4[img.Length / 4];
+            Parallel.ForEach(Partitioner.Create(0, img.Length / 4), range =>
+            {
+                for (int i = range.Item1 * 4; i < range.Item2 * 4; i += 4)
+                {
+                    // This is the only way to do a true single-precision sqrt in .NET Framework
+                    var tmp = Vector4.SquareRoot(new Vector4(
+                        img[i] / 255.0f,
+                        img[i + 1] / 255.0f,
+                        img[i + 2] / 255.0f,
+                        img[i + 3] / 255.0f
+                    ));
+                    result[i / 4] = new Color4(tmp.X, tmp.Y, tmp.Z, tmp.W);
+                }
+            });
+            return result;
+        }
+
+        /// <summary>        /// Adds the skeleton node to the viewport
         /// </summary>
         /// <param name="targetRace">The race the skeleton will be obtained from</param>
         public void AddSkeletonNode(XivRace targetRace)
@@ -397,7 +440,7 @@ namespace FFXIV_TexTools.ViewModels
         private BoneSkinnedMeshGeometry3D GetMeshGeometry(TTModel model, int meshGroupId)
         {
             var group = model.MeshGroups[meshGroupId];
-
+            var isBodyMaterial = bodyMaterial.IsMatch(group.Material);
             var mg = new BoneSkinnedMeshGeometry3D
             {
                 Positions = new Vector3Collection((int)group.VertexCount),
@@ -461,7 +504,7 @@ namespace FFXIV_TexTools.ViewModels
                 vertCount += p.Vertices.Count;
                 indexCount += p.TriangleIndices.Count;
             }
-            return mg;
+            return (mg, isBodyMaterial);
         }
 
 
