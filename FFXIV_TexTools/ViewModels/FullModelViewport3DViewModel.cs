@@ -51,6 +51,7 @@ namespace FFXIV_TexTools.ViewModels
     {
 
         private readonly FullModelViewModel _modelViewModel;
+        protected List<Stream> streamList = new List<Stream>();
         private HashSet<string> shownBonesList = new HashSet<string>();
         private XivRace _targetRace;
         public Dictionary<string, DisplayedModelData> shownModels = new Dictionary<string, DisplayedModelData>();
@@ -369,6 +370,12 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         public void ClearAll()
         {
+            foreach (var stream in streamList)
+            {
+                stream.Dispose();
+            }
+
+            streamList.Clear();
             Models.Clear();
             ModelGroup.Clear();
             shownModels.Clear();
