@@ -221,7 +221,7 @@ namespace FFXIV_TexTools
             var cwd = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
             Directory.SetCurrentDirectory(cwd);
 
-            //CheckForUpdates();
+            CheckForUpdates();
 
             // This slightly unusual contrivance is to ensure that we actually exit program on updates
             // *before* performing the rest of the startup initialization.  If we let it continue
@@ -1441,6 +1441,8 @@ namespace FFXIV_TexTools
         {
             // Ensure the cache worker shuts down.
             XivCache.CacheWorkerEnabled = false;
+            System.Windows.Forms.Application.Exit();
+            //System.Environment.Exit(0);
         }
 
         private void MetroWindow_Loaded(object sender, RoutedEventArgs e)
@@ -1718,10 +1720,15 @@ namespace FFXIV_TexTools
             try
             {
                 var _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory);
-                await Task.Run(async () => { 
+                await Task.Run(async () => {
+
+#if ENDWALKER
+                    await _mtrl.UpdateShaderDB(false);
+#else
                     // TODO - This should be [false] when switching off the benchmark install.
                     // ( Controls whether it uses Index 1 or Index 2 for the search )
                     await _mtrl.UpdateShaderDB(true);
+#endif
                     await ShaderHelpers.LoadShaderInfo();
                 });
             } catch(Exception ex)
