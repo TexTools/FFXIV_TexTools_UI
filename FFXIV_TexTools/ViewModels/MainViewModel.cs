@@ -87,7 +87,10 @@ namespace FFXIV_TexTools.ViewModels
             var count = XivCache.GetDependencyQueueLength();
             if (count > 0)
             {
-                _mainWindow.ShowStatusMessage($"Queue Length: {count._()}".L());
+                //_mainWindow.ShowStatusMessage($"Queue Length: {count._()}".L());
+
+                // Removed localization on this because the localization is throwing an error for some reason(?)
+                _mainWindow.ShowStatusMessage($"Queue Length: {count}");
             }
         }
 

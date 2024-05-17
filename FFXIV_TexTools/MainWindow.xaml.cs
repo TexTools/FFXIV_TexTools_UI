@@ -1436,12 +1436,9 @@ namespace FFXIV_TexTools
             }
         }
 
-        private void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        private async void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            // Ensure the cache worker shuts down.
-            XivCache.CacheWorkerEnabled = false;
-            System.Windows.Forms.Application.Exit();
-            //System.Environment.Exit(0);
+            return;
         }
 
         private void MetroWindow_Loaded(object sender, RoutedEventArgs e)
