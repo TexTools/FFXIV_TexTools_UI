@@ -65,14 +65,9 @@ namespace FFXIV_TexTools.Views
 
 
         private CancellationTokenSource _cts;
-        private TextureViewModel _textureViewModel;
-        private ModelViewModel _modelViewModel;
 
-        public ModListView(TextureViewModel textureViewModel, ModelViewModel modelViewModel)
+        public ModListView()
         {
-            _textureViewModel = textureViewModel;
-            _modelViewModel = modelViewModel;
-
             InitializeComponent();
         }
 

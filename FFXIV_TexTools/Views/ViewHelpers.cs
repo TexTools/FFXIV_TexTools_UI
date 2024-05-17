@@ -1,10 +1,12 @@
-﻿using FFXIV_TexTools.Resources;
+﻿using FFXIV_TexTools.Helpers;
+using FFXIV_TexTools.Resources;
 using MahApps.Metro.Controls.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace FFXIV_TexTools.Views
 {
@@ -46,5 +48,11 @@ namespace FFXIV_TexTools.Views
             return f;
         }
 
+
+        public static void ShowError(string title, string message)
+        {
+            FlexibleMessageBox.Show(message, title, MessageBoxButtons.OK, MessageBoxIcon.Error,
+                MessageBoxDefaultButton.Button1);
+        }
     }
 }

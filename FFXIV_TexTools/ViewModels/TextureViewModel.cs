@@ -562,7 +562,7 @@ namespace FFXIV_TexTools.ViewModels
             }
 
             var _tex = new Tex(XivCache.GameInfo.GameDirectory);
-            var icons = await _tex.GetItemIcons(_item, MainWindow.UserTransaction);
+            var icons = await _tex.GetItemIcons(_item, MainWindow.DefaultTransaction);
             if (icons.Count > 0)
             {
                 finalList.Add("icons.ui");
@@ -733,7 +733,7 @@ namespace FFXIV_TexTools.ViewModels
             if (ext == ".avfx")
             {
                 var _atex = new ATex(XivCache.GameInfo.GameDirectory);
-                var paths = await _atex.GetAtexPaths(_item, false, MainWindow.UserTransaction);
+                var paths = await _atex.GetAtexPaths(_item, false, MainWindow.DefaultTransaction);
 
                 foreach (var path in paths)
                 {
@@ -748,7 +748,7 @@ namespace FFXIV_TexTools.ViewModels
             else if (ext == ".ui")
             {
                 var _tex = new Tex(XivCache.GameInfo.GameDirectory);
-                var icons = await _tex.GetItemIcons(_item, MainWindow.UserTransaction);
+                var icons = await _tex.GetItemIcons(_item, MainWindow.DefaultTransaction);
 
                 foreach (var ttp in icons)
                 {

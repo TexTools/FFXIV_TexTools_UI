@@ -150,19 +150,30 @@ namespace FFXIV_TexTools.Views.Wizard
         /// </summary>
         private async void FinalizeImport()
         {
-            _ProgressController = await this.ShowProgressAsync(UIMessages.ModPackImportTitle, UIMessages.PleaseStandByMessage);
-
             (List<string> Imported, List<string> NotImported, float Duration) res = (null, null, 0);
-            if (_Data.ModpackType == TTMP.EModpackType.Pmp)
+            _ProgressController = await this.ShowProgressAsync(UIMessages.ModPackImportTitle, UIMessages.PleaseStandByMessage);
+            try
             {
-                res = await FinalizePmp(_Data, _Path, ViewHelpers.BindReportProgress(_ProgressController));
-            }
-            else if (_Data.ModpackType == TTMP.EModpackType.TtmpWizard)
-            {
-                res = await FinalizeTtmp(_Data, _Path, ViewHelpers.BindReportProgress(_ProgressController));
-            }
+                if (_Data.ModpackType == TTMP.EModpackType.Pmp)
+                {
+                    res = await FinalizePmp(_Data, _Path, ViewHelpers.BindReportProgress(_ProgressController));
+                }
+                else if (_Data.ModpackType == TTMP.EModpackType.TtmpWizard)
+                {
+                    res = await FinalizeTtmp(_Data, _Path, ViewHelpers.BindReportProgress(_ProgressController));
+                }
 
-            await _ProgressController.CloseAsync();
+            }
+            finally
+            {
+                await _ProgressController.CloseAsync();
+            }
+            if(res.Imported == null)
+            {
+                // User cancelled import or there were 0 items in the modpack.
+                DialogResult = false;
+                return;
+            }
             float ImportDuration = res.Duration;
             int TotalModsImported = res.Imported.Count;
             int TotalModsErrored = res.NotImported.Count;

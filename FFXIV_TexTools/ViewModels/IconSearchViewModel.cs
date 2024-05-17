@@ -91,7 +91,7 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         private async void OpenIcon()
         {
-            var tx = MainWindow.UserTransaction != null ? MainWindow.UserTransaction : ModTransaction.BeginTransaction();
+            var tx = MainWindow.DefaultTransaction;
             if (_mainView.TabsControl.SelectedIndex == 1)
             {
                 _mainView.TabsControl.SelectedIndex = 0;

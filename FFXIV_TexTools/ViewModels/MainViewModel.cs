@@ -528,19 +528,14 @@ namespace FFXIV_TexTools.ViewModels
         private async Task BackupIndexFiles()
         {
             _mainWindow.LockProgress?.Report("Creating Index Backups...".L());
-            var pc = new ProblemChecker(XivCache.GameInfo.GameDirectory);
-            DirectoryInfo backupDir;
             try
             {
-                Directory.CreateDirectory(Settings.Default.Backup_Directory);
-                backupDir = new DirectoryInfo(Settings.Default.Backup_Directory);
+                await ProblemChecker.CreateIndexBackups(Settings.Default.Backup_Directory);
             }
-            catch
+            catch(Exception ex)
             {
-                throw new Exception("Unable to create index backups.\nThe Index Backup directory is invalid or inaccessible: ".L() + Settings.Default.Backup_Directory);
+                ViewHelpers.ShowError("Index Backup Error", "Index backups were unabled to be created:\n\n" + ex.Message);
             }
-
-            await pc.BackupIndexFiles(backupDir);
 
         }
 

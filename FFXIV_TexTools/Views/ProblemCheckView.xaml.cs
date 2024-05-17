@@ -50,9 +50,7 @@ namespace FFXIV_TexTools.Views
     /// </summary>
     public partial class ProblemCheckView
     {
-        private ProblemChecker _problemChecker;
         private DirectoryInfo _gameDirectory;
-        private List<XivDataFile> _indexDatRepairList = new List<XivDataFile>();
         private string textColor = "Black";
         private string secondaryTextColor = "Blue";
         private CancellationTokenSource cts = new CancellationTokenSource();
@@ -70,7 +68,6 @@ namespace FFXIV_TexTools.Views
 
             _gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
 
-            _problemChecker = new ProblemChecker(_gameDirectory);
 
             RunChecks();
         }
@@ -92,9 +89,6 @@ namespace FFXIV_TexTools.Views
             AddText($"{UIStrings.ProblemCheck_Initialize}\n\n", textColor);
 
             AddText($"{UIStrings.ProblemCheck_IndexDat}\n\n", secondaryTextColor);
-
-            AddText($"\n{UIStrings.ProblemCheck_IndexBackups}\n", secondaryTextColor);
-            await CheckBackups();
 
             AddText($"\n{UIStrings.ProblemCheck_DatSize}\n", secondaryTextColor);
             await CheckDatSizes();
@@ -124,18 +118,6 @@ namespace FFXIV_TexTools.Views
             ProgressBar.Value = 0;
             ProgressLabel.Content = UIStrings.Done;
         }
-
-        /// <summary>
-        /// Fixes the dat counts in the index files
-        /// </summary>
-        private async Task FixIndexDatCounts()
-        {
-            foreach (var xivDataFile in _indexDatRepairList)
-            {
-                await _problemChecker.RepairIndexDatCounts(xivDataFile);
-            }
-        }
-
 
         private async Task CheckDatSizes()
         {
@@ -192,11 +174,10 @@ namespace FFXIV_TexTools.Views
 
                 await Task.Run( async () =>
                 {
-                    var problemChecker = new ProblemChecker(_gameDirectory);
                     var indexBackupsDirectory = new DirectoryInfo(Settings.Default.Backup_Directory);
                     try
                     {
-                        await problemChecker.PerformStartOver(indexBackupsDirectory, null, XivLanguages.GetXivLanguage(Properties.Settings.Default.Application_Language));
+                        await ProblemChecker.ResetAllGameFiles(indexBackupsDirectory, null);
 
                         Dispatcher.Invoke(() => AddText("\t\u2714", "Green"));
                         Dispatcher.Invoke(() => AddText("\tModList restored".L(), "Green"));
@@ -263,13 +244,13 @@ namespace FFXIV_TexTools.Views
 
                             textsToAdd.Add(($"\t{fileName}{tabs}", textColor));
 
-                            if (mod.OriginalOffset8x <= 0)
+                            if (mod.OriginalOffset8x < 0)
                             {
                                 textsToAdd.Add(("\t\u2716\n", "Red"));
                                 textsToAdd.Add(($"\tOriginal FFXIV Offset is Invalid.  Unrecoverable ModList state.\n\t Please use [Download Index Backups] =>  [Start Over].\n".L(), "Red"));
                                 unresolvedCriticalErrors++;
                             }
-                            else if (mod.ModOffset8x <= 0)
+                            else if (mod.ModOffset8x < 0)
                             {
                                 textsToAdd.Add(("\t\u2716\n", "Red"));
                                 textsToAdd.Add(($"\tMod Data Offset is invalid. \n\t The Mod will be disabled, deleted, and the mod slot will be purged from the ModList.\n".L(), "Red"));
@@ -523,62 +504,6 @@ namespace FFXIV_TexTools.Views
 
             if (Directory.Exists(dir))
             {
-                var DX11 = await Task.Run(() =>
-                {
-                    var dx = false;
-                    if (!File.Exists($"{dir}\\FFXIV_BOOT.cfg"))
-                    {
-                        if (File.Exists($"{_gameDirectory}\\..\\..\\..\\sdo\\sdologin\\GamePlugin\\GameSetting.xml"))
-                        {
-                            var text = File.ReadAllText($"{_gameDirectory}\\..\\..\\..\\sdo\\sdologin\\GamePlugin\\GameSetting.xml");
-                            if (text.IndexOf("<DX11Option value=\"1\"")!=-1)
-                            {
-                                return true;
-                            }
-                        }
-                    }
-                    if (File.Exists($"{dir}\\FFXIV_BOOT.cfg"))
-                    {
-                        var lines = File.ReadAllLines($"{dir}\\FFXIV_BOOT.cfg");
-
-                        foreach (var line in lines)
-                        {
-                            if (cts.IsCancellationRequested)
-                            {
-                                cts.Token.ThrowIfCancellationRequested();
-                                return dx;
-                            }
-
-                            if (line.Contains("DX11Enabled"))
-                            {
-                                var val = line.Substring(line.Length - 1, 1);
-                                if (val.Equals("1"))
-                                {
-                                    dx = true;
-                                }
-
-                                break;
-                            }
-                        }
-                    }
-
-                    return dx;
-                }, cts.Token);
-
-                if (DX11)
-                {
-                    AddText($"\tFFXIV set to DX11 Mode".L(), textColor);
-                    AddText("\t\u2714\n", "Green");
-                } else
-                {
-                    AddText($"\tFFXIV set to DX9 Mode".L(), textColor);
-                    AddText("\t\u2716\n", "Red");
-                    AddText($"\tFFXIV is set to DX9 Mode.  This may cause issues.\n".L(), "Orange");
-                }
-
-
-
-
 
                 var datSizeLimit = Dat.GetMaximumDatSize();
                 double gb = ((double)datSizeLimit) / 1024D / 1024D / 1024D;
@@ -607,7 +532,7 @@ namespace FFXIV_TexTools.Views
                         if (line.Contains("LodType"))
                         {
                             var val = line.Substring(line.Length - 1, 1);
-                            if (DX11 && line.Contains("DX11"))
+                            if (line.Contains("DX11"))
                             {
                                 if (val.Equals("1"))
                                 {
@@ -626,22 +551,6 @@ namespace FFXIV_TexTools.Views
                                 AddText("\u2714\n", "Green");
 
                             }
-                            else if (!DX11 && !line.Contains("DX11"))
-                            {
-                                if (val.Equals("1"))
-                                {
-                                    AddText($"\t{line.Substring(0, line.IndexOf("\t"))} ON\t", textColor);
-                                    AddText("\u2716\n", "Red");
-                                    tmpLine = lineNum;
-                                    problem = true;
-
-                                    break;
-                                }
-
-                                AddText($"\t{line.Substring(0, line.IndexOf("\t"))} OFF\t", textColor);
-                                AddText("\u2714\n", "Green");
-                            }
-
                         }
 
                         lineNum++;
@@ -662,47 +571,6 @@ namespace FFXIV_TexTools.Views
                 }
             }
             cfpTextBox.ScrollToEnd();
-        }
-
-        private async Task CheckBackups()
-        {
-            var filesToCheck = new XivDataFile[] { XivDataFile._0A_Exd, XivDataFile._01_Bgcommon, XivDataFile._04_Chara, XivDataFile._06_Ui};
-
-            var backupDirectory = new DirectoryInfo(Properties.Settings.Default.Backup_Directory);
-
-            foreach (var file in filesToCheck)
-            {
-                AddText($"\t{file.GetFileName()._()} Index Files".L(), textColor);
-
-                try
-                {
-                    var path = Path.Combine(backupDirectory.FullName, file.GetFilePath());
-                    var backupFile = new DirectoryInfo($"{path}.win32.index");
-
-                    if (!File.Exists(backupFile.FullName))
-                    {
-                        AddText($"\t\u2716\n{UIStrings.ProblemCheck_NoBackup}\n", "Red");
-                        continue;
-                    }
-
-                    var result = await _problemChecker.ValidateIndexBackup(file, backupDirectory);
-
-                    if (!result)
-                    {
-                        AddText($"\t\u2716 {UIStrings.ProblemCheck_OutOfDate}\n", "Red");
-                    }
-                    else
-                    {
-                        AddText("\t\u2714\n", "Green");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    FlexibleMessageBox.Show(
-                        $"{UIStrings.ProblemCheck_BackupError}\n{ex.Message}", "Problem Check Error".L(),
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
         }
 
         /// <summary>

@@ -323,6 +323,13 @@ namespace FFXIV_TexTools.Views
                     Properties.Settings.Default.AutoMaterialFix, Properties.Settings.Default.FixPreDawntrailOnImport, MainWindow.UserTransaction);
                 });
 
+                if (importResults.Imported == null)
+                {
+                    // User cancelled or modpack had 0 items.
+                    DialogResult = false;
+                    return;
+                }
+
                 TotalModsErrored = importResults.Imported.Count;
                 TotalModsImported = importResults.NotImported.Count;
                 ImportDuration = importResults.Duration;
@@ -333,8 +340,11 @@ namespace FFXIV_TexTools.Views
                     $"{UIMessages.ErrorImportingModsMessage}\n\n{ex.Message}", UIMessages.ErrorImportingModsTitle,
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+            finally
+            {
+                await _progressController.CloseAsync();
+            }
 
-            await _progressController.CloseAsync();
 
             if (_messageInImport)
             {

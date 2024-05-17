@@ -522,14 +522,12 @@ namespace FFXIV_TexTools
                     {
                         // Back up their stuff if they're a totally fresh install.
                         var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
-                        var problemChecker = new ProblemChecker(gameDirectory);
-                        var backupsDirectory = new DirectoryInfo(Properties.Settings.Default.Backup_Directory);
 
 
                         await LockUi("Creating Initial Backups".L(), "This should only take a moment...".L());
                         try
                         {
-                            await problemChecker.BackupIndexFiles(backupsDirectory);
+                            await ProblemChecker.CreateIndexBackups(Settings.Default.Backup_Directory);
                             await this.ShowMessageAsync(UIMessages.BackupCompleteTitle, UIMessages.BackupCompleteMessage);
                         }
                         catch (Exception ex)
@@ -1111,12 +1109,7 @@ namespace FFXIV_TexTools
         /// </summary>
         private void Menu_ModList_Click(object sender, RoutedEventArgs e)
         {
-            var textureView = TextureTabItem.Content as TextureView;
-            var textureViewModel = textureView.DataContext as TextureViewModel;
-            var modelView = ModelTabItem.Content as ModelView;
-            var modelViewModel = modelView.DataContext as ModelViewModel;
-
-            var modListView = new ModListView(textureViewModel, modelViewModel) {Owner = this};
+            var modListView = new ModListView() {Owner = this};
             modListView.Show();
         }
 
@@ -1365,15 +1358,13 @@ namespace FFXIV_TexTools
                 }
 
 
-                var problemChecker = new ProblemChecker(gameDirectory);
-
                 await LockUi(UIStrings.Start_Over, UIMessages.PleaseStandByMessage, this);
 
                 MakeHighlander();
 
                 try
                 {
-                    await problemChecker.PerformStartOver(indexBackupsDirectory, _lockProgress, XivLanguages.GetXivLanguage(Settings.Default.Application_Language));
+                    await ProblemChecker.ResetAllGameFiles(indexBackupsDirectory, _lockProgress);
                     CustomizeViewModel.UpdateCacheSettings();
                 }
                 catch(Exception ex)
@@ -1417,13 +1408,12 @@ namespace FFXIV_TexTools
 
             if (result == System.Windows.Forms.DialogResult.Yes)
             {
-                var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);                
-                var problemChecker = new ProblemChecker(gameDirectory);
+                var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
                 var backupsDirectory = new DirectoryInfo(Properties.Settings.Default.Backup_Directory);
                 await LockUi("Backing Up Indexes".L(), "If you have many mods enabled, this may take some time...".L());
                 try
                 {
-                    await problemChecker.BackupIndexFiles(backupsDirectory);
+                    await ProblemChecker.CreateIndexBackups(backupsDirectory.FullName);
                     await this.ShowMessageAsync(UIMessages.BackupCompleteTitle, UIMessages.BackupCompleteMessage);
                 }
                 catch(Exception ex)

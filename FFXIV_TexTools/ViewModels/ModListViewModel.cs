@@ -53,7 +53,6 @@ namespace FFXIV_TexTools.ViewModels
 {
     public class ModListViewModel : INotifyPropertyChanged
     {
-        private readonly DirectoryInfo _modListDirectory;
         private readonly DirectoryInfo _gameDirectory;
         private string _modToggleText = UIStrings.Enable_Disable;
         private Visibility _listVisibility = Visibility.Visible, _infoGridVisibility = Visibility.Collapsed;
@@ -68,7 +67,6 @@ namespace FFXIV_TexTools.ViewModels
         public ModListViewModel()
         {
             _gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
-            _modListDirectory = new DirectoryInfo(Path.Combine(_gameDirectory.Parent.Parent.FullName, XivStrings.ModlistFilePath));
 
             progress = new Progress<(int current, int total)>((result) =>
             {

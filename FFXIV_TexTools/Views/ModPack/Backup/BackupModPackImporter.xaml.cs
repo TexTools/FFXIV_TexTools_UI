@@ -118,6 +118,13 @@ namespace FFXIV_TexTools.Views
                     return await TTMP.ImportModPackAsync(_modpackDirectory.FullName, importList, XivStrings.TexTools, ViewHelpers.BindReportProgress(_progressController), null, false, Properties.Settings.Default.FixPreDawntrailOnImport, MainWindow.UserTransaction);
                 });
 
+                if (importResults.Imported == null)
+                {
+                    // User cancelled or modpack had 0 items.
+                    DialogResult = false;
+                    return;
+                }
+
                 TotalModsImported = importResults.Imported.Count;
                 TotalModsErrored = importResults.NotImported.Count;
                 ImportDuration = importResults.Duration;

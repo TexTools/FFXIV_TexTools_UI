@@ -2044,7 +2044,7 @@ namespace FFXIV_TexTools.ViewModels
                 var colors = ModelTexture.GetCustomColors();
                 colors.InvertNormalGreen = false;
 
-                var modelMaps = await ModelTexture.GetModelMaps(_gameDirectory, xivMtrl.Value, colors, HighlightedColorsetRow, MainWindow.UserTransaction);
+                var modelMaps = await ModelTexture.GetModelMaps(_gameDirectory, xivMtrl.Value, colors, HighlightedColorsetRow, MainWindow.DefaultTransaction);
                 textureDataDictionary.Add(xivMtrl.Key, modelMaps);
             }
 
