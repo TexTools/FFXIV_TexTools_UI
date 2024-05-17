@@ -399,6 +399,8 @@ namespace FFXIV_TexTools.ViewModels
             SkeletonComboboxEnabled = true;
             SkinComboboxEnabled = true;
 
+            ReflectionValue = ViewPortVM.SpecularShine;
+
             ExportEnabled = true;
             RemoveEnabled = true;
             _isFirstModel = false;
