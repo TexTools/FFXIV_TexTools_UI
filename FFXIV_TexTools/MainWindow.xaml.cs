@@ -1061,7 +1061,7 @@ namespace FFXIV_TexTools
         /// </summary>
         private void PKEmporium_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start(WebUrl.PKEmporium_Website);
+            Process.Start(WebUrl.PKEmporium_Discord);
         }
 
         /// <summary>
