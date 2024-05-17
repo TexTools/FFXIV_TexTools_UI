@@ -149,7 +149,7 @@ namespace FFXIV_TexTools.Views
 
             foreach (var file in filesToCheck)
             {
-                AddText($"\t{file.GetDataFileName()._()} Dat Files".L(), textColor);
+                AddText($"\t{file.GetFileName()._()} Dat Files".L(), textColor);
 
                 try
                 {
@@ -672,12 +672,12 @@ namespace FFXIV_TexTools.Views
 
             foreach (var file in filesToCheck)
             {
-                AddText($"\t{file.GetDataFileName()._()} Index Files".L(), textColor);
+                AddText($"\t{file.GetFileName()._()} Index Files".L(), textColor);
 
                 try
                 {
-                    var backupFile =
-                        new DirectoryInfo($"{backupDirectory.FullName}\\{file.GetDataFileName()}.win32.index");
+                    var path = Path.Combine(backupDirectory.FullName, file.GetFilePath());
+                    var backupFile = new DirectoryInfo($"{path}.win32.index");
 
                     if (!File.Exists(backupFile.FullName))
                     {

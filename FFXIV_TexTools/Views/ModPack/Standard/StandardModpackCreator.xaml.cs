@@ -463,7 +463,7 @@ namespace FFXIV_TexTools.Views
                         ModOffset = offset,
                         ModSize = compressedSize,
                         IsDefault = isDef,
-                        DatFile = dataFile.GetDataFileName()
+                        DatFile = dataFile.GetFileName()
                     };
 
                     simpleModPackData.SimpleModDataList.Add(simpleData);
