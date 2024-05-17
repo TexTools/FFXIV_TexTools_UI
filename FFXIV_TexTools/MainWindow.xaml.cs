@@ -1410,7 +1410,7 @@ namespace FFXIV_TexTools
             {
                 var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
                 var backupsDirectory = new DirectoryInfo(Properties.Settings.Default.Backup_Directory);
-                await LockUi("Backing Up Indexes".L(), "If you have many mods enabled, this may take some time...".L());
+                await LockUi("Backing Up Indexes".L(), "Please wait...".L());
                 try
                 {
                     await ProblemChecker.CreateIndexBackups(backupsDirectory.FullName);
