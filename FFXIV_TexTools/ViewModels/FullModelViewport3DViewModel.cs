@@ -1,4 +1,4 @@
-﻿// FFXIV TexTools
+// FFXIV TexTools
 // Copyright © 2020 Rafael Gonzalez - All Rights Reserved
 // 
 // This program is free software: you can redistribute it and/or modify
@@ -42,7 +42,7 @@ using xivModdingFramework.Models.DataContainers;
 using xivModdingFramework.Models.Helpers;
 using Color = SharpDX.Color;
 using PerspectiveCamera = HelixToolkit.Wpf.SharpDX.PerspectiveCamera;
-using Vector4 = System.Numerics.Vector4;
+using SRGBVector4 = System.Numerics.Vector4;
 
 namespace FFXIV_TexTools.ViewModels
 {
@@ -217,7 +217,7 @@ namespace FFXIV_TexTools.ViewModels
                 for (int i = range.Item1 * 4; i < range.Item2 * 4; i += 4)
                 {
                     // This is the only way to do a true single-precision sqrt in .NET Framework
-                    var tmp = Vector4.SquareRoot(new Vector4(
+                    var tmp = SRGBVector4.SquareRoot(new SRGBVector4(
                         img[i] / 255.0f,
                         img[i + 1] / 255.0f,
                         img[i + 2] / 255.0f,
@@ -437,7 +437,7 @@ namespace FFXIV_TexTools.ViewModels
         /// <param name="model">The model to get the geometry from</param>
         /// <param name="meshGroupId">The mesh group ID</param>
         /// <returns>The Skinned Mesh Geometry</returns>
-        private BoneSkinnedMeshGeometry3D GetMeshGeometry(TTModel model, int meshGroupId)
+        private (BoneSkinnedMeshGeometry3D, bool) GetMeshGeometry(TTModel model, int meshGroupId)
         {
             var group = model.MeshGroups[meshGroupId];
             var isBodyMaterial = bodyMaterial.IsMatch(group.Material);
