@@ -335,6 +335,12 @@ namespace FFXIV_TexTools.ViewModels
         /// <param name="race">The race of the model being added</param>
         public async void AddModelToView(TTModel ttModel, Dictionary<int, ModelTextureData> _materialDictionary, IItemModel item, XivRace modelRace)
         {
+            var firstModelSkeleton = from s in Skeletons where s.XivRace == modelRace select s;
+            SelectedSkeleton = firstModelSkeleton.FirstOrDefault();
+            if (SelectedSkeleton == null)
+            {
+                return;
+            }
 
             var pc = await _fullModelView.ShowProgressAsync(UIStrings.ModelStatus_Loading, UIMessages.PleaseStandByMessage);
             // Sets the skeleton to the same as the race of the first model added
@@ -345,9 +351,6 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     await GetCharaSkinDictionary();
                 }
-                var firstModelSkeleton = from s in Skeletons where s.XivRace == modelRace select s;
-                SelectedSkeleton = firstModelSkeleton.FirstOrDefault();
-
                 Skins.Clear();
 
                 foreach (var skinNum in _charaRaceAndSkinDictionary[SelectedSkeleton.XivRace.GetSkinRace()])
