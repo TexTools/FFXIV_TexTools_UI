@@ -124,11 +124,11 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to https://prettykittyemporium.blogspot.com/.
+        ///   Looks up a localized string similar to https://discord.gg/pkemporium.
         /// </summary>
-        internal static string PKEmporium_Website {
+        internal static string PKEmporium_Discord {
             get {
-                return ResourceManager.GetString("PKEmporium_Website", resourceCulture);
+                return ResourceManager.GetString("PKEmporium_Discord", resourceCulture);
             }
         }
         
