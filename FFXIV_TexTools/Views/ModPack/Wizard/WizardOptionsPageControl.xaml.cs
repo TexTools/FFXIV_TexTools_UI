@@ -92,7 +92,7 @@ namespace FFXIV_TexTools.Views.Wizard
             foreach (var item in OptionsList.ItemsSource)
             {
                 var modOption = (WizardOptionDisplay)item;
-                if (!modOption.OptionType.Equals("Single"))
+                if (modOption.OptionType == EOptionType.Multi)
                 {
                     modOption.Selected = isSelected;
                 }
