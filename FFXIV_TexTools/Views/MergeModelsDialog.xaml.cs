@@ -20,23 +20,41 @@ using xivModdingFramework.Cache;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Models.FileTypes;
+using xivModdingFramework.Variants.FileTypes;
+using xivModdingFramework.Mods;
+using System.Collections.ObjectModel;
 
 namespace FFXIV_TexTools.Views
 {
     /// <summary>
     /// Interaction logic for CopyModelDialog.xaml
     /// </summary>
-    public partial class CopyModelDialog : Window
+    public partial class MergeModelsDialog : Window
     {
-        public CopyModelDialog()
+        private ObservableCollection<int> ImcVariantSource = new ObservableCollection<int>();
+
+        public MergeModelsDialog()
         {
             InitializeComponent();
+            
+            ImcVariantSource.Add(0);
+            VariantBox.ItemsSource = ImcVariantSource;
+            VariantBox.SelectedIndex = 0;
+
         }
+
+        private string _lastFrom;
 
         private async void AnyTextChanged(object sender, TextChangedEventArgs e)
         {
             var to = ToBox.Text;
             var from = FromBox.Text;
+
+            if(from != _lastFrom)
+            {
+                _lastFrom = from;
+                LoadVariants();
+            }
 
             if (string.IsNullOrWhiteSpace(to) || string.IsNullOrWhiteSpace(from))
             {
@@ -131,7 +149,37 @@ namespace FFXIV_TexTools.Views
             RaceChangeNotice.Text = $"Model will be adjusted from {fromRace.GetDisplayName()._()} to {toRace.GetDisplayName()._()}.".L();
             RaceChangeNotice.Foreground = Brushes.Green;
 
+        }
 
+        private async void LoadVariants()
+        {
+            ImcVariantSource.Clear();
+            ImcVariantSource.Add(0);
+            VariantBox.SelectedIndex = 0;
+
+            // Validation
+            var from = FromBox.Text;
+            if (string.IsNullOrWhiteSpace(from)) return;
+            
+            from = from.Trim().ToLower();
+            if (!from.EndsWith(".mdl")) return;
+
+            var fromRoot = await XivCache.GetFirstRoot(from);
+            if (fromRoot == null) return;
+            if (!Imc.UsesImc(fromRoot)) return;
+
+            var _imc = new Imc(XivCache.GameInfo.GameDirectory);
+
+            var imcInfo = await _imc.GetFullImcInfo(fromRoot.GetRawImcFilePath(), MainWindow.DefaultTransaction);
+
+            if (imcInfo.SubsetCount == 0) return;
+
+            ImcVariantSource.Clear();
+            for (int i = 0; i < imcInfo.SubsetCount + 1; i++)
+            {
+                ImcVariantSource.Add(i);
+            }
+            VariantBox.SelectedIndex = 1;
         }
 
         private async void CopyButton_Click(object sender, RoutedEventArgs e)
@@ -153,10 +201,11 @@ namespace FFXIV_TexTools.Views
                 var toRoot = await XivCache.GetFirstRoot(to);
                 var fromRoot = await XivCache.GetFirstRoot(from);
                 var df = IOUtil.GetDataFileFromPath(to);
-
                 var _mdl = new Mdl(XivCache.GameInfo.GameDirectory);
 
-                await _mdl.CopyModel(from, to, XivStrings.TexTools, true, MainWindow.UserTransaction);
+
+
+                await _mdl.MergeModels(to, from, VariantBox.SelectedIndex, XivStrings.TexTools, true, MainWindow.UserTransaction);
                 FlexibleMessageBox.Show("Model Copied Successfully.".L(), "Model Copy Confirmation".L(), System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Information);
                 Close();
             }

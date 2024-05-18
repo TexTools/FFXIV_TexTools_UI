@@ -1698,6 +1698,12 @@ namespace FFXIV_TexTools
             wind.Show();
         }
 
+        private void Menu_MergeModels_Click(object sender, RoutedEventArgs e)
+        {
+            var wind = new MergeModelsDialog() { Owner = this };
+            wind.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            wind.Show();
+        }
 
 
         private void Menu_RacialScaling_Click(object sender, RoutedEventArgs e)
