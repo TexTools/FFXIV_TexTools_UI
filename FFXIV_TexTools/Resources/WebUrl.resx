@@ -139,7 +139,7 @@
     <value>https://www.nexusmods.com/finalfantasy14</value>
   </data>
   <data name="PKEmporium_Discord" xml:space="preserve">
-    <value>https://discord.gg/pkemporium/</value>
+    <value>https://discord.gg/pkemporium</value>
   </data>
   <data name="TexTools_Beta_Update_Url" xml:space="preserve">
     <value>https://raw.githubusercontent.com/TexTools/FFXIV_TexTools_Updater/master/updater_beta.xml</value>
