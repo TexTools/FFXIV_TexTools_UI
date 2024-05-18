@@ -915,94 +915,102 @@ namespace FFXIV_TexTools
         /// <param name="selectedItem">The selected item</param>
         private async void UpdateViews(IItem item)
         {
-            if(item == null)
+            try
             {
-                return;
-            }
-
-            if (ItemChanging != null)
-            {
-                ItemChanging.Invoke(this, null);
-            }
-
-            await LockUi();
-
-            _modelLoaded = false;
-            _texturesLoaded = false;
-            _waitingForItemLoad = true;
-
-            var textureView = TextureTabItem.Content as TextureView;
-            var textureViewModel = textureView.DataContext as TextureViewModel;
-            var sharedItemsView = SharedItemsTab.Content as SharedItemsView;
-            var sharedItemsViewModel = sharedItemsView.DataContext as SharedItemsViewModel;
-            var metadataView = MetadataTab.Content as MetadataView;
-
-            var showMetadata = await metadataView.SetItem(item);
-            if (showMetadata)
-            {
-                MetadataTab.IsEnabled = true;
-                MetadataTab.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                if (MetadataTab.IsSelected)
+                if (item == null)
                 {
-                    MetadataTab.IsSelected = false;
-                    TextureTabItem.IsSelected = true;
-                }
-                MetadataTab.IsEnabled = false;
-                MetadataTab.Visibility = Visibility.Collapsed;
-            }
-
-            // This guy has no funny async callback.  It's ready once these awaits are done.
-            await textureViewModel.UpdateTexture(item);
-            var showSharedItems = await sharedItemsViewModel.SetItem(item, this);
-            if(showSharedItems) { 
-                SharedItemsTab.IsEnabled = true;
-                SharedItemsTab.Visibility = Visibility.Visible;
-            } else
-            {
-                if(SharedItemsTab.IsSelected)
-                {
-                    SharedItemsTab.IsSelected = false;
-                    TextureTabItem.IsSelected = true;
-                }
-                SharedItemsTab.IsEnabled = false;
-                SharedItemsTab.Visibility = Visibility.Collapsed;
-            }
-
-
-
-
-            if (item.PrimaryCategory.Equals(XivStrings.UI) ||
-                item.SecondaryCategory.Equals(XivStrings.Face_Paint) ||
-                item.SecondaryCategory.Equals(XivStrings.Equipment_Decals) ||
-                item.SecondaryCategory.Equals(XivStrings.Paintings))
-            {
-                if (TabsControl.SelectedIndex == 1)
-                {
-                    TabsControl.SelectedIndex = 0;
+                    return;
                 }
 
-                // No model to load, just set us as already loaded.
-                _modelLoaded = true;
+                if (ItemChanging != null)
+                {
+                    ItemChanging.Invoke(this, null);
+                }
 
-                ModelTabItem.IsEnabled = false;
-                ModelTabItem.Visibility = Visibility.Collapsed;
+                await LockUi();
+
+                _modelLoaded = false;
+                _texturesLoaded = false;
+                _waitingForItemLoad = true;
+
+                var textureView = TextureTabItem.Content as TextureView;
+                var textureViewModel = textureView.DataContext as TextureViewModel;
+                var sharedItemsView = SharedItemsTab.Content as SharedItemsView;
+                var sharedItemsViewModel = sharedItemsView.DataContext as SharedItemsViewModel;
+                var metadataView = MetadataTab.Content as MetadataView;
+
+                var showMetadata = await metadataView.SetItem(item);
+                if (showMetadata)
+                {
+                    MetadataTab.IsEnabled = true;
+                    MetadataTab.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    if (MetadataTab.IsSelected)
+                    {
+                        MetadataTab.IsSelected = false;
+                        TextureTabItem.IsSelected = true;
+                    }
+                    MetadataTab.IsEnabled = false;
+                    MetadataTab.Visibility = Visibility.Collapsed;
+                }
+
+                // This guy has no funny async callback.  It's ready once these awaits are done.
+                await textureViewModel.UpdateTexture(item);
+                var showSharedItems = await sharedItemsViewModel.SetItem(item, this);
+                if(showSharedItems) { 
+                    SharedItemsTab.IsEnabled = true;
+                    SharedItemsTab.Visibility = Visibility.Visible;
+                } else
+                {
+                    if(SharedItemsTab.IsSelected)
+                    {
+                        SharedItemsTab.IsSelected = false;
+                        TextureTabItem.IsSelected = true;
+                    }
+                    SharedItemsTab.IsEnabled = false;
+                    SharedItemsTab.Visibility = Visibility.Collapsed;
+                }
+
+
+
+
+                if (item.PrimaryCategory.Equals(XivStrings.UI) ||
+                    item.SecondaryCategory.Equals(XivStrings.Face_Paint) ||
+                    item.SecondaryCategory.Equals(XivStrings.Equipment_Decals) ||
+                    item.SecondaryCategory.Equals(XivStrings.Paintings))
+                {
+                    if (TabsControl.SelectedIndex == 1)
+                    {
+                        TabsControl.SelectedIndex = 0;
+                    }
+
+                    // No model to load, just set us as already loaded.
+                    _modelLoaded = true;
+
+                    ModelTabItem.IsEnabled = false;
+                    ModelTabItem.Visibility = Visibility.Collapsed;
+                }
+                else
+                {
+                    ModelTabItem.IsEnabled = true;
+                    ModelTabItem.Visibility = Visibility.Visible;
+
+                    var modelView = ModelTabItem.Content as ModelView;
+                    var modelViewModel = modelView.DataContext as ModelViewModel;
+
+                    await modelViewModel.UpdateModel(item as IItemModel);
+                }
+
+                // Need to do this here in case any of the views came back immediately and fired before we finished this function.
+                await CheckItemLoadComplete();
             }
-            else
+            catch (Exception ex)
             {
-                ModelTabItem.IsEnabled = true;
-                ModelTabItem.Visibility = Visibility.Visible;
-
-                var modelView = ModelTabItem.Content as ModelView;
-                var modelViewModel = modelView.DataContext as ModelViewModel;
-
-                await modelViewModel.UpdateModel(item as IItemModel);
+                ViewHelpers.ShowError("Item Load Failure", "Unable to load some or all parts of item:\n\n" + ex.Message);
+                await UnlockUi();
             }
-
-            // Need to do this here in case any of the views came back immediately and fired before we finished this function.
-            await CheckItemLoadComplete();
         }
 
         /// <summary>

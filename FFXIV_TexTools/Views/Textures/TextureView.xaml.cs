@@ -140,5 +140,10 @@ namespace FFXIV_TexTools.Views
             this.ExportContextMenu.PlacementTarget = this.ExportTextureButton;
             this.ExportContextMenu.IsOpen = true;
         }
+
+        private void ExportModpack_Click(object sender, RoutedEventArgs e)
+        {
+            SingleFileModpackCreator.ExportFile(textureViewModel.PathString, MainWindow.GetMainWindow());
+        }
     }
 }

@@ -168,6 +168,7 @@
                         <MenuItem Header="DDS" IsCheckable="True" IsChecked="{Binding ExportTextureAsDDS}"/>
                         <MenuItem Header="BMP" IsCheckable="True" IsChecked="{Binding ExportTextureAsBMP}"/>
                         <MenuItem Header="PNG" IsCheckable="True" IsChecked="{Binding ExportTextureAsPNG}"/>
+                        <MenuItem Header="Modpack" Click="ExportModpack_Click"/>
                     </ContextMenu>
                 </Grid.ContextMenu>
                 

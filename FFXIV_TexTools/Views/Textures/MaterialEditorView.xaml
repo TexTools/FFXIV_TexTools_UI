@@ -70,6 +70,7 @@
 
         <Button x:Name="SavePresetButton" Content="Save Preset" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Center" Width="100" Grid.Column="2" Click="SavePresetButton_Click" Height="28" Grid.Row="1"/>
         <Button x:Name="LoadPresetButton" Content="Load Preset" HorizontalAlignment="Left" Margin="110,0,0,0" VerticalAlignment="Center" Width="100" Grid.Column="2" Click="LoadPresetButton_Click" Height="28" Grid.Row="1"/>
+        <Button x:Name="SaveModpackButton" Content="Save Modpack" HorizontalAlignment="Right" Margin="0,0,10,0" VerticalAlignment="Center" Width="100" Grid.Column="1" Click="SaveModpack_Click" Height="28" Grid.Row="1"/>
 
         <Button x:Name="SaveRawButton" Content="Save Raw" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Center" Width="100" Grid.Column="2" Click="SaveRawButton_Click" Height="28" Grid.Row="2"/>
         <Button x:Name="LoadRawButton" Content="Load Raw" HorizontalAlignment="Left" Margin="110,0,0,0" VerticalAlignment="Center" Width="100" Grid.Column="2" Click="LoadRawButton_Click" Height="28" Grid.Row="2"/>

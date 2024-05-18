@@ -376,6 +376,7 @@ namespace FFXIV_TexTools.Views.Textures
             dialog.FileName = Path.GetFileName(Material.MTRLPath);
             if (dialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
                 return;
+
             try
             {
                 var _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory);
@@ -384,6 +385,41 @@ namespace FFXIV_TexTools.Views.Textures
             } catch(Exception ex)
             {
                 FlexibleMessageBox.Show("Unable to save file:".L() + ex.Message, "Material Save Error".L(), System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
+            }
+        }
+
+        private async void SaveModpack_Click(object sender, RoutedEventArgs e)
+        {
+            // Because the user likely expects the outgoing modpack to reflect their changes
+            // (Same behavior as the other save functions), we should save the changes to a TX here and then restore state after export.
+
+            var tx = MainWindow.UserTransaction;
+            bool ownTx = false;
+            TxFileState state = null;
+            if(tx == null)
+            {
+                ownTx = true;
+                tx = ModTransaction.BeginTransaction(true);
+            }
+            try
+            {
+
+                state = await tx.SaveFileState(_Material.MTRLPath);
+
+                var _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory);
+                await _mtrl.ImportMtrl(Material, null, "Temp", false, tx);
+
+                SingleFileModpackCreator.ExportFile(_Material.MTRLPath, this);
+            }
+            finally
+            {
+                if (ownTx)
+                {
+                    ModTransaction.CancelTransaction(tx, true);
+                } else
+                {
+                    await tx.RestoreFileState(state);
+                }
             }
         }
     }

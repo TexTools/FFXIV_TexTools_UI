@@ -325,5 +325,10 @@ namespace FFXIV_TexTools.Views.Metadata
             }
 
         }
+
+        private void SaveModpack_Click(object sender, RoutedEventArgs e)
+        {
+            SingleFileModpackCreator.ExportFile(_root.Info.GetRootFile(), MainWindow.GetMainWindow());
+        }
     }
 }

@@ -11,7 +11,9 @@
     <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="36"></RowDefinition>
+            <RowDefinition Height="36"></RowDefinition>
             <RowDefinition Height="5"></RowDefinition>
+            <RowDefinition Height="1*"></RowDefinition>
             <RowDefinition></RowDefinition>
         </Grid.RowDefinitions>
         <Grid Grid.Row="0">
@@ -46,18 +48,20 @@
                 <iconPacks:PackIconFontAwesome Kind="SearchSolid"/>
             </Button>
 
-            <TextBlock Grid.Column="7" x:Name="ItemNameBox" VerticalAlignment="Center" FontSize="16" Margin="10,0">[7] Bogarter's Gloves of Doing Cool Things</TextBlock>
 
-
+            <Button Grid.Column="7" x:Name="SaveModpackButton" Margin="5" Width="90" VerticalAlignment="Center" Content="Save Modpack" Click="SaveModpack_Click" HorizontalAlignment="Right"></Button>
             <Button Grid.Column="8" x:Name="ToggleButton" Margin="5" VerticalAlignment="Center" Content="Disable" Click="ToggleButton_Click"></Button>
             <Button Grid.Column="9" x:Name="SaveButton" Margin="5" VerticalAlignment="Center" Content="Save" Click="SaveButton_Click"></Button>
         </Grid>
 
-        <Separator Grid.Row="1">
+        <TextBlock Grid.Column="0" Grid.Row="1" x:Name="ItemNameBox" VerticalAlignment="Center" FontSize="16" Margin="10,0">[7] Bogarter's Gloves of Doing Cool Things</TextBlock>
+
+
+        <Separator Grid.Row="2">
         </Separator>
 
 
-        <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Row="2">
+        <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Row="3">
             <StackPanel>
                 <local:EqdpControl x:Name="EqdpView" Margin="10"></local:EqdpControl>
                 <local:SkeletonControl x:Name="SkeletonView" Margin="10,0,10,10"></local:SkeletonControl>
