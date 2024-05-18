@@ -356,6 +356,15 @@ namespace FFXIV_TexTools.Views
                 var itemRoot = item.GetRoot();
                 if (itemRoot == null) return false;
 
+                if(itemRoot.Info.PrimaryType == XivItemType.equipment || itemRoot.Info.PrimaryType == XivItemType.accessory)
+                {
+                    if(root.Info.PrimaryType == XivItemType.accessory)
+                    {
+                        // Allow converting most things to accessories.
+                        return true;
+                    }
+                }
+
                 if (itemRoot.Info.PrimaryType == root.Info.PrimaryType &&
                     itemRoot.Info.SecondaryType == root.Info.SecondaryType &&
                     itemRoot.Info.Slot == root.Info.Slot)

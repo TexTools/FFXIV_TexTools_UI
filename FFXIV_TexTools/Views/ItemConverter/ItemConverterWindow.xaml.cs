@@ -168,6 +168,13 @@ namespace FFXIV_TexTools.Views.ItemConverter
             var root = fullRoot.Info;
             var src = Source.Info;
 
+            // Convert To Accessory Handling
+            if((src.PrimaryType == XivItemType.equipment || src.PrimaryType == XivItemType.accessory) && root.PrimaryType == XivItemType.accessory)
+            {
+                // Allow swapping Most things to Accessories.
+                return true;
+            }
+
             if (root.PrimaryType != src.PrimaryType) return false;
             if (root.SecondaryType != src.SecondaryType) return false;
             if (root.Slot != src.Slot) return false;
@@ -385,6 +392,13 @@ namespace FFXIV_TexTools.Views.ItemConverter
             }
 
             var extraConversions = new Dictionary<XivDependencyRoot, XivDependencyRoot>();
+
+            if(Destination.Info.PrimaryType != XivItemType.equipment)
+            {
+                // If we're converting off of equipment there's not extras to swap.
+                return extraConversions;
+            }
+
             // For top items, we need to check and see if a recursive action is required.
             var meta = await ItemMetadata.GetMetadata(Source);
             var eqp = meta.EqpEntry;
