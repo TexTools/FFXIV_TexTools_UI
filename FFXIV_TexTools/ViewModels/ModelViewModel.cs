@@ -236,6 +236,8 @@ namespace FFXIV_TexTools.ViewModels
             // Add the list of exporters to the menu.
             var exporters = _mdl.GetAvailableExporters();
             _view.ExportContextMenu.Items.Clear();
+
+            exporters.Add("modpack");
             foreach(var format in exporters)
             {
                 var button = new System.Windows.Controls.Button();
@@ -1567,6 +1569,12 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         private void ExportModel(string format)
         {
+            if (format == "modpack")
+            {
+                SingleFileModpackCreator.ExportFile(_model.Source, MainWindow.GetMainWindow());
+                return;
+            }
+
             DisableButtons();
             Task.Run(async () =>
             {
