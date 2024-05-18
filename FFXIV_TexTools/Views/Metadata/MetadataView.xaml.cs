@@ -21,9 +21,11 @@ using xivModdingFramework.Cache;
 using xivModdingFramework.Exd.FileTypes;
 using xivModdingFramework.Items.Enums;
 using xivModdingFramework.Items.Interfaces;
+using xivModdingFramework.Materials.FileTypes;
 using xivModdingFramework.Models.FileTypes;
 using xivModdingFramework.Mods;
 using xivModdingFramework.Mods.Enums;
+using xivModdingFramework.Mods.FileTypes;
 using xivModdingFramework.Variants.FileTypes;
 using UserControl = System.Windows.Controls.UserControl;
 
@@ -326,9 +328,40 @@ namespace FFXIV_TexTools.Views.Metadata
 
         }
 
-        private void SaveModpack_Click(object sender, RoutedEventArgs e)
+        private async void SaveModpack_Click(object sender, RoutedEventArgs e)
         {
-            SingleFileModpackCreator.ExportFile(_root.Info.GetRootFile(), MainWindow.GetMainWindow());
+            // Because Metadata file may not actually exist, we have to temporarily save metadata,
+            // in order for the simple creator to be able to parse the file.
+
+            var tx = MainWindow.UserTransaction;
+            var file = _root.Info.GetRootFile();
+            bool ownTx = false;
+            TxFileState state = null;
+            if (tx == null)
+            {
+                ownTx = true;
+                tx = ModTransaction.BeginTransaction(true);
+            }
+            try
+            {
+                state = await tx.SaveFileState(file);
+
+                var metadata = await ItemMetadata.GetMetadata(file, false, tx);
+                await ItemMetadata.SaveMetadata(metadata, file, tx);
+                SingleFileModpackCreator.ExportFile(_root.Info.GetRootFile(), MainWindow.GetMainWindow(), tx);
+
+            }
+            finally
+            {
+                if (ownTx)
+                {
+                    ModTransaction.CancelTransaction(tx, true);
+                }
+                else
+                {
+                    await tx.RestoreFileState(state);
+                }
+            }
         }
     }
 }

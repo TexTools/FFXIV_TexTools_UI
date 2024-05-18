@@ -143,7 +143,7 @@ namespace FFXIV_TexTools.Views
 
         private void ExportModpack_Click(object sender, RoutedEventArgs e)
         {
-            SingleFileModpackCreator.ExportFile(textureViewModel.PathString, MainWindow.GetMainWindow());
+            SingleFileModpackCreator.ExportFile(textureViewModel.PathString, MainWindow.GetMainWindow(), MainWindow.DefaultTransaction);
         }
     }
 }

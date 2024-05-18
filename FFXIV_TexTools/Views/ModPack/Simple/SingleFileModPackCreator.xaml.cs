@@ -62,6 +62,8 @@ namespace FFXIV_TexTools.Views
 
         public event PropertyChangedEventHandler PropertyChanged;
 
+        private ModTransaction _tx;
+
         public string DestinationPath
         {
             get
@@ -88,8 +90,9 @@ namespace FFXIV_TexTools.Views
         }
 
 
-        public SingleFileModpackCreator(string file)
+        public SingleFileModpackCreator(string file, ModTransaction tx = null)
         {
+            _tx = tx;
             _File = file;
             var defaultPath = Path.GetFullPath(Path.Combine(Settings.Default.ModPack_Directory, Path.GetFileNameWithoutExtension(file) + ".ttmp2"));
             DestinationPath = defaultPath;
@@ -109,7 +112,7 @@ namespace FFXIV_TexTools.Views
                 mp.Version = "1.0";
                 mp.Url = "";
 
-                await TTMP.CreateModpackFromFile(_File, DestinationPath, IncludeChildren, mp, MainWindow.DefaultTransaction);
+                await TTMP.CreateModpackFromFile(_File, DestinationPath, IncludeChildren, mp, _tx);
             }
             catch(Exception ex)
             {
@@ -124,9 +127,9 @@ namespace FFXIV_TexTools.Views
         /// </summary>
         /// <param name="file"></param>
         /// <returns></returns>
-        public static void ExportFile(string file, Window owner = null)
+        public static void ExportFile(string file, Window owner = null, ModTransaction tx = null)
         {
-            var wind = new SingleFileModpackCreator(file);
+            var wind = new SingleFileModpackCreator(file, tx);
             wind.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             wind.Owner = owner;
             wind.ShowDialog();

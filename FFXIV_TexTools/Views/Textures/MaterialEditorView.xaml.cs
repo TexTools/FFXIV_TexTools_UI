@@ -409,7 +409,7 @@ namespace FFXIV_TexTools.Views.Textures
                 var _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory);
                 await _mtrl.ImportMtrl(Material, null, "Temp", false, tx);
 
-                SingleFileModpackCreator.ExportFile(_Material.MTRLPath, this);
+                SingleFileModpackCreator.ExportFile(_Material.MTRLPath, this, tx);
             }
             finally
             {

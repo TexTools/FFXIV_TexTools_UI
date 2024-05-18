@@ -1571,7 +1571,7 @@ namespace FFXIV_TexTools.ViewModels
         {
             if (format == "modpack")
             {
-                SingleFileModpackCreator.ExportFile(_model.Source, MainWindow.GetMainWindow());
+                SingleFileModpackCreator.ExportFile(_model.Source, MainWindow.GetMainWindow(), MainWindow.DefaultTransaction);
                 return;
             }
 
