@@ -342,7 +342,7 @@ namespace FFXIV_TexTools.Views
                                     var children = new List<string>();
                                     try
                                     {
-                                        children = await XivCache.GetChildFiles(mod.FilePath);
+                                        children = await XivCache.GetChildFiles(mod.FilePath, tx);
                                     }
                                     catch
                                     {

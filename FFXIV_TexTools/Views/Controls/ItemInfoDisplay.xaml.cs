@@ -218,7 +218,7 @@ namespace FFXIV_TexTools.Views.Controls
                     {
                         // Get the materials used by this racial's model.
                         var mdl = usedMdl;
-                        var mdlMaterials = await XivCache.GetChildFiles(mdl);
+                        var mdlMaterials = await XivCache.GetChildFiles(mdl, tx);
                         var mtrl = mdlMaterials.FirstOrDefault(x => raceRegex.IsMatch(x));
 
                         if(mtrl == null)

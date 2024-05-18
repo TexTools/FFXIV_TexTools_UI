@@ -510,7 +510,7 @@ namespace FFXIV_TexTools.ViewModels
             {
                 try
                 {
-                    materials = await _root.GetMaterialFiles(materialSet, tx);
+                    materials = await _root.GetMaterialFiles(materialSet, tx, true);
                 }
                 catch(Exception ex)
                 {
@@ -1802,7 +1802,7 @@ namespace FFXIV_TexTools.ViewModels
             if (racialModels.Count > 0)
             {
                 // This item has no materials, but it *does* have a racial model, which has materials...
-                var mats = await XivCache.GetChildFiles(racialModels[0]);
+                var mats = await XivCache.GetChildFiles(racialModels[0], tx);
 
                 if (mats.Count > 0)
                 {
