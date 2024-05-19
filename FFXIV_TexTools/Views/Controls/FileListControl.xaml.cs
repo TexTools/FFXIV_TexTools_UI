@@ -259,6 +259,8 @@ namespace FFXIV_TexTools.Views.Controls
             }
 
             _SelectedCount = _Files.Count;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedCountLabel)));
+
             VisibleFiles = CollectionViewSource.GetDefaultView(_Files);
             VisibleFiles.Filter += FilterFiles;
             SortBy(nameof(UiWrappedFile.FilePath));
