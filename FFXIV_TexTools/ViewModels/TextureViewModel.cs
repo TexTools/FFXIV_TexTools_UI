@@ -1359,6 +1359,7 @@ namespace FFXIV_TexTools.ViewModels
                 return;
 
 
+
             if (format == TextureFormats.DDS)
             {
                 DirectoryInfo savePath = new DirectoryInfo(Settings.Default.Save_Directory);
@@ -1374,8 +1375,15 @@ namespace FFXIV_TexTools.ViewModels
 
                 if (SelectedMap.Usage== XivTexType.ColorSet)
                 {
+                    // To match user expectation here, we want to export the current state of the colorset editor.
+                    var material = _textureView.ColorsetEditor.Material;
+                    if(material == null)
+                    {
+                        // Fallback to clean file.
+                        material = _xivMtrl;
+                    }
 
-                    texData = await Mtrl.GetColorsetXivTex(_xivMtrl);
+                    texData = await Mtrl.GetColorsetXivTex(material);
                     if (_primaryIsRace)
                     {
                         Mtrl.SaveColorsetDyeData(_item, _xivMtrl, savePath, SelectedRace);

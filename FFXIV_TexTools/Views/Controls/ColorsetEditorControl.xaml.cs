@@ -61,6 +61,16 @@ namespace FFXIV_TexTools.Controls
         }
 
         XivMtrl _mtrl;
+        public XivMtrl Material {
+            get
+            {
+                if(_mtrl == null)
+                {
+                    return null;
+                }
+                return (XivMtrl) _mtrl.Clone();
+            }
+        }
 
         List<Half[]> RowData;
 
