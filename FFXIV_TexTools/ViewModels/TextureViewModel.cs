@@ -89,10 +89,16 @@ namespace FFXIV_TexTools.ViewModels
                 if (_mtrl != null)
                 {
                     // Use the smarter resolution path if we have the available data.
-                    return list.Select(x => new MapComboBoxEntry(
-                        x.TexturePath, 
-                        _mtrl.ResolveFullUsage(x)
-                        )).ToList();
+                    var l = new List<MapComboBoxEntry>();
+                    foreach(var tex in list)
+                    {
+                        l.Add(new MapComboBoxEntry(tex.Dx11Path, _mtrl.ResolveFullUsage(tex)));
+                        if(tex.Dx9Path != null)
+                        {
+                            l.Add(new MapComboBoxEntry(tex.Dx9Path, XivTexType.DX9));
+                        }
+                    }
+                    return l;
                 }
                 else
                 {
