@@ -83,7 +83,6 @@ namespace FFXIV_TexTools.ViewModels
         public int HighlightedColorsetRow = -1;
 
         private IItemModel _item;
-        private Mdl _mdl;
 
         private TTModel _model;
         private Viewport3DViewModel _viewPortVM;
@@ -230,11 +229,10 @@ namespace FFXIV_TexTools.ViewModels
             _item = (IItemModel)itemModel.Clone();
 
             _gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
-            _mdl = new Mdl(_gameDirectory);
 
 
             // Add the list of exporters to the menu.
-            var exporters = _mdl.GetAvailableExporters();
+            var exporters = Mdl.GetAvailableExporters();
             _view.ExportContextMenu.Items.Clear();
 
             exporters.Add("modpack");
@@ -740,7 +738,7 @@ namespace FFXIV_TexTools.ViewModels
             {
                 if (_item.PrimaryCategory.Equals(XivStrings.Gear))
                 {
-                    _model = await _mdl.GetTTModel(_item, SelectedRace.XivRace, null, false, MainWindow.DefaultTransaction);
+                    _model = await Mdl.GetTTModel(_item, SelectedRace.XivRace, null, false, MainWindow.DefaultTransaction);
                 }
                 else if (_item.PrimaryCategory.Equals(XivStrings.Character))
                 {
@@ -755,7 +753,7 @@ namespace FFXIV_TexTools.ViewModels
 
                     ((XivCharacter)_item).TertiaryCategory = SelectedPart.Name;
 
-                    _model = await _mdl.GetTTModel(_item, SelectedRace.XivRace, null, false, MainWindow.DefaultTransaction);
+                    _model = await Mdl.GetTTModel(_item, SelectedRace.XivRace, null, false, MainWindow.DefaultTransaction);
                 }
                 else if (_item.PrimaryCategory.Equals(XivStrings.Companions))
                 {
@@ -771,12 +769,12 @@ namespace FFXIV_TexTools.ViewModels
                         ((XivMount)_item).TertiaryCategory = SelectedPart.Name;
                     }
 
-                    _model = await _mdl.GetTTModel(_item, SelectedRace.XivRace);
+                    _model = await Mdl.GetTTModel(_item, SelectedRace.XivRace);
                 }
                 else if (_item.PrimaryCategory.Equals(XivStrings.Housing))
                 {
                     string submeshId = GetSubmeshId();
-                    _model = await _mdl.GetTTModel(_item, SelectedRace.XivRace, submeshId, false, MainWindow.DefaultTransaction);
+                    _model = await Mdl.GetTTModel(_item, SelectedRace.XivRace, submeshId, false, MainWindow.DefaultTransaction);
                 }
             }
             catch (Exception ex)
@@ -1421,7 +1419,7 @@ namespace FFXIV_TexTools.ViewModels
 
         private async Task<XivMdl> GetRawMdl()
         {
-            return (await _model.GetRawMdl(_mdl, MainWindow.DefaultTransaction));
+            return (await _model.GetRawMdl(MainWindow.DefaultTransaction));
         }
 
         private void OpenModelInspector(object obj)
@@ -1582,7 +1580,7 @@ namespace FFXIV_TexTools.ViewModels
                {
                     var path = GetItem3DFolder() + Path.GetFileNameWithoutExtension(_model.Source) + "." + format;
                     string submeshId = GetSubmeshId();
-                    await _mdl.ExportMdlToFile(_item, SelectedRace.XivRace, path, submeshId);
+                    await Mdl.ExportMdlToFile(_item, SelectedRace.XivRace, path, submeshId);
 
                 }
                catch (Exception e)
@@ -2199,7 +2197,7 @@ namespace FFXIV_TexTools.ViewModels
             if (_model == null || !_model.IsInternal) return;
 
             // Load a clean copy of the model.
-            var ttmdl = await _mdl.GetTTModel(_model.Source);
+            var ttmdl = await Mdl.GetTTModel(_model.Source);
 
             var fmea = new fullModelEventArgs { TTModelData = ttmdl, TextureData = _materialDictionary, Item = _item, XivRace = SelectedRace.XivRace};
 

@@ -123,7 +123,6 @@ namespace FFXIV_TexTools.ViewModels
 
                 await ItemMetadata.SaveMetadata(_metadata, XivStrings.TexTools);
 
-                var _mdl = new Mdl(XivCache.GameInfo.GameDirectory);
 
                 foreach (var kv in _metadata.EqdpEntries)
                 {
@@ -131,7 +130,7 @@ namespace FFXIV_TexTools.ViewModels
                     if (_original.EqdpEntries[kv.Key].bit1 == true) continue;
 
                     // Here we have a new race, we need to create a model for it.
-                    await _mdl.AddRacialModel(_metadata.Root.Info.PrimaryId, _metadata.Root.Info.Slot, kv.Key, XivStrings.TexTools);
+                    await Mdl.AddRacialModel(_metadata.Root.Info.PrimaryId, _metadata.Root.Info.Slot, kv.Key, XivStrings.TexTools);
                 }
 
                 if(_metadata.ImcEntries.Count > 0)

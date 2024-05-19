@@ -33,7 +33,6 @@ namespace FFXIV_TexTools.ViewModels
         private ImportModelView _view;
         private IItemModel _item;
         private XivRace _race;
-        private Mdl _mdl;
         private List<string> _importers;
         private bool _dataOnly;
         private string _internalPath;
@@ -54,7 +53,7 @@ namespace FFXIV_TexTools.ViewModels
         }
 
         private async Task AssignPath() {
-            var result = await _mdl.GetMdlPath(_item, _race, _submeshId, MainWindow.DefaultTransaction);
+            var result = await Mdl.GetMdlPath(_item, _race, _submeshId, MainWindow.DefaultTransaction);
             _internalPath = result;
         }
 
@@ -134,8 +133,7 @@ namespace FFXIV_TexTools.ViewModels
             var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
             var saveDirectory = new DirectoryInfo(Settings.Default.Save_Directory);
             var dataFile = IOUtil.GetDataFileFromPath(_item.GetItemRootFolder());
-            _mdl = new Mdl(gameDirectory);
-            _importers = _mdl.GetAvailableImporters();
+            _importers = Mdl.GetAvailableImporters();
 
             SetupRaces();
 
@@ -306,11 +304,11 @@ namespace FFXIV_TexTools.ViewModels
                    byte[] data = null;
                    if (showEditor)
                    {
-                       data = await _mdl.ImportModel(_item, _race, path, options, LogMessageReceived, IntermediateStep, XivStrings.TexTools, _submeshId, _dataOnly);
+                       data = await Mdl.ImportModel(_item, _race, path, options, LogMessageReceived, IntermediateStep, XivStrings.TexTools, _submeshId, _dataOnly);
                    }
                    else
                    {
-                       data = await _mdl.ImportModel(_item, _race, path, options, LogMessageReceived, null, XivStrings.TexTools, _submeshId, _dataOnly);
+                       data = await Mdl.ImportModel(_item, _race, path, options, LogMessageReceived, null, XivStrings.TexTools, _submeshId, _dataOnly);
                    }
                    OnImportComplete(data);
                }

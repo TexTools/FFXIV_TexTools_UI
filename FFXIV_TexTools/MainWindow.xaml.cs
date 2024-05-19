@@ -1037,8 +1037,7 @@ namespace FFXIV_TexTools
                     var changed = 0;
                     await Task.Run(async () =>
                     {
-                        var _mdl = new Mdl(XivCache.GameInfo.GameDirectory);
-                        changed = await _mdl.CheckAllModsSkinAssignments();
+                        changed = await Mdl.CheckAllModsSkinAssignments();
                     });
 
                     FlexibleMessageBox.Show($"Skin Auto-Assigment is complete.\n\n{changed._()} Models updated.".L(), "Skin Auto - Assign Complete".L(), MessageBoxButtons.OK, MessageBoxIcon.Information);
