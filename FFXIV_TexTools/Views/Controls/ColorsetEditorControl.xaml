@@ -18,7 +18,11 @@
             <ColumnDefinition Width="500"></ColumnDefinition>
             <ColumnDefinition Width="1*"></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <Grid Grid.Column="0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40"></RowDefinition>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid Grid.Column="0" Grid.RowSpan="2">
             <Grid.RowDefinitions>
                 <RowDefinition Height="40"></RowDefinition>
                 <RowDefinition Height="40"></RowDefinition>
@@ -40,10 +44,26 @@
             </StackPanel>
 
         </Grid>
+
+        <Grid x:Name="TopRow" Grid.Row="0" Grid.Column="1" Margin="10,0,10,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+                <ColumnDefinition Width="100"></ColumnDefinition>
+                <ColumnDefinition Width="100"></ColumnDefinition>
+                <ColumnDefinition Width="100"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Button x:Name="LoadButton" Content="Load" VerticalAlignment="Center" Margin="5,5,5,5" Click="Load_Click" Grid.Column="1" Height="28" />
+            <Button x:Name="SaveAsButton" Content="Save As" VerticalAlignment="Center" Margin="5,5,5,5" Click="SaveAs_Click" Grid.Column="2" Height="28" />
+            <Button x:Name="SaveButton" Content="Save" VerticalAlignment="Center" Margin="5,5,5,5" Click="SaveButton_Click" Grid.Column="3" Height="28" />
+        </Grid>
         
-        <ScrollViewer Grid.Column="1">
+        <ScrollViewer Grid.Column="1" Grid.Row="1">
             <Grid Grid.Column="1">
-                <GroupBox x:Name="DetailsGroupBox" Header="Material - Colorset Row Settings - Row ~">
+
+                <Grid.RowDefinitions>
+                </Grid.RowDefinitions>
+                
+                <GroupBox x:Name="DetailsGroupBox" Header="Material - Colorset Row Settings - Row ~" Grid.Row="1">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="40"></RowDefinition>
@@ -51,15 +71,15 @@
                             <RowDefinition Height="180"></RowDefinition>
 
                             <RowDefinition Height="115"></RowDefinition>
-                            
+
                             <RowDefinition Height="45"></RowDefinition>
 
                             <RowDefinition Height="50"></RowDefinition>
                             <RowDefinition Height="1*"></RowDefinition>
 
                         </Grid.RowDefinitions>
-                        <Image x:Name="SelectedColorsetRowImage" Grid.Row="0" Source="/FFXIV_TexTools;component/ffxiv2.ico" Height="32" VerticalAlignment="Center" Margin="10,9,0,9" Width="128" HorizontalAlignment="Left"/>
-                        <Button x:Name="SaveButton" Content="Save" HorizontalAlignment="Right" VerticalAlignment="Center" Width="100" Margin="0,6,10,6" Click="SaveButton_Click" Grid.Column="1" Height="28" Grid.ColumnSpan="2"/>
+
+                        <Image Grid.Row="0" x:Name="SelectedColorsetRowImage" Source="/FFXIV_TexTools;component/ffxiv2.ico" Height="32" VerticalAlignment="Center" Margin="10,9,0,9" Width="128" HorizontalAlignment="Left"/>
 
 
                         <Grid Grid.Row="1" Margin="0,10,0,0">
@@ -218,7 +238,7 @@
             </Grid>
         </ScrollViewer>
 
-        <Grid Grid.Column="2">
+        <Grid Grid.Column="2" Grid.Row="0" Grid.RowSpan="2">
             <Grid.RowDefinitions>
                 <RowDefinition Height="35"></RowDefinition>
                 <RowDefinition Height="35"></RowDefinition>

@@ -845,9 +845,7 @@ namespace FFXIV_TexTools.Views
                 ddsPath = od.FileName;
 
                 // Read and assign the data.
-                var cSet = Tex.GetColorsetDataFromDDS(ddsPath);
-                mtrl.ColorSetData = cSet.ColorsetData;
-                mtrl.ColorSetDyeData = cSet.DyeData;
+                Tex.ImportColorsetTexture(mtrl, ddsPath);
 
                 // SqPack the data.
                 mtrlData = await Dat.CompressType2Data(Mtrl.XivMtrlToUncompressedMtrl(mtrl));
@@ -855,11 +853,11 @@ namespace FFXIV_TexTools.Views
 
                 if (addChildren)
                 {
-                    AddWithChildren(selectedFile.Path, SelectedItem, mtrlData);
+                    await AddWithChildren(selectedFile.Path, SelectedItem, mtrlData);
                 }
                 else
                 {
-                    AddFile(selectedFile, SelectedItem, mtrlData);
+                    await AddFile(selectedFile, SelectedItem, mtrlData);
                 }
 
             } catch(Exception ex)

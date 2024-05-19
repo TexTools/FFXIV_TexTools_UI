@@ -18,6 +18,15 @@ using xivModdingFramework.Cache;
 using xivModdingFramework.Materials.DataContainers;
 using xivModdingFramework.Materials.FileTypes;
 using Xceed.Wpf.Toolkit;
+using FFXIV_TexTools.Views;
+using System.Windows.Markup;
+using xivModdingFramework.General.Enums;
+using xivModdingFramework.Items.DataContainers;
+using xivModdingFramework.Textures.FileTypes;
+using System.IO;
+using xivModdingFramework.Helpers;
+using FFXIV_TexTools.Properties;
+using System.Diagnostics;
 
 namespace FFXIV_TexTools.Controls
 {
@@ -1215,6 +1224,66 @@ namespace FFXIV_TexTools.Controls
 
             // Reload the UI.
             await SetMaterial(_mtrl, RowId);
+        }
+
+        private string GetDefaultSaveDirectory()
+        {
+            var mw = MainWindow.GetMainWindow();
+            var item = mw.GetSelectedItem();
+            var path = Path.GetFullPath(IOUtil.MakeItemSavePath(item, new DirectoryInfo(Settings.Default.Save_Directory), IOUtil.GetRaceFromPath(Material.MTRLPath)));
+            Directory.CreateDirectory(path);
+            return path;
+        }
+        private string GetDefaultSaveName()
+        {
+            var name = Path.GetFileNameWithoutExtension(Material.MTRLPath);
+            return name + ".dds";
+        }
+
+        private async void SaveAs_Click(object sender, RoutedEventArgs e)
+        {
+            // To match user expectation here, we want to export the current state of the colorset editor.
+            var material = Material;
+            var texData = await Mtrl.GetColorsetXivTex(material);
+
+            var sd = new System.Windows.Forms.SaveFileDialog();
+            sd.Filter = "DDS Files (*.DDS)|*.dds";
+            sd.FileName = GetDefaultSaveName();
+            sd.InitialDirectory = GetDefaultSaveDirectory();
+            var res = sd.ShowDialog();
+            if(res != System.Windows.Forms.DialogResult.OK)
+            {
+                return;
+            }
+
+            var path = sd.FileName;
+
+            Tex.SaveTexAsDDS(path, texData);
+            var dyeData = material.ColorSetDyeData != null ? material.ColorSetDyeData : new byte[0];
+            var datPath = Path.Combine(Path.GetDirectoryName(path), Path.GetFileNameWithoutExtension(path) + ".dat");
+
+            File.WriteAllBytes(datPath, dyeData);
+        }
+
+        private async void Load_Click(object sender, RoutedEventArgs e)
+        {
+            var ofd = new System.Windows.Forms.OpenFileDialog();
+            ofd.Filter = "DDS Files (*.DDS)|*.dds";
+            ofd.FileName = GetDefaultSaveName();
+            ofd.InitialDirectory = GetDefaultSaveDirectory();
+            var res = ofd.ShowDialog();
+            if (res != System.Windows.Forms.DialogResult.OK)
+            {
+                return;
+            }
+            var path = ofd.FileName;
+
+            var datPath = Path.Combine(Path.GetDirectoryName(path), Path.GetFileNameWithoutExtension(path) + ".dat");
+
+            var mw = MainWindow.GetMainWindow();
+            var item = mw.GetSelectedItem();
+            await Tex.ImportColorsetTexture(Material.MTRLPath, path, false, true, true, item, XivStrings.TexTools, MainWindow.UserTransaction);
+
         }
     }
 }

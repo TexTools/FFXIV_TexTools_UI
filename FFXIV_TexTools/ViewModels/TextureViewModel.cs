@@ -1671,7 +1671,7 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     try
                     {
-                        var newColorSetOffset = await Tex.ImportColorsetTexture(_xivMtrl, fileDir.FullName, _item, XivStrings.TexTools);
+                        var newColorSetOffset = await Tex.ImportColorsetTexture(_xivMtrl.MTRLPath, fileDir.FullName, true, true, false, _item, XivStrings.TexTools);
                         _xivMtrl = await Mtrl.GetXivMtrl(_xivMtrl.MTRLPath, false, MainWindow.DefaultTransaction);
                     }
                     catch (Exception ex)
