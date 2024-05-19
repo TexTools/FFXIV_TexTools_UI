@@ -205,8 +205,6 @@ namespace FFXIV_TexTools.Views
             var allMods = ModList.GetMods(x => !x.IsInternal()).ToList();
 
             // Rip through the mod list and get the correct raw compressed sizes for all the mods.
-            var _dat = new Dat(XivCache.GameInfo.GameDirectory);
-
             this.ParentsDictionary = await XivCache.GetModListParents(tx);
 
 
@@ -258,7 +256,6 @@ namespace FFXIV_TexTools.Views
         /// </summary>
         private async void CreateModPackButton_Click(object sender, RoutedEventArgs e)
         {
-            var _dat = new Dat(XivCache.GameInfo.GameDirectory);
             if (ModPackName.Text.Equals(string.Empty))
             {
                 if (FlexibleMessageBox.Show(new Wpf32Window(this),

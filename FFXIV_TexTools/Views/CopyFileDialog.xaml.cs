@@ -35,7 +35,6 @@ namespace FFXIV_TexTools.Views
 
             if (String.IsNullOrWhiteSpace(to) || String.IsNullOrWhiteSpace(to)) return;
 
-            var _dat = new Dat(XivCache.GameInfo.GameDirectory);
 
 
             try
@@ -59,7 +58,7 @@ namespace FFXIV_TexTools.Views
                     if (cancel) return;
                 }
 
-                await _dat.CopyFile(from, to, XivStrings.TexTools, true);
+                await Dat.CopyFile(from, to, XivStrings.TexTools, true);
 
                 Dispatcher.Invoke(() =>
                 {

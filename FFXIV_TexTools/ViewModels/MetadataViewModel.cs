@@ -136,7 +136,6 @@ namespace FFXIV_TexTools.ViewModels
 
                 if(_metadata.ImcEntries.Count > 0)
                 {
-                    var _dat = new Dat(XivCache.GameInfo.GameDirectory);
                     var originalMaterialSetMax = _original.ImcEntries.Select(x => x.MaterialSet).Max();
                     var newMaterialSetMax = _metadata.ImcEntries.Select(x => x.MaterialSet).Max();
 
@@ -154,7 +153,7 @@ namespace FFXIV_TexTools.ViewModels
                             {
                                 var dest = material.Replace("v0001", "v" + i.ToString().PadLeft(4, '0'));
 
-                                await _dat.CopyFile(material, dest, XivStrings.TexTools, false, item);
+                                await Dat.CopyFile(material, dest, XivStrings.TexTools, false, item);
                             }
                         }
                     }

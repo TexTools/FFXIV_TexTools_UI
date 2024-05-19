@@ -318,7 +318,6 @@ namespace FFXIV_TexTools.Views
             try
             {
                 TTMP texToolsModPack = new TTMP(new DirectoryInfo(Settings.Default.ModPack_Directory));
-                var dat = new Dat(XivCache.GameInfo.GameDirectory);
                 var ModList = await tx.GetModList();
 
                 var wizardData = new ModPackData()
@@ -419,7 +418,6 @@ namespace FFXIV_TexTools.Views
             var tx = MainWindow.DefaultTransaction;
 
             TTMP texToolsModPack = new TTMP(new DirectoryInfo(Settings.Default.ModPack_Directory));
-            var dat = new Dat(XivCache.GameInfo.GameDirectory);
             var ModList = await tx.GetModList();
 
             SimpleModPackData simpleModPackData = new SimpleModPackData

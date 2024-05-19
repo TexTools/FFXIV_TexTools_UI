@@ -29,7 +29,6 @@ namespace FFXIV_TexTools.Views
 
             var path = FromBox.Text;
             var ext = Path.GetExtension(path);
-            var _dat = new Dat(XivCache.GameInfo.GameDirectory);
             byte[] data = null;
 
             var tx = MainWindow.DefaultTransaction;

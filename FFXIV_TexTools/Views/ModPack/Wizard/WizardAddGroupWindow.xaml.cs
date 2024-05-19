@@ -684,7 +684,6 @@ namespace FFXIV_TexTools.Views
                 // Readonly TX if we don't have one.
                 tx = ModTransaction.BeginTransaction();
             }
-            var dat = new Dat(_gameDirectory);
 
             if (file == null || file.Path == null || _selectedModOption == null) return;
 
@@ -833,7 +832,6 @@ namespace FFXIV_TexTools.Views
             {
                 var _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory);
                 var _tex = new Tex(XivCache.GameInfo.GameDirectory);
-                var _dat = new Dat(XivCache.GameInfo.GameDirectory);
 
                 var mtrlData = new byte[0];
                 var mtrl = await _mtrl.GetXivMtrl(selectedFile.Path, false, MainWindow.DefaultTransaction);
@@ -856,7 +854,7 @@ namespace FFXIV_TexTools.Views
                 mtrl.ColorSetDyeData = cSet.DyeData;
 
                 // SqPack the data.
-                mtrlData = await _dat.CompressType2Data(_mtrl.XivMtrlToUncompressedMtrl(mtrl));
+                mtrlData = await Dat.CompressType2Data(_mtrl.XivMtrlToUncompressedMtrl(mtrl));
 
 
                 if (addChildren)
@@ -1070,9 +1068,8 @@ namespace FFXIV_TexTools.Views
             };
             var addChildren = MetadataIncludeChildFilesBox.IsChecked == true ? true : false;
 
-            var _dat = new Dat(_gameDirectory);
             var meta = await ItemMetadata.GetMetadata(path);
-            var data = await _dat.CompressType2Data(await ItemMetadata.Serialize(meta));
+            var data = await Dat.CompressType2Data(await ItemMetadata.Serialize(meta));
 
             if (addChildren)
             {

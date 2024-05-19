@@ -194,7 +194,6 @@ namespace FFXIV_TexTools.Views
                 return;
             }
 
-            var dat = new Dat(_gameDirectory);
 
 
             int resolvedErrors = 0;
@@ -313,7 +312,7 @@ namespace FFXIV_TexTools.Views
                                         // Just test to see if we can get the data at all.
                                         if (extension == ".tex")
                                         {
-                                            var updated = await dat.UpdateType4UncompressedSize(mod.FilePath, mod.DataFile, mod.ModOffset8x, tx, XivStrings.TexTools);
+                                            var updated = await Dat.UpdateType4UncompressedSize(mod.FilePath, mod.DataFile, mod.ModOffset8x, tx, XivStrings.TexTools);
 
                                             if (updated)
                                             {
