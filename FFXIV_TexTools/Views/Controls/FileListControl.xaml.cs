@@ -212,6 +212,9 @@ namespace FFXIV_TexTools.Views.Controls
         private ObservableCollection<UiWrappedFile> _Files = new ObservableCollection<UiWrappedFile>();
 
 
+        public event EventHandler SelectionChanged;
+
+
         public string SelectedCountLabel
         {
             get
@@ -221,6 +224,14 @@ namespace FFXIV_TexTools.Views.Controls
         }
 
         private int _SelectedCount;
+
+        public bool AnySelected
+        {
+            get
+            {
+                return _Files.Any(x => x.Selected);
+            }
+        }
 
         private ICollectionView _VisibleFiles;
         public ICollectionView VisibleFiles {
@@ -268,6 +279,7 @@ namespace FFXIV_TexTools.Views.Controls
 
         private void Uif_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
+            SelectionChanged?.Invoke(this, null);
             if (_SELECTED_INTERNAL) return;
 
             var uif = sender as UiWrappedFile;

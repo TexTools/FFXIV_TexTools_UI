@@ -1255,13 +1255,7 @@ namespace FFXIV_TexTools
         /// </summary>
         private async void Menu_MakeSimpleModpack_Click(object sender, RoutedEventArgs e)
         {
-            var simpleCreator = new SimpleModPackCreator{Owner = this};
-            var result = simpleCreator.ShowDialog();
-
-            if (result == true)
-            {
-                await this.ShowMessageAsync(UIMessages.ModPackCreationCompleteTitle, string.Format(UIMessages.ModPackCreationCompleteMessage, simpleCreator.ModPackFileName));
-            }
+            FileListExporter.ShowModpackExport();
         }
 
         private async void Menu_RebuildCache_Click(object sender, RoutedEventArgs e)

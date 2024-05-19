@@ -206,6 +206,9 @@ move $(TargetDir)*.dll $(TargetDir)lib</PostBuildEvent>
       <AutoGen>True</AutoGen>
       <DependentUpon>UIStrings.resx</DependentUpon>
     </Compile>
+    <Compile Update="Views\ModPack\Simple\FileListExporter.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Update="Properties\Settings.settings">

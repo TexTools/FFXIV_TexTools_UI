@@ -40,6 +40,7 @@ using xivModdingFramework.Cache;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Items.DataContainers;
+using xivModdingFramework.Items.Interfaces;
 using xivModdingFramework.Materials.FileTypes;
 using xivModdingFramework.Mods;
 using xivModdingFramework.Mods.DataContainers;
@@ -53,7 +54,6 @@ namespace FFXIV_TexTools.ViewModels
 {
     public class ModListViewModel : INotifyPropertyChanged
     {
-        private readonly DirectoryInfo _gameDirectory;
         private string _modToggleText = UIStrings.Enable_Disable;
         private Visibility _listVisibility = Visibility.Visible, _infoGridVisibility = Visibility.Collapsed;
         private string _modPackTitle, _modPackModAuthorLabel, _modPackModCountLabel, _modPackModVersionLabel, _modPackContentList, _progressText;
@@ -66,7 +66,6 @@ namespace FFXIV_TexTools.ViewModels
 
         public ModListViewModel()
         {
-            _gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
 
             progress = new Progress<(int current, int total)>((result) =>
             {
@@ -113,12 +112,12 @@ namespace FFXIV_TexTools.ViewModels
         /// <summary>
         /// Gets the categories based on the item filter
         /// </summary>
-        private Task GetCategoriesItemFilter()
+        private async Task GetCategoriesItemFilter()
         {
             Categories = new ObservableCollection<Category>();
             var tx = MainWindow.DefaultTransaction;
 
-            return Task.Run(async () =>
+            await Task.Run(async () =>
             {
                 var modList = await tx.GetModList();
 
@@ -168,10 +167,9 @@ namespace FFXIV_TexTools.ViewModels
                 // Mods
                 var mainCategories = new HashSet<string>();
 
-                var allmods = modList.GetMods();
+                var allmods = modList.GetMods(x => !x.IsInternal());
                 foreach (var modEntry in allmods)
                 {
-                    if (modEntry.IsInternal()) continue;
                     if (!modEntry.ItemName.Equals(string.Empty))
                     {
                         mainCategories.Add(modEntry.ItemCategory);
@@ -201,7 +199,7 @@ namespace FFXIV_TexTools.ViewModels
                             categoryItem = new Category
                             {
                                 Name = modItem.ItemName,
-                                Item = MakeItemModel(modItem),
+                                Item = await MakeItemModel(modItem),
                                 ParentCategory = category
                             };
                         } catch(Exception ex)
@@ -239,12 +237,12 @@ namespace FFXIV_TexTools.ViewModels
         /// <summary>
         /// Gets the categoreis based on the mod pack filter
         /// </summary>
-        private Task GetCategoriesModPackFilter()
+        private async Task GetCategoriesModPackFilter()
         {
             Categories = new ObservableCollection<Category>();
 
             var tx = MainWindow.DefaultTransaction;
-            return Task.Run(async () =>
+            await Task.Run(async () =>
             {
                 var modList = await tx.GetModList();
 
@@ -312,14 +310,13 @@ namespace FFXIV_TexTools.ViewModels
                         modsInModpack = mp.Value.GetMods(modList).ToList();
                     } else
                     {
-                        modsInModpack = modList.GetMods(x => x.ModPack == "").ToList();
+                        modsInModpack = modList.GetMods(x => x.ModPack == "" && !x.IsInternal()).ToList();
                     }
 
                     var mainCategories = new HashSet<string>();
 
                     foreach (var modEntry in modsInModpack)
                     {
-                        if (modEntry.IsInternal()) continue;
                         if (!modEntry.ItemName.Equals(string.Empty))
                         {
                             mainCategories.Add(modEntry.ItemCategory);
@@ -351,7 +348,7 @@ namespace FFXIV_TexTools.ViewModels
                                 categoryItem = new Category
                                 {
                                     Name = modItem.ItemName,
-                                    Item = MakeItemModel(modItem),
+                                    Item = await MakeItemModel(modItem),
                                     ParentCategory = category
                                 };
                             }
@@ -401,176 +398,28 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         /// <param name="modItem">The mod item</param>
         /// <returns>The mod item as a XivGenericItemModel</returns>
-        private static XivGenericItemModel MakeItemModel(Mod modItem)
+        private static async Task<IItem> MakeItemModel(Mod modItem)
         {
-            var fullPath = modItem.FilePath;
-
-            var item = new XivGenericItemModel
-            {
-                Name = modItem.ItemName,
-                SecondaryCategory = modItem.ItemCategory,
-                DataFile = modItem.DataFile
-            };
-
             try
             {
-                if (modItem.FilePath.Contains("chara/equipment") || modItem.FilePath.Contains("chara/accessory"))
+                var root = await XivCache.GetFirstRoot(modItem.FilePath);
+                if(root == null)
                 {
-                    item.PrimaryCategory = XivStrings.Gear;
-                    item.ModelInfo = new XivModelInfo
-                    {
-                        PrimaryID = int.Parse(fullPath.Substring(17, 4))
-                    };
+                    return new SimpleIItem("Unknown", "Unknown");
                 }
-
-                if (modItem.FilePath.Contains("chara/weapon"))
-                {
-                    item.PrimaryCategory = XivStrings.Gear;
-                    item.ModelInfo = new XivModelInfo
-                    {
-                        PrimaryID = int.Parse(fullPath.Substring(14, 4))
-                    };
-                }
-
-                if (modItem.FilePath.Contains("chara/human"))
-                {
-                    item.PrimaryCategory = XivStrings.Character;
-
-
-                    if (item.Name.Equals(XivStrings.Body))
-                    {
-                        item.ModelInfo = new XivModelInfo
-                        {
-                            PrimaryID = int.Parse(
-                                fullPath.Substring(fullPath.IndexOf("/body", StringComparison.Ordinal) + 7, 4))
-                        };
-                    }
-                    else if (item.Name.Equals(XivStrings.Hair))
-                    {
-                        item.ModelInfo = new XivModelInfo
-                        {
-                            PrimaryID = int.Parse(
-                                fullPath.Substring(fullPath.IndexOf("/hair", StringComparison.Ordinal) + 7, 4))
-                        };
-                    }
-                    else if (item.Name.Equals(XivStrings.Face))
-                    {
-                        item.ModelInfo = new XivModelInfo
-                        {
-                            PrimaryID = int.Parse(
-                                fullPath.Substring(fullPath.IndexOf("/face", StringComparison.Ordinal) + 7, 4))
-                        };
-                    }
-                    else if (item.Name.Equals(XivStrings.Tail))
-                    {
-                        item.ModelInfo = new XivModelInfo
-                        {
-                            PrimaryID = int.Parse(
-                                fullPath.Substring(fullPath.IndexOf("/tail", StringComparison.Ordinal) + 7, 4))
-                        };
-                    }
-                }
-
-                if (modItem.FilePath.Contains("chara/common"))
-                {
-                    item.PrimaryCategory = XivStrings.Character;
-
-                    if (item.Name.Equals(XivStrings.Face_Paint))
-                    {
-                        item.ModelInfo = new XivModelInfo
-                        {
-                            PrimaryID = int.Parse(
-                                fullPath.Substring(fullPath.LastIndexOf("_", StringComparison.Ordinal) + 1, 1))
-                        };
-                    }
-                    else if (item.Name.Equals(XivStrings.Equipment_Decals))
-                    {
-                        item.ModelInfo = new XivModelInfo();
-
-                        if (!fullPath.Contains("_stigma"))
-                        {
-                            item.ModelInfo.PrimaryID = int.Parse(
-                                fullPath.Substring(fullPath.LastIndexOf("_", StringComparison.Ordinal) + 1, 3));
-                        }
-                    }
-                }
-
-                if (modItem.FilePath.Contains("chara/monster"))
-                {
-                    item.PrimaryCategory = XivStrings.Companions;
-
-                    item.ModelInfo = new XivModelInfo
-                    {
-                        PrimaryID = int.Parse(fullPath.Substring(15, 4)),
-                        SecondaryID = int.Parse(fullPath.Substring(fullPath.IndexOf("/body", StringComparison.Ordinal) + 7, 4))
-                    };
-                }
-
-                if (modItem.FilePath.Contains("chara/demihuman"))
-                {
-                    item.PrimaryCategory = XivStrings.Companions;
-
-                    item.ModelInfo = new XivModelInfo
-                    {
-                        SecondaryID = int.Parse(fullPath.Substring(17, 4)),
-                        PrimaryID = int.Parse(
-                            fullPath.Substring(fullPath.IndexOf("t/e", StringComparison.Ordinal) + 3, 4))
-                    };
-                }
-
-                if (modItem.FilePath.Contains("ui/"))
-                {
-                    item.PrimaryCategory = XivStrings.UI;
-
-                    if (modItem.FilePath.Contains("ui/uld") || modItem.FilePath.Contains("ui/map") || modItem.FilePath.Contains("ui/loadingimage"))
-                    {
-                        item.ModelInfo = new XivModelInfo
-                        {
-                            PrimaryID = 0
-                        };
-                    }
-                    else
-                    {
-                        item.ModelInfo = new XivModelInfo
-                        {
-                            PrimaryID = int.Parse(fullPath.Substring(fullPath.LastIndexOf("/", StringComparison.Ordinal) + 1,
-                                6))
-                        };
-                    }
-                }
-
-                if (modItem.FilePath.Contains("/hou/"))
-                {
-                    item.PrimaryCategory = XivStrings.Housing;
-                    var furnitureRegex = new Regex("\\/general\\/([0-9]{4})\\/");
-
-                    var match = furnitureRegex.Match(fullPath);
-                    if (match.Success)
-                    {
-                        item.ModelInfo = new XivModelInfo
-                        {
-                            PrimaryID = int.Parse(match.Groups[1].Value)
-                        };
-                    } else
-                    {
-                        item.ModelInfo = new XivModelInfo();
-                    }
-
-                }
+                return root.GetFirstItem();
             }
             catch (Exception ex)
             {
                 throw new Exception(string.Format(UIMessages.ModelDataErrorMessage, modItem.ItemName, modItem.FilePath));
             }
-
-            return item;
         }
 
         /// <summary>
         /// Update the mod list entries
         /// </summary>
         /// <param name="selectedItem">The selected item to update the entries for</param>
-        public Task UpdateList(Category category, CancellationTokenSource cts)
+        public async Task UpdateList(Category category, CancellationTokenSource cts)
         {
             var updateLock = new object();
             ListVisibility = Visibility.Visible;
@@ -580,17 +429,17 @@ namespace FFXIV_TexTools.ViewModels
             ProgressValue = 0;
             ProgressText = string.Empty;
 
-            return Task.Run(async () =>
+            await Task.Run(async () =>
             {
                 var tx = MainWindow.DefaultTransaction;
-                var selectedItem = category.Item as XivGenericItemModel;
+                var selectedItem = category.Item as IItem;
                 if (selectedItem == null) return;
 
                 var modList = await tx.GetModList();
 
                 var modItems = new List<Mod>();
 
-                var allMods = modList.GetMods();
+                var allMods = modList.GetMods(x => !x.IsInternal());
                 if (ModPackFilter)
                 {
                     var modPackCategory = category;
@@ -628,7 +477,6 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     foreach (var modItem in modItems)
                     {
-                        if (modItem.IsInternal()) continue;
 
                         var itemPath = modItem.FilePath;
 
@@ -850,7 +698,7 @@ namespace FFXIV_TexTools.ViewModels
 
             var modList = await tx.GetModList();
             List<Mod> modPackModList = null;
-            var allMods = modList.GetMods();
+            var allMods = modList.GetMods(x => !x.IsInternal());
             var allModpacks = modList.GetModPacks();
 
             if (category.Name.Equals(UIStrings.Standalone_Non_ModPack))
@@ -883,8 +731,6 @@ namespace FFXIV_TexTools.ViewModels
             var count = 0;
             foreach (var mod in modPackModList)
             {
-                if (mod.IsInternal()) continue;
-
                 count++;
 
                 if (await mod.GetState(tx) == EModState.Enabled)
