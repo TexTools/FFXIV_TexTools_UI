@@ -281,8 +281,6 @@ namespace FFXIV_TexTools.Views.ItemConverter
         {
             if (!DestinationOk(Destination)) return;
 
-            var imc = new Imc(XivCache.GameInfo.GameDirectory);
-
 
             SourceBox.Text = Source.Info.GetBaseFileName() + " (" + SourceItem.Name + ")";
             DestinationBox.Text = Destination.Info.GetBaseFileName() + " (" + DestinationItem.Name + ")";
@@ -291,8 +289,8 @@ namespace FFXIV_TexTools.Views.ItemConverter
             {
                 try
                 {
-                    var sourceInfo = await imc.GetFullImcInfo(Source.GetRawImcFilePath());
-                    var destInfo = await imc.GetFullImcInfo(Destination.GetRawImcFilePath());
+                    var sourceInfo = await Imc.GetFullImcInfo(Source.GetRawImcFilePath());
+                    var destInfo = await Imc.GetFullImcInfo(Destination.GetRawImcFilePath());
                     SourceVariantsBox.Text = (sourceInfo.SubsetCount + 1).ToString();
                     DestinationVariantsBox.Text = (destInfo.SubsetCount + 1).ToString();
                     SameVariantBox.IsEnabled = true;

@@ -699,7 +699,6 @@ namespace FFXIV_TexTools.ViewModels
         /// <param name="materialDictionary">The dictionary of materials for the current model</param>
         private async Task UpdateBodyTextures(TTModel ttModel, IItemModel item, Dictionary<int, ModelTextureData> materialDictionary)
         {
-            var _imc = new Imc(_gameDirectory);
 
             // Determine which materials in the model need to be replaced
             var bodyMaterialIndex = GetBodyTextureIndex(ttModel);
@@ -734,7 +733,7 @@ namespace FFXIV_TexTools.ViewModels
             var mtrlVariant = 1;
             try
             {
-                mtrlVariant = (await _imc.GetImcInfo(item)).MaterialSet;
+                mtrlVariant = (await Imc.GetImcInfo(item)).MaterialSet;
             }
             catch (Exception ex)
             {

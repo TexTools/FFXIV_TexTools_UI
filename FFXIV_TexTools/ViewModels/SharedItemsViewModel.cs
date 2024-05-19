@@ -29,7 +29,6 @@ namespace FFXIV_TexTools.ViewModels
         private MainWindow _mainWindow;
         private IItem _item;
         private TreeView _tree;
-        private Imc _imc;
         private Gear _gear;
 
         protected virtual void NotifyPropertyChanged(string propertyName)
@@ -53,7 +52,6 @@ namespace FFXIV_TexTools.ViewModels
         {
             var tx = MainWindow.DefaultTransaction;
             var gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
-            _imc = new Imc(gameDirectory);
             _gear = new Gear(gameDirectory, XivLanguages.GetXivLanguage(Properties.Settings.Default.Application_Language));
 
             if (mainWindow != null)
@@ -109,7 +107,7 @@ namespace FFXIV_TexTools.ViewModels
             FullImcInfo fullInfo = null;
             try
             {
-                fullInfo = await _imc.GetFullImcInfo(im, false, tx);
+                fullInfo = await Imc.GetFullImcInfo(im, false, tx);
                 if(fullInfo == null)
                 {
                     return false;

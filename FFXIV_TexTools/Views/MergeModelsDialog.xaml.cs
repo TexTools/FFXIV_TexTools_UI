@@ -168,9 +168,8 @@ namespace FFXIV_TexTools.Views
             if (fromRoot == null) return;
             if (!Imc.UsesImc(fromRoot)) return;
 
-            var _imc = new Imc(XivCache.GameInfo.GameDirectory);
 
-            var imcInfo = await _imc.GetFullImcInfo(fromRoot.GetRawImcFilePath(), MainWindow.DefaultTransaction);
+            var imcInfo = await Imc.GetFullImcInfo(fromRoot.GetRawImcFilePath(), MainWindow.DefaultTransaction);
 
             if (imcInfo.SubsetCount == 0) return;
 

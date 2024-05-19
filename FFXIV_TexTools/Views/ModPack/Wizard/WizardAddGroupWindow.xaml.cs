@@ -512,7 +512,6 @@ namespace FFXIV_TexTools.Views
             }
 
 
-            var _imc = new Imc(_gameDirectory);
 
             var tx = MainWindow.DefaultTransaction;
             int mSet = -1;
@@ -531,7 +530,7 @@ namespace FFXIV_TexTools.Views
 
 
                     metadataFile = root.Info.GetRootFile();
-                    mSet = await _imc.GetMaterialSetId(im, false, tx);
+                    mSet = await Imc.GetMaterialSetId(im, false, tx);
                     models = await root.GetModelFiles(tx);
                     materials = await root.GetMaterialFiles(mSet, tx);
                     textures = await root.GetTextureFiles(mSet, tx);

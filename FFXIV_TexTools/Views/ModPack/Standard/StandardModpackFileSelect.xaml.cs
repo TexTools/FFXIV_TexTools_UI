@@ -116,10 +116,9 @@ namespace FFXIV_TexTools.Views
                 }
                 else if (_level == XivDependencyLevel.Material)
                 {
-                    var imc = new Imc(XivCache.GameInfo.GameDirectory);
                     try
                     {
-                        var entry = await imc.GetImcInfo((IItemModel)_item, false, tx);
+                        var entry = await Imc.GetImcInfo((IItemModel)_item, false, tx);
                         children = await root.GetMaterialFiles(entry.MaterialSet, tx);
                     } catch
                     {
@@ -140,8 +139,7 @@ namespace FFXIV_TexTools.Views
                 {
                     try
                     {
-                        var imc = new Imc(XivCache.GameInfo.GameDirectory);
-                        var entry = await imc.GetImcInfo((IItemModel)_item, false, tx);
+                        var entry = await Imc.GetImcInfo((IItemModel)_item, false, tx);
                         children = await root.GetTextureFiles(entry.MaterialSet, tx);
                     }
                     catch

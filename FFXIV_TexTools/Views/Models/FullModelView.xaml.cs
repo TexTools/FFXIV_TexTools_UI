@@ -127,8 +127,7 @@ namespace FFXIV_TexTools.Views.Models
                 var mtrlVariant = 1;
                 try
                 {
-                    var imc = new Imc(_gameDirectory);
-                    mtrlVariant = (await imc.GetImcInfo(model.Value.ItemModel)).MaterialSet;
+                    mtrlVariant = (await Imc.GetImcInfo(model.Value.ItemModel)).MaterialSet;
                 }
                 catch (Exception ex)
                 {

@@ -1026,8 +1026,7 @@ namespace FFXIV_TexTools.ViewModels
                 List<XivImc> entries = new List<XivImc>();
                 await Task.Run(async () =>
                 {
-                    var _imc = new Imc(XivCache.GameInfo.GameDirectory);
-                    var info = (await _imc.GetFullImcInfo(item, false, MainWindow.DefaultTransaction));
+                    var info = (await Imc.GetFullImcInfo(item, false, MainWindow.DefaultTransaction));
                     if(info == null)
                     {
                         return;

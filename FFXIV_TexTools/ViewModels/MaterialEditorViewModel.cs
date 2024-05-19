@@ -184,8 +184,6 @@ namespace FFXIV_TexTools.ViewModels
         public async Task SaveMulti()
         {
 
-            var _imc = new Imc(XivCache.GameInfo.GameDirectory);
-
             // Get tokenized map info structs.
             // This will let us set them in the new Materials and
             // Detokenize them using the new paths.
@@ -218,7 +216,7 @@ namespace FFXIV_TexTools.ViewModels
             var materialSets = new HashSet<byte>();
             try
             {
-                var imcInfo = await _imc.GetFullImcInfo(_item, false, MainWindow.DefaultTransaction);
+                var imcInfo = await Imc.GetFullImcInfo(_item, false, MainWindow.DefaultTransaction);
                 imcEntries = imcInfo.GetAllEntries(root.Slot, true);
                 materialSets = imcEntries.Select(x => x.MaterialSet).ToHashSet();
             } catch
@@ -325,8 +323,7 @@ namespace FFXIV_TexTools.ViewModels
                 files.Add(_material.MTRLPath);
             } else
             {
-                var imc = new Imc(XivCache.GameInfo.GameDirectory);
-                var info = await imc.GetFullImcInfo(_item, false, MainWindow.DefaultTransaction);
+                var info = await Imc.GetFullImcInfo(_item, false, MainWindow.DefaultTransaction);
                 var entries = info.GetAllEntries(root.Info.Slot);
                 var materialSets = entries.Select(x => x.MaterialSet).ToHashSet();
 

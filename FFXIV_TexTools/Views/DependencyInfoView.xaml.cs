@@ -212,7 +212,6 @@ namespace FFXIV_TexTools.Views
 
             Dictionary<XivDependencyRoot, HashSet<int>> sharedImcSubsets = new Dictionary<XivDependencyRoot, HashSet<int>>();
 
-            var _imc = new Imc(XivCache.GameInfo.GameDirectory);
 
             try
             {
@@ -224,7 +223,7 @@ namespace FFXIV_TexTools.Views
                     sharedImcSubsets.Add(rt, new HashSet<int>());
                     var imcPath = rt.GetRawImcFilePath();
 
-                    var fullImcInfo = await _imc.GetFullImcInfo(imcPath);
+                    var fullImcInfo = await Imc.GetFullImcInfo(imcPath);
 
                     var setCount = fullImcInfo.SubsetCount + 1;
                     for (int i = 0; i < setCount; i++)

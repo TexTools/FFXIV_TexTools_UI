@@ -93,7 +93,6 @@ namespace FFXIV_TexTools.Views.Controls
             var lang = XivCache.GameInfo.GameLanguage;
             var df = IOUtil.GetDataFileFromPath(root.Info.GetRootFile());
 
-            var _imc = new Imc(gd);
             var raceRegex = new Regex("c([0-9]{4})[^b]");
 
             var tx = MainWindow.DefaultTransaction;
@@ -126,7 +125,7 @@ namespace FFXIV_TexTools.Views.Controls
                 VariantLabel.Text = $"Variant: --".L();
             }
 
-            var mSet = await _imc.GetMaterialSetId(_item, false, tx);
+            var mSet = await Imc.GetMaterialSetId(_item, false, tx);
             if (mSet > 0)
             {
                 MaterialSetLabel.Text = $"Material Set: {mSet._()}".L();
@@ -269,7 +268,7 @@ namespace FFXIV_TexTools.Views.Controls
             {
                 var myImcSubsetId = _item.ModelInfo.ImcSubsetID;
                 var allItems = await root.GetAllItems();
-                var fInfo = await _imc.GetFullImcInfo(_item, false, tx);
+                var fInfo = await Imc.GetFullImcInfo(_item, false, tx);
                 var entries = fInfo.GetAllEntries(_item.GetItemSlotAbbreviation(), true);
 
                 foreach (var item in allItems)
