@@ -396,9 +396,10 @@ namespace FFXIV_TexTools.Views.ItemConverter
                 // If we're converting off of equipment there's not extras to swap.
                 return extraConversions;
             }
+            var tx = MainWindow.DefaultTransaction;
 
             // For top items, we need to check and see if a recursive action is required.
-            var meta = await ItemMetadata.GetMetadata(Source);
+            var meta = await ItemMetadata.GetMetadata(Source, false, tx);
             var eqp = meta.EqpEntry;
 
             if (eqp != null && eqp.GetFlag(EquipmentParameterFlag.EnableBodyFlags))
@@ -418,8 +419,8 @@ namespace FFXIV_TexTools.Views.ItemConverter
                         var sourceAltRoot = Source.Info.GetOtherSlot("glv").ToFullRoot();
                         var destAltRoot = Destination.Info.GetOtherSlot("glv").ToFullRoot();
 
-                        var sourceAltMeta = await ItemMetadata.GetMetadata(sourceAltRoot);
-                        var destAltMeta = await ItemMetadata.GetMetadata(destAltRoot);
+                        var sourceAltMeta = await ItemMetadata.GetMetadata(sourceAltRoot, false, tx);
+                        var destAltMeta = await ItemMetadata.GetMetadata(destAltRoot, false, tx);
 
                         var srcShowRingR = sourceAltMeta.EqpEntry.GetFlag(EquipmentParameterFlag.HandShowRingR);
                         var dstShowRingR = destAltMeta.EqpEntry.GetFlag(EquipmentParameterFlag.HandShowRingR);
@@ -451,8 +452,8 @@ namespace FFXIV_TexTools.Views.ItemConverter
                         var sourceAltRoot = Source.Info.GetOtherSlot("dwn").ToFullRoot();
                         var destAltRoot = Destination.Info.GetOtherSlot("dwn").ToFullRoot();
 
-                        var sourceAltMeta = await ItemMetadata.GetMetadata(sourceAltRoot);
-                        var destAltMeta = await ItemMetadata.GetMetadata(destAltRoot);
+                        var sourceAltMeta = await ItemMetadata.GetMetadata(sourceAltRoot, false, tx);
+                        var destAltMeta = await ItemMetadata.GetMetadata(destAltRoot, false, tx);
 
                         var srcShowFoot = sourceAltMeta.EqpEntry.GetFlag(EquipmentParameterFlag.LegShowFoot);
                         var dstShowFoot = destAltMeta.EqpEntry.GetFlag(EquipmentParameterFlag.LegShowFoot);

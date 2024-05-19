@@ -41,8 +41,10 @@ namespace FFXIV_TexTools.ViewModels
         /// <returns></returns>
         public async Task<bool> SetRoot(XivDependencyRoot root, int startingVariant = 0)
         {
-            _metadata = await ItemMetadata.GetMetadata(root);
-            _original = await ItemMetadata.GetMetadata(root);
+            var tx = MainWindow.DefaultTransaction;
+
+            _metadata = await ItemMetadata.GetMetadata(root, false, tx);
+            _original = await ItemMetadata.GetMetadata(root, false, tx);
             if (_metadata == null || !_metadata.AnyMetadata) {
                 _view.SaveButton.IsEnabled = false;
                 _view.NexSlotButton.IsEnabled = false;

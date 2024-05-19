@@ -1062,16 +1062,16 @@ namespace FFXIV_TexTools.Views
             };
             var addChildren = MetadataIncludeChildFilesBox.IsChecked == true ? true : false;
 
-            var meta = await ItemMetadata.GetMetadata(path);
+            var meta = await ItemMetadata.GetMetadata(path, false, MainWindow.DefaultTransaction);
             var data = await Dat.CompressType2Data(await ItemMetadata.Serialize(meta));
 
             if (addChildren)
             {
-                AddWithChildren(selectedFile.Path, SelectedItem, data);
+                await AddWithChildren(selectedFile.Path, SelectedItem, data);
             }
             else
             {
-                AddFile(selectedFile, SelectedItem, data);
+                await AddFile(selectedFile, SelectedItem, data);
             }
 
         }

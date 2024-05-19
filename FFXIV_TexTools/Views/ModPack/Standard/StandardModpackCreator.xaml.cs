@@ -22,6 +22,7 @@ using xivModdingFramework.Mods.DataContainers;
 using xivModdingFramework.Mods.FileTypes;
 using xivModdingFramework.SqPack.FileTypes;
 using AutoUpdaterDotNET;
+using System.Windows.Markup;
 
 namespace FFXIV_TexTools.Views
 {
@@ -364,12 +365,16 @@ namespace FFXIV_TexTools.Views
                     {
                         var exists = await tx.FileExists(file);
 
-                        // This is a funny case where in order to create the modpack we actually have to write a default meta entry to the dats first.
-                        // If we had the right functions we could just load and serialize the data, but we don't atm.
+                        var data = new byte[0];
                         if (!exists && Path.GetExtension(file) == ".meta")
                         {
-                            var meta = await ItemMetadata.GetMetadata(file);
-                            await ItemMetadata.SaveMetadata(meta, XivStrings.TexTools);
+                            // Metadata doesn't exist in .meta form, so need to retrieve it from constituent files.
+                            var meta = await ItemMetadata.GetMetadata(file, false, tx);
+                            data = await ItemMetadata.Serialize(meta);
+                            data = await Dat.CompressType2Data(data);
+                        } else
+                        {
+                            data = await tx.ReadFile(file, false, true);
                         }
 
                         var isDef = await Modding.GetModState(file, tx) == xivModdingFramework.Mods.Enums.EModState.UnModded;
@@ -380,7 +385,7 @@ namespace FFXIV_TexTools.Views
                             Category = e.Item.SecondaryCategory,
                             FullPath = file,
                             IsDefault = isDef,
-                            ModDataBytes = await tx.ReadFile(file, false, true)
+                            ModDataBytes = data
                         };
                         option.Mods.Add(file, fData);
                     }
@@ -414,8 +419,7 @@ namespace FFXIV_TexTools.Views
                 }
             }
 
-            var tx = MainWindow.DefaultTransaction;
-
+            var tx = MainWindow.UserTransaction;
             var ModList = await tx.GetModList();
 
             SimpleModPackData simpleModPackData = new SimpleModPackData
@@ -428,49 +432,57 @@ namespace FFXIV_TexTools.Views
                 SimpleModDataList = new List<SimpleModData>()
             };
 
-            foreach (var entry in ViewModel.Entries)
+            var ownTx = false;
+            if(tx == null)
             {
-                foreach(var file in entry.AllFiles)
-                {
-                    var exists = await tx.FileExists(file);
-
-                    // This is a funny case where in order to create the modpack we actually have to write a default meta entry to the dats first.
-                    // If we had the right functions we could just load and serialize the data, but we don't atm.
-                    if (!exists && Path.GetExtension(file) == ".meta")
-                    {
-                        var meta = await ItemMetadata.GetMetadata(file);
-                        await ItemMetadata.SaveMetadata(meta, XivStrings.TexTools);
-                    }
-
-                    var offset = await tx.Get8xDataOffset(file);
-                    var compressedSize = await tx.GetCompressedFileSize(file);
-                    var dataFile = IOUtil.GetDataFileFromPath(file);
-                    ModList.Mods.TryGetValue(file, out var modEntry);
-
-
-                    var isDef = await Modding.GetModState(file, tx) == xivModdingFramework.Mods.Enums.EModState.UnModded;
-
-
-                    SimpleModData simpleData = new SimpleModData
-                    {
-                        Name = entry.Item.Name,
-                        Category = entry.Item.SecondaryCategory,
-                        FullPath = file,
-                        ModOffset = offset,
-                        ModSize = compressedSize,
-                        IsDefault = isDef,
-                        DatFile = dataFile.GetFileName()
-                    };
-
-                    simpleModPackData.SimpleModDataList.Add(simpleData);
-
-                }
+                ownTx = true;
+                tx = ModTransaction.BeginTransaction(true);
             }
+            try { 
+                foreach (var entry in ViewModel.Entries)
+                {
+                    foreach(var file in entry.AllFiles)
+                    {
+                        var exists = await tx.FileExists(file);
+
+                        var dataFile = IOUtil.GetDataFileFromPath(file);
+                        var data = new byte[0];
+                        var offset = await tx.Get8xDataOffset(file);
+
+                        if (!exists && Path.GetExtension(file) == ".meta")
+                        {
+                            // Metadata doesn't exist in .meta form, so need to retrieve it from constituent files.
+                            var meta = await ItemMetadata.GetMetadata(file, false, tx);
+                            data = await ItemMetadata.Serialize(meta);
+                            data = await Dat.CompressType2Data(data);
+
+                            // However... Because the simple mod creator also doesn't know how to export raw data, we need
+                            // To store this in the transaction DB temporarily.  We can write it to a random offset and let
+                            // The TX automatically delete it later whenever it ends.
+                            offset = await tx.UNSAFE_WriteData(dataFile, data, true);
+                        } 
+
+                        ModList.Mods.TryGetValue(file, out var modEntry);
 
 
+                        var isDef = await Modding.GetModState(file, tx) == xivModdingFramework.Mods.Enums.EModState.UnModded;
 
-            try
-            {
+
+                        SimpleModData simpleData = new SimpleModData
+                        {
+                            Name = entry.Item.Name,
+                            Category = entry.Item.SecondaryCategory,
+                            FullPath = file,
+                            ModOffset = offset,
+                            IsDefault = isDef,
+                            DatFile = dataFile.GetFileName()
+                        };
+
+                        simpleModPackData.SimpleModDataList.Add(simpleData);
+
+                    }
+                }
+
                 await LockUi(UIStrings.Creating_Modpack, null, null);
                 await TTMP.CreateSimpleModPack(simpleModPackData, Properties.Settings.Default.ModPack_Directory, ViewHelpers.BindReportProgress(_lockProgressController), true);
 
@@ -481,9 +493,17 @@ namespace FFXIV_TexTools.Views
             }
             catch(Exception ex)
             {
+
                 FlexibleMessageBox.Show(new Wpf32Window(this), "An Error occured while creating the modpack.\n\n".L()+ ex.Message,
                                                "Modpack Creation Error".L(), MessageBoxButtons.OK, MessageBoxIcon.Error);
                 await UnlockUi(this);
+            }
+            finally
+            {
+                if (ownTx)
+                {
+                    ModTransaction.CancelTransaction(tx, true);
+                }
             }
 
 
