@@ -1715,15 +1715,14 @@ namespace FFXIV_TexTools
             await LockUi("Updating Shader References...".L(), "This may take up to 5 minutes depending on your computer specs...".L(), this);
             try
             {
-                var _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory);
                 await Task.Run(async () => {
 
 #if ENDWALKER
-                    await _mtrl.UpdateShaderDB(false);
+                    await Mtrl.UpdateShaderDB(false);
 #else
                     // TODO - This should be [false] when switching off the benchmark install.
                     // ( Controls whether it uses Index 1 or Index 2 for the search )
-                    await _mtrl.UpdateShaderDB(true);
+                    await Mtrl.UpdateShaderDB(true);
 #endif
                     await ShaderHelpers.LoadShaderInfo();
                 });

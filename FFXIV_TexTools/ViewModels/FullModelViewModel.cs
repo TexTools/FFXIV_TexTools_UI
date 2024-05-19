@@ -700,7 +700,6 @@ namespace FFXIV_TexTools.ViewModels
         private async Task UpdateBodyTextures(TTModel ttModel, IItemModel item, Dictionary<int, ModelTextureData> materialDictionary)
         {
             var _imc = new Imc(_gameDirectory);
-            var _mtrl = new Mtrl(_gameDirectory);
 
             // Determine which materials in the model need to be replaced
             var bodyMaterialIndex = GetBodyTextureIndex(ttModel);
@@ -759,8 +758,8 @@ namespace FFXIV_TexTools.ViewModels
                     .FirstOrDefault();
                 bTex.MaterialPath = newMaterial;
 
-                var mtrlPath = _mtrl.GetMtrlPath(tempMdlPath, newMaterial, mtrlVariant);
-                var mtrl = await _mtrl.GetXivMtrl(mtrlPath);
+                var mtrlPath = Mtrl.GetMtrlPath(tempMdlPath, newMaterial, mtrlVariant);
+                var mtrl = await Mtrl.GetXivMtrl(mtrlPath);
 
                 var colors = ModelTexture.GetCustomColors();
                 colors.InvertNormalGreen = false;
@@ -783,7 +782,6 @@ namespace FFXIV_TexTools.ViewModels
         /// <param name="materialDictionary">The dictionary of materials for the current model</param>
         private async Task UpdateTailTextures(TTModel ttModel, Dictionary<int, ModelTextureData> materialDictionary)
         {
-            var _mtrl = new Mtrl(_gameDirectory);
 
             // Determine which materials in the model need to be replaced
             var currTailNum = GetTailNum(ttModel);
@@ -803,8 +801,8 @@ namespace FFXIV_TexTools.ViewModels
                 var mtrlVariant = 1;
                 materialDictionary[0].MaterialPath = newMaterial;
 
-                var mtrlPath = _mtrl.GetMtrlPath(tempMdlPath, newMaterial, mtrlVariant);
-                var mtrl = await _mtrl.GetXivMtrl(mtrlPath);
+                var mtrlPath = Mtrl.GetMtrlPath(tempMdlPath, newMaterial, mtrlVariant);
+                var mtrl = await Mtrl.GetXivMtrl(mtrlPath);
                 var colors = ModelTexture.GetCustomColors();
                 colors.InvertNormalGreen = false;
                 var modelMaps = await ModelTexture.GetModelMaps(_gameDirectory, mtrl, colors, -1, MainWindow.UserTransaction);
@@ -842,7 +840,6 @@ namespace FFXIV_TexTools.ViewModels
 
             if (ttModel != null)
             {
-                var _mtrl = new Mtrl(_gameDirectory);
 
                 var faceRegex = new Regex("(f[0-9]{4})");
                 var facePartRegex = new Regex("(_[a-z]{3}_)");
@@ -875,8 +872,8 @@ namespace FFXIV_TexTools.ViewModels
 
                     try
                     {
-                        var mtrlPath = _mtrl.GetMtrlPath(tempMdlPath, material);
-                        var mtrl = await _mtrl.GetXivMtrl(mtrlPath);
+                        var mtrlPath = Mtrl.GetMtrlPath(tempMdlPath, material);
+                        var mtrl = await Mtrl.GetXivMtrl(mtrlPath);
                         var colors = ModelTexture.GetCustomColors();
                         colors.InvertNormalGreen = false;
                         var modelMaps = await ModelTexture.GetModelMaps(_gameDirectory, mtrl, colors, -1, MainWindow.UserTransaction);

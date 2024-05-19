@@ -761,7 +761,6 @@ namespace FFXIV_TexTools.ViewModels
             }
             else if (ext == ".mtrl")
             {
-                var _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory);
                 try
                 {
                     // Material doesn't exist for this material set.
@@ -772,7 +771,7 @@ namespace FFXIV_TexTools.ViewModels
                         return;
                     }
 
-                    _xivMtrl = await _mtrl.GetXivMtrl(SelectedMaterial);
+                    _xivMtrl = await Mtrl.GetXivMtrl(SelectedMaterial);
 
                     if(_xivMtrl == null)
                     {
@@ -1153,7 +1152,6 @@ namespace FFXIV_TexTools.ViewModels
                 return;
             }
 
-            var _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory);
             var _tex = new Tex(XivCache.GameInfo.GameDirectory);
 
             // This is intentionally an async/deferred call here.
@@ -1194,7 +1192,7 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     // Colorset entry.
                     PathString = SelectedMap.TexturePath;
-                    _xivMtrl = await _mtrl.GetXivMtrl(SelectedMap.TexturePath, _item);
+                    _xivMtrl = await Mtrl.GetXivMtrl(SelectedMap.TexturePath, _item);
                     await _textureView.ColorsetEditor.SetMaterial(_xivMtrl);
 
                     _textureView.ColorsetEditor.Visibility = Visibility.Visible;
@@ -1371,7 +1369,6 @@ namespace FFXIV_TexTools.ViewModels
                 DirectoryInfo savePath = new DirectoryInfo(Settings.Default.Save_Directory);
                 XivTex texData;
                 var df = IOUtil.GetDataFileFromPath(SelectedMap.TexturePath);
-                var _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory);
                 var _tex = new Tex(XivCache.GameInfo.GameDirectory);
 
                 var ttp = new TexTypePath
@@ -1384,10 +1381,10 @@ namespace FFXIV_TexTools.ViewModels
                 if (SelectedMap.Usage== XivTexType.ColorSet)
                 {
 
-                    texData = await _mtrl.GetColorsetXivTex(_xivMtrl);
+                    texData = await Mtrl.GetColorsetXivTex(_xivMtrl);
                     if (_primaryIsRace)
                     {
-                        _mtrl.SaveColorsetDyeData(_item, _xivMtrl, savePath, SelectedRace);
+                        Mtrl.SaveColorsetDyeData(_item, _xivMtrl, savePath, SelectedRace);
                     }
                     else
                     {
@@ -1395,7 +1392,7 @@ namespace FFXIV_TexTools.ViewModels
                         saveItem.ModelInfo.SecondaryID = SelectedPrimary;
                         saveItem.Name = saveItem.SecondaryCategory;
                         var race = _root == null ? XivRace.All_Races : XivRaces.GetXivRace(_root.Info.PrimaryId);
-                        _mtrl.SaveColorsetDyeData(saveItem, _xivMtrl, savePath, race);
+                        Mtrl.SaveColorsetDyeData(saveItem, _xivMtrl, savePath, race);
                     }
                 }
                 else
@@ -1620,7 +1617,6 @@ namespace FFXIV_TexTools.ViewModels
 
         public async Task Import(string fileName)
         {
-            var _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory);
             var _tex = new Tex(XivCache.GameInfo.GameDirectory);
 
             ImportEnabled = false;
@@ -1670,7 +1666,7 @@ namespace FFXIV_TexTools.ViewModels
                     try
                     {
                         var newColorSetOffset = await _tex.ImportColorsetTexture(_xivMtrl, fileDir.FullName, _item, XivStrings.TexTools);
-                        _xivMtrl = await _mtrl.GetXivMtrl(_xivMtrl.MTRLPath, false, MainWindow.DefaultTransaction);
+                        _xivMtrl = await Mtrl.GetXivMtrl(_xivMtrl.MTRLPath, false, MainWindow.DefaultTransaction);
                     }
                     catch (Exception ex)
                     {
@@ -1896,10 +1892,9 @@ namespace FFXIV_TexTools.ViewModels
                     }
 
                     if (matPath == null) return;
-                    var _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory);
 
                     // Load the original material.
-                    material = await _mtrl.GetXivMtrl(matPath, false, tx);
+                    material = await Mtrl.GetXivMtrl(matPath, false, tx);
 
                     // And replace the path.
                     material.MTRLPath = material.MTRLPath.Replace(original, target);

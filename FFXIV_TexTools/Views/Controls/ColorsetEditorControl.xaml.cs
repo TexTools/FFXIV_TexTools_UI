@@ -690,10 +690,9 @@ namespace FFXIV_TexTools.Controls
             try
             {
 
-                var mtrlLib = new Mtrl(XivCache.GameInfo.GameDirectory);
 
                 var item = mw.GetSelectedItem();
-                await mtrlLib.ImportMtrl(_mtrl, item, XivStrings.TexTools);
+                await Mtrl.ImportMtrl(_mtrl, item, XivStrings.TexTools);
                 MaterialSaved.Invoke(this, null);
             }
             catch(Exception ex)

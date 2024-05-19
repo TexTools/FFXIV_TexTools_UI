@@ -830,11 +830,10 @@ namespace FFXIV_TexTools.Views
 
             try
             {
-                var _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory);
                 var _tex = new Tex(XivCache.GameInfo.GameDirectory);
 
                 var mtrlData = new byte[0];
-                var mtrl = await _mtrl.GetXivMtrl(selectedFile.Path, false, MainWindow.DefaultTransaction);
+                var mtrl = await Mtrl.GetXivMtrl(selectedFile.Path, false, MainWindow.DefaultTransaction);
 
                 var ddsPath = "";
 
@@ -854,7 +853,7 @@ namespace FFXIV_TexTools.Views
                 mtrl.ColorSetDyeData = cSet.DyeData;
 
                 // SqPack the data.
-                mtrlData = await Dat.CompressType2Data(_mtrl.XivMtrlToUncompressedMtrl(mtrl));
+                mtrlData = await Dat.CompressType2Data(Mtrl.XivMtrlToUncompressedMtrl(mtrl));
 
 
                 if (addChildren)

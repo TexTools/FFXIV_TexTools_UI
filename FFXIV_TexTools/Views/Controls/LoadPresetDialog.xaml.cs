@@ -50,9 +50,8 @@ namespace FFXIV_TexTools.Views.Controls
         {
             var path = (string) PresetsList.SelectedValue;
 
-            var _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory);
             var bytes = System.IO.File.ReadAllBytes(path);
-            var newMtrl = _mtrl.GetXivMtrl(bytes, Material.MTRLPath);
+            var newMtrl = Mtrl.GetXivMtrl(bytes, Material.MTRLPath);
 
             // Carry our colorset information through.
             if (ColorsetBox.IsChecked == false)

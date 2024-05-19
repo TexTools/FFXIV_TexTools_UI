@@ -587,7 +587,6 @@ namespace FFXIV_TexTools.ViewModels
                 var selectedItem = category.Item as XivGenericItemModel;
                 if (selectedItem == null) return;
 
-                var mtrl = new Mtrl(_gameDirectory);
                 var modList = await tx.GetModList();
 
                 var modItems = new List<Mod>();
@@ -697,7 +696,7 @@ namespace FFXIV_TexTools.ViewModels
                             {
                                 try
                                 {
-                                    var mtrlData = await mtrl.GetXivMtrl(modItem.FilePath, false, tx);
+                                    var mtrlData = await Mtrl.GetXivMtrl(modItem.FilePath, false, tx);
                                     if (mtrlData != null)
                                     {
 

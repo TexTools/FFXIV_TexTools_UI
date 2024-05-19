@@ -55,7 +55,6 @@ namespace FFXIV_TexTools.ViewModels
 
         
         private MaterialEditorView _view;
-        private Mtrl _mtrl;
         private Index _index;
         private Gear _gear;
         private XivMtrl _material;
@@ -79,7 +78,6 @@ namespace FFXIV_TexTools.ViewModels
             _item = item;
 
             var gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
-            _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory);
             _gear = new Gear(gameDirectory, GetLanguage());
 
 
@@ -168,7 +166,7 @@ namespace FFXIV_TexTools.ViewModels
                 if (_mode == MaterialEditorMode.EditSingle)
                 {
                     // Save the existing MTRL.
-                    await _mtrl.ImportMtrl(_material, _item, XivStrings.TexTools);
+                    await Mtrl.ImportMtrl(_material, _item, XivStrings.TexTools);
                 }
                 else if (_mode == MaterialEditorMode.NewMulti || _mode == MaterialEditorMode.EditMulti || _mode == MaterialEditorMode.NewRace)
                 {
@@ -233,7 +231,7 @@ namespace FFXIV_TexTools.ViewModels
             // We need to save our non-existent base material once before we can continue.
             if (_mode == MaterialEditorMode.NewRace)
             {
-                await _mtrl.ImportMtrl(_material, _item, XivStrings.TexTools, true, MainWindow.UserTransaction);
+                await Mtrl.ImportMtrl(_material, _item, XivStrings.TexTools, true, MainWindow.UserTransaction);
             }
 
             var count = 0;
@@ -272,7 +270,7 @@ namespace FFXIV_TexTools.ViewModels
             // Load and modify all the MTRLs.
             foreach (var materialSetId in materialSets)
             {
-                var variantPath = _mtrl.GetMtrlFolder(root, materialSetId);
+                var variantPath = Mtrl.GetMtrlFolder(root, materialSetId);
                 var oldMaterialPath = variantPath + "/" + oldMtrlName;
                 var newMaterialPath = variantPath + "/" + newMtrlName;
 
@@ -306,7 +304,7 @@ namespace FFXIV_TexTools.ViewModels
 
                 count++;
                 // Write the new Material
-                await _mtrl.ImportMtrl(itemXivMtrl, item, XivStrings.TexTools, true, MainWindow.UserTransaction);
+                await Mtrl.ImportMtrl(itemXivMtrl, item, XivStrings.TexTools, true, MainWindow.UserTransaction);
                 _view.SaveStatusLabel.Content = $"Updated {count._()}/{materialSets.Count._()} Material Sets...".L();
             }
 

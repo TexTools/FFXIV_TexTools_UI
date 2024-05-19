@@ -1817,7 +1817,6 @@ namespace FFXIV_TexTools.ViewModels
             var textureDataDictionary = new Dictionary<int, ModelTextureData>();
             if (_model == null) return textureDataDictionary;
             var mtrlDictionary = new Dictionary<int, XivMtrl>();
-            var mtrl = new Mtrl(XivCache.GameInfo.GameDirectory);
             var mtrlFilePaths = _model.Materials;
             var hasColorChangeShader = false;
             Color? customColor = null;
@@ -2021,7 +2020,7 @@ namespace FFXIV_TexTools.ViewModels
                 }
 
                 var dxVersion = int.Parse(Settings.Default.DX_Version);
-                var mtrlData = await mtrl.GetXivMtrl(filePath, mtrlItem);
+                var mtrlData = await Mtrl.GetXivMtrl(filePath, mtrlItem);
 
                 if(mtrlData == null)
                 {
