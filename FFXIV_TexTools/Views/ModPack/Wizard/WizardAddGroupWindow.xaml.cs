@@ -544,8 +544,7 @@ namespace FFXIV_TexTools.Views
                         textures.Add(icon.Path);
                     }
 
-                    var _atex = new ATex(XivCache.GameInfo.GameDirectory);
-                    var paths = await _atex.GetAtexPaths(im, false, tx);
+                    var paths = await ATex.GetAtexPaths(im, false, tx);
                     foreach (var path in paths)
                     {
                         textures.Add(path.Path);
