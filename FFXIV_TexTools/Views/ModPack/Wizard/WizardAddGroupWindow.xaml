@@ -110,7 +110,7 @@
                                 <RowDefinition/>
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
-                            <ListBox x:Name="IncludedModsList" Grid.Row="0" Margin="5" DisplayMemberPath="Name" SelectionChanged="IncludedModsList_SelectionChanged"/>
+                            <ListBox x:Name="IncludedModsList" Grid.Row="0" Margin="5" DisplayMemberPath="Name" SelectionChanged="IncludedModsList_SelectionChanged" SelectionMode="Multiple"/>
                             <Button x:Name="RemoveModItemButton" Grid.Row="1" Content="{Binding Source={x:Static resx:UIStrings.Remove}}" Click="RemoveModItemButton_Click"/>
                         </Grid>
                     </GroupBox>
@@ -134,6 +134,7 @@
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="40"/>
                                     <RowDefinition Height="40"/>
+                                    <RowDefinition Height="40"/>
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="300"/>
@@ -143,6 +144,7 @@
                                 <TextBox x:Name="MetadataPathBox" IsReadOnly="true" Grid.ColumnSpan="1" Margin="5,0" VerticalAlignment="Center"/>
                                 <CheckBox x:Name="MetadataIncludeChildFilesBox" Content="Include Child Files" IsChecked="True" Grid.Row="0" Grid.Column="1" Margin="5,0" VerticalAlignment="Center"/>
                                 <Button x:Name="AddMetadataButton" Grid.Column="2" Grid.Row="0" Content="{Binding Source={x:Static resx:UIStrings.Add}}" VerticalAlignment="Center" Click="AddMetadataButton_Click" Margin="5,0" IsEnabled="False"/>
+                                <Button x:Name="AddNewMetadata" Grid.Column="2" Grid.Row="1" Content="Add New" VerticalAlignment="Center" Margin="5,0" Click="AddNewMetadata_Click" IsEnabled="False"/>
                             </Grid>
                         </GroupBox>
                     </TabItem>
@@ -150,6 +152,7 @@
                         <GroupBox Header="{Binding Source={x:Static resx:UIStrings.Model_Options}}">
                             <Grid>
                                 <Grid.RowDefinitions>
+                                    <RowDefinition Height="40"/>
                                     <RowDefinition Height="40"/>
                                     <RowDefinition Height="40"/>
                                     <RowDefinition/>
@@ -163,7 +166,8 @@
                                 <ComboBox x:Name="ModelTypeComboBox" Grid.Row="0" Grid.Column="0" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.Model_Type}}" VerticalAlignment="Center" Margin="5,0" DisplayMemberPath="Name"/>
                                 <CheckBox x:Name="ModelIncludeChildFilesBox" Content="Include Child Files" IsChecked="True" Grid.Row="0" Grid.Column="1" Margin="5,0" VerticalAlignment="Center"/>
                                 <Button x:Name="AddCurrentModelButton" Grid.Column="2" Content="{Binding Source={x:Static resx:UIStrings.Add}}" VerticalAlignment="Center" Margin="5,0" Click="AddCurrentModelButton_Click" IsEnabled="False"/>
-                                <Button x:Name="AdvOptionsButton" Grid.Column="2" Grid.Row="1" Content="Add New" VerticalAlignment="Center" Margin="5,0" Click="AdvOptionsButton_Click" IsEnabled="False"/>
+                                <Button x:Name="AdvOptionsButton" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="1" Content="Add With Custom Settings" VerticalAlignment="Center" Margin="5,0" Click="AdvOptionsButton_Click" IsEnabled="False" HorizontalAlignment="Right" Width="180"/>
+                                <Button x:Name="AddRawModel" Grid.Column="2" Grid.Row="2" Content="Add New" VerticalAlignment="Center" Margin="5,0" Click="AddRawModel_Click" IsEnabled="False"/>
                             </Grid>
                         </GroupBox>
                     </TabItem>
@@ -171,6 +175,7 @@
                         <GroupBox Header="{Binding Source={x:Static resx:UIStrings.Material_Options}}">
                             <Grid>
                                 <Grid.RowDefinitions>
+                                    <RowDefinition Height="40"/>
                                     <RowDefinition Height="40"/>
                                     <RowDefinition Height="40"/>
                                 </Grid.RowDefinitions>
@@ -183,6 +188,9 @@
 
                                 <CheckBox x:Name="MaterialIncludeChildrenBox" Content="Include Child Files" IsChecked="True" Grid.Row="0" Grid.Column="1" Margin="5,0" VerticalAlignment="Center"/>
                                 <Button x:Name="AddCurrentMaterialButton" Grid.Column="2" Grid.Row="0" Content="{Binding Source={x:Static resx:UIStrings.Add}}" VerticalAlignment="Center" Click="AddCurrentMaterialButton_Click" Margin="5,0" IsEnabled="False"/>
+
+                                <Button x:Name="AddWithCustomColorsetButton" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="1" Content="Add with Custom Colorset" VerticalAlignment="Center" Click="AddWithCustomColorsetButton_Click" Margin="5,0" IsEnabled="False" HorizontalAlignment="Right" Width="180"/>
+                                <Button x:Name="AddCustomMaterialButton" Grid.Column="2" Grid.Row="2" Content="Add New" VerticalAlignment="Center" Click="AddCustomMaterialButton_Click" Margin="5,0" IsEnabled="False"/>
 
                             </Grid>
                         </GroupBox>

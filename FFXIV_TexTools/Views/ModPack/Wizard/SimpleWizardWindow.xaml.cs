@@ -154,13 +154,14 @@ namespace FFXIV_TexTools.Views.Wizard
             _ProgressController = await this.ShowProgressAsync(UIMessages.ModPackImportTitle, UIMessages.PleaseStandByMessage);
             try
             {
+                var settings = ViewHelpers.GetDefaultImportSettings(_ProgressController);
                 if (_Data.ModpackType == TTMP.EModpackType.Pmp)
                 {
-                    res = await FinalizePmp(_Data, _Path, ViewHelpers.BindReportProgress(_ProgressController));
+                    res = await FinalizePmp(_Data, _Path, settings);
                 }
                 else if (_Data.ModpackType == TTMP.EModpackType.TtmpWizard)
                 {
-                    res = await FinalizeTtmp(_Data, _Path, ViewHelpers.BindReportProgress(_ProgressController));
+                    res = await FinalizeTtmp(_Data, _Path, settings);
                 }
 
             }
@@ -257,7 +258,7 @@ namespace FFXIV_TexTools.Views.Wizard
             return data;
         }
 
-        private async Task<(List<string> Imported, List<string> NotImported, float Duration)> FinalizeTtmp(WizardData data, string path, IProgress<(int, int, string)> progress)
+        private async Task<(List<string> Imported, List<string> NotImported, float Duration)> FinalizeTtmp(WizardData data, string path, ModPackImportSettings settings)
         {
             var mods = data.FinalizeTttmpSelections();
             // Time for the chaos that is the TTMP import function.
@@ -265,13 +266,11 @@ namespace FFXIV_TexTools.Views.Wizard
 
             var res = await Task.Run(async () =>
             {
-                return await TTMP.ImportModPackAsync(path, mods, XivStrings.TexTools,
-            progress, ModpackRootConvertWindow.GetRootConversions,
-            Properties.Settings.Default.AutoMaterialFix, Properties.Settings.Default.FixPreDawntrailOnImport, MainWindow.UserTransaction);
+                return await TTMP.ImportModPackAsync(path, mods, settings, MainWindow.UserTransaction);
             });
             return res;
         }
-        private async Task<(List<string> Imported, List<string> NotImported, float Duration)> FinalizePmp(WizardData data, string path, IProgress<(int, int, string)> progress)
+        private async Task<(List<string> Imported, List<string> NotImported, float Duration)> FinalizePmp(WizardData data, string path, ModPackImportSettings settings)
         {
             try
             {
@@ -279,8 +278,7 @@ namespace FFXIV_TexTools.Views.Wizard
                 var pmp = data.RawSource as PMPJson;
                 var res = await Task.Run(async () =>
                 {
-                    return await PMP.ImportPMP(pmp, path, MainWindow.UserTransaction, XivStrings.TexTools,
-                    progress, ModpackRootConvertWindow.GetRootConversions);
+                    return await PMP.ImportPMP(pmp, path, settings, MainWindow.UserTransaction);
                 });
                 return res;
             }

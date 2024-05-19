@@ -2,6 +2,7 @@
 using FFXIV_TexTools.Resources;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -40,6 +41,12 @@ namespace FFXIV_TexTools.Views.Metadata
 
         public async Task Init()
         {
+            if (Race == XivSubRace.Invalid)
+            {
+                this.Close();
+                return;
+            }
+
             _data = await CMP.GetScalingParameter(Race, Gender);
 
             Title = $"Racial Settings - {Race.GetDisplayName()._()} - {Gender.ToString()._()}".L();

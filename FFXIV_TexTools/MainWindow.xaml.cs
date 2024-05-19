@@ -22,6 +22,7 @@ using FFXIV_TexTools.Views;
 using FFXIV_TexTools.Views.ItemConverter;
 using FFXIV_TexTools.Views.Metadata;
 using FFXIV_TexTools.Views.Models;
+using FFXIV_TexTools.Views.Simple;
 using FFXIV_TexTools.Views.Wizard;
 using FolderSelect;
 using ForceUpdateAssembly;
@@ -1217,27 +1218,23 @@ namespace FFXIV_TexTools
                     throw new Exception("Modpack was not a valid PMP or TTMP file, or cannot be read on this version of TexTools.");
                 }
 
+                // See if we can get the information in simple mode.
+                var modPackFiles = await TTMP.ModPackToSimpleFileList(path, false);
+
+                if(modPackFiles != null)
+                {
+                    FileListImporter.ShowModpackImport(path, modPackFiles.Keys.ToList(), this);
+                    return;
+                }
+
                 if (modpackType == TTMP.EModpackType.TtmpWizard || modpackType == TTMP.EModpackType.Pmp)
                 {
+                    // Multi-Option PMP/TTMP
                     await SimpleWizardWindow.ImportModpack(path, this);
-                }
-                else if(modpackType == TTMP.EModpackType.TtmpSimple)
-                {
-                    var mpl = await TTMP.GetModpackList(path);
-                    var simpleImport = new SimpleModPackImporter(new DirectoryInfo(path), mpl, false, false);
-
-                    simpleImport.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-                    simpleImport.Owner = this;
-
-                    var result = simpleImport.ShowDialog();
-
-                    if (result == true)
-                    {
-                        return;
-                    }
                 }
                 else if(modpackType == TTMP.EModpackType.TtmpBackup)
                 {
+                    // TexTools backup modpack.
                     var mpl = await TTMP.GetModpackList(path);
                     var backupImport = new BackupModPackImporter(new DirectoryInfo(path), mpl, false);
 

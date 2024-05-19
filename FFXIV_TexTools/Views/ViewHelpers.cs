@@ -5,8 +5,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using xivModdingFramework.Mods.FileTypes;
 
 namespace FFXIV_TexTools.Views
 {
@@ -53,6 +55,45 @@ namespace FFXIV_TexTools.Views
         {
             FlexibleMessageBox.Show(message, title, MessageBoxButtons.OK, MessageBoxIcon.Error,
                 MessageBoxDefaultButton.Button1);
+        }
+        public static Action<T> Debounce<T>(Action<T> func, int milliseconds = 300)
+        {
+            CancellationTokenSource cancelTokenSource = null;
+
+            return arg =>
+            {
+                cancelTokenSource?.Cancel();
+                cancelTokenSource = new CancellationTokenSource();
+
+                Task.Delay(milliseconds, cancelTokenSource.Token)
+                    .ContinueWith(t =>
+                    {
+                        if (t.IsCompleted && !t.IsCanceled)
+                        {
+                            func(arg);
+                        }
+                    }, TaskScheduler.Default);
+            };
+        }
+
+
+        /// <summary>
+        /// Gets an import settings object with most of the standard user-controlled or system standard stuff set already.
+        /// </summary>
+        /// <returns></returns>
+        public static ModPackImportSettings GetDefaultImportSettings(ProgressDialogController controller = null)
+        {
+            var settings = new ModPackImportSettings();
+            settings.AutoAssignSkinMaterials = Properties.Settings.Default.AutoMaterialFix;
+            settings.UpdateDawntrailMaterials = Properties.Settings.Default.FixPreDawntrailOnImport;
+            settings.RootConversionFunction = ModpackRootConvertWindow.GetRootConversions;
+            settings.SourceApplication = XivStrings.TexTools;
+
+            if (controller != null)
+            {
+                settings.ProgressReporter = BindReportProgress(controller);
+            }
+            return settings;
         }
     }
 }

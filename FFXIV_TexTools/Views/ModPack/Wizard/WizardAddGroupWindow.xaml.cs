@@ -43,6 +43,7 @@ using xivModdingFramework.Helpers;
 using xivModdingFramework.Items.Categories;
 using xivModdingFramework.Items.DataContainers;
 using xivModdingFramework.Items.Interfaces;
+using xivModdingFramework.Materials.DataContainers;
 using xivModdingFramework.Materials.FileTypes;
 using xivModdingFramework.Models.FileTypes;
 using xivModdingFramework.Mods;
@@ -96,6 +97,7 @@ namespace FFXIV_TexTools.Views
             RenameOptionButton.IsEnabled = false;
             MoveOptionUpButton.IsEnabled = false;
             MoveOptionDownButton.IsEnabled = false;
+
         }
 
         private ProgressDialogController _lockProgressController;
@@ -642,23 +644,29 @@ namespace FFXIV_TexTools.Views
             {
                 AddCurrentModelButton.IsEnabled = true;
                 AdvOptionsButton.IsEnabled = true;
+                AddRawModel.IsEnabled = true;
                 ModelTypeComboBox.SelectedIndex = 0;
 
             }
             else
             {
                 AddCurrentModelButton.IsEnabled = false;
+                AddRawModel.IsEnabled = false;
                 AdvOptionsButton.IsEnabled = false;
             }
 
             if (MaterialComboBox.Items.Count > 0)
             {
                 AddCurrentMaterialButton.IsEnabled = true;
+                AddWithCustomColorsetButton.IsEnabled = true;
+                AddCustomMaterialButton.IsEnabled = true;
                 MaterialComboBox.SelectedIndex = 0;
             }
             else
             {
                 AddCurrentMaterialButton.IsEnabled = false;
+                AddWithCustomColorsetButton.IsEnabled = false;
+                AddCustomMaterialButton.IsEnabled = false;
             }
 
             SelectModGroup.IsEnabled = true;
@@ -779,19 +787,16 @@ namespace FFXIV_TexTools.Views
         {
             var selectedFile = TextureMapComboBox.SelectedItem as FileEntry;
 
-            var openFileDialog = new OpenFileDialog { Filter = "Texture Files(*.DDS;*.BMP;*.PNG) |*.DDS;*.BMP;*.PNG".L() };
+            var openFileDialog = new OpenFileDialog { Filter = "Texture Files(*.DDS;*.BMP;*.PNG;*.TEX) |*.DDS;*.BMP;*.PNG;*.TEX".L() };
 
 
             var result = openFileDialog.ShowDialog();
 
             if (result != System.Windows.Forms.DialogResult.OK) return;
-                ;
-
-            var _tex = new Tex(XivCache.GameInfo.GameDirectory);
 
             try
             {
-                var data = await _tex.MakeCompressedTex(selectedFile.Path, openFileDialog.FileName);
+                var data = await SmartImport.CreateCompressedFile(openFileDialog.FileName, selectedFile.Path, MainWindow.DefaultTransaction);
                 await AddFile(selectedFile, SelectedItem, data);
             }
             catch (Exception ex)
@@ -817,6 +822,82 @@ namespace FFXIV_TexTools.Views
             else
             {
                 AddFile(selectedFile, SelectedItem);
+            }
+        }
+        private async void AddWithCustomColorsetButton_Click(object sender, RoutedEventArgs e)
+        {
+            var selectedFile = MaterialComboBox.SelectedItem as FileEntry;
+            var addChildren = MaterialIncludeChildrenBox.IsChecked == true ? true : false;
+
+            try
+            {
+                var _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory);
+                var _tex = new Tex(XivCache.GameInfo.GameDirectory);
+                var _dat = new Dat(XivCache.GameInfo.GameDirectory);
+
+                var mtrlData = new byte[0];
+                var mtrl = await _mtrl.GetXivMtrl(selectedFile.Path, false, MainWindow.DefaultTransaction);
+
+                var ddsPath = "";
+
+                var od = new OpenFileDialog();
+                od.Filter = "DDS Files (*.DDS)|*.DDS";
+                var res = od.ShowDialog();
+                if(res != System.Windows.Forms.DialogResult.OK)
+                {
+                    return;
+                }
+
+                ddsPath = od.FileName;
+
+                // Read and assign the data.
+                var cSet = Tex.GetColorsetDataFromDDS(ddsPath);
+                mtrl.ColorSetData = cSet.ColorsetData;
+                mtrl.ColorSetDyeData = cSet.DyeData;
+
+                // SqPack the data.
+                mtrlData = await _dat.CompressType2Data(_mtrl.XivMtrlToUncompressedMtrl(mtrl));
+
+
+                if (addChildren)
+                {
+                    AddWithChildren(selectedFile.Path, SelectedItem, mtrlData);
+                }
+                else
+                {
+                    AddFile(selectedFile, SelectedItem, mtrlData);
+                }
+
+            } catch(Exception ex)
+            {
+                ViewHelpers.ShowError("Colorset Import Error".L(), "Unable to Import Colorset:\n\n".L() + ex.Message);
+            }
+
+
+        }
+        private async void AddCustomMaterialButton_Click(object sender, RoutedEventArgs e)
+        {
+            var selectedFile = MaterialComboBox.SelectedItem as FileEntry;
+
+            var openFileDialog = new OpenFileDialog { Filter = "Material Files(*.MTRL) |*.MTRL".L() };
+
+
+            var result = openFileDialog.ShowDialog();
+
+            if (result != System.Windows.Forms.DialogResult.OK) return;
+
+
+            try
+            {
+                var data = await SmartImport.CreateCompressedFile(openFileDialog.FileName, selectedFile.Path, MainWindow.DefaultTransaction);
+                await AddFile(selectedFile, SelectedItem, data);
+            }
+            catch (Exception ex)
+            {
+                FlexibleMessageBox.Show(new Wpf32Window(this),
+                    string.Format(UIMessages.TextureImportErrorMessage, ex.Message), UIMessages.TextureImportErrorTitle,
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
             }
         }
 
@@ -871,9 +952,18 @@ namespace FFXIV_TexTools.Views
         /// </summary>
         private void RemoveModItemButton_Click(object sender, RoutedEventArgs e)
         {
-            if (IncludedModsList.SelectedItem == null) return;
-            _selectedModOption.Mods.Remove(((FileEntry)IncludedModsList.SelectedItem).Path);
-            IncludedModsList.Items.Remove(IncludedModsList.SelectedItem);
+            // Enumeration struggles...
+            var items = new List<FileEntry>();
+            foreach(FileEntry item in IncludedModsList.SelectedItems)
+            {
+                items.Add(item);
+            }
+
+            foreach (FileEntry item in items)
+            {
+                _selectedModOption.Mods.Remove(item.Path);
+                IncludedModsList.Items.Remove(item);
+            }
         }
 
         /// <summary>
@@ -1120,6 +1210,61 @@ namespace FFXIV_TexTools.Views
         private void ModpackContents_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             AddButton.IsEnabled = ModpackContents.SelectedItems.Count > 0;
+        }
+
+        private async void AddRawModel_Click(object sender, RoutedEventArgs e)
+        {
+            var selectedFile = ModelTypeComboBox.SelectedItem as FileEntry;
+
+            var openFileDialog = new OpenFileDialog { Filter = "Model Files(*.MDL;*.FBX) |*.MDL;*.FBX".L() };
+
+
+            var result = openFileDialog.ShowDialog();
+
+            if (result != System.Windows.Forms.DialogResult.OK) return;
+
+            try
+            {
+                var data = await SmartImport.CreateCompressedFile(openFileDialog.FileName, selectedFile.Path, MainWindow.DefaultTransaction);
+                await AddFile(selectedFile, SelectedItem, data);
+            }
+            catch (Exception ex)
+            {
+                FlexibleMessageBox.Show(new Wpf32Window(this),
+                    string.Format(UIMessages.TextureImportErrorMessage, ex.Message), UIMessages.TextureImportErrorTitle,
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+        }
+
+        private async void AddNewMetadata_Click(object sender, RoutedEventArgs e)
+        {
+            var path = MetadataPathBox.Text;
+            var selectedFile = new FileEntry()
+            {
+                Path = path,
+                Name = MakeFriendlyFileName(path)
+            };
+
+            var openFileDialog = new OpenFileDialog { Filter = "FFXIV Raw Metadata Files(*.META) |*.META".L() };
+
+
+            var result = openFileDialog.ShowDialog();
+
+            if (result != System.Windows.Forms.DialogResult.OK) return;
+
+            try
+            {
+                var data = await SmartImport.CreateCompressedFile(openFileDialog.FileName, selectedFile.Path, MainWindow.DefaultTransaction);
+                await AddFile(selectedFile, SelectedItem, data);
+            }
+            catch (Exception ex)
+            {
+                FlexibleMessageBox.Show(new Wpf32Window(this),
+                    string.Format(UIMessages.TextureImportErrorMessage, ex.Message), UIMessages.TextureImportErrorTitle,
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
         }
     }
 }

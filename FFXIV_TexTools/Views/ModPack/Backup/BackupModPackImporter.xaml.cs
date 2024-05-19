@@ -1,4 +1,5 @@
 ﻿using FFXIV_TexTools.Helpers;
+using FFXIV_TexTools.Properties;
 using FFXIV_TexTools.Resources;
 using FFXIV_TexTools.ViewModels;
 using MahApps.Metro.Controls.Dialogs;
@@ -115,7 +116,13 @@ namespace FFXIV_TexTools.Views
 
                 var importResults = await Task.Run(async () =>
                 {
-                    return await TTMP.ImportModPackAsync(_modpackDirectory.FullName, importList, XivStrings.TexTools, ViewHelpers.BindReportProgress(_progressController), null, false, Properties.Settings.Default.FixPreDawntrailOnImport, MainWindow.UserTransaction);
+                    var settings = ViewHelpers.GetDefaultImportSettings(_progressController);
+
+                    // Limit the amount of extra actions on backup imports.
+                    settings.RootConversionFunction = null;
+                    settings.AutoAssignSkinMaterials = false;
+
+                    return await TTMP.ImportModPackAsync(_modpackDirectory.FullName, importList, settings, MainWindow.UserTransaction);
                 });
 
                 if (importResults.Imported == null)

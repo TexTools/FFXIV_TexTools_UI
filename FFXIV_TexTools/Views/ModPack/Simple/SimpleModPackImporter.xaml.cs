@@ -319,8 +319,8 @@ namespace FFXIV_TexTools.Views
                 // Specifically run this in a new thread to make sure there's no issue with windows treating us as not-responding.
                 var importResults = await Task.Run(async () =>
                 {
-                    return await TTMP.ImportModPackAsync(_modPackDirectory.FullName, importList, XivStrings.TexTools, ViewHelpers.BindReportProgress(_progressController), ModpackRootConvertWindow.GetRootConversions,
-                    Properties.Settings.Default.AutoMaterialFix, Properties.Settings.Default.FixPreDawntrailOnImport, MainWindow.UserTransaction);
+                    var settings = ViewHelpers.GetDefaultImportSettings(_progressController);
+                    return await TTMP.ImportModPackAsync(_modPackDirectory.FullName, importList, settings, MainWindow.UserTransaction);
                 });
 
                 if (importResults.Imported == null)
