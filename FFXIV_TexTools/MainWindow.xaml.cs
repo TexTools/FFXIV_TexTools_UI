@@ -1626,7 +1626,7 @@ namespace FFXIV_TexTools
                 // Run in new thread so UI doesn't lock.
                 await Task.Run(async () =>
                 {
-                    await Modding.CleanUpModlistItems(reporter);
+                    await Modding.CleanUpModlistItems(reporter, MainWindow.UserTransaction);
                 });
                 FlexibleMessageBox.Show("The Modlist was cleaned up successfully.".L(), "Cleanup Complete".L(), MessageBoxButtons.OK, MessageBoxIcon.Information);
             }

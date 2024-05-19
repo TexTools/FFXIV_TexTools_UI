@@ -812,7 +812,7 @@ namespace FFXIV_TexTools.ViewModels
             SelectedMeshIndex = 0;
 
             var tx = MainWindow.DefaultTransaction;
-            var state = await Modding.GetModState(PathString);
+            var state = await Modding.GetModState(PathString, tx);
             
 
             if(state == EModState.Invalid || state == EModState.UnModded)

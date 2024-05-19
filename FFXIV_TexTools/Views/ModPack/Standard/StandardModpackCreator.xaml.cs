@@ -372,7 +372,7 @@ namespace FFXIV_TexTools.Views
                             await ItemMetadata.SaveMetadata(meta, XivStrings.TexTools);
                         }
 
-                        var isDef = await Modding.GetModState(file) == xivModdingFramework.Mods.Enums.EModState.UnModded;
+                        var isDef = await Modding.GetModState(file, tx) == xivModdingFramework.Mods.Enums.EModState.UnModded;
 
                         var fData = new ModData
                         {
@@ -448,7 +448,7 @@ namespace FFXIV_TexTools.Views
                     ModList.Mods.TryGetValue(file, out var modEntry);
 
 
-                    var isDef = await Modding.GetModState(file) == xivModdingFramework.Mods.Enums.EModState.UnModded;
+                    var isDef = await Modding.GetModState(file, tx) == xivModdingFramework.Mods.Enums.EModState.UnModded;
 
 
                     SimpleModData simpleData = new SimpleModData

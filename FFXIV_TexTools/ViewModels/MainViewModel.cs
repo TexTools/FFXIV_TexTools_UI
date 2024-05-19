@@ -507,7 +507,7 @@ namespace FFXIV_TexTools.ViewModels
                     // Run on new thread so we don't block.
                     await Task.Run(async () =>
                     {
-                        await Modding.SetAllModStates(EModState.Enabled, ViewHelpers.BindReportProgress(_progressController));
+                        await Modding.SetAllModStates(EModState.Enabled, ViewHelpers.BindReportProgress(_progressController), MainWindow.UserTransaction);
                     });
                 } catch(Exception ex)
                 {
@@ -543,7 +543,7 @@ namespace FFXIV_TexTools.ViewModels
                     // Run on new thread so we don't block.
                     await Task.Run(async () =>
                     {
-                        await Modding.SetAllModStates(EModState.Disabled, ViewHelpers.BindReportProgress(_progressController));
+                        await Modding.SetAllModStates(EModState.Disabled, ViewHelpers.BindReportProgress(_progressController), MainWindow.UserTransaction);
                     });
                 } catch (Exception ex)
                 {

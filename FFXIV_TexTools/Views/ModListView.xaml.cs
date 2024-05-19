@@ -276,7 +276,7 @@ namespace FFXIV_TexTools.Views
                             UIMessages.DeleteModPackTitle,
                             MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == System.Windows.Forms.DialogResult.Yes)
                     {
-                        await Modding.DeleteModPack((ModListTreeView.SelectedItem as Category).Name);
+                        await Modding.DeleteModPack((ModListTreeView.SelectedItem as Category).Name, MainWindow.UserTransaction);
                         (DataContext as ModListViewModel).RemoveModPack();
                     }
 
@@ -288,7 +288,7 @@ namespace FFXIV_TexTools.Views
 
                     foreach (var selectedModItem in selectedItems)
                     {
-                        await Modding.DeleteMod(selectedModItem.ModItem.FilePath);
+                        await Modding.DeleteMod(selectedModItem.ModItem.FilePath, MainWindow.UserTransaction);
                         await (DataContext as ModListViewModel).RemoveItem(selectedModItem, (Category)ModListTreeView.SelectedItem);
                     }
                 }
