@@ -526,7 +526,7 @@ namespace FFXIV_TexTools.ViewModels
                 if (_root.Info.PrimaryType == XivItemType.equipment || _root.Info.PrimaryType == XivItemType.weapon)
                 {
                     // Need to test to see if they have VFX files too.
-                    var vfxPath = await ATex.GetVfxPath(_item);
+                    var vfxPath = await ATex.GetVfxPath(_item, false, tx);
                     _vfxPath = vfxPath.Folder + "/" + vfxPath.File;
                     if (!string.IsNullOrWhiteSpace(vfxPath.Folder))
                     {
@@ -1163,7 +1163,7 @@ namespace FFXIV_TexTools.ViewModels
             {
                 if (SelectedMap.Usage != XivTexType.ColorSet)
                 {
-                    var texData = await Tex.GetXivTex(SelectedMap.TexturePath, SelectedMap.Usage);
+                    var texData = await Tex.GetXivTex(SelectedMap.TexturePath, SelectedMap.Usage, false, MainWindow.DefaultTransaction);
 
                     var mapBytes = await texData.GetRawPixels();
 
@@ -1405,7 +1405,7 @@ namespace FFXIV_TexTools.ViewModels
                 }
                 else
                 {
-                    texData = await Tex.GetXivTex(ttp.Path, ttp.Type);
+                    texData = await Tex.GetXivTex(ttp.Path, ttp.Type, false, MainWindow.DefaultTransaction);
                 }
 
                 if (_uiItem != null)
@@ -1635,7 +1635,7 @@ namespace FFXIV_TexTools.ViewModels
                 if (SelectedMap.Usage != XivTexType.ColorSet)
                 {
                     
-                    var texData = await Tex.GetXivTex(SelectedMap.TexturePath, SelectedMap.Usage);
+                    var texData = await Tex.GetXivTex(SelectedMap.TexturePath, SelectedMap.Usage, false, MainWindow.DefaultTransaction);
 
                     try
                     {
@@ -1651,11 +1651,11 @@ namespace FFXIV_TexTools.ViewModels
                                 saveItem = temp;
                             }
 
-                            await Tex.ImportTex(texData.TextureTypeAndPath.Path, fileDir.FullName, saveItem, XivStrings.TexTools);
+                            await Tex.ImportTex(texData.TextureTypeAndPath.Path, fileDir.FullName, saveItem, XivStrings.TexTools, MainWindow.UserTransaction);
                         }
                         else if (_uiItem != null)
                         {
-                            await Tex.ImportTex(texData.TextureTypeAndPath.Path, fileDir.FullName, _uiItem, XivStrings.TexTools);
+                            await Tex.ImportTex(texData.TextureTypeAndPath.Path, fileDir.FullName, _uiItem, XivStrings.TexTools, MainWindow.UserTransaction);
                         }
                     }
                     catch (Exception ex)
@@ -1688,7 +1688,7 @@ namespace FFXIV_TexTools.ViewModels
             {
                 if (SelectedMap.Usage != XivTexType.ColorSet)
                 {
-                    var texData = await Tex.GetXivTex(SelectedMap.TexturePath, SelectedMap.Usage);
+                    var texData = await Tex.GetXivTex(SelectedMap.TexturePath, SelectedMap.Usage, false, MainWindow.DefaultTransaction);
 
                     try
                     {
@@ -1704,11 +1704,11 @@ namespace FFXIV_TexTools.ViewModels
                                 saveItem = temp;
                             }
 
-                            await Tex.ImportTex(texData.TextureTypeAndPath.Path, fileDir.FullName, _item, XivStrings.TexTools);
+                            await Tex.ImportTex(texData.TextureTypeAndPath.Path, fileDir.FullName, _item, XivStrings.TexTools, MainWindow.UserTransaction);
                         }
                         else if (_uiItem != null)
                         {
-                            await Tex.ImportTex(texData.TextureTypeAndPath.Path, fileDir.FullName, _uiItem, XivStrings.TexTools);
+                            await Tex.ImportTex(texData.TextureTypeAndPath.Path, fileDir.FullName, _uiItem, XivStrings.TexTools, MainWindow.UserTransaction);
                         }
                     }
                     catch (Exception ex)

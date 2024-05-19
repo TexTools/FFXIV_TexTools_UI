@@ -711,7 +711,7 @@ namespace FFXIV_TexTools.Controls
 
 
                 var item = mw.GetSelectedItem();
-                await Mtrl.ImportMtrl(_mtrl, item, XivStrings.TexTools);
+                await Mtrl.ImportMtrl(_mtrl, item, XivStrings.TexTools, true, MainWindow.UserTransaction);
                 MaterialSaved.Invoke(this, null);
             }
             catch(Exception ex)
