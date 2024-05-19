@@ -26,6 +26,7 @@ using xivModdingFramework.Models.FileTypes;
 using xivModdingFramework.Mods;
 using xivModdingFramework.Mods.Enums;
 using xivModdingFramework.Mods.FileTypes;
+using xivModdingFramework.SqPack.FileTypes;
 using xivModdingFramework.Variants.FileTypes;
 using UserControl = System.Windows.Controls.UserControl;
 
@@ -143,7 +144,20 @@ namespace FFXIV_TexTools.Views.Metadata
                 SlotLabel.Content = Mdl.SlotAbbreviationDictionary.FirstOrDefault(x => x.Value == _root.Info.Slot).Key + "(" + _root.Info.Slot + ")";
 
                 var items = await _root.GetAllItems();
-                ItemNameBox.Text = "[" + items.Count + "] " + items[0].Name;
+                var count = items.Count;
+                if(count > 1)
+                {
+                    // If we have real items, ignore the base set.
+                    count--;
+                }
+
+                ItemNameBox.Text = items[0].Name;
+                if (count > 1)
+                {
+                    var i = count - 1;
+                    var s = i > 1 ? "s" : "";
+                    ItemNameBox.Text += $" ( + {i} Other Item{s} )";
+                }
 
                 var path = _root.Info.GetRootFile();
                 var mod = await MainWindow.DefaultTransaction.GetMod(path);
@@ -330,38 +344,147 @@ namespace FFXIV_TexTools.Views.Metadata
 
         private async void SaveModpack_Click(object sender, RoutedEventArgs e)
         {
-            // Because Metadata file may not actually exist, we have to temporarily save metadata,
-            // in order for the simple creator to be able to parse the file.
-
-            var tx = MainWindow.UserTransaction;
-            var file = _root.Info.GetRootFile();
-            bool ownTx = false;
-            TxFileState state = null;
-            if (tx == null)
-            {
-                ownTx = true;
-                tx = ModTransaction.BeginTransaction(true);
-            }
+            await MainWindow.GetMainWindow().LockUi("Exporting Metadata".L());
             try
             {
-                state = await tx.SaveFileState(file);
+                // To meet user expectations, we need to temporarily save the file as the on-screen state before exporting,
+                // Then roll back the file after.
 
-                var metadata = await ItemMetadata.GetMetadata(file, false, tx);
-                await ItemMetadata.SaveMetadata(metadata, file, tx);
-                SingleFileModpackCreator.ExportFile(_root.Info.GetRootFile(), MainWindow.GetMainWindow(), tx);
+                var tx = MainWindow.UserTransaction;
+                var file = _root.Info.GetRootFile();
+                bool ownTx = false;
+                TxFileState state = null;
+                if (tx == null)
+                {
+                    ownTx = true;
+                    tx = ModTransaction.BeginTransaction(true);
+                }
+                try
+                {
+                    state = await tx.SaveFileState(file);
 
+                    await _vm.Save(true, tx);
+                    SingleFileModpackCreator.ExportFile(_root.Info.GetRootFile(), MainWindow.GetMainWindow(), tx);
+
+                }
+                finally
+                {
+                    if (ownTx)
+                    {
+                        ModTransaction.CancelTransaction(tx, true);
+                    }
+                    else
+                    {
+                        await tx.RestoreFileState(state);
+                    }
+                }
             }
             finally
             {
-                if (ownTx)
+                await MainWindow.GetMainWindow().UnlockUi();
+            }
+        }
+
+        private async void ExportRaw_Click(object sender, RoutedEventArgs e)
+        {
+            var file = _root.Info.GetRootFile();
+            var sd = new SaveFileDialog();
+            sd.Filter = "FFXIV Item Metadata (*.meta)|*.meta";
+            sd.FileName = System.IO.Path.GetFileName(file);
+            var res = sd.ShowDialog();
+            if (res != DialogResult.OK)
+            {
+                return;
+            }
+
+            await MainWindow.GetMainWindow().LockUi("Exporting Metadata".L());
+            try
+            {
+                // To meet user expectations, we need to temporarily save the file as the on-screen state before exporting,
+                // Then roll back the file after.
+
+                var tx = MainWindow.UserTransaction;
+                bool ownTx = false;
+                TxFileState state = null;
+                if (tx == null)
                 {
-                    ModTransaction.CancelTransaction(tx, true);
+                    ownTx = true;
+                    tx = ModTransaction.BeginTransaction(true);
                 }
-                else
+                try
                 {
-                    await tx.RestoreFileState(state);
+                    state = await tx.SaveFileState(file);
+
+                    await _vm.Save(true, tx);
+                    var metadata = await ItemMetadata.GetMetadata(file, false, tx);
+                    var data = await ItemMetadata.Serialize(metadata);
+
+
+
+                    File.WriteAllBytes(sd.FileName, data);
+
+                }
+                finally
+                {
+                    if (ownTx)
+                    {
+                        ModTransaction.CancelTransaction(tx, true);
+                    }
+                    else
+                    {
+                        await tx.RestoreFileState(state);
+                    }
                 }
             }
+            finally
+            {
+                await MainWindow.GetMainWindow().UnlockUi();
+            }
+        }
+
+        private async void ImportRaw_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                await MainWindow.GetMainWindow().LockUi("Importing Metadata".L());
+                var ofd = new OpenFileDialog();
+                ofd.Filter = "FFXIV Item Metadata (*.meta)|*.meta";
+                var res = ofd.ShowDialog();
+                if (res != DialogResult.OK)
+                {
+                    return;
+                }
+                var data = File.ReadAllBytes(ofd.FileName);
+
+                var metadata = await ItemMetadata.Deserialize(data);
+
+                var file = _root.Info.GetRootFile();
+                
+                metadata.AlterRoot(_root);
+                metadata.Validate(file);
+
+                data = await ItemMetadata.Serialize(metadata);
+
+                var tx = MainWindow.UserTransaction;
+
+                // Data will automatically be expanded.
+                await Dat.ImportType2Data(data, file, XivStrings.TexTools, _root.GetFirstItem(), tx);
+
+                // Fill in missing racial models or material sets.
+                await metadata.FillMissingFiles(XivStrings.TexTools, tx);
+
+                await SetRoot(_root);
+            }
+            catch(Exception ex)
+            {
+                ViewHelpers.ShowError("Metadata Import Error", "Could not import Metadata due to an error:\n\n" + ex.Message);
+            }
+            finally
+            {
+                await MainWindow.GetMainWindow().UnlockUi();
+            }
+
+
         }
     }
 }

@@ -620,9 +620,11 @@ namespace FFXIV_TexTools.Views
             if(String.IsNullOrEmpty(metadataFile))
             {
                 AddMetadataButton.IsEnabled = false;
+                AddNewMetadata.IsEnabled = false;
             } else
             {
                 AddMetadataButton.IsEnabled = true;
+                AddNewMetadata.IsEnabled = true;
             }
 
             if (TextureMapComboBox.Items.Count > 0)
@@ -1246,8 +1248,32 @@ namespace FFXIV_TexTools.Views
 
             try
             {
-                var data = await SmartImport.CreateCompressedFile(openFileDialog.FileName, selectedFile.Path, MainWindow.DefaultTransaction);
-                await AddFile(selectedFile, SelectedItem, data);
+                // Slightly more complex.  Because Metadata files have internal root path references,
+                // We need to import them, then alter them, then recompress them.
+                var root = await XivCache.GetFirstRoot(path);
+                var fileData = File.ReadAllBytes(openFileDialog.FileName);
+
+                uint fileType = 0;
+                using (var br = new BinaryReader(new MemoryStream(fileData)))
+                {
+                    fileType = Dat.GetSqPackType(br);
+                }
+
+                if(fileType == 2)
+                {
+                    // Compressed file.  Normally we never export .meta files as compressed sqpack files,
+                    // But it's not impossible to if the user really wanted to.
+                    fileData = await Dat.ReadSqPackType2(fileData);
+                }
+
+
+                var metadata = await ItemMetadata.Deserialize(fileData);
+                metadata.AlterRoot(root);
+
+                var data = await ItemMetadata.Serialize(metadata);
+                var compressed = await Dat.CompressType2Data(data);
+
+                await AddFile(selectedFile, SelectedItem, compressed);
             }
             catch (Exception ex)
             {

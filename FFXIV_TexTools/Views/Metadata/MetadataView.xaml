@@ -53,7 +53,16 @@
             <Button Grid.Column="9" x:Name="SaveButton" Margin="5" VerticalAlignment="Center" Content="Save" Click="SaveButton_Click"></Button>
         </Grid>
 
-        <TextBlock Grid.Column="0" Grid.Row="1" x:Name="ItemNameBox" VerticalAlignment="Center" FontSize="16" Margin="10,0">[7] Bogarter's Gloves of Doing Cool Things</TextBlock>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+                <ColumnDefinition Width="100"></ColumnDefinition>
+                <ColumnDefinition Width="100"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" x:Name="ItemNameBox" VerticalAlignment="Center" FontSize="16" Margin="10,0">[7] Bogarter's Gloves of Doing Cool Things</TextBlock>
+            <Button Grid.Column="1" x:Name="ImportRawButton" Margin="5" VerticalAlignment="Center" Content="Import Raw" Click="ImportRaw_Click"></Button>
+            <Button Grid.Column="2" x:Name="ExportRawButton" Margin="5" VerticalAlignment="Center" Content="Export Raw" Click="ExportRaw_Click"></Button>
+        </Grid>
 
 
         <Separator Grid.Row="2">

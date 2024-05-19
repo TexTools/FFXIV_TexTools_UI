@@ -15,6 +15,7 @@ using xivModdingFramework.Items.Interfaces;
 using xivModdingFramework.Models.FileTypes;
 using xivModdingFramework.Mods.FileTypes;
 using xivModdingFramework.SqPack.FileTypes;
+using xivModdingFramework.Mods;
 
 namespace FFXIV_TexTools.ViewModels
 {
@@ -113,51 +114,36 @@ namespace FFXIV_TexTools.ViewModels
             return (_metadata != null);
         }
 
-        public async Task<bool> Save()
+        public async Task<bool> Save(bool simpleSave = false, ModTransaction tx = null)
         {
             if (_metadata == null) return false;
+
+            if(tx == null)
+            {
+                tx = MainWindow.UserTransaction;
+            }
+
             var success = false;
             try
             {
-                await MainWindow.GetMainWindow().LockUi("Updating Metadata".L());
-
-                await ItemMetadata.SaveMetadata(_metadata, XivStrings.TexTools);
-
-
-                foreach (var kv in _metadata.EqdpEntries)
+                if (!simpleSave)
                 {
-                    if (kv.Value.bit1 == false) continue;
-                    if (_original.EqdpEntries[kv.Key].bit1 == true) continue;
-
-                    // Here we have a new race, we need to create a model for it.
-                    await Mdl.AddRacialModel(_metadata.Root.Info.PrimaryId, _metadata.Root.Info.Slot, kv.Key, XivStrings.TexTools);
+                    await MainWindow.GetMainWindow().LockUi("Updating Metadata".L());
                 }
 
-                if(_metadata.ImcEntries.Count > 0)
+                await ItemMetadata.SaveMetadata(_metadata, XivStrings.TexTools, tx);
+
+                if (!simpleSave)
                 {
-                    var originalMaterialSetMax = _original.ImcEntries.Select(x => x.MaterialSet).Max();
-                    var newMaterialSetMax = _metadata.ImcEntries.Select(x => x.MaterialSet).Max();
-
-                    if(newMaterialSetMax > originalMaterialSetMax)
-                    {
-                        // We have new materials to add.
-
-                        // First find the base files to copy. (Just always copy from set 1 for simplicity)
-                        var copySource = await _metadata.Root.GetMaterialFiles(1);
-                        var item = _metadata.Root.GetFirstItem();
-
-                        for(int i = originalMaterialSetMax +1; i <= newMaterialSetMax; i++)
-                        {
-                            foreach(var material in copySource)
-                            {
-                                var dest = material.Replace("v0001", "v" + i.ToString().PadLeft(4, '0'));
-
-                                await Dat.CopyFile(material, dest, XivStrings.TexTools, false, item);
-                            }
-                        }
-                    }
+                    // Fill in missing racial models or material sets.
+                    await _metadata.FillMissingFiles(XivStrings.TexTools, tx);
                 }
 
+
+                if (!simpleSave)
+                {
+                    await _view.SetRoot(_metadata.Root);
+                }
                 success = true;
             } catch(Exception Ex)
             {
@@ -165,14 +151,12 @@ namespace FFXIV_TexTools.ViewModels
             }
             finally
             {
-                await MainWindow.GetMainWindow().UnlockUi();
+                if (!simpleSave)
+                {
+                    await MainWindow.GetMainWindow().UnlockUi();
+                }
             }
 
-            if (success)
-            {
-                var mw = MainWindow.GetMainWindow();
-                mw.ReloadItem();
-            }
 
             return success;
         }
