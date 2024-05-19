@@ -535,8 +535,7 @@ namespace FFXIV_TexTools.Views
                     materials = await root.GetMaterialFiles(mSet, tx);
                     textures = await root.GetTextureFiles(mSet, tx);
 
-                    var _tex = new Tex(XivCache.GameInfo.GameDirectory);
-                    var icons = await _tex.GetItemIcons(im, tx);
+                    var icons = await Tex.GetItemIcons(im, tx);
 
                     foreach (var icon in icons)
                     {
@@ -828,8 +827,6 @@ namespace FFXIV_TexTools.Views
 
             try
             {
-                var _tex = new Tex(XivCache.GameInfo.GameDirectory);
-
                 var mtrlData = new byte[0];
                 var mtrl = await Mtrl.GetXivMtrl(selectedFile.Path, false, MainWindow.DefaultTransaction);
 

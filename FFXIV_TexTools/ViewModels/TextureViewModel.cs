@@ -561,8 +561,7 @@ namespace FFXIV_TexTools.ViewModels
                 }
             }
 
-            var _tex = new Tex(XivCache.GameInfo.GameDirectory);
-            var icons = await _tex.GetItemIcons(_item, MainWindow.DefaultTransaction);
+            var icons = await Tex.GetItemIcons(_item, MainWindow.DefaultTransaction);
             if (icons.Count > 0)
             {
                 finalList.Add("icons.ui");
@@ -746,8 +745,7 @@ namespace FFXIV_TexTools.ViewModels
             }
             else if (ext == ".ui")
             {
-                var _tex = new Tex(XivCache.GameInfo.GameDirectory);
-                var icons = await _tex.GetItemIcons(_item, MainWindow.DefaultTransaction);
+                var icons = await Tex.GetItemIcons(_item, MainWindow.DefaultTransaction);
 
                 foreach (var ttp in icons)
                 {
@@ -1150,7 +1148,6 @@ namespace FFXIV_TexTools.ViewModels
                 return;
             }
 
-            var _tex = new Tex(XivCache.GameInfo.GameDirectory);
 
             // This is intentionally an async/deferred call here.
             LoadParentFileInformation(SelectedMap.TexturePath);
@@ -1160,7 +1157,7 @@ namespace FFXIV_TexTools.ViewModels
             {
                 if (SelectedMap.Usage != XivTexType.ColorSet)
                 {
-                    var texData = await _tex.GetXivTex(SelectedMap.TexturePath, SelectedMap.Usage);
+                    var texData = await Tex.GetXivTex(SelectedMap.TexturePath, SelectedMap.Usage);
 
                     var mapBytes = await texData.GetRawPixels();
 
@@ -1367,7 +1364,6 @@ namespace FFXIV_TexTools.ViewModels
                 DirectoryInfo savePath = new DirectoryInfo(Settings.Default.Save_Directory);
                 XivTex texData;
                 var df = IOUtil.GetDataFileFromPath(SelectedMap.TexturePath);
-                var _tex = new Tex(XivCache.GameInfo.GameDirectory);
 
                 var ttp = new TexTypePath
                 {
@@ -1395,29 +1391,29 @@ namespace FFXIV_TexTools.ViewModels
                 }
                 else
                 {
-                    texData = await _tex.GetXivTex(ttp.Path, ttp.Type);
+                    texData = await Tex.GetXivTex(ttp.Path, ttp.Type);
                 }
 
                 if (_uiItem != null)
                 {
-                    _tex.SaveTexAsDDS(_uiItem, texData, savePath);
+                    Tex.SaveTexAsDDS(_uiItem, texData, savePath);
                 }
                 else
                 {
                     if (_primaryIsRace)
                     {
-                        _tex.SaveTexAsDDS(_item, texData, savePath, SelectedRace);
+                        Tex.SaveTexAsDDS(_item, texData, savePath, SelectedRace);
                     } else if( typeof(XivFurniture) == _item.GetType())
                     {
                         // Fucking Paintings are cancer.
-                        _tex.SaveTexAsDDS(_item, texData, savePath, SelectedRace);
+                        Tex.SaveTexAsDDS(_item, texData, savePath, SelectedRace);
                     } else
                     {
                         var saveItem = (XivCharacter)((XivCharacter)_item).Clone();
                         saveItem.Name = saveItem.SecondaryCategory;
                         saveItem.ModelInfo.SecondaryID = SelectedPrimary;
                         var race = _root == null ? XivRace.All_Races : XivRaces.GetXivRace(_root.Info.PrimaryId);
-                        _tex.SaveTexAsDDS(saveItem, texData, savePath, race);
+                        Tex.SaveTexAsDDS(saveItem, texData, savePath, race);
                     }
                 }
             }
@@ -1615,8 +1611,6 @@ namespace FFXIV_TexTools.ViewModels
 
         public async Task Import(string fileName)
         {
-            var _tex = new Tex(XivCache.GameInfo.GameDirectory);
-
             ImportEnabled = false;
             var fileDir = new DirectoryInfo(fileName);
             var dxVersion = int.Parse(Settings.Default.DX_Version);
@@ -1627,7 +1621,7 @@ namespace FFXIV_TexTools.ViewModels
                 if (SelectedMap.Usage != XivTexType.ColorSet)
                 {
                     
-                    var texData = await _tex.GetXivTex(SelectedMap.TexturePath, SelectedMap.Usage);
+                    var texData = await Tex.GetXivTex(SelectedMap.TexturePath, SelectedMap.Usage);
 
                     try
                     {
@@ -1643,11 +1637,11 @@ namespace FFXIV_TexTools.ViewModels
                                 saveItem = temp;
                             }
 
-                            await _tex.ImportTex(texData.TextureTypeAndPath.Path, fileDir.FullName, saveItem, XivStrings.TexTools);
+                            await Tex.ImportTex(texData.TextureTypeAndPath.Path, fileDir.FullName, saveItem, XivStrings.TexTools);
                         }
                         else if (_uiItem != null)
                         {
-                            await _tex.ImportTex(texData.TextureTypeAndPath.Path, fileDir.FullName, _uiItem, XivStrings.TexTools);
+                            await Tex.ImportTex(texData.TextureTypeAndPath.Path, fileDir.FullName, _uiItem, XivStrings.TexTools);
                         }
                     }
                     catch (Exception ex)
@@ -1663,7 +1657,7 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     try
                     {
-                        var newColorSetOffset = await _tex.ImportColorsetTexture(_xivMtrl, fileDir.FullName, _item, XivStrings.TexTools);
+                        var newColorSetOffset = await Tex.ImportColorsetTexture(_xivMtrl, fileDir.FullName, _item, XivStrings.TexTools);
                         _xivMtrl = await Mtrl.GetXivMtrl(_xivMtrl.MTRLPath, false, MainWindow.DefaultTransaction);
                     }
                     catch (Exception ex)
@@ -1680,7 +1674,7 @@ namespace FFXIV_TexTools.ViewModels
             {
                 if (SelectedMap.Usage != XivTexType.ColorSet)
                 {
-                    var texData = await _tex.GetXivTex(SelectedMap.TexturePath, SelectedMap.Usage);
+                    var texData = await Tex.GetXivTex(SelectedMap.TexturePath, SelectedMap.Usage);
 
                     try
                     {
@@ -1696,11 +1690,11 @@ namespace FFXIV_TexTools.ViewModels
                                 saveItem = temp;
                             }
 
-                            await _tex.ImportTex(texData.TextureTypeAndPath.Path, fileDir.FullName, _item, XivStrings.TexTools);
+                            await Tex.ImportTex(texData.TextureTypeAndPath.Path, fileDir.FullName, _item, XivStrings.TexTools);
                         }
                         else if (_uiItem != null)
                         {
-                            await _tex.ImportTex(texData.TextureTypeAndPath.Path, fileDir.FullName, _uiItem, XivStrings.TexTools);
+                            await Tex.ImportTex(texData.TextureTypeAndPath.Path, fileDir.FullName, _uiItem, XivStrings.TexTools);
                         }
                     }
                     catch (Exception ex)

@@ -579,7 +579,6 @@ namespace FFXIV_TexTools.ViewModels
 
             ProgressValue = 0;
             ProgressText = string.Empty;
-            Tex tex;
 
             return Task.Run(async () =>
             {
@@ -622,8 +621,6 @@ namespace FFXIV_TexTools.ViewModels
                          where mod.ItemName.Equals(selectedItem.Name)
                          select mod).ToList();
                 }
-
-                tex = new Tex(_gameDirectory);
 
                 var modNum = 0;
 
@@ -763,7 +760,7 @@ namespace FFXIV_TexTools.ViewModels
                                 XivTex texData;
                                 try
                                 {
-                                    texData = await tex.GetXivTex(modItem.FilePath, false, tx);
+                                    texData = await Tex.GetXivTex(modItem.FilePath, false, tx);
 
                                     var mapBytes = await texData.GetRawPixels();
 
