@@ -317,7 +317,6 @@ namespace FFXIV_TexTools.Views
             await LockUi(UIStrings.Creating_Modpack, null, null);
             try
             {
-                TTMP texToolsModPack = new TTMP(new DirectoryInfo(Settings.Default.ModPack_Directory));
                 var ModList = await tx.GetModList();
 
                 var wizardData = new ModPackData()
@@ -389,7 +388,7 @@ namespace FFXIV_TexTools.Views
 
                 // Okay modpack is now created internally, just need to save it.
                 var progressIndicator = new Progress<double>(ReportProgressAdv);
-                await texToolsModPack.CreateWizardModPack(wizardData, progressIndicator , true);
+                await TTMP.CreateWizardModPack(wizardData, Properties.Settings.Default.ModPack_Directory, progressIndicator , true);
                 FlexibleMessageBox.Show(new Wpf32Window(this), "Modpack Created Successfully.".L(),
                                                "Modpack Created".L(), MessageBoxButtons.OK, MessageBoxIcon.Information);
                 await UnlockUi(this);
@@ -417,7 +416,6 @@ namespace FFXIV_TexTools.Views
 
             var tx = MainWindow.DefaultTransaction;
 
-            TTMP texToolsModPack = new TTMP(new DirectoryInfo(Settings.Default.ModPack_Directory));
             var ModList = await tx.GetModList();
 
             SimpleModPackData simpleModPackData = new SimpleModPackData
@@ -474,7 +472,7 @@ namespace FFXIV_TexTools.Views
             try
             {
                 await LockUi(UIStrings.Creating_Modpack, null, null);
-                await texToolsModPack.CreateSimpleModPack(simpleModPackData, ViewHelpers.BindReportProgress(_lockProgressController), true);
+                await TTMP.CreateSimpleModPack(simpleModPackData, Properties.Settings.Default.ModPack_Directory, ViewHelpers.BindReportProgress(_lockProgressController), true);
 
                 FlexibleMessageBox.Show(new Wpf32Window(this), "Modpack Created Successfully.".L(),
                                                "Modpack Created".L(), MessageBoxButtons.OK, MessageBoxIcon.Information);

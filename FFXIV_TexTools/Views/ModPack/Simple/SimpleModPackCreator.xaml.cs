@@ -329,7 +329,6 @@ namespace FFXIV_TexTools.Views
             _progressController = await this.ShowProgressAsync(UIMessages.ModPackCreationMessage, UIMessages.PleaseStandByMessage);
             ModPackFileName = ModPackName.Text;
 
-            TTMP texToolsModPack = new TTMP(new DirectoryInfo(Properties.Settings.Default.ModPack_Directory));
 
             SimpleModPackData simpleModPackData = new SimpleModPackData
             {
@@ -384,7 +383,7 @@ namespace FFXIV_TexTools.Views
                 }
             }
 
-            await texToolsModPack.CreateSimpleModPack(simpleModPackData, ViewHelpers.BindReportProgress(_progressController), overwriteModpack);
+            await TTMP.CreateSimpleModPack(simpleModPackData, Properties.Settings.Default.ModPack_Directory, ViewHelpers.BindReportProgress(_progressController), overwriteModpack);
 
             await _progressController.CloseAsync();
 

@@ -157,7 +157,6 @@ namespace FFXIV_TexTools.Views
 
                 }
 
-                var texToolsModPack = new TTMP(new DirectoryInfo(Properties.Settings.Default.ModPack_Directory));
 
                 string modPackPath = System.IO.Path.Combine(Properties.Settings.Default.ModPack_Directory, $"{backupModpackData.Name}.ttmp2");
                 bool overwriteModpack = false;
@@ -179,7 +178,7 @@ namespace FFXIV_TexTools.Views
 
                 ModPackFileName = backupModpackData.Name;
 
-                await texToolsModPack.CreateBackupModpack(backupModpackData, ViewHelpers.BindReportProgress(_progressController), overwriteModpack);
+                await TTMP.CreateBackupModpack(backupModpackData, Properties.Settings.Default.ModPack_Directory, ViewHelpers.BindReportProgress(_progressController), overwriteModpack);
             }
             catch (Exception ex)
             {

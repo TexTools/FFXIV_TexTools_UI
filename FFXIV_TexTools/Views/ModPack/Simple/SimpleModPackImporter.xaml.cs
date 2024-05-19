@@ -57,7 +57,6 @@ namespace FFXIV_TexTools.Views
         private ListSortDirection _lastDirection = ListSortDirection.Ascending;
         private readonly DirectoryInfo _gameDirectory, _modPackDirectory;
         private ProgressDialogController _progressController;
-        private readonly TTMP _texToolsModPack;
         private long _modSize;
         private bool _messageInImport;
         private ModPackJson _packJson;
@@ -103,7 +102,6 @@ namespace FFXIV_TexTools.Views
 
             _modPackDirectory = modPackDirectory;
             _gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
-            _texToolsModPack = new TTMP(new DirectoryInfo(Properties.Settings.Default.ModPack_Directory));
             _messageInImport = messageInImport;
 
             _packJson = modPackJson;
@@ -255,7 +253,7 @@ namespace FFXIV_TexTools.Views
                 });
             });
 
-            var originalModPackData = await _texToolsModPack.GetOriginalModPackJsonData(_modPackDirectory);
+            var originalModPackData = await TTMP.GetOriginalModPackJsonData(_modPackDirectory);
 
             Dispatcher.Invoke(() =>
             {
