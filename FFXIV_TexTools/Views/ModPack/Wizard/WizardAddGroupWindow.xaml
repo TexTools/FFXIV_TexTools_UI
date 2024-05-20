@@ -143,8 +143,8 @@
                                 </Grid.ColumnDefinitions>
                                 <TextBox x:Name="MetadataPathBox" IsReadOnly="true" Grid.ColumnSpan="1" Margin="5,0" VerticalAlignment="Center"/>
                                 <CheckBox x:Name="MetadataIncludeChildFilesBox" Content="Include Child Files" IsChecked="True" Grid.Row="0" Grid.Column="1" Margin="5,0" VerticalAlignment="Center"/>
-                                <Button x:Name="AddMetadataButton" Grid.Column="2" Grid.Row="0" Content="{Binding Source={x:Static resx:UIStrings.Add}}" VerticalAlignment="Center" Click="AddMetadataButton_Click" Margin="5,0" IsEnabled="False"/>
-                                <Button x:Name="AddNewMetadata" Grid.Column="2" Grid.Row="1" Content="Add New" VerticalAlignment="Center" Margin="5,0" Click="AddNewMetadata_Click" IsEnabled="False"/>
+                                <Button x:Name="AddMetadataButton" Grid.Column="2" Grid.Row="0" Content="Add Existing" VerticalAlignment="Center" Click="AddMetadataButton_Click" Margin="5,0" IsEnabled="False" ToolTip="{x:Static resx:UIStrings.AddToModpackTooltip}"/>
+                                <Button x:Name="AddNewMetadata" Grid.Column="2" Grid.Row="1" Content="Load External" VerticalAlignment="Center" Margin="5,0" Click="AddNewMetadata_Click" IsEnabled="False" ToolTip="{x:Static resx:UIStrings.LoadToModpackTooltip}"/>
                             </Grid>
                         </GroupBox>
                     </TabItem>
@@ -165,9 +165,9 @@
 
                                 <ComboBox x:Name="ModelTypeComboBox" Grid.Row="0" Grid.Column="0" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.Model_Type}}" VerticalAlignment="Center" Margin="5,0" DisplayMemberPath="Name"/>
                                 <CheckBox x:Name="ModelIncludeChildFilesBox" Content="Include Child Files" IsChecked="True" Grid.Row="0" Grid.Column="1" Margin="5,0" VerticalAlignment="Center"/>
-                                <Button x:Name="AddCurrentModelButton" Grid.Column="2" Content="{Binding Source={x:Static resx:UIStrings.Add}}" VerticalAlignment="Center" Margin="5,0" Click="AddCurrentModelButton_Click" IsEnabled="False"/>
-                                <Button x:Name="AdvOptionsButton" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="1" Content="Add With Custom Settings" VerticalAlignment="Center" Margin="5,0" Click="AdvOptionsButton_Click" IsEnabled="False" HorizontalAlignment="Right" Width="180"/>
-                                <Button x:Name="AddRawModel" Grid.Column="2" Grid.Row="2" Content="Add New" VerticalAlignment="Center" Margin="5,0" Click="AddRawModel_Click" IsEnabled="False"/>
+                                <Button x:Name="AddCurrentModelButton" Grid.Column="2" Content="Add Existing" VerticalAlignment="Center" Margin="5,0" Click="AddCurrentModelButton_Click" IsEnabled="False"  ToolTip="{x:Static resx:UIStrings.AddToModpackTooltip}"/>
+                                <Button x:Name="AdvOptionsButton" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="1" Content="Add With Custom Settings" VerticalAlignment="Center" Margin="5,0" Click="AdvOptionsButton_Click" IsEnabled="False" HorizontalAlignment="Right" Width="180"  ToolTip="{x:Static resx:UIStrings.AddCustomToModpackTooltip}"/>
+                                <Button x:Name="AddRawModel" Grid.Column="2" Grid.Row="2" Content="Load" VerticalAlignment="Center" Margin="5,0" Click="AddRawModel_Click" IsEnabled="False"  ToolTip="{x:Static resx:UIStrings.LoadToModpackTooltip}"/>
                             </Grid>
                         </GroupBox>
                     </TabItem>
@@ -187,10 +187,10 @@
                                 <ComboBox x:Name="MaterialComboBox" Grid.Row="0" Grid.Column="0"  mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.Material}}" VerticalAlignment="Center" Margin="5,0" DisplayMemberPath="Name"/>
 
                                 <CheckBox x:Name="MaterialIncludeChildrenBox" Content="Include Child Files" IsChecked="True" Grid.Row="0" Grid.Column="1" Margin="5,0" VerticalAlignment="Center"/>
-                                <Button x:Name="AddCurrentMaterialButton" Grid.Column="2" Grid.Row="0" Content="{Binding Source={x:Static resx:UIStrings.Add}}" VerticalAlignment="Center" Click="AddCurrentMaterialButton_Click" Margin="5,0" IsEnabled="False"/>
+                                <Button x:Name="AddCurrentMaterialButton" Grid.Column="2" Grid.Row="0" Content="Add Existing" VerticalAlignment="Center" Click="AddCurrentMaterialButton_Click" Margin="5,0" IsEnabled="False"  ToolTip="{x:Static resx:UIStrings.AddToModpackTooltip}"/>
 
-                                <Button x:Name="AddWithCustomColorsetButton" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="1" Content="Add with Custom Colorset" VerticalAlignment="Center" Click="AddWithCustomColorsetButton_Click" Margin="5,0" IsEnabled="False" HorizontalAlignment="Right" Width="180"/>
-                                <Button x:Name="AddCustomMaterialButton" Grid.Column="2" Grid.Row="2" Content="Add New" VerticalAlignment="Center" Click="AddCustomMaterialButton_Click" Margin="5,0" IsEnabled="False"/>
+                                <Button x:Name="AddWithCustomColorsetButton" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="1" Content="Add with Custom Colorset" VerticalAlignment="Center" Click="AddWithCustomColorsetButton_Click" Margin="5,0" IsEnabled="False" HorizontalAlignment="Right" Width="180"  ToolTip="{x:Static resx:UIStrings.AddCustomToModpackTooltip}"/>
+                                <Button x:Name="AddCustomMaterialButton" Grid.Column="2" Grid.Row="2" Content="Load External" VerticalAlignment="Center" Click="AddCustomMaterialButton_Click" Margin="5,0" IsEnabled="False"  ToolTip="{x:Static resx:UIStrings.LoadToModpackTooltip}"/>
 
                             </Grid>
                         </GroupBox>
@@ -209,8 +209,8 @@
                                 </Grid.ColumnDefinitions>
 
                                 <ComboBox x:Name="TextureMapComboBox" Grid.Row="0" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.Texture_Map}}" VerticalAlignment="Center" DisplayMemberPath="Name" Margin="5,0"/>
-                                <Button x:Name="AddCurrentTextureButton" Grid.Column="2" Content="{Binding Source={x:Static resx:UIStrings.Add}}" VerticalAlignment="Center" Click="AddCurrentTextureButton_Click" Margin="5,0" IsEnabled="False"/>
-                                <Button x:Name="AddCustomTextureButton" Grid.Column="2" Grid.Row="1" Content="Add New" VerticalAlignment="Center" Click="AddCustomTextureButton_Click" Margin="5,0" IsEnabled="False"/>
+                                <Button x:Name="AddCurrentTextureButton" Grid.Column="2" Content="Add Existing" VerticalAlignment="Center" Click="AddCurrentTextureButton_Click" Margin="5,0" IsEnabled="False"  ToolTip="{x:Static resx:UIStrings.AddToModpackTooltip}"/>
+                                <Button x:Name="AddCustomTextureButton" Grid.Column="2" Grid.Row="1" Content="Load External" VerticalAlignment="Center" Click="AddCustomTextureButton_Click" Margin="5,0" IsEnabled="False"  ToolTip="{x:Static resx:UIStrings.LoadToModpackTooltip}"/>
                             </Grid>
                         </GroupBox>
                     </TabItem>
@@ -231,7 +231,7 @@
                                     <Button x:Name="LoadSimpleModpackButton" Content="{Binding Source={x:Static resx:UIStrings.Load_Modpack}}" Click="LoadSimpleModpackButton_Click" HorizontalAlignment="Left" VerticalAlignment="Center" Width="150" Margin="5,0" />
                                     <Button x:Name="SelectAllButton" Click="SelectAllButton_Click" Content="{Binding Source={x:Static resx:UIStrings.Select_All}}" Grid.Column="1" VerticalAlignment="Center" Margin="5,0" IsEnabled="False" />
                                     <Button x:Name="DeselectAllButton" Click="DeselectAllButton_Click" Content="{Binding Source={x:Static resx:UIStrings.Deselect_All}}" Grid.Column="2" VerticalAlignment="Center" Margin="5,0" IsEnabled="False" />
-                                    <Button x:Name="AddButton" Click="AddButton_Click" Content="{Binding Source={x:Static resx:UIStrings.Add}}" Grid.Column="3" VerticalAlignment="Center" Margin="5,0" IsEnabled="False" />
+                                    <Button x:Name="AddButton" Click="AddButton_Click" Content="Add File(s)" Grid.Column="3" VerticalAlignment="Center" Margin="5,0" IsEnabled="False" />
                                 </Grid>
                                 <ListView Style="{x:Null}" x:Name="ModpackContents" Grid.Row="1" SelectionMode="Multiple" SelectionChanged="ModpackContents_SelectionChanged" BorderBrush="Black" BorderThickness="0,1" AlternationCount="2">
                                     <ListView.View>

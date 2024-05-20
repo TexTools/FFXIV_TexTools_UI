@@ -1699,4 +1699,31 @@ If you would like to enable this, first import a texture for the selected item.<
   <data name="Other" xml:space="preserve">
     <value>Other</value>
   </data>
+  <data name="AddCustomToModpackTooltip" xml:space="preserve">
+    <value>Add a customized file into the modpack.</value>
+  </data>
+  <data name="AddToModpackTooltip" xml:space="preserve">
+    <value>Add the current game/transaction file into the modpack.</value>
+  </data>
+  <data name="EnableDisableTooltip" xml:space="preserve">
+    <value>Enable or Disable the current Modded version of this file.</value>
+  </data>
+  <data name="ExportTooltip" xml:space="preserve">
+    <value>Save the current game file to external file.</value>
+  </data>
+  <data name="ImportTooltip" xml:space="preserve">
+    <value>Import an external file to game files/transaction.</value>
+  </data>
+  <data name="LoadToModpackTooltip" xml:space="preserve">
+    <value>Load an external file into the modpack.</value>
+  </data>
+  <data name="SaveAsModpackTooltip" xml:space="preserve">
+    <value>Save the current State to a new Modpack</value>
+  </data>
+  <data name="SaveAsTooltip" xml:space="preserve">
+    <value>Save the current state to external file.</value>
+  </data>
+  <data name="SaveTooltip" xml:space="preserve">
+    <value>Save the current state to the game files/transaction</value>
+  </data>
 </root>

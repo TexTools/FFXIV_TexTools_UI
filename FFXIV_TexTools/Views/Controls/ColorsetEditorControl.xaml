@@ -47,14 +47,15 @@
 
         <Grid x:Name="TopRow" Grid.Row="0" Grid.Column="1" Margin="10,0,10,0">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1*"></ColumnDefinition>
-                <ColumnDefinition Width="100"></ColumnDefinition>
-                <ColumnDefinition Width="100"></ColumnDefinition>
-                <ColumnDefinition Width="100"></ColumnDefinition>
+                <ColumnDefinition Width="120"></ColumnDefinition>
+                <ColumnDefinition Width="120"></ColumnDefinition>
+                <ColumnDefinition Width="120"></ColumnDefinition>
+                <ColumnDefinition Width="120"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <Button x:Name="LoadButton" Content="Load" VerticalAlignment="Center" Margin="5,5,5,5" Click="Load_Click" Grid.Column="1" Height="28" />
-            <Button x:Name="SaveAsButton" Content="Save As" VerticalAlignment="Center" Margin="5,5,5,5" Click="SaveAs_Click" Grid.Column="2" Height="28" />
-            <Button x:Name="SaveButton" Content="Save" VerticalAlignment="Center" Margin="5,5,5,5" Click="SaveButton_Click" Grid.Column="3" Height="28" />
+            <Button x:Name="LoadButton" Content="Import" VerticalAlignment="Center" Margin="5,5,5,5" Click="Load_Click" Grid.Column="0" Height="28" ToolTip="{x:Static resx:UIStrings.ImportTooltip}" />
+            <Button x:Name="SaveAsModpackButton" Content="Save Modpack" VerticalAlignment="Center" Margin="5,5,5,5" Click="SaveAsModpack_Click" Grid.Column="1" Height="28" ToolTip="{x:Static resx:UIStrings.SaveAsModpackTooltip}" />
+            <Button x:Name="SaveAsButton" Content="Save As" VerticalAlignment="Center" Margin="5,5,5,5" Click="SaveAs_Click" Grid.Column="2" Height="28" ToolTip="{x:Static resx:UIStrings.SaveAsTooltip}" />
+            <Button x:Name="SaveButton" Content="Save" VerticalAlignment="Center" Margin="5,5,5,5" Click="SaveButton_Click" Grid.Column="3" Height="28" ToolTip="{x:Static resx:UIStrings.SaveTooltip}" />
         </Grid>
         
         <ScrollViewer Grid.Column="1" Grid.Row="1">

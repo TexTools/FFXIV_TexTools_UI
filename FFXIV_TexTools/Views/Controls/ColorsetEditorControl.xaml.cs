@@ -1285,5 +1285,10 @@ namespace FFXIV_TexTools.Controls
             await Tex.ImportColorsetTexture(Material.MTRLPath, path, false, true, true, item, XivStrings.TexTools, MainWindow.UserTransaction);
 
         }
+
+        private void SaveAsModpack_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

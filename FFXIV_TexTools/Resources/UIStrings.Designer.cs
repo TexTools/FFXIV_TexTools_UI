@@ -232,6 +232,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add a customized file into the modpack..
+        /// </summary>
+        public static string AddCustomToModpackTooltip {
+            get {
+                return ResourceManager.GetString("AddCustomToModpackTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to added mesh(es)
         ///Change material for new mesh(es) if necessary..
         /// </summary>
@@ -248,6 +257,15 @@ namespace FFXIV_TexTools.Resources {
         public static string Added_MeshParts {
             get {
                 return ResourceManager.GetString("Added_MeshParts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add the current game/transaction file into the modpack..
+        /// </summary>
+        public static string AddToModpackTooltip {
+            get {
+                return ResourceManager.GetString("AddToModpackTooltip", resourceCulture);
             }
         }
         
@@ -1351,6 +1369,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Enable or Disable the current Modded version of this file..
+        /// </summary>
+        public static string EnableDisableTooltip {
+            get {
+                return ResourceManager.GetString("EnableDisableTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Enter a brief description of your Mod Pack..
         /// </summary>
         public static string Enter_a_brief_description_of_your_Mod_Pack {
@@ -1464,6 +1491,15 @@ namespace FFXIV_TexTools.Resources {
         public static string Export_Settings {
             get {
                 return ResourceManager.GetString("Export_Settings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save the current game file to external file..
+        /// </summary>
+        public static string ExportTooltip {
+            get {
+                return ResourceManager.GetString("ExportTooltip", resourceCulture);
             }
         }
         
@@ -1936,6 +1972,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Import an external file to game files/transaction..
+        /// </summary>
+        public static string ImportTooltip {
+            get {
+                return ResourceManager.GetString("ImportTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Include Child Files.
         /// </summary>
         public static string Include_Child_Files {
@@ -2166,6 +2211,15 @@ namespace FFXIV_TexTools.Resources {
         public static string Loading_Items {
             get {
                 return ResourceManager.GetString("Loading_Items", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Load an external file into the modpack..
+        /// </summary>
+        public static string LoadToModpackTooltip {
+            get {
+                return ResourceManager.GetString("LoadToModpackTooltip", resourceCulture);
             }
         }
         
@@ -3803,6 +3857,33 @@ namespace FFXIV_TexTools.Resources {
         public static string Save_Directory {
             get {
                 return ResourceManager.GetString("Save_Directory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save the current State to a new Modpack.
+        /// </summary>
+        public static string SaveAsModpackTooltip {
+            get {
+                return ResourceManager.GetString("SaveAsModpackTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save the current state to external file..
+        /// </summary>
+        public static string SaveAsTooltip {
+            get {
+                return ResourceManager.GetString("SaveAsTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save the current state to the game files/transaction.
+        /// </summary>
+        public static string SaveTooltip {
+            get {
+                return ResourceManager.GetString("SaveTooltip", resourceCulture);
             }
         }
         

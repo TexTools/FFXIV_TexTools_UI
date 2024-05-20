@@ -30,9 +30,9 @@
             </Button>
             <TextBlock Grid.Column="1" x:Name="ItemNameBox" VerticalAlignment="Center" FontSize="16" Margin="10,0">[7] Bogarter's Gloves of Doing Cool Things</TextBlock>
 
-            <Button Grid.Column="2" x:Name="SaveModpackButton" Margin="5" Width="90" VerticalAlignment="Center" Content="Save Modpack" Click="SaveModpack_Click" HorizontalAlignment="Right"></Button>
-            <Button Grid.Column="3" x:Name="ToggleButton" Margin="5" VerticalAlignment="Center" Content="Disable" Click="ToggleButton_Click"></Button>
-            <Button Grid.Column="4" x:Name="SaveButton" Margin="5" VerticalAlignment="Center" Content="Save" Click="SaveButton_Click"></Button>
+            <Button Grid.Column="2" x:Name="SaveModpackButton" Margin="5" Width="90" VerticalAlignment="Center" Content="Save Modpack" Click="SaveModpack_Click" HorizontalAlignment="Right" ToolTip="{x:Static resx:UIStrings.SaveAsModpackTooltip}"></Button>
+            <Button Grid.Column="3" x:Name="ImportRawButton" Margin="5" VerticalAlignment="Center" Content="Save As" Click="ImportRaw_Click" ToolTip="{x:Static resx:UIStrings.SaveAsTooltip}"></Button>
+            <Button Grid.Column="4" x:Name="SaveButton" Margin="5" VerticalAlignment="Center" Content="Save" Click="SaveButton_Click" ToolTip="{x:Static resx:UIStrings.SaveTooltip}"></Button>
         </Grid>
         
         <Grid Grid.Row="1">
@@ -50,6 +50,7 @@
                 <ColumnDefinition Width="100"></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <Label Grid.Column="0" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" FontSize="16" VerticalAlignment="Center">Set:</Label>
+            <Button Grid.Column="8" x:Name="ToggleButton" Margin="5" VerticalAlignment="Center" Content="Disable" Click="ToggleButton_Click" ToolTip="{x:Static resx:UIStrings.EnableDisableTooltip}"></Button>
             <Label Grid.Column="1" x:Name="SetLabel" VerticalContentAlignment="Center" FontSize="16" VerticalAlignment="Center">e0504</Label>
 
 
@@ -64,8 +65,7 @@
             </Button>
 
 
-            <Button Grid.Column="8" x:Name="ImportRawButton" Margin="5" VerticalAlignment="Center" Content="Import Raw" Click="ImportRaw_Click"></Button>
-            <Button Grid.Column="9" x:Name="ExportRawButton" Margin="5" VerticalAlignment="Center" Content="Export Raw" Click="ExportRaw_Click"></Button>
+            <Button Grid.Column="9" x:Name="ExportRawButton" Margin="5" VerticalAlignment="Center" Content="Import" Click="ExportRaw_Click" ToolTip="{x:Static resx:UIStrings.ImportTooltip}"></Button>
         </Grid>
 
 
