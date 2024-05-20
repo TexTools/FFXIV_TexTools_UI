@@ -28,6 +28,7 @@ using xivModdingFramework.Helpers;
 using FFXIV_TexTools.Properties;
 using System.Diagnostics;
 using FFXIV_TexTools.Views.MaterialEditor;
+using xivModdingFramework.Mods;
 
 namespace FFXIV_TexTools.Controls
 {
@@ -1309,8 +1310,48 @@ namespace FFXIV_TexTools.Controls
             }
         }
 
-        private void SaveAsModpack_Click(object sender, RoutedEventArgs e)
+        private async void SaveAsModpack_Click(object sender, RoutedEventArgs e)
         {
+            await MainWindow.GetMainWindow().LockUi("Exporting Metadata".L());
+            try
+            {
+                // To meet user expectations, we need to temporarily save the file as the on-screen state before exporting,
+                // Then roll back the file after.
+
+                var tx = MainWindow.UserTransaction;
+                var file = Material.MTRLPath;
+                bool ownTx = false;
+                TxFileState state = null;
+                if (tx == null)
+                {
+                    ownTx = true;
+                    tx = ModTransaction.BeginTransaction(true);
+                }
+                try
+                {
+                    state = await tx.SaveFileState(file);
+                    await Mtrl.ImportMtrl(Material, null, "Temp", false, tx);
+
+
+                    SingleFileModpackCreator.ExportFile(Material.MTRLPath, MainWindow.GetMainWindow(), tx);
+
+                }
+                finally
+                {
+                    if (ownTx)
+                    {
+                        ModTransaction.CancelTransaction(tx, true);
+                    }
+                    else
+                    {
+                        await tx.RestoreFileState(state);
+                    }
+                }
+            }
+            finally
+            {
+                await MainWindow.GetMainWindow().UnlockUi();
+            }
 
         }
     }
