@@ -16,6 +16,7 @@ using System.Text.RegularExpressions;
 using xivModdingFramework.SqPack.FileTypes;
 using xivModdingFramework.Cache;
 using AutoUpdaterDotNET;
+using FFXIV_TexTools.Views.MaterialEditor;
 
 namespace FFXIV_TexTools.Views.Controls
 {
@@ -121,7 +122,7 @@ namespace FFXIV_TexTools.Views.Controls
 
 
             var newMtrl = (XivMtrl)material.Clone();
-            Textures.MaterialEditorMode mode = Textures.MaterialEditorMode.NewMulti;
+            MaterialEditorMode mode = MaterialEditorMode.NewMulti;
             if (exists)
             {
                 // We only actually open the user-input dialog IF we're creating something that has an extension to change.
@@ -144,12 +145,12 @@ namespace FFXIV_TexTools.Views.Controls
             else
             {
                 // If the file doesn't exist, set the mode accordingly and just pass in the clone of the material we were given.
-                mode = Textures.MaterialEditorMode.NewRace;
+                mode = MaterialEditorMode.NewRace;
             }
 
 
             // Call into the editor with our new material.
-            var editor = new Views.Textures.MaterialEditorView() { Owner = System.Windows.Application.Current.MainWindow };
+            var editor = new MaterialEditorView() { Owner = System.Windows.Application.Current.MainWindow };
             var open = await editor.SetMaterial(newMtrl, item, mode);
             if(!open)
             {

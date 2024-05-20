@@ -2,7 +2,6 @@
 using FFXIV_TexTools.Helpers;
 using FFXIV_TexTools.Resources;
 using FFXIV_TexTools.Views;
-using FFXIV_TexTools.Views.Textures;
 using HelixToolkit.Wpf.SharpDX;
 using System;
 using System.Collections.Generic;
@@ -32,6 +31,7 @@ using static xivModdingFramework.Materials.DataContainers.ShaderHelpers;
 using System.Globalization;
 using System.Windows.Data;
 using xivModdingFramework.Mods.Enums;
+using FFXIV_TexTools.Views.MaterialEditor;
 
 namespace FFXIV_TexTools.ViewModels
 {

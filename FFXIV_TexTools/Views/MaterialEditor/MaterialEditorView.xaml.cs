@@ -24,7 +24,7 @@ using xivModdingFramework.Textures.Enums;
 using static xivModdingFramework.Materials.DataContainers.ShaderHelpers;
 using Button = System.Windows.Controls.Button;
 
-namespace FFXIV_TexTools.Views.Textures
+namespace FFXIV_TexTools.Views.MaterialEditor
 {
     public enum MaterialEditorMode
     {
@@ -225,7 +225,7 @@ namespace FFXIV_TexTools.Views.Textures
         }
         private void HelpButton_Click(object sender, RoutedEventArgs e)
         {
-            var help = new Views.Textures.MaterialEditorHelpView();
+            var help = new MaterialEditorHelpView();
             help.ShowDialog();
         }
 

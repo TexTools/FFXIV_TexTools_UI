@@ -7,7 +7,7 @@ using System.Windows.Navigation;
 using xivModdingFramework.Items.Interfaces;
 using xivModdingFramework.Materials.DataContainers;
 
-namespace FFXIV_TexTools.Views.Textures
+namespace FFXIV_TexTools.Views.MaterialEditor
 {
     /// <summary>
     /// Interaction logic for MaterialEditor.xaml

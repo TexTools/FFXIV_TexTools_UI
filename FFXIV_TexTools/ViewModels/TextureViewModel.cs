@@ -21,7 +21,7 @@ using FFXIV_TexTools.Resources;
 using FFXIV_TexTools.Textures;
 using FFXIV_TexTools.Views;
 using FFXIV_TexTools.Views.Controls;
-using FFXIV_TexTools.Views.Textures;
+using FFXIV_TexTools.Views.MaterialEditor;
 using HelixToolkit.Wpf.SharpDX;
 using SharpDX;
 using SixLabors.ImageSharp;
@@ -1910,7 +1910,7 @@ namespace FFXIV_TexTools.ViewModels
                 XivMtrl newMaterial;
                 if (mode == MaterialEditorMode.EditSingle || mode == MaterialEditorMode.EditMulti)
                 {
-                    var editor = new Views.Textures.MaterialEditorView() { Owner = System.Windows.Application.Current.MainWindow };
+                    var editor = new MaterialEditorView() { Owner = System.Windows.Application.Current.MainWindow };
                     var created = await editor.SetMaterial(material, item, mode);
                     // If we failed to create the dialog, just cancel entirely.
                     // We probably weren't done loading.
