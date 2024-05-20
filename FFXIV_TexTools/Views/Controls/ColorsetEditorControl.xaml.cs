@@ -1296,9 +1296,11 @@ namespace FFXIV_TexTools.Controls
                 var datPath = Path.Combine(Path.GetDirectoryName(path), Path.GetFileNameWithoutExtension(path) + ".dat");
 
                 var item = mw.GetSelectedItem();
-                await Tex.ImportColorsetTexture(Material.MTRLPath, path, false, cres.ImportColorset.Value, cres.ImportDye.Value, item, XivStrings.TexTools, MainWindow.UserTransaction);
+                Tex.ImportColorsetTexture(Material, path);
+                //await Tex.ImportColorsetTexture(Material.MTRLPath, path, false, cres.ImportColorset.Value, cres.ImportDye.Value, item, XivStrings.TexTools, MainWindow.UserTransaction);
+                //var mtrl = await Mtrl.GetXivMtrl(Material.MTRLPath, false, MainWindow.UserTransaction);
 
-                var mtrl = await Mtrl.GetXivMtrl(Material.MTRLPath, false, MainWindow.UserTransaction);
+                await this.SetMaterial(Material);
 
                 // Reload the UI.
                 MaterialSaved.Invoke(this, null);

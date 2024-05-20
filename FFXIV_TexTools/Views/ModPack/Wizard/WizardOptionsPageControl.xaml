@@ -39,8 +39,8 @@
                         <RowDefinition Height="25"/>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
-                    <Button x:Name="SelectAllButton" Content="{Binding Source={x:Static resx:UIStrings.Select_All}}" Grid.Column="0" Click="SelectAllButton_Click"/>
-                    <Button x:Name="DeselectAllButton" Content="{Binding Source={x:Static resx:UIStrings.Deselect_All}}" Grid.Column="1" Click="DeselectAllButton_Click"/>
+                    <Button x:Name="SelectAllButton" Content="{Binding Source={x:Static resx:UIStrings.Select_All}}" Grid.Column="1" Click="SelectAllButton_Click"/>
+                    <Button x:Name="DeselectAllButton" Content="{Binding Source={x:Static resx:UIStrings.Deselect_All}}" Grid.Column="0" Click="DeselectAllButton_Click"/>
                     <ListBox x:Name="OptionsList" ScrollViewer.CanContentScroll="False" Grid.Row="1" Grid.ColumnSpan="2" SelectionChanged="OptionsList_SelectionChanged">
                         <ListBox.GroupStyle>
                             <GroupStyle>

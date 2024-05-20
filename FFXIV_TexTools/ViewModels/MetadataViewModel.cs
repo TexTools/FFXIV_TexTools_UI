@@ -24,11 +24,12 @@ namespace FFXIV_TexTools.ViewModels
     {
         private MetadataView _view;
         private ItemMetadata _metadata;
-        private ItemMetadata _original;
         public MetadataViewModel(MetadataView view)
         {
             _view = view;
         }
+
+        public int StartingVariant { get; private set; }
 
 
         /// <summary>
@@ -39,12 +40,20 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         /// <param name="root"></param>
         /// <returns></returns>
-        public async Task<bool> SetRoot(XivDependencyRoot root, int startingVariant = 0)
+        public async Task<bool> SetRoot(XivDependencyRoot root, int startingVariant = 0, ItemMetadata data = null)
         {
             var tx = MainWindow.DefaultTransaction;
+            StartingVariant = startingVariant;
 
-            _metadata = await ItemMetadata.GetMetadata(root, false, tx);
-            _original = await ItemMetadata.GetMetadata(root, false, tx);
+            if (data == null)
+            {
+                _metadata = await ItemMetadata.GetMetadata(root, false, tx);
+            }
+            else
+            {
+                _metadata = data;
+            }
+
             if (_metadata == null || !_metadata.AnyMetadata) {
                 _view.SaveButton.IsEnabled = false;
                 _view.NexSlotButton.IsEnabled = false;

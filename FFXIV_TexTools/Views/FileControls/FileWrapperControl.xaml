@@ -1,0 +1,74 @@
+﻿<UserControl x:Class="FFXIV_TexTools.Views.Controls.FileWrapperControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:FFXIV_TexTools.Views.Controls" xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40"></RowDefinition>
+            <RowDefinition Height="1*"></RowDefinition>
+            <RowDefinition Height="40"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="60"></ColumnDefinition>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+                <ColumnDefinition Width="60"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
+
+            <Button x:Name="RefreshButton" Margin="5" Grid.Column="0" IsEnabled="False" Click="RefreshButton_Click">
+                <iconPacks:Material Kind="Refresh" Height="12"/>
+
+            </Button>
+
+
+            <TextBox Grid.Column="1" IsReadOnly="True" Margin="5" TextAlignment="Center" Text="Loading File..." x:Name="FilePathBox" VerticalContentAlignment="Center"/>
+            
+            <Button x:Name="FileInfoButton" Margin="5" Grid.Column="2" IsEnabled="false" Click="FileInfo_Click">
+                <iconPacks:PackIconFontAwesome Kind="InfoSolid" Height="12"/>
+            </Button>
+        </Grid>
+        
+        <Grid Grid.Row="1" x:Name="FileControlEntry">
+        </Grid>
+
+        <Grid Grid.Row="2" x:Name="ButtonRow">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Button Margin="5" Grid.Column="0" x:Name="EnableDisableButton" Content="{Binding Source={x:Static resx:UIStrings.Enable}}" Click="EnableDisable_Click" ToolTip="{Binding Source={x:Static resx:UIStrings.EnableDisableTooltip}}"/>
+            <Button Margin="5" Grid.Column="1" x:Name="LoadButton" Content="{Binding Source={x:Static resx:UIStrings.Load}}" Click="Load_Click" ToolTip="{Binding Source={x:Static resx:UIStrings.LoadTooltip}}"/>
+
+
+            <Grid x:Name="SaveAsGrid" Margin="5" Grid.Column="2" ToolTip="{Binding Source={x:Static resx:UIStrings.SaveAsTooltip}}">
+                <Button x:Name="SaveAsButton" Grid.Column="0" Click="SaveAs_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding Source={x:Static resx:UIStrings.SaveAs}}" />
+                    </StackPanel>
+                </Button>
+                <Button Width="32" HorizontalAlignment="Right" BorderThickness="3" BorderBrush="Transparent" Click="SaveAsDropdown_Click">
+                    <iconPacks:PackIconFontAwesome Kind="CaretDownSolid" Height="4"/>
+                </Button>
+                <Line Y1="0" Y2="1" StrokeThickness="1" Stroke="Black" Stretch="Fill" Margin="0, 6, 32, 6" HorizontalAlignment="Right" Opacity="0.25"/>
+
+                <Grid.ContextMenu>
+                    <ContextMenu x:Name="SaveAsContextMenu">
+                    </ContextMenu>
+                </Grid.ContextMenu>
+
+            </Grid>
+
+
+            <Button Margin="5" Grid.Column="3" x:Name="SaveButton" Content="{Binding Source={x:Static resx:UIStrings.Save}}" ToolTip="{Binding Source={x:Static resx:UIStrings.SaveTooltip}}" Click="Save_Click"/>
+        </Grid>
+
+    </Grid>
+</UserControl>

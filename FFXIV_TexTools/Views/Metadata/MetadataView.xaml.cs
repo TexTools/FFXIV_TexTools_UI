@@ -72,6 +72,7 @@ namespace FFXIV_TexTools.Views.Metadata
             if (e <= 0) return;
             if (e == (int)_root.Info.SecondaryId) return;
 
+            RefreshButton.IsEnabled = false;
 
             // Change root to the new "number" root.
             var nRoot = new XivDependencyRootInfo()
@@ -97,6 +98,7 @@ namespace FFXIV_TexTools.Views.Metadata
         /// <returns></returns>
         public async Task<bool> SetItem(IItem item)
         {
+            RefreshButton.IsEnabled = false;
             var defaultVariant = 0;
             var im = item as IItemModel;
             if(im == null || !Imc.UsesImc(im))
@@ -182,6 +184,7 @@ namespace FFXIV_TexTools.Views.Metadata
                         ToggleButton.Content = "Enable".L();
                     }
                 }
+                RefreshButton.IsEnabled = true;
                 return await _vm.SetRoot(_root, defaultVariant);
             }
             catch(Exception ex) 
@@ -442,7 +445,7 @@ namespace FFXIV_TexTools.Views.Metadata
             }
         }
 
-        private async void ImportRaw_Click(object sender, RoutedEventArgs e)
+        private async void Load_Click(object sender, RoutedEventArgs e)
         {
             try
             {
@@ -463,17 +466,20 @@ namespace FFXIV_TexTools.Views.Metadata
                 metadata.AlterRoot(_root);
                 metadata.Validate(file);
 
-                data = await ItemMetadata.Serialize(metadata);
+                await _vm.SetRoot(_root, _vm.StartingVariant, metadata);
 
-                var tx = MainWindow.UserTransaction;
+
+                //data = await ItemMetadata.Serialize(metadata);
+
+                //var tx = MainWindow.UserTransaction;
 
                 // Data will automatically be expanded.
-                await Dat.ImportType2Data(data, file, XivStrings.TexTools, _root.GetFirstItem(), tx);
+                //await Dat.ImportType2Data(data, file, XivStrings.TexTools, _root.GetFirstItem(), tx);
 
                 // Fill in missing racial models or material sets.
-                await metadata.FillMissingFiles(XivStrings.TexTools, tx);
+                //await metadata.FillMissingFiles(XivStrings.TexTools, tx);
 
-                await SetRoot(_root);
+                //await SetRoot(_root);
             }
             catch(Exception ex)
             {
@@ -485,6 +491,11 @@ namespace FFXIV_TexTools.Views.Metadata
             }
 
 
+        }
+
+        private async void RefreshButton_Click(object sender, RoutedEventArgs e)
+        {
+            await _vm.SetRoot(_root, _vm.StartingVariant);
         }
     }
 }

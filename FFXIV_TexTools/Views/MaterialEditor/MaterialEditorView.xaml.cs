@@ -123,7 +123,7 @@ namespace FFXIV_TexTools.Views.MaterialEditor
             }
 
 
-            PasteMaterialButton.IsEnabled = _copiedMaterial != null;
+            //PasteMaterialButton.IsEnabled = _copiedMaterial != null;
 
             DisableButton.IsEnabled = false;
             DisableButton.Visibility = Visibility.Hidden;
@@ -232,7 +232,7 @@ namespace FFXIV_TexTools.Views.MaterialEditor
         private void CopyMaterialButton_Click(object sender, RoutedEventArgs e)
         {
             _copiedMaterial = (XivMtrl) Material.Clone();
-            PasteMaterialButton.IsEnabled = true;
+            //PasteMaterialButton.IsEnabled = true;
         }
 
         private async void PasteMaterialButton_Click(object sender, RoutedEventArgs e)

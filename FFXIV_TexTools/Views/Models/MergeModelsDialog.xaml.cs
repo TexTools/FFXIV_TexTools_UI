@@ -29,7 +29,7 @@ namespace FFXIV_TexTools.Views
     /// <summary>
     /// Interaction logic for CopyModelDialog.xaml
     /// </summary>
-    public partial class MergeModelsDialog : Window
+    public partial class MergeModelsDialog
     {
         private ObservableCollection<int> ImcVariantSource = new ObservableCollection<int>();
 

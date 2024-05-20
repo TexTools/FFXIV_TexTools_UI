@@ -1709,7 +1709,7 @@ If you would like to enable this, first import a texture for the selected item.<
     <value>Enable or Disable the current Modded version of this file.</value>
   </data>
   <data name="ExportTooltip" xml:space="preserve">
-    <value>Save the current game file to external file.</value>
+    <value>Export the current game/transaction file to an external location.</value>
   </data>
   <data name="ImportTooltip" xml:space="preserve">
     <value>Import an external file to game files/transaction.</value>
@@ -1718,12 +1718,21 @@ If you would like to enable this, first import a texture for the selected item.<
     <value>Load an external file into the modpack.</value>
   </data>
   <data name="SaveAsModpackTooltip" xml:space="preserve">
-    <value>Save the current State to a new Modpack</value>
+    <value>Save the current editor state to a new Modpack</value>
   </data>
   <data name="SaveAsTooltip" xml:space="preserve">
-    <value>Save the current state to external file.</value>
+    <value>Save the current editor state to external file.</value>
   </data>
   <data name="SaveTooltip" xml:space="preserve">
-    <value>Save the current state to the game files/transaction</value>
+    <value>Save the current editor state to the game files/transaction</value>
+  </data>
+  <data name="LoadTooltip" xml:space="preserve">
+    <value>Load an external file into this editor window.</value>
+  </data>
+  <data name="Load" xml:space="preserve">
+    <value>LOAD</value>
+  </data>
+  <data name="SaveAs" xml:space="preserve">
+    <value>SAVE AS</value>
   </data>
 </root>

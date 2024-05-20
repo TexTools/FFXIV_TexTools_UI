@@ -1495,7 +1495,7 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Save the current game file to external file..
+        ///   Looks up a localized string similar to Export the current game/transaction file to an external location..
         /// </summary>
         public static string ExportTooltip {
             get {
@@ -2170,6 +2170,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to LOAD.
+        /// </summary>
+        public static string Load {
+            get {
+                return ResourceManager.GetString("Load", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Load From....
         /// </summary>
         public static string Load_From {
@@ -2220,6 +2229,15 @@ namespace FFXIV_TexTools.Resources {
         public static string LoadToModpackTooltip {
             get {
                 return ResourceManager.GetString("LoadToModpackTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Load an external file into this editor window..
+        /// </summary>
+        public static string LoadTooltip {
+            get {
+                return ResourceManager.GetString("LoadTooltip", resourceCulture);
             }
         }
         
@@ -3861,7 +3879,16 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Save the current State to a new Modpack.
+        ///   Looks up a localized string similar to SAVE AS.
+        /// </summary>
+        public static string SaveAs {
+            get {
+                return ResourceManager.GetString("SaveAs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save the current editor state to a new Modpack.
         /// </summary>
         public static string SaveAsModpackTooltip {
             get {
@@ -3870,7 +3897,7 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Save the current state to external file..
+        ///   Looks up a localized string similar to Save the current editor state to external file..
         /// </summary>
         public static string SaveAsTooltip {
             get {
@@ -3879,7 +3906,7 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Save the current state to the game files/transaction.
+        ///   Looks up a localized string similar to Save the current editor state to the game files/transaction.
         /// </summary>
         public static string SaveTooltip {
             get {

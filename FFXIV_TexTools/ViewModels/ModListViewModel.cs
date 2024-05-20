@@ -235,7 +235,7 @@ namespace FFXIV_TexTools.ViewModels
         }
 
         /// <summary>
-        /// Gets the categoreis based on the mod pack filter
+        /// Gets the categories based on the mod pack filter
         /// </summary>
         private async Task GetCategoriesModPackFilter()
         {
@@ -407,7 +407,10 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     return new SimpleIItem("Unknown", "Unknown");
                 }
-                return root.GetFirstItem();
+                var item = root.GetFirstItem();
+                item.SecondaryCategory = modItem.ItemCategory;
+                item.Name = modItem.ItemName;
+                return item;
             }
             catch (Exception ex)
             {
@@ -465,6 +468,7 @@ namespace FFXIV_TexTools.ViewModels
                 }
                 else
                 {
+                    var itemNames = allMods.Select(x => x.ItemName).ToArray();
                     modItems =
                         (from mod in allMods
                          where mod.ItemName.Equals(selectedItem.Name)

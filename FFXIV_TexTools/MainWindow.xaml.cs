@@ -19,6 +19,7 @@ using FFXIV_TexTools.Properties;
 using FFXIV_TexTools.Resources;
 using FFXIV_TexTools.ViewModels;
 using FFXIV_TexTools.Views;
+using FFXIV_TexTools.Views.Controls;
 using FFXIV_TexTools.Views.ItemConverter;
 using FFXIV_TexTools.Views.Metadata;
 using FFXIV_TexTools.Views.Models;
@@ -140,6 +141,9 @@ namespace FFXIV_TexTools
                 return ModTransaction.BeginTransaction();
             }
         }
+
+        public delegate void UserTransactionEventHandler();
+        public static event UserTransactionEventHandler UserTransactionStarted;
 
 
 
@@ -1426,6 +1430,14 @@ namespace FFXIV_TexTools
 
         private async void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            try
+            {
+                XivCache.CacheWorkerEnabled = false;
+            }
+            catch
+            {
+                //No-Op
+            }
             return;
         }
 
@@ -1742,6 +1754,9 @@ namespace FFXIV_TexTools
 
         }
 
-
+        private async void FileViewerButton_Click(object sender, RoutedEventArgs e)
+        {
+            var success = await SimpleFileViewWindow.OpenFile("chara/equipment/e0755/texture/v01_c0101e0755_top_n.tex");
+        }
     }
 }

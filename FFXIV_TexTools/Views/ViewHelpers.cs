@@ -1,5 +1,6 @@
 ﻿using FFXIV_TexTools.Helpers;
 using FFXIV_TexTools.Resources;
+using FolderSelect;
 using MahApps.Metro.Controls.Dialogs;
 using System;
 using System.Collections.Generic;
@@ -7,8 +8,13 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Forms;
+using System.Windows.Interop;
+using System.Windows.Threading;
 using xivModdingFramework.Mods.FileTypes;
+using UserControl = System.Windows.Controls.UserControl;
 
 namespace FFXIV_TexTools.Views
 {
@@ -50,11 +56,39 @@ namespace FFXIV_TexTools.Views
             return f;
         }
 
+        public static void ShowError(this UserControl control, string title, string message)
+        {
+            var wind = Window.GetWindow(control);
+            var Win32Window = new WindowWrapper(new WindowInteropHelper(wind).Handle);
+            FlexibleMessageBox.Show(Win32Window, message, title, MessageBoxButtons.OK, MessageBoxIcon.Error,
+                MessageBoxDefaultButton.Button1);
+            
+        }
 
         public static void ShowError(string title, string message)
         {
-            FlexibleMessageBox.Show(message, title, MessageBoxButtons.OK, MessageBoxIcon.Error,
+            FlexibleMessageBox.Show(MainWindow.GetMainWindow().Win32Window, message, title, MessageBoxButtons.OK, MessageBoxIcon.Error,
                 MessageBoxDefaultButton.Button1);
+        }
+
+        public static Action Debounce(Action func, int milliseconds = 300)
+        {
+            CancellationTokenSource cancelTokenSource = null;
+
+            return () =>
+            {
+                cancelTokenSource?.Cancel();
+                cancelTokenSource = new CancellationTokenSource();
+
+                Task.Delay(milliseconds, cancelTokenSource.Token)
+                    .ContinueWith(t =>
+                    {
+                        if (t.IsCompleted && !t.IsCanceled)
+                        {
+                            func();
+                        }
+                    }, TaskScheduler.Default);
+            };
         }
         public static Action<T> Debounce<T>(Action<T> func, int milliseconds = 300)
         {

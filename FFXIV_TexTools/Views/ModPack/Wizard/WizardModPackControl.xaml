@@ -64,9 +64,9 @@
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <Button x:Name="AddGroupButton" Grid.Column="0" Content="{Binding Source={x:Static resx:UIStrings.Add}}" Margin="5" Click="AddGroupButton_Click"/>
+                <Button x:Name="AddGroupButton" Grid.Column="2" Content="{Binding Source={x:Static resx:UIStrings.Add}}" Margin="5" Click="AddGroupButton_Click"/>
                 <Button x:Name="EditGroupButton" Grid.Column="1" Content="{Binding Source={x:Static resx:UIStrings.Edit}}" Margin="5" Click="EditGroupButton_Click" IsEnabled="False"/>
-                <Button x:Name="DeleteGroupButton" Grid.Column="2" Content="{Binding Source={x:Static resx:UIStrings.Delete}}" Margin="5" Click="DeleteGroupButton_Click" IsEnabled="False"/>
+                <Button x:Name="DeleteGroupButton" Grid.Column="0" Content="{Binding Source={x:Static resx:UIStrings.Delete}}" Margin="5" Click="DeleteGroupButton_Click" IsEnabled="False"/>
             </Grid>
         </Grid>
         <Grid Column="1">

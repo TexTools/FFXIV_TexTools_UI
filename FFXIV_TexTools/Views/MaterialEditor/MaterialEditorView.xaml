@@ -7,8 +7,8 @@
         xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:input="clr-namespace:System.Windows.Input;assembly=PresentationCore"
-        mc:Ignorable="d"
         xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
+        mc:Ignorable="d"
         resx:Localization.Enabled="True"                  
         Title="{Binding Source={x:Static resx:UIStrings.Material_Editor}}" Height="600" IsMinButtonEnabled="False" IsMaxRestoreButtonEnabled="False" WindowStartupLocation="CenterOwner" FontSize="14" Width="800"
                  MinWidth="800" MinHeight="600">
@@ -65,15 +65,13 @@
         <Label Content="Shader Pack:" Margin="10,0,0,0" VerticalAlignment="Center" FontWeight="Bold" FontSize="14" Height="28" HorizontalAlignment="Left" Grid.Row="1" HorizontalContentAlignment="Right" ToolTip="{StaticResource ShpkTooltip}"/>
         <ComboBox x:Name="ShaderComboBox" Margin="110,0,10,0" VerticalAlignment="Center" Height="26" Grid.Row="1" SelectionChanged="ShaderComboBox_SelectionChanged" ToolTip="{StaticResource ShpkTooltip}"/>
 
-        <Button x:Name="CopyMaterialButton" Content="Copy Material" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Center" Width="100" Grid.Column="2" Click="CopyMaterialButton_Click" Height="28"/>
-        <Button x:Name="PasteMaterialButton" Content="Paste Material" HorizontalAlignment="Left"  Margin="110,0,0,0" VerticalAlignment="Center" Width="100" Grid.Column="2" Click="PasteMaterialButton_Click" Height="28"/>
+        <Button x:Name="LoadRawButton" Content="Load" HorizontalAlignment="Right" Margin="0,0,10,0" VerticalAlignment="Center" Width="100" Grid.Column="1" Click="LoadRawButton_Click" Height="28" Grid.Row="1" ToolTip="{x:Static resx:UIStrings.LoadTooltip}"/>
+        <Button x:Name="SaveModpackButton" Content="Save Modpack" HorizontalAlignment="Left" Margin="0,0,10,0" VerticalAlignment="Center" Width="100" Grid.Column="2" Click="SaveModpack_Click" Height="28" Grid.Row="1" ToolTip="{x:Static resx:UIStrings.SaveAsModpackTooltip}"/>
+        <Button x:Name="SaveRawButton" Content="Save As" HorizontalAlignment="Left" Margin="110,0,0,0" VerticalAlignment="Center" Width="100" Grid.Column="2" Click="SaveRawButton_Click" Height="28" Grid.Row="1" ToolTip="{x:Static resx:UIStrings.SaveAsTooltip}"/>
 
-        <Button x:Name="SavePresetButton" Content="Save Preset" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Center" Width="100" Grid.Column="2" Click="SavePresetButton_Click" Height="28" Grid.Row="1"/>
-        <Button x:Name="LoadPresetButton" Content="Load Preset" HorizontalAlignment="Left" Margin="110,0,0,0" VerticalAlignment="Center" Width="100" Grid.Column="2" Click="LoadPresetButton_Click" Height="28" Grid.Row="1"/>
-        <Button x:Name="SaveModpackButton" Content="Save Modpack" HorizontalAlignment="Right" Margin="0,0,10,0" VerticalAlignment="Center" Width="100" Grid.Column="1" Click="SaveModpack_Click" Height="28" Grid.Row="1"/>
-
-        <Button x:Name="SaveRawButton" Content="Save Raw" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Center" Width="100" Grid.Column="2" Click="SaveRawButton_Click" Height="28" Grid.Row="2"/>
-        <Button x:Name="LoadRawButton" Content="Load Raw" HorizontalAlignment="Left" Margin="110,0,0,0" VerticalAlignment="Center" Width="100" Grid.Column="2" Click="LoadRawButton_Click" Height="28" Grid.Row="2"/>
+        <Button x:Name="SavePresetButton" Content="Save Preset" HorizontalAlignment="Left" Margin="110,0,0,0" VerticalAlignment="Center" Width="100" Grid.Column="2" Click="SavePresetButton_Click" Height="28" Grid.Row="0"/>
+        <Button x:Name="LoadPresetButton" Content="Load Preset" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Center" Width="100" Grid.Column="2" Click="LoadPresetButton_Click" Height="28" Grid.Row="0"/>
+        
 
 
 
@@ -92,10 +90,11 @@
         <Button x:Name="NewSharedButton" Content="Make Textures Shared" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center" Width="150" Height="28" Grid.Row="4" Click="NewSharedButton_Click"/>
         <Button x:Name="NewUniqueButton" Content="Make Textures Unique" HorizontalAlignment="Left" Margin="170,0,0,0" VerticalAlignment="Center" Width="150" Height="28" Grid.Row="4" Click="NewUniqueButton_Click"/>
 
-        <Button x:Name="SaveButton" Content="Save" Grid.Column="2" Margin="0,0,10,0" Grid.Row="6" FontSize="12" HorizontalAlignment="Right" Width="150" Height="30" VerticalAlignment="Center"/>
-        <Label x:Name="SaveStatusLabel" Content="" Grid.Column="1" HorizontalAlignment="Right" Margin="0,0,170,0" Grid.Row="6" VerticalAlignment="Center" Grid.ColumnSpan="2" Width="243" HorizontalContentAlignment="Right" FontStyle="Italic" Height="29"/>
+        <Label x:Name="SaveStatusLabel" Content="" Grid.Column="0" Grid.ColumnSpan="3" HorizontalAlignment="Right" Grid.Row="6" VerticalAlignment="Center" Width="243" HorizontalContentAlignment="Right" FontStyle="Italic" Height="29" Margin="0,0,334,0"/>
+        
+        <Button x:Name="SaveButton" Content="Save" Grid.Column="2" Margin="0,0,10,0" Grid.Row="6" FontSize="12" HorizontalAlignment="Right" Width="150" Height="30" VerticalAlignment="Center" ToolTip="{x:Static resx:UIStrings.SaveTooltip}"/>
         <Button x:Name="CancelButton" Content="Cancel" Margin="10,0,0,0" Grid.Row="6" FontSize="12" Click="CancelButton_Click" HorizontalAlignment="Left" Width="150" Height="30" VerticalAlignment="Center" Cursor="" RenderTransformOrigin="0.415,1.067"/>
-        <Button x:Name="DisableButton" Content="Disable/Delete" Margin="175,0,0,0" Grid.Row="6" FontSize="12" HorizontalAlignment="Left" Width="150" Height="30" VerticalAlignment="Center" Click="DisableButton_Click"/>
+        <Button x:Name="DisableButton" Content="Disable/Delete" Grid.Row="6" FontSize="12" HorizontalAlignment="Right" Grid.Column="1" Grid.ColumnSpan="2" Width="150" Height="30" VerticalAlignment="Center" Click="DisableButton_Click" Margin="0,0,170,0"  ToolTip="{x:Static resx:UIStrings.EnableDisableTooltip}"/>
 
 
         <ListBox x:Name="TexturesList" Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="3" Margin="10"

@@ -329,6 +329,7 @@ namespace FFXIV_TexTools.ViewModels
         {
             ClearAll();
 
+            _textureView.RefreshButton.IsEnabled = false;
             _root = item.GetRoot();
 
             if(_root == null)
@@ -819,6 +820,16 @@ namespace FFXIV_TexTools.ViewModels
             }
         }
 
+        public void Refresh()
+        {
+            ClearImage();
+            if (SelectedMap == null)
+            {
+                return;
+            }
+            UpdateImage();
+        }
+
         private void MapComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
             ClearImage();
@@ -1143,6 +1154,7 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         public async void UpdateImage()
         {
+            _textureView.RefreshButton.IsEnabled = true;
             ImageDisplay = null;
             ChannelsEnabled = true;
 

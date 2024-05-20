@@ -19,20 +19,27 @@
 
         <Grid Grid.Row="0">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="50"></ColumnDefinition>
+                <ColumnDefinition Width="40"></ColumnDefinition>
+                <ColumnDefinition Width="40"></ColumnDefinition>
                 <ColumnDefinition Width="1*"></ColumnDefinition>
                 <ColumnDefinition Width="100"></ColumnDefinition>
                 <ColumnDefinition Width="100"></ColumnDefinition>
                 <ColumnDefinition Width="100"></ColumnDefinition>
+                <ColumnDefinition Width="100"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <Button Grid.Column="0" x:Name="AffectedItemsButton" Margin="5" VerticalAlignment="Center" Click="AffectedItemsButton_Click">
+            <Button x:Name="RefreshButton" Margin="5" Grid.Column="0" IsEnabled="False" Click="RefreshButton_Click">
+                <iconPacks:Material Kind="Refresh" Height="12"/>
+            </Button>
+
+            <Button Grid.Column="1" x:Name="AffectedItemsButton" Margin="5" VerticalAlignment="Center" Click="AffectedItemsButton_Click">
                 <iconPacks:PackIconFontAwesome Kind="SearchSolid" Width="12" Height="12"/>
             </Button>
-            <TextBlock Grid.Column="1" x:Name="ItemNameBox" VerticalAlignment="Center" FontSize="16" Margin="10,0">[7] Bogarter's Gloves of Doing Cool Things</TextBlock>
+            <TextBlock Grid.Column="2" x:Name="ItemNameBox" VerticalAlignment="Center" FontSize="16" Margin="10,0">[7] Bogarter's Gloves of Doing Cool Things</TextBlock>
 
-            <Button Grid.Column="2" x:Name="SaveModpackButton" Margin="5" Width="90" VerticalAlignment="Center" Content="Save Modpack" Click="SaveModpack_Click" HorizontalAlignment="Right" ToolTip="{x:Static resx:UIStrings.SaveAsModpackTooltip}"></Button>
-            <Button Grid.Column="3" x:Name="ImportRawButton" Margin="5" VerticalAlignment="Center" Content="Save As" Click="ImportRaw_Click" ToolTip="{x:Static resx:UIStrings.SaveAsTooltip}"></Button>
-            <Button Grid.Column="4" x:Name="SaveButton" Margin="5" VerticalAlignment="Center" Content="Save" Click="SaveButton_Click" ToolTip="{x:Static resx:UIStrings.SaveTooltip}"></Button>
+            <Button Grid.Column="3" x:Name="ExportRawButton" Margin="5" VerticalAlignment="Center" Content="Load" Click="ExportRaw_Click" ToolTip="{x:Static resx:UIStrings.LoadTooltip}"></Button>
+            <Button Grid.Column="4" x:Name="SaveModpackButton" Margin="5" Width="90" VerticalAlignment="Center" Content="Save Modpack" Click="SaveModpack_Click" HorizontalAlignment="Right" ToolTip="{x:Static resx:UIStrings.SaveAsModpackTooltip}"></Button>
+            <Button Grid.Column="5" x:Name="ImportRawButton" Margin="5" VerticalAlignment="Center" Content="Save As" Click="Load_Click" ToolTip="{x:Static resx:UIStrings.SaveAsTooltip}"></Button>
+            <Button Grid.Column="6" x:Name="SaveButton" Margin="5" VerticalAlignment="Center" Content="Save" Click="SaveButton_Click" ToolTip="{x:Static resx:UIStrings.SaveTooltip}"></Button>
         </Grid>
         
         <Grid Grid.Row="1">
@@ -50,7 +57,8 @@
                 <ColumnDefinition Width="100"></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <Label Grid.Column="0" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" FontSize="16" VerticalAlignment="Center">Set:</Label>
-            <Button Grid.Column="8" x:Name="ToggleButton" Margin="5" VerticalAlignment="Center" Content="Disable" Click="ToggleButton_Click" ToolTip="{x:Static resx:UIStrings.EnableDisableTooltip}"></Button>
+            
+            <Button Grid.Column="9" x:Name="ToggleButton" Margin="5" VerticalAlignment="Center" Content="Disable" Click="ToggleButton_Click" ToolTip="{x:Static resx:UIStrings.EnableDisableTooltip}"></Button>
             <Label Grid.Column="1" x:Name="SetLabel" VerticalContentAlignment="Center" FontSize="16" VerticalAlignment="Center">e0504</Label>
 
 
@@ -65,7 +73,6 @@
             </Button>
 
 
-            <Button Grid.Column="9" x:Name="ExportRawButton" Margin="5" VerticalAlignment="Center" Content="Import" Click="ExportRaw_Click" ToolTip="{x:Static resx:UIStrings.ImportTooltip}"></Button>
         </Grid>
 
 

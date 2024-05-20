@@ -145,5 +145,10 @@ namespace FFXIV_TexTools.Views
         {
             SingleFileModpackCreator.ExportFile(textureViewModel.PathString, MainWindow.GetMainWindow(), MainWindow.DefaultTransaction);
         }
+
+        private void RefreshButton_Click(object sender, RoutedEventArgs e)
+        {
+            textureViewModel.Refresh();
+        }
     }
 }
