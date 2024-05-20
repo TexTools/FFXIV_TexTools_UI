@@ -151,7 +151,7 @@
                 <ColumnDefinition Width="48"/>
             </Grid.ColumnDefinitions>
 
-            <Grid IsEnabled="{Binding ExportEnabled, FallbackValue=false}" Margin="5">
+            <Grid IsEnabled="{Binding ExportEnabled, FallbackValue=false}" Margin="5"  x:Name="ExportGrid">
                 <Button x:Name="ExportTextureButton" Grid.Column="0" Click="ExportTextureButton_Click" Padding="0, 0, 32, 0">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="{Binding Source={x:Static resx:UIStrings.Export}}"/>
@@ -174,7 +174,7 @@
                 
             </Grid>
 
-            <Grid IsEnabled="{Binding ImportEnabled, FallbackValue=false}" Grid.Column="1" Margin="5">
+            <Grid IsEnabled="{Binding ImportEnabled, FallbackValue=false}" Grid.Column="1" Margin="5" x:Name="ImportGrid">
                 <Button x:Name="ImportTextureButton" Click="ImportTextureButton_Click">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="{Binding Source={x:Static resx:UIStrings.Import}}"/>

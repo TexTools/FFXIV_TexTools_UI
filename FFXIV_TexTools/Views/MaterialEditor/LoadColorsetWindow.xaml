@@ -6,8 +6,22 @@
         xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:local="clr-namespace:FFXIV_TexTools.Views.MaterialEditor"
         mc:Ignorable="d"
-        Title="LoadColorsetWindow" Height="450" Width="800">
+        Title="Load Colorset File..." Width="400" Height="160" ResizeMode="NoResize">
     <Grid>
-        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40"></RowDefinition>
+            <RowDefinition Height="40"></RowDefinition>
+            <RowDefinition Height="40"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <TextBox x:Name="PathBox" IsReadOnly="True" Grid.ColumnSpan="2" Margin="10,0,10,0" VerticalAlignment="Center"/>
+
+        <CheckBox x:Name="ColorsetImportBox" Grid.Row="1" IsEnabled="True" Content="Import Colorset" Margin="10,0,10,0" VerticalAlignment="Center"></CheckBox>
+        <CheckBox x:Name="DyeImportBox" IsEnabled="True"  Grid.Row="1" Grid.Column="1" Content="Import Dye Settings" Margin="10,0,10,0" VerticalAlignment="Center"></CheckBox>
+        <Button Grid.Row="3" Grid.Column="0" Content="Cancel" VerticalAlignment="Center" Margin="10,0,10,0" Click="Cancel_Click"/>
+        <Button Grid.Row="3" Grid.Column="2" Content="Import" VerticalAlignment="Center" Margin="10,0,10,0" Click="Import_Click"/>
     </Grid>
 </mah:MetroWindow>

@@ -27,6 +27,7 @@ using System.IO;
 using xivModdingFramework.Helpers;
 using FFXIV_TexTools.Properties;
 using System.Diagnostics;
+using FFXIV_TexTools.Views.MaterialEditor;
 
 namespace FFXIV_TexTools.Controls
 {
@@ -1267,23 +1268,45 @@ namespace FFXIV_TexTools.Controls
 
         private async void Load_Click(object sender, RoutedEventArgs e)
         {
-            var ofd = new System.Windows.Forms.OpenFileDialog();
-            ofd.Filter = "DDS Files (*.DDS)|*.dds";
-            ofd.FileName = GetDefaultSaveName();
-            ofd.InitialDirectory = GetDefaultSaveDirectory();
-            var res = ofd.ShowDialog();
-            if (res != System.Windows.Forms.DialogResult.OK)
-            {
-                return;
-            }
-            var path = ofd.FileName;
-
-            var datPath = Path.Combine(Path.GetDirectoryName(path), Path.GetFileNameWithoutExtension(path) + ".dat");
-
             var mw = MainWindow.GetMainWindow();
-            var item = mw.GetSelectedItem();
-            await Tex.ImportColorsetTexture(Material.MTRLPath, path, false, true, true, item, XivStrings.TexTools, MainWindow.UserTransaction);
+            await mw.LockUi();
+            try
+            {
+                var ofd = new System.Windows.Forms.OpenFileDialog();
+                ofd.Filter = "DDS Files (*.DDS)|*.dat;*.dds";
+                ofd.FileName = GetDefaultSaveName();
+                ofd.InitialDirectory = GetDefaultSaveDirectory();
+                var res = ofd.ShowDialog();
+                if (res != System.Windows.Forms.DialogResult.OK)
+                {
+                    return;
+                }
+                var path = ofd.FileName;
+                path.Replace(".dat", ".dds");
 
+                var cres = LoadColorsetWindow.ShowImport(path);
+                if (cres.ImportDye == null && cres.ImportColorset == null)
+                {
+                    return;
+                }
+                cres.ImportColorset = cres.ImportColorset == true;
+                cres.ImportDye = cres.ImportDye == true;
+
+                var datPath = Path.Combine(Path.GetDirectoryName(path), Path.GetFileNameWithoutExtension(path) + ".dat");
+
+                var item = mw.GetSelectedItem();
+                await Tex.ImportColorsetTexture(Material.MTRLPath, path, false, cres.ImportColorset.Value, cres.ImportDye.Value, item, XivStrings.TexTools, MainWindow.UserTransaction);
+
+                var mtrl = await Mtrl.GetXivMtrl(Material.MTRLPath, false, MainWindow.UserTransaction);
+
+                // Reload the UI.
+                MaterialSaved.Invoke(this, null);
+                await mw.UnlockUi();
+            }
+            catch
+            {
+                await mw.UnlockUi();
+            }
         }
 
         private void SaveAsModpack_Click(object sender, RoutedEventArgs e)

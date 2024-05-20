@@ -1188,6 +1188,10 @@ namespace FFXIV_TexTools.ViewModels
                     TextureFormat = texData.TextureFormat.GetTexDisplayName();
                     TextureDimensions = $"{texData.Height} x {texData.Width}";
                     MipMapInfo = texData.MipMapCount != 0 ? $"Yes ({texData.MipMapCount})" : "No";
+                    ExportEnabled = true;
+                    ImportEnabled = true;
+                    _textureView.ExportGrid.Visibility = Visibility.Visible;
+                    _textureView.ImportGrid.Visibility = Visibility.Visible;
                 }
                 else
                 {
@@ -1198,6 +1202,10 @@ namespace FFXIV_TexTools.ViewModels
 
                     _textureView.ColorsetEditor.Visibility = Visibility.Visible;
                     _textureView.StandardTextureDisplay.Visibility = Visibility.Collapsed;
+                    ExportEnabled = false;
+                    ImportEnabled = false;
+                    _textureView.ExportGrid.Visibility = Visibility.Collapsed;
+                    _textureView.ImportGrid.Visibility = Visibility.Collapsed;
                 }
 
                 var tx = MainWindow.DefaultTransaction;
@@ -1232,8 +1240,6 @@ namespace FFXIV_TexTools.ViewModels
                     ModToggleText = UIStrings.Enable;
                 }
 
-                ExportEnabled = true;
-                ImportEnabled = true;
                 MoreOptionsEnabled = true;
 
                 if (_item != null)
