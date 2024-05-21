@@ -316,6 +316,7 @@ namespace FFXIV_TexTools.Views.Controls
                 ModState = await Modding.GetModState(InternalFilePath, tx);
                 success = await INTERNAL_LoadFile(data);
 
+                UnsavedChanges = false;
                 return success;
             }
             catch (Exception ex)
@@ -324,6 +325,7 @@ namespace FFXIV_TexTools.Views.Controls
                 InternalFilePath = "";
                 ExternalFilePath = "";
                 ModState = EModState.UnModded;
+                UnsavedChanges = false;
                 return success;
             }
             finally
