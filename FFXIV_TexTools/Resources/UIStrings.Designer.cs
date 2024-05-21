@@ -3906,6 +3906,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to SAVE.
+        /// </summary>
+        public static string SaveCaps {
+            get {
+                return ResourceManager.GetString("SaveCaps", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Save the current editor state to the game files/transaction.
         /// </summary>
         public static string SaveTooltip {

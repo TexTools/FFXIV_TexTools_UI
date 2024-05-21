@@ -1756,7 +1756,7 @@ namespace FFXIV_TexTools
 
         private async void FileViewerButton_Click(object sender, RoutedEventArgs e)
         {
-            var success = await SimpleFileViewWindow.OpenFile("chara/equipment/e0755/texture/v01_c0101e0755_top_n.tex");
+            var success = await SimpleFileViewWindow.OpenFile("chara/equipment/e0755/model/c0101e0755_top.mdl");
         }
     }
 }

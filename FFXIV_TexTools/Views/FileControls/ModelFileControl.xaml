@@ -4,9 +4,72 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:FFXIV_TexTools.Views.Controls"
+             xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
+             xmlns:views="clr-namespace:FFXIV_TexTools.Views"
+             xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls" 
              mc:Ignorable="d" 
+             xmlns:hx="http://helix-toolkit.org/wpf/SharpDX"
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
+        <Grid>
+            <hx:Viewport3DX
+                x:Name="Viewport"
+                Camera="{Binding Camera}"
+                CoordinateSystemLabelForeground="White"
+                TextBrush="Black"
+                UseDefaultGestures="False"
+                BackgroundColor="{Binding BackgroundColor}"
+                EffectsManager="{Binding EffectsManager}"
+                ShowTriangleCountInfo="True" FXAALevel="Medium" MSAA="Two" ZoomExtentsWhenLoaded="True" 
+                OITRenderMode="DepthPeeling" OITWeightMode="Linear0" ZoomDistanceLimitNear="0.0001">
+                <hx:Viewport3DX.InputBindings>
+                    <KeyBinding Key="B" Command="hx:ViewportCommands.BackView" />
+                    <KeyBinding Key="F" Command="hx:ViewportCommands.FrontView" />
+                    <KeyBinding Key="U" Command="hx:ViewportCommands.TopView" />
+                    <KeyBinding Key="D" Command="hx:ViewportCommands.BottomView" />
+                    <KeyBinding Key="L" Command="hx:ViewportCommands.LeftView" />
+                    <KeyBinding Key="R" Command="hx:ViewportCommands.RightView" />
+                    <KeyBinding Command="hx:ViewportCommands.ZoomExtents" Gesture="Control+E" />
+                    <KeyBinding Command="hx:ViewportCommands.Reset" Gesture="Control+R"/>
+                    <MouseBinding Command="hx:ViewportCommands.Rotate" Gesture="RightClick" />
+                    <MouseBinding Command="hx:ViewportCommands.Zoom" Gesture="MiddleClick" />
+                    <MouseBinding Command="hx:ViewportCommands.Pan" Gesture="LeftClick" />
+                </hx:Viewport3DX.InputBindings>
+                <hx:DirectionalLight3D
+                    Direction="{Binding Light1Direction}"
+                    Color="White"/>
+                <hx:DirectionalLight3D
+                    Direction="{Binding Light2Direction}"
+                    Color="White" />
+                <hx:DirectionalLight3D
+                    Direction="{Binding Light3Direction}"                 
+                    IsRendering="{Binding RenderLight3}"
+                    Color="White" />
+                <hx:GroupModel3D ItemsSource="{Binding Models}"/>
+            </hx:Viewport3DX>
+            <Canvas Name="AlternateViewportCanvas" Visibility="Hidden" IsHitTestVisible="False"/>
             
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="5,5,5,80">
+                <Button x:Name="HighlightColorsetButton" Content="Highlight Colorset Row"  Visibility="{Binding ColorsetVisibility, FallbackValue=Hidden}" Click="HighlightColorsetButton_Click" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="5,5,5,40">
+                <Button x:Name="OpenShapesMenu" Content="Apply Deformation Shapes" Click="OpenShapesMenu_Click"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="5">
+                <Button x:Name="ViewerOptionsButton" Content="{Binding Source={x:Static resx:UIStrings.Viewer_Options}}" Click="ToggleFlyout"/>
+                <CheckBox Margin="5,0" Content="{Binding Source={x:Static resx:UIStrings.Keep_Camera_Position}}" IsChecked="{Binding KeepCameraChecked}"/>
+
+                <Button x:Name="FullModelViewerButton" Content="Add To FMV" Visibility="{Binding FMVVisibility, FallbackValue=Hidden}" IsEnabled="{Binding FMVEnabled}" Margin="5,0" Click="FullModel_Click" />
+            </StackPanel>
+            
+            <Label x:Name="ViewportDisclaimer" VerticalAlignment="Top" HorizontalAlignment="Center" Content="{Binding Source={x:Static resx:UIStrings.Viewport_Disclaimer}}" Foreground="#FF151515" FontSize="10"/>
+            <Label VerticalAlignment="Bottom" HorizontalAlignment="Center" Content="{Binding ModelStatusLabel}" Foreground="#FF151515" FontSize="18"/>
+
+            <mah:FlyoutsControl Grid.Row="0" Grid.RowSpan="2" HorizontalAlignment="Right">
+                <mah:Flyout x:Name="ViewerOptionsFlyout" Header="Viewer Options" Position="Right" Width="250" IsOpen="{Binding FlyoutOpen}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
+                    <views:ModelViewerOptionsView/>
+                </mah:Flyout>
+            </mah:FlyoutsControl>
+        </Grid>
     </Grid>
 </local:FileViewControl>

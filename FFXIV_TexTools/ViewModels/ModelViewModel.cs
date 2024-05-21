@@ -1642,26 +1642,24 @@ namespace FFXIV_TexTools.ViewModels
             // Check if the user imported files for this race before to potentially auto-fill the path for them
             bool pathFound = _lastFileImportPathDictionary.TryGetValue(SelectedRace.XivRace, out string previousImportPath);
 
-            (bool success, string importedFilePath) = await ImportModelView.ImportModel(
-                _item, SelectedRace.XivRace, submeshId, 
-                lastImportFilePath: pathFound ? previousImportPath : null,
-                onComplete: () =>
-                {
-                    _view.Dispatcher.BeginInvoke((ThreadStart)delegate ()
-                    {
-                        // Go ahead and reload the model as soon as the import process is done, even if they haven't closed the window.
-                        ModStatusToggleEnabled = true;
-                        GetMeshes();
-                    });
-                }
+            var result = await ImportModelView.ImportModel(
+                _item, SelectedRace.XivRace, submeshId, false, null, MainWindow.GetMainWindow()
             );
 
-            if (success)
+
+            if (result.Success)
             {
                 // Add the file path to the dictionary to auto-fill for easy repeated imports
-                _lastFileImportPathDictionary[SelectedRace.XivRace] = importedFilePath;
+                _lastFileImportPathDictionary[SelectedRace.XivRace] = result.Path;
+
+                // Reload model.
+                ModStatusToggleEnabled = true;
+                GetMeshes();
             }
+
+
         }
+
         #endregion
 
         #region Text

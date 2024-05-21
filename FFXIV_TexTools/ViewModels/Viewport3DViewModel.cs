@@ -268,8 +268,11 @@ namespace FFXIV_TexTools.ViewModels
                 Light2Direction = new Vector3D(_light2X, _light2Y, _light2Z);
             }
 
-            _modelViewModel.ResetLightValues();
-            _modelViewModel.FlyoutOpen = false;
+            if (_modelViewModel != null)
+            {
+                _modelViewModel.ResetLightValues();
+                _modelViewModel.FlyoutOpen = false;
+            }
         }
 
         #region Properties

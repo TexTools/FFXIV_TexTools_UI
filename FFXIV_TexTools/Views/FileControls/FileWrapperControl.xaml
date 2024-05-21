@@ -43,8 +43,9 @@
                 <ColumnDefinition></ColumnDefinition>
                 <ColumnDefinition></ColumnDefinition>
                 <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition Width="40"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <Button Margin="5" Grid.Column="0" x:Name="EnableDisableButton" Content="{Binding Source={x:Static resx:UIStrings.Enable}}" Click="EnableDisable_Click" ToolTip="{Binding Source={x:Static resx:UIStrings.EnableDisableTooltip}}"/>
+            <Button Margin="5" Grid.Column="0" x:Name="EnableDisableButton" Content="{Binding Path=EnableDisableText}" Click="EnableDisable_Click" ToolTip="{Binding Source={x:Static resx:UIStrings.EnableDisableTooltip}}" IsEnabled="{Binding Path=EnableDisableEnabled}"/>
             <Button Margin="5" Grid.Column="1" x:Name="LoadButton" Content="{Binding Source={x:Static resx:UIStrings.Load}}" Click="Load_Click" ToolTip="{Binding Source={x:Static resx:UIStrings.LoadTooltip}}"/>
 
 
@@ -67,7 +68,21 @@
             </Grid>
 
 
-            <Button Margin="5" Grid.Column="3" x:Name="SaveButton" Content="{Binding Source={x:Static resx:UIStrings.Save}}" ToolTip="{Binding Source={x:Static resx:UIStrings.SaveTooltip}}" Click="Save_Click"/>
+            <Button Margin="5" Grid.Column="3" x:Name="SaveButton" ToolTip="{Binding Path=SaveTooltip}" Click="Save_Click">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition></ColumnDefinition>
+                        <ColumnDefinition></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Text="{Binding Source={x:Static resx:UIStrings.SaveCaps}}" HorizontalAlignment="Right" Grid.Column="0"/>
+                    <TextBlock Text="{Binding Path=UnsavedChangesText}" FontWeight="Bold" Foreground="#FFC80000" HorizontalAlignment="Left" Grid.Column="1"/>
+                </Grid>
+            </Button>
+
+            <Button x:Name="OpenFolderButton" Margin="5" Grid.Column="5" IsEnabled="True" Click="OpenFolder_Click">
+                <iconPacks:PackIconFontAwesome Kind="FolderOpenRegular" Height="12"/>
+            </Button>
         </Grid>
 
     </Grid>

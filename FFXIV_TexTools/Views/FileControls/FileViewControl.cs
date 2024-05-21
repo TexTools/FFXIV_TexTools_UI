@@ -18,6 +18,7 @@ using xivModdingFramework.Cache;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Items.Interfaces;
 using xivModdingFramework.Mods;
+using xivModdingFramework.Mods.Enums;
 using xivModdingFramework.SqPack.FileTypes;
 
 namespace FFXIV_TexTools.Views.Controls
@@ -29,7 +30,7 @@ namespace FFXIV_TexTools.Views.Controls
         Editor
     };
 
-    public abstract class FileViewControl : System.Windows.Controls.UserControl, INotifyPropertyChanged
+    public abstract class FileViewControl : System.Windows.Controls.UserControl, INotifyPropertyChanged, IDisposable
     {
         private EFileViewType _ViewType;
         public EFileViewType ViewType { get
@@ -40,6 +41,28 @@ namespace FFXIV_TexTools.Views.Controls
             {
                 _ViewType = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ViewType)));
+            }
+        }
+
+        private bool _UnsavedChanges;
+        public bool UnsavedChanges
+        {
+            get => _UnsavedChanges;
+            protected set
+            {
+                _UnsavedChanges = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(UnsavedChanges)));
+            }
+        }
+
+        private EModState _ModState;
+        public EModState ModState
+        {
+            get => _ModState;
+            protected set
+            {
+                _ModState = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ModState)));
             }
         }
 
@@ -113,6 +136,8 @@ namespace FFXIV_TexTools.Views.Controls
         }
 
         private bool _IS_SAVING;
+        private bool _Disposed;
+
         private async void ModTransaction_FileChanged(string internalFilePath)
         {
             if (_IS_SAVING || string.IsNullOrWhiteSpace(internalFilePath) || string.IsNullOrWhiteSpace(InternalFilePath))
@@ -282,13 +307,15 @@ namespace FFXIV_TexTools.Views.Controls
                 }
 
 
-
-
                 var tx = MainWindow.DefaultTransaction;
+
+
                 var data = await tx.ReadFile(internalFile, forceOriginal);
                 InternalFilePath = internalFile;
                 ExternalFilePath = "";
+                ModState = await Modding.GetModState(InternalFilePath, tx);
                 success = await INTERNAL_LoadFile(data);
+
                 return success;
             }
             catch (Exception ex)
@@ -296,6 +323,7 @@ namespace FFXIV_TexTools.Views.Controls
                 this.ShowError("File Load Error", "There was an error loading the file:\n\n" + ex.Message);
                 InternalFilePath = "";
                 ExternalFilePath = "";
+                ModState = EModState.UnModded;
                 return success;
             }
             finally
@@ -342,16 +370,21 @@ namespace FFXIV_TexTools.Views.Controls
                     var root = await XivCache.GetFirstRoot(internalFile);
                     if (root != null)
                     {
-                        ReferenceItem = root.GetFirstItem();
+                        referenceItem = root.GetFirstItem();
                     }
                 }
 
                 ReferenceItem = referenceItem;
-
                 ExternalFilePath = externalFile;
 
-                var data = await INTERNAL_CreateUncompressedFile(externalFile, internalFile);
+                var data = await INTERNAL_CreateUncompressedFile(externalFile, internalFile, ReferenceItem);
+                if(data == null || data.Length == 0)
+                {
+                    return false;
+                }
+
                 success = await INTERNAL_LoadFile(data);
+                UnsavedChanges = true;
                 return success;
             } catch (Exception ex)
             {
@@ -364,7 +397,7 @@ namespace FFXIV_TexTools.Views.Controls
                 FileLoaded?.Invoke(this,success);
             }
         }
-        protected virtual async Task<byte[]> INTERNAL_CreateUncompressedFile(string externalFile, string internalFile)
+        protected virtual async Task<byte[]> INTERNAL_CreateUncompressedFile(string externalFile, string internalFile, IItem referenceItem)
         {
             return await SmartImport.CreateUncompressedFile(externalFile, internalFile, MainWindow.DefaultTransaction);
         }
@@ -447,6 +480,7 @@ namespace FFXIV_TexTools.Views.Controls
                 var data = await GetCompressedData();
                 await Dat.WriteModFile(data, InternalFilePath, XivStrings.TexTools, ReferenceItem, tx);
                 success = true;
+                ModState = EModState.Enabled;
                 return success;
             }
             catch(Exception ex)
@@ -461,7 +495,7 @@ namespace FFXIV_TexTools.Views.Controls
         }
 
 
-        protected KeyValuePair<string, string> GetDefaultExtension()
+        protected virtual KeyValuePair<string, string> GetDefaultExtension()
         {
             var extensions = GetValidFileExtensions();
             if(extensions == null || extensions.Count == 0)
@@ -470,14 +504,14 @@ namespace FFXIV_TexTools.Views.Controls
             }
             return extensions.First();
         }
-        protected string GetDefaultSaveDirectory()
+        public virtual string GetDefaultSaveDirectory()
         {
             var mw = MainWindow.GetMainWindow();
             var path = Path.GetFullPath(IOUtil.MakeItemSavePath(ReferenceItem, new DirectoryInfo(Settings.Default.Save_Directory), IOUtil.GetRaceFromPath(InternalFilePath)));
             Directory.CreateDirectory(path);
             return path;
         }
-        protected string GetDefaultSaveName(string extension = null)
+        public virtual string GetDefaultSaveName(string extension = null)
         {
             var name = Path.GetFileNameWithoutExtension(InternalFilePath);
 
@@ -695,6 +729,38 @@ namespace FFXIV_TexTools.Views.Controls
                 this.ShowError("Save Error", "An Error occured while saving the file:\n\n" + ex.Message);
                 return false;
             }
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_Disposed)
+            {
+                if (disposing)
+                {
+                    
+                }
+
+                FreeUnmanaged();
+                _Disposed = true;
+            }
+        }
+
+        protected virtual void FreeUnmanaged()
+        {
+
+        }
+
+        ~FileViewControl()
+        {
+             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+             Dispose(disposing: false);
+        }
+
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }

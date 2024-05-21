@@ -37,6 +37,7 @@ using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using TeximpNet.DDS;
 using xivModdingFramework.Cache;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Helpers;
@@ -919,14 +920,12 @@ namespace FFXIV_TexTools.Views
             var itemModel = (IItemModel) SelectedItem;
             try
             {
-                // TODO - Include Submesh ID ?
-                // Do we even have any kind of UI To specify this in the wizard?
-                // Submeshes are only used for Furniture anyways, so it might be a 'will not fix'
-                (bool success, string _) = await ImportModelView.ImportModel(itemModel, IOUtil.GetRaceFromPath(selectedFile.Path), null, this, null, true);
-                if (!success)
+                var result = await ImportModelView.ImportModel(selectedFile.Path, itemModel, true, null, Window.GetWindow(this));
+                if (!result.Success)
                 {
                     return;
                 }
+                await AddFile(selectedFile, SelectedItem, result.Data);
             }
             catch (Exception ex)
             {
@@ -935,8 +934,6 @@ namespace FFXIV_TexTools.Views
                 return;
             }
 
-            var mdlData = ImportModelView.GetData();
-            AddFile(selectedFile, SelectedItem, mdlData);
         }
 
         /// <summary>

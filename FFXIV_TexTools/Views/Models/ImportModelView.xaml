@@ -51,7 +51,7 @@
         <UniformGrid Margin="10,5,10,5" Columns="3" Grid.Row="2">
             <Button x:Name="CancelButton" Content="Cancel" Margin="0,0,10,0" Click="CancelButton_Click"  />
             <Button x:Name="EditButton" Content="Open Editor" Margin="0" />
-            <Button x:Name="ImportButton" Content="Import" Margin="10,0,0,0" />
+            <Button x:Name="ImportButton" Content="Load" Margin="10,0,0,0" />
         </UniformGrid>
         <RichTextBox x:Name="LogTextBox" Block.LineHeight="2" Height="418"  Grid.Row="3" Margin="8,0,8,0" VerticalAlignment="Top" Background="#FFE2E2E2" Foreground="Black" FontFamily="Courier New" VerticalScrollBarVisibility="Visible" Padding="5" IsUndoEnabled="True" IsReadOnly="True" mah:TextBoxHelper.WatermarkWrapping="Wrap"/>
     </Grid>

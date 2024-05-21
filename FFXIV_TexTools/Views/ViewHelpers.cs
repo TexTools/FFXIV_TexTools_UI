@@ -1,4 +1,5 @@
 ﻿using FFXIV_TexTools.Helpers;
+using FFXIV_TexTools.Properties;
 using FFXIV_TexTools.Resources;
 using FolderSelect;
 using MahApps.Metro.Controls.Dialogs;
@@ -13,6 +14,7 @@ using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Interop;
 using System.Windows.Threading;
+using xivModdingFramework.General.Enums;
 using xivModdingFramework.Mods.FileTypes;
 using UserControl = System.Windows.Controls.UserControl;
 
@@ -129,5 +131,58 @@ namespace FFXIV_TexTools.Views
             }
             return settings;
         }
+
+
+        /// <summary>
+        /// Gets the race from the settings
+        /// </summary>
+        /// <param name="gender">The gender of the currently selected race</param>
+        /// <returns>A tuple containing the race and body</returns>
+        public static (XivRace Race, string BodyID) GetUserRace(int gender)
+        {
+            var settingsRace = Settings.Default.Default_Race;
+            var defaultBody = "0001";
+
+            if (settingsRace.Equals(XivStringRaces.Hyur_M))
+            {
+                if (gender == 0)
+                {
+                    return (XivRaces.GetXivRace("0101"), defaultBody);
+                }
+            }
+
+            if (settingsRace.Equals(XivStringRaces.Hyur_H))
+            {
+                if (gender == 0)
+                {
+                    return (XivRaces.GetXivRace("0301"), defaultBody);
+                }
+
+                return (XivRaces.GetXivRace("0401"), defaultBody);
+            }
+
+            if (settingsRace.Equals(XivStringRaces.Aura_R))
+            {
+                if (gender == 0)
+                {
+                    return (XivRaces.GetXivRace("1301"), defaultBody);
+                }
+
+                return (XivRaces.GetXivRace("1401"), defaultBody);
+            }
+
+            if (settingsRace.Equals(XivStringRaces.Aura_X))
+            {
+                if (gender == 0)
+                {
+                    return (XivRaces.GetXivRace("1301"), "0101");
+                }
+
+                return (XivRaces.GetXivRace("1401"), "0101");
+            }
+
+            return (XivRaces.GetXivRace("0201"), defaultBody);
+        }
+
     }
 }

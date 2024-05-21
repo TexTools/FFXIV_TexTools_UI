@@ -1,7 +1,11 @@
 ﻿using FFXIV_TexTools.Resources;
 using MahApps.Metro.Controls;
+using MahApps.Metro.Controls.Dialogs;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,20 +26,84 @@ namespace FFXIV_TexTools.Views.Controls
     /// <summary>
     /// Interaction logic for FileWrapperControl.xaml
     /// </summary>
-    public partial class FileWrapperControl : UserControl
+    public partial class FileWrapperControl : UserControl, INotifyPropertyChanged
     {
         public FileViewControl FileControl { get; private set; }
         public string FilePath { get; private set; } = "";
 
+        public string EnableDisableText
+        {
+            get
+            {
+                if(FileControl == null)
+                {
+                    return UIStrings.Enable;
+                }
+                return FileControl.ModState == EModState.Enabled ? UIStrings.Disable : UIStrings.Enable;
+            }
+        }
+        public bool EnableDisableEnabled
+        {
+            get
+            {
+                if (FileControl == null)
+                {
+                    return false;
+                }
+                if(FileControl.ModState == EModState.UnModded)
+                {
+                    return false;
+                }
+                return true;
+            }
+        }
+
+        public string UnsavedChangesText
+        {
+            get
+            {
+                if(FileControl == null)
+                {
+                    return "";
+                }
+                
+                if(!FileControl.UnsavedChanges)
+                {
+                    return "";
+                }
+
+                return "(!)";
+            }
+        }
+        public string SaveTooltip
+        {
+            get
+            {
+                if (FileControl == null)
+                {
+                    return UIStrings.SaveTooltip;
+                }
+
+                if (!FileControl.UnsavedChanges)
+                {
+                    return UIStrings.SaveTooltip;
+                }
+
+                return UIStrings.SaveTooltip + "\n(You currently have unsaved changes!)";
+            }
+        }
+
         public FileWrapperControl()
         {
+            DataContext = this;
             InitializeComponent();
 
             LoadButton.IsEnabled = false;
             SaveAsGrid.IsEnabled = false;
             SaveButton.IsEnabled = false;
-            EnableDisableButton.IsEnabled = false;
         }
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         public static FileViewControl GetControlForFile(string file)
         {
@@ -44,6 +112,12 @@ namespace FFXIV_TexTools.Views.Controls
             {
                 return texHandler;
             }
+            var mdlHandler = new ModelFileControl();
+            if (mdlHandler.CanLoadFile(file))
+            {
+                return mdlHandler;
+            }
+
 
             return null;
         }
@@ -51,45 +125,80 @@ namespace FFXIV_TexTools.Views.Controls
 
         public async Task<bool> LoadExternalFile(string externalFilePath, string internalFilePath)
         {
-            FilePathBox.Text = "Loading File...";
-            FilePath = internalFilePath;
-            var control = GetControlForFile(externalFilePath);
-            if (control == null)
+            try
+            {
+                FilePathBox.Text = "Loading File...";
+                FilePath = internalFilePath;
+                var control = GetControlForFile(externalFilePath);
+                if (control == null)
+                {
+                    return false;
+                }
+                FileControl = control;
+                FileControlEntry.Children.Add(FileControl);
+                FileControl.PropertyChanged += FileControl_PropertyChanged;
+
+
+                await FileControl.LoadExternalFile(externalFilePath, internalFilePath);
+                await SetupUi();
+                return true;
+            }
+            catch
             {
                 return false;
             }
-            FileControl = control;
-            FileControlEntry.Children.Add(FileControl);
-
-            await FileControl.LoadExternalFile(externalFilePath, internalFilePath);
-            SetupUi();
-            return true;
         }
+
+
         public async Task<bool> LoadInternalFile(string internalFilePath)
         {
-            FilePathBox.Text = "Loading File...";
-            FilePath = internalFilePath;
-
-            if(FileControl != null)
+            try
             {
-                FileControlEntry.Children.Remove(FileControl);
-                FileControl = null;
-            }
+                FilePathBox.Text = "Loading File...";
+                FilePath = internalFilePath;
 
-            var control = GetControlForFile(internalFilePath);
-            if (control == null)
-            {
+                if (FileControl != null)
+                {
+                    FileControlEntry.Children.Remove(FileControl);
+                    FileControl = null;
+                }
+
+                var control = GetControlForFile(internalFilePath);
+                if (control == null)
+                {
+                    await SetupUi();
+                    return false;
+                }
+
+                FileControl = control;
+                FileControlEntry.Children.Add(FileControl);
+                FileControl.PropertyChanged += FileControl_PropertyChanged;
+
+
+
+                await FileControl.LoadInternalFile(internalFilePath);
                 await SetupUi();
+                return true;
+            }
+            catch
+            {
                 return false;
             }
+        }
+        private void FileControl_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(FileControl.UnsavedChanges))
+            {
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(UnsavedChangesText)));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SaveTooltip)));
+            }
 
-
-            FileControl = control;
-            FileControlEntry.Children.Add(FileControl);
-
-            await FileControl.LoadInternalFile(internalFilePath);
-            await SetupUi();
-            return true;
+            if(e.PropertyName == nameof(FileControl.ModState))
+            {
+                // Do thing
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(EnableDisableEnabled)));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(EnableDisableText)));
+            }
         }
 
         public async Task ClearFile()
@@ -113,23 +222,7 @@ namespace FFXIV_TexTools.Views.Controls
                 LoadButton.IsEnabled = false;
                 SaveAsGrid.IsEnabled = false;
                 SaveButton.IsEnabled = false;
-                EnableDisableButton.IsEnabled = false;
                 return;
-            }
-
-            var tx = MainWindow.DefaultTransaction;
-            var mod = await tx.GetMod(FilePath);
-            if (mod != null)
-            {
-                var state = await mod.Value.GetState(tx);
-
-                EnableDisableButton.Content = state == xivModdingFramework.Mods.Enums.EModState.Enabled ? UIStrings.Disable : UIStrings.Enable;
-                EnableDisableButton.IsEnabled = true;
-            }
-            else
-            {
-                EnableDisableButton.Content = UIStrings.Enable;
-                EnableDisableButton.IsEnabled = false;
             }
 
             FilePathBox.Text = FilePath;
@@ -146,6 +239,14 @@ namespace FFXIV_TexTools.Views.Controls
                 };
                 SaveAsContextMenu.Items.Add(mi);
             }
+
+            var mpItem = new MenuItem();
+            mpItem.Header = "Modpack";
+            mpItem.Click += (object sender, RoutedEventArgs e) =>
+            {
+                SaveAsModpack();
+            };
+            SaveAsContextMenu.Items.Add(mpItem);
 
             LoadButton.IsEnabled = true;
             SaveAsGrid.IsEnabled = true;
@@ -215,6 +316,11 @@ namespace FFXIV_TexTools.Views.Controls
 
         private async void Save_Click(object sender, RoutedEventArgs e)
         {
+            SaveFile();
+        }
+
+        private async Task SaveFile(ModTransaction tx = null)
+        {
             if (FileControl == null)
             {
                 return;
@@ -224,7 +330,13 @@ namespace FFXIV_TexTools.Views.Controls
             {
                 return;
             }
-            await FileControl.SaveCurrentFile(MainWindow.UserTransaction);
+
+            if(tx == null)
+            {
+                tx = MainWindow.UserTransaction;
+            }
+
+            await FileControl.SaveCurrentFile(tx);
         }
 
         private void SaveAsDropdown_Click(object sender, RoutedEventArgs e)
@@ -249,6 +361,68 @@ namespace FFXIV_TexTools.Views.Controls
                 return;
             }
             await FileControl.ReloadFile();
+        }
+
+        private async void SaveAsModpack()
+        {
+            var wind = ((MetroWindow)Window.GetWindow(this));
+            var controller = await wind.ShowProgressAsync("Exporting Modpack...", "Please wait...");
+            try
+            {
+                var tx = MainWindow.UserTransaction;
+                var ownTx = false;
+                TxFileState state = null;
+                if (tx == null)
+                {
+                    ownTx = true;
+                    tx = ModTransaction.BeginTransaction(true);
+                }
+                else
+                {
+                    state = await tx.SaveFileState(FilePath);
+                }
+                try
+                {
+                    // Due to the nature of the single file modpack exporter, we need to temp save the file here.
+                    await SaveFile(tx);
+
+                    SingleFileModpackCreator.ExportFile(FilePath, Window.GetWindow(this), tx);
+                }
+                finally
+                {
+                    // Cancel or rollback after as needed.
+                    if (ownTx)
+                    {
+                        ModTransaction.CancelTransaction(tx, true);
+                    }
+                    else
+                    {
+                        await tx.RestoreFileState(state);
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+                this.ShowError("Modpack Export Error", "An error occured while trying to export the file:\n\n" + ex.Message);
+            }
+            finally
+            {
+                await controller.CloseAsync();
+            }
+
+        }
+
+        private void OpenFolder_Click(object sender, RoutedEventArgs e)
+        {
+            if(FileControl == null)
+            {
+                return;
+            }
+
+            var dir = FileControl.GetDefaultSaveDirectory();
+            Directory.CreateDirectory(dir);
+
+            Process.Start(dir);
         }
     }
 }

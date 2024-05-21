@@ -31,31 +31,19 @@ namespace FFXIV_TexTools.ViewModels
         private const double CloseDelay = 3000f;
 
         private ImportModelView _view;
-        private IItemModel _item;
-        private XivRace _race;
+        private IItem _item;
         private List<string> _importers;
         private bool _dataOnly;
         private string _internalPath;
-        private string _submeshId;
         private System.Timers.Timer _closeTimer;
         private bool _anyWarnings = false;
-        private string _lastImportFilePath;
+        private string _startingFilePath;
 
 
         private bool _success = false;
-        private Action _onComplete;
-        public bool Success
-        {
-            get
-            {
-                return _success;
-            }
-        }
+        private Action<ModelImportResult> _onComplete;
 
-        private async Task AssignPath() {
-            var result = await Mdl.GetMdlPath(_item, _race, _submeshId, MainWindow.DefaultTransaction);
-            _internalPath = result;
-        }
+        ModelImportResult _result;
 
 
 
@@ -67,22 +55,23 @@ namespace FFXIV_TexTools.ViewModels
             _view.RaceComboBox.DisplayMemberPath = "Value";
 
             _view.RaceComboBox.IsEnabled = false;
+            var race = IOUtil.GetRaceFromPath(_internalPath);
 
-            if (_race == XivRace.All_Races)
+            if (race == XivRace.All_Races)
             {
                 _view.OverrideRaceButton.IsEnabled = false;
                 var kv = new KeyValuePair<XivRace, string>(XivRace.All_Races, "--");
                 _view.RaceComboBox.Items.Add(kv);
             } else
             {
-                foreach (var race in races)
+                foreach (var r in races)
                 {
-                    var kv = new KeyValuePair<XivRace, string>(race, XivRaces.GetDisplayName(race));
+                    var kv = new KeyValuePair<XivRace, string>(r, XivRaces.GetDisplayName(r));
                     _view.RaceComboBox.Items.Add(kv);
                 }
             }
 
-            _view.RaceComboBox.SelectedValue = _race;
+            _view.RaceComboBox.SelectedValue = race;
 
         }
 
@@ -96,13 +85,15 @@ namespace FFXIV_TexTools.ViewModels
             var fileName = Path.GetFileNameWithoutExtension(_view.FileNameTextBox.Text);
             var raceRegex = new Regex("c([0-9]{4})");
             var match = raceRegex.Match(fileName);
+            var mdlRace = IOUtil.GetRaceFromPath(_internalPath);
+
             if (match.Success)
             {
                 // Swap the race to a non-NPC version if it's an NPC race.
                 var raceCode = match.Groups[1].Value.Substring(0, 2) + "01";
                 var race = XivRaces.GetXivRace(raceCode);
 
-                if(race != _race && race != XivRace.All_Races && _race != XivRace.All_Races)
+                if(race != mdlRace && race != XivRace.All_Races && mdlRace != XivRace.All_Races)
                 {
                     // We have a valid race.
                     _view.OverrideRaceButton.IsChecked = true;
@@ -112,15 +103,15 @@ namespace FFXIV_TexTools.ViewModels
         }
 
 
-        public ImportModelViewModel(ImportModelView view, IItemModel item, XivRace race, string submeshId, bool dataOnly, Action onComplete = null, string lastImportFilePath = null)
+        public ImportModelViewModel(ImportModelView view, string internalPath, IItem referenceItem, bool dataOnly = false, Action<ModelImportResult> onComplete = null, string startingFilePath = null)
         {
             _view = view;
-            _item = item;
-            _race = race;
-            _submeshId = submeshId;
             _dataOnly = dataOnly;
             _onComplete = onComplete;
-            _lastImportFilePath = lastImportFilePath;
+            _startingFilePath = startingFilePath;
+            _internalPath = internalPath;
+            _item = referenceItem;
+
 
             if(typeof(XivCharacter) == _item.GetType())
             {
@@ -137,11 +128,9 @@ namespace FFXIV_TexTools.ViewModels
 
             SetupRaces();
 
+            var race = IOUtil.GetRaceFromPath(_internalPath);
 
-            // We need to explicitly fork this onto a new thread to avoid deadlock.
-            Task.Run(AssignPath).Wait();
-
-            var defaultPath = $"{IOUtil.MakeItemSavePath(_item, saveDirectory, _race)}\\3D".Replace("/", "\\");
+            var defaultPath = $"{IOUtil.MakeItemSavePath(_item, saveDirectory, race)}\\3D".Replace("/", "\\");
             var modelName = Path.GetFileNameWithoutExtension(_internalPath);
 
 
@@ -171,7 +160,7 @@ namespace FFXIV_TexTools.ViewModels
             if (!foundValidFile)
             {
                 // Auto-fill the last import file path if the file still exists, otherwise just default to reusing the existing model
-                startingPath = File.Exists(_lastImportFilePath) ? _lastImportFilePath : "";
+                startingPath = File.Exists(_startingFilePath) ? _startingFilePath : "";
             }
 
 
@@ -186,21 +175,25 @@ namespace FFXIV_TexTools.ViewModels
             _view.OverrideRaceButton.Unchecked += OverrideRaceButton_Unchecked;
 
             // Default Settings for specific categories, event handlers are added to allow users to opt out of these defaults
-            if (item.SecondaryCategory == XivStrings.Face)
+            if (_item != null)
             {
-                _view.UseOriginalShapeDataButton.IsChecked = Settings.Default.UseOriginalShapeDataForFace;
-                _view.UseOriginalShapeDataButton.Click += UseOriginalShapeDataButton_Clicked;
-            }
-            if (item.SecondaryCategory == XivStrings.Hair)
-            {
-                _view.CloneUV1Button.IsChecked = Settings.Default.CloneUV1toUV2ForHair;
-                _view.CloneUV1Button.Click += CloneUV1Button_Clicked;
-            }
+                if (_item.SecondaryCategory == XivStrings.Face)
+                {
+                    _view.UseOriginalShapeDataButton.IsChecked = Settings.Default.UseOriginalShapeDataForFace;
+                    _view.UseOriginalShapeDataButton.Click += UseOriginalShapeDataButton_Clicked;
+                }
+                if (_item.SecondaryCategory == XivStrings.Hair)
+                {
+                    _view.CloneUV1Button.IsChecked = Settings.Default.CloneUV1toUV2ForHair;
+                    _view.CloneUV1Button.Click += CloneUV1Button_Clicked;
+                }
 
-            var iType = item.GetPrimaryItemType();
-            if (iType == xivModdingFramework.Items.Enums.XivItemType.equipment || iType == xivModdingFramework.Items.Enums.XivItemType.accessory || iType == xivModdingFramework.Items.Enums.XivItemType.weapon) {
-                _view.ForceUVsButton.IsChecked = Settings.Default.ForceUV1QuadrantForGear;
-                _view.ForceUVsButton.Click += ForceUVsButton_Clicked;
+                var iType = _item.GetPrimaryItemType();
+                if (iType == xivModdingFramework.Items.Enums.XivItemType.equipment || iType == xivModdingFramework.Items.Enums.XivItemType.accessory || iType == xivModdingFramework.Items.Enums.XivItemType.weapon)
+                {
+                    _view.ForceUVsButton.IsChecked = Settings.Default.ForceUV1QuadrantForGear;
+                    _view.ForceUVsButton.Click += ForceUVsButton_Clicked;
+                }
             }
         }
 
@@ -229,14 +222,29 @@ namespace FFXIV_TexTools.ViewModels
         }
         private void OverrideRaceButton_Unchecked(object sender, RoutedEventArgs e)
         {
+            var race = IOUtil.GetRaceFromPath(_internalPath);
+
             _view.RaceComboBox.IsEnabled = false;
-            _view.RaceComboBox.SelectedValue = _race;
+            _view.RaceComboBox.SelectedValue = race;
         }
 
 
         private void _view_Closing(object sender, CancelEventArgs e)
         {
-            _view.DialogResult = Success;
+            // Make sure to notify if we never did for some reason.
+            if(_result == null)
+            {
+                if (_onComplete != null)
+                {
+                    var result = new ModelImportResult()
+                    {
+                        Path = _internalPath,
+                        Success = _success,
+                        Data = null
+                    };
+                    _onComplete(result);
+                }
+            }
         }
 
         private void ImportButton_Click(object sender, System.Windows.RoutedEventArgs e)
@@ -252,14 +260,15 @@ namespace FFXIV_TexTools.ViewModels
         private void DoImport(bool showEditor)
         {
 
-            string path = null;
+            var race = IOUtil.GetRaceFromPath(_internalPath);
+            string externalPath = null;
             _anyWarnings = false;
             if (_view.FileNameTextBox.Text != null && _view.FileNameTextBox.Text.Trim() != "") 
             {
                 try
                 {
                     var d = new DirectoryInfo(_view.FileNameTextBox.Text);
-                    path = d.FullName;
+                    externalPath = d.FullName;
                 }
                 catch(Exception ex)
                 {
@@ -276,7 +285,7 @@ namespace FFXIV_TexTools.ViewModels
             _view.LogTextBox.Document.Blocks.Clear();
             _view.LogTextBox.AppendText("");
 
-            var options = new ModelModifierOptions();
+            var options = new ModelImportOptions();
             options.UseOriginalShapeData = _view.UseOriginalShapeDataButton.IsChecked == true ? true : false;
             options.ForceUVQuadrant = _view.ForceUVsButton.IsChecked == true ? true : false;
             options.ClearUV2 = _view.ClearUV2Button.IsChecked == true ? true : false;
@@ -285,15 +294,19 @@ namespace FFXIV_TexTools.ViewModels
             options.ClearVColor = _view.ClearVColorButton.IsChecked == true ? true : false;
             options.AutoScale = _view.AutoScaleButton.IsChecked == true ? true : false;
 
+            options.SourceApplication = XivStrings.TexTools;
+
             var selectedRace = XivRace.All_Races;
             if (_view.RaceComboBox.SelectedValue != null) {
                 selectedRace = (XivRace)_view.RaceComboBox.SelectedValue;
             }
 
-            if(selectedRace != XivRace.All_Races && selectedRace != _race)
+            if(selectedRace != XivRace.All_Races && selectedRace != race)
             {
                 options.SourceRace = selectedRace;
             }
+
+            options.LoggingFunction = LogMessageReceived;
             
 
             // Asynchronously call ImportModel.
@@ -301,16 +314,21 @@ namespace FFXIV_TexTools.ViewModels
            {
                try
                {
-                   byte[] data = null;
                    if (showEditor)
                    {
-                       data = await Mdl.ImportModel(_item, _race, path, options, LogMessageReceived, IntermediateStep, XivStrings.TexTools, _submeshId, _dataOnly);
+                       options.IntermediaryFunction = IntermediateStep;
                    }
-                   else
+
+                   byte[] data = null;
+                   if (_dataOnly)
                    {
-                       data = await Mdl.ImportModel(_item, _race, path, options, LogMessageReceived, null, XivStrings.TexTools, _submeshId, _dataOnly);
+                       data = await Mdl.FileToUncompressedMdl(externalPath, _internalPath, options, MainWindow.UserTransaction);
+                   } else
+                   {
+                       var offset = await Mdl.ImportModel(externalPath, _internalPath, options, MainWindow.UserTransaction);
                    }
-                   OnImportComplete(data);
+
+                    OnImportComplete(data);
                }
                catch (Exception ex)
                {
@@ -318,7 +336,7 @@ namespace FFXIV_TexTools.ViewModels
                     // on the main UI thread.
                     // main thread that has ownership to edit the Enabled values.
                     await _view.Dispatcher.BeginInvoke((ThreadStart)delegate ()
-                   {
+                    {
                        if (ex.Message != "cancel")
                        {
                            _anyWarnings = true;
@@ -430,7 +448,14 @@ namespace FFXIV_TexTools.ViewModels
                 // while the user is still looking at the log and feeling good about stuff.
                 if (_onComplete != null)
                 {
-                    _onComplete();
+                    var result = new ModelImportResult()
+                    {
+                        Path = _internalPath,
+                        Success = _success,
+                        Data = data
+                    };
+                    _result = result;
+                    _onComplete(result);
                 }
             }).Wait();
         }
@@ -469,7 +494,7 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     if (_view.IsActive)
                     {
-                        _view.DialogResult = Success;
+                        _view.Close();
                     }
                 }
                 catch (Exception ex)

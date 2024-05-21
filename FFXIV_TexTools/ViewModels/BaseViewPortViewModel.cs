@@ -150,16 +150,6 @@ namespace FFXIV_TexTools.ViewModels
             eh?.Invoke(this, new EventArgs());
         }
 
-        public static MemoryStream LoadFileToMemory(string filePath)
-        {
-            using (var file = new FileStream(filePath, FileMode.Open))
-            {
-                var memory = new MemoryStream();
-                file.CopyTo(memory);
-                return memory;
-            }
-        }
-
         #region IDisposable Support
         private bool disposedValue = false; // To detect redundant calls
 

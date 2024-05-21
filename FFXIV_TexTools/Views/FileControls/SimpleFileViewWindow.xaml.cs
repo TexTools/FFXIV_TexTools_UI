@@ -59,16 +59,24 @@ namespace FFXIV_TexTools.Views.Controls
                 return;
             }
             var tx = MainWindow.DefaultTransaction;
-
-            if(!await tx.FileExists(file))
+            try
             {
-                ViewHelpers.ShowError(FileWrapper, "File Not Found", "The given file does not currently exist:\n\n" + file);
+
+                if (!await tx.FileExists(file))
+                {
+                    ViewHelpers.ShowError(FileWrapper, "File Not Found", "The given file does not currently exist:\n\n" + file);
+                }
+
+                var success = await LoadFile(file);
+                if (!success)
+                {
+                    ViewHelpers.ShowError(FileWrapper, "Unable to Display File", "Unable to load or display the file:\n\n" + file);
+                }
             }
-
-            var success = await LoadFile(file);
-            if(!success)
+            catch(Exception ex)
             {
-                ViewHelpers.ShowError(FileWrapper, "Unable to Display File", "Unable to correctly load or display the file:\n\n" + file);
+                ViewHelpers.ShowError(FileWrapper, "File Load Error", "An error occurred when trying to load the file:\n\n" + ex.Message);
+
             }
         }
     }
