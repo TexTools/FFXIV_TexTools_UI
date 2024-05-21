@@ -23,6 +23,7 @@ namespace FFXIV_TexTools.Views.Metadata
     public partial class VisorControl : UserControl
     {
         private ItemMetadata _metadata;
+        public event Action FileChanged;
         public VisorControl()
         {
             InitializeComponent();
@@ -57,6 +58,7 @@ namespace FFXIV_TexTools.Views.Metadata
         private void AnimatedBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             _metadata.GmpEntry.Animated = AnimatedBox.SelectedIndex == 1 ? true : false;
+            FileChanged?.Invoke();
         }
 
         private void RotationABox_SelectionChanged(object sender, RoutedEventArgs e)
@@ -75,6 +77,7 @@ namespace FFXIV_TexTools.Views.Metadata
             }
 
             _metadata.GmpEntry.RotationA = v;
+            FileChanged?.Invoke();
         }
 
         private void RotationBBox_SelectionChanged(object sender, RoutedEventArgs e)
@@ -92,6 +95,7 @@ namespace FFXIV_TexTools.Views.Metadata
                 return;
             }
             _metadata.GmpEntry.RotationB = v;
+            FileChanged?.Invoke();
         }
 
         private void RotationCBox_SelectionChanged(object sender, RoutedEventArgs e)
@@ -105,6 +109,7 @@ namespace FFXIV_TexTools.Views.Metadata
                 return;
             }
             _metadata.GmpEntry.RotationC = v;
+            FileChanged?.Invoke();
         }
 
         private void UnknownHighBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -122,6 +127,7 @@ namespace FFXIV_TexTools.Views.Metadata
                 return;
             }
             _metadata.GmpEntry.UnknownHigh = v;
+            FileChanged?.Invoke();
         }
 
         private void UnknownLowBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -139,6 +145,7 @@ namespace FFXIV_TexTools.Views.Metadata
                 return;
             }
             _metadata.GmpEntry.UnknownLow = v;
+            FileChanged?.Invoke();
         }
 
         private void ToggleAllElements(bool enabled)
@@ -154,12 +161,14 @@ namespace FFXIV_TexTools.Views.Metadata
         private void EnabledBox_Checked(object sender, RoutedEventArgs e)
         {
             _metadata.GmpEntry.Enabled = true;
+            FileChanged?.Invoke();
             ToggleAllElements(true);
         }
 
         private void EnabledBox_Unchecked(object sender, RoutedEventArgs e)
         {
             _metadata.GmpEntry.Enabled = false;
+            FileChanged?.Invoke();
             ToggleAllElements(false);
         }
     }

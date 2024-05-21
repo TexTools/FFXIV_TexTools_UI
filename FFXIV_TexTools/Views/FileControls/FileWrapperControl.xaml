@@ -75,7 +75,7 @@
                         <ColumnDefinition></ColumnDefinition>
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Text="{Binding Source={x:Static resx:UIStrings.SaveCaps}}" HorizontalAlignment="Right" Grid.Column="0"/>
+                    <TextBlock x:Name="SaveText" Text="SAVE" HorizontalAlignment="Right" Grid.Column="0"/>
                     <TextBlock Text="{Binding Path=UnsavedChangesText}" FontWeight="Bold" Foreground="#FFC80000" HorizontalAlignment="Left" Grid.Column="1"/>
                 </Grid>
             </Button>

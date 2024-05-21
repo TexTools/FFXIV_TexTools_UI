@@ -23,6 +23,7 @@ namespace FFXIV_TexTools.Views.Metadata
     public partial class ImcControl : UserControl
     {
         private ItemMetadata _metadata;
+        public event Action FileChanged;
         public ImcControl()
         {
             InitializeComponent();
@@ -81,6 +82,8 @@ namespace FFXIV_TexTools.Views.Metadata
             {
                 _metadata.ImcEntries[variant].Mask = (ushort)(_metadata.ImcEntries[variant].Mask & ~bit);
             }
+
+            FileChanged?.Invoke();
         }
 
         private void ImcVariantBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -122,6 +125,7 @@ namespace FFXIV_TexTools.Views.Metadata
             AnimationBox.Text = anim.ToString();
 
             MaterialSetBox.SelectedIndex = entry.MaterialSet;
+            FileChanged?.Invoke();
 
         }
 
@@ -133,6 +137,7 @@ namespace FFXIV_TexTools.Views.Metadata
             }
             var entry = _metadata.ImcEntries[(int)ImcVariantBox.SelectedItem];
             entry.MaterialSet = (byte)MaterialSetBox.SelectedIndex;
+            FileChanged?.Invoke();
         }
 
         private void AffectedItemsButton_Click(object sender, RoutedEventArgs e)
@@ -171,6 +176,7 @@ namespace FFXIV_TexTools.Views.Metadata
             if (value < 0) { value = 0; }
 
             entry.Decal = (byte) value;
+            FileChanged?.Invoke();
         }
         private void AnimationBox_TextChanged(object sender, TextChangedEventArgs e)
         {
@@ -186,6 +192,7 @@ namespace FFXIV_TexTools.Views.Metadata
             if (value < 0) { value = 0; }
 
             entry.Animation = (byte)value;
+            FileChanged?.Invoke();
         }
 
         private void SfxBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -206,6 +213,7 @@ namespace FFXIV_TexTools.Views.Metadata
             ushort baseMask = (ushort)(entry.Mask & 0x3FF);
 
             entry.Mask = (ushort)(baseMask | sfxBits);
+            FileChanged?.Invoke();
         }
 
         private void VfxBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -222,6 +230,7 @@ namespace FFXIV_TexTools.Views.Metadata
             if (value < 0) { value = 0; }
 
             entry.Vfx = (byte)value;
+            FileChanged?.Invoke();
         }
 
 
@@ -259,6 +268,7 @@ namespace FFXIV_TexTools.Views.Metadata
                 entry.MaterialSet = current.MaterialSet;
                 entry.Animation = current.Animation;
             }
+            FileChanged?.Invoke();
         }
 
         private void AddVariantButton_Click(object sender, RoutedEventArgs e)
@@ -270,6 +280,7 @@ namespace FFXIV_TexTools.Views.Metadata
             _metadata.ImcEntries.Add(entry);
             ImcVariantBox.Items.Add(idx);
             ImcVariantBox.SelectedIndex = idx;
+            FileChanged?.Invoke();
         }
 
         private void AddMaterialSetButton_Click(object sender, RoutedEventArgs e)
@@ -279,6 +290,7 @@ namespace FFXIV_TexTools.Views.Metadata
 
             MaterialSetBox.Items.Add(currentMax);
             MaterialSetBox.SelectedIndex = currentMax;
+            FileChanged?.Invoke();
         }
     }
 }

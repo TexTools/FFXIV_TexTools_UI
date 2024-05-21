@@ -206,6 +206,12 @@ move $(TargetDir)*.dll $(TargetDir)lib</PostBuildEvent>
       <AutoGen>True</AutoGen>
       <DependentUpon>UIStrings.resx</DependentUpon>
     </Compile>
+    <Compile Update="Views\FileControls\MaterialFileControl.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\FileControls\MetadataFileControl.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Views\ModPack\Simple\FileListExporter.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -215,5 +221,10 @@ move $(TargetDir)*.dll $(TargetDir)lib</PostBuildEvent>
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\FileControls\MaterialFileControl.xaml">
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
 </Project>

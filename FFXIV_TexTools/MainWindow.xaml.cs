@@ -27,6 +27,7 @@ using FFXIV_TexTools.Views.Simple;
 using FFXIV_TexTools.Views.Wizard;
 using FolderSelect;
 using ForceUpdateAssembly;
+using HelixToolkit.SharpDX.Core.Utilities;
 using MahApps.Metro;
 using MahApps.Metro.Controls.Dialogs;
 using SixLabors.ImageSharp;
@@ -118,15 +119,39 @@ namespace FFXIV_TexTools
             }
         }
 
+
+        private static ModTransaction _UserTransaction;
+
         /// <summary>
         /// The current active, end-user-controlled, write-enabled transaction, if there is one.
         /// Probably should go somewhere else later, but for now this is accessible until a final location is sorted.
         /// </summary>
         public static ModTransaction UserTransaction
         {
-            get;
-            set;
+            get { return _UserTransaction;  }
+            set
+            {
+                _UserTransaction = value;
+                TxWatcher.INTERNAL_TxStateChanged(ETransactionState.Invalid, value.State);
+                value.TransactionStateChanged += OnUserTxChanged;
+            }
         }
+
+        private static void OnUserTxChanged(ModTransaction sender, ETransactionState oldState, ETransactionState newState)
+        {
+            if(_UserTransaction != sender)
+            {
+                return;
+            }
+
+            TxWatcher.INTERNAL_TxStateChanged(oldState, newState);
+
+            if(newState == ETransactionState.Closed ||  newState == ETransactionState.Invalid) {
+                _UserTransaction = null;
+            }
+        }
+
+
 
         public static ModTransaction DefaultTransaction
         {
@@ -1756,7 +1781,7 @@ namespace FFXIV_TexTools
 
         private async void FileViewerButton_Click(object sender, RoutedEventArgs e)
         {
-            var success = await SimpleFileViewWindow.OpenFile("chara/equipment/e0755/model/c0101e0755_top.mdl");
+            var success = await SimpleFileViewWindow.OpenFile("chara/equipment/e0755/e0755_top.meta");
         }
     }
 }

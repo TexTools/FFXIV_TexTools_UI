@@ -925,7 +925,8 @@ namespace FFXIV_TexTools.Views
                 {
                     return;
                 }
-                await AddFile(selectedFile, SelectedItem, result.Data);
+                var data = await Mdl.CompressMdlFile(result.Data);
+                await AddFile(selectedFile, SelectedItem, data);
             }
             catch (Exception ex)
             {

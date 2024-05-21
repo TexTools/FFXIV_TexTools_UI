@@ -5,6 +5,7 @@ using FolderSelect;
 using MahApps.Metro.Controls.Dialogs;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -56,6 +57,20 @@ namespace FFXIV_TexTools.Views
             };
 
             return f;
+        }
+
+        public static bool ConfirmDiscardChanges(this UserControl control, string filePath)
+        {
+
+            var wind = Window.GetWindow(control);
+            var Win32Window = new WindowWrapper(new WindowInteropHelper(wind).Handle);
+            var fileName = Path.GetFileName(filePath);
+            var res = FlexibleMessageBox.Show(Win32Window, "You have unsaved changes to the file: " + fileName +  "\nThey will be lost if you continue.\n\nAre you sure you wish to continue and discard these changes?", "Discard Changes Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1);
+            if(res == DialogResult.Yes || res == DialogResult.OK)
+            {
+                return true;
+            }
+            return false;
         }
 
         public static void ShowError(this UserControl control, string title, string message)

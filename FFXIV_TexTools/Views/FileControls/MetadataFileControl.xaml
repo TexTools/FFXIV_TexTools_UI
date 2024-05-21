@@ -1,0 +1,55 @@
+﻿<local:FileViewControl x:Class="FFXIV_TexTools.Views.Controls.MetadataFileControl
+                       "
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:local="clr-namespace:FFXIV_TexTools.Views.Controls"
+             xmlns:meta="clr-namespace:FFXIV_TexTools.Views.Metadata"
+             xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+        <Grid Margin="10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="36"></RowDefinition>
+                <RowDefinition Height="5"></RowDefinition>
+                <RowDefinition Height="1*"></RowDefinition>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="50"></ColumnDefinition>
+                    <ColumnDefinition Width="60"></ColumnDefinition>
+                    <ColumnDefinition Width="50"></ColumnDefinition>
+                    <ColumnDefinition Width="100"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Label Grid.Column="0" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" FontSize="16" VerticalAlignment="Center">Set:</Label>
+                <Label Grid.Column="1" x:Name="SetLabel" VerticalContentAlignment="Center" FontSize="16" VerticalAlignment="Center">e0504</Label>
+
+
+
+                <Label Grid.Column="2" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" FontSize="16" VerticalAlignment="Center">Slot:</Label>
+                <Label Grid.Column="3" x:Name="SlotLabel" VerticalContentAlignment="Center" FontSize="16" VerticalAlignment="Center">Hands(glv)</Label>
+
+
+            </Grid>
+
+
+            <Separator Grid.Row="1">
+            </Separator>
+
+
+            <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Row="2">
+                <StackPanel>
+                <meta:EqdpControl x:Name="EqdpView" Margin="10"></meta:EqdpControl>
+                <meta:SkeletonControl x:Name="SkeletonView" Margin="10,0,10,10"></meta:SkeletonControl>
+                <meta:VisorControl x:Name="VisorView" Margin="10,0,10,10"></meta:VisorControl>
+                <meta:EqpControl x:Name="EqpView" Margin="10,0,10,10"></meta:EqpControl>
+                <meta:ImcControl x:Name="ImcView" Margin="10,0,10,10"></meta:ImcControl>
+                </StackPanel>
+            </ScrollViewer>
+
+        </Grid>
+</local:FileViewControl>

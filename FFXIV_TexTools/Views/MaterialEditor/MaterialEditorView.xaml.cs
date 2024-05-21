@@ -148,6 +148,7 @@ namespace FFXIV_TexTools.Views.MaterialEditor
             return await viewModel.SetMaterial(material, item, mode);
         }
 
+        // =============================================== //
 
         /// <summary>
         /// Updates the visual texture collection.

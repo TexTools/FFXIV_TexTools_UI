@@ -1,4 +1,5 @@
-﻿using FFXIV_TexTools.Properties;
+﻿using FFXIV_TexTools.Helpers;
+using FFXIV_TexTools.Properties;
 using FFXIV_TexTools.Resources;
 using MahApps.Metro.Controls;
 using System;
@@ -14,6 +15,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
+using System.Windows.Markup;
 using xivModdingFramework.Cache;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Items.Interfaces;
@@ -138,20 +140,45 @@ namespace FFXIV_TexTools.Views.Controls
         private bool _IS_SAVING;
         private bool _Disposed;
 
-        private async void ModTransaction_FileChanged(string internalFilePath)
+        private async void ModTransaction_FileChanged(string changedFile)
         {
-            if (_IS_SAVING || string.IsNullOrWhiteSpace(internalFilePath) || string.IsNullOrWhiteSpace(InternalFilePath))
+            if (_IS_SAVING || string.IsNullOrWhiteSpace(changedFile) || string.IsNullOrWhiteSpace(InternalFilePath))
             {
                 return;
             }
-
-            var children = await XivCache.GetChildFiles(InternalFilePath);
-
-            // If our file was changed by someone else, silently attempt to reload it.
-            if (children.Contains(internalFilePath) || string.Equals(internalFilePath, InternalFilePath))
+            try
             {
-                DebouncedUpdate();
+                // Run update checks on a new thread.
+                await Task.Run(async () =>
+                {
+                    if (string.Equals(changedFile, InternalFilePath))
+                    {
+                        DebouncedUpdate();
+                    }
+                    else
+                    {
+                        if (await ShouldUpdateOnFileChange(changedFile))
+                        {
+                            DebouncedUpdate();
+                        }
+                    }
+                });
             }
+            catch(Exception ex)
+            {
+                // No Op
+                Trace.WriteLine(ex);
+            }
+        }
+
+        /// <summary>
+        /// Determines if this file view should refresh when a given file is changed.
+        /// </summary>
+        /// <param name="changedFile"></param>
+        /// <returns></returns>
+        protected virtual async Task<bool> ShouldUpdateOnFileChange(string changedFile)
+        {
+            return false;
         }
 
         private void _UpdateOnMainThread()
@@ -243,7 +270,17 @@ namespace FFXIV_TexTools.Views.Controls
         /// <returns></returns>
         public virtual async Task<bool> ReloadFile()
         {
-            return await LoadInternalFile(InternalFilePath, false, ReferenceItem);
+            if(string.IsNullOrWhiteSpace(InternalFilePath))
+            {
+                return false;
+            }
+
+            var tx = TxWatcher.DefaultTransaction;
+            if (await tx.FileExists(InternalFilePath) || InternalFilePath.EndsWith(".meta"))
+            {
+                return await LoadInternalFile(InternalFilePath, false, ReferenceItem);
+            }
+            return false;
         }
 
         /// <summary>
@@ -282,8 +319,16 @@ namespace FFXIV_TexTools.Views.Controls
         /// <param name="externalFile"></param>
         /// <param name="internalFile"></param>
         /// <returns></returns>
-        public virtual async Task<bool> LoadInternalFile(string internalFile, bool forceOriginal = false, IItem referenceItem = null)
+        public virtual async Task<bool> LoadInternalFile(string internalFile, bool forceOriginal = false, IItem referenceItem = null, byte[] decompData = null)
         {
+            if (UnsavedChanges && !string.IsNullOrWhiteSpace(InternalFilePath))
+            {
+                if (!this.ConfirmDiscardChanges(InternalFilePath))
+                {
+                    return false;
+                }
+            }
+
             bool success = false;
             try
             {
@@ -310,9 +355,18 @@ namespace FFXIV_TexTools.Views.Controls
                 var tx = MainWindow.DefaultTransaction;
 
 
-                var data = await tx.ReadFile(internalFile, forceOriginal);
+                var data = new byte[0];
+                if (decompData == null)
+                {
+                    data = await INTERNAL_GetDataFromPath(internalFile, forceOriginal, tx);
+                } else
+                {
+                    data = decompData;
+                }
+
                 InternalFilePath = internalFile;
                 ExternalFilePath = "";
+
                 ModState = await Modding.GetModState(InternalFilePath, tx);
                 success = await INTERNAL_LoadFile(data);
 
@@ -334,6 +388,11 @@ namespace FFXIV_TexTools.Views.Controls
             }
         }
 
+        protected virtual async Task<byte[]> INTERNAL_GetDataFromPath(string internalPath, bool forceOriginal, ModTransaction tx)
+        {
+            return await tx.ReadFile(internalPath, forceOriginal);
+        }
+
         /// <summary>
         /// Load the given external file into view, assuming it will go to the target internal path.
         /// Returns true if the data was successfully loaded.
@@ -345,6 +404,14 @@ namespace FFXIV_TexTools.Views.Controls
         /// <returns></returns>
         public virtual async Task<bool> LoadExternalFile(string externalFile, string internalFile = null, IItem referenceItem = null)
         {
+            if (UnsavedChanges && !string.IsNullOrWhiteSpace(InternalFilePath))
+            {
+                if (!this.ConfirmDiscardChanges(InternalFilePath))
+                {
+                    return false;
+                }
+            }
+
             var success = false;
             try
             {
@@ -407,6 +474,7 @@ namespace FFXIV_TexTools.Views.Controls
         /// <summary>
         /// Loads the given byte data into the workspace.
         /// Returns true if the data was successfully loaded.
+        /// Data is an Uncompressed FFXIV file type.
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>

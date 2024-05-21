@@ -377,30 +377,43 @@ namespace FFXIV_TexTools.Views.Controls
         private List<string> ActiveShapes = new List<string>();
         private async void HighlightColorsetButton_Click(object sender, RoutedEventArgs e)
         {
-            var wind = new HighilightedColorsetSelection(HighlightedColorsetRow) { Owner = MainWindow.GetMainWindow() };
-            wind.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            try
+            {
+                var wind = new HighilightedColorsetSelection(HighlightedColorsetRow) { Owner = MainWindow.GetMainWindow() };
+                wind.WindowStartupLocation = WindowStartupLocation.CenterOwner;
 
-            var result = wind.ShowDialog();
+                var result = wind.ShowDialog();
 
-            if (result != true) return;
+                if (result != true) return;
 
-            HighlightedColorsetRow = wind.SelectedRow;
-            await UpdateVisual();
-
+                HighlightedColorsetRow = wind.SelectedRow;
+                await UpdateVisual();
+            }
+            catch
+            {
+                //No Op
+            }
         }
         private async void OpenShapesMenu_Click(object sender, RoutedEventArgs e)
         {
-            if (Model == null || !Model.HasShapeData) return;
+            try
+            {
+                if (Model == null || !Model.HasShapeData) return;
 
-            var wind = new ApplyShapesView(Model, ActiveShapes) { Owner = MainWindow.GetMainWindow() };
-            wind.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                var wind = new ApplyShapesView(Model, ActiveShapes) { Owner = MainWindow.GetMainWindow() };
+                wind.WindowStartupLocation = WindowStartupLocation.CenterOwner;
 
-            var result = wind.ShowDialog();
+                var result = wind.ShowDialog();
 
-            if (result != true) return;
+                if (result != true) return;
 
-            ActiveShapes = wind.SelectedShapes;
-            await UpdateVisual();
+                ActiveShapes = wind.SelectedShapes;
+                await UpdateVisual();
+            }
+            catch
+            {
+                //No op
+            }
         }
 
         private void ToggleFlyout(object sender, RoutedEventArgs e)
@@ -742,17 +755,22 @@ namespace FFXIV_TexTools.Views.Controls
         private async void FullModel_Click(object sender, RoutedEventArgs e)
         {
             if (Model == null || !Model.IsInternal) return;
+            try
+            {
+                // Load a clean copy of the model.
+                var ttmdl = await Mdl.GetTTModel(InternalFilePath);
+                var race = IOUtil.GetRaceFromPath(InternalFilePath);
+                
+                // Weird usage pattern but apparently this is how liinko structured it.
+                var fmv = FullModelView.Instance;
+                fmv.Owner = MainWindow.GetMainWindow();
+                fmv.Show();
 
-            // Load a clean copy of the model.
-            var ttmdl = await Mdl.GetTTModel(InternalFilePath);
-            var race = IOUtil.GetRaceFromPath(InternalFilePath);
-
-            // Weird usage pattern but apparently this is how liinko structured it.
-            var fmv = FullModelView.Instance;
-            fmv.Owner = MainWindow.GetMainWindow();
-            fmv.Show();
-
-            await fmv.AddModel(ttmdl, await GetMaterials(), ReferenceItem as IItemModel, race);
+                await fmv.AddModel(ttmdl, await GetMaterials(), ReferenceItem as IItemModel, race);
+            } catch (Exception ex)
+            {
+                this.ShowError("FMV Error", "An error occurred while loading the model to the FMV:\n\n" + ex.Message);
+            }
         }
 
 

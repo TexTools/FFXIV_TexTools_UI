@@ -101,6 +101,21 @@ namespace FFXIV_TexTools.Views.Controls
             LoadButton.IsEnabled = false;
             SaveAsGrid.IsEnabled = false;
             SaveButton.IsEnabled = false;
+
+            SaveText.Text = TxWatcher.SaveLabel;
+
+            TxWatcher.SaveStatusChanged += TxWatcher_SaveStatusChanged;
+        }
+
+        private void TxWatcher_SaveStatusChanged(bool allowed, string text)
+        {
+            SaveText.Text = TxWatcher.SaveLabel;
+            if (FileControl == null || string.IsNullOrWhiteSpace(FilePath))
+            {
+                SaveButton.IsEnabled = false;
+            }
+
+            SaveButton.IsEnabled = TxWatcher.SaveAllowed;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -116,6 +131,16 @@ namespace FFXIV_TexTools.Views.Controls
             if (mdlHandler.CanLoadFile(file))
             {
                 return mdlHandler;
+            }
+            var mtrlHandler = new MaterialFileControl();
+            if (mtrlHandler.CanLoadFile(file))
+            {
+                return mtrlHandler;
+            }
+            var metaHandler = new MetadataFileControl();
+            if (metaHandler.CanLoadFile(file))
+            {
+                return metaHandler;
             }
 
 
@@ -250,8 +275,16 @@ namespace FFXIV_TexTools.Views.Controls
 
             LoadButton.IsEnabled = true;
             SaveAsGrid.IsEnabled = true;
-            SaveButton.IsEnabled = true;
-            RefreshButton.IsEnabled = true;
+            SaveButton.IsEnabled = TxWatcher.SaveAllowed;
+
+            var tx = TxWatcher.DefaultTransaction;
+            if (await tx.FileExists(FilePath) || FilePath.EndsWith(".meta"))
+            {
+                RefreshButton.IsEnabled = true;
+            } else
+            {
+                RefreshButton.IsEnabled = false;
+            }
         }
 
         private async void EnableDisable_Click(object sender, RoutedEventArgs e)

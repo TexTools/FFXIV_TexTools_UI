@@ -28,6 +28,8 @@ namespace FFXIV_TexTools.Views.Metadata
 
         private Dictionary<XivRace, CheckBox> RacialCheckboxes = new Dictionary<XivRace, CheckBox>();
 
+        public event Action FileChanged;
+
         public event EventHandler<(XivRace Race, bool Enabled)> RaceChanged;
         public EqdpControl()
         {
@@ -66,6 +68,7 @@ namespace FFXIV_TexTools.Views.Metadata
                     RaceChanged.Invoke(this, (race, enabled));
                 }
             }
+            FileChanged?.Invoke();
 
         }
 

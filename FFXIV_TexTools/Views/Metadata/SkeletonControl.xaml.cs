@@ -22,7 +22,7 @@ namespace FFXIV_TexTools.Views.Metadata
         private Dictionary<XivRace, ComboBox> RacialComboBoxes;
         private Dictionary<XivRace, ObservableCollection<KeyValuePair<int, string>>> RacialItemSources;
 
-
+        public event Action FileChanged;
         private bool IsRaceEnabled(XivRace race)
         {
 
@@ -294,6 +294,7 @@ namespace FFXIV_TexTools.Views.Metadata
             var skel = (int)cb.SelectedValue;
 
             _metadata.EstEntries[race].SkelId = (ushort)skel;
+            FileChanged?.Invoke();
         }
 
         private void AllBoxChanged(object sender, SelectionChangedEventArgs e)

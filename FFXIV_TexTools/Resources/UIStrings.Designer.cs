@@ -3924,6 +3924,24 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to SAVE TO TX.
+        /// </summary>
+        public static string SaveTX {
+            get {
+                return ResourceManager.GetString("SaveTX", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SAVE TO FFXIV.
+        /// </summary>
+        public static string SaveXIV {
+            get {
+                return ResourceManager.GetString("SaveXIV", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Scan for new Item Sets.
         /// </summary>
         public static string Scan_For_Sets {

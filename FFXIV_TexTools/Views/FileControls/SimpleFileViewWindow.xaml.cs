@@ -12,6 +12,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using xivModdingFramework.Cache;
 
 namespace FFXIV_TexTools.Views.Controls
 {
@@ -24,6 +25,19 @@ namespace FFXIV_TexTools.Views.Controls
         {
             InitializeComponent();
 
+            Closing += SimpleFileViewWindow_Closing;
+        }
+
+        private void SimpleFileViewWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if(FileWrapper != null && FileWrapper.FileControl != null &&  FileWrapper.FileControl.UnsavedChanges && !string.IsNullOrWhiteSpace(FileWrapper.FileControl.InternalFilePath))
+            {
+                if (!FileWrapper.ConfirmDiscardChanges(FileWrapper.FileControl.InternalFilePath))
+                {
+                    e.Cancel = true;
+                    return;
+                }
+            }
         }
 
         public async Task<bool> LoadFile(string filePath)
@@ -64,7 +78,16 @@ namespace FFXIV_TexTools.Views.Controls
 
                 if (!await tx.FileExists(file))
                 {
-                    ViewHelpers.ShowError(FileWrapper, "File Not Found", "The given file does not currently exist:\n\n" + file);
+                    var root = await XivCache.GetFirstRoot(file);
+                    if (root != null && root.Info.GetRootFile() == file)
+                    {
+                        // This is a valid metadata file even if doesn't exist yet.
+                    }
+                    else
+                    {
+                        ViewHelpers.ShowError(FileWrapper, "File Not Found", "The given file does not currently exist:\n\n" + file);
+                        return;
+                    }
                 }
 
                 var success = await LoadFile(file);
