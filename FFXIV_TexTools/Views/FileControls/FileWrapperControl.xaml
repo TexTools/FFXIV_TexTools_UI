@@ -29,8 +29,8 @@
 
             <TextBox Grid.Column="1" IsReadOnly="True" Margin="5" TextAlignment="Center" Text="Loading File..." x:Name="FilePathBox" VerticalContentAlignment="Center"/>
             
-            <Button x:Name="FileInfoButton" Margin="5" Grid.Column="2" IsEnabled="false" Click="FileInfo_Click">
-                <iconPacks:PackIconFontAwesome Kind="InfoSolid" Height="12"/>
+            <Button x:Name="PopOutButton" Margin="5" Grid.Column="2" IsEnabled="false" Click="PopOut_Click">
+                <iconPacks:PackIconFontAwesome Kind="ExternalLinkSquareAltSolid" Height="12"/>
             </Button>
         </Grid>
         

@@ -281,9 +281,11 @@ namespace FFXIV_TexTools.Views.Controls
             if (await tx.FileExists(FilePath) || FilePath.EndsWith(".meta"))
             {
                 RefreshButton.IsEnabled = true;
+                PopOutButton.IsEnabled = true;
             } else
             {
                 RefreshButton.IsEnabled = false;
+                PopOutButton.IsEnabled = false;
             }
         }
 
@@ -456,6 +458,17 @@ namespace FFXIV_TexTools.Views.Controls
             Directory.CreateDirectory(dir);
 
             Process.Start(dir);
+        }
+
+        private async void PopOut_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                await SimpleFileViewWindow.OpenFile(FilePath);
+            }
+            catch { 
+                // No-Op
+            }
         }
     }
 }
