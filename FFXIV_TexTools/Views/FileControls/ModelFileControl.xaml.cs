@@ -99,7 +99,6 @@ namespace FFXIV_TexTools.Views.Controls
             return RawMdl;
         }
 
-
         protected override async Task<bool> INTERNAL_LoadFile(byte[] data)
         {
             RawMdl = data;
@@ -117,6 +116,49 @@ namespace FFXIV_TexTools.Views.Controls
             // So just export the internal game state.
             await Mdl.ExportMdlToFile(InternalFilePath, externalFilePath, 1, true, false, MainWindow.DefaultTransaction);
             return true;
+        }
+
+        protected override async Task<bool> ShouldUpdateOnFileChange(string changedFile)
+        {
+            if (UnsavedChanges)
+            {
+                return false;
+            }
+
+            // Ship this to another thread, since depending on the state of the cache this could do a bunch of
+            // somewhat hefty jumping around files.
+            return await Task.Run(async () =>
+            {
+                var tx = MainWindow.DefaultTransaction;
+                var mSet = -1;
+                if (ReferenceItem != null) {
+                    var asIm = ReferenceItem as IItemModel;
+                    if(asIm != null)
+                    {
+                        mSet = await Imc.GetMaterialSetId(asIm, false, tx);
+                    }
+                }
+
+                var materials = await Mdl.GetReferencedMaterialPaths(Model.Materials, InternalFilePath, mSet, false, true, tx);
+                
+                foreach(var mat in materials)
+                {
+                    if (changedFile.EndsWith(mat))
+                    {
+                        return true;
+                    }
+
+                    var textures = await XivCache.GetChildFiles(mat, tx);
+                    foreach(var tex in textures)
+                    {
+                        if(changedFile == tex)
+                        {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            });
         }
 
         public override string GetNiceName()

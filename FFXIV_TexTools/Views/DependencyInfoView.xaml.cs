@@ -223,7 +223,7 @@ namespace FFXIV_TexTools.Views
                     sharedImcSubsets.Add(rt, new HashSet<int>());
                     var imcPath = rt.GetRawImcFilePath();
 
-                    var fullImcInfo = await Imc.GetFullImcInfo(imcPath);
+                    var fullImcInfo = await Imc.GetFullImcInfo(imcPath, false, MainWindow.DefaultTransaction);
 
                     var setCount = fullImcInfo.SubsetCount + 1;
                     for (int i = 0; i < setCount; i++)

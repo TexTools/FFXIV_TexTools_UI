@@ -9,11 +9,15 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="40"></RowDefinition>
             <RowDefinition Height="1*"></RowDefinition>
             <RowDefinition Height="40"></RowDefinition>
+            <RowDefinition Height="40"></RowDefinition>
         </Grid.RowDefinitions>
-        <Grid Grid.Row="0">
+        
+        <Grid Grid.Row="0" x:Name="FileControlEntry">
+        </Grid>
+
+        <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="60"></ColumnDefinition>
                 <ColumnDefinition Width="1*"></ColumnDefinition>
@@ -21,20 +25,17 @@
             </Grid.ColumnDefinitions>
 
 
-            <Button x:Name="RefreshButton" Margin="5" Grid.Column="0" IsEnabled="False" Click="RefreshButton_Click">
+            <Button x:Name="RefreshButton" Margin="5" Grid.Column="0" IsEnabled="False" Click="RefreshButton_Click" ToolTip="Reload the currently selected file from the Game Files/Transaction.">
                 <iconPacks:Material Kind="Refresh" Height="12"/>
 
             </Button>
 
 
             <TextBox Grid.Column="1" IsReadOnly="True" Margin="5" TextAlignment="Center" Text="Loading File..." x:Name="FilePathBox" VerticalContentAlignment="Center"/>
-            
-            <Button x:Name="PopOutButton" Margin="5" Grid.Column="2" IsEnabled="false" Click="PopOut_Click">
+
+            <Button x:Name="PopOutButton" Margin="5" Grid.Column="2" IsEnabled="false" Click="PopOut_Click" ToolTip="Pop this file out in a new window.">
                 <iconPacks:PackIconFontAwesome Kind="ExternalLinkSquareAltSolid" Height="12"/>
             </Button>
-        </Grid>
-        
-        <Grid Grid.Row="1" x:Name="FileControlEntry">
         </Grid>
 
         <Grid Grid.Row="2" x:Name="ButtonRow">

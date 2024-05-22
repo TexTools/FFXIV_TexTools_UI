@@ -205,7 +205,7 @@ namespace FFXIV_TexTools.ViewModels
             get
             {
                 var mw = MainWindow.GetMainWindow();
-                return mw.ModelTabItem;
+                return null;
             }
         }
 

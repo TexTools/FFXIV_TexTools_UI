@@ -357,21 +357,6 @@ namespace FFXIV_TexTools
                 // Can set this now that we're open.
                 Win32Window = new WindowWrapper(new WindowInteropHelper(this).Handle);
 
-
-                var textureView = TextureTabItem.Content as TextureView;
-                var textureViewModel = textureView.DataContext as TextureViewModel;
-
-                textureViewModel.LoadingComplete += TextureViewModelOnLoadingComplete;
-
-                var modelView = ModelTabItem.Content as ModelView;
-                var modelViewModel = modelView.DataContext as ModelViewModel;
-
-                modelViewModel.LoadingComplete += ModelViewModelOnLoadingComplete;
-                modelViewModel.AddToFullModelEvent += ModelViewModelOnAddToFullModelEvent;
-
-                this.TabsControl.SelectionChanged += TabsControl_SelectionChanged;
-
-
                 // This can be set whereever, since the item select won't fire it unless things are loaded fully.
                 ItemSelect.ItemSelected += ItemSelect_ItemSelected;
                 ItemSelect.ItemsLoaded += OnTreeLoaded;
@@ -383,18 +368,6 @@ namespace FFXIV_TexTools
         }
 
 
-        private void TabsControl_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
-        {
-            if (e.Source == TabsControl)
-            {
-                if (TabsControl.SelectedItem == this.ModelTabItem)
-                {
-                    var modelView = ModelTabItem.Content as ModelView;
-                    var modelViewModel = modelView.DataContext as ModelViewModel;
-                    modelViewModel.OnTabShown();
-                }
-            }
-        }
 
         /// <summary>
         /// Event handler for adding models to the full model view
@@ -945,102 +918,7 @@ namespace FFXIV_TexTools
         /// <param name="selectedItem">The selected item</param>
         private async void UpdateViews(IItem item)
         {
-            try
-            {
-                if (item == null)
-                {
-                    return;
-                }
-
-                if (ItemChanging != null)
-                {
-                    ItemChanging.Invoke(this, null);
-                }
-
-                await LockUi();
-
-                _modelLoaded = false;
-                _texturesLoaded = false;
-                _waitingForItemLoad = true;
-
-                var textureView = TextureTabItem.Content as TextureView;
-                var textureViewModel = textureView.DataContext as TextureViewModel;
-                var sharedItemsView = SharedItemsTab.Content as SharedItemsView;
-                var sharedItemsViewModel = sharedItemsView.DataContext as SharedItemsViewModel;
-                var metadataView = MetadataTab.Content as MetadataView;
-
-                var showMetadata = await metadataView.SetItem(item);
-                if (showMetadata)
-                {
-                    MetadataTab.IsEnabled = true;
-                    MetadataTab.Visibility = Visibility.Visible;
-                }
-                else
-                {
-                    if (MetadataTab.IsSelected)
-                    {
-                        MetadataTab.IsSelected = false;
-                        TextureTabItem.IsSelected = true;
-                    }
-                    MetadataTab.IsEnabled = false;
-                    MetadataTab.Visibility = Visibility.Collapsed;
-                }
-
-                // This guy has no funny async callback.  It's ready once these awaits are done.
-                await textureViewModel.UpdateTexture(item);
-                var showSharedItems = await sharedItemsViewModel.SetItem(item, this);
-                if(showSharedItems) { 
-                    SharedItemsTab.IsEnabled = true;
-                    SharedItemsTab.Visibility = Visibility.Visible;
-                } else
-                {
-                    if(SharedItemsTab.IsSelected)
-                    {
-                        SharedItemsTab.IsSelected = false;
-                        TextureTabItem.IsSelected = true;
-                    }
-                    SharedItemsTab.IsEnabled = false;
-                    SharedItemsTab.Visibility = Visibility.Collapsed;
-                }
-
-
-
-
-                if (item.PrimaryCategory.Equals(XivStrings.UI) ||
-                    item.SecondaryCategory.Equals(XivStrings.Face_Paint) ||
-                    item.SecondaryCategory.Equals(XivStrings.Equipment_Decals) ||
-                    item.SecondaryCategory.Equals(XivStrings.Paintings))
-                {
-                    if (TabsControl.SelectedIndex == 1)
-                    {
-                        TabsControl.SelectedIndex = 0;
-                    }
-
-                    // No model to load, just set us as already loaded.
-                    _modelLoaded = true;
-
-                    ModelTabItem.IsEnabled = false;
-                    ModelTabItem.Visibility = Visibility.Collapsed;
-                }
-                else
-                {
-                    ModelTabItem.IsEnabled = true;
-                    ModelTabItem.Visibility = Visibility.Visible;
-
-                    var modelView = ModelTabItem.Content as ModelView;
-                    var modelViewModel = modelView.DataContext as ModelViewModel;
-
-                    await modelViewModel.UpdateModel(item as IItemModel);
-                }
-
-                // Need to do this here in case any of the views came back immediately and fired before we finished this function.
-                await CheckItemLoadComplete();
-            }
-            catch (Exception ex)
-            {
-                ViewHelpers.ShowError("Item Load Failure", "Unable to load some or all parts of item:\n\n" + ex.Message);
-                await UnlockUi();
-            }
+            await ItemView.SetItem(item);
         }
 
         /// <summary>

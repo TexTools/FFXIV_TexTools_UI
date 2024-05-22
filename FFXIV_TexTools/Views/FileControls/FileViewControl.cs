@@ -50,7 +50,7 @@ namespace FFXIV_TexTools.Views.Controls
         public bool UnsavedChanges
         {
             get => _UnsavedChanges;
-            protected set
+            set
             {
                 _UnsavedChanges = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(UnsavedChanges)));
@@ -361,6 +361,7 @@ namespace FFXIV_TexTools.Views.Controls
                     data = await INTERNAL_GetDataFromPath(internalFile, forceOriginal, tx);
                 } else
                 {
+                    UnsavedChanges = true;
                     data = decompData;
                 }
 
@@ -547,10 +548,16 @@ namespace FFXIV_TexTools.Views.Controls
                 }
                 _IS_SAVING = true;
 
-                var data = await GetCompressedData();
-                await Dat.WriteModFile(data, InternalFilePath, XivStrings.TexTools, ReferenceItem, tx);
+
+                var res = await INTERNAL_WriteModFile(tx);
+                if (!res)
+                {
+                    return false;
+                }
+
                 success = true;
                 ModState = EModState.Enabled;
+                UnsavedChanges = false;
                 return success;
             }
             catch(Exception ex)
@@ -562,6 +569,13 @@ namespace FFXIV_TexTools.Views.Controls
                 _IS_SAVING = false;
                 FileSaved?.Invoke(this, success);
             }
+        }
+
+        protected virtual internal async Task<bool> INTERNAL_WriteModFile(ModTransaction tx)
+        {
+            var data = await GetCompressedData();
+            await Dat.WriteModFile(data, InternalFilePath, XivStrings.TexTools, ReferenceItem, tx);
+            return true;
         }
 
 

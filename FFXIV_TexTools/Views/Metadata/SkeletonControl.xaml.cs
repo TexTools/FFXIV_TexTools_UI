@@ -48,7 +48,7 @@ namespace FFXIV_TexTools.Views.Metadata
             RacialComboBoxes = new Dictionary<XivRace, ComboBox>();
             RacialItemSources = new Dictionary<XivRace, ObservableCollection<KeyValuePair<int, string>>>();
 
-            MetadataView.CurrentView.EqdpView.RaceChanged += EqdpView_RaceChanged;
+            //MetadataView.CurrentView.EqdpView.RaceChanged += EqdpView_RaceChanged;
 
         }
 

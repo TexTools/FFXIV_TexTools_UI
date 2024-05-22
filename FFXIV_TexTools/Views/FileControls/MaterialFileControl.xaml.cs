@@ -43,6 +43,7 @@ using System.Collections.ObjectModel;
 using FFXIV_TexTools.Helpers;
 using xivModdingFramework.Materials.FileTypes;
 using xivModdingFramework.Mods;
+using FFXIV_TexTools.Resources;
 
 namespace FFXIV_TexTools.Views.Controls
 {
@@ -219,6 +220,12 @@ namespace FFXIV_TexTools.Views.Controls
 
         }
 
+        protected internal override async Task<bool> INTERNAL_WriteModFile(ModTransaction tx)
+        {
+            // We override this in order to use MTRL's import function, which checks for missing texture files, etc.
+            await Mtrl.ImportMtrl(Material, ReferenceItem, XivStrings.TexTools, true, tx);
+            return true;
+        }
 
         /// <summary>
         /// Updates the visual texture collection.

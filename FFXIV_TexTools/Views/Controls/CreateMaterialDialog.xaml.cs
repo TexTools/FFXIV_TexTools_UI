@@ -17,6 +17,7 @@ using xivModdingFramework.SqPack.FileTypes;
 using xivModdingFramework.Cache;
 using AutoUpdaterDotNET;
 using FFXIV_TexTools.Views.MaterialEditor;
+using xivModdingFramework.Mods.DataContainers;
 
 namespace FFXIV_TexTools.Views.Controls
 {
@@ -84,6 +85,7 @@ namespace FFXIV_TexTools.Views.Controls
             {
                 return "a";
             }
+
             for (var i = 0; i < alphabet.Length; i++)
             {
                 var identifier = alphabet[i];
@@ -114,6 +116,56 @@ namespace FFXIV_TexTools.Views.Controls
             // If you got this far, you can suffer memes.
             return "why";
         }
+
+        /// <summary>
+        /// Just creates the material ID.
+        /// </summary>
+        /// <param name="baseMaterial"></param>
+        /// <param name="item"></param>
+        /// <param name="owner"></param>
+        /// <returns></returns>
+        public static async Task<XivMtrl> ShowCreateMaterialDialogSimple(string targetModel, XivMtrl baseMaterial, IItem item, Window owner = null)
+        {
+            var exists = await MainWindow.DefaultTransaction.FileExists(baseMaterial.MTRLPath);
+            var newMtrl = (XivMtrl)baseMaterial.Clone();
+
+
+            var modelRoot = IOUtil.GetPrimarySecondaryFromFilename(targetModel);
+            var materialRoot = IOUtil.GetPrimarySecondaryFromFilename(baseMaterial.MTRLPath);
+
+            if (!string.IsNullOrEmpty(materialRoot) && !string.IsNullOrEmpty(modelRoot))
+            {
+                // Swap root part of the filename if needed...
+                baseMaterial.MTRLPath = baseMaterial.MTRLPath.Replace(materialRoot, modelRoot);
+            }
+
+            if (exists)
+            {
+                // We only actually open the user-input dialog IF we're creating something that has an extension to change.
+                var wind = new CreateMaterialDialog(baseMaterial);
+                wind.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                wind.Owner = owner != null ? owner : System.Windows.Application.Current.MainWindow;
+                var result = wind.ShowDialog();
+                if (result != true)
+                {
+                    // User cancelled
+                    return null;
+                }
+
+                newMtrl.MTRLPath = SuffixRegex.Replace(baseMaterial.MTRLPath, "_" + wind.Suffix + ".mtrl");
+                if (newMtrl.MTRLPath == baseMaterial.MTRLPath)
+                {
+                    // Failed to replace suffix, just add one on.
+                    newMtrl.MTRLPath = Regex.Replace(baseMaterial.MTRLPath, "\\.mtrl$", "_" + wind.Suffix + ".mtrl");
+                }
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+            return newMtrl;
+        }
+
 
         public static async Task<XivMtrl> ShowCreateMaterialDialog(XivMtrl material, IItemModel item, Window owner = null)
         {

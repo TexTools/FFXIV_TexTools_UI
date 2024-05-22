@@ -7,10 +7,9 @@
         xmlns:models="clr-namespace:FFXIV_TexTools.Models"
         xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
-        xmlns:views ="clr-namespace:FFXIV_TexTools.Views"
-        xmlns:metadata ="clr-namespace:FFXIV_TexTools.Views.Metadata"
+        xmlns:item ="clr-namespace:FFXIV_TexTools.Views.Item"
         xmlns:resx="clr-namespace:FFXIV_TexTools.Resources" 
-        xmlns:items="clr-namespace:FFXIV_TexTools.Views.Controls"
+        xmlns:controls="clr-namespace:FFXIV_TexTools.Views.Controls"
                       mc:Ignorable="d"
         resx:Localization.Enabled="True"
         Title="FFXIV TexTools" Height="720" Width="1280" WindowStartupLocation="CenterScreen" Closing="MetroWindow_Closing" Loaded="MetroWindow_Loaded">
@@ -116,7 +115,7 @@
                         <RowDefinition/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
-                    <items:ItemSelectControl x:Name="ItemSelect" Height="Auto" Width="Auto" DeferLoading="True" MainMenuMode="True" Margin="0,0,0,0"/>
+                    <controls:ItemSelectControl x:Name="ItemSelect" Height="Auto" Width="Auto" DeferLoading="True" MainMenuMode="True" Margin="0,0,0,0"/>
                 <TextBlock x:Name="StatusTextBox" ToolTip="You may continue using FFXIV/TexTools as normal while TexTools works. You do not need to keep TexTools open." Margin="0" TextWrapping="Wrap" Text="Status Text Goes Here" TextAlignment="Center" Grid.Row="1"/>
                 </Grid>
             </GroupBox>
@@ -130,20 +129,10 @@
                     </VisualBrush>
                 </GridSplitter.Background>
             </GridSplitter>
-            <Controls:MetroTabControl x:Name="TabsControl" Grid.Column="2" Controls:TabControlHelper.Underlined="TabPanel">
-                <TabItem x:Name="TextureTabItem" Header="{Binding Source={x:Static resx:UIStrings.Textures}}">
-                    <views:TextureView/>
-                </TabItem>
-                <TabItem x:Name="ModelTabItem" Header="{Binding Source={x:Static resx:UIStrings.Models}}" IsEnabled="False" Visibility="Hidden">
-                    <views:ModelView/>
-                </TabItem>
-                <TabItem x:Name="SharedItemsTab" Header="{Binding Source={x:Static resx:UIStrings.Variants}}" IsEnabled="False" Visibility="Hidden">
-                    <views:SharedItemsView/>
-                </TabItem>
-                <TabItem x:Name="MetadataTab" Header="Metadata" IsEnabled="False" Visibility="Hidden">
-                    <metadata:MetadataView/>
-                </TabItem>
-            </Controls:MetroTabControl>
+
+            <item:ItemViewControl x:Name="ItemView" Grid.Column="2">
+                
+            </item:ItemViewControl>
         </Grid>
 
         <Controls:FlyoutsControl Grid.Row="0" Grid.RowSpan="2" HorizontalAlignment="Right">

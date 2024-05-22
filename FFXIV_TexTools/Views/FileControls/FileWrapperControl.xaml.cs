@@ -18,6 +18,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using xivModdingFramework.Items.Interfaces;
 using xivModdingFramework.Mods;
 using xivModdingFramework.Mods.Enums;
 
@@ -93,6 +94,25 @@ namespace FFXIV_TexTools.Views.Controls
             }
         }
 
+        public bool UnsavedChanges { get
+            {
+                if (FileControl == null)
+                {
+                    return false;
+                }
+
+                return FileControl.UnsavedChanges;
+            }
+            set
+            {
+                if(FileControl == null)
+                {
+                    return;
+                }
+                FileControl.UnsavedChanges = value;
+            }
+        }
+
         public FileWrapperControl()
         {
             DataContext = this;
@@ -147,24 +167,73 @@ namespace FFXIV_TexTools.Views.Controls
             return null;
         }
 
-
-        public async Task<bool> LoadExternalFile(string externalFilePath, string internalFilePath)
+        public bool SetControlType(Type t)
         {
+            try
+            {
+                if (FileControl != null)
+                {
+                    _ = FileControl.ClearFile();
+                    FileControlEntry.Children.Remove(FileControl);
+                    FileControl = null;
+                }
+
+                FileControl = (FileViewControl)Activator.CreateInstance(t);
+                FileControlEntry.Children.Add(FileControl);
+                FileControl.PropertyChanged += FileControl_PropertyChanged;
+            }
+            catch
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public async Task<bool> LoadExternalFile(string externalFilePath, string internalFilePath, IItem referenceItem = null, bool reloadControl = true)
+        {
+            if (string.IsNullOrWhiteSpace(externalFilePath) || string.IsNullOrWhiteSpace(internalFilePath))
+            {
+                return false;
+            }
+
+            if (!reloadControl && FileControl == null)
+            {
+                return false;
+            }
+
             try
             {
                 FilePathBox.Text = "Loading File...";
                 FilePath = internalFilePath;
-                var control = GetControlForFile(externalFilePath);
-                if (control == null)
+                if (reloadControl)
                 {
-                    return false;
+                    if (FileControl != null)
+                    {
+                        FileControlEntry.Children.Remove(FileControl);
+                        FileControl = null;
+                    }
+
+                    var control = GetControlForFile(internalFilePath);
+                    if (control == null)
+                    {
+                        await SetupUi();
+                        return false;
+                    }
+                    FileControl = control;
+                    FileControlEntry.Children.Add(FileControl);
+                    FileControl.PropertyChanged += FileControl_PropertyChanged;
                 }
-                FileControl = control;
-                FileControlEntry.Children.Add(FileControl);
-                FileControl.PropertyChanged += FileControl_PropertyChanged;
+                else
+                {
+                    if (!FileControl.CanLoadFile(internalFilePath))
+                    {
+                        return false;
+                    }
+                }
 
 
-                await FileControl.LoadExternalFile(externalFilePath, internalFilePath);
+
+                await FileControl.LoadExternalFile(externalFilePath, internalFilePath, referenceItem);
                 await SetupUi();
                 return true;
             }
@@ -175,33 +244,54 @@ namespace FFXIV_TexTools.Views.Controls
         }
 
 
-        public async Task<bool> LoadInternalFile(string internalFilePath)
+        public async Task<bool> LoadInternalFile(string internalFilePath, IItem referenceItem = null, byte[] data = null, bool reloadControl = true)
         {
+
+            if (!reloadControl && FileControl == null)
+            {
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(internalFilePath))
+            {
+                await ClearFile();
+                return false;
+            }
+
             try
             {
                 FilePathBox.Text = "Loading File...";
                 FilePath = internalFilePath;
 
-                if (FileControl != null)
+                if (reloadControl)
                 {
-                    FileControlEntry.Children.Remove(FileControl);
-                    FileControl = null;
+                    if (FileControl != null)
+                    {
+                        FileControlEntry.Children.Remove(FileControl);
+                        FileControl = null;
+                    }
+
+                    var control = GetControlForFile(internalFilePath);
+                    if (control == null)
+                    {
+                        await SetupUi();
+                        return false;
+                    }
+                    FileControl = control;
+                    FileControlEntry.Children.Add(FileControl);
+                    FileControl.PropertyChanged += FileControl_PropertyChanged;
+                }
+                else
+                {
+                    if (!FileControl.CanLoadFile(internalFilePath))
+                    {
+                        await ClearFile();
+                        return false;
+                    }
                 }
 
-                var control = GetControlForFile(internalFilePath);
-                if (control == null)
-                {
-                    await SetupUi();
-                    return false;
-                }
 
-                FileControl = control;
-                FileControlEntry.Children.Add(FileControl);
-                FileControl.PropertyChanged += FileControl_PropertyChanged;
-
-
-
-                await FileControl.LoadInternalFile(internalFilePath);
+                await FileControl.LoadInternalFile(internalFilePath, false, referenceItem, data);
                 await SetupUi();
                 return true;
             }

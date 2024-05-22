@@ -17,6 +17,7 @@
 using FFXIV_TexTools.Helpers;
 using FFXIV_TexTools.Resources;
 using FFXIV_TexTools.Views;
+using FFXIV_TexTools.Views.Item;
 using System.ComponentModel;
 using System.IO;
 using System.Windows.Data;
@@ -92,13 +93,6 @@ namespace FFXIV_TexTools.ViewModels
         private async void OpenIcon()
         {
             var tx = MainWindow.DefaultTransaction;
-            if (_mainView.TabsControl.SelectedIndex == 1)
-            {
-                _mainView.TabsControl.SelectedIndex = 0;
-            }
-
-            _mainView.ModelTabItem.IsEnabled = false;
-
 
             var iconInt = -1;
             try
@@ -129,8 +123,6 @@ namespace FFXIV_TexTools.ViewModels
 
                 if (await tx.FileExists(path))
                 {
-                    var textureView = _mainView.TextureTabItem.Content as TextureView;
-                    var textureViewModel = textureView.DataContext as TextureViewModel;
 
                     var xivUI = new XivUi
                     {
@@ -143,16 +135,13 @@ namespace FFXIV_TexTools.ViewModels
                         UiPath = $"{iconFolderString}/{iconFileString}"
                     };
 
-                    await textureViewModel.UpdateTexture(xivUI);
+                    await ItemViewControl.StaticSetItem(xivUI);
                 }
                 else
                 {
                     var iconLangFolderString = $"ui/icon/{iconFolderInt.ToString().PadLeft(6, '0')}/en";
                     if (await tx.FileExists(path))
                     {
-                        var textureView = _mainView.TextureTabItem.Content as TextureView;
-                        var textureViewModel = textureView.DataContext as TextureViewModel;
-
                         var xivUI = new XivUi
                         {
                             Name = Path.GetFileNameWithoutExtension(iconFileString),
@@ -164,7 +153,7 @@ namespace FFXIV_TexTools.ViewModels
                             UiPath = $"{iconFolderString}/{iconFileString}"
                         };
 
-                        await textureViewModel.UpdateTexture(xivUI);
+                        await ItemViewControl.StaticSetItem(xivUI);
                     }
                     else
                     {
