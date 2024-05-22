@@ -102,6 +102,19 @@ namespace FFXIV_TexTools.Views.Controls
                 UpdateTextureList();
                 OnPropertyChanged(nameof(Material));
                 OnPropertyChanged(nameof(ShaderPack));
+                OnPropertyChanged(nameof(ColorsetEnabled));
+            }
+        }
+
+        public bool ColorsetEnabled
+        {
+            get
+            {
+                if(Material == null)
+                {
+                    return false;
+                }
+                return Material.ColorSetDataSize > 0;
             }
         }
 
@@ -131,7 +144,7 @@ namespace FFXIV_TexTools.Views.Controls
         {
             DataContext = this;
             InitializeComponent();
-
+            ViewType = EFileViewType.Editor;
 
             TextureSource = new ObservableCollection<WrappedTexture>();
 

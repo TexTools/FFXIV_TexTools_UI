@@ -47,6 +47,7 @@ using MahApps.Metro;
 using FFXIV_TexTools.Properties;
 using Xceed.Wpf.Toolkit;
 using xivModdingFramework.Helpers;
+using System.Diagnostics;
 
 namespace FFXIV_TexTools.Views.Controls
 {
@@ -96,7 +97,7 @@ namespace FFXIV_TexTools.Views.Controls
 
         List<Half[]> RowData;
 
-        private bool _LOADING = true;
+        private bool _Mtrl_Loading = true;
 
         ObservableCollection<KeyValuePair<ushort, string>> DyeTemplateCollection = new ObservableCollection<KeyValuePair<ushort, string>>();
         ObservableCollection<KeyValuePair<int, string>> PreviewDyeCollection = new ObservableCollection<KeyValuePair<int, string>>();
@@ -110,6 +111,7 @@ namespace FFXIV_TexTools.Views.Controls
         public ColorsetFileControl()
         {
             DataContext = this;
+            ViewType = EFileViewType.Editor;
             InitializeComponent();
 
             // This is really the Viewport's VM, not the general editor's VM.
@@ -392,7 +394,7 @@ namespace FFXIV_TexTools.Views.Controls
         // normal 255 byte color ranges, so we need to not stomp them when calling the normal UpdateRow() function.
         private void DiffuseColorPicker_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<System.Windows.Media.Color?> e)
         {
-            if (_LOADING) return;
+            if (_Mtrl_Loading) return;
 
             if (DiffuseColorPicker.SelectedColor.Value.A != 255)
             {
@@ -412,7 +414,7 @@ namespace FFXIV_TexTools.Views.Controls
         }
         private void SpecularColorPicker_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<System.Windows.Media.Color?> e)
         {
-            if (_LOADING) return;
+            if (_Mtrl_Loading) return;
 
             if (SpecularColorPicker.SelectedColor.Value.A != 255)
             {
@@ -437,7 +439,7 @@ namespace FFXIV_TexTools.Views.Controls
         }
         private void EmissiveColorPicker_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<System.Windows.Media.Color?> e)
         {
-            if (_LOADING) return;
+            if (_Mtrl_Loading) return;
 
             if (EmissiveColorPicker.SelectedColor.Value.A != 255)
             {
@@ -498,7 +500,7 @@ namespace FFXIV_TexTools.Views.Controls
 
             if (Material == null) return;
 
-            _LOADING = true;
+            _Mtrl_Loading = true;
 
             var dyeLen = Material.ColorSetData.Count == 256 ? 32 : 128;
             if (Material.ColorSetDyeData == null || Material.ColorSetDyeData.Length != dyeLen)
@@ -625,7 +627,7 @@ namespace FFXIV_TexTools.Views.Controls
 
             await UpdateViewport();
 
-            _LOADING = false;
+            _Mtrl_Loading = false;
         }
 
         private async Task UpdateViewport()
@@ -712,7 +714,7 @@ namespace FFXIV_TexTools.Views.Controls
             Material = material;
             if (Material == null) return;
 
-            _LOADING = true;
+            _Mtrl_Loading = true;
 
             STM.EStainingTemplate stainingTemplate;
             if (Material.ColorSetData.Count == 256)
@@ -827,7 +829,7 @@ namespace FFXIV_TexTools.Views.Controls
             {
                 FlexibleMessageBox.Show("Unable to load material into colorset editor.\n\nError: ".L() + ex.Message, "Colorset Editor Error".L(), System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning);
             }
-            _LOADING = false;
+            _Mtrl_Loading = false;
         }
 
 
@@ -888,7 +890,7 @@ namespace FFXIV_TexTools.Views.Controls
         {
             if (Material == null) return;
             if (Material.ColorSetData.Count == 0) return;
-            if (_LOADING) return;
+            if (_Mtrl_Loading) return;
 
             try
             {
@@ -1017,6 +1019,8 @@ namespace FFXIV_TexTools.Views.Controls
                     }
                 }
 
+                UnsavedChanges = true;
+
                 UpdateDyeStatus();
                 await UpdateRowVisual(RowId);
                 await UpdateViewport();
@@ -1032,6 +1036,7 @@ namespace FFXIV_TexTools.Views.Controls
         {
             try
             {
+                UnsavedChanges = true;
                 await UpdateRow();
             }
             catch (Exception ex)
@@ -1048,7 +1053,7 @@ namespace FFXIV_TexTools.Views.Controls
             {
                 return;
             }
-            _LOADING = true;
+            _Mtrl_Loading = true;
 
             var c = GetDisplayColor(col);
             picker.SelectedColor = new System.Windows.Media.Color()
@@ -1058,13 +1063,14 @@ namespace FFXIV_TexTools.Views.Controls
                 B = c.b,
                 A = 255,
             };
-            _LOADING = false;
+            UnsavedChanges = true;
+            _Mtrl_Loading = false;
             UpdateRow();
         }
 
         private void AssignPixel(int col, float r, float g, float b, float a = float.NaN)
         {
-            _LOADING = true;
+            _Mtrl_Loading = true;
             RowData[col][0] = r;
             RowData[col][1] = g;
             RowData[col][2] = b;
@@ -1073,7 +1079,8 @@ namespace FFXIV_TexTools.Views.Controls
             {
                 RowData[col][3] = a;
             }
-            _LOADING = false;
+            UnsavedChanges = true;
+            _Mtrl_Loading = false;
         }
         private (byte r, byte g, byte b) GetDisplayColor(int col)
         {
@@ -1082,7 +1089,7 @@ namespace FFXIV_TexTools.Views.Controls
             var hb = RowData[col][2];
 
 
-            return (ColorHalfToByte(hr), ColorHalfToByte(hb), ColorHalfToByte(hg));
+            return (ColorHalfToByte(hr), ColorHalfToByte(hg), ColorHalfToByte(hb));
 
         }
 
@@ -1166,32 +1173,41 @@ namespace FFXIV_TexTools.Views.Controls
             PasteRowButton.IsEnabled = true;
         }
 
-        private void PasteRowButton_Click(object sender, RoutedEventArgs e)
+        private async void PasteRowButton_Click(object sender, RoutedEventArgs e)
         {
-            if (CopiedRow == null) return;
-
-            // Disable Dye copying for now since that's not set up yet.
-
-            var dyeSize = 2;
-            if (Material.ColorSetData.Count > 256)
+            try
             {
-                dyeSize = 4;
-            }
-            var offset = RowId * dyeSize;
-            Array.Copy(CopiedRowDye, 0, Material.ColorSetDyeData, offset, dyeSize);
+                if (CopiedRow == null) return;
 
-            offset = RowId * _columnCount * 4;
-            for (int x = 0; x < _columnCount; x++)
-            {
-                for (int y = 0; y < 4; y++)
+                // Disable Dye copying for now since that's not set up yet.
+
+                var dyeSize = 2;
+                if (Material.ColorSetData.Count > 256)
                 {
-                    Material.ColorSetData[offset] = CopiedRow[x][y];
-                    offset++;
+                    dyeSize = 4;
                 }
-            }
+                var offset = RowId * dyeSize;
+                Array.Copy(CopiedRowDye, 0, Material.ColorSetDyeData, offset, dyeSize);
 
-            UpdateRowVisual(RowId);
-            SetRow(RowId);
+                offset = RowId * _columnCount * 4;
+                for (int x = 0; x < _columnCount; x++)
+                {
+                    for (int y = 0; y < 4; y++)
+                    {
+                        Material.ColorSetData[offset] = CopiedRow[x][y];
+                        offset++;
+                    }
+                }
+
+                await UpdateRowVisual(RowId);
+                await SetRow(RowId);
+
+                UnsavedChanges = true;
+            }
+            catch(Exception ex)
+            {
+                Trace.WriteLine(ex);
+            }
         }
 
         private async void MoveRowUpButton_Click(object sender, RoutedEventArgs e)
@@ -1255,6 +1271,7 @@ namespace FFXIV_TexTools.Views.Controls
 
             Material.ColorSetData = arr.ToList();
 
+            UnsavedChanges = true;
             await SetMaterial(Material, row2);
         }
 
@@ -1275,7 +1292,7 @@ namespace FFXIV_TexTools.Views.Controls
                     }
                 }
 
-                if (_LOADING) return;
+                if (_Mtrl_Loading) return;
 
                 await UpdateViewport();
             }

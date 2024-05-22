@@ -79,6 +79,7 @@ namespace FFXIV_TexTools.Views.Controls
 
             if (Configuration.EnvironmentConfiguration.TT_Unshared_Rendering)
                 _CanvasRenderer = new Helpers.ViewportCanvasRenderer(Viewport, AlternateViewportCanvas);
+            ViewType = EFileViewType.Editor;
 
         }
 

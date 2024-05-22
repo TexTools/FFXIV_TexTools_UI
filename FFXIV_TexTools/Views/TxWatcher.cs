@@ -34,15 +34,24 @@ namespace FFXIV_TexTools.Views
             }
         }
 
+
         public static bool SaveAllowed
         {
             get
             {
-                if (UserTransaction == null)
+                if (_HardSaveDisabled)
+                {
+                    return false;
+                }
+
+                if (ModTransaction.ActiveTransaction == null)
                 {
                     return true;
+                } else if (ModTransaction.ActiveTransaction != MainWindow.UserTransaction) {
+                    // This is a temporary write transaction being used internally, no other saves allowed, regardless of state.
+                    return false;
                 }
-                else if (UserTransaction.State == ETransactionState.Open || UserTransaction.State == ETransactionState.Preparing)
+                else if (ModTransaction.ActiveTransaction.State == ETransactionState.Open || ModTransaction.ActiveTransaction.State == ETransactionState.Preparing || ModTransaction.ActiveTransaction.State == ETransactionState.Closed)
                 {
                     return true;
                 }
@@ -56,10 +65,15 @@ namespace FFXIV_TexTools.Views
         {
             get
             {
-                if(UserTransaction == null)
+                if (_HardSaveDisabled)
+                {
+                    return UIStrings.Working_Ellipsis;
+                }
+
+                if (UserTransaction == null)
                 {
                     return UIStrings.SaveXIV;
-                } else if(UserTransaction.State == ETransactionState.Open || UserTransaction.State == ETransactionState.Preparing) {
+                } else if (UserTransaction.State == ETransactionState.Open || UserTransaction.State == ETransactionState.Preparing) {
                     return UIStrings.SaveTX;
                 }
                 else
@@ -72,6 +86,40 @@ namespace FFXIV_TexTools.Views
         internal static void INTERNAL_TxStateChanged(ETransactionState oldState, ETransactionState newState)
         {
             UserTxStateChanged?.Invoke(oldState, newState);
+            SaveStatusChanged?.Invoke(SaveAllowed, SaveLabel);
+        }
+
+        static TxWatcher()
+        {
+            ModTransaction.ActiveTransactionStateChanged += ActiveTransactionStateChanged;
+        }
+
+        private static void ActiveTransactionStateChanged(ModTransaction sender, ETransactionState oldState, ETransactionState newState)
+        {
+            SaveStatusChanged?.Invoke(SaveAllowed, SaveLabel);
+        }
+
+        private static bool _HardSaveDisabled = false;
+
+        /// <summary>
+        /// Strictly disable saving, immediately, system-wide.
+        /// Used as a failsafe, since it may take some time for the system to open a Transaction.
+        /// The function which uses this MUST have a finally{EnableSave()} block.
+        /// </summary>
+        /// <returns></returns>
+        public static void DisableSave()
+        {
+            _HardSaveDisabled = true;
+            SaveStatusChanged?.Invoke(SaveAllowed, SaveLabel);
+        }
+
+        /// <summary>
+        /// restore the system level saving block.
+        /// </summary>
+        /// <returns></returns>
+        public static void EnableSave()
+        {
+            _HardSaveDisabled = false;
             SaveStatusChanged?.Invoke(SaveAllowed, SaveLabel);
         }
     }

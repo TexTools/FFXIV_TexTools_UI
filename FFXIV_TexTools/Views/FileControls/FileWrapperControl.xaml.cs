@@ -43,6 +43,22 @@ namespace FFXIV_TexTools.Views.Controls
                 return FileControl.ModState == EModState.Enabled ? UIStrings.Disable : UIStrings.Enable;
             }
         }
+
+        private bool _SaveEnabled;
+        public bool SaveEnabled
+        {
+            get
+            {
+                return _SaveEnabled && TxWatcher.SaveAllowed;
+            }
+            set
+            {
+                _SaveEnabled = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SaveEnabled)));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(EnableDisableEnabled)));
+            }
+        }
+
         public bool EnableDisableEnabled
         {
             get
@@ -55,7 +71,7 @@ namespace FFXIV_TexTools.Views.Controls
                 {
                     return false;
                 }
-                return true;
+                return true && SaveEnabled;
             }
         }
 
@@ -120,22 +136,30 @@ namespace FFXIV_TexTools.Views.Controls
 
             LoadButton.IsEnabled = false;
             SaveAsGrid.IsEnabled = false;
-            SaveButton.IsEnabled = false;
+            SaveEnabled = false;
 
             SaveText.Text = TxWatcher.SaveLabel;
 
             TxWatcher.SaveStatusChanged += TxWatcher_SaveStatusChanged;
         }
 
-        private void TxWatcher_SaveStatusChanged(bool allowed, string text)
+        private async void TxWatcher_SaveStatusChanged(bool allowed, string text)
         {
-            SaveText.Text = TxWatcher.SaveLabel;
-            if (FileControl == null || string.IsNullOrWhiteSpace(FilePath))
+            try
             {
-                SaveButton.IsEnabled = false;
+                // Refresh this value to indicate a change occurred.
+                await Dispatcher.InvokeAsync(() =>
+                {
+                    // We don't know what event thread we're propogating from, so this needs to be dispatcher invoked.
+                    SaveText.Text = TxWatcher.SaveLabel;
+                    SaveEnabled = _SaveEnabled;
+                });
             }
-
-            SaveButton.IsEnabled = TxWatcher.SaveAllowed;
+            catch(Exception ex) 
+            {
+                // No-Op
+                Trace.WriteLine(ex);
+            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -347,7 +371,7 @@ namespace FFXIV_TexTools.Views.Controls
                 FilePathBox.Text = "No File Loaded";
                 LoadButton.IsEnabled = false;
                 SaveAsGrid.IsEnabled = false;
-                SaveButton.IsEnabled = false;
+                SaveEnabled = false;
                 return;
             }
 
@@ -376,7 +400,7 @@ namespace FFXIV_TexTools.Views.Controls
 
             LoadButton.IsEnabled = true;
             SaveAsGrid.IsEnabled = true;
-            SaveButton.IsEnabled = TxWatcher.SaveAllowed;
+            SaveEnabled = true;
 
             var tx = TxWatcher.DefaultTransaction;
             if (await tx.FileExists(FilePath) || FilePath.EndsWith(".meta"))
@@ -392,24 +416,41 @@ namespace FFXIV_TexTools.Views.Controls
 
         private async void EnableDisable_Click(object sender, RoutedEventArgs e)
         {
-            if (FileControl == null)
+            try
             {
-                return;
-            }
-            if (!FileControl.HasFile)
-            {
-                return;
-            }
+                TxWatcher.DisableSave();
 
-            var rtx = MainWindow.DefaultTransaction;
-            var desiredState = string.Equals(EnableDisableButton.Content, UIStrings.Enable) ? EModState.Enabled : EModState.Disabled;
-            var mod = await rtx.GetMod(FilePath);
-            if (mod == null)
-            {
-                return;
-            }
+                if (FileControl == null)
+                {
+                    return;
+                }
+                if (!FileControl.HasFile)
+                {
+                    return;
+                }
 
-            await Modding.SetModState(desiredState, mod.Value, MainWindow.UserTransaction);
+                var targetState = string.Equals(EnableDisableButton.Content, UIStrings.Enable);
+                await Task.Run((Func<Task>)(async () =>
+                {
+                    var rtx = MainWindow.DefaultTransaction;
+                    var desiredState =  targetState ? EModState.Enabled : EModState.Disabled;
+                    var mod = await rtx.GetMod(FilePath);
+                    if (mod == null)
+                    {
+                        return;
+                    }
+
+                    await Modding.SetModState(desiredState, mod.Value, MainWindow.UserTransaction);
+                }));
+            }
+            catch(Exception ex)
+            {
+                this.ShowError("File Save Error", "An error occurred while saving the file:\n\n" + ex.Message);
+            }
+            finally
+            {
+                TxWatcher.EnableSave();
+            }
         }
 
         private async void Load_Click(object sender, RoutedEventArgs e)
@@ -452,27 +493,42 @@ namespace FFXIV_TexTools.Views.Controls
 
         private async void Save_Click(object sender, RoutedEventArgs e)
         {
-            SaveFile();
+            await SaveFile();
         }
 
         private async Task SaveFile(ModTransaction tx = null)
         {
-            if (FileControl == null)
+            try
             {
-                return;
-            }
+                TxWatcher.DisableSave();
 
-            if (!FileControl.HasFile)
+                if (FileControl == null)
+                {
+                    return;
+                }
+
+                if (!FileControl.HasFile)
+                {
+                    return;
+                }
+
+
+                if (tx == null)
+                {
+                    tx = MainWindow.UserTransaction;
+                }
+
+                await FileControl.SaveCurrentFile(tx);
+            }
+            catch(Exception ex)
             {
-                return;
+                // These should already be handled, but safety is good whenever dealing with an async void call.
+                Trace.WriteLine(ex);
             }
-
-            if(tx == null)
+            finally
             {
-                tx = MainWindow.UserTransaction;
+                TxWatcher.EnableSave();
             }
-
-            await FileControl.SaveCurrentFile(tx);
         }
 
         private void SaveAsDropdown_Click(object sender, RoutedEventArgs e)

@@ -55,6 +55,7 @@ namespace FFXIV_TexTools.Views.Controls
             EqdpView.FileChanged += FileChanged;
             ImcView.FileChanged += FileChanged;
             VisorView.FileChanged += FileChanged;
+            ViewType = EFileViewType.Editor;
         }
 
         private void FileChanged()

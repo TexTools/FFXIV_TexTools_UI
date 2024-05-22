@@ -51,6 +51,7 @@ namespace FFXIV_TexTools.Views.Controls
             SizeChanged += TextureFileControl_SizeChanged;
 
             PropertyChanged += TextureFileControl_PropertyChanged;
+            ViewType = EFileViewType.Editor;
         }
 
 
@@ -288,6 +289,7 @@ namespace FFXIV_TexTools.Views.Controls
         }
         public override async Task INTERNAL_ClearFile()
         {
+            ImageSource = null;
             ChannelsEnabled = false;
             TextureFormatLabel.Visibility = Visibility.Collapsed;
             MipMapLabel.Visibility = Visibility.Collapsed;

@@ -121,10 +121,9 @@ namespace FFXIV_TexTools.Views.Controls
             {
                 MainWindow.UserTransaction.FileChanged += ModTransaction_FileChanged;
             }
-
             MainWindow.UserTransactionStarted += MainWindow_UserTransactionStarted;
 
-            DebouncedUpdate = ViewHelpers.Debounce(_UpdateOnMainThread, 100);
+            DebouncedUpdate = ViewHelpers.Debounce(_UpdateOnMainThread, 200);
         }
 
         private Action DebouncedUpdate;
@@ -304,6 +303,7 @@ namespace FFXIV_TexTools.Views.Controls
                     Trace.WriteLine("An error occurred when unloading file: " + file + "\n" + ex.Message);
                 }
             }
+            IsEnabled = false;
         }
 
         public abstract Task INTERNAL_ClearFile();
@@ -364,22 +364,31 @@ namespace FFXIV_TexTools.Views.Controls
 
 
                 var data = new byte[0];
-                if (decompData == null)
-                {
-                    data = await INTERNAL_GetDataFromPath(internalFile, forceOriginal, tx);
-                } else
-                {
-                    UnsavedChanges = true;
-                    data = decompData;
-                }
 
                 InternalFilePath = internalFile;
                 ExternalFilePath = "";
 
-                ModState = await Modding.GetModState(InternalFilePath, tx);
+                // Thread the loading, which may involve substantial decompression tasks.
+                await Task.Run(async () =>
+                {
+                    if (decompData == null)
+                    {
+                        data = await INTERNAL_GetDataFromPath(internalFile, forceOriginal, tx);
+                    }
+                    else
+                    {
+                        UnsavedChanges = true;
+                        data = decompData;
+                    }
+                    ModState = await Modding.GetModState(InternalFilePath, tx);
+                });
+
+
                 success = await INTERNAL_LoadFile(data);
 
                 UnsavedChanges = false;
+                IsEnabled = success;
+
                 return success;
             }
             catch (Exception ex)
@@ -464,6 +473,8 @@ namespace FFXIV_TexTools.Views.Controls
 
                 success = await INTERNAL_LoadFile(data);
                 UnsavedChanges = true;
+                IsEnabled = success;
+
                 return success;
             } catch (Exception ex)
             {
@@ -544,30 +555,45 @@ namespace FFXIV_TexTools.Views.Controls
         public async Task<bool> SaveCurrentFile(ModTransaction tx = null)
         {
             var success = false;
+            _IS_SAVING = true;
             try
             {
-                if (string.IsNullOrWhiteSpace(InternalFilePath))
+                // Thread this since mod writing may involve some pretty hefty tasks in some cases.
+                // And nothing in here should be touching our UI.
+                var s =  await Task.Run(async () =>
                 {
+                    if (string.IsNullOrWhiteSpace(InternalFilePath))
+                    {
+                        return success;
+                    }
+
+                    if (tx == null)
+                    {
+                        tx = MainWindow.UserTransaction;
+                    }
+
+
+                    var res = await INTERNAL_WriteModFile(tx);
+                    if (!res)
+                    {
+                        return false;
+                    }
+
+                    success = true;
+                    ModState = EModState.Enabled;
+                    UnsavedChanges = false;
                     return success;
-                }
+                });
 
-                if(tx == null)
+                if (s)
                 {
-                    tx = MainWindow.UserTransaction;
-                }
-                _IS_SAVING = true;
-
-
-                var res = await INTERNAL_WriteModFile(tx);
-                if (!res)
-                {
-                    return false;
+                    // Reload the file after to ensure user has correct-to-file-system state.
+                    // This is maybe unnecessary, but until we're 200% sure TT's file writing is perfectly
+                    // stable, it's probably better to be safe here.
+                    await ReloadFile();
                 }
 
-                success = true;
-                ModState = EModState.Enabled;
-                UnsavedChanges = false;
-                return success;
+                return s;
             }
             catch(Exception ex)
             {
@@ -791,7 +817,7 @@ namespace FFXIV_TexTools.Views.Controls
 
                 if (string.IsNullOrWhiteSpace(extension))
                 {
-                    var extStrings = "*" + string.Join(";*", exts);
+                    var extStrings = "*" + string.Join(";*", exts.Keys);
                     var filter = GetNiceName() + " Files (" + extStrings + ")|" + extStrings;
                     sfd.Filter = filter;
                 } else

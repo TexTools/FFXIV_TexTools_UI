@@ -5,6 +5,7 @@ using FolderSelect;
 using MahApps.Metro.Controls.Dialogs;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -75,11 +76,18 @@ namespace FFXIV_TexTools.Views
 
         public static void ShowError(this UserControl control, string title, string message)
         {
-            var wind = Window.GetWindow(control);
-            var Win32Window = new WindowWrapper(new WindowInteropHelper(wind).Handle);
-            FlexibleMessageBox.Show(Win32Window, message, title, MessageBoxButtons.OK, MessageBoxIcon.Error,
-                MessageBoxDefaultButton.Button1);
-            
+            try
+            {
+                var wind = Window.GetWindow(control);
+                var Win32Window = new WindowWrapper(new WindowInteropHelper(wind).Handle);
+                FlexibleMessageBox.Show(Win32Window, message, title, MessageBoxButtons.OK, MessageBoxIcon.Error,
+                    MessageBoxDefaultButton.Button1);
+            }
+            catch(Exception ex)
+            {
+                // Can't let the error function crash us.
+                Trace.WriteLine(ex);
+            }   
         }
 
         public static void ShowError(string title, string message)

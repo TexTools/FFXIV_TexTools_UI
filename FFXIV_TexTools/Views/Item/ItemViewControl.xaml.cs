@@ -1,5 +1,6 @@
 ﻿using FFXIV_TexTools.Resources;
 using FFXIV_TexTools.Views.Controls;
+using HelixToolkit.Wpf;
 using MahApps.Metro.Controls;
 using MahApps.Metro.IconPacks;
 using Newtonsoft.Json.Linq;
@@ -250,6 +251,8 @@ namespace FFXIV_TexTools.Views.Item
                 Textures = new ObservableCollection<KeyValuePair<string, string>>();
                 Files = new Dictionary<string, Dictionary<string, HashSet<string>>>();
 
+                ResetWatermarks();
+
                 await TextureWrapper.ClearFile();
                 await MaterialWrapper.ClearFile();
                 await ModelWrapper.ClearFile();
@@ -276,9 +279,13 @@ namespace FFXIV_TexTools.Views.Item
 
                 // Populate the Files structure.
                 var tx = MainWindow.DefaultTransaction;
-                await GetModels(tx);
-                await GetMaterials(tx);
-                await GetTextures(tx);
+                await Task.Run(async () =>
+                {
+                    // These need to be in sequence, so they can't be paralell'd
+                    await GetModels(tx);
+                    await GetMaterials(tx);
+                    await GetTextures(tx);
+                });
 
                 // Load metadata view manually since it's not handled by the above functions.
                 var success = await MetadataWrapper.LoadInternalFile(Root.Info.GetRootFile(), Item, null, false);
@@ -310,12 +317,70 @@ namespace FFXIV_TexTools.Views.Item
             }
         }
 
+        private void ResetWatermarks()
+        {
+
+            TextBoxHelper.SetWatermark(ModelComboBox, UIStrings.Model);
+            TextBoxHelper.SetWatermark(MaterialComboBox, UIStrings.Material);
+            TextBoxHelper.SetWatermark(TextureComboBox, UIStrings.Texture);
+        }
+        private void AssignModelWatermark()
+        {
+            var ct = Models.Count;
+            if (Models.Count == 0 || Models[0].Value == "")
+            {
+                ct = 0;
+            }
+
+            var markText = UIStrings.Model;
+            if (ct == 0 || ct > 1)
+            {
+                markText = UIStrings.Models;
+            }
+
+            markText += " (" + ct + ")";
+            TextBoxHelper.SetWatermark(ModelComboBox, markText);
+        }
+        private void AssignMaterialWatermark()
+        {
+            string markText = UIStrings.Material;
+            var ct = Materials.Count;
+            if (Materials.Count == 0 || Materials[0].Value == "")
+            {
+                ct = 0;
+            }
+            if (ct == 0 || ct > 1)
+            {
+                markText = UIStrings.Materials;
+            }
+
+            markText += " (" + ct + ")";
+            TextBoxHelper.SetWatermark(MaterialComboBox, markText);
+        }
+        private void AssignTexturewatermark()
+        {
+
+            var ct = Textures.Count;
+            if (Textures.Count == 0 || Textures[0].Value == "")
+            {
+                ct = 0;
+            }
+
+            string markText = UIStrings.Texture;
+            if (ct == 0 || ct > 1)
+            {
+                markText = UIStrings.Textures;
+            }
+
+            markText += " (" + ct + ")";
+            TextBoxHelper.SetWatermark(TextureComboBox, markText);
+        }
+
         /// <summary>
         /// Populates the top level strcture of the Files dictionary.
         /// </summary>
         private async Task GetModels(ModTransaction tx)
         {
-            TextBoxHelper.SetWatermark(ModelComboBox, UIStrings.Model);
             if (Root == null)
             {
                 Files.Add("", new Dictionary<string, HashSet<string>>());
@@ -323,76 +388,17 @@ namespace FFXIV_TexTools.Views.Item
                 return;
             }
 
-            var asIm = Item as IItemModel;
-            if (asIm == null)
+            var models = await Root.GetModelFiles(tx);
+            foreach (var m in models)
             {
-                // If we got handed a malformed item, just load by root.
-                var models = await Root.GetModelFiles(tx);
-                foreach(var m in models)
-                {
-                    Files.Add(m, new Dictionary<string, HashSet<string>>());
-                }
-                return;
-            }
-
-            if(Root.Info.PrimaryType != XivItemType.human)
-            {
-                // Anything outside of the human tree is fine to ship as-is.
-                var models = await Root.GetModelFiles(tx);
-                foreach (var m in models)
-                {
-                    Files.Add(m, new Dictionary<string, HashSet<string>>());
-                }
-                return;
-            }
-
-            var sType = Root.Info.SecondaryType.Value;
-            if(Root.Info.SecondaryId != 0)
-            {
-                // Need to handle this case later.
-                throw new NotImplementedException();
-            }
-
-
-            if(sType == XivItemType.face)
-            {
-                TextBoxHelper.SetWatermark(ModelComboBox, XivStrings.Face + " ID");
-
-            } else if(sType == XivItemType.body)
-            {
-                TextBoxHelper.SetWatermark(ModelComboBox, XivStrings.Body + " ID");
-
-            } else if(sType == XivItemType.tail)
-            {
-                TextBoxHelper.SetWatermark(ModelComboBox, XivStrings.Tail + " ID");
-
-            } else if(sType == XivItemType.hair)
-            {
-                TextBoxHelper.SetWatermark(ModelComboBox, XivStrings.Hair + " ID");
-            }
-            else if (sType == XivItemType.ear)
-            {
-                TextBoxHelper.SetWatermark(ModelComboBox, XivStrings.Ear + " ID");
-            }
-            else
-            {
-                // Malformed item.
-                throw new InvalidDataException("The given item was invalid.");
-            }
-
-            var race = XivRaces.GetXivRace(Root.Info.PrimaryId);
-
-            var values = await Character.GetAvailableSecondaryIds(race, sType, MainWindow.DefaultTransaction);
-
-            foreach (var v in values)
-            {
-                Files.Add(v.ToString(), new Dictionary<string, HashSet<string>>());
+                Files.Add(m, new Dictionary<string, HashSet<string>>());
             }
 
             if(Files.Count == 0)
             {
                 Files.Add("", new Dictionary<string, HashSet<string>>());
             }
+            return;
         }
 
 
@@ -415,14 +421,27 @@ namespace FFXIV_TexTools.Views.Item
                 materialSet = await Imc.GetMaterialSetId(asIm, false, tx);
             }
 
-            if (Root.Info.PrimaryType != XivItemType.human)
+            if (Root.Info.PrimaryType == XivItemType.human && Root.Info.SecondaryType == XivItemType.body)
             {
-                // Standard resolution.  Resolve by referenced materials.
+                // Exceptions class.
+                var materials = await Root.GetMaterialFiles(-1, tx, false);
+                var key = Files.First().Key;
+                foreach (var mat in materials)
+                {
+                    if (!Files[key].ContainsKey(mat))
+                    {
+                        Files[key].Add(mat, new HashSet<string>());
+                    }
+                }
+            }
+            else
+            {
+                // Resolve by referenced materials.
                 foreach (var file in Files)
                 {
                     var model = file.Key;
                     var materials = await Root.GetVariantShiftedMaterials(model, materialSet, tx);
-                    foreach(var mat in materials)
+                    foreach (var mat in materials)
                     {
                         if (!Files[model].ContainsKey(mat))
                         {
@@ -430,43 +449,8 @@ namespace FFXIV_TexTools.Views.Item
                         }
                     }
                 }
-
-            }
-            else
-            {
-                // Human Folder, the most exceptional nonsense.
-                foreach(var file in Files)
-                {
-                    if(file.Key == "")
-                    {
-                        break;
-                    }
-
-                    // For these, we really are crunching multiple roots into one "item".
-                    // So rip the secondary ID back off the "Model" field, and reconstruct the full root.
-                    var secondaryId = Int32.Parse(file.Key);
-                    var newInfo = (XivDependencyRootInfo)Root.Info.Clone();
-                    newInfo.SecondaryId = secondaryId;
-                    var newRoot = new XivDependencyRoot(newInfo);
-
-                    // Then let the root logic find all the materials, and attach them.
-                    // Orphans skipped here since we stick them in later anyways.
-                    var materials = await newRoot.GetMaterialFiles(-1, tx, false);
-                    foreach(var material in materials)
-                    {
-                        file.Value.Add(material, new HashSet<string>());
-                    }
-                }
             }
 
-            // Ensure we have at least a blank entry.
-            foreach(var file in Files)
-            {
-                if(file.Value.Count == 0)
-                {
-                    file.Value.Add("", new HashSet<string>());
-                }
-            }
 
             var orphanMaterials = await Root.GetOrphanMaterials(materialSet, tx);
             if (Root.Info.SecondaryType != null)
@@ -502,7 +486,23 @@ namespace FFXIV_TexTools.Views.Item
                     }
                 }
             }
+
+            // Ensure we have at least a blank entry.
+            foreach (var file in Files)
+            {
+                if (file.Value.Count == 0)
+                {
+                    file.Value.Add("", new HashSet<string>());
+                }
+            }
         }
+
+        private async Task<(string model, List<string> materials)> GetMaterialsTask(string model, XivDependencyRoot root, ModTransaction tx)
+        {
+            var materials = await root.GetMaterialFiles(-1, tx, false);
+            return (model, materials);
+        }
+
         private async Task GetTextures(ModTransaction tx)
         {
 
@@ -568,6 +568,7 @@ namespace FFXIV_TexTools.Views.Item
                 Models.Add(new KeyValuePair<string, string>("--", ""));
             }
 
+            AssignModelWatermark();
             ModelsEnabled = true;
             ModelComboBox.SelectedIndex = 0;
         }
@@ -598,6 +599,7 @@ namespace FFXIV_TexTools.Views.Item
                 Materials.Add(new KeyValuePair<string, string>("--", ""));
             }
 
+            AssignMaterialWatermark();
             MaterialComboBox.SelectedIndex = 0;
             MaterialsEnabled = true;
         }
@@ -629,6 +631,7 @@ namespace FFXIV_TexTools.Views.Item
                 Textures.Add(new KeyValuePair<string, string>("--", ""));
             }
 
+            AssignTexturewatermark();
             TexturesEnabled = true;
             TextureComboBox.SelectedIndex = 0;
         }
@@ -726,20 +729,6 @@ namespace FFXIV_TexTools.Views.Item
                 }
                 var mats = Files[currentModel].Keys.ToList();
 
-                if(Root != null && Root.Info.PrimaryType == XivItemType.human)
-                {
-                    // For these, we really are crunching multiple roots into one "item".
-                    // So rip the secondary ID back off the "Model" field, and reconstruct the full root.
-                    var secondaryId = Int32.Parse(currentModel);
-                    var newInfo = (XivDependencyRootInfo)Root.Info.Clone();
-                    newInfo.SecondaryId = secondaryId;
-                    var newRoot = new XivDependencyRoot(newInfo);
-
-                    // These then only have a single model, so...
-                    var tx = MainWindow.DefaultTransaction;
-                    var model = (await newRoot.GetModelFiles(tx)).FirstOrDefault();
-                    currentModel = model;
-                }
 
                 var success = await ModelWrapper.LoadInternalFile(currentModel, Item, null, false);
                 if (success && !_LoadSourceSet)

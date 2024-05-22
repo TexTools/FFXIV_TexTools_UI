@@ -20,6 +20,7 @@ using System.Windows;
 using FFXIV_TexTools.Helpers;
 using xivModdingFramework.Items;
 using System.Runtime.CompilerServices;
+using System.Diagnostics;
 
 namespace FFXIV_TexTools.Views.Controls
 {
@@ -281,20 +282,6 @@ namespace FFXIV_TexTools.Views.Controls
 
         private async Task<List<IItem>> BuildCategoryTree()
         {
-
-            foreach(var kv in _categoryStructure)
-            {
-                // Make the top level node.
-                var e = new ItemTreeElement(null, null, kv.Key);
-
-                foreach(var secondary in kv.Value)
-                {
-                    var e2 = new ItemTreeElement(e, null, secondary);
-                    e.Children.Add(e2);
-                }
-                CategoryElements.Add(e);
-            }
-
             var gameDir = XivCache.GameInfo.GameDirectory;
             var language = XivCache.GameInfo.GameLanguage;
 
@@ -302,25 +289,29 @@ namespace FFXIV_TexTools.Views.Controls
 
             foreach (var item in items)
             {
-                // Find what node we should be attached to.
+                // Find our top level parent.
                 ItemTreeElement catParent = null;
-                var topLevel = CategoryElements.FirstOrDefault(x => x.DisplayName == item.PrimaryCategory);
+                ItemTreeElement topLevel = null;
+                ItemTreeElement secondLevel = null;
+                ItemTreeElement thirdLevel = null;
+                ItemTreeElement fourthLevel = null;
+
+                topLevel = CategoryElements.FirstOrDefault(x => x.DisplayName == item.PrimaryCategory);
                 if (topLevel == null)
                 {
+                    // Create it if it doesn't already exist.
                     topLevel = new ItemTreeElement(null, null, item.PrimaryCategory);
                     CategoryElements.Add(topLevel);
                 }
+                catParent = topLevel;
 
-                var secondLevel = topLevel.Children.FirstOrDefault(x => x.DisplayName == item.SecondaryCategory);
-                if (secondLevel == null)
+                // Find our second level parent, if we have one.
+                if (!string.IsNullOrWhiteSpace(item.SecondaryCategory) && item.Name != item.SecondaryCategory)
                 {
-                    if (item.SecondaryCategory == item.Name)
+                    secondLevel = topLevel.Children.FirstOrDefault(x => x.DisplayName == item.SecondaryCategory);
+                    if (secondLevel == null)
                     {
-                        // These are a special snowflake case.
-                        secondLevel = topLevel;
-                    }
-                    else
-                    {
+                        //Create it if it doesn't exist.
                         secondLevel = new ItemTreeElement(topLevel, null, item.SecondaryCategory);
                         topLevel.Children.Add(secondLevel);
                     }
@@ -328,10 +319,16 @@ namespace FFXIV_TexTools.Views.Controls
                 catParent = secondLevel;
 
                 // If we have a Tertiary Category...
-                if (!String.IsNullOrWhiteSpace(item.TertiaryCategory)) {
+                if (!string.IsNullOrWhiteSpace(item.TertiaryCategory))
+                {
+                    var asch = item as XivCharacter;
+                    if(asch != null)
+                    {
+                        Trace.Write(asch);
+                    }
 
                     // Parent doesn't already have a Tertiary to attach to...
-                    var thirdLevel = secondLevel.Children.FirstOrDefault(x => x.DisplayName == item.TertiaryCategory);
+                    thirdLevel = secondLevel.Children.FirstOrDefault(x => x.DisplayName == item.TertiaryCategory);
                     if (thirdLevel == null)
                     {
                         // Add tertiary
@@ -340,22 +337,23 @@ namespace FFXIV_TexTools.Views.Controls
                     }
                     catParent = thirdLevel;
 
-                    if (item.SecondaryCategory == XivStrings.Maps)
-                    {
-                        var ui = (XivUi)item;
+                }
 
-                        if (!String.IsNullOrWhiteSpace(ui.MapZoneCategory))
+                // Maps are special and go 5 levels deep. (UI => Maps => Region => Zone => SubMap)
+                if (item.SecondaryCategory == XivStrings.Maps)
+                {
+                    var ui = (XivUi)item;
+                    if (!String.IsNullOrWhiteSpace(ui.MapZoneCategory))
+                    {
+                        // Parent doesn't already have a map group to attach to...
+                        fourthLevel = thirdLevel.Children.FirstOrDefault(x => x.DisplayName == ui.MapZoneCategory);
+                        if (fourthLevel == null)
                         {
-                            // Parent doesn't already have a map group to attach to...
-                            var fourthLevel = thirdLevel.Children.FirstOrDefault(x => x.DisplayName == ui.MapZoneCategory);
-                            if (fourthLevel == null)
-                            {
-                                // Add tertiary
-                                fourthLevel = new ItemTreeElement(topLevel, null, ui.MapZoneCategory);
-                                thirdLevel.Children.Add(fourthLevel);
-                            }
-                            catParent = fourthLevel;
+                            // Add tertiary
+                            fourthLevel = new ItemTreeElement(topLevel, null, ui.MapZoneCategory);
+                            thirdLevel.Children.Add(fourthLevel);
                         }
+                        catParent = fourthLevel;
                     }
                 }
 
@@ -385,50 +383,14 @@ namespace FFXIV_TexTools.Views.Controls
                     throw;
                 }
 
-                ItemTreeElement e2;
-                if (ExpandCharacterMenu && typeof(XivCharacter) == item.GetType())
-                {
-                    var charItem = (XivCharacter)item;
-                    if (charItem.ModelInfo != null && charItem.ModelInfo.PrimaryID > 0)
-                    {
-                        e2 = new ItemTreeElement(catParent, setParent, item.Name);
-                    } else
-                    {
-                        e2 = new ItemTreeElement(catParent, setParent, item);
-                    }
-                } else
-                {
-                    e2 = new ItemTreeElement(catParent, setParent, item);
-                }
+                var element = new ItemTreeElement(catParent, setParent, item);
                 if(catParent != null)
                 {
-                    catParent.Children.Add(e2);
+                    catParent.Children.Add(element);
                 }
                 if(setParent != null)
                 {
-                    setParent.Children.Add(e2);
-                }
-
-                if (ExpandCharacterMenu)
-                {
-                    if (typeof(XivCharacter) == item.GetType())
-                    {
-                        // Cache the references to our human root nodes.
-                        var charItem = (XivCharacter)item;
-                        var type = charItem.GetSecondaryItemType();
-                        if (type != XivItemType.none)
-                        {
-                            var raceCode = charItem.ModelInfo.PrimaryID;
-                            var race = XivRaces.GetXivRace(raceCode);
-
-                            if (!HumanParentNodes.ContainsKey(type))
-                            {
-                                HumanParentNodes.Add(type, new Dictionary<XivRace, ItemTreeElement>());
-                            }
-
-                            HumanParentNodes[type].Add(race, e2);
-                        }
-                    }
+                    setParent.Children.Add(element);
                 }
             }
             return items;

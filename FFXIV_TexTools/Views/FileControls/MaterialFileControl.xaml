@@ -65,7 +65,7 @@
         <Button x:Name="SavePresetButton" Content="Save Preset" HorizontalAlignment="Left" Margin="110,0,0,0" VerticalAlignment="Center" Width="100" Grid.Column="2" Click="SavePresetButton_Click" Height="28"/>
         <Button x:Name="LoadPresetButton" Content="Load Preset" HorizontalAlignment="Left" VerticalAlignment="Center" Width="100" Grid.Column="2" Click="LoadPresetButton_Click" Height="28"/>
 
-        <Button x:Name="EditColorsetButton" Content="View/Edit Colorset" HorizontalAlignment="Left" Margin="0,0,10,0" VerticalAlignment="Center" Width="150" Grid.Column="1" Click="EditColorset_Click"></Button>
+        <Button x:Name="EditColorsetButton" Content="View/Edit Colorset" HorizontalAlignment="Left" Margin="0,0,10,0" VerticalAlignment="Center" Width="150" Grid.Column="1" Click="EditColorset_Click" IsEnabled="{Binding Path=ColorsetEnabled}"></Button>
 
 
         <Button x:Name="EditShaderFlagsButton" Content="Edit Material Flags" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center" Width="150" Height="28" Grid.Row="1" Click="EditShaderFlags_Click"/>
