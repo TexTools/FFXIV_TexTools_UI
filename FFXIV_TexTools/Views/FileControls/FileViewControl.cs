@@ -151,16 +151,9 @@ namespace FFXIV_TexTools.Views.Controls
                 // Run update checks on a new thread.
                 await Task.Run(async () =>
                 {
-                    if (string.Equals(changedFile, InternalFilePath))
+                    if (await ShouldUpdateOnFileChange(changedFile))
                     {
                         DebouncedUpdate();
-                    }
-                    else
-                    {
-                        if (await ShouldUpdateOnFileChange(changedFile))
-                        {
-                            DebouncedUpdate();
-                        }
                     }
                 });
             }
@@ -178,6 +171,11 @@ namespace FFXIV_TexTools.Views.Controls
         /// <returns></returns>
         protected virtual async Task<bool> ShouldUpdateOnFileChange(string changedFile)
         {
+            if(string.Equals(changedFile, InternalFilePath))
+            {
+                return true;
+            }
+
             return false;
         }
 
@@ -231,7 +229,7 @@ namespace FFXIV_TexTools.Views.Controls
                 return false;
             }
 
-            var ext = Path.GetExtension(filePath);
+            var ext = Path.GetExtension(filePath).ToLower();
             if (exts.ContainsKey(ext))
             {
                 return true;
@@ -310,6 +308,8 @@ namespace FFXIV_TexTools.Views.Controls
 
         public abstract Task INTERNAL_ClearFile();
 
+
+        protected bool _LOADING = false;
         /// <summary>
         /// Load the given external file into view, assuming it will go to the target internal path.
         /// Returns true if the data was successfully loaded.
@@ -321,6 +321,13 @@ namespace FFXIV_TexTools.Views.Controls
         /// <returns></returns>
         public virtual async Task<bool> LoadInternalFile(string internalFile, bool forceOriginal = false, IItem referenceItem = null, byte[] decompData = null)
         {
+
+            if (_LOADING)
+            {
+                // Safety reject.
+                return false;
+            }
+
             if (UnsavedChanges && !string.IsNullOrWhiteSpace(InternalFilePath))
             {
                 if (!this.ConfirmDiscardChanges(InternalFilePath))
@@ -332,6 +339,7 @@ namespace FFXIV_TexTools.Views.Controls
             bool success = false;
             try
             {
+                _LOADING = true;
                 if (HasFile)
                 {
                     await ClearFile();
@@ -385,6 +393,7 @@ namespace FFXIV_TexTools.Views.Controls
             }
             finally
             {
+                _LOADING = false;
                 FileLoaded?.Invoke(this, success);
             }
         }
@@ -676,7 +685,7 @@ namespace FFXIV_TexTools.Views.Controls
                 return false;
             }
 
-            var ext = Path.GetExtension(externalFilePath);
+            var ext = Path.GetExtension(externalFilePath).ToLower();
             if (!exts.ContainsKey(ext))
             {
                 return false;
@@ -800,7 +809,7 @@ namespace FFXIV_TexTools.Views.Controls
                     return false;
                 }
 
-                var userExt = Path.GetExtension(sfd.FileName);
+                var userExt = Path.GetExtension(sfd.FileName).ToLower();
                 if (!exts.ContainsKey(userExt))
                 {
                     return false;

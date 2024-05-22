@@ -202,7 +202,7 @@ namespace FFXIV_TexTools.Views.Controls
         protected override async Task<bool> INTERNAL_SaveAs(string externalFilePath)
         {
             // Saving the current state to external file.
-            var ext = Path.GetExtension(externalFilePath);
+            var ext = Path.GetExtension(externalFilePath).ToLower();
                 
             if(ext == ".mtrl") {
                 var data = Mtrl.XivMtrlToUncompressedMtrl(_Material);
@@ -225,6 +225,45 @@ namespace FFXIV_TexTools.Views.Controls
             // We override this in order to use MTRL's import function, which checks for missing texture files, etc.
             await Mtrl.ImportMtrl(Material, ReferenceItem, XivStrings.TexTools, true, tx);
             return true;
+        }
+
+
+        protected override async Task<bool> ShouldUpdateOnFileChange(string changedFile)
+        {
+            if (!string.Equals(changedFile, InternalFilePath))
+            {
+                // We only care about changing if our exact file was altered.
+                return false;
+            }
+
+            // Time for some cursed tech.
+            return await Task.Run(async () =>
+            {
+                var tx = MainWindow.DefaultTransaction;
+                var newMtrl = await Mtrl.GetXivMtrl(changedFile, false, tx);
+
+                var result = Mtrl.CompareMaterials(Material, newMtrl);
+
+                if (result.OtherDifferences)
+                {
+                    // If parts other than the colorset were changed, we need to prompt a reload.
+                    return true;
+                }
+
+                if (!result.ColorsetDifferences)
+                {
+                    // Nothing actually changed, don't bother reloading.
+                    return true;
+                }
+
+
+                // Okay, now we need to merge the data.
+                // We don't need to do any UI updates because colorset information isn't displayed to start with.
+                Material.ColorSetData = newMtrl.ColorSetData;
+                Material.ColorSetDyeData = newMtrl.ColorSetDyeData;
+
+                return false;
+            });
         }
 
         /// <summary>
@@ -457,6 +496,22 @@ namespace FFXIV_TexTools.Views.Controls
             }
             var tex = (WrappedTexture)((Button)sender).DataContext;
             await SimpleFileViewWindow.OpenFile(tex.Texture.TexturePath);
+        }
+
+        private async void EditColorset_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if(Material.ColorSetDataSize > 0)
+                {
+                    var data = Mtrl.XivMtrlToUncompressedMtrl(Material);
+                    await SimpleFileViewWindow.OpenFile(Material.MTRLPath, ReferenceItem, data, true, Window.GetWindow(this));
+                }
+            }
+            catch
+            {
+                // No-Op
+            }
         }
     }
 }

@@ -25,8 +25,6 @@ namespace FFXIV_TexTools.ViewModels
 {
     public class ColorsetEditorViewModel : INotifyPropertyChanged
     {
-        ColorsetEditorControl _view;
-
         private static XivTex TileTextureNormal;
         private static XivTex TileTextureDiffuse;
 
@@ -35,6 +33,7 @@ namespace FFXIV_TexTools.ViewModels
 
         public ObservableElement3DCollection Models { get; } = new ObservableElement3DCollection();
         public Camera Camera { get; set; }
+        bool _NeedLights = true;
         public EffectsManager EffectsManager { get; }
 
         private XivMtrl _mtrl;
@@ -75,9 +74,8 @@ namespace FFXIV_TexTools.ViewModels
             }
         }
 
-        public ColorsetEditorViewModel(ColorsetEditorControl view)
+        public ColorsetEditorViewModel(Viewport3DX viewport)
         {
-            _view = view;
 
             // Eat exception to not immediately crash in VirtualBox
             try
@@ -85,15 +83,13 @@ namespace FFXIV_TexTools.ViewModels
                 EffectsManager = new DefaultEffectsManager();
             } catch { }
             Camera = new PerspectiveCamera();
+            _viewport = viewport;
         }
 
-        bool _NeedLights = true;
 
         public async Task SetMaterial(XivMtrl mtrl, StainingTemplateFile dyeFile) {
             _mtrl = mtrl;
             DyeTemplateFile = dyeFile;
-
-            _viewport = _view.ColorsetRowViewport;
             _viewport.BackgroundColor = System.Windows.Media.Colors.Gray;
             _viewport.Background = Brushes.Gray;
 

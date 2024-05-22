@@ -58,34 +58,34 @@
             <RowDefinition Height="40"/>
             <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
-        
-        <Label Content="Shader Pack:" Margin="10,0,0,0" VerticalAlignment="Center" FontWeight="Bold" FontSize="14" Height="28" HorizontalAlignment="Left" Grid.Row="0" HorizontalContentAlignment="Right" ToolTip="{StaticResource ShpkTooltip}"/>
-        <ComboBox x:Name="ShaderComboBox" Margin="110,0,10,0" VerticalAlignment="Center" Height="26" Grid.Row="0" SelectionChanged="ShaderComboBox_SelectionChanged" ToolTip="{StaticResource ShpkTooltip}" SelectedValue="{Binding Path=ShaderPack}"/>
 
-        <Button x:Name="SavePresetButton" Content="Save Preset" HorizontalAlignment="Left" Margin="110,0,0,0" VerticalAlignment="Center" Width="100" Grid.Column="2" Click="SavePresetButton_Click" Height="28" Grid.Row="0"/>
-        <Button x:Name="LoadPresetButton" Content="Load Preset" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Center" Width="100" Grid.Column="2" Click="LoadPresetButton_Click" Height="28" Grid.Row="0"/>
+        <Label Content="Shader Pack:" Margin="10,0,0,0" VerticalAlignment="Center" FontWeight="Bold" FontSize="14" Height="28" HorizontalAlignment="Left" HorizontalContentAlignment="Right" ToolTip="{StaticResource ShpkTooltip}" Width="94"/>
+        <ComboBox x:Name="ShaderComboBox" Margin="110,0,10,0" VerticalAlignment="Center" Height="26" SelectionChanged="ShaderComboBox_SelectionChanged" ToolTip="{StaticResource ShpkTooltip}" SelectedValue="{Binding Path=ShaderPack}"/>
+
+        <Button x:Name="SavePresetButton" Content="Save Preset" HorizontalAlignment="Left" Margin="110,0,0,0" VerticalAlignment="Center" Width="100" Grid.Column="2" Click="SavePresetButton_Click" Height="28"/>
+        <Button x:Name="LoadPresetButton" Content="Load Preset" HorizontalAlignment="Left" VerticalAlignment="Center" Width="100" Grid.Column="2" Click="LoadPresetButton_Click" Height="28"/>
+
+        <Button x:Name="EditColorsetButton" Content="View/Edit Colorset" HorizontalAlignment="Left" Margin="0,0,10,0" VerticalAlignment="Center" Width="150" Grid.Column="1" Click="EditColorset_Click"></Button>
 
 
-
-
-        <Button x:Name="EditShaderFlagsButton" Content="Edit Material Flags" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center" Width="150" Height="28" Grid.Row="1" Grid.ColumnSpan="2" Click="EditShaderFlags_Click"/>
-        <Button x:Name="EditShaderKeysButton" Content="Edit Shader Keys" HorizontalAlignment="Left" Margin="170,0,0,0" VerticalAlignment="Center" Width="150" Height="28" Grid.Row="1" Grid.ColumnSpan="2" Click="EditShaderKeys_Click"/>
+        <Button x:Name="EditShaderFlagsButton" Content="Edit Material Flags" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center" Width="150" Height="28" Grid.Row="1" Click="EditShaderFlags_Click"/>
+        <Button x:Name="EditShaderKeysButton" Content="Edit Shader Keys" HorizontalAlignment="Left" Margin="170,0,0,0" VerticalAlignment="Center" Width="150" Height="28" Grid.Row="1" Click="EditShaderKeys_Click"/>
         <Button x:Name="EditShaderConstantsButton" Content="Edit Shader Constants" HorizontalAlignment="Left" Margin="330,0,0,0" VerticalAlignment="Center" Width="150" Height="28" Grid.Row="1" Grid.ColumnSpan="2" Click="EditShaderConstants_Click"/>
 
         <Separator Grid.Row="2" Grid.ColumnSpan="3" Margin="5,0,5,0"/>
 
 
-        <Label Content="Textures" Grid.Row="3" HorizontalContentAlignment="Center" VerticalContentAlignment="Top" Cursor="Arrow" Grid.ColumnSpan="3" FontWeight="Bold" FontStyle="Italic" Grid.RowSpan="1" VerticalAlignment="Center"/>
+        <Label Content="Textures" Grid.Row="3" HorizontalContentAlignment="Center" VerticalContentAlignment="Top" Cursor="Arrow" Grid.ColumnSpan="3" FontWeight="Bold" FontStyle="Italic" VerticalAlignment="Center" Height="26"/>
 
-        <Button Content="Add Texture" Grid.Row="4" Grid.Column="2" HorizontalAlignment="Right" Margin="0,0,10,0" VerticalAlignment="Center" Width="150" Click="AddTexture_Click" Height="27" Grid.RowSpan="1"/>
-        <Button Content="Help" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" HorizontalAlignment="Right" Margin="0,0,170,0" VerticalAlignment="Center" Width="150" Click="HelpButton_Click" Height="27" Grid.RowSpan="1"/>
+        <Button Content="Add Texture" Grid.Row="4" Grid.Column="2" HorizontalAlignment="Left" Margin="60,0,0,0" VerticalAlignment="Center" Width="150" Click="AddTexture_Click" Height="28"/>
+        <Button Content="Help" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" HorizontalAlignment="Left" Margin="141,0,0,0" VerticalAlignment="Center" Width="150" Click="HelpButton_Click" Height="28"/>
 
         <Button x:Name="NewSharedButton" Content="Make Textures Shared" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center" Width="150" Height="28" Grid.Row="4" Click="NewSharedButton_Click"/>
         <Button x:Name="NewUniqueButton" Content="Make Textures Unique" HorizontalAlignment="Left" Margin="170,0,0,0" VerticalAlignment="Center" Width="150" Height="28" Grid.Row="4" Click="NewUniqueButton_Click"/>
 
-        <Label x:Name="SaveStatusLabel" Content="" Grid.Column="0" Grid.ColumnSpan="3" HorizontalAlignment="Right" Grid.Row="6" VerticalAlignment="Center" Width="243" HorizontalContentAlignment="Right" FontStyle="Italic" Height="29" Margin="0,0,334,0"/>
+        <Label x:Name="SaveStatusLabel" Content="" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Left" Grid.Row="4" VerticalAlignment="Center" Width="243" HorizontalContentAlignment="Right" FontStyle="Italic" Height="28" Margin="223,0,0,0"/>
 
-        <ListBox x:Name="TexturesList" Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="3" Margin="10"
+        <ListBox x:Name="TexturesList" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" Margin="10,10,10,10"
                     ItemTemplate="{StaticResource MtrlTextureTemplate}">
         </ListBox>
 

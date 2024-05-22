@@ -106,7 +106,7 @@ namespace FFXIV_TexTools.Views.Controls
 
         protected override async Task<bool> INTERNAL_SaveAs(string externalFilePath)
         {
-            var ext = Path.GetExtension(externalFilePath);
+            var ext = Path.GetExtension(externalFilePath).ToLower();
 
             if(ext == ".tex")
             {
@@ -412,7 +412,7 @@ namespace FFXIV_TexTools.Views.Controls
 
                     entries = info.GetAllEntries(asIm.GetItemSlotAbbreviation(), true);
 
-                    if (Path.GetExtension(InternalFilePath) == ".mtrl")
+                    if (Path.GetExtension(InternalFilePath).ToLower() == ".mtrl")
                     {
                         parents = new List<string>() { InternalFilePath };
                     }

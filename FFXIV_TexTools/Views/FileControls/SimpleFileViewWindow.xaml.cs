@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using xivModdingFramework.Cache;
+using xivModdingFramework.Items.Interfaces;
 
 namespace FFXIV_TexTools.Views.Controls
 {
@@ -40,13 +41,13 @@ namespace FFXIV_TexTools.Views.Controls
             }
         }
 
-        public async Task<bool> LoadFile(string filePath)
+        public async Task<bool> LoadFile(string filePath, IItem referenceItem = null, byte[] data = null, bool forceColorsetEditor = false)
         {
-            return await FileWrapper.LoadInternalFile(filePath);
+            return await FileWrapper.LoadInternalFile(filePath, referenceItem, data, true, forceColorsetEditor);
         }
 
 
-        public static async Task<bool> OpenFile(string filePath, Window owner = null)
+        public static async Task<bool> OpenFile(string filePath, IItem referenceItem = null, byte[] data = null, bool forceColorsetEditor = false, Window owner = null)
         {
             if(owner == null)
             {
@@ -56,7 +57,7 @@ namespace FFXIV_TexTools.Views.Controls
             wind.Owner = owner;
             wind.WindowStartupLocation = WindowStartupLocation.CenterOwner;
 
-            var success = await wind.LoadFile(filePath);
+            var success = await wind.LoadFile(filePath, referenceItem, data, forceColorsetEditor);
             if (success)
             {
                 wind.Show();

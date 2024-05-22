@@ -1,42 +1,61 @@
-﻿using FFXIV_TexTools.Helpers;
-using FFXIV_TexTools.Resources;
-using FFXIV_TexTools.ViewModels;
-using FFXIV_TexTools.Views.Controls;
-using MahApps.Metro;
-using SharpDX;
+﻿using FFXIV_TexTools.Textures;
+using SharpDX.Toolkit.Graphics;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats;
+using SixLabors.ImageSharp.Formats.Bmp;
+using SixLabors.ImageSharp.Formats.Png;
+using SixLabors.ImageSharp.PixelFormats;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.IO;
 using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using TeximpNet.DDS;
 using xivModdingFramework.Cache;
-using xivModdingFramework.Materials.DataContainers;
-using xivModdingFramework.Materials.FileTypes;
-using Xceed.Wpf.Toolkit;
-using FFXIV_TexTools.Views;
-using System.Windows.Markup;
-using xivModdingFramework.General.Enums;
-using xivModdingFramework.Items.DataContainers;
+using xivModdingFramework.Items.Enums;
+using xivModdingFramework.Items.Interfaces;
+using xivModdingFramework.SqPack.FileTypes;
+using xivModdingFramework.Textures.DataContainers;
+using xivModdingFramework.Textures.Enums;
 using xivModdingFramework.Textures.FileTypes;
-using System.IO;
-using xivModdingFramework.Helpers;
-using FFXIV_TexTools.Properties;
-using System.Diagnostics;
-using FFXIV_TexTools.Views.MaterialEditor;
+using xivModdingFramework.Variants.DataContainers;
+using xivModdingFramework.Variants.FileTypes;
+using static FFXIV_TexTools.ViewModels.TextureViewModel;
+using xivModdingFramework.Items;
+using Image = SixLabors.ImageSharp.Image;
+using xivModdingFramework.Materials.FileTypes;
+using xivModdingFramework.Materials.DataContainers;
 using xivModdingFramework.Mods;
+using FFXIV_TexTools.Controls;
+using FFXIV_TexTools.ViewModels;
+using SharpDX;
+using System.Collections.ObjectModel;
+using FFXIV_TexTools.Helpers;
+using MahApps.Metro;
+using FFXIV_TexTools.Properties;
+using Xceed.Wpf.Toolkit;
+using xivModdingFramework.Helpers;
 
-namespace FFXIV_TexTools.Controls
+namespace FFXIV_TexTools.Views.Controls
 {
     /// <summary>
-    /// Interaction logic for ColorsetEditorControl.xaml
+    /// Interaction logic for TextureFileControl.xaml
     /// </summary>
-    public partial class ColorsetEditorControl : UserControl
+    public partial class ColorsetFileControl : FileViewControl, INotifyPropertyChanged
     {
+
         List<ColorsetRowControl> ColorSetRowControls = new List<ColorsetRowControl>();
         StainingTemplateFile DyeTemplateFile;
         int RowId = 0;
@@ -46,6 +65,8 @@ namespace FFXIV_TexTools.Controls
         private int _rowCount = 32;
         private int _columnCount = 8;
 
+        List<Half[]> CopiedRow;
+        byte[] CopiedRowDye;
         private bool DawnTrail
         {
             get
@@ -58,11 +79,11 @@ namespace FFXIV_TexTools.Controls
         {
             get
             {
-                if (_mtrl == null) return false;
+                if (Material == null) return false;
 
                 if (DawnTrail)
                 {
-                    return _mtrl.ShaderPack == ShaderHelpers.EShaderPack.CharacterLegacy;
+                    return Material.ShaderPack == ShaderHelpers.EShaderPack.CharacterLegacy;
                 }
                 else
                 {
@@ -71,23 +92,11 @@ namespace FFXIV_TexTools.Controls
             }
         }
 
-        XivMtrl _mtrl;
-        public XivMtrl Material {
-            get
-            {
-                if(_mtrl == null)
-                {
-                    return null;
-                }
-                return (XivMtrl) _mtrl.Clone();
-            }
-        }
+        private XivMtrl Material;
 
         List<Half[]> RowData;
 
         private bool _LOADING = true;
-
-        public event EventHandler MaterialSaved;
 
         ObservableCollection<KeyValuePair<ushort, string>> DyeTemplateCollection = new ObservableCollection<KeyValuePair<ushort, string>>();
         ObservableCollection<KeyValuePair<int, string>> PreviewDyeCollection = new ObservableCollection<KeyValuePair<int, string>>();
@@ -98,10 +107,14 @@ namespace FFXIV_TexTools.Controls
 
         private Helpers.ViewportCanvasRenderer canvasRenderer = null;
 
-        public ColorsetEditorControl()
+        public ColorsetFileControl()
         {
-            this.DataContext = _vm = new ColorsetEditorViewModel(ColorsetRowViewport);
+            DataContext = this;
             InitializeComponent();
+
+            // This is really the Viewport's VM, not the general editor's VM.
+            _vm = new ColorsetEditorViewModel(ColorsetRowViewport);
+            ColorsetRowViewport.DataContext = _vm;
 
             if (Configuration.EnvironmentConfiguration.TT_Unshared_Rendering)
                 canvasRenderer = new Helpers.ViewportCanvasRenderer(ColorsetRowViewport, AlternateViewportCanvas);
@@ -116,7 +129,8 @@ namespace FFXIV_TexTools.Controls
                         Height = 12,
                         Width = 160
                     };
-                } else
+                }
+                else
                 {
                     elem = new ColorsetRowControl(i)
                     {
@@ -144,10 +158,10 @@ namespace FFXIV_TexTools.Controls
 
             // Binding handlers for any time the data is changed in the UI.
             const int _DYE_BITS = 12;
-            for(int i = 0; i < _DYE_BITS; i++)
+            for (int i = 0; i < _DYE_BITS; i++)
             {
                 var st = "DyeBit" + i;
-                var box = (CheckBox) FindName(st);
+                var box = (CheckBox)FindName(st);
                 box.Checked += ValueChanged;
                 box.Unchecked += ValueChanged;
                 DyeBoxes.Add(box);
@@ -193,9 +207,116 @@ namespace FFXIV_TexTools.Controls
             SetDyeBitLabels();
         }
 
+        public override string GetNiceName()
+        {
+            return "Colorset";
+        }
+
+        protected override KeyValuePair<string, string> GetDefaultExtension()
+        {
+            return new KeyValuePair<string, string>(".mtrl", "FFXIV Material");
+        }
+
+        public override Dictionary<string, string> GetValidFileExtensions()
+        {
+            return new Dictionary<string, string>()
+            {
+                { ".mtrl", "FFXIV Material" },
+                { ".dds", "DDS Image" }
+            };
+        }
+
+        public override async Task INTERNAL_ClearFile()
+        {
+            await SetMaterial(null);
+        }
+
+        protected override async Task<byte[]> INTERNAL_GetUncompressedData()
+        {
+            return Mtrl.XivMtrlToUncompressedMtrl(Material);
+        }
+
+        protected virtual async Task<byte[]> INTERNAL_CreateUncompressedFile(string externalFile, string internalFile, IItem referenceItem)
+        {
+            var ext = Path.GetExtension(externalFile).ToLower();
+
+
+            // This one's a little jank since we're really loading a partial file, and supplementing it with internal game files.
+            var material = await Mtrl.GetXivMtrl(internalFile, false, MainWindow.DefaultTransaction);
+            Tex.ImportColorsetTexture(material, externalFile, true, true);
+
+            return Mtrl.XivMtrlToUncompressedMtrl(material);
+        }
+
+        protected override async Task<bool> INTERNAL_LoadFile(byte[] data)
+        {
+            var mat = Mtrl.GetXivMtrl(data, InternalFilePath);
+            await SetMaterial(mat);
+            return true;
+        }
+
+        protected override async Task<bool> INTERNAL_SaveAs(string externalFilePath)
+        {
+            var ext = Path.GetExtension(externalFilePath).ToLower();
+            if(ext == ".mtrl")
+            {
+                File.WriteAllBytes(externalFilePath, await INTERNAL_GetUncompressedData());
+                return true;
+            }
+            else
+            {
+                var tex = await Mtrl.GetColorsetXivTex(Material);
+                var dyePath = Path.Combine(Path.GetDirectoryName(externalFilePath), Path.GetFileNameWithoutExtension(externalFilePath) + ".dat");
+
+                Mtrl.SaveColorsetDyeData(Material, dyePath);
+                Tex.SaveTexAsDDS(externalFilePath, tex);
+                return true;
+            }
+        }
+
+
+        protected override async Task<bool> ShouldUpdateOnFileChange(string changedFile)
+        {
+            if(!string.Equals(changedFile, InternalFilePath))
+            {
+                // We only care about changing if our exact file was altered.
+                return false;
+            }
+
+            // Time for some cursed tech.
+            return await Task.Run(async () =>
+            {
+                var tx = MainWindow.DefaultTransaction;
+                var newMtrl = await Mtrl.GetXivMtrl(changedFile, false, tx);
+
+                var result = Mtrl.CompareMaterials(Material, newMtrl);
+
+                if (result.ColorsetDifferences)
+                {
+                    // If our colorset got changed, we should be prompted for reload.
+                    return true;
+                }
+
+                if (!result.OtherDifferences)
+                {
+                    // No reason to reload if it's the same file.
+                    return false;
+                }
+
+                // Okay, we now need to the data and soft-reload the UI.
+                newMtrl.ColorSetData = Material.ColorSetData;
+                newMtrl.ColorSetDyeData = Material.ColorSetDyeData;
+
+                await SetMaterial(newMtrl, RowId);
+
+                return false;
+            });
+        }
+
+
         private void SetDyeBitLabels()
         {
-            if(DawnTrail)
+            if (DawnTrail)
             {
                 DyeBit0.Content = "Dye Diffuse";
                 DyeBit1.Content = "Dye Specular(?)";
@@ -229,7 +350,8 @@ namespace FFXIV_TexTools.Controls
                 TileOpacityLabel.Visibility = Visibility.Visible;
                 DyeChannelBox.Visibility = Visibility.Visible;
                 DyeChannelLabel.Visibility = Visibility.Visible;
-            } else
+            }
+            else
             {
                 DyeBit0.Content = "Dye Diffuse";
                 DyeBit1.Content = "Dye Specular";
@@ -260,11 +382,11 @@ namespace FFXIV_TexTools.Controls
             }
         }
 
+
         private void ValueChanged(object sender, RoutedEventArgs e)
         {
             UpdateRow();
         }
-
 
         // Color pickers get their own special handling, because technically the raw values can go over
         // normal 255 byte color ranges, so we need to not stomp them when calling the normal UpdateRow() function.
@@ -274,7 +396,8 @@ namespace FFXIV_TexTools.Controls
 
             if (DiffuseColorPicker.SelectedColor.Value.A != 255)
             {
-                DiffuseColorPicker.SelectedColor = new System.Windows.Media.Color() {
+                DiffuseColorPicker.SelectedColor = new System.Windows.Media.Color()
+                {
                     R = DiffuseColorPicker.SelectedColor.Value.R,
                     B = DiffuseColorPicker.SelectedColor.Value.B,
                     G = DiffuseColorPicker.SelectedColor.Value.G,
@@ -352,7 +475,7 @@ namespace FFXIV_TexTools.Controls
                 data.Add(arr);
                 for (int z = 0; z < 4; z++)
                 {
-                    arr[z] = _mtrl.ColorSetData[offset];
+                    arr[z] = Material.ColorSetData[offset];
                     offset++;
                 }
             }
@@ -362,7 +485,7 @@ namespace FFXIV_TexTools.Controls
         private Half[] RowDataToRaw(List<Half[]> data)
         {
             var raw = new Half[_columnCount * 4];
-            for(int i = 0; i < _columnCount; i++)
+            for (int i = 0; i < _columnCount; i++)
             {
                 Array.Copy(data[i], 0, raw, i * 4, 4);
             }
@@ -370,16 +493,17 @@ namespace FFXIV_TexTools.Controls
             return raw;
         }
 
-        private async Task SetRow(int rowNumber) {
+        private async Task SetRow(int rowNumber)
+        {
 
-            if (_mtrl == null) return;
+            if (Material == null) return;
 
             _LOADING = true;
 
-            var dyeLen = _mtrl.ColorSetData.Count == 256 ? 32 : 128;
-            if (_mtrl.ColorSetDyeData == null || _mtrl.ColorSetDyeData.Length != dyeLen)
+            var dyeLen = Material.ColorSetData.Count == 256 ? 32 : 128;
+            if (Material.ColorSetDyeData == null || Material.ColorSetDyeData.Length != dyeLen)
             {
-                _mtrl.ColorSetDyeData = new byte[dyeLen];
+                Material.ColorSetDyeData = new byte[dyeLen];
             }
 
             RowId = rowNumber;
@@ -407,25 +531,27 @@ namespace FFXIV_TexTools.Controls
 
 
 
-            if (_mtrl.ColorSetData.Count > 256)
+            if (Material.ColorSetData.Count > 256)
             {
                 // Dawntrail flipped these two values.
                 SpecularPowerBox.Text = RowData[1][3].ToString();
                 GlossBox.Text = RowData[0][3].ToString();
-            } else
+            }
+            else
             {
                 SpecularPowerBox.Text = RowData[0][3].ToString();
                 GlossBox.Text = RowData[1][3].ToString();
             }
 
-            if (_columnCount== 4)
+            if (_columnCount == 4)
             {
                 TileIdBox.SelectedValue = (int)(Math.Floor(RowData[2][3] * 64));
                 TileCountXBox.Text = RowData[3][0].ToString();
                 TileCountYBox.Text = RowData[3][3].ToString();
                 TileSkewXBox.Text = RowData[3][1].ToString();
                 TileSkewYBox.Text = RowData[3][2].ToString();
-            } else
+            }
+            else
             {
                 TileIdBox.SelectedValue = (int)(Math.Floor(RowData[6][1] * 64));
                 TileCountXBox.Text = RowData[7][0].ToString();
@@ -439,31 +565,32 @@ namespace FFXIV_TexTools.Controls
                 AnisotropyBlendingBox.Text = RowData[4][3].ToString();
             }
 
-            
+
 
 
             uint dyeData = 0;
-            if (_mtrl.ColorSetDyeData.Length != 0) {
+            if (Material.ColorSetDyeData.Length != 0)
+            {
                 if (DawnTrail)
                 {
-                    dyeData = BitConverter.ToUInt32(_mtrl.ColorSetDyeData, rowNumber * 4);
+                    dyeData = BitConverter.ToUInt32(Material.ColorSetDyeData, rowNumber * 4);
                 }
                 else
                 {
-                    dyeData = BitConverter.ToUInt16(_mtrl.ColorSetDyeData, rowNumber * 2);
+                    dyeData = BitConverter.ToUInt16(Material.ColorSetDyeData, rowNumber * 2);
                 }
             }
 
-            if(dyeData == uint.MaxValue)
+            if (dyeData == uint.MaxValue)
             {
                 dyeData = 0;
             }
 
-            ushort dyeTemplateId = STM.GetTemplateKeyFromMaterialData(_mtrl, RowId);
+            ushort dyeTemplateId = STM.GetTemplateKeyFromMaterialData(Material, RowId);
             DyeTemplateIdBox.SelectedValue = dyeTemplateId;
 
             var dyeBoxes = DawnTrail ? DyeBoxes.Count : 5;
-            for(int i = 0; i < dyeBoxes; i++)
+            for (int i = 0; i < dyeBoxes; i++)
             {
                 var shifted = 0x01 << i;
                 var active = (dyeData & shifted) > 0;
@@ -474,7 +601,8 @@ namespace FFXIV_TexTools.Controls
             {
                 uint dyeChannel = dyeData << 3 >> 30;
                 DyeChannelBox.SelectedValue = dyeChannel;
-            } else
+            }
+            else
             {
                 DyeChannelBox.SelectedValue = (uint)0;
             }
@@ -507,13 +635,13 @@ namespace FFXIV_TexTools.Controls
             {
                 dyeId = (int)DyePreviewIdBox.SelectedValue;
             }
-            
+
             await _vm.SetColorsetRow(RowId, _columnCount, dyeId);
         }
 
         private byte ColorHalfToByte(Half half)
         {
-            var b = (byte) Math.Round((Math.Sqrt(half) * 255));
+            var b = (byte)Math.Round((Math.Sqrt(half) * 255));
 
             return b;
         }
@@ -538,15 +666,14 @@ namespace FFXIV_TexTools.Controls
             for (int x = 0; x < _columnCount; x++)
             {
                 var valueOffset = (rowId * _columnCount * 4) + (x * 4);
-                var half = _mtrl.ColorSetData[valueOffset];
 
                 // Convert RGBA to BGRA
                 byte[] pixel = new byte[4];
                 var destinationOffset = x * 4;
-                pixels[destinationOffset + 0] = ColorHalfToByte(_mtrl.ColorSetData[valueOffset + 2]);
-                pixels[destinationOffset + 1] = ColorHalfToByte(_mtrl.ColorSetData[valueOffset + 1]);
-                pixels[destinationOffset + 2] = ColorHalfToByte(_mtrl.ColorSetData[valueOffset + 0]);
-                //pixels[destinationOffset + 3] = HalfToByte(_mtrl.ColorSetData[valueOffset + 3]);
+                pixels[destinationOffset + 0] = ColorHalfToByte(Material.ColorSetData[valueOffset + 2]);
+                pixels[destinationOffset + 1] = ColorHalfToByte(Material.ColorSetData[valueOffset + 1]);
+                pixels[destinationOffset + 2] = ColorHalfToByte(Material.ColorSetData[valueOffset + 0]);
+                //pixels[destinationOffset + 3] = HalfToByte(Material.ColorSetData[valueOffset + 3]);
 
                 // Turn off Alpha, it looks horrible and confusing.
                 pixels[destinationOffset + 3] = 255;
@@ -554,7 +681,7 @@ namespace FFXIV_TexTools.Controls
 
             const int expansionSize = 8;
             var expandedPixels = new byte[pixels.Length * expansionSize * expansionSize];
-            for(int z = 0; z < expansionSize; z++)
+            for (int z = 0; z < expansionSize; z++)
             {
                 for (int w = 0; w < expansionSize * _columnCount; w++)
                 {
@@ -573,26 +700,28 @@ namespace FFXIV_TexTools.Controls
             }
         }
 
+
         /// <summary>
         /// Sets the material and selects a given row (or row 0)
         /// </summary>
         /// <param name="mtrl"></param>
         /// <param name="row"></param>
         /// <returns></returns>
-        public async Task SetMaterial(XivMtrl mtrl, int row = 0)
+        public async Task SetMaterial(XivMtrl material, int row = 0)
         {
-            if (mtrl == null) return;
+            Material = material;
+            if (Material == null) return;
 
             _LOADING = true;
-            _mtrl = mtrl;
 
             STM.EStainingTemplate stainingTemplate;
-            if (mtrl.ColorSetData.Count == 256)
+            if (Material.ColorSetData.Count == 256)
             {
                 stainingTemplate = STM.EStainingTemplate.Endwalker;
                 _columnCount = 4;
                 _rowCount = 16;
-            } else
+            }
+            else
             {
                 stainingTemplate = STM.EStainingTemplate.Dawntrail;
                 _columnCount = 8;
@@ -614,7 +743,7 @@ namespace FFXIV_TexTools.Controls
 
             DiffuseColorPicker.DropDownBackground = bgBrush;
             DiffuseColorPicker.HeaderForeground = fgBrush;
-            DiffuseColorPicker.TabForeground= fgBrush;
+            DiffuseColorPicker.TabForeground = fgBrush;
             DiffuseColorPicker.TabBackground = bgBrush;
             DiffuseColorPicker.HeaderBackground = bgBrush;
 
@@ -669,13 +798,14 @@ namespace FFXIV_TexTools.Controls
                 DyePreviewIdBox.SelectedValue = -1;
 
 
-                if(!LegacyShader)
+                if (!LegacyShader)
                 {
                     GlossBox.Visibility = Visibility.Collapsed;
                     GlossLabel.Visibility = Visibility.Collapsed;
                     SpecularPowerBox.Visibility = Visibility.Collapsed;
                     SpecularPowerLabel.Visibility = Visibility.Collapsed;
-                } else
+                }
+                else
                 {
                     // Gloss/Spec Power only work on legacy shaders.
                     GlossBox.Visibility = Visibility.Visible;
@@ -684,7 +814,7 @@ namespace FFXIV_TexTools.Controls
                     SpecularPowerLabel.Visibility = Visibility.Visible;
                 }
 
-                await _vm.SetMaterial(_mtrl, DyeTemplateFile);
+                await _vm.SetMaterial(Material, DyeTemplateFile);
                 await SetRow(row);
 
                 for (int i = 0; i < _rowCount; i++)
@@ -692,39 +822,12 @@ namespace FFXIV_TexTools.Controls
                     await UpdateRowVisual(i);
                 }
 
-            } catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 FlexibleMessageBox.Show("Unable to load material into colorset editor.\n\nError: ".L() + ex.Message, "Colorset Editor Error".L(), System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning);
             }
             _LOADING = false;
-        }
-
-        /// <summary>
-        /// Saves the material to file.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private async void SaveButton_Click(object sender, RoutedEventArgs e)
-        {
-            var mw = MainWindow.GetMainWindow();
-            await mw.LockUi();
-            try
-            {
-
-
-                var item = mw.GetSelectedItem();
-                await Mtrl.ImportMtrl(_mtrl, item, XivStrings.TexTools, true, MainWindow.UserTransaction);
-                MaterialSaved.Invoke(this, null);
-            }
-            catch(Exception ex)
-            {
-                FlexibleMessageBox.Show("Unable to save Material.\n\nError: ".L() + ex.Message, "Material Save Error".L(), System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
-                return;
-            }
-            finally
-            {
-                await mw.UnlockUi();
-            }
         }
 
 
@@ -741,7 +844,7 @@ namespace FFXIV_TexTools.Controls
             CopyDyeValuesButton.IsEnabled = false;
             if (entry == null)
             {
-                for(int i = 0; i < DyeBoxes.Count; i++)
+                for (int i = 0; i < DyeBoxes.Count; i++)
                 {
                     DyeBoxes[i].IsEnabled = false;
                     DyeBoxes[i].IsChecked = false;
@@ -758,7 +861,7 @@ namespace FFXIV_TexTools.Controls
                 }
             }
 
-            for(int i = 0; i < DyeBoxes.Count; i++)
+            for (int i = 0; i < DyeBoxes.Count; i++)
             {
                 UpdateDyeBox(DyeBoxes[i], entry, i);
             }
@@ -783,8 +886,8 @@ namespace FFXIV_TexTools.Controls
         /// </summary>
         private async Task UpdateRow()
         {
-            if (_mtrl == null) return;
-            if (_mtrl.ColorSetData.Count == 0) return;
+            if (Material == null) return;
+            if (Material.ColorSetData.Count == 0) return;
             if (_LOADING) return;
 
             try
@@ -800,7 +903,8 @@ namespace FFXIV_TexTools.Controls
                     fl = 1.0f;
                     float.TryParse(GlossBox.Text, out fl);
                     RowData[0][3] = new Half(fl);
-                } else if (!DawnTrail)
+                }
+                else if (!DawnTrail)
                 {
                     // Original Endwalker gloss/spec power assignment.
                     fl = 1.0f;
@@ -901,14 +1005,14 @@ namespace FFXIV_TexTools.Controls
                 var offset = RowId * _dyeSize;
                 var bytes = BitConverter.GetBytes(modifier);
 
-                Array.Copy(bytes, 0, _mtrl.ColorSetDyeData, offset, _dyeSize);
+                Array.Copy(bytes, 0, Material.ColorSetDyeData, offset, _dyeSize);
 
                 offset = RowId * _columnCount * 4;
-                for(int x = 0; x < _columnCount; x++)
+                for (int x = 0; x < _columnCount; x++)
                 {
-                    for(int y = 0; y < 4; y++)
+                    for (int y = 0; y < 4; y++)
                     {
-                        _mtrl.ColorSetData[offset] = RowData[x][y];
+                        Material.ColorSetData[offset] = RowData[x][y];
                         offset++;
                     }
                 }
@@ -917,7 +1021,7 @@ namespace FFXIV_TexTools.Controls
                 await UpdateRowVisual(RowId);
                 await UpdateViewport();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 // No-Op...?
                 var z = "z";
@@ -930,7 +1034,7 @@ namespace FFXIV_TexTools.Controls
             {
                 await UpdateRow();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 this.ShowError("Unknown Error", "An error occurred:\n\n" + ex.Message);
             }
@@ -947,10 +1051,11 @@ namespace FFXIV_TexTools.Controls
             _LOADING = true;
 
             var c = GetDisplayColor(col);
-            picker.SelectedColor = new System.Windows.Media.Color() { 
+            picker.SelectedColor = new System.Windows.Media.Color()
+            {
                 R = c.r,
-                G = c.g, 
-                B = c.b, 
+                G = c.g,
+                B = c.b,
                 A = 255,
             };
             _LOADING = false;
@@ -964,7 +1069,7 @@ namespace FFXIV_TexTools.Controls
             RowData[col][1] = g;
             RowData[col][2] = b;
 
-            if(a != float.NaN)
+            if (a != float.NaN)
             {
                 RowData[col][3] = a;
             }
@@ -975,7 +1080,7 @@ namespace FFXIV_TexTools.Controls
             var hr = RowData[col][0];
             var hg = RowData[col][1];
             var hb = RowData[col][2];
-            
+
 
             return (ColorHalfToByte(hr), ColorHalfToByte(hb), ColorHalfToByte(hg));
 
@@ -983,7 +1088,7 @@ namespace FFXIV_TexTools.Controls
 
         private bool RawEditPixel(int col, string title, bool includeAlpha = false)
         {
-            if(col >= _columnCount)
+            if (col >= _columnCount)
             {
                 return false;
             }
@@ -1045,21 +1150,18 @@ namespace FFXIV_TexTools.Controls
         {
             RawAssignColorPixel(2, "Emissive Pixel", EmissiveColorPicker);
         }
-
-        List<Half[]> CopiedRow;
-        byte[] CopiedRowDye;
         private void CopyRowButton_Click(object sender, RoutedEventArgs e)
         {
             CopiedRow = GetRowData(RowId);
 
             var dyeSize = 2;
-            if(_mtrl.ColorSetData.Count > 256)
+            if (Material.ColorSetData.Count > 256)
             {
                 dyeSize = 4;
             }
 
             CopiedRowDye = new byte[dyeSize];
-            Array.Copy(_mtrl.ColorSetDyeData, RowId * dyeSize, CopiedRowDye, 0, dyeSize);
+            Array.Copy(Material.ColorSetDyeData, RowId * dyeSize, CopiedRowDye, 0, dyeSize);
 
             PasteRowButton.IsEnabled = true;
         }
@@ -1071,19 +1173,19 @@ namespace FFXIV_TexTools.Controls
             // Disable Dye copying for now since that's not set up yet.
 
             var dyeSize = 2;
-            if (_mtrl.ColorSetData.Count > 256)
+            if (Material.ColorSetData.Count > 256)
             {
                 dyeSize = 4;
             }
             var offset = RowId * dyeSize;
-            Array.Copy(CopiedRowDye, 0, _mtrl.ColorSetDyeData, offset, dyeSize);
+            Array.Copy(CopiedRowDye, 0, Material.ColorSetDyeData, offset, dyeSize);
 
             offset = RowId * _columnCount * 4;
             for (int x = 0; x < _columnCount; x++)
             {
                 for (int y = 0; y < 4; y++)
                 {
-                    _mtrl.ColorSetData[offset] = CopiedRow[x][y];
+                    Material.ColorSetData[offset] = CopiedRow[x][y];
                     offset++;
                 }
             }
@@ -1136,31 +1238,32 @@ namespace FFXIV_TexTools.Controls
             var myOffset = row1 * 4 * _columnCount;
             var otherOffset = row2 * 4 * _columnCount;
 
-            var arr = _mtrl.ColorSetData.ToArray();
+            var arr = Material.ColorSetData.ToArray();
             Array.Copy(myData, 0, arr, otherOffset, 4 * _columnCount);
             Array.Copy(otherData, 0, arr, myOffset, 4 * _columnCount);
 
             var offset1 = row1 * 2;
             var offset2 = row2 * 2;
 
-            var b1 = _mtrl.ColorSetDyeData[offset1];
-            var b2 = _mtrl.ColorSetDyeData[offset1 + 1];
+            var b1 = Material.ColorSetDyeData[offset1];
+            var b2 = Material.ColorSetDyeData[offset1 + 1];
 
-            _mtrl.ColorSetDyeData[offset1] = _mtrl.ColorSetDyeData[offset2];
-            _mtrl.ColorSetDyeData[offset1 + 1] = _mtrl.ColorSetDyeData[offset2 + 1];
-            _mtrl.ColorSetDyeData[offset2] = b1;
-            _mtrl.ColorSetDyeData[offset2 + 1] = b2;
+            Material.ColorSetDyeData[offset1] = Material.ColorSetDyeData[offset2];
+            Material.ColorSetDyeData[offset1 + 1] = Material.ColorSetDyeData[offset2 + 1];
+            Material.ColorSetDyeData[offset2] = b1;
+            Material.ColorSetDyeData[offset2 + 1] = b2;
 
-            _mtrl.ColorSetData = arr.ToList();
+            Material.ColorSetData = arr.ToList();
 
-            await SetMaterial(_mtrl, row2);
+            await SetMaterial(Material, row2);
         }
 
         private async void DyePreviewIdBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (_mtrl == null) return;
             try
             {
+                if (Material == null) return;
+
                 CopyDyeValuesButton.IsEnabled = false;
                 if (DyePreviewIdBox.SelectedValue != null && DyeTemplateIdBox.SelectedValue != null)
                 {
@@ -1186,22 +1289,22 @@ namespace FFXIV_TexTools.Controls
         {
             try
             {
-                ushort dyeTemplateId = STM.GetTemplateKeyFromMaterialData(_mtrl.ColorSetDyeData, RowId);
+                ushort dyeTemplateId = STM.GetTemplateKeyFromMaterialData(Material.ColorSetDyeData, RowId);
                 var template = DyeTemplateFile.GetTemplate(dyeTemplateId);
                 var dyeId = (int)DyePreviewIdBox.SelectedValue;
 
                 uint dyeData = 0;
-                if (_mtrl.ColorSetDyeData.Length == 0)
+                if (Material.ColorSetDyeData.Length == 0)
                 {
                     return;
                 }
                 if (DawnTrail)
                 {
-                    dyeData = BitConverter.ToUInt32(_mtrl.ColorSetDyeData, RowId * 4);
+                    dyeData = BitConverter.ToUInt32(Material.ColorSetDyeData, RowId * 4);
                 }
                 else
                 {
-                    dyeData = BitConverter.ToUInt16(_mtrl.ColorSetDyeData, RowId * 2);
+                    dyeData = BitConverter.ToUInt16(Material.ColorSetDyeData, RowId * 2);
                 }
 
                 var templateType = LegacyShader ? STM.EStainingTemplate.Endwalker : STM.EStainingTemplate.Dawntrail;
@@ -1248,13 +1351,13 @@ namespace FFXIV_TexTools.Controls
 
                 // Copy RowData into the main colorset array.
                 var rawData = RowDataToRaw(RowData);
-                var fullData = _mtrl.ColorSetData.ToArray();
+                var fullData = Material.ColorSetData.ToArray();
                 var offset = RowId * _columnCount * 4;
                 Array.Copy(rawData, 0, fullData, offset, rawData.Length);
-                _mtrl.ColorSetData = fullData.ToList();
+                Material.ColorSetData = fullData.ToList();
 
                 // Reload the UI.
-                await SetMaterial(_mtrl, RowId);
+                await SetMaterial(Material, RowId);
             }
             catch (Exception ex)
             {
@@ -1262,140 +1365,5 @@ namespace FFXIV_TexTools.Controls
             }
         }
 
-        private string GetDefaultSaveDirectory()
-        {
-            var mw = MainWindow.GetMainWindow();
-            var item = mw.GetSelectedItem();
-            var path = Path.GetFullPath(IOUtil.MakeItemSavePath(item, new DirectoryInfo(Settings.Default.Save_Directory), IOUtil.GetRaceFromPath(Material.MTRLPath)));
-            Directory.CreateDirectory(path);
-            return path;
-        }
-        private string GetDefaultSaveName()
-        {
-            var name = Path.GetFileNameWithoutExtension(Material.MTRLPath);
-            return name + ".dds";
-        }
-
-        private async void SaveAs_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                // To match user expectation here, we want to export the current state of the colorset editor.
-                var material = Material;
-                var texData = await Mtrl.GetColorsetXivTex(material);
-
-                var sd = new System.Windows.Forms.SaveFileDialog();
-                sd.Filter = "DDS Files (*.DDS)|*.dds";
-                sd.FileName = GetDefaultSaveName();
-                sd.InitialDirectory = GetDefaultSaveDirectory();
-                var res = sd.ShowDialog();
-                if (res != System.Windows.Forms.DialogResult.OK)
-                {
-                    return;
-                }
-
-                var path = sd.FileName;
-
-                Tex.SaveTexAsDDS(path, texData);
-                var dyeData = material.ColorSetDyeData != null ? material.ColorSetDyeData : new byte[0];
-                var datPath = Path.Combine(Path.GetDirectoryName(path), Path.GetFileNameWithoutExtension(path) + ".dat");
-
-                File.WriteAllBytes(datPath, dyeData);
-            }
-            catch (Exception ex)
-            {
-                this.ShowError("Unknown Error", "An error occurred:\n\n" + ex.Message);
-            }
-        }
-
-        private async void Load_Click(object sender, RoutedEventArgs e)
-        {
-            var mw = MainWindow.GetMainWindow();
-            await mw.LockUi();
-            try
-            {
-                var ofd = new System.Windows.Forms.OpenFileDialog();
-                ofd.Filter = "DDS Files (*.DDS)|*.dat;*.dds";
-                ofd.FileName = GetDefaultSaveName();
-                ofd.InitialDirectory = GetDefaultSaveDirectory();
-                var res = ofd.ShowDialog();
-                if (res != System.Windows.Forms.DialogResult.OK)
-                {
-                    return;
-                }
-                var path = ofd.FileName;
-                path.Replace(".dat", ".dds");
-
-                var cres = LoadColorsetWindow.ShowImport(path);
-                if (cres.ImportDye == null && cres.ImportColorset == null)
-                {
-                    return;
-                }
-                cres.ImportColorset = cres.ImportColorset == true;
-                cres.ImportDye = cres.ImportDye == true;
-
-                var datPath = Path.Combine(Path.GetDirectoryName(path), Path.GetFileNameWithoutExtension(path) + ".dat");
-
-                var item = mw.GetSelectedItem();
-                Tex.ImportColorsetTexture(Material, path);
-                //await Tex.ImportColorsetTexture(Material.MTRLPath, path, false, cres.ImportColorset.Value, cres.ImportDye.Value, item, XivStrings.TexTools, MainWindow.UserTransaction);
-                //var mtrl = await Mtrl.GetXivMtrl(Material.MTRLPath, false, MainWindow.UserTransaction);
-
-                await this.SetMaterial(Material);
-
-                // Reload the UI.
-                MaterialSaved.Invoke(this, null);
-                await mw.UnlockUi();
-            }
-            catch
-            {
-                await mw.UnlockUi();
-            }
-        }
-
-        private async void SaveAsModpack_Click(object sender, RoutedEventArgs e)
-        {
-            await MainWindow.GetMainWindow().LockUi("Exporting Metadata".L());
-            try
-            {
-                // To meet user expectations, we need to temporarily save the file as the on-screen state before exporting,
-                // Then roll back the file after.
-
-                var tx = MainWindow.UserTransaction;
-                var file = Material.MTRLPath;
-                bool ownTx = false;
-                TxFileState state = null;
-                if (tx == null)
-                {
-                    ownTx = true;
-                    tx = ModTransaction.BeginTransaction(true);
-                }
-                try
-                {
-                    state = await tx.SaveFileState(file);
-                    await Mtrl.ImportMtrl(Material, null, "Temp", false, tx);
-
-
-                    SingleFileModpackCreator.ExportFile(Material.MTRLPath, MainWindow.GetMainWindow(), tx);
-
-                }
-                finally
-                {
-                    if (ownTx)
-                    {
-                        ModTransaction.CancelTransaction(tx, true);
-                    }
-                    else
-                    {
-                        await tx.RestoreFileState(state);
-                    }
-                }
-            }
-            finally
-            {
-                await MainWindow.GetMainWindow().UnlockUi();
-            }
-
-        }
     }
 }

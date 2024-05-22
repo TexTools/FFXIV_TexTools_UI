@@ -120,6 +120,11 @@ namespace FFXIV_TexTools.Views.Controls
 
         protected override async Task<bool> ShouldUpdateOnFileChange(string changedFile)
         {
+            if(changedFile == InternalFilePath)
+            {
+                return true;
+            }
+
             if (UnsavedChanges)
             {
                 return false;
