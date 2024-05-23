@@ -660,10 +660,12 @@ namespace FFXIV_TexTools.Views.Item
                 materialSet = await Imc.GetMaterialSetId(asIm, false, tx);
             }
 
+            HashSet<string> foundMaterials = new HashSet<string>();
             if (Root.Info.PrimaryType == XivItemType.human && Root.Info.SecondaryType == XivItemType.body)
             {
                 // Exceptions class.
                 var materials = await Root.GetMaterialFiles(-1, tx, false);
+                foundMaterials.UnionWith(materials);
                 var key = Files.First().Key;
                 foreach (var mat in materials)
                 {
@@ -680,6 +682,8 @@ namespace FFXIV_TexTools.Views.Item
                 {
                     var model = file.Key;
                     var materials = await Root.GetVariantShiftedMaterials(model, materialSet, tx);
+                    foundMaterials.UnionWith(materials);
+
                     foreach (var mat in materials)
                     {
                         if (!Files[model].ContainsKey(mat))
@@ -698,6 +702,8 @@ namespace FFXIV_TexTools.Views.Item
                 var entry = Files.First().Value;
                 foreach (var orph in orphanMaterials)
                 {
+                    if (foundMaterials.Contains(orph)) continue;
+
                     if (!entry.ContainsKey(orph)) {
                         entry.Add(orph, new HashSet<string>());
                     }
@@ -707,11 +713,13 @@ namespace FFXIV_TexTools.Views.Item
             {
                 foreach (var orph in orphanMaterials)
                 {
+                    //if (foundMaterials.Contains(orph)) continue;
+
                     // This goes to the matching fake-secondary entry, if there is one.
-                    // Ex. on Equipment, the race is a fake secondary value.
-                    var secondary = IOUtil.GetSecondaryIdFromFileName(orph);
-                    var match = Files.FirstOrDefault(x => IOUtil.GetSecondaryIdFromFileName(x.Key) == secondary);
-                    if(match.Key != null && match.Value != null)
+                    // Ex. on Equipment, the race is a fake primary value.
+                    var primary = IOUtil.GetPrimaryIdFromFileName(orph);
+                    var match = Files.FirstOrDefault(x => IOUtil.GetPrimaryIdFromFileName(x.Key) == primary);
+                    if(match.Key != null && match.Value != null && !string.IsNullOrWhiteSpace(primary))
                     {
                         if (!match.Value.ContainsKey(orph))
                         {
@@ -777,6 +785,7 @@ namespace FFXIV_TexTools.Views.Item
         /// <param name="models"></param>
         private void AddModels(IEnumerable<string> models)
         {
+            models = models.OrderBy(x => x);
             Models = new ObservableCollection<KeyValuePair<string, string>>();
             foreach (var model in models)
             {
@@ -826,6 +835,7 @@ namespace FFXIV_TexTools.Views.Item
         /// <param name="models"></param>
         private void AddMaterials(IEnumerable<string> materials)
         {
+            materials = materials.OrderBy(x => x);
             Materials = new ObservableCollection<KeyValuePair<string, string>>();
             foreach (var material in materials)
             {
@@ -866,6 +876,7 @@ namespace FFXIV_TexTools.Views.Item
         /// <param name="textures"></param>
         private async Task AddTextures(IEnumerable<string> textures)
         {
+            //textures = textures.OrderBy(x => x);
             var mtrlPath = (string)MaterialComboBox.SelectedValue;
             XivMtrl mtrl = null;
             if (!string.IsNullOrEmpty(mtrlPath))
