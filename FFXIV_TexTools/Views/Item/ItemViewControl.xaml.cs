@@ -429,6 +429,8 @@ namespace FFXIV_TexTools.Views.Item
 
             try
             {
+                _TargetFile = GetFileKeys(targetFile);
+
                 Item = item;
                 ModelsEnabled = false;
                 MaterialsEnabled = false;
@@ -479,7 +481,6 @@ namespace FFXIV_TexTools.Views.Item
                 var tx = MainWindow.DefaultTransaction;
 
                 await SetItemName(tx);
-                _TargetFile = GetFileKeys(targetFile);
 
                 // Load metadata view manually since it's not handled by the above functions.
                 var success = await MetadataWrapper.LoadInternalFile(Root.Info.GetRootFile(), Item, null, false);
