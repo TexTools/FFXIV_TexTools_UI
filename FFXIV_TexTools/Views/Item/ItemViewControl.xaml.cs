@@ -697,18 +697,35 @@ namespace FFXIV_TexTools.Views.Item
             }
             else
             {
-                // Resolve by referenced materials.
-                foreach (var file in Files)
+                if (Files.Count == 1 && Files.First().Key == "")
                 {
-                    var model = file.Key;
-                    var materials = await Root.GetVariantShiftedMaterials(model, materialSet, tx);
-                    foundMaterials.UnionWith(materials);
-
+                    // No valid model files.  But there might be materials.
+                    var materials = await Root.GetMaterialFiles(-1, tx, false);
                     foreach (var mat in materials)
                     {
-                        if (!Files[model].ContainsKey(mat))
+                        if (!Files[""].ContainsKey(mat))
                         {
-                            Files[model].Add(mat, new HashSet<string>());
+                            Files[""].Add(mat, new HashSet<string>());
+                        }
+                    }
+                }
+                else
+                {
+                    // Resolve by referenced materials.
+                    foreach (var file in Files)
+                    {
+                        var model = file.Key;
+
+                        if (string.IsNullOrWhiteSpace(model)) break;
+                        var materials = await Root.GetVariantShiftedMaterials(model, materialSet, tx);
+                        foundMaterials.UnionWith(materials);
+
+                        foreach (var mat in materials)
+                        {
+                            if (!Files[model].ContainsKey(mat))
+                            {
+                                Files[model].Add(mat, new HashSet<string>());
+                            }
                         }
                     }
                 }
