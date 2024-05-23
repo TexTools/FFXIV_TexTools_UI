@@ -108,7 +108,8 @@ namespace FFXIV_TexTools.Views.Controls
             // The data coming in here is an uncompressed .mdl file.
             Model = Mdl.GetTTModel(data, InternalFilePath);
 
-            await UpdateVisual();
+            // Don't actually wait for the visual update on the model.
+            _ = UpdateVisual();
             return true;
         }
 

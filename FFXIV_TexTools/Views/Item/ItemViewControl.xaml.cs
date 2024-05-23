@@ -1517,7 +1517,7 @@ namespace FFXIV_TexTools.Views.Item
         {
             try
             {
-                var success = await SetItem(Item);
+                var success = await SetItem(Item, _VisiblePanel.FilePath);
             }
             catch
             {
