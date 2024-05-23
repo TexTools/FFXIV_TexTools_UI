@@ -14,6 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+using FFXIV_TexTools.ViewModels;
+using FFXIV_TexTools.Views.Models;
+using System.Data.Entity.Core.Metadata.Edm;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace FFXIV_TexTools.Views
@@ -23,9 +27,62 @@ namespace FFXIV_TexTools.Views
     /// </summary>
     public partial class ModelViewerOptionsView : UserControl
     {
+        private Viewport3DViewModel _vm
+        {
+            get
+            {
+                return DataContext as Viewport3DViewModel;
+            }
+        }
+
         public ModelViewerOptionsView()
         {
             InitializeComponent();
+        }
+
+        private void OpenShapesMenu_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            if (_vm == null) return;
+
+            try
+            {
+                if (_vm.Model == null || !_vm.Model.HasShapeData) return;
+
+                var wind = new ApplyShapesView(_vm.Model, _vm.ActiveShapes) { Owner = MainWindow.GetMainWindow() };
+                wind.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+
+                var result = wind.ShowDialog();
+
+                if (result != true) return;
+
+                _vm.SetShapes(wind.SelectedShapes);
+            }
+            catch
+            {
+                //No op
+            }
+
+        }
+
+        private void HighlightColorsetButton_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            if (_vm == null) return;
+
+            try
+            {
+                var wind = new HighilightedColorsetSelection(_vm.HighlightedColorsetRow) { Owner = MainWindow.GetMainWindow() };
+                wind.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+
+                var result = wind.ShowDialog();
+
+                if (result != true) return;
+
+                _vm.HighlightedColorsetRow = wind.SelectedRow;
+            }
+            catch
+            {
+                //No Op
+            }
         }
     }
 }

@@ -80,7 +80,6 @@ namespace FFXIV_TexTools.ViewModels
         private Visibility _raceVisibility = Visibility.Visible;
         private bool _light1Check = true, _light2Check, _light3Check, _lightRenderToggle, _transparencyToggle, _cullModeToggle, _keepCameraChecked;
 
-        public int HighlightedColorsetRow = -1;
 
         private IItemModel _item;
 
@@ -93,7 +92,7 @@ namespace FFXIV_TexTools.ViewModels
 
         private List<string> ActiveShapes = new List<string>();
 
-        private Dictionary<int, ModelTextureData> _materialDictionary;
+        private List<ModelTextureData> _materialDictionary;
 
         private DirectoryInfo _gameDirectory;
 
@@ -104,7 +103,7 @@ namespace FFXIV_TexTools.ViewModels
 
         public ModelViewModel(ModelView modelView)
         {
-            ViewPortVM = new Viewport3DViewModel(this);
+            ViewPortVM = new Viewport3DViewModel();
             _view = modelView;
 
             _view.ExportModelButton.Click += ExportModelButton_Click;
@@ -1419,7 +1418,7 @@ namespace FFXIV_TexTools.ViewModels
 
         private async Task<XivMdl> GetRawMdl()
         {
-            return (await _model.GetRawMdl(MainWindow.DefaultTransaction));
+            return null;
         }
 
         private void OpenModelInspector(object obj)
@@ -1721,11 +1720,9 @@ namespace FFXIV_TexTools.ViewModels
 
                 ModelModifiers.ApplyShapes(_model, ActiveShapes);
 
-                _materialDictionary = await GetMaterials();
+                //_materialDictionary = await GetMaterials();
 
                 ViewPortVM.UpdateModel(_model, _materialDictionary);
-
-                ReflectionValue = ViewPortVM.SpecularShine;
 
                 _view.viewport3DX.ZoomExtents();
 
@@ -2047,7 +2044,7 @@ namespace FFXIV_TexTools.ViewModels
                 var colors = ModelTexture.GetCustomColors();
                 colors.InvertNormalGreen = false;
 
-                var modelMaps = await ModelTexture.GetModelMaps(xivMtrl.Value, colors, HighlightedColorsetRow, MainWindow.DefaultTransaction);
+                var modelMaps = await ModelTexture.GetModelMaps(xivMtrl.Value, colors, ViewPortVM.HighlightedColorsetRow, MainWindow.DefaultTransaction);
                 textureDataDictionary.Add(xivMtrl.Key, modelMaps);
             }
 
@@ -2141,30 +2138,10 @@ namespace FFXIV_TexTools.ViewModels
 
         private void HighlightColorsetButton_Click(object sender, RoutedEventArgs e)
         {
-            var wind = new HighilightedColorsetSelection(HighlightedColorsetRow) { Owner = MainWindow.GetMainWindow() };
-            wind.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-
-            var result = wind.ShowDialog();
-
-            if (result != true) return;
-
-            HighlightedColorsetRow = wind.SelectedRow;
-            UpdateViewPort();
 
         }
         private void OpenShapesMenu_Click(object sender, RoutedEventArgs e)
         {
-            if (_model == null || !_model.HasShapeData) return;
-
-            var wind = new ApplyShapesView(_model, ActiveShapes) { Owner = MainWindow.GetMainWindow() };
-            wind.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-
-            var result = wind.ShowDialog();
-
-            if (result != true) return;
-
-            ActiveShapes = wind.SelectedShapes;
-            UpdateViewPort();
         }
 
 
@@ -2196,9 +2173,9 @@ namespace FFXIV_TexTools.ViewModels
             // Load a clean copy of the model.
             var ttmdl = await Mdl.GetTTModel(_model.Source);
 
-            var fmea = new fullModelEventArgs { TTModelData = ttmdl, TextureData = _materialDictionary, Item = _item, XivRace = SelectedRace.XivRace};
+            //var fmea = new fullModelEventArgs { TTModelData = ttmdl, TextureData = _materialDictionary, Item = _item, XivRace = SelectedRace.XivRace};
 
-            AddToFullModelEvent?.Invoke(this, fmea);
+            //AddToFullModelEvent?.Invoke(this, fmea);
         }
 
         /// <summary>

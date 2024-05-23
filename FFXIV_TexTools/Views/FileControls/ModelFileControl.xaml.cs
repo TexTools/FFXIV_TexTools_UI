@@ -41,6 +41,8 @@ using System.Diagnostics;
 using static FFXIV_TexTools.ViewModels.ModelViewModel;
 using xivModdingFramework.Mods.DataContainers;
 using System.Threading;
+using xivModdingFramework.SqPack.FileTypes;
+using SharpDX;
 
 namespace FFXIV_TexTools.Views.Controls
 {
@@ -67,49 +69,96 @@ namespace FFXIV_TexTools.Views.Controls
         private TTModel Model;
         private Helpers.ViewportCanvasRenderer _CanvasRenderer = null;
 
-        private byte[] RawMdl;
+
+        private HashSet<string> _ChildFiles = new HashSet<string>();
 
         public ModelFileControl()
         {
             DataContext = this;
             InitializeComponent();
-            ViewportVM = new Viewport3DViewModel(null);
-
-            Viewport.DataContext = ViewportVM;
+            ViewportVM = new Viewport3DViewModel();
 
             if (Configuration.EnvironmentConfiguration.TT_Unshared_Rendering)
                 _CanvasRenderer = new Helpers.ViewportCanvasRenderer(Viewport, AlternateViewportCanvas);
             ViewType = EFileViewType.Editor;
-            ColorsetVisibility = Visibility.Collapsed;
+            ColorsetButtonEnabled = false;
+
+            ViewportVM.TextureUpdateRequested += TextureUpdateRequested;
+            ViewportVM.ZoomExtentsRequested += ZoomExtentsRequested;
 
         }
-
         public override async Task INTERNAL_ClearFile()
         {
             Model = null;
             ViewportVM.ClearModels();
         }
 
-        protected override async Task<byte[]> INTERNAL_CreateUncompressedFile(string externalFile, string internalFile, IItem referenceItem)
+        protected override async Task<byte[]> INTERNAL_ExternalToUncompressedFile(string externalFile, string internalFile, IItem referenceItem)
         {
-            var data = await ImportModel(externalFile, internalFile, referenceItem);
+            var data = await ShowModelImportDialog(externalFile, internalFile, referenceItem);
             return data;
         }
 
         protected override async Task<byte[]> INTERNAL_GetUncompressedData()
         {
-            return RawMdl;
+            var tx = MainWindow.DefaultTransaction;
+            var data = await Mdl.MakeUncompressedMdlFile(Model, InternalFilePath, false, tx);
+            return data;
         }
 
         protected override async Task<bool> INTERNAL_LoadFile(byte[] data)
         {
-            RawMdl = data;
 
             // The data coming in here is an uncompressed .mdl file.
             Model = Mdl.GetTTModel(data, InternalFilePath);
 
+            _ChildFiles.Clear();
+            _ChildFiles.Add(InternalFilePath);
+
+            var root = XivCache.GetFilePathRoot(InternalFilePath);
+
+            var tx = MainWindow.DefaultTransaction;
+            _MaterialSet = 1;
+            _MaterialPaths = new List<string>();
+
+            try
+            {
+                // Resolve our child files to track.
+                    var set = 1;
+                if (ReferenceItem != null && Imc.UsesImc(root))
+                {
+                    var asIm = ReferenceItem as IItemModel;
+                    if (asIm != null)
+                    {
+                        set = await Imc.GetMaterialSetId(asIm, false, tx);
+                    }
+                }
+
+                _MaterialSet = set;
+                _MaterialPaths = await Mdl.GetReferencedMaterialPaths(Model.Materials, InternalFilePath, set, false, true, tx);
+                _ChildFiles.UnionWith(_MaterialPaths);
+
+                for (int i = 0; i < _MaterialPaths.Count; i++)
+                {
+                    var filePath = _MaterialPaths[i];
+
+                    if (!await tx.FileExists(filePath))
+                        continue;
+
+                    var textures = await Mtrl.GetTexturePathsFromMtrlPath(filePath, false, false, tx);
+                    _ChildFiles.UnionWith(textures);
+                }
+            }
+            catch(Exception ex)
+            {
+                // If any of these fail to resolve, we still want to continue.
+                Trace.Write(ex);
+            }
+
+
             // Don't actually wait for the visual update on the model.
             _ = UpdateVisual();
+
             return true;
         }
 
@@ -148,23 +197,9 @@ namespace FFXIV_TexTools.Views.Controls
                 return true;
             }
 
-            var tx = MainWindow.DefaultTransaction;
-
-            foreach(var mat in _MaterialPaths)
+            if(_ChildFiles.Contains(changedFile))
             {
-                if (changedFile.EndsWith(mat))
-                {
-                    return true;
-                }
-
-                var textures = await XivCache.GetChildFiles(mat, tx);
-                foreach(var tex in textures)
-                {
-                    if(changedFile == tex)
-                    {
-                        return true;
-                    }
-                }
+                return true;
             }
             return false;
         }
@@ -205,6 +240,33 @@ namespace FFXIV_TexTools.Views.Controls
 
 
         #region Core Visual Update Functions
+
+        public ModelTextureData GetPlaceholderTexture(string materialFileName)
+        {
+            var tex = new ModelTextureData()
+            {
+                Alpha = new byte[] { 255, 255, 255, 255 },
+                Diffuse = new byte[] { 128, 128, 128, 255 },
+                Emissive = null,
+                MaterialPath = materialFileName,
+                Height = 1,
+                Width = 1,
+                Normal = new byte[] { 128, 128, 255, 255 },
+                Specular = new byte[] { 64, 64, 64, 255 }
+            };
+            return tex;
+        }
+        public List<ModelTextureData> GetPlaceholderTextures(TTModel model)
+        {
+            var textures = new List<ModelTextureData>();
+            foreach(var mat in model.Materials)
+            {
+                textures.Add(GetPlaceholderTexture(mat));
+            }
+
+            return textures;
+        }
+
         /// <summary>
         /// Core function to refresh the visual model.
         /// Called once the actual TTModel is loaded, etc.
@@ -220,33 +282,23 @@ namespace FFXIV_TexTools.Views.Controls
             try
             {
                 ViewportVM.ClearModels();
-                ColorsetVisibility = Visibility.Collapsed;
 
                 ModelStatusLabel = UIStrings.ModelStatus_Loading;
 
                 // Might as well just make sure we have these updated.
                 CustomizeViewModel.UpdateFrameworkColors();
-                
-                TransparencyToggle = false;
-                FmvEnabled = false;
+
+                ViewportVM.TransparencyToggle = false;
+                FmvButtonEnabled = false;
+                ColorsetButtonEnabled = false;
+
+                List<ModelTextureData> textureData = null;
+                textureData = GetPlaceholderTextures(Model);
+
+                ViewportVM.UpdateModel(Model, textureData);
 
 
-                ModelModifiers.ApplyShapes(Model, ActiveShapes);
-
-                Dictionary<int, ModelTextureData> materialData = null;
-                await Task.Run(async () =>
-                {
-                    materialData = await GetMaterials();
-                });
-
-                ViewportVM.UpdateModel(Model, materialData);
-
-                ReflectionValue = ViewportVM.SpecularShine;
-
-                Viewport.ZoomExtents();
-
-
-                FmvEnabled = true;
+                FmvButtonEnabled = true;
                 // Disable FMV button if we're an unsupported type.
                 if (Model.IsInternal)
                 {
@@ -256,16 +308,17 @@ namespace FFXIV_TexTools.Views.Controls
                         || modelRoot.Info.PrimaryType == XivItemType.monster
                         || modelRoot.Info.PrimaryType == XivItemType.weapon)
                     {
-                        FmvEnabled = false;
+                        FmvButtonEnabled = false;
                     }
                 }
 
-                if (!KeepCameraChecked)
-                {
-                    Viewport.ZoomExtents();
-                }
 
-                ShowModelStatus(UIStrings.ModelStatus_UpdateSuccess);
+                ShowModelStatus("Loading Textures...");
+
+                await Task.Run(async () =>
+                {
+                    _ = UpdateTextures(Model, _MaterialPaths);
+                });
             }
             catch (Exception ex)
             {
@@ -280,114 +333,150 @@ namespace FFXIV_TexTools.Views.Controls
         private int _MaterialSet = -1;
         private List<string> _MaterialPaths = null;
 
-        /// <summary>
-        /// Gets the materials for the model
-        /// </summary>
-        /// <returns>A dictionary containing the mesh number(key) and the associated texture data (value)</returns>
-        private async Task<Dictionary<int, ModelTextureData>> GetMaterials()
+        private string AdjustSkinMaterial(string mtrl)
         {
-            var textureDataDictionary = new Dictionary<int, ModelTextureData>();
-            if (Model == null) return textureDataDictionary;
-
-            var tx = MainWindow.DefaultTransaction;
-
-            var mtrlDictionary = new Dictionary<int, XivMtrl>();
-
-            var race = IOUtil.GetRaceFromPath(InternalFilePath);
-
-            var root = await XivCache.GetFirstRoot(InternalFilePath);
-            if(root == null)
+            if (ModelModifiers.IsSkinMaterial(mtrl))
             {
-                return textureDataDictionary;
-            }
+                var race = IOUtil.GetRaceFromPath(InternalFilePath);
+                // Adjust skin materials to point to the user's preferred race.
 
-            var set = 1;
-            if (ReferenceItem != null && Imc.UsesImc(root))
-            {
-                var asIm = ReferenceItem as IItemModel;
-                if(asIm != null)
+                var file = "/" + Path.GetFileName(mtrl);
+                var body = file.Substring(file.IndexOf("b") + 1, 4);
+                var raceString = file.Substring(file.IndexOf("c") + 1, 4);
+
+                // XIV automatically forces skin materials to instead reference the appropiate one for the character wearing it.
+                race = XivRaceTree.GetSkinRace(race);
+
+                var gender = 0;
+                if (int.Parse(XivRaces.GetRaceCode(race).Substring(0, 2)) % 2 == 0)
                 {
-                    set = await Imc.GetMaterialSetId(asIm);
+                    gender = 1;
+                }
+
+                var userRace = ViewHelpers.GetUserRace(gender);
+
+                // Get the actual skin the user's preferred race uses.
+                var settingsRace = XivRaceTree.GetSkinRace(userRace.Race);
+                var settingsBody = settingsRace == userRace.Race ? userRace.BodyID : "0001";
+
+                // If the user's race is a child of the item's race, we can show the user skin instead.
+                var useSettings = XivRaceTree.IsChildOf(settingsRace, race);
+                if (useSettings)
+                {
+                    mtrl = mtrl.Replace("c" + raceString, "c" + settingsRace.GetRaceCode()).Replace("b" + body, "b" + settingsBody);
+                }
+                else
+                {
+                    // Just use item race.
+                    mtrl = mtrl.Replace("c" + raceString, "c" + race.GetRaceCode()).Replace("b" + body, "b0001");
                 }
             }
+            return mtrl;
+        }
 
-            _MaterialSet = set;
-            _MaterialPaths = await Mdl.GetReferencedMaterialPaths(Model.Materials, InternalFilePath, set, false, true, tx);
-            var fullMats = _MaterialPaths;
-
-            var materialNum = 0;
-            foreach (var mtrlFilePath in fullMats)
+        private List<ModelTextureData> _Textures;
+        /// <summary>
+        /// Gets the processed textures for the model, in usage order for the mdl.
+        /// </summary>
+        private async Task UpdateTextures(TTModel model, List<string> materials)
+        {
+            try
             {
-                var filePath = mtrlFilePath;
+                var textureList = new List<ModelTextureData>();
+                if (Model == null) return;
 
-                if (ModelModifiers.IsSkinMaterial(mtrlFilePath)) {
-                    // Adjust skin materials to point to the user's preferred race.
+                var tx = MainWindow.DefaultTransaction;
 
-                    var file = "/" + Path.GetFileName(mtrlFilePath);
-                    var body = file.Substring(file.IndexOf("b") + 1, 4);
-                    var raceString = file.Substring(file.IndexOf("c") + 1, 4);
+                var mtrlList = new List<XivMtrl>();
 
-                    // XIV automatically forces skin materials to instead reference the appropiate one for the character wearing it.
-                    race = XivRaceTree.GetSkinRace(race);
 
-                    var gender = 0;
-                    if (int.Parse(XivRaces.GetRaceCode(race).Substring(0, 2)) % 2 == 0)
+                var root = await XivCache.GetFirstRoot(InternalFilePath);
+                if (root == null)
+                {
+                    return;
+                }
+
+
+                for (int i = 0; i < materials.Count; i++)
+                {
+                    var originalFilePath = materials[i];
+                    var filePath = AdjustSkinMaterial(originalFilePath);
+
+                    var exists = await tx.FileExists(filePath);
+                    if (!exists && filePath != originalFilePath)
                     {
-                        gender = 1;
+                        // Retry with original file path.
+                        filePath = originalFilePath;
+                        if (!await tx.FileExists(filePath))
+                        {
+                            var fakeName = "/" + Path.GetFileName(originalFilePath);
+                            textureList.Add(GetPlaceholderTexture(fakeName));
+                            continue;
+                        }
+                    }
+                    else if (!exists)
+                    {
+                        var fakeName = "/" + Path.GetFileName(originalFilePath);
+                        textureList.Add(GetPlaceholderTexture(fakeName));
+                        continue;
                     }
 
-                    var userRace = ViewHelpers.GetUserRace(gender);
 
-                    // Get the actual skin the user's preferred race uses.
-                    var settingsRace = XivRaceTree.GetSkinRace(userRace.Race);
-                    var settingsBody = settingsRace == userRace.Race ? userRace.BodyID : "0001";
+                    var mtrlData = await Mtrl.GetXivMtrl(filePath, false, tx);
 
-                    // If the user's race is a child of the item's race, we can show the user skin instead.
-                    var useSettings = XivRaceTree.IsChildOf(settingsRace, race);
-                    if (useSettings)
+                    if (mtrlData == null)
                     {
-                        filePath = mtrlFilePath.Replace("c" + raceString, "c" + settingsRace.GetRaceCode()).Replace("b" +body, "b" +settingsBody);
+                        var fakeName = "/" + Path.GetFileName(originalFilePath);
+                        textureList.Add(GetPlaceholderTexture(fakeName));
+                        continue;
                     }
-                    else
+
+                    if (mtrlData.ShaderPackRaw.Contains("colorchange"))
                     {
-                        // Just use item race.
-                        filePath = mtrlFilePath.Replace("c" + raceString, "c" + race.GetRaceCode()).Replace("b" + body, "b0001");
+                        //hasColorChangeShader = true;
                     }
+
+
+                    mtrlData.MTRLPath = originalFilePath;
+                    mtrlList.Add(mtrlData);
                 }
 
 
-                var mtrlData = await Mtrl.GetXivMtrl(filePath, false, tx);
-
-                if (mtrlData == null)
+                for (int i = 0; i < mtrlList.Count; i++)
                 {
-                    continue;
+                    var xivMtrl = mtrlList[i];
+                    if (xivMtrl.ColorSetData.Count > 0)
+                    {
+                        ColorsetButtonEnabled = true;
+                    }
+
+                    var colors = ModelTexture.GetCustomColors();
+                    colors.InvertNormalGreen = false;
+
+                    var modelMaps = await ModelTexture.GetModelMaps(xivMtrl, colors, ViewportVM.HighlightedColorsetRow, tx);
+                    textureList.Add(modelMaps);
                 }
 
-                if (mtrlData.ShaderPackRaw.Contains("colorchange"))
+
+
+                if (InternalFilePath != Model.Source)
                 {
-                    //hasColorChangeShader = true;
+                    // User changed models.
+                    return;
                 }
+                _Textures = textureList;
 
-                mtrlDictionary.Add(materialNum, mtrlData);
-                materialNum++;
+                // Synchronous invoke here because we want to freeze the UI while we change the camera panel, to avoid any insanity.
+                Dispatcher.Invoke(() =>
+                {
+                    ViewportVM.UpdateModel(Model, textureList);
+                });
             }
-
-
-            foreach (var xivMtrl in mtrlDictionary)
+            catch(Exception ex)
             {
-                if (xivMtrl.Value.ColorSetData.Count > 0)
-                {
-                    ColorsetVisibility = Visibility.Visible;
-                }
-
-                var colors = ModelTexture.GetCustomColors();
-                colors.InvertNormalGreen = false;
-
-                var modelMaps = await ModelTexture.GetModelMaps(xivMtrl.Value, colors, HighlightedColorsetRow, tx);
-                textureDataDictionary.Add(xivMtrl.Key, modelMaps);
+                // No-Op.
+                Trace.Write(ex);
             }
-
-            return textureDataDictionary;
         }
         #endregion
 
@@ -431,341 +520,31 @@ namespace FFXIV_TexTools.Views.Controls
             ModelStatusLabel = string.Empty;
         }
 
-        public int HighlightedColorsetRow = -1;
-        private List<string> ActiveShapes = new List<string>();
-        private async void HighlightColorsetButton_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                var wind = new HighilightedColorsetSelection(HighlightedColorsetRow) { Owner = MainWindow.GetMainWindow() };
-                wind.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-
-                var result = wind.ShowDialog();
-
-                if (result != true) return;
-
-                HighlightedColorsetRow = wind.SelectedRow;
-                await UpdateVisual();
-            }
-            catch
-            {
-                //No Op
-            }
-        }
-        private async void OpenShapesMenu_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                if (Model == null || !Model.HasShapeData) return;
-
-                var wind = new ApplyShapesView(Model, ActiveShapes) { Owner = MainWindow.GetMainWindow() };
-                wind.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-
-                var result = wind.ShowDialog();
-
-                if (result != true) return;
-
-                ActiveShapes = wind.SelectedShapes;
-                await UpdateVisual();
-            }
-            catch
-            {
-                //No op
-            }
-        }
-
         private void ToggleFlyout(object sender, RoutedEventArgs e)
         {
-            FlyoutOpen = !FlyoutOpen;
+            ViewerOptionsFlyout.IsOpen = !ViewerOptionsFlyout.IsOpen;
         }
 
-        private bool _FlyoutOpen;
-        public bool FlyoutOpen
+        private bool _FmvButtonEnabled;
+        public bool FmvButtonEnabled
         {
-            get => _FlyoutOpen;
+            get => _FmvButtonEnabled;
             set
             {
-                _FlyoutOpen = value;
-                OnPropertyChanged(nameof(FlyoutOpen));
+                _FmvButtonEnabled = value;
+                OnPropertyChanged(nameof(FmvButtonEnabled));
             }
         }
 
 
-        private float _LightingXValue;
-        public float LightingXValue
+        private bool _ColorsetButtonEnabled;
+        public bool ColorsetButtonEnabled
         {
-            get => _LightingXValue;
+            get => _ColorsetButtonEnabled;
             set
             {
-                _LightingXValue = value;
-                ViewportVM.UpdateLighting(value, _CheckedLight, "X");
-                LightXLabel = $"X  |  {value:0.#}";
-                OnPropertyChanged(nameof(LightingXValue));
-            }
-        }
-
-        public float _LightingYValue;
-        public float LightingYValue
-        {
-            get => _LightingYValue;
-            set
-            {
-                _LightingYValue = value;
-                ViewportVM.UpdateLighting(value, _CheckedLight, "Y");
-                LightYLabel = $"Y  |  {value:0.#}";
-                OnPropertyChanged(nameof(LightingYValue));
-            }
-        }
-
-        public float _lightingZValue;
-        public float LightingZValue
-        {
-            get => _lightingZValue;
-            set
-            {
-                _lightingZValue = value;
-                ViewportVM.UpdateLighting(value, _CheckedLight, "Z");
-                LightZLabel = $"Z  |  {value:0.#}";
-                OnPropertyChanged(nameof(LightingZValue));
-            }
-        }
-
-        public int _ReflectionValue;
-        public int ReflectionValue
-        {
-            get => _ReflectionValue;
-            set
-            {
-                _ReflectionValue = value;
-                ViewportVM.UpdateReflection(value);
-                ReflectionLabel = $"{UIStrings.Reflection}  |  {value}";
-                OnPropertyChanged(nameof(ReflectionValue));
-            }
-        }
-
-        private int _CheckedLight;
-
-        public bool _Light1Check;
-        public bool Light1Check
-        {
-            get => _Light1Check;
-            set
-            {
-                _Light1Check = value;
-                if (value)
-                {
-                    _CheckedLight = 0;
-                    UpdateLights();
-                }
-            }
-        }
-
-        public bool _Light2Check;
-        public bool Light2Check
-        {
-            get => _Light2Check;
-            set
-            {
-                _Light2Check = value;
-                if (value)
-                {
-                    _CheckedLight = 1;
-                    UpdateLights();
-                }
-            }
-        }
-
-        public bool _Light3Check;
-        public bool Light3Check
-        {
-            get => _Light3Check;
-            set
-            {
-                _Light3Check = value;
-                if (value)
-                {
-                    _CheckedLight = 2;
-                    UpdateLights();
-                }
-            }
-        }
-
-        public bool _LightRenderToggle;
-        public bool LightRenderToggle
-        {
-            get => _LightRenderToggle;
-            set
-            {
-                _LightRenderToggle = value;
-                ViewportVM.RenderLight3 = value;
-                OnPropertyChanged(nameof(LightRenderToggle));
-            }
-        }
-
-        public Visibility _LightToggleVisibility;
-        public Visibility LightToggleVisibility
-        {
-            get => _LightToggleVisibility;
-            set
-            {
-                _LightToggleVisibility = value;
-                OnPropertyChanged(nameof(LightToggleVisibility));
-            }
-        }
-
-        public string _LightXLabel;
-        public string LightXLabel
-        {
-            get => _LightXLabel;
-            set
-            {
-                _LightXLabel = value;
-                OnPropertyChanged(nameof(LightXLabel));
-            }
-        }
-
-        public string _LightYLabel;
-        public string LightYLabel
-        {
-            get => _LightYLabel;
-            set
-            {
-                _LightYLabel = value;
-                OnPropertyChanged(nameof(LightYLabel));
-            }
-        }
-
-        public string _LightZLabel;
-        public string LightZLabel
-        {
-            get => _LightZLabel;
-            set
-            {
-                _LightZLabel = value;
-                OnPropertyChanged(nameof(LightZLabel));
-            }
-        }
-
-        public string _reflectionLabel;
-        public string ReflectionLabel
-        {
-            get => _reflectionLabel;
-            set
-            {
-                _reflectionLabel = value;
-                OnPropertyChanged(nameof(ReflectionLabel));
-            }
-        }
-
-        public bool _TransparencyToggle;
-        public bool TransparencyToggle
-        {
-            get => _TransparencyToggle;
-            set
-            {
-                _TransparencyToggle = value;
-                ViewportVM.UpdateTransparency(value);
-                OnPropertyChanged(nameof(TransparencyToggle));
-            }
-        }
-
-        public bool _CullModeToggle;
-        public bool CullModeToggle
-        {
-            get => _CullModeToggle;
-            set
-            {
-                _CullModeToggle = value;
-                UpdateCullMode(value);
-                OnPropertyChanged(nameof(CullModeToggle));
-            }
-        }
-
-        public bool _KeepCameraChecked;
-        public bool KeepCameraChecked
-        {
-            get => _KeepCameraChecked;
-            set
-            {
-                _KeepCameraChecked = value;
-                OnPropertyChanged(nameof(KeepCameraChecked));
-            }
-        }
-
-        public Visibility _FmvVisibility;
-        public Visibility FmvVisibility
-        {
-            get => _FmvVisibility;
-            set
-            {
-                _FmvVisibility = value;
-                OnPropertyChanged(nameof(FmvVisibility));
-            }
-        }
-
-        public Visibility _ColorsetVisibility;
-        public Visibility ColorsetVisibility
-        {
-            get => _ColorsetVisibility;
-            set
-            {
-                _ColorsetVisibility = value;
-                OnPropertyChanged(nameof(ColorsetVisibility));
-            }
-        }
-        /// <summary>
-        /// Updates the Cull Mode
-        /// </summary>
-        private void UpdateCullMode(bool noneCull)
-        {
-            ViewportVM.UpdateCullMode(noneCull);
-
-            Settings.Default.Cull_Mode = noneCull ? UIStrings.None : UIStrings.Back;
-
-            Settings.Default.Save();
-        }
-
-        /// <summary>
-        /// Update the light position values on the sliders
-        /// </summary>
-        private void UpdateLights()
-        {
-            var lightValues = ViewportVM.GetLightOffset(_CheckedLight);
-
-            LightingXValue = (float)lightValues.x;
-            LightXLabel = $"X  |  {lightValues.x:0.#}";
-            LightingYValue = (float)lightValues.y;
-            LightYLabel = $"Y  |  {lightValues.y:0.#}";
-            LightingZValue = (float)lightValues.z;
-            LightZLabel = $"Z  |  {lightValues.z:0.#}";
-
-            LightToggleVisibility = _CheckedLight == 2 ? Visibility.Visible : Visibility.Collapsed;
-        }
-
-        /// <summary>
-        /// Resets the light position values for the sliders
-        /// </summary>
-        public void ResetLightValues()
-        {
-            if (_CheckedLight == 2) return;
-
-            LightingXValue = 0;
-            LightXLabel = "X  |  0";
-            LightingYValue = 0;
-            LightYLabel = "Y  |  0";
-            LightingZValue = 0;
-            LightZLabel = "Z  |  0";
-        }
-
-
-        private bool _FmvEnabled;
-        public bool FmvEnabled
-        {
-            get => _FmvEnabled;
-            set
-            {
-                _FmvEnabled = value;
-                OnPropertyChanged(nameof(FmvEnabled));
+                _ColorsetButtonEnabled = value;
+                OnPropertyChanged(nameof(ColorsetButtonEnabled));
             }
         }
 
@@ -775,9 +554,18 @@ namespace FFXIV_TexTools.Views.Controls
         }
 
 
-        private async Task<XivMdl> GetRawMdl()
+        /// <summary>
+        /// Converts the current TTModel into XivMdl, in a similar structured state to how it would be on file import.
+        /// Mostly used to power the mdl detail panel for debugging/analysis.
+        /// </summary>
+        /// <returns></returns>
+        private async Task<XivMdl> GetXivMdl()
         {
-            return (await Model.GetRawMdl(MainWindow.DefaultTransaction));
+
+            var tx = MainWindow.DefaultTransaction;
+            var data = await Mdl.MakeUncompressedMdlFile(Model, InternalFilePath, false, tx);
+
+            return Mdl.GetXivMdl(data, InternalFilePath);
         }
 
         public override string GetDefaultSaveDirectory()
@@ -792,19 +580,6 @@ namespace FFXIV_TexTools.Views.Controls
         protected override KeyValuePair<string, string> GetDefaultExtension()
         {
             return new KeyValuePair<string, string>(".FBX", "FBX Model");
-        }
-
-        private void OpenModelInspector(object obj)
-        {
-            if (Model != null)
-            {
-                var task = Task.Run(GetRawMdl);
-                task.Wait();
-                var mdl = task.Result;
-                var modelInspector = new ModelInspector(mdl);
-                modelInspector.Owner = Window.GetWindow(this);
-                modelInspector.ShowDialog();
-            }
         }
 
 
@@ -824,7 +599,22 @@ namespace FFXIV_TexTools.Views.Controls
                 fmv.Owner = MainWindow.GetMainWindow();
                 fmv.Show();
 
-                await fmv.AddModel(ttmdl, await GetMaterials(), ReferenceItem as IItemModel, race);
+                // Jank conversion to dictionary for the FMV that needs updating badly.
+                var dict = new Dictionary<int, ModelTextureData>();
+                var i = 0;
+                foreach(var material in Model.Materials)
+                {
+                    var tex = _Textures.FirstOrDefault(x => x.MaterialPath == material);
+                    if(tex == null)
+                    {
+                        tex = GetPlaceholderTexture(material);
+                    }
+                    dict.Add(i, tex);
+                    i++;
+                }
+
+
+                await fmv.AddModel(ttmdl, dict, ReferenceItem as IItemModel, race);
             } catch (Exception ex)
             {
                 this.ShowError("FMV Error", "An error occurred while loading the model to the FMV:\n\n" + ex.Message);
@@ -832,20 +622,53 @@ namespace FFXIV_TexTools.Views.Controls
         }
 
 
-        private async Task<byte[]> ImportModel(string externalPath, string internalPath, IItem referenceItem)
+        private async Task<byte[]> ShowModelImportDialog(string externalPath, string internalPath, IItem referenceItem)
         {
-            var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
-
             var race = IOUtil.GetRaceFromPath(InternalFilePath);
-
             var result = await ImportModelView.ImportModel(internalPath, referenceItem, true, externalPath, MainWindow.GetMainWindow());
-
             if ( result != null && result.Success)
             {
                 return result.Data;
             }
             return null;
         }
+
+        private async void ModelInfo_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (Model != null)
+                {
+                    var mdl = await Task.Run(GetXivMdl);
+                    var modelInspector = new ModelInspector(mdl);
+                    modelInspector.Owner = Window.GetWindow(this);
+                    modelInspector.ShowDialog();
+                }
+            }
+            catch(Exception ex)
+            {
+                //No-Op.
+                Trace.WriteLine(ex);
+            }
+        }
+
+        #region Viewport Function Routing
+        private async void TextureUpdateRequested(Viewport3DViewModel requestor)
+        {
+            try
+            {
+                await UpdateTextures(Model, _MaterialPaths);
+            }
+            catch
+            {
+                // No-Op
+            }
+        }
+        private void ZoomExtentsRequested(Viewport3DViewModel requestor)
+        {
+            Viewport.ZoomExtents();
+        }
+        #endregion
 
     }
 }

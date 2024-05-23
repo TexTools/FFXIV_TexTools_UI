@@ -289,6 +289,22 @@ namespace FFXIV_TexTools.Views.Item
             }
         }
 
+        private bool _UpdateQueued;
+        private bool UpdateQueued
+        {
+            get => _UpdateQueued;
+            set
+            {
+                _UpdateQueued = value;
+
+                // Notify the child controls to stop processing for updates, since we're about to wipe them anyways.
+                TextureWrapper.FileControl._UpdateQueued = true;
+                MaterialWrapper.FileControl._UpdateQueued = true;
+                ModelWrapper.FileControl._UpdateQueued = true;
+                MetadataWrapper.FileControl._UpdateQueued = true;
+            }
+        }
+
         private async void ModTransaction_FileChanged(string changedFile, long newOffset)
         {
             if (Files == null) return;
@@ -309,6 +325,9 @@ namespace FFXIV_TexTools.Views.Item
                     var keys = GetFileKeys(changedFile);
                     if (keys.ModelKey == "!")
                     {
+                        _UpdateQueued = true;
+
+
                         // But is not already listed in our file structure.
                         // This means we need to reload the item.
                         _DebouncedRebuildComboBoxes(Item);

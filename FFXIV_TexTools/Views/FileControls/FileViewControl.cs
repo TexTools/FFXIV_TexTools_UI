@@ -112,11 +112,13 @@ namespace FFXIV_TexTools.Views.Controls
             }
         }
 
-        public bool HasFile { get
+        public bool HasFile { 
+            get
             {
                 return !string.IsNullOrWhiteSpace(InternalFilePath);
             } 
         }
+
 
         public FileViewControl()
         {
@@ -142,6 +144,8 @@ namespace FFXIV_TexTools.Views.Controls
             }
         }
 
+        // State control vars.
+        internal bool _UpdateQueued;
         private bool _IS_SAVING;
         private bool _Disposed;
 
@@ -166,8 +170,15 @@ namespace FFXIV_TexTools.Views.Controls
                 return;
             }
 
+            if (_UpdateQueued)
+            {
+                // Already in queue.
+                return;
+            }
+
             if (newOffset == 0 && changedFile == InternalFilePath)
             {
+                _UpdateQueued = true;
                 // File was deleted.
                 DebouncedUpdate(InternalFilePath);
                 FileDeleted?.Invoke(InternalFilePath);
@@ -179,6 +190,7 @@ namespace FFXIV_TexTools.Views.Controls
             {
                 if (await ShouldUpdateOnFileChange(changedFile))
                 {
+                    _UpdateQueued = true;
                     DebouncedUpdate(InternalFilePath);
                 }
             });
@@ -371,6 +383,7 @@ namespace FFXIV_TexTools.Views.Controls
                 // Safety reject.
                 return false;
             }
+            _UpdateQueued = false;
 
             if (UnsavedChanges && !string.IsNullOrWhiteSpace(InternalFilePath))
             {
@@ -494,6 +507,7 @@ namespace FFXIV_TexTools.Views.Controls
                     return false;
                 }
             }
+            _UpdateQueued = false;
 
             IsEnabled = false;
             var success = false;
@@ -534,7 +548,7 @@ namespace FFXIV_TexTools.Views.Controls
                 ReferenceItem = referenceItem;
                 ExternalFilePath = externalFile;
 
-                var data = await INTERNAL_CreateUncompressedFile(externalFile, internalFile, ReferenceItem);
+                var data = await INTERNAL_ExternalToUncompressedFile(externalFile, internalFile, ReferenceItem);
                 if(data == null || data.Length == 0)
                 {
                     return false;
@@ -557,7 +571,7 @@ namespace FFXIV_TexTools.Views.Controls
                 FileLoaded?.Invoke(this,success);
             }
         }
-        protected virtual async Task<byte[]> INTERNAL_CreateUncompressedFile(string externalFile, string internalFile, IItem referenceItem)
+        protected virtual async Task<byte[]> INTERNAL_ExternalToUncompressedFile(string externalFile, string internalFile, IItem referenceItem)
         {
             return await SmartImport.CreateUncompressedFile(externalFile, internalFile, MainWindow.DefaultTransaction);
         }

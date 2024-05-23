@@ -16,8 +16,24 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
+            <Button Grid.Column="0" Margin="5"  Content="Show CSet Row" IsEnabled="{Binding ColorsetButtonEnabled}" Click="HighlightColorsetButton_Click" />
+            <Button Grid.Column="1" Margin="5"  Content="Deformations" IsEnabled="{Binding ColorsetButtonEnabled}"  Click="OpenShapesMenu_Click"/>
+        </Grid>
+
+        <Grid Grid.Row="1">
+            <CheckBox Margin="5" Content="{Binding Source={x:Static resx:UIStrings.Keep_Camera_Position}}" IsChecked="{Binding KeepCameraPosition}"/>
+        </Grid>
+        
+        <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
@@ -32,7 +48,7 @@
                               OffLabel="{Binding Source={x:Static resx:UIStrings.Back}}"
                               OnLabel="{Binding Source={x:Static resx:UIStrings.None}}" Margin="5" IsChecked="{Binding CullModeToggle}"/>
         </Grid>
-        <Grid Grid.Row="1">
+        <Grid Grid.Row="3">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -40,7 +56,7 @@
             <Label Grid.Row="0" Content="{Binding ReflectionLabel, FallbackValue=Reflection}" Margin="5"/>
             <Slider Grid.Row="1" Margin="5" AutoToolTipPlacement="TopLeft" Value="{Binding ReflectionValue}" Minimum="-1" Maximum="100"/>
         </Grid>
-        <Grid Grid.Row="2">
+        <Grid Grid.Row="4">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -52,12 +68,12 @@
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <RadioButton Grid.Column="0" Content="1" GroupName="Lights" Margin="5" IsChecked="{Binding Light1Check, FallbackValue=true}"/>
-                <RadioButton Grid.Column="1" Content="2" GroupName="Lights" Margin="5" IsChecked="{Binding Light2Check}"/>
-                <RadioButton Grid.Column="2" Content="3" GroupName="Lights" Margin="5" IsChecked="{Binding Light3Check}"/>
+                <RadioButton Grid.Column="0" Content="1" GroupName="Lights" Margin="5" IsChecked="{Binding Path=Light1Check}"/>
+                <RadioButton Grid.Column="1" Content="2" GroupName="Lights" Margin="5" IsChecked="{Binding Path=Light2Check}"/>
+                <RadioButton Grid.Column="2" Content="3" GroupName="Lights" Margin="5" IsChecked="{Binding Path=Light3Check}"/>
             </Grid>
         </Grid>
-        <Grid Grid.Row="3">
+        <Grid Grid.Row="5">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>

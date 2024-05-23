@@ -44,9 +44,9 @@
                 <ColumnDefinition></ColumnDefinition>
                 <ColumnDefinition></ColumnDefinition>
                 <ColumnDefinition></ColumnDefinition>
-                <ColumnDefinition Width="40"></ColumnDefinition>
+                <ColumnDefinition Width="60"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <Button Margin="5" Grid.Column="0" x:Name="EnableDisableButton" Content="{Binding Path=EnableDisableText}" Click="EnableDisable_Click" ToolTip="{Binding Source={x:Static resx:UIStrings.EnableDisableTooltip}}" IsEnabled="{Binding Path=EnableDisableEnabled}"/>
+            <Button Margin="5" Grid.Column="0" x:Name="EnableDisableButton" Content="{Binding Path=EnableDisableText, FallbackValue=Enable}" Click="EnableDisable_Click" ToolTip="{Binding Source={x:Static resx:UIStrings.EnableDisableTooltip}}" IsEnabled="{Binding Path=EnableDisableEnabled}"/>
             <Button Margin="5" Grid.Column="1" x:Name="LoadButton" Content="{Binding Source={x:Static resx:UIStrings.Load}}" Click="Load_Click" ToolTip="{Binding Source={x:Static resx:UIStrings.LoadTooltip}}"/>
 
 

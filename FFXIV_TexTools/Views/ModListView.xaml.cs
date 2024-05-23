@@ -297,7 +297,6 @@ namespace FFXIV_TexTools.Views
         {
             (DataContext as ModListViewModel).Dispose();
             _cts?.Dispose();
-            MainWindow.GetMainWindow().ReloadItem();
         }
 
         private Dictionary<string, EModState> ModStates;
