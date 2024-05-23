@@ -85,13 +85,20 @@ namespace FFXIV_TexTools.ViewModels
 
         public void UpdateDependencyQueueCount(object sender, System.Timers.ElapsedEventArgs e)
         {
-            var count = XivCache.GetDependencyQueueLength();
-            if (count > 0)
+            if (XivCache.CacheWorkerEnabled)
             {
-                //_mainWindow.ShowStatusMessage($"Queue Length: {count._()}".L());
+                var count = XivCache.GetDependencyQueueLength();
+                if (count > 0)
+                {
+                    //_mainWindow.ShowStatusMessage($"Queue Length: {count._()}".L());
 
-                // Removed localization on this because the localization is throwing an error for some reason(?)
-                _mainWindow.ShowStatusMessage($"Queue Length: {count}");
+                    // Removed localization on this because the localization is throwing an error for some reason(?)
+                    _mainWindow.ShowStatusMessage($"Queue Length: {count}");
+                }
+            } else
+            {
+
+                _mainWindow.ShowStatusMessage($"Cache Worker Paused");
             }
         }
 

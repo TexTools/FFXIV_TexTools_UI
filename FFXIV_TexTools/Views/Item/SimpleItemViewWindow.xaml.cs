@@ -20,9 +20,24 @@ namespace FFXIV_TexTools.Views.Item
     /// </summary>
     public partial class SimpleItemViewWindow
     {
+        public static List<SimpleItemViewWindow> OpenItemWindows = new List<SimpleItemViewWindow>();
+        public bool _IgnoreUnsaved = false;
         public SimpleItemViewWindow()
         {
             InitializeComponent();
+            Closing += SimpleItemViewWindow_Closing;
+        }
+
+        private void SimpleItemViewWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (_IgnoreUnsaved)
+            {
+                OpenItemWindows.Remove(this);
+                return;
+            }
+
+            // TODO - Proc Unsaved Changes prompt here.
+            OpenItemWindows.Remove(this);
         }
 
         public async Task<bool> SetItem(IItem item)
@@ -39,6 +54,8 @@ namespace FFXIV_TexTools.Views.Item
             var wind = new SimpleItemViewWindow();
             wind.Owner = owner;
             wind.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+
+            OpenItemWindows.Add(wind);
             wind.Show();
 
             return await wind.SetItem(item);

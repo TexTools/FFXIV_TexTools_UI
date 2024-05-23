@@ -147,34 +147,41 @@ namespace FFXIV_TexTools.Views.Controls
 
         private async void ModTransaction_FileChanged(string changedFile, long newOffset)
         {
-            if (_IS_SAVING || string.IsNullOrWhiteSpace(changedFile) || string.IsNullOrWhiteSpace(InternalFilePath))
-            {
-                return;
-            }
+
             try
             {
-                if(newOffset == 0 && changedFile == InternalFilePath)
-                {
-                    // File was deleted.
-                    DebouncedUpdate(InternalFilePath);
-                    FileDeleted?.Invoke(InternalFilePath);
-                    return;
-                }
-
-                // Run update checks on a new thread.
-                await Task.Run(async () =>
-                {
-                    if (await ShouldUpdateOnFileChange(changedFile))
-                    {
-                        DebouncedUpdate(InternalFilePath);
-                    }
-                });
+                await INTERNAL_HandlTxNotification(changedFile, newOffset);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 // No Op
                 Trace.WriteLine(ex);
             }
+        }
+
+        protected virtual async Task INTERNAL_HandlTxNotification(string changedFile, long newOffset)
+        {
+            if (_IS_SAVING || string.IsNullOrWhiteSpace(changedFile) || string.IsNullOrWhiteSpace(InternalFilePath))
+            {
+                return;
+            }
+
+            if (newOffset == 0 && changedFile == InternalFilePath)
+            {
+                // File was deleted.
+                DebouncedUpdate(InternalFilePath);
+                FileDeleted?.Invoke(InternalFilePath);
+                return;
+            }
+
+            // Run update checks on a new thread.
+            await Task.Run(async () =>
+            {
+                if (await ShouldUpdateOnFileChange(changedFile))
+                {
+                    DebouncedUpdate(InternalFilePath);
+                }
+            });
         }
 
         /// <summary>
@@ -192,19 +199,26 @@ namespace FFXIV_TexTools.Views.Controls
             return false;
         }
 
-        private void _UpdateOnMainThread(string file)
+        private async void  _UpdateOnMainThread(string file)
         {
-
-            this.Invoke(() =>
+            Trace.WriteLine("Main Thread Update Called: " + file);
+            try
             {
-                if (file != InternalFilePath)
+                await Dispatcher.InvokeAsync(async () =>
                 {
-                    // No longer viewing the same file.
-                    return;
-                }
+                    if (file != InternalFilePath)
+                    {
+                        // No longer viewing the same file.
+                        return;
+                    }
 
-                var task = ReloadFile();
-            });
+                    var task = ReloadFile();
+                });
+            }
+            catch(Exception ex)
+            {
+                Trace.WriteLine(ex);
+            }
         }
 
         public delegate void FileActionEventHandler(FileViewControl sender, bool success);

@@ -259,6 +259,7 @@ namespace FFXIV_TexTools.Views.Item
             }
             MainWindow.UserTransactionStarted += MainWindow_UserTransactionStarted;
 
+            _DebouncedRebuildComboBoxes = ViewHelpers.Debounce<IItem>(DispatchRebuildComboBoxes);
         }
         private void MainWindow_UserTransactionStarted()
         {
@@ -268,16 +269,52 @@ namespace FFXIV_TexTools.Views.Item
             }
         }
 
+        private Action<IItem> _DebouncedRebuildComboBoxes;
+
+        private async void DispatchRebuildComboBoxes(IItem item)
+        {
+            try
+            {
+                await Dispatcher.InvokeAsync(async () =>
+                {
+                    var tx = MainWindow.DefaultTransaction;
+                    _TargetFile = GetFileKeys(_VisiblePanel.FilePath);
+                    await RebuildComboBoxes(tx);
+                });
+            }
+            catch(Exception ex)
+            {
+                // No-Op
+                Trace.WriteLine(ex);
+            }
+        }
+
         private async void ModTransaction_FileChanged(string changedFile, long newOffset)
         {
+            if (Files == null) return;
+
             if (string.IsNullOrWhiteSpace(changedFile))
             {
                 return;
             }
+
             try
             {
-                // This is where we can listen for files getting modified.
 
+                // This is where we can listen for files getting modified.
+                var fRoot = XivCache.GetFilePathRoot(changedFile);
+                if(Root == fRoot)
+                {
+                    // File is contained in our root...
+                    var keys = GetFileKeys(changedFile);
+                    if (keys.ModelKey == "!")
+                    {
+                        // But is not already listed in our file structure.
+                        // This means we need to reload the item.
+                        _DebouncedRebuildComboBoxes(Item);
+                    }
+                    return;
+                }
             }
             catch (Exception ex)
             {
@@ -407,13 +444,13 @@ namespace FFXIV_TexTools.Views.Item
 
                 ResetWatermarks();
 
-                await TextureWrapper.ClearFile();
-                await MaterialWrapper.ClearFile();
-                await ModelWrapper.ClearFile();
-                await MetadataWrapper.ClearFile();
-
                 if (Item == null)
                 {
+                    await TextureWrapper.ClearFile();
+                    await MaterialWrapper.ClearFile();
+                    await ModelWrapper.ClearFile();
+                    await MetadataWrapper.ClearFile();
+
                     ItemNameText = "No Item Selected";
                     ShowPanel(null);
                     return true;
@@ -424,6 +461,10 @@ namespace FFXIV_TexTools.Views.Item
 
                 if (Root == null)
                 {
+                    await MaterialWrapper.ClearFile();
+                    await ModelWrapper.ClearFile();
+                    await MetadataWrapper.ClearFile();
+
                     // Texture only item.  Not implemented yet.
                     TexturesEnabled = true;
                     ShowPanel(TextureWrapper);
@@ -438,16 +479,7 @@ namespace FFXIV_TexTools.Views.Item
                 var tx = MainWindow.DefaultTransaction;
 
                 await SetItemName(tx);
-
-
-                // Populate the Files structure.
-                await Task.Run(async () =>
-                {
-                    // These need to be in sequence, so they can't be paralell'd
-                    await GetModels(tx);
-                    await GetMaterials(tx);
-                    await GetTextures(tx);
-                });
+                _TargetFile = GetFileKeys(targetFile);
 
                 // Load metadata view manually since it's not handled by the above functions.
                 var success = await MetadataWrapper.LoadInternalFile(Root.Info.GetRootFile(), Item, null, false);
@@ -456,9 +488,8 @@ namespace FFXIV_TexTools.Views.Item
                     MetadataEnabled = true;
                 }
 
-                _TargetFile = GetFileKeys(targetFile);
-                // Assign the first combo box, which will kick off the children boxes in turn.
-                AddModels(Files.Keys.ToList());
+                await RebuildComboBoxes(tx);
+
 
 
                 return true;
@@ -479,6 +510,21 @@ namespace FFXIV_TexTools.Views.Item
                     await lockController.CloseAsync();
                 }
             }
+        }
+
+        private async Task RebuildComboBoxes(ModTransaction tx) {
+
+            // Populate the Files structure.
+            await Task.Run(async () =>
+            {
+                // These need to be in sequence, so they can't be paralell'd
+                await GetModels(tx);
+                await GetMaterials(tx);
+                await GetTextures(tx);
+            });
+
+            // Assign the first combo box, which will kick off the children boxes in turn.
+            AddModels(Files.Keys.ToList());
         }
 
         private async Task SetItemName(ModTransaction tx)
@@ -573,10 +619,11 @@ namespace FFXIV_TexTools.Views.Item
         /// </summary>
         private async Task GetModels(ModTransaction tx)
         {
+            Files = new Dictionary<string, Dictionary<string, HashSet<string>>>();
+
             if (Root == null)
             {
                 Files.Add("", new Dictionary<string, HashSet<string>>());
-                AddModels(new List<string>());
                 return;
             }
 
@@ -954,9 +1001,14 @@ namespace FFXIV_TexTools.Views.Item
         }
 
 
-        private (string fileKey, string materialKey, string texKey) GetFileKeys(string file)
+        private (string ModelKey, string MaterialKey, string TexKey) GetFileKeys(string file)
         {
             if (string.IsNullOrEmpty(file))
+            {
+                return (null, null, null);
+            }
+
+            if(Files == null)
             {
                 return (null, null, null);
             }
@@ -1293,7 +1345,6 @@ namespace FFXIV_TexTools.Views.Item
                 //TextureBorder.Margin = new Thickness(2);
                 TextureBorder.BorderBrush = SelectedBrush;
             }
-
         }
 
         private void ShowTexture_Click(object sender, RoutedEventArgs e)

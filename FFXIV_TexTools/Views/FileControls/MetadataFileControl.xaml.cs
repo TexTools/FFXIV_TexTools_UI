@@ -58,9 +58,13 @@ namespace FFXIV_TexTools.Views.Controls
             ViewType = EFileViewType.Editor;
         }
 
+        private bool _LOADING_METADATA;
         private void FileChanged()
         {
-            UnsavedChanges = true;
+            if (!_LOADING_METADATA)
+            {
+                UnsavedChanges = true;
+            }
         }
 
         private ItemMetadata _Metadata;
@@ -178,6 +182,7 @@ namespace FFXIV_TexTools.Views.Controls
 
             var tx = MainWindow.DefaultTransaction;
 
+            _LOADING_METADATA = true;
 
             if (Metadata.ImcEntries.Count > 0)
             {
@@ -229,6 +234,8 @@ namespace FFXIV_TexTools.Views.Controls
                 VisorView.Visibility = System.Windows.Visibility.Collapsed;
 
             }
+
+            _LOADING_METADATA = false;
 
         }
 

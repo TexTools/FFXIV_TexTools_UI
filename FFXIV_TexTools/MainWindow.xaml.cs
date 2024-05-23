@@ -20,6 +20,7 @@ using FFXIV_TexTools.Resources;
 using FFXIV_TexTools.ViewModels;
 using FFXIV_TexTools.Views;
 using FFXIV_TexTools.Views.Controls;
+using FFXIV_TexTools.Views.Item;
 using FFXIV_TexTools.Views.ItemConverter;
 using FFXIV_TexTools.Views.Metadata;
 using FFXIV_TexTools.Views.Models;
@@ -1216,6 +1217,22 @@ namespace FFXIV_TexTools
             }
         }
 
+        private void CloseAllViewers()
+        {
+            var fileWindows = SimpleFileViewWindow.OpenFileWindows.ToList();
+            foreach (var wind in fileWindows)
+            {
+                wind._IgnoreUnsaved = true;
+                wind.Close();
+            }
+            var itemWindows = SimpleItemViewWindow.OpenItemWindows.ToList();
+            foreach(var wind in itemWindows)
+            {
+                wind._IgnoreUnsaved = true;
+                wind.Close();
+            }
+        }
+
         /// <summary>
         /// Event handler for the start over menu item clicked
         /// </summary>
@@ -1228,6 +1245,7 @@ namespace FFXIV_TexTools
                 return;
             }
 
+
             var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
 
 
@@ -1235,6 +1253,9 @@ namespace FFXIV_TexTools
 
             if (result == System.Windows.Forms.DialogResult.Yes)
             {
+                CloseAllViewers();
+
+
                 var indexBackupsDirectory = new DirectoryInfo(Settings.Default.Backup_Directory);
 
                 if (!Directory.Exists(indexBackupsDirectory.FullName))

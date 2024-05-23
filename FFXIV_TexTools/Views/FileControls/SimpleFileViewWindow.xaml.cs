@@ -22,6 +22,8 @@ namespace FFXIV_TexTools.Views.Controls
     /// </summary>
     public partial class SimpleFileViewWindow
     {
+        public static List<SimpleFileViewWindow> OpenFileWindows = new List<SimpleFileViewWindow>();
+        public bool _IgnoreUnsaved = false;
         public SimpleFileViewWindow()
         {
             InitializeComponent();
@@ -31,6 +33,12 @@ namespace FFXIV_TexTools.Views.Controls
 
         private void SimpleFileViewWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            if (_IgnoreUnsaved)
+            {
+                OpenFileWindows.Remove(this);
+                return;
+            }
+
             if(FileWrapper != null && FileWrapper.FileControl != null &&  FileWrapper.FileControl.UnsavedChanges && !string.IsNullOrWhiteSpace(FileWrapper.FileControl.InternalFilePath))
             {
                 if (!FileWrapper.ConfirmDiscardChanges(FileWrapper.FileControl.InternalFilePath))
@@ -39,6 +47,7 @@ namespace FFXIV_TexTools.Views.Controls
                     return;
                 }
             }
+            OpenFileWindows.Remove(this);
         }
 
         public async Task<bool> LoadFile(string filePath, IItem referenceItem = null, byte[] data = null, Type forcedControlType = null)
@@ -60,6 +69,7 @@ namespace FFXIV_TexTools.Views.Controls
             var success = await wind.LoadFile(filePath, referenceItem, data, forcedControlType);
             if (success)
             {
+                OpenFileWindows.Add(wind);
                 wind.Show();
             }
             return success;

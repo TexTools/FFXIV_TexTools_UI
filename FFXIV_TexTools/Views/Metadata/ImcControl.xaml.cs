@@ -39,8 +39,10 @@ namespace FFXIV_TexTools.Views.Metadata
             }
         }
 
+        private bool _LOADING = false;
         public async Task SetMetadata(ItemMetadata m, int startingVariant = 0)
         {
+            _LOADING = true;
             _metadata = m;
             ImcVariantBox.Items.Clear();
             MaterialSetBox.Items.Clear();
@@ -61,6 +63,8 @@ namespace FFXIV_TexTools.Views.Metadata
             }
 
             ImcVariantBox.SelectedItem = startingVariant;
+
+            _LOADING = false;
         }
 
 
@@ -86,12 +90,20 @@ namespace FFXIV_TexTools.Views.Metadata
             FileChanged?.Invoke();
         }
 
-        private void ImcVariantBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void ImcVariantBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (_metadata == null) return;
-            if (ImcVariantBox.SelectedItem == null) return;
+            try
+            {
+                if (_LOADING) return;
+                if (_metadata == null) return;
+                if (ImcVariantBox.SelectedItem == null) return;
 
-            SetImcVariant((int)ImcVariantBox.SelectedItem);
+                await SetImcVariant((int)ImcVariantBox.SelectedItem);
+            }
+            catch
+            {
+
+            }
         }
 
         public async Task SetImcVariant(int variant)

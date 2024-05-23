@@ -3,6 +3,7 @@ using FFXIV_TexTools.Resources;
 using FFXIV_TexTools.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -59,35 +60,43 @@ namespace FFXIV_TexTools.Views.Metadata
             mw.SelectedPrimaryItemValueChanged += Mw_SelectedPrimaryItemValueChanged;
         }
 
-        private void Mw_SelectedPrimaryItemValueChanged(object sender, int e)
+        private async void Mw_SelectedPrimaryItemValueChanged(object sender, int e)
         {
-            if (_root == null) return;
-
-            // Only human types have the weird multi-root "Item" representation thing.
-            if (_root.Info.PrimaryType != XivItemType.human) return;
-            
-            // Body stuff is totally desynced.
-            if (_root.Info.SecondaryType == XivItemType.body) return;
-
-            if (e <= 0) return;
-            if (e == (int)_root.Info.SecondaryId) return;
-
-            RefreshButton.IsEnabled = false;
-
-            // Change root to the new "number" root.
-            var nRoot = new XivDependencyRootInfo()
+            try
             {
-                PrimaryId = _root.Info.PrimaryId,
-                PrimaryType = _root.Info.PrimaryType,
-                SecondaryId = e,
-                SecondaryType = _root.Info.SecondaryType,
-                Slot = _root.Info.Slot
-            };
+                if (_root == null) return;
 
-            _lastNumber = e;
+                // Only human types have the weird multi-root "Item" representation thing.
+                if (_root.Info.PrimaryType != XivItemType.human) return;
 
-            // Switch display to that new root.
-            SetRoot(nRoot.ToFullRoot());
+                // Body stuff is totally desynced.
+                if (_root.Info.SecondaryType == XivItemType.body) return;
+
+                if (e <= 0) return;
+                if (e == (int)_root.Info.SecondaryId) return;
+
+                RefreshButton.IsEnabled = false;
+
+                // Change root to the new "number" root.
+                var nRoot = new XivDependencyRootInfo()
+                {
+                    PrimaryId = _root.Info.PrimaryId,
+                    PrimaryType = _root.Info.PrimaryType,
+                    SecondaryId = e,
+                    SecondaryType = _root.Info.SecondaryType,
+                    Slot = _root.Info.Slot
+                };
+
+                _lastNumber = e;
+
+                // Switch display to that new root.
+                await SetRoot(nRoot.ToFullRoot());
+            }
+            catch(Exception ex)
+            {
+                // No-op
+                Trace.WriteLine(ex);
+            }
         }
 
         /// <summary>

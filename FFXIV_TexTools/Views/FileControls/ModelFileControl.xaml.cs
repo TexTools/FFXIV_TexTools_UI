@@ -131,40 +131,40 @@ namespace FFXIV_TexTools.Views.Controls
                 return false;
             }
 
-            // Ship this to another thread, since depending on the state of the cache this could do a bunch of
-            // somewhat hefty jumping around files.
-            return await Task.Run(async () =>
+            if(Model == null)
             {
-                var tx = MainWindow.DefaultTransaction;
-                var mSet = -1;
-                if (ReferenceItem != null) {
-                    var asIm = ReferenceItem as IItemModel;
-                    if(asIm != null)
-                    {
-                        mSet = await Imc.GetMaterialSetId(asIm, false, tx);
-                    }
+                return true;
+            }
+
+            if (Model == null)
+            {
+                return true;
+            }
+
+            if (_MaterialPaths == null)
+            {
+                return true;
+            }
+
+            var tx = MainWindow.DefaultTransaction;
+
+            foreach(var mat in _MaterialPaths)
+            {
+                if (changedFile.EndsWith(mat))
+                {
+                    return true;
                 }
 
-                var materials = await Mdl.GetReferencedMaterialPaths(Model.Materials, InternalFilePath, mSet, false, true, tx);
-                
-                foreach(var mat in materials)
+                var textures = await XivCache.GetChildFiles(mat, tx);
+                foreach(var tex in textures)
                 {
-                    if (changedFile.EndsWith(mat))
+                    if(changedFile == tex)
                     {
                         return true;
                     }
-
-                    var textures = await XivCache.GetChildFiles(mat, tx);
-                    foreach(var tex in textures)
-                    {
-                        if(changedFile == tex)
-                        {
-                            return true;
-                        }
-                    }
                 }
-                return false;
-            });
+            }
+            return false;
         }
 
         public override string GetNiceName()
@@ -270,6 +270,8 @@ namespace FFXIV_TexTools.Views.Controls
             }
         }
 
+        private int _MaterialSet = -1;
+        private List<string> _MaterialPaths = null;
 
         /// <summary>
         /// Gets the materials for the model
@@ -302,7 +304,9 @@ namespace FFXIV_TexTools.Views.Controls
                 }
             }
 
-            var fullMats = await Mdl.GetReferencedMaterialPaths(Model.Materials, InternalFilePath, set, false, true, tx);
+            _MaterialSet = set;
+            _MaterialPaths = await Mdl.GetReferencedMaterialPaths(Model.Materials, InternalFilePath, set, false, true, tx);
+            var fullMats = _MaterialPaths;
 
             var materialNum = 0;
             foreach (var mtrlFilePath in fullMats)
