@@ -80,6 +80,7 @@ namespace FFXIV_TexTools.Views.Controls
             if (Configuration.EnvironmentConfiguration.TT_Unshared_Rendering)
                 _CanvasRenderer = new Helpers.ViewportCanvasRenderer(Viewport, AlternateViewportCanvas);
             ViewType = EFileViewType.Editor;
+            ColorsetVisibility = Visibility.Collapsed;
 
         }
 
@@ -218,6 +219,7 @@ namespace FFXIV_TexTools.Views.Controls
             try
             {
                 ViewportVM.ClearModels();
+                ColorsetVisibility = Visibility.Collapsed;
 
                 ModelStatusLabel = UIStrings.ModelStatus_Loading;
 
@@ -230,9 +232,13 @@ namespace FFXIV_TexTools.Views.Controls
 
                 ModelModifiers.ApplyShapes(Model, ActiveShapes);
 
-                var materials = await GetMaterials();
+                Dictionary<int, ModelTextureData> materialData = null;
+                await Task.Run(async () =>
+                {
+                    materialData = await GetMaterials();
+                });
 
-                ViewportVM.UpdateModel(Model, materials);
+                ViewportVM.UpdateModel(Model, materialData);
 
                 ReflectionValue = ViewportVM.SpecularShine;
 
@@ -366,7 +372,6 @@ namespace FFXIV_TexTools.Views.Controls
             }
 
 
-            //ColorsetVisibility = Visibility.Collapsed;
             foreach (var xivMtrl in mtrlDictionary)
             {
                 if (xivMtrl.Value.ColorSetData.Count > 0)
