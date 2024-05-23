@@ -24,7 +24,7 @@
             <RowDefinition Height="45"/>
         </Grid.RowDefinitions>
         <Button x:Name="CancelButton" Content="Cancel" HorizontalAlignment="Left" Width="201" Margin="10,10,0,9" Grid.Row="6" VerticalContentAlignment="Center" Click="CancelButton_Click"/>
-        <Button x:Name="ImportButton" Content="Load" HorizontalAlignment="Left" Width="201" Margin="81,10,0,9" Grid.Row="6" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Grid.Column="1" Click="ImportButton_Click"/>
+        <Button x:Name="ImportButton" Content="Confirm" HorizontalAlignment="Left" Width="201" Margin="81,10,0,9" Grid.Row="6" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Grid.Column="1" Click="ImportButton_Click"/>
 
         <Label Content="Group:" HorizontalAlignment="Left" Margin="16,10,0,0" Width="54" VerticalContentAlignment="Center" VerticalAlignment="Top" RenderTransformOrigin="-0.1,0.5" Height="28" FontWeight="Bold"/>
         <Label Content="Part:" HorizontalAlignment="Left" Margin="15,10,0,0" Width="40" VerticalContentAlignment="Center" VerticalAlignment="Top" Height="28" FontWeight="Bold" Grid.Column="1"/>

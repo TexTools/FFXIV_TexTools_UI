@@ -56,7 +56,8 @@ namespace FFXIV_TexTools.Views.Models
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
-            DialogResult = false;
+            var wind = Window.GetWindow(this);
+            wind.Close();
         }
 
         /// <summary>

@@ -43,6 +43,7 @@ using xivModdingFramework.Mods.DataContainers;
 using System.Threading;
 using xivModdingFramework.SqPack.FileTypes;
 using SharpDX;
+using ControlzEx.Standard;
 
 namespace FFXIV_TexTools.Views.Controls
 {
@@ -110,16 +111,24 @@ namespace FFXIV_TexTools.Views.Controls
         {
 
             // The data coming in here is an uncompressed .mdl file.
-            Model = Mdl.GetTTModel(data, InternalFilePath);
+            return await LoadModel(Mdl.GetTTModel(data, InternalFilePath));
+        }
+        protected async Task<bool> LoadModel(TTModel model) {
+            Model = model;
 
             _ChildFiles.Clear();
             _ChildFiles.Add(InternalFilePath);
+            _MaterialSet = 1;
+            _MaterialPaths = new List<string>();
+
+            if (Model == null)
+            {
+                return false;
+            }
 
             var root = XivCache.GetFilePathRoot(InternalFilePath);
 
             var tx = MainWindow.DefaultTransaction;
-            _MaterialSet = 1;
-            _MaterialPaths = new List<string>();
 
             try
             {
@@ -670,5 +679,29 @@ namespace FFXIV_TexTools.Views.Controls
         }
         #endregion
 
+        private async void EditModel_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var tx = MainWindow.DefaultTransaction;
+                var newModel = (TTModel)Model.Clone();
+
+                // This is mostly used for powering the model scaling comparisons,
+                // And as a file-path source for resolving a few root-related settings.
+                var oldModel = await Mdl.GetTTModel(InternalFilePath, false, tx);
+
+                var editorWindow = new ImportModelEditView(newModel, oldModel) { Owner = Window.GetWindow(this) };
+                var result = editorWindow.ShowDialog();
+                if (result == true)
+                {
+                    UnsavedChanges = true;
+                    await LoadModel(newModel);
+                }
+            } catch(Exception ex)
+            {
+                // No-op.  SHould be handled internally already.
+                Trace.WriteLine(ex);
+            }
+        }
     }
 }
