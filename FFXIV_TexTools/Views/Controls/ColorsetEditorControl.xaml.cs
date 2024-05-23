@@ -1363,13 +1363,9 @@ namespace FFXIV_TexTools.Controls
 
                 var tx = MainWindow.UserTransaction;
                 var file = Material.MTRLPath;
-                bool ownTx = false;
                 TxFileState state = null;
-                if (tx == null)
-                {
-                    ownTx = true;
-                    tx = ModTransaction.BeginTransaction(true);
-                }
+
+                var boiler = TxBoiler.BeginWrite(ref tx);
                 try
                 {
                     state = await tx.SaveFileState(file);
@@ -1381,14 +1377,7 @@ namespace FFXIV_TexTools.Controls
                 }
                 finally
                 {
-                    if (ownTx)
-                    {
-                        ModTransaction.CancelTransaction(tx, true);
-                    }
-                    else
-                    {
-                        await tx.RestoreFileState(state);
-                    }
+                    await boiler.Cancel(true, state);
                 }
             }
             finally

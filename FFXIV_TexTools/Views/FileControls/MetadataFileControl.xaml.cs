@@ -116,7 +116,7 @@ namespace FFXIV_TexTools.Views.Controls
             Metadata = null;
         }
 
-        protected override async Task<bool> INTERNAL_CanLoadFile(string filePath, ModTransaction tx)
+        protected override async Task<bool> INTERNAL_CanLoadFile(string filePath, byte[] data, ModTransaction tx)
         {
             // Metadata can load files that don't exist, because they're really a fake compiled file.
             var targetRoot = await XivCache.GetFirstRoot(filePath);

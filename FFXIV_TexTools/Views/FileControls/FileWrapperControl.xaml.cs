@@ -171,7 +171,7 @@ namespace FFXIV_TexTools.Views.Controls
             if (forcedType != null)
             {
                 var obj = Activator.CreateInstance(forcedType) as FileViewControl;
-                if (obj == null || !await obj.CanLoadFile(file, tx))
+                if (obj == null || !await obj.CanLoadFile(file, null, tx))
                 {
                     return null;
                 }
@@ -182,25 +182,25 @@ namespace FFXIV_TexTools.Views.Controls
             }
 
             FileViewControl handler = new TextureFileControl();
-            if (await handler.CanLoadFile(file, tx))
+            if (await handler.CanLoadFile(file, null, tx))
             {
                 return handler;
             }
 
             handler = new ModelFileControl();
-            if (await handler.CanLoadFile(file, tx))
+            if (await handler.CanLoadFile(file, null, tx))
             {
                 return handler;
             }
 
             handler = new MaterialFileControl();
-            if (await handler.CanLoadFile(file, tx))
+            if (await handler.CanLoadFile(file, null, tx))
             {
                 return handler;
             }
 
             handler = new MetadataFileControl();
-            if (await handler.CanLoadFile(file, tx))
+            if (await handler.CanLoadFile(file, null, tx))
             {
                 return handler;
             }
@@ -267,7 +267,8 @@ namespace FFXIV_TexTools.Views.Controls
                 }
                 else
                 {
-                    if (!await FileControl.CanLoadFile(internalFilePath, null))
+                    var tx = MainWindow.DefaultTransaction;
+                    if (!await FileControl.CanLoadFile(internalFilePath, null, tx))
                     {
                         return false;
                     }
@@ -284,7 +285,6 @@ namespace FFXIV_TexTools.Views.Controls
                 return false;
             }
         }
-
 
         public async Task<bool> LoadInternalFile(string internalFilePath, IItem referenceItem = null, byte[] data = null, bool reloadControl = true, Type forcedControlType = null)
         {
@@ -326,7 +326,7 @@ namespace FFXIV_TexTools.Views.Controls
                 }
                 else
                 {
-                    if (!await FileControl.CanLoadFile(internalFilePath, MainWindow.DefaultTransaction))
+                    if (!await FileControl.CanLoadFile(internalFilePath, data, MainWindow.DefaultTransaction))
                     {
                         await ClearFile();
                         return false;
@@ -336,6 +336,7 @@ namespace FFXIV_TexTools.Views.Controls
 
                 await FileControl.LoadInternalFile(internalFilePath, false, referenceItem, data);
                 await SetupUi();
+
                 this.IsEnabled = true;
                 return true;
             }
@@ -571,19 +572,11 @@ namespace FFXIV_TexTools.Views.Controls
             try
             {
                 var tx = MainWindow.UserTransaction;
-                var ownTx = false;
+                var boiler = TxBoiler.BeginWrite(ref tx);
                 TxFileState state = null;
-                if (tx == null)
-                {
-                    ownTx = true;
-                    tx = ModTransaction.BeginTransaction(true);
-                }
-                else
-                {
-                    state = await tx.SaveFileState(FilePath);
-                }
                 try
                 {
+                    state = await tx.SaveFileState(FilePath);
                     // Due to the nature of the single file modpack exporter, we need to temp save the file here.
                     await SaveFile(tx);
 
@@ -591,15 +584,7 @@ namespace FFXIV_TexTools.Views.Controls
                 }
                 finally
                 {
-                    // Cancel or rollback after as needed.
-                    if (ownTx)
-                    {
-                        ModTransaction.CancelTransaction(tx, true);
-                    }
-                    else
-                    {
-                        await tx.RestoreFileState(state);
-                    }
+                    await boiler.Cancel(true, state);
                 }
             }
             catch(Exception ex)

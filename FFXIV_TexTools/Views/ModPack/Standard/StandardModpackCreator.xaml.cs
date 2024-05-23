@@ -432,12 +432,7 @@ namespace FFXIV_TexTools.Views
                 SimpleModDataList = new List<SimpleModData>()
             };
 
-            var ownTx = false;
-            if(tx == null)
-            {
-                ownTx = true;
-                tx = ModTransaction.BeginTransaction(true);
-            }
+            var boiler = TxBoiler.BeginWrite(ref tx);
             try { 
                 foreach (var entry in ViewModel.Entries)
                 {
@@ -500,10 +495,7 @@ namespace FFXIV_TexTools.Views
             }
             finally
             {
-                if (ownTx)
-                {
-                    ModTransaction.CancelTransaction(tx, true);
-                }
+                boiler.Cancel(true);
             }
 
 

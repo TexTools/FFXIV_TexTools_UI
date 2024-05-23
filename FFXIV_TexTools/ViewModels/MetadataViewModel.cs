@@ -142,13 +142,7 @@ namespace FFXIV_TexTools.ViewModels
                     await MainWindow.GetMainWindow().LockUi("Updating Metadata".L());
                 }
 
-                await ItemMetadata.SaveMetadata(_metadata, XivStrings.TexTools, tx);
-
-                if (!simpleSave)
-                {
-                    // Fill in missing racial models or material sets.
-                    await _metadata.FillMissingFiles(XivStrings.TexTools, tx);
-                }
+                await ItemMetadata.SaveMetadata(_metadata, XivStrings.TexTools, tx, !simpleSave);
 
 
                 if (!simpleSave)

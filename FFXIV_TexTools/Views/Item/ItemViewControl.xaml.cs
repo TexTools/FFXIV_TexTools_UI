@@ -251,8 +251,40 @@ namespace FFXIV_TexTools.Views.Item
             MaterialWrapper.FileControl.FileDeleted += FileControl_FileDeleted;
             ModelWrapper.FileControl.FileDeleted += FileControl_FileDeleted;
             MetadataWrapper.FileControl.FileDeleted += Metadata_FileDeleted;
+
+            ModTransaction.FileChangedOnCommit += ModTransaction_FileChanged;
+            if (MainWindow.UserTransaction != null)
+            {
+                MainWindow.UserTransaction.FileChanged += ModTransaction_FileChanged;
+            }
+            MainWindow.UserTransactionStarted += MainWindow_UserTransactionStarted;
+
+        }
+        private void MainWindow_UserTransactionStarted()
+        {
+            if (MainWindow.UserTransaction != null)
+            {
+                MainWindow.UserTransaction.FileChanged += ModTransaction_FileChanged;
+            }
         }
 
+        private async void ModTransaction_FileChanged(string changedFile, long newOffset)
+        {
+            if (string.IsNullOrWhiteSpace(changedFile))
+            {
+                return;
+            }
+            try
+            {
+                // This is where we can listen for files getting modified.
+
+            }
+            catch (Exception ex)
+            {
+                // No Op
+                Trace.WriteLine(ex);
+            }
+        }
         private async void Metadata_FileDeleted(string internalPath)
         {
             try
@@ -1036,6 +1068,45 @@ namespace FFXIV_TexTools.Views.Item
             _TargetFile = GetFileKeys(file);
             AddModels(Files.Keys.ToList());
             return true;
+        }
+
+        private async Task SafeAddFile((string ModelKey, string MaterialKey, string TextureKey) keys)
+        {
+            if(string.IsNullOrWhiteSpace(keys.ModelKey))
+            {
+                return;
+            }
+
+            bool anyChanges = false;
+
+            // Add to the base files dictionary.
+            if (!Files.ContainsKey(keys.ModelKey))
+            {
+                Files.Add(keys.ModelKey, new Dictionary<string, HashSet<string>>());
+                anyChanges = true;
+            }
+
+            if (keys.MaterialKey != null && !Files[keys.ModelKey].ContainsKey(keys.MaterialKey))
+            {
+                Files[keys.ModelKey].Add(keys.MaterialKey, new HashSet<string>());
+                anyChanges = true;
+            }
+
+            if (keys.TextureKey!= null && !Files[keys.ModelKey][keys.MaterialKey].Contains(keys.TextureKey))
+            {
+                Files[keys.ModelKey][keys.MaterialKey].Add(keys.TextureKey);
+                anyChanges = true;
+            }
+
+            if(!anyChanges)
+            {
+                return;
+            }
+
+            _TargetFile = keys;
+
+            // Rebuild the list.
+            AddModels(Files.Keys.ToList());
         }
 
         private async void Model_Changed(object sender, SelectionChangedEventArgs e)

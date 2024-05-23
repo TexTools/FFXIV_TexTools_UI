@@ -236,7 +236,7 @@ namespace FFXIV_TexTools.Views.Controls
         /// </summary>
         /// <param name="filePath"></param>
         /// <returns></returns>
-        public virtual async Task<bool> CanLoadFile(string filePath, ModTransaction tx)
+        public virtual async Task<bool> CanLoadFile(string filePath, byte[] data, ModTransaction tx)
         {
             if (string.IsNullOrWhiteSpace(filePath))
             {
@@ -254,7 +254,7 @@ namespace FFXIV_TexTools.Views.Controls
             {
                 if (IOUtil.IsFFXIVInternalPath(filePath))
                 {
-                    return await INTERNAL_CanLoadFile(filePath, tx);
+                    return await INTERNAL_CanLoadFile(filePath,data, tx);
                 }
                 return true;
             }
@@ -262,8 +262,13 @@ namespace FFXIV_TexTools.Views.Controls
             return false;
         }
 
-        protected virtual async Task<bool> INTERNAL_CanLoadFile(string filePath, ModTransaction tx)
+        protected virtual async Task<bool> INTERNAL_CanLoadFile(string filePath, byte[] data, ModTransaction tx)
         {
+            if(data != null)
+            {
+                return true;
+            }
+
             return await tx.FileExists(filePath);
         }
 
@@ -371,8 +376,9 @@ namespace FFXIV_TexTools.Views.Controls
                     await ClearFile();
                 }
 
+
                 var tx = MainWindow.DefaultTransaction;
-                if (!await CanLoadFile(internalFile, tx))
+                if (!await CanLoadFile(internalFile, decompData, tx))
                 {
                     // If we can't load the file, but still have it assigned, keep it posted here..?
                     InternalFilePath = internalFile;
@@ -412,7 +418,14 @@ namespace FFXIV_TexTools.Views.Controls
 
                 success = await INTERNAL_LoadFile(data);
 
-                UnsavedChanges = false;
+
+                if (decompData != null)
+                {
+                    UnsavedChanges = true;
+                } else
+                {
+                    UnsavedChanges = false;
+                }
                 IsEnabled = success;
 
                 return success;
@@ -477,7 +490,8 @@ namespace FFXIV_TexTools.Views.Controls
                     await ClearFile();
                 }
 
-                if (!await CanLoadFile(externalFile, null))
+                var tx = MainWindow.DefaultTransaction;
+                if (!await CanLoadFile(externalFile, null, tx))
                 {
                     // If we can't load the file, but still have it assigned, keep it posted here..?
                     InternalFilePath = internalFile;
@@ -792,15 +806,11 @@ namespace FFXIV_TexTools.Views.Controls
         {
             // Because of the way some of the system internals work, the single-file modpack export needs us to temporarily save the file first.
             var tx = MainWindow.UserTransaction;
-            var ownTx = false;
             TxFileState state = null;
-            if(tx == null)
-            {
-                ownTx = true;
-                tx = ModTransaction.BeginTransaction(true);
-            }
+            var boiler = TxBoiler.BeginWrite(ref tx);
             try
             {
+                state = await tx.SaveFileState(InternalFilePath);
                 await SaveCurrentFile(tx);
                 SingleFileModpackCreator.ExportFile(InternalFilePath, Window.GetWindow(this), tx);
                 return true;
@@ -812,13 +822,7 @@ namespace FFXIV_TexTools.Views.Controls
             }
             finally
             {
-                if (ownTx)
-                {
-                    ModTransaction.CancelTransaction(tx);
-                } else
-                {
-                    await tx.RestoreFileState(state);
-                }
+                await boiler.Cancel(true, state);
             }
         }
 

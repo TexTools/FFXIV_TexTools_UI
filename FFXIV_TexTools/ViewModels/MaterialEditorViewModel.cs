@@ -341,12 +341,7 @@ namespace FFXIV_TexTools.ViewModels
             try
             {
                 var tx = MainWindow.UserTransaction;
-                var ownTx = false;
-                if (tx == null)
-                {
-                    ownTx = true;
-                    tx = ModTransaction.BeginTransaction(true);
-                }
+                var boiler = TxBoiler.BeginWrite(ref tx, true);
                 try
                 {
                     foreach (var file in files)
@@ -360,17 +355,11 @@ namespace FFXIV_TexTools.ViewModels
                         await Modding.SetModState(EModState.Disabled, modEntry.Value.FilePath, tx);
                     }
 
-                    if (ownTx)
-                    {
-                        await ModTransaction.CommitTransaction(tx);
-                    }
+                    await boiler.Commit();
                 }
                 catch
                 {
-                    if (ownTx)
-                    {
-                        ModTransaction.CancelTransaction(tx);
-                    }
+                    boiler.Cancel();
                     throw;
                 }
             } catch(Exception ex)

@@ -149,13 +149,8 @@ namespace FFXIV_TexTools.Views.Simple
             }
 
             var allFiles = new Dictionary<string, FileStorageInformation>();
-            var ownTx = false;
             var tx = MainWindow.UserTransaction;
-            if (tx == null)
-            {
-                ownTx = true;
-                tx = ModTransaction.BeginTransaction(true);
-            }
+            var boiler = TxBoiler.BeginWrite(ref tx);
             _progressController = await this.ShowProgressAsync(UIMessages.ModPackImportTitle, UIMessages.PleaseStandByMessage);
             try
             {
@@ -178,20 +173,14 @@ namespace FFXIV_TexTools.Views.Simple
                 var settings = ViewHelpers.GetDefaultImportSettings();
                 await TTMP.ImportFiles(allFiles, modpack, settings, tx);
 
-                if (ownTx)
-                {
-                    await ModTransaction.CommitTransaction(tx);
-                }
+                await boiler.Commit();
 
                 await _progressController.CloseAsync();
                 Close();
             }
             catch(Exception ex) 
             {
-                if (ownTx)
-                {
-                    ModTransaction.CancelTransaction(tx);
-                }
+                boiler.Cancel();
 
                 ViewHelpers.ShowError("File Import Error", "The import has been cancelled due to an error:\n\n" + ex.Message);
                 await _progressController.CloseAsync();

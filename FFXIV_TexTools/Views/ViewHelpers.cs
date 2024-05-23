@@ -74,6 +74,21 @@ namespace FFXIV_TexTools.Views
             return false;
         }
 
+
+        public static void ShowError(this Window wind, string title, string message)
+        {
+            try
+            {
+                var Win32Window = new WindowWrapper(new WindowInteropHelper(wind).Handle);
+                FlexibleMessageBox.Show(Win32Window, message, title, MessageBoxButtons.OK, MessageBoxIcon.Error,
+                    MessageBoxDefaultButton.Button1);
+            }
+            catch (Exception ex)
+            {
+                // Can't let the error function crash us.
+                Trace.WriteLine(ex);
+            }
+        }
         public static void ShowError(this UserControl control, string title, string message)
         {
             try

@@ -34,6 +34,8 @@ using ListBox = System.Windows.Controls.ListBox;
 using System.Threading.Tasks;
 using xivModdingFramework.Mods.Enums;
 using System.Windows.Shapes;
+using System.Collections.Generic;
+using SharpDX;
 
 namespace FFXIV_TexTools.Views
 {
@@ -145,12 +147,7 @@ namespace FFXIV_TexTools.Views
             Category selectedItem = null;
 
             var tx = MainWindow.UserTransaction;
-            var ownTx = false;
-            if(tx == null)
-            {
-                tx = ModTransaction.BeginTransaction(true);
-                ownTx = true;
-            }
+            var boiler = TxBoiler.BeginWrite(ref tx);
             try
             {
                 if ((ModListTreeView.SelectedItem as Category).ParentCategory.Name.Equals("ModPacks"))
@@ -235,17 +232,11 @@ namespace FFXIV_TexTools.Views
                     }
                 }
 
-                if (ownTx)
-                {
-                    await ModTransaction.CommitTransaction(tx);
-                }
+                await boiler.Commit();
             }
             catch
             {
-                if (ownTx)
-                {
-                    ModTransaction.CancelTransaction(tx);
-                }
+                boiler.Cancel();
                 throw;
             }
             finally
@@ -307,6 +298,25 @@ namespace FFXIV_TexTools.Views
             (DataContext as ModListViewModel).Dispose();
             _cts?.Dispose();
             MainWindow.GetMainWindow().ReloadItem();
+        }
+
+        private Dictionary<string, EModState> ModStates;
+        private async Task SaveModListState(ModTransaction tx)
+        {
+            var ml = await tx.GetModList();
+            var mods = ml.GetMods();
+
+            ModStates = new Dictionary<string, EModState>();
+            foreach(var mod in mods)
+            {
+                var state = await mod.GetState(tx);
+                ModStates.Add(mod.FilePath, state);
+            }
+        }
+
+        private async Task<bool> CheckForChanges(ModTransaction tx)
+        {
+            return true;
         }
     }
 }
