@@ -47,7 +47,7 @@
     </local:FileViewControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="340"/>
+            <ColumnDefinition Width="330"/>
             <ColumnDefinition MinWidth="220"/>
             <ColumnDefinition Width="220"/>
         </Grid.ColumnDefinitions>
@@ -67,10 +67,12 @@
 
         <Button x:Name="EditColorsetButton" Content="View/Edit Colorset" HorizontalAlignment="Left" Margin="0,0,10,0" VerticalAlignment="Center" Width="150" Grid.Column="1" Click="EditColorset_Click" IsEnabled="{Binding Path=ColorsetEnabled}"></Button>
 
+        <Image x:Name="ColorsetImage" Source="/FFXIV_TexTools;component/ffxiv2.ico" Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Margin="160,0,0,0" Height="80" Width="20" HorizontalAlignment="Left" 
+       RenderOptions.BitmapScalingMode="NearestNeighbor"/>
 
         <Button x:Name="EditShaderFlagsButton" Content="Edit Material Flags" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center" Width="150" Height="28" Grid.Row="1" Click="EditShaderFlags_Click"/>
         <Button x:Name="EditShaderKeysButton" Content="Edit Shader Keys" HorizontalAlignment="Left" Margin="170,0,0,0" VerticalAlignment="Center" Width="150" Height="28" Grid.Row="1" Click="EditShaderKeys_Click"/>
-        <Button x:Name="EditShaderConstantsButton" Content="Edit Shader Constants" HorizontalAlignment="Left" Margin="330,0,0,0" VerticalAlignment="Center" Width="150" Height="28" Grid.Row="1" Grid.ColumnSpan="2" Click="EditShaderConstants_Click"/>
+        <Button x:Name="EditShaderConstantsButton" Content="Edit Shader Constants" HorizontalAlignment="Left" Margin="0,0,0,0" Grid.Column="1" VerticalAlignment="Center" Width="150" Height="28" Grid.Row="1" Grid.ColumnSpan="2" Click="EditShaderConstants_Click"/>
 
         <Separator Grid.Row="2" Grid.ColumnSpan="3" Margin="5,0,5,0"/>
 

@@ -612,30 +612,34 @@ namespace FFXIV_TexTools.ViewModels
                                 XivTex texData;
                                 try
                                 {
-                                    texData = await Tex.GetXivTex(modItem.FilePath, false, tx);
-
-                                    var mapBytes = await texData.GetRawPixels();
-
-                                    using (var img = Image.LoadPixelData<Rgba32>(mapBytes, texData.Width, texData.Height))
+                                    if(await tx.FileExists(modItem.FilePath))
                                     {
-                                        img.Mutate(x => x.Opacity(1));
 
-                                        BitmapImage bmp;
+                                        texData = await Tex.GetXivTex(modItem.FilePath, false, tx);
 
-                                        using (var ms = new MemoryStream())
+                                        var mapBytes = await texData.GetRawPixels();
+
+                                        using (var img = Image.LoadPixelData<Rgba32>(mapBytes, texData.Width, texData.Height))
                                         {
-                                            img.Save(ms, new BmpEncoder());
+                                            img.Mutate(x => x.Opacity(1));
 
-                                            bmp = new BitmapImage();
-                                            bmp.BeginInit();
-                                            bmp.StreamSource = ms;
-                                            bmp.CacheOption = BitmapCacheOption.OnLoad;
-                                            bmp.EndInit();
-                                            bmp.Freeze();
+                                            BitmapImage bmp;
+
+                                            using (var ms = new MemoryStream())
+                                            {
+                                                img.Save(ms, new BmpEncoder());
+
+                                                bmp = new BitmapImage();
+                                                bmp.BeginInit();
+                                                bmp.StreamSource = ms;
+                                                bmp.CacheOption = BitmapCacheOption.OnLoad;
+                                                bmp.EndInit();
+                                                bmp.Freeze();
+                                            }
+
+                                            modListModel.Image =
+                                                Application.Current.Dispatcher.Invoke(() => bmp);
                                         }
-
-                                        modListModel.Image =
-                                            Application.Current.Dispatcher.Invoke(() => bmp);
                                     }
                                 }
                                 catch (Exception ex)

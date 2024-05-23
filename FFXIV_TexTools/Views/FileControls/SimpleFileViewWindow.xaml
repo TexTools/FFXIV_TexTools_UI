@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:FFXIV_TexTools.Views.Controls"
         xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
         mc:Ignorable="d"
-        Title="View File" Height="450" Width="800">
+        Title="File Viewer" Height="450" Width="800">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="30"></RowDefinition>

@@ -661,36 +661,18 @@ namespace FFXIV_TexTools
                     return;
                 }
 
-                try
-                {
-                    // Sometimes this chokes, not sure why.
-                    const int timeout = 1000;
-                    var task = _lockProgressController.CloseAsync();
-
-                    if (await Task.WhenAny(task, Task.Delay(timeout)) == task)
-                    {
-                        // Task completed within timeout
-                    }
-                    else
-                    {
-                        // Unlock screen failed to resolve, don't let us deadlock.
-                    }
-                }
-                catch
-                {
-
-                }
+                await _lockProgressController.CloseAsync();
                 _lockProgressController = null;
                 _lockProgress = null;
+
+                if (UiUnlocked != null)
+                {
+                    UiUnlocked.Invoke(caller, null);
+                }
             }
             finally
             {
                 _lockScreenSemaphore.Release();
-            }
-
-            if (UiUnlocked != null)
-            {
-                UiUnlocked.Invoke(caller, null);
             }
         }
 

@@ -41,13 +41,13 @@ namespace FFXIV_TexTools.Views.Controls
             }
         }
 
-        public async Task<bool> LoadFile(string filePath, IItem referenceItem = null, byte[] data = null, bool forceColorsetEditor = false)
+        public async Task<bool> LoadFile(string filePath, IItem referenceItem = null, byte[] data = null, Type forcedControlType = null)
         {
-            return await FileWrapper.LoadInternalFile(filePath, referenceItem, data, true, forceColorsetEditor);
+            return await FileWrapper.LoadInternalFile(filePath, referenceItem, data, true, forcedControlType);
         }
 
 
-        public static async Task<bool> OpenFile(string filePath, IItem referenceItem = null, byte[] data = null, bool forceColorsetEditor = false, Window owner = null)
+        public static async Task<bool> OpenFile(string filePath, IItem referenceItem = null, byte[] data = null, Type forcedControlType = null, Window owner = null)
         {
             if(owner == null)
             {
@@ -57,7 +57,7 @@ namespace FFXIV_TexTools.Views.Controls
             wind.Owner = owner;
             wind.WindowStartupLocation = WindowStartupLocation.CenterOwner;
 
-            var success = await wind.LoadFile(filePath, referenceItem, data, forceColorsetEditor);
+            var success = await wind.LoadFile(filePath, referenceItem, data, forcedControlType);
             if (success)
             {
                 wind.Show();

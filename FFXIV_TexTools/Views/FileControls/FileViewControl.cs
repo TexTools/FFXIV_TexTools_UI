@@ -34,6 +34,10 @@ namespace FFXIV_TexTools.Views.Controls
 
     public abstract class FileViewControl : System.Windows.Controls.UserControl, INotifyPropertyChanged, IDisposable
     {
+        public delegate void FileDeletedEventHandler(string internalPath);
+        public event FileDeletedEventHandler FileDeleted;
+
+
         private EFileViewType _ViewType;
         public EFileViewType ViewType { get
             {
@@ -123,10 +127,12 @@ namespace FFXIV_TexTools.Views.Controls
             }
             MainWindow.UserTransactionStarted += MainWindow_UserTransactionStarted;
 
-            DebouncedUpdate = ViewHelpers.Debounce(_UpdateOnMainThread, 200);
+            DebouncedUpdate = ViewHelpers.Debounce<string>(_UpdateOnMainThread, 200);
+
+            IsEnabled = false;
         }
 
-        private Action DebouncedUpdate;
+        private Action<string> DebouncedUpdate;
 
         private void MainWindow_UserTransactionStarted()
         {
@@ -139,7 +145,7 @@ namespace FFXIV_TexTools.Views.Controls
         private bool _IS_SAVING;
         private bool _Disposed;
 
-        private async void ModTransaction_FileChanged(string changedFile)
+        private async void ModTransaction_FileChanged(string changedFile, long newOffset)
         {
             if (_IS_SAVING || string.IsNullOrWhiteSpace(changedFile) || string.IsNullOrWhiteSpace(InternalFilePath))
             {
@@ -147,12 +153,20 @@ namespace FFXIV_TexTools.Views.Controls
             }
             try
             {
+                if(newOffset == 0 && changedFile == InternalFilePath)
+                {
+                    // File was deleted.
+                    DebouncedUpdate(InternalFilePath);
+                    FileDeleted?.Invoke(InternalFilePath);
+                    return;
+                }
+
                 // Run update checks on a new thread.
                 await Task.Run(async () =>
                 {
                     if (await ShouldUpdateOnFileChange(changedFile))
                     {
-                        DebouncedUpdate();
+                        DebouncedUpdate(InternalFilePath);
                     }
                 });
             }
@@ -178,10 +192,17 @@ namespace FFXIV_TexTools.Views.Controls
             return false;
         }
 
-        private void _UpdateOnMainThread()
+        private void _UpdateOnMainThread(string file)
         {
+
             this.Invoke(() =>
             {
+                if (file != InternalFilePath)
+                {
+                    // No longer viewing the same file.
+                    return;
+                }
+
                 var task = ReloadFile();
             });
         }
@@ -215,7 +236,7 @@ namespace FFXIV_TexTools.Views.Controls
         /// </summary>
         /// <param name="filePath"></param>
         /// <returns></returns>
-        public virtual bool CanLoadFile(string filePath)
+        public virtual async Task<bool> CanLoadFile(string filePath, ModTransaction tx)
         {
             if (string.IsNullOrWhiteSpace(filePath))
             {
@@ -231,10 +252,19 @@ namespace FFXIV_TexTools.Views.Controls
             var ext = Path.GetExtension(filePath).ToLower();
             if (exts.ContainsKey(ext))
             {
+                if (IOUtil.IsFFXIVInternalPath(filePath))
+                {
+                    return await INTERNAL_CanLoadFile(filePath, tx);
+                }
                 return true;
             }
 
             return false;
+        }
+
+        protected virtual async Task<bool> INTERNAL_CanLoadFile(string filePath, ModTransaction tx)
+        {
+            return await tx.FileExists(filePath);
         }
 
         /// <summary>
@@ -272,12 +302,7 @@ namespace FFXIV_TexTools.Views.Controls
                 return false;
             }
 
-            var tx = TxWatcher.DefaultTransaction;
-            if (await tx.FileExists(InternalFilePath) || InternalFilePath.EndsWith(".meta"))
-            {
-                return await LoadInternalFile(InternalFilePath, false, ReferenceItem);
-            }
-            return false;
+            return await LoadInternalFile(InternalFilePath, false, ReferenceItem);
         }
 
         /// <summary>
@@ -339,14 +364,19 @@ namespace FFXIV_TexTools.Views.Controls
             bool success = false;
             try
             {
+                IsEnabled = false;
                 _LOADING = true;
                 if (HasFile)
                 {
                     await ClearFile();
                 }
 
-                if (!CanLoadFile(internalFile))
+                var tx = MainWindow.DefaultTransaction;
+                if (!await CanLoadFile(internalFile, tx))
                 {
+                    // If we can't load the file, but still have it assigned, keep it posted here..?
+                    InternalFilePath = internalFile;
+                    await UpdateModState();
                     return success;
                 }
 
@@ -358,10 +388,6 @@ namespace FFXIV_TexTools.Views.Controls
                         ReferenceItem = root.GetFirstItem();
                     }
                 }
-
-
-                var tx = MainWindow.DefaultTransaction;
-
 
                 var data = new byte[0];
 
@@ -380,7 +406,7 @@ namespace FFXIV_TexTools.Views.Controls
                         UnsavedChanges = true;
                         data = decompData;
                     }
-                    ModState = await Modding.GetModState(InternalFilePath, tx);
+                    await UpdateModState(tx);
                 });
 
 
@@ -403,8 +429,19 @@ namespace FFXIV_TexTools.Views.Controls
             finally
             {
                 _LOADING = false;
+                IsEnabled = success;
                 FileLoaded?.Invoke(this, success);
             }
+        }
+
+        protected virtual async Task UpdateModState(ModTransaction tx = null)
+        {
+            if(tx == null)
+            {
+                tx = MainWindow.DefaultTransaction;
+            }
+
+            ModState = await Modding.GetModState(InternalFilePath, tx);
         }
 
         protected virtual async Task<byte[]> INTERNAL_GetDataFromPath(string internalPath, bool forceOriginal, ModTransaction tx)
@@ -431,6 +468,7 @@ namespace FFXIV_TexTools.Views.Controls
                 }
             }
 
+            IsEnabled = false;
             var success = false;
             try
             {
@@ -439,8 +477,11 @@ namespace FFXIV_TexTools.Views.Controls
                     await ClearFile();
                 }
 
-                if (!CanLoadFile(externalFile))
+                if (!await CanLoadFile(externalFile, null))
                 {
+                    // If we can't load the file, but still have it assigned, keep it posted here..?
+                    InternalFilePath = internalFile;
+                    await UpdateModState();
                     return success;
                 }
 
@@ -484,6 +525,7 @@ namespace FFXIV_TexTools.Views.Controls
             }
             finally
             {
+                IsEnabled = success;
                 FileLoaded?.Invoke(this,success);
             }
         }
@@ -560,11 +602,11 @@ namespace FFXIV_TexTools.Views.Controls
             {
                 // Thread this since mod writing may involve some pretty hefty tasks in some cases.
                 // And nothing in here should be touching our UI.
-                var s =  await Task.Run(async () =>
+                success = await Task.Run(async () =>
                 {
                     if (string.IsNullOrWhiteSpace(InternalFilePath))
                     {
-                        return success;
+                        return false;
                     }
 
                     if (tx == null)
@@ -579,21 +621,21 @@ namespace FFXIV_TexTools.Views.Controls
                         return false;
                     }
 
-                    success = true;
                     ModState = EModState.Enabled;
                     UnsavedChanges = false;
-                    return success;
+                    return true;
                 });
 
-                if (s)
+                FileSaved?.Invoke(this, success);
+
+                if (success)
                 {
                     // Reload the file after to ensure user has correct-to-file-system state.
                     // This is maybe unnecessary, but until we're 200% sure TT's file writing is perfectly
                     // stable, it's probably better to be safe here.
                     await ReloadFile();
                 }
-
-                return s;
+                return success;
             }
             catch(Exception ex)
             {
@@ -602,7 +644,6 @@ namespace FFXIV_TexTools.Views.Controls
             } finally
             {
                 _IS_SAVING = false;
-                FileSaved?.Invoke(this, success);
             }
         }
 

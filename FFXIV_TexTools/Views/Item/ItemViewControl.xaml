@@ -13,12 +13,34 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="40"></RowDefinition>
             <RowDefinition Height="60"></RowDefinition>
             <RowDefinition x:Name="ExtraButtonsRow" Height="40"></RowDefinition>
             <RowDefinition Height="1*"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <Grid x:Name="ComboGrid" Grid.Row="0">
+
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="60"></ColumnDefinition>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+                <ColumnDefinition Width="60"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
+
+            <Button x:Name="RefreshButton" Margin="5" Grid.Column="0" IsEnabled="{Binding Path=RefreshEnabled}" Click="RefreshButton_Click" ToolTip="Reload the currently selected item from the Game Files/Transaction.">
+                <iconPacks:Material Kind="Refresh" Height="12"/>
+            </Button>
+
+
+            <TextBox Grid.Column="1" IsReadOnly="True" Margin="5" TextAlignment="Center" x:Name="ItemNameBox" VerticalContentAlignment="Center" Text="{Binding Path=ItemNameText}"/>
+
+            <Button x:Name="PopOutButton" Margin="5" Grid.Column="2" IsEnabled="{Binding Path=RefreshEnabled}" Click="PopOut_Click" ToolTip="Pop this item out in a new window.">
+                <iconPacks:PackIconFontAwesome Kind="ExternalLinkSquareAltSolid" Height="12"/>
+            </Button>
+        </Grid>
+
+        <Grid x:Name="ComboGrid" Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="60"></ColumnDefinition>
                 <ColumnDefinition></ColumnDefinition>
@@ -30,48 +52,61 @@
                 <iconPacks:PackIconMaterial Kind="UnfoldMoreHorizontal"/>
             </Button>
 
-            <Grid Grid.Column="1" Margin="5" IsEnabled="{Binding Path=ModelsEnabled}">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="60"></ColumnDefinition>
-                    <ColumnDefinition></ColumnDefinition>
-                </Grid.ColumnDefinitions>
-                <Button Grid.Column="0" Click="ShowModel_Click" ToolTip="View or edit the currently selected Model.">
-                    <iconPacks:PackIconMaterial Kind="Eye"/>
-                </Button>
-                
-                <ComboBox Grid.Column="1" x:Name="ModelComboBox" mah:TextBoxHelper.UseFloatingWatermark="True" mah:TextBoxHelper.Watermark="Model" 
+            <Border x:Name="ModelBorder"  Grid.Column="1"  Margin="3" BorderBrush="Black" BorderThickness="2" >
+                <Grid x:Name="ModelGrid" IsEnabled="{Binding Path=ModelsEnabled}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="60"></ColumnDefinition>
+                        <ColumnDefinition></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Button Grid.Column="0" Click="ShowModel_Click" ToolTip="View or edit the currently selected Model.">
+                        <iconPacks:PackIconMaterial Kind="Eye"/>
+                    </Button>
+
+                    <ComboBox Grid.Column="1" x:Name="ModelComboBox" mah:TextBoxHelper.UseFloatingWatermark="True" mah:TextBoxHelper.Watermark="Model" 
+                              DropDownClosed="ModelComboBox_DropDownClosed"
+                              DropDownOpened="Combobox_DropdownOpened"
                       ItemsSource="{Binding Path=Models}" DisplayMemberPath="Key" SelectedValuePath="Value" SelectionChanged="Model_Changed"/>
 
-            </Grid>
+                </Grid>
+            </Border>
 
-            <Grid Grid.Column="2" Margin="5" IsEnabled="{Binding Path=MaterialsEnabled}">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="60"></ColumnDefinition>
-                    <ColumnDefinition></ColumnDefinition>
-                </Grid.ColumnDefinitions>
+            <Border x:Name="MaterialBorder"  Grid.Column="2"    Margin="3" BorderBrush="Black" BorderThickness="2"  >
+                <Grid x:Name="MaterialGrid" IsEnabled="{Binding Path=MaterialsEnabled}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="60"></ColumnDefinition>
+                        <ColumnDefinition></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
 
-                <Button Grid.Column="0" Click="ShowMaterial_Click" ToolTip="View or edit the currently selected Material.">
-                    <iconPacks:PackIconMaterial Kind="Eye"/>
-                </Button>
-                <ComboBox Grid.Column="2" x:Name="MaterialComboBox" mah:TextBoxHelper.UseFloatingWatermark="True" mah:TextBoxHelper.Watermark="Material" 
-                      ItemsSource="{Binding Path=Materials}" DisplayMemberPath="Key" SelectedValuePath="Value" SelectionChanged="Material_Changed"/>
-            </Grid>
+                    <Button Grid.Column="0" Click="ShowMaterial_Click" ToolTip="View or edit the currently selected Material.">
+                        <iconPacks:PackIconMaterial Kind="Eye"/>
+                    </Button>
+                    <ComboBox Grid.Column="2" x:Name="MaterialComboBox" mah:TextBoxHelper.UseFloatingWatermark="True" mah:TextBoxHelper.Watermark="Material"
+                              DropDownClosed="MaterialComboBox_DropDownClosed"
+                              DropDownOpened="Combobox_DropdownOpened"
+                          ItemsSource="{Binding Path=Materials}" DisplayMemberPath="Key" SelectedValuePath="Value" SelectionChanged="Material_Changed"/>
+                </Grid>
+            </Border>
 
-            <Grid Grid.Column="3" Margin="5" IsEnabled="{Binding Path=TexturesEnabled}">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="60"></ColumnDefinition>
-                    <ColumnDefinition></ColumnDefinition>
-                </Grid.ColumnDefinitions>
-                <Button Grid.Column="0" Click="ShowTexture_Click" ToolTip="View or edit the currently selected Texture.">
-                    <iconPacks:PackIconMaterial Kind="Eye"/>
-                </Button>
-                
-                <ComboBox Grid.Column="3" x:Name="TextureComboBox" mah:TextBoxHelper.UseFloatingWatermark="True" mah:TextBoxHelper.Watermark="Texture" 
+            <Border x:Name="TextureBorder" Grid.Column="3"   Margin="3" BorderBrush="Black" BorderThickness="2" >
+                <Grid x:Name="TextureGrid" IsEnabled="{Binding Path=TexturesEnabled}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="60"></ColumnDefinition>
+                        <ColumnDefinition></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Button Grid.Column="0" Click="ShowTexture_Click" ToolTip="View or edit the currently selected Texture.">
+                        <iconPacks:PackIconMaterial Kind="Eye"/>
+                    </Button>
+
+                    <ComboBox Grid.Column="3" x:Name="TextureComboBox" mah:TextBoxHelper.UseFloatingWatermark="True" mah:TextBoxHelper.Watermark="Texture" 
+                              DropDownClosed="TextureComboBox_DropDownClosed"
+                              DropDownOpened="Combobox_DropdownOpened"
                       ItemsSource="{Binding Path=Textures}" DisplayMemberPath="Key" SelectedValuePath="Value" SelectionChanged="Texture_Changed"/>
-            </Grid>
+                </Grid>
+            </Border>
         </Grid>
 
-        <Grid x:Name="ButtonGrid" Grid.Row="1">
+
+        <Grid x:Name="ButtonGrid" Grid.Row="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="150"></ColumnDefinition>
                 <ColumnDefinition Width="150"></ColumnDefinition>
@@ -83,7 +118,8 @@
             <Button Content="Add New Material" Margin="5" Grid.Column="2" Click="AddMaterial_Click" IsEnabled="{Binding Path=AddMaterialEnabled}"></Button>
         </Grid>
 
-        <Grid x:Name="FileGrid" Grid.Row="2">
+        
+        <Grid x:Name="FileGrid" Grid.Row="3">
             <controls:FileWrapperControl x:Name="ModelWrapper" Visibility="Collapsed"></controls:FileWrapperControl>
             <controls:FileWrapperControl x:Name="MaterialWrapper" Visibility="Collapsed"></controls:FileWrapperControl>
             <controls:FileWrapperControl x:Name="TextureWrapper" Visibility="Collapsed"></controls:FileWrapperControl>

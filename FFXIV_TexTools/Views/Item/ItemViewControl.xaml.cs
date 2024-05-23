@@ -2,6 +2,7 @@
 using FFXIV_TexTools.Views.Controls;
 using HelixToolkit.Wpf;
 using MahApps.Metro.Controls;
+using MahApps.Metro.Controls.Dialogs;
 using MahApps.Metro.IconPacks;
 using Newtonsoft.Json.Linq;
 using System;
@@ -9,12 +10,14 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Diagnostics.Eventing.Reader;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -27,8 +30,11 @@ using xivModdingFramework.Helpers;
 using xivModdingFramework.Items.Categories;
 using xivModdingFramework.Items.Enums;
 using xivModdingFramework.Items.Interfaces;
+using xivModdingFramework.Materials.DataContainers;
 using xivModdingFramework.Materials.FileTypes;
 using xivModdingFramework.Mods;
+using xivModdingFramework.Textures.Enums;
+using xivModdingFramework.Textures.FileTypes;
 using xivModdingFramework.Variants.FileTypes;
 
 namespace FFXIV_TexTools.Views.Item
@@ -42,52 +48,40 @@ namespace FFXIV_TexTools.Views.Item
          *  as well as wrapping those file paths into dropdown selections in some of the tabs.
         */
 
+        // TODO: Make this prettier.
+        private static SolidColorBrush SelectedBrush = new SolidColorBrush(new Color() { A = 255, R = 0, G = 0, B = 0 });
+
+        private static SolidColorBrush UnselectedBrush = new SolidColorBrush(new Color() { A = 0, R = 0, G = 0, B = 0 });
+
+        private string _ItemNameText;
+        public string ItemNameText
+        {
+            get
+            {
+                return _ItemNameText;
+            }
+            set
+            {
+                _ItemNameText = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ItemNameText)));
+            }
+        }
+
+        public bool RefreshEnabled
+        {
+            get
+            {
+                return Item != null;
+            }
+        }
+
+
         private List<FileWrapperControl> FileControls = new List<FileWrapperControl>();
-        public ItemViewControl()
-        {
-            DataContext = this;
-            InitializeComponent();
-            ActiveView = this;
-
-            TextureWrapper.SetControlType(typeof(TextureFileControl));
-            MaterialWrapper.SetControlType(typeof(MaterialFileControl));
-            ModelWrapper.SetControlType(typeof(ModelFileControl));
-            MetadataWrapper.SetControlType(typeof(MetadataFileControl));
-
-            FileControls.Add(TextureWrapper);
-            FileControls.Add(MaterialWrapper);
-            FileControls.Add(ModelWrapper);
-            FileControls.Add(MetadataWrapper);
-
-            MetadataWrapper.FileControl.FileSaved += OnMetadataSaved;
-
-            ExtraButtonsRow.Height = new GridLength(0);
-
-            // Go ahead and show the model panel.
-            // The viewport there can take a second to initialize,
-            // So it helps a little to get it visible to kick that stuff off earlier.
-            ShowPanel(ModelWrapper);
-        }
-
-        private async void OnMetadataSaved(FileViewControl sender, bool success)
-        {
-            try
-            {
-                // Always reload the item on Metadata reload, to be safe.
-                _TargetFile = Item.GetRoot().Info.GetRootFile();
-                await SetItem(Item);
-            }
-            catch
-            {
-                // No-Op, just safety catch.
-            }
-        }
-
         #region Basic IPropertyNotify Properties Pattern
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public static ItemViewControl ActiveView { get; private set; }
+        public static ItemViewControl MainItemView { get; private set; }
 
         private IItem _Item;
         public IItem Item
@@ -97,6 +91,7 @@ namespace FFXIV_TexTools.Views.Item
             {
                 _Item = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Item)));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(RefreshEnabled)));
             }
         }
 
@@ -202,8 +197,20 @@ namespace FFXIV_TexTools.Views.Item
         #endregion
 
 
-        private bool _LoadSourceSet = false;
-        private string _TargetFile = null;
+        private bool _TargetFileSet {  get
+            {
+                return _TargetFile.ModelKey != null;
+            } 
+        }
+
+        // Special indicator requesting not to change the visible panel.
+        private bool _TargetFileLocked { get
+            {
+                return _TargetFile.ModelKey == "!";
+            } 
+        }
+
+        private (string ModelKey, string MaterialKey, string TextureKey) _TargetFile = (null, null, null);
 
         /// <summary>
         /// Internal dictionary structure representing all of the files available for this item.
@@ -215,6 +222,96 @@ namespace FFXIV_TexTools.Views.Item
 
         private XivDependencyRoot Root;
 
+        public ItemViewControl()
+        {
+            DataContext = this;
+            InitializeComponent();
+
+            TextureWrapper.SetControlType(typeof(TextureFileControl));
+            MaterialWrapper.SetControlType(typeof(MaterialFileControl));
+            ModelWrapper.SetControlType(typeof(ModelFileControl));
+            MetadataWrapper.SetControlType(typeof(MetadataFileControl));
+
+            FileControls.Add(TextureWrapper);
+            FileControls.Add(MaterialWrapper);
+            FileControls.Add(ModelWrapper);
+            FileControls.Add(MetadataWrapper);
+
+            MetadataWrapper.FileControl.FileSaved += OnMetadataSaved;
+
+            ExtraButtonsRow.Height = new GridLength(0);
+            ItemNameText = "No Item Selected";
+
+            // Go ahead and show the model panel.
+            // The viewport there can take a second to initialize,
+            // So it helps a little to get it visible to kick that stuff off earlier.
+            ShowPanel(ModelWrapper);
+
+            TextureWrapper.FileControl.FileDeleted += FileControl_FileDeleted;
+            MaterialWrapper.FileControl.FileDeleted += FileControl_FileDeleted;
+            ModelWrapper.FileControl.FileDeleted += FileControl_FileDeleted;
+            MetadataWrapper.FileControl.FileDeleted += Metadata_FileDeleted;
+        }
+
+        private async void Metadata_FileDeleted(string internalPath)
+        {
+            try
+            {
+                // Deleted metadata basically required reloading the item due to the bredth of possible changes.
+                await Dispatcher.InvokeAsync(async () =>
+                {
+                    await SetItem(Item);
+                });
+            }
+            catch (Exception ex)
+            {
+                //No Op
+                Trace.WriteLine(ex);
+            }
+        }
+
+        private async void FileControl_FileDeleted(string internalPath)
+        {
+            try
+            {
+                await Dispatcher.InvokeAsync(async () =>
+                {
+                    await SafeRemoveFile(internalPath);
+                });
+            }
+            catch(Exception ex)
+            {
+                //No Op
+                Trace.WriteLine(ex);
+            }
+        }
+
+        protected override void OnVisualParentChanged(DependencyObject oldParent)
+        {
+            var wind = Window.GetWindow(this);
+            if (wind == MainWindow.GetMainWindow())
+            {
+                MainItemView = this;
+            }
+
+            wind.PreviewKeyDown += Wind_PreviewKeyDown;
+            wind.PreviewMouseRightButtonDown += Wind_PreviewMouseRightButtonDown;
+        }
+
+
+        private async void OnMetadataSaved(FileViewControl sender, bool success)
+        {
+            try
+            {
+                // Always reload the item on Metadata reload, to be safe.
+                await SetItem(Item, Item.GetRoot().Info.GetRootFile());
+            }
+            catch
+            {
+                // No-Op, just safety catch.
+            }
+        }
+
         /// <summary>
         /// Simple shortcut accessor and null checking for ActiveView.SetItem(item)
         /// </summary>
@@ -222,11 +319,11 @@ namespace FFXIV_TexTools.Views.Item
         /// <returns></returns>
         public static async Task StaticSetItem(IItem item)
         {
-            if(ActiveView == null)
+            if(MainItemView == null)
             {
                 return;
             }
-            await ActiveView.SetItem(item);
+            await MainItemView.SetItem(item);
         }
 
         /// <summary>
@@ -234,9 +331,33 @@ namespace FFXIV_TexTools.Views.Item
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
-        public async Task SetItem(IItem item)
+        public async Task<bool> SetItem(IItem item, string targetFile = null)
         {
-            await MainWindow.GetMainWindow().LockUi("Loading Item", "Please wait...", this);
+            var res = await HandleUnsaveConfirmation(null, null);
+            if (!res)
+            {
+                return false;
+            }
+
+            if(Item == item && targetFile == null)
+            {
+                targetFile = _VisiblePanel.FilePath;
+            }
+
+            ProgressDialogController lockController = null;
+            if (this == MainItemView)
+            {
+                await MainWindow.GetMainWindow().LockUi("Loading Item", "Please wait...", this);
+            }
+            else
+            {
+                var wind = Window.GetWindow(this) as MetroWindow;
+                if (wind != null)
+                {
+                    lockController = await wind.ShowProgressAsync("Loading Item", "Please wait...");
+                }
+            }
+
             try
             {
                 Item = item;
@@ -250,6 +371,7 @@ namespace FFXIV_TexTools.Views.Item
                 Materials = new ObservableCollection<KeyValuePair<string, string>>();
                 Textures = new ObservableCollection<KeyValuePair<string, string>>();
                 Files = new Dictionary<string, Dictionary<string, HashSet<string>>>();
+                ItemNameText = "Loading Item...";
 
                 ResetWatermarks();
 
@@ -260,7 +382,9 @@ namespace FFXIV_TexTools.Views.Item
 
                 if (Item == null)
                 {
-                    return;
+                    ItemNameText = "No Item Selected";
+                    ShowPanel(null);
+                    return true;
                 }
 
                 ItemInfoEnabled = true;
@@ -270,15 +394,21 @@ namespace FFXIV_TexTools.Views.Item
                 {
                     // Texture only item.  Not implemented yet.
                     TexturesEnabled = true;
+                    ShowPanel(TextureWrapper);
+                    ItemNameText = ":(";
                     throw new NotImplementedException();
-                    return;
+                    return false;
                 }
 
                 // We can add materials to anything with a root.
                 AddMaterialEnabled = true;
 
-                // Populate the Files structure.
                 var tx = MainWindow.DefaultTransaction;
+
+                await SetItemName(tx);
+
+
+                // Populate the Files structure.
                 await Task.Run(async () =>
                 {
                     // These need to be in sequence, so they can't be paralell'd
@@ -294,27 +424,57 @@ namespace FFXIV_TexTools.Views.Item
                     MetadataEnabled = true;
                 }
 
-                if(!string.IsNullOrWhiteSpace(_TargetFile))
-                {
-                    _LoadSourceSet = true;
-                }
+                _TargetFile = GetFileKeys(targetFile);
                 // Assign the first combo box, which will kick off the children boxes in turn.
                 AddModels(Files.Keys.ToList());
 
 
-                if (!string.IsNullOrWhiteSpace(_TargetFile))
-                {
-                    await ShowFile(_TargetFile);
-                }
+                return true;
             }
             catch(Exception ex) 
             {
                 this.ShowError("Item Load Error", "An error occurred while loading the item:\n\n" + ex.Message);
+                return false;
             }
             finally
             {
-                await MainWindow.GetMainWindow().UnlockUi(this);
+
+                if (this == MainItemView)
+                {
+                    await MainWindow.GetMainWindow().UnlockUi(this);
+                } else if(lockController != null)
+                {
+                    await lockController.CloseAsync();
+                }
             }
+        }
+
+        private async Task SetItemName(ModTransaction tx)
+        {
+            if(Item == null)
+            {
+                ItemNameText = "No Item Selected";
+                return;
+            } else if(Root == null)
+            {
+                ItemNameText = Item.Name;
+                return;
+            }
+
+            var variantString = "";
+            var asIm = Item as IItemModel;
+            if (Imc.UsesImc(Root) && asIm != null && asIm.ModelInfo != null && asIm.ModelInfo.ImcSubsetID >= 0)
+            {
+                variantString += " - Variant " + asIm.ModelInfo.ImcSubsetID;
+
+                var mSetId = await Imc.GetMaterialSetId(asIm, false, tx);
+                if (mSetId >= 0)
+                {
+                    variantString = " - Material Set " + mSetId;
+                }
+            }
+
+            ItemNameText = Root.Info.GetBaseFileName() + variantString + " : " + Item.Name;
         }
 
         private void ResetWatermarks()
@@ -570,7 +730,15 @@ namespace FFXIV_TexTools.Views.Item
 
             AssignModelWatermark();
             ModelsEnabled = true;
-            ModelComboBox.SelectedIndex = 0;
+
+            if (_TargetFileSet && Models.Any(x => x.Value == _TargetFile.ModelKey))
+            {
+                ModelComboBox.SelectedValue = _TargetFile.ModelKey;
+            } else
+            {
+                // Default behavior
+                ModelComboBox.SelectedIndex = 0;
+            }
         }
 
         /// <summary>
@@ -600,16 +768,36 @@ namespace FFXIV_TexTools.Views.Item
             }
 
             AssignMaterialWatermark();
-            MaterialComboBox.SelectedIndex = 0;
             MaterialsEnabled = true;
+
+            if (_TargetFile.MaterialKey != null && Materials.Any(x => x.Value == _TargetFile.MaterialKey))
+            {
+                MaterialComboBox.SelectedValue = _TargetFile.MaterialKey;
+            }
+            else
+            {
+                // Default behavior
+                MaterialComboBox.SelectedIndex = 0;
+            }
         }
 
         /// <summary>
         /// Adds the given paths to the Textures combo box.
         /// </summary>
         /// <param name="textures"></param>
-        private void AddTextures(IEnumerable<string> textures)
+        private async Task AddTextures(IEnumerable<string> textures)
         {
+            var mtrlPath = (string)MaterialComboBox.SelectedValue;
+            XivMtrl mtrl = null;
+            if (!string.IsNullOrEmpty(mtrlPath))
+            {
+                var tx = MainWindow.DefaultTransaction;
+                if(await tx.FileExists(mtrlPath))
+                {
+                    mtrl = await Mtrl.GetXivMtrl(mtrlPath, false, tx);
+                }
+            }
+
             Textures = new ObservableCollection<KeyValuePair<string, string>>();
             foreach (var texture in textures)
             {
@@ -620,8 +808,21 @@ namespace FFXIV_TexTools.Views.Item
                 }
 
                 var niceName = Path.GetFileNameWithoutExtension(texture);
-                var race = IOUtil.GetRaceFromPath(texture);
-                var baseName = Root.Info.GetBaseFileName();
+
+                if (mtrl != null && mtrl.Textures.Any(x => x.Dx11Path == texture))
+                {
+                    niceName = mtrl.ResolveFullUsage(mtrl.Textures.First(x => x.Dx11Path == texture)).ToString() + " - " +  niceName;
+                }
+                else if (mtrl != null && mtrl.Textures.Any(x => x.Dx9Path == texture))
+                {
+                    niceName = "DX9 - " + niceName;
+                }
+                else
+                {
+                    
+                }
+
+
 
                 Textures.Add(new KeyValuePair<string, string>(niceName, texture));
             }
@@ -633,7 +834,15 @@ namespace FFXIV_TexTools.Views.Item
 
             AssignTexturewatermark();
             TexturesEnabled = true;
-            TextureComboBox.SelectedIndex = 0;
+            if (_TargetFile.TextureKey != null && Textures.Any(x => x.Value == _TargetFile.TextureKey))
+            {
+                TextureComboBox.SelectedValue = _TargetFile.TextureKey;
+            }
+            else
+            {
+                // Default behavior
+                TextureComboBox.SelectedIndex = 0;
+            }
         }
 
         // Internal state control flag.
@@ -648,10 +857,13 @@ namespace FFXIV_TexTools.Views.Item
                 return false;
             }
 
-            if(e.RemovedItems.Count == 0)
+            if (e != null)
             {
-                // Something broke, unfortunate.
-                return true;
+                if (e.RemovedItems.Count == 0)
+                {
+                    // Something broke, unfortunate.
+                    return true;
+                }
             }
 
             var res = true;
@@ -659,17 +871,17 @@ namespace FFXIV_TexTools.Views.Item
             bool materialPrompt = false;
             bool texPrompt = false;
 
-            if (ModelWrapper.UnsavedChanges && (c == ModelComboBox))
+            if (ModelWrapper.UnsavedChanges && ((c == ModelComboBox) || c == null))
             {
                 res = ModelWrapper.FileControl.ConfirmDiscardChanges(ModelWrapper.FilePath);
                 modelPrompt = true;
             }
-            if (res && MaterialWrapper.UnsavedChanges && (c == MaterialComboBox || c == ModelComboBox))
+            if (res && MaterialWrapper.UnsavedChanges && (c == MaterialComboBox || c == ModelComboBox || c == null))
             {
                 res = MaterialWrapper.FileControl.ConfirmDiscardChanges(MaterialWrapper.FilePath);
                 materialPrompt = true;
             }
-            if (res && TextureWrapper.UnsavedChanges)
+            if (res && TextureWrapper.UnsavedChanges && c == null)
             {
                 res= TextureWrapper.FileControl.ConfirmDiscardChanges(TextureWrapper.FilePath);
                 texPrompt = true;
@@ -680,9 +892,12 @@ namespace FFXIV_TexTools.Views.Item
             {
 
                 // Restore selected combo box back to its previous state.
-                _CANCELLING_COMBO_BOXES = true;
-                c.SelectedItem = e.RemovedItems[0];
-                _CANCELLING_COMBO_BOXES = false;
+                if (c != null && e != null)
+                {
+                    _CANCELLING_COMBO_BOXES = true;
+                    c.SelectedItem = e.RemovedItems[0];
+                    _CANCELLING_COMBO_BOXES = false;
+                }
 
                 return false;
             }
@@ -706,11 +921,128 @@ namespace FFXIV_TexTools.Views.Item
             return true;
         }
 
+
+        private (string fileKey, string materialKey, string texKey) GetFileKeys(string file)
+        {
+            if (string.IsNullOrEmpty(file))
+            {
+                return (null, null, null);
+            }
+
+            foreach (var mkv in Files)
+            {
+                if (mkv.Key == file)
+                {
+                    return (file, null, null);
+                }
+                foreach (var mtkv in mkv.Value)
+                {
+                    if (mtkv.Key == file)
+                    {
+                        return (mkv.Key, file, null);
+                    }
+
+                    foreach (var tex in mtkv.Value)
+                    {
+                        if (tex == file)
+                        {
+                            return (mkv.Key, mtkv.Key, file);
+                        }
+                    }
+                }
+            }
+            
+            // File not in our tree, don't force visibility.
+            return ("!", null, null);
+        }
+
+        private bool RemoveFile(string file)
+        {
+            foreach (var mkv in Files)
+            {
+                if (mkv.Key == file)
+                {
+                    Files.Remove(file);
+                    return true;
+                }
+                foreach(var mtkv in mkv.Value)
+                {
+                    if(mtkv.Key == file)
+                    {
+                        Files[mkv.Key].Remove(file);
+                        return true;
+                    }
+
+                    foreach(var tex in mtkv.Value)
+                    {
+                        if(tex == file)
+                        {
+                            Files[mkv.Key][mtkv.Key].Remove(tex);
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Tests if a file exists, safely removing it from the combo boxes as non-disruptively as possible if it doesn't.
+        /// </summary>
+        /// <param name="shiftUp"></param>
+        /// <returns></returns>
+        private async Task<bool> SafeRemoveFile(string fileRemoved)
+        {
+            if (string.IsNullOrWhiteSpace(fileRemoved))
+            {
+                return false;
+            }
+
+            var tx = MainWindow.DefaultTransaction;
+            if(await tx.FileExists(fileRemoved))
+            {
+                // File still exists, leave it in.
+                return false;
+            }
+
+
+            if (!RemoveFile(fileRemoved))
+            {
+                return false;
+            }
+
+            string file = null;
+            if (!string.IsNullOrWhiteSpace(fileRemoved))
+            {
+                var ext = Path.GetExtension(fileRemoved);
+                if (TextureWrapper.FileControl.GetValidFileExtensions().Keys.Contains(ext))
+                {
+                    file = Textures.First().Value;
+                    file = file == fileRemoved ? Materials.First().Value : file;
+                } else if (MaterialWrapper.FileControl.GetValidFileExtensions().Keys.Contains(ext))
+                {
+                    file = Materials.First().Value;
+                    file = file == fileRemoved ? Models.First().Value : file;
+                } else if(ModelWrapper.FileControl.GetValidFileExtensions().Keys.Contains(ext))
+                {
+                    file = Models.First().Value;
+                    file = file == fileRemoved ? null : file;
+                } else
+                {
+                    file = null;
+                }
+            }
+
+            _TargetFile = GetFileKeys(file);
+            AddModels(Files.Keys.ToList());
+            return true;
+        }
+
         private async void Model_Changed(object sender, SelectionChangedEventArgs e)
         {
-
             try
             {
+
                 if (ModelComboBox.SelectedValue == null)
                 {
                     return;
@@ -722,18 +1054,29 @@ namespace FFXIV_TexTools.Views.Item
                 }
 
                 var currentModel = (string)ModelComboBox.SelectedValue;
+
+                if (!string.IsNullOrEmpty(currentModel))
+                {
+                    if(await SafeRemoveFile(currentModel))
+                    {
+                        return;
+                    }
+                }
+
                 if (currentModel == null || !Files.ContainsKey(currentModel))
                 {
                     AddMaterials(new List<string>());
                     return;
                 }
+
                 var mats = Files[currentModel].Keys.ToList();
-
-
                 var success = await ModelWrapper.LoadInternalFile(currentModel, Item, null, false);
-                if (success && !_LoadSourceSet)
+
+                if(!_TargetFileLocked && 
+                    _TargetFile.ModelKey != null
+                    && _TargetFile.MaterialKey == null
+                    && _TargetFile.TextureKey == null)
                 {
-                    _LoadSourceSet = true;
                     ShowPanel(ModelWrapper);
                 }
 
@@ -764,27 +1107,37 @@ namespace FFXIV_TexTools.Views.Item
                 var currentModel = (string)ModelComboBox.SelectedValue;
                 if (currentModel == null || !Files.ContainsKey(currentModel))
                 {
-                    AddTextures(new List<string>());
+                    await AddTextures(new List<string>());
                     return;
                 }
                 var currentMaterial = (string)MaterialComboBox.SelectedValue;
+
+                if (!string.IsNullOrEmpty(currentMaterial))
+                {
+                    if (await SafeRemoveFile(currentMaterial))
+                    {
+                        return;
+                    }
+                }
+
                 if (currentMaterial == null || !Files[currentModel].ContainsKey(currentMaterial))
                 {
-                    AddTextures(new List<string>());
+                    await AddTextures(new List<string>());
                     return;
                 }
 
                 var texs = Files[currentModel][currentMaterial];
 
                 var success = await MaterialWrapper.LoadInternalFile(currentMaterial, Item, null, false);
-                if (success && !_LoadSourceSet)
+
+                if (!_TargetFileLocked 
+                    && _TargetFile.MaterialKey != null
+                    && _TargetFile.TextureKey == null)
                 {
-                    _LoadSourceSet = true;
                     ShowPanel(MaterialWrapper);
                 }
 
-                AddTextures(texs);
-
+                await AddTextures(texs);
             }
             catch
             {
@@ -809,11 +1162,19 @@ namespace FFXIV_TexTools.Views.Item
 
 
                 var tex = (string)TextureComboBox.SelectedValue;
+
+                if (!string.IsNullOrEmpty(tex))
+                {
+                    if (await SafeRemoveFile(tex))
+                    {
+                        return;
+                    }
+                }
+
                 var success = await TextureWrapper.LoadInternalFile(tex, Item, null, false);
 
-                if (success && !_LoadSourceSet)
+                if (!_TargetFileLocked && _TargetFile.TextureKey != null)
                 {
-                    _LoadSourceSet = true;
                     ShowPanel(TextureWrapper);
                 }
             }
@@ -822,7 +1183,8 @@ namespace FFXIV_TexTools.Views.Item
                 // No-Op.  Should be handled elsewhere, this is just super safety.
             }
 
-            _LoadSourceSet = false;
+            // All done here.
+            _TargetFile = (null, null, null);
         }
 
         private void ItemInfo_Click(object sender, RoutedEventArgs e)
@@ -830,12 +1192,37 @@ namespace FFXIV_TexTools.Views.Item
 
         }
 
+        private FileWrapperControl _VisiblePanel;
         private void ShowPanel(FileWrapperControl control)
         {
-            foreach(var panel in FileControls)
+            _VisiblePanel = control;
+
+            ModelBorder.BorderBrush = UnselectedBrush;
+            MaterialBorder.BorderBrush = UnselectedBrush;
+            TextureBorder.BorderBrush = UnselectedBrush;
+            //ModelBorder.Margin = new Thickness(5);
+            //MaterialBorder.Margin = new Thickness(5);
+            //TextureBorder.Margin = new Thickness(5);
+
+            foreach (var panel in FileControls)
             {
                 panel.Visibility = panel == control ? Visibility.Visible : Visibility.Collapsed;
             }
+
+            if(control == ModelWrapper && ModelWrapper.FileControl.HasFile)
+            {
+                //ModelBorder.Margin = new Thickness(2);
+                ModelBorder.BorderBrush = SelectedBrush;
+            } else if(control == MaterialWrapper && MaterialWrapper.FileControl.HasFile)
+            {
+                //MaterialBorder.Margin = new Thickness(2);
+                MaterialBorder.BorderBrush = SelectedBrush;
+            } else if (control == TextureWrapper && TextureWrapper.FileControl.HasFile)
+            {
+                //TextureBorder.Margin = new Thickness(2);
+                TextureBorder.BorderBrush = SelectedBrush;
+            }
+
         }
 
         private void ShowTexture_Click(object sender, RoutedEventArgs e)
@@ -917,8 +1304,7 @@ namespace FFXIV_TexTools.Views.Item
                 matControl.FileLoaded -= MatControl_FileLoaded;
                 matControl.FileSaved -= MatControl_FileSaved;
 
-                _TargetFile = matControl.Material.MTRLPath;
-                await SetItem(Item);
+                await SetItem(Item, matControl.Material.MTRLPath);
             } catch(Exception ex)
             {
                 // No op, just safety catch.
@@ -926,61 +1312,96 @@ namespace FFXIV_TexTools.Views.Item
             }
         }
 
-        /// <summary>
-        /// Shows the given file in the appropriate view, IF the file exists in this item.
-        /// Otherwise pops out a view for the file.
-        /// </summary>
-        /// <param name="file"></param>
-        public async Task ShowFile(string file)
+        private bool _DROPDOWN_OPEN;
+        private bool _DROPDOWN_CANCEL;
+        private void Combobox_DropdownOpened(object sender, EventArgs e)
         {
-            FileWrapperControl control = GetControlForFile(file);
-            if (control != null)
-            {
-                var success = await control.LoadInternalFile(file);
+            _DROPDOWN_OPEN = true;
+            _DROPDOWN_CANCEL = false;
+        }
 
-                if (success)
-                {
-                    ShowPanel(control);
-                }
-            } else
+        private void ModelComboBox_DropDownClosed(object sender, EventArgs e)
+        {
+            if (_DROPDOWN_CANCEL)
             {
-                await SimpleFileViewWindow.OpenFile(file);
+                _DROPDOWN_CANCEL = false;
+                return;
+            }
+
+            _DROPDOWN_CANCEL = false;
+            ShowPanel(ModelWrapper);
+        }
+
+        private void MaterialComboBox_DropDownClosed(object sender, EventArgs e)
+        {
+            if (_DROPDOWN_CANCEL)
+            {
+                _DROPDOWN_CANCEL = false;
+                return;
+            }
+
+            _DROPDOWN_CANCEL = false;
+            ShowPanel(MaterialWrapper);
+        }
+
+        private void TextureComboBox_DropDownClosed(object sender, EventArgs e)
+        {
+            if (_DROPDOWN_CANCEL)
+            {
+                _DROPDOWN_CANCEL = false;
+                return;
+            }
+
+            _DROPDOWN_CANCEL = false;
+            ShowPanel(TextureWrapper);
+        }
+        private void Wind_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (_DROPDOWN_OPEN)
+            {
+                var controlSource = e.OriginalSource as Control;
+                if (controlSource != null && controlSource.Parent == null)
+                {
+                    // Clicked on the content of the dropdown, which is just null-parent floating text boxes.
+                    // This doesn't close the popup window.
+                    return;
+                }
+                _DROPDOWN_CANCEL = true;
+            }
+        }
+        private void Wind_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if(e.Key == Key.Escape)
+            {
+                if (_DROPDOWN_OPEN)
+                {
+                    _DROPDOWN_CANCEL = true;
+                }
             }
         }
 
-        private FileWrapperControl GetControlForFile(string file)
+        private async void RefreshButton_Click(object sender, RoutedEventArgs e)
         {
-            if(Root != null)
+            try
             {
-                if(file == Root.Info.GetRootFile())
-                {
-                    return MetadataWrapper;
-                }
+                var success = await SetItem(Item);
             }
-
-            foreach (var modelKv in Files)
+            catch
             {
-                if (modelKv.Key == file)
-                {
-                    return ModelWrapper;
-                }
-                foreach (var materialKv in modelKv.Value)
-                {
-                    if (materialKv.Key == file)
-                    {
-                        return MaterialWrapper;
-                    }
-                    foreach (var texture in materialKv.Value)
-                    {
-                        if (texture == file)
-                        {
-                            return TextureWrapper;
-                        }
-                    }
-                }
+                // No op
             }
+        }
 
-            return null;
+        private async void PopOut_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var success = await SimpleItemViewWindow.ShowItem(Item, Window.GetWindow(this));
+            }
+            catch
+            {
+                // No op
+            }
         }
     }
 }

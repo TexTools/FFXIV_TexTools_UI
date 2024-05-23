@@ -108,6 +108,7 @@ namespace FFXIV_TexTools.Views.Controls
 
         private Helpers.ViewportCanvasRenderer canvasRenderer = null;
 
+
         public ColorsetFileControl()
         {
             DataContext = this;
@@ -289,6 +290,12 @@ namespace FFXIV_TexTools.Views.Controls
             return await Task.Run(async () =>
             {
                 var tx = MainWindow.DefaultTransaction;
+                if (!await tx.FileExists(changedFile) || Material == null)
+                {
+                    // File was deleted or restored.
+                    return true;
+                }
+
                 var newMtrl = await Mtrl.GetXivMtrl(changedFile, false, tx);
 
                 var result = Mtrl.CompareMaterials(Material, newMtrl);
@@ -310,6 +317,7 @@ namespace FFXIV_TexTools.Views.Controls
                 newMtrl.ColorSetDyeData = Material.ColorSetDyeData;
 
                 await SetMaterial(newMtrl, RowId);
+                await UpdateModState(tx);
 
                 return false;
             });

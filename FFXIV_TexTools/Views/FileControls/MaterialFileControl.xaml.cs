@@ -44,6 +44,8 @@ using FFXIV_TexTools.Helpers;
 using xivModdingFramework.Materials.FileTypes;
 using xivModdingFramework.Mods;
 using FFXIV_TexTools.Resources;
+using System.Diagnostics;
+using System.Threading;
 
 namespace FFXIV_TexTools.Views.Controls
 {
@@ -100,6 +102,7 @@ namespace FFXIV_TexTools.Views.Controls
             {
                 _Material = value;
                 UpdateTextureList();
+                _ = UpdateColorsetImage();
                 OnPropertyChanged(nameof(Material));
                 OnPropertyChanged(nameof(ShaderPack));
                 OnPropertyChanged(nameof(ColorsetEnabled));
@@ -166,8 +169,9 @@ namespace FFXIV_TexTools.Views.Controls
 
                 ShaderSource.Add(kv);
             }
-        }
 
+            ColorsetImage.MouseLeftButtonDown += ColorsetImage_MouseLeftButtonDown;
+        }
 
         public virtual string GetNiceName()
         {
@@ -223,7 +227,11 @@ namespace FFXIV_TexTools.Views.Controls
                 return true;
             } else if(ext == ".dds")
             {
-                Mtrl.SaveColorsetDyeData(_Material, externalFilePath);
+                var tex = await Mtrl.GetColorsetXivTex(Material);
+                var dyePath = Path.Combine(Path.GetDirectoryName(externalFilePath), Path.GetFileNameWithoutExtension(externalFilePath) + ".dat");
+
+                Mtrl.SaveColorsetDyeData(Material, dyePath);
+                Tex.SaveTexAsDDS(externalFilePath, tex);
                 return true;
             } else
             {
@@ -253,6 +261,12 @@ namespace FFXIV_TexTools.Views.Controls
             return await Task.Run(async () =>
             {
                 var tx = MainWindow.DefaultTransaction;
+                if(!await tx.FileExists(changedFile) || Material == null)
+                {
+                    // File was deleted.
+                    return true;
+                }
+
                 var newMtrl = await Mtrl.GetXivMtrl(changedFile, false, tx);
 
                 var result = Mtrl.CompareMaterials(Material, newMtrl);
@@ -271,12 +285,63 @@ namespace FFXIV_TexTools.Views.Controls
 
 
                 // Okay, now we need to merge the data.
-                // We don't need to do any UI updates because colorset information isn't displayed to start with.
                 Material.ColorSetData = newMtrl.ColorSetData;
                 Material.ColorSetDyeData = newMtrl.ColorSetDyeData;
 
+                // This has to be dispatched to the render thread since this event could come from any thread.
+                await DispatchUpdateColorset();
+                await UpdateModState(tx);
+
                 return false;
             });
+        }
+
+
+        private async Task DispatchUpdateColorset()
+        {
+            await Dispatcher.BeginInvoke((ThreadStart) async delegate ()
+            {
+                await UpdateColorsetImage();
+            });
+        }
+        private async Task UpdateColorsetImage()
+        {
+            if(Material == null || Material.ColorSetDataSize <= 0)
+            {
+                ColorsetImage.Source = null;
+                return;
+            }
+
+            ImageSource imageSource = null;
+            var pixels = new byte[0];
+            var width = 0;
+            var height = 0;
+            await Task.Run(async () =>
+            {
+
+                var tex = await Mtrl.GetColorsetXivTex(Material);
+                pixels = await tex.GetRawPixels();
+
+                // Fix opacity and convert to BGRA
+                for(int i = 0; i < pixels.Length; i+= 4)
+                {
+                    pixels[i + 3] = 255;
+
+                    var r = pixels[i +0];
+                    var b = pixels[i +2];
+                    pixels[i+2] = r;
+                    pixels[i+0] = b;
+                }
+
+                width = tex.Width;
+                height = tex.Height;
+
+            });
+
+            // This seems to generate invalid image sources when not run on the render thread.
+            imageSource = BitmapSource.Create(width, height, 1, 1, PixelFormats.Bgra32, null, pixels, width * 4);
+
+            ColorsetImage.Source = imageSource;
         }
 
         /// <summary>
@@ -511,14 +576,23 @@ namespace FFXIV_TexTools.Views.Controls
             await SimpleFileViewWindow.OpenFile(tex.Texture.TexturePath);
         }
 
+        private async void ColorsetImage_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            await OpenColorset();
+        }
+
         private async void EditColorset_Click(object sender, RoutedEventArgs e)
+        {
+            await OpenColorset();
+        }
+        private async Task OpenColorset()
         {
             try
             {
-                if(Material.ColorSetDataSize > 0)
+                if (Material.ColorSetDataSize > 0)
                 {
                     var data = Mtrl.XivMtrlToUncompressedMtrl(Material);
-                    await SimpleFileViewWindow.OpenFile(Material.MTRLPath, ReferenceItem, data, true, Window.GetWindow(this));
+                    await SimpleFileViewWindow.OpenFile(Material.MTRLPath, ReferenceItem, data, typeof(ColorsetFileControl), Window.GetWindow(this));
                 }
             }
             catch

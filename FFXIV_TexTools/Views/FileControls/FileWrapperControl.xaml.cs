@@ -164,38 +164,45 @@ namespace FFXIV_TexTools.Views.Controls
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public static FileViewControl GetControlForFile(string file, bool forceColorsetEditor = false)
+        public static async Task<FileViewControl> GetControlForFile(string file, Type forcedType = null)
         {
+            var tx = MainWindow.DefaultTransaction;
 
-            var texHandler = new TextureFileControl();
-            if (texHandler.CanLoadFile(file))
+            if (forcedType != null)
             {
-                return texHandler;
-            }
-            var mdlHandler = new ModelFileControl();
-            if (mdlHandler.CanLoadFile(file))
-            {
-                return mdlHandler;
-            }
-
-            if (forceColorsetEditor)
-            {
-                var colorsetHandler = new ColorsetFileControl();
-                if (colorsetHandler.CanLoadFile(file))
+                var obj = Activator.CreateInstance(forcedType) as FileViewControl;
+                if (obj == null || !await obj.CanLoadFile(file, tx))
                 {
-                    return colorsetHandler;
+                    return null;
+                }
+                else if (obj != null)
+                {
+                    return obj;
                 }
             }
 
-            var mtrlHandler = new MaterialFileControl();
-            if (mtrlHandler.CanLoadFile(file))
+            FileViewControl handler = new TextureFileControl();
+            if (await handler.CanLoadFile(file, tx))
             {
-                return mtrlHandler;
+                return handler;
             }
-            var metaHandler = new MetadataFileControl();
-            if (metaHandler.CanLoadFile(file))
+
+            handler = new ModelFileControl();
+            if (await handler.CanLoadFile(file, tx))
             {
-                return metaHandler;
+                return handler;
+            }
+
+            handler = new MaterialFileControl();
+            if (await handler.CanLoadFile(file, tx))
+            {
+                return handler;
+            }
+
+            handler = new MetadataFileControl();
+            if (await handler.CanLoadFile(file, tx))
+            {
+                return handler;
             }
 
 
@@ -224,7 +231,7 @@ namespace FFXIV_TexTools.Views.Controls
             return true;
         }
 
-        public async Task<bool> LoadExternalFile(string externalFilePath, string internalFilePath, IItem referenceItem = null, bool reloadControl = true, bool forceColorsetEditor = false)
+        public async Task<bool> LoadExternalFile(string externalFilePath, string internalFilePath, IItem referenceItem = null, bool reloadControl = true, Type forcedControlType = null)
         {
             if (string.IsNullOrWhiteSpace(externalFilePath) || string.IsNullOrWhiteSpace(internalFilePath))
             {
@@ -248,7 +255,7 @@ namespace FFXIV_TexTools.Views.Controls
                         FileControl = null;
                     }
 
-                    var control = GetControlForFile(internalFilePath, forceColorsetEditor);
+                    var control = await GetControlForFile(internalFilePath, forcedControlType);
                     if (control == null)
                     {
                         await SetupUi();
@@ -260,7 +267,7 @@ namespace FFXIV_TexTools.Views.Controls
                 }
                 else
                 {
-                    if (!FileControl.CanLoadFile(internalFilePath))
+                    if (!await FileControl.CanLoadFile(internalFilePath, null))
                     {
                         return false;
                     }
@@ -279,9 +286,10 @@ namespace FFXIV_TexTools.Views.Controls
         }
 
 
-        public async Task<bool> LoadInternalFile(string internalFilePath, IItem referenceItem = null, byte[] data = null, bool reloadControl = true, bool forceColorsetEditor = false)
+        public async Task<bool> LoadInternalFile(string internalFilePath, IItem referenceItem = null, byte[] data = null, bool reloadControl = true, Type forcedControlType = null)
         {
 
+            this.IsEnabled = false;
             if (!reloadControl && FileControl == null)
             {
                 return false;
@@ -306,7 +314,7 @@ namespace FFXIV_TexTools.Views.Controls
                         FileControl = null;
                     }
 
-                    var control = GetControlForFile(internalFilePath, forceColorsetEditor);
+                    var control = await GetControlForFile(internalFilePath, forcedControlType);
                     if (control == null)
                     {
                         await SetupUi();
@@ -318,7 +326,7 @@ namespace FFXIV_TexTools.Views.Controls
                 }
                 else
                 {
-                    if (!FileControl.CanLoadFile(internalFilePath))
+                    if (!await FileControl.CanLoadFile(internalFilePath, MainWindow.DefaultTransaction))
                     {
                         await ClearFile();
                         return false;
@@ -328,6 +336,7 @@ namespace FFXIV_TexTools.Views.Controls
 
                 await FileControl.LoadInternalFile(internalFilePath, false, referenceItem, data);
                 await SetupUi();
+                this.IsEnabled = true;
                 return true;
             }
             catch

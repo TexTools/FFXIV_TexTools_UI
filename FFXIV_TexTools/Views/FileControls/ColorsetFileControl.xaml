@@ -89,14 +89,14 @@
                             </Grid.ColumnDefinitions>
 
                             <Label Content="Diffuse Color:" Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Center" Height="26" Margin="0,2" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Width="81"/>
-                            <xctk:ColorPicker x:Name="DiffuseColorPicker" Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left" Width="150" Height="22" Margin="0,4"></xctk:ColorPicker>
+                            <xctk:ColorPicker x:Name="DiffuseColorPicker" Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left" Width="150" ColorMode="ColorCanvas" ShowAvailableColors="False" ShowStandardColors="False" Height="22" Margin="0,4"></xctk:ColorPicker>
                             <Label x:Name="SpecularPowerLabel" Content="Specular Power:" Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Center" Height="26" Margin="0,2" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Width="108"/>
                             <TextBox x:Name="SpecularPowerBox" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" Width="150" VerticalAlignment="Center" Margin="0,2" Height="26"></TextBox>
                             <Button x:Name="EditRawDiffuse" Grid.Row="0" Grid.Column="2" Content="Edit Raw" VerticalAlignment="Center" Margin="5,0" Click="EditRawDiffuse_Click"/>
 
 
                             <Label Content="Specular Color:" Grid.Row="3" HorizontalAlignment="Right" VerticalAlignment="Center" Height="26" Margin="0,2" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Width="90"/>
-                            <xctk:ColorPicker x:Name="SpecularColorPicker" Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left" Width="150" Height="22" Margin="0,4"></xctk:ColorPicker>
+                            <xctk:ColorPicker x:Name="SpecularColorPicker" Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left" Width="150" ColorMode="ColorCanvas" ShowStandardColors="False"  Height="22" Margin="0,4"></xctk:ColorPicker>
                             <Label x:Name="GlossLabel"  Content="Gloss:" Grid.Row="4" HorizontalAlignment="Right" VerticalAlignment="Center" Height="26" Margin="0,2" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Width="41"/>
                             <TextBox x:Name="GlossBox" Grid.Row="4" Grid.Column="1" HorizontalAlignment="Left" Width="150" VerticalAlignment="Center" Margin="0,2" Height="26"></TextBox>
                             <Button x:Name="EditRawSpecular" Grid.Row="3" Grid.Column="2" Content="Edit Raw" VerticalAlignment="Center" Margin="5,0" Click="EditRawSpecular_Click"/>
@@ -104,7 +104,7 @@
 
 
                             <Label Content="Emissive Color:" Grid.Row="6" HorizontalAlignment="Right" VerticalAlignment="Center" Height="26" Margin="0,2" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Width="89"/>
-                            <xctk:ColorPicker x:Name="EmissiveColorPicker" Grid.Row="6" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left" Width="150" Height="22" Margin="0,4"></xctk:ColorPicker>
+                            <xctk:ColorPicker x:Name="EmissiveColorPicker" Grid.Row="6" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left" Width="150" ColorMode="ColorCanvas" ShowStandardColors="False"  Height="22" Margin="0,4"></xctk:ColorPicker>
                             <Button x:Name="EditRawEmmissive" Grid.Row="6" Grid.Column="2" Content="Edit Raw" VerticalAlignment="Center" Margin="5,0" Click="EditRawEmmissive_Click"/>
 
                         </Grid>

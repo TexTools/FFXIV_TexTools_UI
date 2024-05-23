@@ -1175,7 +1175,7 @@ namespace FFXIV_TexTools.ViewModels
             {
                 if (SelectedMap.Usage != XivTexType.ColorSet)
                 {
-                    var texData = await Tex.GetXivTex(SelectedMap.TexturePath, SelectedMap.Usage, false, MainWindow.DefaultTransaction);
+                    var texData = await Tex.GetXivTex(SelectedMap.TexturePath, false, MainWindow.DefaultTransaction);
 
                     var mapBytes = await texData.GetRawPixels();
 
@@ -1196,7 +1196,7 @@ namespace FFXIV_TexTools.ViewModels
                     _textureView.ImageZoombox.CenterContent();
                     _textureView.ImageZoombox.FitToBounds();
 
-                    PathString = texData.TextureTypeAndPath.Path;
+                    PathString = texData.FilePath;
                     TextureFormat = texData.TextureFormat.GetTexDisplayName();
                     TextureDimensions = $"{texData.Height} x {texData.Width}";
                     MipMapInfo = texData.MipMapCount != 0 ? $"Yes ({texData.MipMapCount})" : "No";
@@ -1423,7 +1423,7 @@ namespace FFXIV_TexTools.ViewModels
                 }
                 else
                 {
-                    texData = await Tex.GetXivTex(ttp.Path, ttp.Type, false, MainWindow.DefaultTransaction);
+                    texData = await Tex.GetXivTex(ttp.Path, false, MainWindow.DefaultTransaction);
                 }
 
                 if (_uiItem != null)
@@ -1653,7 +1653,7 @@ namespace FFXIV_TexTools.ViewModels
                 if (SelectedMap.Usage != XivTexType.ColorSet)
                 {
                     
-                    var texData = await Tex.GetXivTex(SelectedMap.TexturePath, SelectedMap.Usage, false, MainWindow.DefaultTransaction);
+                    var texData = await Tex.GetXivTex(SelectedMap.TexturePath, false, MainWindow.DefaultTransaction);
 
                     try
                     {
@@ -1669,11 +1669,11 @@ namespace FFXIV_TexTools.ViewModels
                                 saveItem = temp;
                             }
 
-                            await Tex.ImportTex(texData.TextureTypeAndPath.Path, fileDir.FullName, saveItem, XivStrings.TexTools, MainWindow.UserTransaction);
+                            await Tex.ImportTex(texData.FilePath, fileDir.FullName, saveItem, XivStrings.TexTools, MainWindow.UserTransaction);
                         }
                         else if (_uiItem != null)
                         {
-                            await Tex.ImportTex(texData.TextureTypeAndPath.Path, fileDir.FullName, _uiItem, XivStrings.TexTools, MainWindow.UserTransaction);
+                            await Tex.ImportTex(texData.FilePath, fileDir.FullName, _uiItem, XivStrings.TexTools, MainWindow.UserTransaction);
                         }
                     }
                     catch (Exception ex)
@@ -1706,7 +1706,7 @@ namespace FFXIV_TexTools.ViewModels
             {
                 if (SelectedMap.Usage != XivTexType.ColorSet)
                 {
-                    var texData = await Tex.GetXivTex(SelectedMap.TexturePath, SelectedMap.Usage, false, MainWindow.DefaultTransaction);
+                    var texData = await Tex.GetXivTex(SelectedMap.TexturePath, false, MainWindow.DefaultTransaction);
 
                     try
                     {
@@ -1722,11 +1722,11 @@ namespace FFXIV_TexTools.ViewModels
                                 saveItem = temp;
                             }
 
-                            await Tex.ImportTex(texData.TextureTypeAndPath.Path, fileDir.FullName, _item, XivStrings.TexTools, MainWindow.UserTransaction);
+                            await Tex.ImportTex(texData.FilePath, fileDir.FullName, _item, XivStrings.TexTools, MainWindow.UserTransaction);
                         }
                         else if (_uiItem != null)
                         {
-                            await Tex.ImportTex(texData.TextureTypeAndPath.Path, fileDir.FullName, _uiItem, XivStrings.TexTools, MainWindow.UserTransaction);
+                            await Tex.ImportTex(texData.FilePath, fileDir.FullName, _uiItem, XivStrings.TexTools, MainWindow.UserTransaction);
                         }
                     }
                     catch (Exception ex)
