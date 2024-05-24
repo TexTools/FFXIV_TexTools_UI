@@ -334,7 +334,7 @@ namespace FFXIV_TexTools.Views.Item
             try
             {
                 // Deleted metadata basically required reloading the item due to the bredth of possible changes.
-                await Dispatcher.InvokeAsync(async () =>
+                await await Dispatcher.InvokeAsync(async () =>
                 {
                     await SetItem(Item);
                 });
@@ -349,7 +349,7 @@ namespace FFXIV_TexTools.Views.Item
         {
             try
             {
-                await Dispatcher.InvokeAsync(async () =>
+                await await Dispatcher.InvokeAsync(async () =>
                 {
                     await SafeRemoveFile(internalPath);
                 });
@@ -1699,7 +1699,7 @@ namespace FFXIV_TexTools.Views.Item
         {
             try
             {
-                await Dispatcher.InvokeAsync(async () =>
+                await await Dispatcher.InvokeAsync(async () =>
                 {
                     var tx = MainWindow.DefaultTransaction;
                     _TargetFile = GetFileKeys(_VisiblePanel.FilePath);

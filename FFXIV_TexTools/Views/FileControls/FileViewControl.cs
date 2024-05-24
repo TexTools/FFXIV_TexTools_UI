@@ -230,7 +230,7 @@ namespace FFXIV_TexTools.Views.Controls
             Trace.WriteLine("Main Thread Update Called: " + file);
             try
             {
-                await Dispatcher.InvokeAsync(async () =>
+                await await Dispatcher.InvokeAsync(async () =>
                 {
                     if (file != InternalFilePath)
                     {

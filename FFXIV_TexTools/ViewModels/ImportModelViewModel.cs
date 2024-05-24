@@ -189,7 +189,9 @@ namespace FFXIV_TexTools.ViewModels
                 }
 
                 var iType = _item.GetPrimaryItemType();
-                if (iType == xivModdingFramework.Items.Enums.XivItemType.equipment || iType == xivModdingFramework.Items.Enums.XivItemType.accessory || iType == xivModdingFramework.Items.Enums.XivItemType.weapon)
+                if (iType == xivModdingFramework.Items.Enums.XivItemType.equipment 
+                    || iType == xivModdingFramework.Items.Enums.XivItemType.accessory 
+                    || iType == xivModdingFramework.Items.Enums.XivItemType.weapon)
                 {
                     _view.ForceUVsButton.IsChecked = Settings.Default.ForceUV1QuadrantForGear;
                     _view.ForceUVsButton.Click += ForceUVsButton_Clicked;

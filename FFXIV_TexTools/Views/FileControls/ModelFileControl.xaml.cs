@@ -45,6 +45,7 @@ using xivModdingFramework.SqPack.FileTypes;
 using SharpDX;
 using ControlzEx.Standard;
 using System.Windows.Media.Media3D;
+using System.Runtime.CompilerServices;
 
 namespace FFXIV_TexTools.Views.Controls
 {
@@ -97,7 +98,12 @@ namespace FFXIV_TexTools.Views.Controls
 
         protected override async Task<byte[]> INTERNAL_ExternalToUncompressedFile(string externalFile, string internalFile, IItem referenceItem)
         {
-            var data = await ShowModelImportDialog(externalFile, internalFile, referenceItem);
+            byte[] data = null;
+            // Have to main thread this, booo.
+            await await Dispatcher.InvokeAsync(async () =>
+            {
+                data = await ShowModelImportDialog(externalFile, internalFile, referenceItem);
+            });
             return data;
         }
 
@@ -174,8 +180,13 @@ namespace FFXIV_TexTools.Views.Controls
 
         protected override async Task<bool> INTERNAL_SaveAs(string externalFilePath)
         {
+            if (externalFilePath.ToLower().EndsWith(".mdl"))
+            {
+                return await SaveAsRaw(externalFilePath);
+            }
             // We don't support editing our current TTModel in a permanent way in the viewer.
             // So just export the internal game state.
+            // TODO - Fix this.
             await Mdl.ExportMdlToFile(InternalFilePath, externalFilePath, 1, true, false, MainWindow.DefaultTransaction);
             return true;
         }
