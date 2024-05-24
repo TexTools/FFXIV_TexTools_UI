@@ -417,6 +417,10 @@ namespace FFXIV_TexTools.Views.Item
             await MainItemView.SetItem(item);
         }
 
+        private string _PreLoadModel = null;
+        private string _PreLoadMaterial = null;
+        private string _PreLoadTexture = null;
+
         /// <summary>
         /// Primary setter for other areas in TexTools to assign an item to this view.
         /// </summary>
@@ -430,9 +434,21 @@ namespace FFXIV_TexTools.Views.Item
                 return false;
             }
 
-            if(Item == item && targetFile == null)
+            _PreLoadModel = null;
+            _PreLoadMaterial = null;
+            _PreLoadTexture = null;
+
+            if (Item == item && targetFile == null)
             {
+                // This is a refresh/reload. Try to keep us on the same file.
                 targetFile = _VisiblePanel.FilePath;
+            } else if(targetFile == null)
+            {
+                // Changing item, and we're looking at something.
+                // Hang onto these to try to logically guess where the user wants to look at next.
+                _PreLoadModel = ModelWrapper.FilePath;
+                _PreLoadMaterial = MaterialWrapper.FilePath;
+                _PreLoadTexture = TextureWrapper.FilePath;
             }
 
             ProgressDialogController lockController = null;
@@ -894,6 +910,38 @@ namespace FFXIV_TexTools.Views.Item
             if (_TargetFileSet && Models.Any(x => x.Value == _TargetFile.ModelKey))
             {
                 ModelComboBox.SelectedValue = _TargetFile.ModelKey;
+            } else if(!string.IsNullOrWhiteSpace(_PreLoadModel))
+            {
+                // User was looking at the model panel.
+                var info = XivCache.GetFileNameRootInfo(_PreLoadModel, false);
+                if (!info.IsValid())
+                {
+                    // Can't do anything here.  Too weird.
+                    ModelComboBox.SelectedIndex = 0;
+                } else
+                {
+                    // See if we have file that matches our primary root info (Ex. Race)
+                    var target = Files.Keys.FirstOrDefault(x => {
+                        var xinfo = XivCache.GetFileNameRootInfo(x, false);
+                        if(xinfo.PrimaryType == info.PrimaryType && xinfo.PrimaryId == info.PrimaryId)
+                        {
+                            // Matching primaries, Ex. Race
+                            return true;
+                        }
+                        return false;
+                    });
+
+
+                    if (!string.IsNullOrWhiteSpace(target))
+                    {
+                        // Found a same race/etc. type model.  Keep it.
+                        ModelComboBox.SelectedValue = target;
+                    } else
+                    {
+                        // Fallback
+                        ModelComboBox.SelectedIndex = 0;
+                    }
+                }
             } else
             {
                 // Default behavior
@@ -964,6 +1012,13 @@ namespace FFXIV_TexTools.Views.Item
             {
                 MaterialComboBox.SelectedValue = _TargetFile.MaterialKey;
             }
+            else if (!string.IsNullOrWhiteSpace(_PreLoadMaterial))
+            {
+                // Default behavior
+                // In theory, should we snap to some kind of approximately similar material?
+                // That seems fairly unclear.
+                MaterialComboBox.SelectedIndex = 0;
+            }
             else
             {
                 // Default behavior
@@ -1029,27 +1084,29 @@ namespace FFXIV_TexTools.Views.Item
             {
                 TextureComboBox.SelectedValue = _TargetFile.TextureKey;
             }
-            else
+            else if(Root == null)
             {
-                // Default behavior
-                if (Root == null)
+                if(!string.IsNullOrWhiteSpace(_PreLoadTexture))
                 {
-                    var hr = textures.FirstOrDefault(x => x.EndsWith("_hr1.tex"));
-                    if (!string.IsNullOrWhiteSpace(hr))
-                    {
-                        // Select High res textures by default.
-                        TextureComboBox.SelectedValue = hr;
-                    }
-                    else
-                    {
-                        TextureComboBox.SelectedIndex = 0;
-                    }
-                    ShowPanel(TextureWrapper);
+                    // Do something to select similar texture?
+                }
+
+                // Texture only item always snaps to texture.
+                var hr = textures.FirstOrDefault(x => x.EndsWith("_hr1.tex"));
+                if (!string.IsNullOrWhiteSpace(hr))
+                {
+                    // Select High res textures by default.
+                    TextureComboBox.SelectedValue = hr;
                 }
                 else
                 {
                     TextureComboBox.SelectedIndex = 0;
                 }
+                ShowPanel(TextureWrapper);
+            }
+            else
+            {
+                TextureComboBox.SelectedIndex = 0;
             }
         }
 
@@ -1443,7 +1500,9 @@ namespace FFXIV_TexTools.Views.Item
             }
 
             // All done here.
-            _TargetFile = (null, null, null);
+            _PreLoadModel = null;
+            _PreLoadMaterial = null;
+            _PreLoadTexture = null;
         }
 
         private async void ItemInfo_Click(object sender, RoutedEventArgs e)
