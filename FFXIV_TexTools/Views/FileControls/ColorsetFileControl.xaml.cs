@@ -229,9 +229,9 @@ namespace FFXIV_TexTools.Views.Controls
             };
         }
 
-        public override async Task INTERNAL_ClearFile()
+        public override void INTERNAL_ClearFile()
         {
-            await SetMaterial(null);
+            Material = null;
         }
 
         protected override async Task<byte[]> INTERNAL_GetUncompressedData()
@@ -1387,6 +1387,14 @@ namespace FFXIV_TexTools.Views.Controls
             catch (Exception ex)
             {
                 this.ShowError("Unknown Error", "An error occurred:\n\n" + ex.Message);
+            }
+        }
+
+        protected override void FreeManaged()
+        {
+            if (ColorsetRowViewport != null)
+            {
+                ColorsetRowViewport.Dispose();
             }
         }
 

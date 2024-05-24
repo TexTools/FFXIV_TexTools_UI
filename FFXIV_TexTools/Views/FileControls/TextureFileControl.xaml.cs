@@ -43,17 +43,6 @@ namespace FFXIV_TexTools.Views.Controls
     /// </summary>
     public partial class TextureFileControl : FileViewControl, INotifyPropertyChanged
     {
-        public TextureFileControl()
-        {
-            DataContext = this;
-            InitializeComponent();
-            ImageZoombox.Loaded += ImageZoombox_Loaded;
-            SizeChanged += TextureFileControl_SizeChanged;
-
-            PropertyChanged += TextureFileControl_PropertyChanged;
-            ViewType = EFileViewType.Editor;
-        }
-
 
         private XivTex _Texture = null;
         public XivTex Texture
@@ -86,6 +75,18 @@ namespace FFXIV_TexTools.Views.Controls
                 _ImageEffect = value;
                 OnPropertyChanged(nameof(ImageEffect));
             }
+        }
+
+        public TextureFileControl()
+        {
+            DataContext = this;
+            InitializeComponent();
+            ImageZoombox.Loaded += ImageZoombox_Loaded;
+
+            SizeChanged += TextureFileControl_SizeChanged;
+            PropertyChanged += TextureFileControl_PropertyChanged;
+
+            ViewType = EFileViewType.Editor;
         }
 
 
@@ -287,8 +288,9 @@ namespace FFXIV_TexTools.Views.Controls
                 { ".tex", "FFXIV Texture" },
             };
         }
-        public override async Task INTERNAL_ClearFile()
+        public override void INTERNAL_ClearFile()
         {
+            Texture = null;
             ImageSource = null;
             ChannelsEnabled = false;
             TextureFormatLabel.Visibility = Visibility.Collapsed;
@@ -331,9 +333,12 @@ namespace FFXIV_TexTools.Views.Controls
                 var b = BlueChecked ? 1.0f : 0.0f;
                 var a = AlphaChecked ? 1.0f : 0.0f;
 
-                var effect = new ColorChannels();
-                effect.Channel = new System.Windows.Media.Media3D.Point4D(r, g, b, a);
-                ImageEffect = effect;
+                if(ImageEffect == null)
+                {
+                    ImageEffect = new ColorChannels();
+                }
+                ImageEffect.Channel = new System.Windows.Media.Media3D.Point4D(r, g, b, a);
+                OnPropertyChanged(nameof(ImageEffect));
 
                 byte[] pixData = new byte[0];
                 await Task.Run(async () =>
@@ -513,6 +518,28 @@ namespace FFXIV_TexTools.Views.Controls
             {
                 // No-op.  Lacking this data is not a critical failure.
             }
+        }
+
+        protected override void FreeManaged()
+        {
+            SizeChanged -= TextureFileControl_SizeChanged;
+            PropertyChanged -= TextureFileControl_PropertyChanged;
+
+            if(ImageZoombox != null)
+            {
+                ImageZoombox.Loaded -= ImageZoombox_Loaded;
+            }
+
+            if (ImageEffect != null)
+            {
+                ImageEffect.Dispose();
+            }
+
+            ImageEffect = null;
+            ImageSource = null;
+            Texture = null;
+
+            base.FreeManaged();
         }
     }
 }

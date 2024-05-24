@@ -37,6 +37,12 @@ namespace FFXIV_TexTools.Views.Controls
         public delegate void FileDeletedEventHandler(string internalPath);
         public event FileDeletedEventHandler FileDeleted;
 
+        // State control vars.
+        internal bool _UpdateQueued;
+        private bool _IS_SAVING;
+        private bool _Disposed;
+
+        private List<ModTransaction> _listeningTransactions = new List<ModTransaction>();
 
         private EFileViewType _ViewType;
         public EFileViewType ViewType { get
@@ -122,12 +128,15 @@ namespace FFXIV_TexTools.Views.Controls
 
         public FileViewControl()
         {
-            ModTransaction.FileChangedOnCommit += ModTransaction_FileChanged;
-            if(MainWindow.UserTransaction != null)
+            if (MainWindow.UserTransaction != null)
             {
-                MainWindow.UserTransaction.FileChanged += ModTransaction_FileChanged;
+                _listeningTransactions.Add(MainWindow.UserTransaction);
+                MainWindow.UserTransaction.FileChanged += Tx_FileChanged;
             }
-            MainWindow.UserTransactionStarted += MainWindow_UserTransactionStarted;
+
+            ModTransaction.FileChangedOnCommit += Tx_FileChanged;
+            MainWindow.UserTransactionStarted += OnUserTransactionStarted;
+
 
             DebouncedUpdate = ViewHelpers.Debounce<string>(_UpdateOnMainThread, 200);
 
@@ -136,20 +145,25 @@ namespace FFXIV_TexTools.Views.Controls
 
         private Action<string> DebouncedUpdate;
 
-        private void MainWindow_UserTransactionStarted()
+        private void OnUserTransactionStarted()
         {
             if (MainWindow.UserTransaction != null)
             {
-                MainWindow.UserTransaction.FileChanged += ModTransaction_FileChanged;
+                MainWindow.UserTransaction.FileChanged += Tx_FileChanged;
+                MainWindow.UserTransaction.TransactionClosed -= Tx_Closed;
+                _listeningTransactions.Add(MainWindow.UserTransaction);
             }
         }
 
-        // State control vars.
-        internal bool _UpdateQueued;
-        private bool _IS_SAVING;
-        private bool _Disposed;
 
-        private async void ModTransaction_FileChanged(string changedFile, long newOffset)
+        private void Tx_Closed(ModTransaction sender)
+        {
+            sender.TransactionClosed -= Tx_Closed;
+            sender.FileChanged -= Tx_FileChanged;
+            _listeningTransactions.Remove(sender);
+        }
+
+        private async void Tx_FileChanged(string changedFile, long newOffset)
         {
 
             try
@@ -342,14 +356,15 @@ namespace FFXIV_TexTools.Views.Controls
         /// This function is expected to catch and handle its own errors.
         /// </summary>
         /// <returns></returns>
-        public virtual async Task ClearFile()
+        public virtual void ClearFile()
         {
             if (HasFile)
             {
                 var file = InternalFilePath;
                 try
                 {
-                    await INTERNAL_ClearFile();
+                    IsEnabled = false;
+                    INTERNAL_ClearFile();
                     InternalFilePath = null;
                     ExternalFilePath = null;
                     ReferenceItem = null;
@@ -359,10 +374,9 @@ namespace FFXIV_TexTools.Views.Controls
                     Trace.WriteLine("An error occurred when unloading file: " + file + "\n" + ex.Message);
                 }
             }
-            IsEnabled = false;
         }
 
-        public abstract Task INTERNAL_ClearFile();
+        public abstract void INTERNAL_ClearFile();
 
 
         protected bool _LOADING = false;
@@ -400,7 +414,7 @@ namespace FFXIV_TexTools.Views.Controls
                 _LOADING = true;
                 if (HasFile)
                 {
-                    await ClearFile();
+                    ClearFile();
                 }
 
 
@@ -515,7 +529,7 @@ namespace FFXIV_TexTools.Views.Controls
             {
                 if (HasFile)
                 {
-                    await ClearFile();
+                    ClearFile();
                 }
 
                 var tx = MainWindow.DefaultTransaction;
@@ -923,19 +937,40 @@ namespace FFXIV_TexTools.Views.Controls
             }
         }
 
-        protected virtual void Dispose(bool disposing)
+        private void Dispose(bool disposing)
         {
             if (!_Disposed)
             {
+                // Remove event handlers to ensure we don't get GC locked.
+                MainWindow.UserTransactionStarted -= OnUserTransactionStarted;
+                ModTransaction.FileChangedOnCommit -= Tx_FileChanged;
+                if (_listeningTransactions != null)
+                {
+                    foreach (var t in _listeningTransactions)
+                    {
+                        t.FileChanged -= Tx_FileChanged;
+                        t.TransactionClosed -= Tx_Closed;
+                    }
+                    _listeningTransactions = null;
+                }
+
                 if (disposing)
                 {
-                    
+                    ClearFile();
+                    FreeManaged();
                 }
 
                 FreeUnmanaged();
                 _Disposed = true;
             }
         }
+
+
+
+        protected virtual void FreeManaged()
+        {
+        }
+
 
         protected virtual void FreeUnmanaged()
         {

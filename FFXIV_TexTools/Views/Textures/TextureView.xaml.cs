@@ -150,5 +150,6 @@ namespace FFXIV_TexTools.Views
         {
             textureViewModel.Refresh();
         }
+
     }
 }

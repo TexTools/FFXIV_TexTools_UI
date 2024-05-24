@@ -27,7 +27,7 @@ namespace FFXIV_TexTools.Views.Controls
     /// <summary>
     /// Interaction logic for FileWrapperControl.xaml
     /// </summary>
-    public partial class FileWrapperControl : UserControl, INotifyPropertyChanged
+    public partial class FileWrapperControl : UserControl, INotifyPropertyChanged, IDisposable
     {
         public FileViewControl FileControl { get; private set; }
         public string FilePath { get; private set; } = "";
@@ -45,6 +45,8 @@ namespace FFXIV_TexTools.Views.Controls
         }
 
         private bool _SaveEnabled;
+        private bool disposedValue;
+
         public bool SaveEnabled
         {
             get
@@ -215,7 +217,7 @@ namespace FFXIV_TexTools.Views.Controls
             {
                 if (FileControl != null)
                 {
-                    _ = FileControl.ClearFile();
+                    FileControl.ClearFile();
                     FileControlEntry.Children.Remove(FileControl);
                     FileControl = null;
                 }
@@ -368,7 +370,7 @@ namespace FFXIV_TexTools.Views.Controls
                 return;
             }
 
-            await FileControl.ClearFile();
+            FileControl.ClearFile();
             FilePath = "";
             await SetupUi();
         }
@@ -620,6 +622,31 @@ namespace FFXIV_TexTools.Views.Controls
             catch { 
                 // No-Op
             }
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                TxWatcher.SaveStatusChanged -= TxWatcher_SaveStatusChanged;
+
+                if (disposing)
+                {
+                    if (FileControl != null)
+                    {
+                        FileControl.Dispose();
+                        FileControl = null;
+                    }
+                }
+
+                disposedValue = true;
+            }
+        }
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }

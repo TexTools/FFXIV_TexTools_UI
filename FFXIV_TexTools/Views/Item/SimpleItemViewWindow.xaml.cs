@@ -44,6 +44,8 @@ namespace FFXIV_TexTools.Views.Item
                 return;
             }
 
+            ItemView.Dispose();
+
             OpenItemWindows.Remove(this);
         }
 

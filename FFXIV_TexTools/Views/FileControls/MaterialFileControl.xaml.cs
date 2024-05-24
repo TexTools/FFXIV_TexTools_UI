@@ -196,7 +196,7 @@ namespace FFXIV_TexTools.Views.Controls
                 //{ ".dat", "Colorset Dye" },
             };
         }
-        public override async Task INTERNAL_ClearFile()
+        public override void INTERNAL_ClearFile()
         {
             // Clear the current editor state to blank.
             // Typically in preparation to load a new file.

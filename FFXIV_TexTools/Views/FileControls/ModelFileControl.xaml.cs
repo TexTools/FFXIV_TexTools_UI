@@ -89,7 +89,7 @@ namespace FFXIV_TexTools.Views.Controls
             ViewportVM.ZoomExtentsRequested += ZoomExtentsRequested;
 
         }
-        public override async Task INTERNAL_ClearFile()
+        public override void INTERNAL_ClearFile()
         {
             Model = null;
             ViewportVM.ClearModels();
@@ -238,13 +238,19 @@ namespace FFXIV_TexTools.Views.Controls
             return ret;
         }
 
-        protected override void FreeUnmanaged()
+        protected override void FreeManaged()
         {
             // Ensure VM gets properly disposed.
             if (_ViewportVM != null)
             {
+                ViewportVM.TextureUpdateRequested -= TextureUpdateRequested;
+                ViewportVM.ZoomExtentsRequested -= ZoomExtentsRequested;
                 _ViewportVM.Dispose();
             }
+        }
+
+        protected override void FreeUnmanaged()
+        {
         }
 
 

@@ -47,6 +47,9 @@ namespace FFXIV_TexTools.Views.Controls
                     return;
                 }
             }
+
+            FileWrapper.Dispose();
+
             OpenFileWindows.Remove(this);
         }
 

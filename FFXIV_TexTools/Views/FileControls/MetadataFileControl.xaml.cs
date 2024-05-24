@@ -115,7 +115,7 @@ namespace FFXIV_TexTools.Views.Controls
             return await ItemMetadata.Serialize(mData);
         }
 
-        public override async Task INTERNAL_ClearFile()
+        public override void INTERNAL_ClearFile()
         {
             Metadata = null;
         }

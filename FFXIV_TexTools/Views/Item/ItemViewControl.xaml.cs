@@ -42,7 +42,7 @@ using static FFXIV_TexTools.ViewModels.TextureViewModel;
 
 namespace FFXIV_TexTools.Views.Item
 {
-    public partial class ItemViewControl : UserControl, INotifyPropertyChanged
+    public partial class ItemViewControl : UserControl, INotifyPropertyChanged, IDisposable
     {
         /*  This class is the primary container for the core TexTools "Item" based view system.
          *  It primarily serves a wrapper for the various File Wrapper tabs.
@@ -225,6 +225,22 @@ namespace FFXIV_TexTools.Views.Item
 
         private XivDependencyRoot Root;
 
+        private bool _UpdateQueued;
+        private bool UpdateQueued
+        {
+            get => _UpdateQueued;
+            set
+            {
+                _UpdateQueued = value;
+
+                // Notify the child controls to stop processing for updates, since we're about to wipe them anyways.
+                TextureWrapper.FileControl._UpdateQueued = true;
+                MaterialWrapper.FileControl._UpdateQueued = true;
+                ModelWrapper.FileControl._UpdateQueued = true;
+                MetadataWrapper.FileControl._UpdateQueued = true;
+            }
+        }
+
         public ItemViewControl()
         {
             DataContext = this;
@@ -255,60 +271,29 @@ namespace FFXIV_TexTools.Views.Item
             ModelWrapper.FileControl.FileDeleted += FileControl_FileDeleted;
             MetadataWrapper.FileControl.FileDeleted += Metadata_FileDeleted;
 
-            ModTransaction.FileChangedOnCommit += ModTransaction_FileChanged;
+            ModTransaction.FileChangedOnCommit += Tx_FileChanged;
             if (MainWindow.UserTransaction != null)
             {
-                MainWindow.UserTransaction.FileChanged += ModTransaction_FileChanged;
+                MainWindow.UserTransaction.FileChanged += Tx_FileChanged;
             }
-            MainWindow.UserTransactionStarted += MainWindow_UserTransactionStarted;
+            MainWindow.UserTransactionStarted += OnUserTransactionStarted;
 
             _DebouncedRebuildComboBoxes = ViewHelpers.Debounce<IItem>(DispatchRebuildComboBoxes);
         }
-        private void MainWindow_UserTransactionStarted()
+        private void OnUserTransactionStarted()
         {
             if (MainWindow.UserTransaction != null)
             {
-                MainWindow.UserTransaction.FileChanged += ModTransaction_FileChanged;
+                MainWindow.UserTransaction.FileChanged += Tx_FileChanged;
+                MainWindow.UserTransaction.TransactionClosed -= Tx_Closed;
             }
         }
-
-        private Action<IItem> _DebouncedRebuildComboBoxes;
-
-        private async void DispatchRebuildComboBoxes(IItem item)
+        private void Tx_Closed(ModTransaction sender)
         {
-            try
-            {
-                await Dispatcher.InvokeAsync(async () =>
-                {
-                    var tx = MainWindow.DefaultTransaction;
-                    _TargetFile = GetFileKeys(_VisiblePanel.FilePath);
-                    await RebuildComboBoxes(tx);
-                });
-            }
-            catch(Exception ex)
-            {
-                // No-Op
-                Trace.WriteLine(ex);
-            }
+            sender.TransactionClosed -= Tx_Closed;
+            sender.FileChanged -= Tx_FileChanged;
         }
-
-        private bool _UpdateQueued;
-        private bool UpdateQueued
-        {
-            get => _UpdateQueued;
-            set
-            {
-                _UpdateQueued = value;
-
-                // Notify the child controls to stop processing for updates, since we're about to wipe them anyways.
-                TextureWrapper.FileControl._UpdateQueued = true;
-                MaterialWrapper.FileControl._UpdateQueued = true;
-                ModelWrapper.FileControl._UpdateQueued = true;
-                MetadataWrapper.FileControl._UpdateQueued = true;
-            }
-        }
-
-        private async void ModTransaction_FileChanged(string changedFile, long newOffset)
+        private void Tx_FileChanged(string changedFile, long newOffset)
         {
             if (Files == null) return;
 
@@ -360,7 +345,6 @@ namespace FFXIV_TexTools.Views.Item
                 Trace.WriteLine(ex);
             }
         }
-
         private async void FileControl_FileDeleted(string internalPath)
         {
             try
@@ -376,7 +360,6 @@ namespace FFXIV_TexTools.Views.Item
                 Trace.WriteLine(ex);
             }
         }
-
         protected override void OnVisualParentChanged(DependencyObject oldParent)
         {
             var wind = Window.GetWindow(this);
@@ -1637,6 +1620,8 @@ namespace FFXIV_TexTools.Views.Item
 
         private bool _DROPDOWN_OPEN;
         private bool _DROPDOWN_CANCEL;
+        private bool disposedValue;
+
         private void Combobox_DropdownOpened(object sender, EventArgs e)
         {
             _DROPDOWN_OPEN = true;
@@ -1703,6 +1688,26 @@ namespace FFXIV_TexTools.Views.Item
             }
         }
 
+        private Action<IItem> _DebouncedRebuildComboBoxes;
+        private async void DispatchRebuildComboBoxes(IItem item)
+        {
+            try
+            {
+                await Dispatcher.InvokeAsync(async () =>
+                {
+                    var tx = MainWindow.DefaultTransaction;
+                    _TargetFile = GetFileKeys(_VisiblePanel.FilePath);
+                    await RebuildComboBoxes(tx);
+                });
+            }
+            catch (Exception ex)
+            {
+                // No-Op
+                Trace.WriteLine(ex);
+            }
+        }
+
+
         private async void RefreshButton_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -1725,6 +1730,65 @@ namespace FFXIV_TexTools.Views.Item
             {
                 // No op
             }
+        }
+
+        private void RemoveDeletedHandler(FileWrapperControl fw)
+        {
+            if(fw == null)
+            {
+                return;
+            }
+            if(fw.FileControl == null)
+            {
+                return;
+            }
+
+            fw.FileControl.FileDeleted -= FileControl_FileDeleted;
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                // This part isn't strictly needed if we're nulling the refs already,
+                // But it doesn't hurt to be safe.
+                RemoveDeletedHandler(MetadataWrapper);
+                RemoveDeletedHandler(ModelWrapper);
+                RemoveDeletedHandler(MaterialWrapper);
+                RemoveDeletedHandler(TextureWrapper);
+
+                // Global event handlers definitely have to go.
+                ModTransaction.FileChangedOnCommit -= Tx_FileChanged;
+                MainWindow.UserTransactionStarted -= OnUserTransactionStarted;
+
+                if (MainWindow.UserTransaction != null)
+                {
+                    MainWindow.UserTransaction.FileChanged -= Tx_FileChanged;
+                    MainWindow.UserTransaction.TransactionClosed -= Tx_Closed;
+                }
+
+                if (disposing)
+                {
+                    MetadataWrapper.Dispose();
+                    ModelWrapper.Dispose();
+                    MaterialWrapper.Dispose();
+                    TextureWrapper.Dispose();
+
+                    MetadataWrapper = null;
+                    ModelWrapper = null;
+                    MaterialWrapper = null;
+                    TextureWrapper = null;
+                }
+
+                disposedValue = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }
