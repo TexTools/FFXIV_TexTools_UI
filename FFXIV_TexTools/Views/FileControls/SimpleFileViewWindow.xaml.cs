@@ -69,12 +69,12 @@ namespace FFXIV_TexTools.Views.Controls
             wind.Owner = owner;
             wind.WindowStartupLocation = WindowStartupLocation.CenterOwner;
 
+            OpenFileWindows.Add(wind);
+            wind.Show();
+
+            // This has to be called /after/ showing the window in order for the model viewer to load properly.
             var success = await wind.LoadFile(filePath, referenceItem, data, forcedControlType);
-            if (success)
-            {
-                OpenFileWindows.Add(wind);
-                wind.Show();
-            }
+
             return success;
         }
 
