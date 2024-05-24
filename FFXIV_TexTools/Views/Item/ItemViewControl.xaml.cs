@@ -1,5 +1,6 @@
 ﻿using FFXIV_TexTools.Resources;
 using FFXIV_TexTools.Views.Controls;
+using FFXIV_TexTools.Views.SharedItems;
 using HelixToolkit.Wpf;
 using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
@@ -1422,9 +1423,15 @@ namespace FFXIV_TexTools.Views.Item
             _TargetFile = (null, null, null);
         }
 
-        private void ItemInfo_Click(object sender, RoutedEventArgs e)
+        private async void ItemInfo_Click(object sender, RoutedEventArgs e)
         {
-
+            try
+            {
+                await SharedItemsWindow.ShowSharedItems(Item);
+            } catch(Exception ex)
+            {
+                Trace.WriteLine(ex);
+            }
         }
 
         private FileWrapperControl _VisiblePanel;

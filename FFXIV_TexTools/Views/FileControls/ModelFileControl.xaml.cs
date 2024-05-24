@@ -251,7 +251,7 @@ namespace FFXIV_TexTools.Views.Controls
 
         #region Core Visual Update Functions
 
-        public ModelTextureData GetPlaceholderTexture(string materialFileName)
+        public static ModelTextureData GetPlaceholderTexture(string materialFileName)
         {
             var tex = new ModelTextureData()
             {
@@ -266,7 +266,7 @@ namespace FFXIV_TexTools.Views.Controls
             };
             return tex;
         }
-        public List<ModelTextureData> GetPlaceholderTextures(TTModel model)
+        public static List<ModelTextureData> GetPlaceholderTextures(TTModel model)
         {
             var textures = new List<ModelTextureData>();
             foreach(var mat in model.Materials)

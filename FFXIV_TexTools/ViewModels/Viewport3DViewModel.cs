@@ -18,6 +18,7 @@ using FFXIV_TexTools.Custom;
 using FFXIV_TexTools.Properties;
 using FFXIV_TexTools.Resources;
 using FFXIV_TexTools.Views;
+using FFXIV_TexTools.Views.Controls;
 using HelixToolkit.Wpf.SharpDX;
 using HelixToolkit.Wpf.SharpDX.Cameras;
 using Newtonsoft.Json.Linq;
@@ -93,7 +94,7 @@ namespace FFXIV_TexTools.ViewModels
             }
         }
 
-        private bool _MoveLightsWithCamera = false;
+        private bool _MoveLightsWithCamera = true;
         public bool MoveLightsWithCamera
         {
             get => _MoveLightsWithCamera;
@@ -250,8 +251,8 @@ namespace FFXIV_TexTools.ViewModels
                     var textureData = textureDataDictionary.FirstOrDefault(x => x.MaterialPath == mtrlName);
                     if (textureData == null)
                     {
-                        // This material didn't exist, was corrupt or otherwise didn't get loaded.  Skip it.
-                        continue;
+                        // Data was invalid somehow, use a placeholder.
+                        textureData = ModelFileControl.GetPlaceholderTexture(mtrlName);
                     }
 
                     TextureModel diffuse = null, specular = null, normal = null, alpha = null, emissive = null;
@@ -385,7 +386,7 @@ namespace FFXIV_TexTools.ViewModels
             cam.Normalize();
 
             double angle = 0;
-            if (_MoveLightsWithCamera)
+            if (MoveLightsWithCamera)
             {
                 angle = Math.Atan2(cam.X * -1, cam.Z * -1);
             }

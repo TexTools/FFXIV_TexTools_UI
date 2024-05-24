@@ -25,21 +25,17 @@ namespace FFXIV_TexTools.ViewModels
     class SharedItemsViewModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
-        private SharedItemsView _view;
-        private MainWindow _mainWindow;
         private IItem _item;
         private TreeView _tree;
-        private Gear _gear;
 
         protected virtual void NotifyPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        public SharedItemsViewModel(SharedItemsView view)
+        public SharedItemsViewModel(TreeView tree)
         {
-            _view = view;
-            _tree = _view.PrimaryTree;
+            _tree = tree;
         }
 
 
@@ -48,26 +44,15 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
-        public async Task<bool> SetItem(IItem item, MainWindow mainWindow = null)
+        public async Task<bool> SetItem(IItem item)
         {
             var tx = MainWindow.DefaultTransaction;
-            var gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
-            _gear = new Gear(gameDirectory, XivLanguages.GetXivLanguage(Properties.Settings.Default.Application_Language));
 
-            if (mainWindow != null)
-            {
-                _mainWindow = mainWindow;
-            }
             _item = item;
             _tree.Items.Clear();
             IItemModel im = item as IItemModel;
 
-            if (im == null || !Imc.UsesImc(im))
-            {
-                return false;
-            }
-
-            if(im == null || im.ModelInfo == null)
+            if (im == null || im.ModelInfo == null || !Imc.UsesImc(im))
             {
                 return false;
             }
@@ -112,7 +97,8 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     return false;
                 }
-            } catch(Exception ex)
+            } 
+            catch(Exception ex)
             {
                 // This item has no IMC file.
                 var nextNode = new TreeViewItem();
@@ -128,6 +114,7 @@ namespace FFXIV_TexTools.ViewModels
                 return false;
 
             }
+
             var sharedList = new List<IItemModel>();
             try
             {
@@ -138,7 +125,7 @@ namespace FFXIV_TexTools.ViewModels
                 // No-Op.  If this broke the user is already getting bombarded with errors.
             }
 
-            var myMaterialSetNumber = fullInfo.GetEntry(im.ModelInfo.ImcSubsetID, im.GetItemSlotAbbreviation()).MaterialSet;
+            var myMaterialSetNumber = fullInfo.GetEntry(im.ModelInfo.ImcSubsetID, abbreviation).MaterialSet;
             var myImcNumber = im.ModelInfo.ImcSubsetID;
 
             var imcVariantHeaders = new Dictionary<int, TreeViewItem>();
@@ -149,7 +136,7 @@ namespace FFXIV_TexTools.ViewModels
             foreach(var i in sharedList)
             {
                 // Get the Variant # information
-                var info = fullInfo.GetEntry(i.ModelInfo.ImcSubsetID, i.GetItemSlotAbbreviation());
+                var info = fullInfo.GetEntry(i.ModelInfo.ImcSubsetID, abbreviation);
                 if(info == null)
                 {
                     // Invalid IMC Set ID for the item.
@@ -197,10 +184,8 @@ namespace FFXIV_TexTools.ViewModels
                 if (i.Name == im.Name)
                 {
                     myNode = nextNode;
-                } else
-                {
-                    nextNode.MouseDoubleClick += ItemNode_Activated;
                 }
+                nextNode.MouseDoubleClick += ItemNode_Activated;
             }
 
             foreach (var h in imcVariantHeaders)
@@ -235,7 +220,7 @@ namespace FFXIV_TexTools.ViewModels
         {
             var treeItem = (TreeViewItem)sender;
             var item = (IItem) treeItem.DataContext;
-            _mainWindow.SetSelectedItem(item);
+            MainWindow.GetMainWindow().SetSelectedItem(item);
         }
 
         /// <summary>
