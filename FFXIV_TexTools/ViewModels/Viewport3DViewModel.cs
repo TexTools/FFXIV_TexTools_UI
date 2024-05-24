@@ -55,13 +55,12 @@ namespace FFXIV_TexTools.ViewModels
         private Vector3D _light1Direction;
         private Vector3D _light2Direction;
         private Vector3D _light3Direction;
-        protected double _lightX, _light1X, _light2X, _lightY, _light1Y, _light2Y, _lightZ, _light1Z, _light2Z;
-        private bool _renderLight3;
         private static readonly Regex bodyMaterial = new Regex("[bf][0-9]{4}", RegexOptions.IgnoreCase);
 
         public delegate void ViewportEventHandler(Viewport3DViewModel owner);
+        public delegate void ViewportZoomEventHandler(Viewport3DViewModel owner, double animationTime, Rect3D? boundingBox);
         public event ViewportEventHandler TextureUpdateRequested;
-        public event ViewportEventHandler ZoomExtentsRequested;
+        public event ViewportZoomEventHandler ZoomExtentsRequested;
 
         public ObservableElement3DCollection Models { get; } = new ObservableElement3DCollection();
 
@@ -77,9 +76,39 @@ namespace FFXIV_TexTools.ViewModels
             } catch { }
 
             Camera = new PerspectiveCamera();
+            Camera.CameraInternal.PropertyChanged += CameraInternal_PropertyChanged;
 
             BackgroundColor = Properties.Settings.Default.BG_Color;
             ReflectionLabel = $"{UIStrings.Reflection}  |  {ReflectionValue}";
+        }
+
+
+        private void CameraInternal_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if(e.PropertyName == "LookDirection")
+            {
+                OnCameraDirectionChanged();
+            }
+        }
+
+        private bool _MoveLightsWithCamera = false;
+        public bool MoveLightsWithCamera
+        {
+            get => _MoveLightsWithCamera;
+            set
+            {
+                _MoveLightsWithCamera = value;
+                ResetLights();
+                OnPropertyChanged(nameof(MoveLightsWithCamera));
+            }
+        }
+
+        private void OnCameraDirectionChanged()
+        {
+            if (_MoveLightsWithCamera)
+            {
+                ResetLights();
+            }
         }
 
         private MeshGeometry3D GetMeshGeometry(TTModel model, int meshGroupId)
@@ -215,7 +244,8 @@ namespace FFXIV_TexTools.ViewModels
 
                     var isBodyMaterial = bodyMaterial.IsMatch(model.MeshGroups[i].Material);
 
-                    var textureData = textureDataDictionary.FirstOrDefault(x => x.MaterialPath == model.MeshGroups[i].Material);
+                    var mtrlName = "/" + Path.GetFileName(model.MeshGroups[i].Material);
+                    var textureData = textureDataDictionary.FirstOrDefault(x => x.MaterialPath == mtrlName);
                     if (textureData == null)
                     {
                         // This material didn't exist, was corrupt or otherwise didn't get loaded.  Skip it.
@@ -274,20 +304,48 @@ namespace FFXIV_TexTools.ViewModels
             }
 
 
+            var center = new Vector3(0, 1, 0);
+            Rect3D r3d = new Rect3D();
+            if (Models.Count > 0)
+            {
 
-            var center = boundingBox.GetValueOrDefault().Center;
+                // SharpDX sucks at computing these in a reasonable way.
+                var minPoint = new Vector3(9999.0f);
+                var maxPoint = new Vector3(-9999.0f);
 
-            _lightX = center.X;
-            _lightY = center.Y;
-            _lightZ = center.Z;
+                foreach (var m in Models)
+                {
+                    minPoint.X = minPoint.X < m.Bounds.Minimum.X ? minPoint.X : m.Bounds.Minimum.X;
+                    minPoint.Y = minPoint.Y < m.Bounds.Minimum.Y ? minPoint.Y : m.Bounds.Minimum.Y;
+                    minPoint.Z = minPoint.Z < m.Bounds.Minimum.Z ? minPoint.Z : m.Bounds.Minimum.Z;
+                    maxPoint.X = maxPoint.X > m.Bounds.Maximum.X ? maxPoint.X : m.Bounds.Maximum.X;
+                    maxPoint.Y = maxPoint.Y > m.Bounds.Maximum.Y ? maxPoint.Y : m.Bounds.Maximum.Y;
+                    maxPoint.Z = maxPoint.Z > m.Bounds.Maximum.Z ? maxPoint.Z : m.Bounds.Maximum.Z;
+                }
 
-            Light3Direction = new Vector3D(_lightX, _lightY, _lightZ);
+                center = ((maxPoint - minPoint) / 2.0f) + minPoint;
+                var sizeX = maxPoint.X - minPoint.X;
+                var sizeY = maxPoint.Y - minPoint.Y;
+                var sizeZ = maxPoint.Z - minPoint.Z;
+
+                r3d = new Rect3D(minPoint.X, minPoint.Y, minPoint.Z, sizeX, sizeY, sizeZ);
+
+            }
+
+
+            
             Camera.UpDirection = new Vector3D(0, 1, 0);
-            Camera.CameraInternal.PropertyChanged += CameraInternal_PropertyChanged;
 
             if(newModel && originalModel != _Model && !KeepCameraPosition)
             {
-                ZoomExtentsRequested?.Invoke(this);
+                ResetLights();
+
+                if (Models.Count == 0) {
+                    ZoomExtentsRequested?.Invoke(this, 0, null);
+                } else
+                {
+                    ZoomExtentsRequested?.Invoke(this, 0, r3d);
+                }
             }
         }
 
@@ -318,28 +376,35 @@ namespace FFXIV_TexTools.ViewModels
         /// <summary>
         /// Event handler for the camera property changing
         /// </summary>
-        protected virtual void CameraInternal_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        protected virtual void ResetLights()
         {
-            if (e.PropertyName.Equals("LookDirection"))
+            var cam = Camera.CameraInternal.LookDirection;
+            cam.Y = 0;
+            cam.Normalize();
+
+            double angle = 0;
+            if (_MoveLightsWithCamera)
             {
-                var camera = sender as PerspectiveCameraCore;
-
-                _light1X = -camera.LookDirection.X;
-                _light1Y = -camera.LookDirection.Y;
-                _light1Z = -camera.LookDirection.Z;
-
-
-                Light1Direction = new Vector3D(_light1X, _light1Y, _light1Z);
-
-                _light2X = camera.LookDirection.X;
-                _light2Y = camera.LookDirection.Y;
-                _light2Z = camera.LookDirection.Z;
-
-
-                Light2Direction = new Vector3D(_light2X, _light2Y, _light2Z);
+                angle = Math.Atan2(cam.X * -1, cam.Z * -1);
             }
 
-            //ResetLightValues();
+
+            var rotMatrix = Matrix.RotationAxis(new Vector3(0, 1, 0), (float) angle);
+
+            var light = new Vector3(-1, -0.5f, -1);
+            var res = Vector3.Transform(light, rotMatrix);
+            Light1Direction = new Vector3D(res.X, res.Y, res.Z);
+
+
+            light = new Vector3(1, -0.5f, -1);
+            res = Vector3.Transform(light, rotMatrix);
+            Light2Direction = new Vector3D(res.X, res.Y, res.Z);
+
+            light = new Vector3(0, 0.5f, 1);
+            res = Vector3.Transform(light, rotMatrix);
+            Light3Direction = new Vector3D(res.X, res.Y, res.Z);
+
+            UpdateLightSliders();
         }
 
         #region Properties
@@ -396,19 +461,6 @@ namespace FFXIV_TexTools.ViewModels
             }
         }
 
-        /// <summary>
-        /// The render status of light 3
-        /// </summary>
-        public bool RenderLight3
-        {
-            get => _renderLight3;
-            set
-            {
-                _renderLight3 = value;
-                OnPropertyChanged(nameof(RenderLight3));
-            }
-        }
-
         #endregion
 
         /// <summary>
@@ -456,15 +508,15 @@ namespace FFXIV_TexTools.ViewModels
             {
                 if (num == 0)
                 {
-                    Light1Direction = new Vector3D(_light1X + value, Light1Direction.Y, Light1Direction.Z);
+                    Light1Direction = new Vector3D(value, Light1Direction.Y, Light1Direction.Z);
                 }
                 else if (num == 1)
                 {
-                    Light2Direction = new Vector3D(_light2X + value, Light2Direction.Y, Light2Direction.Z);
+                    Light2Direction = new Vector3D(value, Light2Direction.Y, Light2Direction.Z);
                 }
                 else if (num == 2)
                 {
-                    Light3Direction = new Vector3D(_lightX + value, Light3Direction.Y, Light3Direction.Z);
+                    Light3Direction = new Vector3D(value, Light3Direction.Y, Light3Direction.Z);
                 }
             }
 
@@ -472,15 +524,15 @@ namespace FFXIV_TexTools.ViewModels
             {
                 if (num == 0)
                 {
-                    Light1Direction = new Vector3D(Light1Direction.X, _light1Y + value, Light1Direction.Z);
+                    Light1Direction = new Vector3D(Light1Direction.X, value, Light1Direction.Z);
                 }
                 else if (num == 1)
                 {
-                    Light2Direction = new Vector3D(Light2Direction.X, _light2Y + value, Light2Direction.Z);
+                    Light2Direction = new Vector3D(Light2Direction.X, value, Light2Direction.Z);
                 }
                 else if (num == 2)
                 {
-                    Light3Direction = new Vector3D(Light3Direction.X, _lightY + value, Light3Direction.Z);
+                    Light3Direction = new Vector3D(Light3Direction.X, value, Light3Direction.Z);
                 }
             }
 
@@ -488,15 +540,15 @@ namespace FFXIV_TexTools.ViewModels
             {
                 if (num == 0)
                 {
-                    Light1Direction = new Vector3D(Light1Direction.X, Light1Direction.Y, _light1Z + value);
+                    Light1Direction = new Vector3D(Light1Direction.X, Light1Direction.Y, value);
                 }
                 else if (num == 1)
                 {
-                    Light2Direction = new Vector3D(Light2Direction.X, Light2Direction.Y, _light2Z + value);
+                    Light2Direction = new Vector3D(Light2Direction.X, Light2Direction.Y, value);
                 }
                 else if (num == 2)
                 {
-                    Light3Direction = new Vector3D(Light3Direction.X, Light3Direction.Y, _lightZ + value);
+                    Light3Direction = new Vector3D(Light3Direction.X, Light3Direction.Y, value);
                 }
             }
         }
@@ -512,25 +564,25 @@ namespace FFXIV_TexTools.ViewModels
             {
                 case 0:
                     {
-                        var x = Light1Direction.X - _light1X;
-                        var y = Light1Direction.Y - _light1Y;
-                        var z = Light1Direction.Z - _light1Z;
+                        var x = Light1Direction.X;
+                        var y = Light1Direction.Y;
+                        var z = Light1Direction.Z;
 
                         return (x, y, z);
                     }
                 case 1:
                     {
-                        var x = Light2Direction.X - _light2X;
-                        var y = Light2Direction.Y - _light2Y;
-                        var z = Light2Direction.Z - _light2Z;
+                        var x = Light2Direction.X;
+                        var y = Light2Direction.Y;
+                        var z = Light2Direction.Z;
 
                         return (x, y, z);
                     }
                 case 2:
                     {
-                        var x = Light3Direction.X - _lightX;
-                        var y = Light3Direction.Y - _lightY;
-                        var z = Light3Direction.Z - _lightZ;
+                        var x = Light3Direction.X;
+                        var y = Light3Direction.Y;
+                        var z = Light3Direction.Z;
 
                         return (x, y, z);
                     }
@@ -606,6 +658,36 @@ namespace FFXIV_TexTools.ViewModels
 
         #region INotify Properties
 
+        private Color _Light1Color = new Color(1,1,1,0.5f);
+        public Color Light1Color
+        {
+            get => _Light1Color;
+            set
+            {
+                _Light1Color = value;
+                OnPropertyChanged(nameof(Light1Color));
+            }
+        }
+        private Color _Light2Color = new Color(1, 1, 1, 0.5f);
+        public Color Light2Color
+        {
+            get => _Light2Color;
+            set
+            {
+                _Light2Color = value;
+                OnPropertyChanged(nameof(Light2Color));
+            }
+        }
+        private Color _Light3Color = new Color(1, 1, 1, 0.5f);
+        public Color Light3Color
+        {
+            get => _Light3Color;
+            set
+            {
+                _Light3Color = value;
+                OnPropertyChanged(nameof(Light3Color));
+            }
+        }
 
         private float _LightingXValue;
         public float LightingXValue
@@ -615,7 +697,6 @@ namespace FFXIV_TexTools.ViewModels
             {
                 _LightingXValue = value;
                 UpdateLighting(value, _CheckedLight, "X");
-                LightXLabel = $"X  |  {value:0.#}";
                 OnPropertyChanged(nameof(LightingXValue));
             }
         }
@@ -628,7 +709,6 @@ namespace FFXIV_TexTools.ViewModels
             {
                 _LightingYValue = value;
                 UpdateLighting(value, _CheckedLight, "Y");
-                LightYLabel = $"Y  |  {value:0.#}";
                 OnPropertyChanged(nameof(LightingYValue));
             }
         }
@@ -641,7 +721,6 @@ namespace FFXIV_TexTools.ViewModels
             {
                 _lightingZValue = value;
                 UpdateLighting(value, _CheckedLight, "Z");
-                LightZLabel = $"Z  |  {value:0.#}";
                 OnPropertyChanged(nameof(LightingZValue));
             }
         }
@@ -670,7 +749,7 @@ namespace FFXIV_TexTools.ViewModels
                 if (value)
                 {
                     _CheckedLight = 0;
-                    UpdateLights();
+                    UpdateLightSliders();
                 }
             }
         }
@@ -685,7 +764,7 @@ namespace FFXIV_TexTools.ViewModels
                 if (value)
                 {
                     _CheckedLight = 1;
-                    UpdateLights();
+                    UpdateLightSliders();
                 }
             }
         }
@@ -700,67 +779,10 @@ namespace FFXIV_TexTools.ViewModels
                 if (value)
                 {
                     _CheckedLight = 2;
-                    UpdateLights();
+                    UpdateLightSliders();
                 }
             }
         }
-
-        public bool _LightRenderToggle;
-        public bool LightRenderToggle
-        {
-            get => _LightRenderToggle;
-            set
-            {
-                _LightRenderToggle = value;
-                RenderLight3 = value;
-                OnPropertyChanged(nameof(LightRenderToggle));
-            }
-        }
-
-        public Visibility _LightToggleVisibility = Visibility.Collapsed;
-        public Visibility LightToggleVisibility
-        {
-            get => _LightToggleVisibility;
-            set
-            {
-                _LightToggleVisibility = value;
-                OnPropertyChanged(nameof(LightToggleVisibility));
-            }
-        }
-
-        public string _LightXLabel;
-        public string LightXLabel
-        {
-            get => _LightXLabel;
-            set
-            {
-                _LightXLabel = value;
-                OnPropertyChanged(nameof(LightXLabel));
-            }
-        }
-
-        public string _LightYLabel;
-        public string LightYLabel
-        {
-            get => _LightYLabel;
-            set
-            {
-                _LightYLabel = value;
-                OnPropertyChanged(nameof(LightYLabel));
-            }
-        }
-
-        public string _LightZLabel;
-        public string LightZLabel
-        {
-            get => _LightZLabel;
-            set
-            {
-                _LightZLabel = value;
-                OnPropertyChanged(nameof(LightZLabel));
-            }
-        }
-
         public string _reflectionLabel;
         public string ReflectionLabel
         {
@@ -851,33 +873,13 @@ namespace FFXIV_TexTools.ViewModels
         /// <summary>
         /// Update the light position values on the sliders
         /// </summary>
-        private void UpdateLights()
+        private void UpdateLightSliders()
         {
             var lightValues = GetLightOffset(_CheckedLight);
 
             LightingXValue = (float)lightValues.x;
-            LightXLabel = $"X  |  {lightValues.x:0.#}";
             LightingYValue = (float)lightValues.y;
-            LightYLabel = $"Y  |  {lightValues.y:0.#}";
             LightingZValue = (float)lightValues.z;
-            LightZLabel = $"Z  |  {lightValues.z:0.#}";
-
-            LightToggleVisibility = _CheckedLight == 2 ? Visibility.Visible : Visibility.Collapsed;
-        }
-
-        /// <summary>
-        /// Resets the light position values for the sliders
-        /// </summary>
-        public void ResetLightValues()
-        {
-            if (_CheckedLight == 2) return;
-
-            LightingXValue = 0;
-            LightXLabel = "X  |  0";
-            LightingYValue = 0;
-            LightYLabel = "Y  |  0";
-            LightingZValue = 0;
-            LightZLabel = "Z  |  0";
         }
 
         #endregion

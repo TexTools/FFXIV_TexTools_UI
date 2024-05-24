@@ -26,8 +26,10 @@
                 CoordinateSystemLabelForeground="White"
                 TextBrush="Black"
                 UseDefaultGestures="False"
-                BackgroundColor="{Binding BackgroundColor}"
-                EffectsManager="{Binding EffectsManager}"
+                BackgroundColor="{Binding Path=BackgroundColor}"
+                EffectsManager="{Binding Path=EffectsManager}"
+                IsZoomEnabled="True"
+                ZoomExtentsWhenLoaded="True" 
                 ShowTriangleCountInfo="True" FXAALevel="Medium" MSAA="Two" 
                 OITRenderMode="DepthPeeling" OITWeightMode="Linear0" ZoomDistanceLimitNear="0.0001">
                 <hx:Viewport3DX.InputBindings>
@@ -44,16 +46,15 @@
                     <MouseBinding Command="hx:ViewportCommands.Pan" Gesture="LeftClick" />
                 </hx:Viewport3DX.InputBindings>
                 <hx:DirectionalLight3D
-                    Direction="{Binding Light1Direction}"
-                    Color="White"/>
+                    Direction="{Binding Path=Light1Direction}"
+                    Color="{Binding Path=Light1Color}" />
                 <hx:DirectionalLight3D
-                    Direction="{Binding Light2Direction}"
-                    Color="White" />
+                    Direction="{Binding Path=Light2Direction}"
+                    Color="{Binding Path=Light2Color}" />
                 <hx:DirectionalLight3D
-                    Direction="{Binding Light3Direction}"                 
-                    IsRendering="{Binding RenderLight3}"
-                    Color="White" />
-                <hx:GroupModel3D ItemsSource="{Binding Models}"/>
+                    Direction="{Binding Path=Light3Direction}"
+                    Color="{Binding Path=Light3Color}" />
+                <hx:GroupModel3D ItemsSource="{Binding Path=Models}"/>
             </hx:Viewport3DX>
             <Canvas Name="AlternateViewportCanvas" Visibility="Hidden" IsHitTestVisible="False"/>
 

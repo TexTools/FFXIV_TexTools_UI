@@ -187,14 +187,7 @@ namespace FFXIV_TexTools.ViewModels
             }
             var center = boundingBox.GetValueOrDefault().Center;
 
-            _lightX = center.X;
-            _lightY = center.Y;
-            _lightZ = center.Z;
-
-            Light3Direction = new Vector3D(_lightX, _lightY, _lightZ);
             Camera.UpDirection = new Vector3D(0, 1, 0);
-            Camera.CameraInternal.PropertyChanged += CameraInternal_PropertyChanged;
-
             // Add the skeleton node for the target race
             AddSkeletonNode(targetRace);
 
@@ -397,29 +390,6 @@ namespace FFXIV_TexTools.ViewModels
                     material.DiffuseColor = PhongMaterials.ToColor(1, 1, 1, 1);
                 }
             }
-        }
-
-        protected override void CameraInternal_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName.Equals("LookDirection"))
-            {
-                var camera = sender as PerspectiveCameraCore;
-
-                _light1X = -camera.LookDirection.X;
-                _light1Y = -camera.LookDirection.Y;
-                _light1Z = -camera.LookDirection.Z;
-
-                Light1Direction = new Vector3D(_light1X, _light1Y, _light1Z);
-
-                _light2X = camera.LookDirection.X;
-                _light2Y = camera.LookDirection.Y;
-                _light2Z = camera.LookDirection.Z;
-
-                Light2Direction = new Vector3D(_light2X, _light2Y, _light2Z);
-            }
-
-            _modelViewModel.ResetLightValues();
-            _modelViewModel.FlyoutOpen = false;
         }
 
         #endregion

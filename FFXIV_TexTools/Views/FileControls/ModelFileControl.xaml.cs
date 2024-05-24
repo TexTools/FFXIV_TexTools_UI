@@ -44,6 +44,7 @@ using System.Threading;
 using xivModdingFramework.SqPack.FileTypes;
 using SharpDX;
 using ControlzEx.Standard;
+using System.Windows.Media.Media3D;
 
 namespace FFXIV_TexTools.Views.Controls
 {
@@ -257,7 +258,7 @@ namespace FFXIV_TexTools.Views.Controls
                 Alpha = new byte[] { 255, 255, 255, 255 },
                 Diffuse = new byte[] { 128, 128, 128, 255 },
                 Emissive = null,
-                MaterialPath = materialFileName,
+                MaterialPath = "/" + Path.GetFileName(materialFileName),
                 Height = 1,
                 Width = 1,
                 Normal = new byte[] { 128, 128, 255, 255 },
@@ -467,18 +468,16 @@ namespace FFXIV_TexTools.Views.Controls
                 }
 
 
-
-                if (InternalFilePath != Model.Source)
+                await Dispatcher.InvokeAsync(() =>
                 {
-                    // User changed models.
-                    return;
-                }
-                _Textures = textureList;
+                    if (InternalFilePath != Model.Source)
+                    {
+                        // User changed models.
+                        return;
+                    }
 
-                // Synchronous invoke here because we want to freeze the UI while we change the camera panel, to avoid any insanity.
-                Dispatcher.Invoke(() =>
-                {
-                    ViewportVM.UpdateModel(Model, textureList);
+                    _Textures = textureList;
+                    ViewportVM.UpdateModel(Model, _Textures);
                 });
             }
             catch(Exception ex)
@@ -673,9 +672,23 @@ namespace FFXIV_TexTools.Views.Controls
                 // No-Op
             }
         }
-        private void ZoomExtentsRequested(Viewport3DViewModel requestor)
+        private void ZoomExtentsRequested(Viewport3DViewModel requestor, double animationTime, Rect3D? boundingBox)
         {
-            Viewport.ZoomExtents();
+            try
+            {
+                if (boundingBox != null)
+                {
+                    Viewport.ZoomExtents(boundingBox.Value, animationTime);
+                }
+                else
+                {
+                    Viewport.ZoomExtents(animationTime);
+                }
+            }
+            catch(Exception ex)
+            {
+                Trace.WriteLine(ex);
+            }
         }
         #endregion
 

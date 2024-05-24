@@ -60,38 +60,9 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
-            <Label Grid.Row="0" Content="{Binding Source={x:Static resx:UIStrings.Lights}}"/>
-            <Grid Grid.Row="1">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
-                <RadioButton Grid.Column="0" Content="1" GroupName="Lights" Margin="5" IsChecked="{Binding Path=Light1Check}"/>
-                <RadioButton Grid.Column="1" Content="2" GroupName="Lights" Margin="5" IsChecked="{Binding Path=Light2Check}"/>
-                <RadioButton Grid.Column="2" Content="3" GroupName="Lights" Margin="5" IsChecked="{Binding Path=Light3Check}"/>
-            </Grid>
-        </Grid>
-        <Grid Grid.Row="5">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <Grid Grid.Row="0">
-                <Label Content="{Binding LightXLabel, FallbackValue=X}" Margin="5"/>
-                <mah:ToggleSwitch Style="{StaticResource MahApps.Metro.Styles.ToggleSwitch.Win10}" HorizontalAlignment="Right" VerticalAlignment="Center"
-                                  Margin="0, 0, 5, 0" IsChecked="{Binding LightRenderToggle}" Visibility="{Binding LightToggleVisibility, FallbackValue=Collapsed}"/>
-            </Grid>
-            <Slider Grid.Row="1" Margin="5" AutoToolTipPlacement="TopLeft" Value="{Binding LightingXValue}" Maximum="10" Minimum="-10" TickFrequency="0.1" LargeChange="0.1"/>
-            <Label Grid.Row="2" Content="{Binding LightYLabel, FallbackValue=Y}" Margin="5"/>
-            <Slider Grid.Row="3" Margin="5" AutoToolTipPlacement="TopLeft" Value="{Binding LightingYValue}" Maximum="10" Minimum="-10" TickFrequency="0.1"/>
-            <Label Grid.Row="4" Content="{Binding LightZLabel, FallbackValue=Z}" Margin="5"/>
-            <Slider Grid.Row="5" Margin="5" AutoToolTipPlacement="TopLeft" Value="{Binding LightingZValue}" Maximum="10" Minimum="-10" TickFrequency="0.1"/>
+            <mah:ToggleSwitch Header="Move Lights With Camera" Grid.Row="0" IsChecked="{Binding Path=MoveLightsWithCamera}" Style="{StaticResource MahApps.Metro.Styles.ToggleSwitch.Win10}"/>
         </Grid>
     </Grid>
 </UserControl>

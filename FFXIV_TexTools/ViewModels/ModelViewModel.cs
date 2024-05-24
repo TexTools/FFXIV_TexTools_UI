@@ -1126,7 +1126,6 @@ namespace FFXIV_TexTools.ViewModels
             set
             {
                 _lightRenderToggle = value;
-                ViewPortVM.RenderLight3 = value;
                 NotifyPropertyChanged(nameof(LightRenderToggle));
             }
         }

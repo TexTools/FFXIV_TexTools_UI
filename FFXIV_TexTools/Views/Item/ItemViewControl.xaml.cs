@@ -28,6 +28,7 @@ using xivModdingFramework.Cache;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Items.Categories;
+using xivModdingFramework.Items.DataContainers;
 using xivModdingFramework.Items.Enums;
 using xivModdingFramework.Items.Interfaces;
 using xivModdingFramework.Materials.DataContainers;
@@ -36,6 +37,7 @@ using xivModdingFramework.Mods;
 using xivModdingFramework.Textures.Enums;
 using xivModdingFramework.Textures.FileTypes;
 using xivModdingFramework.Variants.FileTypes;
+using static FFXIV_TexTools.ViewModels.TextureViewModel;
 
 namespace FFXIV_TexTools.Views.Item
 {
@@ -480,20 +482,6 @@ namespace FFXIV_TexTools.Views.Item
                 ItemInfoEnabled = true;
                 Root = Item.GetRoot();
 
-                if (Root == null)
-                {
-                    await MaterialWrapper.ClearFile();
-                    await ModelWrapper.ClearFile();
-                    await MetadataWrapper.ClearFile();
-
-                    // Texture only item.  Not implemented yet.
-                    TexturesEnabled = true;
-                    ShowPanel(TextureWrapper);
-                    ItemNameText = ":(";
-                    throw new NotImplementedException();
-                    return false;
-                }
-
                 // We can add materials to anything with a root.
                 AddMaterialEnabled = true;
 
@@ -502,10 +490,13 @@ namespace FFXIV_TexTools.Views.Item
                 await SetItemName(tx);
 
                 // Load metadata view manually since it's not handled by the above functions.
-                var success = await MetadataWrapper.LoadInternalFile(Root.Info.GetRootFile(), Item, null, false);
-                if (success)
+                if (Root != null)
                 {
-                    MetadataEnabled = true;
+                    var success = await MetadataWrapper.LoadInternalFile(Root.Info.GetRootFile(), Item, null, false);
+                    if (success)
+                    {
+                        MetadataEnabled = true;
+                    }
                 }
 
                 await RebuildComboBoxes(tx);
@@ -669,7 +660,10 @@ namespace FFXIV_TexTools.Views.Item
         {
             if(Root == null)
             {
-                Files.Add("", new Dictionary<string, HashSet<string>>());
+                if (Files.Count >= 1)
+                {
+                    Files.First().Value.Add("", new HashSet<string>());
+                }
                 return;
             }
 
@@ -790,6 +784,26 @@ namespace FFXIV_TexTools.Views.Item
         private async Task GetTextures(ModTransaction tx)
         {
 
+            if(Root == null)
+            {
+                var uiItem = Item as XivUi;
+                if (uiItem != null)
+                {
+                    if(Files.Count == 0 || Files.First().Value.Count == 0)
+                    {
+                        return;
+                    }
+                    var set = Files.First().Value.First().Value;
+
+                    var paths = await uiItem.GetTexPaths(true, true, MainWindow.DefaultTransaction);
+                    foreach (var kv in paths)
+                    {
+                        set.Add(kv.Value);
+                    }
+                }
+                return;
+            }
+
             // Anything with materials is easy. 
             foreach(var mdlKv in Files)
             {
@@ -798,6 +812,7 @@ namespace FFXIV_TexTools.Views.Item
                     var mtrl = mtrlKv.Key;
                     if(mtrlKv.Key == "")
                     {
+                        mtrlKv.Value.Add("");
                         break;
                     }
 
@@ -807,12 +822,6 @@ namespace FFXIV_TexTools.Views.Item
                         mtrlKv.Value.Add(tex);
                     }
                 }
-            }
-
-            if(Files.Count == 0)
-            {
-                // TODO: Add resoultion for texture-only items.
-                Files.Add("", new Dictionary<string, HashSet<string>>());
             }
         }
 
@@ -913,7 +922,7 @@ namespace FFXIV_TexTools.Views.Item
         /// <param name="textures"></param>
         private async Task AddTextures(IEnumerable<string> textures)
         {
-            //textures = textures.OrderBy(x => x);
+            Textures = new ObservableCollection<KeyValuePair<string, string>>();
             var mtrlPath = (string)MaterialComboBox.SelectedValue;
             XivMtrl mtrl = null;
             if (!string.IsNullOrEmpty(mtrlPath))
@@ -924,8 +933,8 @@ namespace FFXIV_TexTools.Views.Item
                     mtrl = await Mtrl.GetXivMtrl(mtrlPath, false, tx);
                 }
             }
+            
 
-            Textures = new ObservableCollection<KeyValuePair<string, string>>();
             foreach (var texture in textures)
             {
                 if (texture == "")
@@ -968,7 +977,23 @@ namespace FFXIV_TexTools.Views.Item
             else
             {
                 // Default behavior
-                TextureComboBox.SelectedIndex = 0;
+                if (Root == null)
+                {
+                    var hr = textures.FirstOrDefault(x => x.EndsWith("_hr1.tex"));
+                    if (!string.IsNullOrWhiteSpace(hr))
+                    {
+                        // Select High res textures by default.
+                        TextureComboBox.SelectedValue = hr;
+                    }
+                    else
+                    {
+                        TextureComboBox.SelectedIndex = 0;
+                    }
+                }
+                else
+                {
+                    TextureComboBox.SelectedIndex = 0;
+                }
             }
         }
 
