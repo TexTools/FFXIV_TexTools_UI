@@ -46,6 +46,7 @@ using xivModdingFramework.Mods;
 using FFXIV_TexTools.Resources;
 using System.Diagnostics;
 using System.Threading;
+using System.CodeDom;
 
 namespace FFXIV_TexTools.Views.Controls
 {
@@ -209,10 +210,10 @@ namespace FFXIV_TexTools.Views.Controls
             return Mtrl.XivMtrlToUncompressedMtrl(_Material);
         }
 
-        protected override async Task<bool> INTERNAL_LoadFile(byte[] data)
+        protected override async Task<bool> INTERNAL_LoadFile(byte[] data, string path, IItem referenceItem)
         {
             // The incoming data is an uncompressed MTRL file.
-            Material = Mtrl.GetXivMtrl(data, InternalFilePath);
+            Material = Mtrl.GetXivMtrl(data, path);
             return true;
         }
 
@@ -246,6 +247,32 @@ namespace FFXIV_TexTools.Views.Controls
             // We override this in order to use MTRL's import function, which checks for missing texture files, etc.
             await Mtrl.ImportMtrl(Material, ReferenceItem, XivStrings.TexTools, true, tx);
             return true;
+        }
+
+        protected override async Task<byte[]> INTERNAL_ExternalToUncompressedFile(string externalFile, string internalFile, IItem referenceItem)
+        {
+            var ext = Path.GetExtension(externalFile).ToLower();
+            if (ext == ".mtrl")
+            {
+                return await base.INTERNAL_ExternalToUncompressedFile(externalFile, internalFile, referenceItem);
+            } else if(ext == ".dds")
+            {
+                if (!Material.ShaderPack.UsesColorset())
+                {
+                    throw new InvalidDataException(ShaderPack.ToString() + " shader pack does not use Colorsets.");
+                }
+
+                var csetData = Tex.GetColorsetDataFromDDS(externalFile);
+
+                var mtrl = (XivMtrl) Material.Clone();
+                mtrl.ColorSetData = csetData.ColorsetData;
+                mtrl.ColorSetDyeData = csetData.DyeData;
+                return Mtrl.XivMtrlToUncompressedMtrl(mtrl);
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
         }
 
 
@@ -480,7 +507,7 @@ namespace FFXIV_TexTools.Views.Controls
             {
                 UnsavedChanges = true;
                 var bytes = Mtrl.XivMtrlToUncompressedMtrl(result);
-                await INTERNAL_LoadFile(bytes);
+                await INTERNAL_LoadFile(bytes, InternalFilePath, ReferenceItem);
             }
 
         }

@@ -1344,6 +1344,9 @@ namespace FFXIV_TexTools
                 return;
             }
 
+            // Probably not necessary given the entire application is closing typically, but who knows, maybe one day we'll spawn multiple mainwindows..?
+            ItemView.Dispose();
+
             try
             {
                 XivCache.CacheWorkerEnabled = false;

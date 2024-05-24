@@ -251,9 +251,9 @@ namespace FFXIV_TexTools.Views.Controls
             return Mtrl.XivMtrlToUncompressedMtrl(material);
         }
 
-        protected override async Task<bool> INTERNAL_LoadFile(byte[] data)
+        protected override async Task<bool> INTERNAL_LoadFile(byte[] data, string path, IItem referenceItem)
         {
-            var mat = Mtrl.GetXivMtrl(data, InternalFilePath);
+            var mat = Mtrl.GetXivMtrl(data, path);
             await SetMaterial(mat);
             return true;
         }
@@ -478,6 +478,7 @@ namespace FFXIV_TexTools.Views.Controls
         private List<Half[]> GetRowData(int row)
         {
             var offset = row * _columnCount * 4;
+
             var data = new List<Half[]>(4);
             for (int i = 0; i < _columnCount; i++)
             {
@@ -1236,7 +1237,7 @@ namespace FFXIV_TexTools.Views.Controls
         {
             try
             {
-                if (RowId == 15) return;
+                if (RowId == _rowCount - 1) return;
                 var prevRowId = RowId + 1;
                 await SwapRows(RowId, prevRowId);
             }

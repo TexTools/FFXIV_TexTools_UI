@@ -173,8 +173,13 @@ namespace FFXIV_TexTools.Views.Controls
             if (forcedType != null)
             {
                 var obj = Activator.CreateInstance(forcedType) as FileViewControl;
-                if (obj == null || !await obj.CanLoadFile(file, null, tx))
+                if (obj == null)
                 {
+                    return null;
+                }
+                else if (!await obj.CanLoadFile(file, null, tx))
+                {
+                    obj.Dispose();
                     return null;
                 }
                 else if (obj != null)
@@ -188,24 +193,28 @@ namespace FFXIV_TexTools.Views.Controls
             {
                 return handler;
             }
+            handler.Dispose();
 
             handler = new ModelFileControl();
             if (await handler.CanLoadFile(file, null, tx))
             {
                 return handler;
             }
+            handler.Dispose();
 
             handler = new MaterialFileControl();
             if (await handler.CanLoadFile(file, null, tx))
             {
                 return handler;
             }
+            handler.Dispose();
 
             handler = new MetadataFileControl();
             if (await handler.CanLoadFile(file, null, tx))
             {
                 return handler;
             }
+            handler.Dispose();
 
 
             return null;
@@ -233,6 +242,23 @@ namespace FFXIV_TexTools.Views.Controls
             return true;
         }
 
+        private void DisposeFileControl()
+        {
+            if(FileControl == null)
+            {
+                return;
+            }
+
+            if (FileControlEntry != null && FileControlEntry.Children != null && FileControlEntry.Children.Contains(FileControl))
+            {
+                FileControlEntry.Children.Remove(FileControl);
+            }
+
+            FileControl.PropertyChanged -= FileControl_PropertyChanged;
+            FileControl.Dispose();
+            FileControl = null;
+        }
+        
         public async Task<bool> LoadExternalFile(string externalFilePath, string internalFilePath, IItem referenceItem = null, bool reloadControl = true, Type forcedControlType = null)
         {
             if (string.IsNullOrWhiteSpace(externalFilePath) || string.IsNullOrWhiteSpace(internalFilePath))
@@ -253,8 +279,7 @@ namespace FFXIV_TexTools.Views.Controls
                 {
                     if (FileControl != null)
                     {
-                        FileControlEntry.Children.Remove(FileControl);
-                        FileControl = null;
+                        DisposeFileControl();
                     }
 
                     var control = await GetControlForFile(internalFilePath, forcedControlType);
@@ -312,8 +337,7 @@ namespace FFXIV_TexTools.Views.Controls
                 {
                     if (FileControl != null)
                     {
-                        FileControlEntry.Children.Remove(FileControl);
-                        FileControl = null;
+                        DisposeFileControl();
                     }
 
                     var control = await GetControlForFile(internalFilePath, forcedControlType);
@@ -617,7 +641,10 @@ namespace FFXIV_TexTools.Views.Controls
         {
             try
             {
-                await SimpleFileViewWindow.OpenFile(FilePath);
+                if (FileControl != null)
+                {
+                    await SimpleFileViewWindow.OpenFile(FilePath, FileControl.ReferenceItem, null, null, Window.GetWindow(this));
+                }
             }
             catch { 
                 // No-Op
@@ -632,11 +659,7 @@ namespace FFXIV_TexTools.Views.Controls
 
                 if (disposing)
                 {
-                    if (FileControl != null)
-                    {
-                        FileControl.Dispose();
-                        FileControl = null;
-                    }
+                    DisposeFileControl();
                 }
 
                 disposedValue = true;

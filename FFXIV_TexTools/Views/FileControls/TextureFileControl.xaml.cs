@@ -95,13 +95,13 @@ namespace FFXIV_TexTools.Views.Controls
             return Texture.ToUncompressedTex();
         }
 
-        protected override async Task<bool> INTERNAL_LoadFile(byte[] uncompressedData)
+        protected override async Task<bool> INTERNAL_LoadFile(byte[] uncompressedData, string path, IItem referenceItem)
         {
             Texture = XivTex.FromUncompressedTex(uncompressedData);
 
             await UpdateDisplayImage();
 
-            _ = LoadParentFileInformation(InternalFilePath, ReferenceItem);
+            _ = LoadParentFileInformation(path, ReferenceItem);
             CenterImage();
             return true;
         }

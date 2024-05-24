@@ -666,6 +666,11 @@ namespace FFXIV_TexTools.Views.Item
                 }
                 return;
             }
+            if(Files.Count == 0)
+            {
+                // Hmm.  How did we get here?
+                return;
+            }
 
             var asIm = Item as IItemModel;
             var materialSet = -1;
@@ -1486,6 +1491,7 @@ namespace FFXIV_TexTools.Views.Item
             _PreLoadModel = null;
             _PreLoadMaterial = null;
             _PreLoadTexture = null;
+            _TargetFile = (null, null, null);
         }
 
         private async void ItemInfo_Click(object sender, RoutedEventArgs e)

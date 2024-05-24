@@ -108,11 +108,11 @@ namespace FFXIV_TexTools.Views.Controls
             return data;
         }
 
-        protected override async Task<bool> INTERNAL_LoadFile(byte[] data)
+        protected override async Task<bool> INTERNAL_LoadFile(byte[] data, string path, IItem referenceItem)
         {
 
             // The data coming in here is an uncompressed .mdl file.
-            return await LoadModel(Mdl.GetTTModel(data, InternalFilePath));
+            return await LoadModel(Mdl.GetTTModel(data, path));
         }
         protected async Task<bool> LoadModel(TTModel model) {
             Model = model;
@@ -476,7 +476,7 @@ namespace FFXIV_TexTools.Views.Controls
 
                 await Dispatcher.InvokeAsync(() =>
                 {
-                    if (InternalFilePath != Model.Source)
+                    if (Model == null || InternalFilePath != Model.Source)
                     {
                         // User changed models.
                         return;

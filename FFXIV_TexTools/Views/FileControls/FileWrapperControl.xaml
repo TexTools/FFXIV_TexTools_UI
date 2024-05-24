@@ -46,11 +46,8 @@
                 <ColumnDefinition></ColumnDefinition>
                 <ColumnDefinition Width="60"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <Button Margin="5" Grid.Column="0" x:Name="EnableDisableButton" Content="{Binding Path=EnableDisableText, FallbackValue=Enable}" Click="EnableDisable_Click" ToolTip="{Binding Source={x:Static resx:UIStrings.EnableDisableTooltip}}" IsEnabled="{Binding Path=EnableDisableEnabled}"/>
-            <Button Margin="5" Grid.Column="1" x:Name="LoadButton" Content="{Binding Source={x:Static resx:UIStrings.Load}}" Click="Load_Click" ToolTip="{Binding Source={x:Static resx:UIStrings.LoadTooltip}}"/>
 
-
-            <Grid x:Name="SaveAsGrid" Margin="5" Grid.Column="2" ToolTip="{Binding Source={x:Static resx:UIStrings.SaveAsTooltip}}">
+            <Grid x:Name="SaveAsGrid" Margin="5" Grid.Column="0" ToolTip="{Binding Source={x:Static resx:UIStrings.SaveAsTooltip}}">
                 <Button x:Name="SaveAsButton" Grid.Column="0" Click="SaveAs_Click">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="{Binding Source={x:Static resx:UIStrings.SaveAs}}" />
@@ -67,6 +64,10 @@
                 </Grid.ContextMenu>
 
             </Grid>
+            
+            <Button Margin="5" Grid.Column="1" x:Name="LoadButton" Content="{Binding Source={x:Static resx:UIStrings.Load}}" Click="Load_Click" ToolTip="{Binding Source={x:Static resx:UIStrings.LoadTooltip}}"/>
+
+            <Button Margin="5" Grid.Column="2" x:Name="EnableDisableButton" Content="{Binding Path=EnableDisableText, FallbackValue=Enable}" Click="EnableDisable_Click" ToolTip="{Binding Source={x:Static resx:UIStrings.EnableDisableTooltip}}" IsEnabled="{Binding Path=EnableDisableEnabled}"/>
 
 
             <Button Margin="5" Grid.Column="3" x:Name="SaveButton" ToolTip="{Binding Path=SaveTooltip}" IsEnabled="{Binding Path=SaveEnabled}" Click="Save_Click">
@@ -76,7 +77,7 @@
                         <ColumnDefinition></ColumnDefinition>
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock x:Name="SaveText" Text="SAVE" HorizontalAlignment="Right" Grid.Column="0"/>
+                    <TextBlock x:Name="SaveText" Text="SAVE TO FFXIV" HorizontalAlignment="Right" Grid.Column="0"/>
                     <TextBlock Text="{Binding Path=UnsavedChangesText}" FontWeight="Bold" Foreground="#FFC80000" HorizontalAlignment="Left" Grid.Column="1"/>
                 </Grid>
             </Button>

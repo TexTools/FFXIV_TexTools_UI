@@ -138,11 +138,11 @@ namespace FFXIV_TexTools.Views.Controls
             return await ItemMetadata.Serialize(Metadata);
         }
 
-        protected override async Task<bool> INTERNAL_LoadFile(byte[] data)
+        protected override async Task<bool> INTERNAL_LoadFile(byte[] data, string path, IItem referenceItem)
         {
             Metadata = await ItemMetadata.Deserialize(data);
 
-            Metadata.Validate(InternalFilePath);
+            Metadata.Validate(path);
 
             Root = Metadata.Root;
             await OnRootChanged();

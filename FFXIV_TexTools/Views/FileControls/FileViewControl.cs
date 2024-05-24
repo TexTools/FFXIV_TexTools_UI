@@ -457,7 +457,7 @@ namespace FFXIV_TexTools.Views.Controls
                 });
 
 
-                success = await INTERNAL_LoadFile(data);
+                success = await INTERNAL_LoadFile(data, internalFile, referenceItem);
 
 
                 if (decompData != null)
@@ -490,12 +490,18 @@ namespace FFXIV_TexTools.Views.Controls
 
         protected virtual async Task UpdateModState(ModTransaction tx = null)
         {
-            if(tx == null)
+            try
             {
-                tx = MainWindow.DefaultTransaction;
+                if (tx == null)
+                {
+                    tx = MainWindow.DefaultTransaction;
+                }
+                ModState = await Modding.GetModState(InternalFilePath, tx);
             }
-
-            ModState = await Modding.GetModState(InternalFilePath, tx);
+            catch(Exception ex)
+            {
+                Trace.WriteLine(ex);
+            }
         }
 
         protected virtual async Task<byte[]> INTERNAL_GetDataFromPath(string internalPath, bool forceOriginal, ModTransaction tx)
@@ -514,6 +520,8 @@ namespace FFXIV_TexTools.Views.Controls
         /// <returns></returns>
         public virtual async Task<bool> LoadExternalFile(string externalFile, string internalFile = null, IItem referenceItem = null)
         {
+            var originalPath = InternalFilePath;
+            var originalItem = ReferenceItem;
             if (UnsavedChanges && !string.IsNullOrWhiteSpace(InternalFilePath))
             {
                 if (!this.ConfirmDiscardChanges(InternalFilePath))
@@ -526,26 +534,22 @@ namespace FFXIV_TexTools.Views.Controls
             IsEnabled = false;
             var success = false;
             try
-            {
-                if (HasFile)
-                {
-                    ClearFile();
-                }
+            { 
 
                 var tx = MainWindow.DefaultTransaction;
                 if (!await CanLoadFile(externalFile, null, tx))
                 {
                     // If we can't load the file, but still have it assigned, keep it posted here..?
-                    InternalFilePath = internalFile;
-                    await UpdateModState();
                     return success;
                 }
 
-                if (!string.IsNullOrWhiteSpace(internalFile))
-                {
-                    InternalFilePath = internalFile;
+                if (internalFile == null)
+                { 
+                    internalFile = InternalFilePath;
+                    referenceItem = ReferenceItem;
                 }
-                if (string.IsNullOrEmpty(InternalFilePath))
+
+                if (!IOUtil.IsFFXIVInternalPath(internalFile))
                 {
                     throw new Exception("Must have a valid internal path to prepare the external file for.");
                 }
@@ -559,16 +563,25 @@ namespace FFXIV_TexTools.Views.Controls
                     }
                 }
 
-                ReferenceItem = referenceItem;
-                ExternalFilePath = externalFile;
-
-                var data = await INTERNAL_ExternalToUncompressedFile(externalFile, internalFile, ReferenceItem);
-                if(data == null || data.Length == 0)
+                // Don't clear the file until after calling this, since some files may be partial imports.
+                byte[] data = null;
+                await Task.Run(async () =>
+                {
+                    // Thread the actual loading process which could involve extensive file manipulation.
+                    data = await INTERNAL_ExternalToUncompressedFile(externalFile, internalFile, referenceItem);
+                });
+                if (data == null || data.Length == 0)
                 {
                     return false;
                 }
 
-                success = await INTERNAL_LoadFile(data);
+                ClearFile();
+
+                ExternalFilePath = externalFile;
+                InternalFilePath = internalFile;
+                ReferenceItem = referenceItem;
+
+                success = await INTERNAL_LoadFile(data, internalFile, referenceItem);
                 UnsavedChanges = true;
                 IsEnabled = success;
 
@@ -581,6 +594,28 @@ namespace FFXIV_TexTools.Views.Controls
             }
             finally
             {
+                if (!success)
+                {
+                    ClearFile();
+                }
+
+                // Ensure we're still marked on the correct file coming out.
+                if (IOUtil.IsFFXIVInternalPath(internalFile))
+                {
+                    InternalFilePath = internalFile;
+                    ReferenceItem = referenceItem;
+                }  else if(IOUtil.IsFFXIVInternalPath(originalPath))
+                {
+                    InternalFilePath = originalPath;
+                    ReferenceItem = originalItem;
+                } else
+                {
+                    InternalFilePath = null;
+                    ReferenceItem = null;
+                }
+
+                await UpdateModState();
+
                 IsEnabled = success;
                 FileLoaded?.Invoke(this,success);
             }
@@ -597,7 +632,7 @@ namespace FFXIV_TexTools.Views.Controls
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        protected abstract Task<bool> INTERNAL_LoadFile(byte[] data);
+        protected abstract Task<bool> INTERNAL_LoadFile(byte[] data, string internalFile, IItem referenceItem);
 
         /// <summary>
         /// Gets the currently viewed file in compressed/SQPacked format.
