@@ -423,7 +423,7 @@ namespace FFXIV_TexTools.Views.Item
         /// <returns></returns>
         public async Task<bool> SetItem(IItem item, string targetFile = null)
         {
-            var res = await HandleUnsaveConfirmation(null, null);
+            var res = HandleUnsaveConfirmation(null, null);
             if (!res)
             {
                 return false;
@@ -765,6 +765,15 @@ namespace FFXIV_TexTools.Views.Item
                 }
             }
 
+
+            if(asIm != null && asIm.IconId > 0)
+            {
+                foreach(var file in Files)
+                {
+                    file.Value.Add("icon", new HashSet<string>());
+                }
+            }
+
             // Ensure we have at least a blank entry.
             foreach (var file in Files)
             {
@@ -809,19 +818,30 @@ namespace FFXIV_TexTools.Views.Item
                 return;
             }
 
+            var asIm = Item as IItemModel;
+
             // Anything with materials is easy. 
             foreach(var mdlKv in Files)
             {
                 foreach(var mtrlKv in Files[mdlKv.Key])
                 {
                     var mtrl = mtrlKv.Key;
+                    List<string> textures = new List<string>();
                     if(mtrlKv.Key == "")
                     {
                         mtrlKv.Value.Add("");
                         break;
+                    } else if(mtrlKv.Key == "icon")
+                    {
+                        if (asIm != null) {
+                            textures = await Tex.GetItemIcons(asIm.IconId, tx);
+                        }
+                    }
+                    else
+                    {
+                        textures = await Mtrl.GetTexturePathsFromMtrlPath(mtrl, false, false, tx);
                     }
 
-                    var textures = await Mtrl.GetTexturePathsFromMtrlPath(mtrl, false, false, tx);
                     foreach(var tex in textures)
                     {
                         mtrlKv.Value.Add(tex);
@@ -890,11 +910,17 @@ namespace FFXIV_TexTools.Views.Item
             Materials = new ObservableCollection<KeyValuePair<string, string>>();
             foreach (var material in materials)
             {
-                if(material == "")
+                if (material == "")
                 {
                     Materials.Add(new KeyValuePair<string, string>("--", ""));
                     break;
                 }
+                else if (material == "icon")
+                {
+                    Materials.Add(new KeyValuePair<string, string>(XivStrings.Icon, "icon"));
+                    continue;
+                }
+
                 var niceName = Path.GetFileNameWithoutExtension(material);
                 var race = IOUtil.GetRaceFromPath(material);
                 var baseName = Root.Info.GetBaseFileName();
@@ -930,7 +956,7 @@ namespace FFXIV_TexTools.Views.Item
             Textures = new ObservableCollection<KeyValuePair<string, string>>();
             var mtrlPath = (string)MaterialComboBox.SelectedValue;
             XivMtrl mtrl = null;
-            if (!string.IsNullOrEmpty(mtrlPath))
+            if (!string.IsNullOrEmpty(mtrlPath) && IOUtil.IsFFXIVInternalPath(mtrlPath))
             {
                 var tx = MainWindow.DefaultTransaction;
                 if(await tx.FileExists(mtrlPath))
@@ -1007,7 +1033,7 @@ namespace FFXIV_TexTools.Views.Item
         private bool _CANCELLING_COMBO_BOXES;
 
 
-        private async Task<bool> HandleUnsaveConfirmation(ComboBox c, SelectionChangedEventArgs e)
+        public bool HandleUnsaveConfirmation(ComboBox c, SelectionChangedEventArgs e)
         {
             if (_CANCELLING_COMBO_BOXES)
             {
@@ -1161,6 +1187,12 @@ namespace FFXIV_TexTools.Views.Item
                 return false;
             }
 
+            if (!IOUtil.IsFFXIVInternalPath(fileRemoved))
+            {
+                // Non-FFXIV file.  Either something weird or an internal flag like 'icon'
+                return false;
+            }
+
             var tx = MainWindow.DefaultTransaction;
             if(await tx.FileExists(fileRemoved))
             {
@@ -1250,7 +1282,7 @@ namespace FFXIV_TexTools.Views.Item
                     return;
                 }
 
-                if (!await HandleUnsaveConfirmation(ModelComboBox, e))
+                if (!HandleUnsaveConfirmation(ModelComboBox, e))
                 {
                     return;
                 }
@@ -1301,7 +1333,7 @@ namespace FFXIV_TexTools.Views.Item
                 }
 
 
-                if (!await HandleUnsaveConfirmation(MaterialComboBox, e))
+                if (!HandleUnsaveConfirmation(MaterialComboBox, e))
                 {
                     return;
                 }
@@ -1341,9 +1373,10 @@ namespace FFXIV_TexTools.Views.Item
 
                 await AddTextures(texs);
             }
-            catch
+            catch(Exception ex)
             {
                 // No-Op.
+                Trace.WriteLine(ex);
             }
 
         }
@@ -1357,7 +1390,7 @@ namespace FFXIV_TexTools.Views.Item
                     return;
                 }
 
-                if (!await HandleUnsaveConfirmation(TextureComboBox, e))
+                if (!HandleUnsaveConfirmation(TextureComboBox, e))
                 {
                     return;
                 }

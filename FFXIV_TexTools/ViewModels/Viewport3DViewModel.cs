@@ -80,6 +80,8 @@ namespace FFXIV_TexTools.ViewModels
 
             BackgroundColor = Properties.Settings.Default.BG_Color;
             ReflectionLabel = $"{UIStrings.Reflection}  |  {ReflectionValue}";
+
+            ResetLights();
         }
 
 
@@ -336,7 +338,7 @@ namespace FFXIV_TexTools.ViewModels
             
             Camera.UpDirection = new Vector3D(0, 1, 0);
 
-            if(newModel && originalModel != _Model && !KeepCameraPosition)
+            if(newModel && originalModel != _Model && AllowCameraReset)
             {
                 ResetLights();
 
@@ -619,10 +621,6 @@ namespace FFXIV_TexTools.ViewModels
         {
             foreach (var model in Models)
             {
-                var isBody = ((CustomMeshGeometryModel3D)model).IsBody;
-
-                if (isBody) continue;
-
                 var material = ((CustomMeshGeometryModel3D)model).Material as PhongMaterial;
 
                 if (transparencyEnabled)
@@ -818,14 +816,14 @@ namespace FFXIV_TexTools.ViewModels
             }
         }
 
-        public bool _KeepCameraPosition;
-        public bool KeepCameraPosition
+        public bool _AllowCameraReset = true;
+        public bool AllowCameraReset
         {
-            get => _KeepCameraPosition;
+            get => _AllowCameraReset;
             set
             {
-                _KeepCameraPosition = value;
-                OnPropertyChanged(nameof(KeepCameraPosition));
+                _AllowCameraReset = value;
+                OnPropertyChanged(nameof(AllowCameraReset));
             }
         }
 

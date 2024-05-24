@@ -136,7 +136,7 @@ namespace FFXIV_TexTools.Views.Models
                 }
             }
 
-            var imView = new ImportModelView(path, referenceItem, dataOnly, OnComplete) { Owner = windowOwner };
+            var imView = new ImportModelView(path, referenceItem, dataOnly, OnComplete, startingFilePath) { Owner = windowOwner };
             imView.WindowStartupLocation = WindowStartupLocation.CenterOwner;
 
 

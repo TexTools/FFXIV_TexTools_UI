@@ -1336,6 +1336,14 @@ namespace FFXIV_TexTools
 
         private async void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+
+            var res = ItemView.HandleUnsaveConfirmation(null, null);
+            if (res == false)
+            {
+                e.Cancel = true;
+                return;
+            }
+
             try
             {
                 XivCache.CacheWorkerEnabled = false;

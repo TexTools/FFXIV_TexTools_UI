@@ -29,40 +29,47 @@
             <Button Grid.Column="1" Margin="5"  Content="Deformations" IsEnabled="{Binding ColorsetButtonEnabled}"  Click="OpenShapesMenu_Click"/>
         </Grid>
 
-        <Grid Grid.Row="1">
-            <CheckBox Margin="5" Content="{Binding Source={x:Static resx:UIStrings.Keep_Camera_Position}}" IsChecked="{Binding KeepCameraPosition}"/>
-        </Grid>
         
-        <Grid Grid.Row="2">
+        <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+            </Grid.RowDefinitions>
             <mah:ToggleSwitch Header="{Binding Source={x:Static resx:UIStrings.Translucency}}" 
                               Style="{StaticResource MahApps.Metro.Styles.ToggleSwitch.Win10}"
                               OffLabel="{Binding Source={x:Static resx:UIStrings.Disabled}}"
-                              OnLabel="{Binding Source={x:Static resx:UIStrings.Enabled}}" Margin="5" IsChecked="{Binding TransparencyToggle}"/>
+                              OnLabel="{Binding Source={x:Static resx:UIStrings.Enabled}}" 
+                              Margin="5" IsChecked="{Binding TransparencyToggle}"/>
+            
             <mah:ToggleSwitch Header="{Binding Source={x:Static resx:UIStrings.Cull_Mode}}" 
                               Grid.Column="1"
                               Style="{StaticResource MahApps.Metro.Styles.ToggleSwitch.Win10}"
                               OffLabel="{Binding Source={x:Static resx:UIStrings.Back}}"
                               OnLabel="{Binding Source={x:Static resx:UIStrings.None}}" Margin="5" IsChecked="{Binding CullModeToggle}"/>
+            
+            <mah:ToggleSwitch Grid.Row="1" IsChecked="{Binding Path=MoveLightsWithCamera}" Margin="5"
+                              Header="Light Movement"
+                              Style="{StaticResource MahApps.Metro.Styles.ToggleSwitch.Win10}"
+                              OffLabel="Static"
+                              OnLabel="Mobile" />
+
+            <mah:ToggleSwitch Grid.Row="1" Grid.Column="1" IsChecked="{Binding Path=AllowCameraReset}" Margin="5"
+                              Header="Camera Reset"
+                              Style="{StaticResource MahApps.Metro.Styles.ToggleSwitch.Win10}"
+                              OffLabel="Disabled"
+                              OnLabel="Enabled" />
         </Grid>
-        <Grid Grid.Row="3">
+        <Grid Grid.Row="2">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <Label Grid.Row="0" Content="{Binding ReflectionLabel, FallbackValue=Reflection}" Margin="5"/>
             <Slider Grid.Row="1" Margin="5" AutoToolTipPlacement="TopLeft" Value="{Binding ReflectionValue}" Minimum="-1" Maximum="100"/>
-        </Grid>
-        <Grid Grid.Row="4">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
-            <mah:ToggleSwitch Header="Move Lights With Camera" Grid.Row="0" IsChecked="{Binding Path=MoveLightsWithCamera}" Style="{StaticResource MahApps.Metro.Styles.ToggleSwitch.Win10}"/>
         </Grid>
     </Grid>
 </UserControl>

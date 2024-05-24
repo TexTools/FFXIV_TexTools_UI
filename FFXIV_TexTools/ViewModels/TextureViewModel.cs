@@ -738,30 +738,10 @@ namespace FFXIV_TexTools.ViewModels
             var items = 0;
             if (ext == ".avfx")
             {
-                var paths = await ATex.GetAtexPaths(_item, false, MainWindow.DefaultTransaction);
-
-                foreach (var path in paths)
-                {
-                    var mi = new MapComboBoxEntry();
-                    mi.TexturePath = path.Path;
-                    mi.Usage = XivTexType.Vfx;
-                    _mapComboBoxData.Add(new KeyValuePair<string, MapComboBoxEntry>("VFX - ".L() + Path.GetFileNameWithoutExtension(mi.TexturePath), mi));
-                    items++;
-                }
 
             }
             else if (ext == ".ui")
             {
-                var icons = await Tex.GetItemIcons(_item, MainWindow.DefaultTransaction);
-
-                foreach (var ttp in icons)
-                {
-                    var mi = new MapComboBoxEntry();
-                    mi.TexturePath = ttp.Path;
-                    mi.Usage = XivTexType.UI;
-                    _mapComboBoxData.Add(new KeyValuePair<string, MapComboBoxEntry>(ttp.Name.L(), mi));
-                    items++;
-                }
             }
             else if (ext == ".mtrl")
             {

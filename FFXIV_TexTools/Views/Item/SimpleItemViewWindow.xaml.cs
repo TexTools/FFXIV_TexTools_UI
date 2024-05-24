@@ -36,7 +36,14 @@ namespace FFXIV_TexTools.Views.Item
                 return;
             }
 
-            // TODO - Proc Unsaved Changes prompt here.
+            var res = ItemView.HandleUnsaveConfirmation(null, null);
+
+            if(res == false)
+            {
+                e.Cancel = true;
+                return;
+            }
+
             OpenItemWindows.Remove(this);
         }
 

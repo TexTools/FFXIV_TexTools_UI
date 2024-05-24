@@ -540,13 +540,13 @@ namespace FFXIV_TexTools.Views
 
                     foreach (var icon in icons)
                     {
-                        textures.Add(icon.Path);
+                        textures.Add(icon);
                     }
 
                     var paths = await ATex.GetAtexPaths(im, false, tx);
                     foreach (var path in paths)
                     {
-                        textures.Add(path.Path);
+                        textures.Add(path);
                     }
                 }
                 else
