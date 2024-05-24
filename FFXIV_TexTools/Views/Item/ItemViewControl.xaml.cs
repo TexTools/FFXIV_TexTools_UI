@@ -1519,7 +1519,7 @@ namespace FFXIV_TexTools.Views.Item
             }
             catch(Exception ex)
             {
-                Trace.Write(ex);
+                Trace.WriteLine(ex);
             }
         }
 

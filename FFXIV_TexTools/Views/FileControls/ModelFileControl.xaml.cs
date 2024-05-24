@@ -162,7 +162,7 @@ namespace FFXIV_TexTools.Views.Controls
             catch(Exception ex)
             {
                 // If any of these fail to resolve, we still want to continue.
-                Trace.Write(ex);
+                Trace.WriteLine(ex);
             }
 
 
@@ -483,7 +483,7 @@ namespace FFXIV_TexTools.Views.Controls
             catch(Exception ex)
             {
                 // No-Op.
-                Trace.Write(ex);
+                Trace.WriteLine(ex);
             }
         }
         #endregion

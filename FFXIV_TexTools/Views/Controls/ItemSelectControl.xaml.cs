@@ -327,12 +327,6 @@ namespace FFXIV_TexTools.Views.Controls
                 // If we have a Tertiary Category...
                 if (!string.IsNullOrWhiteSpace(item.TertiaryCategory))
                 {
-                    var asch = item as XivCharacter;
-                    if(asch != null)
-                    {
-                        Trace.Write(asch);
-                    }
-
                     // Parent doesn't already have a Tertiary to attach to...
                     thirdLevel = secondLevel.Children.FirstOrDefault(x => x.DisplayName == item.TertiaryCategory);
                     if (thirdLevel == null)

@@ -45,19 +45,6 @@ namespace FFXIV_TexTools.Views.Controls
                 {
                     Constant.ConstantId = value;
 
-                    // Everything changes when ID changes.
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ConstantId)));
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Name)));
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Values)));
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Val0)));
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Val1)));
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Val2)));
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Val3)));
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Val0Enabled)));
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Val1Enabled)));
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Val2Enabled)));
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Val3Enabled)));
-
                     var ninfo = Constant.GetConstantInfo(_Editor.Material.ShaderPack);
                     if (ninfo != null)
                     {
@@ -67,6 +54,11 @@ namespace FFXIV_TexTools.Views.Controls
                     {
                         Values = new List<float>() { 0.0f };
                     }
+
+                    // Everything changes when ID changes.
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ConstantId)));
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Name)));
+
                 }
             }
             public List<float> Values
@@ -79,6 +71,14 @@ namespace FFXIV_TexTools.Views.Controls
                 {
                     Constant.Values = value;
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Values)));
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Val0)));
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Val1)));
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Val2)));
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Val3)));
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Val0Enabled)));
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Val1Enabled)));
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Val2Enabled)));
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Val3Enabled)));
                 }
             }
             public string Name
@@ -302,11 +302,11 @@ namespace FFXIV_TexTools.Views.Controls
         {
             var newConst = new ShaderConstant();
 
-            if (ShaderKeys[Material.ShaderPack].Count > 0)
+            if (ShaderConstants[Material.ShaderPack].Count > 0)
             {
                 var info = ShaderConstants[Material.ShaderPack].First().Value;
                 newConst.ConstantId = info.Id;
-                newConst.Values = info.DefaultValues;
+                newConst.Values = info.DefaultValues.ToList();
             }
             Material.ShaderConstants.Add(newConst);
             UpdateList();
