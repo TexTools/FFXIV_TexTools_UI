@@ -783,23 +783,28 @@ namespace FFXIV_TexTools.Views.Item
 
         private async Task GetTextures(ModTransaction tx)
         {
+            if (Files.Count == 0 || Files.First().Value.Count == 0)
+            {
+                // How did we get here...
+                return;
+            }
 
-            if(Root == null)
+            if (Root == null)
             {
                 var uiItem = Item as XivUi;
+                var asChar = Item as XivCharacter;
+                var set = Files.First().Value.First().Value;
+
                 if (uiItem != null)
                 {
-                    if(Files.Count == 0 || Files.First().Value.Count == 0)
-                    {
-                        return;
-                    }
-                    var set = Files.First().Value.First().Value;
-
                     var paths = await uiItem.GetTexPaths(true, true, MainWindow.DefaultTransaction);
-                    foreach (var kv in paths)
-                    {
-                        set.Add(kv.Value);
-                    }
+                    set.UnionWith(paths);
+
+                } else if (asChar != null)
+                {
+                    var paths = await asChar.GetDecalTextures(MainWindow.DefaultTransaction);
+                    set.UnionWith(paths);
+
                 }
                 return;
             }
@@ -989,6 +994,7 @@ namespace FFXIV_TexTools.Views.Item
                     {
                         TextureComboBox.SelectedIndex = 0;
                     }
+                    ShowPanel(TextureWrapper);
                 }
                 else
                 {

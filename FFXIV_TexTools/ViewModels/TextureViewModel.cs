@@ -859,7 +859,7 @@ namespace FFXIV_TexTools.ViewModels
             {
                 _uiItem = uiItem;
 
-                var paths = await uiItem.GetTexPaths(!HiResChecked, HiResChecked, MainWindow.DefaultTransaction);
+                var paths = new Dictionary<string, string>();
                 foreach (var kv in paths)
                 {
                     var mapInfo = new MapComboBoxEntry();
@@ -893,9 +893,7 @@ namespace FFXIV_TexTools.ViewModels
                 }
                 else if (item.SecondaryCategory == XivStrings.Face_Paint)
                 {
-                    var _character = new Character(XivCache.GameInfo.GameDirectory, XivCache.GameInfo.GameLanguage);
-
-                    var paths = await _character.GetDecalPaths(Character.XivDecalType.FacePaint, MainWindow.DefaultTransaction);
+                    var paths = await Character.GetDecalPaths(Character.XivDecalType.FacePaint, MainWindow.DefaultTransaction);
 
                     foreach (var path in paths)
                     {
@@ -912,8 +910,7 @@ namespace FFXIV_TexTools.ViewModels
                 }
                 else if (item.SecondaryCategory == XivStrings.Equipment_Decals)
                 {
-                    var _character = new Character(XivCache.GameInfo.GameDirectory, XivCache.GameInfo.GameLanguage);
-                    var paths = await _character.GetDecalPaths(Character.XivDecalType.Equipment, MainWindow.DefaultTransaction);
+                    var paths = await Character.GetDecalPaths(Character.XivDecalType.Equipment, MainWindow.DefaultTransaction);
                     foreach (var path in paths)
                     {
                         var mapInfo = new MapComboBoxEntry();

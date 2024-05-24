@@ -305,6 +305,7 @@ namespace FFXIV_TexTools.Views.Controls
                 }
                 catParent = topLevel;
 
+
                 // Find our second level parent, if we have one.
                 if (!string.IsNullOrWhiteSpace(item.SecondaryCategory) && item.Name != item.SecondaryCategory)
                 {
@@ -316,7 +317,12 @@ namespace FFXIV_TexTools.Views.Controls
                         topLevel.Children.Add(secondLevel);
                     }
                 }
-                catParent = secondLevel;
+
+                if (item.Name != item.SecondaryCategory)
+                {
+                    // Special catch for face paint/equipment decal category.
+                    catParent = secondLevel;
+                }
 
                 // If we have a Tertiary Category...
                 if (!string.IsNullOrWhiteSpace(item.TertiaryCategory))
@@ -336,7 +342,6 @@ namespace FFXIV_TexTools.Views.Controls
                         secondLevel.Children.Add(thirdLevel);
                     }
                     catParent = thirdLevel;
-
                 }
 
                 // Maps are special and go 5 levels deep. (UI => Maps => Region => Zone => SubMap)
@@ -765,64 +770,6 @@ namespace FFXIV_TexTools.Views.Controls
 
             return iMatch;
         }
-
-        private readonly Dictionary<string, List<string>> _categoryStructure = new Dictionary<string, List<string>>()
-        {
-            { XivStrings.Gear, new List<string>() {
-                {XivStrings.Head },
-                {XivStrings.Body },
-                {XivStrings.Hands },
-                {XivStrings.Legs },
-                {XivStrings.Feet },
-                {XivStrings.Main_Hand },
-                {XivStrings.Off_Hand },
-                {XivStrings.Dual_Wield },
-                {XivStrings.Two_Handed },
-                {XivStrings.Earring },
-                {XivStrings.Neck },
-                {XivStrings.Wrists },
-                {XivStrings.Rings },
-                {XivStrings.Head_Body },
-                {XivStrings.Body_Hands },               
-                {XivStrings.Body_Hands_Legs },
-                {XivStrings.Body_Legs_Feet },
-                {XivStrings.Body_Hands_Legs_Feet },
-                {XivStrings.Legs_Feet },
-                {XivStrings.All },
-                {XivStrings.Food }
-                
-            } },
-            { XivStrings.Character, new List<string>() {
-                /*{ XivStrings.Body },
-                { XivStrings.Face },
-                { XivStrings.Hair },
-                { XivStrings.Tail },
-                { XivStrings.Ear },
-                { XivStrings.Face_Paint },
-                { XivStrings.Equipment_Decals }*/ 
-            } },
-            { XivStrings.Companions, new List<string>() {
-                { XivStrings.Minions },
-                { XivStrings.Mounts },
-                { XivStrings.Pets },
-                { XivStrings.Ornaments },
-            } },
-            { XivStrings.UI, new List<string>() {
-                { XivStrings.Actions },
-                { XivStrings.Loading_Screen },
-                { XivStrings.Maps },
-                { XivStrings.Map_Symbols },
-                { XivStrings.Online_Status },
-                { XivStrings.Status },
-                { XivStrings.Weather },
-                { XivStrings.HUD }
-            } },
-            { XivStrings.Housing, new List<string>() {
-                { XivStrings.Indoor_Furniture },
-                { XivStrings.Paintings },
-                { XivStrings.Outdoor_Furniture },
-            } }
-        };
     }
     public class ItemTreeElement : INotifyPropertyChanged
     {

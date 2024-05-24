@@ -556,9 +556,7 @@ namespace FFXIV_TexTools.Views
                         // Face Paint/Equipment Decals jank-items.  Ugh.
                         if (item.SecondaryCategory == XivStrings.Face_Paint)
                         {
-                            var _character = new Character(XivCache.GameInfo.GameDirectory, XivCache.GameInfo.GameLanguage);
-
-                            var paths = await _character.GetDecalPaths(Character.XivDecalType.FacePaint, tx);
+                            var paths = await Character.GetDecalPaths(Character.XivDecalType.FacePaint, tx);
 
                             foreach (var path in paths)
                             {
@@ -568,8 +566,7 @@ namespace FFXIV_TexTools.Views
                         }
                         else if (item.SecondaryCategory == XivStrings.Equipment_Decals)
                         {
-                            var _character = new Character(XivCache.GameInfo.GameDirectory, XivCache.GameInfo.GameLanguage);
-                            var paths = await _character.GetDecalPaths(Character.XivDecalType.Equipment, tx);
+                            var paths = await Character.GetDecalPaths(Character.XivDecalType.Equipment, tx);
                             foreach (var path in paths)
                             {
                                 textures.Add(path);
@@ -583,7 +580,7 @@ namespace FFXIV_TexTools.Views
                         var paths = await uiItem.GetTexPaths(true, true, tx);
                         foreach (var kv in paths)
                         {
-                            textures.Add(kv.Value);
+                            textures.Add(kv);
                         }
                     }
                 }
