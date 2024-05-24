@@ -923,8 +923,31 @@ namespace FFXIV_TexTools.Views.Item
                 }
 
                 var niceName = Path.GetFileNameWithoutExtension(material);
-                var race = IOUtil.GetRaceFromPath(material);
-                var baseName = Root.Info.GetBaseFileName();
+
+                // Get the root for just the file name.
+                var simpleRoot = XivCache.GetFileNameRootInfo(niceName, false);
+
+                XivRace race = XivRace.All_Races;
+                string slot = null;
+                string suffix = IOUtil.GetMaterialSuffix(material);
+                if (simpleRoot.IsValid())
+                {
+                    if(simpleRoot.PrimaryType == XivItemType.human)
+                    {
+                        race = XivRaces.GetXivRace(simpleRoot.PrimaryId);
+                    }
+                    slot = simpleRoot.Slot;
+                }
+
+                if(race != XivRace.All_Races && !string.IsNullOrWhiteSpace(suffix))
+                {
+                    niceName = race.GetDisplayName() + ": ";
+                    if (!string.IsNullOrWhiteSpace(slot)) {
+                        niceName += slot.ToUpper() + " ";
+                    }
+                    niceName += suffix.ToUpper();
+                }
+
 
                 Materials.Add(new KeyValuePair<string, string>(niceName, material));
             }
