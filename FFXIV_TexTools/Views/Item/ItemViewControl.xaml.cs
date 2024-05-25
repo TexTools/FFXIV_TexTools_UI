@@ -1580,7 +1580,7 @@ namespace FFXIV_TexTools.Views.Item
             {
                 var matControl = (MaterialFileControl)MaterialWrapper.FileControl;
                 var currentModel = (string) ModelComboBox.SelectedValue;
-                var result = await CreateMaterialDialog.ShowCreateMaterialDialogSimple(currentModel, matControl.Material, Item, Window.GetWindow(this));
+                var result = await CreateMaterialDialog.ShowCreateMaterialDialogSimple(matControl.Material, currentModel, Window.GetWindow(this));
                 if(result == null)
                 {
                     return;

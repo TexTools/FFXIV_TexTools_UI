@@ -96,7 +96,7 @@ namespace FFXIV_TexTools.Views.Controls
             return Texture.ToUncompressedTex();
         }
 
-        protected override async Task<bool> INTERNAL_LoadFile(byte[] uncompressedData, string path, IItem referenceItem)
+        protected override async Task<bool> INTERNAL_LoadFile(byte[] uncompressedData, string path, IItem referenceItem, ModTransaction tx)
         {
             Texture = XivTex.FromUncompressedTex(uncompressedData);
 

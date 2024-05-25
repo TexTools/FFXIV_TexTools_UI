@@ -1,6 +1,7 @@
 ﻿using FFXIV_TexTools.Helpers;
 using FFXIV_TexTools.Properties;
 using FFXIV_TexTools.Resources;
+using FFXIV_TexTools.Views.Item;
 using MahApps.Metro.Controls;
 using System;
 using System.Collections.Generic;
@@ -22,6 +23,7 @@ using xivModdingFramework.Items.Interfaces;
 using xivModdingFramework.Mods;
 using xivModdingFramework.Mods.Enums;
 using xivModdingFramework.SqPack.FileTypes;
+using Control = System.Windows.Controls.Control;
 
 namespace FFXIV_TexTools.Views.Controls
 {
@@ -457,7 +459,7 @@ namespace FFXIV_TexTools.Views.Controls
                 });
 
 
-                success = await INTERNAL_LoadFile(data, internalFile, referenceItem);
+                success = await INTERNAL_LoadFile(data, internalFile, referenceItem, tx);
 
 
                 if (decompData != null)
@@ -581,7 +583,7 @@ namespace FFXIV_TexTools.Views.Controls
                 InternalFilePath = internalFile;
                 ReferenceItem = referenceItem;
 
-                success = await INTERNAL_LoadFile(data, internalFile, referenceItem);
+                success = await INTERNAL_LoadFile(data, internalFile, referenceItem, tx);
                 UnsavedChanges = true;
                 IsEnabled = success;
 
@@ -632,7 +634,7 @@ namespace FFXIV_TexTools.Views.Controls
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        protected abstract Task<bool> INTERNAL_LoadFile(byte[] data, string internalFile, IItem referenceItem);
+        protected abstract Task<bool> INTERNAL_LoadFile(byte[] data, string internalFile, IItem referenceItem, ModTransaction tx);
 
         /// <summary>
         /// Gets the currently viewed file in compressed/SQPacked format.
@@ -972,6 +974,11 @@ namespace FFXIV_TexTools.Views.Controls
             }
         }
 
+
+        protected ItemViewControl GetItemControlParent()
+        {
+            return ViewHelpers.FindParentOfType<ItemViewControl>(this);
+        }
         private void Dispose(bool disposing)
         {
             if (!_Disposed)

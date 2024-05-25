@@ -15,6 +15,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Interop;
+using System.Windows.Media;
 using System.Windows.Threading;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Mods.FileTypes;
@@ -221,6 +222,17 @@ namespace FFXIV_TexTools.Views
 
             return (XivRaces.GetXivRace("0201"), defaultBody);
         }
-
+        public static T FindParentOfType<T>(this DependencyObject child) where T : DependencyObject
+        {
+            DependencyObject parentDepObj = child;
+            do
+            {
+                parentDepObj = VisualTreeHelper.GetParent(parentDepObj);
+                T parent = parentDepObj as T;
+                if (parent != null) return parent;
+            }
+            while (parentDepObj != null);
+            return null;
+        }
     }
 }

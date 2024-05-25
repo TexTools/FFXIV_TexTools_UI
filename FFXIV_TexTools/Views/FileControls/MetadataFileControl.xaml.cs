@@ -138,7 +138,7 @@ namespace FFXIV_TexTools.Views.Controls
             return await ItemMetadata.Serialize(Metadata);
         }
 
-        protected override async Task<bool> INTERNAL_LoadFile(byte[] data, string path, IItem referenceItem)
+        protected override async Task<bool> INTERNAL_LoadFile(byte[] data, string path, IItem referenceItem, ModTransaction tx)
         {
             Metadata = await ItemMetadata.Deserialize(data);
 

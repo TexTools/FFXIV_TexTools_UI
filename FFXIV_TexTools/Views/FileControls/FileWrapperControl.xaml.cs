@@ -1,4 +1,6 @@
 ﻿using FFXIV_TexTools.Resources;
+using FFXIV_TexTools.Views.Item;
+using Ionic.Zip;
 using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
 using System;

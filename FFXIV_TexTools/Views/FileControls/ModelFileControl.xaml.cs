@@ -128,7 +128,7 @@ namespace FFXIV_TexTools.Views.Controls
             return data;
         }
 
-        protected override async Task<bool> INTERNAL_LoadFile(byte[] data, string path, IItem referenceItem)
+        protected override async Task<bool> INTERNAL_LoadFile(byte[] data, string path, IItem referenceItem, ModTransaction tx)
         {
 
             // The data coming in here is an uncompressed .mdl file.

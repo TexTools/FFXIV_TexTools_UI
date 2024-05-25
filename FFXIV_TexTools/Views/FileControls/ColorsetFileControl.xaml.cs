@@ -273,7 +273,7 @@ namespace FFXIV_TexTools.Views.Controls
             }
         }
 
-        protected override async Task<bool> INTERNAL_LoadFile(byte[] data, string path, IItem referenceItem)
+        protected override async Task<bool> INTERNAL_LoadFile(byte[] data, string path, IItem referenceItem, ModTransaction tx)
         {
             var mat = Mtrl.GetXivMtrl(data, path);
             await SetMaterial(mat);

@@ -65,6 +65,11 @@
         <Button x:Name="SavePresetButton" Content="Save Preset" HorizontalAlignment="Left" Margin="110,0,0,0" VerticalAlignment="Center" Width="100" Grid.Column="2" Click="SavePresetButton_Click" Height="28"/>
         <Button x:Name="LoadPresetButton" Content="Load Preset" HorizontalAlignment="Left" VerticalAlignment="Center" Width="100" Grid.Column="2" Click="LoadPresetButton_Click" Height="28"/>
 
+
+        <CheckBox x:Name="MultiSaveCheckbox" Content="Save Changes to All Versions" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="2" Grid.Row="3"
+                  ToolTip="Should changes to this material apply to all other versions/variants of this item as well?"/>
+        <Button x:Name="AddMaterialButton" Content="New Material" HorizontalAlignment="Left" VerticalAlignment="Center" Width="100" Grid.Column="2" Click="AddMaterial_Click" Grid.Row="1" Margin="110,0,0,0"/>
+
         <Button x:Name="EditColorsetButton" Content="View/Edit Colorset" HorizontalAlignment="Left" Margin="0,0,10,0" VerticalAlignment="Center" Width="150" Grid.Column="1" Click="EditColorset_Click" IsEnabled="{Binding Path=ColorsetEnabled}"></Button>
 
         <Image x:Name="ColorsetImage" Source="/FFXIV_TexTools;component/ffxiv2.ico" Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Margin="160,0,0,0" Height="80" Width="20" HorizontalAlignment="Left" 
@@ -77,7 +82,7 @@
         <Separator Grid.Row="2" Grid.ColumnSpan="3" Margin="5,0,5,0"/>
 
 
-        <Label Content="Textures" Grid.Row="3" HorizontalContentAlignment="Center" VerticalContentAlignment="Top" Cursor="Arrow" Grid.ColumnSpan="3" FontWeight="Bold" FontStyle="Italic" VerticalAlignment="Center" Height="26"/>
+        <Label Content="Textures" Grid.Row="3" HorizontalContentAlignment="Center" VerticalContentAlignment="Top" Cursor="Arrow" Grid.ColumnSpan="3" FontWeight="Bold" FontStyle="Italic" VerticalAlignment="Center" Height="26" HorizontalAlignment="Center"/>
 
         <Button Content="Add Texture" Grid.Row="4" Grid.Column="2" HorizontalAlignment="Left" Margin="60,0,0,0" VerticalAlignment="Center" Width="150" Click="AddTexture_Click" Height="28"/>
         <Button Content="Help" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" HorizontalAlignment="Left" Margin="141,0,0,0" VerticalAlignment="Center" Width="150" Click="HelpButton_Click" Height="28"/>
@@ -85,7 +90,7 @@
         <Button x:Name="NewSharedButton" Content="Make Textures Shared" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center" Width="150" Height="28" Grid.Row="4" Click="NewSharedButton_Click"/>
         <Button x:Name="NewUniqueButton" Content="Make Textures Unique" HorizontalAlignment="Left" Margin="170,0,0,0" VerticalAlignment="Center" Width="150" Height="28" Grid.Row="4" Click="NewUniqueButton_Click"/>
 
-        <Label x:Name="SaveStatusLabel" Content="" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Left" Grid.Row="4" VerticalAlignment="Center" Width="243" HorizontalContentAlignment="Right" FontStyle="Italic" Height="28" Margin="223,0,0,0"/>
+        <Label x:Name="SaveStatusLabel" Content="" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Left" Grid.Row="4" VerticalAlignment="Center" Width="240" HorizontalContentAlignment="Right" FontStyle="Italic" Height="28" Margin="223,0,0,0"/>
 
         <ListBox x:Name="TexturesList" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" Margin="10,10,10,10"
                     ItemTemplate="{StaticResource MtrlTextureTemplate}">

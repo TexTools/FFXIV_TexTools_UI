@@ -210,8 +210,26 @@ namespace FFXIV_TexTools.Views.Controls
             return Mtrl.XivMtrlToUncompressedMtrl(_Material);
         }
 
-        protected override async Task<bool> INTERNAL_LoadFile(byte[] data, string path, IItem referenceItem)
+        protected override async Task<bool> INTERNAL_LoadFile(byte[] data, string path, IItem referenceItem, ModTransaction tx)
         {
+            var exists = await tx.FileExists(path, false);
+
+            var root = await XivCache.GetFirstRoot(path);
+            var usesImc = root == null ? false : Imc.UsesImc(root);
+
+            if (!usesImc)
+            {
+                MultiSaveCheckbox.IsChecked = false;
+                MultiSaveCheckbox.IsEnabled = false;
+            }
+            else if (!exists)
+            {
+                MultiSaveCheckbox.IsChecked = true;
+                MultiSaveCheckbox.IsEnabled = false;
+            } else
+            {
+                MultiSaveCheckbox.IsEnabled = true;
+            }
             // The incoming data is an uncompressed MTRL file.
             Material = Mtrl.GetXivMtrl(data, path);
             return true;
@@ -507,7 +525,7 @@ namespace FFXIV_TexTools.Views.Controls
             {
                 UnsavedChanges = true;
                 var bytes = Mtrl.XivMtrlToUncompressedMtrl(result);
-                await INTERNAL_LoadFile(bytes, InternalFilePath, ReferenceItem);
+                await INTERNAL_LoadFile(bytes, InternalFilePath, ReferenceItem, MainWindow.DefaultTransaction);
             }
 
         }
@@ -612,6 +630,36 @@ namespace FFXIV_TexTools.Views.Controls
         {
             await OpenColorset();
         }
+
+        private async Task AddNewMaterial()
+        {
+            try
+            {
+                string mdl = null;
+                var ivc = GetItemControlParent();
+
+                if(ivc != null && ivc.ModelWrapper != null && ivc.ModelWrapper.FileControl != null && ivc.ModelWrapper.FileControl.HasFile)
+                {
+                    // Yoink.
+                    mdl = ivc.ModelWrapper.FileControl.InternalFilePath;
+                }
+
+                var result = await CreateMaterialDialog.ShowCreateMaterialDialogSimple(Material, mdl, Window.GetWindow(this));
+                if (result == null)
+                {
+                    return;
+                }
+
+
+                // Load the new data at the new path.
+                var data = Mtrl.XivMtrlToUncompressedMtrl(result);
+                await SimpleFileViewWindow.OpenFile(result.MTRLPath, ReferenceItem, data, typeof(MaterialFileControl), Window.GetWindow(this));
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine(ex);
+            }
+        }
         private async Task OpenColorset()
         {
             try
@@ -631,6 +679,18 @@ namespace FFXIV_TexTools.Views.Controls
             catch
             {
                 // No-Op
+            }
+        }
+
+        private async void AddMaterial_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                await AddNewMaterial();
+            }
+            catch(Exception ex)
+            {
+                Trace.WriteLine(ex);
             }
         }
     }

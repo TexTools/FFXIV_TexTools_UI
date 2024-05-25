@@ -150,9 +150,16 @@ namespace FFXIV_TexTools.Views.Controls
         /// <param name="item"></param>
         /// <param name="owner"></param>
         /// <returns></returns>
-        public static async Task<XivMtrl> ShowCreateMaterialDialogSimple(string targetModel, XivMtrl baseMaterial, IItem item, Window owner = null)
+        public static async Task<XivMtrl> ShowCreateMaterialDialogSimple(XivMtrl baseMaterial, string targetModel = null, Window owner = null)
         {
-            var tx = MainWindow.DefaultTransaction;
+            if(targetModel == null)
+            {
+                // Yolo.  Should work fine 99% of the time.  The other 1% The user did something phenomenally stupid with their
+                // material naming/pathing, and they can deal with it.
+                targetModel = baseMaterial.MTRLPath.Replace(".mtrl", ".mdl");
+            }
+
+            //var tx = MainWindow.DefaultTransaction;
             var newMtrl = (XivMtrl)baseMaterial.Clone();
 
             var targetFolder = Path.GetDirectoryName(newMtrl.MTRLPath).Replace("\\","/");
