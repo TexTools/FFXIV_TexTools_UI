@@ -485,7 +485,7 @@ namespace FFXIV_TexTools.Views.Controls
                 }
 
 
-                await Dispatcher.InvokeAsync(() =>
+                await await Dispatcher.InvokeAsync(async () =>
                 {
                     if (Model == null || InternalFilePath != Model.Source)
                     {

@@ -22,6 +22,8 @@ using xivModdingFramework.Models.FileTypes;
 using xivModdingFramework.Models.Helpers;
 using System.Text.RegularExpressions;
 using xivModdingFramework.Items.DataContainers;
+using System.Diagnostics;
+using System.Linq.Expressions;
 
 namespace FFXIV_TexTools.ViewModels
 {
@@ -249,17 +251,31 @@ namespace FFXIV_TexTools.ViewModels
             }
         }
 
-        private void ImportButton_Click(object sender, System.Windows.RoutedEventArgs e)
+        private async void ImportButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            DoImport(false);
+            try 
+            { 
+                await DoImport(false);
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine(ex);
+            }
         }
 
-        private void EditButton_Click(object sender, System.Windows.RoutedEventArgs e)
+        private async void EditButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            DoImport(true);
+            try
+            {
+                await DoImport(true);
+            }
+            catch(Exception ex)
+            {
+                Trace.WriteLine(ex);
+            }
         }
 
-        private void DoImport(bool showEditor)
+        private async Task DoImport(bool showEditor)
         {
 
             var race = IOUtil.GetRaceFromPath(_internalPath);
@@ -311,8 +327,8 @@ namespace FFXIV_TexTools.ViewModels
             options.LoggingFunction = LogMessageReceived;
             
 
-            // Asynchronously call ImportModel.
-            Task.Run(async () =>
+           // Asynchronously call ImportModel.
+           await Task.Run(async () =>
            {
                try
                {
@@ -330,14 +346,14 @@ namespace FFXIV_TexTools.ViewModels
                        var offset = await Mdl.ImportModel(externalPath, _internalPath, options, MainWindow.UserTransaction);
                    }
 
-                    OnImportComplete(data);
+                    await OnImportComplete(data);
                }
                catch (Exception ex)
                {
                     // This is kind of a weird construct, but ensures this is called
                     // on the main UI thread.
                     // main thread that has ownership to edit the Enabled values.
-                    await _view.Dispatcher.BeginInvoke((ThreadStart)delegate ()
+                    await await _view.Dispatcher.InvokeAsync(async () =>
                     {
                        if (ex.Message != "cancel")
                        {
@@ -379,7 +395,7 @@ namespace FFXIV_TexTools.ViewModels
         private async Task<bool> IntermediateStep(TTModel newModel, TTModel oldModel)
         {
             var result = false;
-            await _view.Dispatcher.BeginInvoke((ThreadStart)delegate ()
+            await _view.Dispatcher.InvokeAsync(() =>
             {
                 try
                 {
@@ -401,28 +417,34 @@ namespace FFXIV_TexTools.ViewModels
         /// <param name="message"></param>
         private void LogMessageReceived(bool isWarning, string message)
         {
-            if (message == null || message.Trim() == "") return;
+            try
+            {
+                if (message == null || message.Trim() == "") return;
 
-            _view.Dispatcher.BeginInvoke((ThreadStart)delegate ()
-           {
-               if (isWarning)
-               {
-                   _anyWarnings = true;
-                   WriteToLog("> [WARN] " + message, Brushes.DarkGoldenrod);
-               }
-               else
-               {
-                   WriteToLog("> [INFO] " + message, Brushes.Black);
-               }
-           }).Wait(); // The .Wait() is just to help ensure we don't print log lines out of order.
+                _view.Dispatcher.InvokeAsync(() =>
+                {
+                    if (isWarning)
+                    {
+                        _anyWarnings = true;
+                        WriteToLog("> [WARN] " + message, Brushes.DarkGoldenrod);
+                    }
+                    else
+                    {
+                        WriteToLog("> [INFO] " + message, Brushes.Black);
+                    }
+                }).Wait(); // The .Wait() is just to help ensure we don't print log lines out of order.
+            } catch(Exception ex)
+            {
+                Trace.WriteLine(ex);
+            }
         }
 
         /// <summary>
         /// This is called when the import is successfully completed.
         /// </summary>
-        private void OnImportComplete(byte[] data)
+        private async Task OnImportComplete(byte[] data)
         {
-            _view.Dispatcher.BeginInvoke((ThreadStart)delegate ()
+            await await _view.Dispatcher.InvokeAsync(async () =>
             {
                 WriteToLog("> [SUCCESS] Model Imported Successfully.", Brushes.DarkGreen);
                 _view.SetData(data);
@@ -459,7 +481,7 @@ namespace FFXIV_TexTools.ViewModels
                     _result = result;
                     _onComplete(result);
                 }
-            }).Wait();
+            });
         }
 
         private void _view_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
@@ -478,32 +500,39 @@ namespace FFXIV_TexTools.ViewModels
             }
         }
 
-        private void _closeTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        private async void _closeTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
-            _view.Dispatcher.BeginInvoke((ThreadStart)delegate ()
+            try
             {
-                if (_closeTimer != null)
+                await _view.Dispatcher.InvokeAsync(() =>
                 {
-                    _closeTimer.Elapsed -= _closeTimer_Elapsed;
-                    _closeTimer.Stop();
-                    _closeTimer = null;
-                    if (_view != null)
+                    if (_closeTimer != null)
                     {
-                        _view.KeyDown += _view_KeyDown;
+                        _closeTimer.Elapsed -= _closeTimer_Elapsed;
+                        _closeTimer.Stop();
+                        _closeTimer = null;
+                        if (_view != null)
+                        {
+                            _view.KeyDown += _view_KeyDown;
+                        }
                     }
-                }
-                try
-                {
-                    if (_view.IsActive)
+                    try
                     {
-                        _view.Close();
+                        if (_view.IsActive)
+                        {
+                            _view.Close();
+                        }
                     }
-                }
-                catch (Exception ex)
-                {
-                    //No-Op.  If this fails /bc window is already closed it doesn't matter.
-                }
-            }).Wait();
+                    catch (Exception ex)
+                    {
+                        //No-Op.  If this fails /bc window is already closed it doesn't matter.
+                    }
+                });
+            }
+            catch(Exception ex)
+            {
+                Trace.WriteLine(ex);
+            }
         }
 
         private void SelectFileButton_Click(object sender, System.Windows.RoutedEventArgs e)

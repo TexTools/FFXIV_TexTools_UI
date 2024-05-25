@@ -326,7 +326,7 @@ namespace FFXIV_TexTools.Views.Controls
 
         private async Task DispatchUpdateColorset()
         {
-            await Dispatcher.BeginInvoke((ThreadStart) async delegate ()
+            await await Dispatcher.InvokeAsync(async () =>
             {
                 await UpdateColorsetImage();
             });
