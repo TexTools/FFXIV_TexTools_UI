@@ -96,8 +96,13 @@ namespace FFXIV_TexTools.Views.Controls
             ViewportVM.ClearModels();
         }
 
-        protected override async Task<byte[]> INTERNAL_ExternalToUncompressedFile(string externalFile, string internalFile, IItem referenceItem)
+        protected override async Task<byte[]> INTERNAL_ExternalToUncompressedFile(string externalFile, string internalFile, IItem referenceItem, ModTransaction tx)
         {
+            if (externalFile.ToLower().EndsWith(".mdl"))
+            {
+                return await SmartImport.CreateUncompressedFile(externalFile, internalFile, tx);
+            }
+
             byte[] data = null;
             // Have to main thread this, booo.
             await await Dispatcher.InvokeAsync(async () =>

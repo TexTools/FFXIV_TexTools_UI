@@ -39,7 +39,6 @@ namespace FFXIV_TexTools.ViewModels
         private string _internalPath;
         private System.Timers.Timer _closeTimer;
         private bool _anyWarnings = false;
-        private string _startingFilePath;
 
 
         private bool _success = false;
@@ -110,7 +109,6 @@ namespace FFXIV_TexTools.ViewModels
             _view = view;
             _dataOnly = dataOnly;
             _onComplete = onComplete;
-            _startingFilePath = startingFilePath;
             _internalPath = internalPath;
             _item = referenceItem;
 
@@ -140,33 +138,34 @@ namespace FFXIV_TexTools.ViewModels
             bool foundValidFile = false;
 
             // FBX is default, so check that first.
-            var startingPath = Path.Combine(defaultPath, modelName) + ".fbx";
-            if (File.Exists(startingPath))
+            if (startingFilePath == null)
             {
-                foundValidFile = true;
-            }
-
-            if (!foundValidFile)
-            {
-                foreach (var suffix in _importers)
+                startingFilePath = Path.Combine(defaultPath, modelName) + ".fbx";
+                if (File.Exists(startingFilePath))
                 {
-                    startingPath = Path.Combine(defaultPath, modelName) + "." + suffix;
-                    if (File.Exists(startingPath))
+                    foundValidFile = true;
+                }
+
+                if (!foundValidFile)
+                {
+                    foreach (var suffix in _importers)
                     {
-                        foundValidFile = true;
-                        break;
+                        startingFilePath = Path.Combine(defaultPath, modelName) + "." + suffix;
+                        if (File.Exists(startingFilePath))
+                        {
+                            foundValidFile = true;
+                            break;
+                        }
                     }
                 }
+                if (!foundValidFile)
+                {
+                    startingFilePath = "";
+                }
             }
-
-            if (!foundValidFile)
-            {
-                // Auto-fill the last import file path if the file still exists, otherwise just default to reusing the existing model
-                startingPath = File.Exists(_startingFilePath) ? _startingFilePath : "";
-            }
+            _view.FileNameTextBox.Text = startingFilePath;
 
 
-            _view.FileNameTextBox.Text = startingPath;
 
             // Event Handlers
             _view.SelectFileButton.Click += SelectFileButton_Click;

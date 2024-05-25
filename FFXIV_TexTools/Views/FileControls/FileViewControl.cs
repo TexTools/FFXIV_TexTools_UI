@@ -568,7 +568,7 @@ namespace FFXIV_TexTools.Views.Controls
                 await Task.Run(async () =>
                 {
                     // Thread the actual loading process which could involve extensive file manipulation.
-                    data = await INTERNAL_ExternalToUncompressedFile(externalFile, internalFile, referenceItem);
+                    data = await INTERNAL_ExternalToUncompressedFile(externalFile, internalFile, referenceItem, tx);
                 });
                 if (data == null || data.Length == 0)
                 {
@@ -620,9 +620,9 @@ namespace FFXIV_TexTools.Views.Controls
                 FileLoaded?.Invoke(this,success);
             }
         }
-        protected virtual async Task<byte[]> INTERNAL_ExternalToUncompressedFile(string externalFile, string internalFile, IItem referenceItem)
+        protected virtual async Task<byte[]> INTERNAL_ExternalToUncompressedFile(string externalFile, string internalFile, IItem referenceItem, ModTransaction tx)
         {
-            return await SmartImport.CreateUncompressedFile(externalFile, internalFile, MainWindow.DefaultTransaction);
+            return await SmartImport.CreateUncompressedFile(externalFile, internalFile, tx);
         }
 
         /// <summary>

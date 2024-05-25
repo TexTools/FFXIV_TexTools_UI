@@ -249,12 +249,12 @@ namespace FFXIV_TexTools.Views.Controls
             return true;
         }
 
-        protected override async Task<byte[]> INTERNAL_ExternalToUncompressedFile(string externalFile, string internalFile, IItem referenceItem)
+        protected override async Task<byte[]> INTERNAL_ExternalToUncompressedFile(string externalFile, string internalFile, IItem referenceItem, ModTransaction tx)
         {
             var ext = Path.GetExtension(externalFile).ToLower();
             if (ext == ".mtrl")
             {
-                return await base.INTERNAL_ExternalToUncompressedFile(externalFile, internalFile, referenceItem);
+                return await base.INTERNAL_ExternalToUncompressedFile(externalFile, internalFile, referenceItem, tx);
             } else if(ext == ".dds")
             {
                 if (!Material.ShaderPack.UsesColorset())
