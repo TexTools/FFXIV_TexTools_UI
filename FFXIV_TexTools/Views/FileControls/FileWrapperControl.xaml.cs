@@ -166,7 +166,7 @@ namespace FFXIV_TexTools.Views.Controls
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public static async Task<FileViewControl> GetControlForFile(string file, Type forcedType = null)
+        public static async Task<FileViewControl> GetControlForFile(string file, byte[] data = null, Type forcedType = null)
         {
             var tx = MainWindow.DefaultTransaction;
 
@@ -177,7 +177,7 @@ namespace FFXIV_TexTools.Views.Controls
                 {
                     return null;
                 }
-                else if (!await obj.CanLoadFile(file, null, tx))
+                else if (!await obj.CanLoadFile(file, data, tx))
                 {
                     obj.Dispose();
                     return null;
@@ -189,28 +189,28 @@ namespace FFXIV_TexTools.Views.Controls
             }
 
             FileViewControl handler = new TextureFileControl();
-            if (await handler.CanLoadFile(file, null, tx))
+            if (await handler.CanLoadFile(file, data, tx))
             {
                 return handler;
             }
             handler.Dispose();
 
             handler = new ModelFileControl();
-            if (await handler.CanLoadFile(file, null, tx))
+            if (await handler.CanLoadFile(file, data, tx))
             {
                 return handler;
             }
             handler.Dispose();
 
             handler = new MaterialFileControl();
-            if (await handler.CanLoadFile(file, null, tx))
+            if (await handler.CanLoadFile(file, data, tx))
             {
                 return handler;
             }
             handler.Dispose();
 
             handler = new MetadataFileControl();
-            if (await handler.CanLoadFile(file, null, tx))
+            if (await handler.CanLoadFile(file, data, tx))
             {
                 return handler;
             }
@@ -282,7 +282,7 @@ namespace FFXIV_TexTools.Views.Controls
                         DisposeFileControl();
                     }
 
-                    var control = await GetControlForFile(internalFilePath, forcedControlType);
+                    var control = await GetControlForFile(internalFilePath, null, forcedControlType);
                     if (control == null)
                     {
                         await SetupUi();
@@ -340,7 +340,7 @@ namespace FFXIV_TexTools.Views.Controls
                         DisposeFileControl();
                     }
 
-                    var control = await GetControlForFile(internalFilePath, forcedControlType);
+                    var control = await GetControlForFile(internalFilePath, data, forcedControlType);
                     if (control == null)
                     {
                         await SetupUi();

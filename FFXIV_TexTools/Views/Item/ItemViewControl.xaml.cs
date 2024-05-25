@@ -1588,38 +1588,10 @@ namespace FFXIV_TexTools.Views.Item
 
                 // Load the new data at the new path.
                 var data = Mtrl.XivMtrlToUncompressedMtrl(result);
-                await MaterialWrapper.LoadInternalFile(result.MTRLPath, Item, data, false);
-                ShowPanel(MaterialWrapper);
-
-                // Hook the next material save to reload the item, so that we can get our new material in our combo boxes.
-                matControl.FileSaved += MatControl_FileSaved;
-                matControl.FileLoaded += MatControl_FileLoaded;
+                await SimpleFileViewWindow.OpenFile(result.MTRLPath, Item, data, typeof(MaterialFileControl), Window.GetWindow(this));
             }
             catch(Exception ex)
             {
-                Trace.WriteLine(ex);
-            }
-        }
-
-        private void MatControl_FileLoaded(FileViewControl sender, bool success)
-        {
-            // User switched off the new material without saving it.
-            MaterialWrapper.FileControl.FileLoaded -= MatControl_FileLoaded;
-            MaterialWrapper.FileControl.FileSaved -= MatControl_FileSaved;
-        }
-
-        private async void MatControl_FileSaved(FileViewControl sender, bool success)
-        {
-            try
-            {
-                var matControl = (MaterialFileControl)MaterialWrapper.FileControl;
-                matControl.FileLoaded -= MatControl_FileLoaded;
-                matControl.FileSaved -= MatControl_FileSaved;
-
-                await SetItem(Item, matControl.Material.MTRLPath);
-            } catch(Exception ex)
-            {
-                // No op, just safety catch.
                 Trace.WriteLine(ex);
             }
         }

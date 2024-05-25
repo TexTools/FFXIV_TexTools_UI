@@ -8,7 +8,7 @@
         xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
         resx:Localization.Enabled="True"
         mc:Ignorable="d"
-        Title="Merge Models" Height="245" Width="600">
+        Title="Merge Models" Height="245" Width="800">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="40"></RowDefinition>
@@ -22,6 +22,8 @@
             <ColumnDefinition Width="1*"></ColumnDefinition>
             <ColumnDefinition Width="80"></ColumnDefinition>
             <ColumnDefinition Width="80"></ColumnDefinition>
+            <ColumnDefinition Width="80"></ColumnDefinition>
+            <ColumnDefinition Width="80"></ColumnDefinition>
         </Grid.ColumnDefinitions>
 
         <Label Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" Content="Merge This:" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
@@ -30,6 +32,11 @@
         <Label Grid.Column="2" Grid.Row="0" Content="IMC Variant:" HorizontalAlignment="Right" VerticalAlignment="Center"></Label>
         <ComboBox x:Name="VariantBox" Grid.Column="3" Grid.Row="0" VerticalAlignment="Center" Margin="0,0,10,0"></ComboBox>
 
+        <Label Grid.Column="4" Grid.Row="0" Content="Mesh Group:" HorizontalAlignment="Right" VerticalAlignment="Center"></Label>
+        <ComboBox x:Name="MeshIdBox" Grid.Column="5" Grid.Row="0" VerticalAlignment="Center" Margin="0,0,10,0" ItemsSource="{Binding Path=MeshIdSource}" DisplayMemberPath="Key" SelectedValuePath="Value"></ComboBox>
+
+        <CheckBox x:Name="CopyMaterialsBox" Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="2" Content="Copy Materials" IsChecked="True" ToolTip="If turned off, stub materials will be created instead."></CheckBox>
+        
         <Label Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" Content="Into This:" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
         <TextBox x:Name="ToBox"  Grid.Column="1" Grid.Row="1" Margin="5,0" Grid.ColumnSpan="1" VerticalAlignment="Center" TextChanged="AnyTextChanged"></TextBox>
 
