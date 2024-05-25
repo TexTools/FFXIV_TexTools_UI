@@ -35,6 +35,7 @@ using xivModdingFramework.Variants.FileTypes;
 using static FFXIV_TexTools.ViewModels.TextureViewModel;
 using xivModdingFramework.Items;
 using Image = SixLabors.ImageSharp.Image;
+using xivModdingFramework.Mods;
 
 namespace FFXIV_TexTools.Views.Controls
 {

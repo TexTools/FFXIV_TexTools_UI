@@ -251,6 +251,28 @@ namespace FFXIV_TexTools.Views.Controls
             return Mtrl.XivMtrlToUncompressedMtrl(material);
         }
 
+        protected override async Task<byte[]> INTERNAL_ExternalToUncompressedFile(string externalFile, string internalFile, IItem referenceItem, ModTransaction tx)
+        {
+            var ext = Path.GetExtension(externalFile).ToLower();
+            if (ext == ".mtrl")
+            {
+                return await base.INTERNAL_ExternalToUncompressedFile(externalFile, internalFile, referenceItem, tx);
+            }
+            else if (ext == ".dds")
+            {
+                // Merge DDS colorset data into our current material.
+                var csetData = Tex.GetColorsetDataFromDDS(externalFile);
+                var mtrl = (XivMtrl)Material.Clone();
+                mtrl.ColorSetData = csetData.ColorsetData;
+                mtrl.ColorSetDyeData = csetData.DyeData;
+                return Mtrl.XivMtrlToUncompressedMtrl(mtrl);
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+        }
+
         protected override async Task<bool> INTERNAL_LoadFile(byte[] data, string path, IItem referenceItem)
         {
             var mat = Mtrl.GetXivMtrl(data, path);

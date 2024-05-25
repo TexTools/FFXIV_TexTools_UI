@@ -604,6 +604,7 @@ namespace FFXIV_TexTools.Views.Controls
             var ext = "3D\\";
             var comb = Path.Combine(start, ext);
             var full = Path.GetFullPath(comb);
+            Directory.CreateDirectory(full);
             return full;
         }
 
