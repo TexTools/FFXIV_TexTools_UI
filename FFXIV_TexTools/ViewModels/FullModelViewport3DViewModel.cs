@@ -367,33 +367,6 @@ namespace FFXIV_TexTools.ViewModels
 
         #endregion
 
-        #region Overrides
-
-        public override void UpdateTransparency(bool transparencyEnabled)
-        {
-            foreach (var model in Models)
-            {
-                var isBody = ((CustomBoneSkinMeshGeometry3D)model).IsBody;
-
-                if (isBody) continue;
-
-                var material = ((CustomBoneSkinMeshGeometry3D)model).Material as PhongMaterial;
-
-                if (transparencyEnabled)
-                {
-                    ((CustomBoneSkinMeshGeometry3D)model).IsTransparent = true;
-                    material.DiffuseColor = PhongMaterials.ToColor(1, 1, 1, .4f);
-                }
-                else
-                {
-                    ((CustomBoneSkinMeshGeometry3D)model).IsTransparent = false;
-                    material.DiffuseColor = PhongMaterials.ToColor(1, 1, 1, 1);
-                }
-            }
-        }
-
-        #endregion
-
         #region Private Methods
         /// <summary>
         /// Gets the Mesh Geometry

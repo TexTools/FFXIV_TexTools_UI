@@ -190,7 +190,7 @@ namespace FFXIV_TexTools.ViewModels
                     specularPower = RowData[1][3];
                 }
 
-                if (dyeId >= 0 && dyeId < 128 && _mtrl.ColorSetDyeData != null)
+                if (dyeId >= 0 && dyeId < 128 && _mtrl.ColorSetDyeData.Length > 0)
                 {
                     var templateId = STM.GetTemplateKeyFromMaterialData(_mtrl, RowId);
                     var template = DyeTemplateFile.GetTemplate(templateId);

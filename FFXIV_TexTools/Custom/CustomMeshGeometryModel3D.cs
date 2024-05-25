@@ -21,8 +21,6 @@ namespace FFXIV_TexTools.Custom
 {
     public class CustomMeshGeometryModel3D : MeshGeometryModel3D
     {
-        public bool IsBody { get; set; }
-
         protected override SceneNode OnCreateSceneNode()
         {
             var node = base.OnCreateSceneNode();

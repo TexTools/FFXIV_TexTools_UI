@@ -5,8 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FFXIV_TexTools.Views.Item"
         xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
-        mc:Ignorable="d"
-        Title="Item Viewer" Height="450" Width="800">
+        Title="Item Viewer" Height="640" Width="1000">
     <Grid>
         <local:ItemViewControl x:Name="ItemView">
             

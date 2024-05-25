@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows;
 using FFXIV_TexTools.ViewModels;
 using xivModdingFramework.Models.DataContainers;
@@ -12,7 +14,7 @@ namespace FFXIV_TexTools.Views.Models
     /// <summary>
     /// Interaction logic for ImportModelEditView.xaml
     /// </summary>
-    public partial class ImportModelEditView 
+    public partial class ImportModelEditView
     {
         private ImportModelEditViewModel _viewModel;
         private TTModel _newModel;
@@ -38,34 +40,7 @@ namespace FFXIV_TexTools.Views.Models
             ScaleComboBox.Items.Clear();
             MdlVersionComboBox.Items.Clear();
 
-            var itemName = Path.GetFileNameWithoutExtension(oldModel.Source);
-            for (var mIdx = 0; mIdx < _newModel.MeshGroups.Count; mIdx++)
-            {
-                var m = _newModel.MeshGroups[mIdx];
-                if(m.Name == null)
-                {
-                    MeshSource.Add(new KeyValuePair<int, string>(mIdx, "#".L() + mIdx.ToString() + ": " + "Unknown".L()));
-
-                } else
-                {
-                    var name = m.Name.Replace(itemName, "");
-                    name = name.Trim();
-                    MeshSource.Add(new KeyValuePair<int, string>(mIdx, "#" + mIdx.ToString() + ": " + name));
-                }
-            }
-
-            var values = Enum.GetValues(typeof(EMeshType));
-            foreach(var v in values)
-            {
-                var e = (EMeshType)v;
-                MeshTypeSource.Add(new KeyValuePair<EMeshType, string>(e, e.ToString()));
-            }
-            ModelTypeComboBox.ItemsSource = MeshTypeSource;
-            ModelTypeComboBox.DisplayMemberPath = "Value";
-            ModelTypeComboBox.SelectedValuePath = "Key";
-
-
-
+            SizeMultiplierSource.Clear();
             SizeMultiplierSource.Add(new KeyValuePair<double, string>(1.0D, "1x"));
             SizeMultiplierSource.Add(new KeyValuePair<double, string>(2.0D, "2x"));
             SizeMultiplierSource.Add(new KeyValuePair<double, string>(3.0D, "3x"));
@@ -76,8 +51,21 @@ namespace FFXIV_TexTools.Views.Models
             SizeMultiplierSource.Add(new KeyValuePair<double, string>(.1D, "0.1x"));
             SizeMultiplierSource.Add(new KeyValuePair<double, string>(.01D, "0.01x"));
             SizeMultiplierSource.Add(new KeyValuePair<double, string>(0.03937007874D, "0.039x (Legacy Fix)".L()));
+
+            MdlVersionSource.Clear();
             MdlVersionSource.Add(new KeyValuePair<int, string>(5, "5"));
             MdlVersionSource.Add(new KeyValuePair<int, string>(6, "6"));
+
+            var values = Enum.GetValues(typeof(EMeshType));
+            foreach (var v in values)
+            {
+                var e = (EMeshType)v;
+                MeshTypeSource.Add(new KeyValuePair<EMeshType, string>(e, e.ToString()));
+            }
+
+            ModelTypeComboBox.ItemsSource = MeshTypeSource;
+            ModelTypeComboBox.DisplayMemberPath = "Value";
+            ModelTypeComboBox.SelectedValuePath = "Key";
 
             MeshNumberBox.ItemsSource = MeshSource;
             MeshNumberBox.DisplayMemberPath = "Value";
@@ -113,17 +101,17 @@ namespace FFXIV_TexTools.Views.Models
             MdlVersionComboBox.SelectedValuePath = "Key";
 
             ScaleComboBox.SelectedValue = 1.0f;
+
             var version = 6;
-            if(_newModel.MdlVersion > 0)
+            if (_newModel.MdlVersion > 0)
             {
                 version = _newModel.MdlVersion;
-            } else if(_oldModel.MdlVersion > 0)
+            }
+            else if (_oldModel.MdlVersion > 0)
             {
                 version = _oldModel.MdlVersion;
             }
-
             MdlVersionComboBox.SelectedValue = version;
-
 
 #if ENDWALKER  
             _newModel.MdlVersion = 5;
@@ -131,10 +119,33 @@ namespace FFXIV_TexTools.Views.Models
 #endif
 
             _viewModel = new ImportModelEditViewModel(this, _newModel, _oldModel);
+            DataContext = _viewModel;
 
+            _ = SetupUi();
+        }
 
+        private async Task SetupUi()
+        {
+            var itemName = Path.GetFileNameWithoutExtension(_oldModel.Source);
 
-            this.DataContext = _viewModel;
+            MeshSource.Clear();
+            for (var mIdx = 0; mIdx < _newModel.MeshGroups.Count; mIdx++)
+            {
+                var m = _newModel.MeshGroups[mIdx];
+                if (m.Name == null)
+                {
+                    MeshSource.Add(new KeyValuePair<int, string>(mIdx, "#".L() + mIdx.ToString() + ": " + "Unknown".L()));
+
+                }
+                else
+                {
+                    var name = m.Name.Replace(itemName, "");
+                    name = name.Trim();
+                    MeshSource.Add(new KeyValuePair<int, string>(mIdx, "#" + mIdx.ToString() + ": " + name));
+                }
+            }
+
+            await _viewModel.SetupUi();
         }
 
         private void ImportButton_Click(object sender, RoutedEventArgs e)
@@ -143,14 +154,83 @@ namespace FFXIV_TexTools.Views.Models
             {
                 ModelModifiers.ScaleModel(_newModel, (double)ScaleComboBox.SelectedValue);
             }
-            var val = (int) MdlVersionComboBox.SelectedValue;
-            _newModel.MdlVersion = (ushort) val;
+            var val = (int)MdlVersionComboBox.SelectedValue;
+            _newModel.MdlVersion = (ushort)val;
             DialogResult = true;
         }
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
             DialogResult = false;
+        }
+
+        private async void DeleteMeshGroup_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (_newModel.MeshGroups.Count == 0)
+                {
+                    this.ShowError("Delete Mesh Group Error".L(), "The model must have at least one Mesh Group.");
+                    return;
+                }
+
+                var mesh = (int)MeshNumberBox.SelectedValue;
+                if(_newModel.MeshGroups.Count <= mesh)
+                {
+                    return;
+                }
+
+                _newModel.MeshGroups.RemoveAt(mesh);
+                await SetupUi();
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine(ex);
+            }
+        }
+
+        private async void DeletePart_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var mesh = (int)MeshNumberBox.SelectedValue;
+                if (_newModel.MeshGroups.Count <= mesh || mesh < 0)
+                {
+                    return;
+                }
+                var mg = _newModel.MeshGroups[mesh];
+
+                var part = (int) PartNumberBox.SelectedValue;
+                if (mg.Parts.Count <= part || part < 0)
+                {
+                    return;
+                }
+
+                if(mg.Parts.Count == 1 && _newModel.MeshGroups.Count == 1)
+                {
+                    this.ShowError("Delete Mesh Group Error".L(), "The model must have at least one Part.");
+                    return;
+                }
+
+                var removedMesh = false;
+                mg.Parts.RemoveAt(part);
+                if(mg.Parts.Count == 0)
+                {
+                    removedMesh = true;
+                    _newModel.MeshGroups.Remove(mg);
+                }
+
+                await SetupUi();
+                if (removedMesh)
+                {
+                    MeshNumberBox.SelectedValue = mesh;
+                }
+                
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine(ex);
+            }
         }
     }
 }

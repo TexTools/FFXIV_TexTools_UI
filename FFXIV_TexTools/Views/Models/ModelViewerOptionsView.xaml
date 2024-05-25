@@ -16,21 +16,43 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
+            <Button Margin="5"  Content="Shape Deformations" IsEnabled="{Binding ShapeButtonEnabled}"  Click="OpenShapesMenu_Click"/>
+        </Grid>
+
+        <Grid Grid.Row="1" Margin="5">
+            <Grid.RowDefinitions>
+                <RowDefinition></RowDefinition>
+            </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition></ColumnDefinition>
                 <ColumnDefinition></ColumnDefinition>
             </Grid.ColumnDefinitions>
 
-            <Button Grid.Column="0" Margin="5"  Content="Show CSet Row" IsEnabled="{Binding ColorsetButtonEnabled}" Click="HighlightColorsetButton_Click" />
-            <Button Grid.Column="1" Margin="5"  Content="Deformations" IsEnabled="{Binding ColorsetButtonEnabled}"  Click="OpenShapesMenu_Click"/>
+            <Label Content="Colorset Row:" HorizontalAlignment="Right" VerticalAlignment="Center"></Label>
+            <ComboBox Grid.Column="1" VerticalAlignment="Center" ItemsSource="{Binding Path=ColorsetRowSource}" DisplayMemberPath="Key" SelectedValuePath="Value" SelectedValue="{Binding Path=HighlightedColorsetRow}" IsEnabled="{Binding Path=ColorsetButtonEnabled}"></ComboBox>
+        </Grid>
+        
+        <Grid Grid.Row="2" Margin="5">
+            <Grid.RowDefinitions>
+                <RowDefinition></RowDefinition>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
+            <Label Content="Visible Mesh:" HorizontalAlignment="Right" VerticalAlignment="Center"></Label>
+            <ComboBox x:Name="VisibleMeshComboBox" Grid.Column="1" VerticalAlignment="Center" ItemsSource="{Binding Path=VisibleMeshSource}" DisplayMemberPath="Key" SelectedValuePath="Value" SelectedValue="{Binding Path=VisibleMesh}"></ComboBox>
         </Grid>
 
         
-        <Grid Grid.Row="1">
+        <Grid Grid.Row="3">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
@@ -39,31 +61,25 @@
                 <RowDefinition></RowDefinition>
                 <RowDefinition></RowDefinition>
             </Grid.RowDefinitions>
-            <mah:ToggleSwitch Header="{Binding Source={x:Static resx:UIStrings.Translucency}}" 
-                              Style="{StaticResource MahApps.Metro.Styles.ToggleSwitch.Win10}"
-                              OffLabel="{Binding Source={x:Static resx:UIStrings.Disabled}}"
-                              OnLabel="{Binding Source={x:Static resx:UIStrings.Enabled}}" 
-                              Margin="5" IsChecked="{Binding TransparencyToggle}"/>
-            
-            <mah:ToggleSwitch Header="{Binding Source={x:Static resx:UIStrings.Cull_Mode}}" 
-                              Grid.Column="1"
+            <mah:ToggleSwitch Grid.Row="1" Header="{Binding Source={x:Static resx:UIStrings.Cull_Mode}}" 
+                              Grid.Column="0"
                               Style="{StaticResource MahApps.Metro.Styles.ToggleSwitch.Win10}"
                               OffLabel="{Binding Source={x:Static resx:UIStrings.Back}}"
                               OnLabel="{Binding Source={x:Static resx:UIStrings.None}}" Margin="5" IsChecked="{Binding CullModeToggle}"/>
             
-            <mah:ToggleSwitch Grid.Row="1" IsChecked="{Binding Path=MoveLightsWithCamera}" Margin="5"
+            <mah:ToggleSwitch Grid.Row="0" IsChecked="{Binding Path=MoveLightsWithCamera}" Margin="5"
                               Header="Light Movement"
                               Style="{StaticResource MahApps.Metro.Styles.ToggleSwitch.Win10}"
                               OffLabel="Static"
                               OnLabel="Mobile" />
 
-            <mah:ToggleSwitch Grid.Row="1" Grid.Column="1" IsChecked="{Binding Path=AllowCameraReset}" Margin="5"
+            <mah:ToggleSwitch Grid.Row="0" Grid.Column="1" IsChecked="{Binding Path=AllowCameraReset}" Margin="5"
                               Header="Camera Reset"
                               Style="{StaticResource MahApps.Metro.Styles.ToggleSwitch.Win10}"
                               OffLabel="Disabled"
                               OnLabel="Enabled" />
         </Grid>
-        <Grid Grid.Row="2">
+        <Grid Grid.Row="4">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>

@@ -878,11 +878,6 @@ namespace FFXIV_TexTools.ViewModels
             set
             {
                 _selectedMesh = value;
-                NotifyPropertyChanged(nameof(SelectedMesh));
-                if (SelectedMeshIndex > -1)
-                {
-                    ViewPortVM.VisibleModels(_selectedMesh.Name);
-                }
             }
         }
 
@@ -1204,7 +1199,6 @@ namespace FFXIV_TexTools.ViewModels
             set
             {
                 _transparencyToggle = value;
-                ViewPortVM.UpdateTransparency(value);
                 NotifyPropertyChanged(nameof(TransparencyToggle));
             }
         }

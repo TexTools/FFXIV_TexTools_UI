@@ -61,22 +61,6 @@
             <Label x:Name="ViewportDisclaimer" VerticalAlignment="Top" HorizontalAlignment="Center" Content="{Binding Source={x:Static resx:UIStrings.Viewport_Disclaimer}}" Foreground="#FF151515" FontSize="10"/>
             <Label VerticalAlignment="Bottom" HorizontalAlignment="Center" Content="{Binding ModelStatusLabel}" Foreground="#FF151515" FontSize="18"/>
 
-            <Grid x:Name="FloatingButtonsGrid" HorizontalAlignment="Left" VerticalAlignment="Bottom"  Width="400">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="40"></RowDefinition>
-                    <RowDefinition Height="40"></RowDefinition>
-                    <RowDefinition Height="40"></RowDefinition>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition></ColumnDefinition>
-                    <ColumnDefinition></ColumnDefinition>
-                </Grid.ColumnDefinitions>
-
-
-                <Button Grid.Column="0" Grid.Row="3" Margin="5" Content="Add To FMV" IsEnabled="{Binding FmvButtonEnabled}" Click="FullModel_Click" />
-
-
-            </Grid>
 
             <Grid x:Name="ViewerSettingsGrid" Grid.Row="1" VerticalAlignment="Top">
                 <Grid.ColumnDefinitions>
@@ -92,6 +76,21 @@
                 <Button Grid.Row="2" Margin="5" Content="Edit Model" Click="EditModel_Click" />
             </Grid>
 
+            <Grid x:Name="FloatingButtonsGrid" HorizontalAlignment="Left" VerticalAlignment="Bottom"  Width="400">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="40"></RowDefinition>
+                    <RowDefinition Height="40"></RowDefinition>
+                    <RowDefinition Height="40"></RowDefinition>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+
+
+                <Button Grid.Column="1" Grid.Row="2" Margin="5" Content="View/Edit Material" Visibility="{Binding Path=ShowMaterialVisibility}" Click="ShowMaterial_Click" />
+                <Button Grid.Column="0" Grid.Row="2" Margin="5" Content="Add To FMV" IsEnabled="{Binding Path=FmvButtonEnabled}" Click="FullModel_Click" />
+            </Grid>
 
             <mah:ClipBorder Width="250" HorizontalAlignment="Left"> 
                 <mah:FlyoutsControl Width="250" HorizontalAlignment="Left">

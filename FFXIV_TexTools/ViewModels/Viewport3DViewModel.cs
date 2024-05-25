@@ -28,6 +28,7 @@ using SharpDX.Direct3D9;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -47,6 +48,7 @@ using MeshGeometry3D = HelixToolkit.Wpf.SharpDX.MeshGeometry3D;
 using PerspectiveCamera = HelixToolkit.Wpf.SharpDX.PerspectiveCamera;
 using TextureModel = HelixToolkit.Wpf.SharpDX.TextureModel;
 using Vector4 = System.Numerics.Vector4;
+using WinColor = System.Windows.Media.Color;
 
 namespace FFXIV_TexTools.ViewModels
 {
@@ -62,6 +64,7 @@ namespace FFXIV_TexTools.ViewModels
         public delegate void ViewportZoomEventHandler(Viewport3DViewModel owner, double animationTime, Rect3D? boundingBox);
         public event ViewportEventHandler TextureUpdateRequested;
         public event ViewportZoomEventHandler ZoomExtentsRequested;
+        public event EventHandler<int> VisibleMeshChanged;
 
         public ObservableElement3DCollection Models { get; } = new ObservableElement3DCollection();
 
@@ -81,6 +84,16 @@ namespace FFXIV_TexTools.ViewModels
 
             BackgroundColor = Properties.Settings.Default.BG_Color;
             ReflectionLabel = $"{UIStrings.Reflection}  |  {ReflectionValue}";
+
+            var csetMax = 32;
+#if ENDWALKER
+            csetMax = 16;
+#endif
+            ColorsetRowSource.Add(new KeyValuePair<string, int>("All", -1));
+            for(int i = 0; i < csetMax; i++)
+            {
+                ColorsetRowSource.Add(new KeyValuePair<string, int>(i.ToString(), i));
+            }
 
             ResetLights();
         }
@@ -183,6 +196,30 @@ namespace FFXIV_TexTools.ViewModels
         private List<MeshGeometry3D> _Geometry = new List<MeshGeometry3D>();
         private List<PhongMaterial> _Materials = new List<PhongMaterial>();
 
+        private bool _UPDATING = false;
+        private void UpdateVisibleMeshSource()
+        {
+            _UPDATING = true;
+            VisibleMeshSource.Clear();
+            VisibleMeshSource.Add(new KeyValuePair<string, int>("All", -1));
+            if(_Model == null)
+            {
+                VisibleMesh = -1;
+                return;
+            }
+
+            for(int i = 0; i < _Model.MeshGroups.Count; i++)
+            {
+                VisibleMeshSource.Add(new KeyValuePair<string, int>(i.ToString(), i));
+            }
+
+            ActiveShapes.Clear();
+            VisibleMesh = -1;
+            HighlightedColorsetRow = -1;
+
+            _UPDATING = false;
+        }
+
         /// <summary>
         /// Updates the model in the 3D viewport
         /// </summary>
@@ -190,6 +227,10 @@ namespace FFXIV_TexTools.ViewModels
         /// <param name="textureDataDictionary">The texture dictionary for the model</param>
         public void UpdateModel(TTModel importModel = null, List<ModelTextureData> importTextures = null)
         {
+            if (_UPDATING)
+            {
+                return;
+            }
 
             var newModel = false;
             var newTextures = false;
@@ -209,12 +250,21 @@ namespace FFXIV_TexTools.ViewModels
             }
             var textureDataDictionary = _Textures;
 
+
+            ShapeButtonEnabled = _Model.HasShapeData;
             ClearModels();
+
+            if (_Model == null)
+            {
+                return;
+            }
+
 
             if (newModel && originalModel != _Model)
             {
                 // Only recalculate if an actually new-new model, since this doesn't change on shape application.
                 ModelModifiers.CalculateTangents(model);
+                UpdateVisibleMeshSource();
             }
 
             if (newModel)
@@ -231,6 +281,11 @@ namespace FFXIV_TexTools.ViewModels
             SharpDX.BoundingBox? boundingBox = null;
 
             var totalMeshCount = model.MeshGroups.Count;
+
+            if(VisibleMesh >= totalMeshCount)
+            {
+                VisibleMesh = -1;
+            }
 
 
 
@@ -303,7 +358,11 @@ namespace FFXIV_TexTools.ViewModels
                 boundingBox = _Geometry[i].Bound;
 
                 mgm3d.CullMode = Properties.Settings.Default.Cull_Mode.Equals("None") ? CullMode.None : CullMode.Back;
-                Models.Add(mgm3d);
+
+                if (VisibleMesh == i || VisibleMesh < 0)
+                {
+                    Models.Add(mgm3d);
+                }
             }
 
 
@@ -466,36 +525,16 @@ namespace FFXIV_TexTools.ViewModels
 
         #endregion
 
-        /// <summary>
-        /// Sets the visible flag for the selected mesh
-        /// </summary>
-        /// <param name="selectedMesh">The selected mesh</param>
-        public void VisibleModels(string selectedMesh)
-        {
-            if (selectedMesh.Equals(XivStrings.All))
-            {
-                foreach (var model in Models)
-                {
-                    model.IsRendering = true;
-                }
-            }
-            else
-            {
-                var modelNum = int.Parse(selectedMesh);
-
-                for (var i = 0; i < Models.Count; i++)
-                {
-                    Models[i].IsRendering = (i == modelNum);
-                }
-
-            }
-        }
 
         /// <summary>
         /// Clear all the models in the viewport
         /// </summary>
         public void ClearModels()
         {
+            foreach(var mdl in Models)
+            {
+                mdl.Dispose();
+            }
             Models.Clear();
         }
 
@@ -611,33 +650,6 @@ namespace FFXIV_TexTools.ViewModels
         }
 
         /// <summary>
-        /// Updates the transparency flag
-        /// </summary>
-        /// <remarks>
-        /// This will make all models translucent,
-        /// with the exception of any model which contains a body mesh
-        /// </remarks>
-        /// <param name="transparencyEnabled">The transparency enabled flag</param>
-        public virtual void UpdateTransparency(bool transparencyEnabled)
-        {
-            foreach (var model in Models)
-            {
-                var material = ((CustomMeshGeometryModel3D)model).Material as PhongMaterial;
-
-                if (transparencyEnabled)
-                {
-                    ((CustomMeshGeometryModel3D)model).IsTransparent = true;
-                    material.DiffuseColor = PhongMaterials.ToColor(1, 1, 1, .4f);
-                }
-                else
-                {
-                    ((CustomMeshGeometryModel3D)model).IsTransparent = false;
-                    material.DiffuseColor = PhongMaterials.ToColor(1, 1, 1, 1);
-                }
-            }
-        }
-
-        /// <summary>
         /// Updates the culling mode of the model
         /// </summary>
         /// <remarks>
@@ -657,8 +669,8 @@ namespace FFXIV_TexTools.ViewModels
 
         #region INotify Properties
 
-        private Color _Light1Color = new Color(1,1,1,0.5f);
-        public Color Light1Color
+        private WinColor _Light1Color = new WinColor() { R = 128, G = 128, B = 128, A = 128 };
+        public WinColor Light1Color
         {
             get => _Light1Color;
             set
@@ -667,8 +679,8 @@ namespace FFXIV_TexTools.ViewModels
                 OnPropertyChanged(nameof(Light1Color));
             }
         }
-        private Color _Light2Color = new Color(1, 1, 1, 0.5f);
-        public Color Light2Color
+        private WinColor _Light2Color = new WinColor() { R = 128, G = 128, B = 128, A = 128 };
+        public WinColor Light2Color
         {
             get => _Light2Color;
             set
@@ -677,8 +689,8 @@ namespace FFXIV_TexTools.ViewModels
                 OnPropertyChanged(nameof(Light2Color));
             }
         }
-        private Color _Light3Color = new Color(1, 1, 1, 0.5f);
-        public Color Light3Color
+        private WinColor _Light3Color = new WinColor() { R = 128, G = 128, B = 128, A = 128 };
+        public WinColor Light3Color
         {
             get => _Light3Color;
             set
@@ -793,17 +805,28 @@ namespace FFXIV_TexTools.ViewModels
             }
         }
 
-        public bool _TransparencyToggle;
-        public bool TransparencyToggle
+        private bool _ColorsetButtonEnabled;
+        public bool ColorsetButtonEnabled
         {
-            get => _TransparencyToggle;
+            get => _ColorsetButtonEnabled;
             set
             {
-                _TransparencyToggle = value;
-                UpdateTransparency(value);
-                OnPropertyChanged(nameof(TransparencyToggle));
+                _ColorsetButtonEnabled = value;
+                OnPropertyChanged(nameof(ColorsetButtonEnabled));
             }
         }
+
+        private bool _ShapeButtonEnabled;
+        public bool ShapeButtonEnabled
+        {
+            get => _ShapeButtonEnabled;
+            set
+            {
+                _ShapeButtonEnabled = value;
+                OnPropertyChanged(nameof(ShapeButtonEnabled));
+            }
+        }
+
 
         private bool _CullModeToggle;
         public bool CullModeToggle
@@ -828,6 +851,30 @@ namespace FFXIV_TexTools.ViewModels
             }
         }
 
+        private int _VisibleMesh = -1;
+        public int VisibleMesh
+        {
+            get => _VisibleMesh;
+            set
+            {
+                _VisibleMesh = value;
+                UpdateModel();
+                OnPropertyChanged(nameof(VisibleMesh));
+                VisibleMeshChanged?.Invoke(this, VisibleMesh);
+            }
+        }
+
+        private ObservableCollection<KeyValuePair<string, int>> _VisibleMeshSource = new ObservableCollection<KeyValuePair<string, int>>();
+        public ObservableCollection<KeyValuePair<string, int>> VisibleMeshSource
+        {
+            get => _VisibleMeshSource;
+            set
+            {
+                _VisibleMeshSource = value;
+                OnPropertyChanged(nameof(VisibleMeshSource));
+            }
+        }
+
 
         private int _HighlightedColorsetRow = -1;
         public int HighlightedColorsetRow
@@ -840,6 +887,16 @@ namespace FFXIV_TexTools.ViewModels
                 
                 // This has to be handled by our external view.
                 TextureUpdateRequested?.Invoke(this);
+            }
+        }
+        private ObservableCollection<KeyValuePair<string, int>> _ColorsetRowSource = new ObservableCollection<KeyValuePair<string, int>>();
+        public ObservableCollection<KeyValuePair<string, int>> ColorsetRowSource
+        {
+            get => _ColorsetRowSource;
+            set
+            {
+                _ColorsetRowSource = value;
+                OnPropertyChanged(nameof(ColorsetRowSource));
             }
         }
 

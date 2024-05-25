@@ -45,8 +45,8 @@ namespace FFXIV_TexTools.ViewModels
         private readonly KeyValuePair<string, string> SkinTag = new KeyValuePair<string, string>(SkinMaterial, "Skin".L());
         private readonly string UnknownText = "Unknown".L();
 
-        private readonly float OldModelSize;
-        private readonly float NewModelSize;
+        private float OldModelSize;
+        private float NewModelSize;
         private const float MinAcceptableSize = 0.5f;
         private const float MaxAcceptableSize = 2f;
 
@@ -80,10 +80,10 @@ namespace FFXIV_TexTools.ViewModels
             _view = view;
             _newModel = newModel;
             _oldModel = oldModel;
+        }
 
-
-
-
+        public async Task SetupUi()
+        {
             // Get all the materials available.
 
             // Merge all the default skin materials together, since FFXIV auto-handles them anyways.
@@ -101,6 +101,14 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     m.Material = SkinMaterial;
                 }
+            }
+
+            if(_newModel.MeshGroups.Count <= 1)
+            {
+                _view.DeleteMeshGroupButton.IsEnabled = false;
+            } else
+            {
+                _view.DeleteMeshGroupButton.IsEnabled = true;
             }
 
             // Calculate the model bounding box sizes.
@@ -152,16 +160,11 @@ namespace FFXIV_TexTools.ViewModels
 
             OldModelSize = Vector3.Distance(min, max);
 
-            if(newModel.MeshGroups.Count > 0)
+            if (_newModel.MeshGroups.Count > 0)
             {
-                _view.ModelTypeComboBox.SelectedValue = newModel.MeshGroups[0].MeshType;
+                _view.ModelTypeComboBox.SelectedValue = _newModel.MeshGroups[0].MeshType;
             }
 
-            AsyncInit();
-        }
-
-        private async Task AsyncInit()
-        {
             // Get this model's root.
             _root = await XivCache.GetFirstRoot(_oldModel.Source);
 

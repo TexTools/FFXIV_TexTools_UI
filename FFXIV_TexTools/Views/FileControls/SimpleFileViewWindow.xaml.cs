@@ -72,6 +72,9 @@ namespace FFXIV_TexTools.Views.Controls
             OpenFileWindows.Add(wind);
             wind.Show();
 
+            // Tiny delay to try to let the SharpDX window become sane if we're a model view.
+            await Task.Delay(10);
+
             // This has to be called /after/ showing the window in order for the model viewer to load properly.
             var success = await wind.LoadFile(filePath, referenceItem, data, forcedControlType);
 

@@ -1175,7 +1175,6 @@ namespace FFXIV_TexTools.ViewModels
             set
             {
                 _transparencyToggle = value;
-                ViewPortVM.UpdateTransparency(value);
                 NotifyPropertyChanged(nameof(TransparencyToggle));
             }
         }

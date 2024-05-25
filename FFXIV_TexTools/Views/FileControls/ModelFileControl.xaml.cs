@@ -69,6 +69,13 @@ namespace FFXIV_TexTools.Views.Controls
             }
         }
 
+        public Visibility ShowMaterialVisibility
+        {
+            get {
+                return GetVisibleMaterial() == null ? Visibility.Collapsed : Visibility.Visible;
+            }
+        }
+
         private TTModel Model;
         private Helpers.ViewportCanvasRenderer _CanvasRenderer = null;
 
@@ -84,12 +91,14 @@ namespace FFXIV_TexTools.Views.Controls
             if (Configuration.EnvironmentConfiguration.TT_Unshared_Rendering)
                 _CanvasRenderer = new Helpers.ViewportCanvasRenderer(Viewport, AlternateViewportCanvas);
             ViewType = EFileViewType.Editor;
-            ColorsetButtonEnabled = false;
+            ViewportVM.ColorsetButtonEnabled = false;
 
             ViewportVM.TextureUpdateRequested += TextureUpdateRequested;
             ViewportVM.ZoomExtentsRequested += ZoomExtentsRequested;
+            ViewportVM.VisibleMeshChanged += VisibleMeshChanged;
 
         }
+
         public override void INTERNAL_ClearFile()
         {
             Model = null;
@@ -196,6 +205,12 @@ namespace FFXIV_TexTools.Views.Controls
             return true;
         }
 
+        protected internal override async Task<bool> INTERNAL_WriteModFile(ModTransaction tx)
+        {
+            // We override this to perform material validation first.
+            await Mdl.FillMissingMaterials(Model, ReferenceItem, XivStrings.TexTools, tx);
+            return await base.INTERNAL_WriteModFile(tx);   
+        }
         protected override async Task<bool> ShouldUpdateOnFileChange(string changedFile)
         {
             if(changedFile == InternalFilePath)
@@ -261,6 +276,7 @@ namespace FFXIV_TexTools.Views.Controls
             {
                 ViewportVM.TextureUpdateRequested -= TextureUpdateRequested;
                 ViewportVM.ZoomExtentsRequested -= ZoomExtentsRequested;
+                ViewportVM.VisibleMeshChanged -= VisibleMeshChanged;
                 _ViewportVM.Dispose();
             }
         }
@@ -320,9 +336,8 @@ namespace FFXIV_TexTools.Views.Controls
                 // Might as well just make sure we have these updated.
                 CustomizeViewModel.UpdateFrameworkColors();
 
-                ViewportVM.TransparencyToggle = false;
                 FmvButtonEnabled = false;
-                ColorsetButtonEnabled = false;
+                ViewportVM.ColorsetButtonEnabled = false;
 
                 List<ModelTextureData> textureData = null;
                 textureData = GetPlaceholderTextures(Model);
@@ -479,7 +494,7 @@ namespace FFXIV_TexTools.Views.Controls
                     var xivMtrl = mtrlList[i];
                     if (xivMtrl.ColorSetData.Count > 0)
                     {
-                        ColorsetButtonEnabled = true;
+                        ViewportVM.ColorsetButtonEnabled = true;
                     }
 
                     var colors = ModelTexture.GetCustomColors();
@@ -566,17 +581,6 @@ namespace FFXIV_TexTools.Views.Controls
             }
         }
 
-
-        private bool _ColorsetButtonEnabled;
-        public bool ColorsetButtonEnabled
-        {
-            get => _ColorsetButtonEnabled;
-            set
-            {
-                _ColorsetButtonEnabled = value;
-                OnPropertyChanged(nameof(ColorsetButtonEnabled));
-            }
-        }
 
         private string GetItem3DFolder()
         {
@@ -736,6 +740,75 @@ namespace FFXIV_TexTools.Views.Controls
             } catch(Exception ex)
             {
                 // No-op.  SHould be handled internally already.
+                Trace.WriteLine(ex);
+            }
+        }
+
+        private void VisibleMeshChanged(object sender, int e)
+        {
+            OnPropertyChanged(nameof(ShowMaterialVisibility));
+        }
+
+        private string GetVisibleMaterial()
+        {
+
+            if (_ViewportVM == null || Model == null)
+            {
+                return null;
+            }
+
+            var totalNonSkinMaterials = Model.Materials.Where(x => !ModelModifiers.IsSkinMaterial(x)).ToList();
+
+            string file = null;
+            if(totalNonSkinMaterials.Count == 1)
+            {
+                // Only one viable material.
+                file = _ChildFiles.FirstOrDefault(x => x.EndsWith(totalNonSkinMaterials[0]));
+                if (string.IsNullOrEmpty(file))
+                {
+                    return null;
+                }
+                return file;
+            }
+
+            if (_ViewportVM.VisibleMesh < 0 && Model.MeshGroups.Count > 1)
+            {
+                return null;
+            }
+
+            var meshIdx = _ViewportVM.VisibleMesh >= 0 ? _ViewportVM.VisibleMesh : 0;
+            if (meshIdx >= Model.MeshGroups.Count)
+            {
+                return null;
+            }
+
+            var mg = Model.MeshGroups[meshIdx];
+            if (ModelModifiers.IsSkinMaterial(mg.Material))
+            {
+                // Resolving skin paths is sort of nonsensical since it can vary based on equipped character's race.
+                return null;
+            }
+
+            file = _ChildFiles.FirstOrDefault(x => x.EndsWith(mg.Material));
+            if (string.IsNullOrEmpty(file))
+            {
+                return null;
+            }
+            return file;
+        }
+        private async void ShowMaterial_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var file = GetVisibleMaterial();
+                if (file == null)
+                {
+                    return;
+                }
+                await SimpleFileViewWindow.OpenFile(file);
+            }
+            catch(Exception ex)
+            {
                 Trace.WriteLine(ex);
             }
         }

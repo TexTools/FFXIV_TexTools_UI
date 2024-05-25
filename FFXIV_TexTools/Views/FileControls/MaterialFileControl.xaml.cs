@@ -622,7 +622,7 @@ namespace FFXIV_TexTools.Views.Controls
 
                     if (UnsavedChanges)
                     {
-                        Mtrl.XivMtrlToUncompressedMtrl(Material);
+                        data = Mtrl.XivMtrlToUncompressedMtrl(Material);
                     }
 
                     await SimpleFileViewWindow.OpenFile(Material.MTRLPath, ReferenceItem, data, typeof(ColorsetFileControl), Window.GetWindow(this));
