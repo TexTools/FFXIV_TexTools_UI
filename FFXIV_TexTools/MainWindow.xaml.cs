@@ -1378,12 +1378,20 @@ namespace FFXIV_TexTools
         /// </summary>
         private void FullModelViewer_Click(object sender, RoutedEventArgs e)
         {
+            FullModelView.ShowFmv();
         }
 
 
-        private void Menu_WebBackups_Click(object sender, RoutedEventArgs e)
+        private async void Menu_WebBackups_Click(object sender, RoutedEventArgs e)
         {
-            DownloadIndexBackups();
+            try
+            {
+                await DownloadIndexBackups();
+            }
+            catch(Exception ex)
+            {
+                Trace.WriteLine(ex);
+            }
         }
         private async Task DownloadIndexBackups()
         {
