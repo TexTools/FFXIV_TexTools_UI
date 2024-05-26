@@ -195,31 +195,8 @@ namespace FFXIV_TexTools.ViewModels
             shownModels.Add(itemType, new DisplayedModelData{TtModel = model, ItemModel = item, ModelTextureData = textureDataDictionary});
         }
 
-        /// <summary>
-        /// Take the square root of every pixels' RGB datapoints to match the behavior of the FF14 engine
-        /// </summary>
-        /// <param name="img"></param>
-        private static Color4[] NormalizePixelData(byte[] img)
-        {
-            Color4[] result = new Color4[img.Length / 4];
-            Parallel.ForEach(Partitioner.Create(0, img.Length / 4), range =>
-            {
-                for (int i = range.Item1 * 4; i < range.Item2 * 4; i += 4)
-                {
-                    // This is the only way to do a true single-precision sqrt in .NET Framework
-                    var tmp = SRGBVector4.SquareRoot(new SRGBVector4(
-                        img[i] / 255.0f,
-                        img[i + 1] / 255.0f,
-                        img[i + 2] / 255.0f,
-                        img[i + 3] / 255.0f
-                    ));
-                    result[i / 4] = new Color4(tmp.X, tmp.Y, tmp.Z, tmp.W);
-                }
-            });
-            return result;
-        }
-
-        /// <summary>        /// Adds the skeleton node to the viewport
+        /// <summary>        
+        /// /// Adds the skeleton node to the viewport
         /// </summary>
         /// <param name="targetRace">The race the skeleton will be obtained from</param>
         public void AddSkeletonNode(XivRace targetRace)
@@ -345,6 +322,11 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         public void ClearAll()
         {
+            foreach(var model in Models)
+            {
+                model.Dispose();
+            }
+
             Models.Clear();
             ModelGroup.Clear();
             shownModels.Clear();
@@ -356,13 +338,8 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         public void CleanUp()
         {
-            ModelGroup.Dispose();
-            foreach (var model in Models)
-            {
-                model.Dispose();
-            }
-
             ClearAll();
+            ModelGroup.Dispose();
         }
 
         #endregion

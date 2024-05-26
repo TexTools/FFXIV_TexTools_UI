@@ -40,18 +40,17 @@ using xivModdingFramework.Models.Helpers;
 using xivModdingFramework.Models.ModelTextures;
 using xivModdingFramework.SqPack.FileTypes;
 using xivModdingFramework.Variants.FileTypes;
+using xivModdingFramework.Cache;
 
 namespace FFXIV_TexTools.ViewModels
 {
     public class FullModelViewModel : INotifyPropertyChanged
     {
 
-        private FullModelViewport3DViewModel _viewPortVM;
-        private float _lightingXValue, _lightingYValue, _lightingZValue;
-        private string _lightXLabel = "X  |  0", _lightYLabel = "Y  |  0", _lightZLabel = "Z  |  0", _reflectionLabel = $"{UIStrings.Reflection}  |  1", _modToggleText = UIStrings.Enable_Disable, _modelStatusLabel, _selectedFace;
-        private int _checkedLight, _reflectionValue, _selectedSkeletonIndex, _selectedModelIndex, _selectedSkinIndex, _selectedSkin, _selectedFaceIndex;
-        private bool _flyoutOpen, _lightRenderToggle, _light1Check = true, _light2Check, _light3Check, _transparencyToggle, _cullModeToggle, _showSkeleton, _skeletonComboboxEnabled, _skinComboboxEnabled, _exportEnabled, _removeEnabled, _isFirstModel, _faceComboboxEnabled;
-        private Visibility _lightToggleVisibility = Visibility.Collapsed, _faceComboBoxVisibility = Visibility.Collapsed;
+        private FullModelViewport3DViewModel _viewportVM;
+        private int  _selectedSkeletonIndex, _selectedModelIndex, _selectedSkinIndex, _selectedSkin, _selectedFaceIndex;
+        private bool _showSkeleton, _skeletonComboboxEnabled, _skinComboboxEnabled, _exportEnabled, _removeEnabled, _isFirstModel, _faceComboboxEnabled;
+        private Visibility _faceComboBoxVisibility = Visibility.Collapsed;
         private FullModelView _fullModelView;
         private ObservableCollection<ComboBoxData> _skeletonComboBoxData = new ObservableCollection<ComboBoxData>();
         private ObservableCollection<int> _skins = new ObservableCollection<int>();
@@ -59,16 +58,12 @@ namespace FFXIV_TexTools.ViewModels
         private ObservableCollection<string> _facesList = new ObservableCollection<string>();
         private ComboBoxData _selectedSkeleton;
         private XivRace _previousRace;
-        private DirectoryInfo _gameDirectory;
         private Dictionary<XivRace, int[]> _charaRaceAndSkinDictionary;
-
-        private bool _updateNeeded = true;
 
         public FullModelViewModel(FullModelView fullModelView)
         {
-            _gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
             _fullModelView = fullModelView;
-            ViewPortVM = new FullModelViewport3DViewModel(this);
+            ViewportVM = new FullModelViewport3DViewModel(this);
             FillSkeletonComboBox();
             SelectedSkeletonIndex = 0;
             SkeletonComboboxEnabled = true;
@@ -79,13 +74,13 @@ namespace FFXIV_TexTools.ViewModels
         /// <summary>
         /// The 3D viewport viewmodel which handles the model display
         /// </summary>
-        public FullModelViewport3DViewModel ViewPortVM
+        public FullModelViewport3DViewModel ViewportVM
         {
-            get => _viewPortVM;
+            get => _viewportVM;
             set
             {
-                _viewPortVM = value;
-                NotifyPropertyChanged(nameof(ViewPortVM));
+                _viewportVM = value;
+                NotifyPropertyChanged(nameof(ViewportVM));
             }
         }
 
@@ -216,9 +211,8 @@ namespace FFXIV_TexTools.ViewModels
             }
         }
 
-        /// <summary>
-        /// The selected face
-        /// </summary>
+     
+        private string _selectedFace;
         public string SelectedFace
         {
             get => _selectedFace;
@@ -344,7 +338,7 @@ namespace FFXIV_TexTools.ViewModels
 
             var pc = await _fullModelView.ShowProgressAsync(UIStrings.ModelStatus_Loading, UIMessages.PleaseStandByMessage);
             // Sets the skeleton to the same as the race of the first model added
-            if (ViewPortVM.Models.Count < 1)
+            if (ViewportVM.Models.Count < 1)
             {
                 _isFirstModel = true;
                 if (_charaRaceAndSkinDictionary == null)
@@ -395,7 +389,7 @@ namespace FFXIV_TexTools.ViewModels
             SkeletonComboboxEnabled = false;
             SkinComboboxEnabled = false;
 
-            ViewPortVM.UpdateModel(ttModel, _materialDictionary, item, modelRace, SelectedSkeleton.XivRace);
+            ViewportVM.UpdateModel(ttModel, _materialDictionary, item, modelRace, SelectedSkeleton.XivRace);
             SkeletonComboboxEnabled = true;
             SkinComboboxEnabled = true;
 
@@ -413,7 +407,7 @@ namespace FFXIV_TexTools.ViewModels
         public void CleanUp()
         {
             _modelList.Clear();
-            ViewPortVM.CleanUp();
+            ViewportVM.CleanUp();
         }
 
         #endregion
@@ -465,7 +459,7 @@ namespace FFXIV_TexTools.ViewModels
         /// <returns>A dictionary containing an array of skin numbers per race</returns>
         private async Task GetCharaSkinDictionary()
         {
-            var character = new Character(_gameDirectory, XivLanguages.GetXivLanguage(Settings.Default.Application_Language));
+            var character = new Character(XivCache.GameInfo.GameDirectory, XivLanguages.GetXivLanguage(Settings.Default.Application_Language));
 
             var xivChara = new XivCharacter
             {
@@ -536,7 +530,7 @@ namespace FFXIV_TexTools.ViewModels
 
                 if (!_isFirstModel)
                 {
-                    ViewPortVM.UpdateSkeleton(_previousRace, selectedSkeleton);
+                    ViewportVM.UpdateSkeleton(_previousRace, selectedSkeleton);
                 }
 
                 SkeletonComboboxEnabled = true;
@@ -580,11 +574,11 @@ namespace FFXIV_TexTools.ViewModels
         private async Task UpdateAllSkin()
         {
 
-            if (ViewPortVM.shownModels.Any())
+            if (ViewportVM.shownModels.Any())
             {
                 var pc = await _fullModelView.ShowProgressAsync(UIMessages.UpdatingSkinTitle, UIMessages.PleaseStandByMessage);
 
-                foreach (var shownModel in ViewPortVM.shownModels.Values)
+                foreach (var shownModel in ViewportVM.shownModels.Values)
                 {
                     var originalBodyIndex = GetBodyTextureIndex(shownModel.TtModel);
 
@@ -602,7 +596,7 @@ namespace FFXIV_TexTools.ViewModels
                     }
                 }
 
-                ViewPortVM.UpdateSkin(SelectedSkeleton.XivRace);
+                ViewportVM.UpdateSkin(SelectedSkeleton.XivRace);
 
                 await pc.CloseAsync();
             }
@@ -826,7 +820,7 @@ namespace FFXIV_TexTools.ViewModels
             TTModel ttModel = null;
             Dictionary<int, ModelTextureData> materialDictionary = null;
 
-            foreach (var shownModel in ViewPortVM.shownModels.Values)
+            foreach (var shownModel in ViewportVM.shownModels.Values)
             {
                 if (shownModel.ItemModel.SecondaryCategory.Equals(XivStrings.Face))
                 {
@@ -884,7 +878,7 @@ namespace FFXIV_TexTools.ViewModels
                     }
                 }
 
-                ViewPortVM.UpdateSkin(SelectedSkeleton.XivRace);
+                ViewportVM.UpdateSkin(SelectedSkeleton.XivRace);
             }
 
             if (pc != null)
@@ -932,292 +926,17 @@ namespace FFXIV_TexTools.ViewModels
 #endregion
 
 
-        #region ViewPortOptions
-        /// <summary>
-        /// Resets the light position values for the sliders
-        /// </summary>
-        public void ResetLightValues()
-        {
-            if (_checkedLight == 2) return;
-
-            LightingXValue = 0;
-            LightXLabel = "X  |  0";
-            LightingYValue = 0;
-            LightYLabel = "Y  |  0";
-            LightingZValue = 0;
-            LightZLabel = "Z  |  0";
-        }
-
-        /// <summary>
-        /// Update the light position values on the sliders
-        /// </summary>
-        private void UpdateLights()
-        {
-            var lightValues = ViewPortVM.GetLightOffset(_checkedLight);
-
-            LightingXValue = (float)lightValues.x;
-            LightXLabel = $"X  |  {lightValues.x:0.#}";
-            LightingYValue = (float)lightValues.y;
-            LightYLabel = $"Y  |  {lightValues.y:0.#}";
-            LightingZValue = (float)lightValues.z;
-            LightZLabel = $"Z  |  {lightValues.z:0.#}";
-
-            LightToggleVisibility = _checkedLight == 2 ? Visibility.Visible : Visibility.Collapsed;
-        }
-
-        /// <summary>
-        /// The X position of the selected light
-        /// </summary>
-        public float LightingXValue
-        {
-            get => _lightingXValue;
-            set
-            {
-                _lightingXValue = value;
-                ViewPortVM.UpdateLighting(value, _checkedLight, "X");
-                LightXLabel = $"X  |  {value:0.#}";
-                NotifyPropertyChanged(nameof(LightingXValue));
-            }
-        }
-
-        /// <summary>
-        /// The Y position of the selected light
-        /// </summary>
-        public float LightingYValue
-        {
-            get => _lightingYValue;
-            set
-            {
-                _lightingYValue = value;
-                ViewPortVM.UpdateLighting(value, _checkedLight, "Y");
-                LightYLabel = $"Y  |  {value:0.#}";
-                NotifyPropertyChanged(nameof(LightingYValue));
-            }
-        }
-
-        /// <summary>
-        /// The Z position of the selected light
-        /// </summary>
-        public float LightingZValue
-        {
-            get => _lightingZValue;
-            set
-            {
-                _lightingZValue = value;
-                ViewPortVM.UpdateLighting(value, _checkedLight, "Z");
-                LightZLabel = $"Z  |  {value:0.#}";
-                NotifyPropertyChanged(nameof(LightingZValue));
-            }
-        }
-
-        /// <summary>
-        /// The X position value label
-        /// </summary>
-        public string LightXLabel
-        {
-            get => _lightXLabel;
-            set
-            {
-                _lightXLabel = value;
-                NotifyPropertyChanged(nameof(LightXLabel));
-            }
-        }
-
-        /// <summary>
-        /// The Y position value label
-        /// </summary>
-        public string LightYLabel
-        {
-            get => _lightYLabel;
-            set
-            {
-                _lightYLabel = value;
-                NotifyPropertyChanged(nameof(LightYLabel));
-            }
-        }
-
-        /// <summary>
-        /// The Z position value label
-        /// </summary>
-        public string LightZLabel
-        {
-            get => _lightZLabel;
-            set
-            {
-                _lightZLabel = value;
-                NotifyPropertyChanged(nameof(LightZLabel));
-            }
-        }
-
-        /// <summary>
-        /// The open status of the flyout
-        /// </summary>
-        public bool FlyoutOpen
-        {
-            get => _flyoutOpen;
-            set
-            {
-                _flyoutOpen = value;
-                NotifyPropertyChanged(nameof(FlyoutOpen));
-            }
-        }
-
-        /// <summary>
-        /// The status of the light render toggle
-        /// </summary>
-        public bool LightRenderToggle
-        {
-            get => _lightRenderToggle;
-            set
-            {
-                _lightRenderToggle = value;
-            }
-        }
-
-        /// <summary>
-        /// The visibility of the light render toggle
-        /// </summary>
-        public Visibility LightToggleVisibility
-        {
-            get => _lightToggleVisibility;
-            set
-            {
-                _lightToggleVisibility = value;
-                NotifyPropertyChanged(nameof(LightToggleVisibility));
-            }
-        }
-
-        /// <summary>
-        /// The checked status of the light 1 radio button
-        /// </summary>
-        public bool Light1Check
-        {
-            get => _light1Check;
-            set
-            {
-                _light1Check = value;
-                if (value)
-                {
-                    _checkedLight = 0;
-                    UpdateLights();
-                }
-            }
-        }
-
-        /// <summary>
-        /// The checked status of the light 2 radio button
-        /// </summary>
-        public bool Light2Check
-        {
-            get => _light2Check;
-            set
-            {
-                _light2Check = value;
-                if (value)
-                {
-                    _checkedLight = 1;
-                    UpdateLights();
-                }
-            }
-        }
-
-        /// <summary>
-        /// The checked status of the light 3 radio button
-        /// </summary>
-        public bool Light3Check
-        {
-            get => _light3Check;
-            set
-            {
-                _light3Check = value;
-                if (value)
-                {
-                    _checkedLight = 2;
-                    UpdateLights();
-                }
-            }
-        }
-
-        /// <summary>
-        /// The current reflection value of the model
-        /// </summary>
-        public int ReflectionValue
-        {
-            get => _reflectionValue;
-            set
-            {
-                _reflectionValue = value;
-                ViewPortVM.UpdateReflection(value);
-                ReflectionLabel = $"{UIStrings.Reflection}  |  {value}";
-                NotifyPropertyChanged(nameof(ReflectionValue));
-            }
-        }
-
-        /// <summary>
-        /// The reflection value label
-        /// </summary>
-        public string ReflectionLabel
-        {
-            get => _reflectionLabel;
-            set
-            {
-                _reflectionLabel = value;
-                NotifyPropertyChanged(nameof(ReflectionLabel));
-            }
-        }
-
-        /// <summary>
-        /// The status of the transparency toggle
-        /// </summary>
-        public bool TransparencyToggle
-        {
-            get => _transparencyToggle;
-            set
-            {
-                _transparencyToggle = value;
-                NotifyPropertyChanged(nameof(TransparencyToggle));
-            }
-        }
-
-        /// <summary>
-        /// The status of the cull mode toggle
-        /// </summary>
-        public bool CullModeToggle
-        {
-            get => _cullModeToggle;
-            set
-            {
-                _cullModeToggle = value;
-                UpdateCullMode(value);
-                NotifyPropertyChanged(nameof(CullModeToggle));
-            }
-        }
-
-        /// <summary>
-        /// Updates the Cull Mode
-        /// </summary>
-        private void UpdateCullMode(bool noneCull)
-        {
-            ViewPortVM.UpdateCullMode(noneCull);
-
-            Settings.Default.Cull_Mode = noneCull ? UIStrings.None : UIStrings.Back;
-
-            Settings.Default.Save();
-        }
-
         public bool ShowSkeleton
         {
             get => _showSkeleton;
             set
             {
                 _showSkeleton = value;
-                ViewPortVM.ToggleSkeleton(value);
+                ViewportVM.ToggleSkeleton(value);
 
                 NotifyPropertyChanged(nameof(ShowSkeleton));
             }
         }
-
-        #endregion
 
 
         #region Buttons
@@ -1233,7 +952,7 @@ namespace FFXIV_TexTools.ViewModels
         {
             if (ModelList.Count == 1)
             {
-                ViewPortVM.ClearAll();
+                ViewportVM.ClearAll();
                 ModelList.Clear();
                 RemoveEnabled = false;
                 ExportEnabled = false;
@@ -1248,7 +967,7 @@ namespace FFXIV_TexTools.ViewModels
                     FaceComboboxVisibility = Visibility.Collapsed;
                 }
 
-                ViewPortVM.RemoveModel(modelToRemove);
+                ViewportVM.RemoveModel(modelToRemove);
                 ModelList.RemoveAt(SelectedModelIndex);
                 SelectedModelIndex = 0;
             }
@@ -1261,7 +980,7 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         private void ViewerOptions(object obj)
         {
-            FlyoutOpen = !FlyoutOpen;
+            _fullModelView.ViewerOptionsFlyout.IsOpen = !_fullModelView.ViewerOptionsFlyout.IsOpen;
         }
 
         #endregion

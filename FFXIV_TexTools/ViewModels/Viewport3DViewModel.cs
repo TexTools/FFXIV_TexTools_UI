@@ -415,7 +415,7 @@ namespace FFXIV_TexTools.ViewModels
         /// Take the square root of every pixels' RGB datapoints to match the behavior of the FF14 engine
         /// </summary>
         /// <param name="img"></param>
-        private static Color4[] NormalizePixelData(byte[] img)
+        protected static Color4[] NormalizePixelData(byte[] img)
         {
             Color4[] result = new Color4[img.Length / 4];
             Parallel.ForEach(Partitioner.Create(0, img.Length / 4), range =>
@@ -712,7 +712,7 @@ namespace FFXIV_TexTools.ViewModels
             }
         }
 
-        public float _LightingYValue;
+        private float _LightingYValue;
         public float LightingYValue
         {
             get => _LightingYValue;
@@ -724,7 +724,7 @@ namespace FFXIV_TexTools.ViewModels
             }
         }
 
-        public float _lightingZValue;
+        private float _lightingZValue;
         public float LightingZValue
         {
             get => _lightingZValue;
@@ -736,7 +736,7 @@ namespace FFXIV_TexTools.ViewModels
             }
         }
 
-        public int _ReflectionValue  = 5;
+        private int _ReflectionValue  = 5;
         public int ReflectionValue
         {
             get => _ReflectionValue;
@@ -750,7 +750,7 @@ namespace FFXIV_TexTools.ViewModels
 
         private int _CheckedLight = 0;
 
-        public bool _Light1Check = true;
+        private bool _Light1Check = true;
         public bool Light1Check
         {
             get => _Light1Check;
@@ -765,7 +765,7 @@ namespace FFXIV_TexTools.ViewModels
             }
         }
 
-        public bool _Light2Check;
+        private bool _Light2Check;
         public bool Light2Check
         {
             get => _Light2Check;
@@ -780,7 +780,7 @@ namespace FFXIV_TexTools.ViewModels
             }
         }
 
-        public bool _Light3Check;
+        private bool _Light3Check;
         public bool Light3Check
         {
             get => _Light3Check;

@@ -139,9 +139,6 @@ namespace FFXIV_TexTools.ViewModels
 
             // default camera model
             CameraModel = Perspective;
-
-            Title = "Demo (HelixToolkitDX)".L();
-            SubTitle = "Default Base View Model".L();
         }
 
         public void OnCameraModelChanged()
