@@ -76,7 +76,6 @@
                     <hx:PostEffectMeshXRayGrid x:Name="xrayGridEffect" EffectName="xrayGrid" />
                 </hx:Viewport3DX>
                 <Canvas Name="AlternateViewportCanvas" Visibility="Hidden" IsHitTestVisible="False"/>
-                <Label VerticalAlignment="Bottom" HorizontalAlignment="Center" Content="{Binding Path=ModelStatusLabel}" Foreground="#FF151515" FontSize="18"/>
             </Grid>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="5">
                 <Button x:Name="ViewerOptionsButton" Content="{Binding Source={x:Static resx:UIStrings.Viewer_Options}}" Command="{Binding Path=ViewOptionsCommand}"/>
@@ -101,7 +100,7 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <ComboBox VerticalAlignment="Center" Margin="5,0" mah:TextBoxHelper.UseFloatingWatermark="True" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.Model}}" 
-                      ItemsSource="{Binding Path=ModelList}" SelectedIndex="{Binding Path=SelectedModelIndex}" IsEnabled="{Binding Path=ModelListComboboxEnabled}" />
+                      ItemsSource="{Binding Path=ModelList}" SelectedIndex="{Binding Path=SelectedModelIndex}" />
             <Button Grid.Column="1" x:Name="RemoveButton" Content="{Binding Source={x:Static resx:UIStrings.Remove}}" Command="{Binding Path=RemoveCommand}" IsEnabled="{Binding Path=RemoveEnabled}" Margin="5"/>
         </Grid>
 

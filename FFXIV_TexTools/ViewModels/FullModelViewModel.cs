@@ -41,6 +41,9 @@ using xivModdingFramework.Models.ModelTextures;
 using xivModdingFramework.SqPack.FileTypes;
 using xivModdingFramework.Variants.FileTypes;
 using xivModdingFramework.Cache;
+using SharpDX;
+using System.Diagnostics;
+using System.Windows.Media.Media3D;
 
 namespace FFXIV_TexTools.ViewModels
 {
@@ -64,6 +67,8 @@ namespace FFXIV_TexTools.ViewModels
         {
             _fullModelView = fullModelView;
             ViewportVM = new FullModelViewport3DViewModel(this);
+            ViewportVM.ZoomExtentsRequested += ZoomExtentsRequested;
+
             FillSkeletonComboBox();
             SelectedSkeletonIndex = 0;
             SkeletonComboboxEnabled = true;
@@ -411,7 +416,12 @@ namespace FFXIV_TexTools.ViewModels
         public void CleanUp()
         {
             _modelList.Clear();
+
+            ViewportVM.ZoomExtentsRequested -= ZoomExtentsRequested;
+
+            // Hmmm...
             ViewportVM.CleanUp();
+            ViewportVM.Dispose();
         }
 
         #endregion
@@ -978,6 +988,24 @@ namespace FFXIV_TexTools.ViewModels
 
         }
 
+        private void ZoomExtentsRequested(Viewport3DViewModel requestor, double animationTime, Rect3D? boundingBox)
+        {
+            try
+            {
+                if (boundingBox != null)
+                {
+                    _fullModelView.viewport3DX.ZoomExtents(boundingBox.Value, animationTime);
+                }
+                else
+                {
+                    _fullModelView.viewport3DX.ZoomExtents(animationTime);
+                }
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine(ex);
+            }
+        }
 
         /// <summary>
         /// Opens and closes the viewer option flyout
