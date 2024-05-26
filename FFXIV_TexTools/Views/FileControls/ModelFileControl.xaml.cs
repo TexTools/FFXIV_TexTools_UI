@@ -198,10 +198,17 @@ namespace FFXIV_TexTools.Views.Controls
             {
                 return await SaveAsRaw(externalFilePath);
             }
-            // We don't support editing our current TTModel in a permanent way in the viewer.
-            // So just export the internal game state.
-            // TODO - Fix this.
-            await Mdl.ExportMdlToFile(InternalFilePath, externalFilePath, 1, true, false, MainWindow.DefaultTransaction);
+
+            var tx = MainWindow.DefaultTransaction;
+            var version = 1;
+
+            var asIm = ReferenceItem as IItemModel;
+            if(asIm != null && Imc.UsesImc(asIm))
+            {
+                version = await Imc.GetMaterialSetId(asIm, false, tx);
+            }
+
+            await Mdl.ExportTTModelToFile(Model, externalFilePath, version, true, tx);
             return true;
         }
 
@@ -626,7 +633,7 @@ namespace FFXIV_TexTools.Views.Controls
             try
             {
                 // Load a clean copy of the model.
-                var ttmdl = await Mdl.GetTTModel(InternalFilePath);
+                var ttmdl = (TTModel) Model.Clone();
                 var race = IOUtil.GetRaceFromPath(InternalFilePath);
                 
                 // Weird usage pattern but apparently this is how liinko structured it.
