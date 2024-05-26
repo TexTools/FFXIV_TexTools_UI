@@ -69,6 +69,7 @@ namespace FFXIV_TexTools.ViewModels
             } catch { }
 
             Camera = new PerspectiveCamera();
+            Camera.CameraInternal.PropertyChanged += CameraInternal_PropertyChanged;
 
             BackgroundColor = Properties.Settings.Default.BG_Color;
         }

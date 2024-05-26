@@ -80,7 +80,6 @@ namespace FFXIV_TexTools
     {
         private string _startupArgs;
         private static MainWindow _mainWindow;
-        private FullModelView _fmv;
         public readonly System.Windows.Forms.IWin32Window Win32Window;
 
 #if ENDWALKER
@@ -368,22 +367,6 @@ namespace FFXIV_TexTools
             }
         }
 
-
-
-        /// <summary>
-        /// Event handler for adding models to the full model view
-        /// </summary>
-        private async void ModelViewModelOnAddToFullModelEvent(object sender, EventArgs e)
-        {
-            // Gets the model data of the current model in the model view
-            var modelData = e as ModelViewModel.fullModelEventArgs;
-
-            var fmv = FullModelView.Instance;
-            fmv.Owner = this;
-            fmv.Show();
-
-            await fmv.AddModel(modelData.TTModelData, modelData.TextureData, modelData.Item, modelData.XivRace);
-        }
 
         private void LanguageSelection()
         {
@@ -1395,10 +1378,6 @@ namespace FFXIV_TexTools
         /// </summary>
         private void FullModelViewer_Click(object sender, RoutedEventArgs e)
         {
-            var fmv = FullModelView.Instance;
-            fmv.Owner = this;
-
-            fmv.Show();
         }
 
 

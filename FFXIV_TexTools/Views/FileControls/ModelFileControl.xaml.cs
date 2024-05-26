@@ -627,36 +627,14 @@ namespace FFXIV_TexTools.Views.Controls
 
         #endregion
 
-        private async void FullModel_Click(object sender, RoutedEventArgs e)
+        private void FullModel_Click(object sender, RoutedEventArgs e)
         {
             if (Model == null || !Model.IsInternal) return;
             try
             {
                 // Load a clean copy of the model.
                 var ttmdl = (TTModel) Model.Clone();
-                var race = IOUtil.GetRaceFromPath(InternalFilePath);
-                
-                // Weird usage pattern but apparently this is how liinko structured it.
-                var fmv = FullModelView.Instance;
-                fmv.Owner = MainWindow.GetMainWindow();
-                fmv.Show();
-
-                // Jank conversion to dictionary for the FMV that needs updating badly.
-                var dict = new Dictionary<int, ModelTextureData>();
-                var i = 0;
-                foreach(var material in Model.Materials)
-                {
-                    var tex = _Textures.FirstOrDefault(x => x.MaterialPath == material);
-                    if(tex == null)
-                    {
-                        tex = GetPlaceholderTexture(material);
-                    }
-                    dict.Add(i, tex);
-                    i++;
-                }
-
-
-                await fmv.AddModel(ttmdl, dict, ReferenceItem as IItemModel, race);
+                FullModelView.AddModel(ttmdl, _Textures, ReferenceItem as IItemModel);
             } catch (Exception ex)
             {
                 this.ShowError("FMV Error", "An error occurred while loading the model to the FMV:\n\n" + ex.Message);

@@ -99,7 +99,7 @@ namespace FFXIV_TexTools.ViewModels
         }
 
 
-        private void CameraInternal_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        protected void CameraInternal_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if(e.PropertyName == "LookDirection")
             {

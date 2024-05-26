@@ -332,11 +332,12 @@ namespace FFXIV_TexTools.ViewModels
         /// <param name="_materialDictionary">The dictionary with materials</param>
         /// <param name="item">The item associated with the model being added</param>
         /// <param name="race">The race of the model being added</param>
-        public async void AddModelToView(TTModel ttModel, Dictionary<int, ModelTextureData> _materialDictionary, IItemModel item, XivRace modelRace)
+        public async void AddModelToView(TTModel ttModel, Dictionary<int, ModelTextureData> _materialDictionary, IItemModel item)
         {
+            var modelRace = IOUtil.GetRaceFromPath(ttModel.Source);
             var firstModelSkeleton = from s in Skeletons where s.XivRace == modelRace select s;
             
-            if (SelectedSkeleton == null)
+            if (ModelList.Count == 0)
             {
                 SelectedSkeleton = firstModelSkeleton.FirstOrDefault();
                 if (SelectedSkeleton == null)

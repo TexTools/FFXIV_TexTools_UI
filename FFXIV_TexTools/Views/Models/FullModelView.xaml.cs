@@ -32,6 +32,7 @@ using xivModdingFramework.Items.Interfaces;
 using xivModdingFramework.Models.DataContainers;
 using xivModdingFramework.Models.FileTypes;
 using xivModdingFramework.Variants.FileTypes;
+using FFXIV_TexTools.Views.Controls;
 
 namespace FFXIV_TexTools.Views.Models
 {
@@ -42,9 +43,41 @@ namespace FFXIV_TexTools.Views.Models
     {
         private readonly DirectoryInfo _gameDirectory;
         private readonly FullModelViewModel _fmvm;
-        private static readonly Lazy<FullModelView> lazy = new Lazy<FullModelView>(() => new FullModelView());
+        private static FullModelView Instance;
 
-        public static FullModelView Instance => lazy.Value;
+
+        public static void ShowFmv()
+        {
+            if (Instance == null || !Instance.IsLoaded)
+            {
+                Instance = new FullModelView();
+                Instance.Owner = MainWindow.GetMainWindow();
+            }
+            Instance.Show();
+        }
+        public static void AddModel(TTModel model, List<ModelTextureData> textures, IItemModel item)
+        {
+            // Jank conversion to dictionary for the FMV that needs updating badly.
+            var dict = new Dictionary<int, ModelTextureData>();
+            var i = 0;
+            foreach (var material in model.Materials)
+            {
+                var tex = textures.FirstOrDefault(x => x.MaterialPath == material);
+                if (tex == null)
+                {
+                    
+                    tex = ModelFileControl.GetPlaceholderTexture(material);
+                }
+                dict.Add(i, tex);
+                i++;
+            }
+
+            ShowFmv();
+            Instance.AddModel(model, dict, item);
+
+        }
+
+
 
         private Helpers.ViewportCanvasRenderer canvasRenderer = null;
 
@@ -68,11 +101,11 @@ namespace FFXIV_TexTools.Views.Models
         /// <param name="materialDictionary">The dictionary of texture data for the model</param>
         /// <param name="item">The item associated with the model</param>
         /// <param name="race">The race of the model</param>
-        public async Task AddModel(TTModel ttModel, Dictionary<int, ModelTextureData> materialDictionary, IItemModel item, XivRace race)
+        public void AddModel(TTModel ttModel, Dictionary<int, ModelTextureData> materialDictionary, IItemModel item)
         {
             try
             {
-                _fmvm.AddModelToView(ttModel, materialDictionary, item, race);
+                _fmvm.AddModelToView(ttModel, materialDictionary, item);
             }
             catch(Exception ex)
             {
@@ -183,9 +216,8 @@ namespace FFXIV_TexTools.Views.Models
         /// </summary>
         private void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            Instance = null;
             _fmvm.CleanUp();
-            e.Cancel = true;
-            this.Visibility = Visibility.Hidden;
         }
     }
 }
