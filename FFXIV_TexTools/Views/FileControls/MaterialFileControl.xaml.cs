@@ -32,7 +32,6 @@ using xivModdingFramework.Textures.Enums;
 using xivModdingFramework.Textures.FileTypes;
 using xivModdingFramework.Variants.DataContainers;
 using xivModdingFramework.Variants.FileTypes;
-using static FFXIV_TexTools.ViewModels.TextureViewModel;
 using xivModdingFramework.Items;
 using Image = SixLabors.ImageSharp.Image;
 using FFXIV_TexTools.Views.MaterialEditor;

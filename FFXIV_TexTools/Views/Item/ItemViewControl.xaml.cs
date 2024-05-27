@@ -39,7 +39,6 @@ using xivModdingFramework.Mods;
 using xivModdingFramework.Textures.Enums;
 using xivModdingFramework.Textures.FileTypes;
 using xivModdingFramework.Variants.FileTypes;
-using static FFXIV_TexTools.ViewModels.TextureViewModel;
 
 namespace FFXIV_TexTools.Views.Item
 {

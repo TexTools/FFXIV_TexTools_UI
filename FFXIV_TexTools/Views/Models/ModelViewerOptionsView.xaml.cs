@@ -64,25 +64,5 @@ namespace FFXIV_TexTools.Views
 
         }
 
-        private void HighlightColorsetButton_Click(object sender, System.Windows.RoutedEventArgs e)
-        {
-            if (_vm == null) return;
-
-            try
-            {
-                var wind = new HighilightedColorsetSelection(_vm.HighlightedColorsetRow) { Owner = MainWindow.GetMainWindow() };
-                wind.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-
-                var result = wind.ShowDialog();
-
-                if (result != true) return;
-
-                _vm.HighlightedColorsetRow = wind.SelectedRow;
-            }
-            catch
-            {
-                //No Op
-            }
-        }
     }
 }

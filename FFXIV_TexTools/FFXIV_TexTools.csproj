@@ -212,9 +212,6 @@ move $(TargetDir)*.dll $(TargetDir)lib</PostBuildEvent>
     <Compile Update="Views\FileControls\MetadataFileControl.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Views\FileControls\ColorsetFileControl.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Update="Views\ModPack\Simple\FileListExporter.xaml.cs">
       <SubType>Code</SubType>
     </Compile>

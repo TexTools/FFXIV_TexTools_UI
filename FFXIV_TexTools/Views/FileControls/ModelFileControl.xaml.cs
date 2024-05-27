@@ -38,7 +38,6 @@ using Timer = System.Timers.Timer;
 using System.Timers;
 using FFXIV_TexTools.Views.Models;
 using System.Diagnostics;
-using static FFXIV_TexTools.ViewModels.ModelViewModel;
 using xivModdingFramework.Mods.DataContainers;
 using System.Threading;
 using xivModdingFramework.SqPack.FileTypes;
