@@ -66,8 +66,6 @@
         <Button x:Name="LoadPresetButton" Content="Load Preset" HorizontalAlignment="Left" VerticalAlignment="Center" Width="100" Grid.Column="2" Click="LoadPresetButton_Click" Height="28"/>
 
 
-        <CheckBox x:Name="MultiSaveCheckbox" Content="Save Changes to All Versions" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="2" Grid.Row="3"
-                  ToolTip="Should changes to this material apply to all other versions/variants of this item as well?"/>
         <Button x:Name="AddMaterialButton" Content="New Material" HorizontalAlignment="Left" VerticalAlignment="Center" Width="100" Grid.Column="2" Click="AddMaterial_Click" Grid.Row="1" Margin="110,0,0,0"/>
 
         <Button x:Name="EditColorsetButton" Content="View/Edit Colorset" HorizontalAlignment="Left" Margin="0,0,10,0" VerticalAlignment="Center" Width="150" Grid.Column="1" Click="EditColorset_Click" IsEnabled="{Binding Path=ColorsetEnabled}"></Button>

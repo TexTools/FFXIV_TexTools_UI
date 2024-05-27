@@ -197,7 +197,7 @@ namespace FFXIV_TexTools.ViewModels
             // item alphabetically, just for consistency's sake.
             var sameModelItems = (await _item.GetSharedModelItems()).OrderBy(x => x.Name, new ItemNameComparer());
 
-            var oldVariantString = "/v" + _material.GetVariant().ToString().PadLeft(4, '0') + '/';
+            var oldVariantString = "/v" + _material.GetVersion().ToString().PadLeft(4, '0') + '/';
             var modifiedVariants = new List<int>();
 
             var mtrlReplacementRegex = "_" + oldMaterialIdentifier + ".mtrl";

@@ -974,6 +974,15 @@ namespace FFXIV_TexTools.Views.Controls
             }
         }
 
+        public virtual bool HasAdditionalSaveFunctions()
+        {
+            return false;
+        }
+
+        public virtual async Task<List<(string Name, Func<Task> Function, bool Enabled)>> GetAdditionalSaveFunctions()
+        {
+            return new List<(string Name, Func<Task> Function, bool Enabled)>();
+        }
 
         protected ItemViewControl GetItemControlParent()
         {

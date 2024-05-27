@@ -31,8 +31,27 @@ namespace FFXIV_TexTools.Views.Controls
     /// </summary>
     public partial class FileWrapperControl : UserControl, INotifyPropertyChanged, IDisposable
     {
-        public FileViewControl FileControl { get; private set; }
-        public string FilePath { get; private set; } = "";
+        private FileViewControl _FileControl;
+        public FileViewControl FileControl { get => _FileControl;
+            protected set
+            {
+                _FileControl = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(FileControl)));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SaveDropdownVisibility)));
+            }
+        }
+
+
+        private string _FilePath;
+        public string FilePath { get
+                => _FilePath;
+            private set
+            {
+                _FilePath = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(FilePath)));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SaveDropdownVisibility)));
+            }
+        }
 
         public string EnableDisableText
         {
@@ -111,6 +130,21 @@ namespace FFXIV_TexTools.Views.Controls
                 }
 
                 return UIStrings.SaveTooltip + "\n(You currently have unsaved changes!)";
+            }
+        }
+        public Visibility SaveDropdownVisibility
+        {
+            get
+            {
+                if(FileControl == null)
+                {
+                    return Visibility.Collapsed;
+                }
+                if(!FileControl.HasAdditionalSaveFunctions())
+                {
+                    return Visibility.Collapsed;
+                }
+                return Visibility.Visible;
             }
         }
 
@@ -403,6 +437,8 @@ namespace FFXIV_TexTools.Views.Controls
 
         private async Task SetupUi()
         {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SaveDropdownVisibility)));
+            SaveContextMenu.Items.Clear();
             SaveAsContextMenu.Items.Clear();
             if (FileControl == null || string.IsNullOrWhiteSpace(FilePath))
             {
@@ -432,7 +468,13 @@ namespace FFXIV_TexTools.Views.Controls
             mpItem.Header = "Modpack";
             mpItem.Click += (object sender, RoutedEventArgs e) =>
             {
-                SaveAsModpack();
+                try
+                {
+                    SaveAsModpack();
+                } catch(Exception ex)
+                {
+                    Trace.WriteLine(ex);
+                }
             };
             SaveAsContextMenu.Items.Add(mpItem);
 
@@ -449,6 +491,32 @@ namespace FFXIV_TexTools.Views.Controls
             {
                 RefreshButton.IsEnabled = false;
                 PopOutButton.IsEnabled = false;
+            }
+        }
+
+        private async Task SetupSaveContextMenu()
+        {
+            var saveOptions = await FileControl.GetAdditionalSaveFunctions();
+
+            SaveContextMenu.Items.Clear();
+            foreach (var option in saveOptions)
+            {
+                var mi = new MenuItem();
+                mi.Header = option.Name;
+                mi.IsEnabled = option.Enabled;
+                var func = option.Function;
+                mi.Click += async (object sender, RoutedEventArgs e) =>
+                {
+                    try
+                    {
+                        await func.Invoke();
+                    }
+                    catch (Exception ex)
+                    {
+                        Trace.WriteLine(ex);
+                    }
+                };
+                SaveContextMenu.Items.Add(mi);
             }
         }
 
@@ -672,6 +740,20 @@ namespace FFXIV_TexTools.Views.Controls
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
+        }
+
+        private async void SaveDropdown_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                await SetupSaveContextMenu();
+                SaveContextMenu.PlacementTarget = SaveButton;
+                SaveContextMenu.IsOpen = true;
+            }
+            catch(Exception ex)
+            {
+                Trace.WriteLine(ex);
+            }
         }
     }
 }

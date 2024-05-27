@@ -47,6 +47,7 @@ using FFXIV_TexTools.Resources;
 using System.Diagnostics;
 using System.Threading;
 using System.CodeDom;
+using xivModdingFramework.Helpers;
 
 namespace FFXIV_TexTools.Views.Controls
 {
@@ -217,19 +218,6 @@ namespace FFXIV_TexTools.Views.Controls
             var root = await XivCache.GetFirstRoot(path);
             var usesImc = root == null ? false : Imc.UsesImc(root);
 
-            if (!usesImc)
-            {
-                MultiSaveCheckbox.IsChecked = false;
-                MultiSaveCheckbox.IsEnabled = false;
-            }
-            else if (!exists)
-            {
-                MultiSaveCheckbox.IsChecked = true;
-                MultiSaveCheckbox.IsEnabled = false;
-            } else
-            {
-                MultiSaveCheckbox.IsEnabled = true;
-            }
             // The incoming data is an uncompressed MTRL file.
             Material = Mtrl.GetXivMtrl(data, path);
             return true;
@@ -679,6 +667,52 @@ namespace FFXIV_TexTools.Views.Controls
             catch
             {
                 // No-Op
+            }
+        }
+
+        public override bool HasAdditionalSaveFunctions()
+        {
+            return true;
+        }
+
+        public override async Task<List<(string Name, Func<Task> Function, bool Enabled)>> GetAdditionalSaveFunctions()
+        {
+            var list = new List<(string Name, Func<Task> Function, bool Enabled)>();
+
+            var tx = MainWindow.DefaultTransaction;
+
+            var item = ReferenceItem;
+            if(item == null)
+            {
+                var root = await XivCache.GetFirstRoot(InternalFilePath);
+                if(root != null)
+                {
+                    item = root.GetFirstItem();
+                }
+            }
+
+            var enabled = false;
+            var im = item as IItemModel;
+            var exists = await tx.FileExists(InternalFilePath);
+            if(exists && im != null && Imc.UsesImc(im))
+            {
+                enabled = true;
+            }
+
+            list.Add(("Save to all Versions of this Material".L(), SaveAllVersions, enabled));
+
+            return list;
+        }
+
+        public async Task SaveAllVersions()
+        {
+            try
+            {
+                await Mtrl.ImportMtrlToAllVersions(Material, ReferenceItem as IItemModel, XivStrings.TexTools, MainWindow.UserTransaction);
+            }
+            catch(Exception ex)
+            {
+                this.ShowError("Save Error", "An error occurred while saving the materials:\n\n" + ex.Message);
             }
         }
 
