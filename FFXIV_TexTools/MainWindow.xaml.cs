@@ -25,6 +25,7 @@ using FFXIV_TexTools.Views.ItemConverter;
 using FFXIV_TexTools.Views.Metadata;
 using FFXIV_TexTools.Views.Models;
 using FFXIV_TexTools.Views.Simple;
+using FFXIV_TexTools.Views.Transactions;
 using FFXIV_TexTools.Views.Wizard;
 using FolderSelect;
 using ForceUpdateAssembly;
@@ -131,6 +132,15 @@ namespace FFXIV_TexTools
             get { return _UserTransaction;  }
             set
             {
+                if(_UserTransaction != null)
+                {
+                    if(_UserTransaction.State != ETransactionState.Closing)
+                    {
+                        throw new Exception("Cannot assign new user transaction when one already exists and is not closed.");
+                    }
+                    _UserTransaction.TransactionStateChanged -= OnUserTxChanged;
+                }
+
                 _UserTransaction = value;
                 TxWatcher.INTERNAL_TxStateChanged(ETransactionState.Invalid, value.State);
                 value.TransactionStateChanged += OnUserTxChanged;
@@ -861,10 +871,12 @@ namespace FFXIV_TexTools
 
         /// <summary>
         /// Reloads the currently selected item.
+        /// NOTE: Forcibly closes all external viewers without prompts for user progress.
         /// </summary>
-        public void ReloadItem()
+        public async Task ReloadItem()
         {
-            UpdateViews(ItemSelect.SelectedItem);
+            CloseAllViewers();
+            await UpdateViews(ItemSelect.SelectedItem);
         }
 
         /// <summary>
@@ -872,9 +884,16 @@ namespace FFXIV_TexTools
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void ItemSelect_ItemSelected(object sender, IItem item)
+        private async void ItemSelect_ItemSelected(object sender, IItem item)
         {
-            UpdateViews(item);
+            try
+            {
+                await UpdateViews(item);
+            }
+            catch(Exception ex)
+            {
+                Trace.WriteLine(ex);
+            }
         }
 
         /// <summary>
@@ -882,7 +901,7 @@ namespace FFXIV_TexTools
         /// Locks the UI until those tab views come back and confirm they've been loaded.
         /// </summary>
         /// <param name="selectedItem">The selected item</param>
-        private async void UpdateViews(IItem item)
+        private async Task UpdateViews(IItem item)
         {
             await ItemView.SetItem(item);
         }
@@ -1227,64 +1246,66 @@ namespace FFXIV_TexTools
 
                 return;
             }
-
-
-            var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
-
-
-            var result = FlexibleMessageBox.Show(UIMessages.StartOverMessage, UIMessages.StartOverTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Information);
-
-            if (result == System.Windows.Forms.DialogResult.Yes)
+            try
             {
-                CloseAllViewers();
 
+                var result = FlexibleMessageBox.Show(UIMessages.StartOverMessage, UIMessages.StartOverTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Information);
 
-                var indexBackupsDirectory = new DirectoryInfo(Settings.Default.Backup_Directory);
-
-                if (!Directory.Exists(indexBackupsDirectory.FullName))
+                if (result == System.Windows.Forms.DialogResult.Yes)
                 {
-                    FlexibleMessageBox.Show(UIMessages.BackupFolderAccessErrorMessage,
-                        UIMessages.IndexBackupsErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
+                    CloseAllViewers();
 
 
-                await LockUi(UIStrings.Start_Over, UIMessages.PleaseStandByMessage, this);
+                    var indexBackupsDirectory = new DirectoryInfo(Settings.Default.Backup_Directory);
 
-                MakeHighlander();
-
-                try
-                {
-                    await ProblemChecker.ResetAllGameFiles(indexBackupsDirectory, _lockProgress);
-                    CustomizeViewModel.UpdateCacheSettings();
-                }
-                catch(Exception ex)
-                {
-                    while(ex.InnerException != null)
+                    if (!Directory.Exists(indexBackupsDirectory.FullName))
                     {
-                        ex = ex.InnerException;
+                        FlexibleMessageBox.Show(UIMessages.BackupFolderAccessErrorMessage,
+                            UIMessages.IndexBackupsErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
                     }
 
-                    var msg = UIMessages.StartOverErrorMessage + "\n\nError: ".L() + ex.Message;
-                    FlexibleMessageBox.Show(msg,
-                        UIMessages.StartOverErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                    await LockUi(UIStrings.Start_Over, UIMessages.PleaseStandByMessage, this);
+
+                    MakeHighlander();
+
+                    try
+                    {
+                        await ProblemChecker.ResetAllGameFiles(indexBackupsDirectory, _lockProgress);
+                        CustomizeViewModel.UpdateCacheSettings();
+                    }
+                    catch (Exception ex)
+                    {
+                        while (ex.InnerException != null)
+                        {
+                            ex = ex.InnerException;
+                        }
+
+                        var msg = UIMessages.StartOverErrorMessage + "\n\nError: ".L() + ex.Message;
+                        FlexibleMessageBox.Show(msg,
+                            UIMessages.StartOverErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        await UnlockUi();
+                        return;
+                    }
+
                     await UnlockUi();
-                    return;
+
+                    await RefreshTree(this);
+
+
+
+                    var item = ItemSelect.SelectedItem;
+                    if (item != null)
+                    {
+                        await UpdateViews(item);
+                    }
+
+                    await this.ShowMessageAsync(UIMessages.StartOverCompleteTitle, UIMessages.StartOverCompleteMessage);
                 }
-
-                await UnlockUi();
-
-                await RefreshTree(this);
-
-
-
-                var item = ItemSelect.SelectedItem;
-                if (item != null)
-                {
-                    UpdateViews(item);
-                }
-
-                await this.ShowMessageAsync(UIMessages.StartOverCompleteTitle, UIMessages.StartOverCompleteMessage);
+            } catch(Exception ex)
+            {
+                this.ShowError(UIMessages.StartOverErrorTitle, "An unhandled error occurred when Starting Over:\n\n" + ex.Message);
             }
         }
 
@@ -1325,6 +1346,18 @@ namespace FFXIV_TexTools
             {
                 e.Cancel = true;
                 return;
+            }
+
+            if (UserTransaction != null)
+            {
+                try
+                {
+                    ModTransaction.CancelTransaction(UserTransaction, true);
+                }
+                catch (Exception ex)
+                {
+                    Trace.WriteLine(ex);
+                }
             }
 
             // Probably not necessary given the entire application is closing typically, but who knows, maybe one day we'll spawn multiple mainwindows..?
@@ -1661,6 +1694,11 @@ namespace FFXIV_TexTools
         private async void FileViewerButton_Click(object sender, RoutedEventArgs e)
         {
             var success = await SimpleFileViewWindow.OpenFile("chara/equipment/e0755/e0755_top.meta");
+        }
+
+        private void TransactionStatus_Click(object sender, RoutedEventArgs e)
+        {
+            TransactionStatusWindow.ShowTxStatus();
         }
     }
 }

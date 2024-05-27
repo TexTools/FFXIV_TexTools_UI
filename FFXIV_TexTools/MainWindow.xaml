@@ -31,7 +31,12 @@
             <RowDefinition/>
             <RowDefinition Height="22*"/>
         </Grid.RowDefinitions>
-        <Menu VerticalAlignment="Top" Grid.Row="0">
+        
+        <Grid Grid.Row="0" Margin="5,0">
+            <Button Content="Transaction Status" HorizontalAlignment="Right" VerticalAlignment="Center" Click="TransactionStatus_Click"></Button>
+        </Grid>
+        
+        <Menu VerticalAlignment="Top" Grid.Row="0" HorizontalAlignment="Left">
             <Menu.ItemsPanel>
                 <ItemsPanelTemplate>
                     <DockPanel HorizontalAlignment="Stretch"/>
@@ -101,6 +106,8 @@
                 <MenuItem x:Name="NexusMods" Header="{Binding Source={x:Static resx:UIStrings.Nexus_Mods}}" Click="NexusMods_Click"/>
             </MenuItem>
         </Menu>
+
+        
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>

@@ -154,8 +154,6 @@ namespace FFXIV_TexTools.Views
                     string.Format(UIMessages.SuccessfulImportCountMessage, TotalModsImported, TotalModsErrored, durationString));
             }
 
-            MainWindow.GetMainWindow().ReloadItem();
-
             DialogResult = true;
         }
 

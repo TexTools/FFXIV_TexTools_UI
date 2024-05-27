@@ -106,7 +106,6 @@ namespace FFXIV_TexTools.Views.Wizard
         /// </summary>
         private void MetroWindow_Closing(object sender, CancelEventArgs e)
         {
-            MainWindow.GetMainWindow().ReloadItem();
         }
 
         /// <summary>
