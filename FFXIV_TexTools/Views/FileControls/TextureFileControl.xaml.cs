@@ -36,6 +36,8 @@ using static FFXIV_TexTools.ViewModels.TextureViewModel;
 using xivModdingFramework.Items;
 using Image = SixLabors.ImageSharp.Image;
 using xivModdingFramework.Mods;
+using System.Diagnostics;
+using FFXIV_TexTools.Views.Textures;
 
 namespace FFXIV_TexTools.Views.Controls
 {
@@ -53,6 +55,17 @@ namespace FFXIV_TexTools.Views.Controls
             {
                 _Texture = value;
                 OnPropertyChanged(nameof(Texture));
+            }
+        }
+
+        private byte[] _PixelData = null;
+        public byte[] PixelData
+        {
+            get => _PixelData;
+            set
+            {
+                _PixelData = value;
+                OnPropertyChanged(nameof(_PixelData));
             }
         }
 
@@ -93,16 +106,25 @@ namespace FFXIV_TexTools.Views.Controls
 
         protected override async Task<byte[]> INTERNAL_GetUncompressedData()
         {
+            if (UnsavedChanges)
+            {
+                await Tex.MergePixelData(Texture, PixelData);
+            }
             return Texture.ToUncompressedTex();
         }
 
         protected override async Task<bool> INTERNAL_LoadFile(byte[] uncompressedData, string path, IItem referenceItem, ModTransaction tx)
         {
             Texture = XivTex.FromUncompressedTex(uncompressedData);
+            Texture.FilePath = path;
 
-            await UpdateDisplayImage();
+            if(Texture != null)
+            {
+                PixelData = await Texture.GetRawPixels(-1);
+            }
+            UpdateDisplayImage();
 
-            _ = LoadParentFileInformation(path, ReferenceItem);
+            _ = LoadParentFileInformation(path, referenceItem);
             CenterImage();
             return true;
         }
@@ -294,6 +316,7 @@ namespace FFXIV_TexTools.Views.Controls
             Texture = null;
             ImageSource = null;
             ChannelsEnabled = false;
+            PixelData = null;
             TextureFormatLabel.Visibility = Visibility.Collapsed;
             MipMapLabel.Visibility = Visibility.Collapsed;
             SharedVariantLabel.Visibility = Visibility.Collapsed;
@@ -307,11 +330,11 @@ namespace FFXIV_TexTools.Views.Controls
                 || e.PropertyName == nameof(BlueChecked)
                 || e.PropertyName == nameof(AlphaChecked))
             {
-                await UpdateDisplayImage();
+                UpdateDisplayImage();
             }
         }
 
-        private async Task UpdateDisplayImage()
+        public void UpdateDisplayImage()
         {
             if (string.IsNullOrWhiteSpace(InternalFilePath) || Texture == null)
             {
@@ -341,17 +364,13 @@ namespace FFXIV_TexTools.Views.Controls
                 ImageEffect.Channel = new System.Windows.Media.Media3D.Point4D(r, g, b, a);
                 OnPropertyChanged(nameof(ImageEffect));
 
-                byte[] pixData = new byte[0];
-                await Task.Run(async () =>
-                {
-                    pixData = await Texture.GetRawPixels(-1);
-                    SwapRedBlue(pixData);
-                    if (AlphaChecked)
-                    {
-                        MultiplyAlpha(pixData);
-                    }
-                });
 
+                var pixData = (byte[]) PixelData.Clone();
+                SwapRedBlue(pixData);
+                if (AlphaChecked)
+                {
+                    MultiplyAlpha(pixData);
+                }
 
                 var format = PixelFormats.Pbgra32;
                 ImageSource = BitmapSource.Create(Texture.Width, Texture.Height, 96.0, 96.0, format, null, pixData, Texture.Width * format.BitsPerPixel / 8);
@@ -361,7 +380,6 @@ namespace FFXIV_TexTools.Views.Controls
                 this.ShowError("Image Display Error", "An error occurred while trying to display the image:\n\n" + ex.Message);
             }
         }
-
 
         /// <summary>
         /// Asynchronously loads the parent file information for a given texture.
@@ -541,6 +559,18 @@ namespace FFXIV_TexTools.Views.Controls
             Texture = null;
 
             base.FreeManaged();
+        }
+
+        private async void EditChannels_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                EditChannelsWindow.ShowChannelEditor(this);
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine(ex);
+            }
         }
     }
 }

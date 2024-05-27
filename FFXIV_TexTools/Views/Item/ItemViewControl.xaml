@@ -49,7 +49,7 @@
             </Grid.ColumnDefinitions>
 
             <Button Grid.Column="0" Margin="5" Click="ShowExtraButtons_Click" ToolTip="Show/hide the addtional options panel." x:Name="ShowExtraButtonsButton">
-                <iconPacks:PackIconMaterial Kind="UnfoldMoreHorizontal"/>
+                <iconPacks:PackIconFontAwesome Kind="BarsSolid"/>
             </Button>
 
             <Border x:Name="ModelBorder"  Grid.Column="1"  Margin="3" BorderBrush="Black" BorderThickness="2" >
