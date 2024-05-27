@@ -1,6 +1,8 @@
 ﻿using FFXIV_TexTools.Views.Controls;
+using FFXIV_TexTools.Views.Item;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -24,6 +26,9 @@ namespace FFXIV_TexTools.Views.Metadata
     {
         private ItemMetadata _metadata;
         public event Action FileChanged;
+
+
+        private bool _LOADING = false;
         public ImcControl()
         {
             InitializeComponent();
@@ -39,8 +44,17 @@ namespace FFXIV_TexTools.Views.Metadata
             }
         }
 
+        private void OnFileChanged()
+        {
+            if (!_LOADING)
+            {
+                FileChanged?.Invoke();
+            }
+        }
+
         public async Task SetMetadata(ItemMetadata m, int startingVariant = 0)
         {
+            _LOADING = true;
             _metadata = m;
             ImcVariantBox.Items.Clear();
             MaterialSetBox.Items.Clear();
@@ -61,7 +75,6 @@ namespace FFXIV_TexTools.Views.Metadata
             }
 
             ImcVariantBox.SelectedItem = startingVariant;
-
         }
 
 
@@ -84,7 +97,7 @@ namespace FFXIV_TexTools.Views.Metadata
                 _metadata.ImcEntries[variant].Mask = (ushort)(_metadata.ImcEntries[variant].Mask & ~bit);
             }
 
-            FileChanged?.Invoke();
+            OnFileChanged();
         }
 
         private async void ImcVariantBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -133,8 +146,9 @@ namespace FFXIV_TexTools.Views.Metadata
             AnimationBox.Text = anim.ToString();
 
             MaterialSetBox.SelectedIndex = entry.MaterialSet;
-            FileChanged?.Invoke();
+            OnFileChanged();
 
+            _LOADING = false;
         }
 
         private void MaterialSetBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -145,7 +159,7 @@ namespace FFXIV_TexTools.Views.Metadata
             }
             var entry = _metadata.ImcEntries[(int)ImcVariantBox.SelectedItem];
             entry.MaterialSet = (byte)MaterialSetBox.SelectedIndex;
-            FileChanged?.Invoke();
+            OnFileChanged();
         }
 
         private void AffectedItemsButton_Click(object sender, RoutedEventArgs e)
@@ -184,7 +198,7 @@ namespace FFXIV_TexTools.Views.Metadata
             if (value < 0) { value = 0; }
 
             entry.Decal = (byte) value;
-            FileChanged?.Invoke();
+            OnFileChanged();
         }
         private void AnimationBox_TextChanged(object sender, TextChangedEventArgs e)
         {
@@ -200,7 +214,8 @@ namespace FFXIV_TexTools.Views.Metadata
             if (value < 0) { value = 0; }
 
             entry.Animation = (byte)value;
-            FileChanged?.Invoke();
+            OnFileChanged();
+
         }
 
         private void SfxBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -221,7 +236,7 @@ namespace FFXIV_TexTools.Views.Metadata
             ushort baseMask = (ushort)(entry.Mask & 0x3FF);
 
             entry.Mask = (ushort)(baseMask | sfxBits);
-            FileChanged?.Invoke();
+            OnFileChanged();
         }
 
         private void VfxBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -238,7 +253,7 @@ namespace FFXIV_TexTools.Views.Metadata
             if (value < 0) { value = 0; }
 
             entry.Vfx = (byte)value;
-            FileChanged?.Invoke();
+            OnFileChanged();
         }
 
 
@@ -276,7 +291,7 @@ namespace FFXIV_TexTools.Views.Metadata
                 entry.MaterialSet = current.MaterialSet;
                 entry.Animation = current.Animation;
             }
-            FileChanged?.Invoke();
+            OnFileChanged();
         }
 
         private void AddVariantButton_Click(object sender, RoutedEventArgs e)
@@ -288,7 +303,7 @@ namespace FFXIV_TexTools.Views.Metadata
             _metadata.ImcEntries.Add(entry);
             ImcVariantBox.Items.Add(idx);
             ImcVariantBox.SelectedIndex = idx;
-            FileChanged?.Invoke();
+            OnFileChanged();
         }
 
         private void AddMaterialSetButton_Click(object sender, RoutedEventArgs e)
@@ -298,7 +313,21 @@ namespace FFXIV_TexTools.Views.Metadata
 
             MaterialSetBox.Items.Add(currentMax);
             MaterialSetBox.SelectedIndex = currentMax;
-            FileChanged?.Invoke();
+            OnFileChanged();
+        }
+
+        private async void OpenSubItem(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var imcSubset = ImcVariantBox.SelectedIndex;
+                var item = _metadata.Root.GetFirstItem(imcSubset);
+                await SimpleItemViewWindow.ShowItem(item, Window.GetWindow(this));
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine(ex);
+            }
         }
     }
 }

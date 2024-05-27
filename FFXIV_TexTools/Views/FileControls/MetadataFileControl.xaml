@@ -24,7 +24,8 @@
                     <ColumnDefinition Width="60"></ColumnDefinition>
                     <ColumnDefinition Width="50"></ColumnDefinition>
                     <ColumnDefinition Width="100"></ColumnDefinition>
-                </Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
                 <Label Grid.Column="0" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" FontSize="16" VerticalAlignment="Center">Set:</Label>
                 <Label Grid.Column="1" x:Name="SetLabel" VerticalContentAlignment="Center" FontSize="16" VerticalAlignment="Center">e0504</Label>
 
@@ -33,8 +34,9 @@
                 <Label Grid.Column="2" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" FontSize="16" VerticalAlignment="Center">Slot:</Label>
                 <Label Grid.Column="3" x:Name="SlotLabel" VerticalContentAlignment="Center" FontSize="16" VerticalAlignment="Center">Hands(glv)</Label>
 
+            <Label Grid.Column="4" x:Name="ItemCountLabel" VerticalContentAlignment="Center" FontSize="16" VerticalAlignment="Center">? Variants / ? Items</Label>
 
-            </Grid>
+        </Grid>
 
 
             <Separator Grid.Row="1">

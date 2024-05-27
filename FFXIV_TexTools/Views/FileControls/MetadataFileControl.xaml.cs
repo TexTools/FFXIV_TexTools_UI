@@ -38,6 +38,7 @@ using Image = SixLabors.ImageSharp.Image;
 using xivModdingFramework.Mods;
 using xivModdingFramework.Mods.FileTypes;
 using xivModdingFramework.Models.FileTypes;
+using System.Diagnostics;
 
 namespace FFXIV_TexTools.Views.Controls
 {
@@ -118,6 +119,11 @@ namespace FFXIV_TexTools.Views.Controls
         public override void INTERNAL_ClearFile()
         {
             Metadata = null;
+            Root = null;
+            SetLabel.Content = "--";
+            SlotLabel.Content = "--";
+            ItemCountLabel.Content = "";
+
         }
 
         protected override async Task<bool> INTERNAL_CanLoadFile(string filePath, byte[] data, ModTransaction tx)
@@ -164,25 +170,48 @@ namespace FFXIV_TexTools.Views.Controls
                 return;
             }
 
-            var defaultVariant = 0;
-            var im = ReferenceItem as IItemModel;
-            if (im == null || !Imc.UsesImc(im))
-            {
-                //No-Op
-            }
-            else if (im.ModelInfo != null)
-            {
-                defaultVariant = im.ModelInfo.ImcSubsetID >= 0 ? im.ModelInfo.ImcSubsetID : 0;
-            }
-
-
-            SetLabel.Content = XivItemTypes.GetSystemPrefix(Root.Info.PrimaryType) + Root.Info.PrimaryId.ToString().PadLeft(4, '0');
-            SlotLabel.Content = Mdl.SlotAbbreviationDictionary.FirstOrDefault(x => x.Value == Root.Info.Slot).Key + "(" + Root.Info.Slot + ")";
-
+            _LOADING_METADATA = true;
 
             var tx = MainWindow.DefaultTransaction;
 
-            _LOADING_METADATA = true;
+
+            var defaultVariant = 0;
+            var im = ReferenceItem as IItemModel;
+
+            var variantCount = 1;
+            if (im != null && Imc.UsesImc(im) && im.ModelInfo != null)
+            {
+                defaultVariant = im.ModelInfo.ImcSubsetID >= 0 ? im.ModelInfo.ImcSubsetID : 0;
+                var fullInfo = await Imc.GetFullImcInfo(Root.GetRawImcFilePath(), false, tx);
+                if(fullInfo != null)
+                {
+                    // Don't count Variant 0 unless it's the only one.
+                    variantCount = Math.Max(fullInfo.SubsetCount - 1, 1);
+                }
+            }
+
+            var itemCount = 1;
+            try
+            {
+                // Don't count Variant 0 unless it's the only one.
+                itemCount = Math.Max((await Root.GetAllItems()).Count -1, 1);
+            }
+            catch (Exception ex)
+            {
+                // Safety catch here in case something went screwy.
+                Trace.WriteLine(ex);
+            }
+
+            var niceSlot = "--";
+            if (!string.IsNullOrEmpty(Root.Info.Slot))
+            {
+                niceSlot = Mdl.SlotAbbreviationDictionary.FirstOrDefault(x => x.Value == Root.Info.Slot).Key + "(" + Root.Info.Slot + ")";
+            }
+            SetLabel.Content = XivItemTypes.GetSystemPrefix(Root.Info.PrimaryType) + Root.Info.PrimaryId.ToString().PadLeft(4, '0');
+            SlotLabel.Content = niceSlot;
+            ItemCountLabel.Content = $"{itemCount} Item(s) / {variantCount} Variant(s)";
+
+
 
             if (Metadata.ImcEntries.Count > 0)
             {

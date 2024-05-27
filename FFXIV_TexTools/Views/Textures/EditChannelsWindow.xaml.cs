@@ -215,6 +215,7 @@ namespace FFXIV_TexTools.Views.Textures
 
         private void Confirm_Click(object sender, RoutedEventArgs e)
         {
+            Control.UnsavedChanges = true;
             DialogResult = true;
         }
 

@@ -225,29 +225,18 @@ namespace FFXIV_TexTools.Views.Controls
                 return true;
             }
 
-            if (UnsavedChanges)
-            {
-                return false;
-            }
-
-            if(Model == null)
-            {
-                return true;
-            }
-
-            if (Model == null)
-            {
-                return true;
-            }
-
-            if (_MaterialPaths == null)
+            if(Model == null || _MaterialPaths == null)
             {
                 return true;
             }
 
             if(_ChildFiles.Contains(changedFile))
             {
-                return true;
+                // Queue visual update if one of our constituent files chnaged, doesn't really matter if it fails.
+                _ = await Dispatcher.InvokeAsync(async () =>
+                {
+                    await UpdateVisual();
+                });
             }
             return false;
         }

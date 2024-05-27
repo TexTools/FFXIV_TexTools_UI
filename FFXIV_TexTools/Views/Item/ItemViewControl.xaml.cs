@@ -545,7 +545,7 @@ namespace FFXIV_TexTools.Views.Item
             {
                 ItemNameText = "No Item Selected";
                 return;
-            } else if(Root == null)
+            } else if(Root == null || !Root.Info.IsValid())
             {
                 ItemNameText = Item.Name;
                 return;
@@ -553,7 +553,7 @@ namespace FFXIV_TexTools.Views.Item
 
             var variantString = "";
             var asIm = Item as IItemModel;
-            if (Imc.UsesImc(Root) && asIm != null && asIm.ModelInfo != null && asIm.ModelInfo.ImcSubsetID >= 0)
+            if (asIm != null && Imc.UsesImc(Root) && asIm != null && asIm.ModelInfo != null && asIm.ModelInfo.ImcSubsetID >= 0)
             {
                 variantString += " - Variant " + asIm.ModelInfo.ImcSubsetID;
 
@@ -1121,10 +1121,16 @@ namespace FFXIV_TexTools.Views.Item
             }
 
             var res = true;
+            bool metadataPrompt = false;
             bool modelPrompt = false;
             bool materialPrompt = false;
             bool texPrompt = false;
 
+            if (MetadataWrapper.UnsavedChanges && (c == null))
+            {
+                res = MetadataWrapper.FileControl.ConfirmDiscardChanges(MetadataWrapper.FilePath);
+                metadataPrompt = true;
+            }
             if (ModelWrapper.UnsavedChanges && ((c == ModelComboBox) || c == null))
             {
                 res = ModelWrapper.FileControl.ConfirmDiscardChanges(ModelWrapper.FilePath);
@@ -1137,7 +1143,7 @@ namespace FFXIV_TexTools.Views.Item
             }
             if (res && TextureWrapper.UnsavedChanges && c == null)
             {
-                res= TextureWrapper.FileControl.ConfirmDiscardChanges(TextureWrapper.FilePath);
+                res = TextureWrapper.FileControl.ConfirmDiscardChanges(TextureWrapper.FilePath);
                 texPrompt = true;
             }
 
@@ -1157,6 +1163,11 @@ namespace FFXIV_TexTools.Views.Item
             }
 
             // Clear flags.
+            if (res && metadataPrompt)
+            {
+                MetadataWrapper.UnsavedChanges = false;
+            }
+
             if (res && modelPrompt)
             {
                 ModelWrapper.UnsavedChanges = false;

@@ -699,7 +699,7 @@ namespace FFXIV_TexTools.Views.Controls
                 enabled = true;
             }
 
-            list.Add(("Save to all Versions of this Material".L(), SaveAllVersions, enabled));
+            list.Add(("Save to all Material Sets".L(), SaveAllVersions, enabled));
 
             return list;
         }

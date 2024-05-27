@@ -38,6 +38,7 @@ using Image = SixLabors.ImageSharp.Image;
 using xivModdingFramework.Mods;
 using System.Diagnostics;
 using FFXIV_TexTools.Views.Textures;
+using System.Runtime.InteropServices.WindowsRuntime;
 
 namespace FFXIV_TexTools.Views.Controls
 {
@@ -193,38 +194,28 @@ namespace FFXIV_TexTools.Views.Controls
             }
         }
 
-        private string _TextureFormat;
-        public string TextureFormat
+        private string _TextureInfo;
+        public string TextureInfo
         {
-            get => _TextureFormat;
+            get => _TextureInfo;
             set
             {
-                _TextureFormat = value;
-                OnPropertyChanged(nameof(TextureFormat));
+                _TextureInfo = value;
+                OnPropertyChanged(nameof(TextureInfo));
             }
         }
 
-        private string _TextureDimensions;
-        public string TextureDimensions
+        private Visibility _SharedVariantVisibility = Visibility.Collapsed;
+        public Visibility SharedVariantVisibility
         {
-            get => _TextureDimensions;
+            get => _SharedVariantVisibility;
             set
             {
-                _TextureDimensions = value;
-                OnPropertyChanged(nameof(TextureDimensions));
+                _SharedVariantVisibility = value;
+                OnPropertyChanged(nameof(SharedVariantVisibility));
             }
         }
 
-        private string _MipMapInfo;
-        public string MipMapInfo
-        {
-            get => _MipMapInfo;
-            set
-            {
-                _MipMapInfo = "MipMaps: " + value;
-                OnPropertyChanged(nameof(MipMapInfo));
-            }
-        }
 
         private bool _channelsEnabled = true;
         public bool ChannelsEnabled
@@ -317,11 +308,13 @@ namespace FFXIV_TexTools.Views.Controls
             ImageSource = null;
             ChannelsEnabled = false;
             PixelData = null;
-            TextureFormatLabel.Visibility = Visibility.Collapsed;
-            MipMapLabel.Visibility = Visibility.Collapsed;
-            SharedVariantLabel.Visibility = Visibility.Collapsed;
-            SharedTextureLabel.Visibility = Visibility.Collapsed;
-            TexDimensionLabel.Visibility = Visibility.Collapsed;
+            
+            if (Texture == null)
+            {
+                TextureInfo = "--";
+            }
+
+            SharedVariantVisibility = Visibility.Collapsed;
         }
         private async void TextureFileControl_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
@@ -344,13 +337,14 @@ namespace FFXIV_TexTools.Views.Controls
             try
             {
                 ChannelsEnabled = true;
-                TextureFormatLabel.Visibility = Visibility.Visible;
-                MipMapLabel.Visibility = Visibility.Visible;
-                TexDimensionLabel.Visibility = Visibility.Visible;
 
-                TextureFormat = Texture.TextureFormat.GetTexDisplayName();
-                TextureDimensions = $"{Texture.Height} x {Texture.Width}";
-                MipMapInfo = Texture.MipMapCount != 0 ? $"Yes ({Texture.MipMapCount})" : "No";
+                if(Texture == null)
+                {
+                    TextureInfo = "--";
+                    return;
+                }
+
+                TextureInfo = $"{Texture.Width}x{Texture.Height} {Texture.TextureFormat.GetTexDisplayName()} ({Texture.MipMapCount} Mips)";
 
                 var r = RedChecked ? 1.0f : 0.0f;
                 var g = GreenChecked ? 1.0f : 0.0f;
@@ -387,45 +381,28 @@ namespace FFXIV_TexTools.Views.Controls
         /// <returns></returns>
         private async Task LoadParentFileInformation(string path, IItem item = null)
         {
-            if(item == null)
+
+            SharedVariantVisibility = Visibility.Collapsed;
+
+            var root = await XivCache.GetFirstRoot(path);
+
+            if(root == null)
             {
-                var root = await XivCache.GetFirstRoot(path);
-                if(root!= null)
-                {
-                    item = root.GetFirstItem();
-                }
+                return;
             }
 
-            if (item == null)
+            if(item == null)
             {
-                SharedVariantLabel.Visibility = Visibility.Collapsed;
-                SharedTextureLabel.Visibility = Visibility.Collapsed;
+                item = root.GetFirstItem();
+            }
+
+            var asIm = item as IItemModel;
+            if (asIm == null || !Imc.UsesImc(asIm))
+            {
                 return;
             }
             try
             {
-
-                var asIm = item as IItemModel;
-                if (asIm == null)
-                {
-                    return;
-                }
-
-                var root = item.GetRoot();
-                if (root == null || !Imc.UsesImc(asIm))
-                {
-                    SharedVariantLabel.Visibility = Visibility.Collapsed;
-                    SharedTextureLabel.Visibility = Visibility.Collapsed;
-                    return;
-                }
-
-
-
-                SharedVariantLabel.Visibility = Visibility.Visible;
-                SharedTextureLabel.Visibility = Visibility.Collapsed;
-                SharedVariantLabel.Content = "Loading usage data...".L();
-
-
                 List<string> parents = new List<string>();
                 List<XivImc> entries = new List<XivImc>();
                 await Task.Run(async () =>
@@ -451,11 +428,13 @@ namespace FFXIV_TexTools.Views.Controls
                 // Invalid IMC set, cancel.
                 if (asIm.ModelInfo.ImcSubsetID > entries.Count || entries.Count == 0)
                 {
-                    if (string.Equals(InternalFilePath,path))
-                    {
-                        SharedVariantLabel.Visibility = Visibility.Collapsed;
-                        SharedTextureLabel.Visibility = Visibility.Collapsed;
-                    }
+                    return;
+                }
+
+                if(parents == null || parents.Count == 0)
+                {
+                    SharedVariantLabel.Content = $"Unused (Orphaned) Texture".L();
+                    SharedVariantVisibility = Visibility.Visible;
                     return;
                 }
 
@@ -474,16 +453,6 @@ namespace FFXIV_TexTools.Views.Controls
                 {
                     // Material set 0 is the null set.
                     vCount -= variantsPerMset[0];
-                }
-
-                if (parents == null || parents.Count == 0)
-                {
-                    if (string.Equals(InternalFilePath, path))
-                    {
-                        SharedVariantLabel.Content = "";
-                        SharedVariantLabel.Visibility = Visibility.Collapsed;
-                    }
-                    return;
                 }
 
                 var mymSet = entries[asIm.ModelInfo.ImcSubsetID].MaterialSet;
@@ -517,20 +486,13 @@ namespace FFXIV_TexTools.Views.Controls
 
                 if (string.Equals(InternalFilePath, path))
                 {
-                    SharedVariantLabel.Content = $"Used by {variantSum._()}/{vCount._()} Variants".L();
-                    SharedVariantLabel.Visibility = Visibility.Visible;
-                }
 
-                var allSame = sameMaterials.Count() == parents.Count;
-                if (!allSame)
-                {
                     var differentFiles = parents.Select(x => Path.GetFileName(x)).ToHashSet();
-                    var count = differentFiles.Count - 1;
-                    if (string.Equals(InternalFilePath, path))
-                    {
-                        SharedTextureLabel.Content = $"Used by {count._()} Other Materials".L();
-                        SharedTextureLabel.Visibility = Visibility.Visible;
-                    }
+                    var count = differentFiles.Count;
+
+                    SharedVariantLabel.Content = $"Used in {variantSum._()}/{vCount._()} Variant(s)".L();
+                    SharedTextureLabel.Content = $"Used in {count._()} Material(s)".L();
+                    SharedVariantVisibility = Visibility.Visible;
                 }
             }
             catch (Exception ex)
@@ -565,6 +527,10 @@ namespace FFXIV_TexTools.Views.Controls
         {
             try
             {
+                if(Texture == null || PixelData == null)
+                {
+                    return;
+                }
                 EditChannelsWindow.ShowChannelEditor(this);
             }
             catch (Exception ex)
