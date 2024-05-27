@@ -47,6 +47,7 @@ using FFXIV_TexTools.Properties;
 using Xceed.Wpf.Toolkit;
 using xivModdingFramework.Helpers;
 using System.Diagnostics;
+using FFXIV_TexTools.Resources;
 
 namespace FFXIV_TexTools.Views.Controls
 {
@@ -279,6 +280,18 @@ namespace FFXIV_TexTools.Views.Controls
             return true;
         }
 
+        protected internal override async Task<bool> INTERNAL_WriteModFile(ModTransaction tx)
+        {
+            // We override this in order to use MTRL's import function, which checks for missing texture files, etc.
+            await Mtrl.ImportMtrl(Material, ReferenceItem, XivStrings.TexTools, true, tx);
+
+#if DAWNTRAIL
+            await Mtrl.FixPreDawntrailMaterial(Material, XivStrings.TexTools, tx);
+#endif
+
+            return true;
+        }
+
         protected override async Task<bool> INTERNAL_SaveAs(string externalFilePath)
         {
             var ext = Path.GetExtension(externalFilePath).ToLower();
@@ -488,16 +501,32 @@ namespace FFXIV_TexTools.Views.Controls
             UpdateRow();
         }
 
-        private void ColorsetRow_Clicked(object sender, MouseButtonEventArgs e)
+        private async void ColorsetRow_Clicked(object sender, MouseButtonEventArgs e)
         {
-            var selectedRowControl = (ColorsetRowControl)e.Source;
-            SelectedColorsetRowImage.Source = selectedRowControl.RowImageSource;
-            var rowNumber = (int)selectedRowControl.DataContext;
-            SetRow(rowNumber);
+            try
+            {
+                var selectedRowControl = (ColorsetRowControl)e.Source;
+                SelectedColorsetRowImage.Source = selectedRowControl.RowImageSource;
+                var rowNumber = (int)selectedRowControl.DataContext;
+                if(rowNumber >= _rowCount)
+                {
+                    return;
+                }
+                await SetRow(rowNumber);
+            }
+            catch(Exception ex)
+            {
+                Trace.WriteLine(ex);
+            }
         }
 
         private List<Half[]> GetRowData(int row)
         {
+            if(row >= _rowCount)
+            {
+                return new List<Half[]>();
+            }
+
             var offset = row * _columnCount * 4;
 
             var data = new List<Half[]>(4);

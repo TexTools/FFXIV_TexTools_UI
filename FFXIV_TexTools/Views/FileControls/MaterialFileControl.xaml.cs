@@ -218,7 +218,9 @@ namespace FFXIV_TexTools.Views.Controls
             var usesImc = root == null ? false : Imc.UsesImc(root);
 
             // The incoming data is an uncompressed MTRL file.
-            Material = Mtrl.GetXivMtrl(data, path);
+            var mtrl = Mtrl.GetXivMtrl(data, path);
+
+            Material = mtrl;
             return true;
         }
 
@@ -249,8 +251,15 @@ namespace FFXIV_TexTools.Views.Controls
 
         protected internal override async Task<bool> INTERNAL_WriteModFile(ModTransaction tx)
         {
+
+
             // We override this in order to use MTRL's import function, which checks for missing texture files, etc.
             await Mtrl.ImportMtrl(Material, ReferenceItem, XivStrings.TexTools, true, tx);
+
+#if DAWNTRAIL
+            await Mtrl.FixPreDawntrailMaterial(Material, XivStrings.TexTools, tx);
+#endif
+
             return true;
         }
 
