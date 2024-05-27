@@ -15,7 +15,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="40"></RowDefinition>
             <RowDefinition Height="60"></RowDefinition>
-            <RowDefinition x:Name="ExtraButtonsRow" Height="40"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="1*"></RowDefinition>
         </Grid.RowDefinitions>
 
@@ -108,14 +108,22 @@
 
         <Grid x:Name="ButtonGrid" Grid.Row="2">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="150"></ColumnDefinition>
-                <ColumnDefinition Width="150"></ColumnDefinition>
-                <ColumnDefinition Width="150"></ColumnDefinition>
+                <ColumnDefinition Width="200"></ColumnDefinition>
+                <ColumnDefinition Width="200"></ColumnDefinition>
+                <ColumnDefinition Width="200"></ColumnDefinition>
+                <ColumnDefinition Width="200"></ColumnDefinition>
                 <ColumnDefinition Width="1*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <Button Content="Item Info" Margin="5" Grid.Column="0" Click="ItemInfo_Click" IsEnabled="{Binding Path=ItemInfoEnabled}"></Button>
-            <Button Content="View/Edit Metadata" Margin="5" Grid.Column="1" Click="ShowMetadata_Click" IsEnabled="{Binding Path=MetadataEnabled}"></Button>
-            <Button Content="Add New Material" Margin="5" Grid.Column="2" Click="AddMaterial_Click" IsEnabled="{Binding Path=AddMaterialEnabled}"></Button>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40"/>
+                <RowDefinition Height="5"/>
+            </Grid.RowDefinitions>
+            <Button Content="View/Edit Metadata" Margin="5" Grid.Column="0" Click="ShowMetadata_Click" IsEnabled="{Binding Path=MetadataEnabled}"></Button>
+            <Button Content="Variant List" Margin="5" Grid.Column="1" Click="ItemInfo_Click" IsEnabled="{Binding Path=ItemInfoEnabled}"></Button>
+            <Button Content="Delete Orphaned Files" Margin="5" Grid.Column="2" Click="RemoveOrphans_Click" IsEnabled="{Binding Path=AddMaterialEnabled}"></Button>
+            <Button Content="Add New Material" Margin="5" Grid.Column="3" Click="AddMaterial_Click" IsEnabled="{Binding Path=AddMaterialEnabled}"></Button>
+
+            <Separator Grid.Row="1" Grid.ColumnSpan="5"></Separator>
         </Grid>
 
         

@@ -1,4 +1,5 @@
-﻿using FFXIV_TexTools.Resources;
+﻿using FFXIV_TexTools.Helpers;
+using FFXIV_TexTools.Resources;
 using FFXIV_TexTools.Views.Controls;
 using FFXIV_TexTools.Views.SharedItems;
 using HelixToolkit.Wpf;
@@ -258,7 +259,7 @@ namespace FFXIV_TexTools.Views.Item
 
             MetadataWrapper.FileControl.FileSaved += OnMetadataSaved;
 
-            ExtraButtonsRow.Height = new GridLength(0);
+            ButtonGrid.Visibility = Visibility.Collapsed;
             ItemNameText = "No Item Selected";
 
             // Go ahead and show the model panel.
@@ -731,7 +732,7 @@ namespace FFXIV_TexTools.Views.Item
             }
 
 
-            var orphanMaterials = await Root.GetOrphanMaterials(materialSet, tx);
+            var orphanMaterials = await Root.GetModdedMaterials(materialSet, tx);
             if (Root.Info.SecondaryType != null)
             {
                 // If there is a secondary ID, just snap these onto the first entry, because there's only one model (or 0).
@@ -1554,15 +1555,15 @@ namespace FFXIV_TexTools.Views.Item
 
         private void ShowExtraButtons_Click(object sender, RoutedEventArgs e)
         {
-            if (ExtraButtonsRow.Height.Value == 0)
+            if (ButtonGrid.Visibility == Visibility.Visible)
             {
-                ExtraButtonsRow.Height =  new GridLength(40);
+                ButtonGrid.Visibility = Visibility.Collapsed;
                 //var icon = new FontAwesomeExtension(PackIconFontAwesomeKind.SortUpSolid);
                 //ShowExtraButtonsButton.Content = icon;
                 //ExtraButtonsIcon.Kind = PackIconFontAwesomeKind.SortUpSolid;
             } else
             {
-                ExtraButtonsRow.Height = new GridLength(0);
+                ButtonGrid.Visibility = Visibility.Visible;
                 //var icon = new FontAwesomeExtension(PackIconFontAwesomeKind.SortDownSolid);
                 //ShowExtraButtonsButton.Content = icon;
                 //ExtraButtonsIcon.Kind = PackIconFontAwesomeKind.SortDownSolid;
@@ -1767,6 +1768,52 @@ namespace FFXIV_TexTools.Views.Item
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
+        }
+
+        private async void RemoveOrphans_Click(object sender, RoutedEventArgs e)
+        {
+            if(Root == null)
+            {
+                return;
+            }
+            try
+            {
+                var orphans = await Root.GetOrphanedFiles(MainWindow.DefaultTransaction);
+                if(orphans.Count == 0)
+                {
+                    FlexibleMessageBox.Show(this.GetWin32Window(), "This item tree currently has no orphaned files.", "No Orphans Notification", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Information, System.Windows.Forms.MessageBoxDefaultButton.Button1);
+                    return;
+                }
+
+                var orphanText = string.Join("\n", orphans);
+
+                FlexibleMessageBox.Show(this.GetWin32Window(), "This will delete the following orphaned/unused mod files:\n\n" + orphanText + "\n\n Continue?", "Delete Orphans Confirmation", System.Windows.Forms.MessageBoxButtons.OKCancel, System.Windows.Forms.MessageBoxIcon.Warning, System.Windows.Forms.MessageBoxDefaultButton.Button1);
+
+                var tx = MainWindow.UserTransaction;
+                var boiler = TxBoiler.BeginWrite(ref tx);
+                var states = new List<TxFileState>();
+                try
+                {
+                    foreach (var file in orphans)
+                    {
+                        states.Add(await tx.SaveFileState(file));
+                        await Modding.DeleteMod(file, tx);
+                    }
+                    await boiler.Commit();
+                    await SetItem(Item, _VisiblePanel.FilePath);
+                }
+                catch
+                {
+                    await boiler.Catch(states);
+                    throw;
+                }
+
+
+            }
+            catch(Exception ex)
+            {
+                this.ShowError("Delete File Error", "An error occurred while deleting the files: \n\n" + ex.Message);
+            }
         }
     }
 }

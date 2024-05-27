@@ -61,6 +61,18 @@ namespace FFXIV_TexTools.Views
             return f;
         }
 
+        public static WindowWrapper GetWin32Window(this Window window)
+        {
+            var Win32Window = new WindowWrapper(new WindowInteropHelper(window).Handle);
+            return Win32Window;
+        }
+        public static WindowWrapper GetWin32Window(this UserControl control)
+        {
+            var wind = Window.GetWindow(control);
+            var Win32Window = new WindowWrapper(new WindowInteropHelper(wind).Handle);
+            return Win32Window;
+        }
+
         public static bool ConfirmDiscardChanges(this UserControl control, string filePath)
         {
 
