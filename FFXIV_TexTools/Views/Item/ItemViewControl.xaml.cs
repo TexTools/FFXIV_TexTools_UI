@@ -557,10 +557,11 @@ namespace FFXIV_TexTools.Views.Item
             {
                 variantString += " - Variant " + asIm.ModelInfo.ImcSubsetID;
 
+                
                 var mSetId = await Imc.GetMaterialSetId(asIm, false, tx);
                 if (mSetId >= 0)
                 {
-                    variantString = " - Material Set " + mSetId;
+                    variantString += "/Material Set " + mSetId;
                 }
             }
 
