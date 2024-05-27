@@ -39,10 +39,8 @@ namespace FFXIV_TexTools.Views.Metadata
             }
         }
 
-        private bool _LOADING = false;
         public async Task SetMetadata(ItemMetadata m, int startingVariant = 0)
         {
-            _LOADING = true;
             _metadata = m;
             ImcVariantBox.Items.Clear();
             MaterialSetBox.Items.Clear();
@@ -64,7 +62,6 @@ namespace FFXIV_TexTools.Views.Metadata
 
             ImcVariantBox.SelectedItem = startingVariant;
 
-            _LOADING = false;
         }
 
 
@@ -94,7 +91,6 @@ namespace FFXIV_TexTools.Views.Metadata
         {
             try
             {
-                if (_LOADING) return;
                 if (_metadata == null) return;
                 if (ImcVariantBox.SelectedItem == null) return;
 
