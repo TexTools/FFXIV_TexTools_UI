@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using xivModdingFramework.Mods;
+using static FFXIV_TexTools.Views.TxWatcher;
 
 namespace FFXIV_TexTools.Views
 {
@@ -14,8 +15,12 @@ namespace FFXIV_TexTools.Views
 
         public delegate void UserTxStateChangedEventHandler(ETransactionState oldState, ETransactionState newState);
         public delegate void SaveStatusChangedEventHandler(bool allowed, string text);
+        public delegate void UserTxSettingsChangedEventHandler(ModTransactionSettings settings);
+        public delegate void UserTxFileChangedEventHandler(string file);
 
+        public static event UserTxSettingsChangedEventHandler UserTxSettingsChanged;
         public static event UserTxStateChangedEventHandler UserTxStateChanged;
+        public static event UserTxFileChangedEventHandler UserTxFileChanged;
         public static event SaveStatusChangedEventHandler SaveStatusChanged;
 
         public static ModTransaction UserTransaction
@@ -88,6 +93,16 @@ namespace FFXIV_TexTools.Views
             UserTxStateChanged?.Invoke(oldState, newState);
             SaveStatusChanged?.Invoke(SaveAllowed, SaveLabel);
         }
+
+        internal static void INTERNAL_TxSettingsChanged(ModTransactionSettings settings)
+        {
+            UserTxSettingsChanged?.Invoke(settings);
+        }
+        internal static void INTERNAL_TxFileChanged(string file)
+        {
+            UserTxFileChanged?.Invoke(file);
+        }
+
 
         static TxWatcher()
         {

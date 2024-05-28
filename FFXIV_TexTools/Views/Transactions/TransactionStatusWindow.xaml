@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FFXIV_TexTools.Views.Transactions"
         mc:Ignorable="d"
-        Title="User Transaction Status" Height="200" Width="400">
+        Title="User Transaction Status" Height="Auto" Width="500" MinWidth="500" MinHeight="300"
+        SizeToContent="Height">
     <Grid>
         <Grid.ColumnDefinitions>
             
@@ -23,11 +24,55 @@
             </TextBlock>
         </Grid>
 
+        <Grid x:Name="TxStatusGrid" Grid.Row="1" IsEnabled="{Binding Path=TxActionEnabled}" >
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0" Margin="10" MinHeight="150">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30"></RowDefinition>
+                    <RowDefinition Height="1*"></RowDefinition>
+                </Grid.RowDefinitions>
+                <Label Content="Modified Files" HorizontalAlignment="Left" VerticalAlignment="Center"></Label>
+                <Button Content="Reset Selected File(s)" HorizontalAlignment="Right" VerticalAlignment="Center" Click="ResetFiles_Click"></Button>
+                <Border Grid.Row="1" BorderBrush="{DynamicResource NormalBorderBrush}" BorderThickness="1">
+                    <ListBox x:Name="FileListBox" Grid.Row="0" ItemsSource="{Binding Path=FileListSource}" SelectionMode="Multiple"></ListBox>
+                </Border>
+            </Grid>
+
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="120"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="40" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <Label Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Center" Content="Transaction Target:"></Label>
+                <ComboBox Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" Width="120" VerticalAlignment="Center" DisplayMemberPath="Key" SelectedValuePath="Value" ItemsSource="{Binding Path=TargetSource}" SelectedValue="{Binding Path=TxTarget}"></ComboBox>
+
+                <Grid x:Name="ExtendedTargetInfo" Grid.Row="1" Height="40" Grid.ColumnSpan="3">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="120"/>
+                        <ColumnDefinition Width="1*"/>
+                    </Grid.ColumnDefinitions>
+                    <Button Content="Target Path:" HorizontalAlignment="Right" VerticalAlignment="Center" Width="100" Click="SelectTargetPath_Click" Margin="5,0,5,0" IsEnabled="{Binding Path=TxPathEnabled}"></Button>
+                    <TextBox Grid.Column="1" VerticalAlignment="Center" Margin="5,0,5,0" IsEnabled="False" Text="{Binding Path=TxTargetPath}"></TextBox>
+                </Grid>
+            </Grid>
+        </Grid>
+
         <Grid Grid.Row="2" x:Name="PreTxRow"  IsEnabled="{Binding Path=TxActionEnabled}" >
             <Button Content="Begin Transaction" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="5" Width="150" Click="Begin_Click"></Button>
         </Grid>
         <Grid Grid.Row="2" x:Name="DuringTxRow">
             <Button Content="Cancel Transaction" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5" Width="150" Click="Cancel_Click"></Button>
+            <CheckBox x:Name="CloseOnCommitBox" Content="Close Tx on Commit" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,160,0" IsChecked="{Binding Path=CloseOnCommit}"></CheckBox>
             <Button Content="Commit Transaction" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="5" Width="150" Click="Commit_Click"></Button>
         </Grid>
     </Grid>

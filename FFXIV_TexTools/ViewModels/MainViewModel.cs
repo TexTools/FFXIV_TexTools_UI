@@ -49,11 +49,36 @@ using System.Drawing.Imaging;
 using xivModdingFramework.Mods.Enums;
 using System.ComponentModel.Composition.Primitives;
 using AutoUpdaterDotNET;
+using System.Windows.Threading;
+using System.Windows.Media;
 
 namespace FFXIV_TexTools.ViewModels
 {
     public class MainViewModel : INotifyPropertyChanged
     {
+
+        private string _TxStatusText;
+        public string TxStatusText
+        {
+            get => _TxStatusText;
+            set
+            {
+                _TxStatusText = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TxStatusText)));
+            }
+        }
+
+        private Brush _TxStatusBrush;
+        public Brush TxStatusBrush
+        {
+            get => _TxStatusBrush;
+            set
+            {
+                _TxStatusBrush = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TxStatusBrush)));
+            }
+        }
+
         private readonly MainWindow _mainWindow;
 
         private ObservableCollection<Category> _categories = new ObservableCollection<Category>();
@@ -81,6 +106,9 @@ namespace FFXIV_TexTools.ViewModels
 
 
             CacheTimer.Elapsed += UpdateDependencyQueueCount;
+
+            UpdateTxState(MainWindow.UserTransaction == null ? ETransactionState.Closed : MainWindow.UserTransaction.State);
+            TxWatcher.UserTxStateChanged += TxStateChanged;
         }
 
         public void UpdateDependencyQueueCount(object sender, System.Timers.ElapsedEventArgs e)
@@ -573,6 +601,49 @@ namespace FFXIV_TexTools.ViewModels
         }
 
         #endregion
+
+
+        private async void TxStateChanged(ETransactionState oldState, ETransactionState newState)
+        {
+            try
+            {
+                await await _mainWindow.Dispatcher.InvokeAsync(async () =>
+                {
+                    UpdateTxState(newState);
+                });
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine(ex);
+            }
+        }
+        private void UpdateTxState(ETransactionState newState)
+        {
+            TxStatusText = newState.ToString();
+
+            if (newState == ETransactionState.Open)
+            {
+                // TX is ready for writing.
+                TxStatusBrush = Brushes.DarkGreen;
+            }
+            else if (newState == ETransactionState.Invalid || newState == ETransactionState.Closed)
+            {
+                // TX is closed.
+                TxStatusBrush = Brushes.DarkGray;
+            }
+            else if (newState == ETransactionState.Preparing)
+            {
+                // TX is ready for prep-writing.
+                TxStatusBrush = Brushes.DarkOrange;
+            }
+            else
+            {
+                // TX is working.
+                TxStatusBrush = Brushes.DarkRed;
+            }
+
+        }
+
 
         public event PropertyChangedEventHandler PropertyChanged;
 

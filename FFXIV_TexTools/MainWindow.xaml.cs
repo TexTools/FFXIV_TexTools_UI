@@ -134,16 +134,20 @@ namespace FFXIV_TexTools
             {
                 if(_UserTransaction != null)
                 {
-                    if(_UserTransaction.State != ETransactionState.Closing)
+                    if(_UserTransaction.State != ETransactionState.Working)
                     {
                         throw new Exception("Cannot assign new user transaction when one already exists and is not closed.");
                     }
                     _UserTransaction.TransactionStateChanged -= OnUserTxChanged;
+                    _UserTransaction.TransactionSettingsChanged -= OnUserTxSettingsChanged;
+                    _UserTransaction.FileChanged -= OnUserTxFileChanged;
                 }
 
                 _UserTransaction = value;
                 TxWatcher.INTERNAL_TxStateChanged(ETransactionState.Invalid, value.State);
                 value.TransactionStateChanged += OnUserTxChanged;
+                value.TransactionSettingsChanged += OnUserTxSettingsChanged;
+                value.FileChanged += OnUserTxFileChanged;
             }
         }
 
@@ -160,7 +164,19 @@ namespace FFXIV_TexTools
                 _UserTransaction = null;
             }
         }
+        private static void OnUserTxSettingsChanged(ModTransaction sender, ModTransactionSettings settings)
+        {
+            if (_UserTransaction != sender)
+            {
+                return;
+            }
 
+            TxWatcher.INTERNAL_TxSettingsChanged(settings);
+        }
+        private static void OnUserTxFileChanged(string internalFilePath, long newOffset)
+        {
+            TxWatcher.INTERNAL_TxFileChanged(internalFilePath);
+        }
 
 
         public static ModTransaction DefaultTransaction
