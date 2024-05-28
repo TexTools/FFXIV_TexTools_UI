@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FFXIV_TexTools.Views.Transactions"
         mc:Ignorable="d"
-        Title="User Transaction Status" Height="Auto" Width="500" MinWidth="500" MinHeight="300"
+        Title="User Transaction Status" Height="Auto" Width="500" MinWidth="660" MinHeight="300"
         SizeToContent="Height">
     <Grid>
         <Grid.ColumnDefinitions>
@@ -22,6 +22,7 @@
                 <Run>Transaction Status:</Run>
                 <Run Text="{Binding Path=TxStatusText, FallbackValue=Unknown}" FontWeight="Bold" Foreground="{Binding Path=TxStatusBrush, FallbackValue=Red}"></Run>
             </TextBlock>
+            <Label HorizontalAlignment="Right" VerticalAlignment="Center" FontStyle="Italic" FontSize="10">You may close this window after beginning a transaction.</Label>
         </Grid>
 
         <Grid x:Name="TxStatusGrid" Grid.Row="1" IsEnabled="{Binding Path=TxActionEnabled}" >
@@ -71,9 +72,17 @@
             <Button Content="Begin Transaction" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="5" Width="150" Click="Begin_Click"></Button>
         </Grid>
         <Grid Grid.Row="2" x:Name="DuringTxRow">
-            <Button Content="Cancel Transaction" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5" Width="150" Click="Cancel_Click"></Button>
-            <CheckBox x:Name="CloseOnCommitBox" Content="Close Tx on Commit" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,160,0" IsChecked="{Binding Path=CloseOnCommit}"></CheckBox>
-            <Button Content="Commit Transaction" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="5" Width="150" Click="Commit_Click"></Button>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="160"></ColumnDefinition>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+                <ColumnDefinition Width="160"></ColumnDefinition>
+                <ColumnDefinition Width="160"></ColumnDefinition>
+                <ColumnDefinition Width="160"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Button Content="Cancel Transaction" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5" Width="150" Click="Cancel_Click"></Button>
+            <CheckBox x:Name="CloseOnCommitBox"  Grid.Column="2"  Content="Keep Open after Commit" HorizontalAlignment="Center" VerticalAlignment="Center" IsChecked="{Binding Path=KeepOpen}" ToolTip="Keep the transaction open after committing.  Not available when targeting base game files."></CheckBox>
+            <CheckBox x:Name="AutoCommitBox"  Grid.Column="3"  Content="Auto-Commit Changes" HorizontalAlignment="Center" VerticalAlignment="Center" IsChecked="{Binding Path=AutoCommit}" ToolTip="Automatically save the transaction whenever any changes are made."></CheckBox>
+            <Button Content="Commit Transaction"  Grid.Column="4"  VerticalAlignment="Center" HorizontalAlignment="Right" Margin="5" Width="150" Click="Commit_Click" IsEnabled="{Binding Path=CommitEnabled}"></Button>
         </Grid>
     </Grid>
 </Window>

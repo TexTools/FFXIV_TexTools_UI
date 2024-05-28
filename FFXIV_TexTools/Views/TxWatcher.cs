@@ -1,7 +1,9 @@
 ﻿using FFXIV_TexTools.Resources;
+using FFXIV_TexTools.Views.Transactions;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -88,6 +90,8 @@ namespace FFXIV_TexTools.Views
             }
         }
 
+        private static Action DebouncedCommit;
+
         internal static void INTERNAL_TxStateChanged(ETransactionState oldState, ETransactionState newState)
         {
             UserTxStateChanged?.Invoke(oldState, newState);
@@ -101,12 +105,53 @@ namespace FFXIV_TexTools.Views
         internal static void INTERNAL_TxFileChanged(string file)
         {
             UserTxFileChanged?.Invoke(file);
+            if (TransactionStatusWindow._AutoCommit)
+            {
+                DebouncedCommit();
+            }
         }
 
+        private static async void CommitTx()
+        {
+            try
+            {
+                if (!TransactionStatusWindow._AutoCommit)
+                {
+                    return;
+                }
+
+                if (MainWindow.UserTransaction == null)
+                {
+                    return;
+                }
+
+                var tx = MainWindow.UserTransaction;
+                if(tx.State != ETransactionState.Open)
+                {
+                    return;
+                }
+
+                if(tx.Settings.Target == ETransactionTarget.Invalid || tx.Settings.Target == ETransactionTarget.GameFiles)
+                {
+                    return;
+                }
+
+                await ModTransaction.CommitTransaction(tx, false);
+            }
+            catch(Exception ex)
+            {
+                var mw = MainWindow.GetMainWindow();
+                _ = mw.Dispatcher.InvokeAsync(() =>
+                {
+                    MainWindow.GetMainWindow().ShowError("Commit Transaction Error", "An error occurred while committing the transaction:\n\n" + ex.Message);
+                });
+            }
+        }
 
         static TxWatcher()
         {
             ModTransaction.ActiveTransactionStateChanged += ActiveTransactionStateChanged;
+            DebouncedCommit = ViewHelpers.Debounce(CommitTx, 1000);
         }
 
         private static void ActiveTransactionStateChanged(ModTransaction sender, ETransactionState oldState, ETransactionState newState)

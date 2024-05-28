@@ -1,8 +1,10 @@
-﻿using System;
+﻿using FFXIV_TexTools.Properties;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,7 +16,6 @@ using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using xivModdingFramework.Cache;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Mods;
@@ -63,6 +64,17 @@ namespace FFXIV_TexTools.Views.Transactions
             }
         }
 
+        private bool _CommitEnabled;
+        public bool CommitEnabled
+        {
+            get => _CommitEnabled;
+            set
+            {
+                _CommitEnabled = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CommitEnabled)));
+            }
+        }
+
         private bool _TxPathEnabled;
         public bool TxPathEnabled
         {
@@ -74,14 +86,36 @@ namespace FFXIV_TexTools.Views.Transactions
             }
         }
 
-        private bool _CloseOnCommit;
-        public bool CloseOnCommit
+        public static bool _KeepOpen { get; private set; }
+        public bool KeepOpen
         {
-            get => _CloseOnCommit;
+            get => _KeepOpen;
             set
             {
-                _CloseOnCommit = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CloseOnCommit)));
+                _KeepOpen = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(KeepOpen)));
+
+                if(_KeepOpen == false)
+                {
+                    AutoCommitBox.IsEnabled = false;
+                    AutoCommit = false;
+                } else
+                {
+                    AutoCommitBox.IsEnabled = true;
+                }
+            }
+        }
+
+
+
+        public static bool _AutoCommit { get; private set; }
+        public bool AutoCommit
+        {
+            get => _AutoCommit;
+            set
+            {
+                _AutoCommit = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AutoCommit)));
             }
         }
 
@@ -166,6 +200,15 @@ namespace FFXIV_TexTools.Views.Transactions
                 }
 
                 FileListSource.Add(file);
+            }
+
+            if (string.IsNullOrWhiteSpace(TxTargetPath) || tx == null || tx.ModifiedFiles.Count == 0)
+            {
+                CommitEnabled = false;
+            }
+            else
+            {
+                CommitEnabled = true;
             }
         }
 
@@ -284,14 +327,24 @@ namespace FFXIV_TexTools.Views.Transactions
             {
                 TxPathEnabled = true;
             }
-            if (TxTarget == ETransactionTarget.GameFiles)
+
+            if (TxTarget == ETransactionTarget.Invalid || TxTarget == ETransactionTarget.GameFiles)
             {
                 CloseOnCommitBox.IsEnabled = false;
-                CloseOnCommit = true;
+                KeepOpen = false;
             }
             else
             {
                 CloseOnCommitBox.IsEnabled = true;
+            }
+
+            var tx = MainWindow.UserTransaction;
+            if (string.IsNullOrWhiteSpace(TxTargetPath) || tx == null || tx.ModifiedFiles.Count == 0)
+            {
+                CommitEnabled = false;
+            } else
+            {
+                CommitEnabled = true;
             }
         }
 
@@ -352,7 +405,8 @@ namespace FFXIV_TexTools.Views.Transactions
                 }
 
                 TxActionEnabled = false;
-                await ModTransaction.CommitTransaction(MainWindow.UserTransaction, CloseOnCommit != false);
+                var close = !KeepOpen;
+                await ModTransaction.CommitTransaction(MainWindow.UserTransaction, close);
 
             }
             catch (Exception ex)
@@ -420,8 +474,14 @@ namespace FFXIV_TexTools.Views.Transactions
             if (settings.Target == ETransactionTarget.LuminaFolders)
             {
                 var fbd = new FolderBrowserDialog();
+
+                if (!string.IsNullOrWhiteSpace(TxTargetPath))
+                {
+                    fbd.SelectedPath = TxTargetPath;
+                }
+
                 var res = fbd.ShowDialog(this.GetWin32Window());
-                if(res != System.Windows.Forms.DialogResult.OK)
+                if (res != System.Windows.Forms.DialogResult.OK)
                 {
                     return;
                 }
@@ -429,9 +489,26 @@ namespace FFXIV_TexTools.Views.Transactions
                 var folder = fbd.SelectedPath;
                 settings.TargetPath = folder;
                 MainWindow.UserTransaction.Settings = settings;
-            } else
+            } else if(settings.Target == ETransactionTarget.TTMP || settings.Target == ETransactionTarget.PMP)
             {
                 var sfd = new SaveFileDialog();
+
+                if (settings.Target == ETransactionTarget.TTMP)
+                {
+                    sfd.Filter = "TexTools Modpack Files(*.ttmp2)|*.ttmp2";
+                } else
+                {
+                    sfd.Filter = "Penumbra Modpack Files(*.pmp)|*.pmp";
+                }
+
+                if (!string.IsNullOrWhiteSpace(TxTargetPath))
+                {
+                    sfd.InitialDirectory = Path.GetDirectoryName(TxTargetPath);
+                } else
+                {
+                    sfd.InitialDirectory = Settings.Default.ModPack_Directory;
+                }
+
                 var res = sfd.ShowDialog();
                 if (res != System.Windows.Forms.DialogResult.OK)
                 {
