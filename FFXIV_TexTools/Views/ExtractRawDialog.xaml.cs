@@ -1,9 +1,11 @@
 ﻿using FFXIV_TexTools.Helpers;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Forms;
+using System.Windows.Media;
 using xivModdingFramework.Cache;
 using xivModdingFramework.Exd.FileTypes;
 using xivModdingFramework.Helpers;
@@ -21,13 +23,14 @@ namespace FFXIV_TexTools.Views
         public ExtractRawDialog()
         {
             InitializeComponent();
+            FromBox_TextChanged(null, null);
         }
 
         private async void ExtractButton_Click(object sender, RoutedEventArgs e)
         {
-            if (String.IsNullOrWhiteSpace(FromBox.Text)) return;
+            var path = FromBox.Text.ToLower().Trim();
+            if (!IOUtil.IsFFXIVInternalPath(path)) return;
 
-            var path = FromBox.Text;
             var ext = Path.GetExtension(path);
             byte[] data = null;
 
@@ -94,6 +97,44 @@ namespace FFXIV_TexTools.Views
                 FlexibleMessageBox.Show($"Unable to decompress or read file:\n{path._()}\n\nError: ".L() + Ex.Message, "File Not Found".L(), MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
+        }
+
+        private async void FromBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        {
+
+            try
+            {
+                var text = FromBox.Text.ToLower().Trim();
+                if (!IOUtil.IsFFXIVInternalPath(text))
+                {
+                    ExtractButton.IsEnabled = false;
+                    InfoLabel.Foreground = Brushes.DarkRed;
+                    InfoLabel.Content = "Path is not a valid FFXIV file path.";
+                    return;
+                }
+                var tx = MainWindow.DefaultTransaction;
+
+                var exists = await tx.FileExists(text);
+                if (exists)
+                {
+                    ExtractButton.IsEnabled = true;
+                    InfoLabel.Foreground = Brushes.DarkGreen;
+                    InfoLabel.Content = "Valid path, and file exists.";
+                    return;
+                }
+                else
+                {
+                    ExtractButton.IsEnabled = false;
+                    InfoLabel.Foreground = Brushes.DarkRed;
+                    InfoLabel.Content = "Valid path, but no file exists at the destination.";
+                    return;
+                }
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine(ex);
+            }
+
         }
     }
 }

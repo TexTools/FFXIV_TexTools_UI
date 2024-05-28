@@ -7,7 +7,7 @@
         resx:Localization.Enabled="True"
         xmlns:local="clr-namespace:FFXIV_TexTools.Views"
         mc:Ignorable="d"
-        Title="Extract Raw File" Height="155" Width="500">
+        Title="Extract Raw File" Width="500" SizeToContent="Height" MinHeight="130" MinWidth="500">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="40"></RowDefinition>
@@ -20,11 +20,13 @@
         </Grid.ColumnDefinitions>
 
         <Label Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" Content="File Path:" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
-        <TextBox x:Name="FromBox" Grid.Column="1" Grid.Row="0" Margin="5,0" VerticalAlignment="Center"></TextBox>
+        <TextBox x:Name="FromBox" Grid.Column="1" Grid.Row="0" Margin="5,0" VerticalAlignment="Center" TextChanged="FromBox_TextChanged"></TextBox>
 
         <CheckBox x:Name="DecompressBox" IsChecked="True" Grid.Row="1" Grid.Column="1" Margin="5,0" Content="Decompress file before extraction"></CheckBox>
 
         <Button x:Name="ExtractButton"  Grid.Row="2" Grid.Column="1" Content="Extract File" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0" Width="150" Click="ExtractButton_Click"></Button>
+
+        <Label x:Name="InfoLabel" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"></Label>
 
 
     </Grid>
