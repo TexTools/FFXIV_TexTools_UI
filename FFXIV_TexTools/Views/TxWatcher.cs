@@ -15,11 +15,13 @@ namespace FFXIV_TexTools.Views
     public static class TxWatcher
     {
 
+        public delegate void UserTxStartedEventHandler(ModTransaction tx);
         public delegate void UserTxStateChangedEventHandler(ETransactionState oldState, ETransactionState newState);
         public delegate void SaveStatusChangedEventHandler(bool allowed, string text);
         public delegate void UserTxSettingsChangedEventHandler(ModTransactionSettings settings);
         public delegate void UserTxFileChangedEventHandler(string file);
 
+        public static event UserTxStartedEventHandler UserTxStarted;
         public static event UserTxSettingsChangedEventHandler UserTxSettingsChanged;
         public static event UserTxStateChangedEventHandler UserTxStateChanged;
         public static event UserTxFileChangedEventHandler UserTxFileChanged;
@@ -94,6 +96,11 @@ namespace FFXIV_TexTools.Views
 
         internal static void INTERNAL_TxStateChanged(ETransactionState oldState, ETransactionState newState)
         {
+            if(oldState == ETransactionState.Invalid || oldState == ETransactionState.Closed && MainWindow.UserTransaction != null)
+            {
+                UserTxStarted?.Invoke(MainWindow.UserTransaction);
+            }
+
             UserTxStateChanged?.Invoke(oldState, newState);
             SaveStatusChanged?.Invoke(SaveAllowed, SaveLabel);
         }

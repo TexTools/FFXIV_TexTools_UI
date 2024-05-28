@@ -134,10 +134,11 @@ namespace FFXIV_TexTools.Views.Controls
             {
                 _listeningTransactions.Add(MainWindow.UserTransaction);
                 MainWindow.UserTransaction.FileChanged += Tx_FileChanged;
+                MainWindow.UserTransaction.TransactionClosed += Tx_Closed;
             }
 
             ModTransaction.FileChangedOnCommit += Tx_FileChanged;
-            MainWindow.UserTransactionStarted += OnUserTransactionStarted;
+            TxWatcher.UserTxStarted += OnUserTransactionStarted;
 
 
             DebouncedUpdate = ViewHelpers.Debounce<string>(_UpdateOnMainThread, 200);
@@ -147,13 +148,13 @@ namespace FFXIV_TexTools.Views.Controls
 
         private Action<string> DebouncedUpdate;
 
-        private void OnUserTransactionStarted()
+        private void OnUserTransactionStarted(ModTransaction tx)
         {
-            if (MainWindow.UserTransaction != null)
+            if (tx != null)
             {
-                MainWindow.UserTransaction.FileChanged += Tx_FileChanged;
-                MainWindow.UserTransaction.TransactionClosed -= Tx_Closed;
-                _listeningTransactions.Add(MainWindow.UserTransaction);
+                tx.FileChanged += Tx_FileChanged;
+                tx.TransactionClosed += Tx_Closed;
+                _listeningTransactions.Add(tx);
             }
         }
 
@@ -993,7 +994,7 @@ namespace FFXIV_TexTools.Views.Controls
             if (!_Disposed)
             {
                 // Remove event handlers to ensure we don't get GC locked.
-                MainWindow.UserTransactionStarted -= OnUserTransactionStarted;
+                TxWatcher.UserTxStarted -= OnUserTransactionStarted;
                 ModTransaction.FileChangedOnCommit -= Tx_FileChanged;
                 if (_listeningTransactions != null)
                 {

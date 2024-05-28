@@ -193,9 +193,6 @@ namespace FFXIV_TexTools
             }
         }
 
-        public delegate void UserTransactionEventHandler();
-        public static event UserTransactionEventHandler UserTransactionStarted;
-
 
 
         /// <summary>

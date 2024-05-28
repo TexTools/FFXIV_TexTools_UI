@@ -275,17 +275,18 @@ namespace FFXIV_TexTools.Views.Item
             if (MainWindow.UserTransaction != null)
             {
                 MainWindow.UserTransaction.FileChanged += Tx_FileChanged;
+                MainWindow.UserTransaction.TransactionClosed += Tx_Closed;
             }
-            MainWindow.UserTransactionStarted += OnUserTransactionStarted;
+            TxWatcher.UserTxStarted += OnUserTransactionStarted;
 
             _DebouncedRebuildComboBoxes = ViewHelpers.Debounce<IItem>(DispatchRebuildComboBoxes);
         }
-        private void OnUserTransactionStarted()
+        private void OnUserTransactionStarted(ModTransaction tx)
         {
-            if (MainWindow.UserTransaction != null)
+            if (tx != null)
             {
-                MainWindow.UserTransaction.FileChanged += Tx_FileChanged;
-                MainWindow.UserTransaction.TransactionClosed -= Tx_Closed;
+                tx.FileChanged += Tx_FileChanged;
+                tx.TransactionClosed += Tx_Closed;
             }
         }
         private void Tx_Closed(ModTransaction sender)
@@ -1749,7 +1750,7 @@ namespace FFXIV_TexTools.Views.Item
 
                 // Global event handlers definitely have to go.
                 ModTransaction.FileChangedOnCommit -= Tx_FileChanged;
-                MainWindow.UserTransactionStarted -= OnUserTransactionStarted;
+                TxWatcher.UserTxStarted -= OnUserTransactionStarted;
 
                 if (MainWindow.UserTransaction != null)
                 {
