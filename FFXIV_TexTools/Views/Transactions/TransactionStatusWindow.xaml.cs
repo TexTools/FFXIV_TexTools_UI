@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -70,9 +71,18 @@ namespace FFXIV_TexTools.Views.Transactions
             UpdateTxState(MainWindow.UserTransaction == null ? ETransactionState.Closed : MainWindow.UserTransaction.State);
         }
 
-        private void TxStateChanged(ETransactionState oldState, ETransactionState newState)
+        private async void TxStateChanged(ETransactionState oldState, ETransactionState newState)
         {
-            UpdateTxState(newState);
+            try
+            {
+                await await Dispatcher.InvokeAsync(async () =>
+                {
+                    UpdateTxState(newState);
+                });
+            } catch(Exception ex)
+            {
+                Trace.WriteLine(ex);
+            }
         }
 
         private void UpdateTxState(ETransactionState newState)

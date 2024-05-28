@@ -27,8 +27,8 @@
             <Button Content="Begin Transaction" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="5" Width="150" Click="Begin_Click"></Button>
         </Grid>
         <Grid Grid.Row="2" x:Name="DuringTxRow">
-            <Button Content="Cancel Transaction" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5" Width="150" Click="Commit_Click"></Button>
-            <Button Content="Commit Transaction" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="5" Width="150" Click="Cancel_Click"></Button>
+            <Button Content="Cancel Transaction" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5" Width="150" Click="Cancel_Click"></Button>
+            <Button Content="Commit Transaction" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="5" Width="150" Click="Commit_Click"></Button>
         </Grid>
     </Grid>
 </Window>
