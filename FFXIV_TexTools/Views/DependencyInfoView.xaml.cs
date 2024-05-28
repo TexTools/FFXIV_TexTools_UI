@@ -112,7 +112,7 @@ namespace FFXIV_TexTools.Views
 
             var ext = Path.GetExtension(filePath).Substring(1);
 
-            var allItems = (await root.GetAllItems());
+            var allItems = (await root.GetAllItems(-1, tx));
 
             if(allItems.Count == 0)
             {
@@ -182,7 +182,7 @@ namespace FFXIV_TexTools.Views
                     mVariants[pRoot].Add(mVariant);
 
 
-                    var pItems = (await pRoot.GetAllItems());
+                    var pItems = (await pRoot.GetAllItems(-1, tx));
                 }
 
             } else if(ext == "mtrl")

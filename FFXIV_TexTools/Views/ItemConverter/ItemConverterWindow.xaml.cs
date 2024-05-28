@@ -310,7 +310,7 @@ namespace FFXIV_TexTools.Views.ItemConverter
                 DestinationVariantsBox.Text = "1";
             }
 
-            var items = await Destination.GetAllItems();
+            var items = await Destination.GetAllItems(-1, tx);
 
             AffectedItemsBox.Items.Clear();
             foreach (var item in items)

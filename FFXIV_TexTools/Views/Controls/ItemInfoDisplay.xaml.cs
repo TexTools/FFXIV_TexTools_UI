@@ -267,7 +267,7 @@ namespace FFXIV_TexTools.Views.Controls
             if (Imc.UsesImc(_item) && _item.ModelInfo != null)
             {
                 var myImcSubsetId = _item.ModelInfo.ImcSubsetID;
-                var allItems = await root.GetAllItems();
+                var allItems = await root.GetAllItems(-1, MainWindow.DefaultTransaction);
                 var fInfo = await Imc.GetFullImcInfo(_item, false, tx);
                 var entries = fInfo.GetAllEntries(_item.GetItemSlotAbbreviation(), true);
 

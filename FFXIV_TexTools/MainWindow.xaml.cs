@@ -1110,7 +1110,7 @@ namespace FFXIV_TexTools
                 }
 
                 // See if we can get the information in simple mode.
-                var modPackFiles = await TTMP.ModPackToSimpleFileList(path, false);
+                var modPackFiles = await TTMP.ModPackToSimpleFileList(path, false, MainWindow.UserTransaction);
 
                 if(modPackFiles != null)
                 {

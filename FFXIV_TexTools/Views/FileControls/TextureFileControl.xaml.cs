@@ -406,7 +406,8 @@ namespace FFXIV_TexTools.Views.Controls
                 List<XivImc> entries = new List<XivImc>();
                 await Task.Run(async () =>
                 {
-                    var info = (await Imc.GetFullImcInfo(asIm, false, MainWindow.DefaultTransaction));
+                    var tx = MainWindow.DefaultTransaction;
+                    var info = (await Imc.GetFullImcInfo(asIm, false, tx));
                     if (info == null)
                     {
                         return;
@@ -420,7 +421,7 @@ namespace FFXIV_TexTools.Views.Controls
                     }
                     else
                     {
-                        parents = await XivCache.GetParentFiles(InternalFilePath);
+                        parents = await XivCache.GetParentFiles(InternalFilePath, tx);
                     }
                 });
 

@@ -130,7 +130,7 @@ namespace FFXIV_TexTools.Views.Metadata
             }
 
             var root = _metadata.Root;
-            var items = await root.GetAllItems(variant);
+            var items = await root.GetAllItems(variant, MainWindow.DefaultTransaction);
             ItemNameBox.Text = "[" + items.Count + "] " + items[0].Name;
 
             ushort sfx = (ushort)(entry.Mask >> 10);
@@ -168,7 +168,7 @@ namespace FFXIV_TexTools.Views.Metadata
         }
         private async Task ShowAffectedItems()
         {
-            var items = await _metadata.Root.GetAllItems((int)ImcVariantBox.SelectedItem);
+            var items = await _metadata.Root.GetAllItems((int)ImcVariantBox.SelectedItem, MainWindow.DefaultTransaction);
             var itemNames = items.Select(x => x.Name);
 
             var win = new AffectedFilesView(itemNames, "Affected Items");

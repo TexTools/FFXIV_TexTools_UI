@@ -882,11 +882,15 @@ namespace FFXIV_TexTools.ViewModels
             get => _HighlightedColorsetRow;
             set
             {
+                var original = _HighlightedColorsetRow;
                 _HighlightedColorsetRow = value;
                 OnPropertyChanged(nameof(HighlightedColorsetRow));
-                
-                // This has to be handled by our external view.
-                TextureUpdateRequested?.Invoke(this);
+
+                if (original != _HighlightedColorsetRow)
+                {
+                    // This has to be handled by our external view.
+                    TextureUpdateRequested?.Invoke(this);
+                }
             }
         }
         private ObservableCollection<KeyValuePair<string, int>> _ColorsetRowSource = new ObservableCollection<KeyValuePair<string, int>>();

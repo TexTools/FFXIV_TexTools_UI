@@ -70,12 +70,13 @@ namespace FFXIV_TexTools.Views
             {
                 var metaFiles = filePaths.Where(x => x.EndsWith(".meta")).OrderBy(x => x);
 
+                var tx = MainWindow.DefaultTransaction;
                 foreach (var file in metaFiles)
                 {
                     var root = await XivCache.GetFirstRoot(file);
                     if (root != null && RootCloner.IsSupported(root))
                     {
-                        var items = await root.GetAllItems();
+                        var items = await root.GetAllItems(-1, tx);
                         Items.Add(root, items);
                         ItemSelections.Add(root, (items[0], items[0]));
 
@@ -250,10 +251,10 @@ namespace FFXIV_TexTools.Views
 
             if (ui.EnabledCheckBox.IsChecked == true)
             {
-                items = await destRoot.GetAllItems();
+                items = await destRoot.GetAllItems(-1, MainWindow.DefaultTransaction);
             } else
             {
-                items = await root.GetAllItems();
+                items = await root.GetAllItems(-1, MainWindow.DefaultTransaction);
             }
 
 

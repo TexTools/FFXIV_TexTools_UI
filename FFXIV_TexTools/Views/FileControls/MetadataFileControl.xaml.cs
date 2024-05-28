@@ -193,7 +193,7 @@ namespace FFXIV_TexTools.Views.Controls
             try
             {
                 // Don't count Variant 0 unless it's the only one.
-                itemCount = Math.Max((await Root.GetAllItems()).Count -1, 1);
+                itemCount = Math.Max((await Root.GetAllItems(-1, tx)).Count -1, 1);
             }
             catch (Exception ex)
             {

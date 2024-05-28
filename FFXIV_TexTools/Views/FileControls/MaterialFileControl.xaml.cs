@@ -92,6 +92,8 @@ namespace FFXIV_TexTools.Views.Controls
 
         public ObservableCollection<WrappedTexture> TextureSource;
 
+        private bool _MTRL_LOADING = false;
+
         private XivMtrl _Material;
         public XivMtrl Material
         {
@@ -101,12 +103,14 @@ namespace FFXIV_TexTools.Views.Controls
             }
             set
             {
+                _MTRL_LOADING = true;
                 _Material = value;
                 UpdateTextureList();
                 _ = UpdateColorsetImage();
                 OnPropertyChanged(nameof(Material));
                 OnPropertyChanged(nameof(ShaderPack));
                 OnPropertyChanged(nameof(ColorsetEnabled));
+                _MTRL_LOADING = false;
             }
         }
 
@@ -257,7 +261,7 @@ namespace FFXIV_TexTools.Views.Controls
             await Mtrl.ImportMtrl(Material, ReferenceItem, XivStrings.TexTools, true, tx);
 
 #if DAWNTRAIL
-            await Mtrl.FixPreDawntrailMaterial(Material, XivStrings.TexTools, tx);
+            await Mtrl.FixPreDawntrailMaterial(Material, XivStrings.TexTools, true, tx);
 #endif
 
             return true;
@@ -415,7 +419,7 @@ namespace FFXIV_TexTools.Views.Controls
             ShaderPack = (EShaderPack)((ComboBox)sender).SelectedValue;
             UnsavedChanges = true;
 
-            if (ShaderComboBox.SelectedValue == null)
+            if (ShaderComboBox.SelectedValue == null || _MTRL_LOADING)
             {
                 _LastShpk = ShaderPack;
                 return;

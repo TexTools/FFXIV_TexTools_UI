@@ -166,11 +166,10 @@ namespace FFXIV_TexTools.Views.Simple
                 foreach (var file in unselected)
                 {
                     allFiles.Remove(file);
-                    var entry = allFiles[file];
 
                 }
 
-                var settings = ViewHelpers.GetDefaultImportSettings();
+                var settings = ViewHelpers.GetDefaultImportSettings(_progressController);
                 await TTMP.ImportFiles(allFiles, modpack, settings, tx);
 
                 await boiler.Commit();
