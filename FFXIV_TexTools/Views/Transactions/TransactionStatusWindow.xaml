@@ -55,7 +55,7 @@
                 </Grid.RowDefinitions>
 
                 <Label Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Center" Content="Transaction Target:"></Label>
-                <ComboBox Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" Width="120" VerticalAlignment="Center" DisplayMemberPath="Key" SelectedValuePath="Value" ItemsSource="{Binding Path=TargetSource}" SelectedValue="{Binding Path=TxTarget}"></ComboBox>
+                <ComboBox Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" Width="120" VerticalAlignment="Center" DisplayMemberPath="Key" SelectedValuePath="Value" ItemsSource="{Binding Path=TargetSource}" SelectedValue="{Binding Path=TxTarget}" IsEnabled="{Binding Path=TxTargetEnabled}"></ComboBox>
 
                 <Grid x:Name="ExtendedTargetInfo" Grid.Row="1" Height="40" Grid.ColumnSpan="3">
                     <Grid.ColumnDefinitions>
@@ -69,6 +69,7 @@
         </Grid>
 
         <Grid Grid.Row="2" x:Name="PreTxRow"  IsEnabled="{Binding Path=TxActionEnabled}" >
+            <Button Content="Attach to Penumbra" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="5,5,160,5" Width="150" Click="AttachPenumbra_Click"></Button>
             <Button Content="Begin Transaction" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="5" Width="150" Click="Begin_Click"></Button>
         </Grid>
         <Grid Grid.Row="2" x:Name="DuringTxRow">

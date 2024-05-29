@@ -135,7 +135,7 @@ namespace FFXIV_TexTools
             {
                 if(_UserTransaction != null)
                 {
-                    if(_UserTransaction.State != ETransactionState.Working)
+                    if(_UserTransaction.State != ETransactionState.Closed)
                     {
                         throw new Exception("Cannot assign new user transaction when one already exists and is not closed.");
                     }
@@ -1668,7 +1668,7 @@ namespace FFXIV_TexTools
 
         private async void FileViewerButton_Click(object sender, RoutedEventArgs e)
         {
-            var success = await SimpleFileViewWindow.OpenFile("chara/equipment/e0755/e0755_top.meta");
+            var success = await SimpleFileViewWindow.OpenFile();
         }
 
         private void TransactionStatus_Click(object sender, RoutedEventArgs e)

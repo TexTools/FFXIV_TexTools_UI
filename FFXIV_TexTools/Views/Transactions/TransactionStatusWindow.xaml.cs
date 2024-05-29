@@ -1,5 +1,6 @@
 ﻿using FFXIV_TexTools.Helpers;
 using FFXIV_TexTools.Properties;
+using FFXIV_TexTools.Resources;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -7,7 +8,9 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -17,9 +20,11 @@ using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using WK.Libraries.BetterFolderBrowserNS;
 using xivModdingFramework.Cache;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Mods;
+using xivModdingFramework.Mods.FileTypes;
 
 namespace FFXIV_TexTools.Views.Transactions
 {
@@ -76,6 +81,16 @@ namespace FFXIV_TexTools.Views.Transactions
             }
         }
 
+        private bool _TxTargetEnabled;
+        public bool TxTargetEnabled
+        {
+            get => _TxTargetEnabled;
+            set
+            {
+                _TxTargetEnabled = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TxTargetEnabled)));
+            }
+        }
         private bool _TxPathEnabled;
         public bool TxPathEnabled
         {
@@ -106,8 +121,6 @@ namespace FFXIV_TexTools.Views.Transactions
                 }
             }
         }
-
-
 
         public static bool _AutoCommit { get; private set; }
         public bool AutoCommit
@@ -277,22 +290,24 @@ namespace FFXIV_TexTools.Views.Transactions
         {
             TxStatusText = newState.ToString();
 
+
             if (newState == ETransactionState.Open)
             {
                 // TX is ready for writing.
                 TxStatusBrush = Brushes.DarkGreen;
                 TxActionEnabled = true;
+
+                PreTxRow.Visibility = Visibility.Collapsed;
                 DuringTxRow.Visibility = Visibility.Visible;
                 TxStatusGrid.Visibility = Visibility.Visible;
-                PreTxRow.Visibility = Visibility.Collapsed;
             }
             else if (newState == ETransactionState.Invalid || newState == ETransactionState.Closed)
             {
                 // TX is closed.
                 TxStatusBrush = Brushes.DarkGray;
                 TxActionEnabled = true;
-                DuringTxRow.Visibility = Visibility.Collapsed;
                 TxStatusGrid.Visibility = Visibility.Collapsed;
+                DuringTxRow.Visibility = Visibility.Collapsed;
                 PreTxRow.Visibility = Visibility.Visible;
             }
             else if (newState == ETransactionState.Preparing)
@@ -309,6 +324,7 @@ namespace FFXIV_TexTools.Views.Transactions
                 // TX is working.
                 TxStatusBrush = Brushes.DarkRed;
                 TxActionEnabled = false;
+
                 DuringTxRow.Visibility = Visibility.Visible;
                 TxStatusGrid.Visibility = Visibility.Visible;
                 PreTxRow.Visibility = Visibility.Collapsed;
@@ -318,6 +334,18 @@ namespace FFXIV_TexTools.Views.Transactions
 
         private void UpdateTxSettingsUi(ModTransactionSettings settings)
         {
+            if (PenumbraAttachHandler.IsAttached)
+            {
+                TxPathEnabled = false;
+                TxTargetEnabled = false;
+                CloseOnCommitBox.IsEnabled = false;
+                KeepOpen = true;
+                AutoCommitBox.IsEnabled = false;
+                TxTarget = settings.Target;
+                TxTargetPath = settings.TargetPath;
+                return;
+            }
+
             TxTarget = settings.Target;
             TxTargetPath = settings.TargetPath;
             if(TxTarget == ETransactionTarget.Invalid || TxTarget == ETransactionTarget.GameFiles)
@@ -448,6 +476,11 @@ namespace FFXIV_TexTools.Views.Transactions
             {
                 return;
             }
+            if (PenumbraAttachHandler.IsAttached)
+            {
+                return;
+            }
+
             var tx = MainWindow.UserTransaction;
 
             var settings = tx.Settings;
@@ -468,6 +501,11 @@ namespace FFXIV_TexTools.Views.Transactions
         private void SelectTargetPath_Click(object sender, RoutedEventArgs e)
         {
             if(MainWindow.UserTransaction == null)
+            {
+                return;
+            }
+
+            if (PenumbraAttachHandler.IsAttached)
             {
                 return;
             }
@@ -568,6 +606,49 @@ namespace FFXIV_TexTools.Views.Transactions
                 this.ShowError("Reset File Error","An error occurred when resetting the file:\n\n" + ex.Message);
             }
         }
+
+        static BetterFolderBrowser PenumbraAttachDialog = new BetterFolderBrowser();
+        private async void AttachPenumbra_Click(object sender, RoutedEventArgs e)
+        {
+
+            try
+            {
+                await BeginPenumbraAttach();
+            } catch(Exception ex) {
+                this.ShowError("Penumbra Attach Error", "An error occurred while beginning the transaction:\n\n" + ex.Message);
+            }
+        }
+
+        private async Task BeginPenumbraAttach()
+        {
+
+            if (ModTransaction.ActiveTransaction != null)
+            {
+                return;
+            }
+
+            PenumbraAttachDialog.Title = "Select Penumbra Mod Folder...";
+
+            var res = PenumbraAttachDialog.ShowDialog();
+            if (res != System.Windows.Forms.DialogResult.OK)
+            {
+                return;
+            }
+            
+            _AutoCommit = false;
+            _KeepOpen = false;
+
+            var tx = await PenumbraAttachHandler.Attach(PenumbraAttachDialog.SelectedPath);
+            MainWindow.UserTransaction = tx;
+
+
+            //TTMP.ImportFiles()
+
+
+
+
+        }
+
     }
 
 }
