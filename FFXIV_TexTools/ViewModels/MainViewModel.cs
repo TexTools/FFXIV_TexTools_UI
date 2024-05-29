@@ -602,6 +602,10 @@ namespace FFXIV_TexTools.ViewModels
         private void UpdateTxState(ETransactionState newState)
         {
             TxStatusText = newState.ToString();
+            if(PenumbraAttachHandler.IsAttached && newState == ETransactionState.Open)
+            {
+                TxStatusText = "Penumbra Sync".L();
+            }
 
             if (newState == ETransactionState.Open)
             {

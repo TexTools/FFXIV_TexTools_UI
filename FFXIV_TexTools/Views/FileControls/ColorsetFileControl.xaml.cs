@@ -1095,7 +1095,10 @@ namespace FFXIV_TexTools.Views.Controls
         {
             try
             {
-                UnsavedChanges = true;
+                if (!_Mtrl_Loading)
+                {
+                    UnsavedChanges = true;
+                }
                 await UpdateRow();
             }
             catch (Exception ex)

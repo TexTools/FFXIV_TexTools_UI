@@ -3915,6 +3915,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to SAVE TO PENUMBRA.
+        /// </summary>
+        public static string SavePenumbra {
+            get {
+                return ResourceManager.GetString("SavePenumbra", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Save the current editor state to the game files/transaction.
         /// </summary>
         public static string SaveTooltip {

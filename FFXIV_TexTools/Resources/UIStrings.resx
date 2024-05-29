@@ -1744,4 +1744,7 @@ If you would like to enable this, first import a texture for the selected item.<
   <data name="SaveXIV" xml:space="preserve">
     <value>SAVE TO FFXIV</value>
   </data>
+  <data name="SavePenumbra" xml:space="preserve">
+    <value>SAVE TO PENUMBRA</value>
+  </data>
 </root>

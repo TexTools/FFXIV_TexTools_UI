@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using xivModdingFramework.Helpers;
 using xivModdingFramework.Mods;
 using static FFXIV_TexTools.Views.TxWatcher;
 
@@ -83,7 +84,13 @@ namespace FFXIV_TexTools.Views
                 {
                     return UIStrings.SaveXIV;
                 } else if (UserTransaction.State == ETransactionState.Open || UserTransaction.State == ETransactionState.Preparing) {
-                    return UIStrings.SaveTX;
+                    if (PenumbraAttachHandler.IsAttached)
+                    {
+                        return UIStrings.SavePenumbra;
+                    } else
+                    {
+                        return UIStrings.SaveTX;
+                    }
                 }
                 else
                 {

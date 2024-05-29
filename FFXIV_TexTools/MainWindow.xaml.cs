@@ -1690,7 +1690,6 @@ namespace FFXIV_TexTools
             {
                 SafeToggleButton.Content = XivCache.GameWriteEnabled ? "UNSAFE".L() : "SAFE".L();
                 SafeToggleButton.Foreground = XivCache.GameWriteEnabled ? Brushes.DarkRed : Brushes.DarkGreen;
-
             });
         }
     }
