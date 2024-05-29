@@ -509,7 +509,7 @@ namespace FFXIV_TexTools.Views
                 string datSize = gb.ToString("0.00") + " GB";
                 AddText($"\tPer-DAT File Size Limit: {datSize._()}\n".L(), textColor);
 
-                var totalModSize = await Dat.GetTotalModDataSize();
+                var totalModSize = Dat.GetTotalModDataSize();
                 gb = ((double)datSizeLimit) / 1024D / 1024D / 1024D;
                 string modSize = gb.ToString("0.00") + " GB";
                 AddText($"\tSum Total Mod Files Size: {modSize._()}\n".L(), textColor);
