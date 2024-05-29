@@ -482,7 +482,7 @@ namespace FFXIV_TexTools.Views.Transactions
 
             var path = settings.TargetPath;
 
-            if (settings.Target == ETransactionTarget.LuminaFolders)
+            if (settings.Target == ETransactionTarget.FolderTree || settings.Target == ETransactionTarget.PenumbraModFolder)
             {
                 var fbd = new FolderBrowserDialog();
 
