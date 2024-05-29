@@ -433,30 +433,6 @@ namespace FFXIV_TexTools.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string Lumina_Directory {
-            get {
-                return ((string)(this["Lumina_Directory"]));
-            }
-            set {
-                this["Lumina_Directory"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool Lumina_IsEnabled {
-            get {
-                return ((bool)(this["Lumina_IsEnabled"]));
-            }
-            set {
-                this["Lumina_IsEnabled"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool UseOriginalShapeDataForFace {
             get {
@@ -506,12 +482,24 @@ namespace FFXIV_TexTools.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool FixToNewShaders {
+        public bool LiveDangerously {
             get {
-                return ((bool)(this["FixToNewShaders"]));
+                return ((bool)(this["LiveDangerously"]));
             }
             set {
-                this["FixToNewShaders"] = value;
+                this["LiveDangerously"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string PenumbraFolder {
+            get {
+                return ((string)(this["PenumbraFolder"]));
+            }
+            set {
+                this["PenumbraFolder"] = value;
             }
         }
     }

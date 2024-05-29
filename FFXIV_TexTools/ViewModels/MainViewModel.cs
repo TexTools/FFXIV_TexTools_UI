@@ -311,7 +311,6 @@ namespace FFXIV_TexTools.ViewModels
             FlexibleMessageBox.Show(_mainWindow.Win32Window, UIMessages.PatchDetectedMessage, "Post Patch Cleanup Starting".L(), MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
             MainWindow.MakeHighlander();
 
-            var resetLumina = false;
 
             await _mainWindow.LockUi("Performing Post-Patch Maintenence".L(), "This may take a few minutes if you have many mods installed.".L(), this);
 
@@ -323,19 +322,8 @@ namespace FFXIV_TexTools.ViewModels
                 return;
             }
 
-            var gi = XivCache.GameInfo;
-            if (XivCache.GameInfo.UseLumina)
-            {
-                resetLumina = true;
-                XivCache.SetGameInfo(gi.GameDirectory, gi.GameLanguage, false, gi.LuminaDirectory, gi.UseLumina);
-            }
-
-
-            if (!Dat.AllowDatAlteration)
-            {
-                // We have mods on file, we'll need write access here.
-                throw new Exception("Cannot perform Post-Patch Cleanup with ");
-            }
+            var originalWriteSetting = XivCache.GameWriteEnabled;
+            XivCache.GameWriteEnabled = true;
 
             var workerStatus = XivCache.CacheWorkerEnabled;
             XivCache.CacheWorkerEnabled = false;
@@ -409,14 +397,8 @@ namespace FFXIV_TexTools.ViewModels
             }
             finally
             {
-
-                if(resetLumina)
-                {
-                    // Reset lumina mode back to on if we disabled it to perform update checks.
-                    XivCache.SetGameInfo(gi.GameDirectory, gi.GameLanguage, false, gi.LuminaDirectory, true);
-                }
-
                 XivCache.CacheWorkerEnabled = workerStatus;
+                XivCache.GameWriteEnabled = originalWriteSetting;
                 await _mainWindow.UnlockUi(this);
             }
         }

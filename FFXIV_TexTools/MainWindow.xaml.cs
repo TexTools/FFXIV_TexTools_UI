@@ -51,6 +51,7 @@ using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Forms;
 using System.Windows.Interop;
+using System.Windows.Media;
 using System.Windows.Threading;
 using xivModdingFramework.Cache;
 using xivModdingFramework.Exd.FileTypes;
@@ -298,6 +299,8 @@ namespace FFXIV_TexTools
                 //Directory.Delete(updateDir, true);
             }
 
+            XivCache.GameWriteStateChanged += XivCache_GameWriteStateChanged;
+
             CheckForSettingsUpdate();
             LanguageSelection();
 
@@ -352,23 +355,7 @@ namespace FFXIV_TexTools
                 // Just do a hard synchronous cache initialization for import only mode.
                 var gameDir = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
                 var lang = XivLanguages.GetXivLanguage(Properties.Settings.Default.Application_Language);
-                DirectoryInfo luminaDir = null;
-                bool useLumina = false;
-                try
-                {
-                    new DirectoryInfo(Properties.Settings.Default.Lumina_Directory);
-                    useLumina = Properties.Settings.Default.Lumina_IsEnabled;
-                } catch (Exception ex)
-                {
-                    if (!String.IsNullOrWhiteSpace(Properties.Settings.Default.Lumina_Directory) && Properties.Settings.Default.Lumina_IsEnabled == true) {
-                        System.Windows.MessageBox.Show("Unable to restore Lumina settings, directory was invalid.".L(), "Lumina Directory Error.".L());
-                    }
-
-                    luminaDir = null;
-                    useLumina = false;
-                }
-
-                XivCache.SetGameInfo(gameDir, lang, false, luminaDir, useLumina);
+                XivCache.SetGameInfo(gameDir, lang, false);
 
                 _startupArgs = args[0];
                 OnlyImport();
@@ -468,34 +455,8 @@ namespace FFXIV_TexTools
 
                     XivCache.CacheRebuilding += OnCacheRebuild;
 
-                    DirectoryInfo luminaDir = null;
-                    bool useLumina = false;
 
-                    if (String.IsNullOrWhiteSpace(Settings.Default.Lumina_Directory))
-                    {
-                        luminaDir = null;
-                        useLumina = false;
-                    }
-                    else
-                    {
-                        try
-                        {
-                            new DirectoryInfo(Properties.Settings.Default.Lumina_Directory);
-                            useLumina = Properties.Settings.Default.Lumina_IsEnabled;
-                        }
-                        catch (Exception ex)
-                        {
-                            if (Settings.Default.Lumina_IsEnabled == true)
-                            {
-                                System.Windows.MessageBox.Show("Unable to restore Lumina settings, directory was invalid.".L(), "Lumina Directory Error.".L());
-                            }
-
-                            luminaDir = null;
-                            useLumina = false;
-                        }
-                    }
-
-                    XivCache.SetGameInfo(gameDir, lang, true, luminaDir, useLumina);
+                    XivCache.SetGameInfo(gameDir, lang, true);
                     CustomizeViewModel.UpdateCacheSettings();
 
                 } catch(Exception ex)
@@ -561,6 +522,7 @@ namespace FFXIV_TexTools
                     }
                 });
             });
+            UpdateWriteStateUi();
         }
 
 
@@ -1253,9 +1215,9 @@ namespace FFXIV_TexTools
         /// </summary>
         private async void Menu_StartOver_Click(object sender, RoutedEventArgs e)
         {
-            if(XivCache.GameInfo.UseLumina)
+            if(!XivCache.GameWriteEnabled)
             {
-                FlexibleMessageBox.Show("Cannot perform Start Over while Lumina Mode is active.".L(), "Lumina Mode Error".L(), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                FlexibleMessageBox.Show("Cannot perform Start Over while FFXIV file writing is disabled.".L(), "Permissions Error".L(), MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                 return;
             }
@@ -1712,6 +1674,24 @@ namespace FFXIV_TexTools
         private void TransactionStatus_Click(object sender, RoutedEventArgs e)
         {
             TransactionStatusWindow.ShowTxStatus();
+        }
+
+        private void SafeToggle_Click(object sender, RoutedEventArgs e)
+        {
+            XivCache.GameWriteEnabled = !XivCache.GameWriteEnabled;
+        }
+        private void XivCache_GameWriteStateChanged(bool newState)
+        {
+            UpdateWriteStateUi();
+        }
+        private void UpdateWriteStateUi()
+        {
+            Dispatcher.InvokeAsync(() =>
+            {
+                SafeToggleButton.Content = XivCache.GameWriteEnabled ? "UNSAFE".L() : "SAFE".L();
+                SafeToggleButton.Foreground = XivCache.GameWriteEnabled ? Brushes.DarkRed : Brushes.DarkGreen;
+
+            });
         }
     }
 }

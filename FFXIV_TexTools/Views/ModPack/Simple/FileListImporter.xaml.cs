@@ -19,6 +19,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using xivModdingFramework.Cache;
+using xivModdingFramework.Exd.FileTypes;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Mods;
@@ -148,39 +149,45 @@ namespace FFXIV_TexTools.Views.Simple
                 return;
             }
 
-            var allFiles = new Dictionary<string, FileStorageInformation>();
-            var tx = MainWindow.UserTransaction;
-            var boiler = TxBoiler.BeginWrite(ref tx);
             _progressController = await this.ShowProgressAsync(UIMessages.ModPackImportTitle, UIMessages.PleaseStandByMessage);
             try
             {
-                // Read Modpack basic info.
-                var modpack = (await TTMP.GetModpackInfo(_ModpackPath)).ModPack;
 
-                // Unpack files we'll actually use from the modpack.
-                // Providing a TX here lets the transaction handler take care of managing the temp files so we don't have to.
-                allFiles = await TTMP.ModPackToSimpleFileList(_ModpackPath, true, tx);
-
-                var unselected = FileList.GetUnselectedFiles();
-
-                foreach (var file in unselected)
+                var allFiles = new Dictionary<string, FileStorageInformation>();
+                var tx = MainWindow.UserTransaction;
+                var boiler = TxBoiler.BeginWrite(ref tx);
+                try
                 {
-                    allFiles.Remove(file);
+                    // Read Modpack basic info.
+                    var modpack = (await TTMP.GetModpackInfo(_ModpackPath)).ModPack;
 
+                    // Unpack files we'll actually use from the modpack.
+                    // Providing a TX here lets the transaction handler take care of managing the temp files so we don't have to.
+                    allFiles = await TTMP.ModPackToSimpleFileList(_ModpackPath, true, tx);
+
+                    var unselected = FileList.GetUnselectedFiles();
+
+                    foreach (var file in unselected)
+                    {
+                        allFiles.Remove(file);
+
+                    }
+
+                    var settings = ViewHelpers.GetDefaultImportSettings(_progressController);
+                    await TTMP.ImportFiles(allFiles, modpack, settings, tx);
+
+                    await boiler.Commit();
+
+                    await _progressController.CloseAsync();
+                    Close();
                 }
-
-                var settings = ViewHelpers.GetDefaultImportSettings(_progressController);
-                await TTMP.ImportFiles(allFiles, modpack, settings, tx);
-
-                await boiler.Commit();
-
-                await _progressController.CloseAsync();
-                Close();
-            }
-            catch(Exception ex) 
+                catch (Exception ex)
+                {
+                    boiler.Cancel();
+                    throw;
+                }
+            } catch(Exception ex)
             {
-                boiler.Cancel();
-
                 ViewHelpers.ShowError("File Import Error", "The import has been cancelled due to an error:\n\n" + ex.Message);
                 await _progressController.CloseAsync();
                 return;
