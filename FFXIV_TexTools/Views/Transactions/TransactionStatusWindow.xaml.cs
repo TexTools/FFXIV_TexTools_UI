@@ -350,6 +350,7 @@ namespace FFXIV_TexTools.Views.Transactions
                 return;
             }
 
+            TxTargetEnabled = true;
             TxTarget = settings.Target;
             TxTargetPath = settings.TargetPath;
             if(TxTarget == ETransactionTarget.Invalid || TxTarget == ETransactionTarget.GameFiles)
