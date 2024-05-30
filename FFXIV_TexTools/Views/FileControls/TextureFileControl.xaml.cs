@@ -38,6 +38,7 @@ using xivModdingFramework.Mods;
 using System.Diagnostics;
 using FFXIV_TexTools.Views.Textures;
 using System.Runtime.InteropServices.WindowsRuntime;
+using SixLabors.ImageSharp.Formats.Tga;
 
 namespace FFXIV_TexTools.Views.Controls
 {
@@ -152,11 +153,16 @@ namespace FFXIV_TexTools.Views.Controls
                     BitsPerPixel = BmpBitsPerPixel.Pixel32
                 };
             }
-            else
+            else if (ext == ".png")
             {
                 encoder = new PngEncoder()
                 {
                     BitDepth = PngBitDepth.Bit16
+                };
+            } else {
+                encoder = new TgaEncoder()
+                {
+                    BitsPerPixel = TgaBitsPerPixel.Pixel32,
                 };
             };
 
@@ -297,6 +303,7 @@ namespace FFXIV_TexTools.Views.Controls
             {
                 { ".dds", "DDS Image" },
                 { ".png", "PNG Image" },
+                { ".tga", "TGA Image" },
                 { ".bmp", "Bitmap Image" },
                 { ".tex", "FFXIV Texture" },
             };
