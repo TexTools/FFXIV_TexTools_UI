@@ -350,7 +350,7 @@ namespace FFXIV_TexTools.Views
 
         private async void LoadFromButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            var openFileDialog = new OpenFileDialog { Filter = "Texture Files(*.ttmp2)|*.ttmp2".L(), InitialDirectory = Settings.Default.ModPack_Directory };
+            var openFileDialog = new OpenFileDialog { Filter = "Modpack Files(*.ttmp2)|*.ttmp2".L(), InitialDirectory = Settings.Default.ModPack_Directory };
             if (openFileDialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
             {
                 return;

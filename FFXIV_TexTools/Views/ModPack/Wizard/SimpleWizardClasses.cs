@@ -49,6 +49,7 @@ namespace FFXIV_TexTools.Views.Wizard
                 return _Group.Name;
             }
         }
+
         // Option type is used by the UI template binding to determine template type.
         public EOptionType OptionType
         {
@@ -57,6 +58,7 @@ namespace FFXIV_TexTools.Views.Wizard
                 return _Group.OptionType;
             }
         }
+
 
         public event PropertyChangedEventHandler PropertyChanged;
 
