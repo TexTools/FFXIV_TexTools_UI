@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data.Entity.Infrastructure;
@@ -6,9 +7,12 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using xivModdingFramework.Cache;
 using xivModdingFramework.General;
 using xivModdingFramework.Mods.DataContainers;
 using xivModdingFramework.Mods.FileTypes.PMP;
+using xivModdingFramework.SqPack.FileTypes;
+using xivModdingFramework.Variants.DataContainers;
 using static xivModdingFramework.Mods.FileTypes.TTMP;
 
 namespace FFXIV_TexTools.Views.Wizard
@@ -18,6 +22,58 @@ namespace FFXIV_TexTools.Views.Wizard
         Single,
         Multi
     };
+
+    public enum EGroupType
+    {
+        Standard,
+        Imc
+    };
+
+    public class StandardWizardOptionData : WizardOptionData
+    {
+        public Dictionary<string, FileStorageInformation> Files = new Dictionary<string, FileStorageInformation>();
+
+        protected override bool HasData()
+        {
+            return Files.Count > 0;
+        }
+    }
+
+    public class ImcWizardOptionData : WizardOptionData
+    {
+        public bool IsDisableOption;
+        public ushort Mask;
+
+        protected override bool HasData()
+        {
+            return true;
+        }
+    }
+
+    public class ImcWizardGroupData
+    {
+        public XivDependencyRootInfo Root;
+        public ushort Variant;
+        public XivImc ImcEntry;
+    }
+
+    public class WizardOptionData
+    {
+
+        public bool AnyData
+        {
+            get
+            {
+                return HasData();
+            }
+        }
+
+        protected virtual bool HasData()
+        {
+            return false;
+        }
+
+    }
 
     /// <summary>
     /// Class representing a single, clickable [Option],
@@ -63,6 +119,58 @@ namespace FFXIV_TexTools.Views.Wizard
                 return _Group.OptionType;
             }
         }
+        public EGroupType GroupType
+        {
+            get
+            {
+                return _Group.GroupType;
+            }
+        }
+
+        private WizardOptionData _Data;
+
+        public ImcWizardOptionData ImcData
+        {
+            get
+            {
+                if(GroupType == EGroupType.Imc)
+                {
+                    return _Data as ImcWizardOptionData;
+                } else
+                {
+                    return null;
+                }
+            }
+            set
+            {
+                if(GroupType == EGroupType.Imc)
+                {
+                    _Data = value;
+                }
+            }
+        }
+
+        public StandardWizardOptionData Data
+        {
+            get
+            {
+                if (GroupType == EGroupType.Standard)
+                {
+                    return _Data as StandardWizardOptionData;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            set
+            {
+                if (GroupType == EGroupType.Standard)
+                {
+                    _Data = value;
+                }
+            }
+        }
 
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -90,7 +198,27 @@ namespace FFXIV_TexTools.Views.Wizard
 
         public EOptionType OptionType;
 
+        public EGroupType GroupType
+        {
+            get
+            {
+                if(ImcData != null)
+                {
+                    return EGroupType.Imc;
+                }
+                return EGroupType.Standard;
+            }
+        }
+
+
         public List<WizardOptionEntry> Options;
+
+        /// <summary>
+        /// Option Data for Penumbra style Imc-Mask Option Groups.
+        /// </summary>
+        public ImcWizardGroupData ImcData = null;
+
+        public int Priority;
 
         /// <summary>
         /// Handler to the base modpack option.
@@ -144,6 +272,7 @@ namespace FFXIV_TexTools.Views.Wizard
 
             group.OptionType = pGroup.Type == "Single" ? EOptionType.Single : EOptionType.Multi;
             group.Name = pGroup.Name;
+            group.Priority = pGroup.Priority;
 
             group.Description = pGroup.Description;
 
@@ -219,7 +348,7 @@ namespace FFXIV_TexTools.Views.Wizard
     /// <summary>
     /// Class representing the description/cover page of a Modpack.
     /// </summary>
-    public class WizardMetaPage
+    public class WizardMetaEntry
     {
         public string Name;
         public string Author;
@@ -227,10 +356,10 @@ namespace FFXIV_TexTools.Views.Wizard
         public string Url;
         public string Version;
 
-        public static WizardMetaPage FromPMP(PMPJson pmp, string unzipPath)
+        public static WizardMetaEntry FromPMP(PMPJson pmp, string unzipPath)
         {
             var meta = pmp.Meta;
-            var page = new WizardMetaPage();
+            var page = new WizardMetaEntry();
             page.Url = meta.Website;
             page.Version = meta.Version;
             page.Author = meta.Author;
@@ -239,9 +368,9 @@ namespace FFXIV_TexTools.Views.Wizard
             return page;
         }
 
-        public static WizardMetaPage FromWizardModpack(ModPackJson wiz, string unzipPath)
+        public static WizardMetaEntry FromWizardModpack(ModPackJson wiz, string unzipPath)
         {
-            var page = new WizardMetaPage();
+            var page = new WizardMetaEntry();
             page.Url = wiz.Url;
             page.Name = wiz.Name;
             page.Version = wiz.Version;
@@ -257,16 +386,21 @@ namespace FFXIV_TexTools.Views.Wizard
     /// </summary>
     public class WizardData
     {
-        public WizardMetaPage MetaPage;
+        public WizardMetaEntry MetaPage;
         public List<WizardPageEntry> OptionPages;
         public EModpackType ModpackType;
         public ModPack ModPack;
+
+        /// <summary>
+        /// Original source this Wizard Data was generated from.
+        /// Null if the user created a fresh modpack in the UI.
+        /// </summary>
         public object RawSource;
 
         public static WizardData FromPmp(PMPJson pmp, string unzipPath)
         {
             var data = new WizardData();
-            data.MetaPage = WizardMetaPage.FromPMP(pmp, unzipPath);
+            data.MetaPage = WizardMetaEntry.FromPMP(pmp, unzipPath);
             data.OptionPages = new List<WizardPageEntry>();
             data.ModpackType = EModpackType.Pmp;
 
@@ -307,7 +441,7 @@ namespace FFXIV_TexTools.Views.Wizard
         {
             var data = new WizardData();
             data.ModpackType = EModpackType.TtmpWizard;
-            data.MetaPage = WizardMetaPage.FromWizardModpack(ttmp, unzipPath);
+            data.MetaPage = WizardMetaEntry.FromWizardModpack(ttmp, unzipPath);
 
             var mp = new ModPack(null);
             mp.Author = data.MetaPage.Author;
