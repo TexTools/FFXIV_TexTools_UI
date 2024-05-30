@@ -8,7 +8,7 @@
         xmlns:models="clr-namespace:FFXIV_TexTools.Models"
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         xmlns:Controls="clr-namespace:FFXIV_TexTools.Views.Controls"
-        x:Class="FFXIV_TexTools.Views.WizardAddGroupWindow"
+        x:Class="FFXIV_TexTools.Views.EditWizardGroupWindow"
         mc:Ignorable="d"
         xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
         resx:Localization.Enabled="True"              

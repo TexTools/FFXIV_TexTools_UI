@@ -1,4 +1,4 @@
-﻿<mah:MetroWindow x:Class="FFXIV_TexTools.Views.ModPackWizard"
+﻿<mah:MetroWindow x:Class="FFXIV_TexTools.Views.ExportWizardWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -74,7 +74,7 @@
             </Grid>
         </xctk:WizardPage>
         <xctk:WizardPage PageType="Blank" Background="{x:Null}" HeaderBackground="{x:Null}">
-            <local:WizardModPackControl/>
+            <local:ExportWizardPageControl/>
         </xctk:WizardPage>
     </xctk:Wizard>
 </mah:MetroWindow>

@@ -63,7 +63,7 @@ namespace FFXIV_TexTools.Views
     /// <summary>
     /// Interaction logic for WizardAddGroupWindow.xaml
     /// </summary>
-    public partial class WizardAddGroupWindow
+    public partial class EditWizardGroupWindow
     {
         private List<ModOption> _modOptions;
         private ModOption _selectedModOption;
@@ -77,7 +77,7 @@ namespace FFXIV_TexTools.Views
         private DirectoryInfo _basicModpackDirectory;
         private List<byte> _basicModpackData;
 
-        public WizardAddGroupWindow(List<string> groupNames)
+        public EditWizardGroupWindow(List<string> groupNames)
         {
             InitializeComponent();
             _modOptions = new List<ModOption>();

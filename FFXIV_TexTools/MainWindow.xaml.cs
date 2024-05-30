@@ -1011,19 +1011,12 @@ namespace FFXIV_TexTools
         /// </summary>
         private async void Menu_MakeModpackWizard_Click(object sender, RoutedEventArgs e)
         {
-            var wizard = new ModPackWizard {Owner = this};
+            var wizard = new ExportWizardWindow { Owner = this};
             var result = wizard.ShowDialog();
 
             if (result == true)
             {
-                if (wizard.ModPackFileName.Equals("NoData"))
-                {
-                    await this.ShowMessageAsync(UIMessages.ModPackCreationFailedErrorTitle, UIMessages.NoModsDetectedErrorMessage);
-                }
-                else
-                {
-                    await this.ShowMessageAsync(UIMessages.ModPackCreationCompleteTitle, string.Format(UIMessages.ModPackCreationCompleteMessage, wizard.ModPackFileName));
-                }
+                await this.ShowMessageAsync(UIMessages.ModPackCreationCompleteTitle, string.Format(UIMessages.ModPackCreationCompleteMessage, wizard.ModPackFileName));
             }
         }
 
@@ -1096,7 +1089,7 @@ namespace FFXIV_TexTools
                 if (modpackType == TTMP.EModpackType.TtmpWizard || modpackType == TTMP.EModpackType.Pmp)
                 {
                     // Multi-Option PMP/TTMP
-                    await SimpleWizardWindow.ImportModpack(path, this);
+                    await ImportWizardWindow.ImportModpack(path, this);
                 }
                 else if(modpackType == TTMP.EModpackType.TtmpBackup)
                 {

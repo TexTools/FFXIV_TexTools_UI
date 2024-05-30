@@ -31,6 +31,7 @@ using Xceed.Wpf.Toolkit;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Mods.DataContainers;
 using xivModdingFramework.Mods.FileTypes;
+using xivModdingFramework.Mods.Interfaces;
 using Image = SixLabors.ImageSharp.Image;
 
 namespace FFXIV_TexTools.Views
@@ -38,12 +39,12 @@ namespace FFXIV_TexTools.Views
     /// <summary>
     /// Interaction logic for ModPackWizard.xaml
     /// </summary>
-    public partial class ModPackWizard
+    public partial class ExportWizardWindow
     {
         private ProgressDialogController _progressController;
 
-        private static ModPackWizard _wizard = null;
-        public static ModPackWizard GetWizard()
+        private static ExportWizardWindow _wizard = null;
+        public static ExportWizardWindow GetWizard()
         {
             return _wizard;
         }
@@ -69,7 +70,7 @@ namespace FFXIV_TexTools.Views
             _lockProgress = null;
         }
 
-        public ModPackWizard()
+        public ExportWizardWindow()
         {
             _wizard = this;
             InitializeComponent();
@@ -89,8 +90,6 @@ namespace FFXIV_TexTools.Views
         /// </summary>
         private Version VersionNumber { get; set; }
 
-        private string Url { get; set; }
-
         /// <summary>
         /// The mod pack file name
         /// </summary>
@@ -101,13 +100,8 @@ namespace FFXIV_TexTools.Views
 
         #region Event Handlers
 
-        /// <summary>
-        /// Event handler for next page
-        /// </summary>
-        private void modPackWizard_Next(object sender, Xceed.Wpf.Toolkit.Core.CancelRoutedEventArgs e)
+        private void CleanupInput()
         {
-            var wizPages = modPackWizard.Items;
-
             var verString = ModPackVersion.Text.Replace("_", "0");
 
             if (verString.Contains(","))
@@ -117,62 +111,21 @@ namespace FFXIV_TexTools.Views
 
             char[] invalidChars = { '/', '\\', ':', '*', '?', '"', '<', '>', '|' };
 
-            if (ModPackName.Text.IndexOfAny(invalidChars) >= 0)
+            foreach (var ch in invalidChars)
             {
-                if (FlexibleMessageBox.Show(new Wpf32Window(this),
-                        UIMessages.InvalidCharacterModpackNameMessage,
-                        UIMessages.InvalidCharacterModpackNameTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning) ==
-                    System.Windows.Forms.DialogResult.OK)
-                {
-                    e.Cancel = true;
-                    return;
-                }
+                ModPackName.Text.Replace(ch.ToString(), "");
             }
 
             VersionNumber = Version.Parse(verString);
 
             if (VersionNumber.ToString().Equals("0.0.0"))
             {
-                if (FlexibleMessageBox.Show(new Wpf32Window(this),
-                        UIMessages.DefaultModPackVersionMessage,
-                        UIMessages.NoVersionFoundTitle, MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) ==
-                    System.Windows.Forms.DialogResult.OK)
-                {
-                    VersionNumber = new Version(1, 0, 0);
-                }
-                else
-                {
-                    e.Cancel = true;
-                    return;
-                }
+                VersionNumber = new Version(1, 0, 0);
             }
 
             if (ModPackAuthor.Text.Equals(string.Empty))
             {
-                if (FlexibleMessageBox.Show(new Wpf32Window(this),
-                        UIMessages.DefaultModPackAuthorMessage,
-                        UIMessages.NoAuthorFoundTitle, MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) ==
-                    System.Windows.Forms.DialogResult.OK)
-                {
-                    ModPackAuthor.Text = "TexTools User".L();
-                }
-                else
-                {
-                    e.Cancel = true;
-                    return;
-                }
-            }
-
-            if (ModPackDescription.Text.Equals(string.Empty))
-            {
-                if (FlexibleMessageBox.Show(new Wpf32Window(this),
-                        UIMessages.DefaultDescriptionMessage,
-                        UIMessages.NoDescriptionFoundTitle, MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) ==
-                    System.Windows.Forms.DialogResult.Cancel)
-                {
-                    e.Cancel = true;
-                    return;
-                }
+                ModPackAuthor.Text = "Unknown".L();
             }
 
             if (!String.IsNullOrWhiteSpace(ModPackUrl.Text))
@@ -192,13 +145,22 @@ namespace FFXIV_TexTools.Views
                 ModPackUrl.Text = "";
             }
 
+        }
 
+        /// <summary>
+        /// Event handler for next page
+        /// </summary>
+        private void modPackWizard_Next(object sender, Xceed.Wpf.Toolkit.Core.CancelRoutedEventArgs e)
+        {
+            CleanupInput();
+
+            var wizPages = modPackWizard.Items;
             var index = wizPages.IndexOf(modPackWizard.CurrentPage);
             if (index == wizPages.Count - 2)
             {
                 var newPage = new WizardPage
                 {
-                    Content = new WizardModPackControl(),
+                    Content = new ExportWizardPageControl(),
                     PageType = WizardPageType.Blank,
                     Background = null,
                     HeaderBackground = null
@@ -226,7 +188,7 @@ namespace FFXIV_TexTools.Views
             Owner.Activate();
             foreach (WizardPage wizardPage in modPackWizard.Items)
             {
-                if (wizardPage.Content is WizardModPackControl control)
+                if (wizardPage.Content is ExportWizardPageControl control)
                 {
                     control.Dispose();
                 }
@@ -241,12 +203,38 @@ namespace FFXIV_TexTools.Views
         /// </remarks>
         private async void ModPackWizard_CreateModPack(object sender, System.Windows.RoutedEventArgs e)
         {
+            var wizPages = modPackWizard.Items;
+            var anyContent = false;
+            foreach (var wizPageItem in wizPages)
+            {
+                var wizPage = wizPageItem as WizardPage;
+                var content = wizPage.Content as ExportWizardPageControl;
+                if(content.HasData)
+                {
+                    anyContent = true;
+                    break;
+                }
+            }
+
+            if (!anyContent)
+            {
+                return;
+            }
+
+            var modPackPath = Path.Combine(Settings.Default.ModPack_Directory, $"{ModPackName.Text}.ttmp2");
+            if (File.Exists(modPackPath))
+            {
+                var overwriteDialogResult = FlexibleMessageBox.Show(new Wpf32Window(this), UIMessages.ModPackOverwriteMessage,
+                                            UIMessages.OverwriteTitle, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
+                if (overwriteDialogResult != System.Windows.Forms.DialogResult.OK)
+                {
+                    return;
+                }
+            }
+
             _progressController = await this.ShowProgressAsync(UIMessages.ModPackCreationMessage, UIMessages.PleaseStandByMessage);
             try
             {
-
-                var wizPages = modPackWizard.Items;
-
                 var modPackData = new ModPackData
                 {
                     Name = ModPackName.Text,
@@ -262,8 +250,10 @@ namespace FFXIV_TexTools.Views
                 {
                     var wizPage = wizPageItem as WizardPage;
 
-                    if (wizPage.Content is WizardModPackControl control)
+                    if (wizPage.Content is ExportWizardPageControl control)
                     {
+                        //throw new NotImplementedException("asdf");
+                        
                         if (control.ModGroupList.Count > 0)
                         {
                             modPackData.ModPackPages.Add(new ModPackData.ModPackPage
@@ -276,47 +266,22 @@ namespace FFXIV_TexTools.Views
                     pageIndex++;
                 }
 
-                if (modPackData.ModPackPages.Count > 0)
-                {
-                    var progressIndicator = new Progress<double>(ReportProgress);
+                var progressIndicator = new Progress<double>(ReportProgress);
 
-                    var modPackPath = Path.Combine(Properties.Settings.Default.ModPack_Directory, $"{modPackData.Name}.ttmp2");
-                    var overwriteModpack = false;
 
-                    if (File.Exists(modPackPath))
-                    {
-                        var overwriteDialogResult = FlexibleMessageBox.Show(new Wpf32Window(this), UIMessages.ModPackOverwriteMessage,
-                                                    UIMessages.OverwriteTitle, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
-                        if (overwriteDialogResult == System.Windows.Forms.DialogResult.Yes)
-                        {
-                            overwriteModpack = true;
-                        }
-                        else if (overwriteDialogResult == System.Windows.Forms.DialogResult.Cancel)
-                        {
-                            return;
-                        }
-                    }
+                await TTMP.CreateWizardModPack(modPackData, Properties.Settings.Default.ModPack_Directory, progressIndicator, true);
 
-                    await TTMP.CreateWizardModPack(modPackData, Properties.Settings.Default.ModPack_Directory, progressIndicator, overwriteModpack);
+                ModPackFileName = $"{ModPackName.Text}";
 
-                    ModPackFileName = $"{ModPackName.Text}";
-                }
-                else
-                {
-                    ModPackFileName = "NoData";
-                }
+                await _progressController.CloseAsync();
+                DialogResult = true;
             }
             catch(Exception ex)
             {
                 FlexibleMessageBox.Show("Failed to create modpack.\n\nError: ".L() + ex.Message, "Modpack Creation Error".L(), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                await _progressController.CloseAsync();
                 return;
             }
-            finally
-            {
-                await _progressController.CloseAsync();
-            }
-
-            DialogResult = true;
         }
 
 
@@ -397,7 +362,7 @@ namespace FFXIV_TexTools.Views
                     var wizPage = new WizardPage();
                     wizPage.Background = null;
                     wizPage.HeaderBackground = null;
-                    var wizModPackControl = new WizardModPackControl();
+                    var wizModPackControl = new ExportWizardPageControl();
                     wizPage.Content = wizModPackControl;
                     wizPage.PageType = WizardPageType.Blank;
                     foreach (var groupJson in wizPageItemJson.ModGroups)
@@ -475,7 +440,7 @@ namespace FFXIV_TexTools.Views
                 }
                 modPackWizard.Items.Add(new WizardPage()
                 {
-                    Content = new WizardModPackControl(),
+                    Content = new ExportWizardPageControl(),
                     PageType = WizardPageType.Blank,
                     Background = null,
                     HeaderBackground = null

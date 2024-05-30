@@ -43,7 +43,7 @@ namespace FFXIV_TexTools.Views.Wizard
     /// <summary>
     /// Interaction logic for ImportModPackWizard.xaml
     /// </summary>
-    public partial class SimpleWizardWindow
+    public partial class ImportWizardWindow
     {
         private int _CurrentPage;
         private readonly int _PageCount;
@@ -52,7 +52,7 @@ namespace FFXIV_TexTools.Views.Wizard
         private readonly WizardData _Data;
         private readonly string _Path;
 
-        public SimpleWizardWindow(WizardData data, string path)
+        public ImportWizardWindow(WizardData data, string path)
         {
             InitializeComponent();
 
@@ -75,7 +75,7 @@ namespace FFXIV_TexTools.Views.Wizard
             {
                 wizPages.Add(new WizardPage
                 {
-                    Content = new WizardOptionsPageControl(data.OptionPages[i]),
+                    Content = new ImportWizardPageControl(data.OptionPages[i]),
                     PageType = WizardPageType.Blank,
                     Background = null,
                     HeaderBackground = null
@@ -215,7 +215,7 @@ namespace FFXIV_TexTools.Views.Wizard
                 throw new Exception("Cannot import non-wizard capable modpack with the wizard modpack importer.");
             }
 
-            var wind = new SimpleWizardWindow(data, path);
+            var wind = new ImportWizardWindow(data, path);
             wind.Owner = owner;
             if (owner != null)
             {

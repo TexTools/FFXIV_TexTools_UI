@@ -29,10 +29,10 @@ using Image = SixLabors.ImageSharp.Image;
 
 namespace FFXIV_TexTools.Views.Wizard
 {
-    public partial class WizardOptionsPageControl : UserControl
+    public partial class ImportWizardPageControl : UserControl
     {
 
-        public WizardOptionsPageControl(WizardOptionsPage data)
+        public ImportWizardPageControl(WizardOptionsPage data)
         {
             InitializeComponent();
 
