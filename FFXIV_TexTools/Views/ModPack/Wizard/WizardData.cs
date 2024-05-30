@@ -29,7 +29,7 @@ namespace FFXIV_TexTools.Views.Wizard
         Imc
     };
 
-    public class StandardWizardOptionData : WizardOptionData
+    public class WizardStandardOptionData : WizardOptionData
     {
         public Dictionary<string, FileStorageInformation> Files = new Dictionary<string, FileStorageInformation>();
 
@@ -39,22 +39,15 @@ namespace FFXIV_TexTools.Views.Wizard
         }
     }
 
-    public class ImcWizardOptionData : WizardOptionData
+    public class WizardImcOptionData : WizardOptionData
     {
         public bool IsDisableOption;
-        public ushort Mask;
+        public ushort AttributeMask;
 
         protected override bool HasData()
         {
             return true;
         }
-    }
-
-    public class ImcWizardGroupData
-    {
-        public XivDependencyRootInfo Root;
-        public ushort Variant;
-        public XivImc ImcEntry;
     }
 
     public class WizardOptionData
@@ -127,15 +120,15 @@ namespace FFXIV_TexTools.Views.Wizard
             }
         }
 
-        private WizardOptionData _Data;
+        private WizardOptionData _Data = new WizardStandardOptionData();
 
-        public ImcWizardOptionData ImcData
+        public WizardImcOptionData ImcData
         {
             get
             {
                 if(GroupType == EGroupType.Imc)
                 {
-                    return _Data as ImcWizardOptionData;
+                    return _Data as WizardImcOptionData;
                 } else
                 {
                     return null;
@@ -150,13 +143,13 @@ namespace FFXIV_TexTools.Views.Wizard
             }
         }
 
-        public StandardWizardOptionData Data
+        public WizardStandardOptionData StandardData
         {
             get
             {
                 if (GroupType == EGroupType.Standard)
                 {
-                    return _Data as StandardWizardOptionData;
+                    return _Data as WizardStandardOptionData;
                 }
                 else
                 {
@@ -179,6 +172,13 @@ namespace FFXIV_TexTools.Views.Wizard
         {
             _Group = owningGroup;
         }
+    }
+
+    public class WizardImcGroupData
+    {
+        public XivDependencyRoot Root;
+        public ushort Variant;
+        public XivImc BaseEntry;
     }
 
     /// <summary>
@@ -216,7 +216,7 @@ namespace FFXIV_TexTools.Views.Wizard
         /// <summary>
         /// Option Data for Penumbra style Imc-Mask Option Groups.
         /// </summary>
-        public ImcWizardGroupData ImcData = null;
+        public WizardImcGroupData ImcData = null;
 
         public int Priority;
 
@@ -245,6 +245,13 @@ namespace FFXIV_TexTools.Views.Wizard
                     wizOp.ImagePath = Path.Combine(unzipPath, o.ImagePath);
                 }
                 wizOp.Selected = o.IsChecked;
+                
+                var data = new WizardStandardOptionData();
+                // TODO - Populate this Data.
+                wizOp.StandardData = data;
+
+
+
                 group.Options.Add(wizOp);
             }
 
@@ -276,6 +283,17 @@ namespace FFXIV_TexTools.Views.Wizard
 
             group.Description = pGroup.Description;
 
+            var imcGroup = pGroup as PMPImcGroupJson;
+            if (imcGroup != null)
+            {
+                group.ImcData = new WizardImcGroupData()
+                {
+                    Variant = imcGroup.Identifier.Variant,
+                    Root = imcGroup.Identifier.GetRoot(),
+                    BaseEntry = imcGroup.DefaultEntry.ToXivImc(),
+                };
+            }
+
             var idx = 0;
             foreach(var o in pGroup.Options)
             {
@@ -294,6 +312,32 @@ namespace FFXIV_TexTools.Views.Wizard
                     wizOp.Selected = (group.UserSelection & bit) > 0;
                 }
                 group.Options.Add(wizOp);
+
+                if(group.GroupType == EGroupType.Standard)
+                {
+                    var standardData = new WizardStandardOptionData();
+                    // TODO - Populate this data.
+
+
+                    wizOp.StandardData = standardData;
+                } else if(group.GroupType == EGroupType.Imc)
+                {
+                    var imcData = new WizardImcOptionData();
+                    var imcOp = o as PmpImcOptionJson;
+                    if (imcOp != null)
+                    {
+                        imcData.IsDisableOption = false;
+                        imcData.AttributeMask = imcOp.AttributeMask;
+                    }
+                    var defOp = o as PmpDisableImcOptionJson;
+                    if(defOp != null)
+                    {
+                        imcData.IsDisableOption = defOp.IsDisableSubMod;
+                        imcData.AttributeMask = 0;
+                    }
+                    wizOp.ImcData = imcData;
+                }
+
                 idx++;
             }
 
@@ -307,6 +351,7 @@ namespace FFXIV_TexTools.Views.Wizard
             {
                 group.Options[0].Selected = true;
             }
+
 
             return group;
         }

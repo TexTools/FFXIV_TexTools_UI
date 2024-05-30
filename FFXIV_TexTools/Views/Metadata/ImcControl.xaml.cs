@@ -125,7 +125,7 @@ namespace FFXIV_TexTools.Views.Metadata
                 var partIndex = Array.IndexOf(Constants.Alphabet, part);
 
                 ushort bit = (ushort)(1 << partIndex);
-                var active = (bit & entry.Mask) > 0;
+                var active = (bit & entry.AttributeMask) > 0;
                 box.IsChecked = active;
             }
 
@@ -133,7 +133,7 @@ namespace FFXIV_TexTools.Views.Metadata
             var items = await root.GetAllItems(variant, MainWindow.DefaultTransaction);
             ItemNameBox.Text = "[" + items.Count + "] " + items[0].Name;
 
-            ushort sfx = (ushort)(entry.Mask >> 10);
+            ushort sfx = entry.SoundId;
             SfxBox.Text = sfx.ToString();
 
             ushort vfx = entry.Vfx;
@@ -231,11 +231,7 @@ namespace FFXIV_TexTools.Views.Metadata
             if(value > 63) { value = 63; }
             if(value < 0) { value = 0; }
 
-            ushort sfxBits = (ushort) (value << 10);
-
-            ushort baseMask = (ushort)(entry.Mask & 0x3FF);
-
-            entry.Mask = (ushort)(baseMask | sfxBits);
+            entry.SoundId = (byte) value;
             OnFileChanged();
         }
 
