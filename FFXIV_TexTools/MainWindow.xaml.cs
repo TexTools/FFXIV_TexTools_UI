@@ -68,6 +68,7 @@ using xivModdingFramework.Mods.FileTypes;
 using xivModdingFramework.Mods.FileTypes.PMP;
 using xivModdingFramework.SqPack.DataContainers;
 using xivModdingFramework.SqPack.FileTypes;
+using static System.Data.Entity.Infrastructure.Design.Executor;
 using static xivModdingFramework.Cache.XivCache;
 
 using Application = System.Windows.Application;
@@ -220,7 +221,8 @@ namespace FFXIV_TexTools
         /// </summary>
         public IProgress<string> LockProgress { get { return _lockProgress; } }
 
-        private ProgressDialogController _lockProgressController;
+
+        private ProgressDialogController _lockProgressController ;
 
         /// <summary>
         /// Fired when the old tree is about to be discarded.
@@ -589,25 +591,12 @@ namespace FFXIV_TexTools
                     msg = UIStrings.Please_Wait;
                 }
 
-                // If the lock screen doesn't proc within 1 second, kill it.
-                const int timeout = 1000;
-                var task = this.ShowProgressAsync(title, msg);
+                _lockProgressController = await this.ShowProgressAsync(title, msg);
 
-                if (await Task.WhenAny(task, Task.Delay(timeout)) == task)
+                _lockProgress = new Progress<string>((update) =>
                 {
-                    // Task completed within timeout
-                    _lockProgressController = task.Result;
-                    _lockProgressController.SetIndeterminate();
-
-                    _lockProgress = new Progress<string>((update) =>
-                    {
-                        _lockProgressController.SetMessage(update);
-                    });
-                }
-                else
-                {
-                    // Lock screen failed to resolve, don't let us deadlock.
-                }
+                    _lockProgressController.SetMessage(update);
+                });
             }
             finally
             {

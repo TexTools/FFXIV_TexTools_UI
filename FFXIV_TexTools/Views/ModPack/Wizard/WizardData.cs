@@ -7,8 +7,11 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Markup;
 using xivModdingFramework.Cache;
 using xivModdingFramework.General;
+using xivModdingFramework.Helpers;
+using xivModdingFramework.Mods;
 using xivModdingFramework.Mods.DataContainers;
 using xivModdingFramework.Mods.FileTypes.PMP;
 using xivModdingFramework.SqPack.FileTypes;
@@ -226,7 +229,7 @@ namespace FFXIV_TexTools.Views.Wizard
         /// </summary>
         public object ModOption;
 
-        public static WizardGroupEntry FromWizardGroup(ModGroupJson tGroup, string unzipPath)
+        public static async Task<WizardGroupEntry> FromWizardGroup(ModGroupJson tGroup, string unzipPath)
         {
             var group = new WizardGroupEntry();
             group.Options = new List<WizardOptionEntry>();
@@ -234,6 +237,8 @@ namespace FFXIV_TexTools.Views.Wizard
 
             group.Name = tGroup.GroupName;
             group.OptionType = tGroup.SelectionType == "Single" ? EOptionType.Single : EOptionType.Multi;
+
+            var mpdPath = Path.Combine(unzipPath, "TTMPD.mpd");
 
             foreach(var o in tGroup.OptionList)
             {
@@ -247,7 +252,19 @@ namespace FFXIV_TexTools.Views.Wizard
                 wizOp.Selected = o.IsChecked;
                 
                 var data = new WizardStandardOptionData();
-                // TODO - Populate this Data.
+
+                foreach(var mj in o.ModsJsons)
+                {
+                    var finfo = new FileStorageInformation()
+                    {
+                        StorageType = EFileStorageType.CompressedBlob,
+                        FileSize = mj.ModSize,
+                        RealOffset = mj.ModOffset,
+                        RealPath = mpdPath
+                    };
+                    data.Files.Add(mj.FullPath, finfo);
+                }
+
                 wizOp.StandardData = data;
 
 
@@ -269,7 +286,7 @@ namespace FFXIV_TexTools.Views.Wizard
             return group;
         }
 
-        public static WizardGroupEntry FromPMPGroup(PMPGroupJson pGroup, string unzipPath)
+        public static async Task<WizardGroupEntry> FromPMPGroup(PMPGroupJson pGroup, string unzipPath)
         {
             var group = new WizardGroupEntry();
             group.Options = new List<WizardOptionEntry>();
@@ -316,7 +333,10 @@ namespace FFXIV_TexTools.Views.Wizard
                 if(group.GroupType == EGroupType.Standard)
                 {
                     var standardData = new WizardStandardOptionData();
-                    // TODO - Populate this data.
+                    var sOp = o as PmpStandardOptionJson;
+
+                    var data = await PMP.UnpackPmpOption(o, null, unzipPath);
+                    wizOp.StandardData.Files = data;                   
 
 
                     wizOp.StandardData = standardData;
@@ -365,7 +385,7 @@ namespace FFXIV_TexTools.Views.Wizard
         public string Name;
         public List<WizardGroupEntry> Groups;
 
-        public static WizardPageEntry FromWizardModpackPage(ModPackPageJson jp, string unzipPath)
+        public static async Task<WizardPageEntry> FromWizardModpackPage(ModPackPageJson jp, string unzipPath)
         {
             var page = new WizardPageEntry();
             page.Name = "Page " + (jp.PageIndex + 1);
@@ -373,18 +393,18 @@ namespace FFXIV_TexTools.Views.Wizard
             page.Groups = new List<WizardGroupEntry>();
             foreach(var p in jp.ModGroups)
             {
-                page.Groups.Add(WizardGroupEntry.FromWizardGroup(p, unzipPath));
+                page.Groups.Add(await WizardGroupEntry.FromWizardGroup(p, unzipPath));
             }
             return page;
         }
 
-        public static WizardPageEntry FromPenumbraPage(PMPGroupJson pGroup, string unzipPath)
+        public static async Task<WizardPageEntry> FromPenumbraPage(PMPGroupJson pGroup, string unzipPath)
         {
             // Penumbra doesn't actually have pages, just groups.
             var page = new WizardPageEntry();
             page.Name = pGroup.Name;
             page.Groups = new List<WizardGroupEntry>();
-            page.Groups.Add(WizardGroupEntry.FromPMPGroup(pGroup, unzipPath));
+            page.Groups.Add(await WizardGroupEntry.FromPMPGroup(pGroup, unzipPath));
             return page;
         }
 
@@ -442,7 +462,7 @@ namespace FFXIV_TexTools.Views.Wizard
         /// </summary>
         public object RawSource;
 
-        public static WizardData FromPmp(PMPJson pmp, string unzipPath)
+        public static async Task<WizardData> FromPmp(PMPJson pmp, string unzipPath)
         {
             var data = new WizardData();
             data.MetaPage = WizardMetaEntry.FromPMP(pmp, unzipPath);
@@ -461,7 +481,7 @@ namespace FFXIV_TexTools.Views.Wizard
             {
                 foreach (var g in pmp.Groups)
                 {
-                    data.OptionPages.Add(WizardPageEntry.FromPenumbraPage(g, unzipPath));
+                    data.OptionPages.Add(await WizardPageEntry.FromPenumbraPage(g, unzipPath));
                 }
             } else
             {
@@ -477,12 +497,12 @@ namespace FFXIV_TexTools.Views.Wizard
                     pmp.DefaultMod.Name = "Default";
                 }
 
-                data.OptionPages.Add(WizardPageEntry.FromPenumbraPage(fakeGroup, unzipPath));
+                data.OptionPages.Add(await WizardPageEntry.FromPenumbraPage(fakeGroup, unzipPath));
             }
             return data;
         }
 
-        public static WizardData FromWizardPack(ModPackJson ttmp, string unzipPath)
+        public static async Task<WizardData> FromWizardPack(ModPackJson ttmp, string unzipPath)
         {
             var data = new WizardData();
             data.ModpackType = EModpackType.TtmpWizard;
@@ -499,7 +519,7 @@ namespace FFXIV_TexTools.Views.Wizard
             data.OptionPages = new List<WizardPageEntry>();
             foreach (var p in ttmp.ModPackPages)
             {
-                data.OptionPages.Add(WizardPageEntry.FromWizardModpackPage(p, unzipPath));
+                data.OptionPages.Add(await WizardPageEntry.FromWizardModpackPage(p, unzipPath));
             }
             return data;
         }

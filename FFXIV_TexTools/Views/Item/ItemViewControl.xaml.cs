@@ -513,7 +513,6 @@ namespace FFXIV_TexTools.Views.Item
             }
             finally
             {
-
                 if (this == MainItemView)
                 {
                     await MainWindow.GetMainWindow().UnlockUi(this);
