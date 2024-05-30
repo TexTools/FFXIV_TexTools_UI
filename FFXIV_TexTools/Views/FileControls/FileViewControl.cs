@@ -741,7 +741,7 @@ namespace FFXIV_TexTools.Views.Controls
             }
         }
 
-        protected virtual internal async Task<bool> INTERNAL_WriteModFile(ModTransaction tx)
+        protected virtual async Task<bool> INTERNAL_WriteModFile(ModTransaction tx)
         {
             var data = await GetCompressedData();
             await Dat.WriteModFile(data, InternalFilePath, XivStrings.TexTools, ReferenceItem, tx);

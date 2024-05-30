@@ -253,7 +253,7 @@ namespace FFXIV_TexTools.Views.Controls
 
         }
 
-        protected internal override async Task<bool> INTERNAL_WriteModFile(ModTransaction tx)
+        protected override async Task<bool> INTERNAL_WriteModFile(ModTransaction tx)
         {
 
 

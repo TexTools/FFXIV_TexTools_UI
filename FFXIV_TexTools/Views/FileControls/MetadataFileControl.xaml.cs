@@ -38,6 +38,7 @@ using xivModdingFramework.Mods;
 using xivModdingFramework.Mods.FileTypes;
 using xivModdingFramework.Models.FileTypes;
 using System.Diagnostics;
+using FFXIV_TexTools.Resources;
 
 namespace FFXIV_TexTools.Views.Controls
 {
@@ -152,6 +153,12 @@ namespace FFXIV_TexTools.Views.Controls
             Root = Metadata.Root;
             await OnRootChanged();
 
+            return true;
+        }
+
+        protected override async Task<bool> INTERNAL_WriteModFile(ModTransaction tx)
+        {
+            await ItemMetadata.SaveMetadata(Metadata, XivStrings.TexTools, tx, true);
             return true;
         }
 

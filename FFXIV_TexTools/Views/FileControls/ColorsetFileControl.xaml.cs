@@ -280,7 +280,7 @@ namespace FFXIV_TexTools.Views.Controls
             return true;
         }
 
-        protected internal override async Task<bool> INTERNAL_WriteModFile(ModTransaction tx)
+        protected override async Task<bool> INTERNAL_WriteModFile(ModTransaction tx)
         {
             // We override this in order to use MTRL's import function, which checks for missing texture files, etc.
             await Mtrl.ImportMtrl(Material, ReferenceItem, XivStrings.TexTools, true, tx);
