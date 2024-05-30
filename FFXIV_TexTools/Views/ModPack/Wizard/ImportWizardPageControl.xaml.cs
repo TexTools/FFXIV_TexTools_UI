@@ -32,12 +32,12 @@ namespace FFXIV_TexTools.Views.Wizard
     public partial class ImportWizardPageControl : UserControl
     {
 
-        public ImportWizardPageControl(WizardOptionsPage data)
+        public ImportWizardPageControl(WizardPageEntry data)
         {
             InitializeComponent();
 
             // We want one full unified list of options as a source for our listbox.
-            var options = new List<WizardOptionDisplay>();
+            var options = new List<WizardOptionEntry>();
             foreach(var g in data.Groups)
             {
                 options.AddRange(g.Options);
@@ -60,7 +60,7 @@ namespace FFXIV_TexTools.Views.Wizard
         /// </summary>
         private void OptionsList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var opt = OptionsList.SelectedItem as WizardOptionDisplay;
+            var opt = OptionsList.SelectedItem as WizardOptionEntry;
             if (opt == null) return;
 
             OptionDescriptionTextBox.Text = opt.Description;
@@ -91,7 +91,7 @@ namespace FFXIV_TexTools.Views.Wizard
         {
             foreach (var item in OptionsList.ItemsSource)
             {
-                var modOption = (WizardOptionDisplay)item;
+                var modOption = (WizardOptionEntry)item;
                 if (modOption.OptionType == EOptionType.Multi)
                 {
                     modOption.Selected = isSelected;
@@ -124,7 +124,7 @@ namespace FFXIV_TexTools.Views.Wizard
 
             if (container is FrameworkElement frameworkElement)
             {
-                var selectionType = ((WizardOptionDisplay)item).OptionType;
+                var selectionType = ((WizardOptionEntry)item).OptionType;
 
                 if (selectionType == EOptionType.Single)
                 {

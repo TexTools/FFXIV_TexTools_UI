@@ -19,7 +19,12 @@ namespace FFXIV_TexTools.Views.Wizard
         Multi
     };
 
-    public class WizardOptionDisplay : INotifyPropertyChanged
+    /// <summary>
+    /// Class representing a single, clickable [Option],
+    /// Aka a Radio Button or Checkbox the user can select, that internally resolves
+    /// to a single list of files to be imported.
+    /// </summary>
+    public class WizardOptionEntry : INotifyPropertyChanged
     {
         public string Name { get; set; }
         public string Description { get; set; }
@@ -39,7 +44,7 @@ namespace FFXIV_TexTools.Views.Wizard
             }
         }
 
-        private WizardOptionGroup _Group;
+        private WizardGroupEntry _Group;
 
         // Group name is used by the UI template binding for establishing radio button groupings.
         public string GroupName
@@ -62,16 +67,17 @@ namespace FFXIV_TexTools.Views.Wizard
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public WizardOptionDisplay(WizardOptionGroup owningGroup)
+        public WizardOptionEntry(WizardGroupEntry owningGroup)
         {
             _Group = owningGroup;
         }
     }
 
     /// <summary>
-    /// Class representing a single selectable option by the end user.
+    /// Class represnting a Group of options.
+    /// Aka a collection of radio buttons or checkboxes.
     /// </summary>
-    public class WizardOptionGroup
+    public class WizardGroupEntry
     {
         public string Name;
         public string Description;
@@ -84,7 +90,7 @@ namespace FFXIV_TexTools.Views.Wizard
 
         public EOptionType OptionType;
 
-        public List<WizardOptionDisplay> Options;
+        public List<WizardOptionEntry> Options;
 
         /// <summary>
         /// Handler to the base modpack option.
@@ -92,10 +98,10 @@ namespace FFXIV_TexTools.Views.Wizard
         /// </summary>
         public object ModOption;
 
-        public static WizardOptionGroup FromWizardGroup(ModGroupJson tGroup, string unzipPath)
+        public static WizardGroupEntry FromWizardGroup(ModGroupJson tGroup, string unzipPath)
         {
-            var group = new WizardOptionGroup();
-            group.Options = new List<WizardOptionDisplay>();
+            var group = new WizardGroupEntry();
+            group.Options = new List<WizardOptionEntry>();
             group.ModOption = tGroup;
 
             group.Name = tGroup.GroupName;
@@ -103,7 +109,7 @@ namespace FFXIV_TexTools.Views.Wizard
 
             foreach(var o in tGroup.OptionList)
             {
-                var wizOp = new WizardOptionDisplay(group);
+                var wizOp = new WizardOptionEntry(group);
                 wizOp.Name = o.Name;
                 wizOp.Description = o.Description;
                 if(!String.IsNullOrWhiteSpace(o.ImagePath))
@@ -128,10 +134,10 @@ namespace FFXIV_TexTools.Views.Wizard
             return group;
         }
 
-        public static WizardOptionGroup FromPMPGroup(PMPGroupJson pGroup, string unzipPath)
+        public static WizardGroupEntry FromPMPGroup(PMPGroupJson pGroup, string unzipPath)
         {
-            var group = new WizardOptionGroup();
-            group.Options = new List<WizardOptionDisplay>();
+            var group = new WizardGroupEntry();
+            group.Options = new List<WizardOptionEntry>();
             group.ModOption = pGroup;
             group.DefaultSelection = pGroup.DefaultSettings;
             group.UserSelection = pGroup.SelectedSettings > 0 ? pGroup.SelectedSettings : pGroup.DefaultSettings;
@@ -144,7 +150,7 @@ namespace FFXIV_TexTools.Views.Wizard
             var idx = 0;
             foreach(var o in pGroup.Options)
             {
-                var wizOp = new WizardOptionDisplay(group);
+                var wizOp = new WizardOptionEntry(group);
                 wizOp.Name = o.Name;
                 wizOp.Description = o.Description;
                 wizOp.ImagePath = null;
@@ -178,34 +184,33 @@ namespace FFXIV_TexTools.Views.Wizard
     }
 
     /// <summary>
-    /// Class representing a user-facing page in the mod wizard.
-    /// Largely just a list of the options/groups on that page.
+    /// Class representing a Page of Groups.
     /// </summary>
-    public class WizardOptionsPage
+    public class WizardPageEntry
     {
         public string Name;
-        public List<WizardOptionGroup> Groups;
+        public List<WizardGroupEntry> Groups;
 
-        public static WizardOptionsPage FromWizardModpackPage(ModPackPageJson jp, string unzipPath)
+        public static WizardPageEntry FromWizardModpackPage(ModPackPageJson jp, string unzipPath)
         {
-            var page = new WizardOptionsPage();
+            var page = new WizardPageEntry();
             page.Name = "Page " + (jp.PageIndex + 1);
 
-            page.Groups = new List<WizardOptionGroup>();
+            page.Groups = new List<WizardGroupEntry>();
             foreach(var p in jp.ModGroups)
             {
-                page.Groups.Add(WizardOptionGroup.FromWizardGroup(p, unzipPath));
+                page.Groups.Add(WizardGroupEntry.FromWizardGroup(p, unzipPath));
             }
             return page;
         }
 
-        public static WizardOptionsPage FromPenumbraPage(PMPGroupJson pGroup, string unzipPath)
+        public static WizardPageEntry FromPenumbraPage(PMPGroupJson pGroup, string unzipPath)
         {
             // Penumbra doesn't actually have pages, just groups.
-            var page = new WizardOptionsPage();
+            var page = new WizardPageEntry();
             page.Name = pGroup.Name;
-            page.Groups = new List<WizardOptionGroup>();
-            page.Groups.Add(WizardOptionGroup.FromPMPGroup(pGroup, unzipPath));
+            page.Groups = new List<WizardGroupEntry>();
+            page.Groups.Add(WizardGroupEntry.FromPMPGroup(pGroup, unzipPath));
             return page;
         }
 
@@ -253,7 +258,7 @@ namespace FFXIV_TexTools.Views.Wizard
     public class WizardData
     {
         public WizardMetaPage MetaPage;
-        public List<WizardOptionsPage> OptionPages;
+        public List<WizardPageEntry> OptionPages;
         public EModpackType ModpackType;
         public ModPack ModPack;
         public object RawSource;
@@ -262,7 +267,7 @@ namespace FFXIV_TexTools.Views.Wizard
         {
             var data = new WizardData();
             data.MetaPage = WizardMetaPage.FromPMP(pmp, unzipPath);
-            data.OptionPages = new List<WizardOptionsPage>();
+            data.OptionPages = new List<WizardPageEntry>();
             data.ModpackType = EModpackType.Pmp;
 
             var mp = new ModPack(null);
@@ -277,7 +282,7 @@ namespace FFXIV_TexTools.Views.Wizard
             {
                 foreach (var g in pmp.Groups)
                 {
-                    data.OptionPages.Add(WizardOptionsPage.FromPenumbraPage(g, unzipPath));
+                    data.OptionPages.Add(WizardPageEntry.FromPenumbraPage(g, unzipPath));
                 }
             } else
             {
@@ -293,7 +298,7 @@ namespace FFXIV_TexTools.Views.Wizard
                     pmp.DefaultMod.Name = "Default";
                 }
 
-                data.OptionPages.Add(WizardOptionsPage.FromPenumbraPage(fakeGroup, unzipPath));
+                data.OptionPages.Add(WizardPageEntry.FromPenumbraPage(fakeGroup, unzipPath));
             }
             return data;
         }
@@ -312,10 +317,10 @@ namespace FFXIV_TexTools.Views.Wizard
             data.ModPack = mp;
             data.RawSource = ttmp;
 
-            data.OptionPages = new List<WizardOptionsPage>();
+            data.OptionPages = new List<WizardPageEntry>();
             foreach (var p in ttmp.ModPackPages)
             {
-                data.OptionPages.Add(WizardOptionsPage.FromWizardModpackPage(p, unzipPath));
+                data.OptionPages.Add(WizardPageEntry.FromWizardModpackPage(p, unzipPath));
             }
             return data;
         }
