@@ -166,6 +166,11 @@ namespace FFXIV_TexTools.Views.Wizard
                 }
 
             }
+            catch(Exception ex)
+            {
+                this.ShowError("Modpack Import Error", "An Error occured while importing the mod:\n\n" + ex.Message);
+                return;
+            }
             finally
             {
                 await _ProgressController.CloseAsync();
