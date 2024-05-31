@@ -206,6 +206,12 @@ namespace FFXIV_TexTools.Views.Wizard
             {
                 var path = fkv.Key;
                 var forceType2 = path.EndsWith(".atex");
+                if (!File.Exists(fkv.Value.RealPath))
+                {
+                    // Sometimes poorly behaved PMPs or Penumbra folders may have been used as a source,
+                    // where they are missing files that they claim to have.
+                    continue;
+                }
                 var data = await TransactionDataHandler.GetCompressedFile(fkv.Value, forceType2);
 
                 var root = await XivCache.GetFirstRoot(path);
@@ -390,14 +396,8 @@ namespace FFXIV_TexTools.Views.Wizard
 
                 if(group.GroupType == EGroupType.Standard)
                 {
-                    var standardData = new WizardStandardOptionData();
-                    var sOp = o as PmpStandardOptionJson;
-
                     var data = await PMP.UnpackPmpOption(o, null, unzipPath);
-                    wizOp.StandardData.Files = data;                   
-
-
-                    wizOp.StandardData = standardData;
+                    wizOp.StandardData.Files = data;
                 } else if(group.GroupType == EGroupType.Imc)
                 {
                     var imcData = new WizardImcOptionData();
@@ -622,12 +622,15 @@ namespace FFXIV_TexTools.Views.Wizard
 
         public async Task WriteWizardPack(string targetPath)
         {
+            Version.TryParse(MetaPage.Version, out var ver);
+
+            ver ??= new Version("1.0");
             var modPackData = new ModPackData()
             {
                 Name = MetaPage.Name,
                 Author = MetaPage.Author,
                 Url = MetaPage.Url,
-                Version = new Version(MetaPage.Version),
+                Version = ver,
                 Description = MetaPage.Description,
                 ModPackPages = new List<ModPackData.ModPackPage>(),
             };
