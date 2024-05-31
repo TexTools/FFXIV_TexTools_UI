@@ -444,7 +444,7 @@ namespace FFXIV_TexTools.Views
                 {
                     if (ext == ".pmp")
                     {
-                        throw new NotImplementedException();
+                        await Data.WritePmp(path);
                     }
                     else if (ext == ".ttmp2")
                     {

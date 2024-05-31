@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 using System.Windows.Markup;
 using xivModdingFramework.Cache;
 using xivModdingFramework.General;
@@ -19,6 +20,18 @@ using xivModdingFramework.SqPack.FileTypes;
 using xivModdingFramework.Variants.DataContainers;
 using static xivModdingFramework.Mods.FileTypes.TTMP;
 using Image = SixLabors.ImageSharp.Image;
+
+// ================================ //
+
+/// This file contains all of the Data Classes for the Advanced Modpack Wizard, both import and export.
+/// This, thus, also contains all of the logic necessary for generating these classes from the 
+/// TTMP or PMP Json formats, and converting them back into those formats/into TTMP/PMP files.
+/// 
+/// This borders a little on being too heavy to maintain as a TexTools class, but inevitably the
+/// UI Model in this case are very close to the final product by definition, and difficult to break
+/// apart without adding layers of inefficiency and redundancy that would make maintaining them even worse.
+
+// ================================ //
 
 namespace FFXIV_TexTools.Views.Wizard
 {
@@ -239,6 +252,32 @@ namespace FFXIV_TexTools.Views.Wizard
 
             return mo;
         }
+
+        public async Task<PMPOptionJson> ToPmpOption(string tempFolder, IEnumerable<FileIdentifier> identifiers)
+        {
+            PMPOptionJson op;
+            if(GroupType == EGroupType.Imc)
+            {
+                if (ImcData.IsDisableOption)
+                {
+                    var io = new PmpDisableImcOptionJson();
+                    op = io;
+                    io.IsDisableSubMod = true;
+                } else
+                {
+                    var io = new PmpImcOptionJson();
+                    op = io;
+                    io.AttributeMask = ImcData.AttributeMask;
+                }
+                op.Name = Name;
+                op.Description = Description;
+            } else
+            {
+                // This unpacks our deduplicated files as needed.
+                op = await PMP.CreatePmpStandardOption(tempFolder, Name, Description, identifiers);
+            }
+            return op;
+        }
     }
 
     public class WizardImcGroupData
@@ -456,6 +495,49 @@ namespace FFXIV_TexTools.Views.Wizard
 
             return mg;
         }
+
+        public async Task<PMPGroupJson> ToPmpGroup(string tempFolder, Dictionary<string, List<FileIdentifier>> identifiers)
+        {
+            var pg = new PMPGroupJson();
+
+            if (this.ImcData != null)
+            {
+                var imcG = new PMPImcGroupJson();
+                pg = imcG;
+                pg.Type = "Imc";
+
+                // Need to implement identifier and default values here.
+
+                // From ImcData.Root + ImcData.Variant
+                //imcG.Identifier = null; 
+
+                // From ImcData.BaseEntry
+                //imcG.DefaultEntry = new PMPImcManipulationJson.PMPImcEntry();
+
+                throw new NotImplementedException("Writing IMC Groups not yet implemented.");
+            }
+            else
+            {
+                pg.Type = OptionType.ToString();
+            }
+
+            pg.DefaultSettings = UserSelection;
+            pg.Name = Name;
+            pg.Description = Description;
+            pg.Options = new List<PMPOptionJson>();
+            pg.Priority = Priority;
+            pg.SelectedSettings = UserSelection;
+
+
+            foreach(var option in Options)
+            {
+                var optionPrefix = IOUtil.MakePathSafe(Name) + "/" + IOUtil.MakePathSafe(option.Name);
+                identifiers.TryGetValue(optionPrefix, out var files);
+                pg.Options.Add(await option.ToPmpOption(tempFolder, files));
+            }
+
+            return pg;
+        }
     }
 
     /// <summary>
@@ -643,6 +725,82 @@ namespace FFXIV_TexTools.Views.Wizard
             }
 
             await TTMP.CreateWizardModPack(modPackData, targetPath, null, true);
+        }
+
+        public async Task WritePmp(string targetPath)
+        {
+            var pmp = new PMPJson()
+            {
+                DefaultMod = new PMPOptionJson(),
+                Groups = new List<PMPGroupJson>(),
+                Meta = new PMPMetaJson(),
+            };
+
+            var tempFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+            Directory.CreateDirectory(tempFolder);
+            try
+            {
+                Version.TryParse(MetaPage.Version, out var ver);
+                ver ??= new Version("1.0");
+
+                pmp.Meta.Name = MetaPage.Name;
+                pmp.Meta.Author = MetaPage.Author;
+                pmp.Meta.Website = MetaPage.Url;
+                pmp.Meta.Description = MetaPage.Description;
+                pmp.Meta.Version = ver.ToString();
+                pmp.Meta.Tags = new List<string>();
+                pmp.Meta.FileVersion = PMP._WriteFileVersion;
+
+                // We need to compose a list of all the file storage information we're going to use.
+                // Grouped by option folder.
+                var allFiles = new Dictionary<string, Dictionary<string, FileStorageInformation>>();
+                foreach(var p in DataPages)
+                {
+                    foreach(var g in p.Groups)
+                    {
+                        foreach(var o in g.Options)
+                        {
+                            if(o.GroupType != EGroupType.Standard)
+                            {
+                                continue;
+                            }
+
+                            var files = o.StandardData.Files;
+
+                            if(string.IsNullOrWhiteSpace(o.Name) || string.IsNullOrWhiteSpace(g.Name))
+                            {
+                                throw new InvalidDataException("PMP Files must have valid group and option names.");
+                            }
+
+                            var optionPrefix = IOUtil.MakePathSafe(g.Name) + "/" + IOUtil.MakePathSafe(o.Name);
+                            allFiles.Add(optionPrefix, files);
+                        }
+                    }
+                }
+
+                // These are de-duplicated internal write paths for the final PMP folder structure, coupled with
+                // their file identifier and internal path information
+                var identifiers = await FileIdentifier.IdentifierListFromDictionaries(allFiles);
+
+
+                // This both constructs the JSON structure and writes our files to their
+                // real location in the folder tree in the temp folder.
+                foreach (var p in DataPages)
+                {
+                    foreach (var g in p.Groups)
+                    {
+                        var pg = await g.ToPmpGroup(tempFolder, identifiers);
+                        pmp.Groups.Add(pg);
+                    }
+                }
+
+                // This performs the final json serialization/writing and zipping.
+                await PMP.WritePmp(pmp, tempFolder, targetPath);
+            }
+            finally
+            {
+                IOUtil.DeleteTempDirectory(tempFolder);
+            }
         }
 
         /// <summary>
