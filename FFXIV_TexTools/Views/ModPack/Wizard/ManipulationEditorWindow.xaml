@@ -1,0 +1,26 @@
+﻿<Window x:Class="FFXIV_TexTools.Views.Wizard.ManipulationEditorWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FFXIV_TexTools.Views.Wizard"
+        mc:Ignorable="d"
+        Title="Manipulation Editor" Height="450" Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="200"></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition Height="40"></RowDefinition>
+        </Grid.RowDefinitions>
+        <GroupBox Header="Manipulations" Grid.Row="0">
+            <ListBox ItemsSource="{Binding Path=Manipulations}" DisplayMemberPath="Key" SelectedValuePath="Value" SelectedValue="{Binding Path=SelectedManipulation}" SelectionChanged="ManipulationChanged">
+                
+            </ListBox>
+        </GroupBox>
+        <GroupBox x:Name="EditorBox" Header="Editor" Grid.Row="1">
+        </GroupBox>
+
+        <Button Grid.Row="2" Content="Remove Manipulation" HorizontalAlignment="Left" VerticalAlignment="Center" Width="150" Margin="5" Click="RemoveManipulation_Click"></Button>
+        <Button Grid.Row="2" Content="Done" HorizontalAlignment="Right" VerticalAlignment="Center" Width="150" Margin="5" Click="Done_Click"></Button>
+    </Grid>
+</Window>

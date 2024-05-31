@@ -500,7 +500,7 @@ namespace FFXIV_TexTools.Views.Wizard
             return mg;
         }
 
-        public async Task<PMPGroupJson> ToPmpGroup(string tempFolder, Dictionary<string, List<FileIdentifier>> identifiers)
+        public async Task<PMPGroupJson> ToPmpGroup(string tempFolder, Dictionary<string, List<FileIdentifier>> identifiers, bool oneOption = false)
         {
             var pg = new PMPGroupJson();
 
@@ -536,6 +536,11 @@ namespace FFXIV_TexTools.Views.Wizard
             foreach(var option in Options)
             {
                 var optionPrefix = IOUtil.MakePathSafe(Name) + "/" + IOUtil.MakePathSafe(option.Name) + "/";
+                if (oneOption)
+                {
+                    optionPrefix = "";
+                }
+
                 identifiers.TryGetValue(optionPrefix, out var files);
                 var opt = await option.ToPmpOption(tempFolder, files);
                 var so = opt as PmpStandardOptionJson;
@@ -765,6 +770,8 @@ namespace FFXIV_TexTools.Views.Wizard
                 pmp.Meta.Tags = new List<string>();
                 pmp.Meta.FileVersion = PMP._WriteFileVersion;
 
+                var optionCount = DataPages.Sum(p => p.Groups.Sum(x => x.Options.Count));
+
                 // We need to compose a list of all the file storage information we're going to use.
                 // Grouped by option folder.
                 var allFiles = new Dictionary<string, Dictionary<string, FileStorageInformation>>();
@@ -787,6 +794,12 @@ namespace FFXIV_TexTools.Views.Wizard
                             }
 
                             var optionPrefix = IOUtil.MakePathSafe(g.Name) + "/" + IOUtil.MakePathSafe(o.Name) + "/";
+
+                            if(optionCount == 1)
+                            {
+                                optionPrefix = "";
+                            }
+
                             allFiles.Add(optionPrefix, files);
                         }
                     }
@@ -796,17 +809,23 @@ namespace FFXIV_TexTools.Views.Wizard
                 // their file identifier and internal path information
                 var identifiers = await FileIdentifier.IdentifierListFromDictionaries(allFiles);
 
-
-                // This both constructs the JSON structure and writes our files to their
-                // real location in the folder tree in the temp folder.
-                foreach (var p in DataPages)
+                if(optionCount == 1)
                 {
-                    foreach (var g in p.Groups)
+                    pmp.DefaultMod = (await DataPages.First(x => x.Groups.Count > 0).Groups.First(x => x.Options.Count > 0).ToPmpGroup(tempFolder, identifiers, true)).Options[0];
+                } else
+                {
+                    // This both constructs the JSON structure and writes our files to their
+                    // real location in the folder tree in the temp folder.
+                    foreach (var p in DataPages)
                     {
-                        var pg = await g.ToPmpGroup(tempFolder, identifiers);
-                        pmp.Groups.Add(pg);
+                        foreach (var g in p.Groups)
+                        {
+                            var pg = await g.ToPmpGroup(tempFolder, identifiers);
+                            pmp.Groups.Add(pg);
+                        }
                     }
                 }
+
 
                 // This performs the final json serialization/writing and zipping.
                 await PMP.WritePmp(pmp, tempFolder, targetPath);

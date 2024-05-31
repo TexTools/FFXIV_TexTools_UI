@@ -99,6 +99,8 @@ namespace FFXIV_TexTools.Views
             MoveOptionUpButton.IsEnabled = false;
             MoveOptionDownButton.IsEnabled = false;
 
+            PriorityBox.Text = Data.Priority.ToString();
+
 
             ModGroupTitle.Text = Data.Name;
 
@@ -111,6 +113,7 @@ namespace FFXIV_TexTools.Views
             {
                 MultiSelectRadioButton.IsChecked = true;
             }
+
             RebuildOptionList();
         }
 
@@ -181,6 +184,12 @@ namespace FFXIV_TexTools.Views
 
             Data.Name = ModGroupTitle.Text;
             Data.OptionType = selectionType;
+
+            var s = Int32.TryParse(PriorityBox.Text, out var prio);
+            if (s)
+            {
+                Data.Priority = prio;
+            }
         }
 
         #endregion
@@ -307,6 +316,7 @@ namespace FFXIV_TexTools.Views
                 MoveOptionDownButton.IsEnabled = false;
                 RenameOptionButton.IsEnabled = false;
                 OptionImage.Source = null;
+                EditManipulationsButton.IsEnabled = false;
                 return;
             }
 
@@ -361,6 +371,7 @@ namespace FFXIV_TexTools.Views
                     MoveOptionUpButton.IsEnabled = false;
                     MoveOptionDownButton.IsEnabled = false;
                 }
+                UpdateManipulationText();
             }
 
             ModListGrid.IsEnabled = true;
@@ -368,6 +379,9 @@ namespace FFXIV_TexTools.Views
             OptionImageButton.IsEnabled = true;
             RemoveOptionButton.IsEnabled = true;
             RenameOptionButton.IsEnabled = true;
+            EditManipulationsButton.IsEnabled = true;
+
+
 
             if (SelectedItem != null)
             {
@@ -1193,6 +1207,34 @@ namespace FFXIV_TexTools.Views
                     string.Format(UIMessages.TextureImportErrorMessage, ex.Message), UIMessages.TextureImportErrorTitle,
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
+            }
+        }
+
+        private void EditManipulations_Click(object sender, RoutedEventArgs e)
+        {
+            if(SelectedOption == null) return;
+
+            var data = SelectedOption.StandardData;
+            var wind = new ManipulationEditorWindow(data);
+            wind.Owner = this;
+            wind.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            wind.ShowDialog();
+            UpdateManipulationText();
+        }
+        private void UpdateManipulationText()
+        {
+            if(SelectedOption == null || SelectedOption.StandardData == null)
+            {
+                return;
+            }
+
+            if (SelectedOption.StandardData.OtherManipulations != null)
+            {
+                ManipulationCountLabel.Content = SelectedOption.StandardData.OtherManipulations.Count() + " " + "Manipulation(s)".L();
+            }
+            else
+            {
+                ManipulationCountLabel.Content = "0 " + "Manipulation(s)".L();
             }
         }
     }

@@ -25,11 +25,20 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition/>
+                    <ColumnDefinition Width="150"/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
                 <Label Content="{Binding Source={x:Static resx:UIStrings.Group_Title_colon}}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                 <TextBox x:Name="ModGroupTitle" Grid.Column="1" VerticalAlignment="Center" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.Enter_a_Name_for_the_Group_here}}" MinWidth="100"/>
-                <Grid Grid.Column="2" Margin="10,0,0,0">
+                <Grid Grid.Column="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition></ColumnDefinition>
+                        <ColumnDefinition></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Label Content="Priority:" HorizontalAlignment="Right" VerticalAlignment="Center"></Label>
+                    <TextBox x:Name="PriorityBox" Grid.Column="1" VerticalAlignment="Center"></TextBox>
+                </Grid>
+                <Grid Grid.Column="3" Margin="10,0,0,0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
                         <ColumnDefinition/>
@@ -104,6 +113,10 @@
                     </Grid>
                 </Grid>
                 <Grid Grid.Column="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                    </Grid.RowDefinitions>
                     <GroupBox Grid.Row="0" Header="{Binding Source={x:Static resx:UIStrings.Included_Mods_in_Option}}">
                         <Grid>
                             <Grid.RowDefinitions>
@@ -112,6 +125,19 @@
                             </Grid.RowDefinitions>
                             <ListBox x:Name="IncludedModsList" Grid.Row="0" Margin="5" DisplayMemberPath="Name" SelectionChanged="IncludedModsList_SelectionChanged" SelectionMode="Multiple"/>
                             <Button x:Name="RemoveModItemButton" Grid.Row="1" Content="{Binding Source={x:Static resx:UIStrings.Remove}}" Click="RemoveModItemButton_Click"/>
+                        </Grid>
+                    </GroupBox>
+
+                    <GroupBox Grid.Row="1" Header="Penumbra Manipulations">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                            </Grid.RowDefinitions>
+
+                            <Label x:Name="ManipulationCountLabel" Content="- Manipulations" FontWeight="Bold"></Label>
+                            <Button x:Name="EditManipulationsButton" Grid.Row="1" Margin="5" Content="View/Edit Manipulations" Click="EditManipulations_Click"></Button>
+                            
                         </Grid>
                     </GroupBox>
                 </Grid>
