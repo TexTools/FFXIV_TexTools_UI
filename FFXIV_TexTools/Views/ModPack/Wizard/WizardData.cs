@@ -51,6 +51,8 @@ namespace FFXIV_TexTools.Views.Wizard
     {
         public Dictionary<string, FileStorageInformation> Files = new Dictionary<string, FileStorageInformation>();
 
+        public List<PMPManipulationWrapperJson> OtherManipulations = new List<PMPManipulationWrapperJson>();
+
         protected override bool HasData()
         {
             return Files.Count > 0;
@@ -436,7 +438,9 @@ namespace FFXIV_TexTools.Views.Wizard
                 if(group.GroupType == EGroupType.Standard)
                 {
                     var data = await PMP.UnpackPmpOption(o, null, unzipPath);
-                    wizOp.StandardData.Files = data;
+                    wizOp.StandardData.Files = data.Files;
+                    wizOp.StandardData.OtherManipulations = data.OtherManipulations;
+
                 } else if(group.GroupType == EGroupType.Imc)
                 {
                     var imcData = new WizardImcOptionData();
@@ -531,9 +535,19 @@ namespace FFXIV_TexTools.Views.Wizard
 
             foreach(var option in Options)
             {
-                var optionPrefix = IOUtil.MakePathSafe(Name) + "/" + IOUtil.MakePathSafe(option.Name);
+                var optionPrefix = IOUtil.MakePathSafe(Name) + "/" + IOUtil.MakePathSafe(option.Name) + "/";
                 identifiers.TryGetValue(optionPrefix, out var files);
-                pg.Options.Add(await option.ToPmpOption(tempFolder, files));
+                var opt = await option.ToPmpOption(tempFolder, files);
+                var so = opt as PmpStandardOptionJson;
+                if (option.StandardData.OtherManipulations != null)
+                {
+                    foreach (var m in option.StandardData.OtherManipulations)
+                    {
+                        // Carry our extra manipulations through.
+                        so.Manipulations.Add(m);
+                    }
+                }
+                pg.Options.Add(opt);
             }
 
             return pg;
@@ -772,7 +786,7 @@ namespace FFXIV_TexTools.Views.Wizard
                                 throw new InvalidDataException("PMP Files must have valid group and option names.");
                             }
 
-                            var optionPrefix = IOUtil.MakePathSafe(g.Name) + "/" + IOUtil.MakePathSafe(o.Name);
+                            var optionPrefix = IOUtil.MakePathSafe(g.Name) + "/" + IOUtil.MakePathSafe(o.Name) + "/";
                             allFiles.Add(optionPrefix, files);
                         }
                     }
