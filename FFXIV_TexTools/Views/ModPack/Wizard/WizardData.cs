@@ -13,10 +13,12 @@ using xivModdingFramework.General;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Mods;
 using xivModdingFramework.Mods.DataContainers;
+using xivModdingFramework.Mods.FileTypes;
 using xivModdingFramework.Mods.FileTypes.PMP;
 using xivModdingFramework.SqPack.FileTypes;
 using xivModdingFramework.Variants.DataContainers;
 using static xivModdingFramework.Mods.FileTypes.TTMP;
+using Image = SixLabors.ImageSharp.Image;
 
 namespace FFXIV_TexTools.Views.Wizard
 {
@@ -174,6 +176,62 @@ namespace FFXIV_TexTools.Views.Wizard
         public WizardOptionEntry(WizardGroupEntry owningGroup)
         {
             _Group = owningGroup;
+        }
+
+        public async Task<ModOption> ToModOption()
+        {
+            Image img = null;
+            if (!string.IsNullOrWhiteSpace(ImagePath))
+            {
+                img = Image.Load(ImagePath);
+            }
+
+            var mo = new ModOption()
+            {
+                Description = Description,
+                Name = Name,
+                GroupName = _Group.Name,
+                ImageFileName = ImagePath,
+                IsChecked = Selected,
+                SelectionType = OptionType.ToString(),
+                Image = img,
+            };
+
+            if(StandardData == null)
+            {
+                return mo;
+            }
+
+            foreach(var fkv in StandardData.Files)
+            {
+                var path = fkv.Key;
+                var forceType2 = path.EndsWith(".atex");
+                var data = await TransactionDataHandler.GetCompressedFile(fkv.Value, forceType2);
+
+                var root = await XivCache.GetFirstRoot(path);
+                var itemCategory = "Unknown";
+                var itemName = "Unknown";
+                if(root != null)
+                {
+                    var item = root.GetFirstItem();
+                    if(item != null)
+                    {
+                        itemCategory = item.SecondaryCategory;
+                        itemName = item.Name;
+                    }
+                }
+
+                var mData = new ModData()
+                {
+                    Name = itemName,
+                    Category = itemCategory,
+                    FullPath = path,
+                    ModDataBytes = data,
+                };
+                mo.Mods.Add(path, mData);
+            }
+
+            return mo;
         }
     }
 
@@ -375,6 +433,29 @@ namespace FFXIV_TexTools.Views.Wizard
 
             return group;
         }
+
+        public async Task<ModGroup> ToModGroup()
+        {
+            if(this.ImcData != null)
+            {
+                throw new InvalidDataException("TTMP Does not support IMC Selection Groups.");
+            }
+
+            var mg = new ModGroup()
+            {
+                GroupName = Name,
+                OptionList = new List<ModOption>(),
+                SelectionType = OptionType.ToString(),
+            };
+
+            foreach(var option in Options)
+            {
+                var tOpt = await option.ToModOption();
+                mg.OptionList.Add(tOpt);
+            }
+
+            return mg;
+        }
     }
 
     /// <summary>
@@ -408,6 +489,21 @@ namespace FFXIV_TexTools.Views.Wizard
             return page;
         }
 
+        public async Task<ModPackData.ModPackPage> ToModPackPage(int index)
+        {
+            var mpp = new ModPackData.ModPackPage() { 
+                PageIndex = index,
+                ModGroups = new List<ModGroup>(),
+            };
+
+            foreach(var group in Groups)
+            {
+                var mpg = await group.ToModGroup();
+                mpp.ModGroups.Add(mpg);
+            }
+
+            return mpp;
+        }
     }
 
     /// <summary>
@@ -452,7 +548,7 @@ namespace FFXIV_TexTools.Views.Wizard
     public class WizardData
     {
         public WizardMetaEntry MetaPage = new WizardMetaEntry();
-        public List<WizardPageEntry> OptionPages = new List<WizardPageEntry>();
+        public List<WizardPageEntry> DataPages = new List<WizardPageEntry>();
         public EModpackType ModpackType;
         public ModPack ModPack;
 
@@ -466,7 +562,7 @@ namespace FFXIV_TexTools.Views.Wizard
         {
             var data = new WizardData();
             data.MetaPage = WizardMetaEntry.FromPMP(pmp, unzipPath);
-            data.OptionPages = new List<WizardPageEntry>();
+            data.DataPages = new List<WizardPageEntry>();
             data.ModpackType = EModpackType.Pmp;
 
             var mp = new ModPack(null);
@@ -481,7 +577,7 @@ namespace FFXIV_TexTools.Views.Wizard
             {
                 foreach (var g in pmp.Groups)
                 {
-                    data.OptionPages.Add(await WizardPageEntry.FromPenumbraPage(g, unzipPath));
+                    data.DataPages.Add(await WizardPageEntry.FromPenumbraPage(g, unzipPath));
                 }
             } else
             {
@@ -497,7 +593,7 @@ namespace FFXIV_TexTools.Views.Wizard
                     pmp.DefaultMod.Name = "Default";
                 }
 
-                data.OptionPages.Add(await WizardPageEntry.FromPenumbraPage(fakeGroup, unzipPath));
+                data.DataPages.Add(await WizardPageEntry.FromPenumbraPage(fakeGroup, unzipPath));
             }
             return data;
         }
@@ -516,12 +612,34 @@ namespace FFXIV_TexTools.Views.Wizard
             data.ModPack = mp;
             data.RawSource = ttmp;
 
-            data.OptionPages = new List<WizardPageEntry>();
+            data.DataPages = new List<WizardPageEntry>();
             foreach (var p in ttmp.ModPackPages)
             {
-                data.OptionPages.Add(await WizardPageEntry.FromWizardModpackPage(p, unzipPath));
+                data.DataPages.Add(await WizardPageEntry.FromWizardModpackPage(p, unzipPath));
             }
             return data;
+        }
+
+        public async Task WriteWizardPack(string targetPath)
+        {
+            var modPackData = new ModPackData()
+            {
+                Name = MetaPage.Name,
+                Author = MetaPage.Author,
+                Url = MetaPage.Url,
+                Version = new Version(MetaPage.Version),
+                Description = MetaPage.Description,
+                ModPackPages = new List<ModPackData.ModPackPage>(),
+            };
+
+            int i = 0;
+            foreach(var page in DataPages)
+            {
+                modPackData.ModPackPages.Add(await page.ToModPackPage(i));
+                i++;
+            }
+
+            await TTMP.CreateWizardModPack(modPackData, targetPath, null, true);
         }
 
         /// <summary>
@@ -530,7 +648,7 @@ namespace FFXIV_TexTools.Views.Wizard
         public void FinalizePmpSelections()
         {
             // Need to go through and assign the Selected values back to the PMP.
-            foreach(var p in OptionPages)
+            foreach(var p in DataPages)
             {
                 foreach(var g in p.Groups)
                 {
@@ -571,7 +689,7 @@ namespace FFXIV_TexTools.Views.Wizard
         {
             List<ModsJson> modFiles = new List<ModsJson>();
             // Need to go through and compile the final ModJson list.
-            foreach (var p in OptionPages)
+            foreach (var p in DataPages)
             {
                 foreach (var g in p.Groups)
                 {

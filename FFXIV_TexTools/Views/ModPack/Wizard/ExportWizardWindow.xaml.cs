@@ -44,10 +44,10 @@ namespace FFXIV_TexTools.Views
     /// </summary>
     public partial class ExportWizardWindow : INotifyPropertyChanged
     {
-        private ProgressDialogController _progressController;
-
         private ProgressDialogController _lockProgressController;
         private WizardData _Data;
+
+        private string TempFolder;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -113,19 +113,25 @@ namespace FFXIV_TexTools.Views
 
         public async Task LockUi()
         {
-            _lockProgressController = await this.ShowProgressAsync("Loading".L(), "Please Wait...".L());
+            if (_lockProgressController != null) return;
 
+            _lockProgressController = await this.ShowProgressAsync("Loading".L(), "Please Wait...".L());
             _lockProgressController.SetIndeterminate();
 
         }
         public async Task UnlockUi()
         {
+            if (_lockProgressController == null) return;
+
             await _lockProgressController.CloseAsync();
             _lockProgressController = null;
         }
 
         public ExportWizardWindow()
         {
+            TempFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+            Directory.CreateDirectory(TempFolder);
+
             DataContext = this;
             InitializeComponent();
             Data = new WizardData();
@@ -215,7 +221,7 @@ namespace FFXIV_TexTools.Views
             if (index == wizPages.Count - 2)
             {
                 var nPage = new WizardPageEntry();
-                Data.OptionPages.Add(nPage);
+                Data.DataPages.Add(nPage);
 
                 var newPage = new WizardPage
                 {
@@ -240,98 +246,6 @@ namespace FFXIV_TexTools.Views
         }
 
         /// <summary>
-        /// The event handler for the create mod pack button
-        /// </summary>
-        /// <remarks>
-        /// This is originally the help button, but has been repurposed
-        /// </remarks>
-        private async void ModPackWizard_CreateModPack(object sender, System.Windows.RoutedEventArgs e)
-        {
-            var wizPages = WizardControl.Items;
-            var anyContent = false;
-            foreach (var wizPageItem in wizPages)
-            {
-                var wizPage = wizPageItem as WizardPage;
-                var content = wizPage.Content as WizardPageControl;
-                if(content.HasData)
-                {
-                    anyContent = true;
-                    break;
-                }
-            }
-
-            if (!anyContent)
-            {
-                return;
-            }
-
-            var modPackPath = Path.Combine(Settings.Default.ModPack_Directory, $"{ModPackName.Text}.ttmp2");
-            if (File.Exists(modPackPath))
-            {
-                var overwriteDialogResult = FlexibleMessageBox.Show(new Wpf32Window(this), UIMessages.ModPackOverwriteMessage,
-                                            UIMessages.OverwriteTitle, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
-                if (overwriteDialogResult != System.Windows.Forms.DialogResult.OK)
-                {
-                    return;
-                }
-            }
-
-            _progressController = await this.ShowProgressAsync(UIMessages.ModPackCreationMessage, UIMessages.PleaseStandByMessage);
-            try
-            {
-                throw new NotImplementedException("Write Not Implemented");
-                /*
-                var modPackData = new ModPackData
-                {
-                    Name = ModPackName.Text,
-                    Author = ModPackAuthor.Text,
-                    Version = VersionNumber,
-                    Description = ModPackDescription.Text,
-                    Url = ModPackUrl.Text,
-                    ModPackPages = new List<ModPackData.ModPackPage>()
-                };
-
-                var pageIndex = 0;
-                foreach (var wizPageItem in wizPages)
-                {
-                    var wizPage = wizPageItem as WizardPage;
-
-                    if (wizPage.Content is ExportWizardPageControl control)
-                    {
-                        
-                        if (control.ModGroupList.Count > 0)
-                        {
-                            modPackData.ModPackPages.Add(new ModPackData.ModPackPage
-                            {
-                                PageIndex = pageIndex,
-                                ModGroups = control.ModGroupList
-                            });
-                    }
-                    pageIndex++;
-                }
-
-                var progressIndicator = new Progress<double>(ReportProgress);
-
-
-                await TTMP.CreateWizardModPack(modPackData, Properties.Settings.Default.ModPack_Directory, progressIndicator, true);
-
-                ModPackFileName = $"{ModPackName.Text}";
-                        
-                }
-                */
-                await _progressController.CloseAsync();
-                DialogResult = true;
-            }
-            catch(Exception ex)
-            {
-                FlexibleMessageBox.Show("Failed to create modpack.\n\nError: ".L() + ex.Message, "Modpack Creation Error".L(), MessageBoxButtons.OK, MessageBoxIcon.Error);
-                await _progressController.CloseAsync();
-                return;
-            }
-        }
-
-
-        /// <summary>
         /// The event handler when clicking on the mod pack version text box
         /// </summary>
         /// <remarks>
@@ -350,7 +264,7 @@ namespace FFXIV_TexTools.Views
         {
             var openFileDialog = new OpenFileDialog { 
                 Filter = "Modpack Files(*.ttmp2,*.pmp)|*.ttmp2;*.pmp".L(), 
-                InitialDirectory = Settings.Default.ModPack_Directory 
+                InitialDirectory = Path.GetFullPath(Settings.Default.ModPack_Directory)
             };
 
             if (openFileDialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
@@ -399,7 +313,7 @@ namespace FFXIV_TexTools.Views
                 ModPackDescription.Text = Data.MetaPage.Description;
                 ModPackUrl.Text = Data.MetaPage.Url;
 
-                var pageCount = Data.OptionPages.Count;
+                var pageCount = Data.DataPages.Count;
 
                 var wizPages = WizardControl.Items;
                 while (wizPages.Count > 1)
@@ -411,7 +325,7 @@ namespace FFXIV_TexTools.Views
                 {
                     wizPages.Add(new WizardPage
                     {
-                        Content = new WizardPageControl(Data.OptionPages[i], true),
+                        Content = new WizardPageControl(Data.DataPages[i], true),
                         PageType = WizardPageType.Blank,
                         Background = null,
                         HeaderBackground = null
@@ -426,21 +340,37 @@ namespace FFXIV_TexTools.Views
         }
 
 
-        private static async Task<WizardData> SetupTtmp(string path)
+        private async Task<WizardData> SetupTtmp(string path)
         {
-            var mpl = await TTMP.GetModpackList(path);
-            var imageFolder = await TTMP.GetModpackImages(path);
-            var data = await WizardData.FromWizardPack(mpl, imageFolder);
-            return data;
+            return await Task.Run(async () =>
+            {
+                var oldTemp = TempFolder;
+
+                var mpl = await TTMP.GetModpackList(path);
+                var unzipPath = await TTMP.UnzipTtmp(path);
+
+                var data = await WizardData.FromWizardPack(mpl, unzipPath);
+
+                IOUtil.DeleteTempDirectory(oldTemp);
+
+                return data;
+            });
         }
 
-        private static async Task<WizardData> SetupPMP(string path)
+        private async Task<WizardData> SetupPMP(string path)
         {
-            //var data = WizardData.FromWizardPack(mpl, imageFolder);
-            var pmp = await PMP.LoadPMP(path, true);
-            var data = await WizardData.FromPmp(pmp.pmp, pmp.path);
-            return data;
+            return await Task.Run(async () =>
+            {
+                var oldTemp = TempFolder;
+                //var data = WizardData.FromWizardPack(mpl, imageFolder);
+                var pmp = await PMP.LoadPMP(path, false);
+                TempFolder = pmp.path;
+                var data = await WizardData.FromPmp(pmp.pmp, pmp.path);
+                IOUtil.DeleteTempDirectory(oldTemp);
+                return data;
+            });
         }
+
 
 
         private void UpdateButtons()
@@ -466,7 +396,7 @@ namespace FFXIV_TexTools.Views
             if (CurrentIndex == WizardControl.Items.Count - 1)
             {
                 var newPage = new WizardPageEntry();
-                Data.OptionPages.Add(newPage);
+                Data.DataPages.Add(newPage);
 
                 WizardControl.Items.Add(new WizardPage
                 {
@@ -479,9 +409,64 @@ namespace FFXIV_TexTools.Views
             CurrentIndex++;
         }
 
-        private void Finalize_Click(object sender, System.Windows.RoutedEventArgs e)
+        private async void Finalize_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            this.ShowError("Not Implemented", "Need to implement conversion from WizardData back into Modpack Json formats");
+            Data.MetaPage.Name = ModPackName.Text.Trim();
+            Data.MetaPage.Author = ModPackAuthor.Text.Trim();
+            Data.MetaPage.Version = ModPackVersion.Text.Trim();
+            Data.MetaPage.Description = ModPackDescription.Text.Trim();
+            Data.MetaPage.Url = ModPackUrl.Text.Trim();
+
+            if (string.IsNullOrEmpty(Data.MetaPage.Name))
+            {
+                return;
+            }
+
+
+            var sfd = new SaveFileDialog();
+            sfd.Filter = "Modpack Files (*.ttmp2, *.pmp)|*.ttmp2;*.pmp";
+            sfd.FileName = Data.MetaPage.Name + ".ttmp2";
+            sfd.InitialDirectory = Path.GetFullPath(Settings.Default.ModPack_Directory);
+
+            if(sfd.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+            {
+                return;
+            }
+
+            var path = sfd.FileName;
+
+            var ext = Path.GetExtension(path).ToLower();
+
+            await LockUi();
+            try
+            {
+                await Task.Run(async () =>
+                {
+                    if (ext == ".pmp")
+                    {
+                        throw new NotImplementedException();
+                    }
+                    else if (ext == ".ttmp2")
+                    {
+                        await Data.WriteWizardPack(path);
+                    }
+                    else
+                    {
+                        this.ShowError("Export Error".L(), "Modpacks can only be exported in .ttmp2 or .pmp format".L());
+                        return;
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                this.ShowError("Export Error".L(), "An error occurred while exporting the modpack:\n\n" + ex.Message);
+            }
+            finally
+            {
+                await UnlockUi();
+            }
+
+
         }
     }
 }

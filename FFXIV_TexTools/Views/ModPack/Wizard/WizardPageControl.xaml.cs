@@ -39,10 +39,19 @@ namespace FFXIV_TexTools.Views.Wizard
 
         public bool HasData
         {
-            //TODO: Fix this up?
             get
             {
-                return true;
+                if(Data == null || Data.Groups == null || Data.Groups.Count == 0)
+                {
+                    return false;
+                }
+
+                if(Data.Groups.Any(x => x.ImcData != null
+                || (x.Options.Any(o => o.StandardData != null && o.StandardData.Files.Count > 0)))){
+                    return true;
+                }
+
+                return false;
             }
         }
 
@@ -76,19 +85,6 @@ namespace FFXIV_TexTools.Views.Wizard
             SetupUi();
         }
 
-        private int GetCurrentIndex()
-        {
-            var opt = OptionsList.SelectedItem as WizardOptionEntry;
-            if (opt == null) return 0;
-
-            var owningGroup = Data.Groups.FirstOrDefault(x => x.Options.Any(o => o == opt));
-            if (owningGroup == null) return 0;
-
-            var idx = Data.Groups.IndexOf(owningGroup);
-            if (idx < 0) return 0;
-
-            return idx;
-        }
 
         private void SetupUi()
         {
@@ -181,6 +177,7 @@ namespace FFXIV_TexTools.Views.Wizard
             wind.Owner = Window.GetWindow(this);
             wind.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             wind.ShowDialog();
+            SetupUi();
         }
 
         private void DeleteGroup_Click(object sender, RoutedEventArgs e)

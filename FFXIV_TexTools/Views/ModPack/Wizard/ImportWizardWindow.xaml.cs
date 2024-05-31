@@ -67,7 +67,7 @@ namespace FFXIV_TexTools.Views.Wizard
             ModPackUrlLabel.Text = data.MetaPage.Url;
             ModPackUrlLabel.PreviewMouseLeftButtonDown += ModPackUrlLabel_PreviewMouseLeftButtonDown;
 
-            _PageCount = data.OptionPages.Count;
+            _PageCount = data.DataPages.Count;
 
             var wizPages = importModPackWizard.Items;
 
@@ -75,7 +75,7 @@ namespace FFXIV_TexTools.Views.Wizard
             {
                 wizPages.Add(new WizardPage
                 {
-                    Content = new WizardPageControl(data.OptionPages[i]),
+                    Content = new WizardPageControl(data.DataPages[i]),
                     PageType = WizardPageType.Blank,
                     Background = null,
                     HeaderBackground = null

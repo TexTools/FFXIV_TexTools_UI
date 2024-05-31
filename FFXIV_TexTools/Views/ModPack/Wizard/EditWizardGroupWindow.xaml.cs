@@ -23,6 +23,7 @@ using FFXIV_TexTools.Views.Wizard;
 using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
 using Newtonsoft.Json;
+using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Bmp;
 using SixLabors.ImageSharp.Formats.Png;
 using System;
@@ -40,6 +41,7 @@ using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using TeximpNet;
 using TeximpNet.DDS;
 using xivModdingFramework.Cache;
 using xivModdingFramework.Exd.FileTypes;
@@ -304,14 +306,19 @@ namespace FFXIV_TexTools.Views
                 MoveOptionUpButton.IsEnabled = false;
                 MoveOptionDownButton.IsEnabled = false;
                 RenameOptionButton.IsEnabled = false;
+                OptionImage.Source = null;
                 return;
             }
 
             SelectedOption = uiOpt.Option;
             OptionDescription.Text = SelectedOption.Description ?? "";
 
-            // TODO - Set Image Source Here.
             OptionImage.Source = null;
+            if (!string.IsNullOrWhiteSpace(SelectedOption.ImagePath))
+            {
+                var uri = new Uri(SelectedOption.ImagePath);
+                OptionImage.Source = new BitmapImage(uri);
+            }
 
             var opData = SelectedOption.StandardData;
             if(opData != null)
@@ -393,11 +400,25 @@ namespace FFXIV_TexTools.Views
 
             if (openFileDialog.ShowDialog() != System.Windows.Forms.DialogResult.OK) return;
 
-            this.ShowError("Not Implemented", "Need to update image selection.");
-            /*
-            _selectedModOption.Image = Image.Load(openFileDialog.FileName);
-            _selectedModOption.ImageFileName = openFileDialog.FileName;
-            OptionImage.Source = new BitmapImage(new Uri(openFileDialog.FileName));*/
+            try
+            {
+                var img = Image.Load(openFileDialog.FileName);
+
+                var tempFile = Path.GetTempFileName();
+                using (var fs = new FileStream(tempFile, FileMode.OpenOrCreate))
+                {
+                    var enc = new PngEncoder();
+                    img.Save(fs, enc);
+                }
+
+                SelectedOption.ImagePath = tempFile;
+
+                var uri = new Uri(SelectedOption.ImagePath);
+                OptionImage.Source = new BitmapImage(uri);
+            } catch(Exception ex)
+            {
+                this.ShowError("Image Error".L(), "An error occurred while loading the image:\n\n" + ex.Message);
+            }
         }
 
         private void ItemList_ItemSelected(object sender, IItem item)
