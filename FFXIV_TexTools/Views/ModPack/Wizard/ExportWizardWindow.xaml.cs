@@ -263,7 +263,7 @@ namespace FFXIV_TexTools.Views
         private async void LoadFromButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
             var openFileDialog = new OpenFileDialog { 
-                Filter = "Modpack Files(*.ttmp2,*.pmp,*.json)|*.ttmp2;*.pmp;*.json".L(), 
+                Filter = "Modpack Files|*.ttmp2;*.pmp;*.json".L(), 
                 InitialDirectory = Path.GetFullPath(Settings.Default.ModPack_Directory)
             };
 
@@ -424,7 +424,7 @@ namespace FFXIV_TexTools.Views
 
 
             var sfd = new SaveFileDialog();
-            sfd.Filter = "Modpack Files (*.ttmp2, *.pmp)|*.ttmp2;*.pmp";
+            sfd.Filter = "Modpack Files|*.ttmp2;*.pmp|TexTools Modpack|*.ttmp2|Penumbra Modpack|*.pmp";
             sfd.FileName = Data.MetaPage.Name + ".ttmp2";
             sfd.InitialDirectory = Path.GetFullPath(Settings.Default.ModPack_Directory);
 

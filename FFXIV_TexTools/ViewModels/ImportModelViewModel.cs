@@ -552,7 +552,7 @@ namespace FFXIV_TexTools.ViewModels
             }
             filter = filter.Substring(0, filter.Length - 1);
 
-            openFileDialog.Filter = $"3D Models ({filter._()})|{filter._()}";
+            openFileDialog.Filter = $"3D Models|{filter._()}";
             openFileDialog.RestoreDirectory = false;
 
             if (openFileDialog.ShowDialog() == DialogResult.OK)

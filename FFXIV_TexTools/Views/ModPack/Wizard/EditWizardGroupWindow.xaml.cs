@@ -394,7 +394,7 @@ namespace FFXIV_TexTools.Views
         {
             var openFileDialog = new OpenFileDialog
             {
-                Filter = "Image Files(*.BMP;*.JPG;*.GIF;*.PNG)|*.BMP;*.JPG;*.GIF;*.PNG".L()
+                Filter = "Image Files|*.BMP;*.JPG;*.GIF;*.PNG;*.TGA".L()
             };
 
 
@@ -725,7 +725,7 @@ namespace FFXIV_TexTools.Views
         {
             var selectedFile = TextureMapComboBox.SelectedItem as FileEntry;
 
-            var openFileDialog = new OpenFileDialog { Filter = "Texture Files(*.DDS;*.BMP;*.PNG;*.TEX) |*.DDS;*.BMP;*.PNG;*.TEX".L() };
+            var openFileDialog = new OpenFileDialog { Filter = "Texture Files|*.DDS;*.BMP;*.PNG;*.TEX;*.TGA".L() };
 
 
             var result = openFileDialog.ShowDialog();
@@ -814,7 +814,7 @@ namespace FFXIV_TexTools.Views
         {
             var selectedFile = MaterialComboBox.SelectedItem as FileEntry;
 
-            var openFileDialog = new OpenFileDialog { Filter = "Material Files(*.MTRL) |*.MTRL".L() };
+            var openFileDialog = new OpenFileDialog { Filter = "Material Files|*.mtrl".L() };
 
 
             var result = openFileDialog.ShowDialog();
@@ -1118,7 +1118,8 @@ namespace FFXIV_TexTools.Views
         {
             var selectedFile = ModelTypeComboBox.SelectedItem as FileEntry;
 
-            var openFileDialog = new OpenFileDialog { Filter = "Model Files(*.MDL;*.FBX) |*.MDL;*.FBX".L() };
+            // TODO: This should check the actual avaialable importers list from Mdl
+            var openFileDialog = new OpenFileDialog { Filter = "Model Files|*.mdl;*.fbx;*.obj;*.db".L() };
 
 
             var result = openFileDialog.ShowDialog();
@@ -1150,7 +1151,7 @@ namespace FFXIV_TexTools.Views
                 Name = MakeFriendlyFileName(path)
             };
 
-            var openFileDialog = new OpenFileDialog { Filter = "FFXIV Raw Metadata Files(*.META) |*.META".L() };
+            var openFileDialog = new OpenFileDialog { Filter = "FFXIV Raw Metadata Files|*.meta".L() };
 
 
             var result = openFileDialog.ShowDialog();

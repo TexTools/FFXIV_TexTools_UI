@@ -549,10 +549,10 @@ namespace FFXIV_TexTools.Views.Transactions
 
                 if (settings.Target == ETransactionTarget.TTMP)
                 {
-                    sfd.Filter = "TexTools Modpack Files(*.ttmp2)|*.ttmp2";
+                    sfd.Filter = "TexTools Modpack Files|*.ttmp2";
                 } else
                 {
-                    sfd.Filter = "Penumbra Modpack Files(*.pmp)|*.pmp";
+                    sfd.Filter = "Penumbra Modpack Files|*.pmp";
                 }
 
                 if (!string.IsNullOrWhiteSpace(TxTargetPath))

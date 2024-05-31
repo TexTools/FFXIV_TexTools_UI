@@ -803,7 +803,7 @@ namespace FFXIV_TexTools.Views.Controls
 
             var ofd = new OpenFileDialog();
             var extStrings = "*" + string.Join(";*", exts.Keys);
-            var filter = GetNiceName() + " Files (" + extStrings + ")|" + extStrings;
+            var filter = GetNiceName() + " Files|" + extStrings;
             ofd.Filter = filter;
             ofd.InitialDirectory = GetDefaultSaveDirectory();
             ofd.FileName = GetDefaultSaveName();
@@ -943,11 +943,11 @@ namespace FFXIV_TexTools.Views.Controls
                 if (string.IsNullOrWhiteSpace(extension))
                 {
                     var extStrings = "*" + string.Join(";*", exts.Keys);
-                    var filter = GetNiceName() + " Files (" + extStrings + ")|" + extStrings;
+                    var filter = GetNiceName() + " Files|" + extStrings;
                     sfd.Filter = filter;
                 } else
                 {
-                    sfd.Filter = ext.Value + " Files (*" + ext.Key + ")|*" + ext.Key;
+                    sfd.Filter = ext.Value + " Files|*" + ext.Key;
                 }
 
 

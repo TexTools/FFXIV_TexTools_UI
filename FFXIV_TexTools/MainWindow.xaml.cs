@@ -1038,7 +1038,7 @@ namespace FFXIV_TexTools
         {
             var modPackDirectory = new DirectoryInfo(Settings.Default.ModPack_Directory);
 
-            var openFileDialog = new OpenFileDialog {InitialDirectory = modPackDirectory.FullName, Filter = "Mods (*.ttmp;*.ttmp2,*.pmp,*.json)|*.ttmp;*.ttmp2;*.pmp;*.json".L(), Multiselect = true};
+            var openFileDialog = new OpenFileDialog {InitialDirectory = modPackDirectory.FullName, Filter = "Modpack Files|*.ttmp;*.ttmp2;*.pmp;*.json".L(), Multiselect = true};
 
             if (openFileDialog.ShowDialog() != System.Windows.Forms.DialogResult.OK) 
                 return;
@@ -1155,7 +1155,7 @@ namespace FFXIV_TexTools
         {
             using (OpenFileDialog openFileDialog = new OpenFileDialog())
             {
-                openFileDialog.Filter = "db files (*.db)|*.db";
+                openFileDialog.Filter = "db files|*.db";
                 openFileDialog.RestoreDirectory = true;
 
                 if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)

@@ -138,7 +138,7 @@ namespace FFXIV_TexTools.Views
         private void SaveAs_Click(object sender, RoutedEventArgs e)
         {
             var sd = new SaveFileDialog();
-            sd.Filter = $"TTMP2 Files (*.ttmp2)|*.ttmp2".L();
+            sd.Filter = $"TexTools Modpack|*.ttmp2".L();
 
             sd.FileName = DestinationPath;
             var result = sd.ShowDialog();

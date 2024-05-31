@@ -54,7 +54,7 @@ namespace FFXIV_TexTools.Views
                     ext += ".sqpack";
                 }
 
-                sd.Filter = $"{ext.ToUpper()._()} Files (*.{ext._()})|*.{ext._()}".L();
+                sd.Filter = $"{ext.ToUpper()._()} Files|*.{ext._()}".L();
             }
 
             sd.FileName = Path.GetFileName(path);
