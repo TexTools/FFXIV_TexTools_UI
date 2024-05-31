@@ -75,7 +75,7 @@ namespace FFXIV_TexTools.Views.Wizard
             {
                 wizPages.Add(new WizardPage
                 {
-                    Content = new ImportWizardPageControl(data.OptionPages[i]),
+                    Content = new WizardPageControl(data.OptionPages[i]),
                     PageType = WizardPageType.Blank,
                     Background = null,
                     HeaderBackground = null

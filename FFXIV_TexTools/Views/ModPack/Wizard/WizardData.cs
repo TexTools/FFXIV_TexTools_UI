@@ -214,7 +214,7 @@ namespace FFXIV_TexTools.Views.Wizard
         }
 
 
-        public List<WizardOptionEntry> Options;
+        public List<WizardOptionEntry> Options = new List<WizardOptionEntry>();
 
         /// <summary>
         /// Option Data for Penumbra style Imc-Mask Option Groups.
@@ -383,7 +383,7 @@ namespace FFXIV_TexTools.Views.Wizard
     public class WizardPageEntry
     {
         public string Name;
-        public List<WizardGroupEntry> Groups;
+        public List<WizardGroupEntry> Groups = new List<WizardGroupEntry>();
 
         public static async Task<WizardPageEntry> FromWizardModpackPage(ModPackPageJson jp, string unzipPath)
         {
@@ -415,11 +415,11 @@ namespace FFXIV_TexTools.Views.Wizard
     /// </summary>
     public class WizardMetaEntry
     {
-        public string Name;
-        public string Author;
-        public string Description;
-        public string Url;
-        public string Version;
+        public string Name = "";
+        public string Author = "";
+        public string Description = "";
+        public string Url = "";
+        public string Version = "1.0";
 
         public static WizardMetaEntry FromPMP(PMPJson pmp, string unzipPath)
         {
@@ -451,8 +451,8 @@ namespace FFXIV_TexTools.Views.Wizard
     /// </summary>
     public class WizardData
     {
-        public WizardMetaEntry MetaPage;
-        public List<WizardPageEntry> OptionPages;
+        public WizardMetaEntry MetaPage = new WizardMetaEntry();
+        public List<WizardPageEntry> OptionPages = new List<WizardPageEntry>();
         public EModpackType ModpackType;
         public ModPack ModPack;
 

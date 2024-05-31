@@ -13,11 +13,13 @@
 // 
 // You should have received a copy of the GNU General Public License
 
+using AutoUpdaterDotNET;
 using FFXIV_TexTools.Helpers;
 using FFXIV_TexTools.Models;
 using FFXIV_TexTools.Properties;
 using FFXIV_TexTools.Resources;
 using FFXIV_TexTools.Views.Models;
+using FFXIV_TexTools.Views.Wizard;
 using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
 using Newtonsoft.Json;
@@ -35,10 +37,12 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Input;
+using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using TeximpNet.DDS;
 using xivModdingFramework.Cache;
+using xivModdingFramework.Exd.FileTypes;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Items.Categories;
@@ -65,25 +69,19 @@ namespace FFXIV_TexTools.Views
     /// </summary>
     public partial class EditWizardGroupWindow
     {
-        private List<ModOption> _modOptions;
-        private ModOption _selectedModOption;
-        private readonly DirectoryInfo _gameDirectory;
-        private readonly DirectoryInfo _modListDirectory;
-        private readonly List<string> _groupNames;
         private string _editGroupName;
-        private bool _editMode;
         private IItem SelectedItem;
 
-        private DirectoryInfo _basicModpackDirectory;
         private List<byte> _basicModpackData;
 
-        public EditWizardGroupWindow(List<string> groupNames)
-        {
+        private WizardGroupEntry Data;
+
+        private WizardOptionEntry SelectedOption;
+
+        public EditWizardGroupWindow(WizardGroupEntry data)
+        { 
+            Data = data;
             InitializeComponent();
-            _modOptions = new List<ModOption>();
-            _gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
-            _modListDirectory = new DirectoryInfo(Path.Combine(_gameDirectory.Parent.Parent.FullName, XivStrings.ModlistFilePath));
-            _groupNames = groupNames;
 
             ItemList.ExtraSearchFunction = Filter;
             ItemList.ItemSelected += ItemList_ItemSelected;
@@ -99,10 +97,50 @@ namespace FFXIV_TexTools.Views
             MoveOptionUpButton.IsEnabled = false;
             MoveOptionDownButton.IsEnabled = false;
 
+
+            ModGroupTitle.Text = Data.Name;
+
+
+            if (Data.OptionType == EOptionType.Single)
+            {
+                SingleSelectRadioButton.IsChecked = true;
+            }
+            else
+            {
+                MultiSelectRadioButton.IsChecked = true;
+            }
+            RebuildOptionList();
+        }
+
+        private void RebuildOptionList()
+        {
+            var opt = SelectedOption;
+            OptionList.Items.Clear();
+
+            EditableOptionControl target = null;
+            foreach (var option in Data.Options)
+            {
+                var uiOp = new EditableOptionControl(option);
+                OptionList.Items.Add(uiOp);
+                if(option == opt)
+                {
+                    target = uiOp;
+                }
+            }
+
+            if(target != null)
+            {
+                OptionList.SelectedItem = target;
+            } else
+            {
+                if (OptionList.Items.Count > 0)
+                {
+                    OptionList.SelectedIndex = 0;
+                }
+            }
         }
 
         private ProgressDialogController _lockProgressController;
-        private IProgress<string> _lockProgress;
 
         public async Task LockUi(string title = null, string message = null, object sender = null)
         {
@@ -110,16 +148,11 @@ namespace FFXIV_TexTools.Views
 
             _lockProgressController.SetIndeterminate();
 
-            _lockProgress = new Progress<string>((update) =>
-            {
-                _lockProgressController.SetMessage(update);
-            });
         }
         public async Task UnlockUi(object sender = null)
         {
             await _lockProgressController.CloseAsync();
             _lockProgressController = null;
-            _lockProgress = null;
         }
 
         /// <summary>
@@ -132,88 +165,20 @@ namespace FFXIV_TexTools.Views
 
         #region Public Methods
 
-
         /// <summary>
-        /// Sets up the wizard page for edit mode
+        /// Updates basic group settings based on UI state.
         /// </summary>
-        /// <param name="modGroup">The mod group that will be edited</param>
-        public void EditMode(ModGroup modGroup)
+        public void UpdateGroupMeta()
         {
-            ModGroupTitle.Text = modGroup.GroupName;
-            _editGroupName = modGroup.GroupName;
-
-            _editMode = true;
-
-            if (modGroup.SelectionType.Equals("Single"))
-            {
-                SingleSelectRadioButton.IsChecked = true;
-            }
-            else
-            {
-                MultiSelectRadioButton.IsChecked = true;
-            }
-
-            _modOptions.AddRange(modGroup.OptionList);
-
-            foreach (var modOption in modGroup.OptionList)
-            {
-                OptionList.Items.Add(new EditableOptionControl(modOption.Name, modOption));
-            }
-        }
-
-        /// <summary>
-        /// Gets the resulting mod group
-        /// </summary>
-        /// <returns>The mod group</returns>
-        public ModGroup GetResults()
-        {
-            var selectionType = "Single";
+            var selectionType = EOptionType.Single;
 
             if (MultiSelectRadioButton.IsChecked == true)
             {
-                selectionType = "Multi";
+                selectionType = EOptionType.Multi;
             }
 
-
-            foreach (var modOption in _modOptions)
-            {
-                modOption.GroupName = ModGroupTitle.Text;
-                modOption.SelectionType = selectionType;
-            }
-
-            var modGroup = new ModGroup
-            {
-                GroupName = ModGroupTitle.Text,
-                SelectionType = selectionType,
-                OptionList = _modOptions
-            };
-
-            return modGroup;
-        }
-
-        /// <summary>
-        /// Updates the mod group after an edit
-        /// </summary>
-        /// <param name="modGroup">The mod group</param>
-        public void UpdateModGroup(ModGroup modGroup)
-        {
-            var selectionType = "Single";
-
-            if (MultiSelectRadioButton.IsChecked == true)
-            {
-                selectionType = "Multi";
-            }
-
-
-            foreach (var modOption in _modOptions)
-            {
-                modOption.GroupName = ModGroupTitle.Text;
-                modOption.SelectionType = selectionType;
-            }
-
-            modGroup.GroupName = ModGroupTitle.Text;
-            modGroup.SelectionType = selectionType;
-            modGroup.OptionList = _modOptions;
+            Data.Name = ModGroupTitle.Text;
+            Data.OptionType = selectionType;
         }
 
         #endregion
@@ -226,30 +191,16 @@ namespace FFXIV_TexTools.Views
         /// </summary>
         /// <param name="optionText">The option name</param>
         /// <param name="optionNum">The option number</param>
-        private void AddOption(string optionText, int optionNum = 0)
+        private void AddOption(string optionText)
         {
             if (String.IsNullOrWhiteSpace(OptionNameTextBox.Text)) return;
 
-            var optionListItems = OptionList.Items.Cast<EditableOptionControl>().ToList();
+            var option = new WizardOptionEntry(Data);
 
-            if (optionListItems.Exists((option) => option.ToString() == optionText))
-            {
-                AddOption($"{OptionNameTextBox.Text} {optionNum + 1}", optionNum + 1);
-            }
-            else
-            {
-                var modOption = new ModOption
-                {
-                    Name = optionText
-                };
+            Data.Options.Add(option);
 
-                _modOptions.Add(modOption);
-
-                OptionList.Items.Add(new EditableOptionControl(optionText, modOption));
-                OptionList.SelectedIndex = OptionList.Items.Count - 1;
-            }
-
-            OptionNameTextBox.Text = string.Empty;
+            RebuildOptionList();
+            OptionList.SelectedIndex = OptionList.Items.Count - 1;
         }
 
 
@@ -271,29 +222,14 @@ namespace FFXIV_TexTools.Views
         /// </summary>
         private void RemoveOptionButton_Click(object sender, RoutedEventArgs e)
         {
-            _selectedModOption =
-                (from option in _modOptions
-                    where option.Name.Equals(OptionList.SelectedItem.ToString())
-                    select option).FirstOrDefault();
-
-            _modOptions.Remove(_selectedModOption);
-
-            foreach (var item in OptionList.Items)
+            if(SelectedOption == null)
             {
-                if (item.ToString().Equals(_selectedModOption.Name))
-                {
-                    if (OptionList.Items.Count > 0)
-                    {
-                        OptionList.SelectedIndex = 0;
-                    }
-                    else
-                    {
-                        OptionList.SelectedIndex = -1;
-                    }
-                    OptionList.Items.Remove(item);
-                    break;
-                }
+                return;
             }
+
+            Data.Options.Remove(SelectedOption);
+
+            RebuildOptionList();
         }
 
         /// <summary>
@@ -312,19 +248,18 @@ namespace FFXIV_TexTools.Views
         /// </summary>
         private void MoveOptionUpButton_Click(object sender, RoutedEventArgs e)
         {
-            if (OptionList.SelectedIndex > 0)
+            if (SelectedOption != null && OptionList.SelectedIndex > 0)
             {
                 var oldIndex = OptionList.SelectedIndex;
                 var newIndex = OptionList.SelectedIndex - 1;
 
-                var modOption = _modOptions[oldIndex];
-                _modOptions.RemoveAt(oldIndex);
-                _modOptions.Insert(newIndex, modOption);
+                var optionA = Data.Options[oldIndex];
+                var optionB = Data.Options[newIndex];
 
-                var editableOptionControl = OptionList.Items.GetItemAt(oldIndex) as EditableOptionControl;
-                OptionList.Items.RemoveAt(oldIndex);
-                OptionList.Items.Insert(newIndex, editableOptionControl);
+                Data.Options[oldIndex] = optionB;
+                Data.Options[newIndex] = optionA;
 
+                RebuildOptionList();
                 OptionList.SelectedIndex = newIndex;
             }
         }
@@ -334,19 +269,18 @@ namespace FFXIV_TexTools.Views
         /// </summary>
         private void MoveOptionDownButton_Click(object sender, RoutedEventArgs e)
         {
-            if (OptionList.SelectedIndex != -1 && OptionList.SelectedIndex < (OptionList.Items.Count - 1))
+            if (SelectedOption != null && OptionList.SelectedIndex < (OptionList.Items.Count - 1))
             {
                 var oldIndex = OptionList.SelectedIndex;
                 var newIndex = OptionList.SelectedIndex + 1;
 
-                var option = _modOptions[oldIndex];
-                _modOptions.RemoveAt(oldIndex);
-                _modOptions.Insert(newIndex, option);
+                var optionA = Data.Options[oldIndex];
+                var optionB = Data.Options[newIndex];
 
-                var editableOptionControl = OptionList.Items.GetItemAt(oldIndex) as EditableOptionControl;
-                OptionList.Items.RemoveAt(oldIndex);
-                OptionList.Items.Insert(newIndex, editableOptionControl);
+                Data.Options[oldIndex] = optionB;
+                Data.Options[newIndex] = optionA;
 
+                RebuildOptionList();
                 OptionList.SelectedIndex = newIndex;
             }
         }
@@ -359,60 +293,41 @@ namespace FFXIV_TexTools.Views
         {
             IncludedModsList.Items.Clear();
 
-            if (OptionList.SelectedIndex != -1)
+            var uiOpt = OptionList.SelectedItem as EditableOptionControl;
+            if(uiOpt == null)
             {
-                _selectedModOption =
-                    (from option in _modOptions
-                     where option.Name.Equals(OptionList.SelectedItem.ToString())
-                     select option).FirstOrDefault();
+                SelectedOption = null;
+                ModListGrid.IsEnabled = false;
+                OptionDescription.IsEnabled = false;
+                OptionImageButton.IsEnabled = false;
+                RemoveOptionButton.IsEnabled = false;
+                MoveOptionUpButton.IsEnabled = false;
+                MoveOptionDownButton.IsEnabled = false;
+                RenameOptionButton.IsEnabled = false;
+                return;
+            }
 
-                if (_selectedModOption.Description != null)
-                {
-                    OptionDescription.Text = _selectedModOption.Description;
-                }
-                else
-                {
-                    OptionDescription.Text = string.Empty;
-                }
+            SelectedOption = uiOpt.Option;
+            OptionDescription.Text = SelectedOption.Description ?? "";
 
-                if (_selectedModOption.Image != null)
-                {
-                    BitmapImage bmp;
+            // TODO - Set Image Source Here.
+            OptionImage.Source = null;
 
-                    using (var ms = new MemoryStream())
+            var opData = SelectedOption.StandardData;
+            if(opData != null)
+            {
+                foreach(var fileKv in opData.Files)
+                {
+                    var includedMods = new FileEntry
                     {
-                        _selectedModOption.Image.Save(ms, new BmpEncoder());
+                        Name = MakeFriendlyFileName(fileKv.Key),
+                        Path = fileKv.Key
+                    };
 
-                        bmp = new BitmapImage();
-                        bmp.BeginInit();
-                        bmp.StreamSource = ms;
-                        bmp.CacheOption = BitmapCacheOption.OnLoad;
-                        bmp.EndInit();
-                        bmp.Freeze();
-                    }
-
-                    OptionImage.Source = bmp;
-                }
-                else
-                {
-                    OptionImage.Source = null;
+                    IncludedModsList.Items.Add(includedMods);
                 }
 
-                if (_selectedModOption.Mods != null && _selectedModOption.Mods.Count > 0)
-                {
-                    foreach (var mod in _selectedModOption.Mods)
-                    {
-                        var includedMods = new FileEntry
-                        {
-                            Name = MakeFriendlyFileName(mod.Value.FullPath),
-                            Path = mod.Value.FullPath
-                        };
-
-                        IncludedModsList.Items.Add(includedMods);
-                    }
-                }
-
-                if (OptionList.Items.Count > 1)
+                if (Data.Options.Count > 1)
                 {
                     // Enable the move up button only when the option isn't already first
                     if (OptionList.SelectedIndex > 0)
@@ -439,23 +354,13 @@ namespace FFXIV_TexTools.Views
                     MoveOptionUpButton.IsEnabled = false;
                     MoveOptionDownButton.IsEnabled = false;
                 }
+            }
 
-                ModListGrid.IsEnabled = true;
-                OptionDescription.IsEnabled = true;
-                OptionImageButton.IsEnabled = true;
-                RemoveOptionButton.IsEnabled = true;
-                RenameOptionButton.IsEnabled = true;
-            }
-            else
-            {
-                ModListGrid.IsEnabled = false;
-                OptionDescription.IsEnabled = false;
-                OptionImageButton.IsEnabled = false;
-                RemoveOptionButton.IsEnabled = false;
-                MoveOptionUpButton.IsEnabled = false;
-                MoveOptionDownButton.IsEnabled = false;
-                RenameOptionButton.IsEnabled = false;
-            }
+            ModListGrid.IsEnabled = true;
+            OptionDescription.IsEnabled = true;
+            OptionImageButton.IsEnabled = true;
+            RemoveOptionButton.IsEnabled = true;
+            RenameOptionButton.IsEnabled = true;
 
             if (SelectedItem != null)
             {
@@ -470,7 +375,9 @@ namespace FFXIV_TexTools.Views
         /// </summary>
         private void OptionDescription_LostFocus(object sender, RoutedEventArgs e)
         {
-            _selectedModOption.Description = OptionDescription.Text;
+            if (SelectedOption == null) return;
+
+            SelectedOption.Description = OptionDescription.Text;
         }
 
         /// <summary>
@@ -484,12 +391,13 @@ namespace FFXIV_TexTools.Views
             };
 
 
-            if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-            {
-                _selectedModOption.Image = Image.Load(openFileDialog.FileName);
-                _selectedModOption.ImageFileName = openFileDialog.FileName;
-                OptionImage.Source = new BitmapImage(new Uri(openFileDialog.FileName));
-            }
+            if (openFileDialog.ShowDialog() != System.Windows.Forms.DialogResult.OK) return;
+
+            this.ShowError("Not Implemented", "Need to update image selection.");
+            /*
+            _selectedModOption.Image = Image.Load(openFileDialog.FileName);
+            _selectedModOption.ImageFileName = openFileDialog.FileName;
+            OptionImage.Source = new BitmapImage(new Uri(openFileDialog.FileName));*/
         }
 
         private void ItemList_ItemSelected(object sender, IItem item)
@@ -673,16 +581,13 @@ namespace FFXIV_TexTools.Views
 
 
 
-        private async Task AddFile(FileEntry file, IItem item, byte[] rawData = null)
+        private async Task AddFile(FileEntry file, FileStorageInformation? storageHandle = null)
         {
-            var tx = MainWindow.UserTransaction;
-            if (tx == null)
+            if(SelectedOption == null)
             {
-                // Readonly TX if we don't have one.
-                tx = ModTransaction.BeginTransaction();
+                return;
             }
-
-            if (file == null || file.Path == null || _selectedModOption == null) return;
+            if (file == null || file.Path == null || SelectedOption == null) return;
 
             var includedModsList = IncludedModsList.Items.Cast<FileEntry>().ToList();
 
@@ -697,46 +602,35 @@ namespace FFXIV_TexTools.Views
                 }
             }
 
-            if (rawData == null)
-            {
-                if (!await tx.FileExists(file.Path))
-                {
-                    FlexibleMessageBox.Show(new Wpf32Window(this), "Cannot include file, file offset invalid.".L(),
-                        UIMessages.ModDataReadErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
+            var data = SelectedOption.StandardData;
 
-                // Get the compressed file.
-                rawData = await tx.ReadFile(file.Path, false, true);
-                if (rawData == null)
+            if(storageHandle == null)
+            {
+                try
                 {
-                    FlexibleMessageBox.Show(new Wpf32Window(this), "Cannot include file, file offset invalid.".L(),
-                        UIMessages.ModDataReadErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    var tx = MainWindow.DefaultTransaction;
+                    storageHandle = await tx.UNSAFE_GetStorageInfo(file.Path);
+                } catch(Exception ex)
+                {
+                    this.ShowError("File Add Error", "An error occurred while adding the file:\n\n" + ex.Message);
                     return;
                 }
             }
-
             
-            if(_selectedModOption.Mods.ContainsKey(file.Path))
+            if(data.Files.ContainsKey(file.Path))
             {
-                _selectedModOption.Mods[file.Path].ModDataBytes = rawData;
+                data.Files[file.Path] = storageHandle.Value;
             } else
             {
                 IncludedModsList.Items.Add(file);
-                var modData = new ModData
-                {
-                    Name = item.Name,
-                    Category = item.SecondaryCategory,
-                    FullPath = file.Path,
-                    ModDataBytes = rawData,
-                };
-                _selectedModOption.Mods.Add(file.Path, modData);
+                data.Files.Add(file.Path, storageHandle.Value);
             }
 
         }
 
-        private async Task AddWithChildren(string file, IItem item, byte[] rawData = null)
+        private async Task AddWithChildren(string file, FileStorageInformation? storageHandle = null)
         {
+            var tx = MainWindow.DefaultTransaction;
             var children = new HashSet<string>();
             if (Path.GetExtension(file) == ".meta")
             {
@@ -750,19 +644,26 @@ namespace FFXIV_TexTools.Views
                 }
             } else
             {
-                children = await XivCache.GetChildrenRecursive(file, MainWindow.DefaultTransaction);
+                children = await XivCache.GetChildrenRecursive(file, tx);
             }
 
 
             foreach (var child in children)
             {
                 var fe = new FileEntry() { Name = MakeFriendlyFileName(child), Path = child };
-                if (child == file && rawData != null)
+                if (child == file && storageHandle != null)
                 {
-                    await AddFile(fe, item, rawData);
+                    await AddFile(fe, storageHandle.Value);
                 } else 
                 {
-                    await AddFile(fe, item);
+                    try
+                    {
+                        var info = await tx.UNSAFE_GetStorageInfo(child);
+                        await AddFile(fe, info);
+                    } catch(Exception ex)
+                    {
+                        this.ShowError("File Add Error", "An error occurred while adding a file:\n" + child + "\n\n" + ex.Message);
+                    }
                 }
             }
         }
@@ -773,7 +674,27 @@ namespace FFXIV_TexTools.Views
         private void AddCurrentTextureButton_Click(object sender, RoutedEventArgs e)
         {
             var selectedFile = TextureMapComboBox.SelectedItem as FileEntry;
-            AddFile(selectedFile, SelectedItem);
+            _ = AddFile(selectedFile);
+        }
+
+        private FileStorageInformation WriteTempFile(byte[] data, bool compressed = false)
+        {
+            var tempPath = Path.GetTempFileName();
+            File.WriteAllBytes(tempPath, data);
+
+            var info = new FileStorageInformation()
+            {
+                RealPath = tempPath,
+                RealOffset = 0,
+                FileSize = data.Length,
+                StorageType = EFileStorageType.UncompressedIndividual,
+            };
+            if (compressed)
+            {
+                info.StorageType = EFileStorageType.CompressedIndividual;
+            }
+
+            return info;
         }
 
         /// <summary>
@@ -792,8 +713,10 @@ namespace FFXIV_TexTools.Views
 
             try
             {
-                var data = await SmartImport.CreateCompressedFile(openFileDialog.FileName, selectedFile.Path, MainWindow.DefaultTransaction);
-                await AddFile(selectedFile, SelectedItem, data);
+                var data = await SmartImport.CreateUncompressedFile(openFileDialog.FileName, selectedFile.Path, MainWindow.DefaultTransaction);
+                var info = WriteTempFile(data);
+
+                await AddFile(selectedFile, info);
             }
             catch (Exception ex)
             {
@@ -813,11 +736,11 @@ namespace FFXIV_TexTools.Views
             var addChildren = MaterialIncludeChildrenBox.IsChecked == true ? true : false;
             if (addChildren)
             {
-                AddWithChildren(selectedFile.Path, SelectedItem);
+                _ = AddWithChildren(selectedFile.Path);
             }
             else
             {
-                AddFile(selectedFile, SelectedItem);
+                _ = AddFile(selectedFile);
             }
         }
         private async void AddWithCustomColorsetButton_Click(object sender, RoutedEventArgs e)
@@ -845,17 +768,18 @@ namespace FFXIV_TexTools.Views
                 // Read and assign the data.
                 Tex.ImportColorsetTexture(mtrl, ddsPath);
 
-                // SqPack the data.
-                mtrlData = await Dat.CompressType2Data(Mtrl.XivMtrlToUncompressedMtrl(mtrl));
+                mtrlData = Mtrl.XivMtrlToUncompressedMtrl(mtrl);
+
+                var info = WriteTempFile(mtrlData);
 
 
                 if (addChildren)
                 {
-                    await AddWithChildren(selectedFile.Path, SelectedItem, mtrlData);
+                    await AddWithChildren(selectedFile.Path, info);
                 }
                 else
                 {
-                    await AddFile(selectedFile, SelectedItem, mtrlData);
+                    await AddFile(selectedFile, info);
                 }
 
             } catch(Exception ex)
@@ -879,8 +803,10 @@ namespace FFXIV_TexTools.Views
 
             try
             {
-                var data = await SmartImport.CreateCompressedFile(openFileDialog.FileName, selectedFile.Path, MainWindow.DefaultTransaction);
-                await AddFile(selectedFile, SelectedItem, data);
+                var data = await SmartImport.CreateUncompressedFile(openFileDialog.FileName, selectedFile.Path, MainWindow.DefaultTransaction);
+
+                var info = WriteTempFile(data);
+                await AddFile(selectedFile, info);
             }
             catch (Exception ex)
             {
@@ -900,11 +826,11 @@ namespace FFXIV_TexTools.Views
             var addChildren = ModelIncludeChildFilesBox.IsChecked == true ? true : false;
             if (addChildren)
             {
-                AddWithChildren(selectedFile.Path, SelectedItem);
+                _ = AddWithChildren(selectedFile.Path);
             }
             else
             {
-                AddFile(selectedFile, SelectedItem);
+                _ = AddFile(selectedFile);
             }
         }
 
@@ -922,8 +848,9 @@ namespace FFXIV_TexTools.Views
                 {
                     return;
                 }
-                var data = await Mdl.CompressMdlFile(result.Data);
-                await AddFile(selectedFile, SelectedItem, data);
+
+                var info = WriteTempFile(result.Data);
+                await AddFile(selectedFile, info);
             }
             catch (Exception ex)
             {
@@ -946,9 +873,15 @@ namespace FFXIV_TexTools.Views
                 items.Add(item);
             }
 
+            var opData = SelectedOption.StandardData;
+            if(opData == null)
+            {
+                return;
+            }
+
             foreach (FileEntry item in items)
             {
-                _selectedModOption.Mods.Remove(item.Path);
+                opData.Files.Remove(item.Path);
                 IncludedModsList.Items.Remove(item);
             }
         }
@@ -966,28 +899,8 @@ namespace FFXIV_TexTools.Views
         /// </summary>
         private void DoneButton_Click(object sender, RoutedEventArgs e)
         {
-            if (ModGroupTitle.Text.Equals(string.Empty))
-            {
-                ModGroupTitle.Focus();
-                ModGroupTitle.BorderBrush = Brushes.Red;
-                ControlsHelper.SetFocusBorderBrush(ModGroupTitle, Brushes.Red);
-            }
-            else if (!_editMode && _groupNames.Contains(ModGroupTitle.Text) || _editMode && !_editGroupName.Equals(ModGroupTitle.Text) && _groupNames.Contains(ModGroupTitle.Text))
-            {
-                ModGroupTitle.Focus();
-                ModGroupTitle.BorderBrush = Brushes.Red;
-                ControlsHelper.SetFocusBorderBrush(ModGroupTitle, Brushes.Red);
-
-                FlexibleMessageBox.Show(new Wpf32Window(this),
-                    $"\"{ModGroupTitle.Text}\" {UIMessages.ExistingGroupMessage}",
-                    UIMessages.ExistingGroupTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
-            else
-            {
-                DialogResult = true;
-                Close();
-            }
-
+            UpdateGroupMeta();
+            DialogResult = true;
         }
 
 
@@ -996,21 +909,7 @@ namespace FFXIV_TexTools.Views
         /// </summary>
         private void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (DialogResult != true)
-            {
-                if (_modOptions.Count > 0)
-                {
-                    foreach (var modOption in _modOptions)
-                    {
-                        if (modOption.Image != null)
-                        {
-                            modOption.Image.Dispose();
-                        }
-                    }
-                }
-
-                _modOptions = null;
-            }
+            // Does any disposing need to happen here?
         }
 
         #endregion
@@ -1038,15 +937,6 @@ namespace FFXIV_TexTools.Views
             }
         }
 
-        /// <summary>
-        /// Gets the language for the application
-        /// </summary>
-        /// <returns>The application language as XivLanguage</returns>
-        private static XivLanguage GetLanguage()
-        {
-            return XivLanguages.GetXivLanguage(Properties.Settings.Default.Application_Language);
-        }
-
         private async void AddMetadataButton_Click(object sender, RoutedEventArgs e)
         {
             var path = MetadataPathBox.Text;
@@ -1058,15 +948,17 @@ namespace FFXIV_TexTools.Views
             var addChildren = MetadataIncludeChildFilesBox.IsChecked == true ? true : false;
 
             var meta = await ItemMetadata.GetMetadata(path, false, MainWindow.DefaultTransaction);
-            var data = await Dat.CompressType2Data(await ItemMetadata.Serialize(meta));
+            var data = await ItemMetadata.Serialize(meta);
+
+            var info = WriteTempFile(data);
 
             if (addChildren)
             {
-                await AddWithChildren(selectedFile.Path, SelectedItem, data);
+                await AddWithChildren(selectedFile.Path, info);
             }
             else
             {
-                await AddFile(selectedFile, SelectedItem, data);
+                await AddFile(selectedFile, info);
             }
 
         }
@@ -1128,7 +1020,7 @@ namespace FFXIV_TexTools.Views
                 SelectAllButton.IsEnabled = true;
                 DeselectAllButton.IsEnabled = true;
 
-                _basicModpackDirectory = new DirectoryInfo(openFileDialog.FileName);
+                var _basicModpackDirectory = new DirectoryInfo(openFileDialog.FileName);
 
                 var (modpackJson, _) = await TTMP.LEGACY_GetModPackJsonData(_basicModpackDirectory);
                 if (modpackJson.TTMPVersion.Contains("s"))
@@ -1188,8 +1080,11 @@ namespace FFXIV_TexTools.Views
                     Name = modsJson.Name,
                     SecondaryCategory = modsJson.Category
                 };
+                var data = _basicModpackData.GetRange((int)modsJson.ModOffset, modsJson.ModSize).ToArray();
 
-                AddFile(file, xivItem, _basicModpackData.GetRange((int)modsJson.ModOffset, modsJson.ModSize).ToArray());
+                var info = WriteTempFile(data, true);
+
+                _ = AddFile(file, info);
             }
         }
 
@@ -1211,8 +1106,10 @@ namespace FFXIV_TexTools.Views
 
             try
             {
-                var data = await SmartImport.CreateCompressedFile(openFileDialog.FileName, selectedFile.Path, MainWindow.DefaultTransaction);
-                await AddFile(selectedFile, SelectedItem, data);
+                var data = await SmartImport.CreateUncompressedFile(openFileDialog.FileName, selectedFile.Path, MainWindow.DefaultTransaction);
+                var info = WriteTempFile(data);
+
+                await AddFile(selectedFile, info);
             }
             catch (Exception ex)
             {
@@ -1264,9 +1161,9 @@ namespace FFXIV_TexTools.Views
                 metadata.AlterRoot(root);
 
                 var data = await ItemMetadata.Serialize(metadata);
-                var compressed = await Dat.CompressType2Data(data);
+                var info = WriteTempFile(data);
 
-                await AddFile(selectedFile, SelectedItem, compressed);
+                await AddFile(selectedFile, info);
             }
             catch (Exception ex)
             {

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FFXIV_TexTools.Views.Wizard;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -21,15 +22,15 @@ namespace FFXIV_TexTools.Views
     /// </summary>
     public partial class EditableOptionControl : UserControl
     {
-        public ModOption ModOption;
-        public EditableOptionControl(string optionText, ModOption modOption)
+        public WizardOptionEntry Option;
+        public EditableOptionControl(WizardOptionEntry option)
         {
-            ModOption = modOption;
+            Option = option;
 
             InitializeComponent();
 
-            OptionLabel.Content = optionText;
-            OptionTextBox.Text = optionText;
+            OptionLabel.Content = option.Name;
+            OptionTextBox.Text = option.Name;
 
             OptionLabel.MouseDoubleClick += OptionLabel_MouseDoubleClick;
             OptionTextBox.TextChanged += OptionTextBox_TextChanged;
@@ -55,7 +56,7 @@ namespace FFXIV_TexTools.Views
         private void OptionTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             OptionLabel.Content = OptionTextBox.Text;
-            ModOption.Name = OptionTextBox.Text;
+            Option.Name = OptionTextBox.Text;
         }
 
         private void OptionLabel_MouseDoubleClick(object sender, MouseButtonEventArgs e)

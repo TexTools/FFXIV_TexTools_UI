@@ -592,7 +592,6 @@ namespace FFXIV_TexTools
                 }
 
                 _lockProgressController = await this.ShowProgressAsync(title, msg);
-
                 _lockProgress = new Progress<string>((update) =>
                 {
                     _lockProgressController.SetMessage(update);

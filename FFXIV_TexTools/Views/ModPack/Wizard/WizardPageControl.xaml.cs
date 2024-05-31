@@ -17,6 +17,7 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Png;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -29,16 +30,74 @@ using Image = SixLabors.ImageSharp.Image;
 
 namespace FFXIV_TexTools.Views.Wizard
 {
-    public partial class ImportWizardPageControl : UserControl
+    public partial class WizardPageControl : UserControl, INotifyPropertyChanged
     {
+        private bool Editable;
 
-        public ImportWizardPageControl(WizardPageEntry data)
+        public event PropertyChangedEventHandler PropertyChanged;
+        private WizardPageEntry Data;
+
+        public bool HasData
         {
+            //TODO: Fix this up?
+            get
+            {
+                return true;
+            }
+        }
+
+        public Visibility EditorVisibility
+        {
+            get
+            {
+                return Editable ? Visibility.Visible : Visibility.Collapsed;
+            }
+        }
+
+        private bool OptionSelected
+        {
+            get
+            {
+                var opt = OptionsList.SelectedItem as WizardOptionEntry;
+                if (opt == null) {
+                    return false;
+                }
+                return true;
+            }
+        }
+
+        public WizardPageControl(WizardPageEntry data, bool editable = false)
+        {
+            Data = data;
+            Editable = editable;
+            DataContext = this;
             InitializeComponent();
+
+            SetupUi();
+        }
+
+        private int GetCurrentIndex()
+        {
+            var opt = OptionsList.SelectedItem as WizardOptionEntry;
+            if (opt == null) return 0;
+
+            var owningGroup = Data.Groups.FirstOrDefault(x => x.Options.Any(o => o == opt));
+            if (owningGroup == null) return 0;
+
+            var idx = Data.Groups.IndexOf(owningGroup);
+            if (idx < 0) return 0;
+
+            return idx;
+        }
+
+        private void SetupUi()
+        {
+            var opt = OptionsList.SelectedItem as WizardOptionEntry;
+
 
             // We want one full unified list of options as a source for our listbox.
             var options = new List<WizardOptionEntry>();
-            foreach(var g in data.Groups)
+            foreach (var g in Data.Groups)
             {
                 options.AddRange(g.Options);
             }
@@ -50,9 +109,12 @@ namespace FFXIV_TexTools.Views.Wizard
             view.GroupDescriptions.Clear();
             view.GroupDescriptions.Add(groupDescription);
 
-            // The SelectedIndex value is only used in updating the visual display.
-            // It is not used as a final value in any capacity.
-            OptionsList.SelectedIndex = 0;
+            var idx = 0;
+            if(opt != null)
+            {
+                idx = options.IndexOf(opt);
+            }
+            OptionsList.SelectedIndex = idx;
         }
 
         /// <summary>
@@ -60,11 +122,12 @@ namespace FFXIV_TexTools.Views.Wizard
         /// </summary>
         private void OptionsList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(OptionSelected)));
+
             var opt = OptionsList.SelectedItem as WizardOptionEntry;
             if (opt == null) return;
 
             OptionDescriptionTextBox.Text = opt.Description;
-            //opt.ImagePath;
 
             if (!String.IsNullOrWhiteSpace(opt.ImagePath))
             {
@@ -97,6 +160,74 @@ namespace FFXIV_TexTools.Views.Wizard
                     modOption.Selected = isSelected;
                 }
             }
+        }
+
+        private void AddGroup_Click(object sender, RoutedEventArgs e)
+        {
+            Data.Groups.Add(new WizardGroupEntry());
+            SetupUi();
+        }
+
+        private void EditGroup_Click(object sender, RoutedEventArgs e)
+        {
+            // Open thing.
+            var opt = OptionsList.SelectedItem as WizardOptionEntry;
+            if (opt == null) return;
+
+            var owningGroup = Data.Groups.FirstOrDefault(x => x.Options.Any(o => o == opt));
+            if (owningGroup == null) return;
+
+            var wind = new EditWizardGroupWindow(owningGroup);
+            wind.Owner = Window.GetWindow(this);
+            wind.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            wind.ShowDialog();
+        }
+
+        private void DeleteGroup_Click(object sender, RoutedEventArgs e)
+        {
+            var opt = OptionsList.SelectedItem as WizardOptionEntry;
+            if (opt == null) return;
+
+            var owningGroup = Data.Groups.FirstOrDefault(x => x.Options.Any(o => o == opt));
+            if (owningGroup == null) return;
+
+            Data.Groups.Remove(owningGroup);
+
+            SetupUi();
+        }
+
+        private void MoveGroupUp_Click(object sender, RoutedEventArgs e)
+        {
+            var opt = OptionsList.SelectedItem as WizardOptionEntry;
+            if (opt == null) return;
+
+            var owningGroup = Data.Groups.FirstOrDefault(x => x.Options.Any(o => o == opt));
+            if (owningGroup == null) return;
+
+            var idx = Data.Groups.IndexOf(owningGroup);
+            if (idx == 0) return;
+
+            var lowerGroup = Data.Groups[idx - 1];
+            Data.Groups[idx] = lowerGroup;
+            Data.Groups[idx - 1] = owningGroup;
+            SetupUi();
+        }
+
+        private void MoveGroupDown_Click(object sender, RoutedEventArgs e)
+        {
+            var opt = OptionsList.SelectedItem as WizardOptionEntry;
+            if (opt == null) return;
+
+            var owningGroup = Data.Groups.FirstOrDefault(x => x.Options.Any(o => o == opt));
+            if (owningGroup == null) return;
+
+            var idx = Data.Groups.IndexOf(owningGroup);
+            if (idx >= Data.Groups.Count -2) return;
+
+            var higherGroup = Data.Groups[idx + 1];
+            Data.Groups[idx] = higherGroup;
+            Data.Groups[idx + 1] = owningGroup;
+            SetupUi();
         }
     }
 

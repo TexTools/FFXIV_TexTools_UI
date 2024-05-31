@@ -17,9 +17,11 @@
 using FFXIV_TexTools.Helpers;
 using FFXIV_TexTools.Properties;
 using FFXIV_TexTools.Resources;
+using FFXIV_TexTools.Views.Wizard;
 using MahApps.Metro.Controls.Dialogs;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -31,6 +33,7 @@ using Xceed.Wpf.Toolkit;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Mods.DataContainers;
 using xivModdingFramework.Mods.FileTypes;
+using xivModdingFramework.Mods.FileTypes.PMP;
 using xivModdingFramework.Mods.Interfaces;
 using Image = SixLabors.ImageSharp.Image;
 
@@ -39,18 +42,74 @@ namespace FFXIV_TexTools.Views
     /// <summary>
     /// Interaction logic for ModPackWizard.xaml
     /// </summary>
-    public partial class ExportWizardWindow
+    public partial class ExportWizardWindow : INotifyPropertyChanged
     {
         private ProgressDialogController _progressController;
 
-        private static ExportWizardWindow _wizard = null;
-        public static ExportWizardWindow GetWizard()
+        private ProgressDialogController _lockProgressController;
+        private WizardData _Data;
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private int CurrentIndex
         {
-            return _wizard;
+            get
+            {
+                var curIndex = WizardControl.Items.IndexOf(WizardControl.CurrentPage);
+                return curIndex;
+            }
+            set
+            {
+                if(value < 0 || value >= WizardControl.Items.Count)
+                {
+                    return;
+                }
+                WizardControl.CurrentPage = WizardControl.Items[value] as WizardPage;
+                UpdateButtons();
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentIndex)));
+            }
         }
 
-        private ProgressDialogController _lockProgressController;
-        private IProgress<string> _lockProgress;
+        private bool _PreviousEnabled;
+        public bool PreviousEnabled
+        {
+            get => _PreviousEnabled;
+            set
+            {
+                _PreviousEnabled = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PreviousEnabled)));
+            }
+        }
+        private bool _NextEnabled;
+        public bool NextEnabled
+        {
+            get => _NextEnabled;
+            set
+            {
+                _NextEnabled = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NextEnabled)));
+            }
+        }
+        private bool _FinalizeEnabled;
+        public bool FinalizeEnabled
+        {
+            get => _FinalizeEnabled;
+            set
+            {
+                _FinalizeEnabled = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(FinalizeEnabled)));
+            }
+        }
+
+        public WizardData Data {
+            get => _Data;
+            set
+            {
+                _Data = value;
+                OnDataChanged();
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Data)));
+            }
+        }
 
         public async Task LockUi()
         {
@@ -58,29 +117,26 @@ namespace FFXIV_TexTools.Views
 
             _lockProgressController.SetIndeterminate();
 
-            _lockProgress = new Progress<string>((update) =>
-            {
-                _lockProgressController.SetMessage(update);
-            });
         }
         public async Task UnlockUi()
         {
             await _lockProgressController.CloseAsync();
             _lockProgressController = null;
-            _lockProgress = null;
         }
 
         public ExportWizardWindow()
         {
-            _wizard = this;
+            DataContext = this;
             InitializeComponent();
-            modPackWizard.CanSelectNextPage = false;
-            modPackWizard.CanHelp = false;
+            Data = new WizardData();
+            WizardControl.CanSelectNextPage = true;
+            WizardControl.CanHelp = false;
             ModPackName.Focus();
 
             ModPackAuthor.Text = String.IsNullOrWhiteSpace(Settings.Default.Default_Author) ? "TexTools User".L() : Settings.Default.Default_Author;
             ModPackUrl.Text = Settings.Default.Default_Modpack_Url;
             ModPackVersion.Text = "1.0.0";
+            UpdateButtons();
         }
 
         #region Private Properties
@@ -154,13 +210,16 @@ namespace FFXIV_TexTools.Views
         {
             CleanupInput();
 
-            var wizPages = modPackWizard.Items;
-            var index = wizPages.IndexOf(modPackWizard.CurrentPage);
+            var wizPages = WizardControl.Items;
+            var index = wizPages.IndexOf(WizardControl.CurrentPage);
             if (index == wizPages.Count - 2)
             {
+                var nPage = new WizardPageEntry();
+                Data.OptionPages.Add(nPage);
+
                 var newPage = new WizardPage
                 {
-                    Content = new ExportWizardPageControl(),
+                    Content = new WizardPageControl(nPage, true),
                     PageType = WizardPageType.Blank,
                     Background = null,
                     HeaderBackground = null
@@ -168,17 +227,9 @@ namespace FFXIV_TexTools.Views
                 wizPages.Add(newPage);
             }
 
-            modPackWizard.CanHelp = true;
+            WizardControl.CanHelp = true;
         }
 
-
-        /// <summary>
-        /// The event handler for mod pack name text changed
-        /// </summary>
-        private void ModPackName_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            modPackWizard.CanSelectNextPage = ModPackName.Text.Length > 0;
-        }
 
         /// <summary>
         /// The event handler for the window closing
@@ -186,13 +237,6 @@ namespace FFXIV_TexTools.Views
         private void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             Owner.Activate();
-            foreach (WizardPage wizardPage in modPackWizard.Items)
-            {
-                if (wizardPage.Content is ExportWizardPageControl control)
-                {
-                    control.Dispose();
-                }
-            }
         }
 
         /// <summary>
@@ -203,12 +247,12 @@ namespace FFXIV_TexTools.Views
         /// </remarks>
         private async void ModPackWizard_CreateModPack(object sender, System.Windows.RoutedEventArgs e)
         {
-            var wizPages = modPackWizard.Items;
+            var wizPages = WizardControl.Items;
             var anyContent = false;
             foreach (var wizPageItem in wizPages)
             {
                 var wizPage = wizPageItem as WizardPage;
-                var content = wizPage.Content as ExportWizardPageControl;
+                var content = wizPage.Content as WizardPageControl;
                 if(content.HasData)
                 {
                     anyContent = true;
@@ -235,6 +279,8 @@ namespace FFXIV_TexTools.Views
             _progressController = await this.ShowProgressAsync(UIMessages.ModPackCreationMessage, UIMessages.PleaseStandByMessage);
             try
             {
+                throw new NotImplementedException("Write Not Implemented");
+                /*
                 var modPackData = new ModPackData
                 {
                     Name = ModPackName.Text,
@@ -252,7 +298,6 @@ namespace FFXIV_TexTools.Views
 
                     if (wizPage.Content is ExportWizardPageControl control)
                     {
-                        //throw new NotImplementedException("asdf");
                         
                         if (control.ModGroupList.Count > 0)
                         {
@@ -261,7 +306,6 @@ namespace FFXIV_TexTools.Views
                                 PageIndex = pageIndex,
                                 ModGroups = control.ModGroupList
                             });
-                        }
                     }
                     pageIndex++;
                 }
@@ -272,7 +316,9 @@ namespace FFXIV_TexTools.Views
                 await TTMP.CreateWizardModPack(modPackData, Properties.Settings.Default.ModPack_Directory, progressIndicator, true);
 
                 ModPackFileName = $"{ModPackName.Text}";
-
+                        
+                }
+                */
                 await _progressController.CloseAsync();
                 DialogResult = true;
             }
@@ -300,22 +346,13 @@ namespace FFXIV_TexTools.Views
         #endregion
 
 
-        #region Private Methods
-
-        /// <summary>
-        /// Updates the progress bar
-        /// </summary>
-        /// <param name="value">The progress value</param>
-        private void ReportProgress(double value)
-        {
-            _progressController.SetProgress(value);
-        }
-
-        #endregion
-
         private async void LoadFromButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            var openFileDialog = new OpenFileDialog { Filter = "Modpack Files(*.ttmp2)|*.ttmp2".L(), InitialDirectory = Settings.Default.ModPack_Directory };
+            var openFileDialog = new OpenFileDialog { 
+                Filter = "Modpack Files(*.ttmp2,*.pmp)|*.ttmp2;*.pmp".L(), 
+                InitialDirectory = Settings.Default.ModPack_Directory 
+            };
+
             if (openFileDialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
             {
                 return;
@@ -324,131 +361,127 @@ namespace FFXIV_TexTools.Views
             await LockUi();
             try
             {
-                var ttmpData = await TTMP.LEGACY_GetModPackJsonData(new DirectoryInfo(openFileDialog.FileName));
-                if (!ttmpData.ModPackJson.TTMPVersion.Contains("w"))
+                var path = openFileDialog.FileName;
+                var modpackType = TTMP.GetModpackType(path);
+
+
+                if (modpackType == TTMP.EModpackType.Pmp)
                 {
-                    FlexibleMessageBox.Show(new Wpf32Window(this),
-                            UIMessages.NotWizardModPack,
-                            UIMessages.ModPackLoadingTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
+                    Data = await SetupPMP(path);
+                }
+                else if (modpackType == TTMP.EModpackType.TtmpWizard)
+                {
+                    Data = await SetupTtmp(path);
+                }
+                else
+                {
+                    throw new Exception("Cannot import non-wizard capable modpack with the wizard modpack importer.");
+                }
+            }
+            catch (Exception ex)
+            {
+                this.ShowError("Modpack Read Error".L(), "An error occurred while reading the modpack:\n\n" + ex.Message);
+            }
+            finally
+            {
+                await UnlockUi();
+            }
+        }
+
+        private void OnDataChanged()
+        {
+            try
+            {
+
+                ModPackName.Text = Data.MetaPage.Name;
+                ModPackAuthor.Text = Data.MetaPage.Author;
+                ModPackVersion.Text = Data.MetaPage.Version;
+                ModPackDescription.Text = Data.MetaPage.Description;
+                ModPackUrl.Text = Data.MetaPage.Url;
+
+                var pageCount = Data.OptionPages.Count;
+
+                var wizPages = WizardControl.Items;
+                while (wizPages.Count > 1)
+                {
+                    wizPages.RemoveAt(1);
                 }
 
-                var tempMPD = Path.GetTempFileName();
-                using (var archive = ZipFile.OpenRead(openFileDialog.FileName))
+                for (var i = 0; i < pageCount; i++)
                 {
-                    var ttmpd = archive.Entries.First(x => x.FullName.EndsWith(".mpd"));
-                    using (var zipStream = ttmpd.Open())
+                    wizPages.Add(new WizardPage
                     {
-                        using (var fileStream = new FileStream(tempMPD, FileMode.OpenOrCreate))
-                        {
-                            await zipStream.CopyToAsync(fileStream);
-                        }
-                    }
+                        Content = new WizardPageControl(Data.OptionPages[i], true),
+                        PageType = WizardPageType.Blank,
+                        Background = null,
+                        HeaderBackground = null
+                    });
                 }
+                UpdateButtons();
+            }
+            catch(Exception ex)
+            {
+                this.ShowError("Modpack Read Error".L(), "An error occurred while reading the modpack:\n\n" + ex.Message);
+            }
+        }
 
-                ModPackAuthor.Text = ttmpData.ModPackJson.Author;
-                ModPackName.Text = ttmpData.ModPackJson.Name;
-                ModPackVersion.Text= ttmpData.ModPackJson.Version;
-                VersionNumber = Version.Parse(ttmpData.ModPackJson.Version);
-                ModPackDescription.Text = ttmpData.ModPackJson.Description;
-                ModPackUrl.Text = ttmpData.ModPackJson.Url;
-                for (var i = modPackWizard.Items.Count - 1; i > 0; i--)
-                {
-                    modPackWizard.Items.RemoveAt(i);
-                }
-                //var previousPage = modPackWizard.CurrentPage;
-                foreach (var wizPageItemJson in ttmpData.ModPackJson.ModPackPages)
-                {
-                    var wizPage = new WizardPage();
-                    wizPage.Background = null;
-                    wizPage.HeaderBackground = null;
-                    var wizModPackControl = new ExportWizardPageControl();
-                    wizPage.Content = wizModPackControl;
-                    wizPage.PageType = WizardPageType.Blank;
-                    foreach (var groupJson in wizPageItemJson.ModGroups)
-                    {
-                        var modGroup = new ModGroup();
-                        modGroup.OptionList = new List<ModOption>();
-                        modGroup.GroupName = groupJson.GroupName;
-                        modGroup.SelectionType = groupJson.SelectionType;
-                        wizModPackControl.ModGroupList.Add(modGroup);
-                        wizModPackControl.ModGroupNames.Add(modGroup.GroupName);
-                        foreach (var optionJson in groupJson.OptionList) {
-                            var modOption = new ModOption();
-                            modGroup.OptionList.Add(modOption);
-                            modOption.Name = optionJson.Name;
-                            modOption.GroupName = optionJson.GroupName;
-                            modOption.IsChecked = optionJson.IsChecked;
-                            modOption.SelectionType = optionJson.SelectionType;
-                            modOption.Description = optionJson.Description;
-                            if (optionJson.ImagePath.Length > 0)
-                            {
-                            
-                                using (var zipFile = ZipFile.OpenRead(openFileDialog.FileName))
-                                {
-                                    var entry = zipFile.GetEntry(optionJson.ImagePath);
-                                    if (entry != null)
-                                    {
-                                        using (var stream = entry.Open())
-                                        {
-                                            var tmpImage = Path.GetTempFileName();
-                                            using (var imageStream = File.Open(tmpImage, FileMode.OpenOrCreate))
-                                            {
-                                                await stream.CopyToAsync(imageStream);
-                                                imageStream.Position = 0;
-                                            }
-                                            var fileNameBak = openFileDialog.FileName;
-                                            openFileDialog.FileName = tmpImage;
-                                            modOption.Image = Image.Load(openFileDialog.FileName);
-                                            modOption.ImageFileName = openFileDialog.FileName;
-                                            openFileDialog.FileName = fileNameBak;
-                                        }
-                                    }
-                                }
-                            }
-                            foreach (var modJson in optionJson.ModsJsons)
-                            {
-                                var modData = new ModData();
-                                modData.Category = modJson.Category;
-                                modData.FullPath = modJson.FullPath;
-                                modData.Name = modJson.Name;
-                                using (var br = new BinaryReader(File.OpenRead(tempMPD)))
-                                {
-                                    br.BaseStream.Seek(modJson.ModOffset, SeekOrigin.Begin);
-                                    modData.ModDataBytes = br.ReadBytes(modJson.ModSize);
-                                }
-                                modOption.Mods.Add(modData.FullPath, modData);
-                            }
-                            ((List<ModOption>)wizModPackControl.OptionsList.ItemsSource).Add(modOption);
-                            var view = (CollectionView)CollectionViewSource.GetDefaultView(wizModPackControl.OptionsList.ItemsSource);
-                            var groupDescription = new PropertyGroupDescription("GroupName");
-                            view.GroupDescriptions.Clear();
-                            view.GroupDescriptions.Add(groupDescription);
-                        }
 
-                        if (modGroup.OptionList.Count > 0 && modGroup.OptionList.Count(it => it.IsChecked) == 0)
-                        {
-                            if (modGroup.SelectionType != "Multi")
-                            {
-                                modGroup.OptionList[0].IsChecked = true;
-                            }
-                        }
-                    }
+        private static async Task<WizardData> SetupTtmp(string path)
+        {
+            var mpl = await TTMP.GetModpackList(path);
+            var imageFolder = await TTMP.GetModpackImages(path);
+            var data = await WizardData.FromWizardPack(mpl, imageFolder);
+            return data;
+        }
 
-                    modPackWizard.Items.Add(wizPage);
-                    modPackWizard.CanHelp = true;
-                }
-                modPackWizard.Items.Add(new WizardPage()
+        private static async Task<WizardData> SetupPMP(string path)
+        {
+            //var data = WizardData.FromWizardPack(mpl, imageFolder);
+            var pmp = await PMP.LoadPMP(path, true);
+            var data = await WizardData.FromPmp(pmp.pmp, pmp.path);
+            return data;
+        }
+
+
+        private void UpdateButtons()
+        {
+            PreviousEnabled = CurrentIndex > 0;
+            //NextEnabled = CurrentIndex < WizardControl.Items.Count - 1;
+            NextEnabled = true;
+            FinalizeEnabled = WizardControl.Items.Count > 1;
+        }
+
+        private void Cancel_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            DialogResult = false;
+        }
+
+        private void PrevPage_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            CurrentIndex--;
+        }
+
+        private void NextPage_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            if (CurrentIndex == WizardControl.Items.Count - 1)
+            {
+                var newPage = new WizardPageEntry();
+                Data.OptionPages.Add(newPage);
+
+                WizardControl.Items.Add(new WizardPage
                 {
-                    Content = new ExportWizardPageControl(),
+                    Content = new WizardPageControl(newPage, true),
                     PageType = WizardPageType.Blank,
                     Background = null,
                     HeaderBackground = null
                 });
-            } finally
-            {
-                await UnlockUi();
             }
+            CurrentIndex++;
+        }
+
+        private void Finalize_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            this.ShowError("Not Implemented", "Need to implement conversion from WizardData back into Modpack Json formats");
         }
     }
 }
