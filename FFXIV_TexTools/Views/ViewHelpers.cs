@@ -16,6 +16,7 @@ using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Interop;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Mods.FileTypes;
@@ -245,6 +246,23 @@ namespace FFXIV_TexTools.Views
             }
             while (parentDepObj != null);
             return null;
+        }
+
+        /// <summary>
+        /// Loads a file into a BitmapImage object safely in such a way that the file handle is properly released immediately.
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns></returns>
+        public static BitmapImage SafeBitmapFromFile(string file)
+        {
+
+            var bmp = new BitmapImage();
+            using var stream = File.OpenRead(file);
+            bmp.BeginInit();
+            bmp.StreamSource = stream;
+            bmp.CacheOption = BitmapCacheOption.OnLoad;
+            bmp.EndInit();
+            return bmp;
         }
     }
 }

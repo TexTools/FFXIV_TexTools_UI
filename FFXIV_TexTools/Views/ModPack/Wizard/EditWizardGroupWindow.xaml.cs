@@ -324,10 +324,9 @@ namespace FFXIV_TexTools.Views
             OptionDescription.Text = SelectedOption.Description ?? "";
 
             OptionImage.Source = null;
-            if (!string.IsNullOrWhiteSpace(SelectedOption.ImagePath))
+            if (!string.IsNullOrWhiteSpace(SelectedOption.Image))
             {
-                var uri = new Uri(SelectedOption.ImagePath);
-                OptionImage.Source = new BitmapImage(uri);
+                OptionImage.Source = ViewHelpers.SafeBitmapFromFile(SelectedOption.Image);
             }
 
             var opData = SelectedOption.StandardData;
@@ -425,10 +424,9 @@ namespace FFXIV_TexTools.Views
                     img.Save(fs, enc);
                 }
 
-                SelectedOption.ImagePath = tempFile;
+                SelectedOption.Image = tempFile;
 
-                var uri = new Uri(SelectedOption.ImagePath);
-                OptionImage.Source = new BitmapImage(uri);
+                OptionImage.Source = ViewHelpers.SafeBitmapFromFile(SelectedOption.Image);
             } catch(Exception ex)
             {
                 this.ShowError("Image Error".L(), "An error occurred while loading the image:\n\n" + ex.Message);

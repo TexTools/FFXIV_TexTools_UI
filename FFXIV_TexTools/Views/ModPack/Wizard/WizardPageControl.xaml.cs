@@ -18,6 +18,7 @@ using SixLabors.ImageSharp.Formats.Png;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -63,15 +64,28 @@ namespace FFXIV_TexTools.Views.Wizard
             }
         }
 
-        private bool OptionSelected
+        public bool OptionSelected
         {
             get
             {
+                if(OptionsList == null)
+                {
+                    return false;
+                }
+
                 var opt = OptionsList.SelectedItem as WizardOptionEntry;
                 if (opt == null) {
                     return false;
                 }
                 return true;
+            }
+            set
+            {
+                if (!value)
+                {
+                    OptionsList.SelectedItem = null;
+                    PropertyChanged.Invoke(this, new PropertyChangedEventArgs(nameof(OptionSelected)));
+                }
             }
         }
 
@@ -125,10 +139,16 @@ namespace FFXIV_TexTools.Views.Wizard
 
             OptionDescriptionTextBox.Text = opt.Description;
 
-            if (!String.IsNullOrWhiteSpace(opt.ImagePath))
+            if (!String.IsNullOrWhiteSpace(opt.Image))
             {
-                var uri = new Uri(opt.ImagePath);
-                OptionPreviewImage.Source = new BitmapImage(uri);
+                if (File.Exists(opt.Image))
+                {
+                    OptionPreviewImage.Source = ViewHelpers.SafeBitmapFromFile(opt.Image);
+                }
+                else
+                {
+                    Trace.WriteLine(opt.Image + " Missing in modpack, for Option: " + opt.Name);
+                }
             }
             else
             {

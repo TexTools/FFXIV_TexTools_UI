@@ -1,4 +1,6 @@
 ﻿using Newtonsoft.Json;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Png;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -9,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Markup;
+using System.Xml.Linq;
 using xivModdingFramework.Cache;
 using xivModdingFramework.General;
 using xivModdingFramework.Helpers;
@@ -46,6 +49,37 @@ namespace FFXIV_TexTools.Views.Wizard
         Standard,
         Imc
     };
+
+    internal static class WizardHelpers
+    {
+        public static string WriteImage(string currentPath, string tempFolder, string newName) {
+
+            if (string.IsNullOrWhiteSpace(currentPath))
+            {
+                return "";
+            }
+
+            if (!File.Exists(currentPath))
+            {
+                return "";
+            }
+
+            var path = "images/" + newName + ".png";
+
+            var img = SixLabors.ImageSharp.Image.Load(currentPath);
+            var fName = Path.Combine(tempFolder, path);
+            var dir = Path.GetDirectoryName(fName);
+            Directory.CreateDirectory(dir);
+
+            using var fs = File.OpenWrite(fName);
+            var enc = new PngEncoder();
+            enc.BitDepth = PngBitDepth.Bit16;
+            img.Save(fs, enc);
+
+            return path;
+        }
+
+    }
 
     public class WizardStandardOptionData : WizardOptionData
     {
@@ -97,7 +131,7 @@ namespace FFXIV_TexTools.Views.Wizard
     {
         public string Name { get; set; }
         public string Description { get; set; }
-        public string ImagePath { get; set; }
+        public string Image { get; set; }
 
         private bool _Selected;
         public bool Selected
@@ -196,9 +230,9 @@ namespace FFXIV_TexTools.Views.Wizard
         public async Task<ModOption> ToModOption()
         {
             Image img = null;
-            if (!string.IsNullOrWhiteSpace(ImagePath))
+            if (!string.IsNullOrWhiteSpace(Image))
             {
-                img = Image.Load(ImagePath);
+                img = SixLabors.ImageSharp.Image.Load(Image);
             }
 
             var mo = new ModOption()
@@ -206,7 +240,7 @@ namespace FFXIV_TexTools.Views.Wizard
                 Description = Description,
                 Name = Name,
                 GroupName = _Group.Name,
-                ImageFileName = ImagePath,
+                ImageFileName = Image,
                 IsChecked = Selected,
                 SelectionType = OptionType.ToString(),
                 Image = img,
@@ -255,7 +289,7 @@ namespace FFXIV_TexTools.Views.Wizard
             return mo;
         }
 
-        public async Task<PMPOptionJson> ToPmpOption(string tempFolder, IEnumerable<FileIdentifier> identifiers)
+        public async Task<PMPOptionJson> ToPmpOption(string tempFolder, IEnumerable<FileIdentifier> identifiers, string imageName)
         {
             PMPOptionJson op;
             if(GroupType == EGroupType.Imc)
@@ -278,9 +312,14 @@ namespace FFXIV_TexTools.Views.Wizard
                 // This unpacks our deduplicated files as needed.
                 op = await PMP.CreatePmpStandardOption(tempFolder, Name, Description, identifiers);
             }
+
+            op.Image = WizardHelpers.WriteImage(Image, tempFolder, imageName);
+
+
             return op;
         }
     }
+
 
     public class WizardImcGroupData
     {
@@ -297,6 +336,7 @@ namespace FFXIV_TexTools.Views.Wizard
     {
         public string Name;
         public string Description;
+        public string Image;
 
         // Int or Bitflag depending on OptionType.
         public int DefaultSelection;
@@ -352,7 +392,7 @@ namespace FFXIV_TexTools.Views.Wizard
                 wizOp.Description = o.Description;
                 if(!String.IsNullOrWhiteSpace(o.ImagePath))
                 {
-                    wizOp.ImagePath = Path.Combine(unzipPath, o.ImagePath);
+                    wizOp.Image = Path.Combine(unzipPath, o.ImagePath);
                 }
                 wizOp.Selected = o.IsChecked;
                 
@@ -402,6 +442,14 @@ namespace FFXIV_TexTools.Views.Wizard
             group.OptionType = pGroup.Type == "Single" ? EOptionType.Single : EOptionType.Multi;
             group.Name = pGroup.Name;
             group.Priority = pGroup.Priority;
+            
+            if (!string.IsNullOrWhiteSpace(pGroup.Image))
+            {
+                group.Image = Path.Combine(unzipPath, pGroup.Image);
+            } else
+            {
+                group.Image = "";
+            }
 
             group.Description = pGroup.Description;
 
@@ -422,7 +470,7 @@ namespace FFXIV_TexTools.Views.Wizard
                 var wizOp = new WizardOptionEntry(group);
                 wizOp.Name = o.Name;
                 wizOp.Description = o.Description;
-                wizOp.ImagePath = null;
+                wizOp.Image = null;
 
                 if (group.OptionType == EOptionType.Single)
                 {
@@ -457,6 +505,15 @@ namespace FFXIV_TexTools.Views.Wizard
                         imcData.AttributeMask = 0;
                     }
                     wizOp.ImcData = imcData;
+                }
+
+                if (!string.IsNullOrWhiteSpace(o.Image))
+                {
+                    wizOp.Image = Path.Combine(unzipPath, o.Image);
+                }
+                else
+                {
+                    wizOp.Image = "";
                 }
 
                 idx++;
@@ -500,7 +557,7 @@ namespace FFXIV_TexTools.Views.Wizard
             return mg;
         }
 
-        public async Task<PMPGroupJson> ToPmpGroup(string tempFolder, Dictionary<string, List<FileIdentifier>> identifiers, bool oneOption = false)
+        public async Task<PMPGroupJson> ToPmpGroup(string tempFolder, Dictionary<string, List<FileIdentifier>> identifiers, int page, bool oneOption = false)
         {
             var pg = new PMPGroupJson();
 
@@ -531,18 +588,22 @@ namespace FFXIV_TexTools.Views.Wizard
             pg.Options = new List<PMPOptionJson>();
             pg.Priority = Priority;
             pg.SelectedSettings = UserSelection;
+            pg.Page = page;
 
+            pg.Image = WizardHelpers.WriteImage(Image, tempFolder, IOUtil.MakePathSafe(Name));
 
-            foreach(var option in Options)
+            foreach (var option in Options)
             {
                 var optionPrefix = IOUtil.MakePathSafe(Name) + "/" + IOUtil.MakePathSafe(option.Name) + "/";
+                var imgName = optionPrefix.Substring(0, optionPrefix.Length - 1);
                 if (oneOption)
                 {
                     optionPrefix = "";
+                    imgName = "default_image";
                 }
 
                 identifiers.TryGetValue(optionPrefix, out var files);
-                var opt = await option.ToPmpOption(tempFolder, files);
+                var opt = await option.ToPmpOption(tempFolder, files, imgName);
                 var so = opt as PmpStandardOptionJson;
                 if (option.StandardData.OtherManipulations != null)
                 {
@@ -580,16 +641,6 @@ namespace FFXIV_TexTools.Views.Wizard
             return page;
         }
 
-        public static async Task<WizardPageEntry> FromPenumbraPage(PMPGroupJson pGroup, string unzipPath)
-        {
-            // Penumbra doesn't actually have pages, just groups.
-            var page = new WizardPageEntry();
-            page.Name = pGroup.Name;
-            page.Groups = new List<WizardGroupEntry>();
-            page.Groups.Add(await WizardGroupEntry.FromPMPGroup(pGroup, unzipPath));
-            return page;
-        }
-
         public async Task<ModPackData.ModPackPage> ToModPackPage(int index)
         {
             var mpp = new ModPackData.ModPackPage() { 
@@ -617,6 +668,7 @@ namespace FFXIV_TexTools.Views.Wizard
         public string Description = "";
         public string Url = "";
         public string Version = "1.0";
+        public string Image = "";
 
         public static WizardMetaEntry FromPMP(PMPJson pmp, string unzipPath)
         {
@@ -627,6 +679,14 @@ namespace FFXIV_TexTools.Views.Wizard
             page.Author = meta.Author;
             page.Description = meta.Description;
             page.Name = meta.Name;
+            if (!string.IsNullOrWhiteSpace(meta.Image))
+            {
+                page.Image = Path.Combine(unzipPath, meta.Image);
+            }
+            else
+            {
+                page.Image = "";
+            }
             return page;
         }
 
@@ -676,12 +736,25 @@ namespace FFXIV_TexTools.Views.Wizard
 
             if (pmp.Groups.Count > 0)
             {
+                // Create sufficient pages.
+                var pageMax = pmp.Groups.Max(x => x.Page);
+                for (int i = 0; i <= pageMax; i++)
+                {
+                    var page = new WizardPageEntry();
+                    page.Name = "Page " + (i+1).ToString();
+                    page.Groups = new List<WizardGroupEntry>();
+                    data.DataPages.Add(page);
+                }
+
+                // Assign groups to pages.
                 foreach (var g in pmp.Groups)
                 {
-                    data.DataPages.Add(await WizardPageEntry.FromPenumbraPage(g, unzipPath));
+                    var page = data.DataPages[g.Page];
+                    page.Groups.Add(await WizardGroupEntry.FromPMPGroup(g, unzipPath));
                 }
             } else
             {
+
                 // Just drum up a basic group containing the default option.
                 var fakeGroup = new PMPGroupJson();
                 fakeGroup.Name = "Default";
@@ -694,7 +767,11 @@ namespace FFXIV_TexTools.Views.Wizard
                     pmp.DefaultMod.Name = "Default";
                 }
 
-                data.DataPages.Add(await WizardPageEntry.FromPenumbraPage(fakeGroup, unzipPath));
+                var page = new WizardPageEntry();
+                page.Name = "Page 1";
+                page.Groups = new List<WizardGroupEntry>();
+                page.Groups.Add(await WizardGroupEntry.FromPMPGroup(fakeGroup, unzipPath));
+                data.DataPages.Add(page);
             }
             return data;
         }
@@ -769,6 +846,7 @@ namespace FFXIV_TexTools.Views.Wizard
                 pmp.Meta.Version = ver.ToString();
                 pmp.Meta.Tags = new List<string>();
                 pmp.Meta.FileVersion = PMP._WriteFileVersion;
+                pmp.Meta.Image = WizardHelpers.WriteImage(MetaPage.Image, tempFolder, "_MetaImage");
 
                 var optionCount = DataPages.Sum(p => p.Groups.Sum(x => x.Options.Count));
 
@@ -811,18 +889,20 @@ namespace FFXIV_TexTools.Views.Wizard
 
                 if(optionCount == 1)
                 {
-                    pmp.DefaultMod = (await DataPages.First(x => x.Groups.Count > 0).Groups.First(x => x.Options.Count > 0).ToPmpGroup(tempFolder, identifiers, true)).Options[0];
+                    pmp.DefaultMod = (await DataPages.First(x => x.Groups.Count > 0).Groups.First(x => x.Options.Count > 0).ToPmpGroup(tempFolder, identifiers, 0, true)).Options[0];
                 } else
                 {
                     // This both constructs the JSON structure and writes our files to their
                     // real location in the folder tree in the temp folder.
+                    var page = 0;
                     foreach (var p in DataPages)
                     {
                         foreach (var g in p.Groups)
                         {
-                            var pg = await g.ToPmpGroup(tempFolder, identifiers);
+                            var pg = await g.ToPmpGroup(tempFolder, identifiers, page);
                             pmp.Groups.Add(pg);
                         }
+                        page++;
                     }
                 }
 

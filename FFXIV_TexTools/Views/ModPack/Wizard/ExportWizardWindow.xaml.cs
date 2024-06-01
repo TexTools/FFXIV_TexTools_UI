@@ -275,6 +275,7 @@ namespace FFXIV_TexTools.Views
             await LockUi();
             try
             {
+                var oldTemp = TempFolder;
                 var path = openFileDialog.FileName;
                 var modpackType = TTMP.GetModpackType(path);
 
@@ -291,6 +292,8 @@ namespace FFXIV_TexTools.Views
                 {
                     throw new Exception("Cannot import non-wizard capable modpack with the wizard modpack importer.");
                 }
+
+                IOUtil.DeleteTempDirectory(oldTemp);
             }
             catch (Exception ex)
             {
@@ -344,14 +347,11 @@ namespace FFXIV_TexTools.Views
         {
             return await Task.Run(async () =>
             {
-                var oldTemp = TempFolder;
 
                 var mpl = await TTMP.GetModpackList(path);
                 var unzipPath = await TTMP.UnzipTtmp(path);
 
                 var data = await WizardData.FromWizardPack(mpl, unzipPath);
-
-                IOUtil.DeleteTempDirectory(oldTemp);
 
                 return data;
             });
@@ -361,12 +361,10 @@ namespace FFXIV_TexTools.Views
         {
             return await Task.Run(async () =>
             {
-                var oldTemp = TempFolder;
                 //var data = WizardData.FromWizardPack(mpl, imageFolder);
                 var pmp = await PMP.LoadPMP(path, false);
                 TempFolder = pmp.path;
                 var data = await WizardData.FromPmp(pmp.pmp, pmp.path);
-                IOUtil.DeleteTempDirectory(oldTemp);
                 return data;
             });
         }

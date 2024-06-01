@@ -46,6 +46,10 @@ namespace FFXIV_TexTools.Views.Wizard.ManipulationEditors
             {
                 _SetIdEnabled = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SetIdEnabled)));
+                if(SetIdEnabled == false)
+                {
+                    SetId = 0;
+                }
             }
         }
 
