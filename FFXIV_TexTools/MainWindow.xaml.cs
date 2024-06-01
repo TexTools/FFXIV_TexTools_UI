@@ -1036,6 +1036,12 @@ namespace FFXIV_TexTools
         /// </summary>
         private async void Menu_ImportModpack_Click(object sender, RoutedEventArgs e)
         {
+            if (!XivCache.GameWriteEnabled && UserTransaction == null)
+            {
+                this.ShowError("Mod Safety Error", "Cannot import modpacks in SAFE mode outside of Transaction.");
+                return;
+            }
+
             var modPackDirectory = new DirectoryInfo(Settings.Default.ModPack_Directory);
 
             var openFileDialog = new OpenFileDialog {InitialDirectory = modPackDirectory.FullName, Filter = "Modpack Files|*.ttmp;*.ttmp2;*.pmp;*.json".L(), Multiselect = true};
