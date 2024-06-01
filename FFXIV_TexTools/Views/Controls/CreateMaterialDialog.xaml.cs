@@ -31,22 +31,21 @@ namespace FFXIV_TexTools.Views.Controls
     {
         private XivMtrl _material;
         public string Suffix = "a";
-        private string OriginalSuffix = "";
-        public CreateMaterialDialog(XivMtrl material, string suffix)
+        public string OriginalSuffix = "a";
+        public CreateMaterialDialog(XivMtrl material)
         {
             _material = material;
             InitializeComponent();
             PresetName.IsEnabled = false;
-            OriginalSuffix = suffix;
-            //PresetName.Focus();
+            Suffix = material.GetSuffix();
+            OriginalSuffix = material.GetSuffix();
 
             Setup();
         }
 
-        private async void Setup()
+        private void Setup()
         {
-            var id = await GetNewMaterialIdentifier(_material.MTRLPath);
-            PresetName.Text = id;
+            PresetName.Text = Suffix;
             PresetName.IsEnabled = true;
             PresetName.Focus();
         }
@@ -97,52 +96,6 @@ namespace FFXIV_TexTools.Views.Controls
         }
 
 
-        public static async Task<string> GetNewMaterialIdentifier(string mtrl)
-        {
-            var tx = MainWindow.DefaultTransaction;
-            // Get new Material Identifier
-            var alphabet = Constants.Alphabet;
-            List<string> partList = new List<string>();
-
-
-            var res = IOUtil.MtrlSuffixExtractionRegex.Match(mtrl);
-            if (!res.Success)
-            {
-                return "a";
-            }
-            var originalSuffix = res.Groups[1].Value;
-
-            for (var i = 0; i < alphabet.Length; i++)
-            {
-                var identifier = alphabet[i];
-
-                var newPath = mtrl.Replace(originalSuffix + ".mtrl", identifier + ".mtrl");
-                var exists = await tx.FileExists(newPath);
-                if (!exists)
-                {
-                    return identifier.ToString();
-                }
-            }
-
-            // Really? Fine... Twoooo alphabets
-            for (var a = 0; a < alphabet.Length; a++)
-            {
-                for (var b = 0; b < alphabet.Length; b++)
-                {
-                    var identifier = alphabet[a] + alphabet[b];
-                    var newPath = mtrl.Replace(originalSuffix + ".mtrl", identifier + ".mtrl");
-                    var exists = await tx.FileExists(newPath);
-                    if (!exists)
-                    {
-                        return identifier.ToString();
-                    }
-                }
-            }
-
-            // If you got this far, you can suffer memes.
-            return "why";
-        }
-
         /// <summary>
         /// Just creates the material ID.
         /// </summary>
@@ -162,54 +115,18 @@ namespace FFXIV_TexTools.Views.Controls
             //var tx = MainWindow.DefaultTransaction;
             var newMtrl = (XivMtrl)baseMaterial.Clone();
 
-            var targetFolder = Path.GetDirectoryName(newMtrl.MTRLPath).Replace("\\","/");
+            var race = IOUtil.GetRaceFromPath(targetModel);
+            var root = await XivCache.GetFirstRoot(targetModel);
 
-            var modelRoot = IOUtil.GetPrimarySecondaryFromFilename(targetModel);
-            var materialRoot = IOUtil.GetPrimarySecondaryFromFilename(baseMaterial.MTRLPath);
+            var mtrlRoot = await XivCache.GetFirstRoot(baseMaterial.MTRLPath);
 
-            if (!string.IsNullOrEmpty(materialRoot) && !string.IsNullOrEmpty(modelRoot))
-            {
-                // Swap root part of the filename if needed.
-                newMtrl.MTRLPath = newMtrl.MTRLPath.Replace(materialRoot, modelRoot);
-            }
+            var tx = MainWindow.DefaultTransaction;
+            var newPath = await root.Info.GetNextAvailableMaterial(race, (int) newMtrl.GetVersion(), newMtrl.GetFakeSlot(), tx);
 
-            var materialRace = IOUtil.GetRaceFromPath(newMtrl.MTRLPath);
-            var modelRace = IOUtil.GetRaceFromPath(targetModel);
-
-            if(materialRace != modelRace && (int)modelRace > 100)
-            {
-                // Replace races as necessary, since they're not always part of the root information.
-                newMtrl.MTRLPath = newMtrl.MTRLPath.Replace("c" + materialRace.GetRaceCode(), "c" + modelRace.GetRaceCode());
-            }
-
-            var mdlRoot = await XivCache.GetFirstRoot(targetModel);
-
-            var originalSuffix = IOUtil.GetMaterialSuffix(newMtrl.MTRLPath);
-            var suffix = "";
-
-
-            if (string.IsNullOrWhiteSpace(originalSuffix))
-            {
-                originalSuffix = "a";
-            }
-
-            var tempName = Mtrl.GetMtrlNameByRootRaceSlotSuffix(mdlRoot.Info, modelRace, mdlRoot.Info.Slot, "a");
-            var path = targetFolder + tempName;
-
-            // Find first available suffix using our correct name.
-            suffix = await GetNewMaterialIdentifier(path);
-
-            // Create the final fully qualified start material name.
-            var baseName = Mtrl.GetMtrlNameByRootRaceSlotSuffix(mdlRoot.Info, modelRace, mdlRoot.Info.Slot, suffix);
-
-            var targetMaterial = targetFolder  + baseName;
-            newMtrl.MTRLPath = targetMaterial;
-
-            // We now have a valid, non-existing material name.
-            // Ship it to the popup
+            newMtrl.MTRLPath = newPath;
 
             // We only actually open the user-input dialog IF we're creating something that has an extension to change.
-            var wind = new CreateMaterialDialog(newMtrl, suffix);
+            var wind = new CreateMaterialDialog(newMtrl);
             wind.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             wind.Owner = owner != null ? owner : System.Windows.Application.Current.MainWindow;
             var result = wind.ShowDialog();
@@ -220,13 +137,6 @@ namespace FFXIV_TexTools.Views.Controls
 
 
             return newMtrl;
-        }
-
-
-        public static async Task<XivMtrl> ShowCreateMaterialDialog(XivMtrl material, IItemModel item, Window owner = null)
-        {
-            throw new NotImplementedException("Out of date function");
-            return null;
         }
     }
 }
