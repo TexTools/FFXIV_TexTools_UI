@@ -5,11 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FFXIV_TexTools.Views.Wizard"
         mc:Ignorable="d"
-        Title="Manipulation Editor" Height="450" Width="800">
+        Title="Manipulation Editor" Height="440" Width="600">
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="1*"></RowDefinition>
             <RowDefinition Height="200"></RowDefinition>
-            <RowDefinition></RowDefinition>
             <RowDefinition Height="40"></RowDefinition>
         </Grid.RowDefinitions>
         <GroupBox Header="Manipulations" Grid.Row="0">
@@ -20,7 +20,8 @@
         <GroupBox x:Name="EditorBox" Header="Editor" Grid.Row="1">
         </GroupBox>
 
-        <Button Grid.Row="2" Content="Remove Manipulation" HorizontalAlignment="Left" VerticalAlignment="Center" Width="150" Margin="5" Click="RemoveManipulation_Click"></Button>
+        <Button Grid.Row="2" Content="Remove Manipulation" HorizontalAlignment="Left" VerticalAlignment="Center" Width="150" Margin="165,5,5,5" Click="RemoveManipulation_Click"></Button>
+        <Button Grid.Row="2" Content="Clear Manipulations" HorizontalAlignment="Left" VerticalAlignment="Center" Width="150" Margin="5" Click="ClearManipulations_Click"></Button>
         <Button Grid.Row="2" Content="Done" HorizontalAlignment="Right" VerticalAlignment="Center" Width="150" Margin="5" Click="Done_Click"></Button>
     </Grid>
 </Window>

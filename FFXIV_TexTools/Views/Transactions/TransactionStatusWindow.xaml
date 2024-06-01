@@ -5,8 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FFXIV_TexTools.Views.Transactions"
         mc:Ignorable="d"
-        Title="User Transaction Status" Height="Auto" Width="500" MinWidth="660" MinHeight="300"
-        SizeToContent="Height">
+        Title="User Transaction Status" Height="400" Width="500" MinWidth="660" MinHeight="300">
     <Grid>
         <Grid.ColumnDefinitions>
             

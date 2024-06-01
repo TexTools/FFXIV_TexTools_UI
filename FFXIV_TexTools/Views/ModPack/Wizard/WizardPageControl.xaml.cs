@@ -180,7 +180,21 @@ namespace FFXIV_TexTools.Views.Wizard
 
         private void AddGroup_Click(object sender, RoutedEventArgs e)
         {
-            Data.Groups.Add(new WizardGroupEntry());
+            var g = new WizardGroupEntry()
+            {
+                Name = "New Group",
+
+            };
+            var o = new WizardOptionEntry(g)
+            {
+                Name = "New Option"
+            };
+            o.Selected = true;
+            g.Options.Add(o);
+
+
+
+            Data.Groups.Add(g);
             SetupUi();
         }
 

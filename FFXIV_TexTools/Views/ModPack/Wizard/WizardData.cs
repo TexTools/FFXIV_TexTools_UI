@@ -11,9 +11,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Markup;
+using System.Windows.Shapes;
 using System.Xml.Linq;
 using xivModdingFramework.Cache;
 using xivModdingFramework.General;
+using xivModdingFramework.General.DataContainers;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Mods;
 using xivModdingFramework.Mods.DataContainers;
@@ -85,7 +87,7 @@ namespace FFXIV_TexTools.Views.Wizard
     {
         public Dictionary<string, FileStorageInformation> Files = new Dictionary<string, FileStorageInformation>();
 
-        public List<PMPManipulationWrapperJson> OtherManipulations = new List<PMPManipulationWrapperJson>();
+        public List<PMPManipulationWrapperJson> Manipulations = new List<PMPManipulationWrapperJson>();
 
         protected override bool HasData()
         {
@@ -248,6 +250,7 @@ namespace FFXIV_TexTools.Views.Wizard
 
             if(StandardData == null)
             {
+                throw new NotImplementedException();
                 return mo;
             }
 
@@ -285,6 +288,45 @@ namespace FFXIV_TexTools.Views.Wizard
                 };
                 mo.Mods.Add(path, mData);
             }
+
+            if (StandardData.Manipulations != null && StandardData.Manipulations.Count > 0) {
+                // Readonly TX for retrieving base values.
+                var tx = ModTransaction.BeginTransaction();
+                var manips = await PMP.ManipulationsToMetadata(this.StandardData.Manipulations, tx);
+
+                foreach(var meta in manips.Metadatas)
+                {
+                    // Need to convert these and add them to the file array.
+                    var item = meta.Root.GetFirstItem();
+                    var path = meta.Root.Info.GetRootFile();
+                    var mData = new ModData()
+                    {
+                        Name = item.Name,
+                        Category = item.SecondaryCategory,
+                        FullPath = path,
+                        ModDataBytes = await ItemMetadata.Serialize(meta),
+                    };
+                    mo.Mods.Add(path, mData);
+                }
+
+                foreach(var rgsp in manips.Rgsps)
+                {
+                    // Need to convert these and add them to the file array.
+                    var data = rgsp.GetBytes();
+                    var path = CMP.GetRgspPath(rgsp);
+                    var item = CMP.GetDummyItem(rgsp);
+
+                    var mData = new ModData()
+                    {
+                        Name = item.Name,
+                        Category = item.SecondaryCategory,
+                        FullPath = path,
+                        ModDataBytes = data,
+                    };
+                    mo.Mods.Add(path, mData);
+                }
+            }
+
 
             return mo;
         }
@@ -407,7 +449,24 @@ namespace FFXIV_TexTools.Views.Wizard
                         RealOffset = mj.ModOffset,
                         RealPath = mpdPath
                     };
-                    data.Files.Add(mj.FullPath, finfo);
+                    if (mj.FullPath.EndsWith(".meta") || mj.FullPath.EndsWith(".rgsp"))
+                    {
+                        var raw = await TransactionDataHandler.GetUncompressedFile(finfo);
+                        if (mj.FullPath.EndsWith(".meta"))
+                        {
+                            var meta = await ItemMetadata.Deserialize(raw);
+                            data.Manipulations.AddRange(PMPExtensions.MetadataToManipulations(meta));
+                        }
+                        else {
+                            var rgsp = new RacialGenderScalingParameter(raw);
+                            data.Manipulations.AddRange(PMPExtensions.RgspToManipulations(rgsp));
+                        }
+
+                    }
+                    else
+                    {
+                        data.Files.Add(mj.FullPath, finfo);
+                    }
                 }
 
                 wizOp.StandardData = data;
@@ -485,9 +544,9 @@ namespace FFXIV_TexTools.Views.Wizard
 
                 if(group.GroupType == EGroupType.Standard)
                 {
-                    var data = await PMP.UnpackPmpOption(o, null, unzipPath);
+                    var data = await PMP.UnpackPmpOption(o, null, unzipPath, false);
                     wizOp.StandardData.Files = data.Files;
-                    wizOp.StandardData.OtherManipulations = data.OtherManipulations;
+                    wizOp.StandardData.Manipulations = data.OtherManipulations;
 
                 } else if(group.GroupType == EGroupType.Imc)
                 {
@@ -605,9 +664,9 @@ namespace FFXIV_TexTools.Views.Wizard
                 identifiers.TryGetValue(optionPrefix, out var files);
                 var opt = await option.ToPmpOption(tempFolder, files, imgName);
                 var so = opt as PmpStandardOptionJson;
-                if (option.StandardData.OtherManipulations != null)
+                if (option.StandardData.Manipulations != null)
                 {
-                    foreach (var m in option.StandardData.OtherManipulations)
+                    foreach (var m in option.StandardData.Manipulations)
                     {
                         // Carry our extra manipulations through.
                         so.Manipulations.Add(m);
@@ -979,8 +1038,21 @@ namespace FFXIV_TexTools.Views.Wizard
                         var opt = g.Options[i];
                         if (opt.Selected)
                         {
-                            var ttOpt = ttGroup.OptionList[i];
-                            modFiles.AddRange(ttOpt.ModsJsons);
+                            if (opt.GroupType == EGroupType.Standard)
+                            {
+                                if (opt.StandardData.Manipulations != null && opt.StandardData.Manipulations.Count > 0)
+                                {
+                                    // We shouldn't actually be able to get to this path, but safety is good.
+                                    throw new NotImplementedException("Importing TTMPs with Meta Manipulations is not supported.  How did you get here though?");
+                                }
+
+                                var ttOpt = ttGroup.OptionList[i];
+                                modFiles.AddRange(ttOpt.ModsJsons);
+                            } else
+                            {
+                                // We shouldn't actually be able to get to this path, but safety is good.
+                                throw new NotImplementedException("Importing TTMPs with IMC Groups is not supported.  How did you get here though?");
+                            }
                         }
                     }
                 }

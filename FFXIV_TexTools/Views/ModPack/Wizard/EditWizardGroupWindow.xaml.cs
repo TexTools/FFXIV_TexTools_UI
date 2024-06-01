@@ -204,9 +204,10 @@ namespace FFXIV_TexTools.Views
         /// <param name="optionNum">The option number</param>
         private void AddOption(string optionText)
         {
-            if (String.IsNullOrWhiteSpace(OptionNameTextBox.Text)) return;
+            if (String.IsNullOrWhiteSpace(optionText)) return;
 
             var option = new WizardOptionEntry(Data);
+            option.Name = optionText;
 
             Data.Options.Add(option);
 
@@ -661,7 +662,7 @@ namespace FFXIV_TexTools.Views
 
         }
 
-        private async Task AddWithChildren(string file, FileStorageInformation? storageHandle = null)
+        private async Task AddWithChildren(string file, FileStorageInformation? storageHandle = null, bool skipSelf = false)
         {
             var tx = MainWindow.DefaultTransaction;
             var children = new HashSet<string>();
@@ -683,6 +684,8 @@ namespace FFXIV_TexTools.Views
 
             foreach (var child in children)
             {
+                if (child == file && skipSelf) continue;
+
                 var fe = new FileEntry() { Name = MakeFriendlyFileName(child), Path = child };
                 if (child == file && storageHandle != null)
                 {
@@ -970,30 +973,67 @@ namespace FFXIV_TexTools.Views
             }
         }
 
+        private void AddMetadataManipulations(ItemMetadata metadata)
+        {
+            if (SelectedOption == null) return;
+
+
+            if (SelectedOption.StandardData.Manipulations == null)
+            {
+                SelectedOption.StandardData.Manipulations = new List<PMPManipulationWrapperJson>();
+            }
+
+            var toRemove = new List<PMPManipulationWrapperJson>();
+            var manips = SelectedOption.StandardData.Manipulations;
+
+            foreach(var m in manips)
+            {
+                var im = m.GetManipulation() as IPMPItemMetadata;
+                if (im == null) continue;
+                var mRoot = im.GetRoot();
+                if(mRoot == metadata.Root)
+                {
+                    toRemove.Add(m);
+                }
+            }
+
+            foreach(var m in toRemove)
+            {
+                manips.Remove(m);
+            }
+
+            var newManips = PMPExtensions.MetadataToManipulations(metadata);
+            manips.AddRange(newManips);
+            UpdateManipulationText();
+        }
+
         private async void AddMetadataButton_Click(object sender, RoutedEventArgs e)
         {
-            var path = MetadataPathBox.Text;
-            var selectedFile = new FileEntry()
+            try
             {
-                Path = path,
-                Name = MakeFriendlyFileName(path)
-            };
-            var addChildren = MetadataIncludeChildFilesBox.IsChecked == true ? true : false;
+                if (SelectedOption == null) return;
+                var path = MetadataPathBox.Text;
+                var selectedFile = new FileEntry()
+                {
+                    Path = path,
+                    Name = MakeFriendlyFileName(path)
+                };
+                var addChildren = MetadataIncludeChildFilesBox.IsChecked == true ? true : false;
 
-            var meta = await ItemMetadata.GetMetadata(path, false, MainWindow.DefaultTransaction);
-            var data = await ItemMetadata.Serialize(meta);
 
-            var info = WriteTempFile(data);
+                var meta = await ItemMetadata.GetMetadata(path, false, MainWindow.DefaultTransaction);
+                AddMetadataManipulations(meta);
 
-            if (addChildren)
-            {
-                await AddWithChildren(selectedFile.Path, info);
+
+                if (addChildren)
+                {
+                    await AddWithChildren(selectedFile.Path, null, true);
+                }
             }
-            else
+            catch(Exception ex)
             {
-                await AddFile(selectedFile, info);
+                this.ShowError("Add File Error".L(), "An error occurred while adding the file:\n\n".L() + ex.Message);
             }
-
         }
 
         public static string MakeFriendlyFileName(string path)
@@ -1173,7 +1213,7 @@ namespace FFXIV_TexTools.Views
             try
             {
                 // Slightly more complex.  Because Metadata files have internal root path references,
-                // We need to import them, then alter them, then recompress them.
+                // We need to import them, then alter them.
                 var root = await XivCache.GetFirstRoot(path);
                 var fileData = File.ReadAllBytes(openFileDialog.FileName);
 
@@ -1194,10 +1234,7 @@ namespace FFXIV_TexTools.Views
                 var metadata = await ItemMetadata.Deserialize(fileData);
                 metadata.AlterRoot(root);
 
-                var data = await ItemMetadata.Serialize(metadata);
-                var info = WriteTempFile(data);
-
-                await AddFile(selectedFile, info);
+                AddMetadataManipulations(metadata);
             }
             catch (Exception ex)
             {
@@ -1226,9 +1263,9 @@ namespace FFXIV_TexTools.Views
                 return;
             }
 
-            if (SelectedOption.StandardData.OtherManipulations != null)
+            if (SelectedOption.StandardData.Manipulations != null)
             {
-                ManipulationCountLabel.Content = SelectedOption.StandardData.OtherManipulations.Count() + " " + "Manipulation(s)".L();
+                ManipulationCountLabel.Content = SelectedOption.StandardData.Manipulations.Count() + " " + "Manipulation(s)".L();
             }
             else
             {

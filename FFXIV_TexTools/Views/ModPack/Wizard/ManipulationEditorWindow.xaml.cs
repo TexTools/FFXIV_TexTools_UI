@@ -60,9 +60,9 @@ namespace FFXIV_TexTools.Views.Wizard
             DataContext = this;
             InitializeComponent();
             Data = data;
-            if (Data.OtherManipulations == null)
+            if (Data.Manipulations == null)
             {
-                Data.OtherManipulations = new List<PMPManipulationWrapperJson>();
+                Data.Manipulations = new List<PMPManipulationWrapperJson>();
             }
 
             RebuildList();
@@ -71,17 +71,17 @@ namespace FFXIV_TexTools.Views.Wizard
         private void RebuildList()
         {
             Manipulations.Clear();
-            foreach (var m in Data.OtherManipulations)
+            foreach (var m in Data.Manipulations)
             {
                 Manipulations.Add(new KeyValuePair<string, PMPManipulationWrapperJson>(m.GetNiceName(), m));
             }
 
-            SelectedManipulation = Data.OtherManipulations.FirstOrDefault();
+            SelectedManipulation = Data.Manipulations.FirstOrDefault();
         }
 
         private void RemoveManipulation_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            Data.OtherManipulations.Remove(SelectedManipulation);
+            Data.Manipulations.Remove(SelectedManipulation);
             RebuildList();
         }
 
@@ -111,6 +111,17 @@ namespace FFXIV_TexTools.Views.Wizard
             var control = Activator.CreateInstance(t, SelectedManipulation) as UserControl;
 
             EditorBox.Content = control;
+        }
+
+        private void ClearManipulations_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            if(!this.ShowConfirmation("Clear Manipulations Confirmation", "Are you sure you wish to clear ALL manipulations for this option?"))
+            {
+                return;
+            }
+
+            Data.Manipulations.Clear();
+            RebuildList();
         }
     }
 }

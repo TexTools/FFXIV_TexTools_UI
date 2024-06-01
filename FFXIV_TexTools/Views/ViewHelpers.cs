@@ -264,5 +264,16 @@ namespace FFXIV_TexTools.Views
             bmp.EndInit();
             return bmp;
         }
+
+
+        public static bool ShowConfirmation(this DependencyObject self, string title, string message)
+        {
+            var wind = Window.GetWindow(self);
+            var w32 = GetWin32Window(wind);
+
+            var res = FlexibleMessageBox.Show(w32, message, title, MessageBoxButtons.OKCancel, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1);
+            return res == DialogResult.OK;
+
+        }
     }
 }

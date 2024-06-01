@@ -82,6 +82,10 @@ namespace FFXIV_TexTools.Views
 
         public override string ToString() 
         {
+            if(OptionLabel.Content == null)
+            {
+                return "";
+            }
             return OptionLabel.Content.ToString();
         }
     }
