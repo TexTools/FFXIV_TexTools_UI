@@ -263,7 +263,7 @@ namespace FFXIV_TexTools.Views
         private async void LoadFromButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
             var openFileDialog = new OpenFileDialog { 
-                Filter = "Modpack Files|*.ttmp2;*.pmp;*.json".L(), 
+                Filter = "Modpack Files|*.ttmp2;*.pmp;*.json;*.ttmp".L(), 
                 InitialDirectory = Path.GetFullPath(Settings.Default.ModPack_Directory)
             };
 
@@ -287,6 +287,10 @@ namespace FFXIV_TexTools.Views
                 else if (modpackType == TTMP.EModpackType.TtmpWizard)
                 {
                     Data = await SetupTtmp(path);
+                }
+                else if(modpackType == TTMP.EModpackType.TtmpSimple || modpackType == TTMP.EModpackType.TtmpOriginal)
+                {
+                    Data = await SetupTtmp(path, false);
                 }
                 else
                 {
@@ -343,15 +347,21 @@ namespace FFXIV_TexTools.Views
         }
 
 
-        private async Task<WizardData> SetupTtmp(string path)
+        private async Task<WizardData> SetupTtmp(string path, bool wizard = true)
         {
             return await Task.Run(async () =>
             {
 
-                var mpl = await TTMP.GetModpackList(path);
-                var unzipPath = await TTMP.UnzipTtmp(path);
+                var ttmp = await TTMP.UnzipTtmp(path);
 
-                var data = await WizardData.FromWizardPack(mpl, unzipPath);
+                WizardData data;
+                if (wizard)
+                {
+                    data = await WizardData.FromWizardTtmp(ttmp.Mpl, ttmp.UnzipFolder);
+                } else
+                {
+                    data = await WizardData.FromSimpleTtmp(ttmp.Mpl, ttmp.UnzipFolder);
+                }
 
                 return data;
             });

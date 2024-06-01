@@ -1084,7 +1084,7 @@ namespace FFXIV_TexTools.Views
             throw new NotImplementedException("Needs to be redone.");
             var openFileDialog = new OpenFileDialog
             {
-                Filter = "Basic Modpack(*.ttmp2;)|*.ttmp2;".L()
+                Filter = "Basic Modpack|*.ttmp2;*.ttmp;*.pmp".L()
             };
 
             if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)

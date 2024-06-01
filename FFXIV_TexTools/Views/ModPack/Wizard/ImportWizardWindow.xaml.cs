@@ -252,7 +252,7 @@ namespace FFXIV_TexTools.Views.Wizard
         {
             var mpl = await TTMP.GetModpackList(path);
             var imageFolder = await TTMP.GetModpackImages(path);
-            var data = await WizardData.FromWizardPack(mpl, imageFolder);
+            var data = await WizardData.FromWizardTtmp(mpl, imageFolder);
             return data;
         }
 

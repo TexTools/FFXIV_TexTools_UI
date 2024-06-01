@@ -437,7 +437,7 @@ namespace FFXIV_TexTools.Views.Wizard
         /// </summary>
         public object ModOption;
 
-        public static async Task<WizardGroupEntry> FromWizardGroup(ModGroupJson tGroup, string unzipPath)
+        public static async Task<WizardGroupEntry> FromWizardGroup(ModGroupJson tGroup, string unzipPath, bool needsTexFix)
         {
             var group = new WizardGroupEntry();
             group.Options = new List<WizardOptionEntry>();
@@ -486,6 +486,11 @@ namespace FFXIV_TexTools.Views.Wizard
                     }
                     else
                     {
+                        if (needsTexFix && mj.FullPath.EndsWith(".tex"))
+                        {
+                            finfo = await TTMP.FixOldTexData(finfo);
+                        }
+
                         data.Files.Add(mj.FullPath, finfo);
                     }
                 }
@@ -708,7 +713,7 @@ namespace FFXIV_TexTools.Views.Wizard
         public string Name;
         public List<WizardGroupEntry> Groups = new List<WizardGroupEntry>();
 
-        public static async Task<WizardPageEntry> FromWizardModpackPage(ModPackPageJson jp, string unzipPath)
+        public static async Task<WizardPageEntry> FromWizardModpackPage(ModPackPageJson jp, string unzipPath, bool needsTexFix)
         {
             var page = new WizardPageEntry();
             page.Name = "Page " + (jp.PageIndex + 1);
@@ -716,7 +721,7 @@ namespace FFXIV_TexTools.Views.Wizard
             page.Groups = new List<WizardGroupEntry>();
             foreach(var p in jp.ModGroups)
             {
-                page.Groups.Add(await WizardGroupEntry.FromWizardGroup(p, unzipPath));
+                page.Groups.Add(await WizardGroupEntry.FromWizardGroup(p, unzipPath, needsTexFix));
             }
             return page;
         }
@@ -770,7 +775,7 @@ namespace FFXIV_TexTools.Views.Wizard
             return page;
         }
 
-        public static WizardMetaEntry FromWizardModpack(ModPackJson wiz, string unzipPath)
+        public static WizardMetaEntry FromTtmp(ModPackJson wiz, string unzipPath)
         {
             var page = new WizardMetaEntry();
             page.Url = wiz.Url;
@@ -856,11 +861,11 @@ namespace FFXIV_TexTools.Views.Wizard
             return data;
         }
 
-        public static async Task<WizardData> FromWizardPack(ModPackJson ttmp, string unzipPath)
+        public static async Task<WizardData> FromWizardTtmp(ModPackJson mpl, string unzipPath)
         {
             var data = new WizardData();
             data.ModpackType = EModpackType.TtmpWizard;
-            data.MetaPage = WizardMetaEntry.FromWizardModpack(ttmp, unzipPath);
+            data.MetaPage = WizardMetaEntry.FromTtmp(mpl, unzipPath);
 
             var mp = new ModPack(null);
             mp.Author = data.MetaPage.Author;
@@ -868,15 +873,64 @@ namespace FFXIV_TexTools.Views.Wizard
             mp.Name = data.MetaPage.Name;
             mp.Url = data.MetaPage.Url;
             data.ModPack = mp;
-            data.RawSource = ttmp;
+            data.RawSource = mpl;
+
+            var needsTexFix = TTMP.DoesModpackNeedTexFix(mpl);
 
             data.DataPages = new List<WizardPageEntry>();
-            foreach (var p in ttmp.ModPackPages)
+            foreach (var p in mpl.ModPackPages)
             {
-                data.DataPages.Add(await WizardPageEntry.FromWizardModpackPage(p, unzipPath));
+                data.DataPages.Add(await WizardPageEntry.FromWizardModpackPage(p, unzipPath, needsTexFix));
             }
             return data;
         }
+        public static async Task<WizardData> FromSimpleTtmp(ModPackJson mpl, string unzipPath)
+        {
+            var data = new WizardData();
+            data.ModpackType = EModpackType.TtmpWizard;
+            data.MetaPage = WizardMetaEntry.FromTtmp(mpl, unzipPath);
+
+            var mp = new ModPack(null);
+            mp.Author = data.MetaPage.Author;
+            mp.Version = data.MetaPage.Version;
+            mp.Name = data.MetaPage.Name;
+            mp.Url = data.MetaPage.Url;
+            data.ModPack = mp;
+            data.RawSource = mpl;
+
+            var needsTexFix = TTMP.DoesModpackNeedTexFix(mpl);
+
+            // Create a fake page/group.
+            data.DataPages = new List<WizardPageEntry>();
+            var page = new WizardPageEntry()
+            {
+                Groups = new List<WizardGroupEntry>(),
+                Name = "Page 1"
+            };
+            data.DataPages.Add(page);
+
+            var mgj = new ModGroupJson()
+            {
+                GroupName = "Default Group",
+                SelectionType = "Single",
+                OptionList = new List<ModOptionJson>()
+                {
+                    new ModOptionJson()
+                    {
+                        Name = "Default Option",
+                        IsChecked = true,
+                        SelectionType = "Single",
+                        GroupName = "Default Group",
+                        ModsJsons = mpl.SimpleModsList,
+                    },
+                },
+            };
+
+            var g = await WizardGroupEntry.FromWizardGroup(mgj, unzipPath, needsTexFix);
+            page.Groups.Add(g);
+            return data;
+        }
+
 
         public async Task WriteWizardPack(string targetPath)
         {
