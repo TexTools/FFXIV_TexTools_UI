@@ -239,65 +239,8 @@ namespace FFXIV_TexTools.Views
         /// <param name="modPackDirectory">The mod pack directory</param>
         private async Task ImportOldModPack()
         {
-            Dispatcher.Invoke(() =>
-            {
-                var progress = new Progress<(int count, int total)>(prog =>
-                {
-                    LockedStatusLabel.Content = $"{UIStrings.Loading} ({prog.count}, {prog.total})";
-
-                    if (prog.count == prog.total)
-                    {
-                        LockedStatusLabel.Content = UIStrings.Finalizing;
-
-                    }
-                });
-            });
-
-            var originalModPackData = await TTMP.GetOriginalModPackJsonData(_modPackDirectory);
-
-            Dispatcher.Invoke(() =>
-            {
-                // There is nearly no point to doing this on another thread if it's going to be constantly
-                // re-invoking the main thread with literally every line.
-                foreach (var modsJson in originalModPackData)
-                {
-                    var jsonEntry = new ModsJson
-                    {
-                        Name = modsJson.Name,
-                        Category = modsJson.Category.GetDisplayName(),
-                        FullPath = modsJson.FullPath,
-                        DatFile = modsJson.DatFile,
-                        ModOffset = modsJson.ModOffset,
-                        ModSize = modsJson.ModSize,
-                        ModPackEntry = new ModPack
-                        {
-                            Name = Path.GetFileNameWithoutExtension(_modPackDirectory.FullName),
-                            Author = "N/A",
-                            Version = "1.0.0"
-                        }
-                    };
-                    JsonEntries.Add(jsonEntry.FullPath, jsonEntry);
-                    Entries.Add(new SimpleModpackEntry(jsonEntry.FullPath, this));
-
-                }
-
-                ModPackName.Content = Path.GetFileNameWithoutExtension(_modPackDirectory.FullName);
-                ModPackAuthor.Content = "N/A";
-                ModPackVersion.Content = "1.0.0";
-
-                var cv = (CollectionView)CollectionViewSource.GetDefaultView(ModListView.ItemsSource);
-                cv.SortDescriptions.Clear();
-                cv.SortDescriptions.Add(new SortDescription(nameof(SimpleModpackEntry.ItemName), _lastDirection));
-
-                long size = 0;
-                foreach (var entry in JsonEntries)
-                {
-                    SelectedEntries.Add(entry.Value.FullPath);
-                    size += JsonEntries[entry.Value.FullPath].ModSize;
-                }
-                ModListView.SelectAll();
-                ModSize = size;
-            });
+            // Legacy codepath, no longer used.
+            throw new NotImplementedException();
         }
 
         /// <summary>

@@ -1080,6 +1080,8 @@ namespace FFXIV_TexTools.Views
 
         private async void LoadSimpleModpackButton_Click(object sender, RoutedEventArgs e)
         {
+
+            throw new NotImplementedException("Needs to be redone.");
             var openFileDialog = new OpenFileDialog
             {
                 Filter = "Basic Modpack(*.ttmp2;)|*.ttmp2;".L()
@@ -1088,41 +1090,6 @@ namespace FFXIV_TexTools.Views
             if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 ModpackContents.Items.Clear();
-                _basicModpackData = new List<byte>();
-
-                SelectAllButton.IsEnabled = true;
-                DeselectAllButton.IsEnabled = true;
-
-                var _basicModpackDirectory = new DirectoryInfo(openFileDialog.FileName);
-
-                var (modpackJson, _) = await TTMP.LEGACY_GetModPackJsonData(_basicModpackDirectory);
-                if (modpackJson.TTMPVersion.Contains("s"))
-                {
-                    foreach (var modsJson in modpackJson.SimpleModsList)
-                    {
-                        ModpackContents.Items.Add(modsJson);
-                    }
-
-                    // Resize columns to fit content
-                    foreach (var column in GridViewCol.Columns)
-                    {
-                        if (double.IsNaN(column.Width))
-                        {
-                            column.Width = column.ActualWidth;
-                        }
-                        column.Width = double.NaN;
-                    }
-
-                    await LockUi();
-                    var modData = await TTMP.GetModPackData(_basicModpackDirectory);
-                    _basicModpackData.AddRange(modData);
-                    UnlockUi();
-                } 
-                else
-                {
-                    FlexibleMessageBox.Show(new Wpf32Window(this), "You can only load basic modpacks".L(),
-                        "Modpack Type Not Supported".L(), MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                }
             }
         }
 
