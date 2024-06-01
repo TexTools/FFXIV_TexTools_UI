@@ -145,6 +145,28 @@ namespace FFXIV_TexTools.Views.Wizard
             {
                 _Selected = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Selected)));
+
+                var index = _Group.Options.IndexOf(this);
+                if (index < 0) return;
+
+                if(OptionType == EOptionType.Single)
+                {
+                    if (_Selected)
+                    {
+                        _Group.UserSelection = index;
+                    }
+                } else
+                {
+                    var mask = 1 << index;
+                    if (_Selected)
+                    {
+                        _Group.UserSelection |= mask;
+                    }
+                    else
+                    {
+                        _Group.UserSelection &= ~mask;
+                    }
+                }
             }
         }
 
@@ -495,7 +517,7 @@ namespace FFXIV_TexTools.Views.Wizard
             group.Options = new List<WizardOptionEntry>();
             group.ModOption = pGroup;
             group.DefaultSelection = pGroup.DefaultSettings;
-            group.UserSelection = pGroup.SelectedSettings > 0 ? pGroup.SelectedSettings : pGroup.DefaultSettings;
+            group.UserSelection = pGroup.DefaultSettings;
 
             group.OptionType = pGroup.Type == "Single" ? EOptionType.Single : EOptionType.Multi;
             group.Name = pGroup.Name;
@@ -640,12 +662,12 @@ namespace FFXIV_TexTools.Views.Wizard
                 pg.Type = OptionType.ToString();
             }
 
-            pg.DefaultSettings = UserSelection;
             pg.Name = Name;
             pg.Description = Description;
             pg.Options = new List<PMPOptionJson>();
             pg.Priority = Priority;
             pg.SelectedSettings = UserSelection;
+            pg.DefaultSettings = UserSelection;
             pg.Page = page;
 
             pg.Image = WizardHelpers.WriteImage(Image, tempFolder, IOUtil.MakePathSafe(Name));
@@ -984,34 +1006,12 @@ namespace FFXIV_TexTools.Views.Wizard
             {
                 foreach(var g in p.Groups)
                 {
-                    var pmpGroup = g.ModOption as PMPGroupJson;
-                    if(pmpGroup == null)
-                    {
-                        continue;
-                    }
-
-                    var selected = 0;
-                    for(int i = 0; i < g.Options.Count; i++)
-                    {
-                        var opt = g.Options[i];
-                        if (opt.Selected)
-                        {
-                            if(g.OptionType == EOptionType.Single)
-                            {
-                                selected = i;
-                                break;
-                            } else
-                            {
-                                var shifted = 1 << i;
-                                selected |= shifted;
-                            }
-                        }
-                    }
-
-                    pmpGroup.SelectedSettings = selected;
+                    var pg = (g.ModOption as PMPGroupJson);
+                    pg.SelectedSettings = g.UserSelection;
                 }
             }
         }
+
 
         /// <summary>
         /// Returns the list of selected mod files that the TTMP importers expect, based on user selection(s).
