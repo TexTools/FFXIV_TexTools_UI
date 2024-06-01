@@ -353,7 +353,7 @@ namespace FFXIV_TexTools.Views.Transactions
             TxTargetEnabled = true;
             TxTarget = settings.Target;
             TxTargetPath = settings.TargetPath;
-            if(TxTarget == ETransactionTarget.Invalid || TxTarget == ETransactionTarget.GameFiles)
+            if( TxTarget == ETransactionTarget.GameFiles)
             {
                 TxPathEnabled = false;
             }
@@ -362,7 +362,7 @@ namespace FFXIV_TexTools.Views.Transactions
                 TxPathEnabled = true;
             }
 
-            if (TxTarget == ETransactionTarget.Invalid || TxTarget == ETransactionTarget.GameFiles)
+            if ( TxTarget == ETransactionTarget.GameFiles)
             {
                 CloseOnCommitBox.IsEnabled = false;
                 KeepOpen = false;
@@ -518,7 +518,7 @@ namespace FFXIV_TexTools.Views.Transactions
             var tx = MainWindow.UserTransaction;
             var settings = tx.Settings;
 
-            if(settings.Target == ETransactionTarget.Invalid || settings.Target == ETransactionTarget.GameFiles)
+            if( settings.Target == ETransactionTarget.GameFiles)
             {
                 return;
             }

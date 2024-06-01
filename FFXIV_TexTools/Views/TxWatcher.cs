@@ -145,7 +145,7 @@ namespace FFXIV_TexTools.Views
                     return;
                 }
 
-                if(tx.Settings.Target == ETransactionTarget.Invalid || tx.Settings.Target == ETransactionTarget.GameFiles)
+                if(tx.Settings.Target == ETransactionTarget.GameFiles)
                 {
                     return;
                 }
