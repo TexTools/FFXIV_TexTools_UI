@@ -33,6 +33,8 @@ namespace FFXIV_TexTools.Views.Wizard.ManipulationEditors
             set
             {
                 Manipulation.Race = value;
+                HasMaterial = false;
+                HasModel = false;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Race)));
             }
         }
@@ -42,6 +44,8 @@ namespace FFXIV_TexTools.Views.Wizard.ManipulationEditors
             set
             {
                 Manipulation.Gender = value;
+                HasMaterial = false;
+                HasModel = false;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Gender)));
             }
         }
