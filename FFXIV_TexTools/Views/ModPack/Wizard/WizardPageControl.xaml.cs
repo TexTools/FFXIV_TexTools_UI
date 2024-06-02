@@ -13,6 +13,7 @@
 // 
 // You should have received a copy of the GNU General Public License
 
+using FFXIV_TexTools.Views.Wizard;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Png;
 using System;
@@ -180,22 +181,8 @@ namespace FFXIV_TexTools.Views.Wizard
 
         private void AddGroup_Click(object sender, RoutedEventArgs e)
         {
-            var g = new WizardGroupEntry()
-            {
-                Name = "New Group",
-
-            };
-            var o = new WizardOptionEntry(g)
-            {
-                Name = "New Option"
-            };
-            o.Selected = true;
-            g.Options.Add(o);
-
-
-
-            Data.Groups.Add(g);
-            SetupUi();
+            AddContextMenu.PlacementTarget = AddGroupGrid;
+            AddContextMenu.IsOpen = true;
         }
 
         private void EditGroup_Click(object sender, RoutedEventArgs e)
@@ -207,10 +194,19 @@ namespace FFXIV_TexTools.Views.Wizard
             var owningGroup = Data.Groups.FirstOrDefault(x => x.Options.Any(o => o == opt));
             if (owningGroup == null) return;
 
-            var wind = new EditWizardGroupWindow(owningGroup);
-            wind.Owner = Window.GetWindow(this);
-            wind.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-            wind.ShowDialog();
+            if (owningGroup.GroupType == EGroupType.Standard)
+            {
+                var wind = new EditWizardGroupWindow(owningGroup);
+                wind.Owner = Window.GetWindow(this);
+                wind.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                wind.ShowDialog();
+            } else
+            {
+                var wind = new EditImcGroupWindow(owningGroup);
+                wind.Owner = Window.GetWindow(this);
+                wind.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                wind.ShowDialog();
+            }
             SetupUi();
         }
 
@@ -258,6 +254,56 @@ namespace FFXIV_TexTools.Views.Wizard
             var higherGroup = Data.Groups[idx + 1];
             Data.Groups[idx] = higherGroup;
             Data.Groups[idx + 1] = owningGroup;
+            SetupUi();
+        }
+
+        private void AddStandardGroup_Click(object sender, RoutedEventArgs e)
+        {
+            var g = new WizardGroupEntry()
+            {
+                Name = "New Group",
+
+            };
+            var o = new WizardOptionEntry(g)
+            {
+                Name = "New Option"
+            };
+            o.Selected = true;
+            g.Options.Add(o);
+
+
+
+            Data.Groups.Add(g);
+            SetupUi();
+
+        }
+
+        private void AddImcGroup_Click(object sender, RoutedEventArgs e)
+        {
+            var g = new WizardGroupEntry()
+            {
+                Name = "New Imc Group",
+
+            };
+
+            g.ImcData = new WizardImcGroupData();
+            g.OptionType = EOptionType.Single;
+
+            var o = new WizardOptionEntry(g)
+            {
+                Name = "New Imc Option"
+            };
+
+            o.ImcData = new WizardImcOptionData()
+            {
+                AttributeMask = 0,
+                IsDisableOption = false,
+            };
+
+
+            o.Selected = true;
+            g.Options.Add(o);
+            Data.Groups.Add(g);
             SetupUi();
         }
     }

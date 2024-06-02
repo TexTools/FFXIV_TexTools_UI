@@ -86,7 +86,15 @@
                         </Grid.ColumnDefinitions>
                         <Button Grid.Column="0" Content="{Binding Source={x:Static resx:UIStrings.Delete}}" IsEnabled="{Binding Path=OptionSelected}"  Margin="5" Click="DeleteGroup_Click"/>
                         <Button Grid.Column="1" Content="{Binding Source={x:Static resx:UIStrings.Edit}}" IsEnabled="{Binding Path=OptionSelected}" Margin="5" Click="EditGroup_Click"/>
-                        <Button Grid.Column="2" Content="{Binding Source={x:Static resx:UIStrings.Add}}" Margin="5" Click="AddGroup_Click"/>
+                        <Grid Grid.Column="2" x:Name="AddGroupGrid">
+                            <Button Content="{Binding Source={x:Static resx:UIStrings.Add}}" Margin="5" Click="AddGroup_Click"/>
+                            <Grid.ContextMenu>
+                                <ContextMenu x:Name="AddContextMenu">
+                                    <MenuItem Header="Standard Group" Click="AddStandardGroup_Click"></MenuItem>
+                                    <MenuItem Header="IMC Mask Group" Click="AddImcGroup_Click"></MenuItem>
+                                </ContextMenu>
+                            </Grid.ContextMenu>
+                        </Grid>
                     </Grid>
                 </Grid>
             </GroupBox>
