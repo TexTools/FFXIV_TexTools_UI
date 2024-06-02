@@ -6,6 +6,7 @@ using MahApps.Metro.Controls.Dialogs;
 using SixLabors.ImageSharp.Formats.Png;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -326,6 +327,17 @@ namespace FFXIV_TexTools.Views
                 wind.ShowError("Image Error".L(), "An error occurred while loading the image:\n\n" + ex.Message);
                 return (null, null);
             }
+        }
+
+        public static ObservableCollection<KeyValuePair<string, T>> GetEnumSource<T>() where T : struct, IConvertible
+        {
+            var src = new ObservableCollection<KeyValuePair<string, T>>();
+
+            foreach(T t in Enum.GetValues(typeof(T))){
+                src.Add(new KeyValuePair<string, T>(t.ToString(), t));
+            }
+
+            return src;
         }
     }
 }

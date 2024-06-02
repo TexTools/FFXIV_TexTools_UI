@@ -28,7 +28,7 @@ namespace FFXIV_TexTools.Views.Metadata
 
             if(_metadata.EqdpEntries.ContainsKey(race))
             {
-                return _metadata.EqdpEntries[race].bit1;
+                return _metadata.EqdpEntries[race].HasModel;
             }
             return false;
         }

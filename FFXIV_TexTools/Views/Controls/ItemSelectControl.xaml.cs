@@ -569,7 +569,7 @@ namespace FFXIV_TexTools.Views.Controls
             var oldE = (ItemTreeElement)e.OldValue;
             var newE = (ItemTreeElement)e.NewValue;
 
-            if (RawItemSelected != null) {
+            if (RawItemSelected != null && newE != null && newE.Item != null) {
                 RawItemSelected.Invoke(null, newE == null ? null : newE.Item);
             }
 

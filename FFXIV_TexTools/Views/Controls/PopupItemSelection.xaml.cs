@@ -121,6 +121,16 @@ namespace FFXIV_TexTools.Views.Controls
             }
         }
 
+        public static IItem ShowItemSelection(Func<IItem, bool> ExtraFilterFunction = null, Func<IItem, bool> AllowSelectFunction = null, UIElement control = null)
+        {
+            Window wind = null;
+            if (control != null)
+            {
+                wind = Window.GetWindow(control);
+            }
+
+            return ShowItemSelection(ExtraFilterFunction, AllowSelectFunction, wind);
+        }
         public static IItem ShowItemSelection(Func<IItem, bool> ExtraFilterFunction = null, Func<IItem, bool> AllowSelectFunction = null, Window owner = null)
         {
             if(owner == null)

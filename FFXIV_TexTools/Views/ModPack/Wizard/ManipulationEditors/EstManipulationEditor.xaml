@@ -4,9 +4,26 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:FFXIV_TexTools.Views.Wizard.ManipulationEditors"
+             xmlns:controls="clr-namespace:FFXIV_TexTools.Views.Controls"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-            
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="40"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="100"/>
+            <ColumnDefinition Width="100"/>
+            <ColumnDefinition Width="100"/>
+        </Grid.ColumnDefinitions>
+        <controls:RootSelectControl Grid.ColumnSpan="3" x:Name="RootControl" Root="{Binding Path=Root}"></controls:RootSelectControl>
+
+        <Label Content="Race:" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Center"></Label>
+        <Label Content="Gender:" Grid.Row="2" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Center"></Label>
+        
+        <ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding Path=Races}" DisplayMemberPath="Key" SelectedValuePath="Value" SelectedValue="{Binding Path=Race}" VerticalAlignment="Center"/>
+        <ComboBox Grid.Row="2" Grid.Column="1" ItemsSource="{Binding Path=Genders}" DisplayMemberPath="Key" SelectedValuePath="Value" SelectedValue="{Binding Path=Gender}" VerticalAlignment="Center"/>
     </Grid>
 </UserControl>

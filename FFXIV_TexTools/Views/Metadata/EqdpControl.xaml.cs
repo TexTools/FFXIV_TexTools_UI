@@ -60,8 +60,8 @@ namespace FFXIV_TexTools.Views.Metadata
 
             if (race != XivRace.All_Races && _metadata != null)
             {
-                _metadata.EqdpEntries[race].bit0 = enabled;
-                _metadata.EqdpEntries[race].bit1 = enabled;
+                _metadata.EqdpEntries[race].HasMaterial = enabled;
+                _metadata.EqdpEntries[race].HasModel = enabled;
 
                 if(RaceChanged != null)
                 {
@@ -86,7 +86,7 @@ namespace FFXIV_TexTools.Views.Metadata
                 if (m.EqdpEntries.ContainsKey(kv.Key))
                 {
                     var entry = m.EqdpEntries[kv.Key];
-                    kv.Value.IsChecked = entry.bit1;
+                    kv.Value.IsChecked = entry.HasModel;
                 }
             }
 
