@@ -470,28 +470,33 @@ namespace FFXIV_TexTools.Views.Wizard
                         RealOffset = mj.ModOffset,
                         RealPath = mpdPath
                     };
-                    if (mj.FullPath.EndsWith(".meta") || mj.FullPath.EndsWith(".rgsp"))
-                    {
-                        var raw = await TransactionDataHandler.GetUncompressedFile(finfo);
-                        if (mj.FullPath.EndsWith(".meta"))
-                        {
-                            var meta = await ItemMetadata.Deserialize(raw);
-                            data.Manipulations.AddRange(PMPExtensions.MetadataToManipulations(meta));
-                        }
-                        else {
-                            var rgsp = new RacialGenderScalingParameter(raw);
-                            data.Manipulations.AddRange(PMPExtensions.RgspToManipulations(rgsp));
-                        }
 
-                    }
-                    else
+                    // Data may not be unzipped here if we're in import mode.
+                    if (File.Exists(finfo.RealPath))
                     {
-                        if (needsTexFix && mj.FullPath.EndsWith(".tex"))
+                        if (mj.FullPath.EndsWith(".meta") || mj.FullPath.EndsWith(".rgsp"))
                         {
-                            finfo = await TTMP.FixOldTexData(finfo);
+                            var raw = await TransactionDataHandler.GetUncompressedFile(finfo);
+                            if (mj.FullPath.EndsWith(".meta"))
+                            {
+                                var meta = await ItemMetadata.Deserialize(raw);
+                                data.Manipulations.AddRange(PMPExtensions.MetadataToManipulations(meta));
+                            }
+                            else
+                            {
+                                var rgsp = new RacialGenderScalingParameter(raw);
+                                data.Manipulations.AddRange(PMPExtensions.RgspToManipulations(rgsp));
+                            }
                         }
+                        else
+                        {
+                            if (needsTexFix && mj.FullPath.EndsWith(".tex"))
+                            {
+                                finfo = await TTMP.FixOldTexData(finfo);
+                            }
 
-                        data.Files.Add(mj.FullPath, finfo);
+                            data.Files.Add(mj.FullPath, finfo);
+                        }
                     }
                 }
 

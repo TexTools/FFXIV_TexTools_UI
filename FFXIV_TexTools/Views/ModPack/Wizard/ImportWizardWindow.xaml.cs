@@ -41,9 +41,9 @@ using xivModdingFramework.Mods.FileTypes.PMP;
 namespace FFXIV_TexTools.Views.Wizard
 {
     /// <summary>
-    /// Interaction logic for ImportModPackWizard.xaml
+    /// Interaction logic for WizardControl.xaml
     /// </summary>
-    public partial class ImportWizardWindow
+    public partial class ImportWizardWindow : INotifyPropertyChanged
     {
         private int _CurrentPage;
         private readonly int _PageCount;
@@ -52,8 +52,79 @@ namespace FFXIV_TexTools.Views.Wizard
         private readonly WizardData _Data;
         private readonly string _Path;
 
+        private int CurrentIndex
+        {
+            get
+            {
+                var curIndex = WizardControl.Items.IndexOf(WizardControl.CurrentPage);
+                return curIndex;
+            }
+            set
+            {
+                if (value < 0 || value >= WizardControl.Items.Count)
+                {
+                    return;
+                }
+                WizardControl.CurrentPage = WizardControl.Items[value] as WizardPage;
+                UpdateButtons();
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentIndex)));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NextVisible)));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(FinalizeVisible)));
+            }
+        }
+
+        public Visibility NextVisible
+        {
+            get
+            {
+                return NextEnabled ? Visibility.Visible : Visibility.Collapsed;
+            }
+        }
+
+        public Visibility FinalizeVisible
+        {
+            get
+            {
+                return NextEnabled ? Visibility.Collapsed : Visibility.Visible;
+            }
+        }
+
+        private bool _PreviousEnabled;
+        public bool PreviousEnabled
+        {
+            get => _PreviousEnabled;
+            set
+            {
+                _PreviousEnabled = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PreviousEnabled)));
+            }
+        }
+        private bool _NextEnabled;
+        public bool NextEnabled
+        {
+            get => _NextEnabled;
+            set
+            {
+                _NextEnabled = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NextEnabled)));
+            }
+        }
+        private bool _FinalizeEnabled;
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public bool FinalizeEnabled
+        {
+            get => _FinalizeEnabled;
+            set
+            {
+                _FinalizeEnabled = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(FinalizeEnabled)));
+            }
+        }
         public ImportWizardWindow(WizardData data, string path)
         {
+            DataContext = this;
             InitializeComponent();
 
             _Data = data;
@@ -69,7 +140,7 @@ namespace FFXIV_TexTools.Views.Wizard
 
             _PageCount = data.DataPages.Count;
 
-            var wizPages = importModPackWizard.Items;
+            var wizPages = WizardControl.Items;
 
             for (var i = 0; i < _PageCount; i++)
             {
@@ -81,8 +152,7 @@ namespace FFXIV_TexTools.Views.Wizard
                     HeaderBackground = null
                 });
             }
-
-            //this.ImportModPackWizard_Next
+            CurrentIndex = 0;
         }
 
         private void ModPackUrlLabel_PreviewMouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -97,59 +167,10 @@ namespace FFXIV_TexTools.Views.Wizard
             e.Handled = true;
         }
 
-
-        #region Event Handlers
-
-
-        /// <summary>
-        /// The event handler for the window closing
-        /// </summary>
-        private void MetroWindow_Closing(object sender, CancelEventArgs e)
-        {
-        }
-
-        /// <summary>
-        /// The event handler for the finish button
-        /// </summary>
-        private void ImportModPackWizard_Finish(object sender, Xceed.Wpf.Toolkit.Core.CancelRoutedEventArgs e)
-        {
-            FinalizeImport();
-        }
-
-        /// <summary>
-        /// The event handler for the next button
-        /// </summary>
-        private void ImportModPackWizard_Next(object sender, Xceed.Wpf.Toolkit.Core.CancelRoutedEventArgs e)
-        {
-            _CurrentPage++;
-
-            if (_CurrentPage == _PageCount)
-            {
-                importModPackWizard.FinishButtonVisibility = Visibility.Visible;
-                importModPackWizard.CanFinish = true;
-            }
-        }
-
-        /// <summary>
-        /// Event handler for previous page
-        /// </summary>
-        private void ImportModPackWizard_Previous(object sender, Xceed.Wpf.Toolkit.Core.CancelRoutedEventArgs e)
-        {
-            _CurrentPage--;
-
-            importModPackWizard.FinishButtonVisibility = Visibility.Collapsed;
-            importModPackWizard.CanFinish = false;
-        }
-
-        #endregion
-
-
-        #region Private Methods
-
         /// <summary>
         /// Writes all selected mods to game data
         /// </summary>
-        private async void FinalizeImport()
+        private async Task FinalizeImport()
         {
             (List<string> Imported, List<string> NotImported, float Duration) res = (null, null, 0);
             _ProgressController = await this.ShowProgressAsync(UIMessages.ModPackImportTitle, UIMessages.PleaseStandByMessage);
@@ -190,8 +211,6 @@ namespace FFXIV_TexTools.Views.Wizard
                 string.Format(UIMessages.SuccessfulImportCountMessage, TotalModsImported, TotalModsErrored, durationString));
             DialogResult = true;
         }
-
-        #endregion
 
 
         /// <summary>
@@ -293,6 +312,33 @@ namespace FFXIV_TexTools.Views.Wizard
                 IOUtil.DeleteTempDirectory(path);
             }
 
+        }
+
+        private void UpdateButtons()
+        {
+            PreviousEnabled = CurrentIndex > 0;
+            NextEnabled = CurrentIndex < WizardControl.Items.Count - 1;
+            FinalizeEnabled = !NextEnabled;
+        }
+
+        private void Cancel_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            DialogResult = false;
+        }
+
+        private void PrevPage_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            CurrentIndex--;
+        }
+
+        private void NextPage_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            CurrentIndex++;
+        }
+
+        private void Finalize_Click(object sender, RoutedEventArgs e)
+        {
+            _ = FinalizeImport();
         }
     }
 }
