@@ -149,7 +149,7 @@ namespace FFXIV_TexTools.Views.Wizard
 
                 // Sort by root information.
                 var diff = GetSortOrder(aIm) - GetSortOrder(bIm);
-                if(diff != 0)
+                if(diff != 0 || a.Type != "Imc")
                 {
                     return diff;
                 }
@@ -159,7 +159,6 @@ namespace FFXIV_TexTools.Views.Wizard
 
                 if(aImc == null)
                 {
-                    // No defined further sorting for other categories;
                     return 0;
                 }
 
@@ -169,6 +168,7 @@ namespace FFXIV_TexTools.Views.Wizard
 
         private static int GetSortOrder (IPMPItemMetadata manipulation)
         {
+            //Generic sort-order resolver for root using manipulations.
             var root = manipulation.GetRoot();
 
             // 6x shift
@@ -186,8 +186,6 @@ namespace FFXIV_TexTools.Views.Wizard
             {
                 val += (Imc.SlotOffsetDictionary.Keys.ToList().IndexOf(root.Info.Slot) + 1);
             }
-
-
 
             return val;
         }

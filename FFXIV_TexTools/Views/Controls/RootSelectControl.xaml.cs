@@ -29,7 +29,7 @@ namespace FFXIV_TexTools.Views.Controls
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public static readonly DependencyProperty RootProperty = DependencyProperty.Register("Root", 
+        public static readonly DependencyProperty RootProperty = DependencyProperty.Register(nameof(Root), 
             typeof(XivDependencyRoot), 
             typeof(RootSelectControl),
             new PropertyMetadata(RootChangedCallback));
@@ -41,6 +41,8 @@ namespace FFXIV_TexTools.Views.Controls
 
         public Func<IItem, bool> ItemSelect = ItemSelectFunc;
         public Func<IItem, bool> ItemFilter = ItemFilterFunc;
+
+        public EventHandler<XivDependencyRoot> RootChanged;
 
         public string LabelText
         {
@@ -62,9 +64,9 @@ namespace FFXIV_TexTools.Views.Controls
         private static void RootChangedCallback(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             var c = sender as RootSelectControl;
-            if (c != null)
+            if (c != null && e != null)
             {
-                c.PropertyChanged?.Invoke(c, new PropertyChangedEventArgs(nameof(Root)));
+                c.SetValue(RootProperty, e.NewValue as XivDependencyRoot);
                 c.PropertyChanged?.Invoke(c, new PropertyChangedEventArgs(nameof(LabelText)));
             }
         }
@@ -78,9 +80,7 @@ namespace FFXIV_TexTools.Views.Controls
             if (root == null) return;
 
             Root = root;
-
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Root)));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(LabelText)));
+            RootChanged?.Invoke(this, Root);
         }
 
         public static bool ItemSelectFunc(IItem item)

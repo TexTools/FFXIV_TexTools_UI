@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows.Controls;
+using System.Windows.Input;
 using xivModdingFramework.Mods.FileTypes;
 
 namespace FFXIV_TexTools.Views.Wizard
@@ -28,8 +29,8 @@ namespace FFXIV_TexTools.Views.Wizard
             }
         }
 
-        private ObservableCollection<KeyValuePair<string, PMPManipulationWrapperJson>> _Manipulations = new ObservableCollection<KeyValuePair<string, PMPManipulationWrapperJson>>();
-        public ObservableCollection<KeyValuePair<string, PMPManipulationWrapperJson>> Manipulations
+        private ObservableCollection<ManipulationKv> _Manipulations = new ObservableCollection<ManipulationKv>();
+        public ObservableCollection<ManipulationKv> Manipulations
         {
             get => _Manipulations;
             set
@@ -38,6 +39,8 @@ namespace FFXIV_TexTools.Views.Wizard
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Manipulations)));
             }
         }
+
+        private PMPManipulationWrapperJson _LastManipulation;
 
         private PMPManipulationWrapperJson _SelectedManipulation;
         public PMPManipulationWrapperJson SelectedManipulation
@@ -61,6 +64,18 @@ namespace FFXIV_TexTools.Views.Wizard
             { typeof(PMPGlobalEqpManipulationWrapperJson), typeof(GlobalEqpEditor) },
         };
 
+        public class ManipulationKv
+        {
+            public string Key { get; set; }
+            public PMPManipulationWrapperJson Value { get; set; }
+
+            public ManipulationKv(string key, PMPManipulationWrapperJson value)
+            {
+                Key = key;
+                Value = value;
+            }
+        }
+
         public ManipulationEditorWindow(WizardStandardOptionData data)
         {
             DataContext = this;
@@ -79,7 +94,7 @@ namespace FFXIV_TexTools.Views.Wizard
             Manipulations.Clear();
             foreach (var m in Data.Manipulations)
             {
-                Manipulations.Add(new KeyValuePair<string, PMPManipulationWrapperJson>(m.GetNiceName(), m));
+                Manipulations.Add(new ManipulationKv(m.GetNiceName(), m));
             }
 
             SelectedManipulation = Data.Manipulations.FirstOrDefault();
@@ -98,6 +113,10 @@ namespace FFXIV_TexTools.Views.Wizard
 
         private void ManipulationChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
+            if (_LastManipulation != null)
+            {
+                UpdateName(_LastManipulation);
+            }
             EditorBox.Content = null;
 
             if(SelectedManipulation == null)
@@ -117,6 +136,7 @@ namespace FFXIV_TexTools.Views.Wizard
             var control = Activator.CreateInstance(t, SelectedManipulation) as UserControl;
 
             EditorBox.Content = control;
+            _LastManipulation = SelectedManipulation;
         }
 
         private void ClearManipulations_Click(object sender, System.Windows.RoutedEventArgs e)
@@ -128,6 +148,23 @@ namespace FFXIV_TexTools.Views.Wizard
 
             Data.Manipulations.Clear();
             RebuildList();
+        }
+
+        public void UpdateName(object manipulation)
+        {
+            var kv = Manipulations.FirstOrDefault(x => x.Value.GetManipulation() == manipulation);
+            if (kv == null) return;
+            UpdateName(kv);
+        }
+        public void UpdateName(PMPManipulationWrapperJson wrapper)
+        {
+            var kv = Manipulations.FirstOrDefault(x => x.Value == wrapper);
+            if (kv == null) return;
+            UpdateName(kv);
+        }
+        public void UpdateName(ManipulationKv kv)
+        {
+            kv.Key = kv.Value.GetNiceName();
         }
     }
 }

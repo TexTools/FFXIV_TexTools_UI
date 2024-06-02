@@ -32,6 +32,7 @@ namespace FFXIV_TexTools.Views.Wizard.ManipulationEditors
         public event PropertyChangedEventHandler PropertyChanged;
 
 
+
         public XivDependencyRoot Root
         {
             get => Manipulation.GetRoot();
@@ -61,6 +62,7 @@ namespace FFXIV_TexTools.Views.Wizard.ManipulationEditors
         private bool ItemSelectFunc(IItem item)
         {
             var asIm = item as IItemModel;
+            if (asIm == null) return false;
             if (!Imc.UsesImc(asIm)) return false;
             return true;
         }
@@ -68,6 +70,7 @@ namespace FFXIV_TexTools.Views.Wizard.ManipulationEditors
         private bool ItemFilterFunc(IItem item)
         {
             var asIm = item as IItemModel;
+            if (asIm == null) return false;
             if (!Imc.UsesImc(asIm)) return false;
             return true;
         }
