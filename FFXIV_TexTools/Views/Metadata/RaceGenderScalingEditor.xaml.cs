@@ -42,7 +42,7 @@ namespace FFXIV_TexTools.Views.Metadata
         public async Task Init()
         {
 
-            _data = await CMP.GetScalingParameter(Race, Gender);
+            _data = await CMP.GetScalingParameter(Race, Gender, false, MainWindow.DefaultTransaction);
             if (_data == null)
             {
                 this.Close();

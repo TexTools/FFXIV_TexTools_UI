@@ -454,7 +454,7 @@ namespace FFXIV_TexTools.ViewModels
 
                     foreach (var mod in allMods)
                     {
-                        if (!mod.ItemName.Equals(selectedItem.Name)) continue;
+                        if (!mod.ItemName.Equals(category.Name)) continue;
 
                         if (mod.ModPack == modPackCategory.Name)
                         {
@@ -471,7 +471,7 @@ namespace FFXIV_TexTools.ViewModels
                     var itemNames = allMods.Select(x => x.ItemName).ToArray();
                     modItems =
                         (from mod in allMods
-                         where mod.ItemName.Equals(selectedItem.Name)
+                         where mod.ItemName.Equals(category.Name)
                          select mod).ToList();
                 }
 
