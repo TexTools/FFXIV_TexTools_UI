@@ -6,13 +6,14 @@
              xmlns:metadata="clr-namespace:FFXIV_TexTools.Views.Metadata"
              xmlns:local="clr-namespace:FFXIV_TexTools.Views.Wizard"
              mc:Ignorable="d" 
-             d:DesignHeight="120" d:DesignWidth="800"
+             d:DesignHeight="125" d:DesignWidth="800"
              DataContextChanged="OnDataContextChanged">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="40"/>
             <RowDefinition Height="40"/>
             <RowDefinition Height="40"/>
+            <RowDefinition Height="5"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="100"/>
@@ -34,5 +35,6 @@
         <Label Content="Description:" HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Row="2"></Label>
         <TextBox Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="3" Margin="5" Text="{Binding Path=Description}"></TextBox>
 
+        <Separator Grid.Row="3" Grid.ColumnSpan="5"></Separator>
     </Grid>
 </UserControl>

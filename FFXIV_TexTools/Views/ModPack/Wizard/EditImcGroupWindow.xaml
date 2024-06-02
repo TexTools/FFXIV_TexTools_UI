@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:FFXIV_TexTools.Views.Wizard"
         xmlns:metadata="clr-namespace:FFXIV_TexTools.Views.Metadata"
         mc:Ignorable="d"
-        Title="Imc Group Editor" Height="700" Width="800">
+        Title="Imc Group Editor" Height="740" Width="800">
     <Window.Resources>
         <DataTemplate x:Key="RowTemplate">
             <local:ImcOptionRow></local:ImcOptionRow>
@@ -16,6 +16,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="280"></RowDefinition>
             <RowDefinition Height="1*"></RowDefinition>
+            <RowDefinition Height="40"></RowDefinition>
         </Grid.RowDefinitions>
         <GroupBox Grid.Row="0" Header="Basic Settings">
             <Grid>
@@ -27,6 +28,7 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="100"/>
                     <ColumnDefinition Width="200"/>
+                    <ColumnDefinition Width="100"/>
                     <ColumnDefinition Width="100"/>
                     <ColumnDefinition Width="1*"/>
                 </Grid.ColumnDefinitions>
@@ -40,8 +42,10 @@
                 <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Path=Variant}" Width="100" HorizontalAlignment="Left" VerticalAlignment="Center"></TextBox>
                 
                 <CheckBox x:Name="IncludeDisableBox" Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2" Margin="5" Checked="IncludeDisable_Checked" Unchecked="IncludeDisable_Unchecked" Content="Include Disable Option"></CheckBox>
-                
-                <metadata:ImcVariantEditor Grid.Row="2" Grid.ColumnSpan="4" x:Name="VariantEditor"></metadata:ImcVariantEditor>
+
+                <CheckBox Grid.Row="1" Grid.Column="4" Grid.ColumnSpan="2" Margin="5" Content="Apply to All Variants" IsChecked="{Binding Path=AllVariants}"></CheckBox>
+
+                <metadata:ImcVariantEditor Grid.Row="2" Grid.ColumnSpan="5" x:Name="VariantEditor"></metadata:ImcVariantEditor>
                 
             </Grid>
         </GroupBox>
@@ -60,7 +64,7 @@
                 </ListView>
             </Grid>
         </GroupBox>
-            
-        
+
+        <Button Content="Done" Grid.Row="2" Width="150" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5"></Button>
     </Grid>
 </Window>

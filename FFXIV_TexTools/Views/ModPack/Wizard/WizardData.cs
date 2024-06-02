@@ -134,6 +134,7 @@ namespace FFXIV_TexTools.Views.Wizard
         public string Description { get; set; }
         public string Image { get; set; }
 
+
         private bool _Selected;
         public bool Selected
         {
@@ -165,6 +166,30 @@ namespace FFXIV_TexTools.Views.Wizard
                     else
                     {
                         _Group.UserSelection &= ~mask;
+                    }
+                }
+
+                if(GroupType == EGroupType.Imc && Selected == true)
+                {
+                    if (ImcData.IsDisableOption)
+                    {
+                        foreach(var opt in _Group.Options)
+                        {
+                            if(!opt.ImcData.IsDisableOption)
+                            {
+                                opt.Selected = false;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        foreach (var opt in _Group.Options)
+                        {
+                            if (opt.ImcData.IsDisableOption)
+                            {
+                                opt.Selected = false;
+                            }
+                        }
                     }
                 }
             }
@@ -271,8 +296,7 @@ namespace FFXIV_TexTools.Views.Wizard
 
             if(StandardData == null)
             {
-                throw new NotImplementedException();
-                return mo;
+                throw new NotImplementedException("TTMP Export does not support one or more of the selected Option types.");
             }
 
             foreach(var fkv in StandardData.Files)
@@ -394,6 +418,7 @@ namespace FFXIV_TexTools.Views.Wizard
         });
         public ushort Variant;
         public XivImc BaseEntry = new XivImc();
+        public bool AllVariants;
     }
 
     /// <summary>
@@ -556,6 +581,7 @@ namespace FFXIV_TexTools.Views.Wizard
                     Variant = imcGroup.Identifier.Variant,
                     Root = imcGroup.Identifier.GetRoot(),
                     BaseEntry = imcGroup.DefaultEntry.ToXivImc(),
+                    AllVariants = imcGroup.AllVariants,
                 };
             }
 
@@ -662,15 +688,9 @@ namespace FFXIV_TexTools.Views.Wizard
                 pg = imcG;
                 pg.Type = "Imc";
 
-                // Need to implement identifier and default values here.
-
-                // From ImcData.Root + ImcData.Variant
-                //imcG.Identifier = null; 
-
-                // From ImcData.BaseEntry
-                //imcG.DefaultEntry = new PMPImcManipulationJson.PMPImcEntry();
-
-                throw new NotImplementedException("Writing IMC Groups not yet implemented.");
+                imcG.Identifier = PmpIdentifierJson.FromRoot(ImcData.Root.Info, ImcData.Variant);
+                imcG.DefaultEntry = PMPImcManipulationJson.PMPImcEntry.FromXivImc(ImcData.BaseEntry);
+                imcG.AllVariants = ImcData.AllVariants;
             }
             else
             {
@@ -699,13 +719,16 @@ namespace FFXIV_TexTools.Views.Wizard
 
                 identifiers.TryGetValue(optionPrefix, out var files);
                 var opt = await option.ToPmpOption(tempFolder, files, imgName);
-                var so = opt as PmpStandardOptionJson;
-                if (option.StandardData.Manipulations != null)
-                {
-                    foreach (var m in option.StandardData.Manipulations)
+                if (option.StandardData != null)
+                { 
+                    var so = opt as PmpStandardOptionJson;
+                    if (option.StandardData.Manipulations != null)
                     {
-                        // Carry our extra manipulations through.
-                        so.Manipulations.Add(m);
+                        foreach (var m in option.StandardData.Manipulations)
+                        {
+                            // Carry our extra manipulations through.
+                            so.Manipulations.Add(m);
+                        }
                     }
                 }
                 pg.Options.Add(opt);

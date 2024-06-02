@@ -55,6 +55,15 @@ namespace FFXIV_TexTools.Views.Wizard
                 return Group.ImcData.Root.Info.GetBaseFileName();
             }
         }
+        public bool AllVariants
+        {
+            get => Group.ImcData.AllVariants;
+            set
+            {
+                Group.ImcData.AllVariants = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AllVariants)));
+            }
+        }
 
         private ObservableCollection<WrappedImcOption> _Options = new ObservableCollection<WrappedImcOption>();
         public ObservableCollection<WrappedImcOption> Options
