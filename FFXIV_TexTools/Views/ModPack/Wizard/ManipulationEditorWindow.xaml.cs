@@ -52,7 +52,13 @@ namespace FFXIV_TexTools.Views.Wizard
 
         private static Dictionary<Type, Type> EditorTypes = new Dictionary<Type, Type>()
         {
-            { typeof(PMPGlobalEqpManipulationWrapperJson), typeof(GlobalEqpEditor) }
+            { typeof(PMPEstManipulationWrapperJson), typeof(EstManipulationEditor) },
+            { typeof(PMPEqpManipulationWrapperJson), typeof(EqpManipulationEditor) },
+            { typeof(PMPEqdpManipulationWrapperJson), typeof(EqdpManipulationEditor) },
+            { typeof(PMPImcManipulationWrapperJson), typeof(ImcManipulationEditor) },
+            { typeof(PMPGmpManipulationWrapperJson), typeof(GmpManipulationEditor) },
+            { typeof(PMPRspManipulationWrapperJson), typeof(RspManipulationEditor) },
+            { typeof(PMPGlobalEqpManipulationWrapperJson), typeof(GlobalEqpEditor) },
         };
 
         public ManipulationEditorWindow(WizardStandardOptionData data)
