@@ -80,6 +80,30 @@ namespace FFXIV_TexTools.Views
 
         private WizardOptionEntry SelectedOption;
 
+        private int _LockCount = 0;
+
+        private int LockCount
+        {
+            get => _LockCount;
+            set
+            {
+                if(value < 0)
+                {
+                    value = 0;
+                }
+
+                _LockCount = value;
+                if(LockCount > 0)
+                {
+                    this.IsEnabled = false;
+                }
+                else
+                {
+                    this.IsEnabled = true;
+                }
+            }
+        }
+
         public EditWizardGroupWindow(WizardGroupEntry data)
         { 
             Data = data;
@@ -600,87 +624,107 @@ namespace FFXIV_TexTools.Views
             }
             if (file == null || file.Path == null || SelectedOption == null) return;
 
-            var includedModsList = IncludedModsList.Items.Cast<FileEntry>().ToList();
-
-            if (includedModsList.Any(f => f.Path.Equals(file.Path)))
+            LockCount++;
+            try
             {
-                if (FlexibleMessageBox.Show(new Wpf32Window(this),
-                        string.Format(UIMessages.ExistingOption, file.Name),
-                        UIMessages.OverwriteTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Question) !=
-                    System.Windows.Forms.DialogResult.Yes)
+                var includedModsList = IncludedModsList.Items.Cast<FileEntry>().ToList();
+
+                if (includedModsList.Any(f => f.Path.Equals(file.Path)))
                 {
-                    return;
+                    if (FlexibleMessageBox.Show(new Wpf32Window(this),
+                            string.Format(UIMessages.ExistingOption, file.Name),
+                            UIMessages.OverwriteTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Question) !=
+                        System.Windows.Forms.DialogResult.Yes)
+                    {
+                        return;
+                    }
+                }
+
+                var data = SelectedOption.StandardData;
+
+                if (storageHandle == null)
+                {
+                    try
+                    {
+                        var tx = MainWindow.DefaultTransaction;
+                        storageHandle = await tx.UNSAFE_GetStorageInfo(file.Path);
+                    }
+                    catch (Exception ex)
+                    {
+                        this.ShowError("File Add Error", "An error occurred while adding the file:\n\n" + ex.Message);
+                        return;
+                    }
+                }
+
+                if (data.Files.ContainsKey(file.Path))
+                {
+                    data.Files[file.Path] = storageHandle.Value;
+                }
+                else
+                {
+                    IncludedModsList.Items.Add(file);
+                    data.Files.Add(file.Path, storageHandle.Value);
                 }
             }
-
-            var data = SelectedOption.StandardData;
-
-            if(storageHandle == null)
+            finally
             {
-                try
-                {
-                    var tx = MainWindow.DefaultTransaction;
-                    storageHandle = await tx.UNSAFE_GetStorageInfo(file.Path);
-                } catch(Exception ex)
-                {
-                    this.ShowError("File Add Error", "An error occurred while adding the file:\n\n" + ex.Message);
-                    return;
-                }
-            }
-            
-            if(data.Files.ContainsKey(file.Path))
-            {
-                data.Files[file.Path] = storageHandle.Value;
-            } else
-            {
-                IncludedModsList.Items.Add(file);
-                data.Files.Add(file.Path, storageHandle.Value);
+                LockCount--;
             }
 
         }
 
         private async Task AddWithChildren(string file, FileStorageInformation? storageHandle = null, bool skipSelf = false)
         {
-            var tx = MainWindow.DefaultTransaction;
-            var children = new HashSet<string>();
-            if (Path.GetExtension(file) == ".meta")
+            LockCount++;
+            try
             {
-                // If we're the root file, use the proper get all function
-                // which will throw in the AVFX/ATEX stuff as well.
-                var root = await XivCache.GetFirstRoot(file);
-                if(root != null)
+                var tx = MainWindow.DefaultTransaction;
+                var children = new HashSet<string>();
+                if (Path.GetExtension(file) == ".meta")
                 {
-                    var files = await root.GetAllFiles();
-                    children = files.ToHashSet();
+                    // If we're the root file, use the proper get all function
+                    // which will throw in the AVFX/ATEX stuff as well.
+                    var root = await XivCache.GetFirstRoot(file);
+                    if (root != null)
+                    {
+                        var files = await root.GetAllFiles();
+                        children = files.ToHashSet();
+                    }
                 }
-            } else
-            {
-                children = await XivCache.GetChildrenRecursive(file, tx);
-            }
-
-
-            foreach (var child in children)
-            {
-                if (child == file && skipSelf) continue;
-
-                var fe = new FileEntry() { Name = MakeFriendlyFileName(child), Path = child };
-                if (child == file && storageHandle != null)
+                else
                 {
-                    await AddFile(fe, storageHandle.Value);
-                } else 
+                    children = await XivCache.GetChildrenRecursive(file, tx);
+                }
+
+
+                foreach (var child in children)
                 {
-                    try
+                    if (child == file && skipSelf) continue;
+
+                    var fe = new FileEntry() { Name = MakeFriendlyFileName(child), Path = child };
+                    if (child == file && storageHandle != null)
                     {
-                        var info = await tx.UNSAFE_GetStorageInfo(child);
-                        await AddFile(fe, info);
-                    } catch(Exception ex)
+                        await AddFile(fe, storageHandle.Value);
+                    }
+                    else
                     {
-                        this.ShowError("File Add Error", "An error occurred while adding a file:\n" + child + "\n\n" + ex.Message);
+                        try
+                        {
+                            var info = await tx.UNSAFE_GetStorageInfo(child);
+                            await AddFile(fe, info);
+                        }
+                        catch (Exception ex)
+                        {
+                            this.ShowError("File Add Error", "An error occurred while adding a file:\n" + child + "\n\n" + ex.Message);
+                        }
                     }
                 }
             }
+            finally
+            {
+                LockCount--;
+            }
         }
-
         /// <summary>
         /// The event handler for the current texture button clicked
         /// </summary>
@@ -692,22 +736,30 @@ namespace FFXIV_TexTools.Views
 
         private FileStorageInformation WriteTempFile(byte[] data, bool compressed = false)
         {
-            var tempPath = Path.GetTempFileName();
-            File.WriteAllBytes(tempPath, data);
+            LockCount++;
+            try
+            {
+                var tempPath = Path.GetTempFileName();
+                File.WriteAllBytes(tempPath, data);
 
-            var info = new FileStorageInformation()
-            {
-                RealPath = tempPath,
-                RealOffset = 0,
-                FileSize = data.Length,
-                StorageType = EFileStorageType.UncompressedIndividual,
-            };
-            if (compressed)
-            {
-                info.StorageType = EFileStorageType.CompressedIndividual;
+                var info = new FileStorageInformation()
+                {
+                    RealPath = tempPath,
+                    RealOffset = 0,
+                    FileSize = data.Length,
+                    StorageType = EFileStorageType.UncompressedIndividual,
+                };
+                if (compressed)
+                {
+                    info.StorageType = EFileStorageType.CompressedIndividual;
+                }
+
+                return info;
             }
-
-            return info;
+            finally
+            {
+                LockCount--;
+            }
         }
 
         /// <summary>
@@ -724,6 +776,7 @@ namespace FFXIV_TexTools.Views
 
             if (result != System.Windows.Forms.DialogResult.OK) return;
 
+            LockCount++;
             try
             {
                 var data = await SmartImport.CreateUncompressedFile(openFileDialog.FileName, selectedFile.Path, MainWindow.DefaultTransaction);
@@ -737,6 +790,10 @@ namespace FFXIV_TexTools.Views
                     string.Format(UIMessages.TextureImportErrorMessage, ex.Message), UIMessages.TextureImportErrorTitle,
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
+            }
+            finally
+            {
+                LockCount--;
             }
         }
 
@@ -761,6 +818,7 @@ namespace FFXIV_TexTools.Views
             var selectedFile = MaterialComboBox.SelectedItem as FileEntry;
             var addChildren = MaterialIncludeChildrenBox.IsChecked == true ? true : false;
 
+            LockCount++;
             try
             {
                 var mtrlData = new byte[0];
@@ -799,6 +857,10 @@ namespace FFXIV_TexTools.Views
             {
                 ViewHelpers.ShowError("Colorset Import Error".L(), "Unable to Import Colorset:\n\n".L() + ex.Message);
             }
+            finally
+            {
+                LockCount--;
+            }
 
 
         }
@@ -814,6 +876,7 @@ namespace FFXIV_TexTools.Views
             if (result != System.Windows.Forms.DialogResult.OK) return;
 
 
+            LockCount++;
             try
             {
                 var data = await SmartImport.CreateUncompressedFile(openFileDialog.FileName, selectedFile.Path, MainWindow.DefaultTransaction);
@@ -827,6 +890,10 @@ namespace FFXIV_TexTools.Views
                     string.Format(UIMessages.TextureImportErrorMessage, ex.Message), UIMessages.TextureImportErrorTitle,
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
+            }
+            finally
+            {
+                LockCount--;
             }
         }
 
@@ -854,6 +921,7 @@ namespace FFXIV_TexTools.Views
         {
             var selectedFile = ModelTypeComboBox.SelectedItem as FileEntry;
             var itemModel = (IItemModel) SelectedItem;
+            LockCount++;
             try
             {
                 var result = await ImportModelView.ImportModel(selectedFile.Path, itemModel, true, null, Window.GetWindow(this));
@@ -870,6 +938,10 @@ namespace FFXIV_TexTools.Views
                 FlexibleMessageBox.Show(new Wpf32Window(this), ex.Message, UIMessages.AdvancedImportErrorTitle,
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
+            }
+            finally
+            {
+                LockCount--;
             }
 
         }
@@ -960,32 +1032,41 @@ namespace FFXIV_TexTools.Views
                 SelectedOption.StandardData.Manipulations = new List<PMPManipulationWrapperJson>();
             }
 
-            var toRemove = new List<PMPManipulationWrapperJson>();
-            var manips = SelectedOption.StandardData.Manipulations;
-
-            foreach(var m in manips)
+            LockCount++;
+            try
             {
-                var im = m.GetManipulation() as IPMPItemMetadata;
-                if (im == null) continue;
-                var mRoot = im.GetRoot();
-                if(mRoot == metadata.Root)
+                var toRemove = new List<PMPManipulationWrapperJson>();
+                var manips = SelectedOption.StandardData.Manipulations;
+
+                foreach (var m in manips)
                 {
-                    toRemove.Add(m);
+                    var im = m.GetManipulation() as IPMPItemMetadata;
+                    if (im == null) continue;
+                    var mRoot = im.GetRoot();
+                    if (mRoot == metadata.Root)
+                    {
+                        toRemove.Add(m);
+                    }
                 }
-            }
 
-            foreach(var m in toRemove)
+                foreach (var m in toRemove)
+                {
+                    manips.Remove(m);
+                }
+
+                var newManips = PMPExtensions.MetadataToManipulations(metadata);
+                manips.AddRange(newManips);
+                UpdateManipulationText();
+            }
+            finally
             {
-                manips.Remove(m);
+                LockCount--;
             }
-
-            var newManips = PMPExtensions.MetadataToManipulations(metadata);
-            manips.AddRange(newManips);
-            UpdateManipulationText();
         }
 
         private async void AddMetadataButton_Click(object sender, RoutedEventArgs e)
         {
+            LockCount++;
             try
             {
                 if (SelectedOption == null) return;
@@ -1010,6 +1091,10 @@ namespace FFXIV_TexTools.Views
             catch(Exception ex)
             {
                 this.ShowError("Add File Error".L(), "An error occurred while adding the file:\n\n".L() + ex.Message);
+            }
+            finally
+            {
+                LockCount--;
             }
         }
 
@@ -1082,6 +1167,7 @@ namespace FFXIV_TexTools.Views
 
         private void AddButton_Click(object sender, RoutedEventArgs e)
         {
+            throw new NotImplementedException("Needs to be redone.");
             foreach (var item in ModpackContents.SelectedItems)
             {
                 var modsJson = (ModsJson)item;                
@@ -1122,6 +1208,7 @@ namespace FFXIV_TexTools.Views
 
             if (result != System.Windows.Forms.DialogResult.OK) return;
 
+            LockCount++;
             try
             {
                 var data = await SmartImport.CreateUncompressedFile(openFileDialog.FileName, selectedFile.Path, MainWindow.DefaultTransaction);
@@ -1135,6 +1222,10 @@ namespace FFXIV_TexTools.Views
                     string.Format(UIMessages.TextureImportErrorMessage, ex.Message), UIMessages.TextureImportErrorTitle,
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
+            }
+            finally
+            {
+                LockCount--;
             }
         }
 
@@ -1154,6 +1245,7 @@ namespace FFXIV_TexTools.Views
 
             if (result != System.Windows.Forms.DialogResult.OK) return;
 
+            LockCount++;
             try
             {
                 // Slightly more complex.  Because Metadata files have internal root path references,
@@ -1186,6 +1278,10 @@ namespace FFXIV_TexTools.Views
                     string.Format(UIMessages.TextureImportErrorMessage, ex.Message), UIMessages.TextureImportErrorTitle,
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
+            }
+            finally
+            {
+                LockCount--;
             }
         }
 

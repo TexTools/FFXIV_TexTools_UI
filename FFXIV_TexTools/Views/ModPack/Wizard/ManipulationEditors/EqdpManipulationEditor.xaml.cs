@@ -15,6 +15,9 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using xivModdingFramework.Cache;
+using xivModdingFramework.Items;
+using xivModdingFramework.Items.Enums;
+using xivModdingFramework.Items.Interfaces;
 using xivModdingFramework.Mods.FileTypes;
 using xivModdingFramework.Mods.FileTypes.PMP;
 
@@ -111,6 +114,24 @@ namespace FFXIV_TexTools.Views.Wizard.ManipulationEditors
             DataContext = this;
             Manipulation = wrapper.Manipulation;
             InitializeComponent();
+            RootControl.ItemFilter = ItemFilterFunc;
+            RootControl.ItemSelect = ItemSelectFunc;
+        }
+
+        private bool ItemSelectFunc(IItem item)
+        {
+            var type = item.GetPrimaryItemType();
+            if (type != XivItemType.equipment
+                 && type != XivItemType.accessory) return false;
+            return true;
+        }
+
+        private bool ItemFilterFunc(IItem item)
+        {
+            var type = item.GetPrimaryItemType();
+            if (type != XivItemType.equipment
+                 && type != XivItemType.accessory) return false;
+            return true;
         }
 
     }
