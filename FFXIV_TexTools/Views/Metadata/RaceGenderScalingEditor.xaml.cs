@@ -41,13 +41,13 @@ namespace FFXIV_TexTools.Views.Metadata
 
         public async Task Init()
         {
-            if (Race == XivSubRace.Invalid)
+
+            _data = await CMP.GetScalingParameter(Race, Gender);
+            if (_data == null)
             {
                 this.Close();
                 return;
             }
-
-            _data = await CMP.GetScalingParameter(Race, Gender);
 
             Title = $"Racial Settings - {Race.GetDisplayName()._()} - {Gender.ToString()._()}".L();
             TitleBox.Content = $"Racial Settings: {Race.GetDisplayName()._()} - {Gender.ToString()._()}".L();
@@ -123,7 +123,7 @@ namespace FFXIV_TexTools.Views.Metadata
                 SaveButton.IsEnabled = false;
                 SaveButton.Content = "Working...".L();
 
-                await CMP.SaveScalingParameter(_data, XivStrings.TexTools);
+                await CMP.SaveScalingParameter(_data, XivStrings.TexTools, MainWindow.UserTransaction);
 
                 this.Close();
             } catch(Exception ex)

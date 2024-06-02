@@ -298,24 +298,5 @@ namespace FFXIV_TexTools.Views
             (DataContext as ModListViewModel).Dispose();
             _cts?.Dispose();
         }
-
-        private Dictionary<string, EModState> ModStates;
-        private async Task SaveModListState(ModTransaction tx)
-        {
-            var ml = await tx.GetModList();
-            var mods = ml.GetMods();
-
-            ModStates = new Dictionary<string, EModState>();
-            foreach(var mod in mods)
-            {
-                var state = await mod.GetState(tx);
-                ModStates.Add(mod.FilePath, state);
-            }
-        }
-
-        private async Task<bool> CheckForChanges(ModTransaction tx)
-        {
-            return true;
-        }
     }
 }

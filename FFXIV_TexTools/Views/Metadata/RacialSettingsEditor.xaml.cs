@@ -33,14 +33,9 @@ namespace FFXIV_TexTools.Views.Metadata
 
             var races  = Enum.GetValues(typeof(XivSubRace)).Cast<XivSubRace>();
 
-            var rowIdx = -1;
+            var rowIdx = 0;
             foreach(var race in races)
             {
-                if(race == XivSubRace.Invalid)
-                {
-                    continue;
-                }
-
                 var clanId = race.GetSubRaceId();
                 if (clanId == 0)
                 {
@@ -91,16 +86,10 @@ namespace FFXIV_TexTools.Views.Metadata
         private void Btn_Click(object sender, RoutedEventArgs e)
         {
             var context = ((ButtonContext)((Button)e.Source).DataContext);
-
-            if (context.Race == XivSubRace.Invalid)
-            {
-                return;
-            }
-
             var wind = new RaceGenderScalingEditor(context.Race, context.Gender) { Owner = this };
             wind.WindowStartupLocation = WindowStartupLocation.CenterOwner;
 
-            wind.Init();
+            _ = wind.Init();
         }
 
         private void DoneButton_Click(object sender, RoutedEventArgs e)
