@@ -319,6 +319,7 @@ namespace FFXIV_TexTools.ViewModels
             {
                 // No mods.  Just create backups and move on with our life.
                 await BackupIndexFiles();
+                await _mainWindow.UnlockUi();
                 return;
             }
 

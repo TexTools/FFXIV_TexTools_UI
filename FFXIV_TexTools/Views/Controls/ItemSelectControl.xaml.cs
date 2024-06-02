@@ -21,6 +21,7 @@ using FFXIV_TexTools.Helpers;
 using xivModdingFramework.Items;
 using System.Runtime.CompilerServices;
 using System.Diagnostics;
+using Microsoft.Extensions.Logging;
 
 namespace FFXIV_TexTools.Views.Controls
 {
@@ -138,7 +139,7 @@ namespace FFXIV_TexTools.Views.Controls
                 // All the other functions are safety checked on the _READY var.
                 if (CategoryElements.Count == 0)
                 {
-                    LoadItems();
+                    _ = LoadItems();
                 }
             }
         }
@@ -280,10 +281,44 @@ namespace FFXIV_TexTools.Views.Controls
             }
         }
 
+        private void PreloadBaseCategories()
+        {
+            var gear = new ItemTreeElement(null, null, XivStrings.Gear);
+            CategoryElements.Add(gear);
+
+            gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Head));
+            gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Body));
+            gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Hands));
+            gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Legs));
+            gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Feet));
+
+
+            gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Main_Hand));
+            gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Off_Hand));
+            gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Dual_Wield));
+            gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Two_Handed));
+
+            gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Earring));
+            gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Neck));
+            gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Wrists));
+            gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Rings));
+
+            gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Head_Body));
+            gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Body_Hands));
+            gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Body_Hands_Legs));
+            gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Body_Hands_Legs_Feet));
+            gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Legs_Feet));
+            gear.Children.Add(new ItemTreeElement(null, null, XivStrings.All));
+
+            gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Food));
+        }
+
         private async Task<List<IItem>> BuildCategoryTree()
         {
-            var gameDir = XivCache.GameInfo.GameDirectory;
-            var language = XivCache.GameInfo.GameLanguage;
+            CategoryElements.Clear();
+
+            PreloadBaseCategories();
+
 
             var items = await XivCache.GetFullItemList();
 

@@ -474,7 +474,7 @@ namespace FFXIV_TexTools.ViewModels
         /// <returns>A dictionary containing an array of skin numbers per race</returns>
         private async Task GetCharaSkinDictionary()
         {
-            var character = new Character(XivCache.GameInfo.GameDirectory, XivLanguages.GetXivLanguage(Settings.Default.Application_Language));
+            var character = new Character();
 
             var xivChara = new XivCharacter
             {
