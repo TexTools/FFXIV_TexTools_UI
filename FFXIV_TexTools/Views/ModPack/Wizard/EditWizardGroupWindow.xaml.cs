@@ -327,91 +327,97 @@ namespace FFXIV_TexTools.Views
         /// </summary>
         private void OptionList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            IncludedModsList.Items.Clear();
-
-            var uiOpt = OptionList.SelectedItem as EditableOptionControl;
-            if(uiOpt == null)
+            LockCount++;
+            try
             {
-                SelectedOption = null;
-                ModListGrid.IsEnabled = false;
-                OptionDescription.IsEnabled = false;
-                OptionImageButton.IsEnabled = false;
-                RemoveOptionButton.IsEnabled = false;
-                MoveOptionUpButton.IsEnabled = false;
-                MoveOptionDownButton.IsEnabled = false;
-                RenameOptionButton.IsEnabled = false;
-                OptionImage.Source = null;
-                EditManipulationsButton.IsEnabled = false;
-                return;
-            }
+                IncludedModsList.Items.Clear();
 
-            SelectedOption = uiOpt.Option;
-            OptionDescription.Text = SelectedOption.Description ?? "";
-
-            OptionImage.Source = null;
-            if (!string.IsNullOrWhiteSpace(SelectedOption.Image))
-            {
-                OptionImage.Source = ViewHelpers.SafeBitmapFromFile(SelectedOption.Image);
-            }
-
-            var opData = SelectedOption.StandardData;
-            if(opData != null)
-            {
-                foreach(var fileKv in opData.Files)
+                var uiOpt = OptionList.SelectedItem as EditableOptionControl;
+                if (uiOpt == null)
                 {
-                    var includedMods = new FileEntry
-                    {
-                        Name = MakeFriendlyFileName(fileKv.Key),
-                        Path = fileKv.Key
-                    };
-
-                    IncludedModsList.Items.Add(includedMods);
+                    SelectedOption = null;
+                    ModListGrid.IsEnabled = false;
+                    OptionDescription.IsEnabled = false;
+                    OptionImageButton.IsEnabled = false;
+                    RemoveOptionButton.IsEnabled = false;
+                    MoveOptionUpButton.IsEnabled = false;
+                    MoveOptionDownButton.IsEnabled = false;
+                    RenameOptionButton.IsEnabled = false;
+                    OptionImage.Source = null;
+                    EditManipulationsButton.IsEnabled = false;
+                    return;
                 }
 
-                if (Data.Options.Count > 1)
+
+                SelectedOption = uiOpt.Option;
+                OptionDescription.Text = SelectedOption.Description ?? "";
+
+                OptionImage.Source = null;
+                if (!string.IsNullOrWhiteSpace(SelectedOption.Image))
                 {
-                    // Enable the move up button only when the option isn't already first
-                    if (OptionList.SelectedIndex > 0)
+                    OptionImage.Source = ViewHelpers.SafeBitmapFromFile(SelectedOption.Image);
+                }
+
+                var opData = SelectedOption.StandardData;
+                if (opData != null)
+                {
+                    foreach (var fileKv in opData.Files)
                     {
-                        MoveOptionUpButton.IsEnabled = true;
+                        var includedMods = new FileEntry
+                        {
+                            Name = MakeFriendlyFileName(fileKv.Key),
+                            Path = fileKv.Key
+                        };
+
+                        IncludedModsList.Items.Add(includedMods);
+                    }
+
+                    if (Data.Options.Count > 1)
+                    {
+                        // Enable the move up button only when the option isn't already first
+                        if (OptionList.SelectedIndex > 0)
+                        {
+                            MoveOptionUpButton.IsEnabled = true;
+                        }
+                        else
+                        {
+                            MoveOptionUpButton.IsEnabled = false;
+                        }
+
+                        // Enable the move down button only when the option isn't already last
+                        if (OptionList.SelectedIndex < (OptionList.Items.Count - 1))
+                        {
+                            MoveOptionDownButton.IsEnabled = true;
+                        }
+                        else
+                        {
+                            MoveOptionDownButton.IsEnabled = false;
+                        }
                     }
                     else
                     {
                         MoveOptionUpButton.IsEnabled = false;
-                    }
-
-                    // Enable the move down button only when the option isn't already last
-                    if (OptionList.SelectedIndex < (OptionList.Items.Count - 1))
-                    {
-                        MoveOptionDownButton.IsEnabled = true;
-                    }
-                    else
-                    {
                         MoveOptionDownButton.IsEnabled = false;
                     }
+                    UpdateManipulationText();
                 }
-                else
+
+                ModListGrid.IsEnabled = true;
+                OptionDescription.IsEnabled = true;
+                OptionImageButton.IsEnabled = true;
+                RemoveOptionButton.IsEnabled = true;
+                RenameOptionButton.IsEnabled = true;
+                EditManipulationsButton.IsEnabled = true;
+
+                if (SelectedItem != null)
                 {
-                    MoveOptionUpButton.IsEnabled = false;
-                    MoveOptionDownButton.IsEnabled = false;
+                    ItemList_ItemSelected(this, SelectedItem);
                 }
-                UpdateManipulationText();
             }
-
-            ModListGrid.IsEnabled = true;
-            OptionDescription.IsEnabled = true;
-            OptionImageButton.IsEnabled = true;
-            RemoveOptionButton.IsEnabled = true;
-            RenameOptionButton.IsEnabled = true;
-            EditManipulationsButton.IsEnabled = true;
-
-
-
-            if (SelectedItem != null)
+            finally
             {
-                ItemList_ItemSelected(this, SelectedItem);
+                LockCount--;
             }
-
         }
 
 
@@ -1056,6 +1062,7 @@ namespace FFXIV_TexTools.Views
 
                 var newManips = PMPExtensions.MetadataToManipulations(metadata);
                 manips.AddRange(newManips);
+                SelectedOption.StandardData.SortManipulations();
                 UpdateManipulationText();
             }
             finally
@@ -1289,11 +1296,15 @@ namespace FFXIV_TexTools.Views
         {
             if(SelectedOption == null) return;
 
+            SelectedOption.StandardData.SortManipulations();
+
             var data = SelectedOption.StandardData;
             var wind = new ManipulationEditorWindow(data);
             wind.Owner = this;
             wind.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             wind.ShowDialog();
+
+            SelectedOption.StandardData.SortManipulations();
             UpdateManipulationText();
         }
         private void UpdateManipulationText()

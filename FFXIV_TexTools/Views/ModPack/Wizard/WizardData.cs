@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data.Entity.Infrastructure;
+using System.Drawing.Text;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -22,6 +23,7 @@ using xivModdingFramework.Mods.FileTypes;
 using xivModdingFramework.Mods.FileTypes.PMP;
 using xivModdingFramework.SqPack.FileTypes;
 using xivModdingFramework.Variants.DataContainers;
+using xivModdingFramework.Variants.FileTypes;
 using static xivModdingFramework.Mods.FileTypes.TTMP;
 using Image = SixLabors.ImageSharp.Image;
 
@@ -90,7 +92,104 @@ namespace FFXIV_TexTools.Views.Wizard
 
         protected override bool HasData()
         {
-            return Files.Count > 0;
+            return Files.Count > 0 || Manipulations.Count > 0;
+        }
+
+        private static List<string> ManipulationTypeSortOrder = new List<string>()
+        {
+            "Imc",
+            "Eqp",
+            "Eqdp",
+            "Est",
+            "Gmp",
+            "Rsp",
+            "GlobalEqp"
+        };
+
+        public void SortManipulations()
+        {
+            Manipulations.Sort((a,b) =>
+            {
+                if(a == null || b == null)
+                {
+                    return -1;
+                }
+                var aType = ManipulationTypeSortOrder.IndexOf(a.Type);
+                var bType = ManipulationTypeSortOrder.IndexOf(b.Type);
+                
+                aType = aType < 0 ? int.MaxValue : aType;
+                bType = bType < 0 ? int.MaxValue : bType;
+
+                if(aType != bType)
+                {
+                    return aType - bType;
+                }
+
+                if(a.Type == "Rsp")
+                {
+                    var aRsp = a.GetManipulation() as PMPRspManipulationJson;
+                    var bRsp = b.GetManipulation() as PMPRspManipulationJson;
+
+                    var aVal = (int)aRsp.GetRaceGenderHash();
+                    var bVal = (int)bRsp.GetRaceGenderHash();
+
+                    aVal = aVal * 100 + (int)aRsp.Attribute;
+                    bVal = bVal * 100 + (int)aRsp.Attribute;
+                    return aVal - bVal;
+                }
+
+                var aIm = a.GetManipulation() as IPMPItemMetadata;
+                var bIm = b.GetManipulation() as IPMPItemMetadata;
+                
+                if(aIm == null)
+                {
+                    // No defined order for non Item, Non-Rsp types.
+                    return 0;
+                }
+
+                // Sort by root information.
+                var diff = GetSortOrder(aIm) - GetSortOrder(bIm);
+                if(diff != 0)
+                {
+                    return diff;
+                }
+
+                var aImc = a.GetManipulation() as PMPImcManipulationJson;
+                var bImc = b.GetManipulation() as PMPImcManipulationJson;
+
+                if(aImc == null)
+                {
+                    // No defined further sorting for other categories;
+                    return 0;
+                }
+
+                return (int)aImc.Variant - (int)bImc.Variant;
+            });
+        }
+
+        private static int GetSortOrder (IPMPItemMetadata manipulation)
+        {
+            var root = manipulation.GetRoot();
+
+            // 6x shift
+            var val = (int)root.Info.PrimaryType * 1000000;
+
+            // 2x shift
+            val += root.Info.PrimaryId * 100;
+
+            // 0x shift
+            if (root.Info.Slot == null || !Imc.SlotOffsetDictionary.ContainsKey(root.Info.Slot))
+            {
+                val += 0;
+            }
+            else
+            {
+                val += (Imc.SlotOffsetDictionary.Keys.ToList().IndexOf(root.Info.Slot) + 1);
+            }
+
+
+
+            return val;
         }
     }
 
