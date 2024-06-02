@@ -287,7 +287,7 @@ namespace FFXIV_TexTools.Views.Wizard
             };
 
             g.ImcData = new WizardImcGroupData();
-            g.OptionType = EOptionType.Single;
+            g.OptionType = EOptionType.Multi;
 
             var o = new WizardOptionEntry(g)
             {

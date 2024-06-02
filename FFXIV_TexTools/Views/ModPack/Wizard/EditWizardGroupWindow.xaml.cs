@@ -406,32 +406,9 @@ namespace FFXIV_TexTools.Views
         /// </summary>
         private void OptionImageButton_Click(object sender, RoutedEventArgs e)
         {
-            var openFileDialog = new OpenFileDialog
-            {
-                Filter = "Image Files|*.BMP;*.JPG;*.GIF;*.PNG;*.TGA".L()
-            };
-
-
-            if (openFileDialog.ShowDialog() != System.Windows.Forms.DialogResult.OK) return;
-
-            try
-            {
-                var img = Image.Load(openFileDialog.FileName);
-
-                var tempFile = Path.GetTempFileName();
-                using (var fs = new FileStream(tempFile, FileMode.OpenOrCreate))
-                {
-                    var enc = new PngEncoder();
-                    img.Save(fs, enc);
-                }
-
-                SelectedOption.Image = tempFile;
-
-                OptionImage.Source = ViewHelpers.SafeBitmapFromFile(SelectedOption.Image);
-            } catch(Exception ex)
-            {
-                this.ShowError("Image Error".L(), "An error occurred while loading the image:\n\n" + ex.Message);
-            }
+            var res = ViewHelpers.LoadUserImage(this);
+            SelectedOption.Image = res.File;
+            OptionImage.Source = res.Image;
         }
 
         private void ItemList_ItemSelected(object sender, IItem item)

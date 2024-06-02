@@ -662,10 +662,7 @@ namespace FFXIV_TexTools.Views.Controls
                 CollectionViewSource.GetDefaultView(CategoryElements).Refresh();
                 CollectionViewSource.GetDefaultView(SetElements).Refresh();
 
-                if (FilterChanged != null)
-                {
-                    FilterChanged.Invoke(this, SearchBar.Text);
-                }
+                FilterChanged?.Invoke(this, SearchBar.Text);
             });
         }
 
@@ -733,7 +730,7 @@ namespace FFXIV_TexTools.Views.Controls
                 iMatch = iMatch || match;
             }
 
-            if (e.Children.Count > 0)
+            if (e.Children.Count > 0 && e.Item == null)
             {
                 var subItems = (CollectionView)CollectionViewSource.GetDefaultView((e).Children);
 
@@ -756,8 +753,17 @@ namespace FFXIV_TexTools.Views.Controls
             {
                 if(ExtraSearchFunction != null)
                 {
+                    var subHits = false;
+                    if(e.Children.Count > 0)
+                    {
+                        var subItems = (CollectionView)CollectionViewSource.GetDefaultView((e).Children);
+                        subItems.Filter = SearchFilter;
+                        subHits =  !subItems.IsEmpty;
+                    }
+
                     // If we have an extra search criteria supplied by an outside function, it has to pass that, too.
-                    iMatch = ExtraSearchFunction(e.Item) && iMatch;
+                    iMatch = ((ExtraSearchFunction(e.Item) || subHits) && iMatch);
+
                 }
             }
 

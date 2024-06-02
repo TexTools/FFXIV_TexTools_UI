@@ -386,9 +386,14 @@ namespace FFXIV_TexTools.Views.Wizard
 
     public class WizardImcGroupData
     {
-        public XivDependencyRoot Root;
+        public XivDependencyRoot Root = new XivDependencyRoot(new XivDependencyRootInfo()
+        {
+            PrimaryType = xivModdingFramework.Items.Enums.XivItemType.equipment,
+            PrimaryId = 1,
+            Slot = "top"
+        });
         public ushort Variant;
-        public XivImc BaseEntry;
+        public XivImc BaseEntry = new XivImc();
     }
 
     /// <summary>

@@ -121,9 +121,16 @@ namespace FFXIV_TexTools.Views.Controls
             }
         }
 
-        public static IItem ShowItemSelection(Func<IItem, bool> ExtraFilterFunction = null, Func<IItem, bool> AllowSelectFunction = null)
+        public static IItem ShowItemSelection(Func<IItem, bool> ExtraFilterFunction = null, Func<IItem, bool> AllowSelectFunction = null, Window owner = null)
         {
+            if(owner == null)
+            {
+                owner = MainWindow.GetMainWindow();
+            }
+
             var wind = new PopupItemSelection(ExtraFilterFunction, AllowSelectFunction);
+            wind.Owner = owner;
+            wind.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             var result = wind.ShowDialog();
             if (result != true) return null;
 

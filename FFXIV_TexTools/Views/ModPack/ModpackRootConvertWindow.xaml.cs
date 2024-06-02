@@ -381,7 +381,7 @@ namespace FFXIV_TexTools.Views
                 }
 
                 return false;
-            });
+            }, this);
 
             if (selectedItem == null) return;
 

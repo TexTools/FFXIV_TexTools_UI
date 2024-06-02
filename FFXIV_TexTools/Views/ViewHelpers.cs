@@ -3,6 +3,7 @@ using FFXIV_TexTools.Properties;
 using FFXIV_TexTools.Resources;
 using FolderSelect;
 using MahApps.Metro.Controls.Dialogs;
+using SixLabors.ImageSharp.Formats.Png;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -20,6 +21,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Mods.FileTypes;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 using UserControl = System.Windows.Controls.UserControl;
 
 namespace FFXIV_TexTools.Views
@@ -255,14 +257,24 @@ namespace FFXIV_TexTools.Views
         /// <returns></returns>
         public static BitmapImage SafeBitmapFromFile(string file)
         {
+            if (string.IsNullOrWhiteSpace(file))
+            {
+                return null;
+            }
 
-            var bmp = new BitmapImage();
-            using var stream = File.OpenRead(file);
-            bmp.BeginInit();
-            bmp.StreamSource = stream;
-            bmp.CacheOption = BitmapCacheOption.OnLoad;
-            bmp.EndInit();
-            return bmp;
+            try
+            {
+                var bmp = new BitmapImage();
+                using var stream = File.OpenRead(file);
+                bmp.BeginInit();
+                bmp.StreamSource = stream;
+                bmp.CacheOption = BitmapCacheOption.OnLoad;
+                bmp.EndInit();
+                return bmp;
+            } catch(Exception ex)
+            {
+                return null;
+            }
         }
 
 
@@ -274,6 +286,46 @@ namespace FFXIV_TexTools.Views
             var res = FlexibleMessageBox.Show(w32, message, title, MessageBoxButtons.OKCancel, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1);
             return res == DialogResult.OK;
 
+        }
+
+        public static (string File, BitmapImage Image) LoadUserImage(this DependencyObject d)
+        {
+            var wind = d as Window;
+            if (wind == null)
+            {
+                wind = Window.GetWindow(d);
+            }
+            return LoadUserImage(wind);
+        }
+        public static (string File, BitmapImage Image) LoadUserImage(this Window wind)
+        {
+            var openFileDialog = new OpenFileDialog
+            {
+                Filter = "Image Files|*.BMP;*.JPG;*.GIF;*.PNG;*.TGA".L()
+            };
+
+
+            if (openFileDialog.ShowDialog() != System.Windows.Forms.DialogResult.OK) return (null, null);
+
+            try
+            {
+                var img = SixLabors.ImageSharp.Image.Load(openFileDialog.FileName);
+
+                var tempFile = Path.GetTempFileName();
+                using (var fs = new FileStream(tempFile, FileMode.OpenOrCreate))
+                {
+                    var enc = new PngEncoder();
+                    img.Save(fs, enc);
+                }
+
+                return (tempFile, ViewHelpers.SafeBitmapFromFile(tempFile));
+
+            }
+            catch (Exception ex)
+            {
+                wind.ShowError("Image Error".L(), "An error occurred while loading the image:\n\n" + ex.Message);
+                return (null, null);
+            }
         }
     }
 }
