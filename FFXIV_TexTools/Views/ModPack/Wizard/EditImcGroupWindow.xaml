@@ -65,6 +65,6 @@
             </Grid>
         </GroupBox>
 
-        <Button Content="Done" Grid.Row="2" Width="150" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5"></Button>
+        <Button Content="Done" Grid.Row="2" Width="150" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5" Click="Done_Click"></Button>
     </Grid>
 </Window>

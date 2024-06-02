@@ -207,6 +207,11 @@ namespace FFXIV_TexTools.Views.Wizard
                 wind.WindowStartupLocation = WindowStartupLocation.CenterOwner;
                 wind.ShowDialog();
             }
+
+            if (owningGroup.Options.Count == 0)
+            {
+                Data.Groups.Remove(owningGroup);
+            }
             SetupUi();
         }
 
@@ -249,7 +254,7 @@ namespace FFXIV_TexTools.Views.Wizard
             if (owningGroup == null) return;
 
             var idx = Data.Groups.IndexOf(owningGroup);
-            if (idx >= Data.Groups.Count -2) return;
+            if (idx >= Data.Groups.Count - 1) return;
 
             var higherGroup = Data.Groups[idx + 1];
             Data.Groups[idx] = higherGroup;

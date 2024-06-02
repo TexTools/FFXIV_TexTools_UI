@@ -79,10 +79,20 @@ namespace FFXIV_TexTools.Views.Wizard
 
         public event Action<WrappedImcOption> MaskChanged;
 
+        public event Action<WrappedImcOption> MoveUpRequested;
+        public event Action<WrappedImcOption> MoveDownRequested;
 
         public void RequestRemove()
         {
             RemoveRequested?.Invoke(this);
+        }
+        public void RequestMoveUp()
+        {
+            MoveUpRequested?.Invoke(this);
+        }
+        public void RequestMoveDown()
+        {
+            MoveDownRequested?.Invoke(this);
         }
         public WrappedImcOption(WizardOptionEntry option)
         {
@@ -146,5 +156,14 @@ namespace FFXIV_TexTools.Views.Wizard
             MaskGrid.SetMask(Option.Mask);
         }
 
+        private void MoveOptionDownButton_Click(object sender, RoutedEventArgs e)
+        {
+            Option.RequestMoveDown();
+        }
+
+        private void MoveOptionUpButton_Click(object sender, RoutedEventArgs e)
+        {
+            Option.RequestMoveUp();
+        }
     }
 }

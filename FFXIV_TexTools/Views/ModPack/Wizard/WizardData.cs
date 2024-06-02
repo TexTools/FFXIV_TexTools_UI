@@ -659,7 +659,7 @@ namespace FFXIV_TexTools.Views.Wizard
         {
             if(this.ImcData != null)
             {
-                throw new InvalidDataException("TTMP Does not support IMC Selection Groups.");
+                throw new InvalidDataException("TTMP Does not support IMC Groups.");
             }
 
             var mg = new ModGroup()

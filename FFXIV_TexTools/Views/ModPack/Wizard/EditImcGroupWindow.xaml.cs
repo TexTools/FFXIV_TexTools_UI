@@ -92,6 +92,8 @@ namespace FFXIV_TexTools.Views.Wizard
             {
                 wo.RemoveRequested -= Option_RemoveRequested;
                 wo.MaskChanged -= Option_MaskChanged;
+                wo.MoveUpRequested -= Option_MoveUp;
+                wo.MoveDownRequested -= Option_MoveDown;
             }
             Options.Clear();
             foreach (var option in Group.Options)
@@ -100,9 +102,12 @@ namespace FFXIV_TexTools.Views.Wizard
                 var wo = new WrappedImcOption(option);
                 wo.RemoveRequested += Option_RemoveRequested;
                 wo.MaskChanged += Option_MaskChanged;
+                wo.MoveUpRequested += Option_MoveUp;
+                wo.MoveDownRequested += Option_MoveDown;
                 Options.Add(wo);
             }
         }
+
 
         private bool _UPDATING_MASKS;
         private void Option_MaskChanged(WrappedImcOption option)
@@ -182,6 +187,39 @@ namespace FFXIV_TexTools.Views.Wizard
             if (!hasDisable) return;
 
             Group.Options.RemoveAll(x => x.ImcData.IsDisableOption);
+        }
+
+        private void Option_MoveUp(WrappedImcOption option)
+        {
+            var minOp = 0;
+            if (Group.Options[0].ImcData.IsDisableOption)
+            {
+                minOp = 1;
+            }
+
+            var idx = Group.Options.IndexOf(option.Option);
+            if (idx == minOp) return;
+
+            var otherOption = Group.Options[idx - 1];
+            Group.Options[idx] = otherOption;
+            Group.Options[idx - 1] = option.Option;
+            RebuildOptions();
+        }
+
+        private void Option_MoveDown(WrappedImcOption option)
+        {
+            var idx = Group.Options.IndexOf(option.Option);
+            if (idx >= Group.Options.Count - 1) return;
+
+            var otherOption = Group.Options[idx + 1];
+            Group.Options[idx] = otherOption;
+            Group.Options[idx + 1] = option.Option;
+            RebuildOptions();
+        }
+
+        private void Done_Click(object sender, RoutedEventArgs e)
+        {
+            DialogResult = true;
         }
     }
 }
