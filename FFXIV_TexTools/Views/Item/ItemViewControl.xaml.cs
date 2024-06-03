@@ -1287,29 +1287,33 @@ namespace FFXIV_TexTools.Views.Item
                 return false;
             }
 
+
             string file = null;
-            if (!string.IsNullOrWhiteSpace(fileRemoved))
+            var ext = Path.GetExtension(fileRemoved);
+            if (TextureWrapper.FileControl.GetValidFileExtensions().Keys.Contains(ext))
             {
-                var ext = Path.GetExtension(fileRemoved);
-                if (TextureWrapper.FileControl.GetValidFileExtensions().Keys.Contains(ext))
-                {
-                    file = Textures.First().Value;
-                    file = file == fileRemoved ? Materials.First().Value : file;
-                } else if (MaterialWrapper.FileControl.GetValidFileExtensions().Keys.Contains(ext))
-                {
-                    file = Materials.First().Value;
-                    file = file == fileRemoved ? Models.First().Value : file;
-                } else if(ModelWrapper.FileControl.GetValidFileExtensions().Keys.Contains(ext))
-                {
-                    file = Models.First().Value;
-                    file = file == fileRemoved ? null : file;
-                } else
-                {
-                    file = null;
-                }
+                file = Textures.First().Value;
+                file = file == fileRemoved ? Materials.First().Value : file;
+            } else if (MaterialWrapper.FileControl.GetValidFileExtensions().Keys.Contains(ext))
+            {
+                file = Materials.First().Value;
+                file = file == fileRemoved ? Models.First().Value : file;
+            } else if(ModelWrapper.FileControl.GetValidFileExtensions().Keys.Contains(ext))
+            {
+                file = Models.First().Value;
+                file = file == fileRemoved ? null : file;
+            } else
+            {
+                file = null;
             }
 
-            _TargetFile = GetFileKeys(file);
+            if (file == _VisiblePanel.FilePath)
+            {
+                _TargetFile = GetFileKeys(file);
+            } else
+            {
+                _TargetFile = GetFileKeys(_VisiblePanel.FilePath);
+            }
             AddModels(Files.Keys.ToList());
             return true;
         }
