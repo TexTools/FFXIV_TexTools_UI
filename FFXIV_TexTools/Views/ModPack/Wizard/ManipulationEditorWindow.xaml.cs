@@ -63,10 +63,30 @@ namespace FFXIV_TexTools.Views.Wizard
             { typeof(PMPRspManipulationWrapperJson), typeof(RspManipulationEditor) },
             { typeof(PMPGlobalEqpManipulationWrapperJson), typeof(GlobalEqpEditor) },
         };
-
-        public class ManipulationKv
+        private static Dictionary<string, Type> ManipulationTypes = new Dictionary<string, Type>()
         {
-            public string Key { get; set; }
+            { "Imc", typeof(PMPImcManipulationWrapperJson) },
+            { "Eqp", typeof(PMPEqpManipulationWrapperJson) },
+            { "Eqdp", typeof(PMPEqdpManipulationWrapperJson) },
+            { "Est", typeof(PMPEstManipulationWrapperJson) },
+            { "Gmp", typeof(PMPGmpManipulationWrapperJson) },
+            { "Rsp", typeof(PMPRspManipulationWrapperJson) },
+            { "GlobalEqp", typeof(PMPGlobalEqpManipulationWrapperJson) },
+        };
+
+        public class ManipulationKv : INotifyPropertyChanged
+        {
+            public event PropertyChangedEventHandler PropertyChanged;
+            private string _Key;
+            public string Key
+            {
+                get => _Key;
+                set
+                {
+                    _Key = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Key)));
+                }
+            }
             public PMPManipulationWrapperJson Value { get; set; }
 
             public ManipulationKv(string key, PMPManipulationWrapperJson value)
@@ -74,6 +94,7 @@ namespace FFXIV_TexTools.Views.Wizard
                 Key = key;
                 Value = value;
             }
+
         }
 
         public ManipulationEditorWindow(WizardStandardOptionData data)
@@ -86,7 +107,33 @@ namespace FFXIV_TexTools.Views.Wizard
                 Data.Manipulations = new List<PMPManipulationWrapperJson>();
             }
 
+            foreach(var kv in ManipulationTypes)
+            {
+                var mi = new MenuItem();
+                mi.Header = kv.Key;
+                mi.Click += (object sender, System.Windows.RoutedEventArgs e) =>
+                {
+                    var manip = (PMPManipulationWrapperJson) Activator.CreateInstance(ManipulationTypes[kv.Key]);
+                    manip.Type = kv.Key;
+                    AddManipulation(manip);
+                };
+
+                AddContextMenu.Items.Add(mi);
+            }
+
             RebuildList();
+        }
+
+        private void AddManipulation(PMPManipulationWrapperJson manip)
+        {
+            Data.Manipulations.Add(manip);
+            Data.SortManipulations();
+            RebuildList();
+
+            var kv = Manipulations.FirstOrDefault(x => x.Value == manip);
+
+            ManipList.ScrollIntoView(kv);
+            SelectedManipulation = manip;
         }
 
         private void RebuildList()
@@ -165,6 +212,12 @@ namespace FFXIV_TexTools.Views.Wizard
         public void UpdateName(ManipulationKv kv)
         {
             kv.Key = kv.Value.GetNiceName();
+        }
+
+        private void AddManipulation_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            AddContextMenu.IsOpen = true;
+            AddContextMenu.PlacementTarget = AddButton;
         }
     }
 }

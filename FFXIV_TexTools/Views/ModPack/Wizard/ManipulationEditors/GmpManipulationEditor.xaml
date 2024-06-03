@@ -18,7 +18,7 @@
             <ColumnDefinition Width="100"/>
             <ColumnDefinition Width="100"/>
         </Grid.ColumnDefinitions>
-        <controls:RootSelectControl Grid.ColumnSpan="3" x:Name="RootControl" Root="{Binding Path=Root}"></controls:RootSelectControl>
+        <controls:RootSelectControl Grid.ColumnSpan="3" x:Name="RootControl" Root="{Binding Path=Root, Mode=TwoWay}"></controls:RootSelectControl>
 
     </Grid>
 </UserControl>

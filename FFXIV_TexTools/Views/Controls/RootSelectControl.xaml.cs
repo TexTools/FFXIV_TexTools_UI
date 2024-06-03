@@ -42,8 +42,6 @@ namespace FFXIV_TexTools.Views.Controls
         public Func<IItem, bool> ItemSelect = ItemSelectFunc;
         public Func<IItem, bool> ItemFilter = ItemFilterFunc;
 
-        public EventHandler<XivDependencyRoot> RootChanged;
-
         public string LabelText
         {
             get {
@@ -66,7 +64,6 @@ namespace FFXIV_TexTools.Views.Controls
             var c = sender as RootSelectControl;
             if (c != null && e != null)
             {
-                c.SetValue(RootProperty, e.NewValue as XivDependencyRoot);
                 c.PropertyChanged?.Invoke(c, new PropertyChangedEventArgs(nameof(LabelText)));
             }
         }
@@ -80,7 +77,6 @@ namespace FFXIV_TexTools.Views.Controls
             if (root == null) return;
 
             Root = root;
-            RootChanged?.Invoke(this, Root);
         }
 
         public static bool ItemSelectFunc(IItem item)

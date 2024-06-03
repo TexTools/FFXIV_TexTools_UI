@@ -18,7 +18,7 @@
             <ColumnDefinition Width="100"/>
             <ColumnDefinition Width="100"/>
         </Grid.ColumnDefinitions>
-        <controls:RootSelectControl Grid.ColumnSpan="3" x:Name="RootControl" Root="{Binding Path=Root}"></controls:RootSelectControl>
+        <controls:RootSelectControl Grid.ColumnSpan="3" x:Name="RootControl" Root="{Binding Path=Root, Mode=TwoWay}"></controls:RootSelectControl>
 
         <CheckBox Grid.Column="2" Grid.Row="1" Margin="10,0,10,0" Content="Has Model" IsChecked="{Binding Path=HasModel}"></CheckBox>
         <CheckBox Grid.Column="2" Grid.Row="2" Margin="10,0,10,0" Content="Has Material" IsChecked="{Binding Path=HasMaterial}" ToolTip="Does not seem to actually be checked/used by the game client."></CheckBox>
