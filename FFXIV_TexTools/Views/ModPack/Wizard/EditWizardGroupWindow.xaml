@@ -262,8 +262,8 @@
                                 <ListView Style="{x:Null}" x:Name="ModpackContents" Grid.Row="1" SelectionMode="Multiple" SelectionChanged="ModpackContents_SelectionChanged" BorderBrush="Black" BorderThickness="0,1" AlternationCount="2">
                                     <ListView.View>
                                     <GridView  x:Name="GridViewCol">
-                                        <GridViewColumn Header="{Binding Source={x:Static resx:UIStrings.ItemPlural}}" DisplayMemberBinding="{Binding Name}"/>
-                                        <GridViewColumn Header="{Binding Source={x:Static resx:UIStrings.FileName}}" DisplayMemberBinding="{Binding FullPath}"/>
+                                        <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Path=Name}"/>
+                                        <GridViewColumn Header="{Binding Source={x:Static resx:UIStrings.FileName}}" DisplayMemberBinding="{Binding Path=FilePath}"/>
                                     </GridView>
                                     </ListView.View>
                                 </ListView>

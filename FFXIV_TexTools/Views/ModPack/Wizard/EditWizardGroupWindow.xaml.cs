@@ -1150,16 +1150,55 @@ namespace FFXIV_TexTools.Views
         private async void LoadSimpleModpackButton_Click(object sender, RoutedEventArgs e)
         {
 
-            this.ShowError("Not Implemented", "Partial Modpack import has not been re-implemented yet.");
-            return;
             var openFileDialog = new OpenFileDialog
             {
                 Filter = "Basic Modpack|*.ttmp2;*.ttmp;*.pmp".L()
             };
 
-            if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            if (openFileDialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
             {
-                ModpackContents.Items.Clear();
+                SelectAllButton.IsEnabled = false;
+                DeselectAllButton.IsEnabled = false;
+                return;
+            }
+
+            ModpackContents.Items.Clear();
+
+            LockCount++;
+            try
+            {
+                var files = await TTMP.ModPackToSimpleFileList(openFileDialog.FileName, true, MainWindow.UserTransaction);
+                if(files == null || files.Count == 0)
+                {
+                    SelectAllButton.IsEnabled = false;
+                    DeselectAllButton.IsEnabled = false;
+                    return;
+                }
+
+                var ordered = files.OrderBy(x => x.Key);
+                foreach(var f in ordered)
+                {
+                    var item = (await XivCache.GetFirstRoot(f.Key)).GetFirstItem();
+                    var entry = new TinyFileListEntry()
+                    {
+                        FilePath = f.Key,
+                        Name = MakeFriendlyFileName(f.Key),
+                        StorageInfo = f.Value
+                    };
+                    ModpackContents.Items.Add(entry);
+                }
+
+                SelectAllButton.IsEnabled = true;
+                DeselectAllButton.IsEnabled = true;
+
+            }
+            catch(Exception ex)
+            {
+                this.ShowError("Load Error", "An error occurred while loading the file:\n\n" + ex.Message);
+            }
+            finally
+            {
+                LockCount--;
             }
         }
 
@@ -1175,28 +1214,16 @@ namespace FFXIV_TexTools.Views
 
         private void AddButton_Click(object sender, RoutedEventArgs e)
         {
-            this.ShowError("Not Implemented", "Partial Modpack import has not been re-implemented yet.");
-            return;
-            foreach (var item in ModpackContents.SelectedItems)
+            foreach (var i in ModpackContents.SelectedItems)
             {
-                var modsJson = (ModsJson)item;                
-
-                var file = new FileEntry()
+                var item = (TinyFileListEntry)i;
+                var fi = new FileEntry()
                 {
-                    Name = MakeFriendlyFileName(modsJson.FullPath),
-                    Path = modsJson.FullPath
+                    Name = item.Name,
+                    Path = item.FilePath
                 };
 
-                var xivItem = new XivGenericItemModel()
-                {
-                    Name = modsJson.Name,
-                    SecondaryCategory = modsJson.Category
-                };
-                var data = _basicModpackData.GetRange((int)modsJson.ModOffset, modsJson.ModSize).ToArray();
-
-                var info = WriteTempFile(data, true);
-
-                _ = AddFile(file, info);
+                _ = AddFile(fi, item.StorageInfo);
             }
         }
 
@@ -1325,5 +1352,12 @@ namespace FFXIV_TexTools.Views
                 ManipulationCountLabel.Content = "0 " + "Manipulation(s)".L();
             }
         }
+    }
+
+    public class TinyFileListEntry
+    {
+        public string FilePath { get; set; }
+        public string Name { get; set; }
+        public FileStorageInformation StorageInfo { get; set; }
     }
 }
