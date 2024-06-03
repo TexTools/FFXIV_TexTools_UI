@@ -119,7 +119,36 @@ namespace FFXIV_TexTools.Views
             {
                 // Can't let the error function crash us.
                 Trace.WriteLine(ex);
-            }   
+            }
+        }
+        public static void ShowWarning(this Window wind, string title, string message)
+        {
+            try
+            {
+                var Win32Window = new WindowWrapper(new WindowInteropHelper(wind).Handle);
+                FlexibleMessageBox.Show(Win32Window, message, title, MessageBoxButtons.OK, MessageBoxIcon.Warning,
+                    MessageBoxDefaultButton.Button1);
+            }
+            catch (Exception ex)
+            {
+                // Can't let the error function crash us.
+                Trace.WriteLine(ex);
+            }
+        }
+        public static void ShowWarning(this UserControl control, string title, string message)
+        {
+            try
+            {
+                var wind = Window.GetWindow(control);
+                var Win32Window = new WindowWrapper(new WindowInteropHelper(wind).Handle);
+                FlexibleMessageBox.Show(Win32Window, message, title, MessageBoxButtons.OK, MessageBoxIcon.Warning,
+                    MessageBoxDefaultButton.Button1);
+            }
+            catch (Exception ex)
+            {
+                // Can't let the error function crash us.
+                Trace.WriteLine(ex);
+            }
         }
 
         public static void ShowError(string title, string message)

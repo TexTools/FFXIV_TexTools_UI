@@ -24,6 +24,7 @@ using FFXIV_TexTools.Views.Item;
 using FFXIV_TexTools.Views.ItemConverter;
 using FFXIV_TexTools.Views.Metadata;
 using FFXIV_TexTools.Views.Models;
+using FFXIV_TexTools.Views.Projects;
 using FFXIV_TexTools.Views.Simple;
 using FFXIV_TexTools.Views.Transactions;
 using FFXIV_TexTools.Views.Wizard;
@@ -1660,7 +1661,14 @@ namespace FFXIV_TexTools
 
         private void TransactionStatus_Click(object sender, RoutedEventArgs e)
         {
-            TransactionStatusWindow.ShowTxStatus();
+            if (ProjectWindow.Project != null)
+            {
+                ProjectWindow.ShowProjectWindow();
+            }
+            else
+            {
+                TransactionStatusWindow.ShowTxStatus();
+            }
         }
 
         private void SafeToggle_Click(object sender, RoutedEventArgs e)
@@ -1678,6 +1686,11 @@ namespace FFXIV_TexTools
                 SafeToggleButton.Content = XivCache.GameWriteEnabled ? "UNSAFE".L() : "SAFE".L();
                 SafeToggleButton.Foreground = XivCache.GameWriteEnabled ? Brushes.DarkRed : Brushes.DarkGreen;
             });
+        }
+
+        private void Menu_ProjectManager_Click(object sender, RoutedEventArgs e)
+        {
+            ProjectWindow.ShowProjectWindow();
         }
     }
 }

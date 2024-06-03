@@ -59,6 +59,7 @@
                 </ItemsPanelTemplate>
             </Menu.ItemsPanel>
             <MenuItem Header="{Binding Source={x:Static resx:UIStrings.Mods}}">
+                <MenuItem x:Name="Menu_ProjectManager" Header="Open Project Manager" Click="Menu_ProjectManager_Click"/>
                 <MenuItem Header="{Binding Source={x:Static resx:UIStrings.Mod_List}}">
                     <MenuItem x:Name="Menu_ModList" Header="{Binding Source={x:Static resx:UIStrings.Manage_ModList}}" Click="Menu_ModList_Click"/>
                     <MenuItem x:Name="Menu_CleanUpModList" Header="{Binding Source={x:Static resx:UIStrings.Clean_Up_ModList}}" Click="Menu_CleanUpModList_Click"/>

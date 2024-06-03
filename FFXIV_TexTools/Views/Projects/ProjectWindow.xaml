@@ -1,0 +1,67 @@
+﻿<Window x:Class="FFXIV_TexTools.Views.Projects.ProjectWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FFXIV_TexTools.Views.Projects"
+        mc:Ignorable="d"
+        Title="TexTools Project" Height="450" Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="5"/>
+            <RowDefinition Height="1*"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" x:Name="TopRow">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150"/>
+                <ColumnDefinition Width="150"/>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="150"/>
+            </Grid.ColumnDefinitions>
+            <Button Content="Load Project" VerticalAlignment="Center" Margin="5" Grid.Column="0" Click="LoadButton_Click"></Button>
+            <Button x:Name="NewButton" Content="New Project" VerticalAlignment="Center" Margin="5" Grid.Column="1" Click="NewButton_Click">
+                <Button.ContextMenu>
+                    <ContextMenu x:Name="NewContextMenu">
+                        <MenuItem Header="New TTMP Project" Click="NewTtmp_Click"></MenuItem>
+                        <MenuItem Header="New PMP Project" Click="NewPmp_Click"></MenuItem>
+                        <MenuItem Header="Live Penumbra Project" Click="NewPenumbra_Click"></MenuItem>
+                        <MenuItem Header="Convert Modpack to Project" Click="NewModpack_Click"></MenuItem>
+                    </ContextMenu>
+                </Button.ContextMenu>
+            </Button>
+            <Button Content="Stop Project" VerticalAlignment="Center" Margin="5" Grid.Column="3" Click="CloseProject_Click" Visibility="{Binding Path=CloseVisible}"></Button>
+        </Grid>
+
+        <Separator Grid.Row="1"/>
+        
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <GroupBox Grid.Column="1" Margin="5" Header="Transaction Files">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="40"/>
+                        <RowDefinition Height="1*"/>
+                    </Grid.RowDefinitions>
+
+                    <Button Content="Reset File(s)" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5" Width="100"></Button>
+                    <ListBox Grid.Row="1" x:Name="FileListBox" ItemsSource="{Binding Path=FileListSource}" SelectionMode="Multiple"></ListBox>
+                </Grid>
+            </GroupBox>
+
+            <GroupBox Grid.Column="0" Margin="5" Header="Auto-Import Files">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="1*"/>
+                    </Grid.RowDefinitions>
+                </Grid>
+            </GroupBox>
+        </Grid>
+
+    </Grid>
+</Window>
