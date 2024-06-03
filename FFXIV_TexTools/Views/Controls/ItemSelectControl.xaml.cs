@@ -427,6 +427,32 @@ namespace FFXIV_TexTools.Views.Controls
                     setParent.Children.Add(element);
                 }
             }
+
+
+            // Prune empty top level categories with no entries.
+            var elems = CategoryElements.ToList();
+            foreach (var cat in elems)
+            {
+                if(cat.Children.Count == 0)
+                {
+                    CategoryElements.Remove(cat);
+                    continue;
+                }
+
+                var ch = cat.Children.ToList();
+                foreach( var cat2 in ch) {
+                    if(cat2.Item != null)
+                    {
+                        continue;
+                    }
+
+                    if(cat2.Children.Count == 0)
+                    {
+                        cat.Children.Remove(cat2);
+                    }
+                }
+            }
+
             return items;
 
         }
