@@ -525,6 +525,14 @@ namespace FFXIV_TexTools
                     }
                 });
             });
+
+            if (Settings.Default.LiveDangerously)
+            {
+                XivCache.GameWriteEnabled = true;
+            } else
+            {
+                XivCache.GameWriteEnabled = false;
+            }
             UpdateWriteStateUi();
         }
 

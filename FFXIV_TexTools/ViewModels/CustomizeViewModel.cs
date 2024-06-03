@@ -315,6 +315,18 @@ namespace FFXIV_TexTools.ViewModels
             }
         }
 
+        public bool UnsafeMode
+        {
+            get => Settings.Default.LiveDangerously;
+            set
+            {
+                if (UnsafeMode != value)
+                {
+                    Settings.Default.LiveDangerously = value;
+                    Settings.Default.Save();
+                }
+            }
+        }
 
 
         const string maxName = "3DS Max/Unreal";

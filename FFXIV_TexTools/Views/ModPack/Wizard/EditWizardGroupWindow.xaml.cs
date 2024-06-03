@@ -1150,7 +1150,8 @@ namespace FFXIV_TexTools.Views
         private async void LoadSimpleModpackButton_Click(object sender, RoutedEventArgs e)
         {
 
-            throw new NotImplementedException("Needs to be redone.");
+            this.ShowError("Not Implemented", "Partial Modpack import has not been re-implemented yet.");
+            return;
             var openFileDialog = new OpenFileDialog
             {
                 Filter = "Basic Modpack|*.ttmp2;*.ttmp;*.pmp".L()
@@ -1174,7 +1175,8 @@ namespace FFXIV_TexTools.Views
 
         private void AddButton_Click(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException("Needs to be redone.");
+            this.ShowError("Not Implemented", "Partial Modpack import has not been re-implemented yet.");
+            return;
             foreach (var item in ModpackContents.SelectedItems)
             {
                 var modsJson = (ModsJson)item;                

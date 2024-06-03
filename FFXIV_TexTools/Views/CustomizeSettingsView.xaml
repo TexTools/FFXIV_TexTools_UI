@@ -102,8 +102,8 @@
                     <Label Grid.Column="0" Grid.Row="9" Margin="10,0,5,0" Content="Auto-Fix Pre-DT Modpacks" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
                     <CheckBox x:Name="DawntrailFixBox"  Grid.Column="1" Grid.Row="9" VerticalAlignment="Center" Margin="5,0,10,0" ToolTip="Automatically fix Pre-Dawntrail modpacks on Import."  IsChecked="{Binding AutoFixDawntrail}"></CheckBox>
 
-                    <Label Grid.Column="0" Grid.Row="10" Margin="10,0,5,0" Content="Update Pre-DT Shaders" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
-                    <CheckBox x:Name="ShaderUpgradeBox"  Grid.Column="1" Grid.Row="10" VerticalAlignment="Center" Margin="5,0,10,0" ToolTip="Automatically update pre-Dawntrail modpacks to use Dawntrail shaders, instead of Endwalker shaders."  IsChecked="{Binding UpdateShaders}"></CheckBox>
+                    <Label Grid.Column="0" Grid.Row="10" Margin="10,0,5,0" Content="Default to UNSFAE Mode" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
+                    <CheckBox x:Name="UnsafeModeDefault"  Grid.Column="1" Grid.Row="10" VerticalAlignment="Center" Margin="5,0,10,0" ToolTip="Start TexTools in UNSAFE mode on launch."  IsChecked="{Binding Path=UnsafeMode}"></CheckBox>
 
                 </Grid>
             </GroupBox>
