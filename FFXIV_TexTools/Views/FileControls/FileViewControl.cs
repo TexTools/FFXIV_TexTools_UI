@@ -886,11 +886,9 @@ namespace FFXIV_TexTools.Views.Controls
         {
             // Because of the way some of the system internals work, the single-file modpack export needs us to temporarily save the file first.
             var tx = MainWindow.UserTransaction;
-            TxFileState state = null;
             var boiler = TxBoiler.BeginWrite(ref tx);
             try
             {
-                state = await tx.SaveFileState(InternalFilePath);
                 await SaveCurrentFile(tx);
                 SingleFileModpackCreator.ExportFile(InternalFilePath, Window.GetWindow(this), tx);
                 return true;
@@ -902,7 +900,7 @@ namespace FFXIV_TexTools.Views.Controls
             }
             finally
             {
-                await boiler.Cancel(true, state);
+                await boiler.Cancel(true);
             }
         }
 

@@ -495,7 +495,7 @@ namespace FFXIV_TexTools.Views
             }
             finally
             {
-                boiler.Cancel(true);
+                await boiler.Cancel(true);
             }
 
 

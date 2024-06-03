@@ -183,7 +183,7 @@ namespace FFXIV_TexTools.Views.Simple
                 }
                 catch (Exception ex)
                 {
-                    boiler.Cancel();
+                    await boiler.Cancel();
                     throw;
                 }
             } catch(Exception ex)

@@ -1802,12 +1802,10 @@ namespace FFXIV_TexTools.Views.Item
 
                 var tx = MainWindow.UserTransaction;
                 var boiler = TxBoiler.BeginWrite(ref tx);
-                var states = new List<TxFileState>();
                 try
                 {
                     foreach (var file in orphans)
                     {
-                        states.Add(await tx.SaveFileState(file));
                         await Modding.DeleteMod(file, tx);
                     }
                     await boiler.Commit();
@@ -1815,7 +1813,7 @@ namespace FFXIV_TexTools.Views.Item
                 }
                 catch
                 {
-                    await boiler.Catch(states);
+                    await boiler.Catch();
                     throw;
                 }
 

@@ -669,10 +669,8 @@ namespace FFXIV_TexTools.Views.Controls
             {
                 var tx = MainWindow.UserTransaction;
                 var boiler = TxBoiler.BeginWrite(ref tx);
-                TxFileState state = null;
                 try
                 {
-                    state = await tx.SaveFileState(FilePath);
                     // Due to the nature of the single file modpack exporter, we need to temp save the file here.
                     await SaveFile(tx);
 
@@ -680,7 +678,7 @@ namespace FFXIV_TexTools.Views.Controls
                 }
                 finally
                 {
-                    await boiler.Cancel(true, state);
+                    await boiler.Cancel(true);
                 }
             }
             catch(Exception ex)
