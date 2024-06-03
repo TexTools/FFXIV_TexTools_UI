@@ -166,6 +166,7 @@ namespace FFXIV_TexTools.Views.Transactions
 
         public ObservableCollection<string> FileListSource { get; set; } = new ObservableCollection<string>();
 
+        private bool _LOADING;
         public TransactionStatusWindow()
         {
             Instance = this;
@@ -179,6 +180,7 @@ namespace FFXIV_TexTools.Views.Transactions
             InitializeComponent();
             Closing += OnClose;
 
+            _LOADING = true;
             TxWatcher.UserTxStateChanged += OnTxStateChanged;
             TxWatcher.UserTxSettingsChanged += OnTxSettingsChanged;
             TxWatcher.UserTxFileChanged += OnFileChanged;
@@ -190,6 +192,7 @@ namespace FFXIV_TexTools.Views.Transactions
                 UpdateFileList();
             }
             DebouncedFileListUpdate = ViewHelpers.Debounce(DispatchFileListUpdate, 300);
+            _LOADING = false;
         }
 
         private Action DebouncedFileListUpdate;
@@ -205,7 +208,15 @@ namespace FFXIV_TexTools.Views.Transactions
 
             FileListSource.Clear();
 
-            var files = tx.ModifiedFiles.OrderBy(x => x);
+            IOrderedEnumerable<string> files;
+            if(MainWindow.UserTransaction.State == ETransactionState.Preparing)
+            {
+                files = tx.PrepFiles.OrderBy(x => x);
+            } else
+            {
+                files = tx.ModifiedFiles.OrderBy(x => x);
+            }
+
             foreach(var file in files)
             {
                 if (IOUtil.IsMetaInternalFile(file))
@@ -286,6 +297,14 @@ namespace FFXIV_TexTools.Views.Transactions
                 Trace.WriteLine(ex);
             }
         }
+
+        private void ShowRow(Grid row)
+        {
+            PreTxRow.Visibility = Visibility.Collapsed;
+            PreparingTxRow.Visibility = Visibility.Collapsed;
+            DuringTxRow.Visibility = Visibility.Collapsed;
+            row.Visibility = Visibility.Visible;
+        }
         private void UpdateTxStateUi(ETransactionState newState)
         {
             TxStatusText = newState.ToString();
@@ -295,33 +314,35 @@ namespace FFXIV_TexTools.Views.Transactions
             }
 
 
-            if (newState == ETransactionState.Open)
-            {
-                // TX is ready for writing.
-                TxStatusBrush = Brushes.DarkGreen;
-                TxActionEnabled = true;
-
-                PreTxRow.Visibility = Visibility.Collapsed;
-                DuringTxRow.Visibility = Visibility.Visible;
-                TxStatusGrid.Visibility = Visibility.Visible;
-            }
-            else if (newState == ETransactionState.Invalid || newState == ETransactionState.Closed)
+            if (newState == ETransactionState.Invalid || newState == ETransactionState.Closed)
             {
                 // TX is closed.
                 TxStatusBrush = Brushes.DarkGray;
                 TxActionEnabled = true;
+
                 TxStatusGrid.Visibility = Visibility.Collapsed;
-                DuringTxRow.Visibility = Visibility.Collapsed;
-                PreTxRow.Visibility = Visibility.Visible;
+                TargetGrid.Visibility = Visibility.Collapsed;
+                ShowRow(PreTxRow);
             }
             else if (newState == ETransactionState.Preparing)
             {
                 // TX is ready for prep-writing.
                 TxStatusBrush = Brushes.DarkOrange;
                 TxActionEnabled = true;
-                DuringTxRow.Visibility = Visibility.Visible;
+
                 TxStatusGrid.Visibility = Visibility.Visible;
-                PreTxRow.Visibility = Visibility.Collapsed;
+                TargetGrid.Visibility = Visibility.Collapsed;
+                ShowRow(PreparingTxRow);
+            }
+            else if (newState == ETransactionState.Open)
+            {
+                // TX is ready for writing.
+                TxStatusBrush = Brushes.DarkGreen;
+                TxActionEnabled = true;
+
+                TxStatusGrid.Visibility = Visibility.Visible;
+                TargetGrid.Visibility = Visibility.Visible;
+                ShowRow(DuringTxRow);
             }
             else
             {
@@ -329,9 +350,9 @@ namespace FFXIV_TexTools.Views.Transactions
                 TxStatusBrush = Brushes.DarkRed;
                 TxActionEnabled = false;
 
-                DuringTxRow.Visibility = Visibility.Visible;
                 TxStatusGrid.Visibility = Visibility.Visible;
-                PreTxRow.Visibility = Visibility.Collapsed;
+                TargetGrid.Visibility = Visibility.Visible;
+                ShowRow(DuringTxRow);
             }
 
         }
@@ -416,12 +437,15 @@ namespace FFXIV_TexTools.Views.Transactions
             {
                 if (MainWindow.UserTransaction != null)
                 {
+                    if(MainWindow.UserTransaction.State == ETransactionState.Preparing)
+                    {
+                        MainWindow.UserTransaction.Start();
+                    }
                     return;
                 }
 
                 TxActionEnabled = false;
                 MainWindow.UserTransaction = ModTransaction.BeginTransaction(true, null, null, false, false);
-
             }
             catch (Exception ex)
             {
@@ -482,6 +506,11 @@ namespace FFXIV_TexTools.Views.Transactions
                 return;
             }
             if (PenumbraAttachHandler.IsAttached)
+            {
+                return;
+            }
+
+            if (_LOADING)
             {
                 return;
             }
@@ -627,7 +656,7 @@ namespace FFXIV_TexTools.Views.Transactions
         private async Task BeginPenumbraAttach()
         {
 
-            if (ModTransaction.ActiveTransaction != null)
+            if (ModTransaction.ActiveTransaction != null && ModTransaction.ActiveTransaction.State != ETransactionState.Preparing)
             {
                 return;
             }
@@ -643,17 +672,25 @@ namespace FFXIV_TexTools.Views.Transactions
             _AutoCommit = false;
             _KeepOpen = false;
 
+
+            var backupFolder = Path.Combine(Path.GetTempPath(), "TexTools_Transaction_Backup");
+            IOUtil.DeleteTempDirectory(backupFolder);
+            IOUtil.CopyFolder(PenumbraAttachDialog.SelectedPath, backupFolder);
+
             var tx = await PenumbraAttachHandler.Attach(PenumbraAttachDialog.SelectedPath);
             MainWindow.UserTransaction = tx;
-
-
-            //TTMP.ImportFiles()
-
-
-
-
         }
 
+        private void Close_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+
+        private void Prepare_Click(object sender, RoutedEventArgs e)
+        {
+            TxActionEnabled = false;
+            MainWindow.UserTransaction = ModTransaction.BeginTransaction(true, null, null, true, false);
+        }
     }
 
 }

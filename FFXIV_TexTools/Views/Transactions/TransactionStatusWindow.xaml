@@ -42,7 +42,7 @@
                 </Border>
             </Grid>
 
-            <Grid Grid.Row="1">
+            <Grid Grid.Row="1" x:Name="TargetGrid">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="120"/>
                     <ColumnDefinition Width="1*"/>
@@ -70,8 +70,17 @@
         <Grid Grid.Row="2" x:Name="PreTxRow"  IsEnabled="{Binding Path=TxActionEnabled}" >
             <Button Content="Attach to Penumbra" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="5,5,160,5" Width="150" Click="AttachPenumbra_Click"></Button>
             <Button Content="Begin Transaction" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="5" Width="150" Click="Begin_Click"></Button>
+            <Button Content="Prepare Transaction" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,5,315,5" Width="150" ToolTip="Open a Preparation-state Transaction, where you may pre-load files." Click="Prepare_Click"></Button>
+            <Button Content="Cancel" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5" Width="150" Click="Close_Click"></Button>
         </Grid>
-        <Grid Grid.Row="2" x:Name="DuringTxRow">
+        
+        <Grid Grid.Row="2" x:Name="PreparingTxRow"  IsEnabled="{Binding Path=TxActionEnabled}" Visibility="Collapsed" >
+            <Button Content="Attach to Penumbra" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="5,5,160,5" Width="150" Click="AttachPenumbra_Click"></Button>
+            <Button Content="Begin Transaction" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="5" Width="150" Click="Begin_Click"></Button>
+            <Button Content="Cancel Transaction" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5" Width="150" Click="Cancel_Click"></Button>
+        </Grid>
+        
+        <Grid Grid.Row="2" x:Name="DuringTxRow" Visibility="Collapsed">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="160"></ColumnDefinition>
                 <ColumnDefinition Width="1*"></ColumnDefinition>
