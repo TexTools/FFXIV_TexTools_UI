@@ -350,21 +350,23 @@ namespace FFXIV_TexTools.ViewModels
 
                     _Materials.Add(material);
                 }
-                var mgm3d = new CustomMeshGeometryModel3D
-                {
-                    Geometry = _Geometry[i],
-                    Material = _Materials[i],
-                };
-                boundingBox = _Geometry[i].Bound;
-
-                mgm3d.CullMode = Properties.Settings.Default.Cull_Mode.Equals("None") ? CullMode.None : CullMode.Back;
 
                 if (VisibleMesh == i || VisibleMesh < 0)
                 {
+                    var mgm3d = new CustomMeshGeometryModel3D
+                    {
+                        Geometry = _Geometry[i],
+                        Material = _Materials[i],
+                    };
+                    boundingBox = _Geometry[i].Bound;
+
+                    mgm3d.CullMode = Properties.Settings.Default.Cull_Mode.Equals("None") ? CullMode.None : CullMode.Back;
+
                     Models.Add(mgm3d);
                 }
             }
 
+            OnPropertyChanged(nameof(Models));
 
             var center = new Vector3(0, 1, 0);
             Rect3D r3d = new Rect3D();
