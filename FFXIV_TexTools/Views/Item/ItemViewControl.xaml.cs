@@ -280,7 +280,18 @@ namespace FFXIV_TexTools.Views.Item
             TxWatcher.UserTxStarted += OnUserTransactionStarted;
 
             _DebouncedRebuildComboBoxes = ViewHelpers.Debounce<IItem>(DispatchRebuildComboBoxes);
+
+            KeyDown += OnKeyDown;
         }
+
+        public void OnKeyDown(object sender, KeyEventArgs e)
+        {
+            if(_VisiblePanel != null)
+            {
+                _VisiblePanel.OnKeyDown(sender, e);
+            }
+        }
+
         private void OnUserTransactionStarted(ModTransaction tx)
         {
             if (tx != null)

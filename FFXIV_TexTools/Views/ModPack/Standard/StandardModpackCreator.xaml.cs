@@ -23,6 +23,7 @@ using xivModdingFramework.Mods.FileTypes;
 using xivModdingFramework.SqPack.FileTypes;
 using AutoUpdaterDotNET;
 using System.Windows.Markup;
+using System.Diagnostics;
 
 namespace FFXIV_TexTools.Views
 {
@@ -290,13 +291,20 @@ namespace FFXIV_TexTools.Views
 
         private async Task CreateModpack()
         {
-
-            if(ViewModel.SaveAdvanced)
+            try
             {
-                await CreateAdvanced();
-            } else
+                if (ViewModel.SaveAdvanced)
+                {
+                    await CreateAdvanced();
+                }
+                else
+                {
+                    await CreateBasic();
+                }
+            }
+            catch(Exception ex)
             {
-                await CreateBasic();
+                ViewHelpers.ShowError(this, "Mod Creation Error", "An error occurred while creating the mod:\n\n" + ex.Message);
             }
         }
         private async Task CreateAdvanced()
@@ -419,9 +427,6 @@ namespace FFXIV_TexTools.Views
                 }
             }
 
-            var tx = MainWindow.UserTransaction;
-            var ModList = await tx.GetModList();
-
             SimpleModPackData simpleModPackData = new SimpleModPackData
             {
                 Name = ViewModel.Name,
@@ -432,8 +437,11 @@ namespace FFXIV_TexTools.Views
                 SimpleModDataList = new List<SimpleModData>()
             };
 
-            var boiler = TxBoiler.BeginWrite(ref tx);
-            try { 
+            var tx = MainWindow.UserTransaction;
+            var boiler = TxBoiler.BeginWrite(ref tx, true, null, true);
+            try
+            {
+                var ModList = await tx.GetModList();
                 foreach (var entry in ViewModel.Entries)
                 {
                     foreach(var file in entry.AllFiles)
@@ -470,7 +478,7 @@ namespace FFXIV_TexTools.Views
                             FullPath = file,
                             ModOffset = offset,
                             IsDefault = isDef,
-                            DatFile = dataFile.GetFileName()
+                            DatFile = dataFile.GetFileName(),
                         };
 
                         simpleModPackData.SimpleModDataList.Add(simpleData);
@@ -479,7 +487,7 @@ namespace FFXIV_TexTools.Views
                 }
 
                 await LockUi(UIStrings.Creating_Modpack, null, null);
-                await TTMP.CreateSimpleModPack(simpleModPackData, Properties.Settings.Default.ModPack_Directory, ViewHelpers.BindReportProgress(_lockProgressController), true);
+                await TTMP.CreateSimpleModPack(simpleModPackData, Properties.Settings.Default.ModPack_Directory, ViewHelpers.BindReportProgress(_lockProgressController), true, tx);
 
                 FlexibleMessageBox.Show(new Wpf32Window(this), "Modpack Created Successfully.".L(),
                                                "Modpack Created".L(), MessageBoxButtons.OK, MessageBoxIcon.Information);

@@ -379,8 +379,17 @@ namespace FFXIV_TexTools
 
                 ModTransaction.ActiveTransactionBlocked += ModTransaction_ActiveTransactionBlocked;
             }
+
+            KeyDown += OnKeyDown;
         }
 
+        private void OnKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if (ItemView != null)
+            {
+                ItemView.OnKeyDown(sender, e);
+            }
+        }
 
         private void LanguageSelection()
         {

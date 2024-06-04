@@ -35,7 +35,16 @@ namespace FFXIV_TexTools.Views.Controls
         public FileViewControl FileControl { get => _FileControl;
             protected set
             {
+                if(_FileControl != null)
+                {
+                    _FileControl.KeyDown -= OnKeyDown;
+                }
                 _FileControl = value;
+                if (_FileControl != null)
+                {
+                    _FileControl.KeyDown += OnKeyDown;
+                }
+
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(FileControl)));
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SaveDropdownVisibility)));
             }
@@ -179,11 +188,11 @@ namespace FFXIV_TexTools.Views.Controls
             SaveText.Text = TxWatcher.SaveLabel;
 
             TxWatcher.SaveStatusChanged += TxWatcher_SaveStatusChanged;
-            KeyDown += FileWrapperControl_KeyDown; ;
+            KeyDown += OnKeyDown;
 
         }
 
-        private void FileWrapperControl_KeyDown(object sender, KeyEventArgs e)
+        public void OnKeyDown(object sender, KeyEventArgs e)
         {
             if (Keyboard.Modifiers == ModifierKeys.Control) {
                 if (e.Key == Key.S)
