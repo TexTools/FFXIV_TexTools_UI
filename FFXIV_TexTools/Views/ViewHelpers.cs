@@ -373,7 +373,7 @@ namespace FFXIV_TexTools.Views
         {
             if (hex.Length % 2 == 1)
             {
-                hex = "0" + hex;
+                throw new ArgumentException("Hex string must be an even number of characters.");
             }
 
             byte[] arr = new byte[hex.Length >> 1];

@@ -42,7 +42,7 @@
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="1*"></RowDefinition>
-            <RowDefinition Height="90"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
             <RowDefinition Height="40"></RowDefinition>
         </Grid.RowDefinitions>
 
@@ -90,20 +90,16 @@
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="40"></RowDefinition>
-                    <RowDefinition Height="40"></RowDefinition>
                 </Grid.RowDefinitions>
-
-                <Label Grid.Row="0" Grid.Column="0" HorizontalContentAlignment="right" HorizontalAlignment="right" VerticalAlignment="Center"  Content="Additional Data Size (Bytes):" ToolTip="{StaticResource AdditionalDataTooltip}"></Label>
-                <TextBox x:Name="AdditionalDataLengthBox" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" Height="30" Width="50" VerticalAlignment="Center" ToolTip="{StaticResource AdditionalDataTooltip}" PreviewTextInput="NumberValidationTextBox" />
 
                 <Label Grid.Row="1" Grid.Column="0" HorizontalContentAlignment="right" HorizontalAlignment="right" VerticalAlignment="Center"  Content="Additional Data:" ToolTip="{StaticResource AdditionalDataTooltip}"></Label>
                 <TextBox Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" Height="30" Width="150"  VerticalAlignment="Center" ToolTip="{StaticResource AdditionalDataTooltip}" PreviewTextInput="HexInput">
-                <Binding Path="AdditionalDataRaw" UpdateSourceTrigger="PropertyChanged">
+                <Binding Path="AdditionalData" UpdateSourceTrigger="PropertyChanged">
                     <Binding.ValidationRules>
                         <local:HexValidationRule />
                     </Binding.ValidationRules>
                     <Binding.Converter>
-                            <local:HexValueConverter />
+                            <local:HexByteValueConverter />
                     </Binding.Converter>
                 </Binding>
                 </TextBox>

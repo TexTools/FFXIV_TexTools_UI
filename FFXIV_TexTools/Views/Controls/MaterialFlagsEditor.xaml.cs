@@ -23,7 +23,6 @@ namespace FFXIV_TexTools.Views.Controls
     {
         public ushort Flags;
         public ushort Flags2;
-        public ulong AdditionalData;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -42,17 +41,20 @@ namespace FFXIV_TexTools.Views.Controls
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(FullInt)));
             }
         }
-        public ulong AdditionalDataRaw
+
+        public byte[] _AdditionalData;
+        public byte[] AdditionalData
         {
             get
             {
-                return AdditionalData;
+                return _AdditionalData;
             }
             set
             {
-                AdditionalData = value;
+                if (value == null) return;
+                _AdditionalData = value;
                 UpdateCheckBoxes();
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AdditionalDataRaw)));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AdditionalData)));
             }
         }
         public MaterialFlagsEditor(XivMtrl material)
@@ -62,17 +64,9 @@ namespace FFXIV_TexTools.Views.Controls
             Flags = _Material.MaterialFlags;
             Flags2 = _Material.MaterialFlags2;
 
-            var data = _Material.AdditionalData;
-            if(_Material.AdditionalData.Length < 8)
-            {
-                data = new byte[8];
-                _Material.AdditionalData.CopyTo(data, 0);
-            }
-
-            AdditionalData = BitConverter.ToUInt64(data,0);
+            _AdditionalData = (byte[]) _Material.AdditionalData.Clone();
 
             InitializeComponent();
-            AdditionalDataLengthBox.Text = _Material.AdditionalData.Length.ToString();
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(FullInt)));
             BitControl0.SetNames(new List<string>()
             {
@@ -154,7 +148,7 @@ namespace FFXIV_TexTools.Views.Controls
             Flags2 = (ushort)((BitControl3.DisplayByte << 8) | BitControl2.DisplayByte);
 
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(FullInt)));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AdditionalDataRaw)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AdditionalData)));
         }
 
         private void UpdateCheckBoxes()
@@ -183,14 +177,7 @@ namespace FFXIV_TexTools.Views.Controls
             _Material.MaterialFlags = Flags;
             _Material.MaterialFlags2 = Flags2;
 
-            int val = 0;
-            var success = Int32.TryParse(AdditionalDataLengthBox.Text, out val);
-            if(!success)
-            {
-                val = _Material.AdditionalData.Length;
-            }
-            var data = BitConverter.GetBytes(AdditionalData);
-            _Material.AdditionalData = data.Take(val).ToArray();
+            _Material.AdditionalData = AdditionalData;
 
             DialogResult = true;
         }
@@ -199,7 +186,7 @@ namespace FFXIV_TexTools.Views.Controls
         {
             Flags = 0;
             Flags2 = 0;
-            AdditionalData = 0;
+            AdditionalData = new byte[0];
             DialogResult = false;
         }
 

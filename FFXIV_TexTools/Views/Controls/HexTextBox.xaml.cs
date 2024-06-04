@@ -33,7 +33,8 @@ namespace FFXIV_TexTools.Views.Controls
         public override ValidationResult Validate(object value, CultureInfo cultureInfo)
         {
             var str = value as string;
-            if (String.IsNullOrWhiteSpace(str))
+            str = str.Trim();
+            if (String.IsNullOrEmpty(str))
             {
                 return new ValidationResult(true, null);
             }
@@ -43,6 +44,7 @@ namespace FFXIV_TexTools.Views.Controls
             {
                 return new ValidationResult(false, "Input is not a valid hex value");
             }
+
             return new ValidationResult(true, null);
         }
     }
@@ -93,13 +95,55 @@ namespace FFXIV_TexTools.Views.Controls
         {
             try
             {
-                var val = value.ToString().ToUpper();
+                var val = value.ToString().ToUpper().Trim();
                 if(string.IsNullOrWhiteSpace(val))
                 {
                     return 0;
                 }
                 var ret = Int64.Parse(val, System.Globalization.NumberStyles.HexNumber);
                 return ret;
+
+            }
+            catch (Exception)
+            {
+                return value;
+            }
+        }
+    }
+    public class HexByteValueConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            try
+            {
+                byte[] b = value as byte[];
+                if(b == null)
+                {
+                    return "";
+                }
+
+                var st = BitConverter.ToString(b).Replace("-", string.Empty);
+                return st;
+
+            }
+            catch (Exception)
+            {
+                return value;
+            }
+        }
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            try
+            {
+                var val = value.ToString().ToUpper().Trim();
+                if (string.IsNullOrWhiteSpace(val))
+                {
+                    return new byte[0];
+                }
+
+
+                var bytes = ViewHelpers.HexToBytes(val);
+                return bytes;
 
             }
             catch (Exception)
