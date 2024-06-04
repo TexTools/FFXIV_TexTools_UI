@@ -266,6 +266,13 @@ namespace FFXIV_TexTools.Views.Wizard
         public bool HasData
         {
             get {
+
+                if(_Group.ModOption != null)
+                {
+                    // Read mode.
+                    return true;
+                }
+
                 if (StandardData != null)
                 {
                     return StandardData.HasData;
