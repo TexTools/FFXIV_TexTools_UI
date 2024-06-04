@@ -278,7 +278,6 @@ namespace FFXIV_TexTools.ViewModels
                 _Materials.Clear();
             }
             
-            SharpDX.BoundingBox? boundingBox = null;
 
             var totalMeshCount = model.MeshGroups.Count;
 
@@ -358,7 +357,6 @@ namespace FFXIV_TexTools.ViewModels
                         Geometry = _Geometry[i],
                         Material = _Materials[i],
                     };
-                    boundingBox = _Geometry[i].Bound;
 
                     mgm3d.CullMode = Properties.Settings.Default.Cull_Mode.Equals("None") ? CullMode.None : CullMode.Back;
 
