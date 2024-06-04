@@ -18,6 +18,7 @@ using System.Windows.Shapes;
 using xivModdingFramework.Cache;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Items;
+using xivModdingFramework.Items.Enums;
 using xivModdingFramework.Items.Interfaces;
 using xivModdingFramework.Mods.FileTypes;
 using xivModdingFramework.Mods.FileTypes.PMP;
@@ -43,7 +44,14 @@ namespace FFXIV_TexTools.Views.Wizard.ManipulationEditors
                 if (value == null) return;
                 var id = PmpIdentifierJson.FromRoot(value.Info);
                 Manipulation.Slot = id.EquipSlot;
-                Manipulation.SetId = (ushort) id.PrimaryId;
+
+                if (Root.Info.PrimaryType != XivItemType.human)
+                {
+                    Manipulation.SetId = (ushort)value.Info.PrimaryId;
+                } else
+                {
+                    Manipulation.SetId = (ushort)value.Info.SecondaryId;
+                }
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Root)));
             }
         }
@@ -95,13 +103,21 @@ namespace FFXIV_TexTools.Views.Wizard.ManipulationEditors
 
         private bool ItemSelectFunc(IItem item)
         {
-            if(item.GetPrimaryItemType() != xivModdingFramework.Items.Enums.XivItemType.equipment) return false;
+            var type = item.GetPrimaryItemType();
+            var secondary = item.GetSecondaryItemType();
+            if (type != XivItemType.equipment
+                && secondary != XivItemType.hair
+                && secondary != XivItemType.face) return false;
             return true;
         }
 
         private bool ItemFilterFunc(IItem item)
         {
-            if (item.GetPrimaryItemType() != xivModdingFramework.Items.Enums.XivItemType.equipment) return false;
+            var type = item.GetPrimaryItemType();
+            var secondary = item.GetSecondaryItemType();
+            if (type != XivItemType.equipment
+                && secondary != XivItemType.hair
+                && secondary != XivItemType.face) return false;
             return true;
         }
     }
