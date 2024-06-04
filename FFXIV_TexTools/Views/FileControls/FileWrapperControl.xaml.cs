@@ -185,52 +185,53 @@ namespace FFXIV_TexTools.Views.Controls
 
         private void FileWrapperControl_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.S && Keyboard.Modifiers == ModifierKeys.Control)
-            {
-                if(SaveButton.IsEnabled)
+            if (Keyboard.Modifiers == ModifierKeys.Control) {
+                if (e.Key == Key.S)
                 {
-                    _ = SaveFile();
-                }
-            }
-            else if ((e.Key == Key.O && Keyboard.Modifiers == ModifierKeys.Control)
-                || (e.Key == Key.E && Keyboard.Modifiers == ModifierKeys.Control))
-            {
-                if (LoadButton.IsEnabled)
-                {
-                    if (FileControl == null)
+                    if (SaveButton.IsEnabled)
                     {
-                        return;
+                        _ = SaveFile();
                     }
-                    _ = FileControl.LoadFileByDialog();
                 }
-            }
-            else if (e.Key == Key.D && Keyboard.Modifiers == ModifierKeys.Control)
-            {
-                if (EnableDisableButton.IsEnabled)
+                else if (e.Key == Key.O || e.Key == Key.E)
                 {
-                    _ = EnableDisable();
-                }
-            }
-            else if (e.Key == Key.A && Keyboard.Modifiers == ModifierKeys.Control)
-            {
-                if (EnableDisableButton.IsEnabled)
-                {
-                    if (FileControl == null)
+                    if (LoadButton.IsEnabled)
                     {
-                        return;
+                        if (FileControl == null)
+                        {
+                            return;
+                        }
+                        _ = FileControl.LoadFileByDialog();
                     }
-                    _ = FileControl.SaveAsByDialog();
                 }
-            }
-            else if (e.Key == Key.R && Keyboard.Modifiers == ModifierKeys.Control)
-            {
-                if (RefreshButton.IsEnabled)
+                else if (e.Key == Key.D)
                 {
-                    if (FileControl == null)
+                    if (EnableDisableButton.IsEnabled)
                     {
-                        return;
+                        _ = EnableDisable();
                     }
-                    _ = FileControl.ReloadFile();
+                }
+                else if (e.Key == Key.A)
+                {
+                    if (EnableDisableButton.IsEnabled)
+                    {
+                        if (FileControl == null)
+                        {
+                            return;
+                        }
+                        _ = FileControl.SaveAsByDialog();
+                    }
+                }
+                else if (e.Key == Key.R)
+                {
+                    if (RefreshButton.IsEnabled)
+                    {
+                        if (FileControl == null)
+                        {
+                            return;
+                        }
+                        _ = FileControl.ReloadFile();
+                    }
                 }
             }
         }

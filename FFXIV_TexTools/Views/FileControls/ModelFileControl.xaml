@@ -39,8 +39,8 @@
                     <KeyBinding Key="D" Command="hx:ViewportCommands.BottomView" />
                     <KeyBinding Key="L" Command="hx:ViewportCommands.LeftView" />
                     <KeyBinding Key="R" Command="hx:ViewportCommands.RightView" />
-                    <KeyBinding Command="hx:ViewportCommands.ZoomExtents" Gesture="Control+E" />
-                    <KeyBinding Command="hx:ViewportCommands.Reset" Gesture="Control+R"/>
+                    <KeyBinding Command="hx:ViewportCommands.ZoomExtents" Gesture="Alt+E" />
+                    <KeyBinding Command="hx:ViewportCommands.Reset" Gesture="Alt+R"/>
                     <MouseBinding Command="hx:ViewportCommands.Rotate" Gesture="RightClick" />
                     <MouseBinding Command="hx:ViewportCommands.Zoom" Gesture="MiddleClick" />
                     <MouseBinding Command="hx:ViewportCommands.Pan" Gesture="LeftClick" />
