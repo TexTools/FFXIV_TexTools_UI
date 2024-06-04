@@ -1178,7 +1178,6 @@ namespace FFXIV_TexTools.Views
                 var ordered = files.OrderBy(x => x.Key);
                 foreach(var f in ordered)
                 {
-                    var item = (await XivCache.GetFirstRoot(f.Key)).GetFirstItem();
                     var entry = new TinyFileListEntry()
                     {
                         FilePath = f.Key,
