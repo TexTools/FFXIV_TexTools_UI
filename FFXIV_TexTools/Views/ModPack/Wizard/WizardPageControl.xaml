@@ -12,14 +12,18 @@
         <DataTemplate x:Key="CheckBoxTemplate">
             <StackPanel Orientation="Horizontal">
                 <CheckBox IsChecked="{Binding Selected}"/>
-                <TextBlock Text="{Binding Name}"/>
+                <TextBlock>
+                    <Run Text="{Binding Name}"></Run><Run Foreground="DarkRed" Text="{Binding Path=NoDataIndicator, Mode=OneWay}"></Run>
+                </TextBlock>
             </StackPanel>
         </DataTemplate>
 
         <DataTemplate x:Key="RadioButtonTemplate">
             <StackPanel Orientation="Horizontal">
                 <RadioButton GroupName="{Binding GroupName}" IsChecked="{Binding Selected}" />
-                <TextBlock Text="{Binding Name}"/>
+                <TextBlock>
+                    <Run Text="{Binding Name}"></Run><Run Foreground="DarkRed" Text="{Binding Path=NoDataIndicator, Mode=OneWay}"></Run>
+                </TextBlock>
             </StackPanel>
         </DataTemplate>
     </UserControl.Resources>
@@ -57,7 +61,9 @@
                                                     <GradientStop Color="White" Offset="1"/>
                                                 </LinearGradientBrush>
                                             </Border.BorderBrush>
-                                            <TextBlock FontWeight="Bold" Text="{Binding Name}"/>
+                                            <TextBlock FontWeight="Bold">
+                                                <Run Text="{Binding Path=Name, Mode=OneWay}"></Run>
+                                            </TextBlock>
                                         </Border>
                                     </DataTemplate>
                                 </GroupStyle.HeaderTemplate>

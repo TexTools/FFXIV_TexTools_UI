@@ -212,6 +212,19 @@ namespace FFXIV_TexTools.Views.Wizard
             {
                 Data.Groups.Remove(owningGroup);
             }
+            else
+            {
+                owningGroup.Name = owningGroup.Name.Trim();
+
+                var name = owningGroup.Name;
+                var i = 2;
+                while (Data.Groups.Count(x => x.Name == owningGroup.Name) > 1)
+                {
+                    owningGroup.Name = name + " " + i.ToString();
+                    i++;
+                }
+
+            }
             SetupUi();
         }
 
@@ -267,18 +280,24 @@ namespace FFXIV_TexTools.Views.Wizard
             var g = new WizardGroupEntry()
             {
                 Name = "New Group",
-
             };
-            var o = new WizardOptionEntry(g)
+
+            var i = 2;
+            while (Data.Groups.Count(x => x.Name == g.Name) > 0)
+            {
+                g.Name = "New Group " + i.ToString();
+                i++;
+            }
+
+                var o = new WizardOptionEntry(g)
             {
                 Name = "New Option"
             };
             o.Selected = true;
             g.Options.Add(o);
 
-
-
             Data.Groups.Add(g);
+
             SetupUi();
 
         }
@@ -293,6 +312,13 @@ namespace FFXIV_TexTools.Views.Wizard
 
             g.ImcData = new WizardImcGroupData();
             g.OptionType = EOptionType.Multi;
+
+            var i = 2;
+            while (Data.Groups.Count(x => x.Name == g.Name) > 0)
+            {
+                g.Name = "New Group " + i.ToString();
+                i++;
+            }
 
             var o = new WizardOptionEntry(g)
             {

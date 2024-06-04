@@ -90,7 +90,7 @@ namespace FFXIV_TexTools.Views.Wizard
 
         public List<PMPManipulationWrapperJson> Manipulations = new List<PMPManipulationWrapperJson>();
 
-        protected override bool HasData()
+        protected override bool CheckHasData()
         {
             return Files.Count > 0 || Manipulations.Count > 0;
         }
@@ -196,24 +196,28 @@ namespace FFXIV_TexTools.Views.Wizard
         public bool IsDisableOption;
         public ushort AttributeMask;
 
-        protected override bool HasData()
+        protected override bool CheckHasData()
         {
-            return true;
+            if(AttributeMask > 0 || IsDisableOption)
+            {
+                return true;
+            }
+            return false;
         }
     }
 
     public class WizardOptionData
     {
 
-        public bool AnyData
+        public bool HasData
         {
             get
             {
-                return HasData();
+                return CheckHasData();
             }
         }
 
-        protected virtual bool HasData()
+        protected virtual bool CheckHasData()
         {
             return false;
         }
@@ -230,6 +234,48 @@ namespace FFXIV_TexTools.Views.Wizard
         public string Name { get; set; }
         public string Description { get; set; }
         public string Image { get; set; }
+
+        public string NoDataIndicator
+        {
+            get
+            {
+                if (HasData)
+                {
+                    return "";
+                }
+
+                if(!_Group.Options.Any(x => x.HasData))
+                {
+                    // Group needs valid data.
+                    return " (Empty)";
+                }
+
+                if(OptionType == EOptionType.Single)
+                {
+                    if(_Group.Options.FirstOrDefault(x => !x.HasData) == this)
+                    {
+                        // First empty is preserved in single select.
+                        return "";
+                    }
+                }
+
+                return " (Empty)";
+            }
+        }
+
+        public bool HasData
+        {
+            get {
+                if (StandardData != null)
+                {
+                    return StandardData.HasData;
+                } else if(ImcData != null)
+                {
+                    return ImcData.HasData;
+                }
+                return false;
+            }
+        }
 
 
         private bool _Selected;
@@ -528,6 +574,7 @@ namespace FFXIV_TexTools.Views.Wizard
         public string Description;
         public string Image;
 
+
         // Int or Bitflag depending on OptionType.
         public int DefaultSelection;
 
@@ -545,6 +592,14 @@ namespace FFXIV_TexTools.Views.Wizard
                     return EGroupType.Imc;
                 }
                 return EGroupType.Standard;
+            }
+        }
+
+        public bool HasData
+        {
+            get
+            {
+                return Options.Any(x => x.HasData);
             }
         }
 
@@ -843,6 +898,14 @@ namespace FFXIV_TexTools.Views.Wizard
         public string Name;
         public List<WizardGroupEntry> Groups = new List<WizardGroupEntry>();
 
+        public bool HasData
+        {
+            get
+            {
+                return Groups.Any(x => x.HasData);
+            }
+        }
+
         public static async Task<WizardPageEntry> FromWizardModpackPage(ModPackPageJson jp, string unzipPath, bool needsTexFix)
         {
             var page = new WizardPageEntry();
@@ -929,6 +992,14 @@ namespace FFXIV_TexTools.Views.Wizard
         public List<WizardPageEntry> DataPages = new List<WizardPageEntry>();
         public EModpackType ModpackType;
         public ModPack ModPack;
+
+        public bool HasData
+        {
+            get
+            {
+                return DataPages.Any(x => x.HasData);
+            }
+        }
 
         /// <summary>
         /// Original source this Wizard Data was generated from.
@@ -1064,8 +1135,51 @@ namespace FFXIV_TexTools.Views.Wizard
         }
 
 
+        public void ClearEmpties()
+        {
+            var pages = DataPages.ToList();
+            foreach(var p in pages)
+            {
+                if (!p.HasData)
+                {
+                    DataPages.Remove(p);
+                    continue;
+                }
+
+                var groups = p.Groups.ToList();
+                foreach(var g in groups)
+                {
+                    if (!g.HasData)
+                    {
+                        p.Groups.Remove(g);
+                        continue;
+                    }
+
+                    var options = g.Options;
+                    var firstEmpty = false;
+                    foreach (var o in options)
+                    {
+                        if (!o.HasData)
+                        {
+                            if (!firstEmpty && g.OptionType == EOptionType.Single)
+                            {
+                                // Allow one empty option for single selects.
+                                firstEmpty = true;
+                                continue;
+                            }
+                            g.Options.Remove(o);
+                            continue;
+                        }
+                    }
+                }
+            }
+
+        }
+
         public async Task WriteWizardPack(string targetPath)
         {
+            ClearEmpties();
+
             Version.TryParse(MetaPage.Version, out var ver);
 
             ver ??= new Version("1.0");
@@ -1082,6 +1196,10 @@ namespace FFXIV_TexTools.Views.Wizard
             int i = 0;
             foreach(var page in DataPages)
             {
+                if (!page.HasData)
+                {
+                    continue;
+                }
                 modPackData.ModPackPages.Add(await page.ToModPackPage(i));
                 i++;
             }
@@ -1091,6 +1209,8 @@ namespace FFXIV_TexTools.Views.Wizard
 
         public async Task WritePmp(string targetPath)
         {
+            ClearEmpties();
+
             var pmp = new PMPJson()
             {
                 DefaultMod = new PMPOptionJson(),
@@ -1121,9 +1241,9 @@ namespace FFXIV_TexTools.Views.Wizard
                 var allFiles = new Dictionary<string, Dictionary<string, FileStorageInformation>>();
                 foreach(var p in DataPages)
                 {
-                    foreach(var g in p.Groups)
+                    foreach (var g in p.Groups)
                     {
-                        foreach(var o in g.Options)
+                        foreach (var o in g.Options)
                         {
                             if(o.GroupType != EGroupType.Standard)
                             {
