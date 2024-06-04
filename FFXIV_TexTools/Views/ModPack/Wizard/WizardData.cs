@@ -499,7 +499,7 @@ namespace FFXIV_TexTools.Views.Wizard
                         Name = item.Name,
                         Category = item.SecondaryCategory,
                         FullPath = path,
-                        ModDataBytes = await ItemMetadata.Serialize(meta),
+                        ModDataBytes = await SmartImport.CreateCompressedFile(await ItemMetadata.Serialize(meta), true),
                     };
                     mo.Mods.Add(path, mData);
                 }

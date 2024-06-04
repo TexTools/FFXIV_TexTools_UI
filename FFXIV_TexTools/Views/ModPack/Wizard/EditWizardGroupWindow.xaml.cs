@@ -471,67 +471,78 @@ namespace FFXIV_TexTools.Views
             var textures = new List<string>();
             Task.Run(async () =>
             {
-                if (root != null)
+                try
                 {
-                    // Get ALL THE THINGS
-                    // Meta Entries, Models, Materials, Textures, Icons, and VFX Elements.
-                    var im = (IItemModel)item;
-                    var df = IOUtil.GetDataFileFromPath(root.Info.GetRootFile());
-
-
-                    metadataFile = root.Info.GetRootFile();
-                    mSet = await Imc.GetMaterialSetId(im, false, tx);
-                    models = await root.GetModelFiles(tx);
-                    materials = await root.GetMaterialFiles(mSet, tx);
-                    textures = await root.GetTextureFiles(mSet, tx);
-
-                    var icons = await Tex.GetItemIcons(im, tx);
-
-                    foreach (var icon in icons)
+                    if (root != null)
                     {
-                        textures.Add(icon);
-                    }
+                        // Get ALL THE THINGS
+                        // Meta Entries, Models, Materials, Textures, Icons, and VFX Elements.
+                        var im = (IItemModel)item;
+                        var df = IOUtil.GetDataFileFromPath(root.Info.GetRootFile());
 
-                    var paths = await ATex.GetAtexPaths(im, false, tx);
-                    foreach (var path in paths)
-                    {
-                        textures.Add(path);
-                    }
-                }
-                else
-                {
-                    if (item.GetType() == typeof(XivCharacter))
-                    {
-                        // Face Paint/Equipment Decals jank-items.  Ugh.
-                        if (item.SecondaryCategory == XivStrings.Face_Paint)
+
+                        metadataFile = root.Info.GetRootFile();
+                        mSet = await Imc.GetMaterialSetId(im, false, tx);
+                        models = await root.GetModelFiles(tx);
+                        materials = await root.GetMaterialFiles(mSet, tx);
+                        textures = await root.GetTextureFiles(mSet, tx);
+
+                        var icons = await Tex.GetItemIcons(im, tx);
+
+                        foreach (var icon in icons)
                         {
-                            var paths = await Character.GetDecalPaths(Character.XivDecalType.FacePaint, tx);
-
-                            foreach (var path in paths)
-                            {
-                                textures.Add(path);
-                            }
-
+                            textures.Add(icon);
                         }
-                        else if (item.SecondaryCategory == XivStrings.Equipment_Decals)
+
+                        var paths = await ATex.GetAtexPaths(im, false, tx);
+                        foreach (var path in paths)
                         {
-                            var paths = await Character.GetDecalPaths(Character.XivDecalType.Equipment, tx);
-                            foreach (var path in paths)
-                            {
-                                textures.Add(path);
-                            }
+                            textures.Add(path);
                         }
                     }
                     else
                     {
-                        // This is a UI item or otherwise an item which has no root, and only has textures.
-                        var uiItem = (XivUi)item;
-                        var paths = await uiItem.GetTexPaths(true, true, tx);
-                        foreach (var kv in paths)
+                        if (item.GetType() == typeof(XivCharacter))
                         {
-                            textures.Add(kv);
+                            // Face Paint/Equipment Decals jank-items.  Ugh.
+                            if (item.SecondaryCategory == XivStrings.Face_Paint)
+                            {
+                                var paths = await Character.GetDecalPaths(Character.XivDecalType.FacePaint, tx);
+
+                                foreach (var path in paths)
+                                {
+                                    textures.Add(path);
+                                }
+
+                            }
+                            else if (item.SecondaryCategory == XivStrings.Equipment_Decals)
+                            {
+                                var paths = await Character.GetDecalPaths(Character.XivDecalType.Equipment, tx);
+                                foreach (var path in paths)
+                                {
+                                    textures.Add(path);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            // This is a UI item or otherwise an item which has no root, and only has textures.
+                            var uiItem = (XivUi)item;
+                            var paths = await uiItem.GetTexPaths(true, true, tx);
+                            foreach (var kv in paths)
+                            {
+                                textures.Add(kv);
+                            }
                         }
                     }
+                }
+                catch(Exception ex)
+                {
+                    await Dispatcher.InvokeAsync(() =>
+                    {
+                        this.ShowError("Item Load Error", "An error occurred while loading the item:\n\n" + ex.Message);
+                        return;
+                    });
                 }
             }).Wait();
 
