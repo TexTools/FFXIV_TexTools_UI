@@ -339,13 +339,13 @@ namespace FFXIV_TexTools.Views.Controls
         private void SharedPath_Click(object sender, RoutedEventArgs e)
         {
 
-            var path = _Material.GetTextureRootDirectoy() + "/" + _Material.GetDefaultTexureName(Texture.Usage, false);
+            var path = _Material.GetTextureRootDirectoy() + "/" + _Material.GetDefaultTexureName(_Material.ResolveFullUsage(Texture), false);
             TexturePath = path;
         }
 
         private void UniquePath_Click(object sender, RoutedEventArgs e)
         {
-            var path = _Material.GetTextureRootDirectoy() + "/" + _Material.GetDefaultTexureName(Texture.Usage, true);
+            var path = _Material.GetTextureRootDirectoy() + "/" + _Material.GetDefaultTexureName(_Material.ResolveFullUsage(Texture), true);
             TexturePath = path;
         }
     }

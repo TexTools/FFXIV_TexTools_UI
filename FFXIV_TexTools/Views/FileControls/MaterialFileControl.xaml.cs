@@ -467,7 +467,7 @@ namespace FFXIV_TexTools.Views.Controls
             }
             foreach (var tex in Material.Textures)
             {
-                var path = Material.GetTextureRootDirectoy() + "/" + Material.GetDefaultTexureName(tex.Usage, false);
+                var path = Material.GetTextureRootDirectoy() + "/" + Material.GetDefaultTexureName(Material.ResolveFullUsage(tex), false);
                 tex.TexturePath = path;
             }
             UnsavedChanges = true;
@@ -482,7 +482,7 @@ namespace FFXIV_TexTools.Views.Controls
             }
             foreach (var tex in Material.Textures)
             {
-                var path = Material.GetTextureRootDirectoy() + "/" + Material.GetDefaultTexureName(tex.Usage, true);
+                var path = Material.GetTextureRootDirectoy() + "/" + Material.GetDefaultTexureName(Material.ResolveFullUsage(tex), true);
                 tex.TexturePath = path;
             }
             UnsavedChanges = true;
