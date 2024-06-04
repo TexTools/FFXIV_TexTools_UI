@@ -224,7 +224,7 @@ namespace FFXIV_TexTools.Views.Controls
             }
             else if (e.Key == Key.R && Keyboard.Modifiers == ModifierKeys.Control)
             {
-                if (EnableDisableButton.IsEnabled)
+                if (RefreshButton.IsEnabled)
                 {
                     if (FileControl == null)
                     {
