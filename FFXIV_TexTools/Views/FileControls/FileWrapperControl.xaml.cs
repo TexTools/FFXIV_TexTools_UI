@@ -179,6 +179,60 @@ namespace FFXIV_TexTools.Views.Controls
             SaveText.Text = TxWatcher.SaveLabel;
 
             TxWatcher.SaveStatusChanged += TxWatcher_SaveStatusChanged;
+            KeyDown += FileWrapperControl_KeyDown; ;
+
+        }
+
+        private void FileWrapperControl_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.S && Keyboard.Modifiers == ModifierKeys.Control)
+            {
+                if(SaveButton.IsEnabled)
+                {
+                    _ = SaveFile();
+                }
+            }
+            else if ((e.Key == Key.O && Keyboard.Modifiers == ModifierKeys.Control)
+                || (e.Key == Key.E && Keyboard.Modifiers == ModifierKeys.Control))
+            {
+                if (LoadButton.IsEnabled)
+                {
+                    if (FileControl == null)
+                    {
+                        return;
+                    }
+                    _ = FileControl.LoadFileByDialog();
+                }
+            }
+            else if (e.Key == Key.D && Keyboard.Modifiers == ModifierKeys.Control)
+            {
+                if (EnableDisableButton.IsEnabled)
+                {
+                    _ = EnableDisable();
+                }
+            }
+            else if (e.Key == Key.A && Keyboard.Modifiers == ModifierKeys.Control)
+            {
+                if (EnableDisableButton.IsEnabled)
+                {
+                    if (FileControl == null)
+                    {
+                        return;
+                    }
+                    _ = FileControl.SaveAsByDialog();
+                }
+            }
+            else if (e.Key == Key.R && Keyboard.Modifiers == ModifierKeys.Control)
+            {
+                if (EnableDisableButton.IsEnabled)
+                {
+                    if (FileControl == null)
+                    {
+                        return;
+                    }
+                    _ = FileControl.ReloadFile();
+                }
+            }
         }
 
         private async void TxWatcher_SaveStatusChanged(bool allowed, string text)
@@ -520,8 +574,14 @@ namespace FFXIV_TexTools.Views.Controls
             }
         }
 
-        private async void EnableDisable_Click(object sender, RoutedEventArgs e)
+        private void EnableDisable_Click(object sender, RoutedEventArgs e)
         {
+            _ = EnableDisable();
+        }
+
+        private async Task EnableDisable()
+        {
+
             try
             {
                 TxWatcher.DisableSave();
@@ -539,7 +599,7 @@ namespace FFXIV_TexTools.Views.Controls
                 await Task.Run((Func<Task>)(async () =>
                 {
                     var rtx = MainWindow.DefaultTransaction;
-                    var desiredState =  targetState ? EModState.Enabled : EModState.Disabled;
+                    var desiredState = targetState ? EModState.Enabled : EModState.Disabled;
                     var mod = await rtx.GetMod(FilePath);
                     if (mod == null)
                     {
@@ -549,7 +609,7 @@ namespace FFXIV_TexTools.Views.Controls
                     await Modding.SetModState(desiredState, mod.Value, MainWindow.UserTransaction);
                 }));
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 this.ShowError("File Save Error", "An error occurred while saving the file:\n\n" + ex.Message);
             }
