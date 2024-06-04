@@ -87,9 +87,9 @@ namespace FFXIV_TexTools
         public readonly System.Windows.Forms.IWin32Window Win32Window;
 
 #if ENDWALKER
-        public static readonly string BetaSuffix = "- CursedTools Build 26 (ENDWALKER)";
+        public static readonly string BetaSuffix = "- CursedTools Build 27 (ENDWALKER)";
 #else
-        public static readonly string BetaSuffix = "- CursedTools Build 26 (DAWNTRAIL)";
+        public static readonly string BetaSuffix = "- CursedTools Build 27 (DAWNTRAIL)";
 #endif
         public static bool IsBetaVersion {
             get
@@ -1319,7 +1319,7 @@ namespace FFXIV_TexTools
                 return;
             }
 
-            if(UserTransaction != null & UserTransaction.State != ETransactionState.Closed)
+            if(UserTransaction != null && UserTransaction.State != ETransactionState.Closed)
             {
                 ViewHelpers.ShowConfirmation(this, "Unsaved Transaction Confirmation", "You have an open transaction, are you sure you wish to close TexTools?\n\nAny un-commited changes will be lost.");
             }
