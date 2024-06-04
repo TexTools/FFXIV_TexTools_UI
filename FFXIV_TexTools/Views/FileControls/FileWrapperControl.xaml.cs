@@ -192,6 +192,7 @@ namespace FFXIV_TexTools.Views.Controls
                     {
                         _ = SaveFile();
                     }
+                    e.Handled = true;
                 }
                 else if (e.Key == Key.O || e.Key == Key.E)
                 {
@@ -203,6 +204,7 @@ namespace FFXIV_TexTools.Views.Controls
                         }
                         _ = FileControl.LoadFileByDialog();
                     }
+                    e.Handled = true;
                 }
                 else if (e.Key == Key.D)
                 {
@@ -210,6 +212,7 @@ namespace FFXIV_TexTools.Views.Controls
                     {
                         _ = EnableDisable();
                     }
+                    e.Handled = true;
                 }
                 else if (e.Key == Key.A)
                 {
@@ -221,6 +224,7 @@ namespace FFXIV_TexTools.Views.Controls
                         }
                         _ = FileControl.SaveAsByDialog();
                     }
+                    e.Handled = true;
                 }
                 else if (e.Key == Key.R)
                 {
@@ -232,6 +236,7 @@ namespace FFXIV_TexTools.Views.Controls
                         }
                         _ = FileControl.ReloadFile();
                     }
+                    e.Handled = true;
                 }
             }
         }
