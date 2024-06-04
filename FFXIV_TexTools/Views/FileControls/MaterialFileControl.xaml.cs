@@ -469,6 +469,7 @@ namespace FFXIV_TexTools.Views.Controls
                 var path = Material.GetTextureRootDirectoy() + "/" + Material.GetDefaultTexureName(tex.Usage, false);
                 tex.TexturePath = path;
             }
+            UnsavedChanges = true;
             UpdateTextureList();
         }
 
@@ -483,6 +484,7 @@ namespace FFXIV_TexTools.Views.Controls
                 var path = Material.GetTextureRootDirectoy() + "/" + Material.GetDefaultTexureName(tex.Usage, true);
                 tex.TexturePath = path;
             }
+            UnsavedChanges = true;
             UpdateTextureList();
         }
 

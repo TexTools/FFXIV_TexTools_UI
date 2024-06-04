@@ -33,9 +33,21 @@ namespace FFXIV_TexTools.Views.Controls
             }
             set
             {
-                var detokenized = _Material.DetokenizePath(Texture.TexturePath, Texture.Usage);
+                var detokenized = _Material.DetokenizePath(value, Texture.Usage);
                 Texture.TexturePath = detokenized;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TexturePath)));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DetokenizedPath)));
+            }
+        }
+        public string DetokenizedPath
+        {
+            get
+            {
+                return Texture.TexturePath;
+            }
+            set
+            {
+                return;
             }
         }
         public float LoDBias
@@ -183,8 +195,6 @@ namespace FFXIV_TexTools.Views.Controls
             LoDBiasSlider.Maximum = 7.984375f;
             LoDBiasSlider.Value = LoDBias;
 
-            DeTokenizedPathBox.Text = Texture.TexturePath;
-
 
             BitControl0.SetNames(new List<string>()
             {
@@ -269,10 +279,6 @@ namespace FFXIV_TexTools.Views.Controls
                 LoDBiasSlider.Value = (float)LoDBias;
                 _Updating = false;
             }
-            if (e.PropertyName == nameof(TexturePath))
-            {
-                DeTokenizedPathBox.Text = Texture.TexturePath;
-            }
 
 
             // Clunky hooking here b/c we have multiple elements displaying the same data.
@@ -328,6 +334,19 @@ namespace FFXIV_TexTools.Views.Controls
         {
             Regex regex = new Regex("[^0-9a-f]+", RegexOptions.IgnoreCase);
             e.Handled = regex.IsMatch(e.Text);
+        }
+
+        private void SharedPath_Click(object sender, RoutedEventArgs e)
+        {
+
+            var path = _Material.GetTextureRootDirectoy() + "/" + _Material.GetDefaultTexureName(Texture.Usage, false);
+            TexturePath = path;
+        }
+
+        private void UniquePath_Click(object sender, RoutedEventArgs e)
+        {
+            var path = _Material.GetTextureRootDirectoy() + "/" + _Material.GetDefaultTexureName(Texture.Usage, true);
+            TexturePath = path;
         }
     }
 }
