@@ -808,6 +808,15 @@ namespace FFXIV_TexTools.Views.Controls
                 disposedValue = true;
             }
         }
+
+        public bool HandleUnsaveConfirmation()
+        {
+            if (FileControl == null) return true;
+            if (!FileControl.HasFile) return true;
+
+            return FileControl.ConfirmDiscardChanges(FileControl.InternalFilePath);
+        }
+
         public void Dispose()
         {
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method

@@ -78,6 +78,17 @@ namespace FFXIV_TexTools.Views.Item
             }
         }
 
+        public bool UnsavedChanges
+        {
+            get
+            {
+                return TextureWrapper.UnsavedChanges
+                    || MaterialWrapper.UnsavedChanges
+                    || ModelWrapper.UnsavedChanges
+                    || MetadataWrapper.UnsavedChanges;
+            }
+        }
+
 
         private List<FileWrapperControl> FileControls = new List<FileWrapperControl>();
         #region Basic IPropertyNotify Properties Pattern

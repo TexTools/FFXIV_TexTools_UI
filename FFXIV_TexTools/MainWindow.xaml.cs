@@ -1030,6 +1030,7 @@ namespace FFXIV_TexTools
         /// </summary>
         private async void Menu_MakeModpackWizard_Click(object sender, RoutedEventArgs e)
         {
+            NotifyUnsaved();
             var wizard = new ExportWizardWindow { Owner = this};
             var result = wizard.ShowDialog();
 
@@ -1041,6 +1042,7 @@ namespace FFXIV_TexTools
 
         private async void Menu_MakeStandardModpack_Click(object sender, RoutedEventArgs e)
         {
+            NotifyUnsaved();
             var dialog = new StandardModpackCreator { Owner = this };
             var result = dialog.ShowDialog();
             
@@ -1051,6 +1053,7 @@ namespace FFXIV_TexTools
         /// </summary>
         private async void Menu_MakeBackupModpack_Click(object sender, RoutedEventArgs e)
         {
+            NotifyUnsaved();
             var tx = MainWindow.DefaultTransaction;
             var ml = await tx.GetModList();
             var backupCreator = new BackupModPackCreator(ml) { Owner = this };
@@ -1140,6 +1143,7 @@ namespace FFXIV_TexTools
         /// </summary>
         private async void Menu_MakeSimpleModpack_Click(object sender, RoutedEventArgs e)
         {
+            NotifyUnsaved();
             FileListExporter.ShowModpackExport();
         }
 
@@ -1227,6 +1231,71 @@ namespace FFXIV_TexTools
                 wind.Close();
             }
         }
+
+        public bool PromptUnsavedAllViewers()
+        {
+            var fileWindows = SimpleFileViewWindow.OpenFileWindows.ToList();
+            foreach (var wind in fileWindows)
+            {
+                if (!wind.FileWrapper.HandleUnsaveConfirmation())
+                {
+                    return false;
+                }
+            }
+
+            var itemWindows = SimpleItemViewWindow.OpenItemWindows.ToList();
+            foreach (var wind in itemWindows)
+            {
+                if(!wind.ItemView.HandleUnsaveConfirmation(null, null))
+                {
+                    return false;
+                }
+            }
+
+            if (!ItemView.HandleUnsaveConfirmation(null, null))
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public void NotifyUnsaved()
+        {
+            if (AnyUnsavedChanges())
+            {
+                ViewHelpers.ShowWarning(this, "Unsaved Changes Warning", "You have one or more unsaved changes that you may wish to save before proceeding");
+            }
+        }
+
+        public bool AnyUnsavedChanges()
+        {
+            var anyUnsaved = false;
+            var fileWindows = SimpleFileViewWindow.OpenFileWindows.ToList();
+            foreach (var wind in fileWindows)
+            {
+                if (wind.FileWrapper.UnsavedChanges)
+                {
+                    anyUnsaved = true;
+                }
+            }
+
+            var itemWindows = SimpleItemViewWindow.OpenItemWindows.ToList();
+            foreach (var wind in itemWindows)
+            {
+                if (wind.ItemView.UnsavedChanges)
+                {
+                    anyUnsaved = true;
+                }
+            }
+
+            if (ItemView.UnsavedChanges)
+            {
+                anyUnsaved = true;
+            }
+
+            return anyUnsaved;
+        }
+
 
         /// <summary>
         /// Event handler for the start over menu item clicked
