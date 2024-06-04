@@ -214,6 +214,7 @@ namespace FFXIV_TexTools.Views.Controls
         protected override async Task<bool> INTERNAL_WriteModFile(ModTransaction tx)
         {
             // We override this to perform material validation first.
+            Model.Source = InternalFilePath;
             await Mdl.FillMissingMaterials(Model, ReferenceItem, XivStrings.TexTools, tx);
             return await base.INTERNAL_WriteModFile(tx);   
         }

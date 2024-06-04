@@ -1319,6 +1319,11 @@ namespace FFXIV_TexTools
                 return;
             }
 
+            if(UserTransaction != null & UserTransaction.State != ETransactionState.Closed)
+            {
+                ViewHelpers.ShowConfirmation(this, "Unsaved Transaction Confirmation", "You have an open transaction, are you sure you wish to close TexTools?\n\nAny un-commited changes will be lost.");
+            }
+
             if (UserTransaction != null)
             {
                 try
@@ -1699,6 +1704,11 @@ namespace FFXIV_TexTools
         private void Menu_ProjectManager_Click(object sender, RoutedEventArgs e)
         {
             ProjectWindow.ShowProjectWindow();
+        }
+
+        private void ItemViewer_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

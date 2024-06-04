@@ -9,7 +9,7 @@
         mc:Ignorable="d"
         xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
         resx:Localization.Enabled="True"
-        Title="{Binding Source={x:Static resx:UIStrings.Customize}}" Height="694" Width="800" ShowMaxRestoreButton="False" ShowMinButton="False" WindowStartupLocation="CenterOwner">
+        Title="{Binding Source={x:Static resx:UIStrings.Settings}}" Height="694" Width="800" ShowMaxRestoreButton="False" ShowMinButton="False" WindowStartupLocation="CenterOwner">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
@@ -17,6 +17,7 @@
         </Grid.ColumnDefinitions>
         <Grid Grid.Column="0">
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
@@ -48,26 +49,17 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="175"></ColumnDefinition>
                         <ColumnDefinition></ColumnDefinition>
-
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="36"/>
-                        <RowDefinition Height="36"/>
-                        <RowDefinition Height="36"/>
-                        <RowDefinition Height="36"/>
-                        <RowDefinition Height="36"/>
-                        <RowDefinition Height="36"/>
-                        <RowDefinition Height="36"/>
-                        <RowDefinition Height="36"/>
-                        <RowDefinition Height="36"/>
-                        <RowDefinition Height="36"/>
-                        <RowDefinition Height="36"/>
+                        <RowDefinition Height="40"/>
+                        <RowDefinition Height="40"/>
+                        <RowDefinition Height="40"/>
                     </Grid.RowDefinitions>
 
-                    <Label Grid.Column="0" Grid.Row="0"  Margin="10,0,5,0" Content="Default Author" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
+                    <Label Grid.Column="0" Grid.Row="0"  Margin="5" Content="Default Modack Author" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
                     <TextBox x:Name="AuthorTextBox" Grid.Column="1" Grid.Row="0" Text="{Binding DefaultAuthor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="5" VerticalContentAlignment="Center"/>
 
-                    <Label Grid.Column="0" Grid.Row="1"  Margin="10,0,5,0" Content="Default Modpack URL" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
+                    <Label Grid.Column="0" Grid.Row="1"  Margin="5" Content="Default Modpack URL" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
                     <TextBox x:Name="UrlTextBox" Grid.Column="1" Grid.Row="1" Margin="5" VerticalContentAlignment="Center">
                         <TextBox.Text>
                             <Binding  NotifyOnValidationError="True" UpdateSourceTrigger="PropertyChanged" Path="DefaultModpackUrl" Mode="TwoWay">
@@ -78,32 +70,37 @@
                         </TextBox.Text>
                     </TextBox>
 
-                    <Label Grid.Column="0" Grid.Row="2"  Margin="10,0,5,0" Content="Synchronize View Tabs" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
-                    <CheckBox x:Name="SynchronizeViewsBox"  Grid.Column="1" Grid.Row="2" VerticalAlignment="Center" Margin="5,0,10,0"  IsChecked="{Binding UseSynchronizedViews}" ToolTip="Synchronize the model/texture/metadata view tabs to use the same Race/'Number' selection."></CheckBox>
+                    <Label Grid.Column="0" Grid.Row="2" Margin="5" Content="Default Race" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
+                    <ComboBox x:Name="DefaultRacesBox" Grid.Column="1" Grid.Row="2"  VerticalAlignment="Center" ItemsSource="{Binding DefaultRaces}" SelectedItem="{Binding SelectedDefaultRace}" Margin="5" ToolTip="Attempt to switch to this race's model if nothing was selected previously."/>
 
-                    <Label Grid.Column="0" Grid.Row="3"  Margin="10,0,5,0" Content="Remember Race Selection" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
-                    <CheckBox x:Name="RememberSelectionBox"  Grid.Column="1" Grid.Row="3" VerticalAlignment="Center" Margin="5,0,10,0" ToolTip="Remember the Race/'Number' Selection when changing between items."  IsChecked="{Binding RememberRaceSelection}"></CheckBox>
+                </Grid>
+            </GroupBox>
+            <GroupBox Grid.Row="2" Header="Import/Export Settings" Margin="5">
+                <Grid>
 
-                    <Label Grid.Column="0" Grid.Row="4" Margin="10,0,5,0" Content="Default Race" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
-                    <ComboBox x:Name="DefaultRacesBox" Grid.Column="1" Grid.Row="4"  VerticalAlignment="Center" ItemsSource="{Binding DefaultRaces}" IsEnabled="{Binding DefaultRaceEnabled}" SelectedItem="{Binding SelectedDefaultRace}" Margin="5,0,10,0" ToolTip="Always attempt to switch to this race when changing items."/>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="175"></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
 
-                    <Label Grid.Column="0" Grid.Row="5" Margin="10,0,5,0" Content="External Model Viewer Type" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
-                    <ComboBox x:Name="Target3DProgramBox" Grid.Column="1" Grid.Row="5"  VerticalAlignment="Center" ItemsSource="{Binding Target3DPrograms}" SelectedItem="{Binding Selected3DProgram}" Margin="5,0,10,0" />
-
-                    <Label Grid.Column="0" Grid.Row="6" Margin="10,0,5,0" Content="Export Complete Skeletons" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
-                    <CheckBox x:Name="ExportAllBonesBox"  Grid.Column="1" Grid.Row="6" VerticalAlignment="Center" Margin="5,0,10,0" ToolTip="Should model exports include unused bones in the associated skeletons?"  IsChecked="{Binding ExportAllBones}"></CheckBox>
-
-                    <Label Grid.Column="0" Grid.Row="7" Margin="10,0,5,0" Content="TexTools Version" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
-                    <ComboBox x:Name="UpdateBranchBox" Grid.Column="1" Grid.Row="7"  VerticalAlignment="Center" ItemsSource="{Binding UpdateBranches}" SelectedItem="{Binding UpdateBranch}" Margin="5,0,10,0" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="40"/>
+                        <RowDefinition Height="40"/>
+                        <RowDefinition Height="40"/>
+                        <RowDefinition Height="40"/>
+                    </Grid.RowDefinitions>
                     
-                    <Label Grid.Column="0" Grid.Row="8" Margin="10,0,5,0" Content="Body Material Auto-Assign" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
-                    <CheckBox x:Name="AutoMatFixBox"  Grid.Column="1" Grid.Row="8" VerticalAlignment="Center" Margin="5,0,10,0" ToolTip="Automatically assign imported body models to the correct skin material."  IsChecked="{Binding AutoMaterialFix}"></CheckBox>
+                    <Label Grid.Column="0" Grid.Row="0" Margin="5" Content="External Model Viewer Type" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
+                    <ComboBox x:Name="Target3DProgramBox" Grid.Column="1" Grid.Row="0"  VerticalAlignment="Center" ItemsSource="{Binding Target3DPrograms}" SelectedItem="{Binding Selected3DProgram}" Margin="5" />
 
-                    <Label Grid.Column="0" Grid.Row="9" Margin="10,0,5,0" Content="Auto-Fix Pre-DT Modpacks" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
-                    <CheckBox x:Name="DawntrailFixBox"  Grid.Column="1" Grid.Row="9" VerticalAlignment="Center" Margin="5,0,10,0" ToolTip="Automatically fix Pre-Dawntrail modpacks on Import."  IsChecked="{Binding AutoFixDawntrail}"></CheckBox>
+                    <Label Grid.Column="0" Grid.Row="1" Margin="5" Content="Export Complete Skeletons" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
+                    <CheckBox x:Name="ExportAllBonesBox"  Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" Margin="5" ToolTip="Should model exports include unused bones in the associated skeletons?"  IsChecked="{Binding ExportAllBones}"></CheckBox>
 
-                    <Label Grid.Column="0" Grid.Row="10" Margin="10,0,5,0" Content="Default to UNSFAE Mode" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
-                    <CheckBox x:Name="UnsafeModeDefault"  Grid.Column="1" Grid.Row="10" VerticalAlignment="Center" Margin="5,0,10,0" ToolTip="Start TexTools in UNSAFE mode on launch."  IsChecked="{Binding Path=UnsafeMode}"></CheckBox>
+                    <Label Grid.Column="0" Grid.Row="2" Margin="5" Content="Body Material Auto-Assign" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
+                    <CheckBox x:Name="AutoMatFixBox"  Grid.Column="1" Grid.Row="2" VerticalAlignment="Center" Margin="5" ToolTip="Automatically assign imported body models to the correct skin material."  IsChecked="{Binding AutoMaterialFix}"></CheckBox>
+
+                    <Label Grid.Column="0" Grid.Row="3" Margin="5" Content="Update Endwalker Modpacks" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
+                    <CheckBox x:Name="DawntrailFixBox"  Grid.Column="1" Grid.Row="3" VerticalAlignment="Center" Margin="5" ToolTip="Automatically update pre-Dawntrail Modpacks on Import."  IsChecked="{Binding AutoFixDawntrail}"></CheckBox>
 
                 </Grid>
             </GroupBox>
@@ -167,6 +164,27 @@
                 </Grid>
             </GroupBox>
 
+            <GroupBox Header="Danger Zone" Grid.Row="1" Margin="5">
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="175"></ColumnDefinition>
+                        <ColumnDefinition></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="40"/>
+                        <RowDefinition Height="40"/>
+                    </Grid.RowDefinitions>
+
+                    <Label Grid.Column="0" Grid.Row="0" Margin="5" Content="TexTools Branch" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
+                    <ComboBox x:Name="UpdateBranchBox" Grid.Column="1" Grid.Row="0"  VerticalAlignment="Center" ItemsSource="{Binding UpdateBranches}" SelectedItem="{Binding UpdateBranch}" Margin="5" />
+
+                    <Label Grid.Column="0" Grid.Row="1" Margin="5" Content="Default to UNSFAE Mode" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
+                    <CheckBox x:Name="UnsafeModeDefault"  Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" Margin="5" ToolTip="Start TexTools in UNSAFE mode on launch."  IsChecked="{Binding Path=UnsafeMode}"></CheckBox>
+
+
+                </Grid>
+            </GroupBox>
             <Button x:Name="CloseButton" Grid.Row="2" Content="{Binding Source={x:Static resx:UIStrings.Close}}" Command="{Binding CloseCustomize}" Margin="10" Click="CloseButton_Click" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="150" />
         </Grid>
     </Grid>

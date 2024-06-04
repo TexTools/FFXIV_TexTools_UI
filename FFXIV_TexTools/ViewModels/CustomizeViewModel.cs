@@ -303,18 +303,6 @@ namespace FFXIV_TexTools.ViewModels
             Settings.Default.FixPreDawntrailOnImport = value;
             Settings.Default.Save();
         }
-        public bool DefaultRaceEnabled
-        {
-            get
-            {
-                return Settings.Default.Remember_Race_Selection == false;
-            }
-            set
-            {
-                // --
-            }
-        }
-
         public bool UnsafeMode
         {
             get => Settings.Default.LiveDangerously;
@@ -426,29 +414,6 @@ namespace FFXIV_TexTools.ViewModels
         }
 
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public bool RememberRaceSelection
-        {
-            get => Settings.Default.Remember_Race_Selection;
-            set
-            {
-                if (RememberRaceSelection != value)
-                {
-                    SetRememberRaceSelection(value);
-                    NotifyPropertyChanged(nameof(RememberRaceSelection));
-                    NotifyPropertyChanged(nameof(DefaultRaceEnabled));
-                }
-
-            }
-        }
-        public void SetRememberRaceSelection(bool value)
-        {
-            Settings.Default.Remember_Race_Selection = value;
-            Settings.Default.Save();
-        }
-
         public bool AutoMaterialFix
         {
             get => Settings.Default.AutoMaterialFix;
@@ -469,29 +434,6 @@ namespace FFXIV_TexTools.ViewModels
             Settings.Default.Save();
         }
 
-
-        /// <summary>
-        /// The selected skin type
-        /// </summary>
-        public bool UseSynchronizedViews
-        {
-            get => Settings.Default.Sync_Views;
-            set
-            {
-                if (UseSynchronizedViews != value)
-                {
-                    SetViewSync(value);
-                    NotifyPropertyChanged(nameof(UseSynchronizedViews));
-                }
-
-            }
-        }
-
-        public void SetViewSync(bool value)
-        {
-            Settings.Default.Sync_Views = value;
-            Settings.Default.Save();
-        }
 
         public void SetInvertNormal(bool value)
         {

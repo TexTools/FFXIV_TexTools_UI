@@ -851,7 +851,9 @@ namespace FFXIV_TexTools.Views.Wizard
             page.Groups = new List<WizardGroupEntry>();
             foreach(var p in jp.ModGroups)
             {
-                page.Groups.Add(await WizardGroupEntry.FromWizardGroup(p, unzipPath, needsTexFix));
+                var g = await WizardGroupEntry.FromWizardGroup(p, unzipPath, needsTexFix);
+                if (g == null) continue;
+                page.Groups.Add(g);
             }
             return page;
         }

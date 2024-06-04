@@ -4077,6 +4077,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Settings.
+        /// </summary>
+        public static string Settings {
+            get {
+                return ResourceManager.GetString("Settings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to SFX ID:.
         /// </summary>
         public static string SFX_ID_ {
@@ -4802,6 +4811,15 @@ namespace FFXIV_TexTools.Resources {
         public static string VFX_ID_ {
             get {
                 return ResourceManager.GetString("VFX ID:", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to View.
+        /// </summary>
+        public static string View {
+            get {
+                return ResourceManager.GetString("View", resourceCulture);
             }
         }
         
