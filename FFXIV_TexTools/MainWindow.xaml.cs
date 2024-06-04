@@ -82,6 +82,7 @@ namespace FFXIV_TexTools
     /// </summary>
     public partial class MainWindow
     {
+        private int _LockCount = 0;
         private string _startupArgs;
         private static MainWindow _mainWindow;
         public readonly System.Windows.Forms.IWin32Window Win32Window;
@@ -585,6 +586,7 @@ namespace FFXIV_TexTools
             await _lockScreenSemaphore.WaitAsync();
             try
             {
+                _LockCount++;
                 if (IsUiLocked)
                 {
                     return;
@@ -622,7 +624,18 @@ namespace FFXIV_TexTools
             await _lockScreenSemaphore.WaitAsync();
             try
             {
+                _LockCount--;
+                if(_LockCount < 0)
+                {
+                    _LockCount = 0;
+                }
+
                 if (!IsUiLocked)
+                {
+                    return;
+                }
+
+                if(_LockCount > 0)
                 {
                     return;
                 }
@@ -1239,30 +1252,35 @@ namespace FFXIV_TexTools
 
                     await LockUi(UIStrings.Start_Over, UIMessages.PleaseStandByMessage, this);
 
-                    MakeHighlander();
-
                     try
                     {
-                        await ProblemChecker.ResetAllGameFiles(indexBackupsDirectory, _lockProgress);
-                        CustomizeViewModel.UpdateCacheSettings();
-                    }
-                    catch (Exception ex)
-                    {
-                        while (ex.InnerException != null)
+                        MakeHighlander();
+
+                        try
                         {
-                            ex = ex.InnerException;
+                            await ProblemChecker.ResetAllGameFiles(indexBackupsDirectory, _lockProgress);
+                            CustomizeViewModel.UpdateCacheSettings();
                         }
+                        catch (Exception ex)
+                        {
+                            while (ex.InnerException != null)
+                            {
+                                ex = ex.InnerException;
+                            }
 
-                        var msg = UIMessages.StartOverErrorMessage + "\n\nError: ".L() + ex.Message;
-                        FlexibleMessageBox.Show(msg,
-                            UIMessages.StartOverErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        await UnlockUi();
-                        return;
+                            var msg = UIMessages.StartOverErrorMessage + "\n\nError: ".L() + ex.Message;
+                            FlexibleMessageBox.Show(msg,
+                                UIMessages.StartOverErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            await UnlockUi();
+                            return;
+                        }
                     }
+                    finally
+                    {
+                        await UnlockUi();
 
-                    await UnlockUi();
-
-                    await RefreshTree(this);
+                        await RefreshTree(this);
+                    }
 
 
 
