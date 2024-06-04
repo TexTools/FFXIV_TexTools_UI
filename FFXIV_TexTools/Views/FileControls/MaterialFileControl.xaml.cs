@@ -74,7 +74,7 @@ namespace FFXIV_TexTools.Views.Controls
             }
             set
             {
-                Texture.TexturePath = View.Material.DetokenizePath(value, Texture.Usage);
+                Texture.TexturePath = View.Material.DetokenizePath(value, Texture);
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TexturePath)));
             }
         }

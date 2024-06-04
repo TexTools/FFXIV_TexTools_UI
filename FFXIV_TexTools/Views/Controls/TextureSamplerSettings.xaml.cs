@@ -33,7 +33,7 @@ namespace FFXIV_TexTools.Views.Controls
             }
             set
             {
-                var detokenized = _Material.DetokenizePath(value, Texture.Usage);
+                var detokenized = _Material.DetokenizePath(value, Texture);
                 Texture.TexturePath = detokenized;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TexturePath)));
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DetokenizedPath)));
