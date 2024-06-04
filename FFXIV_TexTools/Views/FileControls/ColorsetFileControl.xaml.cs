@@ -286,7 +286,7 @@ namespace FFXIV_TexTools.Views.Controls
             await Mtrl.ImportMtrl(Material, ReferenceItem, XivStrings.TexTools, true, tx);
 
 #if DAWNTRAIL
-            await Mtrl.FixPreDawntrailMaterial(Material, XivStrings.TexTools, true, tx);
+            await Mtrl.UpdateEndwalkerMaterial(Material, XivStrings.TexTools, true, tx);
 #endif
 
             return true;

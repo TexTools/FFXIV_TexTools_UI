@@ -57,11 +57,12 @@ namespace FFXIV_TexTools.Views.Controls
 
         public MaterialFileControl View;
 
+
         public XivTexType Usage
         {
             get
             {
-                return Texture.Usage;
+                return View.Material.ResolveFullUsage(Texture);
             }
         }
 
@@ -261,7 +262,7 @@ namespace FFXIV_TexTools.Views.Controls
             await Mtrl.ImportMtrl(Material, ReferenceItem, XivStrings.TexTools, true, tx);
 
 #if DAWNTRAIL
-            await Mtrl.FixPreDawntrailMaterial(Material, XivStrings.TexTools, true, tx);
+            await Mtrl.UpdateEndwalkerMaterial(Material, XivStrings.TexTools, true, tx);
 #endif
 
             return true;
