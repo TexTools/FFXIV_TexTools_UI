@@ -77,11 +77,14 @@
                             <RowDefinition Height="40"></RowDefinition>
                             <RowDefinition Height="40"></RowDefinition>
                             <RowDefinition Height="40"></RowDefinition>
+                            <RowDefinition Height="40"></RowDefinition>
                         </Grid.RowDefinitions>
 
-                        <Label Grid.Row="0" Content="{Binding Path=TextureInfo, FallbackValue=DXT123 1024x1024 (11 Mips)}" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center"></Label>
+                        <Label Grid.Row="0" Content="{Binding Path=TextureInfo, FallbackValue=1024x1024 (11 Mips)}" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center"></Label>
+                        
+                        <ComboBox Grid.Row="1" ItemsSource="{Binding Path=Formats}" DisplayMemberPath="Key" SelectedValuePath="Value" SelectedValue="{Binding Path=Format}" VerticalAlignment="Center"></ComboBox>
 
-                        <Grid x:Name="ChannelsRow" Grid.Row="1">
+                        <Grid x:Name="ChannelsRow" Grid.Row="2">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition/>
                                 <ColumnDefinition/>
@@ -95,8 +98,8 @@
 
                         </Grid>
 
-                        <Button Grid.ColumnSpan="4" Grid.Row="2" Content="Edit Channels" VerticalAlignment="Center" Click="EditChannels_Click"></Button>
-                        <Button Grid.ColumnSpan="4" Grid.Row="3" Content="Add Overlay" VerticalAlignment="Center" Click="AddOverlay_Click"></Button>
+                        <Button Grid.ColumnSpan="4" Grid.Row="3" Content="Edit Channels" VerticalAlignment="Center" Click="EditChannels_Click"></Button>
+                        <Button Grid.ColumnSpan="4" Grid.Row="4" Content="Add Overlay" VerticalAlignment="Center" Click="AddOverlay_Click"></Button>
                     </Grid>
                 </Grid>
 

@@ -34,6 +34,7 @@ using xivModdingFramework.Variants.FileTypes;
 using Image = SixLabors.ImageSharp.Image;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Textures;
+using System.Collections.ObjectModel;
 
 namespace FFXIV_TexTools.Views.Controls
 {
@@ -108,6 +109,11 @@ namespace FFXIV_TexTools.Views.Controls
             get => _Format;
             set
             {
+                if (!_LoadingImage)
+                {
+                    UnsavedChanges = true;
+                }
+                ShowFormatWarnings(value);
                 _Format = value;
                 OnPropertyChanged(nameof(Format));
             }
@@ -130,6 +136,8 @@ namespace FFXIV_TexTools.Views.Controls
             }
         }
 
+        public ObservableCollection<KeyValuePair<string, XivTexFormat>> Formats { get; set; } = ViewHelpers.GetEnumSource<XivTexFormat>();
+
         private bool _LoadingImage;
         public TextureFileControl()
         {
@@ -143,11 +151,20 @@ namespace FFXIV_TexTools.Views.Controls
             ViewType = EFileViewType.Editor;
         }
 
-
-        protected override async Task<byte[]> INTERNAL_GetUncompressedData()
+        private bool NeedsPixelMerge()
         {
             if (UnsavedChanges && (Texture.TextureFormat != Format || PixelChanges))
             {
+                return true;
+            }
+            return false;
+        }
+
+        protected override async Task<byte[]> INTERNAL_GetUncompressedData()
+        {
+            if (NeedsPixelMerge())
+            {
+                Texture.TextureFormat = Format;
                 await Tex.MergePixelData(Texture, PixelData);
             }
             return Texture.ToUncompressedTex();
@@ -187,7 +204,14 @@ namespace FFXIV_TexTools.Views.Controls
             }
             else if(ext == ".dds")
             {
-                Tex.SaveTexAsDDS(externalFilePath, Texture);
+                var tex = Texture;
+                if (NeedsPixelMerge())
+                {
+                    tex = (XivTex)Texture.Clone();
+                    tex.TextureFormat = Format;
+                    await Tex.MergePixelData(tex, PixelData);
+                }
+                Tex.SaveTexAsDDS(externalFilePath, tex);
                 return true;
             } 
 
@@ -396,7 +420,7 @@ namespace FFXIV_TexTools.Views.Controls
                     return;
                 }
 
-                TextureInfo = $"{Texture.Width}x{Texture.Height} {Format.GetTexDisplayName()} ({Texture.MipMapCount} Mips)";
+                TextureInfo = $"{Texture.Width}x{Texture.Height} ({Texture.MipMapCount} MipMaps)";
 
                 var r = RedChecked ? 1.0f : 0.0f;
                 var g = GreenChecked ? 1.0f : 0.0f;
@@ -624,6 +648,20 @@ namespace FFXIV_TexTools.Views.Controls
             } catch(Exception ex)
             {
                 this.ShowError("Image Processing Error", "An error occurred while processing the overlay:\n\n" + ex.Message);
+            }
+        }
+
+        private void ShowFormatWarnings(XivTexFormat format)
+        {
+            if (Texture == null) return;
+            if(format == Texture.TextureFormat)
+            {
+                return;
+            }
+
+            if(format == XivTexFormat.BC7)
+            {
+                this.ShowWarning("Texture Format Warning", "TexTools does not currently have a BC7 Compressor for raw pixel data.\n\nYou will not be able to save the resulting image.");
             }
         }
     }
