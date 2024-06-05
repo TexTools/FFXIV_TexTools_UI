@@ -792,10 +792,16 @@ namespace FFXIV_TexTools.Views.Controls
         {
             var bf = new BetterFolderBrowser();
             bf.Title = "Select Export Folder";
-            if(bf.ShowDialog() != DialogResult.OK)
+
+            var path = Path.GetFullPath(Path.Combine(GetDefaultSaveDirectory() + "../RawTextures/"));
+            Directory.CreateDirectory(path);
+            bf.RootFolder = path;
+
+            if (bf.ShowDialog() != DialogResult.OK)
             {
                 return;
             }
+
 
             try
             {
