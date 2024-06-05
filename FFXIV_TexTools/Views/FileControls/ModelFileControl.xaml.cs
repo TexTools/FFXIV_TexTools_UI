@@ -45,6 +45,7 @@ using SharpDX;
 using ControlzEx.Standard;
 using System.Windows.Media.Media3D;
 using System.Runtime.CompilerServices;
+using WK.Libraries.BetterFolderBrowserNS;
 
 namespace FFXIV_TexTools.Views.Controls
 {
@@ -784,6 +785,39 @@ namespace FFXIV_TexTools.Views.Controls
             catch(Exception ex)
             {
                 Trace.WriteLine(ex);
+            }
+        }
+
+        private async void ExportTextures_Click(object sender, RoutedEventArgs e)
+        {
+            var bf = new BetterFolderBrowser();
+            bf.Title = "Select Export Folder";
+            if(bf.ShowDialog() != DialogResult.OK)
+            {
+                return;
+            }
+
+            try
+            {
+                ExportTexturesButton.IsEnabled = false;
+                await Task.Run(async () =>
+                {
+                    var set = 1;
+                    var im = ReferenceItem as IItemModel;
+                    if (im != null)
+                    {
+                        set = await Imc.GetMaterialSetId(im, false, MainWindow.DefaultTransaction);
+                    }
+                    Model.Source = InternalFilePath;
+                    await Mdl.ExportAllTextures(Model, bf.SelectedPath, set, MainWindow.DefaultTransaction);
+                });
+            } catch(Exception ex)
+            {
+                this.ShowError("Export Error", "An error occurred while exporting the textures:\n\n" + ex.Message);
+            }
+            finally
+            {
+                ExportTexturesButton.IsEnabled = true;
             }
         }
     }

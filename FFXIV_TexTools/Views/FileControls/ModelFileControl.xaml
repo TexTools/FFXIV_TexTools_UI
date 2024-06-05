@@ -88,6 +88,7 @@
                 </Grid.ColumnDefinitions>
 
 
+                <Button x:Name="ExportTexturesButton" Grid.Column="0" Grid.Row="1" Margin="5" Content="Export All Textures" Click="ExportTextures_Click" />
                 <Button Grid.Column="1" Grid.Row="2" Margin="5" Content="View/Edit Material" Visibility="{Binding Path=ShowMaterialVisibility}" Click="ShowMaterial_Click" />
                 <Button Grid.Column="0" Grid.Row="2" Margin="5" Content="Add To FMV" IsEnabled="{Binding Path=FmvButtonEnabled}" Click="FullModel_Click" />
             </Grid>
