@@ -654,7 +654,7 @@ namespace FFXIV_TexTools.Views.Controls
         private void ShowFormatWarnings(XivTexFormat format)
         {
             if (Texture == null) return;
-            if(format == Texture.TextureFormat)
+            if(format == Texture.TextureFormat && !PixelChanges)
             {
                 return;
             }
