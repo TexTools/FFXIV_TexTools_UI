@@ -1,4 +1,5 @@
 ﻿using FFXIV_TexTools.Helpers;
+using FFXIV_TexTools.Properties;
 using FFXIV_TexTools.Resources;
 using FFXIV_TexTools.Views.Controls;
 using FFXIV_TexTools.Views.SharedItems;
@@ -949,14 +950,33 @@ namespace FFXIV_TexTools.Views.Item
                         ModelComboBox.SelectedValue = target;
                     } else
                     {
-                        // Fallback
-                        ModelComboBox.SelectedIndex = 0;
+                        var userRace = XivRaces.GetXivRaceFromDisplayName(Settings.Default.Default_Race_Selection);
+                        var userPref = Files.Keys.FirstOrDefault(x => IOUtil.GetRaceFromPath(x) == userRace);
+                        if (userPref != null)
+                        {
+                            ModelComboBox.SelectedValue = userPref;
+                        }
+                        else
+                        {
+                            // Fallback
+                            ModelComboBox.SelectedIndex = 0;
+                        }
                     }
                 }
             } else
             {
-                // Default behavior
-                ModelComboBox.SelectedIndex = 0;
+                var userRace = XivRaces.GetXivRaceFromDisplayName(Settings.Default.Default_Race_Selection);
+                var userPref = Files.Keys.FirstOrDefault(x => IOUtil.GetRaceFromPath(x) == userRace);
+                // Default line
+                if (userPref != null)
+                {
+                    ModelComboBox.SelectedValue = userPref;
+                }
+                else
+                {
+                    // Fallback
+                    ModelComboBox.SelectedIndex = 0;
+                }
             }
         }
 
