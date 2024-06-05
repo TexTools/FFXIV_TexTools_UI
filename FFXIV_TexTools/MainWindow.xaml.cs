@@ -366,6 +366,7 @@ namespace FFXIV_TexTools
             }
             else
             {
+                // Normal startup process.
                 this.Show();
 
                 // Can set this now that we're open.
@@ -375,7 +376,7 @@ namespace FFXIV_TexTools
                 ItemSelect.ItemSelected += ItemSelect_ItemSelected;
                 ItemSelect.ItemsLoaded += OnTreeLoaded;
 
-                InitializeCache();
+                _ = AsyncStartup();
 
                 ModTransaction.ActiveTransactionBlocked += ModTransaction_ActiveTransactionBlocked;
             }
@@ -409,7 +410,7 @@ namespace FFXIV_TexTools
                 // We shouldn't evet actually get here, as this function is only called on 
                 // first time installs, where lang would be empty, and other calls force-restart the application.
                 // But doesn't hurt to have a safety check here anyways.
-                InitializeCache();
+                _ = InitializeCache();
             }
         }
 
@@ -438,6 +439,36 @@ namespace FFXIV_TexTools
                 {
                     // New install prompt time after rebuild is done.
                     _NEW_INSTALL = true;
+                }
+            }
+        }
+
+
+        private async Task AsyncStartup()
+        {
+            await InitializeCache();
+
+            if (!string.IsNullOrWhiteSpace(Settings.Default.Backup_Directory))
+            {
+                var validBackups = ProblemChecker.AreBackupsValid(Settings.Default.Backup_Directory);
+                if (!validBackups)
+                {
+                    if(this.InfoPrompt("Missing Index Backups", "Your do not currently have Index Backups, or they are from a previous game version.\n\nWould you like to create new backups now?  This is STRONGLY recommended."))
+                    {
+                        await LockUi("Creating Index Backups");
+                        try
+                        {
+                            await ProblemChecker.CreateIndexBackups(Settings.Default.Backup_Directory);
+                        }
+                        catch(Exception ex)
+                        {
+                            this.ShowError("Index Backup Error", "An error occurred while creating the index backups:\n\n" + ex.Message);
+                        }
+                        finally
+                        {
+                            await UnlockUi();
+                        }
+                    }
                 }
             }
         }
