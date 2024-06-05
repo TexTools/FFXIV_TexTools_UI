@@ -47,6 +47,10 @@ namespace FFXIV_TexTools.Views.Item
             ItemView.Dispose();
 
             OpenItemWindows.Remove(this);
+            if (null != Owner)
+            {
+                Owner.Activate();
+            }
         }
 
         public async Task<bool> SetItem(IItem item)

@@ -53,6 +53,15 @@ namespace FFXIV_TexTools.Views.Models
             FillOtherDataComboBox();
 
             FillLoDComboBox();
+            Closing += ModelInspector_Closing;
+        }
+
+        private void ModelInspector_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (null != Owner)
+            {
+                Owner.Activate();
+            }
         }
 
         private void PrintVar<T>(RichTextBox textBox, T source, string name, bool doubleSpace = true)

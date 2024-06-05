@@ -83,6 +83,16 @@ namespace FFXIV_TexTools.Views.ItemConverter
             ItemSelect.UnlockUiFunction = UnlockUi;
 
             SetState(ItemConverterState.SourceSelect);
+
+            Closing += ItemConverterWindow_Closing;
+        }
+
+        private void ItemConverterWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (null != Owner)
+            {
+                Owner.Activate();
+            }
         }
 
         private void SetState(ItemConverterState state)

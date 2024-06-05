@@ -122,6 +122,16 @@ namespace FFXIV_TexTools.Views.Models
             DataContext = _viewModel;
 
             _ = SetupUi();
+
+            Closing += ImportModelEditView_Closing;
+        }
+
+        private void ImportModelEditView_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (null != Owner)
+            {
+                Owner.Activate();
+            }
         }
 
         private async Task SetupUi()

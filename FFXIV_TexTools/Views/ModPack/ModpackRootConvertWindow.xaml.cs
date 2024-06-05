@@ -61,6 +61,15 @@ namespace FFXIV_TexTools.Views
             UiElements = new Dictionary<XivDependencyRoot, (ComboBox SourceItemSelection, TextBox DestinationItemBox, CheckBox EnabledCheckBox, CheckBox VariantCheckBox, Button SearchButton)>();
 
             // Async init function
+            Closing += ModpackRootConvertWindow_Closing;
+        }
+
+        private void ModpackRootConvertWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (null != Owner)
+            {
+                Owner.Activate();
+            }
         }
 
         private bool Init(HashSet<string> filePaths)

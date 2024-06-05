@@ -41,6 +41,15 @@ namespace FFXIV_TexTools.Views.MaterialEditor
                 DyeImportBox.IsChecked = false;
                 DyeImportBox.ToolTip = "Dye File (*.dat) does not exist.";
             }
+            Closing += LoadColorsetWindow_Closing;
+        }
+
+        private void LoadColorsetWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (null != Owner)
+            {
+                Owner.Activate();
+            }
         }
 
         public bool ImportColorset = true;

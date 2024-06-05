@@ -407,8 +407,15 @@ namespace FFXIV_TexTools.Views.Transactions
         {
             TxWatcher.UserTxStateChanged -= OnTxStateChanged;
             TxWatcher.UserTxSettingsChanged -= OnTxSettingsChanged;
+
+            // TODO: Should we hang onto this event for auto-import?
             TxWatcher.UserTxFileChanged -= OnFileChanged;
             Instance = null;
+
+            if (null != Owner)
+            {
+                Owner.Activate();
+            }
         }
 
         private void Cancel_Click(object sender, RoutedEventArgs e)

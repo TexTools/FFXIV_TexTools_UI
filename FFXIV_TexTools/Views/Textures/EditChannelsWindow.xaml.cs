@@ -121,8 +121,17 @@ namespace FFXIV_TexTools.Views.Textures
             Channels.Add(new KeyValuePair<string, int>("Blue", 2));
             Channels.Add(new KeyValuePair<string, int>("Alpha", 3));
             SelectedChannel = 0;
+            Closing += EditChannelsWindow_Closing;
         }
 
+        private void EditChannelsWindow_Closing(object sender, CancelEventArgs e)
+        {
+            base.OnClosing(e);
+            if (null != Owner)
+            {
+                Owner.Activate();
+            }
+        }
 
         private async Task ModifyPixels(Action<int> action)
         {

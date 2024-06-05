@@ -242,7 +242,10 @@ namespace FFXIV_TexTools.Views
         /// </summary>
         private void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            Owner.Activate();
+            if (null != Owner)
+            {
+                Owner.Activate();
+            }
         }
 
         /// <summary>

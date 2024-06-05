@@ -153,6 +153,15 @@ namespace FFXIV_TexTools.Views.Wizard
                 });
             }
             CurrentIndex = 0;
+            Closing += ImportWizardWindow_Closing;
+        }
+
+        private void ImportWizardWindow_Closing(object sender, CancelEventArgs e)
+        {
+            if (null != Owner)
+            {
+                Owner.Activate();
+            }
         }
 
         private void ModPackUrlLabel_PreviewMouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)

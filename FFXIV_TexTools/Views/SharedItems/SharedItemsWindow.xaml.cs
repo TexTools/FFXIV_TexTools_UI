@@ -23,6 +23,16 @@ namespace FFXIV_TexTools.Views.SharedItems
         public SharedItemsWindow()
         {
             InitializeComponent();
+            Closing += SharedItemsWindow_Closing;
+        }
+
+        private void SharedItemsWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            base.OnClosing(e);
+            if (null != Owner)
+            {
+                Owner.Activate();
+            }
         }
 
         public static async Task<bool> ShowSharedItems(IItem item, Window owner = null)

@@ -52,6 +52,15 @@ namespace FFXIV_TexTools.Views.Models
             InitializeComponent();
             _viewModel = new ImportModelViewModel(this, internalPath, referenceItem, onComplete, startingFilePath, simpleMode);
             DataContext = _viewModel;
+            Closing += ImportModelView_Closing;
+        }
+
+        private void ImportModelView_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (null != Owner)
+            {
+                Owner.Activate();
+            }
         }
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)

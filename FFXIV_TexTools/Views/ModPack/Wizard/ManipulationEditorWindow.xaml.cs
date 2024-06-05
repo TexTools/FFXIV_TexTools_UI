@@ -122,6 +122,15 @@ namespace FFXIV_TexTools.Views.Wizard
             }
 
             RebuildList();
+            Closing += ManipulationEditorWindow_Closing;
+        }
+
+        private void ManipulationEditorWindow_Closing(object sender, CancelEventArgs e)
+        {
+            if (null != Owner)
+            {
+                Owner.Activate();
+            }
         }
 
         private void AddManipulation(PMPManipulationWrapperJson manip)

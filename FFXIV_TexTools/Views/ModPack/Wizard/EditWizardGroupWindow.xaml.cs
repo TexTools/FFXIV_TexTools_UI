@@ -1012,6 +1012,10 @@ namespace FFXIV_TexTools.Views
         private void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             // Does any disposing need to happen here?
+            if (null != Owner)
+            {
+                Owner.Activate();
+            }
         }
 
         #endregion

@@ -51,6 +51,10 @@ namespace FFXIV_TexTools.Views.Controls
             FileWrapper.Dispose();
 
             OpenFileWindows.Remove(this);
+            if (null != Owner)
+            {
+                Owner.Activate();
+            }
         }
 
         public async Task<bool> LoadFile(string filePath, IItem referenceItem = null, byte[] data = null, Type forcedControlType = null)

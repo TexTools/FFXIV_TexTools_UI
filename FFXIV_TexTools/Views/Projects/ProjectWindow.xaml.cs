@@ -83,6 +83,10 @@ namespace FFXIV_TexTools.Views.Projects
         private void ProjectWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             Instance = null;
+            if (null != Owner)
+            {
+                Owner.Activate();
+            }
         }
 
         private void LoadButton_Click(object sender, RoutedEventArgs e)
