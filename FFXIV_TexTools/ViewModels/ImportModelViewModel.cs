@@ -353,6 +353,8 @@ namespace FFXIV_TexTools.ViewModels
                 options.SourceRace = selectedRace;
             }
 
+            options.TargetRace = race;
+
             options.LoggingFunction = LogMessageReceived;
             
 
