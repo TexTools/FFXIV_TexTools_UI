@@ -126,7 +126,6 @@ namespace FFXIV_TexTools.Views.Textures
 
         private void EditChannelsWindow_Closing(object sender, CancelEventArgs e)
         {
-            base.OnClosing(e);
             if (null != Owner)
             {
                 Owner.Activate();

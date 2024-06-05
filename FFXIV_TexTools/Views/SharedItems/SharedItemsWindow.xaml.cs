@@ -28,7 +28,6 @@ namespace FFXIV_TexTools.Views.SharedItems
 
         private void SharedItemsWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            base.OnClosing(e);
             if (null != Owner)
             {
                 Owner.Activate();
