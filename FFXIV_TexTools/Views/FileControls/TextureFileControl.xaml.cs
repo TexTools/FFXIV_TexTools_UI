@@ -50,6 +50,13 @@ namespace FFXIV_TexTools.Views.Controls
             set
             {
                 _Texture = value;
+                if(Texture != null)
+                {
+                    Format = Texture.TextureFormat;
+                } else
+                {
+                    Format = XivTexFormat.INVALID;
+                }
                 OnPropertyChanged(nameof(Texture));
             }
         }
@@ -61,6 +68,14 @@ namespace FFXIV_TexTools.Views.Controls
             set
             {
                 _PixelData = value;
+                if (!_LoadingImage)
+                {
+                    PixelChanges = true;
+                }
+                else
+                {
+                    PixelChanges = false;
+                }
                 OnPropertyChanged(nameof(_PixelData));
             }
         }
@@ -87,6 +102,35 @@ namespace FFXIV_TexTools.Views.Controls
             }
         }
 
+        private XivTexFormat _Format;
+        public XivTexFormat Format
+        {
+            get => _Format;
+            set
+            {
+                _Format = value;
+                OnPropertyChanged(nameof(Format));
+            }
+        }
+
+        private bool _PixelChanges;
+        public bool PixelChanges
+        {
+            get => _PixelChanges;
+            set
+            {
+                _PixelChanges = value;
+
+                if(Format == XivTexFormat.BC7 && PixelChanges)
+                {
+                    Format = XivTexFormat.A8R8G8B8;
+                }
+
+                OnPropertyChanged(nameof(PixelChanges));
+            }
+        }
+
+        private bool _LoadingImage;
         public TextureFileControl()
         {
             DataContext = this;
@@ -102,7 +146,7 @@ namespace FFXIV_TexTools.Views.Controls
 
         protected override async Task<byte[]> INTERNAL_GetUncompressedData()
         {
-            if (UnsavedChanges)
+            if (UnsavedChanges && (Texture.TextureFormat != Format || PixelChanges))
             {
                 await Tex.MergePixelData(Texture, PixelData);
             }
@@ -116,7 +160,15 @@ namespace FFXIV_TexTools.Views.Controls
 
             if(Texture != null)
             {
-                PixelData = await Texture.GetRawPixels(-1);
+                _LoadingImage = true;
+                try
+                {
+                    PixelData = await Texture.GetRawPixels(-1);
+                }
+                finally
+                {
+                    _LoadingImage = false;
+                }
             }
             UpdateDisplayImage();
 
@@ -161,8 +213,7 @@ namespace FFXIV_TexTools.Views.Controls
                 };
             };
 
-            var pixData = await Texture.GetRawPixels(-1);
-            using (var img = Image.LoadPixelData<Rgba32>(pixData, Texture.Width, Texture.Height))
+            using (var img = Image.LoadPixelData<Rgba32>(PixelData, Texture.Width, Texture.Height))
             {
                 img.Save(externalFilePath, encoder);
             }
@@ -345,7 +396,7 @@ namespace FFXIV_TexTools.Views.Controls
                     return;
                 }
 
-                TextureInfo = $"{Texture.Width}x{Texture.Height} {Texture.TextureFormat.GetTexDisplayName()} ({Texture.MipMapCount} Mips)";
+                TextureInfo = $"{Texture.Width}x{Texture.Height} {Format.GetTexDisplayName()} ({Texture.MipMapCount} Mips)";
 
                 var r = RedChecked ? 1.0f : 0.0f;
                 var g = GreenChecked ? 1.0f : 0.0f;
