@@ -36,10 +36,12 @@ using xivModdingFramework.Items.Enums;
 using xivModdingFramework.Items.Interfaces;
 using xivModdingFramework.Materials.DataContainers;
 using xivModdingFramework.Materials.FileTypes;
+using xivModdingFramework.Models.FileTypes;
 using xivModdingFramework.Mods;
 using xivModdingFramework.Textures.Enums;
 using xivModdingFramework.Textures.FileTypes;
 using xivModdingFramework.Variants.FileTypes;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace FFXIV_TexTools.Views.Item
 {
@@ -929,7 +931,7 @@ namespace FFXIV_TexTools.Views.Item
                 if (!info.IsValid())
                 {
                     // Can't do anything here.  Too weird.
-                    ModelComboBox.SelectedIndex = 0;
+                    SetDefaultModel();
                 } else
                 {
                     // See if we have file that matches our primary root info (Ex. Race)
@@ -950,34 +952,71 @@ namespace FFXIV_TexTools.Views.Item
                         ModelComboBox.SelectedValue = target;
                     } else
                     {
-                        var userRace = XivRaces.GetXivRaceFromDisplayName(Settings.Default.Default_Race_Selection);
-                        var userPref = Files.Keys.FirstOrDefault(x => IOUtil.GetRaceFromPath(x) == userRace);
-                        if (userPref != null)
-                        {
-                            ModelComboBox.SelectedValue = userPref;
-                        }
-                        else
-                        {
-                            // Fallback
-                            ModelComboBox.SelectedIndex = 0;
-                        }
+                        SetDefaultModel();
                     }
                 }
             } else
             {
-                var userRace = XivRaces.GetXivRaceFromDisplayName(Settings.Default.Default_Race_Selection);
-                var userPref = Files.Keys.FirstOrDefault(x => IOUtil.GetRaceFromPath(x) == userRace);
-                // Default line
-                if (userPref != null)
+                SetDefaultModel();
+            }
+        }
+
+        private void SetDefaultModel()
+        {
+            // Default line
+            var userPref = GetUserDefaultModel();
+            if (userPref != null)
+            {
+                ModelComboBox.SelectedValue = userPref;
+            }
+            else
+            {
+                // Fallback
+                ModelComboBox.SelectedIndex = 0;
+            }
+        }
+
+        private string GetUserDefaultModel()
+        {
+            var races = Files.Keys.Select(x => IOUtil.GetRaceFromPath(x)).ToList();
+            if (races.Count == 0 || (races.Count == 1 && (int)races[0] < 100))
+            {
+                // Non-racial model.
+                return null;
+            }
+
+            var userRace = XivRaces.GetXivRaceFromDisplayName(Settings.Default.Default_Race_Selection);
+            return GetRacialModel(userRace);
+        }
+
+        private string GetRacialModel(XivRace race)
+        {
+            var target = XivRace.All_Races;
+            List<XivRace> races = Files.Keys.Select(x => IOUtil.GetRaceFromPath(x)).ToList();
+
+            if (races.Contains(race))
+            {
+                target = race;
+            } else 
+            {
+                var prio = XivRaces.GetModelPriorityList(race);
+                foreach (var r in prio)
                 {
-                    ModelComboBox.SelectedValue = userPref;
-                }
-                else
-                {
-                    // Fallback
-                    ModelComboBox.SelectedIndex = 0;
+                    if (races.Contains(r))
+                    {
+                        target = r;
+                        break;
+                    }
                 }
             }
+
+            if(target == XivRace.All_Races)
+            {
+                return null;
+            }
+
+            var userPref = Files.Keys.FirstOrDefault(x => IOUtil.GetRaceFromPath(x) == target);
+            return userPref;
         }
 
         /// <summary>
