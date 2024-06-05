@@ -43,6 +43,8 @@ using xivModdingFramework.Models.Helpers;
 using Color = SharpDX.Color;
 using PerspectiveCamera = HelixToolkit.Wpf.SharpDX.PerspectiveCamera;
 using SRGBVector4 = System.Numerics.Vector4;
+using FFXIV_TexTools.Views;
+using System.Diagnostics;
 
 namespace FFXIV_TexTools.ViewModels
 {
@@ -94,7 +96,7 @@ namespace FFXIV_TexTools.ViewModels
         /// <param name="item">The item for the model</param>
         /// <param name="modelRace">The race of the model</param>
         /// <param name="targetRace">The target race the model should be</param>
-        public void UpdateModel(TTModel model, Dictionary<int, ModelTextureData> textureDataDictionary, IItemModel item, XivRace modelRace, XivRace targetRace)
+        public async Task UpdateModel(TTModel model, Dictionary<int, ModelTextureData> textureDataDictionary, IItemModel item, XivRace modelRace, XivRace targetRace)
         {
             _targetRace = targetRace;
             var itemType = $"{item.PrimaryCategory}_{item.SecondaryCategory}";
@@ -102,7 +104,7 @@ namespace FFXIV_TexTools.ViewModels
             // If target race is different than the model race Apply racial deforms
             if (modelRace != targetRace)
             {
-                ApplyDeformers(model, itemType, modelRace, targetRace);
+                await ApplyDeformers(model, itemType, modelRace, targetRace);
             }
 
             SharpDX.BoundingBox? boundingBox = null;
@@ -226,7 +228,7 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         /// <param name="previousRace">The original or previous race of the model</param>
         /// <param name="targetRace">The target race for the skeleton and model</param>
-        public void UpdateSkeleton(XivRace previousRace, XivRace targetRace)
+        public async void UpdateSkeleton(XivRace previousRace, XivRace targetRace)
         {
             var shownModelList = new List<string>();
 
@@ -235,11 +237,19 @@ namespace FFXIV_TexTools.ViewModels
                 shownModelList.Add(model.Key);
             }
 
-            // Apply racial transforms
-            // This pretty much replaces every model by deleting and recreating them with the target race deforms
-            foreach (var model in shownModelList)
+            try
             {
-                UpdateModel(shownModels[model].TtModel, shownModels[model].ModelTextureData, shownModels[model].ItemModel, previousRace, targetRace);
+                // Apply racial transforms
+                // This pretty much replaces every model by deleting and recreating them with the target race deforms
+                foreach (var model in shownModelList)
+                {
+                    await UpdateModel(shownModels[model].TtModel, shownModels[model].ModelTextureData, shownModels[model].ItemModel, previousRace, targetRace);
+                }
+            }
+            catch(Exception ex)
+            {
+                //ViewHelpers.ShowError(_modelViewModel, "Skeleton Update Errror", "An error occurred while updating the skeleon:\n\n" + ex.Message);
+                Trace.WriteLine(ex);
             }
         }
 
@@ -248,18 +258,25 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         /// <param name="previousRace">The original or previous race of the model</param>
         /// <param name="targetRace">The target race for the skeleton and model</param>
-        public void UpdateSkin(XivRace race)
+        public async void UpdateSkin(XivRace race)
         {
             var shownModelList = new List<string>();
-
-            foreach (var model in shownModels)
+            try
             {
-                shownModelList.Add(model.Key);
+
+                foreach (var model in shownModels)
+                {
+                    shownModelList.Add(model.Key);
+                }
+
+                foreach (var model in shownModelList)
+                {
+                    await UpdateModel(shownModels[model].TtModel, shownModels[model].ModelTextureData, shownModels[model].ItemModel, race, race);
+                }
             }
-
-            foreach (var model in shownModelList)
+            catch(Exception ex)
             {
-                UpdateModel(shownModels[model].TtModel, shownModels[model].ModelTextureData, shownModels[model].ItemModel, race, race);
+                Trace.WriteLine(ex);
             }
         }
 
@@ -583,7 +600,7 @@ namespace FFXIV_TexTools.ViewModels
         /// <param name="itemType">The item type of the model</param>
         /// <param name="currentRace">The current model race</param>
         /// <param name="targetRace">The target race to convert the model to</param>
-        private void ApplyDeformers(TTModel model, string itemType, XivRace currentRace, XivRace targetRace)
+        private async Task ApplyDeformers(TTModel model, string itemType, XivRace currentRace, XivRace targetRace)
         {
             try
             {
@@ -592,30 +609,30 @@ namespace FFXIV_TexTools.ViewModels
                 // [ Current > (apply deform) > Target ]
                 if (currentRace.IsDirectParentOf(targetRace))
                 {
-                    ModelModifiers.ApplyRacialDeform(model, targetRace);
+                    await ModelModifiers.ApplyRacialDeform(model, targetRace);
                 }
                 // Target race is parent node of Current race
                 // Convert to parent (invert deform)
                 // [ Current > (apply inverse deform) > Target ]
                 else if (targetRace.IsDirectParentOf(currentRace))
                 {
-                    ModelModifiers.ApplyRacialDeform(model, currentRace, true);
+                    await ModelModifiers.ApplyRacialDeform(model, currentRace, true);
                 }
                 // Current race is not parent of Target Race and Current race has parent
                 // Make a recursive call with the current races parent race
                 // [ Current > (apply inverse deform) > Current.Parent > Recursive Call ]
                 else if (currentRace.GetNode().Parent != null)
                 {
-                    ModelModifiers.ApplyRacialDeform(model, currentRace, true);
-                    ApplyDeformers(model, itemType, currentRace.GetNode().Parent.Race, targetRace);
+                    await ModelModifiers.ApplyRacialDeform(model, currentRace, true);
+                    await ApplyDeformers(model, itemType, currentRace.GetNode().Parent.Race, targetRace);
                 }
                 // Current race has no parent
                 // Make a recursive call with the target races parent race
                 // [ Target > (apply deform on Target.Parent) > Target.Parent > Recursive Call ]
                 else
                 {
-                    ModelModifiers.ApplyRacialDeform(model, targetRace.GetNode().Parent.Race);
-                    ApplyDeformers(model, itemType, targetRace.GetNode().Parent.Race, targetRace);
+                    await ModelModifiers.ApplyRacialDeform(model, targetRace.GetNode().Parent.Race);
+                    await ApplyDeformers(model, itemType, targetRace.GetNode().Parent.Race, targetRace);
                 }
             }
             catch (Exception ex)

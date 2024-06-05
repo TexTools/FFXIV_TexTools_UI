@@ -399,7 +399,7 @@ namespace FFXIV_TexTools.ViewModels
             SkeletonComboboxEnabled = false;
             SkinComboboxEnabled = false;
 
-            ViewportVM.UpdateModel(ttModel, _materialDictionary, item, modelRace, SelectedSkeleton.XivRace);
+            await ViewportVM.UpdateModel(ttModel, _materialDictionary, item, modelRace, SelectedSkeleton.XivRace);
             SkeletonComboboxEnabled = true;
             SkinComboboxEnabled = true;
 
