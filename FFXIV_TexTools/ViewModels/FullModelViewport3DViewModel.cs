@@ -102,9 +102,16 @@ namespace FFXIV_TexTools.ViewModels
             var itemType = $"{item.PrimaryCategory}_{item.SecondaryCategory}";
 
             // If target race is different than the model race Apply racial deforms
-            if (modelRace != targetRace)
+            try
             {
-                await ApplyDeformers(model, itemType, modelRace, targetRace);
+                if (modelRace != targetRace)
+                {
+                    await ModelModifiers.RaceConvertRecursive(model, targetRace, modelRace);
+                }
+            }
+            catch(Exception ex)
+            {
+                Trace.WriteLine(ex);
             }
 
             SharpDX.BoundingBox? boundingBox = null;
@@ -593,57 +600,6 @@ namespace FFXIV_TexTools.ViewModels
             return matrixList.ToArray();
         }
 
-        /// <summary>
-        /// Applies the deformer to a model
-        /// </summary>
-        /// <param name="model">The model being deformed</param>
-        /// <param name="itemType">The item type of the model</param>
-        /// <param name="currentRace">The current model race</param>
-        /// <param name="targetRace">The target race to convert the model to</param>
-        private async Task ApplyDeformers(TTModel model, string itemType, XivRace currentRace, XivRace targetRace)
-        {
-            try
-            {
-                // Current race is already parent node
-                // Direct conversion
-                // [ Current > (apply deform) > Target ]
-                if (currentRace.IsDirectParentOf(targetRace))
-                {
-                    await ModelModifiers.ApplyRacialDeform(model, targetRace);
-                }
-                // Target race is parent node of Current race
-                // Convert to parent (invert deform)
-                // [ Current > (apply inverse deform) > Target ]
-                else if (targetRace.IsDirectParentOf(currentRace))
-                {
-                    await ModelModifiers.ApplyRacialDeform(model, currentRace, true);
-                }
-                // Current race is not parent of Target Race and Current race has parent
-                // Make a recursive call with the current races parent race
-                // [ Current > (apply inverse deform) > Current.Parent > Recursive Call ]
-                else if (currentRace.GetNode().Parent != null)
-                {
-                    await ModelModifiers.ApplyRacialDeform(model, currentRace, true);
-                    await ApplyDeformers(model, itemType, currentRace.GetNode().Parent.Race, targetRace);
-                }
-                // Current race has no parent
-                // Make a recursive call with the target races parent race
-                // [ Target > (apply deform on Target.Parent) > Target.Parent > Recursive Call ]
-                else
-                {
-                    await ModelModifiers.ApplyRacialDeform(model, targetRace.GetNode().Parent.Race);
-                    await ApplyDeformers(model, itemType, targetRace.GetNode().Parent.Race, targetRace);
-                }
-            }
-            catch (Exception ex)
-            {
-                // Show a warning that deforms are missing for the target race
-                // This mostly happens with Face, Hair, Tails, Ears, and Female > Male deforms
-                // The model is still added but no deforms are applied
-                FlexibleMessageBox.Show(string.Format(UIMessages.MissingDeforms, targetRace.GetDisplayName(), itemType, ex.Message), UIMessages.MissingDeformsTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
-
-        }
 
         #endregion
 
