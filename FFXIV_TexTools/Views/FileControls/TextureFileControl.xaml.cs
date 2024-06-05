@@ -1,44 +1,39 @@
 ﻿using FFXIV_TexTools.Textures;
-using SharpDX.Toolkit.Graphics;
+using FFXIV_TexTools.Views.Textures;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Advanced;
 using SixLabors.ImageSharp.Formats;
 using SixLabors.ImageSharp.Formats.Bmp;
 using SixLabors.ImageSharp.Formats.Png;
+using SixLabors.ImageSharp.Formats.Tga;
 using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
+using SixLabors.ImageSharp.Memory;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Markup;
+using System.Windows.Forms;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using TeximpNet.DDS;
 using xivModdingFramework.Cache;
-using xivModdingFramework.Items.Enums;
+using xivModdingFramework.Items;
 using xivModdingFramework.Items.Interfaces;
-using xivModdingFramework.SqPack.FileTypes;
+using xivModdingFramework.Mods;
 using xivModdingFramework.Textures.DataContainers;
 using xivModdingFramework.Textures.Enums;
 using xivModdingFramework.Textures.FileTypes;
 using xivModdingFramework.Variants.DataContainers;
 using xivModdingFramework.Variants.FileTypes;
-using xivModdingFramework.Items;
 using Image = SixLabors.ImageSharp.Image;
-using xivModdingFramework.Mods;
-using System.Diagnostics;
-using FFXIV_TexTools.Views.Textures;
-using System.Runtime.InteropServices.WindowsRuntime;
-using SixLabors.ImageSharp.Formats.Tga;
+using xivModdingFramework.Helpers;
+using xivModdingFramework.Textures;
 
 namespace FFXIV_TexTools.Views.Controls
 {
@@ -543,6 +538,41 @@ namespace FFXIV_TexTools.Views.Controls
             catch (Exception ex)
             {
                 Trace.WriteLine(ex);
+            }
+        }
+
+        private void AddOverlay_Click(object sender, RoutedEventArgs e)
+        {
+            var ofd = new OpenFileDialog();
+            ofd.Filter = "Image Files with Transparency|*.png;*.tga;*.dds";
+            if(ofd.ShowDialog() != DialogResult.OK)
+            {
+                return;
+            }
+
+            try
+            {
+                var file = ofd.FileName;
+                var cw = Texture.Width;
+                var ch = Texture.Height;
+
+                using (var overlay = Image.Load<Rgba32>(file))
+                {
+                    overlay.Mutate(x => x.Resize(cw, ch));
+
+                    using (var img = Image.LoadPixelData<Rgba32>(PixelData, cw, ch))
+                    {
+
+                        img.Mutate(x => x.DrawImage(overlay, 1.0f));
+
+                        PixelData = IOUtil.GetImageSharpPixels(img);
+                        UpdateDisplayImage();
+                        UnsavedChanges = true;
+                    }
+                }
+            } catch(Exception ex)
+            {
+                this.ShowError("Image Processing Error", "An error occurred while processing the overlay:\n\n" + ex.Message);
             }
         }
     }

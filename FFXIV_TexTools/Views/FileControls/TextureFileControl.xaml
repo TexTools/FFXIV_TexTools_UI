@@ -76,6 +76,7 @@
                             <RowDefinition Height="40"></RowDefinition>
                             <RowDefinition Height="40"></RowDefinition>
                             <RowDefinition Height="40"></RowDefinition>
+                            <RowDefinition Height="40"></RowDefinition>
                         </Grid.RowDefinitions>
 
                         <Label Grid.Row="0" Content="{Binding Path=TextureInfo, FallbackValue=DXT123 1024x1024 (11 Mips)}" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center"></Label>
@@ -95,6 +96,7 @@
                         </Grid>
 
                         <Button Grid.ColumnSpan="4" Grid.Row="2" Content="Edit Channels" VerticalAlignment="Center" Click="EditChannels_Click"></Button>
+                        <Button Grid.ColumnSpan="4" Grid.Row="3" Content="Add Overlay" VerticalAlignment="Center" Click="AddOverlay_Click"></Button>
                     </Grid>
                 </Grid>
 
