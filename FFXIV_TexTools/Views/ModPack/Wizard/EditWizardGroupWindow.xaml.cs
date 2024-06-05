@@ -941,7 +941,7 @@ namespace FFXIV_TexTools.Views
             LockCount++;
             try
             {
-                var result = await ImportModelView.ImportModel(selectedFile.Path, itemModel, true, null, Window.GetWindow(this));
+                var result = await ImportModelView.ImportModel(selectedFile.Path, itemModel, null, false, Window.GetWindow(this));
                 if (!result.Success)
                 {
                     return;

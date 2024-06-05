@@ -801,13 +801,7 @@ namespace FFXIV_TexTools.Views.Controls
                 return false;
             }
 
-            var ofd = new OpenFileDialog();
-            var extStrings = "*" + string.Join(";*", exts.Keys);
-            var filter = GetNiceName() + " Files|" + extStrings;
-            ofd.Filter = filter;
-            ofd.InitialDirectory = GetDefaultSaveDirectory();
-            ofd.FileName = GetDefaultSaveName();
-
+            var ofd = GetOpenDialog();
             var res = ofd.ShowDialog();
             if(res != DialogResult.OK)
             {
@@ -815,6 +809,23 @@ namespace FFXIV_TexTools.Views.Controls
             }
 
             return await LoadExternalFile(ofd.FileName, InternalFilePath);
+        }
+
+        protected OpenFileDialog GetOpenDialog()
+        {
+            var exts = GetValidFileExtensions();
+            if (exts == null || exts.Count == 0)
+            {
+                return null;
+            }
+
+            var ofd = new OpenFileDialog();
+            var extStrings = "*" + string.Join(";*", exts.Keys);
+            var filter = GetNiceName() + " Files|" + extStrings;
+            ofd.Filter = filter;
+            ofd.InitialDirectory = GetDefaultSaveDirectory();
+            ofd.FileName = GetDefaultSaveName();
+            return ofd;
         }
 
         public async Task<bool> ImportFileByDialog(string internalFilePath = null)

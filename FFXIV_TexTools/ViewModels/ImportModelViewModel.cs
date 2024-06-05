@@ -27,18 +27,18 @@ using System.Linq.Expressions;
 
 namespace FFXIV_TexTools.ViewModels
 {
-    public class ImportModelViewModel
+    public class ImportModelViewModel : INotifyPropertyChanged
     {
         private const int ExpandedHeight = 680;
         private const double CloseDelay = 3000f;
 
         private ImportModelView _view;
-        private IItem _item;
         private List<string> _importers;
-        private bool _dataOnly;
         private string _internalPath;
         private System.Timers.Timer _closeTimer;
         private bool _anyWarnings = false;
+
+        private bool _simpleMode = false;
 
 
         private bool _success = false;
@@ -46,6 +46,28 @@ namespace FFXIV_TexTools.ViewModels
 
         ModelImportResult _result;
 
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private bool _ComplexOptionsEnabled;
+        public bool ComplexOptionsEnabled
+        {
+            get => _ComplexOptionsEnabled;
+            set
+            {
+                _ComplexOptionsEnabled = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ComplexOptionsEnabled)));
+            }
+        }
+        private string _FinishText;
+        public string FinishText
+        {
+            get => _FinishText;
+            set
+            {
+                _FinishText = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(FinishText)));
+            }
+        }
 
 
         private void SetupRaces()
@@ -104,33 +126,39 @@ namespace FFXIV_TexTools.ViewModels
         }
 
 
-        public ImportModelViewModel(ImportModelView view, string internalPath, IItem referenceItem, bool dataOnly = false, Action<ModelImportResult> onComplete = null, string startingFilePath = null)
+        public ImportModelViewModel(ImportModelView view, string internalPath, IItem referenceItem, Action<ModelImportResult> onComplete = null, string startingFilePath = null, bool simpleMode = false)
         {
             _view = view;
-            _dataOnly = dataOnly;
             _onComplete = onComplete;
             _internalPath = internalPath;
-            _item = referenceItem;
+            _simpleMode = simpleMode;
 
+            ComplexOptionsEnabled = !simpleMode;
 
-            if(typeof(XivCharacter) == _item.GetType())
+            FinishText = (simpleMode ? "Add Model" : "Load Model");
+
+            if (referenceItem != null && typeof(XivCharacter) == referenceItem.GetType())
             {
                 // Fix up naming scheme for character items to match user expectation.
-                var clone = (XivCharacter)((XivCharacter)_item).Clone();
+                var clone = (XivCharacter)((XivCharacter)referenceItem).Clone();
                 clone.Name = clone.SecondaryCategory;
-                _item = clone;
+                referenceItem = clone;
             }
 
             var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
             var saveDirectory = new DirectoryInfo(Settings.Default.Save_Directory);
-            var dataFile = IOUtil.GetDataFileFromPath(_item.GetItemRootFolder());
+            var dataFile = IOUtil.GetDataFileFromPath(_internalPath);
             _importers = Mdl.GetAvailableImporters();
 
             SetupRaces();
 
             var race = IOUtil.GetRaceFromPath(_internalPath);
 
-            var defaultPath = $"{IOUtil.MakeItemSavePath(_item, saveDirectory, race)}\\3D".Replace("/", "\\");
+            var defaultPath = "";
+            if (referenceItem != null)
+            {
+                defaultPath = $"{IOUtil.MakeItemSavePath((IItem)referenceItem, saveDirectory, race)}\\3D".Replace("/", "\\");
+            }
             var modelName = Path.GetFileNameWithoutExtension(_internalPath);
 
 
@@ -176,20 +204,20 @@ namespace FFXIV_TexTools.ViewModels
             _view.OverrideRaceButton.Unchecked += OverrideRaceButton_Unchecked;
 
             // Default Settings for specific categories, event handlers are added to allow users to opt out of these defaults
-            if (_item != null)
+            if (referenceItem != null)
             {
-                if (_item.SecondaryCategory == XivStrings.Face)
+                if (referenceItem.SecondaryCategory == XivStrings.Face && ComplexOptionsEnabled)
                 {
                     _view.UseOriginalShapeDataButton.IsChecked = Settings.Default.UseOriginalShapeDataForFace;
                     _view.UseOriginalShapeDataButton.Click += UseOriginalShapeDataButton_Clicked;
                 }
-                if (_item.SecondaryCategory == XivStrings.Hair)
+                if (referenceItem.SecondaryCategory == XivStrings.Hair)
                 {
                     _view.CloneUV1Button.IsChecked = Settings.Default.CloneUV1toUV2ForHair;
                     _view.CloneUV1Button.Click += CloneUV1Button_Clicked;
                 }
 
-                var iType = _item.GetPrimaryItemType();
+                var iType = referenceItem.GetPrimaryItemType();
                 if (iType == xivModdingFramework.Items.Enums.XivItemType.equipment 
                     || iType == xivModdingFramework.Items.Enums.XivItemType.accessory 
                     || iType == xivModdingFramework.Items.Enums.XivItemType.weapon)
@@ -243,7 +271,9 @@ namespace FFXIV_TexTools.ViewModels
                     {
                         Path = _internalPath,
                         Success = _success,
-                        Data = null
+                        Data = null,
+                        Model = null,
+                        
                     };
                     _onComplete(result);
                 }
@@ -331,19 +361,20 @@ namespace FFXIV_TexTools.ViewModels
            {
                try
                {
+                   if (_simpleMode)
+                   {
+                       var model = await Mdl.LoadExternalModel(externalPath, options, true);
+                       await OnImportComplete(null, model);
+                       return;
+                   }
+
+
                    if (showEditor)
                    {
                        options.IntermediaryFunction = IntermediateStep;
                    }
 
-                   byte[] data = null;
-                   if (_dataOnly)
-                   {
-                       data = await Mdl.FileToUncompressedMdl(externalPath, _internalPath, options, MainWindow.UserTransaction);
-                   } else
-                   {
-                       var offset = await Mdl.ImportModel(externalPath, _internalPath, options, MainWindow.UserTransaction);
-                   }
+                   byte[] data = await Mdl.FileToUncompressedMdl(externalPath, _internalPath, options, MainWindow.UserTransaction);
 
                     await OnImportComplete(data);
                }
@@ -441,7 +472,7 @@ namespace FFXIV_TexTools.ViewModels
         /// <summary>
         /// This is called when the import is successfully completed.
         /// </summary>
-        private async Task OnImportComplete(byte[] data)
+        private async Task OnImportComplete(byte[] data, TTModel model = null)
         {
             await await _view.Dispatcher.InvokeAsync(async () =>
             {
@@ -475,7 +506,8 @@ namespace FFXIV_TexTools.ViewModels
                     {
                         Path = _internalPath,
                         Success = _success,
-                        Data = data
+                        Data = data,
+                        Model = model,
                     };
                     _result = result;
                     _onComplete(result);

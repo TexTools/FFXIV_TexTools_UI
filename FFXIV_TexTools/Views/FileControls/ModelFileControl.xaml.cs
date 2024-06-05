@@ -635,7 +635,7 @@ namespace FFXIV_TexTools.Views.Controls
         private async Task<byte[]> ShowModelImportDialog(string externalPath, string internalPath, IItem referenceItem)
         {
             var race = IOUtil.GetRaceFromPath(InternalFilePath);
-            var result = await ImportModelView.ImportModel(internalPath, referenceItem, true, externalPath, MainWindow.GetMainWindow());
+            var result = await ImportModelView.ImportModel(internalPath, referenceItem, externalPath, false, MainWindow.GetMainWindow());
             if ( result != null && result.Success)
             {
                 return result.Data;
@@ -824,6 +824,44 @@ namespace FFXIV_TexTools.Views.Controls
             finally
             {
                 ExportTexturesButton.IsEnabled = true;
+            }
+        }
+
+        private async void AddModel_Click(object sender, RoutedEventArgs e)
+        {
+            var ofd = GetOpenDialog();
+            if(ofd.ShowDialog() != DialogResult.OK)
+            {
+                return;
+            }
+
+            try
+            {
+                var result = await ImportModelView.ImportModel(InternalFilePath, ReferenceItem, ofd.FileName, true, Window.GetWindow(this));
+                if (result == null || !result.Success || result.Model == null)
+                {
+                    return;
+                }
+
+                var nonSkinMap = Model.Materials.FirstOrDefault(m => !ModelModifiers.IsSkinMaterial(m));
+                if(nonSkinMap == null)
+                {
+                    nonSkinMap = Model.Materials[0];
+                }
+
+                foreach (var m in result.Model.MeshGroups)
+                {
+                    Model.MeshGroups.Add(m);
+                    m.Material = nonSkinMap;
+                }
+
+                UnsavedChanges = true;
+                _ = UpdateVisual();
+            }
+            catch(Exception ex)
+            {
+                // Don't think we can ever hit this, but safety.
+                Trace.WriteLine(ex);
             }
         }
     }

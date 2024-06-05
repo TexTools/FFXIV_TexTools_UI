@@ -70,10 +70,12 @@
                     <RowDefinition Height="40"></RowDefinition>
                     <RowDefinition Height="40"></RowDefinition>
                     <RowDefinition Height="40"></RowDefinition>
+                    <RowDefinition Height="40"></RowDefinition>
                 </Grid.RowDefinitions>
                 <Button Grid.Row="0" Margin="5" Content="{Binding Source={x:Static resx:UIStrings.Viewer_Options}}" Click="ToggleFlyout"/>
                 <Button Grid.Row="1" Margin="5" Content="Model Information" Click="ModelInfo_Click" />
                 <Button Grid.Row="2" Margin="5" Content="Edit Model" Click="EditModel_Click" />
+                <Button Grid.Row="3" Margin="5" Content="Add Model" Click="AddModel_Click" />
             </Grid>
 
             <Grid x:Name="FloatingButtonsGrid" HorizontalAlignment="Left" VerticalAlignment="Bottom"  Width="400">
