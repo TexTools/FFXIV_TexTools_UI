@@ -179,7 +179,7 @@
                     <Label Grid.Column="0" Grid.Row="0" Margin="5" Content="TexTools Branch" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
                     <ComboBox x:Name="UpdateBranchBox" Grid.Column="1" Grid.Row="0"  VerticalAlignment="Center" ItemsSource="{Binding UpdateBranches}" SelectedItem="{Binding UpdateBranch}" Margin="5" />
 
-                    <Label Grid.Column="0" Grid.Row="1" Margin="5" Content="Default to UNSFAE Mode" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
+                    <Label Grid.Column="0" Grid.Row="1" Margin="5" Content="Default to UNSAFE Mode" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
                     <CheckBox x:Name="UnsafeModeDefault"  Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" Margin="5" ToolTip="Start TexTools in UNSAFE mode on launch."  IsChecked="{Binding Path=UnsafeMode}"></CheckBox>
 
 
