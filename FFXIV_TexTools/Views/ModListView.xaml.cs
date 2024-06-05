@@ -71,6 +71,15 @@ namespace FFXIV_TexTools.Views
         public ModListView()
         {
             InitializeComponent();
+            Closing += ModListView_Closing;
+        }
+
+        private void ModListView_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if(Owner != null)
+            {
+                Owner.Activate();
+            }
         }
 
         /// <summary>
