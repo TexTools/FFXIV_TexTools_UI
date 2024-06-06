@@ -208,6 +208,30 @@ namespace FFXIV_TexTools.Views.Controls
             }
 
             SetDyeBitLabels();
+
+        }
+
+        public override void OnControlKey(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if (Keyboard.Modifiers == ModifierKeys.Control)
+            {
+                if (e.Key == Key.D2)
+                {
+                    if (this.RowId < _rowCount - 1)
+                    {
+                        _ = SetRow(this.RowId + 1);
+                        e.Handled = true;
+                    }
+                }
+                else if (e.Key == Key.D1)
+                {
+                    if (this.RowId > 0)
+                    {
+                        _ = SetRow(this.RowId - 1);
+                        e.Handled = true;
+                    }
+                }
+            }
         }
 
         public override string GetNiceName()
@@ -1344,8 +1368,10 @@ namespace FFXIV_TexTools.Views.Controls
                 if (Material == null) return;
 
                 CopyDyeValuesButton.IsEnabled = false;
+                CopyAllDyeValuesButton.IsEnabled = false;
                 if (DyePreviewIdBox.SelectedValue != null && DyeTemplateIdBox.SelectedValue != null)
                 {
+                    CopyAllDyeValuesButton.IsEnabled = true;
                     var template = (ushort)DyeTemplateIdBox.SelectedValue;
                     var dyeId = (int)DyePreviewIdBox.SelectedValue;
                     if (dyeId >= 0 && template > 0)
@@ -1368,72 +1394,9 @@ namespace FFXIV_TexTools.Views.Controls
         {
             try
             {
-                ushort dyeTemplateId = STM.GetTemplateKeyFromMaterialData(Material.ColorSetDyeData, RowId);
-                var template = DyeTemplateFile.GetTemplate(dyeTemplateId);
                 var dyeId = (int)DyePreviewIdBox.SelectedValue;
 
-                uint dyeData = 0;
-                if (Material.ColorSetDyeData.Length == 0)
-                {
-                    return;
-                }
-                if (DawnTrail)
-                {
-                    dyeData = BitConverter.ToUInt32(Material.ColorSetDyeData, RowId * 4);
-                }
-                else
-                {
-                    dyeData = BitConverter.ToUInt16(Material.ColorSetDyeData, RowId * 2);
-                }
-
-                var templateType = LegacyShader ? STM.EStainingTemplate.Endwalker : STM.EStainingTemplate.Dawntrail;
-
-                if (template == null) return;
-                if (dyeId < 0 || dyeId >= 128) return;
-
-                var dyeCount = LegacyShader ? 5 : DyeBoxes.Count;
-                for (int i = 0; i < dyeCount; i++)
-                {
-                    var shifted = (uint)(0x1 << i);
-                    if ((dyeData & shifted) > 0)
-                    {
-                        // Apply this template dye value to the row.
-                        var data = template.GetData(i, dyeId);
-
-                        // Have to used our cursed translation table here.
-                        var targetOffset = StainingTemplateEntry.TemplateEntryOffsetToColorsetOffset[templateType][i];
-
-                        if ((i == 3 || i == 4) && !DawnTrail)
-                        {
-                            // Handling for gloss/spec being flipped.
-                            if (i == 3)
-                            {
-                                targetOffset = 7;
-                            }
-                            else
-                            {
-                                targetOffset = 3;
-                            }
-                        }
-
-                        var destinationPixel = targetOffset / 4;
-                        var destinationColorIndex = targetOffset % 4;
-
-                        for (int z = 0; z < data.Length; z++)
-                        {
-                            RowData[destinationPixel][destinationColorIndex + z] = data[z];
-                        }
-                    }
-                }
-
-
-
-                // Copy RowData into the main colorset array.
-                var rawData = RowDataToRaw(RowData);
-                var fullData = Material.ColorSetData.ToArray();
-                var offset = RowId * _columnCount * 4;
-                Array.Copy(rawData, 0, fullData, offset, rawData.Length);
-                Material.ColorSetData = fullData.ToList();
+                ApplyDye(RowId, dyeId);
 
                 // Reload the UI.
                 await SetMaterial(Material, RowId);
@@ -1442,6 +1405,95 @@ namespace FFXIV_TexTools.Views.Controls
             {
                 this.ShowError("Unknown Error", "An error occurred:\n\n" + ex.Message);
             }
+        }
+        private async void CopyAllDyeValuesButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var dyeId = (int)DyePreviewIdBox.SelectedValue;
+                
+                for(int i = 0; i < _rowCount; i++)
+                {
+                    ApplyDye(i, dyeId);
+                }
+
+                // Reload the UI.
+                await SetMaterial(Material, RowId);
+            }
+            catch (Exception ex)
+            {
+                this.ShowError("Unknown Error", "An error occurred:\n\n" + ex.Message);
+            }
+        }
+
+        private void ApplyDye(int rowId, int dyeId)
+        {
+            ushort dyeTemplateId = STM.GetTemplateKeyFromMaterialData(Material.ColorSetDyeData, rowId);
+            var template = DyeTemplateFile.GetTemplate(dyeTemplateId);
+
+            var templateType = LegacyShader ? STM.EStainingTemplate.Endwalker : STM.EStainingTemplate.Dawntrail;
+
+            if (template == null) return;
+            if (dyeId < 0 || dyeId >= 128) return;
+
+            uint dyeData = 0;
+            if (Material.ColorSetDyeData.Length == 0)
+            {
+                return;
+            }
+
+            if (DawnTrail)
+            {
+                dyeData = BitConverter.ToUInt32(Material.ColorSetDyeData, rowId * 4);
+            }
+            else
+            {
+                dyeData = BitConverter.ToUInt16(Material.ColorSetDyeData, rowId * 2);
+            }
+
+            var dyeCount = LegacyShader ? 5 : 12;
+            var rowData = GetRowData(rowId);
+            for (int i = 0; i < dyeCount; i++)
+            {
+                var shifted = (uint)(0x1 << i);
+                if ((dyeData & shifted) > 0)
+                {
+                    // Apply this template dye value to the row.
+                    var data = template.GetData(i, dyeId);
+                    if (data == null) continue;
+
+                    // Have to used our cursed translation table here.
+                    var targetOffset = StainingTemplateEntry.TemplateEntryOffsetToColorsetOffset[templateType][i];
+
+                    if ((i == 3 || i == 4) && !DawnTrail)
+                    {
+                        // Handling for gloss/spec being flipped.
+                        if (i == 3)
+                        {
+                            targetOffset = 7;
+                        }
+                        else
+                        {
+                            targetOffset = 3;
+                        }
+                    }
+
+                    var destinationPixel = targetOffset / 4;
+                    var destinationColorIndex = targetOffset % 4;
+
+                    for (int z = 0; z < data.Length; z++)
+                    {
+                        rowData[destinationPixel][destinationColorIndex + z] = data[z];
+                    }
+                }
+            }
+
+            // Copy RowData into the main colorset array.
+            var rawData = RowDataToRaw(rowData);
+            var fullData = Material.ColorSetData.ToArray();
+            var offset = rowId * _columnCount * 4;
+            Array.Copy(rawData, 0, fullData, offset, rawData.Length);
+            Material.ColorSetData = fullData.ToList();
         }
 
         protected override void FreeManaged()

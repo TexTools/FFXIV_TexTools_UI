@@ -247,6 +247,13 @@ namespace FFXIV_TexTools.Views.Controls
                     }
                     e.Handled = true;
                 }
+                else
+                {
+                    if(FileControl != null)
+                    {
+                        FileControl.OnControlKey(sender, e);
+                    }
+                }
             }
         }
 

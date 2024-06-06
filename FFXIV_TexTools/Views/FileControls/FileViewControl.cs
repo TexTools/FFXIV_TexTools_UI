@@ -1026,6 +1026,15 @@ namespace FFXIV_TexTools.Views.Controls
             }
         }
 
+        /// <summary>
+        /// Keydown handler that is passed from the file wrapper in the event of a ctrl-key combo that is not yet handled.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public virtual void OnControlKey(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+        }
+
 
 
         protected virtual void FreeManaged()
