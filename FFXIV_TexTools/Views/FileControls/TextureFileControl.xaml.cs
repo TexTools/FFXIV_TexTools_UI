@@ -69,7 +69,7 @@ namespace FFXIV_TexTools.Views.Controls
             set
             {
                 _PixelData = value;
-                if (!_LoadingImage)
+                if (!_LoadingImage && _PixelData != null)
                 {
                     PixelChanges = true;
                 }
