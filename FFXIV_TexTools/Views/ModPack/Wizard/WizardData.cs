@@ -90,6 +90,8 @@ namespace FFXIV_TexTools.Views.Wizard
 
         public List<PMPManipulationWrapperJson> Manipulations = new List<PMPManipulationWrapperJson>();
 
+        public int Priority;
+
         protected override bool CheckHasData()
         {
             return Files.Count > 0 || Manipulations.Count > 0;
@@ -547,7 +549,7 @@ namespace FFXIV_TexTools.Views.Wizard
             } else
             {
                 // This unpacks our deduplicated files as needed.
-                op = await PMP.CreatePmpStandardOption(tempFolder, Name, Description, identifiers);
+                op = await PMP.CreatePmpStandardOption(tempFolder, Name, Description, identifiers, StandardData.Manipulations, null, StandardData.Priority);
             }
 
             op.Image = WizardHelpers.WriteImage(Image, tempFolder, imageName);
@@ -768,6 +770,10 @@ namespace FFXIV_TexTools.Views.Wizard
                     var data = await PMP.UnpackPmpOption(o, null, unzipPath, false);
                     wizOp.StandardData.Files = data.Files;
                     wizOp.StandardData.Manipulations = data.OtherManipulations;
+                    var sop = o as PmpStandardOptionJson;
+                    if (sop != null) {
+                        wizOp.StandardData.Priority = sop.Priority;
+                    }
 
                 } else if(group.GroupType == EGroupType.Imc)
                 {
@@ -878,18 +884,6 @@ namespace FFXIV_TexTools.Views.Wizard
 
                 identifiers.TryGetValue(optionPrefix, out var files);
                 var opt = await option.ToPmpOption(tempFolder, files, imgName);
-                if (option.StandardData != null)
-                { 
-                    var so = opt as PmpStandardOptionJson;
-                    if (option.StandardData.Manipulations != null)
-                    {
-                        foreach (var m in option.StandardData.Manipulations)
-                        {
-                            // Carry our extra manipulations through.
-                            so.Manipulations.Add(m);
-                        }
-                    }
-                }
                 pg.Options.Add(opt);
             }
 

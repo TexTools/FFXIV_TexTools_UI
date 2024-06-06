@@ -25,7 +25,7 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition/>
-                    <ColumnDefinition Width="150"/>
+                    <ColumnDefinition Width="180"/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
                 <Label Content="{Binding Source={x:Static resx:UIStrings.Group_Title_colon}}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
@@ -35,7 +35,7 @@
                         <ColumnDefinition></ColumnDefinition>
                         <ColumnDefinition></ColumnDefinition>
                     </Grid.ColumnDefinitions>
-                    <Label Content="Priority:" HorizontalAlignment="Right" VerticalAlignment="Center"></Label>
+                    <Label Content="Group Priority:" HorizontalAlignment="Right" VerticalAlignment="Center"></Label>
                     <TextBox x:Name="PriorityBox" Grid.Column="1" VerticalAlignment="Center"></TextBox>
                 </Grid>
                 <Grid Grid.Column="3" Margin="10,0,0,0">
@@ -114,10 +114,23 @@
                 </Grid>
                 <Grid Grid.Column="1">
                     <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"></RowDefinition>
                         <RowDefinition></RowDefinition>
                         <RowDefinition Height="Auto"></RowDefinition>
                     </Grid.RowDefinitions>
-                    <GroupBox Grid.Row="0" Header="{Binding Source={x:Static resx:UIStrings.Included_Mods_in_Option}}">
+                    <Grid Grid.Row="0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="40"></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="100"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Label Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Center">Option Priority</Label>
+                        <TextBox Text="{Binding Path=OptionPriority}" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Width="100"></TextBox>
+                    </Grid>
+                    
+                    <GroupBox Grid.Row="1" Header="{Binding Source={x:Static resx:UIStrings.Included_Mods_in_Option}}">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition/>
@@ -128,7 +141,7 @@
                         </Grid>
                     </GroupBox>
 
-                    <GroupBox Grid.Row="1" Header="Penumbra Manipulations">
+                    <GroupBox Grid.Row="2" Header="Penumbra Manipulations">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition></RowDefinition>

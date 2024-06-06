@@ -29,6 +29,7 @@ using SixLabors.ImageSharp.Formats.Png;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -69,12 +70,9 @@ namespace FFXIV_TexTools.Views
     /// <summary>
     /// Interaction logic for WizardAddGroupWindow.xaml
     /// </summary>
-    public partial class EditWizardGroupWindow
+    public partial class EditWizardGroupWindow : INotifyPropertyChanged
     {
-        private string _editGroupName;
         private IItem SelectedItem;
-
-        private List<byte> _basicModpackData;
 
         private WizardGroupEntry Data;
 
@@ -104,9 +102,28 @@ namespace FFXIV_TexTools.Views
             }
         }
 
+        public int OptionPriority
+        {
+            get
+            {
+                if (SelectedOption == null) return 0;
+                return SelectedOption.StandardData.Priority;
+            }
+            set
+            {
+                if (SelectedOption == null) return;
+                SelectedOption.StandardData.Priority = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(OptionPriority)));
+            }
+        }
+
+
+
+
         public EditWizardGroupWindow(WizardGroupEntry data)
         { 
             Data = data;
+            DataContext = this;
             InitializeComponent();
 
             ItemList.ExtraSearchFunction = Filter;
@@ -170,6 +187,8 @@ namespace FFXIV_TexTools.Views
         }
 
         private ProgressDialogController _lockProgressController;
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         public async Task LockUi(string title = null, string message = null, object sender = null)
         {
@@ -345,6 +364,7 @@ namespace FFXIV_TexTools.Views
                     RenameOptionButton.IsEnabled = false;
                     OptionImage.Source = null;
                     EditManipulationsButton.IsEnabled = false;
+                    OptionPriority = OptionPriority;
                     return;
                 }
 
@@ -408,6 +428,7 @@ namespace FFXIV_TexTools.Views
                 RemoveOptionButton.IsEnabled = true;
                 RenameOptionButton.IsEnabled = true;
                 EditManipulationsButton.IsEnabled = true;
+                OptionPriority = OptionPriority;
 
                 if (SelectedItem != null)
                 {
