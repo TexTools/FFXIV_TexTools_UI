@@ -178,7 +178,7 @@ namespace FFXIV_TexTools.Views
 
                 ModPackFileName = backupModpackData.Name;
 
-                await TTMP.CreateBackupModpack(backupModpackData, Properties.Settings.Default.ModPack_Directory, ViewHelpers.BindReportProgress(_progressController), overwriteModpack);
+                await TTMP.CreateBackupModpack(backupModpackData, Properties.Settings.Default.ModPack_Directory, ViewHelpers.BindReportProgress(_progressController), overwriteModpack, MainWindow.DefaultTransaction);
             }
             catch (Exception ex)
             {
