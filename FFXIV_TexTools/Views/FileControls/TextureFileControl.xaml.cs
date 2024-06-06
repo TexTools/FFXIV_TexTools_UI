@@ -664,5 +664,12 @@ namespace FFXIV_TexTools.Views.Controls
                 this.ShowWarning("Texture Format Warning", "TexTools does not currently have a BC7 Compressor for raw pixel data.\n\nYou will not be able to save the resulting image.");
             }
         }
+
+
+        protected override async Task<byte[]> INTERNAL_ExternalToUncompressedFile(string externalFile, string internalFile, IItem referenceItem, ModTransaction tx)
+        {
+            // Override this so we can pass in the user's requested texture format.
+            return await SmartImport.CreateUncompressedFile(externalFile, internalFile, tx, Format);
+        }
     }
 }
