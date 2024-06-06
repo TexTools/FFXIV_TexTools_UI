@@ -10,15 +10,14 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="40"/>
-            <RowDefinition Height="40"/>
-            <RowDefinition Height="40"/>
+            <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="100"/>
-            <ColumnDefinition Width="100"/>
-            <ColumnDefinition Width="100"/>
+            <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
         <controls:RootSelectControl Grid.ColumnSpan="3" x:Name="RootControl" Root="{Binding Path=Root, Mode=TwoWay}"></controls:RootSelectControl>
 
+        <UniformGrid x:Name="RawGrid" Rows="8" Columns="4" Margin="5" Grid.Row="1" Grid.ColumnSpan="2" />
     </Grid>
 </UserControl>
