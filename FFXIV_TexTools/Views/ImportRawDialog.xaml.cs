@@ -45,7 +45,7 @@ namespace FFXIV_TexTools.Views
             if (result != System.Windows.Forms.DialogResult.OK) return;
             try
             {
-                await SmartImport.Import(od.FileName, path, XivStrings.TexTools);
+                await SmartImport.Import(od.FileName, path, XivStrings.TexTools, MainWindow.UserTransaction);
             }
             catch(Exception Ex)
             {

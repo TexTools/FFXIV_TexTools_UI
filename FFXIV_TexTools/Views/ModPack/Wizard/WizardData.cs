@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data.Entity.Infrastructure;
+using System.Diagnostics;
 using System.Drawing.Text;
 using System.IO;
 using System.Linq;
@@ -683,7 +684,16 @@ namespace FFXIV_TexTools.Views.Wizard
                         {
                             if (needsTexFix && mj.FullPath.EndsWith(".tex"))
                             {
-                                finfo = await TTMP.FixOldTexData(finfo);
+                                try
+                                {
+                                    finfo = await TTMP.FixOldTexData(finfo);
+                                }
+                                catch(Exception ex)
+                                {
+                                    Trace.WriteLine(ex);
+                                    // File majorly broken, skip it.
+                                    continue;
+                                }
                             }
 
                             data.Files.Add(mj.FullPath, finfo);
