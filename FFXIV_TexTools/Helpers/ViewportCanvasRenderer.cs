@@ -5,6 +5,10 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows;
 using System.Windows.Controls;
+using System;
+using System.Diagnostics;
+using System.Windows.Forms;
+using System.Windows.Interop;
 
 namespace FFXIV_TexTools.Helpers
 {
@@ -68,49 +72,69 @@ namespace FFXIV_TexTools.Helpers
 
         private void Viewport3DX_OnRendered(object sender, System.EventArgs e)
         {
-            var renderHost = (IRenderHost)sender;
-
-            var deviceContext = renderHost.EffectsManager.Device.ImmediateContext;
-            var backbuffer = renderHost.RenderBuffer.BackBuffer;
-            var backbufferTexture = backbuffer.Resource as Texture2D;
-            var bbDesc = backbufferTexture.Description;
-            if (stagingTexture == null || bbDesc.Width != stagingTexture.Description.Width || bbDesc.Height != stagingTexture.Description.Height)
-            {
-                if (stagingTexture != null)
-                    stagingTexture.Dispose();
-                var desc = bbDesc;
-                var targetFormat = DXGIFormatToPixelFormat(bbDesc.Format);
-                desc.BindFlags = BindFlags.None;
-                desc.CpuAccessFlags = CpuAccessFlags.Read;
-                desc.Usage = ResourceUsage.Staging;
-                stagingTexture = new Texture2D(deviceContext.Device, desc);
-                canvasBitmap = new WriteableBitmap(bbDesc.Width, bbDesc.Height, 96.0, 96.0, targetFormat ?? PixelFormats.Bgr32, null);
-                canvasBrush.ImageSource = canvasBitmap;
-            }
-
-            deviceContext.CopyResource(backbufferTexture, stagingTexture);
-
-            SharpDX.DataStream dataStream;
-            var dataBox = deviceContext.MapSubresource(stagingTexture, 0, 0, MapMode.Read, MapFlags.None, out dataStream);
-            canvasBitmap.Lock();
             try
             {
-                for (int row = 0; row < bbDesc.Height; ++row)
+                var renderHost = (IRenderHost)sender;
+
+                var deviceContext = renderHost.EffectsManager.Device.ImmediateContext;
+                var backbuffer = renderHost.RenderBuffer.BackBuffer;
+                var backbufferTexture = backbuffer.Resource as Texture2D;
+                var bbDesc = backbufferTexture.Description;
+                if (stagingTexture == null || bbDesc.Width != stagingTexture.Description.Width || bbDesc.Height != stagingTexture.Description.Height)
                 {
-                    unsafe
-                    {
-                        byte* src = (byte*)(dataBox.DataPointer + row * dataBox.RowPitch);
-                        byte* dest = (byte*)(canvasBitmap.BackBuffer + row * canvasBitmap.BackBufferStride);
-                        System.Buffer.MemoryCopy(src, dest, canvasBitmap.BackBufferStride, dataBox.RowPitch);
-                    }
+                    if (stagingTexture != null)
+                        stagingTexture.Dispose();
+                    var desc = bbDesc;
+                    var targetFormat = DXGIFormatToPixelFormat(bbDesc.Format);
+                    desc.BindFlags = BindFlags.None;
+                    desc.CpuAccessFlags = CpuAccessFlags.Read;
+                    desc.Usage = ResourceUsage.Staging;
+                    stagingTexture = new Texture2D(deviceContext.Device, desc);
+                    canvasBitmap = new WriteableBitmap(bbDesc.Width, bbDesc.Height, 96.0, 96.0, targetFormat ?? PixelFormats.Bgr32, null);
+                    canvasBrush.ImageSource = canvasBitmap;
                 }
 
-                canvasBitmap.AddDirtyRect(new Int32Rect(0, 0, bbDesc.Width, bbDesc.Height));
+                deviceContext.CopyResource(backbufferTexture, stagingTexture);
+
+                if (canvasBitmap != null)
+                {
+                    SharpDX.DataStream dataStream;
+                    var dataBox = deviceContext.MapSubresource(stagingTexture, 0, 0, MapMode.Read, MapFlags.None, out dataStream);
+
+                    canvasBitmap.Lock();
+                    try
+                    {
+                        for (int row = 0; row < bbDesc.Height; ++row)
+                        {
+                            unsafe
+                            {
+                                byte* src = (byte*)(dataBox.DataPointer + row * dataBox.RowPitch);
+                                byte* dest = (byte*)(canvasBitmap.BackBuffer + row * canvasBitmap.BackBufferStride);
+                                System.Buffer.MemoryCopy(src, dest, canvasBitmap.BackBufferStride, dataBox.RowPitch);
+                            }
+                        }
+
+                        canvasBitmap.AddDirtyRect(new Int32Rect(0, 0, bbDesc.Width, bbDesc.Height));
+                    }
+                    finally
+                    {
+                        canvasBitmap.Unlock();
+                        deviceContext.UnmapSubresource(stagingTexture, 0);
+                    }
+                }
             }
-            finally
+            catch(Exception ex)
             {
-                canvasBitmap.Unlock();
-                deviceContext.UnmapSubresource(stagingTexture, 0);
+                var mv = MainWindow.GetMainWindow();
+                try
+                {
+                    FlexibleMessageBox.Show("An error occurred when initializing the viewport:\n\n" + ex.Message, "Render Interop Error", MessageBoxButtons.OK, MessageBoxIcon.Error,
+                        MessageBoxDefaultButton.Button1);
+                }
+                catch
+                {
+                    // Can't let the error function crash us.
+                }
             }
         }
     }
