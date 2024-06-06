@@ -49,6 +49,16 @@ namespace FFXIV_TexTools.Views.Wizard
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Variant)));
             }
         }
+        public int GroupPriority
+        {
+            get => Group.Priority;
+            set
+            {
+                Group.Priority = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(GroupPriority)));
+            }
+        }
+
         public string ItemSetText
         {
             get {

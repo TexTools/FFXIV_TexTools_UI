@@ -1156,7 +1156,7 @@ namespace FFXIV_TexTools.Views.Wizard
                         continue;
                     }
 
-                    var options = g.Options;
+                    var options = g.Options.ToList();
                     var firstEmpty = false;
                     foreach (var o in options)
                     {

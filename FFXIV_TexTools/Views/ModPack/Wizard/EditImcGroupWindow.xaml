@@ -30,6 +30,7 @@
                     <ColumnDefinition Width="200"/>
                     <ColumnDefinition Width="100"/>
                     <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="100"/>
                     <ColumnDefinition Width="1*"/>
                 </Grid.ColumnDefinitions>
                 <Label Content="Group Name:" HorizontalAlignment="Right" VerticalAlignment="Center"></Label>
@@ -38,6 +39,9 @@
                 <Button Content="Item Set:" Grid.Row="0" Grid.Column="2" VerticalAlignment="Center" Margin="5,5,5,5" Click="ChangeItemSet_Click"/>
                 <Label Grid.Column="3" Content="{Binding Path=ItemSetText}" VerticalAlignment="Center" Margin="5,5,5,5"/>
 
+                <Label Grid.Column="4" Content="Group Priority:" HorizontalAlignment="Right" VerticalAlignment="Center"></Label>
+                <TextBox Grid.Column="5" Text="{Binding Path=GroupPriority}" Width="100" VerticalAlignment="Center" HorizontalAlignment="Left"></TextBox>
+
                 <Label Grid.Row="1" Grid.Column="0" Content="Variant:" HorizontalAlignment="Right" VerticalAlignment="Center"></Label>
                 <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Path=Variant}" Width="100" HorizontalAlignment="Left" VerticalAlignment="Center"></TextBox>
                 
@@ -45,7 +49,7 @@
 
                 <CheckBox Grid.Row="1" Grid.Column="4" Grid.ColumnSpan="2" Margin="5" Content="Apply to All Variants" IsChecked="{Binding Path=AllVariants}"></CheckBox>
 
-                <metadata:ImcVariantEditor Grid.Row="2" Grid.ColumnSpan="5" x:Name="VariantEditor"></metadata:ImcVariantEditor>
+                <metadata:ImcVariantEditor Grid.Row="2" Grid.ColumnSpan="6" x:Name="VariantEditor"></metadata:ImcVariantEditor>
                 
             </Grid>
         </GroupBox>
