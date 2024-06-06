@@ -1,4 +1,6 @@
-﻿using Microsoft.Win32;
+using Microsoft.Win32;
+using System;
+using System.Runtime.InteropServices;
 
 namespace FFXIV_TexTools.Configuration
 {
@@ -30,6 +32,12 @@ namespace FFXIV_TexTools.Configuration
             }
         }
 
+        [DllImport("kernel32.dll", CharSet = CharSet.Ansi, ExactSpelling = true, SetLastError = true)]
+        private static extern IntPtr GetProcAddress(IntPtr hModule, string procName);
+
+        [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
+        private static extern IntPtr GetModuleHandle(string lpModuleName);
+        
         static bool DetectWINE()
         {
             try
@@ -38,7 +46,15 @@ namespace FFXIV_TexTools.Configuration
                 if (key != null)
                 {
                     key.Dispose();
-                    return true;
+                    IntPtr hModule = GetModuleHandle("kernel32.dll");
+                    if (hModule != IntPtr.Zero)
+                    {
+                        IntPtr functionAddress = GetProcAddress(hModule, "wine_get_unix_file_name");
+                        if (functionAddress != IntPtr.Zero)
+                        {
+                            return true;
+                        }
+                    }
                 }
                 return false;
             }
