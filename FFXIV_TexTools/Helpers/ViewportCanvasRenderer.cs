@@ -110,7 +110,8 @@ namespace FFXIV_TexTools.Helpers
                             {
                                 byte* src = (byte*)(dataBox.DataPointer + row * dataBox.RowPitch);
                                 byte* dest = (byte*)(canvasBitmap.BackBuffer + row * canvasBitmap.BackBufferStride);
-                                System.Buffer.MemoryCopy(src, dest, canvasBitmap.BackBufferStride, dataBox.RowPitch);
+                                int stride = Math.Min(canvasBitmap.BackBufferStride, dataBox.RowPitch);
+                                System.Buffer.MemoryCopy(src, dest, stride, stride);
                             }
                         }
 
