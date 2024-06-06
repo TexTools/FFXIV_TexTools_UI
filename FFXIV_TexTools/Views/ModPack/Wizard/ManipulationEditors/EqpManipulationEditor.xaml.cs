@@ -44,6 +44,8 @@ namespace FFXIV_TexTools.Views.Wizard.ManipulationEditors
                 var id = PmpIdentifierJson.FromRoot(value.Info);
                 Manipulation.Slot = id.EquipSlot;
                 Manipulation.SetId = (ushort)id.PrimaryId;
+                Manipulation.Entry = 0;
+                RebuildCheckboxes();
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Root)));
             }
         }
@@ -56,8 +58,12 @@ namespace FFXIV_TexTools.Views.Wizard.ManipulationEditors
             InitializeComponent();
             RootControl.ItemFilter = ItemFilterFunc;
             RootControl.ItemSelect = ItemSelectFunc;
+            RebuildCheckboxes();
+        }
 
-
+        public void RebuildCheckboxes()
+        {
+            RawGrid.Children.Clear();
             var flags = Eqp.GetFlags();
 
             // Advanced Flag Setup.
@@ -79,6 +85,7 @@ namespace FFXIV_TexTools.Views.Wizard.ManipulationEditors
                 idx++;
             }
         }
+
         private void Cb_Checked(object sender, RoutedEventArgs e)
         {
             var cb = (CheckBox)sender;

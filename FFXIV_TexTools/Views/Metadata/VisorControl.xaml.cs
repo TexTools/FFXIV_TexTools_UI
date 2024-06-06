@@ -41,8 +41,8 @@ namespace FFXIV_TexTools.Views.Metadata
             RotationBBox.Text = m.GmpEntry.RotationB.ToString();
             RotationCBox.Text = m.GmpEntry.RotationC.ToString();
 
-            UnknownHighBox.Text = m.GmpEntry.UnknownHigh.ToString();
-            UnknownLowBox.Text = m.GmpEntry.UnknownLow.ToString();
+            UnknownHighBox.Text = m.GmpEntry.Byte4High.ToString();
+            UnknownLowBox.Text = m.GmpEntry.Byte4Low.ToString();
 
         }
 
@@ -126,7 +126,7 @@ namespace FFXIV_TexTools.Views.Metadata
                 UnknownHighBox.Text = "15";
                 return;
             }
-            _metadata.GmpEntry.UnknownHigh = v;
+            _metadata.GmpEntry.Byte4High = v;
             FileChanged?.Invoke();
         }
 
@@ -144,7 +144,7 @@ namespace FFXIV_TexTools.Views.Metadata
                 UnknownLowBox.Text = "15";
                 return;
             }
-            _metadata.GmpEntry.UnknownLow = v;
+            _metadata.GmpEntry.Byte4Low = v;
             FileChanged?.Invoke();
         }
 

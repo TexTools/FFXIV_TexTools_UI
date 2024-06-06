@@ -10,15 +10,50 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="40"/>
-            <RowDefinition Height="40"/>
-            <RowDefinition Height="40"/>
+            <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="100"/>
-            <ColumnDefinition Width="100"/>
-            <ColumnDefinition Width="100"/>
+            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
-        <controls:RootSelectControl Grid.ColumnSpan="3" x:Name="RootControl" Root="{Binding Path=Root, Mode=TwoWay}"></controls:RootSelectControl>
 
+        <controls:RootSelectControl Grid.ColumnSpan="3" x:Name="RootControl" Root="{Binding Path=Root, Mode=TwoWay}"></controls:RootSelectControl>
+        <CheckBox x:Name="EnabledBox" Content="Enabled" HorizontalAlignment="Left" Grid.Column="3" Grid.ColumnSpan="2" IsChecked="{Binding Path=GmpEnabled}" />
+
+
+        <Grid Grid.Row="1" Grid.ColumnSpan="4">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40"></RowDefinition>
+                <RowDefinition Height="40"></RowDefinition>
+                <RowDefinition Height="40"></RowDefinition>
+                <RowDefinition Height="40"></RowDefinition>
+                <RowDefinition Height="40"></RowDefinition>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="100"></ColumnDefinition>
+                <ColumnDefinition Width="200"></ColumnDefinition>
+                <ColumnDefinition Width="100"></ColumnDefinition>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
+            <CheckBox Content="Animated" Grid.Column="1" IsChecked="{Binding Path=Animated}"></CheckBox>
+
+            <Label Grid.Row="1" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0" Content="Unknown A:" Height="26"/>
+            <TextBox Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Width="150" Height="26" PreviewTextInput="ValidateNumericInput" Text="{Binding Path=UnknownA}" ></TextBox>
+
+            <Label Grid.Row="2" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0" Content="Unknown B:" Height="26"/>
+            <TextBox Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Width="150" Height="26" PreviewTextInput="ValidateNumericInput" Text="{Binding Path=UnknownB}" ></TextBox>
+            
+            <Label Grid.Row="0" Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0" Content="Rotation A:" Height="26"/>
+            <TextBox x:Name="RotationABox" Grid.Row="0" Grid.Column="3" HorizontalAlignment="Left" VerticalAlignment="Center" Width="150"  Height="26" PreviewTextInput="ValidateNumericInput" ToolTip="Rotation of the j_ex_met_va bone in degrees."  Text="{Binding Path=RotationA}"></TextBox>
+
+            <Label Grid.Row="1" Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0" Content="Rotation B:" Height="26"/>
+            <TextBox x:Name="RotationBBox" Grid.Row="1" Grid.Column="3" HorizontalAlignment="Left" VerticalAlignment="Center" Width="150" Height="26" PreviewTextInput="ValidateNumericInput" ToolTip="Rotation of the j_ex_met_vb bone in degrees." Text="{Binding Path=RotationB}"></TextBox>
+
+            <Label Grid.Row="2" Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0" Content="Rotation C:" Height="26" ToolTip="Rotation of the j_ex_met_va bone in degrees."/>
+            <TextBox x:Name="RotationCBox" Grid.Row="2" Grid.Column="3" HorizontalAlignment="Left" VerticalAlignment="Center" Width="150" Height="26" PreviewTextInput="ValidateNumericInput" ToolTip="Rotation of the j_ex_met_vc bone in degrees." Text="{Binding Path=RotationC}"></TextBox>
+
+        </Grid>
     </Grid>
 </UserControl>
