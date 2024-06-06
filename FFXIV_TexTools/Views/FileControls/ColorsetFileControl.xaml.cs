@@ -66,8 +66,22 @@ namespace FFXIV_TexTools.Views.Controls
         private int _rowCount = 32;
         private int _columnCount = 8;
 
-        List<Half[]> CopiedRow;
-        byte[] CopiedRowDye;
+        static List<Half[]> _CopiedRow;
+        static List<Half[]> CopiedRow
+        {
+            get => _CopiedRow;
+            set
+            {
+                _CopiedRow = value;
+                CopyUpdated?.Invoke();
+            }
+        }
+        static byte[] CopiedRowDye;
+
+
+
+        private static event Action CopyUpdated;
+
         private bool DawnTrail
         {
             get
@@ -208,7 +222,19 @@ namespace FFXIV_TexTools.Views.Controls
             }
 
             SetDyeBitLabels();
+            CopyUpdated += OnCopyUpdated;
+        }
 
+        private void OnCopyUpdated()
+        {
+            if (CopiedRow == null)
+            {
+                PasteRowButton.IsEnabled = false;
+            }
+            else
+            {
+                PasteRowButton.IsEnabled = true;
+            }
         }
 
         public override void OnControlKey(object sender, System.Windows.Input.KeyEventArgs e)
@@ -1502,6 +1528,7 @@ namespace FFXIV_TexTools.Views.Controls
             {
                 ColorsetRowViewport.Dispose();
             }
+            CopyUpdated -= OnCopyUpdated;
         }
 
     }
