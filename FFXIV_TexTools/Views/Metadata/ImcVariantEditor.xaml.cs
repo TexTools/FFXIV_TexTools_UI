@@ -93,7 +93,7 @@ namespace FFXIV_TexTools.Views.Metadata
             }
         }
 
-        public EventHandler<XivImc> ValueChanged;
+        public event EventHandler<XivImc> ValueChanged;
 
         private bool _LOADING;
 

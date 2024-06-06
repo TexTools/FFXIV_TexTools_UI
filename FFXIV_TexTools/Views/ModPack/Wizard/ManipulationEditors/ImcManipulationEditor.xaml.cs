@@ -19,6 +19,7 @@ using xivModdingFramework.Items.Enums;
 using xivModdingFramework.Items.Interfaces;
 using xivModdingFramework.Mods.FileTypes;
 using xivModdingFramework.Mods.FileTypes.PMP;
+using xivModdingFramework.Variants.DataContainers;
 using xivModdingFramework.Variants.FileTypes;
 
 namespace FFXIV_TexTools.Views.Wizard.ManipulationEditors
@@ -30,6 +31,24 @@ namespace FFXIV_TexTools.Views.Wizard.ManipulationEditors
     {
         PMPImcManipulationJson Manipulation;
         public event PropertyChangedEventHandler PropertyChanged;
+
+        public XivImc ImcEntry
+        {
+            get
+            {
+                return Manipulation.Entry.ToXivImc();
+            }
+        }
+
+        public uint Variant
+        {
+            get => Manipulation.Variant;
+            set
+            {
+                Manipulation.Variant = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Variant)));
+            }
+        }
 
 
 
@@ -57,6 +76,18 @@ namespace FFXIV_TexTools.Views.Wizard.ManipulationEditors
             InitializeComponent();
             RootControl.ItemFilter = ItemFilterFunc;
             RootControl.ItemSelect = ItemSelectFunc;
+
+            var xImc = Manipulation.Entry.ToXivImc();
+
+            VariantEditor.ImcEntry = xImc;
+
+            VariantEditor.ValueChanged += VariantEditor_ValueChanged;
+            
+        }
+
+        private void VariantEditor_ValueChanged(object sender, XivImc e)
+        {
+            Manipulation.Entry = PMPImcManipulationJson.PMPImcEntry.FromXivImc(e);
         }
 
         private bool ItemSelectFunc(IItem item)
