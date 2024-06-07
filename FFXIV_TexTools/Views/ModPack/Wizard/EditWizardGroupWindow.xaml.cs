@@ -1167,7 +1167,7 @@ namespace FFXIV_TexTools.Views
                 niceName = "Model".L();
             } else if(ext == ".tex")
             {
-                var type = SimpleModpackEntry.GuessTextureUsage(path);
+                var type = ModViewHelpers.GuessTextureUsage(path);
                 niceName = $"{type.ToString()._()} Texture".L();
             } else if(ext == ".meta")
             {

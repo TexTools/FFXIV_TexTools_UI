@@ -506,32 +506,32 @@ namespace FFXIV_TexTools.ViewModels
                         }
 
                         // Race
-                        modListModel.ItemName = SimpleModpackEntry.GetFancyName(modItem.ItemName, modItem.FilePath);
+                        modListModel.ItemName = ModViewHelpers.GetFancyName(modItem.ItemName, modItem.FilePath);
 
                         // File Name
                         modListModel.FileName = Path.GetFileName(modItem.FilePath);
 
                         // Type
-                        modListModel.Type = SimpleModpackEntry.GetType(modItem.FilePath);
+                        modListModel.Type = ModViewHelpers.GetType(modItem.FilePath);
 
                         // Material
                         if (suffix == "tex" && parent != null)
                         {
-                            modListModel.Material = SimpleModpackEntry.GetMaterialId(parent);
+                            modListModel.Material = ModViewHelpers.GetMaterialId(parent);
                         }
                         else
                         {
-                            modListModel.Material = SimpleModpackEntry.GetMaterialId(modItem.FilePath);
+                            modListModel.Material = ModViewHelpers.GetMaterialId(modItem.FilePath);
                         }
 
                         // Race
                         if (suffix == "tex" && parent != null)
                         {
-                            modListModel.Race = SimpleModpackEntry.GetRace(parent).GetDisplayName();
+                            modListModel.Race = ModViewHelpers.GetRace(parent).GetDisplayName();
                         }
                         else
                         {
-                            modListModel.Race = SimpleModpackEntry.GetRace(modItem.FilePath).GetDisplayName();
+                            modListModel.Race = ModViewHelpers.GetRace(modItem.FilePath).GetDisplayName();
                         }
 
 
