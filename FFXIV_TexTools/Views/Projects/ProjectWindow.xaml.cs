@@ -330,6 +330,7 @@ namespace FFXIV_TexTools.Views.Projects
 
             SaveProject();
             Project = null;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(OpenVisible)));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CloseVisible)));
         }
 
@@ -387,6 +388,7 @@ namespace FFXIV_TexTools.Views.Projects
             finally
             {
                 this.IsEnabled = true;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(OpenVisible)));
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CloseVisible)));
                 StaticUpdateFileList();
             }
