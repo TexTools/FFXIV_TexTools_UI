@@ -26,6 +26,35 @@ using xivModdingFramework.SqPack.FileTypes;
 
 namespace FFXIV_TexTools.Views.Projects
 {
+    public class ProjectFileListEntry : INotifyPropertyChanged
+    {
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private string _InternalPath;
+        public string InternalPath
+        {
+            get => _InternalPath;
+            set
+            {
+                if (_InternalPath == value) return;
+                _InternalPath = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(InternalPath)));
+            }
+        }
+
+        private string _ExternalPath;
+        public string ExternalPath
+        {
+            get => _ExternalPath;
+            set
+            {
+                if (_ExternalPath == value) return;
+                _ExternalPath = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ExternalPath)));
+            }
+        }
+    }
+
     /// <summary>
     /// Interaction logic for ProjectWindow.xaml
     /// </summary>
@@ -35,7 +64,7 @@ namespace FFXIV_TexTools.Views.Projects
         public static TTProject Project { get; private set; }
 
         public static ProjectWindow Instance;
-        public ObservableCollection<string> FileListSource { get; set; } = new ObservableCollection<string>();
+        public ObservableCollection<ProjectFileListEntry> FileListSource { get; set; } = new ObservableCollection<ProjectFileListEntry>();
         public Visibility CloseVisible
         {
             get
@@ -43,6 +72,14 @@ namespace FFXIV_TexTools.Views.Projects
                 return Project == null ? Visibility.Collapsed : Visibility.Visible;
             }
         }
+        public Visibility OpenVisible
+        {
+            get
+            {
+                return Project == null ? Visibility.Visible : Visibility.Collapsed;
+            }
+        }
+
 
         public static Window ErrorTarget
         {
@@ -57,6 +94,8 @@ namespace FFXIV_TexTools.Views.Projects
         }
 
         private static List<FileSystemWatcher> Watchers = new List<FileSystemWatcher>();
+
+        private static string _ProjectFileFilter = "TexTools Project Files|*.ttproject";
 
         public ProjectWindow()
         {
@@ -91,8 +130,16 @@ namespace FFXIV_TexTools.Views.Projects
 
         private void LoadButton_Click(object sender, RoutedEventArgs e)
         {
+            if (MainWindow.UserTransaction != null && MainWindow.UserTransaction.State != ETransactionState.Closed && MainWindow.UserTransaction.ModifiedFiles.Count > 0)
+            {
+                if (!ViewHelpers.ShowConfirmation(this, "Close Transaction Confirmation", "This will cancel your current transaction, are you sure you wish to continue?"))
+                {
+                    return;
+                }
+            }
+
             var sfd = new OpenFileDialog();
-            sfd.Filter = "TexTools Project Files|*.ttproject";
+            sfd.Filter = _ProjectFileFilter;
             if (sfd.ShowDialog() != System.Windows.Forms.DialogResult.OK)
             {
                 return;
@@ -102,6 +149,7 @@ namespace FFXIV_TexTools.Views.Projects
             {
                 var text = File.ReadAllText(sfd.FileName);
                 var project = JsonConvert.DeserializeObject<TTProject>(text);
+                project.JsonPath = sfd.FileName;
                 _ = OpenProject(project);
             }
             catch(Exception ex)
@@ -117,54 +165,39 @@ namespace FFXIV_TexTools.Views.Projects
             NewContextMenu.IsOpen = true;
         }
 
-        private void NewTtmp_Click(object sender, RoutedEventArgs e)
+        private void NewProject_Click(object sender, RoutedEventArgs e)
         {
+            if (MainWindow.UserTransaction != null && MainWindow.UserTransaction.State != ETransactionState.Closed && MainWindow.UserTransaction.ModifiedFiles.Count > 0)
+            {
+                if (!ViewHelpers.ShowConfirmation(this, "Close Transaction Confirmation", "This will cancel your current transaction, are you sure you wish to continue?"))
+                {
+                    return;
+                }
+            }
             var sfd = new SaveFileDialog();
-            sfd.Filter = "TexTools Modpacks|*.ttmp2";
+            sfd.Filter = _ProjectFileFilter;
             if (sfd.ShowDialog() != System.Windows.Forms.DialogResult.OK)
             {
                 return;
             }
 
-            CreateProject(sfd.FileName, ETransactionTarget.TTMP, false);
+            var dir = Path.Combine(Path.GetDirectoryName(sfd.FileName), Path.GetFileNameWithoutExtension(sfd.FileName));
+            Directory.CreateDirectory(dir);
 
-        }
+            var projectPath = Path.Combine(dir, Path.GetFileNameWithoutExtension(sfd.FileName) + ".ttproject");
 
-        public static void AddExternalSource(string internalFile, string externalFile)
-        {
-            if (Project == null) return;
-            if (string.IsNullOrWhiteSpace(internalFile) || string.IsNullOrWhiteSpace(externalFile)) return;
-            if (!IOUtil.IsFFXIVInternalPath(internalFile)) return;
-            if (!File.Exists(externalFile)) return;
-
-            if(Project.Files.ContainsKey(internalFile))
-            {
-                Project.Files[internalFile] = externalFile;
-            } else
-            {
-                Project.Files.Add(internalFile, externalFile);
-            }
-
-            if (!Project.LastModifiedTimes.ContainsKey(externalFile))
-            {
-                Project.LastModifiedTimes.Add(externalFile, new FileInfo(externalFile).LastWriteTime);
-            }
-        }
-
-        private void NewPmp_Click(object sender, RoutedEventArgs e)
-        {
-            var sfd = new SaveFileDialog();
-            sfd.Filter = "TexTools Modpacks|*.ttmp2";
-            if (sfd.ShowDialog() != System.Windows.Forms.DialogResult.OK)
-            {
-                return;
-            }
-            CreateProject(sfd.FileName, ETransactionTarget.PMP, false);
-
+            CreateProject(projectPath, ETransactionTarget.FolderTree, null);
         }
 
         private async void NewPenumbra_Click(object sender, RoutedEventArgs e)
         {
+            if (MainWindow.UserTransaction != null && MainWindow.UserTransaction.State != ETransactionState.Closed && MainWindow.UserTransaction.ModifiedFiles.Count > 0)
+            {
+                if (!ViewHelpers.ShowConfirmation(this, "Close Transaction Confirmation", "This will cancel your current transaction, are you sure you wish to continue?"))
+                {
+                    return;
+                }
+            }
             var sfd = new BetterFolderBrowser();
             if (sfd.ShowDialog() != System.Windows.Forms.DialogResult.OK)
             {
@@ -189,11 +222,20 @@ namespace FFXIV_TexTools.Views.Projects
                 return;
             }
 
-            CreateProject(folder, ETransactionTarget.PenumbraModFolder, true);
+            var ttProjectPath = Path.Combine(folder, "project.ttproject");
+
+            CreateProject(ttProjectPath, ETransactionTarget.PenumbraModFolder, folder);
         }
 
         private async void NewModpack_Click(object sender, RoutedEventArgs e)
         {
+            if (MainWindow.UserTransaction != null && MainWindow.UserTransaction.State != ETransactionState.Closed && MainWindow.UserTransaction.ModifiedFiles.Count > 0)
+            {
+                if(!ViewHelpers.ShowConfirmation(this, "Close Transaction Confirmation", "This will cancel your current transaction, are you sure you wish to continue?"))
+                {
+                    return;
+                }
+            }
             var sfd = new OpenFileDialog();
             sfd.Filter = "Modpack Files|*.ttmp2;*.ttmp;*.pmp;*.json";
             if (sfd.ShowDialog() != System.Windows.Forms.DialogResult.OK)
@@ -216,30 +258,40 @@ namespace FFXIV_TexTools.Views.Projects
                 return;
             }
 
-            var target = ETransactionTarget.TTMP;
-            if (sfd.FileName.ToLower().EndsWith(".pmp"))
-            {
-                target = ETransactionTarget.PMP;
-            }
+            var dir = Path.Combine(Path.GetDirectoryName(sfd.FileName), "Project_" + Path.GetFileNameWithoutExtension(sfd.FileName));
+            Directory.CreateDirectory(dir);
 
-            CreateProject(sfd.FileName, target, true);
+            var projectPath = Path.Combine(dir, Path.GetFileNameWithoutExtension(sfd.FileName) + ".ttproject");
+
+
+            CreateProject(projectPath, ETransactionTarget.FolderTree, sfd.FileName);
         }
 
-        private void CreateProject(string path, ETransactionTarget target, bool initialModpack)
+        private void CreateProject(string ttProjectPath, ETransactionTarget target, string intialModpackPath = null)
         {
+            if(!ttProjectPath.EndsWith(".ttproject"))
+            {
+                this.ShowError("Project Creation Error", "Path is not valid: " + ttProjectPath);
+                return;
+            }
+
+            if(target != ETransactionTarget.FolderTree && target != ETransactionTarget.PenumbraModFolder)
+            {
+                this.ShowError("Project Creation Error", "Invalid project target: " + target.ToString());
+                return;
+            }
+
             try
             {
                 var sType = EFileStorageType.UncompressedIndividual;
-                if (target == ETransactionTarget.TTMP)
-                {
-                    sType = EFileStorageType.CompressedIndividual;
-                }
+                var folder = Path.GetDirectoryName(ttProjectPath);
+                Directory.CreateDirectory(folder);
 
                 var settings = new ModTransactionSettings()
                 {
                     Target = target,
                     StorageType = sType,
-                    TargetPath = path,
+                    TargetPath = folder,
                 };
 
                 if (MainWindow.UserTransaction != null)
@@ -250,28 +302,15 @@ namespace FFXIV_TexTools.Views.Projects
                 var project = new TTProject();
 
 
-                var jsonPath = "";
-                if (IOUtil.IsDirectory(path))
-                {
-                    jsonPath = Path.Combine(path, "Project.ttproject");
-                }
-                else
-                {
-                    jsonPath = Path.Combine(Path.GetDirectoryName(path), Path.GetFileNameWithoutExtension(path) + ".ttproject");
-                    if (initialModpack == false)
-                    {
-                        File.Delete(path);
-                    }
-                }
 
-                project.Name = Path.GetFileNameWithoutExtension(path);
-                project.JsonPath = jsonPath;
+                project.Name = Path.GetFileNameWithoutExtension(ttProjectPath);
+                project.JsonPath = ttProjectPath;
                 project.TransactionSettings = settings;
 
                 var json = JsonConvert.SerializeObject(project, Formatting.Indented);
-                File.Delete(jsonPath);
-                File.WriteAllText(jsonPath, json);
-                _ = OpenProject(project, true);
+                File.Delete(ttProjectPath);
+                File.WriteAllText(ttProjectPath, json);
+                _ = OpenProject(project, true, intialModpackPath);
             } catch(Exception ex)
             {
                 this.ShowError("Project Creation Error", "An error occurred while creating the project:\n\n" + ex.Message);
@@ -289,12 +328,12 @@ namespace FFXIV_TexTools.Views.Projects
                 ModTransaction.CancelTransaction(MainWindow.UserTransaction, true);
             }
 
-
+            SaveProject();
             Project = null;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CloseVisible)));
         }
 
-        public async Task OpenProject(TTProject project, bool firstTime = false)
+        public async Task OpenProject(TTProject project, bool firstTime = false, string initialModpackPath = null)
         {
             this.IsEnabled = false;
             try
@@ -321,11 +360,21 @@ namespace FFXIV_TexTools.Views.Projects
 
                 try
                 {
-                    await LoadModpack(firstTime);
+                    await LoadModpack(initialModpackPath, firstTime);
                 }
                 catch (Exception ex)
                 {
                     this.ShowError("Project Load Error", "An error occurred while loading the project:\n\n" + ex.Message);
+                    await CloseProject();
+                    return;
+                }
+
+                try
+                {
+                    await LoadFiles();
+                } catch(Exception ex)
+                {
+                    this.ShowError("Project Load Error", "An error occurred while loading some of the project files the project:\n\n" + ex.Message);
                     await CloseProject();
                     return;
                 }
@@ -356,9 +405,14 @@ namespace FFXIV_TexTools.Views.Projects
                 await TTMP.ImportFiles(files, null, null, MainWindow.UserTransaction);
             }
         }
-        private static async Task LoadModpack(bool ignoreMissing = false)
+        private static async Task LoadModpack(string path = null, bool ignoreMissing = false)
         {
-            var files = await TTMP.ModPackToSimpleFileList(Project.TransactionSettings.TargetPath, true, MainWindow.UserTransaction);
+            if(path == null)
+            {
+                path = Project.TransactionSettings.TargetPath;
+            }
+
+            var files = await TTMP.ModPackToSimpleFileList(path, true, MainWindow.UserTransaction);
             if(files == null)
             {
                 if (ignoreMissing)
@@ -371,6 +425,16 @@ namespace FFXIV_TexTools.Views.Projects
 
             await TTMP.ImportFiles(files, null, null, MainWindow.UserTransaction);
             AttachEvents();
+        }
+
+        private static void SaveProject()
+        {
+            if (Project == null) return;
+            if (string.IsNullOrWhiteSpace(Project.JsonPath)) return;
+
+            var json = JsonConvert.SerializeObject(Project, Formatting.Indented);
+            File.Delete(Project.JsonPath);
+            File.WriteAllText(Project.JsonPath, json);
         }
 
         private static void AttachEvents()
@@ -390,6 +454,8 @@ namespace FFXIV_TexTools.Views.Projects
                     var file = Path.GetFileName(kv.Value);
                     var watch = new FileSystemWatcher(folder, file);
                     watch.EnableRaisingEvents = true;
+                    watch.Renamed += Watcher_FileRenamed;
+                    watch.Deleted += Watcher_FileDeleted;
 
                     watch.Changed += Watcher_FileChanged;
                     watch.Created += Watcher_FileCreated;
@@ -399,6 +465,7 @@ namespace FFXIV_TexTools.Views.Projects
                 }
             }
         }
+
 
         private static void DetatchEvents()
         {
@@ -437,6 +504,7 @@ namespace FFXIV_TexTools.Views.Projects
             try
             {
                 await ModTransaction.CommitTransaction(MainWindow.UserTransaction, false);
+                SaveProject();
             } catch(Exception ex)
             {
                 await ErrorTarget.Dispatcher.InvokeAsync(() =>
@@ -469,7 +537,7 @@ namespace FFXIV_TexTools.Views.Projects
 
                 var modTime = new FileInfo(kv.Value).LastWriteTimeUtc;
 
-                if(modTime != Project.LastModifiedTimes[kv.Key])
+                if(modTime != Project.LastModifiedTimes[kv.Value])
                 {
                     toLoad.Add(kv.Key, kv.Value);
                 }
@@ -483,8 +551,10 @@ namespace FFXIV_TexTools.Views.Projects
             // Unbind events while we're loading files to be safe.
             // We'll commit the transaction after.
             DetatchEvents();
+            bool reloadPenumbra = false;
             if (PenumbraAttachHandler.IsAttached)
             {
+                reloadPenumbra = true;
                 PenumbraAttachHandler.Pause();
             }
 
@@ -501,11 +571,15 @@ namespace FFXIV_TexTools.Views.Projects
                     }
                 }
                 await SaveModpack();
+                SaveProject();
             }
             finally
             {
                 AttachEvents();
-                PenumbraAttachHandler.Resume();
+                if (reloadPenumbra)
+                {
+                    PenumbraAttachHandler.Resume();
+                }
                 StaticUpdateFileList();
             }
         }
@@ -515,6 +589,15 @@ namespace FFXIV_TexTools.Views.Projects
             DebouncedLoadFiles();
         }
         private static void Watcher_FileChanged(object sender, FileSystemEventArgs e)
+        {
+            DebouncedLoadFiles();
+        }
+        private static void Watcher_FileDeleted(object sender, FileSystemEventArgs e)
+        {
+            DebouncedLoadFiles();
+        }
+
+        private static void Watcher_FileRenamed(object sender, RenamedEventArgs e)
         {
             DebouncedLoadFiles();
         }
@@ -552,22 +635,124 @@ namespace FFXIV_TexTools.Views.Projects
 
         public void UpdateFileList()
         {
-            if (MainWindow.UserTransaction == null)
+            if (MainWindow.UserTransaction == null  || Project == null)
             {
                 return;
             }
-            var tx = MainWindow.UserTransaction;
-            FileListSource.Clear();
-            var files = tx.ModifiedFiles.OrderBy(x => x);
-            foreach (var file in files)
+            _ = Dispatcher.InvokeAsync(() =>
             {
-                if (IOUtil.IsMetaInternalFile(file))
+                if (MainWindow.UserTransaction == null || Project == null)
+                {
+                    return;
+                }
+
+                var tx = MainWindow.UserTransaction;
+                FileListSource.Clear();
+                var files = tx.ModifiedFiles.OrderBy(x => x).ToList();
+                foreach (var file in files)
+                {
+                    if (IOUtil.IsMetaInternalFile(file))
+                    {
+                        continue;
+                    }
+
+                    var extPath = "";
+                    if (Project.Files.ContainsKey(file))
+                    {
+                        extPath = Project.Files[file];
+                    }
+
+
+                    var entry = new ProjectFileListEntry()
+                    {
+                        InternalPath = file,
+                        ExternalPath = extPath,
+                    };
+
+                    FileListSource.Add(entry);
+                }
+
+                foreach(var file in Project.Files)
+                {
+                    if (files.Contains(file.Key)) continue;
+
+                    var extPath = file.Value ?? "";
+
+
+                    var entry = new ProjectFileListEntry()
+                    {
+                        InternalPath = file.Key,
+                        ExternalPath = extPath,
+                    };
+
+                    FileListSource.Add(entry);
+                }
+            });
+        }
+
+        public static void AddExternalSource(string internalFile, string externalFile)
+        {
+            if (Project == null) return;
+            if (string.IsNullOrWhiteSpace(internalFile) || string.IsNullOrWhiteSpace(externalFile)) return;
+            if (!IOUtil.IsFFXIVInternalPath(internalFile)) return;
+            if (!File.Exists(externalFile)) return;
+
+            if (Project.Files.ContainsKey(internalFile))
+            {
+                Project.Files[internalFile] = externalFile;
+            }
+            else
+            {
+                Project.Files.Add(internalFile, externalFile);
+            }
+
+            if (!Project.LastModifiedTimes.ContainsKey(externalFile))
+            {
+                Project.LastModifiedTimes.Add(externalFile, new FileInfo(externalFile).LastWriteTime);
+            }
+
+            DetatchEvents();
+            AttachEvents();
+            SaveProject();
+        }
+
+        private async void ResetFile_Click(object sender, RoutedEventArgs e)
+        {
+
+            if (FileListBox.SelectedItems.Count == 0) return;
+            if (Project == null || MainWindow.UserTransaction == null || MainWindow.UserTransaction.State != ETransactionState.Open) return;
+
+            // Remove the files from the transaction and project.
+            var toReset = new List<string>();
+            foreach (ProjectFileListEntry entry in FileListBox.SelectedItems)
+            {
+                toReset.Add(entry.InternalPath);
+            }
+
+            foreach (var f in toReset) {
+                await MainWindow.UserTransaction.ResetFile(f);
+                Project.Files.Remove(f);
+            }
+
+            // Remove file tracking info if the external file is no longer in use.
+            var toRemove = new List<string>();
+            foreach(var f in Project.LastModifiedTimes)
+            {
+                if(Project.Files.Any(x => x.Value == f.Key))
                 {
                     continue;
                 }
 
-                FileListSource.Add(file);
+                toRemove.Add(f.Key);
             }
+
+            foreach(var f in toRemove)
+            {
+                Project.LastModifiedTimes.Remove(f);
+            }
+
+            SaveProject();
+
         }
     }
 }

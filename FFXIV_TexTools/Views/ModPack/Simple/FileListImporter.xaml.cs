@@ -1,4 +1,5 @@
-﻿using FFXIV_TexTools.Resources;
+﻿using ControlzEx.Standard;
+using FFXIV_TexTools.Resources;
 using MahApps.Metro.Controls.Dialogs;
 using System;
 using System.Collections.Generic;
@@ -17,7 +18,6 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using xivModdingFramework.Cache;
 using xivModdingFramework.Exd.FileTypes;
 using xivModdingFramework.General.Enums;
@@ -27,6 +27,7 @@ using xivModdingFramework.Mods.DataContainers;
 using xivModdingFramework.Mods.Enums;
 using xivModdingFramework.Mods.FileTypes;
 using xivModdingFramework.SqPack.FileTypes;
+using Path = System.IO.Path;
 
 
 namespace FFXIV_TexTools.Views.Simple
@@ -97,9 +98,22 @@ namespace FFXIV_TexTools.Views.Simple
 
             Task.Run(async () =>
             {
-                var mpi = await TTMP.GetModpackInfo(modpackPath);
-                _Modpack = mpi.ModPack;
-                ModpackDescription = mpi.Description;
+                try
+                {
+                    var mpi = await TTMP.GetModpackInfo(modpackPath);
+                    _Modpack = mpi.ModPack;
+                    ModpackDescription = mpi.Description;
+                } catch(Exception ex)
+                {
+                    _Modpack = new ModPack(null)
+                    {
+                        Name = Path.GetFileNameWithoutExtension(modpackPath),
+                        Author = "Unknown",
+                        Url = "",
+                        Version = "1.0",
+                    };
+                    ModpackDescription = "";
+                }
 
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ModpackDescription)));
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ModpackAuthor)));
@@ -159,7 +173,13 @@ namespace FFXIV_TexTools.Views.Simple
                 try
                 {
                     // Read Modpack basic info.
-                    var modpack = (await TTMP.GetModpackInfo(_ModpackPath)).ModPack;
+                    ModPack modpack = new ModPack()
+                    {
+                        Name = Name,
+                        Author = ModpackAuthor,
+                        Version = ModpackVersion,
+                        Url = ModpackUrl,
+                    };
 
                     // Unpack files we'll actually use from the modpack.
                     // Providing a TX here lets the transaction handler take care of managing the temp files so we don't have to.

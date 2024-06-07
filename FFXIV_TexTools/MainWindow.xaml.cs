@@ -54,6 +54,7 @@ using System.Windows.Forms;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Threading;
+using WK.Libraries.BetterFolderBrowserNS;
 using xivModdingFramework.Cache;
 using xivModdingFramework.Exd.FileTypes;
 using xivModdingFramework.General.Enums;
@@ -1125,6 +1126,38 @@ namespace FFXIV_TexTools
             }
         }
 
+        private async Task ImportFolder()
+        {
+            if (!XivCache.GameWriteEnabled && UserTransaction == null)
+            {
+                this.ShowError("Mod Safety Error", "Cannot import modpacks in SAFE mode outside of Transaction.");
+                return;
+            }
+
+
+            var ofd = new BetterFolderBrowser {
+                Title = "Import FFXIV Folder Tree"
+            };
+
+            if (ofd.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+                return;
+
+            try
+            {
+                // See if we can get the information in simple mode.
+                var modPackFiles = await TTMP.ModPackToSimpleFileList(ofd.SelectedPath, false, MainWindow.UserTransaction);
+
+                if (modPackFiles != null)
+                {
+                    FileListImporter.ShowModpackImport(ofd.SelectedPath, modPackFiles.Keys.ToList(), this);
+                    return;
+                }
+            } catch(Exception ex)
+            {
+                ViewHelpers.ShowError(this, "Folder Import Error", "An error occurred while importing the folder:\n\n" + ex.Message);
+            }
+        }
+
         /// <summary>
         /// This method opens the modpack import wizard or imports a modpack silently
         /// </summary>
@@ -1844,7 +1877,16 @@ namespace FFXIV_TexTools
 
         private void ItemViewer_Click(object sender, RoutedEventArgs e)
         {
+            var item = PopupItemSelection.ShowItemSelection(null, null, this);
+            if (item != null)
+            {
+                _ = SimpleItemViewWindow.ShowItem(item, this);
+            }
+        }
 
+        private void Menu_ImportFolder_Click(object sender, RoutedEventArgs e)
+        {
+            _ = ImportFolder();
         }
     }
 }

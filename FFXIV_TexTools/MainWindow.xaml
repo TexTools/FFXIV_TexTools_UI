@@ -68,6 +68,7 @@
                     <MenuItem x:Name="Menu_MakeBackupModpack" Header="{Binding Source={x:Static resx:UIStrings.Backup_Modpack}}" Click="Menu_MakeBackupModpack_Click"/>
                 </MenuItem>
                 <MenuItem x:Name="Menu_ImportModpack" Header="{Binding Source={x:Static resx:UIStrings.Import_ModPacks}}" Click="Menu_ImportModpack_Click"/>
+                <MenuItem Header="Import Folder Tree" Click="Menu_ImportFolder_Click"/>
                 <MenuItem x:Name="Menu_DisableAll" Header="{Binding Source={x:Static resx:UIStrings.Disable_All_Mods}}" Command="{Binding DisableAllModsCommand}"/>
                 <MenuItem x:Name="Menu_EnableAll" Header="{Binding Source={x:Static resx:UIStrings.Enable_All_Mods}}" Command="{Binding EnableAllModsCommand}"/>
             </MenuItem>
