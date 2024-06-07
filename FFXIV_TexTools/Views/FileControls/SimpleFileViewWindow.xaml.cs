@@ -83,7 +83,7 @@ namespace FFXIV_TexTools.Views.Controls
 
             if(forcedControlType == typeof(ColorsetFileControl))
             {
-                wind.Height = 800;
+                wind.Height = 860;
             }
 
             wind.Show();

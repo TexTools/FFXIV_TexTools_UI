@@ -136,6 +136,10 @@ namespace FFXIV_TexTools.Views.Controls
             if (Configuration.EnvironmentConfiguration.TT_Unshared_Rendering)
                 canvasRenderer = new Helpers.ViewportCanvasRenderer(ColorsetRowViewport, AlternateViewportCanvas);
 
+            var s = new Separator();
+            s.Height = 2;
+            ColorSetRowsPanel.Children.Add(s);
+
             for (int i = 0; i < _rowCount; i++)
             {
                 ColorsetRowControl elem;
@@ -167,6 +171,13 @@ namespace FFXIV_TexTools.Views.Controls
                 ColorSetRowsPanel.Children.Add(border);
 
                 elem.MouseLeftButtonDown += ColorsetRow_Clicked;
+
+                if(i % 2 == 1)
+                {
+                    var sep = new Separator();
+                    sep.Height = 2;
+                    ColorSetRowsPanel.Children.Add(sep);
+                }
             }
 
             DyeTemplateIdBox.ItemsSource = DyeTemplateCollection;
@@ -572,7 +583,8 @@ namespace FFXIV_TexTools.Views.Controls
         {
             try
             {
-                var selectedRowControl = (ColorsetRowControl)e.Source;
+                var selectedRowControl = e.Source as ColorsetRowControl;
+                if (selectedRowControl == null) return;
                 SelectedColorsetRowImage.Source = selectedRowControl.RowImageSource;
                 var rowNumber = (int)selectedRowControl.DataContext;
                 if(rowNumber >= _rowCount)
@@ -637,7 +649,7 @@ namespace FFXIV_TexTools.Views.Controls
             RowId = rowNumber;
 
             // Triggered when the user clicks on a Colorset row.
-            DetailsGroupBox.Header = $"Material - Colorset Row Editor - Row #{(rowNumber + 1)._()}".L();
+            DetailsGroupBox.Header = $"Material - Colorset Row Editor - Row {ViewHelpers.ColorsetRowToNiceName(rowNumber)}".L();
             RowData = GetRowData(RowId);
 
             SetDyeBitLabels();

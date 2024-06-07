@@ -430,5 +430,22 @@ namespace FFXIV_TexTools.Views
             //Or the two combined, but a bit slower:
             return val - (val < 58 ? 48 : (val < 97 ? 55 : 87));
         }
+
+#if DAWNTRAIL
+        public static string ColorsetRowToNiceName(int id, bool dawntrail = true)
+#else
+        public static string ColorsetRowToNiceName(int id, bool dawntrail = false)
+#endif
+        {
+            if (dawntrail)
+            {
+                var ab = id % 2 == 0 ? "A" : "B";
+                var row = (id / 2) + 1;
+                return row.ToString() + " " + ab;
+            } else
+            {
+                return id.ToString();
+            }
+        }
     }
 }

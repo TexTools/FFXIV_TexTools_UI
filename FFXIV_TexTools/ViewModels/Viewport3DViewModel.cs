@@ -92,7 +92,7 @@ namespace FFXIV_TexTools.ViewModels
             ColorsetRowSource.Add(new KeyValuePair<string, int>("All", -1));
             for(int i = 0; i < csetMax; i++)
             {
-                ColorsetRowSource.Add(new KeyValuePair<string, int>((i+1).ToString(), i));
+                ColorsetRowSource.Add(new KeyValuePair<string, int>(ViewHelpers.ColorsetRowToNiceName(i).ToString(), i));
             }
 
             ResetLights();
