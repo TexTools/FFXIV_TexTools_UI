@@ -38,9 +38,11 @@
 
             </Button>
 
-            <StackPanel x:Name="ColorSetRowsPanel" Grid.Column="0" Grid.Row="2">
+            <ScrollViewer ScrollViewer.VerticalScrollBarVisibility="Auto"  Grid.Column="0" Grid.Row="2">
+                <StackPanel x:Name="ColorSetRowsPanel">
 
-            </StackPanel>
+                </StackPanel>
+            </ScrollViewer>
 
         </Grid>
 
