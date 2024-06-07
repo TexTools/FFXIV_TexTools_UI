@@ -342,6 +342,8 @@ namespace FFXIV_TexTools.Views.Transactions
 
                 TxStatusGrid.Visibility = Visibility.Visible;
                 TargetGrid.Visibility = Visibility.Visible;
+
+
                 ShowRow(DuringTxRow);
             }
             else
@@ -353,6 +355,15 @@ namespace FFXIV_TexTools.Views.Transactions
                 TxStatusGrid.Visibility = Visibility.Visible;
                 TargetGrid.Visibility = Visibility.Visible;
                 ShowRow(DuringTxRow);
+            }
+
+            if (PenumbraAttachHandler.IsAttached)
+            {
+                PenumbraRestore.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                PenumbraRestore.Visibility = Visibility.Collapsed;
             }
 
         }
@@ -697,6 +708,51 @@ namespace FFXIV_TexTools.Views.Transactions
         {
             TxActionEnabled = false;
             MainWindow.UserTransaction = ModTransaction.BeginTransaction(true, null, null, true, false);
+        }
+
+        private void RestorePenumbraBackup_Click(object sender, RoutedEventArgs e)
+        {
+            if(!PenumbraAttachHandler.IsAttached || MainWindow.UserTransaction == null || MainWindow.UserTransaction.State != ETransactionState.Open)
+            {
+                return;
+            }
+            if(MainWindow.UserTransaction.Settings.Target != ETransactionTarget.PenumbraModFolder)
+            {
+                return;
+            }
+
+            var penumbraPath = MainWindow.UserTransaction.Settings.TargetPath;
+            var backupFolder = Path.Combine(Path.GetTempPath(), "TexTools_Transaction_Backup");
+
+            if(!Directory.Exists(backupFolder))
+            {
+                return;
+            }
+
+            if (!ViewHelpers.WarningPrompt(this, 
+                "Backup Restore Confirmation", 
+                "This will cancel your current transaction and reload the pre-transaction backup back to Penumbra.\n\nAre you sure you wish to proceed? All current work will be lost."))
+            {
+                return;
+            }
+
+            try
+            {
+                TxActionEnabled = false;
+                ModTransaction.CancelTransaction(MainWindow.UserTransaction, true);
+
+                IOUtil.RecursiveDeleteDirectory(penumbraPath);
+
+                IOUtil.CopyFolder(backupFolder, penumbraPath);
+
+                var di = new DirectoryInfo(penumbraPath);
+                var folder = di.Name;
+                _ = PenumbraAPI.ReloadMod(folder);
+            } catch (Exception ex)
+            {
+                this.ShowError("Backup Restore Error", "An error occurred while restoring the backup:\n\n" + ex.Message + "\n\nBackup Location: " + backupFolder);
+            }
+
         }
     }
 

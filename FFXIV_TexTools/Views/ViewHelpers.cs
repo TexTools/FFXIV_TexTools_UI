@@ -173,6 +173,23 @@ namespace FFXIV_TexTools.Views
                 return false;
             }
         }
+        public static bool WarningPrompt(this Window wind, string title, string message)
+        {
+            try
+            {
+                var Win32Window = new WindowWrapper(new WindowInteropHelper(wind).Handle);
+                var res = FlexibleMessageBox.Show(Win32Window, message, title, MessageBoxButtons.OKCancel, MessageBoxIcon.Warning,
+                    MessageBoxDefaultButton.Button1);
+
+                return res == DialogResult.OK;
+            }
+            catch (Exception ex)
+            {
+                // Can't let the error function crash us.
+                Trace.WriteLine(ex);
+                return false;
+            }
+        }
 
         public static Action Debounce(Action func, int milliseconds = 300)
         {
