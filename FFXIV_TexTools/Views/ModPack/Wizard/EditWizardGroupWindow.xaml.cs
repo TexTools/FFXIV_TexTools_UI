@@ -270,6 +270,7 @@ namespace FFXIV_TexTools.Views
         private void AddOptionButton_Click(object sender, RoutedEventArgs e)
         {
             AddOption(OptionNameTextBox.Text);
+            OptionNameTextBox.Text = "";
         }
 
         /// <summary>
