@@ -109,7 +109,7 @@ namespace FFXIV_TexTools.Views.Controls
             get => _Format;
             set
             {
-                if (!_LoadingImage)
+                if (!_LoadingImage && value != XivTexFormat.INVALID)
                 {
                     UnsavedChanges = true;
                 }
