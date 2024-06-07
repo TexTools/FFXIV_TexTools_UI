@@ -88,9 +88,9 @@ namespace FFXIV_TexTools
         public readonly System.Windows.Forms.IWin32Window Win32Window;
 
 #if ENDWALKER
-        public static readonly string BetaSuffix = "- CursedTools Build 33 (ENDWALKER)";
+        public static readonly string BetaSuffix = "- CursedTools Build 34 (ENDWALKER)";
 #else
-        public static readonly string BetaSuffix = "- CursedTools Build 33 (DAWNTRAIL)";
+        public static readonly string BetaSuffix = "- CursedTools Build 34 (DAWNTRAIL)";
 #endif
         public static bool IsBetaVersion {
             get

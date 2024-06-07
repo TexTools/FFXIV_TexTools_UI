@@ -143,7 +143,7 @@ namespace FFXIV_TexTools.Views.Controls
                 {
                     elem = new ColorsetRowControl(i)
                     {
-                        Height = 12,
+                        Height = 16,
                         Width = 160
                     };
                 }
@@ -197,8 +197,22 @@ namespace FFXIV_TexTools.Views.Controls
             TileCountXBox.TextChanged += ValueChanged;
             TileCountYBox.TextChanged += ValueChanged;
             TileOpacityBox.TextChanged += ValueChanged;
+            TileUnknownBox.TextChanged += ValueChanged;
+
+
+            RoughnessBox.TextChanged += ValueChanged;
+            MetallicBox.TextChanged += ValueChanged;
+            PbrUnknownBox.TextChanged += ValueChanged;
+            TileUnknownBox.TextChanged += ValueChanged;
             AnisotropyBlendingBox.TextChanged += ValueChanged;
             ShaderTemplateBox.TextChanged += ValueChanged;
+
+
+            FresnelAlbedoBox.TextChanged += ValueChanged;
+            FresnelUnknownBox.TextChanged += ValueChanged;
+            FresnelYBox.TextChanged += ValueChanged;
+            FresnelZBox.TextChanged += ValueChanged;
+
 
             DyePreviewIdBox.ItemsSource = PreviewDyeCollection;
             DyePreviewIdBox.DisplayMemberPath = "Value";
@@ -434,16 +448,17 @@ namespace FFXIV_TexTools.Views.Controls
 
                 ShaderTemplateBox.Visibility = Visibility.Visible;
                 ShaderTemplateBox.Visibility = Visibility.Visible;
-                AnisotropyBlendingBox.Visibility = Visibility.Visible;
-                AnisotropyBlendingLabel.Visibility = Visibility.Visible;
-                EditCol4.Visibility = Visibility.Visible;
-                EditCol5.Visibility = Visibility.Visible;
+
+                PbrGroup.Visibility = Visibility.Visible;
+                FresnelGroup.Visibility = Visibility.Visible;
+
                 EditCol6.Visibility = Visibility.Visible;
-                EditCol7.Visibility = Visibility.Visible;
                 TileOpacityBox.Visibility = Visibility.Visible;
                 TileOpacityLabel.Visibility = Visibility.Visible;
                 DyeChannelBox.Visibility = Visibility.Visible;
                 DyeChannelLabel.Visibility = Visibility.Visible;
+
+                TileUnknownBox.Visibility = Visibility.Visible;
             }
             else
             {
@@ -463,21 +478,23 @@ namespace FFXIV_TexTools.Views.Controls
 
                 ShaderTemplateBox.Visibility = Visibility.Collapsed;
                 ShaderTemplateLabel.Visibility = Visibility.Collapsed;
-                AnisotropyBlendingBox.Visibility = Visibility.Collapsed;
-                AnisotropyBlendingLabel.Visibility = Visibility.Collapsed;
-                EditCol4.Visibility = Visibility.Collapsed;
-                EditCol5.Visibility = Visibility.Collapsed;
+
+                PbrGroup.Visibility = Visibility.Collapsed;
+                FresnelGroup.Visibility = Visibility.Collapsed;
+
                 EditCol6.Visibility = Visibility.Collapsed;
-                EditCol7.Visibility = Visibility.Collapsed;
                 TileOpacityBox.Visibility = Visibility.Collapsed;
                 TileOpacityLabel.Visibility = Visibility.Collapsed;
                 DyeChannelBox.Visibility = Visibility.Collapsed;
                 DyeChannelLabel.Visibility = Visibility.Collapsed;
+
+
+                TileUnknownBox.Visibility = Visibility.Collapsed;
             }
         }
 
 
-        private void ValueChanged(object sender, RoutedEventArgs e)
+        public void ValueChanged(object sender, RoutedEventArgs e)
         {
             UpdateRow();
         }
@@ -664,16 +681,34 @@ namespace FFXIV_TexTools.Views.Controls
             }
             else
             {
+
+
+                FresnelYBox.Text = RowData[3][0].ToString();
+                FresnelAlbedoBox.Text = RowData[3][1].ToString();
+                FresnelZBox.Text = RowData[3][2].ToString();
+                FresnelUnknownBox.Text = RowData[3][3].ToString();
+
+
+                RoughnessBox.Text = RowData[4][0].ToString();
+                PbrUnknownBox.Text = RowData[4][1].ToString();
+                MetallicBox.Text = RowData[4][2].ToString();
+                AnisotropyBlendingBox.Text = RowData[4][3].ToString();
+
+
+                WetnessBox.Text = RowData[5][1].ToString();
+
+
+                ShaderTemplateBox.Text = RowData[6][0].ToString();
                 TileIdBox.SelectedValue = (int)(Math.Floor(RowData[6][1] * 64));
+                TileOpacityBox.Text = RowData[6][2].ToString();
+                TileUnknownBox.Text = RowData[6][3].ToString();
+
+
                 TileCountXBox.Text = RowData[7][0].ToString();
                 TileCountYBox.Text = RowData[7][3].ToString();
                 TileSkewXBox.Text = RowData[7][1].ToString();
                 TileSkewYBox.Text = RowData[7][2].ToString();
 
-
-                ShaderTemplateBox.Text = RowData[6][0].ToString();
-                TileOpacityBox.Text = RowData[6][2].ToString();
-                AnisotropyBlendingBox.Text = RowData[4][3].ToString();
             }
 
 
@@ -1030,6 +1065,45 @@ namespace FFXIV_TexTools.Views.Controls
                 if (DawnTrail)
                 {
                     fl = 0.0f;
+                    float.TryParse(FresnelYBox.Text, out fl);
+                    RowData[3][0] = new Half(fl);
+
+                    fl = 0.0f;
+                    float.TryParse(FresnelAlbedoBox.Text, out fl);
+                    RowData[3][1] = new Half(fl);
+
+                    fl = 0.0f;
+                    float.TryParse(FresnelZBox.Text, out fl);
+                    RowData[3][2] = new Half(fl);
+
+                    fl = 0.0f;
+                    float.TryParse(FresnelUnknownBox.Text, out fl);
+                    RowData[3][3] = new Half(fl);
+
+
+                    fl = 0.0f;
+                    float.TryParse(RoughnessBox.Text, out fl);
+                    RowData[4][0] = new Half(fl);
+
+                    fl = 0.0f;
+                    float.TryParse(PbrUnknownBox.Text, out fl);
+                    RowData[4][1] = new Half(fl);
+
+                    fl = 0.0f;
+                    float.TryParse(MetallicBox.Text, out fl);
+                    RowData[4][2] = new Half(fl);
+
+                    fl = 0.0f;
+                    float.TryParse(AnisotropyBlendingBox.Text, out fl);
+                    RowData[4][3] = new Half(fl);
+
+
+                    fl = 0.0f;
+                    float.TryParse(WetnessBox.Text, out fl);
+                    RowData[5][1] = new Half(fl);
+
+
+                    fl = 0.0f;
                     float.TryParse(ShaderTemplateBox.Text, out fl);
                     RowData[6][0] = new Half(fl);
 
@@ -1038,6 +1112,10 @@ namespace FFXIV_TexTools.Views.Controls
                     fl = 0.0f;
                     float.TryParse(TileOpacityBox.Text, out fl);
                     RowData[6][2] = new Half(fl);
+
+                    fl = 0.0f;
+                    float.TryParse(TileUnknownBox.Text, out fl);
+                    RowData[6][3] = new Half(fl);
 
                     fl = 16.0f;
                     float.TryParse(TileCountXBox.Text, out fl);
@@ -1055,9 +1133,7 @@ namespace FFXIV_TexTools.Views.Controls
                     float.TryParse(TileSkewYBox.Text, out fl);
                     RowData[7][2] = new Half(fl);
 
-                    fl = 0.0f;
-                    float.TryParse(AnisotropyBlendingBox.Text, out fl);
-                    RowData[4][3] = new Half(fl);
+
                 }
 
                 uint modifier = (uint)0;
@@ -1530,6 +1606,5 @@ namespace FFXIV_TexTools.Views.Controls
             }
             CopyUpdated -= OnCopyUpdated;
         }
-
     }
 }

@@ -243,10 +243,10 @@ namespace FFXIV_TexTools.Views
 
                 await boiler.Commit();
             }
-            catch
+            catch(Exception ex)
             {
                 await boiler.Cancel();
-                throw;
+                this.ShowError("Enable/Disable Mod Error", "An error occurred while Enabling/Disabling the mod:" + ex.Message);
             }
             finally
             {

@@ -29,6 +29,12 @@ namespace FFXIV_TexTools.Views.Controls
             InitializeComponent();
 
             Closing += SimpleFileViewWindow_Closing;
+            KeyDown += SimpleFileViewWindow_KeyDown;
+        }
+
+        private void SimpleFileViewWindow_KeyDown(object sender, KeyEventArgs e)
+        {
+            FileWrapper.OnKeyDown(sender, e);
         }
 
         private void SimpleFileViewWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -74,6 +80,12 @@ namespace FFXIV_TexTools.Views.Controls
             wind.WindowStartupLocation = WindowStartupLocation.CenterOwner;
 
             OpenFileWindows.Add(wind);
+
+            if(forcedControlType == typeof(ColorsetFileControl))
+            {
+                wind.Height = 800;
+            }
+
             wind.Show();
 
             // Tiny delay to try to let the SharpDX window become sane if we're a model view.
