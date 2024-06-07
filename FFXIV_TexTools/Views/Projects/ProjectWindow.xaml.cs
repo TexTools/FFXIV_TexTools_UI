@@ -1,5 +1,6 @@
 ﻿using FFXIV_TexTools.Models;
 using FFXIV_TexTools.Resources;
+using FFXIV_TexTools.Views.Controls;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -23,6 +24,7 @@ using xivModdingFramework.Helpers;
 using xivModdingFramework.Mods;
 using xivModdingFramework.Mods.FileTypes;
 using xivModdingFramework.SqPack.FileTypes;
+using Button = System.Windows.Controls.Button;
 
 namespace FFXIV_TexTools.Views.Projects
 {
@@ -518,7 +520,7 @@ namespace FFXIV_TexTools.Views.Projects
         {
             if (Project == null) return;
             if (MainWindow.UserTransaction == null || MainWindow.UserTransaction.State != ETransactionState.Open) return;
-            if (PenumbraAttachHandler.IsAttached) return;
+            if (PenumbraAttachHandler.IsAttached && !PenumbraAttachHandler.IsPaused) return;
 
             try
             {
@@ -818,6 +820,61 @@ namespace FFXIV_TexTools.Views.Projects
         {
             var win = new ImportRawDialog() { Owner = this };
             win.ShowDialog();
+        }
+
+        private void ClearFile_Click(object sender, RoutedEventArgs e)
+        {
+            if (Project == null || MainWindow.UserTransaction == null || MainWindow.UserTransaction.State != ETransactionState.Open)
+            {
+                return;
+            }
+            var entry = (ProjectFileListEntry)((Button)sender).DataContext;
+
+            if (Project.Files.ContainsKey(entry.InternalPath))
+            {
+                AddExternalSource(entry.InternalPath, "");
+            }
+            entry.ExternalPath = "";
+        }
+
+        private async void ChangeFile_Click(object sender, RoutedEventArgs e)
+        {
+            if (Project == null || MainWindow.UserTransaction == null || MainWindow.UserTransaction.State != ETransactionState.Open)
+            {
+                return;
+            }
+            var entry = (ProjectFileListEntry)((Button)sender).DataContext;
+
+            var ofd = new OpenFileDialog();
+            if (ofd.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+            {
+                return;
+            }
+
+            try
+            {
+                IsEnabled = false;
+                await SmartImport.Import(ofd.FileName, entry.InternalPath, XivStrings.TexTools, MainWindow.UserTransaction);
+            }
+            catch (Exception ex)
+            {
+                this.ShowError("Import Error", "An error occurred while importing the file:\n\n" + ex.Message);
+                return;
+            }
+            finally
+            {
+                IsEnabled = true;
+            }
+
+            entry = this.FileListSource.FirstOrDefault(x => x.InternalPath == entry.InternalPath);
+            if (entry == null) return;
+
+            if (Project.Files.ContainsKey(entry.InternalPath))
+            {
+                AddExternalSource(entry.InternalPath, ofd.FileName);
+            }
+            entry.ExternalPath = ofd.FileName;
+
         }
     }
 }

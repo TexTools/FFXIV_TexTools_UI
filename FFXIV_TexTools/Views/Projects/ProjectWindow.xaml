@@ -9,14 +9,20 @@
     <Window.Resources>
 
         <DataTemplate x:Key="FileEntryTemplate">
-            <Grid>
+            <Grid Height="40">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
+                    <ColumnDefinition Width="30"/>
+                    <ColumnDefinition Width="400"/>
+                    <ColumnDefinition Width="10"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="100"/>
                 </Grid.ColumnDefinitions>
 
-                <TextBox Grid.Column="0" Text="{Binding Path=ExternalPath}"></TextBox>
-                <TextBox Grid.Column="1" Text="{Binding Path=InternalPath}"></TextBox>
+                <TextBox Grid.Column="1" Text="{Binding Path=InternalPath}" IsReadOnly="True" VerticalAlignment="Center"></TextBox>
+                <TextBox Grid.Column="3" Text="{Binding Path=ExternalPath}" IsReadOnly="True"  VerticalAlignment="Center"></TextBox>
+                <Button Grid.Column="4" Content="Clear" VerticalAlignment="Center" Margin="5,0" Click="ClearFile_Click"></Button>
+                <Button Grid.Column="5" Content="Change" VerticalAlignment="Center" Margin="5,0" Click="ChangeFile_Click"></Button>
             </Grid>
         </DataTemplate>
     </Window.Resources>
