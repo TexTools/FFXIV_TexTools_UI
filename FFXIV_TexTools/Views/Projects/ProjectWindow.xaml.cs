@@ -258,7 +258,7 @@ namespace FFXIV_TexTools.Views.Projects
                 return;
             }
 
-            var dir = Path.Combine(Path.GetDirectoryName(sfd.FileName), "Project_" + Path.GetFileNameWithoutExtension(sfd.FileName));
+            var dir = Path.Combine(Path.GetDirectoryName(sfd.FileName), "Project - " + Path.GetFileNameWithoutExtension(sfd.FileName));
             Directory.CreateDirectory(dir);
 
             var projectPath = Path.Combine(dir, Path.GetFileNameWithoutExtension(sfd.FileName) + ".ttproject");
@@ -370,9 +370,15 @@ namespace FFXIV_TexTools.Views.Projects
                     return;
                 }
 
+                if (initialModpackPath != null)
+                {
+                    await SaveModpack();
+                }
+
                 try
                 {
                     await LoadFiles();
+                    SaveProject();
                 } catch(Exception ex)
                 {
                     this.ShowError("Project Load Error", "An error occurred while loading some of the project files the project:\n\n" + ex.Message);
@@ -452,6 +458,8 @@ namespace FFXIV_TexTools.Views.Projects
                 // Attach a file watch for every file.
                 foreach (var kv in Project.Files)
                 {
+                    if (string.IsNullOrWhiteSpace(kv.Value)) continue;
+
                     var folder = Path.GetDirectoryName(kv.Value);
                     var file = Path.GetFileName(kv.Value);
                     var watch = new FileSystemWatcher(folder, file);
@@ -506,6 +514,16 @@ namespace FFXIV_TexTools.Views.Projects
             try
             {
                 await ModTransaction.CommitTransaction(MainWindow.UserTransaction, false);
+
+
+                foreach(var file in MainWindow.UserTransaction.ModifiedFiles)
+                {
+                    if (!Project.Files.ContainsKey(file))
+                    {
+                        AddExternalSource(file, "", false);
+                    }
+                }
+
                 SaveProject();
             } catch(Exception ex)
             {
@@ -525,6 +543,10 @@ namespace FFXIV_TexTools.Views.Projects
             var toLoad = new Dictionary<string, string>();
             foreach(var kv in Project.Files)
             {
+                if (string.IsNullOrWhiteSpace(kv.Value))
+                {
+                    continue;
+                }
 
                 if (!File.Exists(kv.Value))
                 {
@@ -692,12 +714,24 @@ namespace FFXIV_TexTools.Views.Projects
             });
         }
 
-        public static void AddExternalSource(string internalFile, string externalFile)
+        public static void AddExternalSource(string internalFile, string externalFile, bool save = true)
         {
             if (Project == null) return;
-            if (string.IsNullOrWhiteSpace(internalFile) || string.IsNullOrWhiteSpace(externalFile)) return;
+            if (string.IsNullOrWhiteSpace(internalFile)) return;
             if (!IOUtil.IsFFXIVInternalPath(internalFile)) return;
-            if (!File.Exists(externalFile)) return;
+            if (IOUtil.IsMetaInternalFile(internalFile)) return;
+
+            if (!string.IsNullOrWhiteSpace(externalFile))
+            {
+                if (!File.Exists(externalFile))
+                {
+                    externalFile = "";
+                }
+            } else
+            {
+                externalFile = "";
+            }
+
 
             if (Project.Files.ContainsKey(internalFile))
             {
@@ -708,14 +742,21 @@ namespace FFXIV_TexTools.Views.Projects
                 Project.Files.Add(internalFile, externalFile);
             }
 
-            if (!Project.LastModifiedTimes.ContainsKey(externalFile))
+            if (externalFile != "")
             {
-                Project.LastModifiedTimes.Add(externalFile, new FileInfo(externalFile).LastWriteTime);
+                if (!Project.LastModifiedTimes.ContainsKey(externalFile))
+                {
+                    Project.LastModifiedTimes.Add(externalFile, new FileInfo(externalFile).LastWriteTime);
+                }
             }
 
             DetatchEvents();
             AttachEvents();
-            SaveProject();
+
+            if (save)
+            {
+                SaveProject();
+            }
         }
 
         private async void ResetFile_Click(object sender, RoutedEventArgs e)
@@ -734,6 +775,13 @@ namespace FFXIV_TexTools.Views.Projects
             foreach (var f in toReset) {
                 await MainWindow.UserTransaction.ResetFile(f);
                 Project.Files.Remove(f);
+
+                if(Project.TransactionSettings.Target == ETransactionTarget.FolderTree)
+                {
+                    var basePath = Path.GetDirectoryName(Project.JsonPath);
+                    var treePath = Path.Combine(basePath, f);
+                    File.Delete(treePath);
+                }
             }
 
             // Remove file tracking info if the external file is no longer in use.
