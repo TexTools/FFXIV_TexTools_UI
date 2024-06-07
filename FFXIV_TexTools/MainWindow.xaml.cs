@@ -1454,7 +1454,10 @@ namespace FFXIV_TexTools
 
             if(UserTransaction != null && UserTransaction.State != ETransactionState.Closed)
             {
-                ViewHelpers.ShowConfirmation(this, "Unsaved Transaction Confirmation", "You have an open transaction, are you sure you wish to close TexTools?\n\nAny un-commited changes will be lost.");
+                if (UserTransaction.ModifiedFiles.Count > 0)
+                {
+                    ViewHelpers.ShowConfirmation(this, "Unsaved Transaction Confirmation", "You have an open transaction, are you sure you wish to close TexTools?\n\nAny un-commited changes will be lost.");
+                }
             }
 
             if (UserTransaction != null)
