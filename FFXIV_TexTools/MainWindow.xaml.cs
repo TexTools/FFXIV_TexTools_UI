@@ -376,9 +376,9 @@ namespace FFXIV_TexTools
                 ItemSelect.ItemSelected += ItemSelect_ItemSelected;
                 ItemSelect.ItemsLoaded += OnTreeLoaded;
 
+                ModTransaction.ActiveTransactionBlocked += ModTransaction_ActiveTransactionBlocked;
                 _ = AsyncStartup();
 
-                ModTransaction.ActiveTransactionBlocked += ModTransaction_ActiveTransactionBlocked;
             }
 
             KeyDown += OnKeyDown;
@@ -470,6 +470,11 @@ namespace FFXIV_TexTools
                         }
                     }
                 }
+            }
+
+            if (Settings.Default.OpenTransactionOnStart)
+            {
+                UserTransaction = ModTransaction.BeginTransaction(true, null, null, false, false);
             }
         }
 

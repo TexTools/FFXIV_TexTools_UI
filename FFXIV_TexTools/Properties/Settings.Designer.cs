@@ -502,5 +502,17 @@ namespace FFXIV_TexTools.Properties {
                 this["PenumbraFolder"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool OpenTransactionOnStart {
+            get {
+                return ((bool)(this["OpenTransactionOnStart"]));
+            }
+            set {
+                this["OpenTransactionOnStart"] = value;
+            }
+        }
     }
 }

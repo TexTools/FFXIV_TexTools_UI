@@ -315,6 +315,18 @@ namespace FFXIV_TexTools.ViewModels
                 }
             }
         }
+        public bool OpenTxByDefault
+        {
+            get => Settings.Default.OpenTransactionOnStart;
+            set
+            {
+                if (OpenTxByDefault != value)
+                {
+                    Settings.Default.OpenTransactionOnStart = value;
+                    Settings.Default.Save();
+                }
+            }
+        }
 
 
         const string maxName = "3DS Max/Unreal";
