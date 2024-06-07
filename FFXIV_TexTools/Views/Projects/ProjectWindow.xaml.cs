@@ -130,6 +130,27 @@ namespace FFXIV_TexTools.Views.Projects
 
         }
 
+        public static void AddExternalSource(string internalFile, string externalFile)
+        {
+            if (Project == null) return;
+            if (string.IsNullOrWhiteSpace(internalFile) || string.IsNullOrWhiteSpace(externalFile)) return;
+            if (!IOUtil.IsFFXIVInternalPath(internalFile)) return;
+            if (!File.Exists(externalFile)) return;
+
+            if(Project.Files.ContainsKey(internalFile))
+            {
+                Project.Files[internalFile] = externalFile;
+            } else
+            {
+                Project.Files.Add(internalFile, externalFile);
+            }
+
+            if (!Project.LastModifiedTimes.ContainsKey(externalFile))
+            {
+                Project.LastModifiedTimes.Add(externalFile, new FileInfo(externalFile).LastWriteTime);
+            }
+        }
+
         private void NewPmp_Click(object sender, RoutedEventArgs e)
         {
             var sfd = new SaveFileDialog();
@@ -425,10 +446,7 @@ namespace FFXIV_TexTools.Views.Projects
             }
         }
 
-
         private static Action DebouncedLoadFiles;
-
-
         private static async Task LoadFiles()
         {
             if (Project == null) return;
@@ -513,6 +531,8 @@ namespace FFXIV_TexTools.Views.Projects
             _ = CloseProject();
         }
 
+
+
         public static void ShowProjectWindow()
         {
             var wind = ProjectWindow.Instance;
@@ -524,7 +544,6 @@ namespace FFXIV_TexTools.Views.Projects
             wind.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             wind.Show();
         }
-
 
         public static void StaticUpdateFileList()
         {

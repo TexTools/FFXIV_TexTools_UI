@@ -2,6 +2,7 @@
 using FFXIV_TexTools.Properties;
 using FFXIV_TexTools.Resources;
 using FFXIV_TexTools.Views.Item;
+using FFXIV_TexTools.Views.Projects;
 using MahApps.Metro.Controls;
 using System;
 using System.Collections.Generic;
@@ -721,9 +722,11 @@ namespace FFXIV_TexTools.Views.Controls
                 });
 
                 FileSaved?.Invoke(this, success);
-
                 if (success)
                 {
+
+                    ProjectWindow.AddExternalSource(InternalFilePath, ExternalFilePath);
+
                     // Reload the file after to ensure user has correct-to-file-system state.
                     // This is maybe unnecessary, but until we're 200% sure TT's file writing is perfectly
                     // stable, it's probably better to be safe here.

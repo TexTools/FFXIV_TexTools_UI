@@ -1,5 +1,6 @@
 ﻿using FFXIV_TexTools.Helpers;
 using FFXIV_TexTools.Resources;
+using FFXIV_TexTools.Views.Projects;
 using System;
 using System.CodeDom;
 using System.Collections.Generic;
@@ -46,6 +47,8 @@ namespace FFXIV_TexTools.Views
             try
             {
                 await SmartImport.Import(od.FileName, path, XivStrings.TexTools, MainWindow.UserTransaction);
+
+                ProjectWindow.AddExternalSource(path, od.FileName);
             }
             catch(Exception Ex)
             {
