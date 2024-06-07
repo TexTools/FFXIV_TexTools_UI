@@ -111,11 +111,11 @@ namespace FFXIV_TexTools.ViewModels
             TxWatcher.UserTxStateChanged += TxStateChanged;
         }
 
-        public void UpdateDependencyQueueCount(object sender, System.Timers.ElapsedEventArgs e)
+        public async void UpdateDependencyQueueCount(object sender, System.Timers.ElapsedEventArgs e)
         {
             if (XivCache.CacheWorkerEnabled)
             {
-                var count = XivCache.GetDependencyQueueLength();
+                var count = 0;
                 if (count > 0)
                 {
                     //_mainWindow.ShowStatusMessage($"Queue Length: {count._()}".L());

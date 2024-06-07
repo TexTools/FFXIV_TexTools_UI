@@ -1700,16 +1700,7 @@ namespace FFXIV_TexTools
         }
         private async void Menu_CleanUpModList_Click(object sender, RoutedEventArgs e)
         {
-            var queueLength = XivCache.GetDependencyQueueLength();
-
-            System.Windows.Forms.DialogResult result;
-            if(queueLength > 100)
-            {
-                result = FlexibleMessageBox.Show("This will update the Modlist to ensure all modded files are\nlabeled under the correct items.\n\nAs the Queue currently has a large amount of files still processing,\nthis operation may take an extended amount of time to complete.\n(Up to one hour)".L(), "Modlist Cleanup Confirmation".L(), MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
-            } else
-            {
-                result = FlexibleMessageBox.Show("This will update the Modlist to ensure all modded files are\nlabeled under the correct items.\n\nThis may take up to 5 minutes to complete.".L(), "Modlist Cleanup Confirmation".L(), MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
-            }
+            var result = FlexibleMessageBox.Show("This will update the Modlist to ensure all modded files are\nlabeled under the correct items.\n\nThis may take up to 5 minutes to complete.".L(), "Modlist Cleanup Confirmation".L(), MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
 
             if (result != System.Windows.Forms.DialogResult.OK) return;
 

@@ -61,7 +61,8 @@
                         <RowDefinition Height="1*"/>
                     </Grid.RowDefinitions>
 
-                    <Button Content="Reset File(s)" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5" Width="100" Click="ResetFile_Click"></Button>
+                    <Button Content="Remove File(s)" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5" Width="150" Click="ResetFile_Click"></Button>
+                    <Button Content="Add File" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5" Width="150" Click="AddFile_Click"></Button>
                     <ListBox Grid.Row="1" x:Name="FileListBox" ItemsSource="{Binding Path=FileListSource}" SelectionMode="Multiple"
                     ItemTemplate="{StaticResource FileEntryTemplate}"></ListBox>
                 </Grid>

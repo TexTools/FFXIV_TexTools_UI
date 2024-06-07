@@ -754,5 +754,11 @@ namespace FFXIV_TexTools.Views.Projects
             SaveProject();
 
         }
+
+        private void AddFile_Click(object sender, RoutedEventArgs e)
+        {
+            var win = new ImportRawDialog() { Owner = this };
+            win.ShowDialog();
+        }
     }
 }
