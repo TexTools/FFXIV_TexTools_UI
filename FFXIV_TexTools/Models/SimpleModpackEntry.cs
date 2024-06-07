@@ -118,14 +118,16 @@ namespace xivModdingFramework.Mods.DataContainers
                         var result = _creatorView.SelectedMods.Add(Path);
                         if (result)
                         {
-                            _creatorView.ModpackSize += Mod.Value.FileSize;
+                            // Defunct 
+                            _creatorView.ModpackSize += 0;
                         }
                     } else
                     {
                         var result = _creatorView.SelectedMods.Remove(Path);
                         if (result)
                         {
-                            _creatorView.ModpackSize -= Mod.Value.FileSize;
+                            // Defunct
+                            _creatorView.ModpackSize -= 0;
                         }
                     }
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsSelected)));

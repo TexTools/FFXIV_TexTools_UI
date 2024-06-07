@@ -430,8 +430,17 @@ namespace FFXIV_TexTools.Views.Projects
                 throw new FileNotFoundException("The project modpack was invalid, contained multiple options, or was corrupted.");
             }
 
+            var settings = new ModPackImportSettings()
+            {
+                AutoAssignSkinMaterials = false,
+                ProgressReporter = null,
+                RootConversionFunction = null,
+                SourceApplication = XivStrings.TexTools,
+                UpdateEndwalkerFiles = false
+            };
 
-            await TTMP.ImportFiles(files, null, null, MainWindow.UserTransaction);
+
+            await TTMP.ImportFiles(files, null, settings, MainWindow.UserTransaction);
             AttachEvents();
         }
 

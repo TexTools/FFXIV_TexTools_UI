@@ -113,6 +113,7 @@ namespace FFXIV_TexTools.Views
                                       select modpack;
                 if (selectedEntries.Count() == 0) throw new Exception("No selected modpacks detected.".L());
 
+                var tx = MainWindow.DefaultTransaction;
                 var allMods = _modList.GetMods();
                 var allModPacks = _modList.GetModPacks();
                 foreach (var modpackEntry in selectedEntries)
@@ -142,7 +143,7 @@ namespace FFXIV_TexTools.Views
                             Category = mod.ItemCategory,
                             FullPath = mod.FilePath,
                             ModOffset = mod.ModOffset8x,
-                            ModSize = mod.FileSize,
+                            ModSize = await mod.GetCompressedSize(tx),
                             DatFile = mod.DataFile.ToString()
                         };
 

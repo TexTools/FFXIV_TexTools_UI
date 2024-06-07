@@ -341,11 +341,11 @@ namespace FFXIV_TexTools.Views
             foreach (var idx in SelectedMods)
             {
                 var mod = ModList.Mods[idx];
-                var compressedSize = mod.FileSize;
+                var compressedSize = 0;
                 try
                 {
                     // Use the explicit offset here, because we want to include the mod data even if the mod is disabled.
-                    compressedSize = await tx.GetCompressedFileSize(mod.DataFile, mod.ModOffset8x);
+                    compressedSize = await mod.GetCompressedSize(tx);
                 } catch
                 {
                     // Don't allow creation of modpacks with broken files.
@@ -433,7 +433,7 @@ namespace FFXIV_TexTools.Views
                 if (SelectedMods.Contains(mod.FilePath)) continue;
 
                 SelectedMods.Add(mod.FilePath);
-                addedSize += mod.FileSize;
+                addedSize += 0;
             }
             ModpackSize += addedSize;
 
@@ -464,7 +464,7 @@ namespace FFXIV_TexTools.Views
                 if (SelectedMods.Contains(mod.FilePath)) continue;
 
                 SelectedMods.Add(mod.FilePath);
-                addedSize += mod.FileSize;
+                addedSize += 0;
             }
             ModpackSize += addedSize;
 
@@ -499,7 +499,7 @@ namespace FFXIV_TexTools.Views
                 if (SelectedMods.Contains(mod.FilePath)) continue;
 
                 SelectedMods.Remove(mod.FilePath);
-                removedSize += mod.FileSize;
+                removedSize += 0;
             }
             ModpackSize -= removedSize;
 
