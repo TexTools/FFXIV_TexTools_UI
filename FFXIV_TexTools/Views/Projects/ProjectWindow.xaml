@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FFXIV_TexTools.Views.Projects"
         mc:Ignorable="d"
-        Title="TexTools Project" Height="450" Width="800">
+        Title="TexTools Project" Height="450" Width="1100">
     <Window.Resources>
 
         <DataTemplate x:Key="FileEntryTemplate">
@@ -14,7 +14,7 @@
                     <ColumnDefinition Width="30"/>
                     <ColumnDefinition Width="400"/>
                     <ColumnDefinition Width="10"/>
-                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="400"/>
                     <ColumnDefinition Width="100"/>
                     <ColumnDefinition Width="100"/>
                 </Grid.ColumnDefinitions>
