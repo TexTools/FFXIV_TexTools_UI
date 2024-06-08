@@ -123,7 +123,7 @@ namespace FFXIV_TexTools.Views.Simple
             });
                 
         }
-        public static void ShowModpackImport(string modpackPath, IEnumerable<string> files, Window owner = null)
+        public static void ShowModpackImport(string modpackPath, IEnumerable<string> files, Window owner = null, bool asDialog = false)
         {
             if (owner == null)
             {
@@ -131,10 +131,21 @@ namespace FFXIV_TexTools.Views.Simple
             }
 
             var wind = new FileListImporter(files, modpackPath);
-            wind.Owner = owner;
-            wind.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            if (ViewHelpers.IsWindowOpen(owner))
+            {
+                wind.Owner = owner;
+            }
 
-            wind.Show();
+            wind.WindowStartupLocation = owner == null ? WindowStartupLocation.CenterScreen : WindowStartupLocation.CenterOwner;
+
+            if (asDialog)
+            {
+                wind.ShowDialog();
+            }
+            else
+            {
+                wind.Show();
+            }
         }
 
 

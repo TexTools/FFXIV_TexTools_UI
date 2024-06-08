@@ -422,7 +422,7 @@ namespace FFXIV_TexTools.Views
                 try
                 {
 
-                    if (Application.Current.Windows.Cast<Window>().Any(x => x == mw))
+                    if (ViewHelpers.IsWindowOpen(mw))
                     {
                         window = new ModpackRootConvertWindow(tx) { Owner = mw };
                         window.WindowStartupLocation = WindowStartupLocation.CenterOwner;

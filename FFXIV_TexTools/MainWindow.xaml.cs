@@ -46,6 +46,7 @@ using System.Net;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.ComTypes;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -84,7 +85,6 @@ namespace FFXIV_TexTools
     public partial class MainWindow
     {
         private int _LockCount = 0;
-        private string _startupArgs;
         private static MainWindow _mainWindow;
         public readonly System.Windows.Forms.IWin32Window Win32Window;
 
@@ -350,20 +350,12 @@ namespace FFXIV_TexTools
 
             if (args != null && args.Length > 0)
             {
-                int dxVersion = 0;
-                bool success = Int32.TryParse(Settings.Default.DX_Version, out dxVersion);
-                if (!success)
-                {
-                    dxVersion = 11;
-                }
-
                 // Just do a hard synchronous cache initialization for import only mode.
                 var gameDir = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
                 var lang = XivLanguages.GetXivLanguage(Properties.Settings.Default.Application_Language);
                 XivCache.SetGameInfo(gameDir, lang, false);
 
-                _startupArgs = args[0];
-                OnlyImport();
+                OnlyImport(args[0]);
             }
             else
             {
@@ -825,9 +817,16 @@ namespace FFXIV_TexTools
             }
         }
 
-        private async void OnlyImport()
+        private async void OnlyImport(string modpack)
         {
-            var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
+            if(!ViewHelpers.ShowConfirmation(this, "Import Confirmation", "This will install the modpack to your live FFXIV files.\n\nAre you sure you wish to continue?"))
+            {
+                Application.Current.Shutdown();
+            }
+
+            XivCache.GameWriteEnabled = true;
+
+            await ImportModpack(modpack, true);
 
             Application.Current.Shutdown();
         }
@@ -1170,12 +1169,13 @@ namespace FFXIV_TexTools
         /// <param name="path">The path to the modpack</param>
         /// <param name="silent">If the modpack wizard should be shown or the modpack should just be imported without any user interaction</param>
         /// <returns></returns>
-        private async Task ImportModpack(string path)
+        private async Task ImportModpack(string path, bool asDialog = false)
         {
             if (!this.CheckFileWrite())
             {
                 return;
             }
+
 
             try
             {
@@ -1192,9 +1192,19 @@ namespace FFXIV_TexTools
                     var backupImport = new BackupModPackImporter(new DirectoryInfo(path), mpl, false);
 
                     backupImport.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-                    backupImport.Owner = this;
 
-                    var result = backupImport.ShowDialog();
+                    if (ViewHelpers.IsWindowOpen(this))
+                    {
+                        backupImport.Owner = this;
+                    }
+
+                    if (asDialog)
+                    {
+                        backupImport.ShowDialog();
+                    } else
+                    {
+                        backupImport.Show();
+                    }
                     return;
                 }
 
@@ -1203,14 +1213,14 @@ namespace FFXIV_TexTools
 
                 if(modPackFiles != null)
                 {
-                    FileListImporter.ShowModpackImport(path, modPackFiles.Keys.ToList(), this);
+                    FileListImporter.ShowModpackImport(path, modPackFiles.Keys.ToList(), this, asDialog);
                     return;
                 }
 
                 if (modpackType == TTMP.EModpackType.TtmpWizard || modpackType == TTMP.EModpackType.Pmp)
                 {
                     // Multi-Option PMP/TTMP
-                    await ImportWizardWindow.ImportModpack(path, this);
+                    await ImportWizardWindow.ImportModpack(path, this, asDialog);
                 }
             }
             catch (Exception ex)

@@ -37,7 +37,6 @@ using xivModdingFramework.Helpers;
 using xivModdingFramework.Mods.DataContainers;
 using xivModdingFramework.Mods.FileTypes;
 using xivModdingFramework.Mods.FileTypes.PMP;
-
 namespace FFXIV_TexTools.Views.Wizard
 {
     /// <summary>
@@ -229,7 +228,7 @@ namespace FFXIV_TexTools.Views.Wizard
         /// <param name="owner"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public static async Task ImportModpack(string path, Window owner)
+        public static async Task ImportModpack(string path, Window owner, bool asDialog = false)
         {
             var modpackType = TTMP.GetModpackType(path);
 
@@ -249,7 +248,11 @@ namespace FFXIV_TexTools.Views.Wizard
             }
 
             var wind = new ImportWizardWindow(data, path);
-            wind.Owner = owner;
+            if (ViewHelpers.IsWindowOpen(owner))
+            {
+                wind.Owner = owner;
+            }
+
             if (owner != null)
             {
                 wind.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterOwner;
@@ -260,11 +263,18 @@ namespace FFXIV_TexTools.Views.Wizard
             }
             try
             {
-                var result = wind.ShowDialog();
-                if (result != true)
+                if (asDialog)
                 {
-                    // User cancelled import process.
-                    return;
+                    var result = wind.ShowDialog();
+                    if (result != true)
+                    {
+                        // User cancelled import process.
+                        return;
+                    }
+                }
+                else
+                {
+                    wind.Show();
                 }
             }
             catch

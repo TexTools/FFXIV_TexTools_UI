@@ -5,6 +5,7 @@ using FolderSelect;
 using MahApps.Metro.Controls.Dialogs;
 using SixLabors.ImageSharp.Formats.Png;
 using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -25,6 +26,7 @@ using xivModdingFramework.General.Enums;
 using xivModdingFramework.Mods;
 using xivModdingFramework.Mods.FileTypes;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
+using Application = System.Windows.Application;
 using UserControl = System.Windows.Controls.UserControl;
 
 namespace FFXIV_TexTools.Views
@@ -82,10 +84,18 @@ namespace FFXIV_TexTools.Views
         public static bool ConfirmDiscardChanges(this UserControl control, string filePath)
         {
 
+            WindowWrapper win32Window = null;
             var wind = Window.GetWindow(control);
-            var Win32Window = new WindowWrapper(new WindowInteropHelper(wind).Handle);
+            if (!IsWindowOpen(wind))
+            {
+                wind = null;
+            }
+            else
+            {
+                win32Window = new WindowWrapper(new WindowInteropHelper(wind).Handle);
+            }
             var fileName = Path.GetFileName(filePath);
-            var res = FlexibleMessageBox.Show(Win32Window, "You have unsaved changes to the file: " + fileName +  "\nThey will be lost if you continue.\n\nAre you sure you wish to continue and discard these changes?", "Discard Changes Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1);
+            var res = FlexibleMessageBox.Show(win32Window, "You have unsaved changes to the file: " + fileName +  "\nThey will be lost if you continue.\n\nAre you sure you wish to continue and discard these changes?", "Discard Changes Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1);
             if(res == DialogResult.Yes || res == DialogResult.OK)
             {
                 return true;
@@ -98,8 +108,16 @@ namespace FFXIV_TexTools.Views
         {
             try
             {
-                var Win32Window = new WindowWrapper(new WindowInteropHelper(wind).Handle);
-                FlexibleMessageBox.Show(Win32Window, message, title, MessageBoxButtons.OK, MessageBoxIcon.Error,
+                WindowWrapper win32Window = null;
+                if (!IsWindowOpen(wind))
+                {
+                    wind = null;
+                }
+                else
+                {
+                    win32Window = new WindowWrapper(new WindowInteropHelper(wind).Handle);
+                }
+                FlexibleMessageBox.Show(win32Window, message, title, MessageBoxButtons.OK, MessageBoxIcon.Error,
                     MessageBoxDefaultButton.Button1);
             }
             catch (Exception ex)
@@ -112,9 +130,17 @@ namespace FFXIV_TexTools.Views
         {
             try
             {
+                WindowWrapper win32Window = null;
                 var wind = Window.GetWindow(control);
-                var Win32Window = new WindowWrapper(new WindowInteropHelper(wind).Handle);
-                FlexibleMessageBox.Show(Win32Window, message, title, MessageBoxButtons.OK, MessageBoxIcon.Error,
+                if (!IsWindowOpen(wind))
+                {
+                    wind = null;
+                }
+                else
+                {
+                    win32Window = new WindowWrapper(new WindowInteropHelper(wind).Handle);
+                }
+                FlexibleMessageBox.Show(win32Window, message, title, MessageBoxButtons.OK, MessageBoxIcon.Error,
                     MessageBoxDefaultButton.Button1);
             }
             catch(Exception ex)
@@ -127,8 +153,16 @@ namespace FFXIV_TexTools.Views
         {
             try
             {
-                var Win32Window = new WindowWrapper(new WindowInteropHelper(wind).Handle);
-                FlexibleMessageBox.Show(Win32Window, message, title, MessageBoxButtons.OK, MessageBoxIcon.Warning,
+                WindowWrapper win32Window = null;
+                if (!IsWindowOpen(wind))
+                {
+                    wind = null;
+                }
+                else
+                {
+                    win32Window = new WindowWrapper(new WindowInteropHelper(wind).Handle);
+                }
+                FlexibleMessageBox.Show(win32Window, message, title, MessageBoxButtons.OK, MessageBoxIcon.Warning,
                     MessageBoxDefaultButton.Button1);
             }
             catch (Exception ex)
@@ -141,9 +175,17 @@ namespace FFXIV_TexTools.Views
         {
             try
             {
+                WindowWrapper win32Window = null;
                 var wind = Window.GetWindow(control);
-                var Win32Window = new WindowWrapper(new WindowInteropHelper(wind).Handle);
-                FlexibleMessageBox.Show(Win32Window, message, title, MessageBoxButtons.OK, MessageBoxIcon.Warning,
+                if (!IsWindowOpen(wind))
+                {
+                    wind = null;
+                }
+                else
+                {
+                    win32Window = new WindowWrapper(new WindowInteropHelper(wind).Handle);
+                }
+                FlexibleMessageBox.Show(win32Window, message, title, MessageBoxButtons.OK, MessageBoxIcon.Warning,
                     MessageBoxDefaultButton.Button1);
             }
             catch (Exception ex)
@@ -155,15 +197,28 @@ namespace FFXIV_TexTools.Views
 
         public static void ShowError(string title, string message)
         {
-            FlexibleMessageBox.Show(MainWindow.GetMainWindow().Win32Window, message, title, MessageBoxButtons.OK, MessageBoxIcon.Error,
+            var wind = MainWindow.GetMainWindow();
+            if (!IsWindowOpen(wind))
+            {
+                wind = null;
+            }
+            FlexibleMessageBox.Show(wind.Win32Window, message, title, MessageBoxButtons.OK, MessageBoxIcon.Error,
                 MessageBoxDefaultButton.Button1);
         }
         public static bool InfoPrompt(this Window wind, string title, string message)
         {
             try
             {
-                var Win32Window = new WindowWrapper(new WindowInteropHelper(wind).Handle);
-                var res = FlexibleMessageBox.Show(Win32Window, message, title, MessageBoxButtons.OKCancel, MessageBoxIcon.Information,
+                WindowWrapper win32Window = null;
+                if (!IsWindowOpen(wind))
+                {
+                    wind = null;
+                }
+                else
+                {
+                    win32Window = new WindowWrapper(new WindowInteropHelper(wind).Handle);
+                }
+                var res = FlexibleMessageBox.Show(win32Window, message, title, MessageBoxButtons.OKCancel, MessageBoxIcon.Information,
                     MessageBoxDefaultButton.Button1);
 
                 return res == DialogResult.OK;
@@ -179,8 +234,16 @@ namespace FFXIV_TexTools.Views
         {
             try
             {
-                var Win32Window = new WindowWrapper(new WindowInteropHelper(wind).Handle);
-                var res = FlexibleMessageBox.Show(Win32Window, message, title, MessageBoxButtons.OKCancel, MessageBoxIcon.Warning,
+                WindowWrapper win32Window = null;
+                if (!IsWindowOpen(wind))
+                {
+                    wind = null;
+                }
+                else
+                {
+                    win32Window = new WindowWrapper(new WindowInteropHelper(wind).Handle);
+                }
+                var res = FlexibleMessageBox.Show(win32Window, message, title, MessageBoxButtons.OKCancel, MessageBoxIcon.Warning,
                     MessageBoxDefaultButton.Button1);
 
                 return res == DialogResult.OK;
@@ -347,7 +410,12 @@ namespace FFXIV_TexTools.Views
         public static bool ShowConfirmation(this DependencyObject self, string title, string message)
         {
             var wind = Window.GetWindow(self);
-            var w32 = GetWin32Window(wind);
+
+            WindowWrapper w32 = null;
+
+            if (IsWindowOpen(wind)) {
+                w32 = GetWin32Window(wind);
+            }
 
             var res = FlexibleMessageBox.Show(w32, message, title, MessageBoxButtons.OKCancel, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1);
             return res == DialogResult.OK;
@@ -508,6 +576,20 @@ namespace FFXIV_TexTools.Views
             }
 
             return true;
+        }
+        public static bool IsWindowOpen<T>(T wind) where T : Window
+        {
+            var w = Application.Current.Windows.OfType<T>().FirstOrDefault(x => x == wind);
+            if(w == null)
+            {
+                return false;
+            }
+
+            if (w.IsVisible)
+            {
+                return true;
+            }
+            return false;
         }
     }
 }
