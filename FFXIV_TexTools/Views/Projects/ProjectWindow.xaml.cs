@@ -636,9 +636,14 @@ namespace FFXIV_TexTools.Views.Projects
             {
                 foreach(var kv in toLoad)
                 {
+                    SmartImportOptions options = null;
+                    if (Project.ImportOptions.ContainsKey(kv.Value))
+                    {
+                        options = Project.ImportOptions[kv.Value];
+                    }
                     try
                     {
-                        await SmartImport.Import(kv.Value, kv.Key, XivStrings.TexTools, MainWindow.UserTransaction);
+                        await SmartImport.Import(kv.Value, kv.Key, XivStrings.TexTools, MainWindow.UserTransaction, options);
                     } catch (Exception ex)
                     {
                         ErrorTarget.ShowError("File Import Error", "An error occurred while importing a project file:\n\n" + kv.Value + "\n" + kv.Key + "\n\n" + ex.Message);
