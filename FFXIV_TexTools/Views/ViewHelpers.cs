@@ -20,7 +20,9 @@ using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
+using xivModdingFramework.Cache;
 using xivModdingFramework.General.Enums;
+using xivModdingFramework.Mods;
 using xivModdingFramework.Mods.FileTypes;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 using UserControl = System.Windows.Controls.UserControl;
@@ -446,6 +448,66 @@ namespace FFXIV_TexTools.Views
             {
                 return id.ToString();
             }
+        }
+
+        /// <summary>
+        /// Checks if an unsafe operation can proceed, showing the user errors if not.
+        /// Returns true if everything is OK, or false if the operation should be cancelled.
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="requiresUnsafe"></param>
+        /// <param name="requiresNoOpenTx"></param>
+        /// <returns></returns>
+        public static bool CheckUnsafeOperation(this DependencyObject obj, bool requiresUnsafe, bool requiresNoOpenTx)
+        {
+            Window wind = obj as Window;
+            if(wind == null)
+            {
+                wind = Window.GetWindow(obj);
+            }
+
+            if(requiresUnsafe && !XivCache.GameWriteEnabled)
+            {
+                wind.ShowWarning("Safe Mode Error", "This operation can only be performed in UNSAFE mode.");
+                return false;
+            }
+
+            if(requiresNoOpenTx && ModTransaction.ActiveTransaction != null && ModTransaction.ActiveTransaction.State != ETransactionState.Closed)
+            {
+                wind.ShowWarning("Transaction State Error", "This cannot be run while there is an open transaction.");
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Checks if a file write is allowed in the current state.
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="requiresUnsafe"></param>
+        /// <param name="requiresNoOpenTx"></param>
+        /// <returns></returns>
+        public static bool CheckFileWrite(this DependencyObject obj, ModTransaction tx = null)
+        {
+            Window wind = obj as Window;
+            if (wind == null)
+            {
+                wind = Window.GetWindow(obj);
+            }
+
+            if(tx == null)
+            {
+                tx = MainWindow.UserTransaction;
+            }
+
+            if ((tx == null || tx.ReadOnly) && !XivCache.GameWriteEnabled)
+            {
+                wind.ShowWarning("Safe Mode Error", "This operation can only be performed within a Transaction or in UNSAFE mode ");
+                return false;
+            }
+
+            return true;
         }
     }
 }

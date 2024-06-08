@@ -1115,9 +1115,8 @@ namespace FFXIV_TexTools
         /// </summary>
         private async void Menu_ImportModpack_Click(object sender, RoutedEventArgs e)
         {
-            if (!XivCache.GameWriteEnabled && UserTransaction == null)
+            if (!this.CheckFileWrite())
             {
-                this.ShowError("Mod Safety Error", "Cannot import modpacks in SAFE mode outside of Transaction.");
                 return;
             }
 
@@ -1136,9 +1135,8 @@ namespace FFXIV_TexTools
 
         private async Task ImportFolder()
         {
-            if (!XivCache.GameWriteEnabled && UserTransaction == null)
+            if (!this.CheckFileWrite())
             {
-                this.ShowError("Mod Safety Error", "Cannot import modpacks in SAFE mode outside of Transaction.");
                 return;
             }
 
@@ -1174,6 +1172,11 @@ namespace FFXIV_TexTools
         /// <returns></returns>
         private async Task ImportModpack(string path)
         {
+            if (!this.CheckFileWrite())
+            {
+                return;
+            }
+
             try
             {
                 var modpackType = TTMP.GetModpackType(path);
@@ -1380,12 +1383,11 @@ namespace FFXIV_TexTools
         /// </summary>
         private async void Menu_StartOver_Click(object sender, RoutedEventArgs e)
         {
-            if(!XivCache.GameWriteEnabled)
+            if(!this.CheckUnsafeOperation(true, true))
             {
-                FlexibleMessageBox.Show("Cannot perform Start Over while FFXIV file writing is disabled.".L(), "Permissions Error".L(), MessageBoxButtons.OK, MessageBoxIcon.Error);
-
                 return;
             }
+
             try
             {
 
@@ -1462,6 +1464,19 @@ namespace FFXIV_TexTools
         private async void Menu_Backup_Click(object sender, RoutedEventArgs e)
         {
             var result = FlexibleMessageBox.Show(UIMessages.CreateBackupsMessage, UIMessages.CreateBackupsTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+
+            var needsWrite = false;
+            try
+            {
+                needsWrite = await Modding.AnyModsEnabled();
+            }
+            catch(Exception ex)
+            {
+                // This should never error, but safety.
+                Trace.WriteLine(ex);
+            }
+
+            this.CheckUnsafeOperation(needsWrite, true);
 
             if (result == System.Windows.Forms.DialogResult.Yes)
             {
@@ -1677,6 +1692,10 @@ namespace FFXIV_TexTools
 
         private void Menu_CopyFile_Click(object sender, RoutedEventArgs e)
         {
+            if (!this.CheckFileWrite())
+            {
+                return;
+            }
             var win = new CopyFileDialog() { Owner = this };
             win.Show();
         }
@@ -1689,6 +1708,10 @@ namespace FFXIV_TexTools
 
         private void Menu_ImportRaw_Click(object sender, RoutedEventArgs e)
         {
+            if (!this.CheckFileWrite())
+            {
+                return;
+            }
             var win = new ImportRawDialog() { Owner = this };
             win.Show();
         }
@@ -1708,6 +1731,11 @@ namespace FFXIV_TexTools
         }
         private async void Menu_CleanUpModList_Click(object sender, RoutedEventArgs e)
         {
+            if (!this.CheckFileWrite())
+            {
+                return;
+            }
+
             var result = FlexibleMessageBox.Show("This will update the Modlist to ensure all modded files are\nlabeled under the correct items.\n\nThis may take up to 5 minutes to complete.".L(), "Modlist Cleanup Confirmation".L(), MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
 
             if (result != System.Windows.Forms.DialogResult.OK) return;
@@ -1747,6 +1775,11 @@ namespace FFXIV_TexTools
 
         private async void Menu_RecoverSpace_Click(object sender, RoutedEventArgs e)
         {
+            if (!this.CheckUnsafeOperation(true, true))
+            {
+                return;
+            }
+
             var result = FlexibleMessageBox.Show("This will recover unused space in the game files by defragmenting the modded DAT files.\n\nPlease do not close TexTools or open FFXIV until this operation is complete".L(), "Recover Space Confirmation".L(), MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
 
             if (result != System.Windows.Forms.DialogResult.OK) return;
@@ -1776,6 +1809,10 @@ namespace FFXIV_TexTools
 
         private void Menu_CopyModel_Click(object sender, RoutedEventArgs e)
         {
+            if (!this.CheckFileWrite())
+            {
+                return;
+            }
             var wind = new CopyModelDialog() { Owner = this };
             wind.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             wind.Show();
@@ -1783,6 +1820,10 @@ namespace FFXIV_TexTools
 
         private void Menu_MergeModels_Click(object sender, RoutedEventArgs e)
         {
+            if (!this.CheckFileWrite())
+            {
+                return;
+            }
             var wind = new MergeModelsDialog() { Owner = this };
             wind.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             wind.Show();
@@ -1791,6 +1832,10 @@ namespace FFXIV_TexTools
 
         private void Menu_RacialScaling_Click(object sender, RoutedEventArgs e)
         {
+            if (!this.CheckFileWrite())
+            {
+                return;
+            }
             var wind = new RacialSettingsEditor() { Owner = this };
             wind.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             wind.Show();

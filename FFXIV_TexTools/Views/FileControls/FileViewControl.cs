@@ -691,6 +691,11 @@ namespace FFXIV_TexTools.Views.Controls
         /// <returns></returns>
         public async Task<bool> SaveCurrentFile(ModTransaction tx = null)
         {
+            if (!this.CheckFileWrite())
+            {
+                return false;
+            }
+
             var success = false;
             _IS_SAVING = true;
             try
@@ -903,7 +908,12 @@ namespace FFXIV_TexTools.Views.Controls
             var boiler = TxBoiler.BeginWrite(ref tx);
             try
             {
-                await SaveCurrentFile(tx);
+                if(!await SaveCurrentFile(tx))
+                {
+                    // This shouldn't really ever occur, but...
+                    throw new Exception("Failed to save file state to temporary internal transaction.");
+                }
+
                 SingleFileModpackCreator.ExportFile(InternalFilePath, Window.GetWindow(this), tx);
                 return true;
             }

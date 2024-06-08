@@ -151,6 +151,11 @@ namespace FFXIV_TexTools.Views
         /// </summary>
         private async void modToggleButton_Click(object sender, RoutedEventArgs e)
         {
+            if (!this.CheckFileWrite())
+            {
+                return;
+            }
+
             await LockUi("Changing Mod Status".L(), "Please wait...".L(), this);
 
             Category selectedItem = null;
@@ -264,7 +269,10 @@ namespace FFXIV_TexTools.Views
         /// </summary>
         private async void modDeleteButton_Click(object sender, RoutedEventArgs e)
         {
-            var gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
+            if (!this.CheckFileWrite())
+            {
+                return;
+            }
 
             await LockUi("Deleting Mod".L(), "Please wait...".L(), this);
             try

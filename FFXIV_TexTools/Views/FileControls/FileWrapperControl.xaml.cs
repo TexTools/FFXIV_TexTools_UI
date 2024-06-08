@@ -603,6 +603,10 @@ namespace FFXIV_TexTools.Views.Controls
 
         private async Task EnableDisable()
         {
+            if (!this.CheckFileWrite())
+            {
+                return;
+            }
 
             try
             {
@@ -686,6 +690,11 @@ namespace FFXIV_TexTools.Views.Controls
 
         private async Task SaveFile(ModTransaction tx = null)
         {
+            if (!this.CheckFileWrite(tx))
+            {
+                return;
+            }
+
             try
             {
                 TxWatcher.DisableSave();
