@@ -1209,6 +1209,7 @@ namespace FFXIV_TexTools.Views
                 {
                     SelectAllButton.IsEnabled = false;
                     DeselectAllButton.IsEnabled = false;
+                    this.ShowError("Load Error", "The Modpack had no data or has multiple options.\nOnly modpacks with a single option may be loaded in this view.");
                     return;
                 }
 
