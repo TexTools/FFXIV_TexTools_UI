@@ -96,7 +96,7 @@ namespace FFXIV_TexTools.Views
                 AddBreak();
 
                 AddText($"Cleaning Index Files...", secondaryTextColor);
-                await ProblemChecker.ResaveAllIndexFiles();
+                await ProblemChecker.RevalidateAllIndexHashes();
                 AddText("\t\u2714", "Green");
                 AddBreak();
 
