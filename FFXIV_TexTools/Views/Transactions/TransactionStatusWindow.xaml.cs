@@ -1,6 +1,7 @@
 ﻿using FFXIV_TexTools.Helpers;
 using FFXIV_TexTools.Properties;
 using FFXIV_TexTools.Resources;
+using FFXIV_TexTools.Views.Projects;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -35,7 +36,7 @@ namespace FFXIV_TexTools.Views.Transactions
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private static TransactionStatusWindow Instance;
+        public static TransactionStatusWindow Instance;
 
         private string _TxStatusText;
         public string TxStatusText
@@ -169,6 +170,11 @@ namespace FFXIV_TexTools.Views.Transactions
         private bool _LOADING;
         public TransactionStatusWindow()
         {
+            if(ProjectWindow.Instance != null)
+            {
+                ProjectWindow.Instance.Close();
+            }
+
             Instance = this;
             DataContext = this;
 

@@ -1,6 +1,7 @@
 ﻿using FFXIV_TexTools.Models;
 using FFXIV_TexTools.Resources;
 using FFXIV_TexTools.Views.Controls;
+using FFXIV_TexTools.Views.Transactions;
 using MahApps.Metro.Controls.Dialogs;
 using Newtonsoft.Json;
 using System;
@@ -103,6 +104,11 @@ namespace FFXIV_TexTools.Views.Projects
 
         public ProjectWindow()
         {
+            if (TransactionStatusWindow.Instance != null)
+            {
+                TransactionStatusWindow.Instance.Close();
+            }
+
             DataContext = this;
             Instance = this;
             InitializeComponent();
