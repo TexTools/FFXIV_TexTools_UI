@@ -156,6 +156,8 @@ namespace FFXIV_TexTools.Views.ItemConverter
 
             var root = fullRoot.Info;
             if (root == null) return false;
+            if (!root.IsValid()) return false;
+
             if (root.PrimaryType == XivItemType.monster) return false;
             if (root.PrimaryType == XivItemType.demihuman) return false;
             if (root.PrimaryType == XivItemType.indoor) return false;
