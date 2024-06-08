@@ -37,8 +37,8 @@
                 <ColumnDefinition></ColumnDefinition>
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
-                <ColumnDefinition Width="Auto"></ColumnDefinition>
-                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                <ColumnDefinition MinWidth="200" Width="Auto"></ColumnDefinition>
+                <ColumnDefinition Width="150"></ColumnDefinition>
             </Grid.ColumnDefinitions>
 
             <Label Grid.Column="1" Content="System State:"></Label>
@@ -49,7 +49,7 @@
                 <Run Text="{Binding Path=TxStatusText, FallbackValue=Unknown}" FontWeight="Bold" Foreground="{Binding Path=TxStatusBrush, FallbackValue=Red}"></Run>
             </TextBlock>
             
-            <Button Grid.Column="4" Content="Transaction Manager" HorizontalAlignment="Right" VerticalAlignment="Center" Click="TransactionStatus_Click" Margin="5,0"></Button>
+            <Button Grid.Column="4" Content="Transaction Manager" VerticalAlignment="Center" Click="TransactionStatus_Click" Margin="5,0"/>
         </Grid>
         
         <Menu VerticalAlignment="Top" Grid.Row="0" HorizontalAlignment="Left">
