@@ -1050,7 +1050,15 @@ namespace FFXIV_TexTools
         private void Menu_ProblemCheck_Click(object sender, RoutedEventArgs e)
         {
             var problemCheckView = new ProblemCheckView {Owner = this};
-            problemCheckView.Show();
+            try
+            {
+                problemCheckView.Show();
+                _ = problemCheckView.RunChecks();
+            }
+            catch
+            {
+                //No op
+            }
         }
 
         /// <summary>

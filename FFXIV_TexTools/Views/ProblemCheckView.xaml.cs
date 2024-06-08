@@ -42,6 +42,7 @@ using xivModdingFramework.SqPack.DataContainers;
 
 using Application = System.Windows.Application;
 using xivModdingFramework.Mods.Enums;
+using System.CodeDom;
 
 namespace FFXIV_TexTools.Views
 {
@@ -69,80 +70,65 @@ namespace FFXIV_TexTools.Views
             _gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
 
 
-            RunChecks();
         }
 
-        private async void RunChecks()
+        public async Task RunChecks()
         {
-            if (!Dat.AllowDatAlteration)
-            {
-                // A few of the constituent functions alter the DATs in the process of fixing known errors.
-                throw new Exception("Cannot run problem checker when DAT writing is disabled.");
-            }
-
-            IProgress<(int current, int total)> progress = new Progress<(int current, int total)>((update) =>
-            {
-                ProgressBar.Value = (((float) update.current / (float) update.total) * 100);
-                ProgressLabel.Content = $"{update.current} / {update.total}";
-            });
-
-            AddText($"{UIStrings.ProblemCheck_Initialize}\n\n", textColor);
-
-            AddText($"{UIStrings.ProblemCheck_IndexDat}\n\n", secondaryTextColor);
-
-            AddText($"\n{UIStrings.ProblemCheck_DatSize}\n", secondaryTextColor);
-            await CheckDatSizes();
-
+            bool started = false;
             try
             {
+                if (!Dat.AllowDatAlteration)
+                {
+                    // A few of the constituent functions alter the DATs in the process of fixing known errors.
+                    throw new Exception("Cannot run problem checker when DAT writing is disabled.");
+                }
+
+                started = true;
+
+                IProgress<(int current, int total)> progress = new Progress<(int current, int total)>((update) =>
+                {
+                    ProgressBar.Value = (((float)update.current / (float)update.total) * 100);
+                    ProgressLabel.Content = $"{update.current} / {update.total}";
+                });
+
+                AddText($"{UIStrings.ProblemCheck_Initialize}", textColor);
+                AddText("\t\u2714", "Green");
+                AddBreak();
+
+                AddText($"Cleaning Index Files...", secondaryTextColor);
+                await ProblemChecker.ResaveAllIndexFiles();
+                AddText("\t\u2714", "Green");
+                AddBreak();
+
+                AddText($"Removing Empty DAT Files...", secondaryTextColor);
+                await CheckDatSizes();
+                AddText("\t\u2714", "Green");
+                AddBreak();
+
                 AddText($"\n{UIStrings.ProblemCheck_ModList}\n", secondaryTextColor);
                 await CheckMods(progress);
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Loading Canceled\n\n{ex.Message._()}".L());
-            }
 
 
-            try
-            {
                 AddText($"\n{UIStrings.ProblemCheck_LoD}\n", secondaryTextColor);
                 cfpTextBox.ScrollToEnd();
                 await CheckDXSettings();
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Loading Canceled\n\n{ex.Message._()}".L());
-            }
 
-            ProgressBar.Value = 0;
-            ProgressLabel.Content = UIStrings.Done;
+                ProgressBar.Value = 0;
+                ProgressLabel.Content = UIStrings.Done;
+            } catch(Exception ex) {
+                this.ShowError("Problem Checker Error", "An error occurred in the Problem Checker:\n\n" + ex.Message);
+                if (!started)
+                {
+                    this.Close();
+                }
+            }
         }
 
         private async Task CheckDatSizes()
         {
-            if (!Dat.AllowDatAlteration)
+            foreach (XivDataFile file in Enum.GetValues(typeof(XivDataFile)))
             {
-                throw new Exception("Cannot clean up DAT sizes while DAT writing is disabled.");
-            }
-
-            var filesToCheck = new XivDataFile[]
-                {XivDataFile._0A_Exd, XivDataFile._01_Bgcommon, XivDataFile._04_Chara, XivDataFile._06_Ui};
-
-            foreach (var file in filesToCheck)
-            {
-                AddText($"\t{file.GetFileName()._()} Dat Files".L(), textColor);
-
-                try
-                {
-                    await Dat.RemoveEmptyDats(file);
-                }
-                catch (Exception ex)
-                {
-                    FlexibleMessageBox.Show(
-                        $"{UIMessages.ProblemCheckDatIssueMessage}\n{ex.Message}", UIMessages.ProblemCheckErrorTitle,
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
+                await Dat.RemoveEmptyDats(file);
             }
         }
 
@@ -296,122 +282,7 @@ namespace FFXIV_TexTools.Views
                                 textsToAdd.Add(("\t\u2714", "Green"));
                             }
 
-                            var state = await mod.GetState(tx);
-                            // Can only reliably check child files on enabled stuff.
-                            if (state == EModState.Enabled)
-                            {
-                                var extension = Path.GetExtension(mod.FilePath);
-
-                                if (extension == ".tex" || extension == ".atex")
-                                {
-                                    // For these, there are no child files to resolve.  Just test if we can at least load the binary uncompressed data for validation.
-
-                                    try
-                                    {
-                                        bool err = false;
-                                        // Just test to see if we can get the data at all.
-                                        if (extension == ".tex")
-                                        {
-                                            var updated = await Dat.UpdateType4UncompressedSize(mod.FilePath, mod.DataFile, mod.ModOffset8x, tx, XivStrings.TexTools);
-
-                                            if (updated)
-                                            {
-                                                err = true;
-                                                textsToAdd.Add(("\t\u2714\n", "Orange"));
-                                                textsToAdd.Add(($"\tMod had an incorrectly reported file size.  The reported size has been corrected.\n".L(), "Orange"));
-                                            }
-                                        }
-
-                                        if (!err)
-                                        {
-                                            textsToAdd.Add(("\t\u2714\n", "Green"));
-                                        }
-                                    }
-                                    catch
-                                    {
-                                        textsToAdd.Add(("\t\u2716\n", "Red"));
-                                        textsToAdd.Add(($"\tUnable to decompress Texture file.  File is most likely corrupt.  The mod will be deleted.\n".L(), "Red"));
-                                        purgeMod = true;
-                                    }
-                                }
-                                else
-                                {
-
-                                    bool skip = false;
-                                    var children = new List<string>();
-                                    try
-                                    {
-                                        children = await XivCache.GetChildFiles(mod.FilePath, tx);
-                                    }
-                                    catch
-                                    {
-
-                                        textsToAdd.Add(("\t\u2716\n", "Red"));
-                                        textsToAdd.Add(($"\tUnable to resolve child files for mod.  File is mod likely corrupt. The mod will be deleted.\n".L(), "Red"));
-                                        purgeMod = true;
-                                        skip = true;
-                                    }
-
-
-                                    if (!skip)
-                                    {
-
-                                        List<string> missingFiles = new List<string>();
-                                        foreach (var child in children)
-                                        {
-                                            var result = await tx.FileExists(child);
-                                            if (!result)
-                                            {
-                                                missingFiles.Add(child);
-                                            }
-                                        }
-
-                                        // Remove missing variant material references for _a type materials; these are most commonly cases of default (non-mat-add) files, where
-                                        // SE has some variant materials due to racial equipment restrictions to start with, and would only end up spurious warnings to the user.
-                                        missingFiles = missingFiles.Where(x => !x.EndsWith("_a.mtrl")).ToList();
-
-                                        if (missingFiles.Count > 0)
-                                        {
-
-                                            var color = "Orange";
-
-                                            textsToAdd.Add(("\t\u2716\n", color));
-                                            foreach (var file in missingFiles)
-                                            {
-                                                textsToAdd.Add(($"Missing File: {file._()}\n".L(), color));
-                                            }
-                                            textsToAdd.Add(($"\tSome files this mod references are missing or disabled.\n".L(), color));
-
-                                            if (extension == ".mdl")
-                                            {
-                                                textsToAdd.Add(($"\tThis may cause some variants of this model to be invisible in game.\n".L(), color));
-                                                unresolvedWarnings++;
-
-                                            }
-                                            else if (extension == ".mtrl")
-                                            {
-                                                textsToAdd.Add(($"\tThis may cause some variants of this model to be invisible in game.\n".L(), color));
-                                                unresolvedWarnings++;
-                                            }
-                                            else if (extension == ".meta")
-                                            {
-                                                textsToAdd.Add(($"\tThis may cause some racial models to be invisible in game.\n".L(), color));
-                                                unresolvedWarnings++;
-                                            }
-
-
-                                        }
-                                        else
-                                        {
-                                            textsToAdd.Add(("\t\u2714\n", "Green"));
-                                        }
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                textsToAdd.Add(("\t\u2714\n", "Green"));
-                            }
+                            textsToAdd.Add(("\t\u2714\n", "Green"));
 
 
 
@@ -572,6 +443,13 @@ namespace FFXIV_TexTools.Views
             cfpTextBox.ScrollToEnd();
         }
 
+
+        private void AddBreak()
+        {
+            AddText("\n", "Green");
+        }
+
+
         /// <summary>
         /// Adds text to the text box
         /// </summary>
@@ -601,6 +479,11 @@ namespace FFXIV_TexTools.Views
         private void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             cts?.Cancel();
+
+            if (null != Owner)
+            {
+                Owner.Activate();
+            }
 
         }
     }
