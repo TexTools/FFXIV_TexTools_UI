@@ -126,7 +126,7 @@ namespace FFXIV_TexTools.Views
                 if (importResults.Imported == null)
                 {
                     // User cancelled or modpack had 0 items.
-                    DialogResult = false;
+                    Close();
                     return;
                 }
 
@@ -152,7 +152,7 @@ namespace FFXIV_TexTools.Views
                     string.Format(UIMessages.SuccessfulImportCountMessage, TotalModsImported, TotalModsErrored, durationString));
             }
 
-            DialogResult = true;
+            Close();
         }
 
         /// <summary>

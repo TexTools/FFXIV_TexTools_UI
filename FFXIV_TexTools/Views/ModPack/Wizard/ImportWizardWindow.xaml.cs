@@ -207,7 +207,7 @@ namespace FFXIV_TexTools.Views.Wizard
             if(res.Imported == null)
             {
                 // User cancelled import or there were 0 items in the modpack.
-                DialogResult = false;
+                this.Close();
                 return;
             }
             float ImportDuration = res.Duration;
@@ -217,7 +217,8 @@ namespace FFXIV_TexTools.Views.Wizard
             var durationString = ImportDuration.ToString("0.00");
             await this.ShowMessageAsync(UIMessages.ImportCompleteTitle,
                 string.Format(UIMessages.SuccessfulImportCountMessage, TotalModsImported, TotalModsErrored, durationString));
-            DialogResult = true;
+
+            this.Close();
         }
 
 
@@ -342,7 +343,7 @@ namespace FFXIV_TexTools.Views.Wizard
 
         private void Cancel_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            DialogResult = false;
+            this.Close();
         }
 
         private void PrevPage_Click(object sender, System.Windows.RoutedEventArgs e)
