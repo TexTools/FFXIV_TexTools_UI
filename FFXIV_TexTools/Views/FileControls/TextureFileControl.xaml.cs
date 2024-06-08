@@ -198,7 +198,7 @@ namespace FFXIV_TexTools.Views.Controls
         {
             var ext = Path.GetExtension(externalFilePath).ToLower();
 
-            if(ext == ".tex")
+            if(ext == ".tex" || ext == ".atex")
             {
                 return await SaveAsRaw(externalFilePath);
             }
@@ -376,6 +376,7 @@ namespace FFXIV_TexTools.Views.Controls
                 { ".tga", "TGA Image" },
                 { ".bmp", "Bitmap Image" },
                 { ".tex", "FFXIV Texture" },
+                { ".atex", "FFXIV VFX Texture" },
             };
         }
         public override void INTERNAL_ClearFile()

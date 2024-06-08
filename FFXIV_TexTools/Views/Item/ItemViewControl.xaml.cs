@@ -796,14 +796,31 @@ namespace FFXIV_TexTools.Views.Item
                 }
             }
 
+            if (Root != null)
+            {
+                var variant = -1;
+                if (asIm != null && asIm.ModelInfo != null)
+                {
+                    variant = asIm.ModelInfo.ImcSubsetID;
+                }
+                var avfx = await Root.GetAvfx(variant, tx);
+                if (avfx.Count > 0)
+                {
+                    foreach (var file in Files)
+                    {
+                        file.Value.Add("vfx", new HashSet<string>());
+                    }
+                }
+            }
 
-            if(asIm != null && asIm.IconId > 0)
+            if (asIm != null && asIm.IconId > 0)
             {
                 foreach(var file in Files)
                 {
                     file.Value.Add("icon", new HashSet<string>());
                 }
             }
+
 
             // Ensure we have at least a blank entry.
             foreach (var file in Files)
@@ -866,6 +883,18 @@ namespace FFXIV_TexTools.Views.Item
                     {
                         if (asIm != null) {
                             textures = await Tex.GetItemIcons(asIm.IconId, tx);
+                        }
+                    }
+                    else if (mtrlKv.Key == "vfx")
+                    {
+                        if (Root != null)
+                        {
+                            var variant = -1;
+                            if (asIm != null && asIm.ModelInfo != null)
+                            {
+                                variant = asIm.ModelInfo.ImcSubsetID;
+                            }
+                            textures = await Root.GetVfxTextures(variant, tx);
                         }
                     }
                     else
@@ -1037,6 +1066,11 @@ namespace FFXIV_TexTools.Views.Item
                 else if (material == "icon")
                 {
                     Materials.Add(new KeyValuePair<string, string>(XivStrings.Icon, "icon"));
+                    continue;
+                }
+                else if (material == "vfx")
+                {
+                    Materials.Add(new KeyValuePair<string, string>("VFX", "vfx"));
                     continue;
                 }
 
