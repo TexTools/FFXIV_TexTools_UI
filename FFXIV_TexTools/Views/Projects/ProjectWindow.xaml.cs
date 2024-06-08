@@ -184,13 +184,7 @@ namespace FFXIV_TexTools.Views.Projects
                     return;
                 }
             }
-            if (MainWindow.UserTransaction != null && MainWindow.UserTransaction.State != ETransactionState.Closed && MainWindow.UserTransaction.ModifiedFiles.Count > 0)
-            {
-                if (!ViewHelpers.ShowConfirmation(this, "Close Transaction Confirmation", "This will cancel your current transaction, are you sure you wish to continue?"))
-                {
-                    return;
-                }
-            }
+
             var sfd = new SaveFileDialog();
             sfd.Filter = _ProjectFileFilter;
             if (sfd.ShowDialog() != System.Windows.Forms.DialogResult.OK)
