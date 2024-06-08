@@ -248,6 +248,7 @@ namespace FFXIV_TexTools.Views
         private void AddOption(string optionText)
         {
             if (String.IsNullOrWhiteSpace(optionText)) return;
+            OptionNameTextBox.Text = "";
 
             var option = new WizardOptionEntry(Data);
             option.Name = optionText;
@@ -270,7 +271,6 @@ namespace FFXIV_TexTools.Views
         private void AddOptionButton_Click(object sender, RoutedEventArgs e)
         {
             AddOption(OptionNameTextBox.Text);
-            OptionNameTextBox.Text = "";
         }
 
         /// <summary>

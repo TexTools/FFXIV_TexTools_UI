@@ -95,7 +95,7 @@ namespace FFXIV_TexTools.Views
                 AddText("\t\u2714", "Green");
                 AddBreak();
 
-                AddText($"Cleaning Index Files...", secondaryTextColor);
+                AddText($"Revalidating Index File Structure...", secondaryTextColor);
                 await ProblemChecker.RevalidateAllIndexHashes();
                 AddText("\t\u2714", "Green");
                 AddBreak();
@@ -112,6 +112,20 @@ namespace FFXIV_TexTools.Views
                 AddText($"\n{UIStrings.ProblemCheck_LoD}\n", secondaryTextColor);
                 cfpTextBox.ScrollToEnd();
                 await CheckDXSettings();
+
+
+
+                AddText($"\nPerforming final full Index File validation scan...", secondaryTextColor);
+                try
+                {
+                    await ProblemChecker.AssertAllIndexesAreClean();
+                }
+                catch(Exception ex)
+                {
+                    var mes = "One or more index files are corrupt, and must be restored with clean backups:\n" + ex.Message;
+                    throw new Exception(mes);
+                }
+                AddText("\t\u2714", "Green");
 
                 ProgressBar.Value = 0;
                 ProgressLabel.Content = UIStrings.Done;
@@ -269,10 +283,21 @@ namespace FFXIV_TexTools.Views
                                 textsToAdd.Add(("\t\u2714", "Green"));
                             }
 
-                            // If the file exists in both indexes, but has a DIFFERENT index in index2...
-                            if (index1Offset != index2Offset && index2Offset != 0)
+                            try
                             {
+                                textsToAdd.Add(("\t\u2714", "Green"));
+                                await tx.ReadFile(mod.DataFile, mod.ModOffset8x, false);
+                            } catch
+                            {
+                                textsToAdd.Add(("\t\u2716\n", "Red"));
+                                textsToAdd.Add(($"\tMod file was unreadable and could not be successfully decompressed.\n", "Red"));
+                                textsToAdd.Add(($"\tThe Mod will automatically be disabled and deleted.\n".L(), "Red"));
+                                purgeMod = true;
+                            }
 
+                            // If the file exists in both indexes, but has a DIFFERENT index in index2, and neither are synonyms.
+                            if (index1Offset != index2Offset && index1Offset != 1 && index2Offset != 1)
+                            {
                                 textsToAdd.Add(("\t\u2716\n", "Orange"));
                                 textsToAdd.Add(($"Index 1/2 Mismatch: Index Values will be repaired.\n".L(), "Orange"));
                                 index2CorrectionNeeded = true;
@@ -282,9 +307,22 @@ namespace FFXIV_TexTools.Views
                                 textsToAdd.Add(("\t\u2714", "Green"));
                             }
 
+
+                            if(!Dat.IsOffsetSane(mod.DataFile, mod.OriginalOffset8x))
+                            {
+                                throw new Exception("Mod File: " + mod.FilePath + " has an unrecoverable original offset.  A [Start Over] with clean index backups is required.");
+                            }
+
+                            if(!Dat.IsOffsetSane(mod.DataFile, mod.ModOffset8x))
+                            {
+                                textsToAdd.Add(("\t\u2716\n", "Red"));
+                                textsToAdd.Add(($"\tMod points to a non-existent DAT file.\n", "Red"));
+                                textsToAdd.Add(($"\tThe Mod will automatically be disabled and deleted.\n".L(), "Red"));
+                                purgeMod = true;
+                            }
+
+
                             textsToAdd.Add(("\t\u2714\n", "Green"));
-
-
 
 
                             if (index2CorrectionNeeded)
@@ -337,6 +375,8 @@ namespace FFXIV_TexTools.Views
                 {
                     Dispatcher.Invoke(() => AddText($"\t{UIStrings.ProblemCheck_NoEntries}\n", "Orange"));
                 }
+
+
 
                 await Dispatcher.InvokeAsync(() =>
                 {
