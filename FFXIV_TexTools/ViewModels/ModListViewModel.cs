@@ -510,6 +510,7 @@ namespace FFXIV_TexTools.ViewModels
 
                         // File Name
                         modListModel.FileName = Path.GetFileName(modItem.FilePath);
+                        modListModel.FilePath = modItem.FilePath;
 
                         // Type
                         modListModel.Type = ModViewHelpers.GetType(modItem.FilePath);
@@ -555,7 +556,16 @@ namespace FFXIV_TexTools.ViewModels
 
                                         if (floatArray.Length > 0)
                                         {
-                                            using (var img = Image.LoadPixelData<RgbaVector>(floatArray, 4, 16))
+                                            var w = 4;
+                                            var h = 16;
+
+                                            if(floatArray.Length >= 1024)
+                                            {
+                                                w = 8;
+                                                h = 32;
+                                            }
+
+                                            using (var img = Image.LoadPixelData<RgbaVector>(floatArray, w, h))
                                             {
                                                 img.Mutate(x => x.Opacity(1));
 
@@ -1094,6 +1104,7 @@ namespace FFXIV_TexTools.ViewModels
             /// The name of the file.
             /// </summary>
             public string FileName { get; set; }
+            public string FilePath { get; set; }
 
             /// <summary>
             /// The race the file is associated with.
