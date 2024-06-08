@@ -69,6 +69,8 @@ namespace FFXIV_TexTools.ViewModels
             }
         }
 
+        private ModelImportOptions ImportOptions;
+
 
         private void SetupRaces()
         {
@@ -356,7 +358,9 @@ namespace FFXIV_TexTools.ViewModels
             options.TargetRace = race;
 
             options.LoggingFunction = LogMessageReceived;
-            
+
+            ImportOptions = options;
+
 
            // Asynchronously call ImportModel.
            await Task.Run(async () =>
@@ -510,6 +514,7 @@ namespace FFXIV_TexTools.ViewModels
                         Success = _success,
                         Data = data,
                         Model = model,
+                        ImportOptions = ImportOptions,
                     };
                     _result = result;
                     _onComplete(result);

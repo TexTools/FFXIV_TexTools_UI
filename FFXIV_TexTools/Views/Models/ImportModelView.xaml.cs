@@ -26,6 +26,7 @@ using xivModdingFramework.Items;
 using xivModdingFramework.Items.Interfaces;
 using xivModdingFramework.Models.DataContainers;
 using xivModdingFramework.Models.FileTypes;
+using xivModdingFramework.Models.Helpers;
 using xivModdingFramework.Mods;
 
 namespace FFXIV_TexTools.Views.Models
@@ -36,6 +37,7 @@ namespace FFXIV_TexTools.Views.Models
         public string Path;
         public byte[] Data;
         public TTModel Model;
+        public ModelImportOptions ImportOptions;
     }
     /// <summary>
     /// Interaction logic for ImportModelView.xaml

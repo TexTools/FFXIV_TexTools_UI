@@ -128,6 +128,8 @@ namespace FFXIV_TexTools.Views.Controls
             } 
         }
 
+        protected SmartImportOptions LastImportOptions;
+
 
         public FileViewControl()
         {
@@ -273,6 +275,7 @@ namespace FFXIV_TexTools.Views.Controls
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
+
         /// <summary>
         /// Validates if this view can load the file in question.
         /// 
@@ -360,13 +363,14 @@ namespace FFXIV_TexTools.Views.Controls
         /// This function is expected to catch and handle its own errors.
         /// </summary>
         /// <returns></returns>
-        public virtual void ClearFile()
+        public void ClearFile()
         {
             if (HasFile)
             {
                 var file = InternalFilePath;
                 try
                 {
+                    LastImportOptions = null;
                     IsEnabled = false;
                     INTERNAL_ClearFile();
                     InternalFilePath = null;
@@ -579,7 +583,10 @@ namespace FFXIV_TexTools.Views.Controls
                     return false;
                 }
 
+                // Preserve import options here.
+                var lastOp = LastImportOptions;
                 ClearFile();
+                LastImportOptions = lastOp;
 
                 ExternalFilePath = externalFile;
                 InternalFilePath = internalFile;
@@ -730,7 +737,7 @@ namespace FFXIV_TexTools.Views.Controls
                 if (success)
                 {
 
-                    ProjectWindow.AddExternalSource(InternalFilePath, ExternalFilePath);
+                    ProjectWindow.AddExternalSource(InternalFilePath, ExternalFilePath, true, LastImportOptions);
 
                     // Reload the file after to ensure user has correct-to-file-system state.
                     // This is maybe unnecessary, but until we're 200% sure TT's file writing is perfectly

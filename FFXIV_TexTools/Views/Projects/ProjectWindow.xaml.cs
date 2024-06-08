@@ -1,6 +1,7 @@
 ﻿using FFXIV_TexTools.Models;
 using FFXIV_TexTools.Resources;
 using FFXIV_TexTools.Views.Controls;
+using MahApps.Metro.Controls.Dialogs;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -21,6 +22,7 @@ using System.Windows.Media.Imaging;
 using WK.Libraries.BetterFolderBrowserNS;
 using xivModdingFramework.Exd.FileTypes;
 using xivModdingFramework.Helpers;
+using xivModdingFramework.Models.Helpers;
 using xivModdingFramework.Mods;
 using xivModdingFramework.Mods.FileTypes;
 using xivModdingFramework.SqPack.FileTypes;
@@ -60,7 +62,7 @@ namespace FFXIV_TexTools.Views.Projects
     /// <summary>
     /// Interaction logic for ProjectWindow.xaml
     /// </summary>
-    public partial class ProjectWindow : Window, INotifyPropertyChanged
+    public partial class ProjectWindow : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
         public static TTProject Project { get; private set; }
@@ -169,6 +171,11 @@ namespace FFXIV_TexTools.Views.Projects
 
         private void NewProject_Click(object sender, RoutedEventArgs e)
         {
+            if (MainWindow.UserTransaction != null)
+            {
+                this.ShowWarning("Project Creation Error", "Cannot create Project when there is already an active transaction");
+            }
+
             if (MainWindow.UserTransaction != null && MainWindow.UserTransaction.State != ETransactionState.Closed && MainWindow.UserTransaction.ModifiedFiles.Count > 0)
             {
                 if (!ViewHelpers.ShowConfirmation(this, "Close Transaction Confirmation", "This will cancel your current transaction, are you sure you wish to continue?"))
@@ -193,6 +200,11 @@ namespace FFXIV_TexTools.Views.Projects
 
         private async void NewPenumbra_Click(object sender, RoutedEventArgs e)
         {
+            if (MainWindow.UserTransaction != null)
+            {
+                this.ShowWarning("Project Creation Error", "Cannot create Project when there is already an active transaction");
+            }
+
             if (MainWindow.UserTransaction != null && MainWindow.UserTransaction.State != ETransactionState.Closed && MainWindow.UserTransaction.ModifiedFiles.Count > 0)
             {
                 if (!ViewHelpers.ShowConfirmation(this, "Close Transaction Confirmation", "This will cancel your current transaction, are you sure you wish to continue?"))
@@ -231,6 +243,11 @@ namespace FFXIV_TexTools.Views.Projects
 
         private async void NewModpack_Click(object sender, RoutedEventArgs e)
         {
+            if (MainWindow.UserTransaction != null)
+            {
+                this.ShowWarning("Project Creation Error", "Cannot create Project when there is already an active transaction");
+            }
+
             if (MainWindow.UserTransaction != null && MainWindow.UserTransaction.State != ETransactionState.Closed && MainWindow.UserTransaction.ModifiedFiles.Count > 0)
             {
                 if(!ViewHelpers.ShowConfirmation(this, "Close Transaction Confirmation", "This will cancel your current transaction, are you sure you wish to continue?"))
@@ -271,6 +288,11 @@ namespace FFXIV_TexTools.Views.Projects
 
         private void CreateProject(string ttProjectPath, ETransactionTarget target, string intialModpackPath = null)
         {
+            if(MainWindow.UserTransaction != null)
+            {
+                this.ShowWarning("Project Creation Error", "Cannot create Project when there is already an active transaction");
+            }
+
             if(!ttProjectPath.EndsWith(".ttproject"))
             {
                 this.ShowError("Project Creation Error", "Path is not valid: " + ttProjectPath);
@@ -417,33 +439,50 @@ namespace FFXIV_TexTools.Views.Projects
         }
         private static async Task LoadModpack(string path = null, bool ignoreMissing = false)
         {
-            if(path == null)
+            ProgressDialogController controller = null;
+            if(Instance != null)
             {
-                path = Project.TransactionSettings.TargetPath;
+                controller = await Instance.ShowProgressAsync("Loading Modpack", "Please wait...");
             }
-
-            var files = await TTMP.ModPackToSimpleFileList(path, true, MainWindow.UserTransaction);
-            if(files == null)
+            try
             {
-                if (ignoreMissing)
+                var upgrade = true;
+                if (path == null)
                 {
-                    return;
+                    path = Project.TransactionSettings.TargetPath;
+                    upgrade = false;
                 }
-                throw new FileNotFoundException("The project modpack was invalid, contained multiple options, or was corrupted.");
+
+                var files = await TTMP.ModPackToSimpleFileList(path, true, MainWindow.UserTransaction);
+                if (files == null)
+                {
+                    if (ignoreMissing)
+                    {
+                        return;
+                    }
+                    throw new FileNotFoundException("The project modpack was invalid, contained multiple options, or was corrupted.");
+                }
+
+                var settings = new ModPackImportSettings()
+                {
+                    AutoAssignSkinMaterials = false,
+                    ProgressReporter = null,
+                    RootConversionFunction = null,
+                    SourceApplication = XivStrings.TexTools,
+                    UpdateEndwalkerFiles = upgrade
+                };
+
+
+                await TTMP.ImportFiles(files, null, settings, MainWindow.UserTransaction);
+                AttachEvents();
             }
-
-            var settings = new ModPackImportSettings()
+            finally
             {
-                AutoAssignSkinMaterials = false,
-                ProgressReporter = null,
-                RootConversionFunction = null,
-                SourceApplication = XivStrings.TexTools,
-                UpdateEndwalkerFiles = false
-            };
-
-
-            await TTMP.ImportFiles(files, null, settings, MainWindow.UserTransaction);
-            AttachEvents();
+                if (controller != null)
+                {
+                    await controller.CloseAsync();
+                }
+            }
         }
 
         private static void SaveProject()
@@ -725,7 +764,7 @@ namespace FFXIV_TexTools.Views.Projects
             });
         }
 
-        public static void AddExternalSource(string internalFile, string externalFile, bool save = true)
+        public static void AddExternalSource(string internalFile, string externalFile, bool save = true, SmartImportOptions importOptions = null)
         {
             if (Project == null) return;
             if (string.IsNullOrWhiteSpace(internalFile)) return;
@@ -759,6 +798,19 @@ namespace FFXIV_TexTools.Views.Projects
                 {
                     Project.LastModifiedTimes.Add(externalFile, new FileInfo(externalFile).LastWriteTime);
                 }
+
+                if(importOptions != null)
+                {
+                    var options = CleanImportOptions(importOptions);
+
+                    if (Project.ImportOptions.ContainsKey(externalFile)){
+                        Project.ImportOptions[externalFile] = options;
+                    }
+                    else
+                    {
+                        Project.ImportOptions.Add(externalFile, options);
+                    }
+                }
             }
 
             DetatchEvents();
@@ -768,6 +820,16 @@ namespace FFXIV_TexTools.Views.Projects
             {
                 SaveProject();
             }
+        }
+
+        private static SmartImportOptions CleanImportOptions(SmartImportOptions modelOptions)
+        {
+            var op = (SmartImportOptions) modelOptions.Clone();
+
+            op.ModelOptions.IntermediaryFunction = null;
+            op.ModelOptions.LoggingFunction = null;
+            op.ModelOptions.ReferenceItem = null;
+            return op;
         }
 
         private async void ResetFile_Click(object sender, RoutedEventArgs e)

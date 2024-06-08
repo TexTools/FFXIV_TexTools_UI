@@ -167,6 +167,14 @@ namespace FFXIV_TexTools.Views.Controls
                 Texture.TextureFormat = Format;
                 await Tex.MergePixelData(Texture, PixelData);
             }
+
+            // Assign this any time we save.
+            var options = new SmartImportOptions()
+            {
+                TextureFormat = Format
+            };
+            LastImportOptions = options;
+
             return Texture.ToUncompressedTex();
         }
 
@@ -669,8 +677,15 @@ namespace FFXIV_TexTools.Views.Controls
 
         protected override async Task<byte[]> INTERNAL_ExternalToUncompressedFile(string externalFile, string internalFile, IItem referenceItem, ModTransaction tx)
         {
+            var options = new SmartImportOptions()
+            {
+                TextureFormat = Format
+            };
+
+            LastImportOptions = options;
+
             // Override this so we can pass in the user's requested texture format.
-            return await SmartImport.CreateUncompressedFile(externalFile, internalFile, tx, Format);
+            return await SmartImport.CreateUncompressedFile(externalFile, internalFile, tx, options);
         }
     }
 }

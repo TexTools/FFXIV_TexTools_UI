@@ -1,12 +1,13 @@
-﻿<Window x:Class="FFXIV_TexTools.Views.Projects.ProjectWindow"
+﻿<mah:MetroWindow x:Class="FFXIV_TexTools.Views.Projects.ProjectWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FFXIV_TexTools.Views.Projects"
+        xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
         mc:Ignorable="d"
         Title="TexTools Project" Height="450" Width="1100">
-    <Window.Resources>
+    <mah:MetroWindow.Resources>
 
         <DataTemplate x:Key="FileEntryTemplate">
             <Grid Height="40">
@@ -25,7 +26,7 @@
                 <Button Grid.Column="5" Content="Change" VerticalAlignment="Center" Margin="5,0" Click="ChangeFile_Click"></Button>
             </Grid>
         </DataTemplate>
-    </Window.Resources>
+    </mah:MetroWindow.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="40"/>
@@ -77,4 +78,4 @@
         </Grid>
 
     </Grid>
-</Window>
+</mah:MetroWindow>

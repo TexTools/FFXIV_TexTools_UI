@@ -638,6 +638,9 @@ namespace FFXIV_TexTools.Views.Controls
             var result = await ImportModelView.ImportModel(internalPath, referenceItem, externalPath, false, MainWindow.GetMainWindow());
             if ( result != null && result.Success)
             {
+                var options = new SmartImportOptions();
+                options.ModelOptions = result.ImportOptions;
+                LastImportOptions = options;
                 return result.Data;
             }
             return null;
