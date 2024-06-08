@@ -171,11 +171,13 @@ namespace FFXIV_TexTools.Views.Projects
 
         private void NewProject_Click(object sender, RoutedEventArgs e)
         {
-            if (MainWindow.UserTransaction != null)
+            if (MainWindow.UserTransaction != null && MainWindow.UserTransaction.State != ETransactionState.Closed && MainWindow.UserTransaction.ModifiedFiles.Count > 0)
             {
-                this.ShowWarning("Project Creation Error", "Cannot create Project when there is already an active transaction");
+                if (!ViewHelpers.ShowConfirmation(this, "Close Transaction Confirmation", "This will cancel your current transaction, are you sure you wish to continue?"))
+                {
+                    return;
+                }
             }
-
             if (MainWindow.UserTransaction != null && MainWindow.UserTransaction.State != ETransactionState.Closed && MainWindow.UserTransaction.ModifiedFiles.Count > 0)
             {
                 if (!ViewHelpers.ShowConfirmation(this, "Close Transaction Confirmation", "This will cancel your current transaction, are you sure you wish to continue?"))
@@ -195,14 +197,17 @@ namespace FFXIV_TexTools.Views.Projects
 
             var projectPath = Path.Combine(dir, Path.GetFileNameWithoutExtension(sfd.FileName) + ".ttproject");
 
-            CreateProject(projectPath, ETransactionTarget.FolderTree, null);
+            _ = CreateProject(projectPath, ETransactionTarget.FolderTree, null);
         }
 
         private async void NewPenumbra_Click(object sender, RoutedEventArgs e)
         {
-            if (MainWindow.UserTransaction != null)
+            if (MainWindow.UserTransaction != null && MainWindow.UserTransaction.State != ETransactionState.Closed && MainWindow.UserTransaction.ModifiedFiles.Count > 0)
             {
-                this.ShowWarning("Project Creation Error", "Cannot create Project when there is already an active transaction");
+                if (!ViewHelpers.ShowConfirmation(this, "Close Transaction Confirmation", "This will cancel your current transaction, are you sure you wish to continue?"))
+                {
+                    return;
+                }
             }
 
             if (MainWindow.UserTransaction != null && MainWindow.UserTransaction.State != ETransactionState.Closed && MainWindow.UserTransaction.ModifiedFiles.Count > 0)
@@ -238,14 +243,17 @@ namespace FFXIV_TexTools.Views.Projects
 
             var ttProjectPath = Path.Combine(folder, "project.ttproject");
 
-            CreateProject(ttProjectPath, ETransactionTarget.PenumbraModFolder, folder);
+            _ = CreateProject(ttProjectPath, ETransactionTarget.PenumbraModFolder, folder);
         }
 
         private async void NewModpack_Click(object sender, RoutedEventArgs e)
         {
-            if (MainWindow.UserTransaction != null)
+            if (MainWindow.UserTransaction != null && MainWindow.UserTransaction.State != ETransactionState.Closed && MainWindow.UserTransaction.ModifiedFiles.Count > 0)
             {
-                this.ShowWarning("Project Creation Error", "Cannot create Project when there is already an active transaction");
+                if (!ViewHelpers.ShowConfirmation(this, "Close Transaction Confirmation", "This will cancel your current transaction, are you sure you wish to continue?"))
+                {
+                    return;
+                }
             }
 
             if (MainWindow.UserTransaction != null && MainWindow.UserTransaction.State != ETransactionState.Closed && MainWindow.UserTransaction.ModifiedFiles.Count > 0)
@@ -283,15 +291,12 @@ namespace FFXIV_TexTools.Views.Projects
             var projectPath = Path.Combine(dir, Path.GetFileNameWithoutExtension(sfd.FileName) + ".ttproject");
 
 
-            CreateProject(projectPath, ETransactionTarget.FolderTree, sfd.FileName);
+            _ = CreateProject(projectPath, ETransactionTarget.FolderTree, sfd.FileName);
         }
 
-        private void CreateProject(string ttProjectPath, ETransactionTarget target, string intialModpackPath = null)
+        private async Task CreateProject(string ttProjectPath, ETransactionTarget target, string intialModpackPath = null)
         {
-            if(MainWindow.UserTransaction != null)
-            {
-                this.ShowWarning("Project Creation Error", "Cannot create Project when there is already an active transaction");
-            }
+            await CloseProject();
 
             if(!ttProjectPath.EndsWith(".ttproject"))
             {
