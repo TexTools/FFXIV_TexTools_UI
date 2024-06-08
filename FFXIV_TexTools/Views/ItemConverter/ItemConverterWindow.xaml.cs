@@ -160,6 +160,7 @@ namespace FFXIV_TexTools.Views.ItemConverter
             if (root.PrimaryType == XivItemType.demihuman) return false;
             if (root.PrimaryType == XivItemType.indoor) return false;
             if (root.PrimaryType == XivItemType.outdoor) return false;
+            if (root.PrimaryType == XivItemType.fish) return false;
 
             if (root.PrimaryType == XivItemType.human)
             {
@@ -233,12 +234,22 @@ namespace FFXIV_TexTools.Views.ItemConverter
         #region Item List Filters
         private bool Filter(IItem item)
         {
-            if (item.PrimaryCategory == XivStrings.Gear) return true;
-            if (item.PrimaryCategory == XivStrings.Character)
+            if (item == null)
             {
-                if (item.SecondaryCategory == XivStrings.Hair) return true;
+                return false;
             }
-            return false;
+
+            var root = item.GetRoot();
+            if (!IsSupported(root))
+            {
+                return false;
+            }
+
+            if (State == ItemConverterState.DestinationSelect && !DestinationOk(root))
+            {
+                return false;
+            }
+            return true;
         }
         #endregion
 

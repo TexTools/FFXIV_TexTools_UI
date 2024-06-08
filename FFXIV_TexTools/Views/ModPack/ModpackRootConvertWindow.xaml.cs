@@ -348,48 +348,10 @@ namespace FFXIV_TexTools.Views
 
             var selectedItem = PopupItemSelection.ShowItemSelection((IItem item) =>
             {
-                // Search Filter
-                if (item == null) return false;
-
-                if (item.PrimaryCategory == XivStrings.Gear) return true;
-                if (item.PrimaryCategory == XivStrings.Character)
-                {
-                    if (item.SecondaryCategory == XivStrings.Hair) return true;
-                }
-
-                return false;
+                return ValidationFunction(item, root);
             }, (IItem item) =>
             {
-                // Item Select Acceptance
-                if (item == null) return false;
-
-                var itemRoot = item.GetRoot();
-                if (itemRoot == null) return false;
-
-                if(itemRoot.Info.PrimaryType == XivItemType.equipment || itemRoot.Info.PrimaryType == XivItemType.accessory)
-                {
-                    if(root.Info.PrimaryType == XivItemType.accessory)
-                    {
-                        // Allow converting most things to accessories.
-                        return true;
-                    }
-                }
-
-                if (itemRoot.Info.PrimaryType == root.Info.PrimaryType &&
-                    itemRoot.Info.SecondaryType == root.Info.SecondaryType &&
-                    itemRoot.Info.Slot == root.Info.Slot)
-                {
-
-                    if(itemRoot.Info.PrimaryType == XivItemType.human && 
-                    itemRoot.Info.PrimaryId != root.Info.PrimaryId)
-                    {
-                        return false;
-                    }
-
-                    return true;
-                }
-
-                return false;
+                return ValidationFunction(item, root);
             }, this);
 
             if (selectedItem == null) return;
@@ -408,6 +370,39 @@ namespace FFXIV_TexTools.Views
             ItemSelections[root] = (ItemSelections[root].SourceItem, im);
             Results[root] = (selectedRoot, Results[root].Variant);
         }
+
+    private static bool ValidationFunction(IItem item, XivDependencyRoot root) {
+            // Item Select Acceptance
+            if (item == null) return false;
+
+            var itemRoot = item.GetRoot();
+            if (itemRoot == null) return false;
+
+            if(itemRoot.Info.PrimaryType == XivItemType.equipment || itemRoot.Info.PrimaryType == XivItemType.accessory)
+            {
+                if(itemRoot.Info.PrimaryType == XivItemType.accessory)
+                {
+                    // Allow converting most things to accessories.
+                    return true;
+                }
+            }
+
+            if (itemRoot.Info.PrimaryType == root.Info.PrimaryType &&
+                itemRoot.Info.SecondaryType == root.Info.SecondaryType &&
+                itemRoot.Info.Slot == root.Info.Slot)
+            {
+
+                if(itemRoot.Info.PrimaryType == XivItemType.human && 
+                itemRoot.Info.PrimaryId != root.Info.PrimaryId)
+                {
+                    return false;
+                }
+
+                return true;
+            }
+
+            return false;
+            }
 
 
         /// <summary>
