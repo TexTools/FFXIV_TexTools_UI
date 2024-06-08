@@ -61,7 +61,7 @@ namespace FFXIV_TexTools.Views
             InitializeComponent();
 
             var appStyle = ThemeManager.DetectAppStyle(Application.Current);
-            if (((AppTheme) appStyle.Item1).Name.Equals("BaseDark"))
+            if (((AppTheme)appStyle.Item1).Name.Equals("BaseDark"))
             {
                 textColor = "White";
                 secondaryTextColor = "LightBlue";
@@ -120,7 +120,7 @@ namespace FFXIV_TexTools.Views
                 {
                     await ProblemChecker.AssertAllIndexesAreClean();
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     var mes = "One or more index files are corrupt, and must be restored with clean backups:\n" + ex.Message;
                     throw new Exception(mes);
@@ -129,7 +129,9 @@ namespace FFXIV_TexTools.Views
 
                 ProgressBar.Value = 0;
                 ProgressLabel.Content = UIStrings.Done;
-            } catch(Exception ex) {
+            }
+            catch (Exception ex)
+            {
                 this.ShowError("Problem Checker Error", "An error occurred in the Problem Checker:\n\n" + ex.Message);
                 if (!started)
                 {
@@ -172,7 +174,7 @@ namespace FFXIV_TexTools.Views
                     $"{UIStrings.ProblemCheck_ErrorsFound}\n", "Corrupted ModList Detected".L(),
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-                await Task.Run( async () =>
+                await Task.Run(async () =>
                 {
                     var indexBackupsDirectory = new DirectoryInfo(Settings.Default.Backup_Directory);
                     try
@@ -199,203 +201,206 @@ namespace FFXIV_TexTools.Views
             int resolvedErrors = 0;
             int unresolvedCriticalErrors = 0;
             int unresolvedWarnings = 0;
-
-            await Task.Run(async () =>
+            List<(string text, string color)> textsToAdd = new List<(string text, string color)>();
+            try
             {
-                var modNum = 0;
-                if (modList.Mods.Count > 0)
+                await Task.Run(async () =>
                 {
-                    var files = modList.Mods.Keys.ToList();
-
-
-                    using (var tx = ModTransaction.BeginTransaction(true))
+                    var modNum = 0;
+                    if (modList.Mods.Count > 0)
                     {
-                        modList = await tx.GetModList();
-                        var allMods = modList.GetMods();
-                        foreach (var mod in allMods)
+                        var files = modList.Mods.Keys.ToList();
+
+
+                        using (var tx = ModTransaction.BeginTransaction(true))
                         {
-                            bool index2CorrectionNeeded = false;
-                            List<(string text, string color)> textsToAdd = new List<(string text, string color)>();
-                            if (cts.IsCancellationRequested)
+                            modList = await tx.GetModList();
+                            var allMods = modList.GetMods().ToList();
+                            foreach (var mod in allMods)
                             {
-                                cts.Token.ThrowIfCancellationRequested();
-                                return;
-                            }
-
-                            var df = IOUtil.GetDataFileFromPath(mod.FilePath);
-                            var iFile = await tx.GetIndexFile(df);
-                            long index1Offset = iFile.Get8xDataOffsetIndex1(mod.FilePath);
-                            long index2Offset = iFile.Get8xDataOffsetIndex2(mod.FilePath);
-
-                            var fileName = Path.GetFileName(mod.FilePath);
-
-                            var tabs = "";
-                            if (fileName.Length < 21 && fileName.Length > 12)
-                            {
-                                tabs = "\t";
-                            }
-                            else if (fileName.Length < 12)
-                            {
-                                tabs = "\t\t";
-                            }
-
-                            bool purgeMod = false;
-
-                            textsToAdd.Add(($"\t{fileName}{tabs}", textColor));
-
-                            if (mod.OriginalOffset8x < 0)
-                            {
-                                textsToAdd.Add(("\t\u2716\n", "Red"));
-                                textsToAdd.Add(($"\tOriginal FFXIV Offset is Invalid.  Unrecoverable ModList state.\n\t Please use [Download Index Backups] =>  [Start Over].\n".L(), "Red"));
-                                unresolvedCriticalErrors++;
-                            }
-                            else if (mod.ModOffset8x < 0)
-                            {
-                                textsToAdd.Add(("\t\u2716\n", "Red"));
-                                textsToAdd.Add(($"\tMod Data Offset is invalid. \n\t The Mod will be disabled, deleted, and the mod slot will be purged from the ModList.\n".L(), "Red"));
-                                purgeMod = true;
-                            }
-                            else
-                            {
-                                textsToAdd.Add(("\t\u2714", "Green"));
-                            }
-
-                            uint fileType = 0;
-                            try
-                            {
-                                fileType = await tx.GetSqPackType(mod.DataFile, mod.ModOffset8x);
-                            }
-                            catch (Exception ex)
-                            {
-                                textsToAdd.Add(("\t\u2716\n", "Red"));
-                                textsToAdd.Add(($"\tError: {ex.Message}\n", "Red"));
-                            }
-
-                            if (fileType != 2 && fileType != 3 && fileType != 4)
-                            {
-                                textsToAdd.Add(("\t\u2716\n", "Red"));
-                                textsToAdd.Add(($"\t{string.Format(UIStrings.ProblemCheck_UnkType, fileType)} [{mod.ModOffset8x}, {((mod.ModOffset8x / 8) & 0x0F) / 2}]\n", "Red"));
-                                textsToAdd.Add(($"\tThe Mod will automatically be disabled and deleted.\n".L(), "Red"));
-                                purgeMod = true;
-                            }
-                            else
-                            {
-                                textsToAdd.Add(("\t\u2714", "Green"));
-                            }
-
-                            try
-                            {
-                                textsToAdd.Add(("\t\u2714", "Green"));
-                                await tx.ReadFile(mod.DataFile, mod.ModOffset8x, false);
-                            } catch
-                            {
-                                textsToAdd.Add(("\t\u2716\n", "Red"));
-                                textsToAdd.Add(($"\tMod file was unreadable and could not be successfully decompressed.\n", "Red"));
-                                textsToAdd.Add(($"\tThe Mod will automatically be disabled and deleted.\n".L(), "Red"));
-                                purgeMod = true;
-                            }
-
-                            // If the file exists in both indexes, but has a DIFFERENT index in index2, and neither are synonyms.
-                            if (index1Offset != index2Offset && index1Offset != 1 && index2Offset != 1)
-                            {
-                                textsToAdd.Add(("\t\u2716\n", "Orange"));
-                                textsToAdd.Add(($"Index 1/2 Mismatch: Index Values will be repaired.\n".L(), "Orange"));
-                                index2CorrectionNeeded = true;
-                            }
-                            else
-                            {
-                                textsToAdd.Add(("\t\u2714", "Green"));
-                            }
-
-
-                            if(!Dat.IsOffsetSane(mod.DataFile, mod.OriginalOffset8x))
-                            {
-                                throw new Exception("Mod File: " + mod.FilePath + " has an unrecoverable original offset.  A [Start Over] with clean index backups is required.");
-                            }
-
-                            if(!Dat.IsOffsetSane(mod.DataFile, mod.ModOffset8x))
-                            {
-                                textsToAdd.Add(("\t\u2716\n", "Red"));
-                                textsToAdd.Add(($"\tMod points to a non-existent DAT file.\n", "Red"));
-                                textsToAdd.Add(($"\tThe Mod will automatically be disabled and deleted.\n".L(), "Red"));
-                                purgeMod = true;
-                            }
-
-
-                            textsToAdd.Add(("\t\u2714\n", "Green"));
-
-
-                            if (index2CorrectionNeeded)
-                            {
-                                try
+                                textsToAdd = new List<(string text, string color)>();
+                                bool index2CorrectionNeeded = false;
+                                if (cts.IsCancellationRequested)
                                 {
-                                    iFile.RepairIndexValue(mod.FilePath);
-                                    resolvedErrors++;
+                                    cts.Token.ThrowIfCancellationRequested();
+                                    return;
                                 }
-                                catch(Exception ex)
+
+                                var df = IOUtil.GetDataFileFromPath(mod.FilePath);
+                                var iFile = await tx.GetIndexFile(df);
+                                long index1Offset = iFile.Get8xDataOffsetIndex1(mod.FilePath);
+                                long index2Offset = iFile.Get8xDataOffsetIndex2(mod.FilePath);
+
+                                var fileName = mod.FilePath;
+
+
+                                bool purgeMod = false;
+
+                                textsToAdd.Add(($"\t{fileName}\n", textColor));
+
+                                if (mod.OriginalOffset8x < 0)
                                 {
-                                    textsToAdd.Add((ex.Message, "Red"));
-                                    textsToAdd.Add(($"Critical Error: Unable to Correct Index Discrepency for Mod: {mod.FilePath._()}\n\tPlease use [Download Index Backups] =>  [Start Over]".L(), "Red"));
+                                    textsToAdd.Add(("\t\u2716\n", "Red"));
+                                    textsToAdd.Add(($"\tOriginal FFXIV Offset is Invalid.  Unrecoverable ModList state.\n\t Please use [Download Index Backups] =>  [Start Over].\n".L(), "Red"));
                                     unresolvedCriticalErrors++;
                                 }
-                            }
+                                else if (mod.ModOffset8x < 0)
+                                {
+                                    textsToAdd.Add(("\t\u2716\n", "Red"));
+                                    textsToAdd.Add(($"\tMod Data Offset is invalid. \n\t The Mod will be disabled, deleted, and the mod slot will be purged from the ModList.\n".L(), "Red"));
+                                    purgeMod = true;
+                                }
+                                else
+                                {
+                                    textsToAdd.Add(("\t\u2714", "Green"));
+                                }
 
-                            if (purgeMod)
-                            {
-                                // Attempt to disable the mod.
+                                uint fileType = 0;
                                 try
                                 {
-                                    // Delete the Mod
-                                    await Modding.DeleteMod(mod.FilePath, tx);
-                                    resolvedErrors++;
+                                    fileType = await tx.GetSqPackType(mod.DataFile, mod.ModOffset8x);
+                                }
+                                catch (Exception ex)
+                                {
+                                    textsToAdd.Add(("\t\u2716\n", "Red"));
+                                    textsToAdd.Add(($"\tError: {ex.Message}\n", "Red"));
+                                }
+
+                                if (fileType != 2 && fileType != 3 && fileType != 4)
+                                {
+                                    textsToAdd.Add(("\t\u2716\n", "Red"));
+                                    textsToAdd.Add(($"\t{string.Format(UIStrings.ProblemCheck_UnkType, fileType)} [{mod.ModOffset8x}, {((mod.ModOffset8x / 8) & 0x0F) / 2}]\n", "Red"));
+                                    textsToAdd.Add(($"\tThe Mod will automatically be disabled and deleted.\n".L(), "Red"));
+                                    purgeMod = true;
+                                }
+                                else
+                                {
+                                    textsToAdd.Add(("\t\u2714", "Green"));
+                                }
+
+                                try
+                                {
+                                    textsToAdd.Add(("\t\u2714", "Green"));
+                                    await tx.ReadFile(mod.DataFile, mod.ModOffset8x, false);
                                 }
                                 catch
                                 {
-                                    textsToAdd.Add(($"Critical Error: Unable to Disable or Delete Mod: {mod.FilePath._()}\n\tPlease use [Download Index Backups] =>  [Start Over]".L(), "Red"));
-                                    unresolvedCriticalErrors++;
+                                    textsToAdd.Add(("\t\u2716\n", "Red"));
+                                    textsToAdd.Add(($"\tMod file was unreadable and could not be successfully decompressed.\n", "Red"));
+                                    textsToAdd.Add(($"\tThe Mod will automatically be disabled and deleted.\n".L(), "Red"));
+                                    purgeMod = true;
                                 }
+
+                                // If the file exists in both indexes, but has a DIFFERENT index in index2, and neither are synonyms.
+                                if (index1Offset != index2Offset && index1Offset != 1 && index2Offset != 1)
+                                {
+                                    textsToAdd.Add(("\t\u2716\n", "Orange"));
+                                    textsToAdd.Add(($"Index 1/2 Mismatch: Index Values will be repaired.\n".L(), "Orange"));
+                                    index2CorrectionNeeded = true;
+                                }
+                                else
+                                {
+                                    textsToAdd.Add(("\t\u2714", "Green"));
+                                }
+
+                                if (!Dat.IsOffsetSane(mod.DataFile, mod.OriginalOffset8x, true))
+                                {
+                                    throw new Exception("Mod File: " + mod.FilePath + " has an unrecoverable original offset.  A [Start Over] with clean index backups is required.");
+                                }
+
+                                if (!Dat.IsOffsetSane(mod.DataFile, mod.ModOffset8x))
+                                {
+                                    textsToAdd.Add(("\t\u2716\n", "Red"));
+                                    textsToAdd.Add(($"\tMod points to a non-existent DAT file.\n", "Red"));
+                                    textsToAdd.Add(($"\tThe Mod will automatically be disabled and deleted.\n".L(), "Red"));
+                                    purgeMod = true;
+                                }
+
+
+                                textsToAdd.Add(("\t\u2714\n", "Green"));
+
+
+                                if (index2CorrectionNeeded)
+                                {
+                                    try
+                                    {
+                                        iFile.RepairIndexValue(mod.FilePath);
+                                        resolvedErrors++;
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        textsToAdd.Add((ex.Message, "Red"));
+                                        textsToAdd.Add(($"Critical Error: Unable to Correct Index Discrepency for Mod: {mod.FilePath._()}\n\tPlease use [Download Index Backups] =>  [Start Over]".L(), "Red"));
+                                        unresolvedCriticalErrors++;
+                                    }
+                                }
+
+                                if (purgeMod)
+                                {
+                                    // Attempt to disable the mod.
+                                    try
+                                    {
+                                        // Delete the Mod
+                                        await Modding.DeleteMod(mod.FilePath, tx);
+                                        resolvedErrors++;
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        throw new Exception("Unable to remove mod file:" + mod.FilePath + "\n\n" + ex.Message);
+                                    }
+                                }
+
+                                await Dispatcher.InvokeAsync(() =>
+                                {
+                                    progress.Report((++modNum, modList.Mods.Count));
+                                    foreach (var entry in textsToAdd)
+                                    {
+                                        AddText(entry.text, entry.color);
+                                    }
+                                    cfpTextBox.ScrollToEnd();
+                                });
                             }
 
-                            await Dispatcher.InvokeAsync(() =>
-                            {
-                                progress.Report((++modNum, modList.Mods.Count));
-                                foreach (var entry in textsToAdd)
-                                {
-                                    AddText(entry.text, entry.color);
-                                }
-                                cfpTextBox.ScrollToEnd();
-                            });
+                            // Commit the changes.
+                            await ModTransaction.CommitTransaction(tx);
                         }
 
-                        // Commit the changes.
-                        await ModTransaction.CommitTransaction(tx);
                     }
-                }
-                else
-                {
-                    Dispatcher.Invoke(() => AddText($"\t{UIStrings.ProblemCheck_NoEntries}\n", "Orange"));
-                }
-
-
-
-                await Dispatcher.InvokeAsync(() =>
-                {
-                    AddText($"Scanned {modNum._()} modded files.\n".L(), textColor);
-                    if(unresolvedCriticalErrors > 0)
+                    else
                     {
-                        AddText($"\t{unresolvedCriticalErrors._()} Unresolved Critical Errors (May cause crashes in game)\n".L(), "Red");
-                    }
-                    if (unresolvedWarnings > 0)
-                    {
-                        AddText($"\t{unresolvedWarnings._()} Warnings (May cause invisible items/models in game)\n".L(), "Orange");
+                        Dispatcher.Invoke(() => AddText($"\t{UIStrings.ProblemCheck_NoEntries}\n", "Orange"));
                     }
 
-                    if(resolvedErrors > 0)
+
+
+                    await Dispatcher.InvokeAsync(() =>
                     {
-                        AddText($"\t{resolvedErrors._()} Resolved Errors (Mod files disabled/deleted)\n".L(), textColor);
-                    }
-                });
+                        AddText($"Scanned {modNum._()} modded files.\n".L(), textColor);
+                        if (unresolvedCriticalErrors > 0)
+                        {
+                            AddText($"\t{unresolvedCriticalErrors._()} Unresolved Critical Errors (May cause crashes in game)\n".L(), "Red");
+                        }
+                        if (unresolvedWarnings > 0)
+                        {
+                            AddText($"\t{unresolvedWarnings._()} Warnings (May cause invisible items/models in game)\n".L(), "Orange");
+                        }
+
+                        if (resolvedErrors > 0)
+                        {
+                            AddText($"\t{resolvedErrors._()} Resolved Errors (Mod files disabled/deleted)\n".L(), textColor);
+                        }
+                    });
                 }, cts.Token);
+            }
+            catch
+            {
+                foreach (var entry in textsToAdd)
+                {
+                    AddText(entry.text, entry.color);
+                }
+                cfpTextBox.ScrollToEnd();
+                throw;
+            }
         }
 
         /// <summary>
@@ -498,7 +503,7 @@ namespace FFXIV_TexTools.Views
         private void AddText(string text, string color)
         {
             var bc = new BrushConverter();
-            var tr = new TextRange(cfpTextBox.Document.ContentEnd, cfpTextBox.Document.ContentEnd) {Text = text};
+            var tr = new TextRange(cfpTextBox.Document.ContentEnd, cfpTextBox.Document.ContentEnd) { Text = text };
             try
             {
                 tr.ApplyPropertyValue(TextElement.ForegroundProperty, bc.ConvertFromString(color));
