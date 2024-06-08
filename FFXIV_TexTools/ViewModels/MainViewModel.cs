@@ -309,7 +309,6 @@ namespace FFXIV_TexTools.ViewModels
         {
 
             FlexibleMessageBox.Show(_mainWindow.Win32Window, UIMessages.PatchDetectedMessage, "Post Patch Cleanup Starting".L(), MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
-            MainWindow.MakeHighlander();
 
 
             await _mainWindow.LockUi("Performing Post-Patch Maintenence".L(), "This may take a few minutes if you have many mods installed.".L(), this);
@@ -322,6 +321,7 @@ namespace FFXIV_TexTools.ViewModels
                 await _mainWindow.UnlockUi();
                 return;
             }
+            MainWindow.MakeHighlander();
 
             var originalWriteSetting = XivCache.GameWriteEnabled;
             XivCache.GameWriteEnabled = true;

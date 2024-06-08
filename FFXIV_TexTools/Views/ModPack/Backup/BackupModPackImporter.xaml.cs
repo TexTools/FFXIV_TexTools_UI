@@ -33,8 +33,6 @@ namespace FFXIV_TexTools.Views
         {
             InitializeComponent();
 
-            MainWindow.MakeHighlander();
-
             _modpackDirectory = modPackDirectory;
             _modsJsons = modPackJson.SimpleModsList;
             _messageInImport = messageInImport;
