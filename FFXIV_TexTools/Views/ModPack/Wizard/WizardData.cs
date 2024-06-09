@@ -1111,7 +1111,6 @@ namespace FFXIV_TexTools.Views.Wizard
 
             var needsTexFix = TTMP.DoesModpackNeedTexFix(mpl);
 
-            var headerImage = mpl.GetHeaderImagePath();
 
             data.DataPages = new List<WizardPageEntry>();
             foreach (var p in mpl.ModPackPages)
