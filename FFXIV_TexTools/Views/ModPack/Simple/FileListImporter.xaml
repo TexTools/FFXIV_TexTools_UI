@@ -7,59 +7,63 @@
         xmlns:controls="clr-namespace:FFXIV_TexTools.Views.Controls"
         xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
-        Title="Import Files" Height="600" Width="1200">
+        Title="Import Files" Height="700" Width="1000">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="160"></RowDefinition>
+            <RowDefinition Height="200"></RowDefinition>
             <RowDefinition Height="10"></RowDefinition>
             <RowDefinition Height="1*"></RowDefinition>
             <RowDefinition Height="40"></RowDefinition>
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="276"/>
+            <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
 
-        <Border Margin="4" CornerRadius="8" BorderThickness="1" BorderBrush="Transparent">
+        <GroupBox Grid.Column="1" Header="Preview">
+        <Border Grid.Column="2" Margin="4" CornerRadius="8" BorderThickness="1" BorderBrush="Transparent">
             <Image Source="{Binding Path=HeaderSource}" ></Image>
         </Border>
+        </GroupBox>
 
-        <Grid Grid.Column="1">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="40"></RowDefinition>
-                <RowDefinition Height="40"></RowDefinition>
-                <RowDefinition Height="1*"></RowDefinition>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="80"></ColumnDefinition>
-                <ColumnDefinition Width="170"></ColumnDefinition>
-                <ColumnDefinition Width="80"></ColumnDefinition>
-                <ColumnDefinition Width="1*"></ColumnDefinition>
-            </Grid.ColumnDefinitions>
-
-
-            <Label Content="Modpack:" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Center"></Label>
-            <Label Content="{Binding Source={x:Static resx:UIStrings.Author_colon}}" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Center"></Label>
-
-            <Label Content="{Binding Path=ModpackName}" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold"></Label>
-            <Label Content="{Binding Path=ModpackAuthor}" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center"></Label>
+        <GroupBox Grid.Column="0" Header="Info">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="40"></RowDefinition>
+                    <RowDefinition Height="40"></RowDefinition>
+                    <RowDefinition Height="1*"></RowDefinition>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="80"></ColumnDefinition>
+                    <ColumnDefinition Width="170"></ColumnDefinition>
+                    <ColumnDefinition Width="80"></ColumnDefinition>
+                    <ColumnDefinition Width="300"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
 
 
-            <Label Content="{Binding Source={x:Static resx:UIStrings.Version_colon}}" Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center"></Label>
-            <Label Content="Url:" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center"></Label>
+                <Label Content="Modpack:" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Center"></Label>
+                <Label Content="{Binding Source={x:Static resx:UIStrings.Author_colon}}" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Center"></Label>
 
-            <Label Content="{Binding Path=ModpackVersion}" Grid.Column="3" HorizontalAlignment="Left" VerticalAlignment="Center"></Label>
-            <TextBlock Text="{Binding Path=ModpackUrl}" Grid.Column="3" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center" TextDecorations="Underline" FontStyle="Italic" FontFamily="Courier New" Foreground="#FF809FFF" PreviewMouseDown="Url_Click"></TextBlock>
+                <Label Content="{Binding Path=ModpackName}" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold"></Label>
+                <Label Content="{Binding Path=ModpackAuthor}" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center"></Label>
 
-            <TextBox TextWrapping="Wrap" Width="600" VerticalScrollBarVisibility="Visible" IsReadOnly="True" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="5" Margin="5" Text="{Binding Path=ModpackDescription}" HorizontalAlignment="Left"></TextBox>
-        </Grid>
 
+                <Label Content="{Binding Source={x:Static resx:UIStrings.Version_colon}}" Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center"></Label>
+                <Label Content="Url:" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center"></Label>
+
+                <Label Content="{Binding Path=ModpackVersion}" Grid.Column="3" HorizontalAlignment="Left" VerticalAlignment="Center"></Label>
+                <TextBlock Text="{Binding Path=ModpackUrl}" Grid.Column="3" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center" TextDecorations="Underline" FontStyle="Italic" FontFamily="Courier New" Foreground="#FF809FFF" PreviewMouseDown="Url_Click"></TextBlock>
+
+                <TextBox TextWrapping="Wrap" VerticalScrollBarVisibility="Visible" IsReadOnly="True" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="5" Margin="5" Text="{Binding Path=ModpackDescription}"/>
+            </Grid>
+        </GroupBox>
+        
         <Separator BorderBrush="{DynamicResource NormalBorderBrush}" Background="{DynamicResource NormalBorderBrush}" BorderThickness="4" Height="4" Grid.Row="1" Grid.ColumnSpan="10"/>
 
-        <controls:FileListControl x:Name="FileList" Grid.Row="2" Grid.ColumnSpan="2"/>
+        <controls:FileListControl x:Name="FileList" Grid.Row="2" Grid.ColumnSpan="3"/>
 
-        <Button Grid.Row="3" Grid.ColumnSpan="2" Content="Import Files" HorizontalAlignment="Right" Width="120" VerticalAlignment="Center" Margin="10,0,10,0" Click="Import_Click"></Button>
-        <Button Grid.Row="3" Grid.ColumnSpan="2" Content="Cancel" HorizontalAlignment="Left" Width="120" VerticalAlignment="Center" Margin="10,0,10,0" Click="Cancel_Click"></Button>
+        <Button Grid.Row="3" Grid.ColumnSpan="3" Content="Import Files" HorizontalAlignment="Right" Width="120" VerticalAlignment="Center" Margin="10,0,10,0" Click="Import_Click"></Button>
+        <Button Grid.Row="3" Grid.ColumnSpan="3" Content="Cancel" HorizontalAlignment="Left" Width="120" VerticalAlignment="Center" Margin="10,0,10,0" Click="Cancel_Click"></Button>
     </Grid>
 </mah:MetroWindow>

@@ -975,6 +975,8 @@ namespace FFXIV_TexTools.Views.Wizard
             page.Author = meta.Author;
             page.Description = meta.Description;
             page.Name = meta.Name;
+
+
             if (!string.IsNullOrWhiteSpace(meta.Image))
             {
                 page.Image = Path.Combine(unzipPath, meta.Image);
@@ -982,6 +984,11 @@ namespace FFXIV_TexTools.Views.Wizard
             else
             {
                 page.Image = "";
+                var hImage = pmp.GetHeaderImage();
+                if (!string.IsNullOrWhiteSpace(hImage))
+                {
+                    meta.Image = Path.Combine(unzipPath, hImage);
+                }
             }
             return page;
         }
@@ -994,6 +1001,14 @@ namespace FFXIV_TexTools.Views.Wizard
             page.Version = wiz.Version;
             page.Author = wiz.Author;
             page.Description = wiz.Description;
+
+            var img = wiz.GetHeaderImagePath();
+            if (!string.IsNullOrWhiteSpace(img))
+            {
+                page.Image = Path.Combine(unzipPath, img);
+            }
+            
+
             return page;
         }
     }
@@ -1095,6 +1110,8 @@ namespace FFXIV_TexTools.Views.Wizard
             data.RawSource = mpl;
 
             var needsTexFix = TTMP.DoesModpackNeedTexFix(mpl);
+
+            var headerImage = mpl.GetHeaderImagePath();
 
             data.DataPages = new List<WizardPageEntry>();
             foreach (var p in mpl.ModPackPages)

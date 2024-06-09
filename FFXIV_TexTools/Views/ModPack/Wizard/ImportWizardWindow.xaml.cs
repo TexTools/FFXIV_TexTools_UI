@@ -29,6 +29,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Interop;
+using System.Windows.Media;
 using System.Windows.Shapes;
 using TeximpNet.DDS;
 using Xceed.Wpf.Toolkit;
@@ -121,6 +122,17 @@ namespace FFXIV_TexTools.Views.Wizard
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(FinalizeEnabled)));
             }
         }
+
+        private ImageSource _HeaderSource;
+        public ImageSource HeaderSource
+        {
+            get => _HeaderSource;
+            set
+            {
+                _HeaderSource = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(HeaderSource)));
+            }
+        }
         public ImportWizardWindow(WizardData data, string path)
         {
             DataContext = this;
@@ -136,6 +148,14 @@ namespace FFXIV_TexTools.Views.Wizard
             ModPackDescription.Text = data.MetaPage.Description;
             ModPackUrlLabel.Text = data.MetaPage.Url;
             ModPackUrlLabel.PreviewMouseLeftButtonDown += ModPackUrlLabel_PreviewMouseLeftButtonDown;
+
+            if (string.IsNullOrWhiteSpace(data.MetaPage.Image) || !File.Exists(data.MetaPage.Image))
+            {
+                HeaderSource = ViewHelpers.GetDefaultModImage();
+            } else
+            {
+                HeaderSource = ViewHelpers.SafeBitmapFromFile(data.MetaPage.Image);
+            }
 
             _PageCount = data.DataPages.Count;
 

@@ -21,50 +21,62 @@
                  NextButtonVisibility="Collapsed"
                  CancelButtonVisibility="Collapsed"
                  IsTabStop="False" Background="{x:Null}">
-            <xctk:WizardPage Title="{Binding Source={x:Static resx:UIStrings.Mod_Pack_Importer}}" Description="{Binding Source={x:Static resx:UIStrings.Go_through_the_wizard_and_select_relevant_options_to_import_mod_pack}}" PageType="Interior" Background="{x:Null}" HeaderBackground="{x:Null}">
+            <xctk:WizardPage PageType="Blank" Background="{x:Null}">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
-                        <RowDefinition/>
+                        <RowDefinition Height="1*"/>
                     </Grid.RowDefinitions>
-                    <Grid Grid.Row="0">
-                        <Grid Grid.Column="0">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition></ColumnDefinition>
-                                <ColumnDefinition></ColumnDefinition>
-                            </Grid.ColumnDefinitions>
-                            <StackPanel Grid.Column="0" Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
-                                <Label Content="{Binding Source={x:Static resx:UIStrings.Name_colon}}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                                <Label Name="ModPackNameLabel" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold"/>
-                            </StackPanel>
-                            <StackPanel Grid.Column="0" Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
-                                <Label Content="{Binding Source={x:Static resx:UIStrings.Author_colon}}" VerticalAlignment="Center"/>
-                                <Label Name="ModPackAuthorLabel" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                            </StackPanel>
-                            <StackPanel Grid.Column="1" Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
-                                <Label Content="{Binding Source={x:Static resx:UIStrings.Version_colon}}"  VerticalAlignment="Center"/>
-                                <Label Name="ModPackVersionLabel" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold"/>
-                            </StackPanel>
-                            <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
-                                <Label Content="Url:"  VerticalAlignment="Center"/>
-                                <TextBlock Name="ModPackUrlLabel" VerticalAlignment="Center" HorizontalAlignment="Center" TextDecorations="Underline" FontStyle="Italic" FontFamily="Courier New" Foreground="#FF809FFF"></TextBlock>
-                            </StackPanel>
+
+                    <GroupBox Header="Preview" Grid.Row="0">
+                        <Grid  Margin="5" Height="150">
+                            <Image Source="{Binding Path=HeaderSource}" />
                         </Grid>
-                    </Grid>
-                    <Grid Grid.Row="1">
+                    </GroupBox>
+                    
+                    <GroupBox Grid.Row="1" Header="Info">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition/>
                             </Grid.RowDefinitions>
-                            <Label Content="{Binding Source={x:Static resx:UIStrings.Description}}"/>
-                            <TextBox x:Name="ModPackDescription" Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" IsReadOnly="True"/>
+                            
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition></ColumnDefinition>
+                                    <ColumnDefinition></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                    <Label Content="{Binding Source={x:Static resx:UIStrings.Name_colon}}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                    <Label Name="ModPackNameLabel" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="0" Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                    <Label Content="{Binding Source={x:Static resx:UIStrings.Author_colon}}" VerticalAlignment="Center"/>
+                                    <Label Name="ModPackAuthorLabel" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="1" Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                    <Label Content="{Binding Source={x:Static resx:UIStrings.Version_colon}}"  VerticalAlignment="Center"/>
+                                    <Label Name="ModPackVersionLabel" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                    <Label Content="Url:"  VerticalAlignment="Center"/>
+                                    <TextBlock Name="ModPackUrlLabel" VerticalAlignment="Center" HorizontalAlignment="Center" TextDecorations="Underline" FontStyle="Italic" FontFamily="Courier New" Foreground="#FF809FFF"></TextBlock>
+                                </StackPanel>
+                            </Grid>
+                            <Grid Grid.Row="1">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+                                <Label Content="{Binding Source={x:Static resx:UIStrings.Description}}"/>
+                                <TextBox x:Name="ModPackDescription" Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" IsReadOnly="True"/>
+                            </Grid>
                         </Grid>
-                    </Grid>
+                    </GroupBox>
                 </Grid>
             </xctk:WizardPage>
         </xctk:Wizard>
