@@ -667,11 +667,6 @@ namespace FFXIV_TexTools.Views.Controls
             {
                 return;
             }
-
-            if(format == XivTexFormat.BC7)
-            {
-                this.ShowWarning("Texture Format Warning", "TexTools does not currently have a BC7 Compressor for raw pixel data.\n\nYou will not be able to save the resulting image.");
-            }
         }
 
 
@@ -684,7 +679,6 @@ namespace FFXIV_TexTools.Views.Controls
 
             LastImportOptions = options;
 
-            // Override this so we can pass in the user's requested texture format.
             return await SmartImport.CreateUncompressedFile(externalFile, internalFile, tx, options);
         }
     }
