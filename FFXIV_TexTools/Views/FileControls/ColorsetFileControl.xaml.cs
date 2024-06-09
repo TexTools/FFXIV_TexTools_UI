@@ -452,7 +452,7 @@ namespace FFXIV_TexTools.Views.Controls
                 DyeBit8.Content = "Dye Fresnel Albedo";
                 DyeBit9.Content = "Dye Anisotropy";
                 DyeBit10.Content = "Dye Tile Unknown";
-                DyeBit11.Content = "Dye Wetness";
+                DyeBit11.Content = "Dye Wetness(?)";
                 DyeBit5.Visibility = Visibility.Visible;
                 DyeBit6.Visibility = Visibility.Visible;
                 DyeBit7.Visibility = Visibility.Visible;
