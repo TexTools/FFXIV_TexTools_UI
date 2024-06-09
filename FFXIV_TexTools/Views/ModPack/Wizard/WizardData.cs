@@ -880,6 +880,8 @@ namespace FFXIV_TexTools.Views.Wizard
             pg.Description = Description;
             pg.Options = new List<PMPOptionJson>();
             pg.Priority = Priority;
+            pg.DefaultSettings = Selection;
+            pg.SelectedSettings = Selection;
             pg.Page = page;
 
             pg.Image = WizardHelpers.WriteImage(Image, tempFolder, IOUtil.MakePathSafe(Name));
