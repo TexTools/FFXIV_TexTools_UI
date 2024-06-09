@@ -217,6 +217,9 @@ move $(TargetDir)*.dll $(TargetDir)lib</PostBuildEvent>
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <None Update="Resources\default_mod_header.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Views\FileControls\MaterialFileControl.xaml">
