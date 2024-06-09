@@ -68,7 +68,7 @@ namespace FFXIV_TexTools.Views.Wizard
                 return "";
             }
 
-            var path = "images/" + newName + ".png";
+            var path = Path.Combine("images", newName + ".png");
 
             var img = SixLabors.ImageSharp.Image.Load(currentPath);
             var fName = Path.Combine(tempFolder, path);
@@ -297,30 +297,12 @@ namespace FFXIV_TexTools.Views.Wizard
             }
             set
             {
+                if (_Selected == value) return;
                 _Selected = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Selected)));
 
                 var index = _Group.Options.IndexOf(this);
                 if (index < 0) return;
-
-                if(OptionType == EOptionType.Single)
-                {
-                    if (_Selected)
-                    {
-                        _Group.UserSelection = index;
-                    }
-                } else
-                {
-                    var mask = 1 << index;
-                    if (_Selected)
-                    {
-                        _Group.UserSelection |= mask;
-                    }
-                    else
-                    {
-                        _Group.UserSelection &= ~mask;
-                    }
-                }
 
                 if(GroupType == EGroupType.Imc && Selected == true)
                 {
@@ -584,12 +566,36 @@ namespace FFXIV_TexTools.Views.Wizard
         public string Description;
         public string Image;
 
-
         // Int or Bitflag depending on OptionType.
-        public int DefaultSelection;
-
-        // Int or Bitflag depending on OptionType.
-        public int UserSelection;
+        public int Selection
+        {
+            get
+            {
+                if(this.OptionType == EOptionType.Single)
+                {
+                    var op = Options.FirstOrDefault(x => x.Selected);
+                    if(op == null)
+                    {
+                        return 0;
+                    }
+                    return Options.IndexOf(op);
+                }
+                else
+                {
+                    var total = 0;
+                    for(int i = 0; i < Options.Count; i++)
+                    {
+                        if (Options[i].Selected)
+                        {
+                            uint mask = 1;
+                            uint shifted = mask << i;
+                            total |= (int)shifted;
+                        }
+                    }
+                    return total;
+                }
+            }
+        }
 
         public EOptionType OptionType;
 
@@ -727,8 +733,6 @@ namespace FFXIV_TexTools.Views.Wizard
             var group = new WizardGroupEntry();
             group.Options = new List<WizardOptionEntry>();
             group.ModOption = pGroup;
-            group.DefaultSelection = pGroup.DefaultSettings;
-            group.UserSelection = pGroup.DefaultSettings;
 
             group.OptionType = pGroup.Type == "Single" ? EOptionType.Single : EOptionType.Multi;
             group.Name = pGroup.Name;
@@ -766,12 +770,12 @@ namespace FFXIV_TexTools.Views.Wizard
 
                 if (group.OptionType == EOptionType.Single)
                 {
-                    wizOp.Selected = group.UserSelection == idx;
+                    wizOp.Selected = pGroup.DefaultSettings == idx;
                 }
                 else
                 {
                     var bit = 1 << idx;
-                    wizOp.Selected = (group.UserSelection & bit) > 0;
+                    wizOp.Selected = (pGroup.DefaultSettings & bit) != 0;
                 }
                 group.Options.Add(wizOp);
 
@@ -872,19 +876,18 @@ namespace FFXIV_TexTools.Views.Wizard
                 pg.Type = OptionType.ToString();
             }
 
-            pg.Name = Name;
+            pg.Name = Name.Trim();
             pg.Description = Description;
             pg.Options = new List<PMPOptionJson>();
             pg.Priority = Priority;
-            pg.SelectedSettings = UserSelection;
-            pg.DefaultSettings = UserSelection;
             pg.Page = page;
 
             pg.Image = WizardHelpers.WriteImage(Image, tempFolder, IOUtil.MakePathSafe(Name));
 
             foreach (var option in Options)
             {
-                var optionPrefix = IOUtil.MakePathSafe(Name) + "/" + IOUtil.MakePathSafe(option.Name) + "/";
+                option.Name = option.Name.Trim();
+                var optionPrefix = IOUtil.MakePathSafe(pg.Name) + "/" + IOUtil.MakePathSafe(option.Name) + "/";
                 var imgName = optionPrefix.Substring(0, optionPrefix.Length - 1);
                 if (oneOption)
                 {
@@ -1296,6 +1299,7 @@ namespace FFXIV_TexTools.Views.Wizard
                     {
                         foreach (var g in p.Groups)
                         {
+                            g.Name = g.Name.Trim();
                             var pg = await g.ToPmpGroup(tempFolder, identifiers, page);
                             pmp.Groups.Add(pg);
                         }
@@ -1324,7 +1328,7 @@ namespace FFXIV_TexTools.Views.Wizard
                 foreach(var g in p.Groups)
                 {
                     var pg = (g.ModOption as PMPGroupJson);
-                    pg.SelectedSettings = g.UserSelection;
+                    pg.SelectedSettings = g.Selection;
                 }
             }
         }
