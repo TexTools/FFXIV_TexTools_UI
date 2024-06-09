@@ -79,7 +79,7 @@ namespace FFXIV_TexTools.Views.Controls
         private TTModel Model;
         private Helpers.ViewportCanvasRenderer _CanvasRenderer = null;
 
-
+        private bool _ViewportLoaded = false;
         private HashSet<string> _ChildFiles = new HashSet<string>();
 
         public ModelFileControl()
@@ -97,6 +97,13 @@ namespace FFXIV_TexTools.Views.Controls
             ViewportVM.ZoomExtentsRequested += ZoomExtentsRequested;
             ViewportVM.VisibleMeshChanged += VisibleMeshChanged;
 
+            Viewport.Loaded += Viewport_Loaded;
+
+        }
+
+        private void Viewport_Loaded(object sender, RoutedEventArgs e)
+        {
+            _ViewportLoaded = true;
         }
 
         public override void INTERNAL_ClearFile()
@@ -136,6 +143,18 @@ namespace FFXIV_TexTools.Views.Controls
         }
         protected async Task<bool> LoadModel(TTModel model) {
             Model = model;
+
+            var maxDelay = 3000;
+            var delay = 0;
+            while (!_ViewportLoaded)
+            {
+                await Task.Delay(10);
+                delay += 10;
+                if(delay > maxDelay)
+                {
+                    throw new Exception("Viewport failed to initialize.");
+                }
+            }
 
             _ChildFiles.Clear();
             _ChildFiles.Add(InternalFilePath);

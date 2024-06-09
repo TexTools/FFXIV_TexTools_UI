@@ -89,11 +89,6 @@ namespace FFXIV_TexTools.Views.Controls
 
             wind.Show();
 
-            // Tiny delay to try to let the SharpDX window become sane if we're a model view.
-            if (filePath != null && filePath.EndsWith(".mdl"))
-            {
-                await Task.Delay(300);
-            }
 
             var success = true;
             if (string.IsNullOrWhiteSpace(filePath))
