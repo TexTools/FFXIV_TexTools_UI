@@ -127,11 +127,6 @@ namespace FFXIV_TexTools.Views.Controls
             {
                 _PixelChanges = value;
 
-                if(Format == XivTexFormat.BC7 && PixelChanges)
-                {
-                    Format = XivTexFormat.A8R8G8B8;
-                }
-
                 OnPropertyChanged(nameof(PixelChanges));
             }
         }
