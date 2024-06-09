@@ -21,7 +21,9 @@
             <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
 
-        <Image Grid.Row="0" Grid.Column="0" Source="{Binding Path=HeaderImage}" Margin="5"></Image>
+        <Border Margin="4" CornerRadius="8" BorderThickness="1" BorderBrush="Transparent">
+            <Image Source="{Binding Path=HeaderSource}" ></Image>
+        </Border>
 
         <Grid Grid.Column="1">
             <Grid.RowDefinitions>
@@ -53,7 +55,7 @@
             <TextBox TextWrapping="Wrap" Width="600" VerticalScrollBarVisibility="Visible" IsReadOnly="True" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="5" Margin="5" Text="{Binding Path=ModpackDescription}" HorizontalAlignment="Left"></TextBox>
         </Grid>
 
-        <Separator BorderBrush="{DynamicResource NormalBorderBrush}" Background="{DynamicResource NormalBorderBrush}" BorderThickness="4" Height="4" Grid.Row="1"/>
+        <Separator BorderBrush="{DynamicResource NormalBorderBrush}" Background="{DynamicResource NormalBorderBrush}" BorderThickness="4" Height="4" Grid.Row="1" Grid.ColumnSpan="10"/>
 
         <controls:FileListControl x:Name="FileList" Grid.Row="2" Grid.ColumnSpan="2"/>
 

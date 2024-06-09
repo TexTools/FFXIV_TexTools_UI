@@ -392,6 +392,11 @@ namespace FFXIV_TexTools.Views
                 return null;
             }
 
+            if (!File.Exists(file))
+            {
+                return null;
+            }
+
             try
             {
                 var bmp = new BitmapImage();
@@ -591,6 +596,17 @@ namespace FFXIV_TexTools.Views
                 return true;
             }
             return false;
+        }
+
+        public static BitmapImage GetDefaultModImage()
+        {
+            const string _defaultImage = "./Resources/default_mod_header.jpg";
+            if (!File.Exists(_defaultImage))
+            {
+                return null;
+            }
+
+            return SafeBitmapFromFile(_defaultImage);
         }
     }
 }

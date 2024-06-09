@@ -27,6 +27,7 @@ using xivModdingFramework.Mods.DataContainers;
 using xivModdingFramework.Mods.Enums;
 using xivModdingFramework.Mods.FileTypes;
 using xivModdingFramework.SqPack.FileTypes;
+using static xivModdingFramework.Mods.DataContainers.ModPackData;
 using Path = System.IO.Path;
 
 
@@ -86,6 +87,16 @@ namespace FFXIV_TexTools.Views.Simple
             }
         }
 
+        private ImageSource _HeaderSource { get; set; }
+        public ImageSource HeaderSource {
+            get => _HeaderSource;
+            set
+            {
+                _HeaderSource = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(HeaderSource)));
+            }
+        }
+
         public string ModpackDescription { get; set; }
 
         public FileListImporter(IEnumerable<string> files, string modpackPath = null)
@@ -96,33 +107,59 @@ namespace FFXIV_TexTools.Views.Simple
             InitializeComponent();
             FileList.SetFiles(files);
 
-            Task.Run(async () =>
+            _ = AsyncInit();
+
+            this.Closing += FileListImporter_Closing;
+        }
+
+        private void FileListImporter_Closing(object sender, CancelEventArgs e)
+        {
+            if(Owner != null)
             {
-                try
+                Owner.Activate();
+            }
+        }
+
+        private async Task AsyncInit()
+        {
+            ImageSource src = null;
+            try
+            {
+                var mpi = await TTMP.GetModpackInfo(_ModpackPath);
+                _Modpack = mpi.ModPack;
+                ModpackDescription = mpi.Description;
+                if (!string.IsNullOrWhiteSpace(mpi.HeaderImage))
                 {
-                    var mpi = await TTMP.GetModpackInfo(modpackPath);
-                    _Modpack = mpi.ModPack;
-                    ModpackDescription = mpi.Description;
-                } catch(Exception ex)
-                {
-                    _Modpack = new ModPack(null)
-                    {
-                        Name = Path.GetFileNameWithoutExtension(modpackPath),
-                        Author = "Unknown",
-                        Url = "",
-                        Version = "1.0",
-                    };
-                    ModpackDescription = "";
+                    src = ViewHelpers.SafeBitmapFromFile(mpi.HeaderImage);
                 }
 
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ModpackDescription)));
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ModpackAuthor)));
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ModpackUrl)));
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ModpackVersion)));
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ModpackName)));
-            });
-                
+            }
+            catch (Exception ex)
+            {
+                _Modpack = new ModPack(null)
+                {
+                    Name = Path.GetFileNameWithoutExtension(_ModpackPath),
+                    Author = "Unknown",
+                    Url = "",
+                    Version = "1.0",
+                };
+                ModpackDescription = "";
+            }
+
+            if (src == null)
+            {
+                src = ViewHelpers.GetDefaultModImage();
+            }
+
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ModpackDescription)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ModpackAuthor)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ModpackUrl)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ModpackVersion)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ModpackName)));
+
+            HeaderSource = src;
         }
+
         public static void ShowModpackImport(string modpackPath, IEnumerable<string> files, Window owner = null, bool asDialog = false)
         {
             if (owner == null)
