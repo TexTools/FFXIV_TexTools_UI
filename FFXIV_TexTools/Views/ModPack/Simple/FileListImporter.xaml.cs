@@ -180,7 +180,8 @@ namespace FFXIV_TexTools.Views.Simple
 
                 var allFiles = new Dictionary<string, FileStorageInformation>();
                 var tx = MainWindow.UserTransaction;
-                var boiler = TxBoiler.BeginWrite(ref tx);
+                var boiler = await TxBoiler.BeginWrite(tx);
+                tx = boiler.Transaction;
                 try
                 {
                     // Read Modpack basic info.

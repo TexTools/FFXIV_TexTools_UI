@@ -194,7 +194,7 @@ namespace FFXIV_TexTools
                 }
 
                 // Default to a new readonly transaction.
-                return ModTransaction.BeginTransaction();
+                return ModTransaction.BeginReadonlyTransaction();
             }
         }
 
@@ -467,7 +467,7 @@ namespace FFXIV_TexTools
 
             if (Settings.Default.OpenTransactionOnStart)
             {
-                UserTransaction = ModTransaction.BeginTransaction(true, null, null, false, false);
+                UserTransaction = await ModTransaction.BeginTransaction(true, null, null, false, false);
             }
         }
 
@@ -1246,9 +1246,9 @@ namespace FFXIV_TexTools
                 await LockUi("Rebuilding Cache".L());
                 try
                 {
-                    await Task.Run(() =>
+                    await Task.Run(async () =>
                     {
-                        XivCache.RebuildCache(XivCache.CacheVersion);
+                        await XivCache.RebuildCache(XivCache.CacheVersion);
                     });
 
                     CustomizeViewModel.UpdateCacheSettings();
@@ -1293,7 +1293,7 @@ namespace FFXIV_TexTools
                 if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
                     // Stop the worker, in case it was reading from the file for some reason.
-                    XivCache.CacheWorkerEnabled = false;
+                    await XivCache.SetCacheWorkerState(false);
 
                     //Get the path of specified file
                     var filePath = openFileDialog.FileName;
@@ -1530,7 +1530,7 @@ namespace FFXIV_TexTools
             {
                 try
                 {
-                    ModTransaction.CancelTransaction(UserTransaction, true);
+                    await ModTransaction.CancelTransaction(UserTransaction, true);
                 }
                 catch (Exception ex)
                 {
@@ -1543,7 +1543,7 @@ namespace FFXIV_TexTools
 
             try
             {
-                XivCache.CacheWorkerEnabled = false;
+                XivCache.SetCacheWorkerState(false);
             }
             catch
             {

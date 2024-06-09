@@ -912,7 +912,8 @@ namespace FFXIV_TexTools.Views.Controls
         {
             // Because of the way some of the system internals work, the single-file modpack export needs us to temporarily save the file first.
             var tx = MainWindow.UserTransaction;
-            var boiler = TxBoiler.BeginWrite(ref tx);
+            var boiler = await TxBoiler.BeginWrite(tx);
+            tx = boiler.Transaction;
             try
             {
                 if(!await SaveCurrentFile(tx))

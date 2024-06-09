@@ -489,7 +489,7 @@ namespace FFXIV_TexTools.Views.Wizard
 
             if (StandardData.Manipulations != null && StandardData.Manipulations.Count > 0) {
                 // Readonly TX for retrieving base values.
-                var tx = ModTransaction.BeginTransaction();
+                var tx = ModTransaction.BeginReadonlyTransaction();
                 var manips = await PMP.ManipulationsToMetadata(this.StandardData.Manipulations, tx);
 
                 foreach(var meta in manips.Metadatas)

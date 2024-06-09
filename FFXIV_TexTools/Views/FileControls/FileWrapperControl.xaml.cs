@@ -759,7 +759,8 @@ namespace FFXIV_TexTools.Views.Controls
             try
             {
                 var tx = MainWindow.UserTransaction;
-                var boiler = TxBoiler.BeginWrite(ref tx);
+                var boiler = await TxBoiler.BeginWrite(tx);
+                tx = boiler.Transaction;
                 try
                 {
                     // Due to the nature of the single file modpack exporter, we need to temp save the file here.

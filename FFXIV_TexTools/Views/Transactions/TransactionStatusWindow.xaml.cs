@@ -435,7 +435,7 @@ namespace FFXIV_TexTools.Views.Transactions
             }
         }
 
-        private void Cancel_Click(object sender, RoutedEventArgs e)
+        private async void Cancel_Click(object sender, RoutedEventArgs e)
         {
             try
             {
@@ -446,7 +446,7 @@ namespace FFXIV_TexTools.Views.Transactions
 
                 TxActionEnabled = false;
 
-                ModTransaction.CancelTransaction(MainWindow.UserTransaction, true);
+                await ModTransaction.CancelTransaction(MainWindow.UserTransaction, true);
             }
             catch(Exception ex)
             {
@@ -455,7 +455,7 @@ namespace FFXIV_TexTools.Views.Transactions
         }
 
 
-        private void Begin_Click(object sender, RoutedEventArgs e)
+        private async void Begin_Click(object sender, RoutedEventArgs e)
         {
             try
             {
@@ -469,7 +469,7 @@ namespace FFXIV_TexTools.Views.Transactions
                 }
 
                 TxActionEnabled = false;
-                MainWindow.UserTransaction = ModTransaction.BeginTransaction(true, null, null, false, false);
+                MainWindow.UserTransaction = await ModTransaction.BeginTransaction(true, null, null, false, false);
             }
             catch (Exception ex)
             {
@@ -710,13 +710,20 @@ namespace FFXIV_TexTools.Views.Transactions
             this.Close();
         }
 
-        private void Prepare_Click(object sender, RoutedEventArgs e)
+        private async void Prepare_Click(object sender, RoutedEventArgs e)
         {
             TxActionEnabled = false;
-            MainWindow.UserTransaction = ModTransaction.BeginTransaction(true, null, null, true, false);
+            try
+            {
+                MainWindow.UserTransaction = await ModTransaction.BeginTransaction(true, null, null, true, false);
+            }
+            catch(Exception ex)
+            {
+                ViewHelpers.ShowError("Transaction Error", "An error occurred while creating the transaction:\n\n" + ex.Message);
+            }
         }
 
-        private void RestorePenumbraBackup_Click(object sender, RoutedEventArgs e)
+        private async void RestorePenumbraBackup_Click(object sender, RoutedEventArgs e)
         {
             if(!PenumbraAttachHandler.IsAttached || MainWindow.UserTransaction == null || MainWindow.UserTransaction.State != ETransactionState.Open)
             {
@@ -745,7 +752,7 @@ namespace FFXIV_TexTools.Views.Transactions
             try
             {
                 TxActionEnabled = false;
-                ModTransaction.CancelTransaction(MainWindow.UserTransaction, true);
+                await ModTransaction.CancelTransaction(MainWindow.UserTransaction, true);
 
                 IOUtil.RecursiveDeleteDirectory(penumbraPath);
 

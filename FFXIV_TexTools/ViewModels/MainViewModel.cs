@@ -313,7 +313,7 @@ namespace FFXIV_TexTools.ViewModels
 
             await _mainWindow.LockUi("Performing Post-Patch Maintenence".L(), "This may take a few minutes if you have many mods installed.".L(), this);
 
-            var readonlyTx = ModTransaction.BeginTransaction();
+            var readonlyTx = ModTransaction.BeginReadonlyTransaction();
             if ((await readonlyTx.GetModList()).Mods.Count == 0)
             {
                 // No mods.  Just create backups and move on with our life.
@@ -327,11 +327,12 @@ namespace FFXIV_TexTools.ViewModels
             XivCache.GameWriteEnabled = true;
 
             var workerStatus = XivCache.CacheWorkerEnabled;
-            XivCache.CacheWorkerEnabled = false;
+
+            await XivCache.SetCacheWorkerState(false);
             try
             {
                 // Cache our currently enabled stuff.
-                using (var tx = ModTransaction.BeginTransaction(true))
+                using (var tx = await ModTransaction.BeginTransaction(true))
                 {
                     var modList = await tx.GetModList();
                     var allMods = modList.GetMods().ToList();
@@ -398,7 +399,7 @@ namespace FFXIV_TexTools.ViewModels
             }
             finally
             {
-                XivCache.CacheWorkerEnabled = workerStatus;
+                await XivCache.SetCacheWorkerState(workerStatus);
                 XivCache.GameWriteEnabled = originalWriteSetting;
                 await _mainWindow.UnlockUi(this);
             }

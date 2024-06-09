@@ -1920,7 +1920,8 @@ namespace FFXIV_TexTools.Views.Item
                 FlexibleMessageBox.Show(this.GetWin32Window(), "This will delete the following orphaned/unused mod files:\n\n" + orphanText + "\n\n Continue?", "Delete Orphans Confirmation", System.Windows.Forms.MessageBoxButtons.OKCancel, System.Windows.Forms.MessageBoxIcon.Warning, System.Windows.Forms.MessageBoxDefaultButton.Button1);
 
                 var tx = MainWindow.UserTransaction;
-                var boiler = TxBoiler.BeginWrite(ref tx);
+                var boiler = await TxBoiler.BeginWrite(tx);
+                tx = boiler.Transaction;
                 try
                 {
                     foreach (var file in orphans)

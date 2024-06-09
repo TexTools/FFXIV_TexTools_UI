@@ -212,7 +212,7 @@ namespace FFXIV_TexTools.Views
                         var files = modList.Mods.Keys.ToList();
 
 
-                        using (var tx = ModTransaction.BeginTransaction(true))
+                        using (var tx = await ModTransaction.BeginTransaction(true))
                         {
                             modList = await tx.GetModList();
                             var allMods = modList.GetMods().ToList();

@@ -161,7 +161,8 @@ namespace FFXIV_TexTools.Views
             Category selectedItem = null;
 
             var tx = MainWindow.UserTransaction;
-            var boiler = TxBoiler.BeginWrite(ref tx);
+            var boiler = await TxBoiler.BeginWrite(tx);
+            tx = boiler.Transaction;
             try
             {
                 if ((ModListTreeView.SelectedItem as Category).ParentCategory.Name.Equals("ModPacks"))

@@ -438,7 +438,8 @@ namespace FFXIV_TexTools.Views
             };
 
             var tx = MainWindow.UserTransaction;
-            var boiler = TxBoiler.BeginWrite(ref tx, true, null, true);
+            var boiler = await TxBoiler.BeginWrite(tx, true, null, true);
+            tx = boiler.Transaction;
             try
             {
                 var ModList = await tx.GetModList();

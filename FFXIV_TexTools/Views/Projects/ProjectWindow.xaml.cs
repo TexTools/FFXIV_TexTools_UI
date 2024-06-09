@@ -354,7 +354,7 @@ namespace FFXIV_TexTools.Views.Projects
 
             if (MainWindow.UserTransaction != null)
             {
-                ModTransaction.CancelTransaction(MainWindow.UserTransaction, true);
+                await ModTransaction.CancelTransaction(MainWindow.UserTransaction, true);
             }
 
             SaveProject();
@@ -379,7 +379,7 @@ namespace FFXIV_TexTools.Views.Projects
                     needsPrep = true;
                 }
 
-                var tx = ModTransaction.BeginTransaction(true, null, Project.TransactionSettings, needsPrep);
+                var tx = await ModTransaction.BeginTransaction(true, null, Project.TransactionSettings, needsPrep);
                 MainWindow.UserTransaction = tx;
 
                 if (needsPrep)
