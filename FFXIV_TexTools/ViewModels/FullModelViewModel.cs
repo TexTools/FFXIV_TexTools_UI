@@ -44,6 +44,7 @@ using xivModdingFramework.Cache;
 using SharpDX;
 using System.Diagnostics;
 using System.Windows.Media.Media3D;
+using System.Threading;
 
 namespace FFXIV_TexTools.ViewModels
 {
@@ -332,83 +333,99 @@ namespace FFXIV_TexTools.ViewModels
         /// <param name="_materialDictionary">The dictionary with materials</param>
         /// <param name="item">The item associated with the model being added</param>
         /// <param name="race">The race of the model being added</param>
-        public async void AddModelToView(TTModel ttModel, Dictionary<int, ModelTextureData> _materialDictionary, IItemModel item)
+        private SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
+
+        public async Task AddModelToView(TTModel ttModel, Dictionary<int, ModelTextureData> _materialDictionary, IItemModel item)
         {
-            var modelRace = IOUtil.GetRaceFromPath(ttModel.Source);
-            var firstModelSkeleton = from s in Skeletons where s.XivRace == modelRace select s;
-            
-            if (ModelList.Count == 0)
+            // If the semaphore is already locked (method is running), return immediately
+            if (!_semaphore.Wait(0))
             {
-                SelectedSkeleton = firstModelSkeleton.FirstOrDefault();
-                if (SelectedSkeleton == null)
-                {
-                    return;
-                }
+                return;
             }
 
-            var pc = await _fullModelView.ShowProgressAsync(UIStrings.ModelStatus_Loading, UIMessages.PleaseStandByMessage);
-            // Sets the skeleton to the same as the race of the first model added
-            if (ViewportVM.Models.Count < 1)
+            try
             {
-                _isFirstModel = true;
-                if (_charaRaceAndSkinDictionary == null)
-                {
-                    await GetCharaSkinDictionary();
-                }
-                Skins.Clear();
+                var modelRace = IOUtil.GetRaceFromPath(ttModel.Source);
+                var firstModelSkeleton = from s in Skeletons where s.XivRace == modelRace select s;
 
-                foreach (var skinNum in _charaRaceAndSkinDictionary[SelectedSkeleton.XivRace.GetSkinRace()])
+                if (ModelList.Count == 0)
                 {
-                    Skins.Add(skinNum);
+                    SelectedSkeleton = firstModelSkeleton.FirstOrDefault();
+                    if (SelectedSkeleton == null)
+                    {
+                        return;
+                    }
                 }
 
-                SelectedSkinIndex = 0;
-            }
+                var pc = await _fullModelView.ShowProgressAsync(UIStrings.ModelStatus_Loading, UIMessages.PleaseStandByMessage);
+                // Sets the skeleton to the same as the race of the first model added
+                if (ViewportVM.Models.Count < 1)
+                {
+                    _isFirstModel = true;
+                    if (_charaRaceAndSkinDictionary == null)
+                    {
+                        await GetCharaSkinDictionary();
+                    }
+                    Skins.Clear();
 
-            // Show the face combo box if a face with different textures is added
-            if (item.SecondaryCategory.Equals(XivStrings.Face) && (SelectedSkeleton.XivRace == XivRace.AuRa_Female || SelectedSkeleton.XivRace == XivRace.AuRa_Male ||
-                SelectedSkeleton.XivRace == XivRace.Viera_Female || SelectedSkeleton.XivRace == XivRace.Viera_Male || SelectedSkeleton.XivRace == XivRace.Hrothgar_Male))
+                    foreach (var skinNum in _charaRaceAndSkinDictionary[SelectedSkeleton.XivRace.GetSkinRace()])
+                    {
+                        Skins.Add(skinNum);
+                    }
+
+                    SelectedSkinIndex = 0;
+                }
+
+                // Show the face combo box if a face with different textures is added
+                if (item.SecondaryCategory.Equals(XivStrings.Face) && (SelectedSkeleton.XivRace == XivRace.AuRa_Female || SelectedSkeleton.XivRace == XivRace.AuRa_Male ||
+                    SelectedSkeleton.XivRace == XivRace.Viera_Female || SelectedSkeleton.XivRace == XivRace.Viera_Male || SelectedSkeleton.XivRace == XivRace.Hrothgar_Male))
+                {
+                    Faces.Clear();
+                    FaceComboboxVisibility = Visibility.Visible;
+                    FaceComboboxEnabled = true;
+                    FillFaceComboBox(SelectedSkeleton.XivRace);
+                    SelectedFaceIndex = 0;
+                }
+
+                await UpdateSkin(ttModel, _materialDictionary, item);
+
+                // Add the item type to the model list
+                var itemType = $"{item.PrimaryCategory}_{item.SecondaryCategory}";
+                var itemDisplay = $"{item.Name} ({itemType})";
+
+                if (!ModelList.Any(x => x.Contains(itemType)))
+                {
+                    ModelList.Add(itemDisplay);
+                    SelectedModelIndex = ModelList.Count - 1;
+                }
+                else
+                {
+                    var removeItem = (from iDisplay in ModelList where iDisplay.Contains(itemType) select iDisplay).FirstOrDefault();
+                    ModelList.Remove(removeItem);
+                    ModelList.Add(itemDisplay);
+                    SelectedModelIndex = ModelList.IndexOf(itemDisplay);
+                }
+
+                // Disable changes while model and viewport update
+                SkeletonComboboxEnabled = false;
+                SkinComboboxEnabled = false;
+
+                await ViewportVM.UpdateModel(ttModel, _materialDictionary, item, modelRace, SelectedSkeleton.XivRace);
+                SkeletonComboboxEnabled = true;
+                SkinComboboxEnabled = true;
+
+                ExportEnabled = true;
+                RemoveEnabled = true;
+                _isFirstModel = false;
+                _fullModelView.viewport3DX.ZoomExtents();
+
+                await pc.CloseAsync();
+            }
+            finally
             {
-                Faces.Clear();
-                FaceComboboxVisibility = Visibility.Visible;
-                FaceComboboxEnabled = true;
-                FillFaceComboBox(SelectedSkeleton.XivRace);
-                SelectedFaceIndex = 0;
+                // Release the semaphore so the method can be called again
+                _semaphore.Release();
             }
-
-            await UpdateSkin(ttModel, _materialDictionary, item);
-
-            // Add the item type to the model list
-            var itemType = $"{item.PrimaryCategory}_{item.SecondaryCategory}";
-            var itemDisplay = $"{item.Name} ({itemType})";
-
-            if (!ModelList.Any(x => x.Contains(itemType)))
-            {
-                ModelList.Add(itemDisplay);
-                SelectedModelIndex = ModelList.Count - 1;
-            }
-            else
-            {
-                var removeItem = (from iDisplay in ModelList where iDisplay.Contains(itemType) select iDisplay).FirstOrDefault();
-                ModelList.Remove(removeItem);
-                ModelList.Add(itemDisplay);
-                SelectedModelIndex = ModelList.IndexOf(itemDisplay);
-            }
-
-            // Disable changes while model and viewport update
-            SkeletonComboboxEnabled = false;
-            SkinComboboxEnabled = false;
-
-            await ViewportVM.UpdateModel(ttModel, _materialDictionary, item, modelRace, SelectedSkeleton.XivRace);
-            SkeletonComboboxEnabled = true;
-            SkinComboboxEnabled = true;
-
-            ExportEnabled = true;
-            RemoveEnabled = true;
-            _isFirstModel = false;
-            _fullModelView.viewport3DX.ZoomExtents();
-
-            await pc.CloseAsync();
         }
 
         /// <summary>
