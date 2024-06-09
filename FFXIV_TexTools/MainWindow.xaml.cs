@@ -696,6 +696,7 @@ namespace FFXIV_TexTools
         public void Restart()
         {
             System.Diagnostics.Process.Start(Application.ResourceAssembly.Location);
+            IOUtil.ClearTempFolder();
             Application.Current.Shutdown();
         }
 
@@ -1543,12 +1544,13 @@ namespace FFXIV_TexTools
 
             try
             {
-                XivCache.SetCacheWorkerState(false);
+                _ = XivCache.SetCacheWorkerState(false);
             }
             catch
             {
                 //No-Op
             }
+            IOUtil.ClearTempFolder();
             return;
         }
 
@@ -1623,12 +1625,12 @@ namespace FFXIV_TexTools
             {
                 await Task.Run(async () =>
                 {
-                    var tempDir = Path.GetTempPath();
+                    var tempDir = IOUtil.GetFrameworkTempFolder();
                     tempDir += "/index_backup";
                     Directory.CreateDirectory(tempDir);
 
                     _lockProgress.Report("Downloading Indexes...".L());
-                    localPath = Path.GetTempFileName();
+                    localPath = IOUtil.GetFrameworkTempFile();
                     using (var client = new WebClient())
                     {
                         client.DownloadFile(url, localPath);

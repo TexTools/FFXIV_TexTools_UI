@@ -23,6 +23,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using xivModdingFramework.Cache;
 using xivModdingFramework.General.Enums;
+using xivModdingFramework.Helpers;
 using xivModdingFramework.Mods;
 using xivModdingFramework.Mods.FileTypes;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
@@ -445,7 +446,7 @@ namespace FFXIV_TexTools.Views
             {
                 var img = SixLabors.ImageSharp.Image.Load(openFileDialog.FileName);
 
-                var tempFile = Path.GetTempFileName();
+                var tempFile = IOUtil.GetFrameworkTempFile();
                 using (var fs = new FileStream(tempFile, FileMode.OpenOrCreate))
                 {
                     var enc = new PngEncoder();

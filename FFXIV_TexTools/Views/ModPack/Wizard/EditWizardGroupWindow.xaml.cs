@@ -778,7 +778,7 @@ namespace FFXIV_TexTools.Views
             LockCount++;
             try
             {
-                var tempPath = Path.GetTempFileName();
+                var tempPath = IOUtil.GetFrameworkTempFile();
                 File.WriteAllBytes(tempPath, data);
 
                 var info = new FileStorageInformation()

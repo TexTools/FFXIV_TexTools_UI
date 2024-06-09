@@ -129,7 +129,7 @@ namespace FFXIV_TexTools.Views
 
         public ExportWizardWindow()
         {
-            TempFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+            TempFolder = Path.Combine(IOUtil.GetFrameworkTempFolder(), Guid.NewGuid().ToString());
             Directory.CreateDirectory(TempFolder);
 
             DataContext = this;

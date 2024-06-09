@@ -1234,7 +1234,7 @@ namespace FFXIV_TexTools.Views.Wizard
                 Meta = new PMPMetaJson(),
             };
 
-            var tempFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+            var tempFolder = Path.Combine(IOUtil.GetFrameworkTempFolder(), Guid.NewGuid().ToString());
             Directory.CreateDirectory(tempFolder);
             try
             {
