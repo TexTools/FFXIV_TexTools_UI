@@ -496,6 +496,12 @@ namespace FFXIV_TexTools.Views.Controls
             }
         }
 
+        public virtual async Task<bool> LoadRawData(byte[] data)
+        {
+            var tx = MainWindow.DefaultTransaction;
+            return await INTERNAL_LoadFile(data, InternalFilePath, ReferenceItem, tx);
+        }
+
         protected virtual async Task UpdateModState(ModTransaction tx = null)
         {
             try

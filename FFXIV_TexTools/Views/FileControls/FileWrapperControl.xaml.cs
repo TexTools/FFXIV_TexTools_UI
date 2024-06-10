@@ -19,7 +19,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
 using xivModdingFramework.Items.Interfaces;
 using xivModdingFramework.Mods;
 using xivModdingFramework.Mods.Enums;
@@ -244,6 +243,22 @@ namespace FFXIV_TexTools.Views.Controls
                             return;
                         }
                         _ = FileControl.ReloadFile();
+                    }
+                    e.Handled = true;
+                }
+                else if (e.Key == Key.C)
+                {
+                    if (RefreshButton.IsEnabled)
+                    {
+                        _ = Copy();
+                    }
+                    e.Handled = true;
+                }
+                else if (e.Key == Key.V)
+                {
+                    if (RefreshButton.IsEnabled)
+                    {
+                        _ = Paste();
                     }
                     e.Handled = true;
                 }
@@ -853,6 +868,43 @@ namespace FFXIV_TexTools.Views.Controls
             {
                 Trace.WriteLine(ex);
             }
+        }
+
+        private void Copy_Click(object sender, RoutedEventArgs e)
+        {
+            _ = Copy();
+        }
+
+        private void Paste_Click(object sender, RoutedEventArgs e)
+        {
+            _ = Paste();
+        }
+
+        public async Task Copy()
+        {
+            if(FileControl == null || !FileControl.HasFile || string.IsNullOrWhiteSpace(FileControl.InternalFilePath))
+            {
+                return;
+            }
+
+            var data = await FileControl.GetUncompressedData();
+
+            var ext = Path.GetExtension(FileControl.InternalFilePath).ToLower();
+            Clipboard.SetData(ext, data);
+        }
+        public async Task Paste()
+        {
+            if (FileControl == null || !FileControl.HasFile)
+            {
+                return;
+            }
+            var ext = Path.GetExtension(FileControl.InternalFilePath).ToLower();
+            var raw = Clipboard.GetData(ext);
+            var asBytes = raw as byte[];
+
+            if (asBytes == null) return;
+
+            await FileControl.LoadRawData(asBytes);
         }
     }
 }
