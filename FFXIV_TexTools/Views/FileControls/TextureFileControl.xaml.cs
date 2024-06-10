@@ -643,6 +643,7 @@ namespace FFXIV_TexTools.Views.Controls
                 await TextureHelpers.OverlayImagePreserveAlpha(PixelData, resizedOverlay, cw, ch);
 
                 UpdateDisplayImage();
+                PixelChanges = true;
                 UnsavedChanges = true;
 
 
@@ -670,6 +671,7 @@ namespace FFXIV_TexTools.Views.Controls
                 await TextureHelpers.AddAlphaOverlay(PixelData, resizedOverlay, cw, ch);
 
                 UpdateDisplayImage();
+                PixelChanges = true;
                 UnsavedChanges = true;
 
 
