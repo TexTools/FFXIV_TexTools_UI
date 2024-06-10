@@ -29,6 +29,7 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Forms;
+using System.Windows.Media;
 using Xceed.Wpf.Toolkit;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Mods.DataContainers;
@@ -100,6 +101,19 @@ namespace FFXIV_TexTools.Views
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(FinalizeEnabled)));
             }
         }
+
+        private ImageSource _HeaderSource;
+        public ImageSource HeaderSource
+        {
+            get => _HeaderSource;
+            set
+            {
+                _HeaderSource = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(HeaderSource)));
+            }
+        }
+
+        private string ImagePath;
 
         public WizardData Data {
             get => _Data;
@@ -323,6 +337,16 @@ namespace FFXIV_TexTools.Views
                 ModPackDescription.Text = Data.MetaPage.Description;
                 ModPackUrl.Text = Data.MetaPage.Url;
 
+                ImagePath = Data.MetaPage.Image;
+                if (string.IsNullOrWhiteSpace(ImagePath) || !File.Exists(ImagePath))
+                {
+                    HeaderSource = ViewHelpers.GetDefaultModImage();
+                }
+                else
+                {
+                    HeaderSource = ViewHelpers.SafeBitmapFromFile(ImagePath);
+                }
+
                 var pageCount = Data.DataPages.Count;
 
                 var wizPages = WizardControl.Items;
@@ -427,6 +451,7 @@ namespace FFXIV_TexTools.Views
             Data.MetaPage.Version = ModPackVersion.Text.Trim();
             Data.MetaPage.Description = ModPackDescription.Text.Trim();
             Data.MetaPage.Url = ModPackUrl.Text.Trim();
+            Data.MetaPage.Image = ImagePath;
 
             if (string.IsNullOrEmpty(Data.MetaPage.Name))
             {
@@ -459,6 +484,18 @@ namespace FFXIV_TexTools.Views
                     }
                     else if (ext == ".ttmp2")
                     {
+                        if (!string.IsNullOrWhiteSpace(ImagePath))
+                        {
+                            if(Data.DataPages.Count > 0 && Data.DataPages[0].Groups.Count > 0 && Data.DataPages[0].Groups[0].Options.Count > 0) {
+                                var op = Data.DataPages[0].Groups[0].Options[0];
+
+                                if (string.IsNullOrWhiteSpace(op.Image))
+                                {
+                                    op.Image = ImagePath;
+                                }
+                            }
+                        }
+
                         await Data.WriteWizardPack(path);
                     }
                     else
@@ -478,6 +515,22 @@ namespace FFXIV_TexTools.Views
             }
 
 
+        }
+
+        private void RemoveImage_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            HeaderSource = null;
+            ImagePath = null;
+        }
+
+        private void ChangeImage_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            var imgInfo = this.LoadUserImage();
+            if (string.IsNullOrWhiteSpace(imgInfo.File)) return;
+
+
+            ImagePath = imgInfo.File;
+            HeaderSource = imgInfo.Image;
         }
     }
 }

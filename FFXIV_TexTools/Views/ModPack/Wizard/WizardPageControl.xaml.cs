@@ -134,7 +134,11 @@ namespace FFXIV_TexTools.Views.Wizard
         private void OptionsList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(OptionSelected)));
+            UpdateOptionInfo();
+        }
 
+        private void UpdateOptionInfo()
+        {
             var opt = OptionsList.SelectedItem as WizardOptionEntry;
             if (opt == null) return;
 
@@ -223,8 +227,9 @@ namespace FFXIV_TexTools.Views.Wizard
                     owningGroup.Name = name + " " + i.ToString();
                     i++;
                 }
-
             }
+
+            UpdateOptionInfo();
             SetupUi();
         }
 

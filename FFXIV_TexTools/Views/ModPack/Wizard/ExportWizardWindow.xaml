@@ -11,7 +11,7 @@
         mc:Ignorable="d"
         xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
         resx:Localization.Enabled="True"                  
-        Title="{Binding Source={x:Static resx:UIStrings.Create_ModPack_Wizard}}" Height="600" Width="800" ShowMaxRestoreButton="False" ShowMinButton="False" WindowStartupLocation="CenterOwner" Closing="MetroWindow_Closing">
+        Title="{Binding Source={x:Static resx:UIStrings.Create_ModPack_Wizard}}" Height="700" Width="800" ShowMaxRestoreButton="False" ShowMinButton="False" WindowStartupLocation="CenterOwner" Closing="MetroWindow_Closing">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="1*"/>
@@ -25,35 +25,33 @@
                  IsTabStop="False" Background="{x:Null}"
                  
                  >
-            <xctk:WizardPage Title="{Binding Source={x:Static resx:UIStrings.Mod_Pack_General_Info}}" Description="{Binding Source={x:Static resx:UIStrings.ModPackGeneralInfo}}" PageType="Interior" IsTabStop="False" Background="{x:Null}" HeaderBackground="{x:Null}">
+            <xctk:WizardPage PageType="Blank" IsTabStop="False" Background="{x:Null}">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
-                        <RowDefinition/>
+                        <RowDefinition Height="1*"/>
                     </Grid.RowDefinitions>
-                    <Grid Grid.Row="0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                        </Grid.ColumnDefinitions>
-                        <Grid Grid.Column="0">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
+
+                    <GroupBox Header="Preview">
+                        <Grid  Margin="5" Height="150">
+                            <Image Source="{Binding Path=HeaderSource}" />
+                            <Button Content="Remove Image" Click="RemoveImage_Click" Width="100" HorizontalAlignment="Left" VerticalAlignment="Top"></Button>
+                            <Button Content="Choose Image" Click="ChangeImage_Click" Width="100" HorizontalAlignment="Right" VerticalAlignment="Top"></Button>
+                        </Grid>
+                    </GroupBox>
+
+                    <GroupBox Grid.Row="1" Header="Info">
+                        <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="1*"/>
+                        </Grid.RowDefinitions>
+                        <Grid Grid.Row="0">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition/>
                                 <ColumnDefinition/>
                             </Grid.ColumnDefinitions>
-                            <Label Content="{Binding Source={x:Static resx:UIStrings.Name_colon}}" Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" HorizontalContentAlignment="Right"/>
-                            <Label Content="{Binding Source={x:Static resx:UIStrings.Version_colon}}" Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" HorizontalContentAlignment="Right"/>
-                            <TextBox x:Name="ModPackName" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.Mod_Pack_Name}}" Grid.Column="1" Grid.Row="0" Margin="5" TabIndex="0"/>
-                            <xctk:MaskedTextBox x:Name="ModPackVersion" input:InputMethod.IsInputMethodEnabled="False" Mask="0.9.9" Text="1 . 0 . 0" Grid.Column="1" Grid.Row="1" Margin="5" MinHeight="26"  TabIndex="2"  PreviewMouseUp="ModPackVersion_PreviewMouseUp" InsertKeyMode="Overwrite" VerticalContentAlignment="Bottom" Padding="0,0,0,2" />
-
-                        </Grid>
-                        <Grid Grid.Column="1">
-                            <Grid>
+                            <Grid Grid.Column="0">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="Auto"/>
@@ -63,26 +61,45 @@
                                     <ColumnDefinition Width="Auto"/>
                                     <ColumnDefinition/>
                                 </Grid.ColumnDefinitions>
-                                <Label Content="{Binding Source={x:Static resx:UIStrings.Author_colon}}" Grid.Column="0" VerticalAlignment="Center" HorizontalContentAlignment="Right"/>
-                                <TextBox x:Name="ModPackAuthor" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.Mod_Pack_Author}}" Grid.Column="1" Margin="5" TabIndex="1"/>
+                                <Label Content="{Binding Source={x:Static resx:UIStrings.Name_colon}}" Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" HorizontalContentAlignment="Right"/>
+                                <Label Content="{Binding Source={x:Static resx:UIStrings.Version_colon}}" Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" HorizontalContentAlignment="Right"/>
+                                <TextBox x:Name="ModPackName" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.Mod_Pack_Name}}" Grid.Column="1" Grid.Row="0" Margin="5" TabIndex="0"/>
+                                <xctk:MaskedTextBox x:Name="ModPackVersion" input:InputMethod.IsInputMethodEnabled="False" Mask="0.9.9" Text="1 . 0 . 0" Grid.Column="1" Grid.Row="1" Margin="5" MinHeight="26"  TabIndex="2"  PreviewMouseUp="ModPackVersion_PreviewMouseUp" InsertKeyMode="Overwrite" VerticalContentAlignment="Bottom" Padding="0,0,0,2" />
 
-                                <Label Content="Url:" Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" HorizontalContentAlignment="Right"/>
-                                <TextBox x:Name="ModPackUrl" mah:TextBoxHelper.Watermark="Mod Page Link" Grid.Column="3" Grid.Row="1" Margin="5" TabIndex="0"/>
+                            </Grid>
+                            <Grid Grid.Column="1">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <Label Content="{Binding Source={x:Static resx:UIStrings.Author_colon}}" Grid.Column="0" VerticalAlignment="Center" HorizontalContentAlignment="Right"/>
+                                    <TextBox x:Name="ModPackAuthor" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.Mod_Pack_Author}}" Grid.Column="1" Margin="5" TabIndex="1"/>
 
-                                <Button x:Name="LoadFromButton" Click="LoadFromButton_Click" Content="{Binding Source={x:Static resx:UIStrings.Load_From}}" Grid.Column="1" Margin="5" Grid.Row="2"></Button>
+                                    <Label Content="Url:" Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" HorizontalContentAlignment="Right"/>
+                                    <TextBox x:Name="ModPackUrl" mah:TextBoxHelper.Watermark="Mod Page Link" Grid.Column="3" Grid.Row="1" Margin="5" TabIndex="0"/>
+
+                                    <Button x:Name="LoadFromButton" Click="LoadFromButton_Click" Content="{Binding Source={x:Static resx:UIStrings.Load_From}}" Grid.Column="1" Margin="5" Grid.Row="2"></Button>
+                                </Grid>
+                            </Grid>
+                        </Grid>
+                        <Grid Grid.Row="1">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+                                <Label Content="{Binding Source={x:Static resx:UIStrings.Enter_a_brief_description_of_your_Mod_Pack}}" Grid.ColumnSpan="2"/>
+                                <TextBox x:Name="ModPackDescription" Grid.Row="1" AcceptsReturn="True"  VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.ModPackDescription}}" Grid.ColumnSpan="2"/>
                             </Grid>
                         </Grid>
                     </Grid>
-                    <Grid Grid.Row="1">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition/>
-                            </Grid.RowDefinitions>
-                            <Label Content="{Binding Source={x:Static resx:UIStrings.Enter_a_brief_description_of_your_Mod_Pack}}" Grid.ColumnSpan="2"/>
-                            <TextBox x:Name="ModPackDescription" Grid.Row="1" AcceptsReturn="True"  VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.ModPackDescription}}" Grid.ColumnSpan="2"/>
-                        </Grid>
-                    </Grid>
+                    </GroupBox>
                 </Grid>
             </xctk:WizardPage>
         </xctk:Wizard>
