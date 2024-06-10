@@ -35,6 +35,8 @@ using Image = SixLabors.ImageSharp.Image;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Textures;
 using System.Collections.ObjectModel;
+using Size = SixLabors.ImageSharp.Size;
+using ResizeMode = SixLabors.ImageSharp.Processing.ResizeMode;
 
 namespace FFXIV_TexTools.Views.Controls
 {
@@ -621,7 +623,7 @@ namespace FFXIV_TexTools.Views.Controls
             }
         }
 
-        private void AddOverlay_Click(object sender, RoutedEventArgs e)
+        private async void AddOverlay_Click(object sender, RoutedEventArgs e)
         {
             var ofd = new OpenFileDialog();
             ofd.Filter = "Image Files with Transparency|*.png;*.tga;*.dds";
@@ -635,21 +637,41 @@ namespace FFXIV_TexTools.Views.Controls
                 var file = ofd.FileName;
                 var cw = Texture.Width;
                 var ch = Texture.Height;
-
-                using (var overlay = Image.Load<Rgba32>(file))
+                var resizeOptions = new ResizeOptions
                 {
-                    overlay.Mutate(x => x.Resize(cw, ch));
+                    Size = new Size(cw, ch),
+                    PremultiplyAlpha = false,
+                    Mode = ResizeMode.Stretch,
+                };
 
-                    using (var img = Image.LoadPixelData<Rgba32>(PixelData, cw, ch))
+                byte[] resizedOverlay;
+                if (ofd.FileName.ToLower().EndsWith(".dds")){
+
+                    // We could have functions somewhere to just raw read the DDS tex data, but this is a 
+                    // relatively minor perf hit since it just flips a header around.
+                    var otherTex = XivTex.FromUncompressedTex(Tex.DDSToUncompressedTex(ofd.FileName));
+                    var otherPixData = await otherTex.GetRawPixels();
+
+                    using (var overlay = Image.LoadPixelData<Rgba32>(otherPixData, otherTex.Width, otherTex.Height))
                     {
-
-                        img.Mutate(x => x.DrawImage(overlay, 1.0f));
-
-                        PixelData = IOUtil.GetImageSharpPixels(img);
-                        UpdateDisplayImage();
-                        UnsavedChanges = true;
+                        overlay.Mutate(x => x.Resize(resizeOptions));
+                        resizedOverlay = IOUtil.GetImageSharpPixels(overlay);
+                    }
+                } else {
+                    using (var overlay = Image.Load<Rgba32>(file))
+                    {
+                        overlay.Mutate(x => x.Resize(resizeOptions));
+                        resizedOverlay = IOUtil.GetImageSharpPixels(overlay);
+                        overlay.Save("D:\\img.png");
                     }
                 }
+
+                await TextureHelpers.OverlayImagePreserveAlpha(PixelData, resizedOverlay, cw, ch);
+
+                UpdateDisplayImage();
+                UnsavedChanges = true;
+
+
             } catch(Exception ex)
             {
                 this.ShowError("Image Processing Error", "An error occurred while processing the overlay:\n\n" + ex.Message);
