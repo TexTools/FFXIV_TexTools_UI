@@ -862,6 +862,25 @@ namespace FFXIV_TexTools.Views.Controls
             }
         }
 
+        /// <summary>
+        /// Overridden here to only load the colorset data.
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public override async Task<bool> LoadRawData(byte[] data)
+        {
+            if (!this.ConfirmDiscardChanges(InternalFilePath))
+            {
+                return false;
+            }
+            var mat = Mtrl.GetXivMtrl(data, InternalFilePath);
+
+            Material.ColorSetData = mat.ColorSetData;
+            Material.ColorSetDyeData = mat.ColorSetDyeData;
+            await SetMaterial(Material, RowId);
+            UnsavedChanges = true;
+            return true;
+        }
 
         /// <summary>
         /// Sets the material and selects a given row (or row 0)

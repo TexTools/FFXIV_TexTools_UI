@@ -498,6 +498,11 @@ namespace FFXIV_TexTools.Views.Controls
 
         public virtual async Task<bool> LoadRawData(byte[] data)
         {
+            if (!this.ConfirmDiscardChanges(InternalFilePath))
+            {
+                return false;
+            }
+
             var tx = MainWindow.DefaultTransaction;
             var success = await INTERNAL_LoadFile(data, InternalFilePath, ReferenceItem, tx);
             UnsavedChanges = true;
