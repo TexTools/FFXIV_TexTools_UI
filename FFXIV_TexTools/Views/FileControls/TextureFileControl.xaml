@@ -78,6 +78,7 @@
                             <RowDefinition Height="40"></RowDefinition>
                             <RowDefinition Height="40"></RowDefinition>
                             <RowDefinition Height="40"></RowDefinition>
+                            <RowDefinition Height="40"></RowDefinition>
                         </Grid.RowDefinitions>
 
                         <Label Grid.Row="0" Content="{Binding Path=TextureInfo, FallbackValue=1024x1024 (11 Mips)}" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center"></Label>
@@ -100,6 +101,7 @@
 
                         <Button Grid.ColumnSpan="4" Grid.Row="3" Content="Edit Channels" VerticalAlignment="Center" Click="EditChannels_Click"></Button>
                         <Button Grid.ColumnSpan="4" Grid.Row="4" Content="Add Overlay" VerticalAlignment="Center" Click="AddOverlay_Click"></Button>
+                        <Button Grid.ColumnSpan="4" Grid.Row="5" Content="Add Alpha Overlay" VerticalAlignment="Center" Click="AddAlphaOverlay_Click"></Button>
                     </Grid>
                 </Grid>
 

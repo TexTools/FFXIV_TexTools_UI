@@ -37,6 +37,7 @@ using xivModdingFramework.Textures;
 using System.Collections.ObjectModel;
 using Size = SixLabors.ImageSharp.Size;
 using ResizeMode = SixLabors.ImageSharp.Processing.ResizeMode;
+using System.Security.Cryptography;
 
 namespace FFXIV_TexTools.Views.Controls
 {
@@ -635,37 +636,10 @@ namespace FFXIV_TexTools.Views.Controls
             try
             {
                 var file = ofd.FileName;
+
                 var cw = Texture.Width;
                 var ch = Texture.Height;
-                var resizeOptions = new ResizeOptions
-                {
-                    Size = new Size(cw, ch),
-                    PremultiplyAlpha = false,
-                    Mode = ResizeMode.Stretch,
-                };
-
-                byte[] resizedOverlay;
-                if (ofd.FileName.ToLower().EndsWith(".dds")){
-
-                    // We could have functions somewhere to just raw read the DDS tex data, but this is a 
-                    // relatively minor perf hit since it just flips a header around.
-                    var otherTex = XivTex.FromUncompressedTex(Tex.DDSToUncompressedTex(ofd.FileName));
-                    var otherPixData = await otherTex.GetRawPixels();
-
-                    using (var overlay = Image.LoadPixelData<Rgba32>(otherPixData, otherTex.Width, otherTex.Height))
-                    {
-                        overlay.Mutate(x => x.Resize(resizeOptions));
-                        resizedOverlay = IOUtil.GetImageSharpPixels(overlay);
-                    }
-                } else {
-                    using (var overlay = Image.Load<Rgba32>(file))
-                    {
-                        overlay.Mutate(x => x.Resize(resizeOptions));
-                        resizedOverlay = IOUtil.GetImageSharpPixels(overlay);
-                        overlay.Save("D:\\img.png");
-                    }
-                }
-
+                var resizedOverlay = await GetResizedPixelDataFromFile(ofd.FileName);
                 await TextureHelpers.OverlayImagePreserveAlpha(PixelData, resizedOverlay, cw, ch);
 
                 UpdateDisplayImage();
@@ -676,6 +650,73 @@ namespace FFXIV_TexTools.Views.Controls
             {
                 this.ShowError("Image Processing Error", "An error occurred while processing the overlay:\n\n" + ex.Message);
             }
+        }
+        private async void AddAlphaOverlay_Click(object sender, RoutedEventArgs e)
+        {
+            var ofd = new OpenFileDialog();
+            ofd.Filter = "Image Files|*.bmp;*.png;*.tga;*.dds";
+            if (ofd.ShowDialog() != DialogResult.OK)
+            {
+                return;
+            }
+
+            try
+            {
+                var file = ofd.FileName;
+
+                var cw = Texture.Width;
+                var ch = Texture.Height;
+                var resizedOverlay = await GetResizedPixelDataFromFile(ofd.FileName);
+                await TextureHelpers.AddAlphaOverlay(PixelData, resizedOverlay, cw, ch);
+
+                UpdateDisplayImage();
+                UnsavedChanges = true;
+
+
+            }
+            catch (Exception ex)
+            {
+                this.ShowError("Image Processing Error", "An error occurred while processing the overlay:\n\n" + ex.Message);
+            }
+        }
+
+        private async Task<byte[]> GetResizedPixelDataFromFile(string file)
+        {
+
+            var cw = Texture.Width;
+            var ch = Texture.Height;
+            var resizeOptions = new ResizeOptions
+            {
+                Size = new Size(cw, ch),
+                PremultiplyAlpha = false,
+                Mode = ResizeMode.Stretch,
+            };
+
+            byte[] resizedOverlay;
+            if (file.ToLower().EndsWith(".dds"))
+            {
+
+                // We could have functions somewhere to just raw read the DDS tex data, but this is a 
+                // relatively minor perf hit since it just flips a header around.
+                var otherTex = XivTex.FromUncompressedTex(Tex.DDSToUncompressedTex(file));
+                var otherPixData = await otherTex.GetRawPixels();
+
+                using (var overlay = Image.LoadPixelData<Rgba32>(otherPixData, otherTex.Width, otherTex.Height))
+                {
+                    overlay.Mutate(x => x.Resize(resizeOptions));
+                    resizedOverlay = IOUtil.GetImageSharpPixels(overlay);
+                }
+            }
+            else
+            {
+                using (var overlay = Image.Load<Rgba32>(file))
+                {
+                    overlay.Mutate(x => x.Resize(resizeOptions));
+                    resizedOverlay = IOUtil.GetImageSharpPixels(overlay);
+                }
+            }
+
+            return resizedOverlay;
         }
 
         private void ShowFormatWarnings(XivTexFormat format)
@@ -699,5 +740,6 @@ namespace FFXIV_TexTools.Views.Controls
 
             return await SmartImport.CreateUncompressedFile(externalFile, internalFile, tx, options);
         }
+
     }
 }
