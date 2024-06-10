@@ -24,6 +24,8 @@ using xivModdingFramework.SqPack.FileTypes;
 using AutoUpdaterDotNET;
 using System.Windows.Markup;
 using System.Diagnostics;
+using FFXIV_TexTools.Views.Wizard;
+using xivModdingFramework.General;
 
 namespace FFXIV_TexTools.Views
 {
@@ -293,127 +295,14 @@ namespace FFXIV_TexTools.Views
         {
             try
             {
-                if (ViewModel.SaveAdvanced)
-                {
-                    await CreateAdvanced();
-                }
-                else
-                {
-                    await CreateBasic();
-                }
+                await Create();
             }
             catch(Exception ex)
             {
                 ViewHelpers.ShowError(this, "Mod Creation Error", "An error occurred while creating the mod:\n\n" + ex.Message);
             }
         }
-        private async Task CreateAdvanced()
-        {
-            var tx = MainWindow.DefaultTransaction;
-
-            string modPackPath = Path.Combine(Properties.Settings.Default.ModPack_Directory, $"{ViewModel.Name}.ttmp2");
-
-            if (File.Exists(modPackPath))
-            {
-                DialogResult overwriteDialogResult = FlexibleMessageBox.Show(new Wpf32Window(this), UIMessages.ModPackOverwriteMessage,
-                                            UIMessages.OverwriteTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
-                if (overwriteDialogResult != System.Windows.Forms.DialogResult.Yes)
-                {
-                    return;
-                }
-            }
-
-            await LockUi(UIStrings.Creating_Modpack, null, null);
-            try
-            {
-                var ModList = await tx.GetModList();
-
-                var wizardData = new ModPackData()
-                {
-                    Name = ViewModel.Name,
-                    Author = ViewModel.Author,
-                    Version = ViewModel.Version,
-                    Description = ViewModel.Description,
-                    Url = ViewModel.Url,
-                    ModPackPages = new List<ModPackData.ModPackPage>()
-                };
-
-                var page = new ModPackData.ModPackPage()
-                {
-                    PageIndex = 1,
-                    ModGroups = new List<ModGroup>()
-                };
-
-                wizardData.ModPackPages.Add(page);
-
-                foreach (var e in ViewModel.Entries)
-                {
-                    var item = e.Item;
-                    var files = e.AllFiles;
-
-                    var group = new ModGroup()
-                    {
-                        GroupName = item.Name,
-                        SelectionType = "Multi",
-                        OptionList = new List<ModOption>()
-                    };
-                    page.ModGroups.Add(group);
-
-                    var option = new ModOption
-                    {
-                        GroupName = group.GroupName,
-                        IsChecked = true,
-                        Name = GetNiceLevelName(e.Level, true, true),
-                        Description = $"Item: {item.Name._()}\nInclusion Level: {GetNiceLevelName(e.Level)._()}\nPrimary Files:{e.MainFiles.Count._()}\nTotal Files:{e.AllFiles.Count._()}".L(),
-                        SelectionType = "Multi",
-                    };
-                    group.OptionList.Add(option);
-
-                    foreach (var file in e.AllFiles)
-                    {
-                        var exists = await tx.FileExists(file);
-
-                        var data = new byte[0];
-                        if (!exists && Path.GetExtension(file) == ".meta")
-                        {
-                            // Metadata doesn't exist in .meta form, so need to retrieve it from constituent files.
-                            var meta = await ItemMetadata.GetMetadata(file, false, tx);
-                            data = await ItemMetadata.Serialize(meta);
-                            data = await Dat.CompressType2Data(data);
-                        } else
-                        {
-                            data = await tx.ReadFile(file, false, true);
-                        }
-
-                        var isDef = await Modding.GetModState(file, tx) == xivModdingFramework.Mods.Enums.EModState.UnModded;
-
-                        var fData = new ModData
-                        {
-                            Name = e.Item.Name,
-                            Category = e.Item.SecondaryCategory,
-                            FullPath = file,
-                            IsDefault = isDef,
-                            ModDataBytes = data
-                        };
-                        option.Mods.Add(file, fData);
-                    }
-                }
-
-                // Okay modpack is now created internally, just need to save it.
-                var progressIndicator = new Progress<double>(ReportProgressAdv);
-                await TTMP.CreateWizardModPack(wizardData, Properties.Settings.Default.ModPack_Directory, progressIndicator , true);
-                FlexibleMessageBox.Show(new Wpf32Window(this), "Modpack Created Successfully.".L(),
-                                               "Modpack Created".L(), MessageBoxButtons.OK, MessageBoxIcon.Information);
-                await UnlockUi(this);
-                DialogResult = true;
-            } catch(Exception ex)
-            {
-                FlexibleMessageBox.Show(new Wpf32Window(this), "An Error occured while creating the modpack.\n\n".L() + ex.Message,
-                                               "Modpack Creation Error".L(), MessageBoxButtons.OK, MessageBoxIcon.Error);
-                await UnlockUi(this);
-            }
-        }
-        private async Task CreateBasic()
+        private async Task Create()
         {
             string modPackPath = Path.Combine(Properties.Settings.Default.ModPack_Directory, $"{ViewModel.Name}.ttmp2");
 
@@ -437,62 +326,81 @@ namespace FFXIV_TexTools.Views
                 SimpleModDataList = new List<SimpleModData>()
             };
 
-            var tx = MainWindow.UserTransaction;
-            var boiler = await TxBoiler.BeginWrite(tx, true, null, true);
-            tx = boiler.Transaction;
+            var tx = MainWindow.DefaultTransaction;
             try
             {
-                var ModList = await tx.GetModList();
+                // Create the data to write.
+                var wizardData = new WizardData();
+
+                wizardData.MetaPage.Author = ViewModel.Author;
+                wizardData.MetaPage.Name = ViewModel.Name;
+                wizardData.MetaPage.Description = ViewModel.Description;
+                wizardData.MetaPage.Url = ViewModel.Url;
+                wizardData.MetaPage.Version = ViewModel.Version.ToString();
+                wizardData.MetaPage.Image = ViewModel.Image;
+
+                var page = new WizardPageEntry();
+                var group = new WizardGroupEntry();
+                group.OptionType = EOptionType.Multi;
+                page.Groups.Add(group);
+                wizardData.DataPages.Add(page);
+
+                group.Name = "Items";
+
+
                 foreach (var entry in ViewModel.Entries)
                 {
-                    foreach(var file in entry.AllFiles)
+                    var option = new WizardOptionEntry(group);
+                    option.Name = "Default Option";
+                    group.Options.Add(option);
+                    option.Selected = true;
+                    foreach (var file in entry.AllFiles)
                     {
-                        var exists = await tx.FileExists(file);
+                        // Need to compose these first, since they may not exist in packable form yet.
+                        if (file.EndsWith(".meta") || file.EndsWith(".rgsp")) {
+                            byte[] data;
+                            if (file.EndsWith(".meta"))
+                            {
+                                var meta = await ItemMetadata.GetMetadata(file, false, tx);
+                                data = await ItemMetadata.Serialize(meta);
+                            } else
+                            {
+                                var rg = CMP.GetRaceGenderFromRgspPath(file);
+                                var rgsp = await CMP.GetScalingParameter(rg.Race, rg.Gender, false, tx);
+                                data = rgsp.GetBytes();
+                            }
 
-                        var dataFile = IOUtil.GetDataFileFromPath(file);
-                        var data = new byte[0];
-                        var offset = await tx.Get8xDataOffset(file);
+                            var path = IOUtil.GetFrameworkTempFile();
+                            File.WriteAllBytes(path, data);
 
-                        if (!exists && Path.GetExtension(file) == ".meta")
+                            var info = new FileStorageInformation()
+                            {
+                                FileSize = 0,
+                                RealOffset = 0,
+                                RealPath = path,
+                                StorageType = EFileStorageType.UncompressedIndividual
+                            };
+                            option.StandardData.Files.Add(file, info);
+                        }
+                        else
                         {
-                            // Metadata doesn't exist in .meta form, so need to retrieve it from constituent files.
-                            var meta = await ItemMetadata.GetMetadata(file, false, tx);
-                            data = await ItemMetadata.Serialize(meta);
-                            data = await Dat.CompressType2Data(data);
-
-                            // However... Because the simple mod creator also doesn't know how to export raw data, we need
-                            // To store this in the transaction DB temporarily.  We can write it to a random offset and let
-                            // The TX automatically delete it later whenever it ends.
-                            offset = await tx.UNSAFE_WriteData(dataFile, data, true);
-                        } 
-
-                        ModList.Mods.TryGetValue(file, out var modEntry);
-
-
-                        var isDef = await Modding.GetModState(file, tx) == xivModdingFramework.Mods.Enums.EModState.UnModded;
-
-
-                        SimpleModData simpleData = new SimpleModData
-                        {
-                            Name = entry.Item.Name,
-                            Category = entry.Item.SecondaryCategory,
-                            FullPath = file,
-                            ModOffset = offset,
-                            IsDefault = isDef,
-                            DatFile = dataFile.GetFileName(),
-                        };
-
-                        simpleModPackData.SimpleModDataList.Add(simpleData);
-
+                            var info = await tx.UNSAFE_GetStorageInfo(file);
+                            option.StandardData.Files.Add(file, info);
+                        }
                     }
                 }
 
-                await LockUi(UIStrings.Creating_Modpack, null, null);
-                await TTMP.CreateSimpleModPack(simpleModPackData, Properties.Settings.Default.ModPack_Directory, ViewHelpers.BindReportProgress(_lockProgressController), true, tx);
+                if (ViewModel.ModpackPath.ToLower().EndsWith(".ttmp2"))
+                {
+                    var option = group.Options[0];
+                    option.Image = ViewModel.Image;
+                    await wizardData.WriteWizardPack(ViewModel.ModpackPath);
+                }
+                else
+                {
+                    await wizardData.WritePmp(ViewModel.ModpackPath);
+                }
 
-                FlexibleMessageBox.Show(new Wpf32Window(this), "Modpack Created Successfully.".L(),
-                                               "Modpack Created".L(), MessageBoxButtons.OK, MessageBoxIcon.Information);
-                await UnlockUi(this);
                 DialogResult = true;
             }
             catch(Exception ex)
@@ -502,13 +410,10 @@ namespace FFXIV_TexTools.Views
                                                "Modpack Creation Error".L(), MessageBoxButtons.OK, MessageBoxIcon.Error);
                 await UnlockUi(this);
             }
-            finally
-            {
-                await boiler.Cancel(true);
-            }
 
 
         }
+
 
         private void ReportProgressAdv(double value)
         {

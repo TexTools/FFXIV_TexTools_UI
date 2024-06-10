@@ -2,8 +2,10 @@
 using FFXIV_TexTools.Properties;
 using FFXIV_TexTools.Resources;
 using FFXIV_TexTools.ViewModels;
+using MahApps.Metro.Behaviours;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,9 +18,9 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Mods.DataContainers;
+using static xivModdingFramework.Mods.DataContainers.ModPackData;
 
 namespace FFXIV_TexTools.Views
 {
@@ -30,6 +32,8 @@ namespace FFXIV_TexTools.Views
         private StandardModpackViewModel _vm;
 
         public event EventHandler<StandardModpackViewModel> CreateModpack;
+
+        string ImagePath;
         public StandardModpackFinalize(StandardModpackViewModel vm)
         {
             _vm = vm;
@@ -46,33 +50,24 @@ namespace FFXIV_TexTools.Views
 
         private void CreateModpackButton_Click(object sender, RoutedEventArgs e)
         {
-            if (ModPackName.Text.Equals(string.Empty))
+
+
+            var pathSafe = IOUtil.MakePathSafe(ModPackName.Text, false);
+
+            var startingFolder = Path.GetFullPath(Settings.Default.ModPack_Directory);
+            var sfd = new SaveFileDialog()
             {
-                if (FlexibleMessageBox.Show(null,
-                        UIMessages.DefaultModPackNameMessage,
-                        UIMessages.NoNameFoundTitle, MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) ==
-                    System.Windows.Forms.DialogResult.OK)
-                {
-                    ModPackName.Text = "ModPack".L();
-                }
-                else
-                {
-                    return;
-                }
+                Filter = "Modpack Files|*.pmp;*.ttmp2",
+                Title = "Save Modpack...",
+                InitialDirectory = startingFolder,
+                FileName = pathSafe + ".pmp"
+            };
+
+            if (sfd.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+            {
+                return;
             }
 
-            char[] invalidChars = { '/', '\\', ':', '*', '?', '"', '<', '>', '|' };
-
-            if (ModPackName.Text.IndexOfAny(invalidChars) >= 0)
-            {
-                if (FlexibleMessageBox.Show(null,
-                        UIMessages.InvalidCharacterModpackNameMessage,
-                        UIMessages.InvalidCharacterModpackNameTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning) ==
-                    System.Windows.Forms.DialogResult.OK)
-                {
-                    return;
-                }
-            }
 
             string verString = ModPackVersion.Text.Replace("_", "0");
 
@@ -84,35 +79,6 @@ namespace FFXIV_TexTools.Views
 
             Version versionNumber = Version.Parse(verString);
 
-            if (versionNumber.ToString().Equals("0.0.0"))
-            {
-                if (FlexibleMessageBox.Show(null,
-                        UIMessages.DefaultModPackVersionMessage,
-                        UIMessages.NoVersionFoundTitle, MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) ==
-                    System.Windows.Forms.DialogResult.OK)
-                {
-                    versionNumber = new Version(1, 0, 0);
-                }
-                else
-                {
-                    return;
-                }
-            }
-
-            if (ModPackAuthor.Text.Equals(string.Empty))
-            {
-                if (FlexibleMessageBox.Show(null,
-                        UIMessages.DefaultModPackAuthorMessage,
-                        UIMessages.NoAuthorFoundTitle, MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) ==
-                    System.Windows.Forms.DialogResult.OK)
-                {
-                    ModPackAuthor.Text = "TexTools User".L();
-                }
-                else
-                {
-                    return;
-                }
-            }
 
             if (!String.IsNullOrWhiteSpace(ModPackUrl.Text))
             {
@@ -137,7 +103,9 @@ namespace FFXIV_TexTools.Views
             _vm.Version = versionNumber;
             _vm.Description = ModPackDescription.Text;
             _vm.Url = ModPackUrl.Text;
-            _vm.SaveAdvanced = ModPackType.SelectedIndex == 1;
+            _vm.Image = ImagePath;
+            _vm.ModpackPath = sfd.FileName;
+            
 
             if (CreateModpack != null)
             {
@@ -151,6 +119,13 @@ namespace FFXIV_TexTools.Views
             {
                 CreateModpack.Invoke(this, null);
             }
+        }
+
+        private void ChooseImage_Click(object sender, RoutedEventArgs e)
+        {
+            var imgInfo = this.LoadUserImage();
+            ImagePath = imgInfo.File;
+            ImageDisplay.Source = imgInfo.Image;
         }
     }
 }
