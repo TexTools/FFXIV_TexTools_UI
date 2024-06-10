@@ -37,6 +37,7 @@
                     <GridViewColumn x:Name="FileType" Header="File Type" DisplayMemberBinding="{Binding FileType}"/>
                     <GridViewColumn x:Name="FileName" Header="File Name" DisplayMemberBinding="{Binding FileName}"/>
                     <GridViewColumn x:Name="ModState" Header="Mod Status" DisplayMemberBinding="{Binding ModState}"/>
+                    <GridViewColumn x:Name="Modpack" Header="Modpack" DisplayMemberBinding="{Binding Modpack}"/>
                     <GridViewColumn x:Name="FilePath" Header="File Path" DisplayMemberBinding="{Binding FilePath}"/>
                 </GridView>
             </ListView.View>

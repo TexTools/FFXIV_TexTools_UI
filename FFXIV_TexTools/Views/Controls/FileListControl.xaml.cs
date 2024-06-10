@@ -59,13 +59,31 @@ namespace FFXIV_TexTools.Views
             {
                 tx = MainWindow.DefaultTransaction;
             }
-            UpdateModState(await Modding.GetModState(_FilePath, tx));
+            try
+            {
+                UpdateModState(await Modding.GetModState(_FilePath, tx));
+                var mod = await tx.GetMod(_FilePath);
+
+                if (mod != null)
+                {
+                    UpdateModpack(mod.Value.ModPack);
+                }
+            }
+            catch(Exception ex)
+            {
+                Trace.Write(ex);
+            }
         }
 
         public void UpdateModState(EModState state)
         {
             _ModState = state;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ModState)));
+        }
+
+        public void UpdateModpack(string modpack)
+        {
+            Modpack = modpack;
         }
 
         private bool _Selected;
@@ -194,6 +212,27 @@ namespace FFXIV_TexTools.Views
                 {
                     return _ModState.ToString();
                 }
+            }
+        }
+
+        private string _Modpack;
+        public string Modpack
+        {
+            get
+            {
+                if (_Modpack == null)
+                {
+                    return "";
+                }
+                else
+                {
+                    return _Modpack;
+                }
+            }
+            set
+            {
+                _Modpack = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Modpack)));
             }
         }
     }
@@ -336,7 +375,7 @@ namespace FFXIV_TexTools.Views.Controls
                 return true;
             }
 
-            if (file.FileType.Contains(searchText))
+            if (file.FileType.ToLower().Contains(searchText))
             {
                 return true;
             }
@@ -357,6 +396,11 @@ namespace FFXIV_TexTools.Views.Controls
             }
             
             if (file.ModState.ToLower().Contains(searchText))
+            {
+                return true;
+            }
+
+            if (file.Modpack.ToLower().Contains(searchText))
             {
                 return true;
             }

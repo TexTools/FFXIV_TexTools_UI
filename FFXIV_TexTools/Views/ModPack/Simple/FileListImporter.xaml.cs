@@ -224,7 +224,7 @@ namespace FFXIV_TexTools.Views.Simple
                     // Read Modpack basic info.
                     ModPack modpack = new ModPack()
                     {
-                        Name = Name,
+                        Name = ModpackName,
                         Author = ModpackAuthor,
                         Version = ModpackVersion,
                         Url = ModpackUrl,
