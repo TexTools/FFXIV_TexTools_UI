@@ -236,6 +236,7 @@ namespace FFXIV_TexTools.Views.Controls
             } else {
                 encoder = new TgaEncoder()
                 {
+                    Compression = TgaCompression.None,
                     BitsPerPixel = TgaBitsPerPixel.Pixel32,
                 };
             };
