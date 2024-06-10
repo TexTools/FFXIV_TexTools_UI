@@ -1550,7 +1550,13 @@ namespace FFXIV_TexTools
             {
                 //No-Op
             }
-            IOUtil.ClearTempFolder();
+
+            Process[] pname = Process.GetProcessesByName(Process.GetCurrentProcess().ProcessName);
+            if (pname.Length == 1)
+            {
+                // Only clear temp folder if we're the last TT application closing.
+                IOUtil.ClearTempFolder();
+            }
             return;
         }
 

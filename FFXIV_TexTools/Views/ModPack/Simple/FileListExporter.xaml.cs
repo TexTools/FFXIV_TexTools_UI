@@ -1,4 +1,6 @@
-﻿using FFXIV_TexTools.Resources;
+﻿using FFXIV_TexTools.Properties;
+using FFXIV_TexTools.Resources;
+using FFXIV_TexTools.Views.Wizard;
 using MahApps.Metro.Controls.Dialogs;
 using System;
 using System.Collections.Generic;
@@ -14,10 +16,10 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using xivModdingFramework.Cache;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Helpers;
@@ -106,6 +108,19 @@ namespace FFXIV_TexTools.Views.Simple
             }
         }
 
+        private ImageSource _HeaderSource { get; set; }
+        public ImageSource HeaderSource
+        {
+            get => _HeaderSource;
+            set
+            {
+                _HeaderSource = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(HeaderSource)));
+            }
+        }
+
+        private string ImagePath;
+
         public FileListExporter(IEnumerable<string> files)
         {
 
@@ -148,6 +163,28 @@ namespace FFXIV_TexTools.Views.Simple
         private async void Export_Click(object sender, RoutedEventArgs e)
         {
 
+            if(string.IsNullOrWhiteSpace(ModpackName))
+            {
+                ModpackName = "Modpack";
+            }
+
+            var pathSafe = IOUtil.MakePathSafe(ModpackName, false);
+
+            var startingFolder = Path.GetFullPath(Settings.Default.ModPack_Directory);
+            var sfd = new SaveFileDialog()
+            {
+                Filter = "Modpack Files|*.pmp;*.ttmp2",
+                Title = "Save Modpack...",
+                InitialDirectory = startingFolder,
+                FileName = pathSafe + ".pmp"
+            };
+
+            if (sfd.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+            {
+                return;
+            }
+            var path = sfd.FileName;
+
             _progressController = await this.ShowProgressAsync(UIMessages.ModPackImportTitle, UIMessages.PleaseStandByMessage);
             try
             {
@@ -168,6 +205,30 @@ namespace FFXIV_TexTools.Views.Simple
                 {
                     ModpackAuthor = "Unknown";
                 }
+
+
+                // Create the data to write.
+                var wizardData = new WizardData();
+
+                wizardData.MetaPage.Author = ModpackAuthor;
+                wizardData.MetaPage.Name = ModpackName;
+                wizardData.MetaPage.Description = ModpackDescription;
+                wizardData.MetaPage.Url = ModpackUrl;
+                wizardData.MetaPage.Version = version.ToString();
+                wizardData.MetaPage.Image = ImagePath;
+
+                var page = new WizardPageEntry();
+                var group = new WizardGroupEntry();
+                group.OptionType = EOptionType.Single;
+                var option = new WizardOptionEntry(group);
+                page.Groups.Add(group);
+                wizardData.DataPages.Add(page);
+                group.Options.Add(option);
+
+                group.Name = "Default Group";
+                option.Name = "Default Option";
+
+
 
                 var smd = new SimpleModPackData()
                 {
@@ -193,39 +254,22 @@ namespace FFXIV_TexTools.Views.Simple
                         offset = mod.Value.ModOffset8x;
                     }
 
-                    var root = await XivCache.GetFirstRoot(file);
-                    var itemName = "Unknown";
-                    var itemCategory = "Unknown";
-
-                    if (root != null)
-                    {
-                        var item = root.GetFirstItem();
-                        if (item != null)
-                        {
-                            itemName = item.Name;
-                            itemCategory = item.SecondaryCategory;
-                        }
-                    }
                     var df = IOUtil.GetDataFileFromPath(file);
-                    var dfString = df.GetFileName();
+                    var handle = tx.UNSAFE_GetStorageInfo(df, offset);
 
-                    var data = new SimpleModData()
-                    {
-                        FullPath = file,
-                        ModOffset = offset,
-                        Name = itemName,
-                        Category = itemCategory,
-
-                        // Legacy Data.
-                        DatFile = dfString,
-                        // Modpack writer will figure out size for us.
-                    };
-
-                    smd.SimpleModDataList.Add(data);
+                    option.StandardData.Files.Add(file, handle);
                 }
 
-                var progress = ViewHelpers.BindReportProgress(_progressController);
-                await TTMP.CreateSimpleModPack(smd, Properties.Settings.Default.ModPack_Directory, progress, false, tx);
+                if (path.ToLower().EndsWith(".ttmp2"))
+                {
+                    option.Image = ImagePath;
+                    await wizardData.WriteWizardPack(path);
+                } else
+                {
+                    await wizardData.WritePmp(path);
+                }
+
+
                 await _progressController.CloseAsync();
                 this.Close();
             }
@@ -239,6 +283,22 @@ namespace FFXIV_TexTools.Views.Simple
         private void Cancel_Click(object sender, RoutedEventArgs e)
         {
             Close();
+        }
+
+        private void ChangeImage_Click(object sender, RoutedEventArgs e)
+        {
+            var imgInfo = this.LoadUserImage();
+            if (string.IsNullOrWhiteSpace(imgInfo.File)) return;
+
+
+            ImagePath = imgInfo.File;
+            HeaderSource = imgInfo.Image;
+        }
+
+        private void RemoveImage_Click(object sender, RoutedEventArgs e)
+        {
+            ImagePath = null;
+            HeaderSource = null;
         }
     }
 }
