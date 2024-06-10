@@ -102,7 +102,7 @@
                 </Grid.ContextMenu>
             </Grid>
 
-            <Button x:Name="OpenFolderButton" Margin="5" Grid.Column="5" IsEnabled="True" Click="OpenFolder_Click">
+            <Button x:Name="OpenFolderButton" Margin="5" Grid.Column="5" IsEnabled="True" Click="OpenFolder_Click" ToolTip="Show this file's default save directory.">
                 <iconPacks:PackIconFontAwesome Kind="FolderOpenRegular" Height="12"/>
             </Button>
         </Grid>
