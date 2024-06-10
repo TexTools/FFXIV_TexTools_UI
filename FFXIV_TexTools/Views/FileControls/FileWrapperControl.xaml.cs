@@ -260,18 +260,17 @@ namespace FFXIV_TexTools.Views.Controls
                 }
                 else if (e.Key == Key.C)
                 {
-                    if (RefreshButton.IsEnabled)
-                    {
-                        _ = Copy();
-                    }
+                    _ = Copy();
                     e.Handled = true;
                 }
                 else if (e.Key == Key.V)
                 {
-                    if (RefreshButton.IsEnabled)
-                    {
-                        _ = Paste();
-                    }
+                    _ = Paste();
+                    e.Handled = true;
+                }
+                else if (e.Key == Key.Q)
+                {
+                    _ = PopOutFile();
                     e.Handled = true;
                 }
                 else
@@ -829,6 +828,12 @@ namespace FFXIV_TexTools.Views.Controls
 
         private async void PopOut_Click(object sender, RoutedEventArgs e)
         {
+            _ = PopOutFile();
+        }
+
+        public async Task PopOutFile()
+        {
+
             try
             {
                 if (FileControl != null)
@@ -836,7 +841,8 @@ namespace FFXIV_TexTools.Views.Controls
                     await SimpleFileViewWindow.OpenFile(FilePath, FileControl.ReferenceItem, null, null, Window.GetWindow(this));
                 }
             }
-            catch { 
+            catch
+            {
                 // No-Op
             }
         }

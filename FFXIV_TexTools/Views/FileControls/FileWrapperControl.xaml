@@ -35,14 +35,14 @@
 
             <TextBox Grid.Column="1" IsReadOnly="True" Margin="5" TextAlignment="Center" Text="Loading File..." x:Name="FilePathBox" VerticalContentAlignment="Center"/>
 
-            <Button Margin="5" Grid.Column="2" Click="Copy_Click" IsEnabled="{Binding Path=CopyPasteEnabled}" ToolTip="Copy the current file to the clipboard.">
+            <Button Margin="5" Grid.Column="2" Click="Copy_Click" IsEnabled="{Binding Path=CopyPasteEnabled}" ToolTip="[Ctrl+C] Copy the current file to the clipboard.">
                 <iconPacks:PackIconFontAwesome Kind="CopySolid" Height="12"/>
             </Button>
-            <Button Margin="5" Grid.Column="3" Click="Paste_Click" IsEnabled="{Binding Path=CopyPasteEnabled}" ToolTip="Paste the current file from the clipboard.">
+            <Button Margin="5" Grid.Column="3" Click="Paste_Click" IsEnabled="{Binding Path=CopyPasteEnabled}" ToolTip="[Ctrl+V] Paste the current file from the clipboard.">
                 <iconPacks:PackIconFontAwesome Kind="PasteSolid" Height="12"/>
             </Button>
             
-            <Button x:Name="PopOutButton" Margin="5" Grid.Column="4" IsEnabled="false" Click="PopOut_Click" ToolTip="Pop this file out in a new window.">
+            <Button x:Name="PopOutButton" Margin="5" Grid.Column="4" IsEnabled="false" Click="PopOut_Click" ToolTip="[Ctrl+Q] Pop this file out in a new window.">
                 <iconPacks:PackIconFontAwesome Kind="ExternalLinkSquareAltSolid" Height="12"/>
             </Button>
         </Grid>

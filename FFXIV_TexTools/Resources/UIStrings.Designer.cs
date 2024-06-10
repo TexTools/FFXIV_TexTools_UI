@@ -1369,7 +1369,7 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Enable or Disable the current Modded version of this file..
+        ///   Looks up a localized string similar to [Ctrl+D] Enable or Disable the current Modded version of this file..
         /// </summary>
         public static string EnableDisableTooltip {
             get {
@@ -2233,7 +2233,7 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Load an external file into this editor window..
+        ///   Looks up a localized string similar to [Ctrl+E] or [Ctrl+O] Load an external file into this editor window..
         /// </summary>
         public static string LoadTooltip {
             get {
@@ -3897,7 +3897,7 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Save the current editor state to external file..
+        ///   Looks up a localized string similar to [Ctrl+A] Save the current editor state to external file..
         /// </summary>
         public static string SaveAsTooltip {
             get {
@@ -3924,7 +3924,7 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Save the current editor state to the game files/transaction.
+        ///   Looks up a localized string similar to [Ctrl+S] Save the current editor state to the game files/transaction.
         /// </summary>
         public static string SaveTooltip {
             get {
