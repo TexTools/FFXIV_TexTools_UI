@@ -27,7 +27,7 @@
             </Grid.ColumnDefinitions>
 
 
-            <Button x:Name="RefreshButton" Margin="5" Grid.Column="0" IsEnabled="False" Click="RefreshButton_Click" ToolTip="Reload the currently selected file from the Game Files/Transaction.">
+            <Button x:Name="RefreshButton" Margin="5" Grid.Column="0" IsEnabled="False" Click="RefreshButton_Click" ToolTip="[Ctrl+R] Reload the currently selected file from the Game Files/Transaction.">
                 <iconPacks:Material Kind="Refresh" Height="12"/>
 
             </Button>
