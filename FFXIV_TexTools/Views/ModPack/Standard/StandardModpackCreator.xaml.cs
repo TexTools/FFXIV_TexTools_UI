@@ -90,7 +90,18 @@ namespace FFXIV_TexTools.Views
             InitializeComponent();
 
             ShowItemSelect();
+
+            Closing += StandardModpackCreator_Closing;
         }
+
+        private void StandardModpackCreator_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if(Owner != null)
+            {
+                Owner.Activate();
+            }
+        }
+
         public async Task LockUi(string title, string message, object requestor)
         {
             _lockProgressController = await this.ShowProgressAsync(title, message);
@@ -163,7 +174,7 @@ namespace FFXIV_TexTools.Views
 
             if (_inProgressLevel == XivDependencyLevel.Root)
             {
-                SelectAllFiles();
+                _ = SelectAllFiles();
                 return;
             }
             else
@@ -288,18 +299,30 @@ namespace FFXIV_TexTools.Views
                 return;
             }
 
-            CreateModpack();
+            _ = CreateModpack();
         }
 
         private async Task CreateModpack()
         {
+
+            var success = false;
+            await LockUi("Creating Modpack", "Please wait...", this);
             try
             {
                 await Create();
+                success = true;
             }
             catch(Exception ex)
             {
                 ViewHelpers.ShowError(this, "Mod Creation Error", "An error occurred while creating the mod:\n\n" + ex.Message);
+            }
+            finally
+            {
+                await UnlockUi(this);
+                if (success)
+                {
+                    DialogResult = true;
+                }
             }
         }
         private async Task Create()
@@ -401,14 +424,12 @@ namespace FFXIV_TexTools.Views
                     await wizardData.WritePmp(ViewModel.ModpackPath);
                 }
 
-                DialogResult = true;
             }
             catch(Exception ex)
             {
 
                 FlexibleMessageBox.Show(new Wpf32Window(this), "An Error occured while creating the modpack.\n\n".L()+ ex.Message,
                                                "Modpack Creation Error".L(), MessageBoxButtons.OK, MessageBoxIcon.Error);
-                await UnlockUi(this);
             }
 
 

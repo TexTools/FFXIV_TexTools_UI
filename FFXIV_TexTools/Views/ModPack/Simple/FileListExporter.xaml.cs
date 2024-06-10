@@ -135,6 +135,15 @@ namespace FFXIV_TexTools.Views.Simple
             ExportButton.IsEnabled = FileList.AnySelected;
 
             ModpackNameBox.Focus();
+            Closing += FileListExporter_Closing;
+        }
+
+        private void FileListExporter_Closing(object sender, CancelEventArgs e)
+        {
+            if (Owner != null)
+            {
+                Owner.Activate();
+            }
         }
 
         private void FileList_SelectionChanged(object sender, EventArgs e)
