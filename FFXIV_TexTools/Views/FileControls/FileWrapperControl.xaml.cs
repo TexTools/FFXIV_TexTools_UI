@@ -175,6 +175,18 @@ namespace FFXIV_TexTools.Views.Controls
             }
         }
 
+        public bool CopyPasteEnabled
+        {
+            get {
+
+                if (FileControl == null || !FileControl.HasFile || string.IsNullOrWhiteSpace(FileControl.InternalFilePath))
+                {
+                    return false;
+                }
+                return true;
+            }
+        }
+
         public FileWrapperControl()
         {
             DataContext = this;
@@ -498,6 +510,7 @@ namespace FFXIV_TexTools.Views.Controls
                 return false;
             }
         }
+
         private void FileControl_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(FileControl.UnsavedChanges))
@@ -537,6 +550,7 @@ namespace FFXIV_TexTools.Views.Controls
                 LoadButton.IsEnabled = false;
                 SaveAsGrid.IsEnabled = false;
                 SaveEnabled = false;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CopyPasteEnabled)));
                 return;
             }
 
@@ -583,6 +597,7 @@ namespace FFXIV_TexTools.Views.Controls
                 RefreshButton.IsEnabled = false;
                 PopOutButton.IsEnabled = false;
             }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CopyPasteEnabled)));
         }
 
         private async Task SetupSaveContextMenu()

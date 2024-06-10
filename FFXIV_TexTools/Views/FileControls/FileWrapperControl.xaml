@@ -35,10 +35,10 @@
 
             <TextBox Grid.Column="1" IsReadOnly="True" Margin="5" TextAlignment="Center" Text="Loading File..." x:Name="FilePathBox" VerticalContentAlignment="Center"/>
 
-            <Button Margin="5" Grid.Column="2" Click="Copy_Click" ToolTip="Copy the current file to the clipboard.">
+            <Button Margin="5" Grid.Column="2" Click="Copy_Click" IsEnabled="{Binding Path=CopyPasteEnabled}" ToolTip="Copy the current file to the clipboard.">
                 <iconPacks:PackIconFontAwesome Kind="CopySolid" Height="12"/>
             </Button>
-            <Button Margin="5" Grid.Column="3" Click="Paste_Click" ToolTip="Paste the current file from the clipboard.">
+            <Button Margin="5" Grid.Column="3" Click="Paste_Click" IsEnabled="{Binding Path=CopyPasteEnabled}" ToolTip="Paste the current file from the clipboard.">
                 <iconPacks:PackIconFontAwesome Kind="PasteSolid" Height="12"/>
             </Button>
             
