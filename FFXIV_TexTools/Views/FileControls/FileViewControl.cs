@@ -498,7 +498,7 @@ namespace FFXIV_TexTools.Views.Controls
 
         public virtual async Task<bool> LoadRawData(byte[] data)
         {
-            if (!this.ConfirmDiscardChanges(InternalFilePath))
+            if (UnsavedChanges && !this.ConfirmDiscardChanges(InternalFilePath))
             {
                 return false;
             }

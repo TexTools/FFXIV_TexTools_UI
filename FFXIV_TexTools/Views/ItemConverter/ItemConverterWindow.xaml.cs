@@ -375,11 +375,11 @@ namespace FFXIV_TexTools.Views.ItemConverter
                 string mpd = saveModpack ? Settings.Default.ModPack_Directory : null;
                 await Task.Run(async () =>
                 {
-                    await RootCloner.CloneRoot(Source, Destination, XivStrings.TexTools, variant, mpd, _lockProgress);
+                    await RootCloner.CloneRoot(Source, Destination, XivStrings.TexTools, variant, mpd, _lockProgress, MainWindow.UserTransaction);
 
                     foreach(var kv in extraConversions)
                     {
-                        await RootCloner.CloneRoot(kv.Key, kv.Value, XivStrings.TexTools, variant, mpd, _lockProgress);
+                        await RootCloner.CloneRoot(kv.Key, kv.Value, XivStrings.TexTools, variant, mpd, _lockProgress, MainWindow.UserTransaction);
                     }
                 });
             }
