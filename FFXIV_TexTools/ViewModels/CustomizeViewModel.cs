@@ -320,7 +320,7 @@ namespace FFXIV_TexTools.ViewModels
             get => Settings.Default.ShiftExportUV;
             set
             {
-                if (UnsafeMode != value)
+                if (ShiftExportUV != value)
                 {
                     Settings.Default.ShiftExportUV = value;
                     Settings.Default.Save();
