@@ -70,7 +70,7 @@ namespace FFXIV_TexTools.Views.Controls
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(FullInt)));
             BitControl0.SetNames(new List<string>()
             {
-                "Show Backfaces",
+                "Hide Backfaces",
                 "Bit 1",
                 "Bit 2",
                 "Bit 3",
