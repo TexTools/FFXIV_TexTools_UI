@@ -36,7 +36,7 @@
       <Value Profile="(Default)">#FF603913</Value>
     </Setting>
     <Setting Name="Lip_Color" Type="System.String" Scope="User">
-      <Value Profile="(Default)">#FFAD6969</Value>
+      <Value Profile="(Default)">#38D01206</Value>
     </Setting>
     <Setting Name="Tattoo_Color" Type="System.String" Scope="User">
       <Value Profile="(Default)">#FF00FF42</Value>

@@ -157,7 +157,7 @@ namespace FFXIV_TexTools.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("#FFAD6969")]
+        [global::System.Configuration.DefaultSettingValueAttribute("#38D01206")]
         public string Lip_Color {
             get {
                 return ((string)(this["Lip_Color"]));
