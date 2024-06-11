@@ -61,8 +61,8 @@ namespace FFXIV_TexTools.Views.Controls
         {
             _Material = material;
             DataContext = this;
-            Flags = _Material.MaterialFlags;
-            Flags2 = _Material.MaterialFlags2;
+            Flags = (ushort) _Material.MaterialFlags;
+            Flags2 = (ushort) _Material.MaterialFlags2;
 
             _AdditionalData = (byte[]) _Material.AdditionalData.Clone();
 
@@ -174,8 +174,8 @@ namespace FFXIV_TexTools.Views.Controls
         {
             UpdateValues();
 
-            _Material.MaterialFlags = Flags;
-            _Material.MaterialFlags2 = Flags2;
+            _Material.MaterialFlags = (EMaterialFlags1) Flags;
+            _Material.MaterialFlags2 = (EMaterialFlags2) Flags2;
 
             _Material.AdditionalData = AdditionalData;
 
