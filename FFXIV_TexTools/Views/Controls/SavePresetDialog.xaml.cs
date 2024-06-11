@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using HelixToolkit.SharpDX.Core.Shaders;
 using xivModdingFramework.Materials.DataContainers;
+using xivModdingFramework.Helpers;
 
 namespace FFXIV_TexTools.Views.Controls
 {
@@ -38,7 +39,9 @@ namespace FFXIV_TexTools.Views.Controls
             folder = folder.Substring(0, folder.Length - 5);
 
             System.IO.Directory.CreateDirectory(LoadPresetDialog._PresetsPath + "/" + folder);
-            SelectedPath = LoadPresetDialog._PresetsPath + "/" + folder + "/" + PresetName.Text + ".mtrl";
+
+
+            SelectedPath = Path.GetFullPath(Path.Combine(LoadPresetDialog._PresetsPath, folder, IOUtil.MakePathSafe(PresetName.Text, false) + ".mtrl"));
             DialogResult = true;
         }
 

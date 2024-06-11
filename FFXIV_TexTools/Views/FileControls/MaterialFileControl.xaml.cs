@@ -516,7 +516,6 @@ namespace FFXIV_TexTools.Views.Controls
 
             try
             {
-                path = IOUtil.MakePathSafe(path).Trim();
                 var bytes = Mtrl.XivMtrlToUncompressedMtrl((XivMtrl)Material.Clone());
                 System.IO.File.WriteAllBytes(path, bytes);
             }
