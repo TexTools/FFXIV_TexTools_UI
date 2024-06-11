@@ -158,13 +158,10 @@ namespace FFXIV_TexTools.ViewModels
                 };
 
                 // Geometry that contains skeleton data
-                var smgm3d = new CustomBoneSkinMeshGeometry3D
+                var smgm3d = new CustomMeshGeometryModel3D
                 {
                     Geometry = meshGeometry3D,
                     Material = material,
-                    ItemType = itemType,
-                    BoneMatrices = GetMatrices(targetRace),
-                    BoneList = model.Bones
                 };
 
                 // Keep track of what bones are showing in the view
