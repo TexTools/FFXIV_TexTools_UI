@@ -613,9 +613,10 @@ namespace FFXIV_TexTools.Views.Controls
         {
 
             var tx = MainWindow.DefaultTransaction;
-            var data = await Mdl.MakeUncompressedMdlFile(Model, InternalFilePath, false, tx);
+            //var data = await Mdl.MakeUncompressedMdlFile(Model, InternalFilePath, false, tx);
+            //return Mdl.GetXivMdl(data, InternalFilePath);
+            return await Mdl.GetXivMdl(InternalFilePath, false, tx);
 
-            return Mdl.GetXivMdl(data, InternalFilePath);
         }
 
         public override string GetDefaultSaveDirectory()
