@@ -36,14 +36,16 @@
             <Grid>
                 <hx:Viewport3DX
                 x:Name="viewport3DX"
+                DataContext="{Binding Path=ViewportVM}"
                 Camera="{Binding Path=Camera}"
                 CoordinateSystemLabelForeground="White"
                 TextBrush="Black"
                 UseDefaultGestures="False"
                 BackgroundColor="{Binding Path=BackgroundColor}"
                 EffectsManager="{Binding Path=EffectsManager}"
-                DataContext="{Binding Path=ViewportVM}"
-                FXAALevel="Medium" MSAA="Two" ZoomExtentsWhenLoaded="True" 
+                IsZoomEnabled="True"
+                ZoomExtentsWhenLoaded="True" 
+                ShowTriangleCountInfo="True" FXAALevel="Medium" MSAA="Two" 
                 OITRenderMode="DepthPeeling" OITWeightMode="Linear0" ZoomDistanceLimitNear="0.0001">
                     <hx:Viewport3DX.InputBindings>
                         <KeyBinding Key="B" Command="hx:ViewportCommands.BackView" />
@@ -52,13 +54,13 @@
                         <KeyBinding Key="D" Command="hx:ViewportCommands.BottomView" />
                         <KeyBinding Key="L" Command="hx:ViewportCommands.LeftView" />
                         <KeyBinding Key="R" Command="hx:ViewportCommands.RightView" />
-                        <KeyBinding Command="hx:ViewportCommands.ZoomExtents" Gesture="Control+E" />
-                        <KeyBinding Command="hx:ViewportCommands.Reset" Gesture="Control+R"/>
+                        <KeyBinding Command="hx:ViewportCommands.ZoomExtents" Gesture="Alt+E" />
+                        <KeyBinding Command="hx:ViewportCommands.Reset" Gesture="Alt+R"/>
                         <MouseBinding Command="hx:ViewportCommands.Rotate" Gesture="RightClick" />
                         <MouseBinding Command="hx:ViewportCommands.Zoom" Gesture="MiddleClick" />
                         <MouseBinding Command="hx:ViewportCommands.Pan" Gesture="LeftClick" />
                     </hx:Viewport3DX.InputBindings>
-                    
+
                     <hx:DirectionalLight3D
                     Direction="{Binding Path=Light1Direction}"
                     Color="{Binding Path=Light1Color}" />

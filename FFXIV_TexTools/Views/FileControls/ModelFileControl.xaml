@@ -22,7 +22,7 @@
             <hx:Viewport3DX
                 x:Name="Viewport"
                 DataContext="{Binding Path=ViewportVM}"
-                Camera="{Binding Camera}"
+                Camera="{Binding Path=Camera}"
                 CoordinateSystemLabelForeground="White"
                 TextBrush="Black"
                 UseDefaultGestures="False"

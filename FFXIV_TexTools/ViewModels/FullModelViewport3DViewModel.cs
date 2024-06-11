@@ -61,19 +61,6 @@ namespace FFXIV_TexTools.ViewModels
         public FullModelViewport3DViewModel(FullModelViewModel fmvm)
         {
             _modelViewModel = fmvm;
-            Title = "";
-            SubTitle = "";
-
-            // Eat exception to not immediately crash in VirtualBox
-            try
-            {
-                EffectsManager = new CustomEffectsManager();
-            } catch { }
-
-            Camera = new PerspectiveCamera();
-            Camera.CameraInternal.PropertyChanged += CameraInternal_PropertyChanged;
-
-            BackgroundColor = Properties.Settings.Default.BG_Color;
         }
 
 
@@ -197,7 +184,7 @@ namespace FFXIV_TexTools.ViewModels
             }
             var center = boundingBox.GetValueOrDefault().Center;
 
-            Camera.UpDirection = new Vector3D(0, 1, 0);
+            //Camera.UpDirection = new Vector3D(0, 1, 0);
             // Add the skeleton node for the target race
             AddSkeletonNode(targetRace);
 
