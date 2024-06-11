@@ -224,8 +224,8 @@ namespace FFXIV_TexTools.ViewModels
                     || iType == xivModdingFramework.Items.Enums.XivItemType.accessory 
                     || iType == xivModdingFramework.Items.Enums.XivItemType.weapon)
                 {
-                    _view.ForceUVsButton.IsChecked = Settings.Default.ForceUV1QuadrantForGear;
-                    _view.ForceUVsButton.Click += ForceUVsButton_Clicked;
+                    _view.ShiftUVsButton.IsChecked = Settings.Default.ShiftImportUV;
+                    _view.ShiftUVsButton.Click += ForceUVsButton_Clicked;
                 }
             }
         }
@@ -244,7 +244,7 @@ namespace FFXIV_TexTools.ViewModels
 
         private void ForceUVsButton_Clicked(object sender, RoutedEventArgs e)
         {
-            Settings.Default.ForceUV1QuadrantForGear = _view.ForceUVsButton.IsChecked == true;
+            Settings.Default.ShiftImportUV = _view.ShiftUVsButton.IsChecked == true;
             Settings.Default.Save();
         }
 
@@ -336,7 +336,7 @@ namespace FFXIV_TexTools.ViewModels
 
             var options = new ModelImportOptions();
             options.UseOriginalShapeData = _view.UseOriginalShapeDataButton.IsChecked == true ? true : false;
-            options.ForceUVQuadrant = _view.ForceUVsButton.IsChecked == true ? true : false;
+            options.ShiftImportUV = _view.ShiftUVsButton.IsChecked == true ? true : false;
             options.ClearUV2 = _view.ClearUV2Button.IsChecked == true ? true : false;
             options.CloneUV2 = _view.CloneUV1Button.IsChecked == true ? true : false;
             options.ClearVAlpha = _view.ClearVAlphaButton.IsChecked == true ? true : false;

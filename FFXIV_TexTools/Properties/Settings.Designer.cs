@@ -514,5 +514,29 @@ namespace FFXIV_TexTools.Properties {
                 this["OpenTransactionOnStart"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ShiftExportUV {
+            get {
+                return ((bool)(this["ShiftExportUV"]));
+            }
+            set {
+                this["ShiftExportUV"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ShiftImportUV {
+            get {
+                return ((bool)(this["ShiftImportUV"]));
+            }
+            set {
+                this["ShiftImportUV"] = value;
+            }
+        }
     }
 }

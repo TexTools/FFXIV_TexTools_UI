@@ -227,7 +227,7 @@ namespace FFXIV_TexTools.Views.Controls
                 version = await Imc.GetMaterialSetId(asIm, false, tx);
             }
 
-            await Mdl.ExportTTModelToFile(Model, externalFilePath, version, true, tx);
+            await Mdl.ExportTTModelToFile(Model, externalFilePath, version, true, Settings.Default.ShiftExportUV, tx);
             return true;
         }
 

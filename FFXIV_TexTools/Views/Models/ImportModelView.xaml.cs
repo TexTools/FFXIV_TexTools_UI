@@ -156,7 +156,7 @@ namespace FFXIV_TexTools.Views.Models
             ClearVColorButton.IsEnabled = enabled;
             ClearVAlphaButton.IsEnabled = enabled;
             UseOriginalShapeDataButton.IsEnabled = enabled;
-            ForceUVsButton.IsEnabled = enabled;
+            ShiftUVsButton.IsEnabled = enabled;
             FileNameTextBox.IsEnabled = enabled;
             UseExistingButton.IsEnabled = enabled;
             IsCloseButtonEnabled = enabled;

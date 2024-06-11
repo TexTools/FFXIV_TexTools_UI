@@ -33,6 +33,7 @@ using xivModdingFramework.Models.DataContainers;
 using xivModdingFramework.Models.FileTypes;
 using xivModdingFramework.Variants.FileTypes;
 using FFXIV_TexTools.Views.Controls;
+using xivModdingFramework.Models.Helpers;
 
 namespace FFXIV_TexTools.Views.Models
 {
@@ -172,7 +173,25 @@ namespace FFXIV_TexTools.Views.Models
                 // Save model to DB
             }
 
-            TTModel.SaveFullToFile(dbPath, _fmvm.SelectedSkeleton.XivRace, fmViewPortVM.shownModels.Select(x => x.Value.TtModel).ToList());
+
+            // Create a cloned list as the model may be modified during export process.
+            List<TTModel> models = new List<TTModel>();
+            foreach(var mdl in fmViewPortVM.shownModels.Select(x => x.Value.TtModel))
+            {
+                var m = (TTModel) mdl.Clone();
+
+                if (Settings.Default.ShiftExportUV)
+                {
+                    // This is not a typo.  Because we haven't flipped the UV yet, we need to -1, not +1.
+                    ModelModifiers.ShiftImportUV(m);
+                }
+                
+                models.Add(m);
+            }
+
+            
+
+            TTModel.SaveFullToFile(dbPath, _fmvm.SelectedSkeleton.XivRace, models);
 
             var proc = new Process
             {

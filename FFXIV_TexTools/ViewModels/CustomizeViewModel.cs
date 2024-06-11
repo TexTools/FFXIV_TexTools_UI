@@ -315,6 +315,18 @@ namespace FFXIV_TexTools.ViewModels
                 }
             }
         }
+        public bool ShiftExportUV
+        {
+            get => Settings.Default.ShiftExportUV;
+            set
+            {
+                if (UnsafeMode != value)
+                {
+                    Settings.Default.ShiftExportUV = value;
+                    Settings.Default.Save();
+                }
+            }
+        }
         public bool OpenTxByDefault
         {
             get => Settings.Default.OpenTransactionOnStart;

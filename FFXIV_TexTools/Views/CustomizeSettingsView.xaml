@@ -88,19 +88,23 @@
                         <RowDefinition Height="40"/>
                         <RowDefinition Height="40"/>
                         <RowDefinition Height="40"/>
+                        <RowDefinition Height="40"/>
                     </Grid.RowDefinitions>
                     
                     <Label Grid.Column="0" Grid.Row="0" Margin="5" Content="External Model Viewer Type" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
                     <ComboBox x:Name="Target3DProgramBox" Grid.Column="1" Grid.Row="0"  VerticalAlignment="Center" ItemsSource="{Binding Target3DPrograms}" SelectedItem="{Binding Selected3DProgram}" Margin="5" />
 
                     <Label Grid.Column="0" Grid.Row="1" Margin="5" Content="Export Complete Skeletons" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
-                    <CheckBox x:Name="ExportAllBonesBox"  Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" Margin="5" ToolTip="Should model exports include unused bones in the associated skeletons?"  IsChecked="{Binding ExportAllBones}"></CheckBox>
+                    <CheckBox x:Name="ExportAllBonesBox"  Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" Margin="5" ToolTip="Export Models with the full mesh skeleton, even if the bones are not used."  IsChecked="{Binding ExportAllBones}"></CheckBox>
 
-                    <Label Grid.Column="0" Grid.Row="2" Margin="5" Content="Body Material Auto-Assign" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
-                    <CheckBox x:Name="AutoMatFixBox"  Grid.Column="1" Grid.Row="2" VerticalAlignment="Center" Margin="5" ToolTip="Automatically assign imported body models to the correct skin material."  IsChecked="{Binding AutoMaterialFix}"></CheckBox>
+                    <Label Grid.Column="0" Grid.Row="2" Margin="5" Content="Shift Exported Model UVs" VerticalAlignment="Center" ToolTip="Shift exported Model UVs by V+1."  HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
+                    <CheckBox x:Name="UvShiftBox"  Grid.Column="1" Grid.Row="2" VerticalAlignment="Center" Margin="5" ToolTip="Shift exported Model UVs by V+1."  IsChecked="{Binding Path=ShiftExportUV}"></CheckBox>
 
-                    <Label Grid.Column="0" Grid.Row="3" Margin="5" Content="Update Endwalker Modpacks" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
-                    <CheckBox x:Name="DawntrailFixBox"  Grid.Column="1" Grid.Row="3" VerticalAlignment="Center" Margin="5" ToolTip="Automatically update pre-Dawntrail Modpacks on Import."  IsChecked="{Binding AutoFixDawntrail}"></CheckBox>
+                    <Label Grid.Column="0" Grid.Row="3" Margin="5" Content="Body Material Auto-Assign" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
+                    <CheckBox x:Name="AutoMatFixBox"  Grid.Column="1" Grid.Row="3" VerticalAlignment="Center" Margin="5" ToolTip="Automatically assign imported body models to the correct skin material."  IsChecked="{Binding AutoMaterialFix}"></CheckBox>
+
+                    <Label Grid.Column="0" Grid.Row="4" Margin="5" Content="Update Endwalker Modpacks" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
+                    <CheckBox x:Name="DawntrailFixBox"  Grid.Column="1" Grid.Row="4" VerticalAlignment="Center" Margin="5" ToolTip="Automatically update pre-Dawntrail Modpacks on Import."  IsChecked="{Binding AutoFixDawntrail}"></CheckBox>
 
                 </Grid>
             </GroupBox>
