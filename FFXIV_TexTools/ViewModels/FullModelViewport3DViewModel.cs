@@ -191,7 +191,7 @@ namespace FFXIV_TexTools.ViewModels
 
                 boundingBox = meshGeometry3D.Bound;
 
-                smgm3d.CullMode = Properties.Settings.Default.Cull_Mode.Equals("None") ? CullMode.None : CullMode.Back;
+                smgm3d.CullMode = textureData.RenderBackfaces ? CullMode.None : CullMode.Back;
 
                 Models.Add(smgm3d);
             }

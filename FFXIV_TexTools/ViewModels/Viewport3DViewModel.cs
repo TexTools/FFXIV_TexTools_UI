@@ -296,12 +296,12 @@ namespace FFXIV_TexTools.ViewModels
                     _Geometry.Add(meshGeometry3D);
                 }
 
+                var isBodyMaterial = bodyMaterial.IsMatch(model.MeshGroups[i].Material);
+                var mtrlName = "/" + Path.GetFileName(model.MeshGroups[i].Material);
+
                 if (newTextures)
                 {
 
-                    var isBodyMaterial = bodyMaterial.IsMatch(model.MeshGroups[i].Material);
-
-                    var mtrlName = "/" + Path.GetFileName(model.MeshGroups[i].Material);
                     var textureData = textureDataDictionary.FirstOrDefault(x => x.MaterialPath == mtrlName);
                     if (textureData == null)
                     {
@@ -358,7 +358,15 @@ namespace FFXIV_TexTools.ViewModels
                         Material = _Materials[i],
                     };
 
-                    mgm3d.CullMode = Properties.Settings.Default.Cull_Mode.Equals("None") ? CullMode.None : CullMode.Back;
+                    var textureData = textureDataDictionary.FirstOrDefault(x => x.MaterialPath == mtrlName);
+                    if(textureData != null && textureData.RenderBackfaces)
+                    {
+                        mgm3d.CullMode = CullMode.None;
+                    }
+                    else
+                    {
+                        mgm3d.CullMode = CullMode.Back;
+                    }
 
                     Models.Add(mgm3d);
                 }
@@ -649,24 +657,6 @@ namespace FFXIV_TexTools.ViewModels
             _ReflectionValue = value;
         }
 
-        /// <summary>
-        /// Updates the culling mode of the model
-        /// </summary>
-        /// <remarks>
-        /// This will switch the cull mode to none if true, or back if false
-        /// </remarks>
-        /// <param name="noneCullMode">The None cull mode flag</param>
-        public void UpdateCullMode(bool noneCullMode)
-        {
-            Settings.Default.Cull_Mode = noneCullMode ? UIStrings.None : UIStrings.Back;
-            Settings.Default.Save();
-
-            foreach (var model in Models)
-            {
-                ((MeshGeometryModel3D)model).CullMode = noneCullMode ? CullMode.None : CullMode.Back;
-            }
-        }
-
         #region INotify Properties
 
         private WinColor _Light1Color = new WinColor() { R = 128, G = 128, B = 128, A = 128 };
@@ -824,19 +814,6 @@ namespace FFXIV_TexTools.ViewModels
             {
                 _ShapeButtonEnabled = value;
                 OnPropertyChanged(nameof(ShapeButtonEnabled));
-            }
-        }
-
-
-        private bool _CullModeToggle;
-        public bool CullModeToggle
-        {
-            get => _CullModeToggle;
-            set
-            {
-                _CullModeToggle = value;
-                UpdateCullMode(value);
-                OnPropertyChanged(nameof(CullModeToggle));
             }
         }
 

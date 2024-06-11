@@ -59,13 +59,7 @@
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition></RowDefinition>
-                <RowDefinition></RowDefinition>
             </Grid.RowDefinitions>
-            <mah:ToggleSwitch Grid.Row="1" Header="{Binding Source={x:Static resx:UIStrings.Cull_Mode}}" 
-                              Grid.Column="0"
-                              Style="{StaticResource MahApps.Metro.Styles.ToggleSwitch.Win10}"
-                              OffLabel="{Binding Source={x:Static resx:UIStrings.Back}}"
-                              OnLabel="{Binding Source={x:Static resx:UIStrings.None}}" Margin="5" IsChecked="{Binding CullModeToggle}"/>
             
             <mah:ToggleSwitch Grid.Row="0" IsChecked="{Binding Path=MoveLightsWithCamera}" Margin="5"
                               Header="Light Movement"
