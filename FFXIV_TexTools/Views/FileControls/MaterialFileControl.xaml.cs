@@ -503,18 +503,27 @@ namespace FFXIV_TexTools.Views.Controls
 
         private void SavePresetButton_Click(object sender, RoutedEventArgs e)
         {
+            
             if (Material == null)
             {
                 return;
             }
             var path = SavePresetDialog.ShowSavePresetDialog(Material.ShaderPack, System.IO.Path.GetFileNameWithoutExtension(Material.MTRLPath));
-            if (path == "")
+            if (string.IsNullOrWhiteSpace(path))
             {
                 return;
             }
 
-            var bytes = Mtrl.XivMtrlToUncompressedMtrl((XivMtrl)Material.Clone());
-            System.IO.File.WriteAllBytes(path, bytes);
+            try
+            {
+                path = IOUtil.MakePathSafe(path).Trim();
+                var bytes = Mtrl.XivMtrlToUncompressedMtrl((XivMtrl)Material.Clone());
+                System.IO.File.WriteAllBytes(path, bytes);
+            }
+            catch(Exception ex)
+            {
+                this.ShowError("Preset Save Error", "There was an error saving the preset:\n\n" + ex.Message);
+            }
         }
 
         private async void LoadPresetButton_Click(object sender, RoutedEventArgs e)
