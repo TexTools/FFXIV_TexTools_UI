@@ -799,14 +799,24 @@ namespace FFXIV_TexTools.Views.Controls
             foreach (var group in groups)
             {
                 var searchTerms = group.Split(' ');
-
                 var trimterms = searchTerms.Select(x => x.Trim().ToLower());
                 bool match = trimterms.All(term => 
-                    e.DisplayName.ToLower().Contains(term)
-                    || (e.Root != null && e.Root.ToString().Contains(term)));
+                    e.DisplayName.ToLower().Contains(term));
                 iMatch = iMatch || match;
             }
 
+            if (e.Root != null)
+            {
+                // Root matching doesn't allow spaces because it makes stuff like searching 
+                // "No 2" for 2b item insane.
+                foreach (var group in groups)
+                {
+                    var term = group.Trim().ToLower();
+                    bool match = e.Root.ToString().Contains(term);
+                    iMatch = iMatch || match;
+                }
+            }
+            
             if (e.Children.Count > 0 && e.Item == null)
             {
                 var subItems = (CollectionView)CollectionViewSource.GetDefaultView((e).Children);
