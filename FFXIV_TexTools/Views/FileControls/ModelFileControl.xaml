@@ -59,7 +59,7 @@
             <Canvas Name="AlternateViewportCanvas" Visibility="Hidden" IsHitTestVisible="False"/>
 
             <Label x:Name="ViewportDisclaimer" VerticalAlignment="Top" HorizontalAlignment="Center" Content="{Binding Source={x:Static resx:UIStrings.Viewport_Disclaimer}}" Foreground="#FF151515" FontSize="10"/>
-            <Label VerticalAlignment="Bottom" HorizontalAlignment="Center" Content="{Binding ModelStatusLabel}" Foreground="#FF151515" FontSize="18"/>
+            <Label VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="250" Content="{Binding ModelStatusLabel}" Foreground="#FF151515" FontSize="18" Margin="410,10,10,10"/>
 
 
             <Grid x:Name="ViewerSettingsGrid" Grid.Row="1" VerticalAlignment="Top">

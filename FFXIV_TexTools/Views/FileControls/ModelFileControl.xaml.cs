@@ -137,9 +137,12 @@ namespace FFXIV_TexTools.Views.Controls
 
         protected override async Task<bool> INTERNAL_LoadFile(byte[] data, string path, IItem referenceItem, ModTransaction tx)
         {
-
+            ShowModelStatus(UIStrings.ModelStatus_Loading);
             // The data coming in here is an uncompressed .mdl file.
-            return await LoadModel(Mdl.GetTTModel(data, path));
+            return await Task.Run(async () =>
+            {
+                return await LoadModel(Mdl.GetTTModel(data, path));
+            });
         }
         protected async Task<bool> LoadModel(TTModel model) {
             Model = model;
@@ -206,7 +209,10 @@ namespace FFXIV_TexTools.Views.Controls
 
 
             // Don't actually wait for the visual update on the model.
-            _ = UpdateVisual();
+            _ = await Dispatcher.InvokeAsync(async () =>
+            {
+                await UpdateVisual();
+            });
 
             return true;
         }
@@ -347,7 +353,7 @@ namespace FFXIV_TexTools.Views.Controls
             {
                 ViewportVM.ClearModels();
 
-                ModelStatusLabel = UIStrings.ModelStatus_Loading;
+                ShowModelStatus(UIStrings.ModelStatus_Loading);
 
                 // Might as well just make sure we have these updated.
                 CustomizeViewModel.UpdateFrameworkColors();
@@ -378,9 +384,14 @@ namespace FFXIV_TexTools.Views.Controls
 
                 ShowModelStatus("Loading Textures...");
 
-                await Task.Run(async () =>
+                _ = Task.Run(async () =>
                 {
-                    _ = UpdateTextures(Model, _MaterialPaths);
+                    await UpdateTextures(Model, _MaterialPaths);
+
+                    Dispatcher.Invoke(() =>
+                    {
+                        ShowModelStatus("Model Loaded Successfully.");
+                    });
                 });
             }
             catch (Exception ex)
@@ -888,7 +899,10 @@ namespace FFXIV_TexTools.Views.Controls
                 }
 
                 UnsavedChanges = true;
-                _ = UpdateVisual();
+                _ = await Dispatcher.InvokeAsync(async () =>
+                {
+                    await UpdateVisual();
+                });
             }
             catch(Exception ex)
             {
