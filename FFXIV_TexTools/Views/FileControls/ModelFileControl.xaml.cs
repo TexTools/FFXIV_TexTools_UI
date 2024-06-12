@@ -631,7 +631,7 @@ namespace FFXIV_TexTools.Views.Controls
 
         protected override KeyValuePair<string, string> GetDefaultExtension()
         {
-            return new KeyValuePair<string, string>(".FBX", "FBX Model");
+            return new KeyValuePair<string, string>(".fbx", "FBX Model");
         }
 
 
