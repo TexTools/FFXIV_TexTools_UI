@@ -419,7 +419,8 @@ namespace FFXIV_TexTools.Views.Controls
                     throw;
                 }
 
-                var element = new ItemTreeElement(catParent, setParent, item);
+                var root = item.GetRoot();
+                var element = new ItemTreeElement(catParent, setParent, item, root);
                 if(catParent != null)
                 {
                     catParent.Children.Add(element);
@@ -515,7 +516,7 @@ namespace FFXIV_TexTools.Views.Controls
                             {
                                 // If we can, add it into the list.
                                 var item = root.ToRawItem();
-                                e = new ItemTreeElement(null, kv.Value, item);
+                                e = new ItemTreeElement(null, kv.Value, item, root);
                                 toAdd.Add((kv.Value, e));
 
                                 if (ExpandCharacterMenu && root.Info.PrimaryType == XivItemType.human)
@@ -798,7 +799,11 @@ namespace FFXIV_TexTools.Views.Controls
             foreach (var group in groups)
             {
                 var searchTerms = group.Split(' ');
-                bool match = searchTerms.All(term => e.DisplayName.ToLower().Contains(term.Trim().ToLower()));
+
+                var trimterms = searchTerms.Select(x => x.Trim().ToLower());
+                bool match = trimterms.All(term => 
+                    e.DisplayName.ToLower().Contains(term)
+                    || (e.Root != null && e.Root.ToString().Contains(term)));
                 iMatch = iMatch || match;
             }
 
@@ -846,6 +851,7 @@ namespace FFXIV_TexTools.Views.Controls
     public class ItemTreeElement : INotifyPropertyChanged
     {
         public readonly IItem Item;
+        public readonly XivDependencyRoot Root;
 
         /// <summary>
         /// Constructor for an empty header cateogory
@@ -866,12 +872,13 @@ namespace FFXIV_TexTools.Views.Controls
         /// Constructor for an actual valid item.
         /// </summary>
         /// <param name="i"></param>
-        public ItemTreeElement(ItemTreeElement itemParent, ItemTreeElement depencencyParent, IItem i, bool searchable = true)
+        public ItemTreeElement(ItemTreeElement itemParent, ItemTreeElement depencencyParent, IItem i, XivDependencyRoot root, bool searchable = true)
         {
             CategoryParent = itemParent;
             SetParent = depencencyParent;
             Item = i;
             Searchable = searchable;
+            Root = root;
             Children = new ObservableCollection<ItemTreeElement>();
         }
 
