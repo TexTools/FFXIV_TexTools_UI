@@ -164,6 +164,7 @@ namespace FFXIV_TexTools.Views.ItemConverter
             if (root.PrimaryType == XivItemType.indoor) return false;
             if (root.PrimaryType == XivItemType.outdoor) return false;
             if (root.PrimaryType == XivItemType.fish) return false;
+            if (root.PrimaryType == XivItemType.painting) return false;
 
             if (root.PrimaryType == XivItemType.human)
             {
