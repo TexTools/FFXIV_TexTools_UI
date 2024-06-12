@@ -242,5 +242,22 @@ namespace FFXIV_TexTools.Views.Models
                 Trace.WriteLine(ex);
             }
         }
+
+        private void ModifyPart_Click(object sender, RoutedEventArgs e)
+        {
+            var mesh = (int)MeshNumberBox.SelectedValue;
+            if (_newModel.MeshGroups.Count <= mesh || mesh < 0)
+            {
+                return;
+            }
+            var mg = _newModel.MeshGroups[mesh];
+
+            var part = (int)PartNumberBox.SelectedValue;
+            if (mg.Parts.Count <= part || part < 0)
+            {
+                return;
+            }
+            ModifyPartWindow.ShowPartModifier(mg.Parts[part], this);
+        }
     }
 }
