@@ -1504,7 +1504,7 @@ namespace FFXIV_TexTools.Views.Item
                 }
 
                 var mats = Files[currentModel].Keys.ToList();
-                var success = await ModelWrapper.LoadInternalFile(currentModel, Item, null, false);
+                _ = ModelWrapper.LoadInternalFile(currentModel, Item, null, false);
 
                 if(!_TargetFileLocked && 
                     _TargetFile.ModelKey != null
@@ -1562,7 +1562,7 @@ namespace FFXIV_TexTools.Views.Item
 
                 var texs = Files[currentModel][currentMaterial];
 
-                var success = await MaterialWrapper.LoadInternalFile(currentMaterial, Item, null, false);
+                _ = MaterialWrapper.LoadInternalFile(currentMaterial, Item, null, false);
 
                 if (!_TargetFileLocked 
                     && _TargetFile.MaterialKey != null
@@ -1606,7 +1606,7 @@ namespace FFXIV_TexTools.Views.Item
                     }
                 }
 
-                var success = await TextureWrapper.LoadInternalFile(tex, Item, null, false);
+                _ = TextureWrapper.LoadInternalFile(tex, Item, null, false);
 
                 if (!_TargetFileLocked && _TargetFile.TextureKey != null)
                 {

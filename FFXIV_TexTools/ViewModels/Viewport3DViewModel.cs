@@ -220,23 +220,28 @@ namespace FFXIV_TexTools.ViewModels
             _UPDATING = false;
         }
 
+        private Guid LastUpdateId;
+
         /// <summary>
         /// Updates the model in the 3D viewport
         /// </summary>
         /// <param name="mdlData">The model data</param>
         /// <param name="textureDataDictionary">The texture dictionary for the model</param>
-        public void UpdateModel(TTModel importModel = null, List<ModelTextureData> importTextures = null)
+        public async Task UpdateModel(TTModel importModel = null, List<ModelTextureData> importTextures = null)
         {
             if (_UPDATING)
             {
                 return;
             }
 
+            var myId = Guid.NewGuid();
+            LastUpdateId = myId;
+
             var newModel = false;
             var newTextures = false;
             var originalModel = _Model;
 
-            if(importModel != null)
+            if (importModel != null)
             {
                 newModel = true;
                 _Model = importModel;
@@ -244,7 +249,7 @@ namespace FFXIV_TexTools.ViewModels
             var model = _Model;
 
             if (importTextures != null)
-            { 
+            {
                 newTextures = true;
                 _Textures = importTextures;
             }
@@ -254,102 +259,118 @@ namespace FFXIV_TexTools.ViewModels
             ShapeButtonEnabled = _Model.HasShapeData;
             ClearModels();
 
+            var totalMeshCount = model.MeshGroups.Count;
+
+            if (VisibleMesh >= totalMeshCount)
+            {
+                // This retriggers UpdateModel
+                VisibleMesh = -1;
+                return;
+            }
+
             if (_Model == null)
             {
                 return;
             }
 
 
-            if (newModel && originalModel != _Model)
+            // Push all the potentially CPU intense stuff onto a new thread.
+            await Task.Run(() =>
             {
-                // Only recalculate if an actually new-new model, since this doesn't change on shape application.
-                ModelModifiers.CalculateTangents(model);
-                UpdateVisibleMeshSource();
-            }
-
-            if (newModel)
-            {
-                _Geometry.Clear();
-                ModelModifiers.ApplyShapes(model, ActiveShapes, true);
-            }
-
-            if (newTextures)
-            {
-                _Materials.Clear();
-            }
-            
-
-            var totalMeshCount = model.MeshGroups.Count;
-
-            if(VisibleMesh >= totalMeshCount)
-            {
-                VisibleMesh = -1;
-            }
-
-
-
-            for (var i = 0; i < totalMeshCount; i++)
-            {
-                if (newModel)
+                if (newModel && originalModel != _Model)
                 {
-                    var meshGeometry3D = GetMeshGeometry(model, i);
-                    _Geometry.Add(meshGeometry3D);
+                    // Only recalculate if an actually new-new model, since this doesn't change on shape application.
+                    ModelModifiers.CalculateTangents(model);
                 }
 
-                var isBodyMaterial = bodyMaterial.IsMatch(model.MeshGroups[i].Material);
-                var mtrlName = "/" + Path.GetFileName(model.MeshGroups[i].Material);
+                if (newModel)
+                {
+                    _Geometry.Clear();
+                    ModelModifiers.ApplyShapes(model, ActiveShapes, true);
+                }
 
                 if (newTextures)
                 {
-
-                    var textureData = textureDataDictionary.FirstOrDefault(x => x.MaterialPath == mtrlName);
-                    if (textureData == null)
-                    {
-                        // Data was invalid somehow, use a placeholder.
-                        textureData = ModelFileControl.GetPlaceholderTexture(mtrlName);
-                    }
-
-                    TextureModel diffuse = null, specular = null, normal = null, alpha = null, emissive = null;
-                    if (!isBodyMaterial)
-                    {
-                        if (textureData.Diffuse != null && textureData.Diffuse.Length > 0)
-                            diffuse = new TextureModel(NormalizePixelData(textureData.Diffuse), textureData.Width, textureData.Height);
-
-                        if (textureData.Specular != null && textureData.Specular.Length > 0)
-                            specular = new TextureModel(NormalizePixelData(textureData.Specular), textureData.Width, textureData.Height);
-                    }
-                    else
-                    {
-                        if (textureData.Diffuse != null && textureData.Diffuse.Length > 0)
-                            diffuse = new TextureModel(textureData.Diffuse, SharpDX.DXGI.Format.R8G8B8A8_UNorm, textureData.Width, textureData.Height);
-
-                        if (textureData.Specular != null && textureData.Specular.Length > 0)
-                            specular = new TextureModel(textureData.Specular, SharpDX.DXGI.Format.R8G8B8A8_UNorm, textureData.Width, textureData.Height);
-                    }
-
-                    if (textureData.Normal != null && textureData.Normal.Length > 0)
-                        normal = new TextureModel(textureData.Normal, SharpDX.DXGI.Format.R8G8B8A8_UNorm, textureData.Width, textureData.Height);
-
-                    if (textureData.Alpha != null && textureData.Alpha.Length > 0)
-                        alpha = new TextureModel(textureData.Alpha, SharpDX.DXGI.Format.R8G8B8A8_UNorm, textureData.Width, textureData.Height);
-
-                    if (textureData.Emissive != null && textureData.Emissive.Length > 0)
-                        emissive = new TextureModel(textureData.Emissive, SharpDX.DXGI.Format.R8G8B8A8_UNorm, textureData.Width, textureData.Height);
-
-                    var material = new PhongMaterial
-                    {
-                        DiffuseColor = PhongMaterials.ToColor(1, 1, 1, 1),
-                        SpecularShininess = ReflectionValue,
-                        DiffuseMap = diffuse,
-                        DiffuseAlphaMap = alpha,
-                        SpecularColorMap = specular,
-                        NormalMap = normal,
-                        EmissiveMap = emissive
-                    };
-
-                    _Materials.Add(material);
+                    _Materials.Clear();
                 }
 
+                for (var i = 0; i < totalMeshCount; i++)
+                {
+                    if (newModel)
+                    {
+                        var meshGeometry3D = GetMeshGeometry(model, i);
+                        _Geometry.Add(meshGeometry3D);
+                    }
+
+                    var isBodyMaterial = bodyMaterial.IsMatch(model.MeshGroups[i].Material);
+                    var mtrlName = "/" + Path.GetFileName(model.MeshGroups[i].Material);
+
+                    if (newTextures)
+                    {
+
+                        var textureData = textureDataDictionary.FirstOrDefault(x => x.MaterialPath == mtrlName);
+                        if (textureData == null)
+                        {
+                            // Data was invalid somehow, use a placeholder.
+                            textureData = ModelFileControl.GetPlaceholderTexture(mtrlName);
+                        }
+
+                        TextureModel diffuse = null, specular = null, normal = null, alpha = null, emissive = null;
+                        if (!isBodyMaterial)
+                        {
+                            if (textureData.Diffuse != null && textureData.Diffuse.Length > 0)
+                                diffuse = new TextureModel(NormalizePixelData(textureData.Diffuse), textureData.Width, textureData.Height);
+
+                            if (textureData.Specular != null && textureData.Specular.Length > 0)
+                                specular = new TextureModel(NormalizePixelData(textureData.Specular), textureData.Width, textureData.Height);
+                        }
+                        else
+                        {
+                            if (textureData.Diffuse != null && textureData.Diffuse.Length > 0)
+                                diffuse = new TextureModel(textureData.Diffuse, SharpDX.DXGI.Format.R8G8B8A8_UNorm, textureData.Width, textureData.Height);
+
+                            if (textureData.Specular != null && textureData.Specular.Length > 0)
+                                specular = new TextureModel(textureData.Specular, SharpDX.DXGI.Format.R8G8B8A8_UNorm, textureData.Width, textureData.Height);
+                        }
+
+                        if (textureData.Normal != null && textureData.Normal.Length > 0)
+                            normal = new TextureModel(textureData.Normal, SharpDX.DXGI.Format.R8G8B8A8_UNorm, textureData.Width, textureData.Height);
+
+                        if (textureData.Alpha != null && textureData.Alpha.Length > 0)
+                            alpha = new TextureModel(textureData.Alpha, SharpDX.DXGI.Format.R8G8B8A8_UNorm, textureData.Width, textureData.Height);
+
+                        if (textureData.Emissive != null && textureData.Emissive.Length > 0)
+                            emissive = new TextureModel(textureData.Emissive, SharpDX.DXGI.Format.R8G8B8A8_UNorm, textureData.Width, textureData.Height);
+
+                        var material = new PhongMaterial
+                        {
+                            DiffuseColor = PhongMaterials.ToColor(1, 1, 1, 1),
+                            SpecularShininess = ReflectionValue,
+                            DiffuseMap = diffuse,
+                            DiffuseAlphaMap = alpha,
+                            SpecularColorMap = specular,
+                            NormalMap = normal,
+                            EmissiveMap = emissive
+                        };
+
+                        _Materials.Add(material);
+                    }
+                }
+            });
+
+            if(myId != LastUpdateId)
+            {
+                // We got re-called while we were off thread.
+                return;
+            }
+
+            if (newModel && originalModel != _Model)
+            {
+                UpdateVisibleMeshSource();
+            }
+
+            for (var i = 0; i < totalMeshCount; i++)
+            {
                 if (VisibleMesh == i || VisibleMesh < 0)
                 {
                     var mgm3d = new CustomMeshGeometryModel3D
@@ -358,8 +379,9 @@ namespace FFXIV_TexTools.ViewModels
                         Material = _Materials[i],
                     };
 
+                    var mtrlName = "/" + Path.GetFileName(model.MeshGroups[i].Material);
                     var textureData = textureDataDictionary.FirstOrDefault(x => x.MaterialPath == mtrlName);
-                    if(textureData != null && textureData.RenderBackfaces)
+                    if (textureData != null && textureData.RenderBackfaces)
                     {
                         mgm3d.CullMode = CullMode.None;
                     }
@@ -835,7 +857,7 @@ namespace FFXIV_TexTools.ViewModels
             set
             {
                 _VisibleMesh = value;
-                UpdateModel();
+                _ = UpdateModel();
                 OnPropertyChanged(nameof(VisibleMesh));
                 VisibleMeshChanged?.Invoke(this, VisibleMesh);
             }
@@ -891,19 +913,19 @@ namespace FFXIV_TexTools.ViewModels
         public void AddShape(string shape)
         {
             _ActiveShapes.Add(shape);
-            UpdateModel(_Model);
+            _ = UpdateModel(_Model);
         }
 
         public void RemoveShape(string shape)
         {
             _ActiveShapes.Remove(shape);
-            UpdateModel(_Model);
+            _ = UpdateModel(_Model);
         }
         
         public void SetShapes(IEnumerable<string> shapes)
         {
             _ActiveShapes = shapes.ToList();
-            UpdateModel(_Model);
+            _ = UpdateModel(_Model);
         }
 
 

@@ -358,7 +358,7 @@ namespace FFXIV_TexTools.Views.Controls
                 List<ModelTextureData> textureData = null;
                 textureData = GetPlaceholderTextures(Model);
 
-                ViewportVM.UpdateModel(Model, textureData);
+                await ViewportVM.UpdateModel(Model, textureData);
 
 
                 FmvButtonEnabled = true;
@@ -494,16 +494,31 @@ namespace FFXIV_TexTools.Views.Controls
                         continue;
                     }
 
-                    if (mtrlData.ShaderPackRaw.Contains("colorchange"))
-                    {
-                        //hasColorChangeShader = true;
-                    }
-
-
                     mtrlData.MTRLPath = originalFilePath;
                     mtrlList.Add(mtrlData);
                 }
 
+
+                List<Task> tasks = new List<Task>();
+                for (int i = 0; i < mtrlList.Count; i++)
+                {
+                    var xivMtrl = mtrlList[i];
+                    // ModelMap generation needs to go on another thread always.
+                    tasks.Add(Task.Run(async () =>
+                    {
+                        var colors = ModelTexture.GetCustomColors();
+                        colors.InvertNormalGreen = false;
+
+                        var modelMaps = await ModelTexture.GetModelMaps(xivMtrl, colors, ViewportVM.HighlightedColorsetRow, tx);
+
+                        lock (textureList)
+                        {
+                            textureList.Add(modelMaps);
+                        }
+                    }));
+                }
+
+                await Task.WhenAll(tasks);
 
                 for (int i = 0; i < mtrlList.Count; i++)
                 {
@@ -512,12 +527,6 @@ namespace FFXIV_TexTools.Views.Controls
                     {
                         ViewportVM.ColorsetButtonEnabled = true;
                     }
-
-                    var colors = ModelTexture.GetCustomColors();
-                    colors.InvertNormalGreen = false;
-
-                    var modelMaps = await ModelTexture.GetModelMaps(xivMtrl, colors, ViewportVM.HighlightedColorsetRow, tx);
-                    textureList.Add(modelMaps);
                 }
 
 
@@ -530,7 +539,7 @@ namespace FFXIV_TexTools.Views.Controls
                     }
 
                     _Textures = textureList;
-                    ViewportVM.UpdateModel(Model, _Textures);
+                    await ViewportVM.UpdateModel(Model, _Textures);
                 });
             }
             catch(Exception ex)
