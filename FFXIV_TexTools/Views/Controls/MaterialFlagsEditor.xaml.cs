@@ -74,8 +74,8 @@ namespace FFXIV_TexTools.Views.Controls
                 "Bit 1",
                 "Bit 2",
                 "Bit 3",
-                "Bit 4",
                 "Enable Translucency",
+                "Bit 5",
                 "Bit 6",
                 "Bit 7",
             });
