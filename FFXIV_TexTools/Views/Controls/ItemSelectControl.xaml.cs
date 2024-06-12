@@ -91,6 +91,8 @@ namespace FFXIV_TexTools.Views.Controls
 
         public Func<IItem, bool> ExtraSearchFunction;
 
+        public bool StartExpanded = false;
+
         Timer SearchTimer;
         private ObservableCollection<ItemTreeElement> CategoryElements = new ObservableCollection<ItemTreeElement>();
         private ObservableCollection<ItemTreeElement> SetElements = new ObservableCollection<ItemTreeElement>();
@@ -552,11 +554,6 @@ namespace FFXIV_TexTools.Views.Controls
                 {
                     tup.parent.Children.Add(tup.child);
                 }
-
-
-
-
-
             });
 
             var view = (CollectionView)CollectionViewSource.GetDefaultView(CategoryElements);
@@ -576,10 +573,16 @@ namespace FFXIV_TexTools.Views.Controls
 
             Search(this, null);
 
+            if (StartExpanded)
+            {
+                ExpandTopLevel();
+            }
+
             if (UnlockUiFunction != null)
             {
                 await UnlockUiFunction(this);
             }
+
 
             if (ItemsLoaded != null)
             {
@@ -707,6 +710,14 @@ namespace FFXIV_TexTools.Views.Controls
                 {
                     ClearSelection(e.Children);
                 }
+            }
+        }
+
+        public void ExpandTopLevel()
+        {
+            foreach(var e in CategoryElements)
+            {
+                e.IsExpanded = true;
             }
         }
 

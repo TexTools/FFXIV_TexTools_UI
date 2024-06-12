@@ -81,6 +81,7 @@ namespace FFXIV_TexTools.Views.ItemConverter
             ItemSelect.ExtraSearchFunction = Filter;
             ItemSelect.LockUiFunction = LockUi;
             ItemSelect.UnlockUiFunction = UnlockUi;
+            ItemSelect.StartExpanded = true;
 
             SetState(ItemConverterState.SourceSelect);
 
@@ -272,6 +273,7 @@ namespace FFXIV_TexTools.Views.ItemConverter
             Source = e.GetRoot();
             SourceItem = e;
             SetState(ItemConverterState.DestinationSelect);
+            RefreshList();
         }
         private void DestinationSelected(object sender, IItem e)
         {
@@ -290,6 +292,7 @@ namespace FFXIV_TexTools.Views.ItemConverter
                     return;
                 case ItemConverterState.DestinationSelect:
                     SetState(ItemConverterState.SourceSelect);
+                    RefreshList();
                     return;
                 case ItemConverterState.Confirmation:
                     SetState(ItemConverterState.DestinationSelect);
@@ -298,6 +301,13 @@ namespace FFXIV_TexTools.Views.ItemConverter
                     Close();
                     return;
             }
+        }
+
+        private void RefreshList()
+        {
+            ItemSelect.ClearSelection();
+            ItemSelect.DoFilter();
+            ItemSelect.ExpandTopLevel();
         }
 
         public async Task ShowConversionStats()
