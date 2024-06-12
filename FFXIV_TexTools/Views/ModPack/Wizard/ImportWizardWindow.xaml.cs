@@ -204,7 +204,7 @@ namespace FFXIV_TexTools.Views.Wizard
             _ProgressController = await this.ShowProgressAsync(UIMessages.ModPackImportTitle, UIMessages.PleaseStandByMessage);
             try
             {
-                var settings = ViewHelpers.GetDefaultImportSettings(_ProgressController);
+                var settings = ViewHelpers.GetDefaultImportSettings(_ProgressController, this);
                 if (_Data.ModpackType == TTMP.EModpackType.Pmp)
                 {
                     res = await FinalizePmp(_Data, _Path, settings);

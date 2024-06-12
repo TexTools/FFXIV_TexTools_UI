@@ -26,6 +26,7 @@ using xivModdingFramework.Items.Interfaces;
 using xivModdingFramework.Mods;
 using xivModdingFramework.Mods.DataContainers;
 using xivModdingFramework.SqPack.DataContainers;
+using static xivModdingFramework.Mods.FileTypes.ModPackImportSettings;
 
 namespace FFXIV_TexTools.Views
 {
@@ -405,6 +406,22 @@ namespace FFXIV_TexTools.Views
             }
 
 
+
+        /// <summary>
+        /// Wrapper that binds the window owner to the delegate function.
+        /// </summary>
+        /// <param name="owner"></param>
+        /// <returns></returns>
+        public static RootConversionDelegate GetRootConversionFunction(Window owner)
+        {
+            RootConversionDelegate del = async (HashSet<string> files, ModTransaction tx) =>
+            {
+                return await GetRootConversions(files, tx, owner);
+            };
+
+            return del;
+        }
+
         /// <summary>
         /// Displays the dialog window to the user, returning the final result after completion, or throwing an error if the user cancelled.
         /// </summary>
@@ -412,7 +429,7 @@ namespace FFXIV_TexTools.Views
         /// <param name="indexFiles"></param>
         /// <param name="modlist"></param>
         /// <returns></returns>
-        public static async Task<Dictionary<XivDependencyRoot, (XivDependencyRoot Root, int Variant)>> GetRootConversions(HashSet<string> files, ModTransaction tx)
+        public static async Task<Dictionary<XivDependencyRoot, (XivDependencyRoot Root, int Variant)>> GetRootConversions(HashSet<string> files, ModTransaction tx, Window owner  = null)
         {
             Dictionary<XivDependencyRoot, (XivDependencyRoot Root, int Variant)> result = null;
             var mw = MainWindow.GetMainWindow();
@@ -422,14 +439,22 @@ namespace FFXIV_TexTools.Views
                 try
                 {
 
-                    if (ViewHelpers.IsWindowOpen(mw))
+                    window = new ModpackRootConvertWindow(tx);
+                    if (owner == null)
                     {
-                        window = new ModpackRootConvertWindow(tx) { Owner = mw };
-                        window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                        if (ViewHelpers.IsWindowOpen(mw))
+                        {
+                            window.Owner = mw;
+                            window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                        }
+                        else
+                        {
+                            window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                        }
                     } else
                     {
-                        window = new ModpackRootConvertWindow(tx);
-                        window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                        window.Owner = owner;
+                        window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
                     }
                 } catch(Exception ex)
                 {

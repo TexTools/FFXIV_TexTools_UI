@@ -114,7 +114,7 @@ namespace FFXIV_TexTools.Views
 
                 var importResults = await Task.Run(async () =>
                 {
-                    var settings = ViewHelpers.GetDefaultImportSettings(_progressController);
+                    var settings = ViewHelpers.GetDefaultImportSettings(_progressController, this);
 
                     // Limit the amount of extra actions on backup imports.
                     settings.RootConversionFunction = null;

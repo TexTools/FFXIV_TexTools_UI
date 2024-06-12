@@ -303,12 +303,12 @@ namespace FFXIV_TexTools.Views
         /// Gets an import settings object with most of the standard user-controlled or system standard stuff set already.
         /// </summary>
         /// <returns></returns>
-        public static ModPackImportSettings GetDefaultImportSettings(ProgressDialogController controller = null)
+        public static ModPackImportSettings GetDefaultImportSettings(ProgressDialogController controller = null, Window owner = null)
         {
             var settings = new ModPackImportSettings();
             settings.AutoAssignSkinMaterials = Properties.Settings.Default.AutoMaterialFix;
             settings.UpdateEndwalkerFiles = Properties.Settings.Default.FixPreDawntrailOnImport;
-            settings.RootConversionFunction = ModpackRootConvertWindow.GetRootConversions;
+            settings.RootConversionFunction = ModpackRootConvertWindow.GetRootConversionFunction(owner);
             settings.SourceApplication = XivStrings.TexTools;
 
             if (controller != null)

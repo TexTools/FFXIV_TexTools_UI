@@ -242,7 +242,7 @@ namespace FFXIV_TexTools.Views.Simple
 
                     }
 
-                    var settings = ViewHelpers.GetDefaultImportSettings(_progressController);
+                    var settings = ViewHelpers.GetDefaultImportSettings(_progressController, this);
                     await TTMP.ImportFiles(allFiles, modpack, settings, tx);
 
                     await boiler.Commit();
