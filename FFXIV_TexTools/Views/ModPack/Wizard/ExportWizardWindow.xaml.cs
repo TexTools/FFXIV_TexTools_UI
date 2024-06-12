@@ -460,7 +460,7 @@ namespace FFXIV_TexTools.Views
 
 
             var sfd = new SaveFileDialog();
-            sfd.Filter = "Modpack Files|*.ttmp2;*.pmp|TexTools Modpack|*.ttmp2|Penumbra Modpack|*.pmp";
+            sfd.Filter = ViewHelpers.ModpackFileFilter;
             sfd.FileName = Data.MetaPage.Name + ".pmp";
             sfd.InitialDirectory = Path.GetFullPath(Settings.Default.ModPack_Directory);
 

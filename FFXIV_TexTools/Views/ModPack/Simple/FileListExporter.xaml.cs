@@ -182,7 +182,7 @@ namespace FFXIV_TexTools.Views.Simple
             var startingFolder = Path.GetFullPath(Settings.Default.ModPack_Directory);
             var sfd = new SaveFileDialog()
             {
-                Filter = "Modpack Files|*.pmp;*.ttmp2",
+                Filter = ViewHelpers.ModpackFileFilter,
                 Title = "Save Modpack...",
                 InitialDirectory = startingFolder,
                 FileName = pathSafe + ".pmp"

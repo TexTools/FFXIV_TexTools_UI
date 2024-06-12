@@ -34,6 +34,8 @@ namespace FFXIV_TexTools.Views
 {
     public static class ViewHelpers
     {
+
+        public const string ModpackFileFilter = "Modpack Files|*.pmp;*.ttmp2|Penumbra Modpack|*.pmp|TexTools Modpack|*.ttmp2";
         public static Progress<(int current, int total, string message)> BindReportProgress(ProgressDialogController controller)
         {
             return new Progress<(int current, int total, string message)>(BindReportProgressAction(controller));
