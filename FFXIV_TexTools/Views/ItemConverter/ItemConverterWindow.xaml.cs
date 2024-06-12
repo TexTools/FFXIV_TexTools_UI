@@ -306,7 +306,6 @@ namespace FFXIV_TexTools.Views.ItemConverter
 
         private void RefreshList()
         {
-            ItemSelect.ClearSelection();
             ItemSelect.DoFilter();
             ItemSelect.ExpandTopLevel();
         }

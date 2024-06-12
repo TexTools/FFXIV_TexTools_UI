@@ -93,9 +93,10 @@ namespace FFXIV_TexTools.Views.Controls
 
         public bool StartExpanded = false;
 
-        Timer SearchTimer;
         private ObservableCollection<ItemTreeElement> CategoryElements = new ObservableCollection<ItemTreeElement>();
         private ObservableCollection<ItemTreeElement> SetElements = new ObservableCollection<ItemTreeElement>();
+
+        private Action DebouncedSearch;
 
         private IItem _selectedItem;
         public IItem SelectedItem
@@ -127,6 +128,7 @@ namespace FFXIV_TexTools.Views.Controls
             SetTree.SelectedItemChanged += CategoryTree_Selected;
             SearchBar.TextChanged += SearchBar_TextChanged;
             Loaded += ItemSelectControl_Loaded;
+            DebouncedSearch = ViewHelpers.Debounce(DoSearch, 500);
 
         }
 
@@ -148,11 +150,6 @@ namespace FFXIV_TexTools.Views.Controls
 
         ~ItemSelectControl()
         {
-            if (SearchTimer != null)
-            {
-                SearchTimer.Stop();
-                SearchTimer.Dispose();
-            }
         }
 
 
@@ -468,8 +465,6 @@ namespace FFXIV_TexTools.Views.Controls
         {
             if (_READY)
             {
-                SearchTimer.Stop();
-                SearchTimer.Dispose();
                 ClearSelection();
             }
 
@@ -564,15 +559,13 @@ namespace FFXIV_TexTools.Views.Controls
             view = (CollectionView)CollectionViewSource.GetDefaultView(SetElements);
             view.Filter = SearchFilter;
 
-            SearchTimer = new Timer(300);
-            SearchTimer.Elapsed += Search;
 
             CategoryTree.ItemsSource = CategoryElements;
             SetTree.ItemsSource = SetElements;
 
             _READY = true;
 
-            Search(this, null);
+            DoSearch();
 
             if (StartExpanded)
             {
@@ -692,7 +685,7 @@ namespace FFXIV_TexTools.Views.Controls
         }
         public void DoFilter()
         {
-            Search(this, null);
+            DoSearch();
         }
         private void ClearSelection(ObservableCollection<ItemTreeElement> elements = null)
 
@@ -724,8 +717,12 @@ namespace FFXIV_TexTools.Views.Controls
 
         private void Search(object sender, ElapsedEventArgs e)
         {
+            DoSearch();
+        }
+
+        private void DoSearch()
+        {
             if (!_READY) return;
-            SearchTimer.Stop();
 
             // Do stuff.
             Dispatcher.Invoke(() =>
@@ -754,14 +751,14 @@ namespace FFXIV_TexTools.Views.Controls
 
             if (e.Key == Key.Return)
             {
-                Search(null, null);
+                DoSearch();
             }
         }
         private void SearchBar_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (!_READY) return;
-            SearchTimer.Stop();
-            SearchTimer.Start();
+
+            DebouncedSearch();
         }
 
         private void SelectButton_Click(object sender, System.Windows.RoutedEventArgs e)
@@ -788,7 +785,6 @@ namespace FFXIV_TexTools.Views.Controls
             if (!_READY) return true;
 
             var e = (ItemTreeElement)o;
-            var groups = SearchBar.Text.Split('|');
             var iMatch = false;
 
             if(e.DisplayName == null)
@@ -796,45 +792,46 @@ namespace FFXIV_TexTools.Views.Controls
                 return false;
             }
 
-            foreach (var group in groups)
+            if (SearchBar.Text.Trim() == "")
             {
-                var searchTerms = group.Split(' ');
-                var trimterms = searchTerms.Select(x => x.Trim().ToLower());
-                bool match = trimterms.All(term => 
-                    e.DisplayName.ToLower().Contains(term));
-                iMatch = iMatch || match;
+                iMatch = true;
+                if(ExtraSearchFunction == null)
+                {
+                    return true;
+                }
             }
-
-            if (e.Root != null)
+            else
             {
-                // Root matching doesn't allow spaces because it makes stuff like searching 
-                // "No 2" for 2b item insane.
+                var groups = SearchBar.Text.Split('|');
                 foreach (var group in groups)
                 {
-                    var term = group.Trim().ToLower();
-                    bool match = e.Root.ToString().Contains(term);
+                    var searchTerms = group.Split(' ');
+                    var trimterms = searchTerms.Select(x => x.Trim().ToLower());
+                    bool match = trimterms.All(term =>
+                        e.DisplayName.ToLower().Contains(term));
                     iMatch = iMatch || match;
+                }
+
+                if (e.Root != null)
+                {
+                    // Root matching doesn't allow spaces because it makes stuff like searching 
+                    // "No 2" for 2b item insane.
+                    foreach (var group in groups)
+                    {
+                        var term = group.Trim().ToLower();
+                        bool match = e.Root.ToString().Contains(term);
+                        iMatch = iMatch || match;
+                    }
                 }
             }
             
             if (e.Children.Count > 0 && e.Item == null)
             {
-                var subItems = (CollectionView)CollectionViewSource.GetDefaultView((e).Children);
-
+                // Just a blank category.
                 e.IsExpanded = !string.IsNullOrEmpty(SearchBar.Text);
-                if (e.Searchable && iMatch)
-                {
-                    // If the actual group name matches the typed in name, include everything in that group.
-                    // This is only allowed in the set menu, as there's some pretty generic words used in the
-                    // category menu structure that muck this up. (Ex. Searching for "Hands" becomes impossible)
-                    subItems.Filter = IncludeAllSearchFilter;
-                    return true;
-                }
-                else
-                {
-                    subItems.Filter = SearchFilter;
-                    return !subItems.IsEmpty;
-                }
+                var subItems = (CollectionView)CollectionViewSource.GetDefaultView((e).Children);
+                subItems.Filter = SearchFilter;
+                return !subItems.IsEmpty;
             }
             else if(e.Item != null)
             {
@@ -843,6 +840,7 @@ namespace FFXIV_TexTools.Views.Controls
                     var subHits = false;
                     if(e.Children.Count > 0)
                     {
+                        // Category with an item itself.  This only occurs with some rare cases in the maps tree.
                         var subItems = (CollectionView)CollectionViewSource.GetDefaultView((e).Children);
                         subItems.Filter = SearchFilter;
                         subHits =  !subItems.IsEmpty;
