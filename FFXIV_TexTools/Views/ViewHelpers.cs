@@ -522,7 +522,7 @@ namespace FFXIV_TexTools.Views
                 return row.ToString() + " " + ab;
             } else
             {
-                return id.ToString();
+                return (id + 1).ToString();
             }
         }
 
