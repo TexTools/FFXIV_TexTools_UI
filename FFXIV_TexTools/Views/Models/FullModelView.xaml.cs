@@ -106,7 +106,7 @@ namespace FFXIV_TexTools.Views.Models
         {
             try
             {
-                _fmvm.AddModelToView(ttModel, materialDictionary, item);
+                _ = _fmvm.AddModelToView(ttModel, materialDictionary, item);
             }
             catch(Exception ex)
             {

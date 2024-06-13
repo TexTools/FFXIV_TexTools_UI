@@ -45,33 +45,20 @@ using PerspectiveCamera = HelixToolkit.Wpf.SharpDX.PerspectiveCamera;
 using SRGBVector4 = System.Numerics.Vector4;
 using FFXIV_TexTools.Views;
 using System.Diagnostics;
+using MeshGeometry3D = HelixToolkit.Wpf.SharpDX.MeshGeometry3D;
 
 namespace FFXIV_TexTools.ViewModels
 {
     public class FullModelViewport3DViewModel : Viewport3DViewModel
     {
 
-        private readonly FullModelViewModel _modelViewModel;
         private static readonly Regex bodyMaterial = new Regex("[bf][0-9]{4}", RegexOptions.IgnoreCase);
 
-        private HashSet<string> shownBonesList = new HashSet<string>();
-        private XivRace _targetRace;
         public Dictionary<string, DisplayedModelData> shownModels = new Dictionary<string, DisplayedModelData>();
 
-        public FullModelViewport3DViewModel(FullModelViewModel fmvm)
+        public FullModelViewport3DViewModel()
         {
-            _modelViewModel = fmvm;
         }
-
-
-        #region Properties
-        /// <summary>
-        /// Model Group containing skeleton node
-        /// </summary>
-        public SceneNodeGroupModel3D ModelGroup { get; } = new SceneNodeGroupModel3D();
-
-
-        #endregion
 
         #region Public Methods
 
@@ -85,9 +72,6 @@ namespace FFXIV_TexTools.ViewModels
         /// <param name="targetRace">The target race the model should be</param>
         public async Task UpdateModel(TTModel model, Dictionary<int, ModelTextureData> textureDataDictionary, IItemModel item, XivRace modelRace, XivRace targetRace)
         {
-            _targetRace = targetRace;
-            var itemType = $"{item.PrimaryCategory}_{item.SecondaryCategory}";
-
             // If target race is different than the model race Apply racial deforms
             try
             {
@@ -100,12 +84,13 @@ namespace FFXIV_TexTools.ViewModels
             {
                 Trace.WriteLine(ex);
             }
+            var slot = ViewHelpers.GetModelSlot(model.Source);
 
             SharpDX.BoundingBox? boundingBox = null;
             ModelModifiers.CalculateTangents(model);
 
             // Remove any existing models of the same item type
-            RemoveModel(itemType);
+            RemoveModel(slot);
 
             var totalMeshCount = model.MeshGroups.Count;
 
@@ -162,16 +147,8 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     Geometry = meshGeometry3D,
                     Material = material,
+                    Source = model.Source,
                 };
-
-                // Keep track of what bones are showing in the view
-                foreach (var modelBone in model.Bones)
-                {
-                    if (!shownBonesList.Contains(modelBone))
-                    {
-                        shownBonesList.Add(modelBone);
-                    }
-                }
 
                 boundingBox = meshGeometry3D.Bound;
 
@@ -181,37 +158,9 @@ namespace FFXIV_TexTools.ViewModels
             }
             var center = boundingBox.GetValueOrDefault().Center;
 
-            //Camera.UpDirection = new Vector3D(0, 1, 0);
-            // Add the skeleton node for the target race
-            AddSkeletonNode(targetRace);
 
             // Keep track of the models displayed in the viewport
-            shownModels.Add(itemType, new DisplayedModelData{TtModel = model, ItemModel = item, ModelTextureData = textureDataDictionary});
-        }
-
-        /// <summary>        
-        /// /// Adds the skeleton node to the viewport
-        /// </summary>
-        /// <param name="targetRace">The race the skeleton will be obtained from</param>
-        public void AddSkeletonNode(XivRace targetRace)
-        {
-            // Clear existing skeleton
-            ModelGroup.Dispose();
-            ModelGroup.Clear();
-
-            var bones = MakeHelixBones(targetRace);
-
-            var bsmNode = new BoneSkinMeshNode
-            {
-                Bones = bones.ToArray()
-            };
-
-            // Create the skeleton node with the given properties
-            var skelNode = bsmNode.CreateSkeletonNode(new DiffuseMaterialCore { DiffuseColor = Color.Red }, "xrayGrid", 0.02f);
-
-            ModelGroup.AddNode(skelNode);
-
-            ModelGroup.SceneNode.Visible = _modelViewModel.ShowSkeleton;
+            shownModels.Add(slot, new DisplayedModelData{TtModel = model, ItemModel = item, ModelTextureData = textureDataDictionary});
         }
 
         /// <summary>
@@ -272,38 +221,25 @@ namespace FFXIV_TexTools.ViewModels
         }
 
 
-
-        /// <summary>
-        /// Toggles the skeleton visibility
-        /// </summary>
-        public void ToggleSkeleton(bool visible)
-        {
-            if (ModelGroup != null)
-            {
-                ModelGroup.SceneNode.Visible = visible;
-            }
-        }
-
         /// <summary>
         /// Removes a model from the viewport
         /// </summary>
-        /// <param name="modelItemType">The item type of the model to remove</param>
-        public void RemoveModel(string modelItemType)
+        public void RemoveModel(string slot)
         {
             // Determine which models needs to be removed
-            var modelsToRemove = new List<CustomBoneSkinMeshGeometry3D>();
+            var modelsToRemove = new List<CustomMeshGeometryModel3D>();
 
-            if (!string.IsNullOrEmpty(modelItemType))
+            if (!string.IsNullOrEmpty(slot))
             {
                 foreach (var displayedModel in Models)
                 {
-                    var model = displayedModel as CustomBoneSkinMeshGeometry3D;
-
-                    if (modelItemType == model.ItemType)
+                    var model = displayedModel as CustomMeshGeometryModel3D;
+                    var s = ViewHelpers.GetModelSlot(model.Source);
+                    if (slot == s)
                     {
                         modelsToRemove.Add(model);
 
-                        shownModels.Remove(modelItemType);
+                        shownModels.Remove(slot);
                     }
                 }
             }
@@ -311,19 +247,10 @@ namespace FFXIV_TexTools.ViewModels
 
             foreach (var model in modelsToRemove)
             {
-                // Remove the bones associated with this model
-                foreach (var bone in model.BoneList)
-                {
-                    shownBonesList.Remove(bone);
-                }
-
                 // Remove the model
                 model.Dispose();
                 Models.Remove(model);
             }
-
-            // Update the skeleton
-            AddSkeletonNode(_targetRace);
         }
 
         /// <summary>
@@ -337,9 +264,7 @@ namespace FFXIV_TexTools.ViewModels
             }
 
             Models.Clear();
-            ModelGroup.Clear();
             shownModels.Clear();
-            shownBonesList.Clear();
         }
 
         /// <summary>
@@ -348,7 +273,6 @@ namespace FFXIV_TexTools.ViewModels
         public void CleanUp()
         {
             ClearAll();
-            ModelGroup.Dispose();
         }
 
         #endregion
@@ -363,11 +287,11 @@ namespace FFXIV_TexTools.ViewModels
         /// <param name="model">The model to get the geometry from</param>
         /// <param name="meshGroupId">The mesh group ID</param>
         /// <returns>The Skinned Mesh Geometry</returns>
-        private (BoneSkinnedMeshGeometry3D, bool) GetMeshGeometry(TTModel model, int meshGroupId)
+        private (MeshGeometry3D, bool) GetMeshGeometry(TTModel model, int meshGroupId)
         {
             var group = model.MeshGroups[meshGroupId];
             var isBodyMaterial = bodyMaterial.IsMatch(group.Material);
-            var mg = new BoneSkinnedMeshGeometry3D
+            var mg = new MeshGeometry3D
             {
                 Positions = new Vector3Collection((int)group.VertexCount),
                 Normals = new Vector3Collection((int)group.VertexCount),
@@ -376,7 +300,6 @@ namespace FFXIV_TexTools.ViewModels
                 BiTangents = new Vector3Collection((int)group.VertexCount),
                 Tangents = new Vector3Collection((int)group.VertexCount),
                 Indices = new IntCollection((int)group.IndexCount),
-                VertexBoneIds = new List<BoneIds>((int)group.IndexCount)
             };
 
             var indexCount = 0;
@@ -412,16 +335,6 @@ namespace FFXIV_TexTools.ViewModels
                     var bw2 = boneWeights[1] / 255f;
                     var bw3 = boneWeights[2] / 255f;
                     var bw4 = boneWeights[3] / 255f;
-
-                    // Add BoneIds to mesh geometry
-                    mg.VertexBoneIds.Add(new BoneIds
-                    {
-                        Bone1 = boneIndices[0],
-                        Bone2 = boneIndices[1],
-                        Bone3 = boneIndices[2],
-                        Bone4 = boneIndices[3],
-                        Weights = new Vector4(bw1, bw2, bw3, bw4)
-                    });
 
                     // Have to bump these to account for merging the lists together.
                     mg.Indices.Add(vertCount + vertexId);

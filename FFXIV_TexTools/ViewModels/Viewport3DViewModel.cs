@@ -377,6 +377,7 @@ namespace FFXIV_TexTools.ViewModels
                     {
                         Geometry = _Geometry[i],
                         Material = _Materials[i],
+                        Source = model.Source,
                     };
 
                     var mtrlName = "/" + Path.GetFileName(model.MeshGroups[i].Material);

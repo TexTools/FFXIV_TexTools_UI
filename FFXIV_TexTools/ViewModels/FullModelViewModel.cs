@@ -67,7 +67,7 @@ namespace FFXIV_TexTools.ViewModels
         public FullModelViewModel(FullModelView fullModelView)
         {
             _fullModelView = fullModelView;
-            ViewportVM = new FullModelViewport3DViewModel(this);
+            ViewportVM = new FullModelViewport3DViewModel();
             ViewportVM.ZoomExtentsRequested += ZoomExtentsRequested;
 
             FillSkeletonComboBox();
@@ -956,19 +956,6 @@ namespace FFXIV_TexTools.ViewModels
         }
 
 #endregion
-
-
-        public bool ShowSkeleton
-        {
-            get => _showSkeleton;
-            set
-            {
-                _showSkeleton = value;
-                ViewportVM.ToggleSkeleton(value);
-
-                NotifyPropertyChanged(nameof(ShowSkeleton));
-            }
-        }
 
 
         #region Buttons

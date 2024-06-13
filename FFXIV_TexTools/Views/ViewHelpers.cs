@@ -12,6 +12,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -609,6 +610,23 @@ namespace FFXIV_TexTools.Views
             }
 
             return SafeBitmapFromFile(_defaultImage);
+        }
+
+
+        /// <summary>
+        /// Retrieves the slot suffix for a given model.
+        /// </summary>
+        /// <param name="modelFileNameOrPath"></param>
+        /// <returns></returns>
+        public static string GetModelSlot(string modelFileNameOrPath)
+        {
+            var regex = new Regex("_([a-z0-9]{3})\\.mdl");
+            var match = regex.Match(modelFileNameOrPath);
+            if (!match.Success)
+            {
+                return "";
+            }
+            return match.Groups[1].Value;
         }
     }
 }

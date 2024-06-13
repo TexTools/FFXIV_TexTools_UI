@@ -21,6 +21,10 @@ namespace FFXIV_TexTools.Custom
 {
     public class CustomMeshGeometryModel3D : MeshGeometryModel3D
     {
+        /// <summary>
+        /// The internal file path source that this mesh stems from.
+        /// </summary>
+        public string Source;
         protected override SceneNode OnCreateSceneNode()
         {
             var node = base.OnCreateSceneNode();

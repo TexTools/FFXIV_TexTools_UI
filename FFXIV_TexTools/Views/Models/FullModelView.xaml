@@ -72,16 +72,11 @@
                     Color="{Binding Path=Light3Color}" />
 
                     <hx:GroupModel3D ItemsSource="{Binding Path=Models}"/>
-
-                    <hx:Element3DPresenter Content="{Binding Path=ModelGroup}"/>
-                    
-                    <hx:PostEffectMeshXRayGrid x:Name="xrayGridEffect" EffectName="xrayGrid" />
                 </hx:Viewport3DX>
                 <Canvas Name="AlternateViewportCanvas" Visibility="Hidden" IsHitTestVisible="False"/>
             </Grid>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="5">
                 <Button x:Name="ViewerOptionsButton" Content="{Binding Source={x:Static resx:UIStrings.Viewer_Options}}" Command="{Binding Path=ViewOptionsCommand}"/>
-                <CheckBox Margin="5,0" Content="Show Skeleton" IsChecked="{Binding Path=ShowSkeleton}"/>
             </StackPanel>
         </Grid>
         <mah:FlyoutsControl Grid.Row="0" Grid.RowSpan="2" HorizontalAlignment="Right">
