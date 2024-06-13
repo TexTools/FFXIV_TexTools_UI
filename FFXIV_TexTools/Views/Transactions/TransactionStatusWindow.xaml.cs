@@ -701,8 +701,14 @@ namespace FFXIV_TexTools.Views.Transactions
             IOUtil.DeleteTempDirectory(backupFolder);
             IOUtil.CopyFolder(PenumbraAttachDialog.SelectedPath, backupFolder);
 
-            var tx = await PenumbraAttachHandler.Attach(PenumbraAttachDialog.SelectedPath);
-            MainWindow.UserTransaction = tx;
+            var tx = MainWindow.UserTransaction;
+            if(tx == null)
+            {
+                tx = await ModTransaction.BeginTransaction(true, null, null, true, true);
+                MainWindow.UserTransaction = tx;
+            }
+
+             await PenumbraAttachHandler.Attach(PenumbraAttachDialog.SelectedPath, MainWindow.UserTransaction);
         }
 
         private void Close_Click(object sender, RoutedEventArgs e)
