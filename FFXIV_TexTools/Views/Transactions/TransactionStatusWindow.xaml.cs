@@ -704,7 +704,14 @@ namespace FFXIV_TexTools.Views.Transactions
             var tx = MainWindow.UserTransaction;
             if(tx == null)
             {
-                tx = await ModTransaction.BeginTransaction(true, null, null, true, true);
+                var settings = new ModTransactionSettings()
+                {
+                    StorageType = xivModdingFramework.SqPack.FileTypes.EFileStorageType.UncompressedIndividual,
+                    Target = ETransactionTarget.PenumbraModFolder,
+                    TargetPath = PenumbraAttachDialog.SelectedPath,
+                    Unsafe = false
+                };
+                tx = await ModTransaction.BeginTransaction(true, null, settings, true, true);
                 MainWindow.UserTransaction = tx;
             }
 
