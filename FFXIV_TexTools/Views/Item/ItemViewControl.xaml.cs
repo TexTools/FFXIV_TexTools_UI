@@ -92,6 +92,11 @@ namespace FFXIV_TexTools.Views.Item
             }
         }
 
+        // These are lists of model and material files which have been changed since we
+        // originally retrieved their constituent files.
+        private HashSet<string> _ModelsNeedingValidation = new HashSet<string>();
+        private HashSet<string> _MaterialsNeedingValidation = new HashSet<string>();
+
 
         private List<FileWrapperControl> FileControls = new List<FileWrapperControl>();
         #region Basic IPropertyNotify Properties Pattern
@@ -294,6 +299,7 @@ namespace FFXIV_TexTools.Views.Item
             TxWatcher.UserTxStarted += OnUserTransactionStarted;
 
             _DebouncedRebuildComboBoxes = ViewHelpers.Debounce<IItem>(DispatchRebuildComboBoxes);
+            _DebouncedValidateSelections = ViewHelpers.Debounce(DispatchValidateSelections);
 
             KeyDown += OnKeyDown;
         }
@@ -341,11 +347,19 @@ namespace FFXIV_TexTools.Views.Item
                     {
                         _UpdateQueued = true;
 
-
                         // But is not already listed in our file structure.
                         // This means we need to reload the item.
                         _DebouncedRebuildComboBoxes(Item);
+                    } else if (changedFile.EndsWith(".mdl"))
+                    {
+                        _ModelsNeedingValidation.Add(changedFile);
+                        _DebouncedValidateSelections();
+                    } else if (changedFile.EndsWith(".mtrl"))
+                    {
+                        _MaterialsNeedingValidation.Add(changedFile);
+                        _DebouncedValidateSelections();
                     }
+
                     return;
                 }
             }
@@ -355,6 +369,67 @@ namespace FFXIV_TexTools.Views.Item
                 Trace.WriteLine(ex);
             }
         }
+
+        private void DispatchValidateSelections()
+        {
+            _ = Dispatcher.InvokeAsync(async () =>
+            {
+                await ValidateSelections();
+            });
+        }
+
+        /// <summary>
+        /// Validates the current selections by effectively checking if our cache of child files is stale.
+        /// </summary>
+        /// <returns></returns>
+        private async Task<bool> ValidateSelections()
+        {
+            var model = (string)ModelComboBox.SelectedValue;
+            var material = (string)MaterialComboBox.SelectedValue;
+            // Call the changed handlers for validation.
+            if (_ModelsNeedingValidation.Contains(model))
+            {
+                var modelEntry = Files[model];
+
+                // This model was changed (possibly by an outside source) since our initial item load.
+                // It may (or may not) need its child files updated.
+                var mSet = 1;
+                var asIm = Item as IItemModel;
+                if (asIm != null)
+                {
+                    mSet = await Imc.GetMaterialSetId(asIm, false, MainWindow.DefaultTransaction);
+                }
+                var materials = await Mdl.GetReferencedMaterialPaths(model, mSet, false, false, MainWindow.DefaultTransaction);
+
+
+                // If the materials don't match...
+                if (modelEntry.Count != materials.Count || modelEntry.Any(x => !materials.Contains(x.Key)))
+                {
+                    // Then we need to reload the item.
+                    await SetItem(Item);
+                    return false;
+                }
+                _ModelsNeedingValidation.Remove(model);
+            }
+            
+            if (_MaterialsNeedingValidation.Contains(material))
+            {
+                var textures = await Mtrl.GetTexturePathsFromMtrlPath(material, false, false, MainWindow.DefaultTransaction);
+                var materialEntry = Files[model][material];
+
+                // If the textures don't match...
+                if (materialEntry.Count != textures.Count || materialEntry.Any(x => !textures.Contains(x)))
+                {
+                    // Then we need to reload the item.
+                    await SetItem(Item);
+                    return false;
+                }
+                _MaterialsNeedingValidation.Remove(material);
+            }
+
+            return true;
+        }
+
         private async void Metadata_FileDeleted(string internalPath)
         {
             try
@@ -397,7 +472,6 @@ namespace FFXIV_TexTools.Views.Item
             wind.PreviewKeyDown += Wind_PreviewKeyDown;
             wind.PreviewMouseRightButtonDown += Wind_PreviewMouseRightButtonDown;
         }
-
 
         private async void OnMetadataSaved(FileViewControl sender, bool success)
         {
@@ -446,19 +520,32 @@ namespace FFXIV_TexTools.Views.Item
             _PreLoadModel = null;
             _PreLoadMaterial = null;
             _PreLoadTexture = null;
-
             if (Item == item && targetFile == null)
             {
                 // This is a refresh/reload. Try to keep us on the same file.
-                targetFile = _VisiblePanel.FilePath;
-            } else if(targetFile == null)
+                _TargetFile = GetCurrentFileKeys();
+            }
+            else if (targetFile == null)
             {
                 // Changing item, and we're looking at something.
                 // Hang onto these to try to logically guess where the user wants to look at next.
                 _PreLoadModel = ModelWrapper.FilePath;
                 _PreLoadMaterial = MaterialWrapper.FilePath;
                 _PreLoadTexture = TextureWrapper.FilePath;
+            } else
+            {
+                _TargetFile = GetFileKeys(targetFile);
             }
+
+            return await INTERNAL_SetItem(item);
+        }
+
+
+        private async Task<bool> INTERNAL_SetItem(IItem item)
+        {
+            _ModelsNeedingValidation.Clear();
+            _MaterialsNeedingValidation.Clear();
+
 
             ProgressDialogController lockController = null;
             if (this == MainItemView)
@@ -476,7 +563,6 @@ namespace FFXIV_TexTools.Views.Item
 
             try
             {
-                _TargetFile = GetFileKeys(targetFile);
 
                 Item = item;
                 ModelsEnabled = false;
@@ -1302,6 +1388,26 @@ namespace FFXIV_TexTools.Views.Item
         }
 
 
+        private (string ModelKey, string MaterialKey, string TexKey) GetCurrentFileKeys()
+        {
+            var mdlKey = (string) ModelComboBox.SelectedValue;
+            var mtrlKey = (string)MaterialComboBox.SelectedValue;
+            var texKey = (string)TextureComboBox.SelectedValue;
+
+            if(_VisiblePanel == ModelWrapper)
+            {
+                return (mdlKey, null, null);
+            } else if(_VisiblePanel == MaterialWrapper)
+            {
+                return (mdlKey, mtrlKey, null);
+            } else if(_VisiblePanel == TextureWrapper)
+            {
+                return (mdlKey, mtrlKey, texKey);
+            }
+
+            return ("!", null, null);
+        }
+
         private (string ModelKey, string MaterialKey, string TexKey) GetFileKeys(string file)
         {
             if (string.IsNullOrEmpty(file))
@@ -1422,13 +1528,8 @@ namespace FFXIV_TexTools.Views.Item
                 file = null;
             }
 
-            if (file == _VisiblePanel.FilePath)
-            {
-                _TargetFile = GetFileKeys(file);
-            } else
-            {
-                _TargetFile = GetFileKeys(_VisiblePanel.FilePath);
-            }
+            _TargetFile = GetCurrentFileKeys();
+
             AddModels(Files.Keys.ToList());
             return true;
         }
@@ -1503,8 +1604,16 @@ namespace FFXIV_TexTools.Views.Item
                     return;
                 }
 
-                var mats = Files[currentModel].Keys.ToList();
+                if(!await ValidateSelections())
+                {
+                    return;
+                }
+
+                // Go ahead and start loading the model file.
                 _ = ModelWrapper.LoadInternalFile(currentModel, Item, null, false);
+
+
+                var mats = Files[currentModel].Keys.ToList();
 
                 if(!_TargetFileLocked && 
                     _TargetFile.ModelKey != null
@@ -1516,9 +1625,10 @@ namespace FFXIV_TexTools.Views.Item
 
                 AddMaterials(mats);
             }
-            catch
+            catch(Exception ex)
             {
                 // No-Op.
+                Trace.WriteLine(ex);
             }
         }
 
@@ -1560,7 +1670,14 @@ namespace FFXIV_TexTools.Views.Item
                     return;
                 }
 
+
+                if (!await ValidateSelections())
+                {
+                    return;
+                }
+
                 var texs = Files[currentModel][currentMaterial];
+
 
                 _ = MaterialWrapper.LoadInternalFile(currentMaterial, Item, null, false);
 
@@ -1798,6 +1915,7 @@ namespace FFXIV_TexTools.Views.Item
         }
 
         private Action<IItem> _DebouncedRebuildComboBoxes;
+        private Action _DebouncedValidateSelections;
         private async void DispatchRebuildComboBoxes(IItem item)
         {
             try
@@ -1805,7 +1923,7 @@ namespace FFXIV_TexTools.Views.Item
                 await await Dispatcher.InvokeAsync(async () =>
                 {
                     var tx = MainWindow.DefaultTransaction;
-                    _TargetFile = GetFileKeys(_VisiblePanel.FilePath);
+                    _TargetFile = GetCurrentFileKeys();
                     await RebuildComboBoxes(tx);
                 });
             }
@@ -1821,7 +1939,7 @@ namespace FFXIV_TexTools.Views.Item
         {
             try
             {
-                var success = await SetItem(Item, _VisiblePanel.FilePath);
+                var success = await SetItem(Item);
             }
             catch
             {
@@ -1929,7 +2047,7 @@ namespace FFXIV_TexTools.Views.Item
                         await Modding.DeleteMod(file, tx);
                     }
                     await boiler.Commit();
-                    await SetItem(Item, _VisiblePanel.FilePath);
+                    await SetItem(Item);
                 }
                 catch
                 {
