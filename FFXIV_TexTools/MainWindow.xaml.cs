@@ -1282,14 +1282,18 @@ namespace FFXIV_TexTools
             {
                 await LockUi("Scanning for new Item Sets".L(), "This can take up to roughly an hour, depending on computer specs.".L());
 
+                var success = false;
                 try
                 {
                     await Task.Run(XivCache.RebuildAllRoots);
+                    success = true;
                 } catch(Exception ex)
                 {
                     FlexibleMessageBox.Show( "An error occured while trying to scan for new item sets.\n\n".L() + ex.Message, "Item Scan Error".L(), MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 await UnlockUi();
+
+                var res = await this.ShowMessageAsync("Item Sets Scan Completed", "The item sets scan was completed successfully, the Item List will now be reloaded.");
                 await RefreshTree();
             }
         }
@@ -1888,6 +1892,8 @@ namespace FFXIV_TexTools
 #endif
                     await ShaderHelpers.LoadShaderInfo();
                 });
+
+                var res = await this.ShowMessageAsync("Shader Scan Complete", "The shader scan was completed.  You may need to restart TexTools to see the new values.");
             } catch(Exception ex)
             {
                 FlexibleMessageBox.Show("An error occurred durin the shader update process.\n\nError: ".L() + ex.Message, "Shader Update Error".L(), MessageBoxButtons.OK, MessageBoxIcon.Error);
