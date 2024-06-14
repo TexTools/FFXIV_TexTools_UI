@@ -311,8 +311,20 @@ namespace FFXIV_TexTools.ViewModels
                         var textureData = textureDataDictionary.FirstOrDefault(x => x.MaterialPath == mtrlName);
                         if (textureData == null)
                         {
-                            // Data was invalid somehow, use a placeholder.
-                            textureData = ModelFileControl.GetPlaceholderTexture(mtrlName);
+                            if (ModelModifiers.IsSkinMaterial(mtrlName))
+                            {
+                                textureData = textureDataDictionary.FirstOrDefault(x => x.IsSkin);
+                                if(textureData == null)
+                                {
+                                    // Skin material, but we have no textures for skin.
+                                    textureData = ModelFileControl.GetPlaceholderTexture(mtrlName);
+                                }
+                            }
+                            else
+                            {
+                                // Data was invalid somehow, use a placeholder.
+                                textureData = ModelFileControl.GetPlaceholderTexture(mtrlName);
+                            }
                         }
 
                         TextureModel diffuse = null, specular = null, normal = null, alpha = null, emissive = null;

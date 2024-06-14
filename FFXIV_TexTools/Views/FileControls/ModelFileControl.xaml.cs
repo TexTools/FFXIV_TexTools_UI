@@ -46,6 +46,7 @@ using ControlzEx.Standard;
 using System.Windows.Media.Media3D;
 using System.Runtime.CompilerServices;
 using WK.Libraries.BetterFolderBrowserNS;
+using System.Text.RegularExpressions;
 
 namespace FFXIV_TexTools.Views.Controls
 {
@@ -437,12 +438,14 @@ namespace FFXIV_TexTools.Views.Controls
                 var useSettings = XivRaceTree.IsChildOf(settingsRace, race);
                 if (useSettings)
                 {
-                    mtrl = mtrl.Replace("c" + raceString, "c" + settingsRace.GetRaceCode()).Replace("b" + body, "b" + settingsBody);
+                    mtrl = Regex.Replace(mtrl, "c[0-9]{4}", "c" + raceString);
+                    mtrl = Regex.Replace(mtrl, "b[0-9]{4}", "b" + settingsBody);
                 }
                 else
                 {
                     // Just use item race.
-                    mtrl = mtrl.Replace("c" + raceString, "c" + race.GetRaceCode()).Replace("b" + body, "b0001");
+                    mtrl = Regex.Replace(mtrl, "c[0-9]{4}", "c" + raceString);
+                    mtrl = Regex.Replace(mtrl, "b[0-9]{4}", "b0001");
                 }
             }
             return mtrl;
