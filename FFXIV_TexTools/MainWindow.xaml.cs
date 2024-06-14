@@ -370,6 +370,7 @@ namespace FFXIV_TexTools
                 ItemSelect.ItemsLoaded += OnTreeLoaded;
 
                 ModTransaction.ActiveTransactionBlocked += ModTransaction_ActiveTransactionBlocked;
+                ModTransaction.ActiveTransactionUnblocked += ModTransaction_ActiveTransactionUnblocked;
                 _ = AsyncStartup();
 
             }
@@ -1186,42 +1187,50 @@ namespace FFXIV_TexTools
                     throw new Exception("Modpack was not a valid PMP or TTMP file, or cannot be read on this version of TexTools.");
                 }
 
-                if (modpackType == TTMP.EModpackType.TtmpBackup)
+                await LockUi("Loading Modpack");
+                try
                 {
-                    // TexTools backup modpack.
-                    var mpl = await TTMP.GetModpackList(path);
-                    var backupImport = new BackupModPackImporter(new DirectoryInfo(path), mpl, false);
-
-                    backupImport.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-
-                    if (ViewHelpers.IsWindowOpen(this))
+                    if (modpackType == TTMP.EModpackType.TtmpBackup)
                     {
-                        backupImport.Owner = this;
+                        // TexTools backup modpack.
+                        var mpl = await TTMP.GetModpackList(path);
+                        var backupImport = new BackupModPackImporter(new DirectoryInfo(path), mpl, false);
+
+                        backupImport.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+
+                        if (ViewHelpers.IsWindowOpen(this))
+                        {
+                            backupImport.Owner = this;
+                        }
+
+                        if (asDialog)
+                        {
+                            backupImport.ShowDialog();
+                        } else
+                        {
+                            backupImport.Show();
+                        }
+                        return;
                     }
 
-                    if (asDialog)
+                    // See if we can get the information in simple mode.
+                    var modPackFiles = await TTMP.ModPackToSimpleFileList(path, false, MainWindow.UserTransaction);
+
+                    if (modPackFiles != null)
                     {
-                        backupImport.ShowDialog();
-                    } else
-                    {
-                        backupImport.Show();
+                        FileListImporter.ShowModpackImport(path, modPackFiles.Keys.ToList(), this, asDialog);
+                        return;
                     }
-                    return;
+
+                    if (modpackType == TTMP.EModpackType.TtmpWizard || modpackType == TTMP.EModpackType.Pmp)
+                    {
+                        // Multi-Option PMP/TTMP
+                        await ImportWizardWindow.ImportModpack(path, this, asDialog);
+                    }
                 }
-
-                // See if we can get the information in simple mode.
-                var modPackFiles = await TTMP.ModPackToSimpleFileList(path, false, MainWindow.UserTransaction);
-
-                if(modPackFiles != null)
+                finally
                 {
-                    FileListImporter.ShowModpackImport(path, modPackFiles.Keys.ToList(), this, asDialog);
-                    return;
-                }
-
-                if (modpackType == TTMP.EModpackType.TtmpWizard || modpackType == TTMP.EModpackType.Pmp)
-                {
-                    // Multi-Option PMP/TTMP
-                    await ImportWizardWindow.ImportModpack(path, this, asDialog);
+                    await UnlockUi();
                 }
             }
             catch (Exception ex)
@@ -1897,8 +1906,19 @@ namespace FFXIV_TexTools
             if(result == System.Windows.Forms.DialogResult.Cancel)
             {
                 ModTransaction.CancelBlockedTransaction();
+                return;
             }
-
+            _ = Dispatcher.InvokeAsync(async () =>
+            {
+                await LockUi("Waiting FFXIV files to be unlocked");
+            });
+        }
+        private void ModTransaction_ActiveTransactionUnblocked(ModTransaction sender)
+        {
+            _ = Dispatcher.InvokeAsync(async () =>
+            {
+                await UnlockUi();
+            });
         }
 
         private async void FileViewerButton_Click(object sender, RoutedEventArgs e)

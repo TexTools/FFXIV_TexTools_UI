@@ -125,11 +125,11 @@ namespace FFXIV_TexTools.Views
             }
         }
 
-        public async Task LockUi()
+        public async Task LockUi(string title = "Loading", string message = "Please Wait...")
         {
             if (_lockProgressController != null) return;
 
-            _lockProgressController = await this.ShowProgressAsync("Loading".L(), "Please Wait...".L());
+            _lockProgressController = await this.ShowProgressAsync(title.L(), message.L());
             _lockProgressController.SetIndeterminate();
 
         }
@@ -289,7 +289,7 @@ namespace FFXIV_TexTools.Views
                 return;
             }
 
-            await LockUi();
+            await LockUi("Loading Modpack", "This may take a moment for older modpacks...");
             try
             {
                 var oldTemp = TempFolder;
@@ -473,7 +473,8 @@ namespace FFXIV_TexTools.Views
 
             var ext = Path.GetExtension(path).ToLower();
 
-            await LockUi();
+            var success = false;
+            await LockUi("Creating Modpack");
             try
             {
                 await Task.Run(async () =>
@@ -504,6 +505,7 @@ namespace FFXIV_TexTools.Views
                         return;
                     }
                 });
+                success = true;
             }
             catch (Exception ex)
             {
@@ -512,6 +514,12 @@ namespace FFXIV_TexTools.Views
             finally
             {
                 await UnlockUi();
+            }
+
+            if (success)
+            {
+                var res = await this.ShowMessageAsync("Modpack Created", "The modpack was created successfully.");
+                //this.Close();
             }
 
 
