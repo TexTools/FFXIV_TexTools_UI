@@ -795,10 +795,6 @@ namespace FFXIV_TexTools.Views.Controls
             if (SearchBar.Text.Trim() == "")
             {
                 iMatch = true;
-                if(ExtraSearchFunction == null)
-                {
-                    return true;
-                }
             }
             else
             {
