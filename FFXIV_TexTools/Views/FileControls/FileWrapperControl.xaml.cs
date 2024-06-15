@@ -925,7 +925,14 @@ namespace FFXIV_TexTools.Views.Controls
 
             if (asBytes == null) return;
 
-            await FileControl.LoadRawData(asBytes);
+            try
+            {
+                await FileControl.LoadRawData(asBytes);
+            }
+            catch(Exception ex)
+            {
+                this.ShowError("Paste Error", "An error occurred while pasting the file:\n\n" + ex.Message);
+            }
         }
     }
 }

@@ -148,6 +148,9 @@ namespace FFXIV_TexTools.Views.Controls
         {
             Metadata = await ItemMetadata.Deserialize(data);
 
+            // Ensure root is assigned correctly when cross-loading.
+            var root = await XivCache.GetFirstRoot(path);
+            Metadata.AlterRoot(root);
             Metadata.Validate(path);
 
             Root = Metadata.Root;
