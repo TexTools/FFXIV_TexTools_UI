@@ -726,7 +726,7 @@ namespace FFXIV_TexTools.Views
                     var root = await XivCache.GetFirstRoot(file);
                     if (root != null)
                     {
-                        var files = await root.GetAllFiles();
+                        var files = await root.GetAllFiles(tx);
                         children = files.ToHashSet();
                     }
                 }

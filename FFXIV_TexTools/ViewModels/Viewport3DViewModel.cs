@@ -285,13 +285,19 @@ namespace FFXIV_TexTools.ViewModels
 
                 if (newModel)
                 {
-                    _Geometry.Clear();
+                    lock (_Geometry)
+                    {
+                        _Geometry.Clear();
+                    }
                     ModelModifiers.ApplyShapes(model, ActiveShapes, true);
                 }
 
                 if (newTextures)
                 {
-                    _Materials.Clear();
+                    lock (_Materials)
+                    {
+                        _Materials.Clear();
+                    }
                 }
 
                 for (var i = 0; i < totalMeshCount; i++)
@@ -299,7 +305,10 @@ namespace FFXIV_TexTools.ViewModels
                     if (newModel)
                     {
                         var meshGeometry3D = GetMeshGeometry(model, i);
-                        _Geometry.Add(meshGeometry3D);
+                        lock (_Geometry)
+                        {
+                            _Geometry.Add(meshGeometry3D);
+                        }
                     }
 
                     var isBodyMaterial = bodyMaterial.IsMatch(model.MeshGroups[i].Material);
@@ -365,7 +374,10 @@ namespace FFXIV_TexTools.ViewModels
                             EmissiveMap = emissive
                         };
 
-                        _Materials.Add(material);
+                        lock (_Materials)
+                        {
+                            _Materials.Add(material);
+                        }
                     }
                 }
             });
@@ -385,12 +397,18 @@ namespace FFXIV_TexTools.ViewModels
             {
                 if (VisibleMesh == i || VisibleMesh < 0)
                 {
-                    var mgm3d = new CustomMeshGeometryModel3D
+                    lock (_Geometry)
                     {
-                        Geometry = _Geometry[i],
-                        Material = _Materials[i],
-                        Source = model.Source,
-                    };
+                        lock (_Materials)
+                        {
+                            var mgm3d = new CustomMeshGeometryModel3D
+                            {
+                                Geometry = _Geometry[i],
+                                Material = _Materials[i],
+                                Source = model.Source,
+                            };
+                        }
+                    }
 
                     var mtrlName = "/" + Path.GetFileName(model.MeshGroups[i].Material);
                     var textureData = textureDataDictionary.FirstOrDefault(x => x.MaterialPath == mtrlName);
