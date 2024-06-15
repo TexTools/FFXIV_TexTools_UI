@@ -397,11 +397,12 @@ namespace FFXIV_TexTools.ViewModels
             {
                 if (VisibleMesh == i || VisibleMesh < 0)
                 {
+                    CustomMeshGeometryModel3D mgm3d;
                     lock (_Geometry)
                     {
                         lock (_Materials)
                         {
-                            var mgm3d = new CustomMeshGeometryModel3D
+                            mgm3d = new CustomMeshGeometryModel3D
                             {
                                 Geometry = _Geometry[i],
                                 Material = _Materials[i],
