@@ -1560,7 +1560,7 @@ namespace FFXIV_TexTools
 
             try
             {
-                _ = XivCache.SetCacheWorkerState(false);
+                XivCache.SetCacheWorkerStateSync(false);
             }
             catch
             {
@@ -1573,6 +1573,8 @@ namespace FFXIV_TexTools
                 // Only clear temp folder if we're the last TT application closing.
                 IOUtil.ClearTempFolder();
             }
+
+            Application.Current.Shutdown();
             return;
         }
 
