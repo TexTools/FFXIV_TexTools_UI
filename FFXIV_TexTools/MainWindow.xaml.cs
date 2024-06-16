@@ -1916,7 +1916,7 @@ namespace FFXIV_TexTools
             }
             _ = Dispatcher.InvokeAsync(async () =>
             {
-                await LockUi("Waiting FFXIV files to be unlocked");
+                await LockUi("Waiting for FFXIV files to be unlocked");
             });
         }
         private void ModTransaction_ActiveTransactionUnblocked(ModTransaction sender)
