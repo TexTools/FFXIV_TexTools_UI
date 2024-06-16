@@ -132,6 +132,8 @@
                       SelectedValuePath="Value"
                       SelectedValue="{Binding Path=MinimumLoD}" Height="26" Width="100"/>
 
+            <Label VerticalAlignment="Center" HorizontalContentAlignment="Right" HorizontalAlignment="Right" Content="Unknown Low:" Grid.Row="9" />
+            <TextBox VerticalAlignment="Center" Grid.Row="9" Grid.Column="1" Text="{Binding Path=UnknownLow}"></TextBox>
 
             <Label VerticalAlignment="Center" HorizontalContentAlignment="Right" HorizontalAlignment="Left" Content="Hex Representation:" Grid.Row="10" ToolTip="{StaticResource SamplerHexTooltip}" Height="26" Margin="4,0,0,0"/>
             <TextBox x:Name="HexBox" Grid.Row="10" Grid.Column="1" HorizontalAlignment="Center" Width="100" VerticalAlignment="Center" ToolTip="{StaticResource SamplerHexTooltip}" Height="26" PreviewTextInput="HexInput">

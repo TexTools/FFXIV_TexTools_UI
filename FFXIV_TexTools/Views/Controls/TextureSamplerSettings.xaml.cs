@@ -113,6 +113,18 @@ namespace FFXIV_TexTools.Views.Controls
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SamplerSettingsRaw)));
             }
         }
+        public byte UnknownLow
+        {
+            get
+            {
+                return Texture.Sampler.SamplerSettingsLowUnknown;
+            }
+            set
+            {
+                Texture.Sampler.SamplerSettingsLowUnknown = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(UnknownLow)));
+            }
+        }
 
         public long TextureFlagsRaw
         {
@@ -285,7 +297,8 @@ namespace FFXIV_TexTools.Views.Controls
             if (e.PropertyName == nameof(LoDBias)
                 || e.PropertyName == nameof(UTilingMode)
                 || e.PropertyName == nameof(VTilingMode)
-                || e.PropertyName == nameof(MinimumLoD))
+                || e.PropertyName == nameof(MinimumLoD)
+                || e.PropertyName == nameof(UnknownLow))
             {
                 _Updating = true;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SamplerSettingsRaw)));
@@ -297,6 +310,7 @@ namespace FFXIV_TexTools.Views.Controls
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(UTilingMode)));
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(VTilingMode)));
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(MinimumLoD)));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(UnknownLow)));
                 _Updating = false;
             }
         }

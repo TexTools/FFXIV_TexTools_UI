@@ -10,7 +10,14 @@
              xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
              mc:Ignorable="d" 
              d:DesignHeight="800" d:DesignWidth="1000">
+    <UserControl.Resources>
+        <ToolTip x:Key="FresnelYTooltip">Affects edge lighting highlight brightness.</ToolTip>
+        <ToolTip x:Key="FresnelZTooltip">Affects edge lighting highlight size.</ToolTip>
+        <ToolTip x:Key="MetalnessTooltip">Affects reflectivity and reflection color.</ToolTip>
+        <ToolTip x:Key="RoughnessTooltip">Affects the size of specular highlights.</ToolTip>
+        <ToolTip x:Key="ShaderTemplateTooltip">Affects SSS and Fur settings.</ToolTip>
 
+    </UserControl.Resources>
     <Grid x:Name="MaterialGrid" Visibility="Visible">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="160"></ColumnDefinition>

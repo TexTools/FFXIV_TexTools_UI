@@ -47,6 +47,7 @@ using System.Diagnostics;
 using System.Threading;
 using System.CodeDom;
 using xivModdingFramework.Helpers;
+using SharpDX;
 
 namespace FFXIV_TexTools.Views.Controls
 {
@@ -262,7 +263,7 @@ namespace FFXIV_TexTools.Views.Controls
             await Mtrl.ImportMtrl(Material, ReferenceItem, XivStrings.TexTools, true, tx);
 
 #if DAWNTRAIL
-            await Mtrl.UpdateEndwalkerMaterial(Material, XivStrings.TexTools, true, tx);
+            await EndwalkerUpgrade.UpdateEndwalkerMaterial(Material, XivStrings.TexTools, true, tx);
 #endif
 
             return true;
@@ -418,6 +419,13 @@ namespace FFXIV_TexTools.Views.Controls
             }
 
             ShaderPack = (EShaderPack)((ComboBox)sender).SelectedValue;
+
+            if (_LastShpk == ShaderPack)
+            {
+                // Nothing changed.
+                return;
+            }
+
             UnsavedChanges = true;
 
             if (ShaderComboBox.SelectedValue == null || _MTRL_LOADING)
@@ -425,7 +433,7 @@ namespace FFXIV_TexTools.Views.Controls
                 _LastShpk = ShaderPack;
                 return;
             }
-            if (_LastShpk == EShaderPack.Invalid || Material.ShaderPack == EShaderPack.Invalid)
+            if (_LastShpk == EShaderPack.Invalid || ShaderPack == EShaderPack.Invalid)
             {
                 // Don't mess with anything if we were on a broken state before, or are transitioning to one.
                 _LastShpk = ShaderPack;
@@ -445,6 +453,24 @@ namespace FFXIV_TexTools.Views.Controls
                 // Rather than wipe them and force the user to manually remake.
                 _LastShpk = ShaderPack;
                 return;
+            }
+
+
+            // Create or purge colorset as necessary.
+            if(ShaderPack != EShaderPack.Character)
+            {
+                Material.ColorSetData = new List<Half>();
+                Material.ColorSetDyeData = new byte[0];
+            } else
+            {
+                var length = 1024;
+                var dyeLength = 128;
+#if ENDWALKER
+                length = 256;
+                dyeLength = 32;
+#endif
+                Material.ColorSetData = new List<Half>(new Half[length]);
+                Material.ColorSetDyeData = new byte[dyeLength];
             }
 
             // Reset shader vars.

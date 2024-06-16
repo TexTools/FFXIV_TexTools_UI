@@ -374,7 +374,14 @@ namespace FFXIV_TexTools.Views.Item
         {
             _ = Dispatcher.InvokeAsync(async () =>
             {
-                await ValidateSelections();
+                try
+                {
+                    await ValidateSelections();
+                }
+                catch
+                {
+                    // No-op
+                }
             });
         }
 
@@ -386,6 +393,12 @@ namespace FFXIV_TexTools.Views.Item
         {
             var model = (string)ModelComboBox.SelectedValue;
             var material = (string)MaterialComboBox.SelectedValue;
+
+            if (!Files.ContainsKey(model))
+            {
+                return true;
+            }
+
             // Call the changed handlers for validation.
             if (_ModelsNeedingValidation.Contains(model))
             {
@@ -411,7 +424,17 @@ namespace FFXIV_TexTools.Views.Item
                 }
                 _ModelsNeedingValidation.Remove(model);
             }
-            
+
+            if (!Files.ContainsKey(model))
+            {
+                return true;
+            }
+
+            if (material == null || !Files[model].ContainsKey(material))
+            {
+                return true; 
+            }
+
             if (_MaterialsNeedingValidation.Contains(material))
             {
                 var textures = await Mtrl.GetTexturePathsFromMtrlPath(material, false, false, MainWindow.DefaultTransaction);
@@ -877,7 +900,10 @@ namespace FFXIV_TexTools.Views.Item
                     else
                     {
                         var entry = Files.First().Value;
-                        entry.Add(orph, new HashSet<string>());
+                        if (!entry.ContainsKey(orph))
+                        {
+                            entry.Add(orph, new HashSet<string>());
+                        }
                     }
                 }
             }
