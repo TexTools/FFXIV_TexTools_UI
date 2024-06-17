@@ -88,6 +88,11 @@
                     <MenuItem x:Name="Menu_RecoverSpace" Header="{Binding Source={x:Static resx:UIStrings.Recover_Space}}" Click="Menu_RecoverSpace_Click"/>
                 </MenuItem>
                 
+                <MenuItem Header="Dawntrail Upgrades">
+                    <MenuItem Header="Index Texture Creator" Click="IndexTextureCreator_Click"/>
+                    <MenuItem Header="Hair Texture Converter" Click="HairTextureConverter_Click"/>
+                </MenuItem>
+                
                 <MenuItem Header="{Binding Source={x:Static resx:UIStrings.Models}}">
                     <MenuItem x:Name="Menu_CopyModel" Header="Copy Models" Click="Menu_CopyModel_Click"/>
                     <MenuItem x:Name="Menu_MergeModels" Header="Merge Models" Click="Menu_MergeModels_Click"/>

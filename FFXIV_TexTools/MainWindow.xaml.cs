@@ -26,6 +26,7 @@ using FFXIV_TexTools.Views.Metadata;
 using FFXIV_TexTools.Views.Models;
 using FFXIV_TexTools.Views.Projects;
 using FFXIV_TexTools.Views.Simple;
+using FFXIV_TexTools.Views.Textures;
 using FFXIV_TexTools.Views.Transactions;
 using FFXIV_TexTools.Views.Wizard;
 using FolderSelect;
@@ -1980,6 +1981,16 @@ namespace FFXIV_TexTools
         private void Menu_ImportFolder_Click(object sender, RoutedEventArgs e)
         {
             _ = ImportFolder();
+        }
+
+        private void IndexTextureCreator_Click(object sender, RoutedEventArgs e)
+        {
+            IndexTextureCreator.ShowWindow(this);
+        }
+
+        private void HairTextureConverter_Click(object sender, RoutedEventArgs e)
+        {
+            HairTextureConverter.ShowWindow(this);
         }
     }
 }
