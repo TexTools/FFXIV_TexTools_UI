@@ -161,7 +161,15 @@ namespace FFXIV_TexTools.Views.Models
                 var mtrlVariant = 1;
                 try
                 {
-                    mtrlVariant = (await Imc.GetImcInfo(model.Value.ItemModel)).MaterialSet;
+                    var im = model.Value.ItemModel;
+                    if (im != null && Imc.UsesImc(im))
+                    {
+                        var imc = (await Imc.GetImcInfo(im));
+                        if (imc != null)
+                        {
+                            mtrlVariant = imc.MaterialSet;
+                        }
+                    }
                 }
                 catch (Exception ex)
                 {

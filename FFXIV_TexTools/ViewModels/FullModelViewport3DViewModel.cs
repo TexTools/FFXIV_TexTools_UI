@@ -90,7 +90,7 @@ namespace FFXIV_TexTools.ViewModels
             ModelModifiers.CalculateTangents(model);
 
             // Remove any existing models of the same item type
-            RemoveModel(slot);
+            RemoveSlot(slot);
 
             var totalMeshCount = model.MeshGroups.Count;
 
@@ -224,7 +224,7 @@ namespace FFXIV_TexTools.ViewModels
         /// <summary>
         /// Removes a model from the viewport
         /// </summary>
-        public void RemoveModel(string slot)
+        public void RemoveSlot(string slot)
         {
             // Determine which models needs to be removed
             var modelsToRemove = new List<CustomMeshGeometryModel3D>();

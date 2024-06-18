@@ -97,7 +97,7 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <ComboBox VerticalAlignment="Center" Margin="5,0" mah:TextBoxHelper.UseFloatingWatermark="True" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.Model}}" 
-                      ItemsSource="{Binding Path=ModelList}" SelectedIndex="{Binding Path=SelectedModelIndex}" />
+                      ItemsSource="{Binding Path=ModelList}" SelectedIndex="{Binding Path=SelectedModelIndex}" DisplayMemberPath="Key" SelectedValuePath="Value" />
             <Button Grid.Column="1" x:Name="RemoveButton" Content="{Binding Source={x:Static resx:UIStrings.Remove}}" Command="{Binding Path=RemoveCommand}" IsEnabled="{Binding Path=RemoveEnabled}" Margin="5"/>
         </Grid>
 

@@ -45,6 +45,7 @@ using SharpDX;
 using System.Diagnostics;
 using System.Windows.Media.Media3D;
 using System.Threading;
+using FFXIV_TexTools.Views;
 
 namespace FFXIV_TexTools.ViewModels
 {
@@ -58,7 +59,8 @@ namespace FFXIV_TexTools.ViewModels
         private FullModelView _fullModelView;
         private ObservableCollection<ComboBoxData> _skeletonComboBoxData = new ObservableCollection<ComboBoxData>();
         private ObservableCollection<int> _skins = new ObservableCollection<int>();
-        private ObservableCollection<string> _modelList = new ObservableCollection<string>();
+
+        private ObservableCollection<KeyValuePair<string, string>> _modelList = new ObservableCollection<KeyValuePair<string, string>>();
         private ObservableCollection<string> _facesList = new ObservableCollection<string>();
         private ComboBoxData _selectedSkeleton;
         private XivRace _previousRace;
@@ -273,7 +275,7 @@ namespace FFXIV_TexTools.ViewModels
         /// <summary>
         /// The list of models by item type
         /// </summary>
-        public ObservableCollection<string> ModelList
+        public ObservableCollection<KeyValuePair<string, string>> ModelList
         {
             get => _modelList;
             set
@@ -389,22 +391,30 @@ namespace FFXIV_TexTools.ViewModels
 
                 await UpdateSkin(ttModel, _materialDictionary, item);
 
-                // Add the item type to the model list
-                var itemType = $"{item.PrimaryCategory}_{item.SecondaryCategory}";
-                var itemDisplay = $"{item.Name} ({itemType})";
+                var path = ttModel.Source;
+                var slot = ViewHelpers.GetModelSlot(path);
 
-                if (!ModelList.Any(x => x.Contains(itemType)))
+                // Add the item type to the model list
+                var itemDisplay = $"{item.Name} ({slot})";
+
+                var replaceTarget = new KeyValuePair<string, string>(null, null);
+                foreach(var kv in ModelList)
                 {
-                    ModelList.Add(itemDisplay);
-                    SelectedModelIndex = ModelList.Count - 1;
+                    var vSlot = ViewHelpers.GetModelSlot(kv.Value);
+                    if(vSlot == slot)
+                    {
+                        replaceTarget = kv;
+                        break;
+                    }
                 }
-                else
+
+                if(replaceTarget.Key != null)
                 {
-                    var removeItem = (from iDisplay in ModelList where iDisplay.Contains(itemType) select iDisplay).FirstOrDefault();
-                    ModelList.Remove(removeItem);
-                    ModelList.Add(itemDisplay);
-                    SelectedModelIndex = ModelList.IndexOf(itemDisplay);
+                    ModelList.Remove(replaceTarget);
                 }
+                var newItem = new KeyValuePair<string, string>(itemDisplay, path);
+                ModelList.Add(newItem);
+                SelectedModelIndex = ModelList.IndexOf(newItem);
 
                 // Disable changes while model and viewport update
                 SkeletonComboboxEnabled = false;
@@ -979,17 +989,18 @@ namespace FFXIV_TexTools.ViewModels
             }
             else
             {
-                var modelToRemove = ModelList[SelectedModelIndex].Substring(ModelList[SelectedModelIndex].IndexOf('('))
-                    .Trim('(').Trim(')');
-                if (modelToRemove.Equals($"{XivStrings.Character}_{XivStrings.Face}"))
+                var path = ModelList[SelectedModelIndex].Value;
+                var slot = ViewHelpers.GetModelSlot(path);
+                ViewportVM.RemoveSlot(slot);
+                ModelList.RemoveAt(SelectedModelIndex);
+                SelectedModelIndex = 0;
+                if (slot == "fac")
                 {
                     FaceComboboxVisibility = Visibility.Collapsed;
                 }
 
-                ViewportVM.RemoveModel(modelToRemove);
-                ModelList.RemoveAt(SelectedModelIndex);
-                SelectedModelIndex = 0;
             }
+
 
         }
 
