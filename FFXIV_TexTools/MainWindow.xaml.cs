@@ -1992,5 +1992,51 @@ namespace FFXIV_TexTools
         {
             HairTextureConverter.ShowWindow(this);
         }
+
+        private async void UpdateModpack_Click(object sender, RoutedEventArgs e)
+        {
+            var ofd = new OpenFileDialog()
+            {
+                Filter = ViewHelpers.ModpackFileFilter,
+                InitialDirectory = Settings.Default.ModPack_Directory,
+            };
+
+            if(ofd.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+            {
+                return;
+            }
+
+            var path = ofd.FileName;
+            var dir = Path.GetDirectoryName(path);
+            var fName = Path.GetFileNameWithoutExtension(path) +"_dt.pmp";
+
+            var sfd = new SaveFileDialog()
+            {
+                FileName = fName,
+                Filter = "Penumbra Modpack File|*.pmp",
+                InitialDirectory = dir,
+            };
+
+            if (sfd.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+            {
+                return;
+            }
+
+            var newPath = sfd.FileName;
+
+            await LockUi("Upgrading Modpack");
+            try
+            {
+                await EndwalkerUpgrade.SimpleUpgdateEndwalkerModpack(path, newPath);
+            } catch(Exception ex)
+            {
+                ViewHelpers.ShowError("Modpack Upgrade Error", "An error occurred while upgrading the modpack:\n\n" + ex.Message);
+            }
+            finally
+            {
+                await UnlockUi();
+            }
+
+        }
     }
 }

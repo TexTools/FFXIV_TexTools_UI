@@ -87,8 +87,9 @@
                     <MenuItem x:Name="Menu_CleanUpModList" Header="{Binding Source={x:Static resx:UIStrings.Clean_Up_ModList}}" Click="Menu_CleanUpModList_Click"/>
                     <MenuItem x:Name="Menu_RecoverSpace" Header="{Binding Source={x:Static resx:UIStrings.Recover_Space}}" Click="Menu_RecoverSpace_Click"/>
                 </MenuItem>
-                
+
                 <MenuItem Header="Dawntrail Upgrades">
+                    <MenuItem Header="Update Modpack" Click="UpdateModpack_Click"/>
                     <MenuItem Header="Index Texture Creator" Click="IndexTextureCreator_Click"/>
                     <MenuItem Header="Hair Texture Converter" Click="HairTextureConverter_Click"/>
                 </MenuItem>
