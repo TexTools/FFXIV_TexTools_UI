@@ -214,7 +214,7 @@ namespace FFXIV_TexTools.Views.Textures
             Action<int> act = (i) =>
             {
                 byte a = PixelData[i + channel];
-                var z = (float)(a - oldMin) / (float)(newMin - oldMin) * (float)(newMax - newMin) + newMin;
+                var z = (float)(a - oldMin) / (float)(oldMax - oldMin) * (float)(newMax - newMin) + newMin;
                 PixelData[i + channel] = (byte)Math.Max(Math.Min(Math.Round(z), 255), 0);
             };
             await ModifyPixels(act);
