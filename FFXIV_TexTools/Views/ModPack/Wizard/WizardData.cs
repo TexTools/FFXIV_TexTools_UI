@@ -1200,6 +1200,17 @@ namespace FFXIV_TexTools.Views.Wizard
 
         }
 
+        public async Task WriteModpack(string targetPath)
+        {
+            if (targetPath.ToLower().EndsWith(".pmp"))
+            {
+                await WritePmp(targetPath);
+            }
+            else
+            {
+                await WriteWizardPack(targetPath);
+            }
+        }
         public async Task WriteWizardPack(string targetPath)
         {
             ClearEmpties();
@@ -1395,6 +1406,38 @@ namespace FFXIV_TexTools.Views.Wizard
             }
 
             return modFiles;
+        }
+
+
+        /// <summary>
+        /// The simplest method for generating fully constructed wizard data.
+        /// Unzips the entire modpack in the process.
+        /// </summary>
+        /// <param name="modpack"></param>
+        /// <returns></returns>
+        public static async Task<WizardData> FromModpack(string modpack)
+        {
+            return await Task.Run(async () =>
+            {
+                var modpackType = TTMP.GetModpackType(modpack);
+
+                if (modpackType == TTMP.EModpackType.Pmp)
+                {
+                    var pmp = await PMP.LoadPMP(modpack, false);
+                    return await WizardData.FromPmp(pmp.pmp, pmp.path);
+                }
+                else if (modpackType == TTMP.EModpackType.TtmpWizard)
+                {
+                    var ttmp = await TTMP.UnzipTtmp(modpack);
+                    return await WizardData.FromWizardTtmp(ttmp.Mpl, ttmp.UnzipFolder);
+                }
+                else if (modpackType == TTMP.EModpackType.TtmpSimple || modpackType == TTMP.EModpackType.TtmpOriginal)
+                {
+                    var ttmp = await TTMP.UnzipTtmp(modpack);
+                    return await WizardData.FromSimpleTtmp(ttmp.Mpl, ttmp.UnzipFolder);
+                }
+                return null;
+            });
         }
     }
 }
