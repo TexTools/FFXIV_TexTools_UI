@@ -1144,44 +1144,10 @@ namespace FFXIV_TexTools.Views
 
         public static string MakeFriendlyFileName(string path)
         {
+
             var filename = Path.GetFileName(path);
-            var ext = Path.GetExtension(path);
-            string niceName = null;
-            if(ext == ".mtrl")
-            {
-                // Include material set identifier for materials.
-                var rex = new Regex("v[0-9]{4}/");
-                var m = rex.Match(path);
 
-                if(m.Success)
-                {
-                    filename = m.Value + filename;
-                }
-
-                niceName = "Material".L();
-            } else if(ext == ".atex")
-            {
-                niceName = "VFX";
-            } else if(ext == ".mdl")
-            {
-                niceName = "Model".L();
-            } else if(ext == ".tex")
-            {
-                var type = ModViewHelpers.GuessTextureUsage(path);
-                niceName = $"{type.ToString()._()} Texture".L();
-            } else if(ext == ".meta")
-            {
-                niceName = "Metadata".L();
-            }
-
-
-
-            var ret = filename;
-            if(niceName != null)
-            {
-                ret = niceName + " (" + filename + ")";
-            }
-            return ret;
+            return filename + " : " + path;
         }
 
         private async void LoadSimpleModpackButton_Click(object sender, RoutedEventArgs e)
