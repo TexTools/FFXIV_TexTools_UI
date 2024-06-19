@@ -76,6 +76,9 @@ namespace FFXIV_TexTools.Helpers
                     }
                 }
 
+
+                var unusedTextures = new HashSet<string>();
+
                 // Second Round Upgrade - This does textures based on the collated upgrade information from the previous pass
                 foreach (var p in data.DataPages)
                 {
@@ -88,6 +91,10 @@ namespace FFXIV_TexTools.Helpers
                                 try
                                 {
                                     await EndwalkerUpgrade.UpgradeRemainingTextures(o.StandardData.Files, missingFiles);
+
+                                    var textures = o.StandardData.Files.Select(x => x.Key).Where(x => x.EndsWith(".tex"));
+                                    var unused = textures.Where(x => !missingFiles.Any(mf => mf.Value.Files.ContainsKey(x)));
+                                    unusedTextures.UnionWith(unused);
                                 }
                                 catch (Exception ex)
                                 {
@@ -98,6 +105,24 @@ namespace FFXIV_TexTools.Helpers
                         }
                     }
                 }
+
+                // Third Round Upgrade - This inspects as-of-yet unupgraded textures for possible jank-upgrades,
+                // Which is to say, upgrades where we can infer their usage and pairing, but the base mtrl was not included.
+                foreach (var p in data.DataPages)
+                {
+                    foreach (var g in p.Groups)
+                    {
+                        foreach (var o in g.Options)
+                        {
+                            if (o.StandardData != null)
+                            {
+                                var contained = unusedTextures.Where(x => o.StandardData.Files.ContainsKey(x));
+                                await EndwalkerUpgrade.CheckImportForOldHairJank(contained.ToList(), "Unused", null, null, o.StandardData.Files);
+                            }
+                        }
+                    }
+                }
+
 
                 var ext = Path.GetExtension(path);
 
