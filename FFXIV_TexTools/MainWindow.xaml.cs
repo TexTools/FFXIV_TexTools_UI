@@ -90,9 +90,9 @@ namespace FFXIV_TexTools
         public readonly System.Windows.Forms.IWin32Window Win32Window;
 
 #if ENDWALKER
-        public static readonly string BetaSuffix = "- CursedTools Build 47 (ENDWALKER)";
+        public static readonly string BetaSuffix = "- CursedTools Build 48 (ENDWALKER)";
 #else
-        public static readonly string BetaSuffix = "- CursedTools Build 47 (DAWNTRAIL)";
+        public static readonly string BetaSuffix = "- CursedTools Build 48 (DAWNTRAIL)";
 #endif
         public static bool IsBetaVersion {
             get
@@ -1985,11 +1985,17 @@ namespace FFXIV_TexTools
 
         private void IndexTextureCreator_Click(object sender, RoutedEventArgs e)
         {
+#if ENDWALKER
+            return;
+#endif
             IndexTextureCreator.ShowWindow(this);
         }
 
         private void HairTextureConverter_Click(object sender, RoutedEventArgs e)
         {
+#if ENDWALKER
+            return;
+#endif
             HairTextureConverter.ShowWindow(this);
         }
 

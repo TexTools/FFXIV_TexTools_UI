@@ -20,11 +20,14 @@ namespace FFXIV_TexTools.Helpers
     {
         public static async Task UpgradeModpackPrompted()
         {
+#if ENDWALKER
+            return;
+#endif
             var mw = MainWindow.GetMainWindow();
             var ofd = new OpenFileDialog()
             {
-                Filter = ViewHelpers.ModpackFileFilter,
-                InitialDirectory = Settings.Default.ModPack_Directory,
+                Filter = ViewHelpers.LoadModpackFilter,
+                InitialDirectory = Path.GetFullPath(Settings.Default.ModPack_Directory),
             };
 
             if (ofd.ShowDialog() != System.Windows.Forms.DialogResult.OK)
@@ -96,9 +99,22 @@ namespace FFXIV_TexTools.Helpers
                     }
                 }
 
+                var ext = Path.GetExtension(path);
+
+                var name = Path.GetFileNameWithoutExtension(path);
+                if (ext == ".json")
+                {
+                    name = IOUtil.MakePathSafe(data.MetaPage.Name, false);
+                }
+
+                if(ext != ".ttmp2" && ext != ".pmp")
+                {
+                    ext = ".pmp";
+                }
+
                 // Final Save location
                 var dir = Path.GetDirectoryName(path);
-                var fName = Path.GetFileNameWithoutExtension(path) + "_dt" + Path.GetExtension(path);
+                var fName = name + "_dt" + ext;
                 var sfd = new SaveFileDialog()
                 {
                     FileName = fName,
@@ -124,6 +140,9 @@ namespace FFXIV_TexTools.Helpers
 
         public static async Task UpgradeModpack(string path, string newPath)
         {
+#if ENDWALKER
+            return;
+#endif
             var data = await WizardData.FromModpack(path);
             var missingFiles = new Dictionary<string, EndwalkerUpgrade.UpgradeInfo>();
 
