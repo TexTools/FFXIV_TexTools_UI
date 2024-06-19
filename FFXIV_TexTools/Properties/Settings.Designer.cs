@@ -133,7 +133,7 @@ namespace FFXIV_TexTools.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("#FF4D7EF0")]
+        [global::System.Configuration.DefaultSettingValueAttribute("#FF5B6E81")]
         public string Hair_Highlight_Color {
             get {
                 return ((string)(this["Hair_Highlight_Color"]));
@@ -157,7 +157,7 @@ namespace FFXIV_TexTools.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("#38D01206")]
+        [global::System.Configuration.DefaultSettingValueAttribute("#998B372E")]
         public string Lip_Color {
             get {
                 return ((string)(this["Lip_Color"]));
@@ -169,7 +169,7 @@ namespace FFXIV_TexTools.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("#FF00FF42")]
+        [global::System.Configuration.DefaultSettingValueAttribute("#FF307066")]
         public string Tattoo_Color {
             get {
                 return ((string)(this["Tattoo_Color"]));
@@ -337,7 +337,7 @@ namespace FFXIV_TexTools.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("#FFFFFFFF")]
+        [global::System.Configuration.DefaultSettingValueAttribute("#FFDBB89A")]
         public string Skin_Color {
             get {
                 return ((string)(this["Skin_Color"]));
@@ -349,7 +349,7 @@ namespace FFXIV_TexTools.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("#FF603913")]
+        [global::System.Configuration.DefaultSettingValueAttribute("#FF6E4D23")]
         public string Hair_Color {
             get {
                 return ((string)(this["Hair_Color"]));
@@ -361,7 +361,7 @@ namespace FFXIV_TexTools.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("#FF603913")]
+        [global::System.Configuration.DefaultSettingValueAttribute("#FFAC719F")]
         public string Iris_Color {
             get {
                 return ((string)(this["Iris_Color"]));

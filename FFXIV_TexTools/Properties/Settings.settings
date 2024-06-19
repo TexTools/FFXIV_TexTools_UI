@@ -30,16 +30,16 @@
       <Value Profile="(Default)">Hyur Midlander</Value>
     </Setting>
     <Setting Name="Hair_Highlight_Color" Type="System.String" Scope="User">
-      <Value Profile="(Default)">#FF4D7EF0</Value>
+      <Value Profile="(Default)">#FF5B6E81</Value>
     </Setting>
     <Setting Name="Eye_Color" Type="System.String" Scope="User">
       <Value Profile="(Default)">#FF603913</Value>
     </Setting>
     <Setting Name="Lip_Color" Type="System.String" Scope="User">
-      <Value Profile="(Default)">#38D01206</Value>
+      <Value Profile="(Default)">#998B372E</Value>
     </Setting>
     <Setting Name="Tattoo_Color" Type="System.String" Scope="User">
-      <Value Profile="(Default)">#FF00FF42</Value>
+      <Value Profile="(Default)">#FF307066</Value>
     </Setting>
     <Setting Name="Furniture_Color" Type="System.String" Scope="User">
       <Value Profile="(Default)">#FF8D3CCC</Value>
@@ -81,13 +81,13 @@
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="Skin_Color" Type="System.String" Scope="User">
-      <Value Profile="(Default)">#FFFFFFFF</Value>
+      <Value Profile="(Default)">#FFDBB89A</Value>
     </Setting>
     <Setting Name="Hair_Color" Type="System.String" Scope="User">
-      <Value Profile="(Default)">#FF603913</Value>
+      <Value Profile="(Default)">#FF6E4D23</Value>
     </Setting>
     <Setting Name="Iris_Color" Type="System.String" Scope="User">
-      <Value Profile="(Default)">#FF603913</Value>
+      <Value Profile="(Default)">#FFAC719F</Value>
     </Setting>
     <Setting Name="Etc_Color" Type="System.String" Scope="User">
       <Value Profile="(Default)">#FF603913</Value>

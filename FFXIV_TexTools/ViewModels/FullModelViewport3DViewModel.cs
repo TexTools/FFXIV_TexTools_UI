@@ -102,25 +102,11 @@ namespace FFXIV_TexTools.ViewModels
 
                 TextureModel diffuse = null, specular = null, normal = null, alpha = null, emissive = null;
 
-                if (!isBodyMaterial)
-                {
-                    if (textureData.Diffuse != null && textureData.Diffuse.Length > 0)
-                        diffuse = new TextureModel(NormalizePixelData(textureData.Diffuse), textureData.Width, textureData.Height);
+                if (textureData.Diffuse != null && textureData.Diffuse.Length > 0)
+                    diffuse = new TextureModel(textureData.Diffuse, SharpDX.DXGI.Format.R8G8B8A8_UNorm, textureData.Width, textureData.Height);
 
-                    if (textureData.Specular != null && textureData.Specular.Length > 0)
-                        specular = new TextureModel(NormalizePixelData(textureData.Specular), textureData.Width, textureData.Height);
-
-                    if (textureData.Emissive != null && textureData.Emissive.Length > 0)
-                        emissive = new TextureModel(NormalizePixelData(textureData.Emissive), textureData.Width, textureData.Height);
-                }
-                else
-                {
-                    if (textureData.Diffuse != null && textureData.Diffuse.Length > 0)
-                        diffuse = new TextureModel(textureData.Diffuse, SharpDX.DXGI.Format.R8G8B8A8_UNorm, textureData.Width, textureData.Height);
-
-                    if (textureData.Specular != null && textureData.Specular.Length > 0)
-                        specular = new TextureModel(textureData.Specular, SharpDX.DXGI.Format.R8G8B8A8_UNorm, textureData.Width, textureData.Height);
-                }
+                if (textureData.Specular != null && textureData.Specular.Length > 0)
+                    specular = new TextureModel(textureData.Specular, SharpDX.DXGI.Format.R8G8B8A8_UNorm, textureData.Width, textureData.Height);
 
                 if (textureData.Normal != null && textureData.Normal.Length > 0)
                     normal = new TextureModel(textureData.Normal, SharpDX.DXGI.Format.R8G8B8A8_UNorm, textureData.Width, textureData.Height);
