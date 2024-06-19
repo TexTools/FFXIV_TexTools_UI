@@ -836,7 +836,12 @@ namespace FFXIV_TexTools.Views.Controls
                 return false;
             }
 
-            return await LoadExternalFile(ofd.FileName, InternalFilePath);
+            var success = await LoadExternalFile(ofd.FileName, InternalFilePath);
+            if (!success)
+            {
+                await ReloadFile();
+            }
+            return success;
         }
 
         protected OpenFileDialog GetOpenDialog()

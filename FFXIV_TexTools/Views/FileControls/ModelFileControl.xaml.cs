@@ -162,7 +162,6 @@ namespace FFXIV_TexTools.Views.Controls
 
             _ChildFiles.Clear();
             _ChildFiles.Add(InternalFilePath);
-            _MaterialSet = 1;
             _MaterialPaths = new List<string>();
 
             if (Model == null)
@@ -187,7 +186,6 @@ namespace FFXIV_TexTools.Views.Controls
                     }
                 }
 
-                _MaterialSet = set;
                 _MaterialPaths = await Mdl.GetReferencedMaterialPaths(Model.Materials, InternalFilePath, set, false, true, tx);
                 _ChildFiles.UnionWith(_MaterialPaths);
 
@@ -405,7 +403,6 @@ namespace FFXIV_TexTools.Views.Controls
             }
         }
 
-        private int _MaterialSet = -1;
         private List<string> _MaterialPaths = null;
 
         private string AdjustSkinMaterial(string mtrl)
