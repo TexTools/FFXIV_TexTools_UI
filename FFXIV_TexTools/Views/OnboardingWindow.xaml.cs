@@ -134,6 +134,12 @@ namespace FFXIV_TexTools.Views
 
         private void Done_Click(object sender, RoutedEventArgs e)
         {
+            if (!IsGameDirectoryValid(Settings.Default.FFXIV_Directory)) {
+                ViewHelpers.ShowWarning(this, "Invalid FFXIV Directory", "You must select a valid FFXIV Install to continue.");
+                return;
+            }
+
+            Settings.Default.Save();
             DialogResult = true;
             System.Windows.Forms.Application.Restart();
             System.Windows.Application.Current.Shutdown();
@@ -187,7 +193,6 @@ namespace FFXIV_TexTools.Views
                 return;
             }
 
-            Settings.Default.Save();
         }
 
         private static string SetDefault(string value, string def)

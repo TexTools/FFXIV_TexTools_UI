@@ -58,6 +58,6 @@
 
 
 
-        <Button Grid.Row="10" Grid.Column="10" Width="150" Margin="5" HorizontalAlignment="Right" VerticalAlignment="Center" Content="Done" Click="Done_Click"></Button>
+        <Button Grid.Row="10" Grid.Column="10" Width="150" Margin="5" HorizontalAlignment="Right" VerticalAlignment="Center" Content="OK" Click="Done_Click"></Button>
     </Grid>
 </Window>
