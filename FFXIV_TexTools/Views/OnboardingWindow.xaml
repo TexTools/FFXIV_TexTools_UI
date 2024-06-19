@@ -19,6 +19,7 @@
             <RowDefinition Height="40"/>
             <RowDefinition Height="40"/>
             <RowDefinition Height="40"/>
+            <RowDefinition Height="40"/>
             <RowDefinition Height="10"/>
             <RowDefinition Height="30"/>
             <RowDefinition Height="40"/>
@@ -39,22 +40,26 @@
         <Label Grid.Row="3" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Center" Content="3D Modeling Tool:"/>
         <ComboBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Width="150" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5" ItemsSource="{Binding Path=ModelingTools}" DisplayMemberPath="Key" SelectedValuePath="Value" SelectedValue="{Binding Path=ModelingTool}"/>
 
-        <Separator Grid.Row="4" Grid.ColumnSpan="10" Margin="20,0"></Separator>
+        <Label Grid.Row="4" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Center" Content="I want to:"/>
+        <ComboBox Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Width="150" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5" ItemsSource="{Binding Path=UseCases}" DisplayMemberPath="Key" SelectedValuePath="Value" SelectedValue="{Binding Path=LiveDangerously}"/>
 
-        <Label Grid.Row="5" Grid.ColumnSpan="10" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="14" FontStyle="Italic">User Folders</Label>
         
-        <Label Grid.Row="6" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Center" Content="Modpack Folder:"/>
-        <Button Grid.Row="6" Grid.Column="1" Margin="5" VerticalAlignment="Center" Content="Select Folder" Click="SelectModpackPath_Click"/>
-        <TextBox Grid.Row="6" Grid.Column="2" Margin="5" VerticalAlignment="Center" IsEnabled="False" Text="{Binding Path=ModPack_Directory}"></TextBox>
+        <Separator Grid.Row="5" Grid.ColumnSpan="10" Margin="20,0"></Separator>
+
+        <Label Grid.Row="6" Grid.ColumnSpan="10" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="14" FontStyle="Italic">User Folders</Label>
+        
+        <Label Grid.Row="7" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Center" Content="Modpack Folder:"/>
+        <Button Grid.Row="7" Grid.Column="1" Margin="5" VerticalAlignment="Center" Content="Select Folder" Click="SelectModpackPath_Click"/>
+        <TextBox Grid.Row="7" Grid.Column="2" Margin="5" VerticalAlignment="Center" IsEnabled="False" Text="{Binding Path=ModPack_Directory}"></TextBox>
 
 
-        <Label Grid.Row="7" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Center" Content="Default Save Folder:"/>
-        <Button Grid.Row="7" Grid.Column="1" Margin="5" VerticalAlignment="Center" Content="Select Folder" Click="SelectSavePath_Click"/>
-        <TextBox Grid.Row="7" Grid.Column="2" Margin="5" VerticalAlignment="Center" IsEnabled="False" Text="{Binding Path=Save_Directory}"></TextBox>
+        <Label Grid.Row="8" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Center" Content="Default Save Folder:"/>
+        <Button Grid.Row="8" Grid.Column="1" Margin="5" VerticalAlignment="Center" Content="Select Folder" Click="SelectSavePath_Click"/>
+        <TextBox Grid.Row="8" Grid.Column="2" Margin="5" VerticalAlignment="Center" IsEnabled="False" Text="{Binding Path=Save_Directory}"></TextBox>
 
-        <Label Grid.Row="8" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Center" Content="Index Backup Folder:"/>
-        <Button Grid.Row="8" Grid.Column="1" Margin="5" VerticalAlignment="Center" Content="Select Folder" Click="SelectBackupPath_Click"/>
-        <TextBox Grid.Row="8" Grid.Column="2" Margin="5" VerticalAlignment="Center" IsEnabled="False" Text="{Binding Path=Backup_Directory}"></TextBox>
+        <Label Grid.Row="9" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Center" Content="Index Backup Folder:"/>
+        <Button Grid.Row="9" Grid.Column="1" Margin="5" VerticalAlignment="Center" Content="Select Folder" Click="SelectBackupPath_Click"/>
+        <TextBox Grid.Row="9" Grid.Column="2" Margin="5" VerticalAlignment="Center" IsEnabled="False" Text="{Binding Path=Backup_Directory}"></TextBox>
 
 
 

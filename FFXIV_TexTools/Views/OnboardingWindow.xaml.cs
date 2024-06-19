@@ -53,6 +53,12 @@ namespace FFXIV_TexTools.Views
 
         public ObservableCollection<KeyValuePair<string, string>> ModelingTools { get; set; } = ModelingToolsList;
 
+        public ObservableCollection<KeyValuePair<string, bool>> UseCases { get; set; } = new ObservableCollection<KeyValuePair<string, bool>>()
+        {
+            new KeyValuePair<string, bool>("Create Mods", false),
+            new KeyValuePair<string, bool>("Install Mods", true),
+        };
+
 
         public string FFXIV_Directory
         {
@@ -106,6 +112,16 @@ namespace FFXIV_TexTools.Views
             {
                 Settings.Default.ModelingTool = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ModelingTool)));
+            }
+        }
+
+        public bool LiveDangerously
+        {
+            get => Settings.Default.LiveDangerously;
+            set
+            {
+                Settings.Default.LiveDangerously = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(LiveDangerously)));
             }
         }
 
