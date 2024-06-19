@@ -88,8 +88,9 @@ namespace FFXIV_TexTools.Helpers
         {
 
             var data = await WizardData.FromModpack(path);
-            var missingFiles = new Dictionary<string, EndwalkerUpgrade.UpgradeInfo>();
+            var textureUpgradeTargets = new Dictionary<string, EndwalkerUpgrade.UpgradeInfo>();
 
+            var allTextures = new HashSet<string>();
 
             // First Round Upgrade -
             // This does models and base MTRLS only.
@@ -106,11 +107,14 @@ namespace FFXIV_TexTools.Helpers
                                 var missing = await EndwalkerUpgrade.UpdateEndwalkerFiles(o.StandardData.Files);
                                 foreach (var kv in missing)
                                 {
-                                    if (!missingFiles.ContainsKey(kv.Key))
+                                    if (!textureUpgradeTargets.ContainsKey(kv.Key))
                                     {
-                                        missingFiles.Add(kv.Key, kv.Value);
+                                        textureUpgradeTargets.Add(kv.Key, kv.Value);
                                     }
                                 }
+
+                                var textures = o.StandardData.Files.Select(x => x.Key).Where(x => x.EndsWith(".tex"));
+                                allTextures.UnionWith(textures);
                             }
                             catch (Exception ex)
                             {
@@ -122,8 +126,6 @@ namespace FFXIV_TexTools.Helpers
                 }
             }
 
-
-            var unusedTextures = new HashSet<string>();
 
             // Second Round Upgrade - This does textures based on the collated upgrade information from the previous pass
             foreach (var p in data.DataPages)
@@ -136,11 +138,7 @@ namespace FFXIV_TexTools.Helpers
                         {
                             try
                             {
-                                await EndwalkerUpgrade.UpgradeRemainingTextures(o.StandardData.Files, missingFiles);
-
-                                var textures = o.StandardData.Files.Select(x => x.Key).Where(x => x.EndsWith(".tex"));
-                                var unused = textures.Where(x => !missingFiles.Any(mf => mf.Value.Files.ContainsKey(x)));
-                                unusedTextures.UnionWith(unused);
+                                await EndwalkerUpgrade.UpgradeRemainingTextures(o.StandardData.Files, textureUpgradeTargets);
                             }
                             catch (Exception ex)
                             {
@@ -151,6 +149,14 @@ namespace FFXIV_TexTools.Helpers
                     }
                 }
             }
+
+            // Find all un-referenced textures.
+            var unusedTextures = new HashSet<string>(
+                allTextures.Where(t =>
+                    !textureUpgradeTargets.Any(x =>
+                        x.Value.Files.ContainsValue(t)
+                    )));
+
 
             // Third Round Upgrade - This inspects as-of-yet unupgraded textures for possible jank-upgrades,
             // Which is to say, upgrades where we can infer their usage and pairing, but the base mtrl was not included.
