@@ -65,6 +65,7 @@ using xivModdingFramework.Items.Categories;
 using xivModdingFramework.Items.Interfaces;
 using xivModdingFramework.Materials.DataContainers;
 using xivModdingFramework.Materials.FileTypes;
+using xivModdingFramework.Models.DataContainers;
 using xivModdingFramework.Models.FileTypes;
 using xivModdingFramework.Mods;
 using xivModdingFramework.Mods.DataContainers;
@@ -308,7 +309,9 @@ namespace FFXIV_TexTools
             XivCache.GameWriteStateChanged += XivCache_GameWriteStateChanged;
 
             CheckForSettingsUpdate();
-            LanguageSelection();
+
+            // Validate settings and perform first-time-setup if needed.
+            OnboardingWindow.OnboardAndInitialize();
 
             var ci = new CultureInfo(Properties.Settings.Default.Application_Language)
             {
@@ -319,14 +322,16 @@ namespace FFXIV_TexTools
             CultureInfo.DefaultThreadCurrentUICulture = ci;
             CultureInfo.CurrentCulture = ci;
             CultureInfo.CurrentUICulture = ci;
-
-            // Data Context needs to be set before we call Initialize Component to ensure
-            // that the bindings get connected immediately, and not after the constructor.
-            var mainViewModel = new MainViewModel(this);
-            this.DataContext = mainViewModel;
-
             CustomizeViewModel.UpdateFrameworkColors();
 
+
+            // At this point all initial base UI Project setup is complete.
+            // But we have no initialized the MainWindow or XivCache.
+
+
+            // Initialize the MainWindow first.
+            var mainViewModel = new MainViewModel(this);
+            this.DataContext = mainViewModel;
             InitializeComponent();
 
             var fileVersion = FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location).FileVersion;
@@ -574,6 +579,12 @@ namespace FFXIV_TexTools
             {
                 XivCache.GameWriteEnabled = false;
             }
+
+            if(Enum.TryParse<EModelingTool>(Settings.Default.ModelingTool, true, out var mt))
+            {
+                XivCache.ModelingTool = mt;
+            }
+
             UpdateWriteStateUi();
         }
 

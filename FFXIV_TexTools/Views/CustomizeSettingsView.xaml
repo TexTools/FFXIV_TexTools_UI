@@ -91,8 +91,8 @@
                         <RowDefinition Height="40"/>
                     </Grid.RowDefinitions>
                     
-                    <Label Grid.Column="0" Grid.Row="0" Margin="5" Content="External Model Viewer Type" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
-                    <ComboBox x:Name="Target3DProgramBox" Grid.Column="1" Grid.Row="0"  VerticalAlignment="Center" ItemsSource="{Binding Target3DPrograms}" SelectedItem="{Binding Selected3DProgram}" Margin="5" />
+                    <Label Grid.Column="0" Grid.Row="0" Margin="5" Content="External Modeling Tool" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
+                    <ComboBox x:Name="Target3DProgramBox" Grid.Column="1" Grid.Row="0"  VerticalAlignment="Center" ItemsSource="{Binding Path=ModelingTools}" SelectedValue="{Binding Path=ModelingTool}" SelectedValuePath="Value" DisplayMemberPath="Key" Margin="5" />
 
                     <Label Grid.Column="0" Grid.Row="1" Margin="5" Content="Export Complete Skeletons" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
                     <CheckBox x:Name="ExportAllBonesBox"  Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" Margin="5" ToolTip="Export Models with the full mesh skeleton, even if the bones are not used."  IsChecked="{Binding ExportAllBones}"></CheckBox>

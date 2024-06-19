@@ -23,15 +23,18 @@ using FolderSelect;
 using ForceUpdateAssembly;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
+using WK.Libraries.BetterFolderBrowserNS;
 using xivModdingFramework.Cache;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Models.DataContainers;
+using xivModdingFramework.Models.FileTypes;
 using xivModdingFramework.Models.ModelTextures;
 
 namespace FFXIV_TexTools.ViewModels
@@ -42,6 +45,9 @@ namespace FFXIV_TexTools.ViewModels
         private string _defaultModpackUrl = Settings.Default.Default_Modpack_Url;
         const string _bgColorDefault = "#FF777777";
         private CustomizeSettingsView _view;
+
+        public ObservableCollection<KeyValuePair<string, string>> ModelingTools { get; set; } = OnboardingViewModel.ModelingToolsList;
+
 
         public CustomizeViewModel(CustomizeSettingsView view)
         {
@@ -82,11 +88,6 @@ namespace FFXIV_TexTools.ViewModels
             {
                 UIStrings.Version_Stable,
                 UIStrings.Version_Latest
-            };
-
-            Target3DPrograms = new List<string>() {
-                blenderName, 
-                maxName 
             };
         }
 
@@ -340,21 +341,15 @@ namespace FFXIV_TexTools.ViewModels
             }
         }
 
-
-        const string maxName = "3DS Max/Unreal";
-        const string blenderName = "Blender/Maya/Unity";
-        public string Selected3DProgram
+        public string ModelingTool
         {
-            get => Settings.Default.InvertNormalGreen ? maxName : blenderName;
+            get => Settings.Default.ModelingTool;
             set
             {
-
-                var b = value == maxName ? true : false;
-
-                if (Settings.Default.InvertNormalGreen != b)
-                {
-                    SetInvertNormal(b);
-                    NotifyPropertyChanged(nameof(Selected3DProgram));
+                if(Enum.TryParse<EModelingTool>(value, false, out var tool)) {
+                    Settings.Default.ModelingTool = value;
+                    UpdateFrameworkColors();
+                    NotifyPropertyChanged(nameof(ModelingTool));
                 }
             }
         }
@@ -458,13 +453,6 @@ namespace FFXIV_TexTools.ViewModels
             Settings.Default.Save();
         }
 
-
-        public void SetInvertNormal(bool value)
-        {
-            Settings.Default.InvertNormalGreen = value;
-            Settings.Default.Save();
-            UpdateFrameworkColors();
-        }
 
         /// <summary>
         /// The list of default races
@@ -592,19 +580,40 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         private void FFXIVSelectDir(object obj)
         {
-            var folderSelect = new FolderSelectDialog
+            var ofd = new BetterFolderBrowser()
             {
-                Title = UIMessages.SelectffxivFolderTitle
+                Title = "Select FFXIV Folder",
             };
 
-            if (folderSelect.ShowDialog())
+            var previous = Settings.Default.FFXIV_Directory;
+            if (!string.IsNullOrWhiteSpace(Settings.Default.FFXIV_Directory))
             {
-                Settings.Default.FFXIV_Directory = folderSelect.FileName;
-                Settings.Default.Save();
+                ofd.RootFolder = Settings.Default.FFXIV_Directory;
+            }
+            else if (!string.IsNullOrWhiteSpace(OnboardingWindow.GetDefaultInstallDirectory()))
+            {
+                ofd.RootFolder = OnboardingWindow.GetDefaultInstallDirectory();
             }
 
-            FFXIV_Directory = Settings.Default.FFXIV_Directory;
 
+            if (ofd.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+            {
+                return;
+            }
+
+            var path = OnboardingWindow.ResolveFFXIVFolder(ofd.SelectedFolder);
+
+            while (!OnboardingWindow.IsGameDirectoryValid(path))
+            {
+                FlexibleMessageBox.Show("Invalid FFXIV Install", "Please select a valid FFXIV install folder.", MessageBoxButtons.OK, MessageBoxIcon.Question);
+                if (ofd.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+                {
+                    return;
+                }
+                path = OnboardingWindow.ResolveFFXIVFolder(ofd.SelectedFolder);
+            }
+
+            FFXIV_Directory = path;
             Helpers.FlexibleMessageBox.Show("TexTools will now restart.".L());
             _view.Close();
             MainWindow.GetMainWindow().Restart();
@@ -944,7 +953,8 @@ namespace FFXIV_TexTools.ViewModels
             c = (System.Windows.Media.Color)ColorConverter.ConvertFromString(Settings.Default.Furniture_Color);
             colorSet.FurnitureColor = new SharpDX.Color(c.R, c.G, c.B, c.A);
 
-            colorSet.InvertNormalGreen = Settings.Default.InvertNormalGreen;
+
+            colorSet.InvertNormalGreen = XivCache.ModelingTool.UsesDirectXNormals();
 
             ModelTexture.SetCustomColors(colorSet);
         }

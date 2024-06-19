@@ -410,18 +410,6 @@ namespace FFXIV_TexTools.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool InvertNormalGreen {
-            get {
-                return ((bool)(this["InvertNormalGreen"]));
-            }
-            set {
-                this["InvertNormalGreen"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool ExportAllBones {
             get {
                 return ((bool)(this["ExportAllBones"]));
@@ -536,6 +524,18 @@ namespace FFXIV_TexTools.Properties {
             }
             set {
                 this["ShiftImportUV"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string ModelingTool {
+            get {
+                return ((string)(this["ModelingTool"]));
+            }
+            set {
+                this["ModelingTool"] = value;
             }
         }
     }
