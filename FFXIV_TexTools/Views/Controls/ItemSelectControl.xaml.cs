@@ -116,12 +116,6 @@ namespace FFXIV_TexTools.Views.Controls
             DataContext = this;
             InitializeComponent();
 
-            if (MainWindow.GetMainWindow() != null)
-            {
-                LockUiFunction = MainWindow.GetMainWindow().LockUi;
-                UnlockUiFunction = MainWindow.GetMainWindow().UnlockUi;
-            }
-
             SelectButton.Click += SelectButton_Click;
             SearchBar.KeyDown += SearchBar_KeyDown;
             CategoryTree.SelectedItemChanged += CategoryTree_Selected;
@@ -463,6 +457,15 @@ namespace FFXIV_TexTools.Views.Controls
         /// <returns></returns>
         public async Task LoadItems()
         {
+
+            var wind = Window.GetWindow(this);
+            var mw = MainWindow.GetMainWindow();
+            if (mw != null && wind == mw && LockUiFunction == null && UnlockUiFunction == null)
+            {
+                LockUiFunction = MainWindow.GetMainWindow().LockUi;
+                UnlockUiFunction = MainWindow.GetMainWindow().UnlockUi;
+            }
+
             if (_READY)
             {
                 ClearSelection();
@@ -474,109 +477,117 @@ namespace FFXIV_TexTools.Views.Controls
             }
 
 
-            // Pump us into another thread so the UI stays nice and fresh.
-            await Task.Run(async () =>
+            try
             {
-                CategoryElements = new ObservableCollection<ItemTreeElement>();
-                SetElements = new ObservableCollection<ItemTreeElement>();
-                DependencyRootNodes = new Dictionary<string, ItemTreeElement>();
-
-                try
+                // Pump us into another thread so the UI stays nice and fresh.
+                await Task.Run(async () =>
                 {
-                    // Gotta build set tree first, so the items from the item list can latch onto the nodes there.
-                    BuildSetTree();
-                    await BuildCategoryTree();
+                    CategoryElements = new ObservableCollection<ItemTreeElement>();
+                    SetElements = new ObservableCollection<ItemTreeElement>();
+                    DependencyRootNodes = new Dictionary<string, ItemTreeElement>();
 
-                }
-                catch (Exception ex)
-                {
-                    FlexibleMessageBox.Show("An error occurred while loading the item list.\n".L() + ex.Message, "Item List Error".L(), System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning);
-                    return;
-                }
-
-
-                var toAdd = new List<(ItemTreeElement parent, ItemTreeElement child)>();
-                foreach (var kv in DependencyRootNodes)
-                {
-                    // This dependency root had no EXD-Items associated with it.
-                    // Gotta make a generic item for it.
-                    if (kv.Value.Children.Count == 0)
+                    try
                     {
-                        // See if we can actually turn this root into a fully fledged item.
-                        try
-                        {
-                            var root = await XivCache.GetFirstRoot(kv.Key);
-                            ItemTreeElement e;
-                            if (root != null)
-                            {
-                                // If we can, add it into the list.
-                                var item = root.ToRawItem();
-                                e = new ItemTreeElement(null, kv.Value, item, root);
-                                toAdd.Add((kv.Value, e));
-
-                                if (ExpandCharacterMenu && root.Info.PrimaryType == XivItemType.human)
-                                {
-                                    // Cache our human type elements if we need them later.
-                                    var race = XivRaces.GetXivRace(root.Info.PrimaryId);
-                                    var sType = (XivItemType)root.Info.SecondaryType;
-
-                                    if (!HumanParentNodes.ContainsKey(sType)) continue;
-                                    if (!HumanParentNodes[sType].ContainsKey(race)) continue;
-
-                                    var parent = HumanParentNodes[sType][race];
-                                    e.CategoryParent = parent;
-                                    parent.Children.Add(e);
-                                }
-                            }
-                            else
-                            {
-                                e = new ItemTreeElement(null, kv.Value, "[Unsupported]");
-                                toAdd.Add((kv.Value, e));
-                            }
-
-
-
-                        }
-                        catch (Exception ex)
-                        {
-                            throw;
-                        }
+                        // Gotta build set tree first, so the items from the item list can latch onto the nodes there.
+                        BuildSetTree();
+                        await BuildCategoryTree();
 
                     }
-                }
+                    catch (Exception ex)
+                    {
+                        FlexibleMessageBox.Show("An error occurred while loading the item list.\n".L() + ex.Message, "Item List Error".L(), System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning);
+                        return;
+                    }
 
-                // Loop back through to add the new items, so we're not affecting the previous iteration.
-                foreach (var tup in toAdd)
+
+                    var toAdd = new List<(ItemTreeElement parent, ItemTreeElement child)>();
+                    foreach (var kv in DependencyRootNodes)
+                    {
+                        // This dependency root had no EXD-Items associated with it.
+                        // Gotta make a generic item for it.
+                        if (kv.Value.Children.Count == 0)
+                        {
+                            // See if we can actually turn this root into a fully fledged item.
+                            try
+                            {
+                                var root = await XivCache.GetFirstRoot(kv.Key);
+                                ItemTreeElement e;
+                                if (root != null)
+                                {
+                                    // If we can, add it into the list.
+                                    var item = root.ToRawItem();
+                                    e = new ItemTreeElement(null, kv.Value, item, root);
+                                    toAdd.Add((kv.Value, e));
+
+                                    if (ExpandCharacterMenu && root.Info.PrimaryType == XivItemType.human)
+                                    {
+                                        // Cache our human type elements if we need them later.
+                                        var race = XivRaces.GetXivRace(root.Info.PrimaryId);
+                                        var sType = (XivItemType)root.Info.SecondaryType;
+
+                                        if (!HumanParentNodes.ContainsKey(sType)) continue;
+                                        if (!HumanParentNodes[sType].ContainsKey(race)) continue;
+
+                                        var parent = HumanParentNodes[sType][race];
+                                        e.CategoryParent = parent;
+                                        parent.Children.Add(e);
+                                    }
+                                }
+                                else
+                                {
+                                    e = new ItemTreeElement(null, kv.Value, "[Unsupported]");
+                                    toAdd.Add((kv.Value, e));
+                                }
+
+
+
+                            }
+                            catch (Exception ex)
+                            {
+                                throw;
+                            }
+
+                        }
+                    }
+
+                    // Loop back through to add the new items, so we're not affecting the previous iteration.
+                    foreach (var tup in toAdd)
+                    {
+                        tup.parent.Children.Add(tup.child);
+                    }
+                });
+
+                var view = (CollectionView)CollectionViewSource.GetDefaultView(CategoryElements);
+                view.Filter = SearchFilter;
+
+
+                view = (CollectionView)CollectionViewSource.GetDefaultView(SetElements);
+                view.Filter = SearchFilter;
+
+
+                CategoryTree.ItemsSource = CategoryElements;
+                SetTree.ItemsSource = SetElements;
+
+                _READY = true;
+
+                DoSearch();
+
+                if (StartExpanded)
                 {
-                    tup.parent.Children.Add(tup.child);
+                    ExpandTopLevel();
                 }
-            });
-
-            var view = (CollectionView)CollectionViewSource.GetDefaultView(CategoryElements);
-            view.Filter = SearchFilter;
-
-
-            view = (CollectionView)CollectionViewSource.GetDefaultView(SetElements);
-            view.Filter = SearchFilter;
-
-
-            CategoryTree.ItemsSource = CategoryElements;
-            SetTree.ItemsSource = SetElements;
-
-            _READY = true;
-
-            DoSearch();
-
-            if (StartExpanded)
-            {
-                ExpandTopLevel();
             }
-
-            if (UnlockUiFunction != null)
+            catch(Exception ex)
             {
-                await UnlockUiFunction(this);
+                ViewHelpers.ShowError("Items List Load Error", "An error occurred while loading the items list:\n\n" + ex.Message);
             }
-
+            finally
+            {
+                if (UnlockUiFunction != null)
+                {
+                    await UnlockUiFunction(this);
+                }
+            }
 
             if (ItemsLoaded != null)
             {

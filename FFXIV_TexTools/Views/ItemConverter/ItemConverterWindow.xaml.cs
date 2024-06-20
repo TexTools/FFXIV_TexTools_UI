@@ -392,6 +392,9 @@ namespace FFXIV_TexTools.Views.ItemConverter
                         await RootCloner.CloneRoot(kv.Key, kv.Value, XivStrings.TexTools, variant, mpd, _lockProgress, MainWindow.UserTransaction);
                     }
                 });
+                await UnlockUi(this);
+                FlexibleMessageBox.Show(windowHandle, "Items converted successfully.".L(), "Item Conversion Successful".L(), System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Information);
+                Close();
             }
             catch(Exception ex)
             {
@@ -405,9 +408,6 @@ namespace FFXIV_TexTools.Views.ItemConverter
                 return;
 
             }
-            await UnlockUi(this);
-            FlexibleMessageBox.Show(windowHandle, "Items converted successfully.".L(), "Item Conversion Successful".L(), System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Information);
-            Close();
         }
 
         /// <summary>
