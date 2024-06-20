@@ -196,7 +196,7 @@ namespace FFXIV_TexTools.Views.ItemConverter
 
             if(root.PrimaryType == XivItemType.human)
             {
-                if (root.PrimaryId != src.PrimaryId) return false;
+                //if (root.PrimaryId != src.PrimaryId) return false;
             }
 
             return true;
