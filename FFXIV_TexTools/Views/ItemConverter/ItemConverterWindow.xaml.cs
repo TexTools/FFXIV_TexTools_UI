@@ -253,6 +253,7 @@ namespace FFXIV_TexTools.Views.ItemConverter
             {
                 return false;
             }
+
             return true;
         }
         #endregion
