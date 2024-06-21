@@ -356,10 +356,6 @@ namespace FFXIV_TexTools
 
             if (args != null && args.Length > 0)
             {
-                // Just do a hard synchronous cache initialization for import only mode.
-                var gameDir = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
-                var lang = XivLanguages.GetXivLanguage(Properties.Settings.Default.Application_Language);
-                XivCache.SetGameInfo(gameDir, lang, false);
 
                 OnlyImport(args[0]);
             }
@@ -446,35 +442,41 @@ namespace FFXIV_TexTools
 
         private async Task AsyncStartup()
         {
-            await InitializeCache();
-
-            if (!string.IsNullOrWhiteSpace(Settings.Default.Backup_Directory))
+            try
             {
-                var validBackups = ProblemChecker.AreBackupsValid(Settings.Default.Backup_Directory);
-                if (!validBackups)
+                await InitializeCache();
+
+                if (!string.IsNullOrWhiteSpace(Settings.Default.Backup_Directory))
                 {
-                    if(this.InfoPrompt("Missing Index Backups", "Your do not currently have Index Backups, or they are from a previous game version.\n\nWould you like to create new backups now?  This is STRONGLY recommended."))
+                    var validBackups = ProblemChecker.AreBackupsValid(Settings.Default.Backup_Directory);
+                    if (!validBackups)
                     {
-                        await LockUi("Creating Index Backups");
-                        try
+                        if (this.InfoPrompt("Missing Index Backups", "Your do not currently have Index Backups, or they are from a previous game version.\n\nWould you like to create new backups now?  This is STRONGLY recommended."))
                         {
-                            await ProblemChecker.CreateIndexBackups(Settings.Default.Backup_Directory);
-                        }
-                        catch(Exception ex)
-                        {
-                            this.ShowError("Index Backup Error", "An error occurred while creating the index backups:\n\n" + ex.Message);
-                        }
-                        finally
-                        {
-                            await UnlockUi();
+                            await LockUi("Creating Index Backups");
+                            try
+                            {
+                                await ProblemChecker.CreateIndexBackups(Settings.Default.Backup_Directory);
+                            }
+                            catch (Exception ex)
+                            {
+                                this.ShowError("Index Backup Error", "An error occurred while creating the index backups:\n\n" + ex.Message);
+                            }
+                            finally
+                            {
+                                await UnlockUi();
+                            }
                         }
                     }
                 }
-            }
 
-            if (Settings.Default.OpenTransactionOnStart)
+                if (Settings.Default.OpenTransactionOnStart)
+                {
+                    UserTransaction = await ModTransaction.BeginTransaction(true, null, null, false, false);
+                }
+            } catch(Exception ex)
             {
-                UserTransaction = await ModTransaction.BeginTransaction(true, null, null, false, false);
+                this.ShowError("Cache Initialization Failure", "An error occurred during cache initialization.\n This is most likely caused by an invalid FFXIV install or unsupported FFXIV version:\n\n" + ex.Message);
             }
         }
 
@@ -505,7 +507,7 @@ namespace FFXIV_TexTools
                     XivCache.CacheRebuilding += OnCacheRebuild;
 
 
-                    XivCache.SetGameInfo(gameDir, lang, true);
+                    await XivCache.SetGameInfo(gameDir, lang, true);
                     CustomizeViewModel.UpdateCacheSettings();
 
                 } catch(Exception ex)
@@ -833,14 +835,26 @@ namespace FFXIV_TexTools
 
         private async void OnlyImport(string modpack)
         {
-            if(!ViewHelpers.ShowConfirmation(this, "Import Confirmation", "This will install the modpack to your live FFXIV files.\n\nAre you sure you wish to continue?"))
+
+            try
             {
-                Application.Current.Shutdown();
+                var gameDir = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
+                var lang = XivLanguages.GetXivLanguage(Properties.Settings.Default.Application_Language);
+                await XivCache.SetGameInfo(gameDir, lang, false);
+                if (!ViewHelpers.ShowConfirmation(this, "Import Confirmation", "This will install the modpack to your live FFXIV files.\n\nAre you sure you wish to continue?"))
+                {
+                    Application.Current.Shutdown();
+                }
+
+                XivCache.GameWriteEnabled = true;
+
+                await ImportModpack(modpack, true);
             }
-
-            XivCache.GameWriteEnabled = true;
-
-            await ImportModpack(modpack, true);
+            catch(Exception ex)
+            {
+                FlexibleMessageBox.Show("An error occurred while initializing or importing the mod:\n\n" + ex.Message, "Import Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                throw;
+            }
 
             Application.Current.Shutdown();
         }
