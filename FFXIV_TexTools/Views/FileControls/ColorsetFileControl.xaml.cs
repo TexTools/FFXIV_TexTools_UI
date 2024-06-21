@@ -1631,6 +1631,7 @@ namespace FFXIV_TexTools.Views.Controls
             var offset = rowId * _columnCount * 4;
             Array.Copy(rawData, 0, fullData, offset, rawData.Length);
             Material.ColorSetData = fullData.ToList();
+            UnsavedChanges = true;
         }
 
         protected override void FreeManaged()
