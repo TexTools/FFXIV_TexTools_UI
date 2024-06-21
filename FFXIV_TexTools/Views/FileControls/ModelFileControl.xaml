@@ -100,7 +100,8 @@
                     <Grid.ContextMenu>
                         <ContextMenu x:Name="OtherActionsContextMenu">
                             <MenuItem Header="Add to FMV" IsEnabled="{Binding Path=FmvButtonEnabled}" Click="FullModel_Click"/>
-                            <MenuItem Header="Export All Textures" Click="ExportTextures_Click"/>
+                            <MenuItem Header="Export Raw Textures" Click="ExportTextures_Click"/>
+                            <MenuItem Header="Export PBR Textures" Click="ExportPbrTextures_Click"/>
                             <MenuItem Header="View/Edit Material" IsEnabled="{Binding Path=ShowMaterialEnabled}" Click="ShowMaterial_Click"/>
                             <MenuItem Header="Show Raw MDL Info" Click="ModelInfo_Click"/>
                         </ContextMenu>

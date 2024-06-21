@@ -176,7 +176,7 @@ namespace FFXIV_TexTools.Views.Models
                     // No-op, defaulted to 1.
                 }
 
-                await Mdl.ExportMaterialsForModel(model.Value.TtModel, outputFilePath, _gameDirectory, mtrlVariant, _fmvm.SelectedSkeleton.XivRace, MainWindow.DefaultTransaction);
+                await Mdl.ExportMaterialsForModel(model.Value.TtModel, outputFilePath, false, mtrlVariant, _fmvm.SelectedSkeleton.XivRace, MainWindow.DefaultTransaction);
 
                 // Save model to DB
             }

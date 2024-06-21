@@ -101,7 +101,6 @@ namespace FFXIV_TexTools.ViewModels
                 var textureData = textureDataDictionary[model.GetMaterialIndex(i)];
 
                 TextureModel diffuse = null, specular = null, normal = null, alpha = null, emissive = null;
-
                 if (textureData.Diffuse != null && textureData.Diffuse.Length > 0)
                     diffuse = new TextureModel(textureData.Diffuse, SharpDX.DXGI.Format.R8G8B8A8_UNorm, textureData.Width, textureData.Height);
 
@@ -111,18 +110,15 @@ namespace FFXIV_TexTools.ViewModels
                 if (textureData.Normal != null && textureData.Normal.Length > 0)
                     normal = new TextureModel(textureData.Normal, SharpDX.DXGI.Format.R8G8B8A8_UNorm, textureData.Width, textureData.Height);
 
-                if (textureData.Alpha != null && textureData.Alpha.Length > 0)
-                    alpha = new TextureModel(textureData.Alpha, SharpDX.DXGI.Format.R8G8B8A8_UNorm, textureData.Width, textureData.Height);
-
                 if (textureData.Emissive != null && textureData.Emissive.Length > 0)
                     emissive = new TextureModel(textureData.Emissive, SharpDX.DXGI.Format.R8G8B8A8_UNorm, textureData.Width, textureData.Height);
 
                 var material = new PhongMaterial
                 {
+                    AmbientColor = PhongMaterials.ToColor(1, 1, 1, 1),
                     DiffuseColor = PhongMaterials.ToColor(1, 1, 1, 1),
-                    SpecularShininess = 1f,
-                    DiffuseMap = diffuse,
-                    DiffuseAlphaMap = alpha,
+                    SpecularShininess = ReflectionValue,
+                    DiffuseAlphaMap = diffuse,
                     SpecularColorMap = specular,
                     NormalMap = normal,
                     EmissiveMap = emissive

@@ -796,7 +796,7 @@ namespace FFXIV_TexTools.ViewModels
 
                 var colors = ModelTexture.GetCustomColors();
                 colors.InvertNormalGreen = false;
-                var modelMaps = await ModelTexture.GetModelMaps(mtrl, colors, -1, MainWindow.UserTransaction);
+                var modelMaps = await ModelTexture.GetModelMaps(mtrl, false, colors, -1, MainWindow.UserTransaction);
 
                 // Reindex the material dictionary as materials may have sorted differently
                 ReIndexMaterialDictionary(ttModel, materialDictionary, modelMaps);
@@ -838,7 +838,7 @@ namespace FFXIV_TexTools.ViewModels
                 var mtrl = await Mtrl.GetXivMtrl(mtrlPath);
                 var colors = ModelTexture.GetCustomColors();
                 colors.InvertNormalGreen = false;
-                var modelMaps = await ModelTexture.GetModelMaps(mtrl, colors, -1, MainWindow.UserTransaction);
+                var modelMaps = await ModelTexture.GetModelMaps(mtrl, false, colors, -1, MainWindow.UserTransaction);
 
                 materialDictionary[0] = modelMaps;
             }
@@ -909,7 +909,7 @@ namespace FFXIV_TexTools.ViewModels
                         var mtrl = await Mtrl.GetXivMtrl(mtrlPath);
                         var colors = ModelTexture.GetCustomColors();
                         colors.InvertNormalGreen = false;
-                        var modelMaps = await ModelTexture.GetModelMaps(mtrl, colors, -1, MainWindow.UserTransaction);
+                        var modelMaps = await ModelTexture.GetModelMaps(mtrl, false, colors, -1, MainWindow.UserTransaction);
 
                         materialDictionary[matLoc.First().Key] = modelMaps;
                     }

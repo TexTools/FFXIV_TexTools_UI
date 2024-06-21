@@ -232,7 +232,13 @@ namespace FFXIV_TexTools.Views.Controls
                 version = await Imc.GetMaterialSetId(asIm, false, tx);
             }
 
-            await Mdl.ExportTTModelToFile(Model, externalFilePath, version, true, Settings.Default.ShiftExportUV, tx);
+            var settings = new ModelExportSettings()
+            {
+                 IncludeTextures = true,
+                 ShiftUVs = Settings.Default.ShiftExportUV,
+                 PbrTextures = false,
+            };
+            await Mdl.ExportTTModelToFile(Model, externalFilePath, version, settings, tx);
             return true;
         }
 
@@ -520,7 +526,7 @@ namespace FFXIV_TexTools.Views.Controls
                         var colors = ModelTexture.GetCustomColors();
                         colors.InvertNormalGreen = false;
 
-                        var modelMaps = await ModelTexture.GetModelMaps(xivMtrl, colors, ViewportVM.HighlightedColorsetRow, tx);
+                        var modelMaps = await ModelTexture.GetModelMaps(xivMtrl, false, colors, ViewportVM.HighlightedColorsetRow, tx);
 
                         lock (textureList)
                         {
@@ -844,6 +850,7 @@ namespace FFXIV_TexTools.Views.Controls
             {
                 return;
             }
+            path = bf.SelectedFolder;
 
 
             try
@@ -939,6 +946,47 @@ namespace FFXIV_TexTools.Views.Controls
 
             OtherActionsContextMenu.PlacementTarget = OtherActionsGrid;
             OtherActionsContextMenu.IsOpen = true;
+        }
+
+        private async void ExportPbrTextures_Click(object sender, RoutedEventArgs e)
+        {
+            var bf = new BetterFolderBrowser();
+            bf.Title = "Select Export Folder";
+
+            var path = Path.GetFullPath(Path.Combine(GetDefaultSaveDirectory(), "PbrTextures"));
+            Directory.CreateDirectory(path);
+            bf.RootFolder = path;
+
+            if (bf.ShowDialog() != DialogResult.OK)
+            {
+                return;
+            }
+
+            path = bf.SelectedFolder;
+
+            // Because the export for model expects an actual file path, not a folder path.
+            path = Path.GetFullPath(Path.Combine(path, "asdf.fbx"));
+
+
+            try
+            {
+                await Task.Run(async () =>
+                {
+                    var set = 1;
+                    var im = ReferenceItem as IItemModel;
+                    if (im != null)
+                    {
+                        set = await Imc.GetMaterialSetId(im, false, MainWindow.DefaultTransaction);
+                    }
+                    Model.Source = InternalFilePath;
+
+                    await Mdl.ExportMaterialsForModel(Model, path, true, set, XivRace.All_Races, MainWindow.DefaultTransaction);
+                });
+            }
+            catch (Exception ex)
+            {
+                this.ShowError("Export Error", "An error occurred while exporting the textures:\n\n" + ex.Message);
+            }
         }
     }
 }

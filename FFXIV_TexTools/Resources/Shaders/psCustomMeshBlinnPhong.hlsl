@@ -105,7 +105,7 @@ float4 main(PSInput input) : SV_Target
     if (bHasAlphaMap)
     {
         float4 color = texAlphaMap.Sample(samplerSurface, input.t);
-        alpha = color[0];
+        alpha = color[3];
 		clip(alpha <= 0.3 ? -1 : 1);
         color[3] = 1;
         vMaterialTexture *= color;

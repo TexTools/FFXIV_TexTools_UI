@@ -336,29 +336,27 @@ namespace FFXIV_TexTools.ViewModels
                             }
                         }
 
+                        var diffuseBase = new TextureModel(new byte[] { 255, 255, 255, 255 }, SharpDX.DXGI.Format.R8G8B8A8_UNorm, 1,1);
+
                         TextureModel diffuse = null, specular = null, normal = null, alpha = null, emissive = null;
                         if (textureData.Diffuse != null && textureData.Diffuse.Length > 0)
                             diffuse = new TextureModel(textureData.Diffuse, SharpDX.DXGI.Format.R8G8B8A8_UNorm, textureData.Width, textureData.Height);
 
                         if (textureData.Specular != null && textureData.Specular.Length > 0)
                             specular = new TextureModel(textureData.Specular, SharpDX.DXGI.Format.R8G8B8A8_UNorm, textureData.Width, textureData.Height);
-                        
 
                         if (textureData.Normal != null && textureData.Normal.Length > 0)
                             normal = new TextureModel(textureData.Normal, SharpDX.DXGI.Format.R8G8B8A8_UNorm, textureData.Width, textureData.Height);
-
-                        if (textureData.Alpha != null && textureData.Alpha.Length > 0)
-                            alpha = new TextureModel(textureData.Alpha, SharpDX.DXGI.Format.R8G8B8A8_UNorm, textureData.Width, textureData.Height);
 
                         if (textureData.Emissive != null && textureData.Emissive.Length > 0)
                             emissive = new TextureModel(textureData.Emissive, SharpDX.DXGI.Format.R8G8B8A8_UNorm, textureData.Width, textureData.Height);
 
                         var material = new PhongMaterial
                         {
+                            AmbientColor = PhongMaterials.ToColor(1, 1, 1, 1),
                             DiffuseColor = PhongMaterials.ToColor(1, 1, 1, 1),
                             SpecularShininess = ReflectionValue,
-                            DiffuseMap = diffuse,
-                            DiffuseAlphaMap = alpha,
+                            DiffuseAlphaMap = diffuse,
                             SpecularColorMap = specular,
                             NormalMap = normal,
                             EmissiveMap = emissive
