@@ -18,7 +18,6 @@
 
             <ListView.Resources>
                 <Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource MetroListViewItem}">
-                    <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}"/>
                 </Style>
             </ListView.Resources>
 

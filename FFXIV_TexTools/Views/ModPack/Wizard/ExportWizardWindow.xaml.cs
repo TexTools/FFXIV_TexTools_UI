@@ -399,7 +399,7 @@ namespace FFXIV_TexTools.Views
             return await Task.Run(async () =>
             {
                 //var data = WizardData.FromWizardPack(mpl, imageFolder);
-                var pmp = await PMP.LoadPMP(path, false);
+                var pmp = await PMP.LoadPMP(path, false, true);
                 TempFolder = pmp.path;
                 var data = await WizardData.FromPmp(pmp.pmp, pmp.path);
                 return data;

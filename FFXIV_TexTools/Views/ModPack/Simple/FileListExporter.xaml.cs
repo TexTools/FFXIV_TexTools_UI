@@ -194,7 +194,7 @@ namespace FFXIV_TexTools.Views.Simple
             }
             var path = sfd.FileName;
 
-            _progressController = await this.ShowProgressAsync(UIMessages.ModPackImportTitle, UIMessages.PleaseStandByMessage);
+            _progressController = await this.ShowProgressAsync("Creating Modpack", UIMessages.PleaseStandByMessage);
             try
             {
                 var files = FileList.GetSelectedFiles();

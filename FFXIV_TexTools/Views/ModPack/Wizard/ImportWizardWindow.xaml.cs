@@ -318,7 +318,7 @@ namespace FFXIV_TexTools.Views.Wizard
         private static async Task<WizardData> SetupPMP(string path)
         {
             //var data = WizardData.FromWizardPack(mpl, imageFolder);
-            var pmp = await PMP.LoadPMP(path, true);
+            var pmp = await PMP.LoadPMP(path, true, true);
             var data = await WizardData.FromPmp(pmp.pmp, pmp.path);
             return data;
         }

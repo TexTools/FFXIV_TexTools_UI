@@ -1423,7 +1423,7 @@ namespace FFXIV_TexTools.Views.Wizard
 
                 if (modpackType == TTMP.EModpackType.Pmp)
                 {
-                    var pmp = await PMP.LoadPMP(modpack, false);
+                    var pmp = await PMP.LoadPMP(modpack, false, true);
                     return await WizardData.FromPmp(pmp.pmp, pmp.path);
                 }
                 else if (modpackType == TTMP.EModpackType.TtmpWizard)
