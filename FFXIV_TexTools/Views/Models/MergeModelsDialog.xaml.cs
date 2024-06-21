@@ -50,7 +50,7 @@ namespace FFXIV_TexTools.Views
             }
         }
 
-        public MergeModelsDialog()
+        public MergeModelsDialog(string startingTarget = null)
         {
             InitializeComponent();
             DataContext = this;
@@ -65,6 +65,12 @@ namespace FFXIV_TexTools.Views
 
             CopyMaterialsBox.Checked += CopyMaterialsBox_Checked;
             CopyMaterialsBox.Unchecked += CopyMaterialsBox_Checked;
+
+            if (!string.IsNullOrWhiteSpace(startingTarget))
+            {
+                ToBox.Text = startingTarget;
+                ToBox.IsEnabled = false;
+            }
         }
 
         private async void CopyMaterialsBox_Checked(object sender, RoutedEventArgs e)

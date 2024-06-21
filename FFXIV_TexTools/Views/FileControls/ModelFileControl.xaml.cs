@@ -70,10 +70,10 @@ namespace FFXIV_TexTools.Views.Controls
             }
         }
 
-        public Visibility ShowMaterialVisibility
+        public bool ShowMaterialEnabled
         {
             get {
-                return GetVisibleMaterial() == null ? Visibility.Collapsed : Visibility.Visible;
+                return GetVisibleMaterial() == null ? false : true;
             }
         }
 
@@ -764,7 +764,7 @@ namespace FFXIV_TexTools.Views.Controls
 
         private void VisibleMeshChanged(object sender, int e)
         {
-            OnPropertyChanged(nameof(ShowMaterialVisibility));
+            OnPropertyChanged(nameof(ShowMaterialEnabled));
         }
 
         private string GetVisibleMaterial()
@@ -848,7 +848,6 @@ namespace FFXIV_TexTools.Views.Controls
 
             try
             {
-                ExportTexturesButton.IsEnabled = false;
                 await Task.Run(async () =>
                 {
                     var set = 1;
@@ -864,16 +863,17 @@ namespace FFXIV_TexTools.Views.Controls
             {
                 this.ShowError("Export Error", "An error occurred while exporting the textures:\n\n" + ex.Message);
             }
-            finally
-            {
-                ExportTexturesButton.IsEnabled = true;
-            }
         }
 
         private async void AddModel_Click(object sender, RoutedEventArgs e)
         {
+            AddModelContextMenu.PlacementTarget = AddModelGrid;
+            AddModelContextMenu.IsOpen = true;
+        }
+        private async void AddExternalModel_Click(object sender, RoutedEventArgs e)
+        {
             var ofd = GetOpenDialog();
-            if(ofd.ShowDialog() != DialogResult.OK)
+            if (ofd.ShowDialog() != DialogResult.OK)
             {
                 return;
             }
@@ -887,7 +887,7 @@ namespace FFXIV_TexTools.Views.Controls
                 }
 
                 var nonSkinMap = Model.Materials.FirstOrDefault(m => !ModelModifiers.IsSkinMaterial(m));
-                if(nonSkinMap == null)
+                if (nonSkinMap == null)
                 {
                     nonSkinMap = Model.Materials[0];
                 }
@@ -904,11 +904,41 @@ namespace FFXIV_TexTools.Views.Controls
                     await UpdateVisual();
                 });
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 // Don't think we can ever hit this, but safety.
                 Trace.WriteLine(ex);
             }
+        }
+
+        private void AddFfxivModel_Click(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(InternalFilePath) || Model == null)
+            {
+                return;
+            }
+
+            if (UnsavedChanges)
+            {
+                if (!this.ConfirmDiscardChanges(InternalFilePath))
+                {
+                    return;
+                }
+            }
+
+            var wind = new MergeModelsDialog(InternalFilePath)
+            {
+                Owner = Window.GetWindow(this)
+            };
+
+            wind.ShowDialog();
+        }
+
+        private void OtherActions_Click(object sender, RoutedEventArgs e)
+        {
+
+            OtherActionsContextMenu.PlacementTarget = OtherActionsGrid;
+            OtherActionsContextMenu.IsOpen = true;
         }
     }
 }
