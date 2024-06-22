@@ -55,7 +55,7 @@
         <ComboBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Width="150" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5" ItemsSource="{Binding Path=ModelingTools}" DisplayMemberPath="Key" SelectedValuePath="Value" SelectedValue="{Binding Path=ModelingTool}" ToolTip="{StaticResource ModelingToolTooltip}"/>
 
         <Label Grid.Row="4" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Center" Content="I want to (Primarily):" ToolTip="{StaticResource UseCaseTooltip}"/>
-        <ComboBox Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Width="150" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5" ItemsSource="{Binding Path=UseCases}" DisplayMemberPath="Key" SelectedValuePath="Value" SelectedValue="{Binding Path=LiveDangerously}" ToolTip="{StaticResource UseCaseTooltip}"/>
+        <ComboBox Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Width="150" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5" ItemsSource="{Binding Path=UseCases}" DisplayMemberPath="Key" SelectedValuePath="Value" SelectedValue="{Binding Path=LiveDangerously}" ToolTip="{StaticResource UseCaseTooltip}" x:Name="UseCaseBox"/>
 
         
         <Separator Grid.Row="5" Grid.ColumnSpan="10" Margin="20,0"></Separator>

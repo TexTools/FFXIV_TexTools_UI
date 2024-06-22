@@ -8,6 +8,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -143,6 +144,9 @@ namespace FFXIV_TexTools.Views
         {
             DataContext = new OnboardingViewModel();
             InitializeComponent();
+
+            UseCaseBox.SelectionChanged += UseCase_Changed;
+
         }
 
 
@@ -502,6 +506,15 @@ namespace FFXIV_TexTools.Views
             }
 
             ViewModel.Backup_Directory = ofd.SelectedFolder;
+        }
+
+        private void UseCase_Changed(object sender, SelectionChangedEventArgs e)
+        {
+            var value = Settings.Default.LiveDangerously;
+            if (value)
+            {
+                this.ShowWarning("Mod Installer Warning", "Please note: While TexTools -CAN- operate as a Mod-Loader, it is not the tool's primary purpose.\n\nYou may find some related features cumbersome or awkward when compared to other Mod-Loaders. (Ex. Penumbra)");
+            }
         }
     }
 }
