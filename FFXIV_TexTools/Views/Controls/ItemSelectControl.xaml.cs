@@ -595,33 +595,66 @@ namespace FFXIV_TexTools.Views.Controls
             }
         }
 
+
+        /// <summary>
+        /// Retrieves the item from an element, if and only if there is 1 possible item resolution.
+        /// </summary>
+        /// <param name="e"></param>
+        /// <returns></returns>
+        private IItem GetOnlyItem(ItemTreeElement e)
+        {
+            if(e == null)
+            {
+                return null;
+            }
+
+            if(e.Item != null)
+            {
+                return e.Item;
+            }
+
+            IItem item = null;
+            foreach(var e2 in e.Children)
+            {
+                var i = GetOnlyItem(e2);
+                if(i != null && item != null)
+                {
+                    // Multiple items.  Not legal.
+                    return null;
+                } else if(i != null)
+                {
+                    item = i;
+                }
+            }
+
+            return item;
+        }
+
         private void CategoryTree_Selected(object sender, System.Windows.RoutedPropertyChangedEventArgs<object> e)
         {
             if (!_READY) return;
             if (_SILENT) return;
 
-            var oldE = (ItemTreeElement)e.OldValue;
-            var newE = (ItemTreeElement)e.NewValue;
+            var element = (ItemTreeElement)e.NewValue;
 
-            if (RawItemSelected != null && newE != null && newE.Item != null) {
-                RawItemSelected.Invoke(null, newE == null ? null : newE.Item);
-            }
+            // Don't allow null selections to escape this controller.
+            if (element == null) return;
 
-            if (newE != null
-             && _selectedItem == null && newE.Item == null)
+            IItem item = GetOnlyItem(element);
+            if(item == null)
             {
-                // If both actual underlying items were null
-                // we didn't really change anything.
                 return;
             }
 
-            // Don't allow null selections to escape this controller.
-            if (newE == null || newE.Item == null) return;
+
+            if (RawItemSelected != null) {
+                RawItemSelected.Invoke(null, item);
+            }
 
             // If we re-selected the same item, selection doesn't escape this controller (didn't actually change).
-            if (_selectedItem == newE.Item) return;
+            if (_selectedItem == item) return;
 
-            _selectedItem = newE.Item;
+            _selectedItem = item;
             if (ItemSelected != null)
             {
                 ItemSelected.Invoke(this, _selectedItem);

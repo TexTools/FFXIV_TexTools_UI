@@ -27,6 +27,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -1051,13 +1052,21 @@ namespace FFXIV_TexTools.ViewModels
         /// <param name="type">The type of the filter</param>
         private async void SetFilter(string type)
         {
-            if (type.Equals("ItemFilter"))
+            try
             {
-                await GetCategoriesItemFilter();
+                if (type.Equals("ItemFilter"))
+                {
+                    await GetCategoriesItemFilter();
+                }
+                else if (type.Equals("ModPackFilter"))
+                {
+                    await GetCategoriesModPackFilter();
+                }
             }
-            else if (type.Equals("ModPackFilter"))
+            catch(Exception ex)
             {
-                await GetCategoriesModPackFilter();
+                // No-Op
+                Trace.WriteLine(ex);
             }
         }
 
