@@ -954,7 +954,12 @@ namespace FFXIV_TexTools.ViewModels
             colorSet.FurnitureColor = new SharpDX.Color(c.R, c.G, c.B, c.A);
 
 
-            colorSet.InvertNormalGreen = XivCache.ModelingTool.UsesDirectXNormals();
+            if(Enum.TryParse<EModelingTool>(Settings.Default.ModelingTool, true, out var tool))
+            {
+                XivCache.ModelingTool = tool;
+                colorSet.InvertNormalGreen = XivCache.ModelingTool.UsesDirectXNormals();
+            }
+            
 
             ModelTexture.SetCustomColors(colorSet);
         }
