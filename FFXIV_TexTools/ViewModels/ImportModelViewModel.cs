@@ -211,22 +211,15 @@ namespace FFXIV_TexTools.ViewModels
                 if (referenceItem.SecondaryCategory == XivStrings.Face && ComplexOptionsEnabled)
                 {
                     _view.UseOriginalShapeDataButton.IsChecked = Settings.Default.UseOriginalShapeDataForFace;
-                    _view.UseOriginalShapeDataButton.Click += UseOriginalShapeDataButton_Clicked;
                 }
                 if (referenceItem.SecondaryCategory == XivStrings.Hair)
                 {
                     _view.CloneUV1Button.IsChecked = Settings.Default.CloneUV1toUV2ForHair;
-                    _view.CloneUV1Button.Click += CloneUV1Button_Clicked;
                 }
 
-                var iType = referenceItem.GetPrimaryItemType();
-                if (iType == xivModdingFramework.Items.Enums.XivItemType.equipment 
-                    || iType == xivModdingFramework.Items.Enums.XivItemType.accessory 
-                    || iType == xivModdingFramework.Items.Enums.XivItemType.weapon)
-                {
-                    _view.ShiftUVsButton.IsChecked = Settings.Default.ShiftImportUV;
-                    _view.ShiftUVsButton.Click += ForceUVsButton_Clicked;
-                }
+                _view.UseOriginalShapeDataButton.Click += UseOriginalShapeDataButton_Clicked;
+                _view.CloneUV1Button.Click += CloneUV1Button_Clicked;
+                _view.ShiftUVsButton.Click += ForceUVsButton_Clicked;
             }
         }
 
