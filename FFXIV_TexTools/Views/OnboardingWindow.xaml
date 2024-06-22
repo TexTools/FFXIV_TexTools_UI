@@ -8,6 +8,20 @@
         SizeToContent="WidthAndHeight"
         ResizeMode="NoResize"
         Title="First-Time Setup">
+    <Window.Resources>
+        <ToolTip x:Key="UseCaseTooltip">
+            <TextBlock>
+                Determines if TexTools should start in SAFE mode by default (for Mod Authors) or not (for Mod Users).
+                <LineBreak />This affects if the default behavior installs files directly to the live game files or not.
+            </TextBlock>
+        </ToolTip>
+        <ToolTip x:Key="ModelingToolTooltip">
+            <TextBlock>
+                Affects the behavior of certain settings for Model/FBX File Exports.
+                <LineBreak />If you don't have an external modeling tool, or don't plan on exporting you can ignore this setting.
+            </TextBlock>
+        </ToolTip>
+    </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="140"/>
@@ -37,11 +51,11 @@
         <Label Grid.Row="2" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Center" Content="Language:"/>
         <ComboBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Width="150" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5" ItemsSource="{Binding Path=Languages}" DisplayMemberPath="Key" SelectedValuePath="Value" SelectedValue="{Binding Path=Application_Language}"/>
 
-        <Label Grid.Row="3" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Center" Content="3D Modeling Tool:"/>
-        <ComboBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Width="150" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5" ItemsSource="{Binding Path=ModelingTools}" DisplayMemberPath="Key" SelectedValuePath="Value" SelectedValue="{Binding Path=ModelingTool}"/>
+        <Label Grid.Row="3" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Center" Content="3D Modeling Tool:" ToolTip="{StaticResource ModelingToolTooltip}"/>
+        <ComboBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Width="150" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5" ItemsSource="{Binding Path=ModelingTools}" DisplayMemberPath="Key" SelectedValuePath="Value" SelectedValue="{Binding Path=ModelingTool}" ToolTip="{StaticResource ModelingToolTooltip}"/>
 
-        <Label Grid.Row="4" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Center" Content="I want to:"/>
-        <ComboBox Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Width="150" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5" ItemsSource="{Binding Path=UseCases}" DisplayMemberPath="Key" SelectedValuePath="Value" SelectedValue="{Binding Path=LiveDangerously}"/>
+        <Label Grid.Row="4" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Center" Content="I want to (Primarily):" ToolTip="{StaticResource UseCaseTooltip}"/>
+        <ComboBox Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Width="150" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5" ItemsSource="{Binding Path=UseCases}" DisplayMemberPath="Key" SelectedValuePath="Value" SelectedValue="{Binding Path=LiveDangerously}" ToolTip="{StaticResource UseCaseTooltip}"/>
 
         
         <Separator Grid.Row="5" Grid.ColumnSpan="10" Margin="20,0"></Separator>

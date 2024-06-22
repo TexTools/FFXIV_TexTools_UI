@@ -56,7 +56,7 @@ namespace FFXIV_TexTools.Views
         public ObservableCollection<KeyValuePair<string, bool>> UseCases { get; set; } = new ObservableCollection<KeyValuePair<string, bool>>()
         {
             new KeyValuePair<string, bool>("Create Mods", false),
-            new KeyValuePair<string, bool>("Install Mods", true),
+            new KeyValuePair<string, bool>("Install or Use Mods", true),
         };
 
 
