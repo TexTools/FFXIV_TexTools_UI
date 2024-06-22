@@ -717,9 +717,9 @@ namespace FFXIV_TexTools.Views.Controls
             await SaveFile();
         }
 
-        private async Task SaveFile(ModTransaction tx = null)
+        private async Task SaveFile(ModTransaction tx = null, bool ignoreWarning = false)
         {
-            if (!this.CheckFileWrite(tx))
+            if ((!ignoreWarning) && !this.CheckFileWrite(tx))
             {
                 return;
             }
@@ -788,12 +788,12 @@ namespace FFXIV_TexTools.Views.Controls
             try
             {
                 var tx = MainWindow.UserTransaction;
-                var boiler = await TxBoiler.BeginWrite(tx);
+                var boiler = await TxBoiler.BeginWrite(tx, true, null, true);
                 tx = boiler.Transaction;
                 try
                 {
                     // Due to the nature of the single file modpack exporter, we need to temp save the file here.
-                    await SaveFile(tx);
+                    await SaveFile(tx, true);
 
                     SingleFileModpackCreator.ExportFile(FilePath, Window.GetWindow(this), tx);
                 }
