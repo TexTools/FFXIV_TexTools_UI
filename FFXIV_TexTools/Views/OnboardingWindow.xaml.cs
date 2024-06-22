@@ -513,7 +513,7 @@ namespace FFXIV_TexTools.Views
             var value = Settings.Default.LiveDangerously;
             if (value)
             {
-                this.ShowWarning("Mod Installer Warning", "Please note: While TexTools -CAN- operate as a Mod-Loader, it is not the tool's primary purpose.\n\nYou may find some related features cumbersome or awkward when compared to other Mod-Loaders. (Ex. Penumbra)");
+                this.ShowWarning("Mod Installer Warning", "Please Note: While TexTools -CAN- operate as a Mod-Loader, it is not the tool's primary purpose.\n\nYou may find some related features cumbersome or awkward when compared to other Mod-Loaders. (Ex. Penumbra)");
             }
         }
     }
