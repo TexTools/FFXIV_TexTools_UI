@@ -776,5 +776,53 @@ namespace FFXIV_TexTools.Views.Controls
                 Trace.WriteLine(ex);
             }
         }
+
+        private void WrapAll_Click(object sender, RoutedEventArgs e)
+        {
+            foreach (var t in Material.Textures)
+            {
+                if (t.Sampler == null) continue;
+                t.Sampler.UTilingMode = TextureSampler.ETilingMode.Wrap;
+                t.Sampler.VTilingMode = TextureSampler.ETilingMode.Wrap;
+            }
+            UnsavedChanges = true;
+        }
+
+        private void MirrorAll_Click(object sender, RoutedEventArgs e)
+        {
+            foreach(var t in Material.Textures)
+            {
+                if (t.Sampler == null) continue;
+                t.Sampler.UTilingMode = TextureSampler.ETilingMode.Mirror;
+                t.Sampler.VTilingMode = TextureSampler.ETilingMode.Mirror;
+            }
+            UnsavedChanges = true;
+        }
+        private void ClampAll_Click(object sender, RoutedEventArgs e)
+        {
+            foreach (var t in Material.Textures)
+            {
+                if (t.Sampler == null) continue;
+                t.Sampler.UTilingMode = TextureSampler.ETilingMode.Clamp;
+                t.Sampler.VTilingMode = TextureSampler.ETilingMode.Clamp;
+            }
+            UnsavedChanges = true;
+        }
+        private void BorderAll_Click(object sender, RoutedEventArgs e)
+        {
+            foreach (var t in Material.Textures)
+            {
+                if (t.Sampler == null) continue;
+                t.Sampler.UTilingMode = TextureSampler.ETilingMode.Border;
+                t.Sampler.VTilingMode = TextureSampler.ETilingMode.Border;
+            }
+            UnsavedChanges = true;
+        }
+
+        private void SetTilingMode_Click(object sender, RoutedEventArgs e)
+        {
+            TilingModeContextMenu.PlacementTarget = TilingModeButton;
+            TilingModeContextMenu.IsOpen = true;
+        }
     }
 }
