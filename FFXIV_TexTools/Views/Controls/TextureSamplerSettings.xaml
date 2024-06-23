@@ -89,7 +89,7 @@
             </TextBox>
 
             <Label VerticalAlignment="Center" HorizontalContentAlignment="Right" HorizontalAlignment="Left" Content="Explicit Path:" Grid.Row="1" ToolTip="{StaticResource DetokenizedTooltip}" Height="26" Width="76" Margin="44,0,0,0"/>
-            <TextBox x:Name="DeTokenizedPathBox" VerticalAlignment="Center" Height="26" Grid.Column="1" Grid.Row="1" IsReadOnly="true" Grid.ColumnSpan="3" ToolTip="{StaticResource DetokenizedTooltip}" Margin="0,0,10,0">
+            <TextBox x:Name="DeTokenizedPathBox" VerticalAlignment="Center" Height="26" Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="3" ToolTip="{StaticResource DetokenizedTooltip}" Margin="0,0,10,0">
                 <Binding Path="DetokenizedPath"></Binding>
             </TextBox>
 

@@ -24,6 +24,7 @@ namespace FFXIV_TexTools.Views.Controls
 
         public event PropertyChangedEventHandler PropertyChanged;
 
+        private bool _UPDATING_TEX_PATH;
         public string TexturePath
         {
             get
@@ -33,10 +34,15 @@ namespace FFXIV_TexTools.Views.Controls
             }
             set
             {
-                var detokenized = _Material.DetokenizePath(value, Texture);
-                Texture.TexturePath = detokenized;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TexturePath)));
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DetokenizedPath)));
+                if (!_UPDATING_TEX_PATH)
+                {
+                    _UPDATING_TEX_PATH = true;
+                    var detokenized = _Material.DetokenizePath(value, Texture);
+                    Texture.TexturePath = detokenized;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TexturePath)));
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DetokenizedPath)));
+                    _UPDATING_TEX_PATH = false;
+                }
             }
         }
         public string DetokenizedPath
@@ -47,7 +53,14 @@ namespace FFXIV_TexTools.Views.Controls
             }
             set
             {
-                return;
+                if (!_UPDATING_TEX_PATH)
+                {
+                    _UPDATING_TEX_PATH = true;
+                    Texture.TexturePath = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TexturePath)));
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DetokenizedPath)));
+                    _UPDATING_TEX_PATH = false;
+                }
             }
         }
         public float LoDBias
