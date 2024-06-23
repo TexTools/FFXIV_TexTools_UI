@@ -38,6 +38,7 @@ using System.Windows.Media.Media3D;
 using HelixToolkit.Wpf.SharpDX.Cameras;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Items.Interfaces;
+using xivModdingFramework.Materials.DataContainers;
 using xivModdingFramework.Models.DataContainers;
 using xivModdingFramework.Models.Helpers;
 using Color = SharpDX.Color;
@@ -113,6 +114,22 @@ namespace FFXIV_TexTools.ViewModels
                 if (textureData.Emissive != null && textureData.Emissive.Length > 0)
                     emissive = new TextureModel(textureData.Emissive, SharpDX.DXGI.Format.R8G8B8A8_UNorm, textureData.Width, textureData.Height);
 
+                var sampler = HelixToolkit.SharpDX.Core.Shaders.DefaultSamplers.LinearSamplerWrapAni1;
+
+                if (textureData.UTilingMode == TextureSampler.ETilingMode.Mirror)
+                    sampler.AddressU = TextureAddressMode.Mirror;
+                else if (textureData.UTilingMode == TextureSampler.ETilingMode.Clamp)
+                    sampler.AddressU = TextureAddressMode.Clamp;
+                else if (textureData.UTilingMode == TextureSampler.ETilingMode.Border)
+                    sampler.AddressU = TextureAddressMode.Border;
+
+                if (textureData.VTilingMode == TextureSampler.ETilingMode.Mirror)
+                    sampler.AddressV = TextureAddressMode.Mirror;
+                else if (textureData.VTilingMode == TextureSampler.ETilingMode.Clamp)
+                    sampler.AddressV = TextureAddressMode.Clamp;
+                else if (textureData.VTilingMode == TextureSampler.ETilingMode.Border)
+                    sampler.AddressV = TextureAddressMode.Border;
+
                 var material = new PhongMaterial
                 {
                     AmbientColor = PhongMaterials.ToColor(1, 1, 1, 1),
@@ -121,7 +138,8 @@ namespace FFXIV_TexTools.ViewModels
                     DiffuseAlphaMap = diffuse,
                     SpecularColorMap = specular,
                     NormalMap = normal,
-                    EmissiveMap = emissive
+                    EmissiveMap = emissive,
+                    DiffuseMapSampler = sampler
                 };
 
                 // Geometry that contains skeleton data
