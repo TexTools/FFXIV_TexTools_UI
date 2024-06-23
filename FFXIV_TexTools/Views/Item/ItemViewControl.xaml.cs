@@ -415,8 +415,9 @@ namespace FFXIV_TexTools.Views.Item
                 var materials = await Mdl.GetReferencedMaterialPaths(model, mSet, false, false, MainWindow.DefaultTransaction);
 
 
+                var mtrls = modelEntry.Count(x => x.Key.EndsWith(".mtrl"));
                 // If the materials don't match...
-                if (modelEntry.Count != materials.Count || modelEntry.Any(x => !materials.Contains(x.Key)))
+                if (mtrls != materials.Count || modelEntry.Any(x => !materials.Contains(x.Key) && x.Key.EndsWith(".mtrl")))
                 {
                     // Then we need to reload the item.
                     await SetItem(Item);

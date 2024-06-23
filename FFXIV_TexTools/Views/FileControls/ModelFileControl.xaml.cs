@@ -938,6 +938,7 @@ namespace FFXIV_TexTools.Views.Controls
                 Owner = Window.GetWindow(this)
             };
 
+            wind.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             wind.ShowDialog();
         }
 
@@ -987,6 +988,21 @@ namespace FFXIV_TexTools.Views.Controls
             {
                 this.ShowError("Export Error", "An error occurred while exporting the textures:\n\n" + ex.Message);
             }
+        }
+
+        private async void CopyModel_Click(object sender, RoutedEventArgs e)
+        {
+            if(Model == null || string.IsNullOrWhiteSpace(InternalFilePath))
+            {
+                return;
+            }
+
+            var wind = new CopyModelDialog(InternalFilePath);
+            wind.Owner = Window.GetWindow(this);
+
+            wind.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+
+            wind.Show();
         }
     }
 }

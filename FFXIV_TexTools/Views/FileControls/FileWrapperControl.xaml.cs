@@ -785,6 +785,7 @@ namespace FFXIV_TexTools.Views.Controls
         {
             var wind = ((MetroWindow)Window.GetWindow(this));
             var controller = await wind.ShowProgressAsync("Exporting Modpack...", "Please wait...");
+            var unsaved = UnsavedChanges;
             try
             {
                 var tx = MainWindow.UserTransaction;
@@ -808,6 +809,8 @@ namespace FFXIV_TexTools.Views.Controls
             }
             finally
             {
+
+                UnsavedChanges = unsaved;
                 await controller.CloseAsync();
             }
 

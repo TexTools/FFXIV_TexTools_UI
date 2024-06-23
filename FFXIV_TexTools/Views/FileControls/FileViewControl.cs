@@ -42,7 +42,7 @@ namespace FFXIV_TexTools.Views.Controls
 
         // State control vars.
         internal bool _UpdateQueued;
-        private bool _IS_SAVING;
+        protected bool _IS_SAVING;
         private bool _Disposed;
 
         private List<ModTransaction> _listeningTransactions = new List<ModTransaction>();

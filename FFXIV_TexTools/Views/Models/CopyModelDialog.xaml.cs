@@ -20,6 +20,7 @@ using xivModdingFramework.Cache;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Models.FileTypes;
+using xivModdingFramework.Mods;
 
 namespace FFXIV_TexTools.Views
 {
@@ -28,9 +29,16 @@ namespace FFXIV_TexTools.Views
     /// </summary>
     public partial class CopyModelDialog : Window
     {
-        public CopyModelDialog()
+        ModTransaction _Transaction;
+        public CopyModelDialog(string startingPath = null, ModTransaction tx = null)
         {
+            _Transaction = tx;
             InitializeComponent();
+
+            if (startingPath != null) {
+                FromBox.Text = startingPath;
+                FromBox.IsEnabled = false;
+            }
         }
 
         private async void AnyTextChanged(object sender, TextChangedEventArgs e)
@@ -154,7 +162,13 @@ namespace FFXIV_TexTools.Views
                 var fromRoot = await XivCache.GetFirstRoot(from);
                 var df = IOUtil.GetDataFileFromPath(to);
 
-                await Mdl.CopyModel(from, to, XivStrings.TexTools, true, MainWindow.UserTransaction);
+                var tx = MainWindow.UserTransaction;
+                if (_Transaction != null)
+                {
+                    tx = _Transaction;
+                }
+
+                await Mdl.CopyModel(from, to, XivStrings.TexTools, true, tx);
                 FlexibleMessageBox.Show("Model Copied Successfully.".L(), "Model Copy Confirmation".L(), System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Information);
                 Close();
             }
