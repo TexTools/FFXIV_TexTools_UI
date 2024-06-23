@@ -2036,5 +2036,14 @@ namespace FFXIV_TexTools
             }
 
         }
+
+        private void IrisDiffuseCreator_Click(object sender, RoutedEventArgs e)
+        {
+#if ENDWALKER
+            return;
+#endif
+            EyeDiffuseCreator.ShowWindow(this);
+
+        }
     }
 }

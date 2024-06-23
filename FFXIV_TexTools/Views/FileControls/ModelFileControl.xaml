@@ -103,7 +103,7 @@
                             <MenuItem Header="Export Raw Textures" Click="ExportTextures_Click"/>
                             <MenuItem Header="Export PBR Textures" Click="ExportPbrTextures_Click"/>
                             <MenuItem Header="View/Edit Material" IsEnabled="{Binding Path=ShowMaterialEnabled}" Click="ShowMaterial_Click"/>
-                            <MenuItem Header="Copy Model To..." Click="CopyModel_Click"/>
+                            <MenuItem Header="Copy Model and Materials To..." Click="CopyModel_Click"/>
                             <MenuItem Header="Show Raw MDL Info" Click="ModelInfo_Click"/>
                         </ContextMenu>
                     </Grid.ContextMenu>
