@@ -2062,7 +2062,10 @@ namespace FFXIV_TexTools.Views.Item
 
                 var orphanText = string.Join("\n", orphans);
 
-                FlexibleMessageBox.Show(this.GetWin32Window(), "This will delete the following orphaned/unused mod files:\n\n" + orphanText + "\n\n Continue?", "Delete Orphans Confirmation", System.Windows.Forms.MessageBoxButtons.OKCancel, System.Windows.Forms.MessageBoxIcon.Warning, System.Windows.Forms.MessageBoxDefaultButton.Button1);
+                if(FlexibleMessageBox.Show(this.GetWin32Window(), "This will delete the following orphaned/unused mod files:\n\n" + orphanText + "\n\n Continue?", "Delete Orphans Confirmation", System.Windows.Forms.MessageBoxButtons.OKCancel, System.Windows.Forms.MessageBoxIcon.Warning, System.Windows.Forms.MessageBoxDefaultButton.Button1) != System.Windows.Forms.DialogResult.OK)
+                {
+                    return;
+                }
 
                 var tx = MainWindow.UserTransaction;
                 var boiler = await TxBoiler.BeginWrite(tx);
