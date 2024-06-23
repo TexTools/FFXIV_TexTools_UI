@@ -643,6 +643,14 @@ namespace FFXIV_TexTools.Views.Controls
             var tex = new MtrlTexture();
             tex.Sampler = new TextureSampler();
             tex.Sampler.SamplerId = ESamplerId.g_SamplerNormal;
+
+            var firstTex = Material.Textures.FirstOrDefault(x => x.Sampler != null);
+            if(firstTex != null)
+            {
+                tex.Sampler.UTilingMode = firstTex.Sampler.UTilingMode;
+                tex.Sampler.VTilingMode = firstTex.Sampler.VTilingMode;
+            }
+
             Material.Textures.Add(tex);
             UnsavedChanges = true;
             UpdateTextureList();
