@@ -147,9 +147,10 @@ namespace FFXIV_TexTools.Views.Textures
             ConvertEnabled = false;
             try
             {
-                // The Ratio of Iris to Sclera is 1/0 in old textures, but is
+                // The Ratio of Iris to Sclera is 92/100 in old textures, but is
                 // 1/2.55 roughly in the new.
-                double ratio = 0.41;
+                // Multiplying these terms together results in a ratio of roughly .44
+                double ratio = 0.44;
 
 
                 var maskData = await Tex.GetPixelDataFromFile(MaskPath);
