@@ -47,8 +47,14 @@
         <ToolTip x:Key="ModpackUrlTooltip">Sets the default Author Url/Website when creating modpacks.</ToolTip>
         <ToolTip x:Key="DefaultRaceTooltip">Sets the default race the UI will attempt to navigate to when selecting an item for the first time.</ToolTip>
 
-        <ToolTip x:Key="SkinRaceTooltip">Skin Race Tooltip.</ToolTip>
+        <ToolTip x:Key="SkinRaceTooltip">
+            <TextBlock>
+                Sets the default skin textures used when dispalying models in TexTools, where applicable.
+                <LineBreak/>Does NOT resize/rescale the model to the target race.  Just a visual helper.
+            </TextBlock>
+        </ToolTip>
 
+        <ToolTip x:Key="UpdateBranchTooltip">Allows access to TexTools BETA editions, if there are any currently available.</ToolTip>
     </mah:MetroWindow.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
@@ -191,8 +197,8 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
-                    <Label Content="Skin Race" Grid.Column="0" Margin="5"/>
-                    <ComboBox x:Name="SkinComboBox" ItemsSource="{Binding SkinTypes}" SelectedItem="{Binding Selected_SkinType}" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left" ToolTip="This selection is only reflected on applicable race models." mah:TextBoxHelper.UseFloatingWatermark="True"/>
+                    <Label Content="Skin Race" Grid.Column="0" Margin="5" ToolTip="{StaticResource SkinRaceTooltip}"/>
+                    <ComboBox x:Name="SkinComboBox" ItemsSource="{Binding SkinTypes}" SelectedItem="{Binding Selected_SkinType}" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left" ToolTip="{StaticResource SkinRaceTooltip}" mah:TextBoxHelper.UseFloatingWatermark="True"/>
 
                     <Label Content="{Binding Source={x:Static resx:UIStrings.Skin_Color}}" Grid.Row="1" Margin="5"/>
                     <xctk:ColorPicker x:Name="SkinColorPicker" SelectedColor="{Binding Selected_SkinColor}" ColorMode="ColorCanvas" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Top" MinWidth="120" DropDownBackground="Gainsboro" Margin="0,7,0,0" />
@@ -236,8 +242,8 @@
                         <RowDefinition Height="40"/>
                     </Grid.RowDefinitions>
 
-                    <Label Grid.Column="0" Grid.Row="0" Margin="5" Content="TexTools Branch" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
-                    <ComboBox x:Name="UpdateBranchBox" Grid.Column="1" Grid.Row="0"  VerticalAlignment="Center" ItemsSource="{Binding UpdateBranches}" SelectedItem="{Binding UpdateBranch}" Margin="5" />
+                    <Label Grid.Column="0" Grid.Row="0" Margin="5" Content="TexTools Branch" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" ToolTip="{StaticResource UpdateBranchTooltip}" ></Label>
+                    <ComboBox x:Name="UpdateBranchBox" Grid.Column="1" Grid.Row="0"  VerticalAlignment="Center" ItemsSource="{Binding UpdateBranches}" SelectedItem="{Binding UpdateBranch}" Margin="5" ToolTip="{StaticResource UpdateBranchTooltip}" />
 
                     <Label Grid.Column="0" Grid.Row="1" Margin="5" Content="Open Transaction on Startup" VerticalAlignment="Center" ToolTip="{StaticResource StartTxTooltip}"  HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
                     <CheckBox x:Name="OpenTxDefault"  Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" Margin="5" ToolTip="{StaticResource StartTxTooltip}" IsChecked="{Binding Path=OpenTxByDefault}"></CheckBox>
