@@ -23,8 +23,8 @@
     <AssemblyTitle>FFXIV_TexTools</AssemblyTitle>
     <Product>FFXIV_TexTools</Product>
     <Copyright>Copyright ©  2024</Copyright>
-    <AssemblyVersion>2.9.9.52</AssemblyVersion>
-    <FileVersion>2.9.9.52</FileVersion>
+    <AssemblyVersion>2.9.9.54</AssemblyVersion>
+    <FileVersion>2.9.9.54</FileVersion>
     <LangVersion>9.0</LangVersion>
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <UseWPF>true</UseWPF>
