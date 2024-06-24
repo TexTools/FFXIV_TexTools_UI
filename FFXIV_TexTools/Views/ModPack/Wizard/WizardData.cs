@@ -699,8 +699,9 @@ namespace FFXIV_TexTools.Views.Wizard
                                     // Have to fix old busted models.
                                     finfo = await EndwalkerUpgrade.FixOldModel(finfo);
                                 }
-                                catch
+                                catch (Exception ex)
                                 {
+                                    Trace.WriteLine(ex);
                                     // Hmm... What should we do about this?
                                     // Skip the file?
                                     continue;

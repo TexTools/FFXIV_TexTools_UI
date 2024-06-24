@@ -26,6 +26,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using MahApps.Metro.Controls.Dialogs;
 
 namespace FFXIV_TexTools.Views
 {
@@ -276,6 +277,8 @@ namespace FFXIV_TexTools.Views
         {
             var to = ToBox.Text;
             var from = FromBox.Text;
+            var c = await this.ShowProgressAsync("Merging Models", "Please wait...");
+            var success = false;
             try
             {
 
@@ -296,13 +299,20 @@ namespace FFXIV_TexTools.Views
 
                 await Mdl.MergeModels(to, from, VariantBox.SelectedIndex, (int)MeshIdBox.SelectedValue, CopyMaterialsBox.IsChecked == true ? true : null, XivStrings.TexTools, MainWindow.UserTransaction);
                 FlexibleMessageBox.Show("Model Copied Successfully.".L(), "Model Copy Confirmation".L(), System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Information);
-                Close();
+                success = true;
             }
             catch(Exception ex)
             {
-                FlexibleMessageBox.Show("Model Copied Failed.\n\nError: ".L() + ex.Message, "Model Copy Error".L(), System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
+                FlexibleMessageBox.Show("Model Merge Failed.\n\nError: ".L() + ex.Message, "Model Merge Error".L(), System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
             }
-
+            finally
+            {
+                await c.CloseAsync();
+            }
+            if (success)
+            {
+                Close();
+            }
         }
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)

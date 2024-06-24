@@ -348,7 +348,14 @@ namespace FFXIV_TexTools.Views.Controls
         {
             await await Dispatcher.InvokeAsync(async () =>
             {
-                await UpdateColorsetImage();
+                try
+                {
+                    await UpdateColorsetImage();
+                }
+                catch
+                {
+                    // No-Op
+                }
             });
         }
         private async Task UpdateColorsetImage()
