@@ -692,6 +692,19 @@ namespace FFXIV_TexTools.Views.Wizard
                                     // File majorly broken, skip it.
                                     continue;
                                 }
+                            } else if(needsTexFix && mj.FullPath.EndsWith(".mdl"))
+                            {
+                                try
+                                {
+                                    // Have to fix old busted models.
+                                    finfo = await EndwalkerUpgrade.FixOldModel(finfo);
+                                }
+                                catch
+                                {
+                                    // Hmm... What should we do about this?
+                                    // Skip the file?
+                                    continue;
+                                }
                             }
 
                             data.Files.Add(mj.FullPath, finfo);
