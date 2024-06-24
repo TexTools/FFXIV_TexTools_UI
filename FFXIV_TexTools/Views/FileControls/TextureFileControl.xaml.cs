@@ -38,6 +38,7 @@ using System.Collections.ObjectModel;
 using Size = SixLabors.ImageSharp.Size;
 using ResizeMode = SixLabors.ImageSharp.Processing.ResizeMode;
 using System.Security.Cryptography;
+using FFXIV_TexTools.Properties;
 
 namespace FFXIV_TexTools.Views.Controls
 {
@@ -169,7 +170,9 @@ namespace FFXIV_TexTools.Views.Controls
             // Assign this any time we save.
             var options = new SmartImportOptions()
             {
-                TextureFormat = Format
+                TextureFormat = Format,
+                MaxImageSize = Settings.Default.MaxImageSize,
+                
             };
             LastImportOptions = options;
 
@@ -735,7 +738,8 @@ namespace FFXIV_TexTools.Views.Controls
         {
             var options = new SmartImportOptions()
             {
-                TextureFormat = Format
+                TextureFormat = Format,
+                MaxImageSize = Settings.Default.MaxImageSize,
             };
 
             LastImportOptions = options;

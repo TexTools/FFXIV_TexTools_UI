@@ -48,6 +48,15 @@ namespace FFXIV_TexTools.ViewModels
 
         public ObservableCollection<KeyValuePair<string, string>> ModelingTools { get; set; } = OnboardingViewModel.ModelingToolsList;
 
+        public ObservableCollection<KeyValuePair<string, int>> ImageSizes { get; set; } = new ObservableCollection<KeyValuePair<string, int>>()
+        {
+            new KeyValuePair<string, int>("None", 0),
+            new KeyValuePair<string, int>("512", 512),
+            new KeyValuePair<string, int>("1024", 1024),
+            new KeyValuePair<string, int>("2048", 2048),
+            new KeyValuePair<string, int>("4096", 4096),
+        };
+
 
         public CustomizeViewModel(CustomizeSettingsView view)
         {
@@ -294,15 +303,38 @@ namespace FFXIV_TexTools.ViewModels
             {
                 if (AutoFixDawntrail != value)
                 {
-                    SetAutoFixDawntrail(value);
+                    Settings.Default.FixPreDawntrailOnImport = value;
+                    Settings.Default.Save();
                     NotifyPropertyChanged(nameof(AutoFixDawntrail));
                 }
             }
         }
-        private void SetAutoFixDawntrail(bool value)
+
+        public bool AutoFixPartialDawntrail
         {
-            Settings.Default.FixPreDawntrailOnImport = value;
-            Settings.Default.Save();
+            get => Settings.Default.FixPreDawntrailPartialOnImport;
+            set
+            {
+                if (AutoFixPartialDawntrail != value)
+                {
+                    Settings.Default.FixPreDawntrailPartialOnImport = value;
+                    Settings.Default.Save();
+                    NotifyPropertyChanged(nameof(AutoFixPartialDawntrail));
+                }
+            }
+        }
+        public int MaxImageSize
+        {
+            get => Settings.Default.MaxImageSize;
+            set
+            {
+                if (MaxImageSize != value)
+                {
+                    Settings.Default.MaxImageSize = value;
+                    Settings.Default.Save();
+                    NotifyPropertyChanged(nameof(MaxImageSize));
+                }
+            }
         }
         public bool UnsafeMode
         {
@@ -313,6 +345,7 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     Settings.Default.LiveDangerously = value;
                     Settings.Default.Save();
+                    NotifyPropertyChanged(nameof(UnsafeMode));
                 }
             }
         }
@@ -325,6 +358,7 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     Settings.Default.ShiftExportUV = value;
                     Settings.Default.Save();
+                    NotifyPropertyChanged(nameof(ShiftExportUV));
                 }
             }
         }
@@ -337,6 +371,7 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     Settings.Default.OpenTransactionOnStart = value;
                     Settings.Default.Save();
+                    NotifyPropertyChanged(nameof(OpenTxByDefault));
                 }
             }
         }
@@ -350,6 +385,7 @@ namespace FFXIV_TexTools.ViewModels
                     Settings.Default.ModelingTool = value;
                     UpdateFrameworkColors();
                     NotifyPropertyChanged(nameof(ModelingTool));
+                    Settings.Default.Save();
                 }
             }
         }

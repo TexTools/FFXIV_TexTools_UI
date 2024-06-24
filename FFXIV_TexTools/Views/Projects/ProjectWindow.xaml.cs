@@ -474,7 +474,8 @@ namespace FFXIV_TexTools.Views.Projects
                     ProgressReporter = null,
                     RootConversionFunction = null,
                     SourceApplication = XivStrings.TexTools,
-                    UpdateEndwalkerFiles = upgrade
+                    UpdateEndwalkerFiles = upgrade,
+                    UpdatePartialEndwalkerFiles = upgrade,
                 };
 
 

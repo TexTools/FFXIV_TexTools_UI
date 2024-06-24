@@ -310,6 +310,7 @@ namespace FFXIV_TexTools.Views
             var settings = new ModPackImportSettings();
             settings.AutoAssignSkinMaterials = Properties.Settings.Default.AutoMaterialFix;
             settings.UpdateEndwalkerFiles = Properties.Settings.Default.FixPreDawntrailOnImport;
+            settings.UpdatePartialEndwalkerFiles = Properties.Settings.Default.FixPreDawntrailPartialOnImport;
             settings.RootConversionFunction = ModpackRootConvertWindow.GetRootConversionFunction(owner);
             settings.SourceApplication = XivStrings.TexTools;
 

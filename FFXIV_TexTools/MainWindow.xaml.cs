@@ -2028,7 +2028,12 @@ namespace FFXIV_TexTools
         {
             try
             {
-                await ModpackUpgrader.UpgradeModpackPrompted();
+                var includePartials = true;
+
+                // Should we use this setting here? Or just always upgrade for modpacks?
+                //includePartials = Settings.Default.FixPreDawntrailPartialOnImport;
+
+                await ModpackUpgrader.UpgradeModpackPrompted(includePartials);
             }
             catch
             {

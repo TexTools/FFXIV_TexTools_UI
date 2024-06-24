@@ -19,7 +19,7 @@ namespace FFXIV_TexTools.Helpers
     /// </summary>
     public static class ModpackUpgrader
     {
-        public static async Task UpgradeModpackPrompted()
+        public static async Task UpgradeModpackPrompted(bool includePartials = true)
         {
 #if ENDWALKER
             return;
@@ -43,7 +43,7 @@ namespace FFXIV_TexTools.Helpers
             try
             {
 
-                var data = await UpgradeModpack(path);
+                var data = await UpgradeModpack(path, includePartials);
 
                 var ext = Path.GetExtension(path);
 
@@ -85,7 +85,7 @@ namespace FFXIV_TexTools.Helpers
             }
         }
 
-        public static async Task<WizardData> UpgradeModpack(string path)
+        public static async Task<WizardData> UpgradeModpack(string path, bool includePartials = true)
         {
 
             var data = await WizardData.FromModpack(path);
@@ -151,30 +151,34 @@ namespace FFXIV_TexTools.Helpers
                 }
             }
 
-            // Find all un-referenced textures.
-            var unusedTextures = new HashSet<string>(
-                allTextures.Where(t =>
-                    !textureUpgradeTargets.Any(x =>
-                        x.Value.Files.ContainsValue(t)
-                    )));
 
-
-            // Third Round Upgrade - This inspects as-of-yet unupgraded textures for possible jank-upgrades,
-            // Which is to say, upgrades where we can infer their usage and pairing, but the base mtrl was not included.
-            foreach (var p in data.DataPages)
+            if (includePartials)
             {
-                foreach (var g in p.Groups)
-                {
-                    foreach (var o in g.Options)
-                    {
-                        if (o.StandardData != null)
-                        {
-                            var contained = unusedTextures.Where(x => o.StandardData.Files.ContainsKey(x));
-                            await EndwalkerUpgrade.CheckImportForOldHairJank(contained.ToList(), "Unused", null, null, o.StandardData.Files);
+                // Find all un-referenced textures.
+                var unusedTextures = new HashSet<string>(
+                    allTextures.Where(t =>
+                        !textureUpgradeTargets.Any(x =>
+                            x.Value.Files.ContainsValue(t)
+                        )));
 
-                            foreach (var possibleMask in contained)
+
+                // Third Round Upgrade - This inspects as-of-yet unupgraded textures for possible jank-upgrades,
+                // Which is to say, upgrades where we can infer their usage and pairing, but the base mtrl was not included.
+                foreach (var p in data.DataPages)
+                {
+                    foreach (var g in p.Groups)
+                    {
+                        foreach (var o in g.Options)
+                        {
+                            if (o.StandardData != null)
                             {
-                                await EndwalkerUpgrade.UpdateEyeMask(possibleMask, "Unused", null, null, o.StandardData.Files);
+                                var contained = unusedTextures.Where(x => o.StandardData.Files.ContainsKey(x));
+                                await EndwalkerUpgrade.CheckImportForOldHairJank(contained.ToList(), "Unused", null, null, o.StandardData.Files);
+
+                                foreach (var possibleMask in contained)
+                                {
+                                    await EndwalkerUpgrade.UpdateEyeMask(possibleMask, "Unused", null, null, o.StandardData.Files);
+                                }
                             }
                         }
                     }
@@ -184,12 +188,12 @@ namespace FFXIV_TexTools.Helpers
             return data;
         }
 
-        public static async Task UpgradeModpack(string path, string newPath)
+        public static async Task UpgradeModpack(string path, string newPath, bool includePartials = true)
         {
 #if ENDWALKER
             return;
 #endif
-            var data = await UpgradeModpack(path);
+            var data = await UpgradeModpack(path, includePartials);
 
             await data.WriteModpack(newPath);
         }

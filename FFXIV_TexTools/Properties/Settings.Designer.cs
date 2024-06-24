@@ -538,5 +538,29 @@ namespace FFXIV_TexTools.Properties {
                 this["ModelingTool"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool FixPreDawntrailPartialOnImport {
+            get {
+                return ((bool)(this["FixPreDawntrailPartialOnImport"]));
+            }
+            set {
+                this["FixPreDawntrailPartialOnImport"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int MaxImageSize {
+            get {
+                return ((int)(this["MaxImageSize"]));
+            }
+            set {
+                this["MaxImageSize"] = value;
+            }
+        }
     }
 }

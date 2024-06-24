@@ -9,7 +9,24 @@
         mc:Ignorable="d"
         xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
         resx:Localization.Enabled="True"
-        Title="{Binding Source={x:Static resx:UIStrings.Settings}}" Height="694" Width="800" ShowMaxRestoreButton="False" ShowMinButton="False" WindowStartupLocation="CenterOwner">
+        Title="{Binding Source={x:Static resx:UIStrings.Settings}}"  Width="800" SizeToContent="Height" ShowMaxRestoreButton="False" ShowMinButton="False" WindowStartupLocation="CenterOwner">
+    <mah:MetroWindow.Resources>
+        <ToolTip x:Key="UpgradeDawntrailTooltip">Automatically update pre-Dawntrail Modpacks on Import."</ToolTip>
+        <ToolTip x:Key="UpgradeDawntrailPartialTooltip">Automatically upgrade Texture-only Hair and Eye mods contained in pre-Dawntrail Modpacks.</ToolTip>
+
+        <ToolTip x:Key="ImageSizeTooltip">
+            <TextBlock>
+                Images above this size will automatically be scaled down on import when importing image files (not Modpacks).
+            </TextBlock>
+        </ToolTip>
+
+
+        <ToolTip x:Key="ModelingToolTooltip">Affects the behavior of FBX file export.</ToolTip>
+        <ToolTip x:Key="CompleteSkeletonsTooltip">Include all available bones when exporting models, even if they are not currently used.</ToolTip>
+
+        <ToolTip x:Key="ShiftModelUvsTooltip">Shift exported Model UVs by V+1.</ToolTip>
+        <ToolTip x:Key="AutoAssignBodyTooltip">Automatically fix Bibo+/Gen3 body materials when they are on the wrong material ID.</ToolTip>
+    </mah:MetroWindow.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
@@ -79,32 +96,47 @@
                 <Grid>
 
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="175"></ColumnDefinition>
+                        <ColumnDefinition Width="200"></ColumnDefinition>
                     <ColumnDefinition></ColumnDefinition>
 
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="40"/>
                         <RowDefinition Height="40"/>
+                        <RowDefinition Height="4"/>
+                        <RowDefinition Height="40"/>
+                        <RowDefinition Height="4"/>
+                        <RowDefinition Height="40"/>
                         <RowDefinition Height="40"/>
                         <RowDefinition Height="40"/>
                         <RowDefinition Height="40"/>
                     </Grid.RowDefinitions>
-                    
-                    <Label Grid.Column="0" Grid.Row="0" Margin="5" Content="External Modeling Tool" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
-                    <ComboBox x:Name="Target3DProgramBox" Grid.Column="1" Grid.Row="0"  VerticalAlignment="Center" ItemsSource="{Binding Path=ModelingTools}" SelectedValue="{Binding Path=ModelingTool}" SelectedValuePath="Value" DisplayMemberPath="Key" Margin="5" />
 
-                    <Label Grid.Column="0" Grid.Row="1" Margin="5" Content="Export Complete Skeletons" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
-                    <CheckBox x:Name="ExportAllBonesBox"  Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" Margin="5" ToolTip="Export Models with the full mesh skeleton, even if the bones are not used."  IsChecked="{Binding ExportAllBones}"></CheckBox>
+                    <Label Grid.Column="0" Grid.Row="0" Margin="5" Content="Update Endwalker Modpacks" VerticalAlignment="Center" ToolTip="{StaticResource UpgradeDawntrailTooltip}" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
+                    <CheckBox x:Name="DawntrailFixBox"  Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" Margin="5" ToolTip="{StaticResource UpgradeDawntrailTooltip}"  IsChecked="{Binding AutoFixDawntrail}"></CheckBox>
 
-                    <Label Grid.Column="0" Grid.Row="2" Margin="5" Content="Shift Exported Model UVs" VerticalAlignment="Center" ToolTip="Shift exported Model UVs by V+1."  HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
-                    <CheckBox x:Name="UvShiftBox"  Grid.Column="1" Grid.Row="2" VerticalAlignment="Center" Margin="5" ToolTip="Shift exported Model UVs by V+1."  IsChecked="{Binding Path=ShiftExportUV}"></CheckBox>
+                    <Label Grid.Column="0" Grid.Row="1" Margin="5" Content="Update Partial Endwalker Files" VerticalAlignment="Center" ToolTip="{StaticResource UpgradeDawntrailPartialTooltip}"  HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
+                    <CheckBox Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" Margin="5" ToolTip="{StaticResource UpgradeDawntrailPartialTooltip}" IsChecked="{Binding UpdatePartialDawntrail}" IsEnabled="{Binding AutoFixDawntrail}"></CheckBox>
 
-                    <Label Grid.Column="0" Grid.Row="3" Margin="5" Content="Body Material Auto-Assign" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
-                    <CheckBox x:Name="AutoMatFixBox"  Grid.Column="1" Grid.Row="3" VerticalAlignment="Center" Margin="5" ToolTip="Automatically assign imported body models to the correct skin material."  IsChecked="{Binding AutoMaterialFix}"></CheckBox>
+                    <Separator Grid.Row="2" Grid.ColumnSpan="10" Margin="20,0"></Separator>
 
-                    <Label Grid.Column="0" Grid.Row="4" Margin="5" Content="Update Endwalker Modpacks" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
-                    <CheckBox x:Name="DawntrailFixBox"  Grid.Column="1" Grid.Row="4" VerticalAlignment="Center" Margin="5" ToolTip="Automatically update pre-Dawntrail Modpacks on Import."  IsChecked="{Binding AutoFixDawntrail}"></CheckBox>
+                    <Label Grid.Column="0" Grid.Row="3" Margin="5" Content="Maximum Imported Image Size" ToolTip="{StaticResource ImageSizeTooltip}" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
+                    <ComboBox Grid.Column="1" Grid.Row="3"  VerticalAlignment="Center" ToolTip="{StaticResource ImageSizeTooltip}" ItemsSource="{Binding Path=ImageSizes}" SelectedValue="{Binding Path=MaxImageSize}" SelectedValuePath="Value" DisplayMemberPath="Key" Margin="5,0" />
+
+
+                    <Separator Grid.Row="4" Grid.ColumnSpan="10" Margin="20,0"></Separator>
+
+                    <Label Grid.Column="0" Grid.Row="5" Margin="5" Content="External Modeling Tool" VerticalAlignment="Center" ToolTip="{StaticResource ModelingToolTooltip}" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
+                    <ComboBox x:Name="Target3DProgramBox" Grid.Column="1" Grid.Row="5"  VerticalAlignment="Center" ToolTip="{StaticResource ModelingToolTooltip}" ItemsSource="{Binding Path=ModelingTools}" SelectedValue="{Binding Path=ModelingTool}" SelectedValuePath="Value" DisplayMemberPath="Key" Margin="5,0" />
+
+                    <Label Grid.Column="0" Grid.Row="6" Margin="5" Content="Export Complete Skeletons" VerticalAlignment="Center" ToolTip="{StaticResource CompleteSkeletonsTooltip}" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
+                    <CheckBox x:Name="ExportAllBonesBox"  Grid.Column="1" Grid.Row="6" VerticalAlignment="Center" Margin="5,0" ToolTip="{StaticResource CompleteSkeletonsTooltip}" IsChecked="{Binding ExportAllBones}"></CheckBox>
+
+                    <Label Grid.Column="0" Grid.Row="7" Margin="5" Content="Shift Exported Model UVs" VerticalAlignment="Center" ToolTip="{StaticResource ShiftModelUvsTooltip}"  HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
+                    <CheckBox x:Name="UvShiftBox"  Grid.Column="1" Grid.Row="7" VerticalAlignment="Center" Margin="5,0"  ToolTip="{StaticResource ShiftModelUvsTooltip}"  IsChecked="{Binding Path=ShiftExportUV}"></CheckBox>
+
+                    <Label Grid.Column="0" Grid.Row="8" Margin="5" Content="Auto-Assign Body Materials" VerticalAlignment="Center" HorizontalContentAlignment="Right" ToolTip="{StaticResource AutoAssignBodyTooltip}"  VerticalContentAlignment="Center"></Label>
+                    <CheckBox x:Name="AutoMatFixBox"  Grid.Column="1" Grid.Row="8" VerticalAlignment="Center" Margin="5,0" ToolTip="{StaticResource AutoAssignBodyTooltip}" IsChecked="{Binding AutoMaterialFix}"></CheckBox>
 
                 </Grid>
             </GroupBox>
