@@ -135,7 +135,7 @@ namespace FFXIV_TexTools.Views.Controls
             {
                 if (Material == null)
                 {
-                    return EShaderPack.Invalid;
+                    return EShaderPack.Unknown;
                 }
 
                 return Material.ShaderPack;
@@ -433,7 +433,7 @@ namespace FFXIV_TexTools.Views.Controls
                 _LastShpk = ShaderPack;
                 return;
             }
-            if (_LastShpk == EShaderPack.Invalid || ShaderPack == EShaderPack.Invalid)
+            if (_LastShpk == EShaderPack.Unknown || ShaderPack == EShaderPack.Unknown)
             {
                 // Don't mess with anything if we were on a broken state before, or are transitioning to one.
                 _LastShpk = ShaderPack;
