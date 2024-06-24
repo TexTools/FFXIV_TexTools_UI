@@ -1630,6 +1630,10 @@ namespace FFXIV_TexTools
 
         private async void Menu_ItemConverter_Click(object sender, RoutedEventArgs e)
         {
+            if (!this.CheckFileWrite())
+            {
+                return;
+            }
 
             var wind = new ItemConverterWindow() { Owner = this };
             wind.WindowStartupLocation = WindowStartupLocation.CenterOwner;
