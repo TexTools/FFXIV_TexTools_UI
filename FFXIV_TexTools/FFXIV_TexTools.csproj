@@ -210,6 +210,9 @@ move $(TargetDir)*.dll $(TargetDir)lib</PostBuildEvent>
     <Compile Update="Views\ModPack\Simple\FileListExporter.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Views\Textures\ResizeImageWindow.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Views\Textures\EyeDiffuseCreator.xaml.cs">
       <SubType>Code</SubType>
     </Compile>

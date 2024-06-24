@@ -611,7 +611,7 @@ namespace FFXIV_TexTools.Views.Controls
             base.FreeManaged();
         }
 
-        private async void EditChannels_Click(object sender, RoutedEventArgs e)
+        private void EditChannels_Click(object sender, RoutedEventArgs e)
         {
             try
             {
@@ -747,5 +747,37 @@ namespace FFXIV_TexTools.Views.Controls
             return await SmartImport.CreateUncompressedFile(externalFile, internalFile, tx, options);
         }
 
+        private async void ResizeImage_Click(object sender, RoutedEventArgs e)
+        {
+            var tex = Texture;
+            if (PixelChanges)
+            {
+                tex = (XivTex)Texture.Clone();
+
+                await Tex.MergePixelData(tex, PixelData);
+            }
+
+            var res = ResizeImageWindow.ShowResizeWindow(this, tex);
+            if (res == null) 
+            {
+                return;
+            }
+
+            try
+            {
+                _Texture = res;
+                PixelData = await Texture.GetRawPixels();
+                UnsavedChanges = true;
+                PixelChanges = false;
+
+                UpdateDisplayImage();
+                CenterImage();
+            }
+            catch(Exception ex)
+            {
+                // Should never hit this, but safety.
+                Trace.WriteLine(ex);
+            }
+        }
     }
 }
