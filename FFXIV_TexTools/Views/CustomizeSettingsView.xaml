@@ -26,6 +26,29 @@
 
         <ToolTip x:Key="ShiftModelUvsTooltip">Shift exported Model UVs by V+1.</ToolTip>
         <ToolTip x:Key="AutoAssignBodyTooltip">Automatically fix Bibo+/Gen3 body materials when they are on the wrong material ID.</ToolTip>
+
+
+        <ToolTip x:Key="UnsafeModeTooltip">
+            <TextBlock>
+                Start TexTools in UNSAFE mode on launch.
+                <LineBreak/>This is typically preferable when using TexTools as a mod-loader.
+            </TextBlock>
+        </ToolTip>
+
+        <ToolTip x:Key="StartTxTooltip">
+            <TextBlock>
+                Start a blank transaction when TexTools loads.
+                <LineBreak/>This may be preferable for some mod authors.
+            </TextBlock>
+        </ToolTip>
+
+
+        <ToolTip x:Key="ModpackAuthorTooltip">Sets the default Author Name when creating modpacks.</ToolTip>
+        <ToolTip x:Key="ModpackUrlTooltip">Sets the default Author Url/Website when creating modpacks.</ToolTip>
+        <ToolTip x:Key="DefaultRaceTooltip">Sets the default race the UI will attempt to navigate to when selecting an item for the first time.</ToolTip>
+
+        <ToolTip x:Key="SkinRaceTooltip">Skin Race Tooltip.</ToolTip>
+
     </mah:MetroWindow.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
@@ -73,11 +96,11 @@
                         <RowDefinition Height="40"/>
                     </Grid.RowDefinitions>
 
-                    <Label Grid.Column="0" Grid.Row="0"  Margin="5" Content="Default Modack Author" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
-                    <TextBox x:Name="AuthorTextBox" Grid.Column="1" Grid.Row="0" Text="{Binding DefaultAuthor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="5" VerticalContentAlignment="Center"/>
+                    <Label Grid.Column="0" Grid.Row="0"  Margin="5" Content="Default Modack Author" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"  ToolTip="{StaticResource ModpackAuthorTooltip}"></Label>
+                    <TextBox x:Name="AuthorTextBox" Grid.Column="1" Grid.Row="0" Text="{Binding DefaultAuthor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="5" VerticalContentAlignment="Center"  ToolTip="{StaticResource ModpackAuthorTooltip}"/>
 
-                    <Label Grid.Column="0" Grid.Row="1"  Margin="5" Content="Default Modpack URL" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
-                    <TextBox x:Name="UrlTextBox" Grid.Column="1" Grid.Row="1" Margin="5" VerticalContentAlignment="Center">
+                    <Label Grid.Column="0" Grid.Row="1"  Margin="5" Content="Default Modpack URL" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"  ToolTip="{StaticResource ModpackUrlTooltip}"></Label>
+                    <TextBox x:Name="UrlTextBox" Grid.Column="1" Grid.Row="1" Margin="5" VerticalContentAlignment="Center"  ToolTip="{StaticResource ModpackUrlTooltip}">
                         <TextBox.Text>
                             <Binding  NotifyOnValidationError="True" UpdateSourceTrigger="PropertyChanged" Path="DefaultModpackUrl" Mode="TwoWay">
                                 <Binding.ValidationRules>
@@ -87,8 +110,8 @@
                         </TextBox.Text>
                     </TextBox>
 
-                    <Label Grid.Column="0" Grid.Row="2" Margin="5" Content="Default Race" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
-                    <ComboBox x:Name="DefaultRacesBox" Grid.Column="1" Grid.Row="2"  VerticalAlignment="Center" ItemsSource="{Binding DefaultRaces}" SelectedItem="{Binding SelectedDefaultRace}" Margin="5" ToolTip="Attempt to switch to this race's model if nothing was selected previously."/>
+                    <Label Grid.Column="0" Grid.Row="2" Margin="5" Content="Default Race" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"  ToolTip="{StaticResource DefaultRaceTooltip}"></Label>
+                    <ComboBox x:Name="DefaultRacesBox" Grid.Column="1" Grid.Row="2"  VerticalAlignment="Center" ItemsSource="{Binding DefaultRaces}" SelectedItem="{Binding SelectedDefaultRace}" Margin="5"  ToolTip="{StaticResource DefaultRaceTooltip}"/>
 
                 </Grid>
             </GroupBox>
@@ -216,11 +239,11 @@
                     <Label Grid.Column="0" Grid.Row="0" Margin="5" Content="TexTools Branch" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
                     <ComboBox x:Name="UpdateBranchBox" Grid.Column="1" Grid.Row="0"  VerticalAlignment="Center" ItemsSource="{Binding UpdateBranches}" SelectedItem="{Binding UpdateBranch}" Margin="5" />
 
-                    <Label Grid.Column="0" Grid.Row="1" Margin="5" Content="Open Transaction on Startup" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
-                    <CheckBox x:Name="OpenTxDefault"  Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" Margin="5" ToolTip="Start a default transaction when TexTools launches."  IsChecked="{Binding Path=OpenTxByDefault}"></CheckBox>
+                    <Label Grid.Column="0" Grid.Row="1" Margin="5" Content="Open Transaction on Startup" VerticalAlignment="Center" ToolTip="{StaticResource StartTxTooltip}"  HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
+                    <CheckBox x:Name="OpenTxDefault"  Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" Margin="5" ToolTip="{StaticResource StartTxTooltip}" IsChecked="{Binding Path=OpenTxByDefault}"></CheckBox>
 
-                    <Label Grid.Column="0" Grid.Row="2" Margin="5" Content="Default to UNSAFE Mode" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
-                    <CheckBox x:Name="UnsafeModeDefault"  Grid.Column="1" Grid.Row="2" VerticalAlignment="Center" Margin="5" ToolTip="Start TexTools in UNSAFE mode on launch."  IsChecked="{Binding Path=UnsafeMode}"></CheckBox>
+                    <Label Grid.Column="0" Grid.Row="2" Margin="5" Content="Default to UNSAFE Mode" VerticalAlignment="Center" ToolTip="{StaticResource UnsafeModeTooltip}" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
+                    <CheckBox x:Name="UnsafeModeDefault"  Grid.Column="1" Grid.Row="2" VerticalAlignment="Center" Margin="5" ToolTip="{StaticResource UnsafeModeTooltip}"  IsChecked="{Binding Path=UnsafeMode}"></CheckBox>
 
 
                 </Grid>
