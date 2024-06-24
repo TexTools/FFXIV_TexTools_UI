@@ -441,7 +441,7 @@ namespace FFXIV_TexTools.Views.Controls
                 var useSettings = XivRaceTree.IsChildOf(settingsRace, race);
                 if (useSettings)
                 {
-                    mtrl = Regex.Replace(mtrl, "c[0-9]{4}", "c" + raceString);
+                    mtrl = Regex.Replace(mtrl, "c[0-9]{4}", "c" + settingsRace.GetRaceCode());
                     mtrl = Regex.Replace(mtrl, "b[0-9]{4}", "b" + settingsBody);
                 }
                 else
