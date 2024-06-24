@@ -94,7 +94,7 @@ namespace FFXIV_TexTools.Views.Models
         }
         private void ClearVAlpha_Click(object sender, RoutedEventArgs e)
         {
-            ModelModifiers.ClearVAlpha(Part);
+            ModelModifiers.ClearVAlpha_Part(Part);
             SetNotice("Vertex Alpha Cleared");
         }
     }
