@@ -147,106 +147,16 @@ namespace FFXIV_TexTools.Views.Textures
             ConvertEnabled = false;
             try
             {
-                // The Ratio of Iris to Sclera is 92/100 in old textures, but is
-                // 1/2.55 roughly in the new.
-                // Multiplying these terms together results in a ratio of roughly .44
-                double ratio = 0.442;
-
-
+                // Load and conver the image.
                 var maskData = await Tex.GetPixelDataFromFile(MaskPath);
 
-                // In order to guarantee we're resizing up, not down, and are still a power-of-two, we have to 4x the
-                // dimensions of the original mask file, as a 2x would result in some amount of compression.
-                var w = maskData.Width * 4;
-                var h = maskData.Width * 4;
-
-                var irisW = (int)(w * ratio);
-                var irisH = (int)(h * ratio);
-
-                // Pull the base game eye files as our baseline.
-                var rTx = MainWindow.DefaultTransaction;
-                var baseDiffuseTex = await Tex.GetXivTex("chara/common/texture/eye/eye01_base.tex", true, rTx);
-                var frameTex = await Tex.GetXivTex("chara/common/texture/eye/eye01_mask.tex", true, rTx);
-
-                var diffuseData = await baseDiffuseTex.GetRawPixels();
-                var frameData = await frameTex.GetRawPixels();
-
-                // Convert mask to greyscale copy of just the red channel data.
-                await TextureHelpers.ExpandChannel(maskData.PixelData, 0, maskData.Width, maskData.Height);
-                var resizedMask = await TextureHelpers.ResizeImage(maskData.PixelData, maskData.Width, maskData.Height, irisW, irisH);
-
-                // Convert eye frame to just the actual framing information
-                await TextureHelpers.ExpandChannel(frameData, 2, frameTex.Width, frameTex.Height, true);
+                var result = await EndwalkerUpgrade.ConvertEyeMaskToDiffuse(maskData.PixelData, maskData.Width, maskData.Height);
 
 
-                // Resize and blur the frame slightly.
-                using (var frameImage = Image.LoadPixelData<Rgba32>(frameData, frameTex.Width, frameTex.Height))
+                using (var mainImage = Image.LoadPixelData<Rgba32>(result.PixelData, result.Width, result.Height))
                 {
-                    var resizeOptions = new ResizeOptions
-                    {
-                        Size = new SixLabors.ImageSharp.Size(w, h),
-                        PremultiplyAlpha = false,
-                        Mode = SixLabors.ImageSharp.Processing.ResizeMode.Stretch,
-                        Sampler = SixLabors.ImageSharp.Processing.KnownResamplers.NearestNeighbor,
-                    };
-                    frameImage.Mutate(x => x.Resize(resizeOptions));
-
-                    // Box-blur the mask just a hair to reduce the harshness at the edges.
-                    // This looks a little nicer than just bicubic upscaling the mask.
-                    frameImage.Mutate(x => x.BoxBlur(w/128));
-                    frameData = IOUtil.GetImageSharpPixels(frameImage);
-                    frameImage.SaveAsTga("E:\\img.tga", Encoder);
+                    mainImage.SaveAsTga(outPath, Encoder);
                 }
-
-                var maskPixels = new byte[w * h * 4];
-
-                // Draw the mask onto a new blank canvas and get the byte data back.
-                using (var blankImage = Image.LoadPixelData<Rgba32>(maskPixels, w, h))
-                {
-                    using (var maskImage = Image.LoadPixelData<Rgba32>(resizedMask, irisW, irisH))
-                    {
-                        var pt = new Point((w / 2) - (irisW / 2), (h / 2) - (irisH / 2));
-                        blankImage.Mutate(x => x.DrawImage(maskImage, pt, 1.0f));
-
-                        maskPixels = IOUtil.GetImageSharpPixels(blankImage);
-
-                    }
-                }
-
-
-                // Use the frame to mask the mask.
-                await TextureHelpers.MaskImage(maskPixels, frameData, w, h);
-
-                // And finally, resize the diffuse and draw the masked image back in.
-                using (var mainImage = Image.LoadPixelData<Rgba32>(diffuseData, baseDiffuseTex.Width, baseDiffuseTex.Height))
-                {
-                    using (var maskImage = Image.LoadPixelData<Rgba32>(maskPixels, w, h))
-                    {
-                        maskImage.SaveAsTga("E:\\img2.tga", Encoder);
-                        var resizeOptions = new ResizeOptions
-                        {
-                            Size = new SixLabors.ImageSharp.Size(w, h),
-                            PremultiplyAlpha = false,
-                            Mode = SixLabors.ImageSharp.Processing.ResizeMode.Stretch,
-                            Sampler = SixLabors.ImageSharp.Processing.KnownResamplers.Bicubic,
-                        };
-                        mainImage.Mutate(x => x.Resize(resizeOptions));
-
-                        var ops = new GraphicsOptions()
-                        {
-                            AlphaCompositionMode = PixelAlphaCompositionMode.SrcAtop,
-                        };
-                        mainImage.Mutate(x => x.DrawImage(maskImage, ops));
-
-                        mainImage.SaveAsTga(outPath, Encoder);
-                    }
-                }
-                //var baseDiffuseData = 
-
-                /*
-                //await TextureHelpers.CreateIndexTexture(data.PixelData, indexData, data.Width, data.Height);
-
-                */
 
             }
             catch (Exception ex)

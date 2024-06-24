@@ -42,7 +42,7 @@ namespace FFXIV_TexTools.Views.Controls
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TexturePath)));
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DetokenizedPath)));
                     _UPDATING_TEX_PATH = false;
-                }
+                };
             }
         }
         public string DetokenizedPath

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using xivModdingFramework.Helpers;
 using System.Windows.Forms;
 using System.IO;
+using System.Diagnostics;
 
 namespace FFXIV_TexTools.Helpers
 {
@@ -170,6 +171,11 @@ namespace FFXIV_TexTools.Helpers
                         {
                             var contained = unusedTextures.Where(x => o.StandardData.Files.ContainsKey(x));
                             await EndwalkerUpgrade.CheckImportForOldHairJank(contained.ToList(), "Unused", null, null, o.StandardData.Files);
+
+                            foreach (var possibleMask in contained)
+                            {
+                                await EndwalkerUpgrade.UpdateEyeMask(possibleMask, "Unused", null, null, o.StandardData.Files);
+                            }
                         }
                     }
                 }
