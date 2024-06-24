@@ -359,77 +359,83 @@ namespace FFXIV_TexTools.ViewModels
                     }
                 }
 
-                var pc = await _fullModelView.ShowProgressAsync(UIStrings.ModelStatus_Loading, UIMessages.PleaseStandByMessage);
-                // Sets the skeleton to the same as the race of the first model added
-                if (ViewportVM.Models.Count < 1)
+                await _fullModelView.LockUi(UIStrings.ModelStatus_Loading, UIMessages.PleaseStandByMessage);
+                try
                 {
-                    _isFirstModel = true;
-                    if (_charaRaceAndSkinDictionary == null)
+                    // Sets the skeleton to the same as the race of the first model added
+                    if (ViewportVM.Models.Count < 1)
                     {
-                        await GetCharaSkinDictionary();
-                    }
-                    Skins.Clear();
+                        _isFirstModel = true;
+                        if (_charaRaceAndSkinDictionary == null)
+                        {
+                            await GetCharaSkinDictionary();
+                        }
+                        Skins.Clear();
 
-                    foreach (var skinNum in _charaRaceAndSkinDictionary[SelectedSkeleton.XivRace.GetSkinRace()])
+                        foreach (var skinNum in _charaRaceAndSkinDictionary[SelectedSkeleton.XivRace.GetSkinRace()])
+                        {
+                            Skins.Add(skinNum);
+                        }
+
+                        SelectedSkinIndex = 0;
+                    }
+
+                    // Show the face combo box if a face with different textures is added
+                    if (item.SecondaryCategory.Equals(XivStrings.Face) && (SelectedSkeleton.XivRace == XivRace.AuRa_Female || SelectedSkeleton.XivRace == XivRace.AuRa_Male ||
+                        SelectedSkeleton.XivRace == XivRace.Viera_Female || SelectedSkeleton.XivRace == XivRace.Viera_Male || SelectedSkeleton.XivRace == XivRace.Hrothgar_Male))
                     {
-                        Skins.Add(skinNum);
+                        Faces.Clear();
+                        FaceComboboxVisibility = Visibility.Visible;
+                        FaceComboboxEnabled = true;
+                        FillFaceComboBox(SelectedSkeleton.XivRace);
+                        SelectedFaceIndex = 0;
                     }
 
-                    SelectedSkinIndex = 0;
-                }
+                    await UpdateSkin(ttModel, _materialDictionary, item);
 
-                // Show the face combo box if a face with different textures is added
-                if (item.SecondaryCategory.Equals(XivStrings.Face) && (SelectedSkeleton.XivRace == XivRace.AuRa_Female || SelectedSkeleton.XivRace == XivRace.AuRa_Male ||
-                    SelectedSkeleton.XivRace == XivRace.Viera_Female || SelectedSkeleton.XivRace == XivRace.Viera_Male || SelectedSkeleton.XivRace == XivRace.Hrothgar_Male))
-                {
-                    Faces.Clear();
-                    FaceComboboxVisibility = Visibility.Visible;
-                    FaceComboboxEnabled = true;
-                    FillFaceComboBox(SelectedSkeleton.XivRace);
-                    SelectedFaceIndex = 0;
-                }
+                    var path = ttModel.Source;
+                    var slot = ViewHelpers.GetModelSlot(path);
 
-                await UpdateSkin(ttModel, _materialDictionary, item);
+                    // Add the item type to the model list
+                    var itemDisplay = $"{item.Name} ({slot})";
 
-                var path = ttModel.Source;
-                var slot = ViewHelpers.GetModelSlot(path);
-
-                // Add the item type to the model list
-                var itemDisplay = $"{item.Name} ({slot})";
-
-                var replaceTarget = new KeyValuePair<string, string>(null, null);
-                foreach(var kv in ModelList)
-                {
-                    var vSlot = ViewHelpers.GetModelSlot(kv.Value);
-                    if(vSlot == slot)
+                    var replaceTarget = new KeyValuePair<string, string>(null, null);
+                    foreach (var kv in ModelList)
                     {
-                        replaceTarget = kv;
-                        break;
+                        var vSlot = ViewHelpers.GetModelSlot(kv.Value);
+                        if (vSlot == slot)
+                        {
+                            replaceTarget = kv;
+                            break;
+                        }
                     }
-                }
 
-                if(replaceTarget.Key != null)
+                    if (replaceTarget.Key != null)
+                    {
+                        ModelList.Remove(replaceTarget);
+                    }
+                    var newItem = new KeyValuePair<string, string>(itemDisplay, path);
+                    ModelList.Add(newItem);
+                    SelectedModelIndex = ModelList.IndexOf(newItem);
+
+                    // Disable changes while model and viewport update
+                    SkeletonComboboxEnabled = false;
+                    SkinComboboxEnabled = false;
+
+                    await ViewportVM.UpdateModel(ttModel, _materialDictionary, item, modelRace, SelectedSkeleton.XivRace);
+                    SkeletonComboboxEnabled = true;
+                    SkinComboboxEnabled = true;
+
+                    ExportEnabled = true;
+                    RemoveEnabled = true;
+                    _isFirstModel = false;
+                    _fullModelView.viewport3DX.ZoomExtents();
+
+                }
+                finally
                 {
-                    ModelList.Remove(replaceTarget);
+                    await _fullModelView.UnlockUi();
                 }
-                var newItem = new KeyValuePair<string, string>(itemDisplay, path);
-                ModelList.Add(newItem);
-                SelectedModelIndex = ModelList.IndexOf(newItem);
-
-                // Disable changes while model and viewport update
-                SkeletonComboboxEnabled = false;
-                SkinComboboxEnabled = false;
-
-                await ViewportVM.UpdateModel(ttModel, _materialDictionary, item, modelRace, SelectedSkeleton.XivRace);
-                SkeletonComboboxEnabled = true;
-                SkinComboboxEnabled = true;
-
-                ExportEnabled = true;
-                RemoveEnabled = true;
-                _isFirstModel = false;
-                _fullModelView.viewport3DX.ZoomExtents();
-
-                await pc.CloseAsync();
             }
             finally
             {
@@ -552,37 +558,42 @@ namespace FFXIV_TexTools.ViewModels
             // Update only if races are different and it is not the first model being added
             if (_previousRace != selectedSkeleton && !_isFirstModel)
             {
-                var pc = await _fullModelView.ShowProgressAsync(UIMessages.UpdatingSkeletonTitle, UIMessages.PleaseStandByMessage);
+                await _fullModelView.LockUi(UIMessages.UpdatingSkeletonTitle, UIMessages.PleaseStandByMessage);
 
-                Skins.Clear();
-
-                if (_charaRaceAndSkinDictionary != null)
+                try
                 {
-                    foreach (var skinNum in _charaRaceAndSkinDictionary[selectedSkeleton.GetSkinRace()])
+
+                    Skins.Clear();
+
+                    if (_charaRaceAndSkinDictionary != null)
                     {
-                        Skins.Add(skinNum);
+                        foreach (var skinNum in _charaRaceAndSkinDictionary[selectedSkeleton.GetSkinRace()])
+                        {
+                            Skins.Add(skinNum);
+                        }
                     }
-                }
 
-                // Disable changes while model and viewport update
-                SkeletonComboboxEnabled = false;
-                SkinComboboxEnabled = false;
-                RemoveEnabled = false;
-                ExportEnabled = false;
+                    // Disable changes while model and viewport update
+                    SkeletonComboboxEnabled = false;
+                    SkinComboboxEnabled = false;
+                    RemoveEnabled = false;
+                    ExportEnabled = false;
 
-                if (!_isFirstModel)
+                    if (!_isFirstModel)
+                    {
+                        ViewportVM.UpdateSkeleton(_previousRace, selectedSkeleton);
+                    }
+
+                    SkeletonComboboxEnabled = true;
+                    SkinComboboxEnabled = true;
+                    RemoveEnabled = true;
+                    ExportEnabled = true;
+
+                    SelectedSkinIndex = 0;
+                } finally
                 {
-                    ViewportVM.UpdateSkeleton(_previousRace, selectedSkeleton);
+                    await _fullModelView.UnlockUi();
                 }
-
-                SkeletonComboboxEnabled = true;
-                SkinComboboxEnabled = true;
-                RemoveEnabled = true;
-                ExportEnabled = true;
-
-                await pc.CloseAsync();
-
-                SelectedSkinIndex = 0;
             }
         }
 
@@ -618,29 +629,34 @@ namespace FFXIV_TexTools.ViewModels
 
             if (ViewportVM.shownModels.Any())
             {
-                var pc = await _fullModelView.ShowProgressAsync(UIMessages.UpdatingSkinTitle, UIMessages.PleaseStandByMessage);
-
-                foreach (var shownModel in ViewportVM.shownModels.Values)
+                await _fullModelView.LockUi(UIMessages.UpdatingSkinTitle, UIMessages.PleaseStandByMessage);
+                try
                 {
-                    var originalBodyIndex = GetBodyTextureIndex(shownModel.TtModel);
-
-                    if (originalBodyIndex != -1)
+                    var models = ViewportVM.shownModels.Values.ToList();
+                    foreach (var shownModel in models)
                     {
-                        var bodyReplacement = $"b{SelectedSkin.ToString().PadLeft(4, '0')}";
-                        ModelModifiers.FixUpSkinReferences(shownModel.TtModel, SelectedSkeleton.XivRace, null, bodyReplacement);
-                        await UpdateBodyTextures(shownModel.TtModel, shownModel.ItemModel, shownModel.ModelTextureData);
+                        var originalBodyIndex = GetBodyTextureIndex(shownModel.TtModel);
+
+                        if (originalBodyIndex != -1)
+                        {
+                            var bodyReplacement = $"b{SelectedSkin.ToString().PadLeft(4, '0')}";
+                            ModelModifiers.FixUpSkinReferences(shownModel.TtModel, SelectedSkeleton.XivRace, null, bodyReplacement);
+                            await UpdateBodyTextures(shownModel.TtModel, shownModel.ItemModel, shownModel.ModelTextureData);
+                        }
+
+                        // Change the tail texture for Au Ra
+                        if (shownModel.ItemModel.Name.Equals(XivStrings.Tail) && (SelectedSkeleton.XivRace == XivRace.AuRa_Female || SelectedSkeleton.XivRace == XivRace.AuRa_Male))
+                        {
+                            await UpdateTailTextures(shownModel.TtModel, shownModel.ModelTextureData);
+                        }
                     }
 
-                    // Change the tail texture for Au Ra
-                    if (shownModel.ItemModel.Name.Equals(XivStrings.Tail) && (SelectedSkeleton.XivRace == XivRace.AuRa_Female || SelectedSkeleton.XivRace == XivRace.AuRa_Male))
-                    {
-                        await UpdateTailTextures(shownModel.TtModel, shownModel.ModelTextureData);
-                    }
+                    ViewportVM.UpdateSkin(SelectedSkeleton.XivRace);
                 }
-
-                ViewportVM.UpdateSkin(SelectedSkeleton.XivRace);
-
-                await pc.CloseAsync();
+                finally
+                {
+                    await _fullModelView.UnlockUi();
+                }
             }
         }
 
@@ -853,79 +869,76 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         private async Task UpdateFaceTextures()
         {
-            ProgressDialogController pc = null;
-            if (!_fullModelView.IsAnyDialogOpen)
+            await _fullModelView.LockUi(UIMessages.UpdatingFaceTitle, UIMessages.PleaseStandByMessage);
+            try
             {
-                pc = await _fullModelView.ShowProgressAsync(UIMessages.UpdatingFaceTitle, UIMessages.PleaseStandByMessage);
-            }
+                TTModel ttModel = null;
+                Dictionary<int, ModelTextureData> materialDictionary = null;
 
-            TTModel ttModel = null;
-            Dictionary<int, ModelTextureData> materialDictionary = null;
-
-            foreach (var shownModel in ViewportVM.shownModels.Values)
-            {
-                if (shownModel.ItemModel.SecondaryCategory.Equals(XivStrings.Face))
+                foreach (var shownModel in ViewportVM.shownModels.Values)
                 {
-                    ttModel = shownModel.TtModel;
-                    materialDictionary = shownModel.ModelTextureData;
-                }
-            }
-
-            if (ttModel != null)
-            {
-
-                var faceRegex = new Regex("(f[0-9]{4})");
-                var facePartRegex = new Regex("(_[a-z]{3}_)");
-                var origFaceNum = faceRegex.Match(ttModel.Source).Value;
-                var newFaceNum = origFaceNum;
-
-                // Second clan face add 100
-                if (SelectedFaceIndex == 1)
-                {
-                    newFaceNum = $"f{(int.Parse(origFaceNum.Substring(1)) + 100).ToString().PadLeft(4, '0')}";
-                }
-
-                var currFaceNum = GetFaceNum(ttModel);
-
-                var tempMdlPath = ttModel.Source.Replace(origFaceNum, newFaceNum);
-
-                if (!currFaceNum.Equals(newFaceNum))
-                {
-                    foreach (var meshGroup in ttModel.MeshGroups)
+                    if (shownModel.ItemModel.SecondaryCategory.Equals(XivStrings.Face))
                     {
-                        meshGroup.Material = meshGroup.Material.Replace(currFaceNum, newFaceNum);
+                        ttModel = shownModel.TtModel;
+                        materialDictionary = shownModel.ModelTextureData;
                     }
                 }
 
-                foreach (var material in ttModel.Materials)
+                if (ttModel != null)
                 {
-                    var matPart = facePartRegex.Match(material).Value;
 
-                    var matLoc = from m in materialDictionary where m.Value.MaterialPath.Contains(matPart) select m;
+                    var faceRegex = new Regex("(f[0-9]{4})");
+                    var facePartRegex = new Regex("(_[a-z]{3}_)");
+                    var origFaceNum = faceRegex.Match(ttModel.Source).Value;
+                    var newFaceNum = origFaceNum;
 
-                    try
+                    // Second clan face add 100
+                    if (SelectedFaceIndex == 1)
                     {
-                        var mtrlPath = Mtrl.GetMtrlPath(tempMdlPath, material);
-                        var mtrl = await Mtrl.GetXivMtrl(mtrlPath);
-                        var colors = ModelTexture.GetCustomColors();
-                        colors.InvertNormalGreen = false;
-                        var modelMaps = await ModelTexture.GetModelMaps(mtrl, false, colors, -1, MainWindow.UserTransaction);
+                        newFaceNum = $"f{(int.Parse(origFaceNum.Substring(1)) + 100).ToString().PadLeft(4, '0')}";
+                    }
 
-                        materialDictionary[matLoc.First().Key] = modelMaps;
-                    }
-                    catch
+                    var currFaceNum = GetFaceNum(ttModel);
+
+                    var tempMdlPath = ttModel.Source.Replace(origFaceNum, newFaceNum);
+
+                    if (!currFaceNum.Equals(newFaceNum))
                     {
-                        // Material was not present in new material path
-                        // eg. Viera f0101 only has _etc_ and _iri_ in materials, it retains _fac_ from the original f0001
+                        foreach (var meshGroup in ttModel.MeshGroups)
+                        {
+                            meshGroup.Material = meshGroup.Material.Replace(currFaceNum, newFaceNum);
+                        }
                     }
+
+                    foreach (var material in ttModel.Materials)
+                    {
+                        var matPart = facePartRegex.Match(material).Value;
+
+                        var matLoc = from m in materialDictionary where m.Value.MaterialPath.Contains(matPart) select m;
+
+                        try
+                        {
+                            var mtrlPath = Mtrl.GetMtrlPath(tempMdlPath, material);
+                            var mtrl = await Mtrl.GetXivMtrl(mtrlPath);
+                            var colors = ModelTexture.GetCustomColors();
+                            colors.InvertNormalGreen = false;
+                            var modelMaps = await ModelTexture.GetModelMaps(mtrl, false, colors, -1, MainWindow.UserTransaction);
+
+                            materialDictionary[matLoc.First().Key] = modelMaps;
+                        }
+                        catch
+                        {
+                            // Material was not present in new material path
+                            // eg. Viera f0101 only has _etc_ and _iri_ in materials, it retains _fac_ from the original f0001
+                        }
+                    }
+
+                    ViewportVM.UpdateSkin(SelectedSkeleton.XivRace);
                 }
-
-                ViewportVM.UpdateSkin(SelectedSkeleton.XivRace);
             }
-
-            if (pc != null)
+            finally
             {
-                await pc.CloseAsync();
+                await _fullModelView.UnlockUi();
             }
         }
 

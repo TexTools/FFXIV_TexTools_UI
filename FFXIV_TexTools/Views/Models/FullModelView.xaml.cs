@@ -34,6 +34,7 @@ using xivModdingFramework.Models.FileTypes;
 using xivModdingFramework.Variants.FileTypes;
 using FFXIV_TexTools.Views.Controls;
 using xivModdingFramework.Models.Helpers;
+using System.Threading;
 
 namespace FFXIV_TexTools.Views.Models
 {
@@ -42,9 +43,72 @@ namespace FFXIV_TexTools.Views.Models
     /// </summary>
     public partial class FullModelView
     {
-        private readonly DirectoryInfo _gameDirectory;
         private readonly FullModelViewModel _fmvm;
         private static FullModelView Instance;
+
+        private int _LockCount = 0;
+        private SemaphoreSlim _lockScreenSemaphore = new SemaphoreSlim(1);
+        private ProgressDialogController _lockProgressController;
+
+        public async Task LockUi(string title = null, string msg = null)
+        {
+            await _lockScreenSemaphore.WaitAsync();
+            try
+            {
+                _LockCount++;
+                if(_lockProgressController != null)
+                {
+                    return;
+                }
+
+                if (title == null)
+                {
+                    title = UIStrings.Loading;
+                }
+
+                if (msg == null)
+                {
+                    msg = UIStrings.Please_Wait;
+                }
+
+                _lockProgressController = await this.ShowProgressAsync(title, msg);
+            }
+            finally
+            {
+                _lockScreenSemaphore.Release();
+            }
+        }
+
+        public async Task UnlockUi()
+        {
+            await _lockScreenSemaphore.WaitAsync();
+            try
+            {
+                _LockCount--;
+                if (_LockCount < 0)
+                {
+                    _LockCount = 0;
+                }
+
+                if (_LockCount > 0)
+                {
+                    return;
+                }
+
+                if (_lockProgressController == null)
+                {
+                    return;
+                }
+
+                await _lockProgressController.CloseAsync();
+                _lockProgressController = null;
+            }
+            finally
+            {
+                _lockScreenSemaphore.Release();
+            }
+        }
+
 
 
         public static void ShowFmv()
@@ -89,7 +153,6 @@ namespace FFXIV_TexTools.Views.Models
             if (Configuration.EnvironmentConfiguration.TT_Unshared_Rendering)
                 canvasRenderer = new Helpers.ViewportCanvasRenderer(viewport3DX, AlternateViewportCanvas);
 
-            _gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
             _fmvm = new FullModelViewModel(this);
 
             this.DataContext = _fmvm;
