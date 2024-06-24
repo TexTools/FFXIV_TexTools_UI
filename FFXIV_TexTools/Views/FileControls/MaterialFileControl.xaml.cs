@@ -170,7 +170,7 @@ namespace FFXIV_TexTools.Views.Controls
             foreach (EShaderPack v in values)
             {
                 var kv = new KeyValuePair<string, EShaderPack>(
-                    ShaderHelpers.GetEnumDescription(v),
+                    v.ToString(),
                     v
                 );
 
