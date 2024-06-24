@@ -121,7 +121,7 @@ namespace FFXIV_TexTools.ViewModels
                 // update the skeleton to the new selected skeleton
                 if (value != null)
                 {
-                    UpdateSkeleton(value.XivRace);
+                    _ = UpdateSkeleton(value.XivRace);
                 }
             }
         }
@@ -176,7 +176,7 @@ namespace FFXIV_TexTools.ViewModels
                 _selectedSkin = value;
                 NotifyPropertyChanged(nameof(SelectedSkin));
 
-                UpdateAllSkin();
+                _ = UpdateAllSkin();
             }
         }
 
@@ -229,7 +229,7 @@ namespace FFXIV_TexTools.ViewModels
                 _selectedFace = value;
                 NotifyPropertyChanged(nameof(SelectedFace));
 
-                UpdateFaceTextures();
+                _ = UpdateFaceTextures();
             }
         }
 
