@@ -116,7 +116,7 @@
                     <CheckBox x:Name="DawntrailFixBox"  Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" Margin="5" ToolTip="{StaticResource UpgradeDawntrailTooltip}"  IsChecked="{Binding AutoFixDawntrail}"></CheckBox>
 
                     <Label Grid.Column="0" Grid.Row="1" Margin="5" Content="Update Partial Endwalker Files" VerticalAlignment="Center" ToolTip="{StaticResource UpgradeDawntrailPartialTooltip}"  HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
-                    <CheckBox Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" Margin="5" ToolTip="{StaticResource UpgradeDawntrailPartialTooltip}" IsChecked="{Binding UpdatePartialDawntrail}" IsEnabled="{Binding AutoFixDawntrail}"></CheckBox>
+                    <CheckBox Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" Margin="5" ToolTip="{StaticResource UpgradeDawntrailPartialTooltip}" IsChecked="{Binding AutoFixPartialDawntrail}" IsEnabled="{Binding AutoFixDawntrail}"></CheckBox>
 
                     <Separator Grid.Row="2" Grid.ColumnSpan="10" Margin="20,0"></Separator>
 
