@@ -58,7 +58,14 @@ namespace FFXIV_TexTools
 
             if (FlexibleMessageBox.Show(errorText, "Crash Report " + ver, MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.Yes)
             {
-                Clipboard.SetText(e.Exception.ToString());
+                if (MainWindow != null)
+                {
+                    // STA error here if this wasn't from main thread, so need to dispatch.
+                    MainWindow.Dispatcher.Invoke(() =>
+                    {
+                        Clipboard.SetText(e.Exception.ToString());
+                    });
+                }
             }
         }
 
