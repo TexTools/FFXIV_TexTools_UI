@@ -155,6 +155,11 @@ namespace FFXIV_TexTools
                 value.TransactionStateChanged += OnUserTxChanged;
                 value.TransactionSettingsChanged += OnUserTxSettingsChanged;
                 value.FileChanged += OnUserTxFileChanged;
+
+                foreach(var f in value.ModifiedFiles)
+                {
+                    TxWatcher.INTERNAL_TxFileChanged(f);
+                }
             }
         }
 

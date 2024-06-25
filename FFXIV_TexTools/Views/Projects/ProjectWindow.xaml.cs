@@ -841,9 +841,12 @@ namespace FFXIV_TexTools.Views.Projects
         {
             var op = (SmartImportOptions) modelOptions.Clone();
 
-            op.ModelOptions.IntermediaryFunction = null;
-            op.ModelOptions.LoggingFunction = null;
-            op.ModelOptions.ReferenceItem = null;
+            if (op.ModelOptions != null)
+            {
+                op.ModelOptions.IntermediaryFunction = null;
+                op.ModelOptions.LoggingFunction = null;
+                op.ModelOptions.ReferenceItem = null;
+            }
             return op;
         }
 
