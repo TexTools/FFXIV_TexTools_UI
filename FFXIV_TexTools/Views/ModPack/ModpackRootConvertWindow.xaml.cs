@@ -372,14 +372,15 @@ namespace FFXIV_TexTools.Views
             Results[root] = (selectedRoot, Results[root].Variant);
         }
 
-    private static bool ValidationFunction(IItem item, XivDependencyRoot root) {
+        private static bool ValidationFunction(IItem item, XivDependencyRoot root) {
             // Item Select Acceptance
             if (item == null) return false;
+            if (root == null) return false;
 
             var itemRoot = item.GetRoot();
             if (itemRoot == null) return false;
 
-            if(itemRoot.Info.PrimaryType == XivItemType.equipment || itemRoot.Info.PrimaryType == XivItemType.accessory)
+            if(root.Info.PrimaryType == XivItemType.equipment || root.Info.PrimaryType == XivItemType.accessory)
             {
                 if(itemRoot.Info.PrimaryType == XivItemType.accessory)
                 {
@@ -392,18 +393,11 @@ namespace FFXIV_TexTools.Views
                 itemRoot.Info.SecondaryType == root.Info.SecondaryType &&
                 itemRoot.Info.Slot == root.Info.Slot)
             {
-
-                if(itemRoot.Info.PrimaryType == XivItemType.human && 
-                itemRoot.Info.PrimaryId != root.Info.PrimaryId)
-                {
-                    return false;
-                }
-
                 return true;
             }
 
             return false;
-            }
+        }
 
 
 

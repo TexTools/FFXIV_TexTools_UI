@@ -169,7 +169,6 @@ namespace FFXIV_TexTools.Views.ItemConverter
             if (root.PrimaryType == XivItemType.human)
             {
                 if (root.SecondaryType == XivItemType.body) return false;
-                if (root.SecondaryType == XivItemType.face) return false;
             }
 
             return true;
@@ -194,10 +193,6 @@ namespace FFXIV_TexTools.Views.ItemConverter
             if (root.SecondaryType != src.SecondaryType) return false;
             if (root.Slot != src.Slot) return false;
 
-            if(root.PrimaryType == XivItemType.human)
-            {
-                //if (root.PrimaryId != src.PrimaryId) return false;
-            }
 
             return true;
         }
