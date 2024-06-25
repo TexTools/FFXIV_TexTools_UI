@@ -211,6 +211,7 @@ namespace FFXIV_TexTools.Views.Simple
                 return;
             }
 
+            var success = false;
             _progressController = await this.ShowProgressAsync(UIMessages.ModPackImportTitle, UIMessages.PleaseStandByMessage);
             try
             {
@@ -250,9 +251,7 @@ namespace FFXIV_TexTools.Views.Simple
                         settings.ProgressReporter?.Report((0, 0, "Compressing Files and Committing Transaction..."));
                     }
                     await boiler.Commit();
-
-                    await _progressController.CloseAsync();
-                    Close();
+                    success = true;
                 }
                 catch (Exception ex)
                 {
@@ -262,8 +261,15 @@ namespace FFXIV_TexTools.Views.Simple
             } catch(Exception ex)
             {
                 ViewHelpers.ShowError("File Import Error", "The import has been cancelled due to an error:\n\n" + ex.Message);
-                await _progressController.CloseAsync();
                 return;
+            }
+            finally
+            {
+                await _progressController.CloseAsync();
+                if (success)
+                {
+                    Close();
+                }
             }
 
 
