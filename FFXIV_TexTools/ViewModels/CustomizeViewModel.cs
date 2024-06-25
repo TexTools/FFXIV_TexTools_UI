@@ -649,8 +649,8 @@ namespace FFXIV_TexTools.ViewModels
                 path = OnboardingWindow.ResolveFFXIVFolder(ofd.SelectedFolder);
             }
 
-            FFXIV_Directory = path;
             Settings.Default.FFXIV_Directory = path;
+            FFXIV_Directory = path;
             Settings.Default.Save();
 
             Helpers.FlexibleMessageBox.Show("TexTools will now restart.".L());
