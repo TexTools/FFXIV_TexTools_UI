@@ -637,13 +637,6 @@ namespace FFXIV_TexTools.Views.Projects
             // Unbind events while we're loading files to be safe.
             // We'll commit the transaction after.
             DetatchEvents();
-            bool reloadPenumbra = false;
-            if (PenumbraAttachHandler.IsAttached)
-            {
-                reloadPenumbra = true;
-                PenumbraAttachHandler.Pause();
-            }
-
             try
             {
                 foreach(var kv in toLoad)
@@ -661,16 +654,16 @@ namespace FFXIV_TexTools.Views.Projects
                         ErrorTarget.ShowError("File Import Error", "An error occurred while importing a project file:\n\n" + kv.Value + "\n" + kv.Key + "\n\n" + ex.Message);
                     }
                 }
-                await SaveModpack();
+
+                if (!PenumbraAttachHandler.IsAttached)
+                {
+                    await SaveModpack();
+                }
                 SaveProject();
             }
             finally
             {
                 AttachEvents();
-                if (reloadPenumbra)
-                {
-                    PenumbraAttachHandler.Resume();
-                }
                 StaticUpdateFileList();
             }
         }
@@ -801,8 +794,13 @@ namespace FFXIV_TexTools.Views.Projects
 
 
             if (Project.Files.ContainsKey(internalFile))
-            {
-                Project.Files[internalFile] = externalFile;
+            { 
+                if (externalFile == "")
+                {
+                    externalFile = Project.Files[internalFile];
+                } else {
+                    Project.Files[internalFile] = externalFile;
+                }
             }
             else
             {
