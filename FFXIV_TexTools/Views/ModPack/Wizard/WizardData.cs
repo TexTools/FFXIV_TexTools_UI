@@ -484,7 +484,7 @@ namespace FFXIV_TexTools.Views.Wizard
                 foreach(var rgsp in manips.Rgsps)
                 {
                     // Need to convert these and add them to the file array.
-                    var data = rgsp.GetBytes();
+                    var data = await SmartImport.CreateCompressedFile(rgsp.GetBytes(), true);
                     var path = CMP.GetRgspPath(rgsp);
                     var item = CMP.GetDummyItem(rgsp);
 
@@ -1288,6 +1288,7 @@ namespace FFXIV_TexTools.Views.Wizard
                 // We need to compose a list of all the file storage information we're going to use.
                 // Grouped by option folder.
                 var allFiles = new Dictionary<string, Dictionary<string, FileStorageInformation>>();
+                var pIdx = 1;
                 foreach(var p in DataPages)
                 {
                     foreach (var g in p.Groups)
@@ -1306,7 +1307,13 @@ namespace FFXIV_TexTools.Views.Wizard
                                 throw new InvalidDataException("PMP Files must have valid group and option names.");
                             }
 
-                            var optionPrefix = IOUtil.MakePathSafe(g.Name) + "/" + IOUtil.MakePathSafe(o.Name) + "/";
+                            var pagePrefix = "";
+                            if(DataPages.Count > 1)
+                            {
+                                pagePrefix = "p" + pIdx + "/";
+                            }
+
+                            var optionPrefix = pagePrefix + IOUtil.MakePathSafe(g.Name) + "/" + IOUtil.MakePathSafe(o.Name) + "/";
 
                             if(optionCount == 1)
                             {
@@ -1316,6 +1323,7 @@ namespace FFXIV_TexTools.Views.Wizard
                             allFiles.Add(optionPrefix, files);
                         }
                     }
+                    pIdx++;
                 }
 
                 // These are de-duplicated internal write paths for the final PMP folder structure, coupled with
