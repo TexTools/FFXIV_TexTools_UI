@@ -298,8 +298,8 @@ namespace FFXIV_TexTools.Views.Item
             }
             TxWatcher.UserTxStarted += OnUserTransactionStarted;
 
-            _DebouncedRebuildComboBoxes = ViewHelpers.Debounce<IItem>(DispatchRebuildComboBoxes);
-            _DebouncedValidateSelections = ViewHelpers.Debounce(DispatchValidateSelections);
+            _DebouncedRebuildComboBoxes = ViewHelpers.Debounce<IItem>(DispatchRebuildComboBoxes, 500);
+            _DebouncedValidateSelections = ViewHelpers.Debounce(DispatchValidateSelections, 500);
 
             KeyDown += OnKeyDown;
         }

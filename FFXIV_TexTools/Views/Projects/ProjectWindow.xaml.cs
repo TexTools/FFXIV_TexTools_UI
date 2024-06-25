@@ -380,7 +380,6 @@ namespace FFXIV_TexTools.Views.Projects
                 }
 
                 var tx = await ModTransaction.BeginTransaction(true, null, Project.TransactionSettings, needsPrep);
-                MainWindow.UserTransaction = tx;
 
                 if (needsPrep)
                 {
@@ -390,11 +389,12 @@ namespace FFXIV_TexTools.Views.Projects
 
                 try
                 {
-                    await LoadModpack(initialModpackPath, firstTime);
+                    await LoadModpack(initialModpackPath, firstTime, tx);
                 }
                 catch (Exception ex)
                 {
                     this.ShowError("Project Load Error", "An error occurred while loading the project:\n\n" + ex.Message);
+                    MainWindow.UserTransaction = tx;
                     await CloseProject();
                     return;
                 }
@@ -411,14 +411,16 @@ namespace FFXIV_TexTools.Views.Projects
                 } catch(Exception ex)
                 {
                     this.ShowError("Project Load Error", "An error occurred while loading some of the project files the project:\n\n" + ex.Message);
+                    MainWindow.UserTransaction = tx;
                     await CloseProject();
                     return;
                 }
 
                 if (Project.TransactionSettings.Target == ETransactionTarget.PenumbraModFolder)
                 {
-                    await PenumbraAttachHandler.Attach(Project.TransactionSettings.TargetPath, MainWindow.UserTransaction);
+                    await PenumbraAttachHandler.Attach(Project.TransactionSettings.TargetPath, tx, true);
                 }
+                MainWindow.UserTransaction = tx;
             }
             finally
             {
@@ -442,8 +444,12 @@ namespace FFXIV_TexTools.Views.Projects
                 await TTMP.ImportFiles(files, null, null, MainWindow.UserTransaction);
             }
         }
-        private static async Task LoadModpack(string path = null, bool ignoreMissing = false)
+        private static async Task LoadModpack(string path = null, bool ignoreMissing = false, ModTransaction tx = null)
         {
+            if(tx == null)
+            {
+                tx = MainWindow.UserTransaction;
+            }
             ProgressDialogController controller = null;
             if(Instance != null)
             {
@@ -479,7 +485,7 @@ namespace FFXIV_TexTools.Views.Projects
                 };
 
 
-                await TTMP.ImportFiles(files, null, settings, MainWindow.UserTransaction);
+                await TTMP.ImportFiles(files, null, settings, tx);
                 AttachEvents();
             }
             finally

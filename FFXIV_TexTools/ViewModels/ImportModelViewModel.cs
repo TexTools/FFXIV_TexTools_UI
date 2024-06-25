@@ -205,6 +205,8 @@ namespace FFXIV_TexTools.ViewModels
             _view.OverrideRaceButton.Checked += OverrideRaceButton_Checked;
             _view.OverrideRaceButton.Unchecked += OverrideRaceButton_Unchecked;
 
+            _view.ShiftUVsButton.IsChecked = Settings.Default.ShiftImportUV;
+
             // Default Settings for specific categories, event handlers are added to allow users to opt out of these defaults
             if (referenceItem != null)
             {
