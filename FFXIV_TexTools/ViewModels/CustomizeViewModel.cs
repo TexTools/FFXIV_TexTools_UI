@@ -650,6 +650,8 @@ namespace FFXIV_TexTools.ViewModels
             }
 
             FFXIV_Directory = path;
+            Settings.Default.Save();
+
             Helpers.FlexibleMessageBox.Show("TexTools will now restart.".L());
             _view.Close();
             MainWindow.GetMainWindow().Restart();
