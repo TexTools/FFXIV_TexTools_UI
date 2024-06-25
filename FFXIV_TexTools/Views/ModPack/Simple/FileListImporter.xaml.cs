@@ -245,6 +245,10 @@ namespace FFXIV_TexTools.Views.Simple
                     var settings = ViewHelpers.GetDefaultImportSettings(_progressController, this);
                     await TTMP.ImportFiles(allFiles, modpack, settings, tx);
 
+                    if (boiler.OwnTx)
+                    {
+                        settings.ProgressReporter?.Report((0, 0, "Compressing Files and Committing Transaction..."));
+                    }
                     await boiler.Commit();
 
                     await _progressController.CloseAsync();
