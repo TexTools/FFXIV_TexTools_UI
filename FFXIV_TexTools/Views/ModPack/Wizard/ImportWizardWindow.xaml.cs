@@ -173,6 +173,8 @@ namespace FFXIV_TexTools.Views.Wizard
             }
             CurrentIndex = 0;
             Closing += ImportWizardWindow_Closing;
+
+            SetTitle();
         }
 
         private void ImportWizardWindow_Closing(object sender, CancelEventArgs e)
@@ -366,14 +368,28 @@ namespace FFXIV_TexTools.Views.Wizard
             this.Close();
         }
 
+        private void SetTitle()
+        {
+            if (CurrentIndex == 0)
+            {
+                Title = "Import " + _Data.MetaPage.Name;
+            }
+            else
+            {
+                Title = "Import " + _Data.MetaPage.Name + " - Page " + CurrentIndex;
+            }
+        }
+
         private void PrevPage_Click(object sender, System.Windows.RoutedEventArgs e)
         {
             CurrentIndex--;
+            SetTitle();
         }
 
         private void NextPage_Click(object sender, System.Windows.RoutedEventArgs e)
         {
             CurrentIndex++;
+            SetTitle();
         }
 
         private void Finalize_Click(object sender, RoutedEventArgs e)

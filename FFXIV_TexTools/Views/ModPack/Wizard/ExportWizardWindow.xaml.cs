@@ -157,6 +157,7 @@ namespace FFXIV_TexTools.Views
             ModPackUrl.Text = Settings.Default.Default_Modpack_Url;
             ModPackVersion.Text = "1.0.0";
             UpdateButtons();
+            SetTitle();
         }
 
         #region Private Properties
@@ -221,33 +222,6 @@ namespace FFXIV_TexTools.Views
                 ModPackUrl.Text = "";
             }
 
-        }
-
-        /// <summary>
-        /// Event handler for next page
-        /// </summary>
-        private void modPackWizard_Next(object sender, Xceed.Wpf.Toolkit.Core.CancelRoutedEventArgs e)
-        {
-            CleanupInput();
-
-            var wizPages = WizardControl.Items;
-            var index = wizPages.IndexOf(WizardControl.CurrentPage);
-            if (index == wizPages.Count - 2)
-            {
-                var nPage = new WizardPageEntry();
-                Data.DataPages.Add(nPage);
-
-                var newPage = new WizardPage
-                {
-                    Content = new WizardPageControl(nPage, true),
-                    PageType = WizardPageType.Blank,
-                    Background = null,
-                    HeaderBackground = null
-                };
-                wizPages.Add(newPage);
-            }
-
-            WizardControl.CanHelp = true;
         }
 
 
@@ -424,6 +398,7 @@ namespace FFXIV_TexTools.Views
         private void PrevPage_Click(object sender, System.Windows.RoutedEventArgs e)
         {
             CurrentIndex--;
+            SetTitle();
         }
 
         private void NextPage_Click(object sender, System.Windows.RoutedEventArgs e)
@@ -442,6 +417,7 @@ namespace FFXIV_TexTools.Views
                 });
             }
             CurrentIndex++;
+            SetTitle();
         }
 
         private async void Finalize_Click(object sender, System.Windows.RoutedEventArgs e)
@@ -539,6 +515,17 @@ namespace FFXIV_TexTools.Views
 
             ImagePath = imgInfo.File;
             HeaderSource = imgInfo.Image;
+        }
+        private void SetTitle()
+        {
+            if (CurrentIndex == 0)
+            {
+                Title = "Create Modpack";
+            }
+            else
+            {
+                Title = "Create Modpack - Page " + CurrentIndex;
+            }
         }
     }
 }
