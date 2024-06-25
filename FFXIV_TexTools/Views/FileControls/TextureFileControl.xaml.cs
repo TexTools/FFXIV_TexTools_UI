@@ -471,25 +471,26 @@ namespace FFXIV_TexTools.Views.Controls
 
             SharedVariantVisibility = Visibility.Collapsed;
 
-            var root = await XivCache.GetFirstRoot(path);
-
-            if(root == null)
-            {
-                return;
-            }
-
-            if(item == null)
-            {
-                item = root.GetFirstItem();
-            }
-
-            var asIm = item as IItemModel;
-            if (asIm == null || !Imc.UsesImc(asIm))
-            {
-                return;
-            }
             try
             {
+                var root = await XivCache.GetFirstRoot(path);
+
+                if(root == null)
+                {
+                    return;
+                }
+
+                if(item == null)
+                {
+                    item = root.GetFirstItem();
+                }
+
+                var asIm = item as IItemModel;
+                if (asIm == null || !Imc.UsesImc(asIm))
+                {
+                    return;
+                }
+
                 List<string> parents = new List<string>();
                 List<XivImc> entries = new List<XivImc>();
                 await Task.Run(async () =>
