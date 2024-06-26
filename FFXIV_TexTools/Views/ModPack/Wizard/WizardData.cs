@@ -863,7 +863,7 @@ namespace FFXIV_TexTools.Views.Wizard
             return mg;
         }
 
-        public async Task<PMPGroupJson> ToPmpGroup(string tempFolder, Dictionary<string, List<FileIdentifier>> identifiers, int page, bool oneOption = false)
+        public async Task<PMPGroupJson> ToPmpGroup(string tempFolder, string groupPrefix, Dictionary<string, List<FileIdentifier>> identifiers, int page, bool oneOption = false)
         {
             var pg = new PMPGroupJson();
 
@@ -895,14 +895,18 @@ namespace FFXIV_TexTools.Views.Wizard
             foreach (var option in Options)
             {
                 option.Name = option.Name.Trim();
-                var optionPrefix = IOUtil.MakePathSafe(pg.Name) + "/" + IOUtil.MakePathSafe(option.Name) + "/";
-                var imgName = optionPrefix.Substring(0, optionPrefix.Length - 1);
-                if (oneOption)
+                var optionPrefix = WizardData.MakeOptionPrefix(groupPrefix, this, option);
+                var imgName = optionPrefix;
+                if(imgName.Length > 0)
                 {
-                    optionPrefix = "";
-                    imgName = "default_image";
+                    // Remove trailing slash
+                    imgName = imgName.Substring(0, imgName.Length - 1);
                 }
 
+                if (oneOption)
+                {
+                    imgName = "default_image";
+                }
                 identifiers.TryGetValue(optionPrefix, out var files);
                 var opt = await option.ToPmpOption(tempFolder, files, imgName);
                 pg.Options.Add(opt);
@@ -1256,6 +1260,46 @@ namespace FFXIV_TexTools.Views.Wizard
             await TTMP.CreateWizardModPack(modPackData, targetPath, null, true);
         }
 
+        private string MakePagePrefix(WizardPageEntry page)
+        {
+            var pagePrefix = "";
+            if (DataPages.Count > 1)
+            {
+                var pIdx = DataPages.IndexOf(page);
+                pagePrefix = "p" + pIdx + "/";
+            }
+            else if (page.Groups.Count == 1)
+            {
+                return "";
+            }
+            return pagePrefix;
+        }
+        private string MakeGroupPrefix(WizardPageEntry page, WizardGroupEntry group)
+        {
+            var pagePrefix = MakePagePrefix(page);
+            if(page.Groups.Count == 1)
+            {
+                return pagePrefix;
+            }
+            var optionPrefix = pagePrefix + IOUtil.MakePathSafe(group.Name) + "/";
+            return optionPrefix;
+        }
+        private string MakeOptionPrefix(WizardPageEntry page, WizardGroupEntry group, WizardOptionEntry option)
+        {
+            return MakeOptionPrefix(MakeGroupPrefix(page, group), group, option);
+        }
+        internal static string MakeOptionPrefix(string groupPrefix, WizardGroupEntry group, WizardOptionEntry option)
+        {
+            if (group.Options.Count > 1)
+            {
+                return groupPrefix + IOUtil.MakePathSafe(option.Name) + "/";
+            }
+            else
+            {
+                return groupPrefix;
+            }
+        }
+
         public async Task WritePmp(string targetPath)
         {
             ClearEmpties();
@@ -1293,6 +1337,7 @@ namespace FFXIV_TexTools.Views.Wizard
                 {
                     foreach (var g in p.Groups)
                     {
+                        g.Name = g.Name.Trim();
                         foreach (var o in g.Options)
                         {
                             if(o.GroupType != EGroupType.Standard)
@@ -1307,18 +1352,8 @@ namespace FFXIV_TexTools.Views.Wizard
                                 throw new InvalidDataException("PMP Files must have valid group and option names.");
                             }
 
-                            var pagePrefix = "";
-                            if(DataPages.Count > 1)
-                            {
-                                pagePrefix = "p" + pIdx + "/";
-                            }
 
-                            var optionPrefix = pagePrefix + IOUtil.MakePathSafe(g.Name) + "/" + IOUtil.MakePathSafe(o.Name) + "/";
-
-                            if(optionCount == 1)
-                            {
-                                optionPrefix = "";
-                            }
+                            var optionPrefix = MakeOptionPrefix(p, g, o);
 
                             allFiles.Add(optionPrefix, files);
                         }
@@ -1332,7 +1367,7 @@ namespace FFXIV_TexTools.Views.Wizard
 
                 if(optionCount == 1)
                 {
-                    pmp.DefaultMod = (await DataPages.First(x => x.Groups.Count > 0).Groups.First(x => x.Options.Count > 0).ToPmpGroup(tempFolder, identifiers, 0, true)).Options[0];
+                    pmp.DefaultMod = (await DataPages.First(x => x.Groups.Count > 0).Groups.First(x => x.Options.Count > 0).ToPmpGroup(tempFolder, "", identifiers, 0, true)).Options[0];
                 } else
                 {
                     // This both constructs the JSON structure and writes our files to their
@@ -1342,8 +1377,8 @@ namespace FFXIV_TexTools.Views.Wizard
                     {
                         foreach (var g in p.Groups)
                         {
-                            g.Name = g.Name.Trim();
-                            var pg = await g.ToPmpGroup(tempFolder, identifiers, page);
+                            var gPrefix = MakeGroupPrefix(p, g);
+                            var pg = await g.ToPmpGroup(tempFolder, gPrefix, identifiers, page);
                             pmp.Groups.Add(pg);
                         }
                         page++;
