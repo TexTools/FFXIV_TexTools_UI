@@ -363,37 +363,44 @@ namespace FFXIV_TexTools.Views.Controls
                 ColorsetImage.Source = null;
                 return;
             }
-
-            ImageSource imageSource = null;
-            var pixels = new byte[0];
-            var width = 0;
-            var height = 0;
-            await Task.Run(async () =>
+            try
             {
 
-                var tex = await Mtrl.GetColorsetXivTex(Material);
-                pixels = await tex.GetRawPixels();
-
-                // Fix opacity and convert to BGRA
-                for(int i = 0; i < pixels.Length; i+= 4)
+                ImageSource imageSource = null;
+                var pixels = new byte[0];
+                var width = 0;
+                var height = 0;
+                await Task.Run(async () =>
                 {
-                    pixels[i + 3] = 255;
 
-                    var r = pixels[i +0];
-                    var b = pixels[i +2];
-                    pixels[i+2] = r;
-                    pixels[i+0] = b;
-                }
+                    var tex = await Mtrl.GetColorsetXivTex(Material);
+                    pixels = await tex.GetRawPixels();
 
-                width = tex.Width;
-                height = tex.Height;
+                    // Fix opacity and convert to BGRA
+                    for (int i = 0; i < pixels.Length; i += 4)
+                    {
+                        pixels[i + 3] = 255;
 
-            });
+                        var r = pixels[i + 0];
+                        var b = pixels[i + 2];
+                        pixels[i + 2] = r;
+                        pixels[i + 0] = b;
+                    }
 
-            // This seems to generate invalid image sources when not run on the render thread.
-            imageSource = BitmapSource.Create(width, height, 1, 1, PixelFormats.Bgra32, null, pixels, width * 4);
+                    width = tex.Width;
+                    height = tex.Height;
 
-            ColorsetImage.Source = imageSource;
+                });
+
+                // This seems to generate invalid image sources when not run on the render thread.
+                imageSource = BitmapSource.Create(width, height, 1, 1, PixelFormats.Bgra32, null, pixels, width * 4);
+
+                ColorsetImage.Source = imageSource;
+            }
+            catch
+            {
+                // No-Op
+            }
         }
 
         /// <summary>
