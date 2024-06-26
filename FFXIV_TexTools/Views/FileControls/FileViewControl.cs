@@ -816,6 +816,9 @@ namespace FFXIV_TexTools.Views.Controls
             if (!string.IsNullOrWhiteSpace(internalFilePath))
             {
                 InternalFilePath = internalFilePath;
+            } else
+            {
+                referenceItem = ReferenceItem;
             }
 
             if (string.IsNullOrWhiteSpace(InternalFilePath))
@@ -836,7 +839,7 @@ namespace FFXIV_TexTools.Views.Controls
                 return false;
             }
 
-            var success = await LoadExternalFile(ofd.FileName, InternalFilePath);
+            var success = await LoadExternalFile(ofd.FileName, InternalFilePath, referenceItem);
             if (!success)
             {
                 await ReloadFile();
