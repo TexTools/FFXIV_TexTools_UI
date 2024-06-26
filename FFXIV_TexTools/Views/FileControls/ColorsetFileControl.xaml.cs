@@ -136,11 +136,9 @@ namespace FFXIV_TexTools.Views.Controls
             if (Configuration.EnvironmentConfiguration.TT_Unshared_Rendering)
                 canvasRenderer = new Helpers.ViewportCanvasRenderer(ColorsetRowViewport, AlternateViewportCanvas);
 
-#if DAWNTRAIL
             var s = new Separator();
             s.Height = 2;
             ColorSetRowsPanel.Children.Add(s);
-#endif
 
             for (int i = 0; i < _rowCount; i++)
             {
@@ -174,14 +172,12 @@ namespace FFXIV_TexTools.Views.Controls
 
                 elem.MouseLeftButtonDown += ColorsetRow_Clicked;
 
-#if DAWNTRAIL
                 if(i % 2 == 1)
                 {
                     var sep = new Separator();
                     sep.Height = 2;
                     ColorSetRowsPanel.Children.Add(sep);
                 }
-#endif
             }
 
             DyeTemplateIdBox.ItemsSource = DyeTemplateCollection;
@@ -364,9 +360,7 @@ namespace FFXIV_TexTools.Views.Controls
             // We override this in order to use MTRL's import function, which checks for missing texture files, etc.
             await Mtrl.ImportMtrl(Material, ReferenceItem, XivStrings.TexTools, true, tx);
 
-#if DAWNTRAIL
             await EndwalkerUpgrade.UpdateEndwalkerMaterial(Material, XivStrings.TexTools, true, tx);
-#endif
 
             return true;
         }

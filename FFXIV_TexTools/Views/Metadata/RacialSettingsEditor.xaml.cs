@@ -50,20 +50,10 @@ namespace FFXIV_TexTools.Views.Metadata
                 MaleGrid.Children.Add(maleButton);
 
                 var baseRace = race.GetBaseRace();
-#if ENDWALKER
-                if (baseRace != XivBaseRace.Hrothgar)
-                {
-                    var femaleButton = MakeButton(race, XivGender.Female);
-                    femaleButton.SetValue(Grid.RowProperty, rowIdx);
-                    femaleButton.SetValue(Grid.ColumnProperty, clanId);
-                    FemaleGrid.Children.Add(femaleButton);
-                }
-#else
                 var femaleButton = MakeButton(race, XivGender.Female);
                 femaleButton.SetValue(Grid.RowProperty, rowIdx);
                 femaleButton.SetValue(Grid.ColumnProperty, clanId);
                 FemaleGrid.Children.Add(femaleButton);
-#endif
             }
         }
 

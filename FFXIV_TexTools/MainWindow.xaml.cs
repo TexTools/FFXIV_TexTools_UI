@@ -90,11 +90,7 @@ namespace FFXIV_TexTools
         private static MainWindow _mainWindow;
         public readonly System.Windows.Forms.IWin32Window Win32Window;
 
-#if ENDWALKER
-        public static readonly string BetaSuffix = "- CursedTools Build 58 (ENDWALKER)";
-#else
-        public static readonly string BetaSuffix = "- CursedTools Build 58 (DAWNTRAIL)";
-#endif
+        public static readonly string BetaSuffix = "- DAWNTRAIL BETA";
         public static bool IsBetaVersion {
             get
             {
@@ -1919,14 +1915,7 @@ namespace FFXIV_TexTools
             try
             {
                 await Task.Run(async () => {
-
-#if ENDWALKER
                     await Mtrl.UpdateShaderDB(false);
-#else
-                    // TODO - This should be [false] when switching off the benchmark install.
-                    // ( Controls whether it uses Index 1 or Index 2 for the search )
-                    await Mtrl.UpdateShaderDB(true);
-#endif
                     await ShaderHelpers.LoadShaderInfo();
                 });
 
@@ -2019,17 +2008,11 @@ namespace FFXIV_TexTools
 
         private void IndexTextureCreator_Click(object sender, RoutedEventArgs e)
         {
-#if ENDWALKER
-            return;
-#endif
             IndexTextureCreator.ShowWindow(this);
         }
 
         private void HairTextureConverter_Click(object sender, RoutedEventArgs e)
         {
-#if ENDWALKER
-            return;
-#endif
             HairTextureConverter.ShowWindow(this);
         }
 
@@ -2053,9 +2036,6 @@ namespace FFXIV_TexTools
 
         private void IrisDiffuseCreator_Click(object sender, RoutedEventArgs e)
         {
-#if ENDWALKER
-            return;
-#endif
             EyeDiffuseCreator.ShowWindow(this);
 
         }

@@ -262,9 +262,7 @@ namespace FFXIV_TexTools.Views.Controls
             // We override this in order to use MTRL's import function, which checks for missing texture files, etc.
             await Mtrl.ImportMtrl(Material, ReferenceItem, XivStrings.TexTools, true, tx);
 
-#if DAWNTRAIL
             await EndwalkerUpgrade.UpdateEndwalkerMaterial(Material, XivStrings.TexTools, true, tx);
-#endif
 
             return true;
         }
@@ -472,10 +470,6 @@ namespace FFXIV_TexTools.Views.Controls
             {
                 var length = 1024;
                 var dyeLength = 128;
-#if ENDWALKER
-                length = 256;
-                dyeLength = 32;
-#endif
                 Material.ColorSetData = new List<Half>(new Half[length]);
                 Material.ColorSetDyeData = new byte[dyeLength];
             }

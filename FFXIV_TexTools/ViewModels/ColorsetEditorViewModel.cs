@@ -109,15 +109,9 @@ namespace FFXIV_TexTools.ViewModels
             {
                 try
                 {
-#if DAWNTRAIL
                     TileTextureNormal = await Tex.GetXivTex("chara/common/texture/tile_norm_array.tex");
                     // This is not the correct usage, but works for the moment.
                     TileTextureDiffuse = await Tex.GetXivTex("chara/common/texture/tile_orb_array.tex");
-#else
-                    // Endwalker tile materials.
-                    TileTextureNormal = await Tex.GetXivTex("chara/common/texture/-tile_n.tex", false, MainWindow.DefaultTransaction);
-                    TileTextureDiffuse = await Tex.GetXivTex("chara/common/texture/-tile_d.tex", false, MainWindow.DefaultTransaction);
-#endif
                 }
                 catch
                 {

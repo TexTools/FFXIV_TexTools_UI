@@ -113,10 +113,6 @@ namespace FFXIV_TexTools.Views.Models
             }
             MdlVersionComboBox.SelectedValue = version;
 
-#if ENDWALKER  
-            _newModel.MdlVersion = 5;
-            MdlVersionComboBox.IsEnabled = false;
-#endif
 
             _viewModel = new ImportModelEditViewModel(this, _newModel, _oldModel);
             DataContext = _viewModel;

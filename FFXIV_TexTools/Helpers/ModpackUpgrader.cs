@@ -21,9 +21,6 @@ namespace FFXIV_TexTools.Helpers
     {
         public static async Task UpgradeModpackPrompted(bool includePartials = true)
         {
-#if ENDWALKER
-            return;
-#endif
             var mw = MainWindow.GetMainWindow();
             var ofd = new OpenFileDialog()
             {
@@ -190,9 +187,6 @@ namespace FFXIV_TexTools.Helpers
 
         public static async Task UpgradeModpack(string path, string newPath, bool includePartials = true)
         {
-#if ENDWALKER
-            return;
-#endif
             var data = await UpgradeModpack(path, includePartials);
 
             await data.WriteModpack(newPath);

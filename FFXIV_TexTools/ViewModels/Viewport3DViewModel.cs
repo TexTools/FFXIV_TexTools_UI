@@ -87,9 +87,6 @@ namespace FFXIV_TexTools.ViewModels
             ReflectionLabel = $"{UIStrings.Reflection}  |  {ReflectionValue}";
 
             var csetMax = 32;
-#if ENDWALKER
-            csetMax = 16;
-#endif
             ColorsetRowSource.Add(new KeyValuePair<string, int>("All", -1));
             for(int i = 0; i < csetMax; i++)
             {
