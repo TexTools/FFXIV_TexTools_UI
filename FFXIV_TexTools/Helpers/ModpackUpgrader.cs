@@ -173,7 +173,7 @@ namespace FFXIV_TexTools.Helpers
                             if (o.StandardData != null)
                             {
                                 var contained = unusedTextures.Where(x => o.StandardData.Files.ContainsKey(x));
-                                await EndwalkerUpgrade.CheckImportForOldHairJank(contained.ToList(), "Unused", null, null, o.StandardData.Files);
+                                await EndwalkerUpgrade.UpdateUnclaimedHairTextures(contained.ToList(), "Unused", null, null, o.StandardData.Files);
 
                                 foreach (var possibleMask in contained)
                                 {
