@@ -23,6 +23,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using WK.Libraries.BetterFolderBrowserNS;
+using xivModdingFramework.Cache;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Models.DataContainers;
 
@@ -238,6 +239,14 @@ namespace FFXIV_TexTools.Views
         public static void InitializeSettings()
         {
             SetDirectories();
+            XivCache.FrameworkSettings.DefaultTextureFormat = Settings.Default.CompressEndwalkerUpgradeTextures ? xivModdingFramework.Textures.Enums.XivTexFormat.BC7 : xivModdingFramework.Textures.Enums.XivTexFormat.A8R8G8B8;
+
+            if (Enum.TryParse<EModelingTool>(Settings.Default.ModelingTool, true, out var mt))
+            {
+                XivCache.FrameworkSettings.ModelingTool = mt;
+            }
+            XivCache.FrameworkSettings.DefaultTextureFormat = Settings.Default.CompressEndwalkerUpgradeTextures ? xivModdingFramework.Textures.Enums.XivTexFormat.BC7 : xivModdingFramework.Textures.Enums.XivTexFormat.A8R8G8B8;
+
         }
 
         public static bool IsGameDirectoryValid(string dir)

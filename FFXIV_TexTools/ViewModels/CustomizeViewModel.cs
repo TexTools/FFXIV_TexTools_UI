@@ -374,6 +374,21 @@ namespace FFXIV_TexTools.ViewModels
             }
         }
 
+        public bool CompressUpgradeTextures
+        {
+            get => Settings.Default.CompressEndwalkerUpgradeTextures;
+            set
+            {
+                if (CompressUpgradeTextures != value)
+                {
+                    Settings.Default.CompressEndwalkerUpgradeTextures = value;
+                    Settings.Default.Save();
+                    XivCache.FrameworkSettings.DefaultTextureFormat = Settings.Default.CompressEndwalkerUpgradeTextures ? xivModdingFramework.Textures.Enums.XivTexFormat.BC7 : xivModdingFramework.Textures.Enums.XivTexFormat.A8R8G8B8;
+                    NotifyPropertyChanged(nameof(CompressUpgradeTextures));
+                }
+            }
+        }
+
         public string ModelingTool
         {
             get => Settings.Default.ModelingTool;

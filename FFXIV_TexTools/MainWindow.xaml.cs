@@ -583,11 +583,6 @@ namespace FFXIV_TexTools
                 XivCache.GameWriteEnabled = false;
             }
 
-            if(Enum.TryParse<EModelingTool>(Settings.Default.ModelingTool, true, out var mt))
-            {
-                XivCache.FrameworkSettings.ModelingTool = mt;
-            }
-
             UpdateWriteStateUi();
         }
 
@@ -839,6 +834,7 @@ namespace FFXIV_TexTools
 
             try
             {
+                
                 var gameDir = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
                 var lang = XivLanguages.GetXivLanguage(Properties.Settings.Default.Application_Language);
                 await XivCache.SetGameInfo(gameDir, lang, false);

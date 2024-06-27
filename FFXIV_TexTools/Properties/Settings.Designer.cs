@@ -562,5 +562,17 @@ namespace FFXIV_TexTools.Properties {
                 this["MaxImageSize"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool CompressEndwalkerUpgradeTextures {
+            get {
+                return ((bool)(this["CompressEndwalkerUpgradeTextures"]));
+            }
+            set {
+                this["CompressEndwalkerUpgradeTextures"] = value;
+            }
+        }
     }
 }

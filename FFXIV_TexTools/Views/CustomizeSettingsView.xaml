@@ -20,6 +20,7 @@
             </TextBlock>
         </ToolTip>
 
+        <ToolTip x:Key="CompressUpgradesTooltip">Compress Dawntrail-Upgraded Endwalker texture files to BC7.</ToolTip>
 
         <ToolTip x:Key="ModelingToolTooltip">Affects the behavior of FBX file export.</ToolTip>
         <ToolTip x:Key="CompleteSkeletonsTooltip">Include all available bones when exporting models, even if they are not currently used.</ToolTip>
@@ -132,6 +133,7 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="40"/>
                         <RowDefinition Height="40"/>
+                        <RowDefinition Height="40"/>
                         <RowDefinition Height="4"/>
                         <RowDefinition Height="40"/>
                         <RowDefinition Height="4"/>
@@ -147,25 +149,28 @@
                     <Label Grid.Column="0" Grid.Row="1" Margin="5" Content="Update Partial Endwalker Files" VerticalAlignment="Center" ToolTip="{StaticResource UpgradeDawntrailPartialTooltip}"  HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
                     <CheckBox Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" Margin="5" ToolTip="{StaticResource UpgradeDawntrailPartialTooltip}" IsChecked="{Binding AutoFixPartialDawntrail}" IsEnabled="{Binding AutoFixDawntrail}"></CheckBox>
 
-                    <Separator Grid.Row="2" Grid.ColumnSpan="10" Margin="20,0"></Separator>
+                    <Label Grid.Column="0" Grid.Row="2" Margin="5" Content="Compress Upgrade Textures" VerticalAlignment="Center" ToolTip="{StaticResource CompressUpgradesTooltip}"  HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
+                    <CheckBox Grid.Column="1" Grid.Row="2" VerticalAlignment="Center" Margin="5" ToolTip="{StaticResource CompressUpgradesTooltip}" IsChecked="{Binding CompressUpgradeTextures}" ></CheckBox>
 
-                    <Label Grid.Column="0" Grid.Row="3" Margin="5" Content="Maximum Imported Image Size" ToolTip="{StaticResource ImageSizeTooltip}" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
-                    <ComboBox Grid.Column="1" Grid.Row="3"  VerticalAlignment="Center" ToolTip="{StaticResource ImageSizeTooltip}" ItemsSource="{Binding Path=ImageSizes}" SelectedValue="{Binding Path=MaxImageSize}" SelectedValuePath="Value" DisplayMemberPath="Key" Margin="5,0" />
+                    <Separator Grid.Row="3" Grid.ColumnSpan="10" Margin="20,0"></Separator>
+
+                    <Label Grid.Column="0" Grid.Row="4" Margin="5" Content="Maximum Imported Image Size" ToolTip="{StaticResource ImageSizeTooltip}" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
+                    <ComboBox Grid.Column="1" Grid.Row="4"  VerticalAlignment="Center" ToolTip="{StaticResource ImageSizeTooltip}" ItemsSource="{Binding Path=ImageSizes}" SelectedValue="{Binding Path=MaxImageSize}" SelectedValuePath="Value" DisplayMemberPath="Key" Margin="5,0" />
 
 
-                    <Separator Grid.Row="4" Grid.ColumnSpan="10" Margin="20,0"></Separator>
+                    <Separator Grid.Row="5" Grid.ColumnSpan="10" Margin="20,0"></Separator>
 
-                    <Label Grid.Column="0" Grid.Row="5" Margin="5" Content="External Modeling Tool" VerticalAlignment="Center" ToolTip="{StaticResource ModelingToolTooltip}" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
-                    <ComboBox x:Name="Target3DProgramBox" Grid.Column="1" Grid.Row="5"  VerticalAlignment="Center" ToolTip="{StaticResource ModelingToolTooltip}" ItemsSource="{Binding Path=ModelingTools}" SelectedValue="{Binding Path=ModelingTool}" SelectedValuePath="Value" DisplayMemberPath="Key" Margin="5,0" />
+                    <Label Grid.Column="0" Grid.Row="6" Margin="5" Content="External Modeling Tool" VerticalAlignment="Center" ToolTip="{StaticResource ModelingToolTooltip}" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
+                    <ComboBox x:Name="Target3DProgramBox" Grid.Column="1" Grid.Row="6"  VerticalAlignment="Center" ToolTip="{StaticResource ModelingToolTooltip}" ItemsSource="{Binding Path=ModelingTools}" SelectedValue="{Binding Path=ModelingTool}" SelectedValuePath="Value" DisplayMemberPath="Key" Margin="5,0" />
 
-                    <Label Grid.Column="0" Grid.Row="6" Margin="5" Content="Export Complete Skeletons" VerticalAlignment="Center" ToolTip="{StaticResource CompleteSkeletonsTooltip}" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
-                    <CheckBox x:Name="ExportAllBonesBox"  Grid.Column="1" Grid.Row="6" VerticalAlignment="Center" Margin="5,0" ToolTip="{StaticResource CompleteSkeletonsTooltip}" IsChecked="{Binding ExportAllBones}"></CheckBox>
+                    <Label Grid.Column="0" Grid.Row="7" Margin="5" Content="Export Complete Skeletons" VerticalAlignment="Center" ToolTip="{StaticResource CompleteSkeletonsTooltip}" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
+                    <CheckBox x:Name="ExportAllBonesBox"  Grid.Column="1" Grid.Row="7" VerticalAlignment="Center" Margin="5,0" ToolTip="{StaticResource CompleteSkeletonsTooltip}" IsChecked="{Binding ExportAllBones}"></CheckBox>
 
-                    <Label Grid.Column="0" Grid.Row="7" Margin="5" Content="Shift Exported Model UVs" VerticalAlignment="Center" ToolTip="{StaticResource ShiftModelUvsTooltip}"  HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
-                    <CheckBox x:Name="UvShiftBox"  Grid.Column="1" Grid.Row="7" VerticalAlignment="Center" Margin="5,0"  ToolTip="{StaticResource ShiftModelUvsTooltip}"  IsChecked="{Binding Path=ShiftExportUV}"></CheckBox>
+                    <Label Grid.Column="0" Grid.Row="8" Margin="5" Content="Shift Exported Model UVs" VerticalAlignment="Center" ToolTip="{StaticResource ShiftModelUvsTooltip}"  HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
+                    <CheckBox x:Name="UvShiftBox"  Grid.Column="1" Grid.Row="8" VerticalAlignment="Center" Margin="5,0"  ToolTip="{StaticResource ShiftModelUvsTooltip}"  IsChecked="{Binding Path=ShiftExportUV}"></CheckBox>
 
-                    <Label Grid.Column="0" Grid.Row="8" Margin="5" Content="Auto-Assign Body Materials" VerticalAlignment="Center" HorizontalContentAlignment="Right" ToolTip="{StaticResource AutoAssignBodyTooltip}"  VerticalContentAlignment="Center"></Label>
-                    <CheckBox x:Name="AutoMatFixBox"  Grid.Column="1" Grid.Row="8" VerticalAlignment="Center" Margin="5,0" ToolTip="{StaticResource AutoAssignBodyTooltip}" IsChecked="{Binding AutoMaterialFix}"></CheckBox>
+                    <Label Grid.Column="0" Grid.Row="9" Margin="5" Content="Auto-Assign Body Materials" VerticalAlignment="Center" HorizontalContentAlignment="Right" ToolTip="{StaticResource AutoAssignBodyTooltip}"  VerticalContentAlignment="Center"></Label>
+                    <CheckBox x:Name="AutoMatFixBox"  Grid.Column="1" Grid.Row="9" VerticalAlignment="Center" Margin="5,0" ToolTip="{StaticResource AutoAssignBodyTooltip}" IsChecked="{Binding AutoMaterialFix}"></CheckBox>
 
                 </Grid>
             </GroupBox>
