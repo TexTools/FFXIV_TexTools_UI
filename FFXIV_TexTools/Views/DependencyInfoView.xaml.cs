@@ -94,6 +94,7 @@ namespace FFXIV_TexTools.Views
             ModelLevelBox.Text = "";
             MaterialLevelBox.Text = "";
 
+            var tx = MainWindow.DefaultTransaction;
 
 
             FilePathLabel.Text = filePath;
@@ -111,7 +112,7 @@ namespace FFXIV_TexTools.Views
 
             var ext = Path.GetExtension(filePath).Substring(1);
 
-            var allItems = (await root.GetAllItems());
+            var allItems = (await root.GetAllItems(-1, tx));
 
             if(allItems.Count == 0)
             {
@@ -131,9 +132,9 @@ namespace FFXIV_TexTools.Views
             ModelLevelBox.Text = modelItem.Name;
 
 
-            var children = await XivCache.GetChildFiles(filePath);
-            var parents = await XivCache.GetParentFiles(filePath);
-            var siblings = await XivCache.GetSiblingFiles(filePath);
+            var children = await XivCache.GetChildFiles(filePath, tx);
+            var parents = await XivCache.GetParentFiles(filePath, tx);
+            var siblings = await XivCache.GetSiblingFiles(filePath, tx);
 
             if (children == null || parents == null || siblings == null)
             {
@@ -181,7 +182,7 @@ namespace FFXIV_TexTools.Views
                     mVariants[pRoot].Add(mVariant);
 
 
-                    var pItems = (await pRoot.GetAllItems());
+                    var pItems = (await pRoot.GetAllItems(-1, tx));
                 }
 
             } else if(ext == "mtrl")
@@ -211,7 +212,6 @@ namespace FFXIV_TexTools.Views
 
             Dictionary<XivDependencyRoot, HashSet<int>> sharedImcSubsets = new Dictionary<XivDependencyRoot, HashSet<int>>();
 
-            var _imc = new Imc(XivCache.GameInfo.GameDirectory);
 
             try
             {
@@ -223,7 +223,7 @@ namespace FFXIV_TexTools.Views
                     sharedImcSubsets.Add(rt, new HashSet<int>());
                     var imcPath = rt.GetRawImcFilePath();
 
-                    var fullImcInfo = await _imc.GetFullImcInfo(imcPath);
+                    var fullImcInfo = await Imc.GetFullImcInfo(imcPath, false, MainWindow.DefaultTransaction);
 
                     var setCount = fullImcInfo.SubsetCount + 1;
                     for (int i = 0; i < setCount; i++)

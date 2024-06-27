@@ -45,13 +45,40 @@ using FFXIV_TexTools.Views;
 using xivModdingFramework.Mods.DataContainers;
 using xivModdingFramework.SqPack.DataContainers;
 
-using Index = xivModdingFramework.SqPack.FileTypes.Index;
+using System.Drawing.Imaging;
+using xivModdingFramework.Mods.Enums;
+using System.ComponentModel.Composition.Primitives;
+using AutoUpdaterDotNET;
+using System.Windows.Threading;
+using System.Windows.Media;
 
 namespace FFXIV_TexTools.ViewModels
 {
     public class MainViewModel : INotifyPropertyChanged
     {
-        private DirectoryInfo _gameDirectory;
+
+        private string _TxStatusText;
+        public string TxStatusText
+        {
+            get => _TxStatusText;
+            set
+            {
+                _TxStatusText = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TxStatusText)));
+            }
+        }
+
+        private Brush _TxStatusBrush;
+        public Brush TxStatusBrush
+        {
+            get => _TxStatusBrush;
+            set
+            {
+                _TxStatusBrush = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TxStatusBrush)));
+            }
+        }
+
         private readonly MainWindow _mainWindow;
 
         private ObservableCollection<Category> _categories = new ObservableCollection<Category>();
@@ -60,8 +87,8 @@ namespace FFXIV_TexTools.ViewModels
         private string _dxVersionText = $"DX: {Properties.Settings.Default.DX_Version}";
         private int _progressValue;
         private Visibility _progressBarVisible, _progressLabelVisible;
-        private Index _index;
         private ProgressDialogController _progressController;
+
         public System.Timers.Timer CacheTimer = new System.Timers.Timer(3000);
 
         private const string WarningIdentifier = "!!";
@@ -69,382 +96,82 @@ namespace FFXIV_TexTools.ViewModels
         public MainViewModel(MainWindow mainWindow)
         {
             _mainWindow = mainWindow;
-            // This is actually synchronous and can just be called immediately...
-            SetDirectories(true);
 
-            _gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
-            _index = new Index(_gameDirectory);
             if (ProgressLabel == null)
             {
                 ProgressLabel = "";
             }
 
-            // And the rest of this can be pushed into a new thread.
-            var task = Task.Run(Initialize);
-
-            // Now we can wait on it.  But we have to thread-safety it.
-            task.Wait();
-
-            var exception = task.Exception;
-            if(exception != null)
-            {
-                throw exception;
-            }
-            var result = task.Result;
-            if (!result)
-            {
-                // We need to die NOW, and not risk any other functions possibly
-                // fucking with broken files.
-                Process.GetCurrentProcess().Kill();
-                return;
-            }
 
             CacheTimer.Elapsed += UpdateDependencyQueueCount;
 
+            UpdateTxState(MainWindow.UserTransaction == null ? ETransactionState.Closed : MainWindow.UserTransaction.State);
+            TxWatcher.UserTxStateChanged += TxStateChanged;
         }
 
-        public void UpdateDependencyQueueCount(object sender, System.Timers.ElapsedEventArgs e)
+        public async void UpdateDependencyQueueCount(object sender, System.Timers.ElapsedEventArgs e)
         {
-            var count = XivCache.GetDependencyQueueLength();
-            if (count > 0)
+            if (XivCache.CacheWorkerEnabled)
             {
-                _mainWindow.ShowStatusMessage($"Queue Length: {count._()}".L());
+                var count = 0;
+                if (count > 0)
+                {
+                    //_mainWindow.ShowStatusMessage($"Queue Length: {count._()}".L());
+
+                    // Removed localization on this because the localization is throwing an error for some reason(?)
+                    _mainWindow.ShowStatusMessage($"Queue Length: {count}");
+                }
+            } else
+            {
+
+                _mainWindow.ShowStatusMessage($"Cache Worker Paused");
+            }
+        }
+        private uint GetExpectedType(string file)
+        {
+            if(file.EndsWith(".tex"))
+            {
+                return 4;
+            } else if (file.EndsWith(".mdl"))
+            {
+                return 3;
+            }
+            else
+            {
+                return 2;
             }
         }
 
-        /// <summary>
-        /// This function is called on a separate thread, *while* the main thread is blocked.
-        /// This means a few things.
-        ///   1.  You cannot access the view's UI elements (Thread safety error & uninitialized) 
-        ///   2.  You cannot use Dispatcher.Invoke (Deadlock)
-        ///   3.  You cannot spawn a new full-fledged windows form (Thread safety error) (Basic default popups are OK)
-        ///   4.  You cannot shut down the application (Thread safety error)
-        ///   
-        /// As such, the return value indicates if we want to gracefully shut down the application.
-        /// (True for success/continue, False for failure/graceful shutdown.)
-        /// 
-        /// Exceptions are checked and rethrown on the main thread.
-        /// 
-        /// This is really 100% only for things that can be safely checked and sanitized
-        /// without external code references or UI interaction beyond basic windows dialogs.
-        /// </summary>
-        /// <returns></returns>
-        public async Task<bool> Initialize()
+        private async Task<bool> CheckFile(ModTransaction tx, string file, long offset)
         {
+            try
+            {
+                var expected = GetExpectedType(file);
+                var df = IOUtil.GetDataFileFromPath(file);
+                var validTypes = new List<uint>() { 2, 3, 4 };
+                using (var br = await tx.GetFileStream(df, offset, true))
+                {
+                    // Type Check
+                    var type = Dat.GetSqPackType(br);
+                    if(type != expected)
+                    {
+                        return false;
+                    }
 
-            var success =  await CheckIndexFiles();
-            if (!success)
+                    // Decompression Check
+                    await tx.ReadFile(df, offset, false);
+
+                    // If we got this far, the file is valid enough to pass our check.
+                    return true;
+                }
+            }
+            catch
             {
                 return false;
             }
 
-            try
-            {
-                await CheckGameDxVersion();
-            } catch
-            {
-                // Unable to determine version, skip it.
-            }
-
-            return true;
 
         }
-
-        /// <summary>
-        /// Checks FFXIV's selected DirectX version and changes TexTools to the appropriate mode if it does not already match.
-        /// </summary>
-        /// <returns></returns>
-        private async Task CheckGameDxVersion()
-        {
-
-            var dir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) +
-                      "\\My Games\\FINAL FANTASY XIV - A Realm Reborn";
-
-            var DX11 = await Task.Run(() =>
-            {
-                var dx = false;
-
-                if (File.Exists($"{dir}\\FFXIV_BOOT.cfg"))
-                {
-                    var lines = File.ReadAllLines($"{dir}\\FFXIV_BOOT.cfg");
-
-                    foreach (var line in lines)
-                    {
-                        if (line.Contains("DX11Enabled"))
-                        {
-                            var val = line.Substring(line.Length - 1, 1);
-                            if (val.Equals("1"))
-                            {
-                                dx = true;
-                            }
-
-                            break;
-                        }
-                    }
-                }
-
-                return dx;
-            });
-
-            if (DX11)
-            {
-                if (Properties.Settings.Default.DX_Version != "11")
-                {
-                    // Set the User's DX Mode to 11 in TexTools to match 
-                    Properties.Settings.Default.DX_Version = "11";
-                    Properties.Settings.Default.Save();
-                    DXVersionText = "DX: 11";
-
-                    if(XivCache.Initialized)
-                    {
-                        var gi = XivCache.GameInfo;
-                        XivCache.SetGameInfo(gi.GameDirectory, gi.GameLanguage, 11, true, true, gi.LuminaDirectory, gi.UseLumina);
-                    }
-                }
-            }
-            else
-            {
-
-                if (Properties.Settings.Default.DX_Version != "9")
-                {
-                    // Set the User's DX Mode to 9 in TexTools to match 
-                    var gi = XivCache.GameInfo;
-                    Properties.Settings.Default.DX_Version = "9";
-                    Properties.Settings.Default.Save();
-                    DXVersionText = "DX: 9";
-                }
-
-                if (XivCache.Initialized)
-                {
-                    var gi = XivCache.GameInfo;
-                    XivCache.SetGameInfo(gi.GameDirectory, gi.GameLanguage, 9, true, true, gi.LuminaDirectory, gi.UseLumina);
-                }
-            }
-
-        }
-
-
-        private async Task<bool> CheckIndexFiles()
-        {
-            var xivDataFiles = new XivDataFile[] { XivDataFile._0A_Exd, XivDataFile._01_Bgcommon, XivDataFile._04_Chara, XivDataFile._06_Ui };
-            var problemChecker = new ProblemChecker(_gameDirectory);
-
-            try
-            {
-                foreach (var xivDataFile in xivDataFiles)
-                {
-                    var errorFound = await problemChecker.CheckIndexDatCounts(xivDataFile);
-
-                    if (errorFound)
-                    {
-                        await problemChecker.RepairIndexDatCounts(xivDataFile);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                var result = FlexibleMessageBox.Show("A critical error occurred when attempting to read the FFXIV index files.\n\nWould you like to restore your index backups?\n\nError: ".L() + ex.Message, "Critical Index Error".L(), MessageBoxButtons.YesNo, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
-                if (result == DialogResult.Yes)
-                {
-                    var indexBackupsDirectory = new DirectoryInfo(Settings.Default.Backup_Directory);
-                    var success = await problemChecker.RestoreBackups(indexBackupsDirectory);
-                    if(!success)
-                    {
-                        FlexibleMessageBox.Show("Unable to restore Index Backups, shutting down TexTools.".L(), "Critical Error Shutdown".L(), MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
-                        return false;
-                    }
-                }
-                else
-                {
-                    FlexibleMessageBox.Show("Shutting Down TexTools.".L(), "Critical Error Shutdown".L(),  MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        /// <summary>
-        /// Asks for game directory and sets default save directory
-        /// </summary>
-        private void SetDirectories(bool valid)
-        {
-            if (valid)
-            {
-                var resourceManager = CommonInstallDirectories.ResourceManager;
-                var resourceSet = resourceManager.GetResourceSet(CultureInfo.CurrentCulture, true, true);
-
-                if (Properties.Settings.Default.FFXIV_Directory.Equals(""))
-                {
-                    var saveDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "/TexTools/Saved";
-                    Directory.CreateDirectory(saveDirectory);
-                    Properties.Settings.Default.Save_Directory = saveDirectory;
-                    Properties.Settings.Default.Save();
-
-                    var installDirectory = "";
-                    foreach (DictionaryEntry commonInstallPath in resourceSet)
-                    {
-                        if (!Directory.Exists(commonInstallPath.Value.ToString())) continue;
-
-                        if (FlexibleMessageBox.Show(string.Format(UIMessages.InstallDirectoryFoundMessage, commonInstallPath.Value), UIMessages.InstallDirectoryFoundTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-                        {
-                            installDirectory = commonInstallPath.Value.ToString();
-                            Properties.Settings.Default.FFXIV_Directory = installDirectory;
-                            Properties.Settings.Default.Save();
-                            break;
-                        }
-                    }
-
-                    if (string.IsNullOrEmpty(installDirectory))
-                    {
-                        if (FlexibleMessageBox.Show(UIMessages.InstallDirectoryNotFoundMessage, UIMessages.InstallDirectoryNotFoundTitle, MessageBoxButtons.OK, MessageBoxIcon.Question) == DialogResult.OK)
-                        {
-                            while (!installDirectory.Contains("ffxiv"))
-                            {
-                                var folderSelect = new FolderSelectDialog()
-                                {
-                                    Title = UIMessages.SelectffxivFolderTitle
-                                };
-
-                                var result = folderSelect.ShowDialog();
-
-                                if (result)
-                                {
-                                    installDirectory = folderSelect.FileName;
-                                }
-                                else
-                                {
-                                    Environment.Exit(0);
-                                }
-                            }
-
-                            Properties.Settings.Default.FFXIV_Directory = installDirectory;
-                            Properties.Settings.Default.Save();
-                        }
-                        else
-                        {
-                            Environment.Exit(0);
-                        }
-                    }
-                }
-
-                // Check if it is an old Directory
-                var fileLastModifiedTime = File.GetLastWriteTime(
-                    $"{Properties.Settings.Default.FFXIV_Directory}\\{XivDataFile._0A_Exd.GetDataFileName()}.win32.dat0");
-
-                if (fileLastModifiedTime.Year < 2021)
-                {
-                    SetDirectories(false);
-                }
-
-                SetSaveDirectory();
-
-                SetBackupsDirectory();
-
-                SetModPackDirectory();
-
-                var modding = new Modding(new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory));
-                modding.CreateModlist();
-            }
-            else
-            {
-                if (FlexibleMessageBox.Show(UIMessages.OutOfDateInstallMessage, UIMessages.OutOfDateInstallTitle, MessageBoxButtons.OK, MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.OK)
-                {
-                    var installDirectory = "";
-
-                    while (!installDirectory.Contains("ffxiv"))
-                    {
-                        var folderSelect = new FolderSelectDialog()
-                        {
-                            Title = UIMessages.SelectffxivFolderTitle
-                        };
-
-                        var result = folderSelect.ShowDialog();
-
-                        if (result)
-                        {
-                            installDirectory = folderSelect.FileName;
-                        }
-                        else
-                        {
-                            Environment.Exit(0);
-                        }
-                    }
-
-                    // Check if it is an old Directory
-                    var fileLastModifiedTime = File.GetLastWriteTime(
-                        $"{installDirectory}\\{XivDataFile._0A_Exd.GetDataFileName()}.win32.dat0");
-
-                    if (fileLastModifiedTime.Year < 2021)
-                    {
-                        SetDirectories(false);
-                    }
-                    else
-                    {
-                        Properties.Settings.Default.FFXIV_Directory = installDirectory;
-                        Properties.Settings.Default.Save();
-                    }
-                }
-                else
-                {
-                    Environment.Exit(0);
-                }
-            }
-        }
-
-        private void SetSaveDirectory()
-        {
-            if (string.IsNullOrEmpty(Properties.Settings.Default.Save_Directory))
-            {
-                var md = $"{Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)}/TexTools/Saved";
-                Directory.CreateDirectory(md);
-                Properties.Settings.Default.Save_Directory = md;
-                Properties.Settings.Default.Save();
-            }
-            else
-            {
-                if (!Directory.Exists(Properties.Settings.Default.Save_Directory))
-                {
-                    Directory.CreateDirectory(Properties.Settings.Default.Save_Directory);
-                }
-            }
-        }
-
-        private void SetBackupsDirectory()
-        {
-            if (string.IsNullOrEmpty(Properties.Settings.Default.Backup_Directory))
-            {
-                var md = $"{Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)}/TexTools/Index_Backups";
-                Directory.CreateDirectory(md);
-                Properties.Settings.Default.Backup_Directory = md;
-                Properties.Settings.Default.Save();
-            }
-            else
-            {
-                if (!Directory.Exists(Properties.Settings.Default.Backup_Directory))
-                {
-                    Directory.CreateDirectory(Properties.Settings.Default.Backup_Directory);
-                }
-            }
-        }
-
-        private void SetModPackDirectory()
-        {
-            if (string.IsNullOrEmpty(Properties.Settings.Default.ModPack_Directory))
-            {
-                var md = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "/TexTools/ModPacks";
-                Directory.CreateDirectory(md);
-                Properties.Settings.Default.ModPack_Directory = md;
-                Properties.Settings.Default.Save();
-            }
-            else
-            {
-                if (!Directory.Exists(Properties.Settings.Default.ModPack_Directory))
-                {
-                    Directory.CreateDirectory(Properties.Settings.Default.ModPack_Directory);
-                }
-            }
-        }
-
 
         /// <summary>
         /// Performs post-patch modlist corrections and validation, prompting user also to generate backups after a successful completion.
@@ -454,316 +181,85 @@ namespace FFXIV_TexTools.ViewModels
         {
 
             FlexibleMessageBox.Show(_mainWindow.Win32Window, UIMessages.PatchDetectedMessage, "Post Patch Cleanup Starting".L(), MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
-            MainWindow.MakeHighlander();
 
-            var resetLumina = false;
 
             await _mainWindow.LockUi("Performing Post-Patch Maintenence".L(), "This may take a few minutes if you have many mods installed.".L(), this);
 
-            var gi = XivCache.GameInfo;
-            if (XivCache.GameInfo.UseLumina)
+            var readonlyTx = ModTransaction.BeginReadonlyTransaction();
+            if ((await readonlyTx.GetModList()).Mods.Count == 0)
             {
-                resetLumina = true;
-                XivCache.SetGameInfo(gi.GameDirectory, gi.GameLanguage, gi.DxMode, false, false, gi.LuminaDirectory, gi.UseLumina);
+                // No mods.  Just create backups and move on with our life.
+                await BackupIndexFiles();
+                await _mainWindow.UnlockUi();
+                return;
             }
+            MainWindow.MakeHighlander();
+
+            var originalWriteSetting = XivCache.GameWriteEnabled;
+            XivCache.GameWriteEnabled = true;
 
             var workerStatus = XivCache.CacheWorkerEnabled;
 
-            if(workerStatus)
-            {
-                // Stop the cache worker if it's running.
-                XivCache.CacheWorkerEnabled = false;
-            }
+            await XivCache.SetCacheWorkerState(false);
             try
             {
-
-                var modding = new Modding(_gameDirectory);
-                var _index = new Index(_gameDirectory);
-                var _dat = new Dat(_gameDirectory);
-
-                var validTypes = new List<int>() { 2, 3, 4 };
-
-                // We have to do a few things here.
-                // 1.  Save a list of what mods were enabled.
-                // 2.  Go through and validate everything that says it is enabled actually is enabled, or mark it as disabled and update its original index offset if it is not.
-                // 3.  Prompt the user for either a full disable and backup creation, or a restore to normal state (re-enable anything that was enabled before but is not now)
-                var modList = modding.GetModList();
-
-                Dictionary<XivDataFile, IndexFile> indexFiles = new Dictionary<XivDataFile, IndexFile>();
-
-
                 // Cache our currently enabled stuff.
-                List<Mod> enabledMods = modList.Mods.Where(x => x.enabled == true).ToList();
-                var toRemove = new List<Mod>();
-
-                foreach (var mod in modList.Mods)
+                using (var tx = await ModTransaction.BeginTransaction(true))
                 {
-                    if (!String.IsNullOrEmpty(mod.fullPath))
+                    var modList = await tx.GetModList();
+                    var allMods = modList.GetMods().ToList();
+
+                    foreach(var mod in allMods)
                     {
-                        var df = IOUtil.GetDataFileFromPath(mod.fullPath);
-                        if (!indexFiles.ContainsKey(df))
+                        var state = await mod.GetState(tx);
+
+                        if(state != EModState.Invalid)
                         {
-                            indexFiles[df] = await _index.GetIndexFile(df);
+                            // Mod is fine.  Can continue on as normal.
+                            continue;
                         }
 
-                        var index1Value = indexFiles[df].Get8xDataOffset(mod.fullPath);
-                        var index2Value = indexFiles[df].Get8xDataOffsetIndex2(mod.fullPath);
-                        var oldOriginalOffset = mod.data.originalOffset;
-                        var modOffset = mod.data.modOffset;
+                        // An Invalid state mod points to Neither the original, nor the modded offset.
+                        var df = IOUtil.GetDataFileFromPath(mod.FilePath);
+                        var currentOffset = await tx.Get8xDataOffset(mod.FilePath);
 
+                        var originalOk = await CheckFile(tx, mod.FilePath, mod.OriginalOffset8x);
+                        var moddedOk = await CheckFile(tx, mod.FilePath, mod.ModOffset8x);
+                        var currentOK = await CheckFile(tx, mod.FilePath, currentOffset);
 
-                        // In any event where an offset does not match either of our saved offsets, we must assume this is a new
-                        // default file offset for post-patch.
-                        if (index1Value != oldOriginalOffset && index1Value != modOffset && index1Value != 0)
+                        if(originalOk && moddedOk && !currentOK)
                         {
-                            // Index 1 value is our new base offset.
-                            var type = _dat.GetFileType(index1Value, df);
-
-                            // Make sure the file it's trying to point to is actually valid.
-                            if (validTypes.Contains(type))
-                            {
-                                mod.data.originalOffset = index1Value;
-                                mod.enabled = false;
-                            } else
-                            {
-                                // Oh dear.  The new index is fucked.  Is the old Index Ok?
-                                type = _dat.GetFileType(oldOriginalOffset, df);
-
-                                if (validTypes.Contains(type) && oldOriginalOffset != 0)
-                                {
-                                    // Old index is fine, so keep using that.
-
-                                    // But mark the index value as invalid, so that we stomp on the index value after this.
-                                    index1Value = -1;
-                                    mod.enabled = false;
-                                } else
-                                {
-                                    // Okay... Maybe the new Index2 Value?
-                                    if (index2Value != 0)
-                                    {
-                                        type = _dat.GetFileType(index2Value, df);
-                                        if (validTypes.Contains(type))
-                                        {
-                                            // Set the index 1 value to invalid so that the if later down the chain stomps the index1 value.
-                                            index1Value = -1;
-
-                                            mod.data.originalOffset = index2Value;
-                                            mod.enabled = false;
-                                        }
-                                        else
-                                        {
-                                            // We be fucked.
-                                            throw new Exception("Unable to determine working original offset for file:".L() + mod.fullPath);
-                                        }
-                                    } else
-                                    {
-                                        // We be fucked.
-                                        throw new Exception("Unable to determine working original offset for file:".L() + mod.fullPath);
-                                    }
-                                }
-                            }
-                        }
-                        else if (index2Value != oldOriginalOffset && index2Value != modOffset && index2Value != 0)
+                            // Mod is fine but current offset is bad.  Restore it to original.
+                            await tx.Set8xDataOffset(mod.FilePath, mod.OriginalOffset8x);
+                        } else if(moddedOk && currentOK && !originalOk)
                         {
-                            // Our Index 1 was normal, but our Index 2 is changed to an unknown value.
-                            // If the index 2 points to a valid file, we must assume that this new file 
-                            // is our new base data offset.
-
-                            var type = _dat.GetFileType(index2Value, df);
-
-                            if (validTypes.Contains(type) && index2Value != 0)
-                            {
-                                mod.data.originalOffset = index2Value;
-                                mod.enabled = false;
-                            }
-                            else
-                            {
-                                // Oh dear.  The new index is fucked.  Is the old Index Ok?
-                                type = _dat.GetFileType(oldOriginalOffset, df);
-
-                                if (validTypes.Contains(type) && oldOriginalOffset != 0)
-                                {
-                                    // Old index is fine, so keep using that, but set the index2 value to invalid to ensure we 
-                                    // stomp on the current broken index value.
-                                    index2Value = -1;
-                                }
-                                else
-                                {
-                                    // We be fucked.
-                                    throw new Exception("Unable to determine working original offset for file:".L() + mod.fullPath);
-                                }
-                            }
+                            // Original offset moved.  Just update the mod entry.
+                            var m = mod;
+                            m.OriginalOffset8x = currentOffset;
+                            await tx.UpdateMod(mod, mod.FilePath);
+                        } else if(currentOK && !moddedOk && !originalOk)
+                        {
+                            // Mod got blasted, but the base file seems fine.  Remove the mod entry.
+                            await tx.RemoveMod(mod);
+                        } else
+                        {
+                            // Any of these other states are indeterminate and unfixable.
+                            throw new InvalidDataException("Offsets for one or more files are unrecoverable.  Please use Download Index Backups => Start Over.");
                         }
 
-                        // Indexes don't match.  This can occur if SE adds something to index2 that didn't exist in index2 before.
-                        if (index1Value != index2Value && index2Value != 0)
-                        {
-                            // We should never actually get to this state for file-addition mods.  If we do, uh.. I guess correct the indexes and yolo?
-                            // ( Only way we get here is if SE added a new file at the same name as a file the user had created via modding, in which case, it's technically no longer a file addition mod )
-                            indexFiles[df].SetDataOffset(mod.fullPath, mod.data.originalOffset);
-                            index1Value = mod.data.originalOffset;
-                            index2Value = mod.data.originalOffset;
-
-                            mod.enabled = false;
-                        }
-
-                        // Set it to the corrected state.
-                        if (index1Value == mod.data.modOffset)
-                        {
-                            mod.enabled = true;
-                        }
-                        else
-                        {
-                            mod.enabled = false;
-                        }
-
-                        // Perform a basic file type check on our results.
-                        var fileType = _dat.GetFileType(mod.data.modOffset, IOUtil.GetDataFileFromPath(mod.fullPath));
-                        var originalFileType = _dat.GetFileType(mod.data.modOffset, IOUtil.GetDataFileFromPath(mod.fullPath));
-
-                        if (!validTypes.Contains(fileType) || mod.data.modOffset == 0)
-                        {
-                            // Mod data is busted.  Fun.
-                            toRemove.Add(mod);
-                        }
-
-                        if ((!validTypes.Contains(originalFileType)) || mod.data.originalOffset == 0)
-                        {
-                            if (mod.IsCustomFile())
-                            {
-                                // Okay, in this case this is recoverable as the mod is a custom addition anyways, so we can just delete it.
-                                if(!toRemove.Contains(mod))
-                                {
-                                    toRemove.Add(mod);
-                                }
-                            }
-                            else
-                            {
-                                // Update ended up with us unable to find a working offset.  Double fun.
-                                throw new Exception("Unable to determine working offset for file:".L() + mod.fullPath);
-                            }
-                        }
+                        // Set to current value to ensure the index points to the same offset for both indexes.
+                        await tx.Set8xDataOffset(mod.FilePath, await tx.Get8xDataOffset(mod.FilePath));
                     }
 
-                    // Okay, this mod is now represented in the modlist in it's actual post-patch index state.
-                    var datNum = (int)((mod.data.modOffset / 8) & 0x0F) / 2;
-                    var dat = XivDataFiles.GetXivDataFile(mod.datFile);
+                    // We now have a working, valid modlist.  Nice.
+                    // Make some fresh backups.
+                    await ModTransaction.CommitTransaction(tx);
 
-                    var originalDats = await _dat.GetUnmoddedDatList(dat);
-                    var datPath = $"{dat.GetDataFileName()}{Dat.DatExtension}{datNum}";
-
-                    // Test for SE Dat file rollover.
-                    if (originalDats.Contains(datPath))
-                    {
-                        // Shit.  This means that the dat file where this mod lived got eaten by SE.  We have to destroy the modlist entry at this point.
-                        toRemove.Add(mod);
-                    }
-                }
-
-                // Save any index changes we made.
-                foreach(var dkv in indexFiles)
-                {
-                    await _index.SaveIndexFile(dkv.Value);
-                }
-
-                // The modlist is now saved in its current index-represented post patch state.
-                modding.SaveModList(modList);
-
-                // We now need to clear out any mods that are irreparably fucked, and clear out all of our
-                // internal data files so we can rebuild them later.
-
-                var internalFiles = modList.Mods.Where(x => x.IsInternal());
-                toRemove.AddRange(internalFiles);
-
-                if (toRemove.Count > 0)
-                {
-                    var removedString = "";
-
-                    // Soft-Disable all metadata mods, since we're going to purge their internal file entries.
-                    var metadata = modList.Mods.Where(x => x.fullPath.EndsWith(".meta") || x.fullPath.EndsWith(".rgsp"));
-                    foreach (var mod in metadata)
-                    {
-                        var df = IOUtil.GetDataFileFromPath(mod.fullPath);
-                        await modding.ToggleModUnsafe(false, mod, true, false, indexFiles[df], modList);
-                    }
-
-                    foreach (var mod in toRemove)
-                    {
-                        if (mod.data.modOffset == 0 || mod.data.originalOffset == 0)
-                        {
-                            if(mod.data.originalOffset == 0 && mod.enabled)
-                            {
-                                // This is awkward.  We have a mod whose data got bashed, but has no valid original offset to restore.
-                                // So the indexes here are fucked if we do, fucked if we don't.
-                                throw new Exception("Patch-Broken file has no valid index to restore.  Clean Index Restoration required.".L());
-                            }
-
-                            modList.Mods.Remove(mod);
-                            enabledMods.Remove(mod);
-                            removedString += mod.fullPath + "\n";
-                        }
-                        else
-                        {
-
-                            if (mod.enabled)
-                            {
-                                var df = IOUtil.GetDataFileFromPath(mod.fullPath);
-                                await modding.ToggleModUnsafe(false, mod, true, false, indexFiles[df], modList);
-                            }
-
-                            modList.Mods.Remove(mod);
-
-                            // Since we're deleting this entry entirely, we can't leave it in the other cached list either to get re-enabled later.
-                            enabledMods.Remove(mod);
-
-                            if (!mod.IsInternal())
-                            {
-                                removedString += mod.fullPath + "\n";
-                            }
-                        }
-                    }
-
-                    // Save the index files and modlist again now that we've removed all the invalid entries.
-                    foreach (var dkv in indexFiles)
-                    {
-                        await _index.SaveIndexFile(dkv.Value);
-                    }
-                    modding.SaveModList(modList);
-
-                    // Show the user a message if we purged any real files.
-                    if (toRemove.Any(x => !String.IsNullOrEmpty(x.fullPath) && !x.IsInternal()))
-                    {
-                        var text = String.Format(UIMessages.PatchDestroyedFiles, removedString);
-
-                        FlexibleMessageBox.Show(_mainWindow.Win32Window, text, "Destroyed Files Notification".L(), MessageBoxButtons.OK, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1);
-                    }
                 }
 
                 // Always create clean index backups after this process is completed.
-
-                _mainWindow.LockProgress.Report("Disabling Mods...".L());
-                await modding.ToggleAllMods(false);
-
-                _mainWindow.LockProgress.Report("Creating Index Backups...".L());
-                var pc = new ProblemChecker(_gameDirectory);
-                DirectoryInfo backupDir;
-                try
-                {
-                    Directory.CreateDirectory(Settings.Default.Backup_Directory);
-                    backupDir = new DirectoryInfo(Settings.Default.Backup_Directory);
-                }
-                catch
-                {
-                    throw new Exception("Unable to create index backups.\nThe Index Backup directory is invalid or inaccessible: ".L() + Settings.Default.Backup_Directory);
-                }
-
-                await pc.BackupIndexFiles(backupDir);
-
-                // Now restore the modlist enable/disable state back to how the user had it before.
-                _mainWindow.LockProgress.Report("Re-Enabling mods...");
-
-                // Re-enable things.
-                await modding.ToggleMods(true, enabledMods.Select(x => x.fullPath));
+                _mainWindow.LockProgress.Report("Creating fresh index backups...".L());
+                await ProblemChecker.CreateIndexBackups(Settings.Default.Backup_Directory);
 
                 FlexibleMessageBox.Show(_mainWindow.Win32Window, UIMessages.PostPatchComplete, "Post-Patch Process Complete".L(), MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
 
@@ -775,18 +271,25 @@ namespace FFXIV_TexTools.ViewModels
             }
             finally
             {
-
-                if(resetLumina)
-                {
-                    // Reset lumina mode back to on if we disabled it to perform update checks.
-                    XivCache.SetGameInfo(gi.GameDirectory, gi.GameLanguage, gi.DxMode, true, false, gi.LuminaDirectory, true);
-                }
-
-                XivCache.CacheWorkerEnabled = workerStatus;
+                await XivCache.SetCacheWorkerState(workerStatus);
+                XivCache.GameWriteEnabled = originalWriteSetting;
                 await _mainWindow.UnlockUi(this);
             }
         }
 
+        private async Task BackupIndexFiles()
+        {
+            _mainWindow.LockProgress?.Report("Creating Index Backups...".L());
+            try
+            {
+                await ProblemChecker.CreateIndexBackups(Settings.Default.Backup_Directory);
+            }
+            catch(Exception ex)
+            {
+                ViewHelpers.ShowError("Index Backup Error", "Index backups were unabled to be created:\n\n" + ex.Message);
+            }
+
+        }
 
         /// <summary>
         /// The DX Version
@@ -874,33 +377,8 @@ namespace FFXIV_TexTools.ViewModels
         }
 
         #region MenuItems
-
-        public ICommand DXVersionCommand => new RelayCommand(SetDXVersion);
         public ICommand EnableAllModsCommand => new RelayCommand(EnableAllMods);
         public ICommand DisableAllModsCommand => new RelayCommand(DisableAllMods);
-
-        /// <summary>
-        /// Sets the DX version for the application
-        /// </summary>
-        private void SetDXVersion(object obj)
-        {
-            var gi = XivCache.GameInfo;
-            if (DXVersionText.Contains("11"))
-            {
-                Properties.Settings.Default.DX_Version = "9";
-                Properties.Settings.Default.Save();
-                XivCache.SetGameInfo(gi.GameDirectory, gi.GameLanguage, 9, true, true, gi.LuminaDirectory, gi.UseLumina);
-            }
-            else
-            {
-                Properties.Settings.Default.DX_Version = "11";
-                Properties.Settings.Default.Save();
-                XivCache.SetGameInfo(gi.GameDirectory, gi.GameLanguage, 11, true, true, gi.LuminaDirectory, gi.UseLumina);
-            }
-
-            DXVersionText = $"DX: {Properties.Settings.Default.DX_Version}";
-        }
-
 
 
         /// <summary>
@@ -909,24 +387,19 @@ namespace FFXIV_TexTools.ViewModels
         /// <param name="obj"></param>
         private async void EnableAllMods(object obj)
         {
-            if (_index.IsIndexLocked(XivDataFile._0A_Exd))
-            {
-                FlexibleMessageBox.Show(UIMessages.IndexLockedErrorMessage, UIMessages.IndexLockedErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                return;
-            }
-
             _progressController = await _mainWindow.ShowProgressAsync(UIMessages.EnablingModsTitle, UIMessages.PleaseWaitMessage);
-            var progressIndicator = new Progress<(int current, int total, string message)>(ReportProgress);
 
             if (FlexibleMessageBox.Show(
                     UIMessages.EnableAllModsMessage, UIMessages.EnablingModsTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
-                var modding = new Modding(_gameDirectory);
                 bool err = false;
                 try
                 {
-                    await modding.ToggleAllMods(true, progressIndicator);
+                    // Run on new thread so we don't block.
+                    await Task.Run(async () =>
+                    {
+                        await Modding.SetAllModStates(EModState.Enabled, ViewHelpers.BindReportProgress(_progressController), MainWindow.UserTransaction);
+                    });
                 } catch(Exception ex)
                 {
                     FlexibleMessageBox.Show("Failed to Enable all Mods: \n\nError:".L() + ex.Message, "Enable Mod Error".L(), MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -950,23 +423,19 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         private async void DisableAllMods(object obj)
         {
-            if (_index.IsIndexLocked(XivDataFile._0A_Exd))
-            {
-                FlexibleMessageBox.Show(UIMessages.IndexLockedErrorMessage, UIMessages.IndexLockedErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                return;
-            }
-
             _progressController = await _mainWindow.ShowProgressAsync(UIMessages.DisablingModsTitle, UIMessages.PleaseWaitMessage);
-            var progressIndicator = new Progress<(int current, int total, string message)>(ReportProgress);
 
             if (FlexibleMessageBox.Show(
                     UIMessages.DisableAllModsMessage, UIMessages.DisableAllModsTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
-                var modding = new Modding(_gameDirectory);
                 bool err = false;
-                try { 
-                    await modding.ToggleAllMods(false, progressIndicator);
+                try
+                {
+                    // Run on new thread so we don't block.
+                    await Task.Run(async () =>
+                    {
+                        await Modding.SetAllModStates(EModState.Disabled, ViewHelpers.BindReportProgress(_progressController), MainWindow.UserTransaction);
+                    });
                 } catch (Exception ex)
                 {
                     FlexibleMessageBox.Show("Failed to Disable all Mods: \n\nError:".L() + ex.Message, "Disable Mod Error".L(), MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -987,28 +456,54 @@ namespace FFXIV_TexTools.ViewModels
 
         }
 
-        /// <summary>
-        /// Updates the progress bar
-        /// </summary>
-        /// <param name="value">The progress value</param>
-        private void ReportProgress((int current, int total, string message) report)
+        #endregion
+
+
+        private async void TxStateChanged(ETransactionState oldState, ETransactionState newState)
         {
-            if (!report.message.Equals(string.Empty))
+            try
             {
-                _progressController.SetMessage(report.message.L());
-                _progressController.SetIndeterminate();
+                await await _mainWindow.Dispatcher.InvokeAsync(async () =>
+                {
+                    UpdateTxState(newState);
+                });
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine(ex);
+            }
+        }
+        private void UpdateTxState(ETransactionState newState)
+        {
+            TxStatusText = newState.ToString();
+            if(PenumbraAttachHandler.IsAttached && newState == ETransactionState.Open)
+            {
+                TxStatusText = "Penumbra Sync".L();
+            }
+
+            if (newState == ETransactionState.Open)
+            {
+                // TX is ready for writing.
+                TxStatusBrush = Brushes.DarkGreen;
+            }
+            else if (newState == ETransactionState.Invalid || newState == ETransactionState.Closed)
+            {
+                // TX is closed.
+                TxStatusBrush = Brushes.DarkGray;
+            }
+            else if (newState == ETransactionState.Preparing)
+            {
+                // TX is ready for prep-writing.
+                TxStatusBrush = Brushes.DarkOrange;
             }
             else
             {
-                _progressController.SetMessage(
-                    $"{UIMessages.PleaseStandByMessage} ({report.current} / {report.total})");
-
-                var value = (double)report.current / (double)report.total;
-                _progressController.SetProgress(value);
+                // TX is working.
+                TxStatusBrush = Brushes.DarkRed;
             }
+
         }
 
-        #endregion
 
         public event PropertyChangedEventHandler PropertyChanged;
 

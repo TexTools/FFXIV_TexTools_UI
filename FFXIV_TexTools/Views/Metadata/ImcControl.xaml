@@ -31,7 +31,9 @@
             <Button Grid.Column="3" x:Name="AddVariantButton" Margin="5,0" VerticalAlignment="Center" Click="AddVariantButton_Click">
                 <iconPacks:PackIconFontAwesome Kind="PlusSolid"/>
             </Button>
-            <TextBlock x:Name="ItemNameBox" Text="[3] Some Cool Item Name" Margin="10,0" FontSize="16" Grid.Row="0" Grid.Column="4" VerticalAlignment="Center"/>
+            <TextBlock x:Name="ItemNameBox" Text="[3] Some Cool Item Name" Margin="110,0,5,0" FontSize="16" Grid.Row="0" Grid.Column="4" VerticalAlignment="Center"/>
+
+            <Button Content="View Item" Grid.Row="0" Grid.Column="4" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5, 0" Width="100" Click="OpenSubItem"></Button>
 
             <Grid Grid.Row="1" Grid.Column="1" Margin="5" Grid.ColumnSpan="4">
 

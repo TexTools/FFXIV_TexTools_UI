@@ -21,8 +21,11 @@ using xivModdingFramework.Mods;
 using xivModdingFramework.Mods.DataContainers;
 using xivModdingFramework.Mods.FileTypes;
 using xivModdingFramework.SqPack.FileTypes;
-
-using Index = xivModdingFramework.SqPack.FileTypes.Index;
+using AutoUpdaterDotNET;
+using System.Windows.Markup;
+using System.Diagnostics;
+using FFXIV_TexTools.Views.Wizard;
+using xivModdingFramework.General;
 
 namespace FFXIV_TexTools.Views
 {
@@ -87,7 +90,18 @@ namespace FFXIV_TexTools.Views
             InitializeComponent();
 
             ShowItemSelect();
+
+            Closing += StandardModpackCreator_Closing;
         }
+
+        private void StandardModpackCreator_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if(Owner != null)
+            {
+                Owner.Activate();
+            }
+        }
+
         public async Task LockUi(string title, string message, object requestor)
         {
             _lockProgressController = await this.ShowProgressAsync(title, message);
@@ -160,7 +174,7 @@ namespace FFXIV_TexTools.Views
 
             if (_inProgressLevel == XivDependencyLevel.Root)
             {
-                SelectAllFiles();
+                _ = SelectAllFiles();
                 return;
             }
             else
@@ -285,131 +299,33 @@ namespace FFXIV_TexTools.Views
                 return;
             }
 
-            CreateModpack();
+            _ = CreateModpack();
         }
 
         private async Task CreateModpack()
         {
 
-            if(ViewModel.SaveAdvanced)
-            {
-                await CreateAdvanced();
-            } else
-            {
-                await CreateBasic();
-            }
-        }
-        private async Task CreateAdvanced()
-        {
-
-            string modPackPath = Path.Combine(Properties.Settings.Default.ModPack_Directory, $"{ViewModel.Name}.ttmp2");
-
-            if (File.Exists(modPackPath))
-            {
-                DialogResult overwriteDialogResult = FlexibleMessageBox.Show(new Wpf32Window(this), UIMessages.ModPackOverwriteMessage,
-                                            UIMessages.OverwriteTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
-                if (overwriteDialogResult != System.Windows.Forms.DialogResult.Yes)
-                {
-                    return;
-                }
-            }
-
-            await LockUi(UIStrings.Creating_Modpack, null, null);
+            var success = false;
+            await LockUi("Creating Modpack", "Please wait...", this);
             try
             {
-                TTMP texToolsModPack = new TTMP(new DirectoryInfo(Settings.Default.ModPack_Directory), XivStrings.TexTools);
-                var index = new Index(XivCache.GameInfo.GameDirectory);
-                var dat = new Dat(XivCache.GameInfo.GameDirectory);
-                var modding = new Modding(XivCache.GameInfo.GameDirectory);
-                var ModList = modding.GetModList();
-
-                var wizardData = new ModPackData()
-                {
-                    Name = ViewModel.Name,
-                    Author = ViewModel.Author,
-                    Version = ViewModel.Version,
-                    Description = ViewModel.Description,
-                    Url = ViewModel.Url,
-                    ModPackPages = new List<ModPackData.ModPackPage>()
-                };
-
-                var page = new ModPackData.ModPackPage()
-                {
-                    PageIndex = 1,
-                    ModGroups = new List<ModGroup>()
-                };
-
-                wizardData.ModPackPages.Add(page);
-
-
-                foreach (var e in ViewModel.Entries)
-                {
-                    var item = e.Item;
-                    var files = e.AllFiles;
-
-                    var group = new ModGroup()
-                    {
-                        GroupName = item.Name,
-                        SelectionType = "Multi",
-                        OptionList = new List<ModOption>()
-                    };
-                    page.ModGroups.Add(group);
-
-                    var option = new ModOption
-                    {
-                        GroupName = group.GroupName,
-                        IsChecked = true,
-                        Name = GetNiceLevelName(e.Level, true, true),
-                        Description = $"Item: {item.Name._()}\nInclusion Level: {GetNiceLevelName(e.Level)._()}\nPrimary Files:{e.MainFiles.Count._()}\nTotal Files:{e.AllFiles.Count._()}".L(),
-                        SelectionType = "Multi",
-                    };
-                    group.OptionList.Add(option);
-
-                    foreach (var file in e.AllFiles)
-                    {
-                        var exists = await index.FileExists(file);
-
-                        // This is a funny case where in order to create the modpack we actually have to write a default meta entry to the dats first.
-                        // If we had the right functions we could just load and serialize the data, but we don't atm.
-                        if (!exists && Path.GetExtension(file) == ".meta")
-                        {
-                            var meta = await ItemMetadata.GetMetadata(file);
-                            await ItemMetadata.SaveMetadata(meta, XivStrings.TexTools);
-                        }
-
-                        var offset = await index.GetDataOffset(file);
-                        var dataFile = IOUtil.GetDataFileFromPath(file);
-                        var compressedSize = await dat.GetCompressedFileSize(offset, dataFile);
-                        var modEntry = ModList.Mods.FirstOrDefault(x => x.fullPath == file);
-                        var modded = modEntry != null && modEntry.enabled == true;
-
-                        var fData = new ModData
-                        {
-                            Name = e.Item.Name,
-                            Category = e.Item.SecondaryCategory,
-                            FullPath = file,
-                            IsDefault = !modded,
-                            ModDataBytes = dat.GetRawData(offset, dataFile, compressedSize)
-                        };
-                        option.Mods.Add(file, fData);
-                    }
-                }
-
-                // Okay modpack is now created internally, just need to save it.
-                var progressIndicator = new Progress<double>(ReportProgressAdv);
-                await texToolsModPack.CreateWizardModPack(wizardData, progressIndicator , true);
-                FlexibleMessageBox.Show(new Wpf32Window(this), "Modpack Created Successfully.".L(),
-                                               "Modpack Created".L(), MessageBoxButtons.OK, MessageBoxIcon.Information);
-                await UnlockUi(this);
-                DialogResult = true;
-            } catch(Exception ex)
+                await Create();
+                success = true;
+            }
+            catch(Exception ex)
             {
-                FlexibleMessageBox.Show(new Wpf32Window(this), "An Error occured while creating the modpack.\n\n".L() + ex.Message,
-                                               "Modpack Creation Error".L(), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                ViewHelpers.ShowError(this, "Mod Creation Error", "An error occurred while creating the mod:\n\n" + ex.Message);
+            }
+            finally
+            {
                 await UnlockUi(this);
+                if (success)
+                {
+                    DialogResult = true;
+                }
             }
         }
-        private async Task CreateBasic()
+        private async Task Create()
         {
             string modPackPath = Path.Combine(Properties.Settings.Default.ModPack_Directory, $"{ViewModel.Name}.ttmp2");
 
@@ -423,12 +339,6 @@ namespace FFXIV_TexTools.Views
                 }
             }
 
-            TTMP texToolsModPack = new TTMP(new DirectoryInfo(Settings.Default.ModPack_Directory), XivStrings.TexTools);
-            var index = new Index(XivCache.GameInfo.GameDirectory);
-            var dat = new Dat(XivCache.GameInfo.GameDirectory);
-            var modding = new Modding(XivCache.GameInfo.GameDirectory);
-            var ModList = modding.GetModList();
-
             SimpleModPackData simpleModPackData = new SimpleModPackData
             {
                 Name = ViewModel.Name,
@@ -439,91 +349,98 @@ namespace FFXIV_TexTools.Views
                 SimpleModDataList = new List<SimpleModData>()
             };
 
-            foreach (var entry in ViewModel.Entries)
-            {
-                foreach(var file in entry.AllFiles)
-                {
-                    var exists = await index.FileExists(file);
-
-                    // This is a funny case where in order to create the modpack we actually have to write a default meta entry to the dats first.
-                    // If we had the right functions we could just load and serialize the data, but we don't atm.
-                    if (!exists && Path.GetExtension(file) == ".meta")
-                    {
-                        var meta = await ItemMetadata.GetMetadata(file);
-                        await ItemMetadata.SaveMetadata(meta, XivStrings.TexTools);
-                    }
-
-                    var offset = await index.GetDataOffset(file);
-                    var dataFile = IOUtil.GetDataFileFromPath(file);
-                    var compressedSize = await dat.GetCompressedFileSize(offset, dataFile);
-                    var modEntry = ModList.Mods.FirstOrDefault(x => x.fullPath == file);
-                    var modded = modEntry != null && modEntry.enabled == true;
-
-
-                    SimpleModData simpleData = new SimpleModData
-                    {
-                        Name = entry.Item.Name,
-                        Category = entry.Item.SecondaryCategory,
-                        FullPath = file,
-                        ModOffset = offset,
-                        ModSize = compressedSize,
-                        IsDefault = !modded,
-                        DatFile = dataFile.GetDataFileName()
-                    };
-
-                    simpleModPackData.SimpleModDataList.Add(simpleData);
-
-                }
-            }
-
-
-
+            var tx = MainWindow.DefaultTransaction;
             try
             {
-                await LockUi(UIStrings.Creating_Modpack, null, null);
-                Progress<(int current, int total, string message)> progressIndicator = new Progress<(int current, int total, string message)>(ReportProgress);
-                await texToolsModPack.CreateSimpleModPack(simpleModPackData, XivCache.GameInfo.GameDirectory, progressIndicator, true);
-                FlexibleMessageBox.Show(new Wpf32Window(this), "Modpack Created Successfully.".L(),
-                                               "Modpack Created".L(), MessageBoxButtons.OK, MessageBoxIcon.Information);
-                await UnlockUi(this);
-                DialogResult = true;
+                // Create the data to write.
+                var wizardData = new WizardData();
+
+                wizardData.MetaPage.Author = ViewModel.Author;
+                wizardData.MetaPage.Name = ViewModel.Name;
+                wizardData.MetaPage.Description = ViewModel.Description;
+                wizardData.MetaPage.Url = ViewModel.Url;
+                wizardData.MetaPage.Version = ViewModel.Version.ToString();
+                wizardData.MetaPage.Image = ViewModel.Image;
+
+                var page = new WizardPageEntry();
+                var group = new WizardGroupEntry();
+                group.OptionType = EOptionType.Multi;
+                page.Groups.Add(group);
+                wizardData.DataPages.Add(page);
+
+                group.Name = "Items";
+
+
+                foreach (var entry in ViewModel.Entries)
+                {
+                    var option = new WizardOptionEntry(group);
+                    option.Name = "Default Option";
+                    group.Options.Add(option);
+                    option.Selected = true;
+                    foreach (var file in entry.AllFiles)
+                    {
+                        // Need to compose these first, since they may not exist in packable form yet.
+                        if (file.EndsWith(".meta") || file.EndsWith(".rgsp")) {
+                            byte[] data;
+                            if (file.EndsWith(".meta"))
+                            {
+                                var meta = await ItemMetadata.GetMetadata(file, false, tx);
+                                data = await ItemMetadata.Serialize(meta);
+                            } else
+                            {
+                                var rg = CMP.GetRaceGenderFromRgspPath(file);
+                                var rgsp = await CMP.GetScalingParameter(rg.Race, rg.Gender, false, tx);
+                                data = rgsp.GetBytes();
+                            }
+
+                            var path = IOUtil.GetFrameworkTempFile();
+                            File.WriteAllBytes(path, data);
+
+                            var info = new FileStorageInformation()
+                            {
+                                FileSize = 0,
+                                RealOffset = 0,
+                                RealPath = path,
+                                StorageType = EFileStorageType.UncompressedIndividual
+                            };
+                            option.StandardData.Files.Add(file, info);
+                        }
+                        else
+                        {
+                            var info = await tx.UNSAFE_GetStorageInfo(file);
+                            option.StandardData.Files.Add(file, info);
+                        }
+                    }
+                }
+
+                if (ViewModel.ModpackPath.ToLower().EndsWith(".ttmp2"))
+                {
+                    var option = group.Options[0];
+                    option.Image = ViewModel.Image;
+                    await wizardData.WriteWizardPack(ViewModel.ModpackPath);
+                }
+                else
+                {
+                    await wizardData.WritePmp(ViewModel.ModpackPath);
+                }
+
             }
             catch(Exception ex)
             {
+
                 FlexibleMessageBox.Show(new Wpf32Window(this), "An Error occured while creating the modpack.\n\n".L()+ ex.Message,
                                                "Modpack Creation Error".L(), MessageBoxButtons.OK, MessageBoxIcon.Error);
-                await UnlockUi(this);
             }
 
 
         }
+
 
         private void ReportProgressAdv(double value)
         {
             // No-op
         }
 
-        /// <summary>
-        /// Updates the progress bar
-        /// </summary>
-        /// <param name="value">The progress value</param>
-        private void ReportProgress((int current, int total, string message) report)
-        {
-            if (!report.message.Equals(string.Empty))
-            {
-
-                _lockProgressController.SetMessage(report.message);
-                _lockProgressController.SetIndeterminate();
-            }
-            else
-            {
-                _lockProgressController.SetMessage(
-                    $"{UIMessages.TTMPGettingData} ({report.current} / {report.total})");
-
-                double value = (double)report.current / (double)report.total;
-                _lockProgressController.SetProgress(value);
-            }
-        }
 
     }
 }

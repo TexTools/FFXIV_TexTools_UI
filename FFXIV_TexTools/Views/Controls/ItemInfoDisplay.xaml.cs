@@ -26,7 +26,6 @@ using xivModdingFramework.Models.FileTypes;
 using xivModdingFramework.SqPack.FileTypes;
 using xivModdingFramework.Variants.FileTypes;
 
-using Index = xivModdingFramework.SqPack.FileTypes.Index;
 
 namespace FFXIV_TexTools.Views.Controls
 {
@@ -94,12 +93,9 @@ namespace FFXIV_TexTools.Views.Controls
             var lang = XivCache.GameInfo.GameLanguage;
             var df = IOUtil.GetDataFileFromPath(root.Info.GetRootFile());
 
-            var _index = new Index(gd);
-            var _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory);
-            var _mdl = new Mdl(gd, df);
-            var _imc = new Imc(gd);
             var raceRegex = new Regex("c([0-9]{4})[^b]");
 
+            var tx = MainWindow.DefaultTransaction;
             ItemNameBox.Text = _item.Name;
 
             var setName = root.Info.GetBaseFileName(false);
@@ -129,7 +125,7 @@ namespace FFXIV_TexTools.Views.Controls
                 VariantLabel.Text = $"Variant: --".L();
             }
 
-            var mSet = await _imc.GetMaterialSetId(_item);
+            var mSet = await Imc.GetMaterialSetId(_item, false, tx);
             if (mSet > 0)
             {
                 MaterialSetLabel.Text = $"Material Set: {mSet._()}".L();
@@ -140,8 +136,8 @@ namespace FFXIV_TexTools.Views.Controls
 
             var races = XivRaces.PlayableRaces;
 
-            var models = await root.GetModelFiles();
-            var materials = await root.GetMaterialFiles(mSet);
+            var models = await root.GetModelFiles(tx);
+            var materials = await root.GetMaterialFiles(mSet, tx);
 
             #region Race Chart
             var rowIdx = 1;
@@ -219,7 +215,7 @@ namespace FFXIV_TexTools.Views.Controls
                     {
                         // Get the materials used by this racial's model.
                         var mdl = usedMdl;
-                        var mdlMaterials = await XivCache.GetChildFiles(mdl);
+                        var mdlMaterials = await XivCache.GetChildFiles(mdl, tx);
                         var mtrl = mdlMaterials.FirstOrDefault(x => raceRegex.IsMatch(x));
 
                         if(mtrl == null)
@@ -271,8 +267,8 @@ namespace FFXIV_TexTools.Views.Controls
             if (Imc.UsesImc(_item) && _item.ModelInfo != null)
             {
                 var myImcSubsetId = _item.ModelInfo.ImcSubsetID;
-                var allItems = await root.GetAllItems();
-                var fInfo = await _imc.GetFullImcInfo(_item);
+                var allItems = await root.GetAllItems(-1, MainWindow.DefaultTransaction);
+                var fInfo = await Imc.GetFullImcInfo(_item, false, tx);
                 var entries = fInfo.GetAllEntries(_item.GetItemSlotAbbreviation(), true);
 
                 foreach (var item in allItems)

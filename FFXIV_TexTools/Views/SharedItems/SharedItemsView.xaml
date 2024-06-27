@@ -13,34 +13,6 @@
     x:Class="FFXIV_TexTools.Views.SharedItemsView"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <UserControl.Resources>
-        <SolidColorBrush x:Key="DarkSquareColor" Color="#CC000000" />
-        <SolidColorBrush x:Key="LightSquareColor" Color="#BF000000" />
-        <Style x:Key="{x:Type xctk:Zoombox}" TargetType="{x:Type xctk:Zoombox}">
-            <Style.Triggers>
-                <Trigger Property="AreDragModifiersActive" Value="True">
-                    <Setter Property="Cursor" Value="SizeAll" />
-                </Trigger>
-                <Trigger Property="AreZoomModifiersActive" Value="True">
-                    <Setter Property="Cursor" Value="Arrow" />
-                </Trigger>
-                <Trigger Property="AreZoomToSelectionModifiersActive" Value="True">
-                    <Setter Property="Cursor" Value="Cross" />
-                </Trigger>
-                <Trigger Property="AreRelativeZoomModifiersActive" Value="True">
-                    <Setter Property="Cursor" Value="Arrow" />
-                </Trigger>
-                <!-- The IsDraggingContent and IsSelectingRegion triggers should 
-           always be last. -->
-                <Trigger Property="IsDraggingContent" Value="True">
-                    <Setter Property="Cursor" Value="SizeAll" />
-                </Trigger>
-                <Trigger Property="IsSelectingRegion" Value="True">
-                    <Setter Property="Cursor" Value="Cross" />
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-    </UserControl.Resources>
     <Grid>
         <TreeView x:Name="PrimaryTree" Margin="10"/>
     </Grid>

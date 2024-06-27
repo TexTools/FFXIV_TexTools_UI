@@ -81,8 +81,19 @@ namespace FFXIV_TexTools.Views.ItemConverter
             ItemSelect.ExtraSearchFunction = Filter;
             ItemSelect.LockUiFunction = LockUi;
             ItemSelect.UnlockUiFunction = UnlockUi;
+            ItemSelect.StartExpanded = true;
 
             SetState(ItemConverterState.SourceSelect);
+
+            Closing += ItemConverterWindow_Closing;
+        }
+
+        private void ItemConverterWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (null != Owner)
+            {
+                Owner.Activate();
+            }
         }
 
         private void SetState(ItemConverterState state)
@@ -146,15 +157,18 @@ namespace FFXIV_TexTools.Views.ItemConverter
 
             var root = fullRoot.Info;
             if (root == null) return false;
+            if (!root.IsValid()) return false;
+
             if (root.PrimaryType == XivItemType.monster) return false;
             if (root.PrimaryType == XivItemType.demihuman) return false;
             if (root.PrimaryType == XivItemType.indoor) return false;
             if (root.PrimaryType == XivItemType.outdoor) return false;
+            if (root.PrimaryType == XivItemType.fish) return false;
+            if (root.PrimaryType == XivItemType.painting) return false;
 
             if (root.PrimaryType == XivItemType.human)
             {
                 if (root.SecondaryType == XivItemType.body) return false;
-                if (root.SecondaryType == XivItemType.face) return false;
             }
 
             return true;
@@ -168,14 +182,17 @@ namespace FFXIV_TexTools.Views.ItemConverter
             var root = fullRoot.Info;
             var src = Source.Info;
 
+            // Convert To Accessory Handling
+            if((src.PrimaryType == XivItemType.equipment || src.PrimaryType == XivItemType.accessory) && root.PrimaryType == XivItemType.accessory)
+            {
+                // Allow swapping Most things to Accessories.
+                return true;
+            }
+
             if (root.PrimaryType != src.PrimaryType) return false;
             if (root.SecondaryType != src.SecondaryType) return false;
             if (root.Slot != src.Slot) return false;
 
-            if(root.PrimaryType == XivItemType.human)
-            {
-                if (root.PrimaryId != src.PrimaryId) return false;
-            }
 
             return true;
         }
@@ -216,12 +233,23 @@ namespace FFXIV_TexTools.Views.ItemConverter
         #region Item List Filters
         private bool Filter(IItem item)
         {
-            if (item.PrimaryCategory == XivStrings.Gear) return true;
-            if (item.PrimaryCategory == XivStrings.Character)
+            if (item == null)
             {
-                if (item.SecondaryCategory == XivStrings.Hair) return true;
+                return false;
             }
-            return false;
+
+            var root = item.GetRoot();
+            if (!IsSupported(root))
+            {
+                return false;
+            }
+
+            if (State == ItemConverterState.DestinationSelect && !DestinationOk(root))
+            {
+                return false;
+            }
+
+            return true;
         }
         #endregion
 
@@ -242,6 +270,7 @@ namespace FFXIV_TexTools.Views.ItemConverter
             Source = e.GetRoot();
             SourceItem = e;
             SetState(ItemConverterState.DestinationSelect);
+            RefreshList();
         }
         private void DestinationSelected(object sender, IItem e)
         {
@@ -260,6 +289,7 @@ namespace FFXIV_TexTools.Views.ItemConverter
                     return;
                 case ItemConverterState.DestinationSelect:
                     SetState(ItemConverterState.SourceSelect);
+                    RefreshList();
                     return;
                 case ItemConverterState.Confirmation:
                     SetState(ItemConverterState.DestinationSelect);
@@ -270,22 +300,27 @@ namespace FFXIV_TexTools.Views.ItemConverter
             }
         }
 
+        private void RefreshList()
+        {
+            ItemSelect.DoFilter();
+            ItemSelect.ExpandTopLevel();
+        }
+
         public async Task ShowConversionStats()
         {
             if (!DestinationOk(Destination)) return;
 
-            var imc = new Imc(XivCache.GameInfo.GameDirectory);
-
 
             SourceBox.Text = Source.Info.GetBaseFileName() + " (" + SourceItem.Name + ")";
             DestinationBox.Text = Destination.Info.GetBaseFileName() + " (" + DestinationItem.Name + ")";
+            var tx = MainWindow.DefaultTransaction;
 
             if (Imc.UsesImc(Source))
             {
                 try
                 {
-                    var sourceInfo = await imc.GetFullImcInfo(Source.GetRawImcFilePath());
-                    var destInfo = await imc.GetFullImcInfo(Destination.GetRawImcFilePath());
+                    var sourceInfo = await Imc.GetFullImcInfo(Source.GetRawImcFilePath(), false, tx);
+                    var destInfo = await Imc.GetFullImcInfo(Destination.GetRawImcFilePath(), false, tx);
                     SourceVariantsBox.Text = (sourceInfo.SubsetCount + 1).ToString();
                     DestinationVariantsBox.Text = (destInfo.SubsetCount + 1).ToString();
                     SameVariantBox.IsEnabled = true;
@@ -304,7 +339,7 @@ namespace FFXIV_TexTools.Views.ItemConverter
                 DestinationVariantsBox.Text = "1";
             }
 
-            var items = await Destination.GetAllItems();
+            var items = await Destination.GetAllItems(-1, tx);
 
             AffectedItemsBox.Items.Clear();
             foreach (var item in items)
@@ -346,13 +381,16 @@ namespace FFXIV_TexTools.Views.ItemConverter
                 string mpd = saveModpack ? Settings.Default.ModPack_Directory : null;
                 await Task.Run(async () =>
                 {
-                    await RootCloner.CloneRoot(Source, Destination, XivStrings.TexTools, variant, mpd, _lockProgress);
+                    await RootCloner.CloneRoot(Source, Destination, XivStrings.TexTools, variant, mpd, _lockProgress, MainWindow.UserTransaction);
 
                     foreach(var kv in extraConversions)
                     {
-                        await RootCloner.CloneRoot(kv.Key, kv.Value, XivStrings.TexTools, variant, mpd, _lockProgress);
+                        await RootCloner.CloneRoot(kv.Key, kv.Value, XivStrings.TexTools, variant, mpd, _lockProgress, MainWindow.UserTransaction);
                     }
                 });
+                await UnlockUi(this);
+                FlexibleMessageBox.Show(windowHandle, "Items converted successfully.".L(), "Item Conversion Successful".L(), System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Information);
+                Close();
             }
             catch(Exception ex)
             {
@@ -366,9 +404,6 @@ namespace FFXIV_TexTools.Views.ItemConverter
                 return;
 
             }
-            await UnlockUi(this);
-            FlexibleMessageBox.Show(windowHandle, "Items converted successfully.".L(), "Item Conversion Successful".L(), System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Information);
-            Close();
         }
 
         /// <summary>
@@ -385,8 +420,16 @@ namespace FFXIV_TexTools.Views.ItemConverter
             }
 
             var extraConversions = new Dictionary<XivDependencyRoot, XivDependencyRoot>();
+
+            if(Destination.Info.PrimaryType != XivItemType.equipment)
+            {
+                // If we're converting off of equipment there's not extras to swap.
+                return extraConversions;
+            }
+            var tx = MainWindow.DefaultTransaction;
+
             // For top items, we need to check and see if a recursive action is required.
-            var meta = await ItemMetadata.GetMetadata(Source);
+            var meta = await ItemMetadata.GetMetadata(Source, false, tx);
             var eqp = meta.EqpEntry;
 
             if (eqp != null && eqp.GetFlag(EquipmentParameterFlag.EnableBodyFlags))
@@ -406,8 +449,8 @@ namespace FFXIV_TexTools.Views.ItemConverter
                         var sourceAltRoot = Source.Info.GetOtherSlot("glv").ToFullRoot();
                         var destAltRoot = Destination.Info.GetOtherSlot("glv").ToFullRoot();
 
-                        var sourceAltMeta = await ItemMetadata.GetMetadata(sourceAltRoot);
-                        var destAltMeta = await ItemMetadata.GetMetadata(destAltRoot);
+                        var sourceAltMeta = await ItemMetadata.GetMetadata(sourceAltRoot, false, tx);
+                        var destAltMeta = await ItemMetadata.GetMetadata(destAltRoot, false, tx);
 
                         var srcShowRingR = sourceAltMeta.EqpEntry.GetFlag(EquipmentParameterFlag.HandShowRingR);
                         var dstShowRingR = destAltMeta.EqpEntry.GetFlag(EquipmentParameterFlag.HandShowRingR);
@@ -439,8 +482,8 @@ namespace FFXIV_TexTools.Views.ItemConverter
                         var sourceAltRoot = Source.Info.GetOtherSlot("dwn").ToFullRoot();
                         var destAltRoot = Destination.Info.GetOtherSlot("dwn").ToFullRoot();
 
-                        var sourceAltMeta = await ItemMetadata.GetMetadata(sourceAltRoot);
-                        var destAltMeta = await ItemMetadata.GetMetadata(destAltRoot);
+                        var sourceAltMeta = await ItemMetadata.GetMetadata(sourceAltRoot, false, tx);
+                        var destAltMeta = await ItemMetadata.GetMetadata(destAltRoot, false, tx);
 
                         var srcShowFoot = sourceAltMeta.EqpEntry.GetFlag(EquipmentParameterFlag.LegShowFoot);
                         var dstShowFoot = destAltMeta.EqpEntry.GetFlag(EquipmentParameterFlag.LegShowFoot);

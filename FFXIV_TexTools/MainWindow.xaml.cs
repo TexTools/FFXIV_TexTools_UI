@@ -19,44 +19,64 @@ using FFXIV_TexTools.Properties;
 using FFXIV_TexTools.Resources;
 using FFXIV_TexTools.ViewModels;
 using FFXIV_TexTools.Views;
+using FFXIV_TexTools.Views.Controls;
+using FFXIV_TexTools.Views.Item;
 using FFXIV_TexTools.Views.ItemConverter;
 using FFXIV_TexTools.Views.Metadata;
 using FFXIV_TexTools.Views.Models;
+using FFXIV_TexTools.Views.Projects;
+using FFXIV_TexTools.Views.Simple;
+using FFXIV_TexTools.Views.Textures;
+using FFXIV_TexTools.Views.Transactions;
+using FFXIV_TexTools.Views.Wizard;
 using FolderSelect;
 using ForceUpdateAssembly;
+using HelixToolkit.SharpDX.Core.Utilities;
 using MahApps.Metro;
 using MahApps.Metro.Controls.Dialogs;
 using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.ComTypes;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Documents;
 using System.Windows.Forms;
 using System.Windows.Interop;
+using System.Windows.Media;
 using System.Windows.Threading;
+using WK.Libraries.BetterFolderBrowserNS;
 using xivModdingFramework.Cache;
 using xivModdingFramework.Exd.FileTypes;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Items.Categories;
 using xivModdingFramework.Items.Interfaces;
+using xivModdingFramework.Materials.DataContainers;
+using xivModdingFramework.Materials.FileTypes;
+using xivModdingFramework.Models.DataContainers;
 using xivModdingFramework.Models.FileTypes;
 using xivModdingFramework.Mods;
 using xivModdingFramework.Mods.DataContainers;
 using xivModdingFramework.Mods.FileTypes;
+using xivModdingFramework.Mods.FileTypes.PMP;
+using xivModdingFramework.SqPack.DataContainers;
 using xivModdingFramework.SqPack.FileTypes;
+using static System.Data.Entity.Infrastructure.Design.Executor;
 using static xivModdingFramework.Cache.XivCache;
 
 using Application = System.Windows.Application;
-using Index = xivModdingFramework.SqPack.FileTypes.Index;
 
 namespace FFXIV_TexTools
 {
@@ -66,9 +86,8 @@ namespace FFXIV_TexTools
     /// </summary>
     public partial class MainWindow
     {
-        private string _startupArgs;
+        private int _LockCount = 0;
         private static MainWindow _mainWindow;
-        private FullModelView _fmv;
         public readonly System.Windows.Forms.IWin32Window Win32Window;
 
         public static readonly string BetaSuffix = null;
@@ -105,6 +124,84 @@ namespace FFXIV_TexTools
         }
 
 
+        private static ModTransaction _UserTransaction;
+
+        /// <summary>
+        /// The current active, end-user-controlled, write-enabled transaction, if there is one.
+        /// Probably should go somewhere else later, but for now this is accessible until a final location is sorted.
+        /// </summary>
+        public static ModTransaction UserTransaction
+        {
+            get { return _UserTransaction;  }
+            set
+            {
+                if(_UserTransaction != null)
+                {
+                    if(_UserTransaction.State != ETransactionState.Closed)
+                    {
+                        throw new Exception("Cannot assign new user transaction when one already exists and is not closed.");
+                    }
+                    _UserTransaction.TransactionStateChanged -= OnUserTxChanged;
+                    _UserTransaction.TransactionSettingsChanged -= OnUserTxSettingsChanged;
+                    _UserTransaction.FileChanged -= OnUserTxFileChanged;
+                }
+
+                _UserTransaction = value;
+                TxWatcher.INTERNAL_TxStateChanged(ETransactionState.Invalid, value.State);
+                value.TransactionStateChanged += OnUserTxChanged;
+                value.TransactionSettingsChanged += OnUserTxSettingsChanged;
+                value.FileChanged += OnUserTxFileChanged;
+
+                foreach(var f in value.ModifiedFiles)
+                {
+                    TxWatcher.INTERNAL_TxFileChanged(f);
+                }
+            }
+        }
+
+        private static void OnUserTxChanged(ModTransaction sender, ETransactionState oldState, ETransactionState newState)
+        {
+            if(_UserTransaction != sender)
+            {
+                return;
+            }
+
+            TxWatcher.INTERNAL_TxStateChanged(oldState, newState);
+
+            if(newState == ETransactionState.Closed ||  newState == ETransactionState.Invalid) {
+                _UserTransaction = null;
+            }
+        }
+        private static void OnUserTxSettingsChanged(ModTransaction sender, ModTransactionSettings settings)
+        {
+            if (_UserTransaction != sender)
+            {
+                return;
+            }
+
+            TxWatcher.INTERNAL_TxSettingsChanged(settings);
+        }
+        private static void OnUserTxFileChanged(string internalFilePath, long newOffset)
+        {
+            TxWatcher.INTERNAL_TxFileChanged(internalFilePath);
+        }
+
+
+        public static ModTransaction DefaultTransaction
+        {
+            get
+            {
+                if(UserTransaction != null)
+                {
+                    return UserTransaction;
+                }
+
+                // Default to a new readonly transaction.
+                return ModTransaction.BeginReadonlyTransaction();
+            }
+        }
+
+
 
         /// <summary>
         /// Static accessor, since we should only ever have one instance of this class anyways.
@@ -130,7 +227,8 @@ namespace FFXIV_TexTools
         /// </summary>
         public IProgress<string> LockProgress { get { return _lockProgress; } }
 
-        private ProgressDialogController _lockProgressController;
+
+        private ProgressDialogController _lockProgressController ;
 
         /// <summary>
         /// Fired when the old tree is about to be discarded.
@@ -184,7 +282,10 @@ namespace FFXIV_TexTools
             var cwd = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
             Directory.SetCurrentDirectory(cwd);
 
-            CheckForUpdates();
+            if (!CheckForUpdates())
+            {
+                return;
+            }
 
             // This slightly unusual contrivance is to ensure that we actually exit program on updates
             // *before* performing the rest of the startup initialization.  If we let it continue
@@ -205,12 +306,16 @@ namespace FFXIV_TexTools
             } else
             {
                 // No updates needed? We can clear out the update path then.
-                var updateDir = Path.Combine(Environment.CurrentDirectory, "update");
-                Directory.Delete(updateDir, true);
+                //var updateDir = Path.Combine(Environment.CurrentDirectory, "update");
+                //Directory.Delete(updateDir, true);
             }
 
+            XivCache.GameWriteStateChanged += XivCache_GameWriteStateChanged;
+
             CheckForSettingsUpdate();
-            LanguageSelection();
+
+            // Validate settings and perform first-time-setup if needed.
+            OnboardingWindow.OnboardAndInitialize();
 
             var ci = new CultureInfo(Properties.Settings.Default.Application_Language)
             {
@@ -221,13 +326,16 @@ namespace FFXIV_TexTools
             CultureInfo.DefaultThreadCurrentUICulture = ci;
             CultureInfo.CurrentCulture = ci;
             CultureInfo.CurrentUICulture = ci;
+            CustomizeViewModel.UpdateFrameworkColors();
 
-            // Data Context needs to be set before we call Initialize Component to ensure
-            // that the bindings get connected immediately, and not after the constructor.
+
+            // At this point all initial base UI Project setup is complete.
+            // But we have no initialized the MainWindow or XivCache.
+
+
+            // Initialize the MainWindow first.
             var mainViewModel = new MainViewModel(this);
             this.DataContext = mainViewModel;
-
-
             InitializeComponent();
 
             var fileVersion = FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location).FileVersion;
@@ -252,93 +360,36 @@ namespace FFXIV_TexTools
 
             if (args != null && args.Length > 0)
             {
-                int dxVersion = 0;
-                bool success = Int32.TryParse(Settings.Default.DX_Version, out dxVersion);
-                if (!success)
-                {
-                    dxVersion = 11;
-                }
 
-                // Just do a hard synchronous cache initialization for import only mode.
-                var gameDir = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
-                var lang = XivLanguages.GetXivLanguage(Properties.Settings.Default.Application_Language);
-                DirectoryInfo luminaDir = null;
-                bool useLumina = false;
-                try
-                {
-                    new DirectoryInfo(Properties.Settings.Default.Lumina_Directory);
-                    useLumina = Properties.Settings.Default.Lumina_IsEnabled;
-                } catch (Exception ex)
-                {
-                    if (!String.IsNullOrWhiteSpace(Properties.Settings.Default.Lumina_Directory) && Properties.Settings.Default.Lumina_IsEnabled == true) {
-                        System.Windows.MessageBox.Show("Unable to restore Lumina settings, directory was invalid.".L(), "Lumina Directory Error.".L());
-                    }
-
-                    luminaDir = null;
-                    useLumina = false;
-                }
-
-                XivCache.SetGameInfo(gameDir, lang, dxVersion, true, false, luminaDir, useLumina);
-
-                _startupArgs = args[0];
-                OnlyImport();
+                OnlyImport(args[0]);
             }
             else
             {
+                // Normal startup process.
                 this.Show();
 
                 // Can set this now that we're open.
                 Win32Window = new WindowWrapper(new WindowInteropHelper(this).Handle);
 
-
-                var textureView = TextureTabItem.Content as TextureView;
-                var textureViewModel = textureView.DataContext as TextureViewModel;
-
-                textureViewModel.LoadingComplete += TextureViewModelOnLoadingComplete;
-
-                var modelView = ModelTabItem.Content as ModelView;
-                var modelViewModel = modelView.DataContext as ModelViewModel;
-
-                modelViewModel.LoadingComplete += ModelViewModelOnLoadingComplete;
-                modelViewModel.AddToFullModelEvent += ModelViewModelOnAddToFullModelEvent;
-
-                this.TabsControl.SelectionChanged += TabsControl_SelectionChanged;
-
-
                 // This can be set whereever, since the item select won't fire it unless things are loaded fully.
                 ItemSelect.ItemSelected += ItemSelect_ItemSelected;
                 ItemSelect.ItemsLoaded += OnTreeLoaded;
 
-                InitializeCache();
+                ModTransaction.ActiveTransactionBlocked += ModTransaction_ActiveTransactionBlocked;
+                ModTransaction.ActiveTransactionUnblocked += ModTransaction_ActiveTransactionUnblocked;
+                _ = AsyncStartup();
+
             }
+
+            KeyDown += OnKeyDown;
         }
 
-        private void TabsControl_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        private void OnKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
-            if (e.Source == TabsControl)
+            if (ItemView != null)
             {
-                if (TabsControl.SelectedItem == this.ModelTabItem)
-                {
-                    var modelView = ModelTabItem.Content as ModelView;
-                    var modelViewModel = modelView.DataContext as ModelViewModel;
-                    modelViewModel.OnTabShown();
-                }
+                ItemView.OnKeyDown(sender, e);
             }
-        }
-
-        /// <summary>
-        /// Event handler for adding models to the full model view
-        /// </summary>
-        private async void ModelViewModelOnAddToFullModelEvent(object sender, EventArgs e)
-        {
-            // Gets the model data of the current model in the model view
-            var modelData = e as ModelViewModel.fullModelEventArgs;
-
-            var fmv = FullModelView.Instance;
-            fmv.Owner = this;
-            fmv.Show();
-
-            await fmv.AddModel(modelData.TTModelData, modelData.TextureData, modelData.Item, modelData.XivRace);
         }
 
         private void LanguageSelection()
@@ -359,13 +410,13 @@ namespace FFXIV_TexTools
                 // We shouldn't evet actually get here, as this function is only called on 
                 // first time installs, where lang would be empty, and other calls force-restart the application.
                 // But doesn't hurt to have a safety check here anyways.
-                InitializeCache();
+                _ = InitializeCache();
             }
         }
 
         private bool _FFXIV_PATCHED = false;
         private bool _NEW_INSTALL = false;
-        private void OnCacheRebuild(object sender, CacheRebuildReason reason)
+        private async void OnCacheRebuild(object sender, CacheRebuildReason reason)
         {
             // If the cache is cycling because of a FFXIV version mismatch, we need to trigger the 
             // version update process after it's done.
@@ -382,15 +433,54 @@ namespace FFXIV_TexTools
             if(reason == CacheRebuildReason.NoCache)
             {
                 // If the user had no cache, and no modlist, they're a new install (or close enough to one)
-                var gameDir = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
-                var modding = new Modding(gameDir);
-                var modList = modding.GetModList();
+                var tx = MainWindow.DefaultTransaction;
 
-                if(modList.Mods.Count == 0)
+                if((await tx.GetModList()).Mods.Count == 0)
                 {
                     // New install prompt time after rebuild is done.
                     _NEW_INSTALL = true;
                 }
+            }
+        }
+
+
+        private async Task AsyncStartup()
+        {
+            try
+            {
+                await InitializeCache();
+
+                if (!string.IsNullOrWhiteSpace(Settings.Default.Backup_Directory))
+                {
+                    var validBackups = ProblemChecker.AreBackupsValid(Settings.Default.Backup_Directory);
+                    if (!validBackups)
+                    {
+                        if (this.InfoPrompt("Missing Index Backups", "Your do not currently have Index Backups, or they are from a previous game version.\n\nWould you like to create new backups now?  This is STRONGLY recommended."))
+                        {
+                            await LockUi("Creating Index Backups");
+                            try
+                            {
+                                await ProblemChecker.CreateIndexBackups(Settings.Default.Backup_Directory);
+                            }
+                            catch (Exception ex)
+                            {
+                                this.ShowError("Index Backup Error", "An error occurred while creating the index backups:\n\n" + ex.Message);
+                            }
+                            finally
+                            {
+                                await UnlockUi();
+                            }
+                        }
+                    }
+                }
+
+                if (Settings.Default.OpenTransactionOnStart)
+                {
+                    UserTransaction = await ModTransaction.BeginTransaction(true, null, null, false, false);
+                }
+            } catch(Exception ex)
+            {
+                this.ShowError("Cache Initialization Failure", "An error occurred during cache initialization.\n This is most likely caused by an invalid FFXIV install or unsupported FFXIV version:\n\n" + ex.Message);
             }
         }
 
@@ -420,25 +510,8 @@ namespace FFXIV_TexTools
 
                     XivCache.CacheRebuilding += OnCacheRebuild;
 
-                    DirectoryInfo luminaDir = null;
-                    bool useLumina = false;
-                    try
-                    {
-                        new DirectoryInfo(Properties.Settings.Default.Lumina_Directory);
-                        useLumina = Properties.Settings.Default.Lumina_IsEnabled;
-                    }
-                    catch (Exception ex)
-                    {
-                        if (!String.IsNullOrWhiteSpace(Properties.Settings.Default.Lumina_Directory)  && Properties.Settings.Default.Lumina_IsEnabled == true)
-                        {
-                            System.Windows.MessageBox.Show("Unable to restore Lumina settings, directory was invalid.".L(), "Lumina Directory Error.".L());
-                        }
 
-                        luminaDir = null;
-                        useLumina = false;
-                    }
-
-                    XivCache.SetGameInfo(gameDir, lang, dxVersion, true, true, luminaDir, useLumina);
+                    await XivCache.SetGameInfo(gameDir, lang, true);
                     CustomizeViewModel.UpdateCacheSettings();
 
                 } catch(Exception ex)
@@ -475,14 +548,12 @@ namespace FFXIV_TexTools
                     {
                         // Back up their stuff if they're a totally fresh install.
                         var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
-                        var problemChecker = new ProblemChecker(gameDirectory);
-                        var backupsDirectory = new DirectoryInfo(Properties.Settings.Default.Backup_Directory);
 
 
                         await LockUi("Creating Initial Backups".L(), "This should only take a moment...".L());
                         try
                         {
-                            await problemChecker.BackupIndexFiles(backupsDirectory);
+                            await ProblemChecker.CreateIndexBackups(Settings.Default.Backup_Directory);
                             await this.ShowMessageAsync(UIMessages.BackupCompleteTitle, UIMessages.BackupCompleteMessage);
                         }
                         catch (Exception ex)
@@ -506,6 +577,16 @@ namespace FFXIV_TexTools
                     }
                 });
             });
+
+            if (Settings.Default.LiveDangerously)
+            {
+                XivCache.GameWriteEnabled = true;
+            } else
+            {
+                XivCache.GameWriteEnabled = false;
+            }
+
+            UpdateWriteStateUi();
         }
 
 
@@ -557,6 +638,7 @@ namespace FFXIV_TexTools
             await _lockScreenSemaphore.WaitAsync();
             try
             {
+                _LockCount++;
                 if (IsUiLocked)
                 {
                     return;
@@ -572,25 +654,11 @@ namespace FFXIV_TexTools
                     msg = UIStrings.Please_Wait;
                 }
 
-                // If the lock screen doesn't proc within 1 second, kill it.
-                const int timeout = 1000;
-                var task = this.ShowProgressAsync(title, msg);
-
-                if (await Task.WhenAny(task, Task.Delay(timeout)) == task)
+                _lockProgressController = await this.ShowProgressAsync(title, msg);
+                _lockProgress = new Progress<string>((update) =>
                 {
-                    // Task completed within timeout
-                    _lockProgressController = task.Result;
-                    _lockProgressController.SetIndeterminate();
-
-                    _lockProgress = new Progress<string>((update) =>
-                    {
-                        _lockProgressController.SetMessage(update);
-                    });
-                }
-                else
-                {
-                    // Lock screen failed to resolve, don't let us deadlock.
-                }
+                    _lockProgressController.SetMessage(update);
+                });
             }
             finally
             {
@@ -608,47 +676,41 @@ namespace FFXIV_TexTools
             await _lockScreenSemaphore.WaitAsync();
             try
             {
+                _LockCount--;
+                if(_LockCount < 0)
+                {
+                    _LockCount = 0;
+                }
+
                 if (!IsUiLocked)
                 {
                     return;
                 }
 
-                try
+                if(_LockCount > 0)
                 {
-                    // Sometimes this chokes, not sure why.
-                    const int timeout = 1000;
-                    var task = _lockProgressController.CloseAsync();
-
-                    if (await Task.WhenAny(task, Task.Delay(timeout)) == task)
-                    {
-                        // Task completed within timeout
-                    }
-                    else
-                    {
-                        // Unlock screen failed to resolve, don't let us deadlock.
-                    }
+                    return;
                 }
-                catch
-                {
 
-                }
+                await _lockProgressController.CloseAsync();
                 _lockProgressController = null;
                 _lockProgress = null;
+
+                if (UiUnlocked != null)
+                {
+                    UiUnlocked.Invoke(caller, null);
+                }
             }
             finally
             {
                 _lockScreenSemaphore.Release();
-            }
-
-            if (UiUnlocked != null)
-            {
-                UiUnlocked.Invoke(caller, null);
             }
         }
 
         public void Restart()
         {
             System.Diagnostics.Process.Start(Application.ResourceAssembly.Location);
+            IOUtil.ClearTempFolder();
             Application.Current.Shutdown();
         }
 
@@ -698,12 +760,22 @@ namespace FFXIV_TexTools
             await ItemSelect.LoadItems();
         }
 
-        public static void CheckForUpdates()
+        public static bool CheckForUpdates()
         {
+
+            // This just checks to make sure we have access to writing our own folder,
+            // As .RunUpdateAsAdmin does not seem to work properly on our current AutoUpdater version.
+            var res = OnboardingWindow.CheckRerunAdminSimple();
+            if (!res)
+            {
+                return res;
+            }
+
             AutoUpdater.Synchronous = true;
             var updateDir = Path.Combine(Environment.CurrentDirectory, "update");
             Directory.CreateDirectory(updateDir);
             AutoUpdater.DownloadPath = updateDir;
+            AutoUpdater.RunUpdateAsAdmin = true;
             try
             {
                 if (IsBetaVersion)
@@ -717,6 +789,8 @@ namespace FFXIV_TexTools
             {
                 AutoUpdater.Start(WebUrl.TexTools_Update_Url);
             }
+
+            return true;
         }
 
         private void CheckForSettingsUpdate()
@@ -755,7 +829,7 @@ namespace FFXIV_TexTools
 
                 if (toKill.Count > 0)
                 {
-                    FlexibleMessageBox.Show("More than one TexTools process detected.  Shutting down other TexTools copies.".L(), "Multi-Application Shutdown.".L(), MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    //FlexibleMessageBox.Show("More than one TexTools process detected.  Shutting down other TexTools copies.".L(), "Multi-Application Shutdown.".L(), MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
                     foreach (var p in toKill)
                     {
@@ -770,20 +844,28 @@ namespace FFXIV_TexTools
             }
         }
 
-        private async void OnlyImport()
+        private async void OnlyImport(string modpack)
         {
-            var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
-            var index = new Index(gameDirectory);
 
-            if (index.IsIndexLocked(XivDataFile._0A_Exd))
+            try
             {
-                FlexibleMessageBox.Show(UIMessages.IndexLockedErrorMessage, UIMessages.IndexLockedErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                
+                var gameDir = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
+                var lang = XivLanguages.GetXivLanguage(Properties.Settings.Default.Application_Language);
+                await XivCache.SetGameInfo(gameDir, lang, false);
+                if (!ViewHelpers.ShowConfirmation(this, "Import Confirmation", "This will install the modpack to your live FFXIV files.\n\nAre you sure you wish to continue?"))
+                {
+                    Application.Current.Shutdown();
+                }
+
+                XivCache.GameWriteEnabled = true;
+
+                await ImportModpack(modpack, true);
             }
-            else
+            catch(Exception ex)
             {
-                var modPackDirectory = new DirectoryInfo(Settings.Default.ModPack_Directory);
-
-                await ImportModpack(new DirectoryInfo(_startupArgs), modPackDirectory, false, true);
+                FlexibleMessageBox.Show("An error occurred while initializing or importing the mod:\n\n" + ex.Message, "Import Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                throw;
             }
 
             Application.Current.Shutdown();
@@ -859,10 +941,12 @@ namespace FFXIV_TexTools
 
         /// <summary>
         /// Reloads the currently selected item.
+        /// NOTE: Forcibly closes all external viewers without prompts for user progress.
         /// </summary>
-        public void ReloadItem()
+        public async Task ReloadItem()
         {
-            UpdateViews(ItemSelect.SelectedItem);
+            CloseAllViewers();
+            await UpdateViews(ItemSelect.SelectedItem);
         }
 
         /// <summary>
@@ -870,9 +954,16 @@ namespace FFXIV_TexTools
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void ItemSelect_ItemSelected(object sender, IItem item)
+        private async void ItemSelect_ItemSelected(object sender, IItem item)
         {
-            UpdateViews(item);
+            try
+            {
+                await UpdateViews(item);
+            }
+            catch(Exception ex)
+            {
+                Trace.WriteLine(ex);
+            }
         }
 
         /// <summary>
@@ -880,96 +971,9 @@ namespace FFXIV_TexTools
         /// Locks the UI until those tab views come back and confirm they've been loaded.
         /// </summary>
         /// <param name="selectedItem">The selected item</param>
-        private async void UpdateViews(IItem item)
+        private async Task UpdateViews(IItem item)
         {
-            if(item == null)
-            {
-                return;
-            }
-
-            if (ItemChanging != null)
-            {
-                ItemChanging.Invoke(this, null);
-            }
-
-            await LockUi();
-
-            _modelLoaded = false;
-            _texturesLoaded = false;
-            _waitingForItemLoad = true;
-
-            var textureView = TextureTabItem.Content as TextureView;
-            var textureViewModel = textureView.DataContext as TextureViewModel;
-            var sharedItemsView = SharedItemsTab.Content as SharedItemsView;
-            var sharedItemsViewModel = sharedItemsView.DataContext as SharedItemsViewModel;
-            var metadataView = MetadataTab.Content as MetadataView;
-
-            var showMetadata = await metadataView.SetItem(item);
-            if (showMetadata)
-            {
-                MetadataTab.IsEnabled = true;
-                MetadataTab.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                if (MetadataTab.IsSelected)
-                {
-                    MetadataTab.IsSelected = false;
-                    TextureTabItem.IsSelected = true;
-                }
-                MetadataTab.IsEnabled = false;
-                MetadataTab.Visibility = Visibility.Collapsed;
-            }
-
-            // This guy has no funny async callback.  It's ready once these awaits are done.
-            await textureViewModel.UpdateTexture(item);
-            var showSharedItems = await sharedItemsViewModel.SetItem(item, this);
-            if(showSharedItems) { 
-                SharedItemsTab.IsEnabled = true;
-                SharedItemsTab.Visibility = Visibility.Visible;
-            } else
-            {
-                if(SharedItemsTab.IsSelected)
-                {
-                    SharedItemsTab.IsSelected = false;
-                    TextureTabItem.IsSelected = true;
-                }
-                SharedItemsTab.IsEnabled = false;
-                SharedItemsTab.Visibility = Visibility.Collapsed;
-            }
-
-
-
-
-            if (item.PrimaryCategory.Equals(XivStrings.UI) ||
-                item.SecondaryCategory.Equals(XivStrings.Face_Paint) ||
-                item.SecondaryCategory.Equals(XivStrings.Equipment_Decals) ||
-                item.SecondaryCategory.Equals(XivStrings.Paintings))
-            {
-                if (TabsControl.SelectedIndex == 1)
-                {
-                    TabsControl.SelectedIndex = 0;
-                }
-
-                // No model to load, just set us as already loaded.
-                _modelLoaded = true;
-
-                ModelTabItem.IsEnabled = false;
-                ModelTabItem.Visibility = Visibility.Collapsed;
-            }
-            else
-            {
-                ModelTabItem.IsEnabled = true;
-                ModelTabItem.Visibility = Visibility.Visible;
-
-                var modelView = ModelTabItem.Content as ModelView;
-                var modelViewModel = modelView.DataContext as ModelViewModel;
-
-                await modelViewModel.UpdateModel(item as IItemModel);
-            }
-
-            // Need to do this here in case any of the views came back immediately and fired before we finished this function.
-            await CheckItemLoadComplete();
+            await ItemView.SetItem(item);
         }
 
         /// <summary>
@@ -995,8 +999,7 @@ namespace FFXIV_TexTools
                     var changed = 0;
                     await Task.Run(async () =>
                     {
-                        var _mdl = new Mdl(XivCache.GameInfo.GameDirectory, XivDataFile._04_Chara);
-                        changed = await _mdl.CheckAllModsSkinAssignments();
+                        changed = await Mdl.CheckAllModsSkinAssignments();
                     });
 
                     FlexibleMessageBox.Show($"Skin Auto-Assigment is complete.\n\n{changed._()} Models updated.".L(), "Skin Auto - Assign Complete".L(), MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -1028,7 +1031,7 @@ namespace FFXIV_TexTools
         /// </summary>
         private void PKEmporium_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start(WebUrl.PKEmporium_Website);
+            Process.Start(WebUrl.PKEmporium_Discord);
         }
 
         /// <summary>
@@ -1076,12 +1079,7 @@ namespace FFXIV_TexTools
         /// </summary>
         private void Menu_ModList_Click(object sender, RoutedEventArgs e)
         {
-            var textureView = TextureTabItem.Content as TextureView;
-            var textureViewModel = textureView.DataContext as TextureViewModel;
-            var modelView = ModelTabItem.Content as ModelView;
-            var modelViewModel = modelView.DataContext as ModelViewModel;
-
-            var modListView = new ModListView(textureViewModel, modelViewModel) {Owner = this};
+            var modListView = new ModListView() {Owner = this};
             modListView.Show();
         }
 
@@ -1091,7 +1089,15 @@ namespace FFXIV_TexTools
         private void Menu_ProblemCheck_Click(object sender, RoutedEventArgs e)
         {
             var problemCheckView = new ProblemCheckView {Owner = this};
-            problemCheckView.Show();
+            try
+            {
+                problemCheckView.Show();
+                _ = problemCheckView.RunChecks();
+            }
+            catch
+            {
+                //No op
+            }
         }
 
         /// <summary>
@@ -1108,24 +1114,19 @@ namespace FFXIV_TexTools
         /// </summary>
         private async void Menu_MakeModpackWizard_Click(object sender, RoutedEventArgs e)
         {
-            var wizard = new ModPackWizard {Owner = this};
+            NotifyUnsaved();
+            var wizard = new ExportWizardWindow { Owner = this};
             var result = wizard.ShowDialog();
 
             if (result == true)
             {
-                if (wizard.ModPackFileName.Equals("NoData"))
-                {
-                    await this.ShowMessageAsync(UIMessages.ModPackCreationFailedErrorTitle, UIMessages.NoModsDetectedErrorMessage);
-                }
-                else
-                {
-                    await this.ShowMessageAsync(UIMessages.ModPackCreationCompleteTitle, string.Format(UIMessages.ModPackCreationCompleteMessage, wizard.ModPackFileName));
-                }
+                await this.ShowMessageAsync(UIMessages.ModPackCreationCompleteTitle, string.Format(UIMessages.ModPackCreationCompleteMessage, wizard.ModPackFileName));
             }
         }
 
         private async void Menu_MakeStandardModpack_Click(object sender, RoutedEventArgs e)
         {
+            NotifyUnsaved();
             var dialog = new StandardModpackCreator { Owner = this };
             var result = dialog.ShowDialog();
             
@@ -1136,7 +1137,10 @@ namespace FFXIV_TexTools
         /// </summary>
         private async void Menu_MakeBackupModpack_Click(object sender, RoutedEventArgs e)
         {
-            var backupCreator = new BackupModPackCreator { Owner = this };
+            NotifyUnsaved();
+            var tx = MainWindow.DefaultTransaction;
+            var ml = await tx.GetModList();
+            var backupCreator = new BackupModPackCreator(ml) { Owner = this };
             var result = backupCreator.ShowDialog();
 
             if (result == true)
@@ -1150,39 +1154,52 @@ namespace FFXIV_TexTools
         /// </summary>
         private async void Menu_ImportModpack_Click(object sender, RoutedEventArgs e)
         {
+            if (!this.CheckFileWrite())
+            {
+                return;
+            }
+
             var modPackDirectory = new DirectoryInfo(Settings.Default.ModPack_Directory);
 
-            var openFileDialog = new OpenFileDialog {InitialDirectory = modPackDirectory.FullName, Filter = "TexToolsModPack TTMP (*.ttmp;*.ttmp2)|*.ttmp;*.ttmp2".L(), Multiselect = true};
+            var openFileDialog = new OpenFileDialog {InitialDirectory = modPackDirectory.FullName, Filter = "Modpack Files|*.ttmp;*.ttmp2;*.pmp;*.json".L(), Multiselect = true};
 
             if (openFileDialog.ShowDialog() != System.Windows.Forms.DialogResult.OK) 
                 return;
-            
-            var importMultiple = openFileDialog.FileNames.Length > 1;
-
-            var modsImported = 0;
-            var modsErrored = 0;
-            float duration = 0;
 
             foreach (var fileName in openFileDialog.FileNames)
             {
-                var fileInfo = new FileInfo(fileName);
+                await ImportModpack(fileName);
+            }
+        }
 
-                if (fileInfo.Length == 0)
-                {
-                    FlexibleMessageBox.Show(string.Format(UIMessages.EmptyTTMPFileErrorMessage, Path.GetFileNameWithoutExtension(fileName)), UIMessages.ImportErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    continue;
-                }
-
-                var r = await ImportModpack(new DirectoryInfo(fileName), modPackDirectory, importMultiple);
-                modsImported += r.Imported;
-                modsErrored += r.Errors;
-                duration += r.Duration;
+        private async Task ImportFolder()
+        {
+            if (!this.CheckFileWrite())
+            {
+                return;
             }
 
-            if (modsImported > 0)
+
+            var ofd = new BetterFolderBrowser {
+                Title = "Import FFXIV Folder Tree"
+            };
+
+            if (ofd.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+                return;
+
+            try
             {
-                var durationString = duration.ToString("0.00");
-                await this.ShowMessageAsync(UIMessages.ImportCompleteTitle, string.Format(UIMessages.SuccessfulImportCountMessage, modsImported, modsErrored, durationString));
+                // See if we can get the information in simple mode.
+                var modPackFiles = await TTMP.ModPackToSimpleFileList(ofd.SelectedPath, false, MainWindow.UserTransaction);
+
+                if (modPackFiles != null)
+                {
+                    FileListImporter.ShowModpackImport(ofd.SelectedPath, modPackFiles.Keys.ToList(), this);
+                    return;
+                }
+            } catch(Exception ex)
+            {
+                ViewHelpers.ShowError(this, "Folder Import Error", "An error occurred while importing the folder:\n\n" + ex.Message);
             }
         }
 
@@ -1192,158 +1209,72 @@ namespace FFXIV_TexTools
         /// <param name="path">The path to the modpack</param>
         /// <param name="silent">If the modpack wizard should be shown or the modpack should just be imported without any user interaction</param>
         /// <returns></returns>
-        private async Task<(int Imported, int Errors, float Duration)> ImportModpack(DirectoryInfo path, DirectoryInfo modPackDirectory, bool silent = false, bool messageInImport = false)
+        private async Task ImportModpack(string path, bool asDialog = false)
         {
-            var importError = false;
-            TextureView textureView = null;
-            TextureViewModel textureViewModel = null;
-            ModelView modelView = null;
-            ModelViewModel modelViewModel = null;
-
-            if(TextureTabItem != null && ModelTabItem != null)
+            if (!this.CheckFileWrite())
             {
-                textureView = TextureTabItem.Content as TextureView;
-                textureViewModel = textureView.DataContext as TextureViewModel;
-                modelView = ModelTabItem.Content as ModelView;
-                modelViewModel = modelView.DataContext as ModelViewModel;
+                return;
             }
 
-            if (!path.Extension.Contains("ttmp"))
-            {
-                FlexibleMessageBox.Show(string.Format(UIMessages.UnsupportedFileExtensionErrorMessage, path.Extension), 
-                    UIMessages.UnsupportedFileExtensionErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                return (0, 1, 0);
-            }
 
             try
             {
-                var ttmpData = await TTMP.GetModPackJsonData(path);
-
-                var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
-                var index = new Index(gameDirectory);
-
-                if (index.IsIndexLocked(XivDataFile._0A_Exd))
+                var modpackType = TTMP.GetModpackType(path);
+                if(modpackType == TTMP.EModpackType.Invalid)
                 {
-                    FlexibleMessageBox.Show("Error Accessing Index File\n\n\nPlease exit the game before proceeding.\n---------------------------------------------------- - ".L(), "Index Access Error".L(), MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                    return (0, 1, 0);
+                    throw new Exception("Modpack was not a valid PMP or TTMP file, or cannot be read on this version of TexTools.");
                 }
 
-                if (ttmpData.ModPackJson.TTMPVersion.Contains("w"))
+                await LockUi("Loading Modpack");
+                try
                 {
-                    try
+                    if (modpackType == TTMP.EModpackType.TtmpBackup)
                     {
-                        var importWizard = new ImportModPackWizard(ttmpData.ModPackJson, ttmpData.ImageDictionary,
-                            path, textureViewModel, modelViewModel, messageInImport);
+                        // TexTools backup modpack.
+                        var mpl = await TTMP.GetModpackList(path);
+                        var backupImport = new BackupModPackImporter(new DirectoryInfo(path), mpl, false);
 
-                        if (messageInImport)
-                        {
-                            importWizard.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-                        }
-                        else
-                        {
-                            importWizard.Owner = this;
-                        }
+                        backupImport.WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
-                        var result = importWizard.ShowDialog();
-
-                        if (result == true)
-                        {
-                            return (importWizard.TotalModsImported, importWizard.TotalModsErrored, importWizard.ImportDuration);
-                        }
-                    }
-                    catch
-                    {
-                        importError = true;
-                    }
-                }
-                else if(ttmpData.ModPackJson.TTMPVersion.Contains("s"))
-                {
-                    try
-                    {
-                        var simpleImport = new SimpleModPackImporter(path,
-                            ttmpData.ModPackJson, textureViewModel, modelViewModel, silent, messageInImport);
-
-                        if (messageInImport)
-                        {
-                            simpleImport.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-                        }
-                        else
-                        {
-                            simpleImport.Owner = this;
-                        }
-
-                        var result = simpleImport.ShowDialog();
-
-                        if (result == true)
-                        {
-                            return (simpleImport.TotalModsImported, simpleImport.TotalModsErrored, simpleImport.ImportDuration);
-                        }
-                    }
-                    catch
-                    {
-                        importError = true;
-                    }
-                }
-                else if(ttmpData.ModPackJson.TTMPVersion.Contains("b"))
-                {
-                    try
-                    {
-                        var backupImport = new BackupModPackImporter(path, ttmpData.ModPackJson, messageInImport);
-
-                        if (messageInImport)
-                        {
-                            backupImport.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-                        }
-                        else
+                        if (ViewHelpers.IsWindowOpen(this))
                         {
                             backupImport.Owner = this;
                         }
 
-                        var result = backupImport.ShowDialog();
-
-                        if (result == true)
+                        if (asDialog)
                         {
-                            return (backupImport.TotalModsImported, backupImport.TotalModsErrored, backupImport.ImportDuration);
+                            backupImport.ShowDialog();
+                        } else
+                        {
+                            backupImport.Show();
                         }
+                        return;
                     }
-                    catch
+
+                    // See if we can get the information in simple mode.
+                    var modPackFiles = await TTMP.ModPackToSimpleFileList(path, false, MainWindow.UserTransaction);
+
+                    if (modPackFiles != null)
                     {
-                        importError = true;
+                        FileListImporter.ShowModpackImport(path, modPackFiles.Keys.ToList(), this, asDialog);
+                        return;
                     }
+
+                    if (modpackType == TTMP.EModpackType.TtmpWizard || modpackType == TTMP.EModpackType.Pmp)
+                    {
+                        // Multi-Option PMP/TTMP
+                        await ImportWizardWindow.ImportModpack(path, this, asDialog);
+                    }
+                }
+                finally
+                {
+                    await UnlockUi();
                 }
             }
             catch (Exception ex)
             {
-                if (!importError)
-                {
-                    var simpleImport = new SimpleModPackImporter(path, null, textureViewModel, modelViewModel, silent, messageInImport);
-
-                    if (messageInImport)
-                    {
-                        simpleImport.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-                    }
-                    else
-                    {
-                        simpleImport.Owner = this;
-                    }
-
-                    var result = simpleImport.ShowDialog();
-
-                    if (result == true)
-                    {
-                        return (simpleImport.TotalModsImported, simpleImport.TotalModsErrored, simpleImport.ImportDuration);
-                    }
-                }
-                else
-                {
-                    FlexibleMessageBox.Show(string.Format(UIMessages.ModPackImportErrorMessage, path.FullName, ex.Message), UIMessages.ModPackImportErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return (0, 1, 0);
-                }
+                FlexibleMessageBox.Show(string.Format(UIMessages.ModPackImportErrorMessage, path, ex.Message), UIMessages.ModPackImportErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);                  
             }
-
-            return (0, 0, 0);
         }
 
         /// <summary>
@@ -1351,13 +1282,8 @@ namespace FFXIV_TexTools
         /// </summary>
         private async void Menu_MakeSimpleModpack_Click(object sender, RoutedEventArgs e)
         {
-            var simpleCreator = new SimpleModPackCreator{Owner = this};
-            var result = simpleCreator.ShowDialog();
-
-            if (result == true)
-            {
-                await this.ShowMessageAsync(UIMessages.ModPackCreationCompleteTitle, string.Format(UIMessages.ModPackCreationCompleteMessage, simpleCreator.ModPackFileName));
-            }
+            NotifyUnsaved();
+            FileListExporter.ShowModpackExport();
         }
 
         private async void Menu_RebuildCache_Click(object sender, RoutedEventArgs e)
@@ -1368,9 +1294,9 @@ namespace FFXIV_TexTools
                 await LockUi("Rebuilding Cache".L());
                 try
                 {
-                    await Task.Run(() =>
+                    await Task.Run(async () =>
                     {
-                        XivCache.RebuildCache(XivCache.CacheVersion);
+                        await XivCache.RebuildCache(XivCache.CacheVersion);
                     });
 
                     CustomizeViewModel.UpdateCacheSettings();
@@ -1394,17 +1320,18 @@ namespace FFXIV_TexTools
             {
                 await LockUi("Scanning for new Item Sets".L(), "This can take up to roughly an hour, depending on computer specs.".L());
 
-                // Stop the worker, in case it was reading from the file for some reason.
-                XivCache.CacheWorkerEnabled = false;
-
+                var success = false;
                 try
                 {
                     await Task.Run(XivCache.RebuildAllRoots);
+                    success = true;
                 } catch(Exception ex)
                 {
                     FlexibleMessageBox.Show( "An error occured while trying to scan for new item sets.\n\n".L() + ex.Message, "Item Scan Error".L(), MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 await UnlockUi();
+
+                var res = await this.ShowMessageAsync("Item Sets Scan Completed", "The item sets scan was completed successfully, the Item List will now be reloaded.");
                 await RefreshTree();
             }
         }
@@ -1412,13 +1339,13 @@ namespace FFXIV_TexTools
         {
             using (OpenFileDialog openFileDialog = new OpenFileDialog())
             {
-                openFileDialog.Filter = "db files (*.db)|*.db";
+                openFileDialog.Filter = "db files|*.db";
                 openFileDialog.RestoreDirectory = true;
 
                 if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
                     // Stop the worker, in case it was reading from the file for some reason.
-                    XivCache.CacheWorkerEnabled = false;
+                    await XivCache.SetCacheWorkerState(false);
 
                     //Get the path of specified file
                     var filePath = openFileDialog.FileName;
@@ -1432,81 +1359,162 @@ namespace FFXIV_TexTools
             }
         }
 
+        private void CloseAllViewers()
+        {
+            var fileWindows = SimpleFileViewWindow.OpenFileWindows.ToList();
+            foreach (var wind in fileWindows)
+            {
+                wind._IgnoreUnsaved = true;
+                wind.Close();
+            }
+            var itemWindows = SimpleItemViewWindow.OpenItemWindows.ToList();
+            foreach(var wind in itemWindows)
+            {
+                wind._IgnoreUnsaved = true;
+                wind.Close();
+            }
+        }
+
+        public bool PromptUnsavedAllViewers()
+        {
+            var fileWindows = SimpleFileViewWindow.OpenFileWindows.ToList();
+            foreach (var wind in fileWindows)
+            {
+                if (!wind.FileWrapper.HandleUnsaveConfirmation())
+                {
+                    return false;
+                }
+            }
+
+            var itemWindows = SimpleItemViewWindow.OpenItemWindows.ToList();
+            foreach (var wind in itemWindows)
+            {
+                if(!wind.ItemView.HandleUnsaveConfirmation(null, null))
+                {
+                    return false;
+                }
+            }
+
+            if (!ItemView.HandleUnsaveConfirmation(null, null))
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public void NotifyUnsaved()
+        {
+            if (AnyUnsavedChanges())
+            {
+                ViewHelpers.ShowWarning(this, "Unsaved Changes Warning", "You have one or more unsaved changes that you may wish to save before proceeding");
+            }
+        }
+
+        public bool AnyUnsavedChanges()
+        {
+            var anyUnsaved = false;
+            var fileWindows = SimpleFileViewWindow.OpenFileWindows.ToList();
+            foreach (var wind in fileWindows)
+            {
+                if (wind.FileWrapper.UnsavedChanges)
+                {
+                    anyUnsaved = true;
+                }
+            }
+
+            var itemWindows = SimpleItemViewWindow.OpenItemWindows.ToList();
+            foreach (var wind in itemWindows)
+            {
+                if (wind.ItemView.UnsavedChanges)
+                {
+                    anyUnsaved = true;
+                }
+            }
+
+            if (ItemView.UnsavedChanges)
+            {
+                anyUnsaved = true;
+            }
+
+            return anyUnsaved;
+        }
+
+
         /// <summary>
         /// Event handler for the start over menu item clicked
         /// </summary>
         private async void Menu_StartOver_Click(object sender, RoutedEventArgs e)
         {
-            if(XivCache.GameInfo.UseLumina)
+            if(!this.CheckUnsafeOperation(true, true))
             {
-                FlexibleMessageBox.Show("Cannot perform Start Over while Lumina Mode is active.".L(), "Lumina Mode Error".L(), MessageBoxButtons.OK, MessageBoxIcon.Error);
-
                 return;
             }
 
-            var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
-
-            var index = new Index(gameDirectory);
-
-            if (index.IsIndexLocked(XivDataFile._0A_Exd))
+            try
             {
-                FlexibleMessageBox.Show(UIMessages.IndexLockedErrorMessage, UIMessages.IndexLockedErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-                return;
-            }
+                var result = FlexibleMessageBox.Show(UIMessages.StartOverMessage, UIMessages.StartOverTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Information);
 
-            var result = FlexibleMessageBox.Show(UIMessages.StartOverMessage, UIMessages.StartOverTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Information);
-
-            if (result == System.Windows.Forms.DialogResult.Yes)
-            {
-                var indexBackupsDirectory = new DirectoryInfo(Settings.Default.Backup_Directory);
-
-                if (!Directory.Exists(indexBackupsDirectory.FullName))
+                if (result == System.Windows.Forms.DialogResult.Yes)
                 {
-                    FlexibleMessageBox.Show(UIMessages.BackupFolderAccessErrorMessage,
-                        UIMessages.IndexBackupsErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
+                    CloseAllViewers();
 
 
-                var problemChecker = new ProblemChecker(gameDirectory);
+                    var indexBackupsDirectory = new DirectoryInfo(Settings.Default.Backup_Directory);
 
-                await LockUi(UIStrings.Start_Over, UIMessages.PleaseStandByMessage, this);
-
-                MakeHighlander();
-
-                try
-                {
-                    await problemChecker.PerformStartOver(indexBackupsDirectory, _lockProgress, XivLanguages.GetXivLanguage(Settings.Default.Application_Language));
-                    CustomizeViewModel.UpdateCacheSettings();
-                }
-                catch(Exception ex)
-                {
-                    while(ex.InnerException != null)
+                    if (!Directory.Exists(indexBackupsDirectory.FullName))
                     {
-                        ex = ex.InnerException;
+                        FlexibleMessageBox.Show(UIMessages.BackupFolderAccessErrorMessage,
+                            UIMessages.IndexBackupsErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
                     }
 
-                    var msg = UIMessages.StartOverErrorMessage + "\n\nError: ".L() + ex.Message;
-                    FlexibleMessageBox.Show(msg,
-                        UIMessages.StartOverErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    await UnlockUi();
-                    return;
+
+                    await LockUi(UIStrings.Start_Over, UIMessages.PleaseStandByMessage, this);
+
+                    try
+                    {
+                        MakeHighlander();
+
+                        try
+                        {
+                            await ProblemChecker.ResetAllGameFiles(indexBackupsDirectory, _lockProgress);
+                            CustomizeViewModel.UpdateCacheSettings();
+                        }
+                        catch (Exception ex)
+                        {
+                            while (ex.InnerException != null)
+                            {
+                                ex = ex.InnerException;
+                            }
+
+                            var msg = UIMessages.StartOverErrorMessage + "\n\nError: ".L() + ex.Message;
+                            FlexibleMessageBox.Show(msg,
+                                UIMessages.StartOverErrorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            await UnlockUi();
+                            return;
+                        }
+                    }
+                    finally
+                    {
+                        await UnlockUi();
+
+                        await RefreshTree(this);
+                    }
+
+
+
+                    var item = ItemSelect.SelectedItem;
+                    if (item != null)
+                    {
+                        await UpdateViews(item);
+                    }
+
+                    await this.ShowMessageAsync(UIMessages.StartOverCompleteTitle, UIMessages.StartOverCompleteMessage);
                 }
-
-                await UnlockUi();
-
-                await RefreshTree(this);
-
-
-
-                var item = ItemSelect.SelectedItem;
-                if (item != null)
-                {
-                    UpdateViews(item);
-                }
-
-                await this.ShowMessageAsync(UIMessages.StartOverCompleteTitle, UIMessages.StartOverCompleteMessage);
+            } catch(Exception ex)
+            {
+                this.ShowError(UIMessages.StartOverErrorTitle, "An unhandled error occurred when Starting Over:\n\n" + ex.Message);
             }
         }
 
@@ -1519,15 +1527,30 @@ namespace FFXIV_TexTools
         {
             var result = FlexibleMessageBox.Show(UIMessages.CreateBackupsMessage, UIMessages.CreateBackupsTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Information);
 
+            var needsWrite = false;
+            try
+            {
+                needsWrite = await Modding.AnyModsEnabled();
+            }
+            catch(Exception ex)
+            {
+                // This should never error, but safety.
+                Trace.WriteLine(ex);
+            }
+
+            if(!this.CheckUnsafeOperation(needsWrite, true))
+            {
+                return;
+            }
+
             if (result == System.Windows.Forms.DialogResult.Yes)
             {
-                var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);                
-                var problemChecker = new ProblemChecker(gameDirectory);
+                var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
                 var backupsDirectory = new DirectoryInfo(Properties.Settings.Default.Backup_Directory);
-                await LockUi("Backing Up Indexes".L(), "If you have many mods enabled, this may take some time...".L());
+                await LockUi("Backing Up Indexes".L(), "Please wait...".L());
                 try
                 {
-                    await problemChecker.BackupIndexFiles(backupsDirectory);
+                    await ProblemChecker.CreateIndexBackups(backupsDirectory.FullName);
                     await this.ShowMessageAsync(UIMessages.BackupCompleteTitle, UIMessages.BackupCompleteMessage);
                 }
                 catch(Exception ex)
@@ -1540,8 +1563,67 @@ namespace FFXIV_TexTools
             }
         }
 
-        private void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        private async void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+
+            var res = ItemView.HandleUnsaveConfirmation(null, null);
+            if (res == false)
+            {
+                e.Cancel = true;
+                return;
+            }
+
+            if(UserTransaction != null && UserTransaction.State != ETransactionState.Closed)
+            {
+                if (UserTransaction.ModifiedFiles.Count > 0)
+                {
+                    if(!ViewHelpers.ShowConfirmation(this, "Unsaved Transaction Confirmation", "You have an open transaction, are you sure you wish to close TexTools?\n\nAny un-commited changes will be lost."))
+                    {
+                        return;
+                    }
+                }
+            }
+
+            if (UserTransaction != null)
+            {
+                try
+                {
+                    await ModTransaction.CancelTransaction(UserTransaction, true);
+                }
+                catch (Exception ex)
+                {
+                    Trace.WriteLine(ex);
+                }
+            }
+
+            // Probably not necessary given the entire application is closing typically, but who knows, maybe one day we'll spawn multiple mainwindows..?
+            ItemView.Dispose();
+
+            try
+            {
+                XivCache.SetCacheWorkerStateSync(false);
+            }
+            catch
+            {
+                //No-Op
+            }
+
+            Process[] pname = Process.GetProcessesByName(Process.GetCurrentProcess().ProcessName);
+            if (pname.Length == 1)
+            {
+                // Only clear temp folder if we're the last TT application closing.
+                try
+                {
+                    IOUtil.ClearTempFolder();
+                }
+                catch
+                {
+                    // Whatever.
+                }
+            }
+
+            Application.Current.Shutdown();
+            return;
         }
 
         private void MetroWindow_Loaded(object sender, RoutedEventArgs e)
@@ -1570,6 +1652,10 @@ namespace FFXIV_TexTools
 
         private async void Menu_ItemConverter_Click(object sender, RoutedEventArgs e)
         {
+            if (!this.CheckFileWrite())
+            {
+                return;
+            }
 
             var wind = new ItemConverterWindow() { Owner = this };
             wind.WindowStartupLocation = WindowStartupLocation.CenterOwner;
@@ -1581,16 +1667,20 @@ namespace FFXIV_TexTools
         /// </summary>
         private void FullModelViewer_Click(object sender, RoutedEventArgs e)
         {
-            var fmv = FullModelView.Instance;
-            fmv.Owner = this;
-
-            fmv.Show();
+            FullModelView.ShowFmv();
         }
 
 
-        private void Menu_WebBackups_Click(object sender, RoutedEventArgs e)
+        private async void Menu_WebBackups_Click(object sender, RoutedEventArgs e)
         {
-            DownloadIndexBackups();
+            try
+            {
+                await DownloadIndexBackups();
+            }
+            catch(Exception ex)
+            {
+                Trace.WriteLine(ex);
+            }
         }
         private async Task DownloadIndexBackups()
         {
@@ -1606,38 +1696,27 @@ namespace FFXIV_TexTools
             if (result != System.Windows.Forms.DialogResult.OK) return;
 
             await LockUi("Downloading Backups".L());
-            string localPath = null;
+            string zipPath = null;
             try
             {
                 await Task.Run(async () =>
                 {
-                    var tempDir = Path.GetTempPath();
-                    tempDir += "/index_backup";
-                    Directory.CreateDirectory(tempDir);
 
                     _lockProgress.Report("Downloading Indexes...".L());
-                    localPath = Path.GetTempFileName();
+                    zipPath = IOUtil.GetFrameworkTempFile();
                     using (var client = new WebClient())
                     {
-                        client.DownloadFile(url, localPath);
+                        client.DownloadFile(url, zipPath);
                     }
 
 
-                    var tempDi = new DirectoryInfo(tempDir);
-                    foreach (FileInfo file in tempDi.GetFiles())
-                    {
-                        file.Delete();
-                    }
+                    var verFile = Path.Combine(IOUtil.GetFrameworkTempFolder(), "ffxivgame.ver");
 
-
-                    _lockProgress.Report("Unzipping new Indexes...".L());
-                    ZipFile.ExtractToDirectory(localPath, tempDir);
-
-                    _lockProgress.Report("Checking downloaded index version...".L());
-                    var versionRaw = File.ReadAllText(tempDir + "/ffxivgame.ver");
+                    _lockProgress.Report("Checking game version...".L());
+                    await IOUtil.UnzipFile(zipPath, IOUtil.GetFrameworkTempFolder(), "ffxivgame.ver");
+                    var versionRaw = File.ReadAllText(verFile);
                     
                     Version version = new Version(versionRaw.Substring(0, versionRaw.LastIndexOf(".", StringComparison.Ordinal)));
-
                     if (version != XivCache.GameInfo.GameVersion)
                     {
                         throw new Exception("Downloaded Index version does not match game version.".L());
@@ -1652,21 +1731,7 @@ namespace FFXIV_TexTools
 
 
                     _lockProgress.Report("Copying new indexes to backup directory...".L());
-                    var newFiles = Directory.GetFiles(tempDi.FullName);
-                    foreach (var nFile in newFiles)
-                    {
-                        try
-                        {
-                            if (nFile.Contains(".win32.index"))
-                            {
-                                File.Copy(nFile, $"{Settings.Default.Backup_Directory}/{Path.GetFileName(nFile)}", true);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new Exception("Failed to copy index files.\n\n".L() + ex.Message);
-                        }
-                    }
+                    await IOUtil.UnzipFiles(zipPath, Settings.Default.Backup_Directory);
 
 
                     _lockProgress.Report("Job Done.".L());
@@ -1680,9 +1745,9 @@ namespace FFXIV_TexTools
             }
             finally
             {
-                if(localPath != null)
+                if(zipPath != null)
                 {
-                    File.Delete(localPath);
+                    File.Delete(zipPath);
                 }
                 await UnlockUi();
             }
@@ -1690,6 +1755,10 @@ namespace FFXIV_TexTools
 
         private void Menu_CopyFile_Click(object sender, RoutedEventArgs e)
         {
+            if (!this.CheckFileWrite())
+            {
+                return;
+            }
             var win = new CopyFileDialog() { Owner = this };
             win.Show();
         }
@@ -1702,6 +1771,10 @@ namespace FFXIV_TexTools
 
         private void Menu_ImportRaw_Click(object sender, RoutedEventArgs e)
         {
+            if (!this.CheckFileWrite())
+            {
+                return;
+            }
             var win = new ImportRawDialog() { Owner = this };
             win.Show();
         }
@@ -1721,16 +1794,12 @@ namespace FFXIV_TexTools
         }
         private async void Menu_CleanUpModList_Click(object sender, RoutedEventArgs e)
         {
-            var queueLength = XivCache.GetDependencyQueueLength();
-
-            System.Windows.Forms.DialogResult result;
-            if(queueLength > 100)
+            if (!this.CheckFileWrite())
             {
-                result = FlexibleMessageBox.Show("This will update the Modlist to ensure all modded files are\nlabeled under the correct items.\n\nAs the Queue currently has a large amount of files still processing,\nthis operation may take an extended amount of time to complete.\n(Up to one hour)".L(), "Modlist Cleanup Confirmation".L(), MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
-            } else
-            {
-                result = FlexibleMessageBox.Show("This will update the Modlist to ensure all modded files are\nlabeled under the correct items.\n\nThis may take up to 5 minutes to complete.".L(), "Modlist Cleanup Confirmation".L(), MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
+                return;
             }
+
+            var result = FlexibleMessageBox.Show("This will update the Modlist to ensure all modded files are\nlabeled under the correct items.\n\nThis may take up to 5 minutes to complete.".L(), "Modlist Cleanup Confirmation".L(), MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
 
             if (result != System.Windows.Forms.DialogResult.OK) return;
 
@@ -1741,8 +1810,7 @@ namespace FFXIV_TexTools
                 // Run in new thread so UI doesn't lock.
                 await Task.Run(async () =>
                 {
-                    var modding = new Modding(XivCache.GameInfo.GameDirectory);
-                    await modding.CleanUpModlist(reporter);
+                    await Modding.CleanUpModlistItems(reporter, MainWindow.UserTransaction);
                 });
                 FlexibleMessageBox.Show("The Modlist was cleaned up successfully.".L(), "Cleanup Complete".L(), MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
@@ -1770,6 +1838,11 @@ namespace FFXIV_TexTools
 
         private async void Menu_RecoverSpace_Click(object sender, RoutedEventArgs e)
         {
+            if (!this.CheckUnsafeOperation(true, true))
+            {
+                return;
+            }
+
             var result = FlexibleMessageBox.Show("This will recover unused space in the game files by defragmenting the modded DAT files.\n\nPlease do not close TexTools or open FFXIV until this operation is complete".L(), "Recover Space Confirmation".L(), MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
 
             if (result != System.Windows.Forms.DialogResult.OK) return;
@@ -1781,8 +1854,7 @@ namespace FFXIV_TexTools
                 // Run in new thread so UI doesn't lock.
                 await Task.Run(async () =>
                 {
-                    var modding = new Modding(XivCache.GameInfo.GameDirectory);
-                    savedBytes = await modding.DefragmentModdedDats(reporter);
+                    savedBytes = await Dat.DefragmentModdedDats(reporter);
                 });
 
                 var savedSpace = FormatBytes(savedBytes);
@@ -1800,18 +1872,168 @@ namespace FFXIV_TexTools
 
         private void Menu_CopyModel_Click(object sender, RoutedEventArgs e)
         {
+            if (!this.CheckFileWrite())
+            {
+                return;
+            }
             var wind = new CopyModelDialog() { Owner = this };
             wind.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             wind.Show();
         }
 
+        private void Menu_MergeModels_Click(object sender, RoutedEventArgs e)
+        {
+            if (!this.CheckFileWrite())
+            {
+                return;
+            }
+            var wind = new MergeModelsDialog() { Owner = this };
+            wind.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            wind.Show();
+        }
 
 
         private void Menu_RacialScaling_Click(object sender, RoutedEventArgs e)
         {
+            if (!this.CheckFileWrite())
+            {
+                return;
+            }
             var wind = new RacialSettingsEditor() { Owner = this };
             wind.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             wind.Show();
+        }
+
+        private async void ScanShaders_Click(object sender, RoutedEventArgs e)
+        {
+
+            await LockUi("Updating Shader References...".L(), "This may take up to 5 minutes depending on your computer specs...".L(), this);
+            try
+            {
+                await Task.Run(async () => {
+                    await Mtrl.UpdateShaderDB(false);
+                    await ShaderHelpers.LoadShaderInfo();
+                });
+
+                var res = await this.ShowMessageAsync("Shader Scan Complete", "The shader scan was completed.  You may need to restart TexTools to see the new values.");
+            } catch(Exception ex)
+            {
+                FlexibleMessageBox.Show("An error occurred durin the shader update process.\n\nError: ".L() + ex.Message, "Shader Update Error".L(), MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                await UnlockUi(this);
+            }
+        }
+
+
+        private void ModTransaction_ActiveTransactionBlocked(ModTransaction sender)
+        {
+            var result = FlexibleMessageBox.Show("The current action in TexTools is blocked due to the game files currently being in use.\n\nYou may cancel the action by pressing CANCEL, or wait for the files to become accessible by pressing OK.", "Transaction Blocked", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
+
+            if(result == System.Windows.Forms.DialogResult.Cancel)
+            {
+                ModTransaction.CancelBlockedTransaction();
+                return;
+            }
+            _ = Dispatcher.InvokeAsync(async () =>
+            {
+                await LockUi("Waiting for FFXIV files to be unlocked");
+            });
+        }
+        private void ModTransaction_ActiveTransactionUnblocked(ModTransaction sender)
+        {
+            _ = Dispatcher.InvokeAsync(async () =>
+            {
+                await UnlockUi();
+            });
+        }
+
+        private async void FileViewerButton_Click(object sender, RoutedEventArgs e)
+        {
+            var success = await SimpleFileViewWindow.OpenFile();
+        }
+
+        private void TransactionStatus_Click(object sender, RoutedEventArgs e)
+        {
+            if (ProjectWindow.Project != null)
+            {
+                ProjectWindow.ShowProjectWindow();
+            }
+            else
+            {
+                TransactionStatusWindow.ShowTxStatus();
+            }
+        }
+
+        private void SafeToggle_Click(object sender, RoutedEventArgs e)
+        {
+            XivCache.GameWriteEnabled = !XivCache.GameWriteEnabled;
+        }
+        private void XivCache_GameWriteStateChanged(bool newState)
+        {
+            UpdateWriteStateUi();
+        }
+        private void UpdateWriteStateUi()
+        {
+            Dispatcher.InvokeAsync(() =>
+            {
+                SafeToggleButton.Content = XivCache.GameWriteEnabled ? "UNSAFE".L() : "SAFE".L();
+                SafeToggleButton.Foreground = XivCache.GameWriteEnabled ? Brushes.DarkRed : Brushes.DarkGreen;
+            });
+        }
+
+        private void Menu_ProjectManager_Click(object sender, RoutedEventArgs e)
+        {
+            ProjectWindow.ShowProjectWindow();
+        }
+
+        private void ItemViewer_Click(object sender, RoutedEventArgs e)
+        {
+            var item = PopupItemSelection.ShowItemSelection(null, null, this);
+            if (item != null)
+            {
+                _ = SimpleItemViewWindow.ShowItem(item, this);
+            }
+        }
+
+        private void Menu_ImportFolder_Click(object sender, RoutedEventArgs e)
+        {
+            _ = ImportFolder();
+        }
+
+        private void IndexTextureCreator_Click(object sender, RoutedEventArgs e)
+        {
+            IndexTextureCreator.ShowWindow(this);
+        }
+
+        private void HairTextureConverter_Click(object sender, RoutedEventArgs e)
+        {
+            HairTextureConverter.ShowWindow(this);
+        }
+
+        private async void UpdateModpack_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var includePartials = true;
+
+                // Should we use this setting here? Or just always upgrade for modpacks?
+                //includePartials = Settings.Default.FixPreDawntrailPartialOnImport;
+
+                await ModpackUpgrader.UpgradeModpackPrompted(includePartials);
+            }
+            catch
+            {
+                // No-Op. Should never hit this, but safety to be 100% sure it can't take the application down.
+            }
+
+        }
+
+        private void IrisDiffuseCreator_Click(object sender, RoutedEventArgs e)
+        {
+            EyeDiffuseCreator.ShowWindow(this);
+
         }
     }
 }

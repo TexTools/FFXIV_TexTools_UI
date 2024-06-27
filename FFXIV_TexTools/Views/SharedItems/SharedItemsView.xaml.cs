@@ -1,5 +1,6 @@
 ﻿using FFXIV_TexTools.ViewModels;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using xivModdingFramework.Items.Interfaces;
@@ -17,8 +18,13 @@ namespace FFXIV_TexTools.Views
         {
             InitializeComponent();
 
-            this._viewModel = new SharedItemsViewModel(this);
+            this._viewModel = new SharedItemsViewModel(PrimaryTree);
             this.DataContext = this._viewModel;
+        }
+
+        public async Task<bool> SetItem(IItem item)
+        {
+            return await _viewModel.SetItem(item);
         }
 
     }

@@ -1,10 +1,12 @@
 ﻿using FFXIV_TexTools.Properties;
 using FFXIV_TexTools.ViewModels;
+using HelixToolkit.Wpf.SharpDX.Elements2D;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -16,35 +18,57 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
+using xivModdingFramework.Cache;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Items;
 using xivModdingFramework.Items.Interfaces;
 using xivModdingFramework.Models.DataContainers;
 using xivModdingFramework.Models.FileTypes;
+using xivModdingFramework.Models.Helpers;
+using xivModdingFramework.Mods;
 
 namespace FFXIV_TexTools.Views.Models
 {
+
+    public class ModelImportResult {
+        public bool Success;
+        public string Path;
+        public byte[] Data;
+        public TTModel Model;
+        public ModelImportOptions ImportOptions;
+    }
     /// <summary>
     /// Interaction logic for ImportModelView.xaml
     /// </summary>
     public partial class ImportModelView
     {
         private ImportModelViewModel _viewModel;
-        private static byte[] _data;
+        private byte[] _data;
 
         // Height to expand to when opening the log window.
 
-        public ImportModelView(IItemModel item, XivRace race, Action onComplete, string submeshId = null, bool dataOnly = false, string lastImportFilePath = null)
+        public ImportModelView(string internalPath, IItem referenceItem, Action<ModelImportResult> onComplete = null, string startingFilePath = null, bool simpleMode = false)
         {
             InitializeComponent();
-            _viewModel = new ImportModelViewModel(this, item, race, submeshId, dataOnly, onComplete, lastImportFilePath);
+            _viewModel = new ImportModelViewModel(this, internalPath, referenceItem, onComplete, startingFilePath, simpleMode);
             DataContext = _viewModel;
+            Closing += ImportModelView_Closing;
+        }
+
+        private void ImportModelView_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (null != Owner)
+            {
+                Owner.Activate();
+            }
         }
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
-            DialogResult = false;
+            var wind = Window.GetWindow(this);
+            wind.Close();
         }
 
         /// <summary>
@@ -76,23 +100,13 @@ namespace FFXIV_TexTools.Views.Models
         /// Returns the data from the last call of ImportModel()
         /// </summary>
         /// <returns></returns>
-        public static byte[] GetData()
+        public byte[] GetData()
         {
             return _data;
         }
 
-        /// <summary>
-        /// Spawns the import model dialog and walks through the full steps to import a model,
-        /// with user interaction.
-        /// </summary>
-        /// <param name="item">Item to import to</param>
-        /// <param name="race">Race to import to</param>
-        /// <param name="windowOwner">Window parent, default uses TexTools main window.</param>
-        /// <param name="onComplete">Function to be called after import completes, but before user has closed the window. (Task handler returns when window is closed)</param>
-        /// <param name="dataOnly">If this should be just load the data to memory and not import the resultant MDL.  Data can be accessed with ImportModelView.GetData()</param>
-        /// <param name="lastImportFilePath">The path to the file that was last imported for path auto-fill purposes in case the user repeatedly wants to import the same file</param>
-        /// <returns>A tuple containing a boolean indicating whether or not the import was successful or not and a string containing the path to the imported model file</returns>
-        public static async Task<(bool, string)> ImportModel(IItemModel item, XivRace race, string submeshId = null, Window windowOwner = null, Action onComplete = null, bool dataOnly = false, string lastImportFilePath = null)
+
+        public static async Task<ModelImportResult> ImportModel(string path, IItem referenceItem = null, string startingFilePath = null, bool simpleMode = false, Window windowOwner = null)
         {
 
             if (windowOwner == null)
@@ -100,13 +114,35 @@ namespace FFXIV_TexTools.Views.Models
                 // Default to the main root window if we don't have an owner.
                 windowOwner = MainWindow.GetMainWindow();
             }
+            if (referenceItem == null)
+            {
+                var root = await XivCache.GetFirstRoot(path);
+                if(root != null)
+                {
+                    referenceItem = root.GetFirstItem();
+                }
+            }
 
-            var imView = new ImportModelView(item, race, onComplete, submeshId, dataOnly, lastImportFilePath) { Owner = windowOwner };
+            var imView = new ImportModelView(path, referenceItem, OnComplete, startingFilePath, simpleMode) { Owner = windowOwner };
+            imView.WindowStartupLocation = WindowStartupLocation.CenterOwner;
 
-            // This blocks until the dialog closes.
-            var result = imView.ShowDialog();
 
-            return (result == true, imView.FileNameTextBox.Text);
+            imView.Show();
+
+            // OnComplete will be called here when either the import is successful or the user closes the window.
+            _Result = null;
+            while(_Result == null)
+            {
+                await Task.Delay(10);
+            }
+
+            return _Result;
+        }
+
+        private static ModelImportResult _Result;
+        private static void OnComplete(ModelImportResult result)
+        {
+            _Result = result;
         }
 
 
@@ -120,7 +156,7 @@ namespace FFXIV_TexTools.Views.Models
             ClearVColorButton.IsEnabled = enabled;
             ClearVAlphaButton.IsEnabled = enabled;
             UseOriginalShapeDataButton.IsEnabled = enabled;
-            ForceUVsButton.IsEnabled = enabled;
+            ShiftUVsButton.IsEnabled = enabled;
             FileNameTextBox.IsEnabled = enabled;
             UseExistingButton.IsEnabled = enabled;
             IsCloseButtonEnabled = enabled;

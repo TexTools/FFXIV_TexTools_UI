@@ -7,10 +7,10 @@
         xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
         resx:Localization.Enabled="True"        
         mc:Ignorable="d"
-        Title="Import Raw File" Height="155" Width="500">
+        Title="Import Raw File" Width="500" SizeToContent="Height"
+        MinHeight="100" MinWidth="500">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="40"></RowDefinition>
             <RowDefinition Height="40"></RowDefinition>
             <RowDefinition Height="40"></RowDefinition>
         </Grid.RowDefinitions>
@@ -20,12 +20,10 @@
         </Grid.ColumnDefinitions>
 
         <Label Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" Content="Destination Path:" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
-        <TextBox x:Name="PathBox" Grid.Column="1" Grid.Row="0" Margin="5,0" VerticalAlignment="Center"></TextBox>
-
-        <CheckBox x:Name="DecompressedType2" IsChecked="True" Grid.Row="1" Grid.Column="1" Margin="5,0" Content="File is Decompressed Type 2 Data"></CheckBox>
-
+        <TextBox x:Name="PathBox" Grid.Column="1" Grid.Row="0" Margin="5,0" VerticalAlignment="Center" TextChanged="PathBox_TextChanged"></TextBox>
         <Button x:Name="ImportButton"  Grid.Row="2" Grid.Column="1" Content="Import File" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0" Width="150" Click="ImportButton_Click"></Button>
 
+        <Label x:Name="InfoLabel" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"></Label>
 
     </Grid>
 </Window>

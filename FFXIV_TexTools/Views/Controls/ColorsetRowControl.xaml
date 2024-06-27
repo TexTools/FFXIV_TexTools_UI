@@ -7,13 +7,13 @@
              mc:Ignorable="d" 
              xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
              resx:Localization.Enabled="True"             
-             d:DesignHeight="24" d:DesignWidth="160">
-    <Grid>
+             d:DesignHeight="24" d:DesignWidth="160" d:MinHeight="16">
+    <Grid MinHeight="16">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1*" ></ColumnDefinition>
             <ColumnDefinition Width="4*" ></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <Label Grid.Column="0" Name="RowNumber" HorizontalContentAlignment="Right" Padding="0, 4, 2, 0" />
-        <Image Grid.Column="1" Name="RowImage" HorizontalAlignment="Left" Margin="5, 0, 0, 0"/>
+        <Label Grid.Column="0" Name="RowNumber" HorizontalContentAlignment="Right" FontFamily="Courier New" Padding="0, 0, 0, 0" />
+        <Image Grid.Column="1" Name="RowImage" HorizontalAlignment="Left" Margin="5, 0, 0, 0" MinHeight="16"/>
     </Grid>
 </UserControl>

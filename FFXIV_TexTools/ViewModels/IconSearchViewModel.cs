@@ -17,6 +17,7 @@
 using FFXIV_TexTools.Helpers;
 using FFXIV_TexTools.Resources;
 using FFXIV_TexTools.Views;
+using FFXIV_TexTools.Views.Item;
 using System.ComponentModel;
 using System.IO;
 using System.Windows.Data;
@@ -24,6 +25,7 @@ using System.Windows.Input;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Items.DataContainers;
+using xivModdingFramework.Mods;
 using xivModdingFramework.SqPack.FileTypes;
 
 namespace FFXIV_TexTools.ViewModels
@@ -90,13 +92,7 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         private async void OpenIcon()
         {
-            if (_mainView.TabsControl.SelectedIndex == 1)
-            {
-                _mainView.TabsControl.SelectedIndex = 0;
-            }
-
-            _mainView.ModelTabItem.IsEnabled = false;
-
+            var tx = MainWindow.DefaultTransaction;
 
             var iconInt = -1;
             try
@@ -120,17 +116,13 @@ namespace FFXIV_TexTools.ViewModels
 
             if (iconInt > -1)
             {
-                var index = new Index(new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory));
-
                 var iconFileString = $"{IconText.PadLeft(6, '0')}.tex";
                 var iconFolderInt = (iconInt / 1000) * 1000;
                 var iconFolderString = $"ui/icon/{iconFolderInt.ToString().PadLeft(6, '0')}";
                 var path = iconFolderString + "/" + iconFileString;
 
-                if (await index.FileExists(path, XivDataFile._06_Ui))
+                if (await tx.FileExists(path))
                 {
-                    var textureView = _mainView.TextureTabItem.Content as TextureView;
-                    var textureViewModel = textureView.DataContext as TextureViewModel;
 
                     var xivUI = new XivUi
                     {
@@ -143,16 +135,13 @@ namespace FFXIV_TexTools.ViewModels
                         UiPath = $"{iconFolderString}/{iconFileString}"
                     };
 
-                    await textureViewModel.UpdateTexture(xivUI);
+                    await ItemViewControl.StaticSetItem(xivUI);
                 }
                 else
                 {
                     var iconLangFolderString = $"ui/icon/{iconFolderInt.ToString().PadLeft(6, '0')}/en";
-                    if (await index.FileExists(path, XivDataFile._06_Ui))
+                    if (await tx.FileExists(path))
                     {
-                        var textureView = _mainView.TextureTabItem.Content as TextureView;
-                        var textureViewModel = textureView.DataContext as TextureViewModel;
-
                         var xivUI = new XivUi
                         {
                             Name = Path.GetFileNameWithoutExtension(iconFileString),
@@ -164,7 +153,7 @@ namespace FFXIV_TexTools.ViewModels
                             UiPath = $"{iconFolderString}/{iconFileString}"
                         };
 
-                        await textureViewModel.UpdateTexture(xivUI);
+                        await ItemViewControl.StaticSetItem(xivUI);
                     }
                     else
                     {

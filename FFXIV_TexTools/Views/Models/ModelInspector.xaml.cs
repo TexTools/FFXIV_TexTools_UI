@@ -14,6 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using MahApps.Metro;
+using SharpDX.Direct2D1.Effects;
 using System;
 using System.Collections.Generic;
 using System.Windows;
@@ -52,6 +53,54 @@ namespace FFXIV_TexTools.Views.Models
             FillOtherDataComboBox();
 
             FillLoDComboBox();
+            Closing += ModelInspector_Closing;
+        }
+
+        private void ModelInspector_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (null != Owner)
+            {
+                Owner.Activate();
+            }
+        }
+
+        private void PrintVar<T>(RichTextBox textBox, T source, string name, bool doubleSpace = true)
+        {
+            object value;
+            var property = typeof(T).GetProperty(name);
+
+            if (property != null)
+            {
+                value = property.GetValue(source);
+            } else
+            {
+                var field = typeof(T).GetField(name);
+                if(field == null)
+                {
+                    return;
+                } else
+                {
+                    value = field.GetValue(source);
+                }
+
+            }
+
+            var spaces = doubleSpace ? "\n\n" : "\n";
+            AddText(textBox, name + " :\t\t".L(), _textColor, false);
+            AddText(textBox, $"{value.ToString()}" + spaces, _textColor, true);
+        }
+        private void PrintAllProps<T>(RichTextBox textBox, T source, bool doubleSpace = true)
+        {
+            var dataType = typeof(T);
+            var props = dataType.GetProperties();
+            
+            foreach(var p in props)
+            {
+                if(p.PropertyType.IsValueType)
+                {
+                    PrintVar(textBox, source, p.Name, doubleSpace);
+                }
+            }
         }
 
         /// <summary>
@@ -64,112 +113,10 @@ namespace FFXIV_TexTools.Views.Models
             var modelData = _xivMdl.ModelData;
 
             // Unknown 0
-            AddText(textBox, "Unknown 0:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{modelData.Unknown0.ToString()}\n\n", _textColor, true);
+            AddText(textBox, "Mdl Version:\t\t".L(), _textColor, false);
+            AddText(textBox, $"{_xivMdl.MdlVersion.ToString()}\n\n", _textColor, true);
 
-            // Mesh Count
-            AddText(textBox, "Mesh Count:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{modelData.MeshCount.ToString()}\n\n", _textColor, true);
-
-            // Attribute Count
-            AddText(textBox, "Attribute Count:\t".L(), _textColor, false);
-            AddText(textBox, $"{modelData.AttributeCount.ToString()}\n\n", _textColor, true);
-
-            // Mesh Part Count
-            AddText(textBox, "Mesh Part Count:\t".L(), _textColor, false);
-            AddText(textBox, $"{modelData.MeshPartCount.ToString()}\n\n", _textColor, true);
-
-            // Material Count
-            AddText(textBox, "Material Count:\t".L(), _textColor, false);
-            AddText(textBox, $"{modelData.MaterialCount.ToString()}\n\n", _textColor, true);
-
-            // Bone Count
-            AddText(textBox, "Bone Count:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{modelData.BoneCount.ToString()}\n\n", _textColor, true);
-
-            // Bone List Count
-            AddText(textBox, "Bone List Count:\t".L(), _textColor, false);
-            AddText(textBox, $"{modelData.BoneListCount.ToString()}\n\n", _textColor, true);
-
-            // Mesh Shape Info Count
-            AddText(textBox, "Shape Info Count:\t".L(), _textColor, false);
-            AddText(textBox, $"{modelData.ShapeCount.ToString()}\n\n", _textColor, true);
-
-            // Mesh Shape Data Count
-            //AddText(textBox, "Shape Data Count:\t", _textColor, false);
-            //AddText(textBox, $"{modelData.ShapePartCount.ToString()}\n\n", _textColor, true);
-
-            // Unknown 1
-            AddText(textBox, "Unknown 1:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{modelData.Unknown1.ToString()}\n\n", _textColor, true);
-
-            // Unknown 2
-            AddText(textBox, "Unknown 2:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{modelData.Unknown2.ToString()}\n\n", _textColor, true);
-
-            // Unknown 3
-            AddText(textBox, "Unknown 3:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{modelData.Unknown3.ToString()}\n\n", _textColor, true);
-
-            // Unknown 4
-            AddText(textBox, "Unknown 4:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{modelData.Unknown4.ToString()}\n\n", _textColor, true);
-
-            // Unknown 5
-            AddText(textBox, "Unknown 5:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{modelData.Unknown5.ToString()}\n\n", _textColor, true);
-
-            // Unknown 6
-            AddText(textBox, "Unknown 6:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{modelData.Unknown6.ToString()}\n\n", _textColor, true);
-
-            // Unknown 7
-            AddText(textBox, "Unknown 7:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{modelData.Unknown7.ToString()}\n\n", _textColor, true);
-
-            // Unknown 8
-            AddText(textBox, "Unknown 8:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{modelData.Unknown8.ToString()}\n\n", _textColor, true);
-
-            // Unknown 9
-            AddText(textBox, "Unknown 9:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{modelData.Unknown9.ToString()}\n\n", _textColor, true);
-
-            // Unknown 10a
-            AddText(textBox, "Unknown 10a:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{modelData.Unknown10a.ToString()}\n\n", _textColor, true);
-
-            // Unknown 10b
-            AddText(textBox, "Unknown 10b:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{modelData.Unknown10b.ToString()}\n\n", _textColor, true);
-
-            // Unknown 11
-            AddText(textBox, "Unknown 11:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{modelData.Unknown11.ToString()}\n\n", _textColor, true);
-
-            // Unknown 12
-            AddText(textBox, "Unknown 12:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{modelData.Unknown12.ToString()}\n\n", _textColor, true);
-
-            // Unknown 13
-            AddText(textBox, "Unknown 13:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{modelData.Unknown13.ToString()}\n\n", _textColor, true);
-
-            // Unknown 14
-            AddText(textBox, "Unknown 14:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{modelData.Unknown14.ToString()}\n\n", _textColor, true);
-
-            // Unknown 15
-            AddText(textBox, "Unknown 15:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{modelData.Unknown15.ToString()}\n\n", _textColor, true);
-
-            // Unknown 16
-            AddText(textBox, "Unknown 16:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{modelData.Unknown16.ToString()}\n\n", _textColor, true);
-
-            // Unknown 17
-            AddText(textBox, "Unknown 17:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{modelData.Unknown17.ToString()}\n\n", _textColor, true);
+            PrintAllProps(textBox, modelData);
 
             // Extra LoD Count
             if (_xivMdl.ExtraLoDList != null)
@@ -232,6 +179,7 @@ namespace FFXIV_TexTools.Views.Models
         {
             var otherList = new List<string>();
 
+            otherList.Add("Vertex Structure".L());
             otherList.Add("Unknown".L());
             otherList.Add("Data Blocks".L());
 
@@ -245,12 +193,12 @@ namespace FFXIV_TexTools.Views.Models
                 otherList.Add($"Bone Index (Part)".L());
             }
 
-            if (_xivMdl.BoundBox != null)
+            if (_xivMdl.BoundingBoxes != null)
             {
                 otherList.Add("Bounding Box".L());
             }
 
-            if (_xivMdl.BoneTransformDataList.Count > 0)
+            if (_xivMdl.BoneBoundingBoxes.Count > 0)
             {
                 otherList.Add("Transforms".L());
             }
@@ -343,6 +291,23 @@ namespace FFXIV_TexTools.Views.Models
                 }
             }
 
+            if (selectedItem.Equals("Vertex Structure".L()))
+            {
+                for (int li = 0; li < _xivMdl.LoDList.Count; li++)
+                {
+                    AddText(textBox, "==== LoD Level " + li.ToString() + " ====\n\n", _textColor, true);
+                    for (int mi = 0; mi < _xivMdl.LoDList[li].MeshDataList.Count; mi++)
+                    {
+                        AddText(textBox, "  == Mesh #" + mi.ToString() + " ==\n\n", _textColor, true);
+                        foreach (var st in _xivMdl.LoDList[li].MeshDataList[mi].VertexDataStructList)
+                        {
+                            PrintAllProps(textBox, st, false);
+                            AddText(textBox, "\n", _textColor, true);
+                        }
+                    }
+                }
+            }
+
             if (selectedItem.Contains("Bone Index (Mesh)".L()))
             {
                 var num = int.Parse(selectedItem.Substring(selectedItem.Length - 1));
@@ -373,36 +338,6 @@ namespace FFXIV_TexTools.Views.Models
                     AddText(textBox, $"{boneIndex.BoneIndices[i]}\n\n", _textColor, true);
                 }
             }
-
-            if (selectedItem.Equals("Bounding Box".L()))
-            {
-                var boundBox = _xivMdl.BoundBox;
-
-                AddText(textBox, "Vector Count:\t".L(), _textColor, false);
-                AddText(textBox, $"{boundBox.PointList.Count}\n\n", _textColor, true);
-
-                for (var i = 0; i < boundBox.PointList.Count; i++)
-                {
-                    AddText(textBox, $"{i}:\t", _textColor, false);
-                    AddText(textBox, $"{boundBox.PointList[i]}\n\n", _textColor, true);
-                }
-            }
-
-            if (selectedItem.Equals("Transforms".L()))
-            {
-                var transforms = _xivMdl.BoneTransformDataList;
-
-                AddText(textBox, "Transform Count:\t".L(), _textColor, false);
-                AddText(textBox, $"{transforms.Count}\n\n", _textColor, true);
-
-                for (var i = 0; i < transforms.Count; i++)
-                {
-                    AddText(textBox, $"{i} T0:\t", _textColor, false);
-                    AddText(textBox, $"{transforms[i].Transform0}\n", _textColor, true);
-                    AddText(textBox, $"{i} T1:\t", _textColor, false);
-                    AddText(textBox, $"{transforms[i].Transform1}\n\n", _textColor, true);
-                }
-            }
         }
 
         /// <summary>
@@ -417,78 +352,7 @@ namespace FFXIV_TexTools.Views.Models
             var selectedLoD = (int) LoDComboBox.SelectedItem;
 
             var lod = _xivMdl.LoDList[selectedLoD];
-
-            // Mesh Offset
-            AddText(textBox, "Mesh Offset:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{lod.MeshOffset}\n\n", _textColor, true);
-
-            // Mesh Count
-            AddText(textBox, "Mesh Count:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{lod.MeshCount}\n\n", _textColor, true);
-
-            // Unknown 0
-            AddText(textBox, "Unknown 0:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{lod.Unknown0}\n\n", _textColor, true);
-
-            // Unknown 1
-            AddText(textBox, "Unknown 1:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{lod.Unknown1}\n\n", _textColor, true);
-
-            // Mesh End
-            AddText(textBox, "Mesh End:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{lod.MeshEnd}\n\n", _textColor, true);
-
-            // Extra Mesh Count
-            AddText(textBox, "Extra Mesh Count:\t".L(), _textColor, false);
-            AddText(textBox, $"{lod.ExtraMeshCount}\n\n", _textColor, true);
-
-            // Mesh Sum
-            AddText(textBox, "Mesh Sum:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{lod.MeshSum}\n\n", _textColor, true);
-
-            // Unknown 2
-            AddText(textBox, "Unknown 2:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{lod.Unknown2}\n\n", _textColor, true);
-
-            // Unknown 3
-            AddText(textBox, "Unknown 3:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{lod.Unknown3}\n\n", _textColor, true);
-
-            // Unknown 4
-            AddText(textBox, "Unknown 4:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{lod.Unknown4}\n\n", _textColor, true);
-
-            // Unknown 5
-            AddText(textBox, "Unknown 5:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{lod.Unknown5}\n\n", _textColor, true);
-
-            // Index Start
-            AddText(textBox, "Index Start:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{lod.IndexDataStart}\n\n", _textColor, true);
-
-            // Unknown 6
-            AddText(textBox, "Unknown 6:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{lod.Unknown6}\n\n", _textColor, true);
-
-            // Unknown 7
-            AddText(textBox, "Unknown 7:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{lod.Unknown7}\n\n", _textColor, true);
-
-            // Vertex Size
-            AddText(textBox, "Vertex Size:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{lod.VertexDataSize}\n\n".L(), _textColor, true);
-
-            // Index Size
-            AddText(textBox, "Index Size:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{lod.IndexDataSize}\n\n", _textColor, true);
-
-            // Vertex Offset
-            AddText(textBox, "Vertex Offset:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{lod.VertexDataOffset}\n\n", _textColor, true);
-
-            // Index Offset
-            AddText(textBox, "Index Offset:\t\t".L(), _textColor, false);
-            AddText(textBox, $"{lod.IndexDataOffset}\n\n", _textColor, true);
+            PrintAllProps(textBox, lod);
         }
 
         /// <summary>

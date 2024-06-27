@@ -28,6 +28,8 @@ namespace FFXIV_TexTools.Views.Metadata
 
         private Dictionary<XivRace, CheckBox> RacialCheckboxes = new Dictionary<XivRace, CheckBox>();
 
+        public event Action FileChanged;
+
         public event EventHandler<(XivRace Race, bool Enabled)> RaceChanged;
         public EqdpControl()
         {
@@ -58,14 +60,15 @@ namespace FFXIV_TexTools.Views.Metadata
 
             if (race != XivRace.All_Races && _metadata != null)
             {
-                _metadata.EqdpEntries[race].bit0 = enabled;
-                _metadata.EqdpEntries[race].bit1 = enabled;
+                _metadata.EqdpEntries[race].HasMaterial = enabled;
+                _metadata.EqdpEntries[race].HasModel = enabled;
 
                 if(RaceChanged != null)
                 {
                     RaceChanged.Invoke(this, (race, enabled));
                 }
             }
+            FileChanged?.Invoke();
 
         }
 
@@ -80,8 +83,11 @@ namespace FFXIV_TexTools.Views.Metadata
 
             foreach (var kv in RacialCheckboxes)
             {
-                var entry = m.EqdpEntries[kv.Key];
-                kv.Value.IsChecked = entry.bit1;
+                if (m.EqdpEntries.ContainsKey(kv.Key))
+                {
+                    var entry = m.EqdpEntries[kv.Key];
+                    kv.Value.IsChecked = entry.HasModel;
+                }
             }
 
             _metadata = m;

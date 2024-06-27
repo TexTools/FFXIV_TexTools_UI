@@ -10,7 +10,7 @@
         xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
         resx:Localization.Enabled="True"
         mc:Ignorable="d"
-        Title="{Binding Source={x:Static resx:UIStrings.Mod_List}}" Height="500" Width="800" ShowMaxRestoreButton="False" ShowMinButton="False" WindowStartupLocation="CenterOwner" Closed="MetroWindow_Closed">
+        Title="{Binding Source={x:Static resx:UIStrings.Mod_List}}" Height="700" Width="900" ShowMaxRestoreButton="False" ShowMinButton="False" WindowStartupLocation="CenterOwner" Closed="MetroWindow_Closed">
     <mah:MetroWindow.DataContext>
         <vms:ModListViewModel/>
     </mah:MetroWindow.DataContext>
@@ -70,7 +70,7 @@
                         </ListView.ItemsPanel>
                         <ListView.ItemTemplate>
                             <DataTemplate>
-                                <Border BorderBrush="{Binding ActiveBorder}" BorderThickness="2" Background="{Binding Active}" Opacity="{Binding ActiveOpacity}">
+                                <Border BorderBrush="{Binding ActiveBorder}" BorderThickness="2" Background="{Binding Active}" Opacity="{Binding ActiveOpacity}" ToolTip="{Binding Path=FilePath}" Width="160">
                                     <Grid>
                                         <Grid.RowDefinitions>
                                             <RowDefinition/>
@@ -101,7 +101,9 @@
 
 
                                         <!-- Preview Image -->
-                                        <Image Margin="5" Source="{Binding Image}" MaxWidth="200" MaxHeight="200" RenderOptions.BitmapScalingMode="NearestNeighbor" Grid.Row="2" Grid.ColumnSpan="2"/>
+                                        <Grid Margin="5" Grid.Row="2" Grid.ColumnSpan="2" Width="150" Height="150">
+                                            <Image Source="{Binding Image}" MaxWidth="150" MaxHeight="150" VerticalAlignment="Center" HorizontalAlignment="Center"  RenderOptions.BitmapScalingMode="NearestNeighbor"/>
+                                        </Grid>
 
                                         <!-- Type and Race-->
                                         <Border BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" BorderThickness="1" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2">

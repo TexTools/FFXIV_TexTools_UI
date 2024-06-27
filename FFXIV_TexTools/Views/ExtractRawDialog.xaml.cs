@@ -1,15 +1,17 @@
 ﻿using FFXIV_TexTools.Helpers;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Forms;
+using System.Windows.Media;
 using xivModdingFramework.Cache;
+using xivModdingFramework.Exd.FileTypes;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Models.FileTypes;
+using xivModdingFramework.Mods;
 using xivModdingFramework.SqPack.FileTypes;
-
-using Index = xivModdingFramework.SqPack.FileTypes.Index;
 
 namespace FFXIV_TexTools.Views
 {
@@ -21,24 +23,38 @@ namespace FFXIV_TexTools.Views
         public ExtractRawDialog()
         {
             InitializeComponent();
+            FromBox_TextChanged(null, null);
         }
 
         private async void ExtractButton_Click(object sender, RoutedEventArgs e)
         {
-            if (String.IsNullOrWhiteSpace(FromBox.Text)) return;
+            var path = FromBox.Text.ToLower().Trim();
+            if (!IOUtil.IsFFXIVInternalPath(path)) return;
 
-            var path = FromBox.Text;
             var ext = Path.GetExtension(path);
-            var _dat = new Dat(XivCache.GameInfo.GameDirectory);
-            var _index = new Index(XivCache.GameInfo.GameDirectory);
             byte[] data = null;
+
+            var tx = MainWindow.DefaultTransaction;
+
+            if(!await tx.FileExists(path))
+            {
+                FlexibleMessageBox.Show($"File does not exist:\n{path._()}".L(), "File Not Found".L(), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
 
             var sd = new SaveFileDialog();
             if (ext.Length > 0)
             {
                 ext = ext.Substring(1);
 
-                sd.Filter = $"{ext.ToUpper()._()} Files (*.{ext._()})|*.{ext._()}".L();
+                if (DecompressBox.IsChecked == false)
+                {
+                    // Add SQPack extension onto the end.
+                    ext += ".sqpack";
+                }
+
+                sd.Filter = $"{ext.ToUpper()._()} Files|*.{ext._()}".L();
             }
 
             sd.FileName = Path.GetFileName(path);
@@ -51,7 +67,7 @@ namespace FFXIV_TexTools.Views
 
             try
             {
-                var offset = await _index.GetDataOffset(path);
+                var offset = await tx.GetRawDataOffset(path);
                 var df = IOUtil.GetDataFileFromPath(path);
                 if (offset <= 0)
                 {
@@ -59,31 +75,12 @@ namespace FFXIV_TexTools.Views
                     return;
                 }
 
-                var type = _dat.GetFileType(offset, df);
-                if (type < 2 || type > 4)
+                if (DecompressBox.IsChecked == true)
                 {
-                    throw new InvalidDataException("Invalid or Unknown Data Type.".L());
-                }
-
-                var size = await _dat.GetCompressedFileSize(offset, df);
-
-                if (type == 2)
+                    data = await tx.ReadFile(path);
+                } else
                 {
-                    if (DecompressType2Box.IsChecked == true)
-                    {
-                        data = await _dat.GetType2Data(offset, df);
-                    } else
-                    {
-                        data = _dat.GetRawData(offset, df, size);
-                    }
-                }
-                if (type == 3)
-                {
-                    data = _dat.GetRawData(offset, df, size);
-                }
-                if (type == 4)
-                {
-                    data = _dat.GetRawData(offset, df, size);
+                    data = await tx.ReadFile(path, false, true );
                 }
 
 
@@ -100,6 +97,44 @@ namespace FFXIV_TexTools.Views
                 FlexibleMessageBox.Show($"Unable to decompress or read file:\n{path._()}\n\nError: ".L() + Ex.Message, "File Not Found".L(), MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
+        }
+
+        private async void FromBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        {
+
+            try
+            {
+                var text = FromBox.Text.ToLower().Trim();
+                if (!IOUtil.IsFFXIVInternalPath(text))
+                {
+                    ExtractButton.IsEnabled = false;
+                    InfoLabel.Foreground = Brushes.DarkRed;
+                    InfoLabel.Content = "Path is not a valid FFXIV file path.";
+                    return;
+                }
+                var tx = MainWindow.DefaultTransaction;
+
+                var exists = await tx.FileExists(text);
+                if (exists)
+                {
+                    ExtractButton.IsEnabled = true;
+                    InfoLabel.Foreground = Brushes.DarkGreen;
+                    InfoLabel.Content = "Valid path, and file exists.";
+                    return;
+                }
+                else
+                {
+                    ExtractButton.IsEnabled = false;
+                    InfoLabel.Foreground = Brushes.DarkRed;
+                    InfoLabel.Content = "Valid path, but no file exists at the destination.";
+                    return;
+                }
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine(ex);
+            }
+
         }
     }
 }

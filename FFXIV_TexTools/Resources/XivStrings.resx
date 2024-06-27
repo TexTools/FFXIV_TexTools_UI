@@ -486,4 +486,13 @@
   <data name="Material" xml:space="preserve">
     <value>Material</value>
   </data>
+  <data name="Beneficial" xml:space="preserve">
+    <value>Beneficial</value>
+  </data>
+  <data name="Detrimental" xml:space="preserve">
+    <value>Detrimental</value>
+  </data>
+  <data name="Other" xml:space="preserve">
+    <value>Other</value>
+  </data>
 </root>

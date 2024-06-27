@@ -1,0 +1,35 @@
+﻿<Window x:Class="FFXIV_TexTools.Views.Controls.SavePresetDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FFXIV_TexTools.Views.Controls"
+        mc:Ignorable="d"
+        xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
+        resx:Localization.Enabled="True"
+        Title="Save Material Preset"
+        ResizeMode="NoResize"
+        SizeToContent="WidthAndHeight">
+    <Grid Height="80" Width="600">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40"></RowDefinition>
+            <RowDefinition Height="40"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="100"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Label Height="30" VerticalAlignment="Center" HorizontalAlignment="Right" FontWeight="Bold"  Content="Preset Name:"></Label>
+            <TextBox x:Name="PresetName" Height="30" VerticalAlignment="Center" Margin="10,0,10,0" Grid.Column="1"/>
+
+        </Grid>
+
+        <Button x:Name="ConfirmButton" Content="Save" Grid.Row="1" Width="100" Height="30" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10,0,10,0" Click="SaveButton_Click"/>
+        <Button x:Name="CancelButton" Content="Cancel" Grid.Row="1" Width="100" Height="30" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,10,0" Click="CancelButton_Click"/>
+    </Grid>
+</Window>

@@ -23,22 +23,35 @@
     <AssemblyTitle>FFXIV_TexTools</AssemblyTitle>
     <Product>FFXIV_TexTools</Product>
     <Copyright>Copyright ©  2024</Copyright>
-    <AssemblyVersion>2.3.8.6</AssemblyVersion>
-    <FileVersion>2.3.8.6</FileVersion>
+    <AssemblyVersion>3.0.0.7</AssemblyVersion>
+    <FileVersion>3.0.0.7</FileVersion>
+    <LangVersion>9.0</LangVersion>
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <UseWPF>true</UseWPF>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <PostBuildEvent>mkdir $(TargetDir)lib
 move $(TargetDir)*.dll $(TargetDir)lib</PostBuildEvent>
     <PostBuildEvent>mkdir $(TargetDir)lib
 move $(TargetDir)*.dll $(TargetDir)lib</PostBuildEvent>
     <PostBuildEvent>mkdir $(TargetDir)lib
 move $(TargetDir)*.dll $(TargetDir)lib</PostBuildEvent>
+    <Configurations>Debug;Release;Endwalker Debug;Endwalker Release</Configurations>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>full</DebugType>
+    <DefineConstants>$(DefineConstants);DAWNTRAIL</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Endwalker Debug|AnyCPU'">
+    <DebugType>full</DebugType>
+    <DefineConstants>$(DefineConstants);ENDWALKER</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
+    <DefineConstants>$(DefineConstants);DAWNTRAIL</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Endwalker Release|AnyCPU'">
+    <DebugType>pdbonly</DebugType>
+    <DefineConstants>$(DefineConstants);ENDWALKER</DefineConstants>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>ffxiv2.ico</ApplicationIcon>
@@ -49,7 +62,6 @@ move $(TargetDir)*.dll $(TargetDir)lib</PostBuildEvent>
   <PropertyGroup>
     <PostBuildEvent>mkdir $(TargetDir)lib
 move $(TargetDir)*.dll $(TargetDir)lib</PostBuildEvent>
-    <Version>2.3.8.6</Version>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Resources\Shaders\psCustomMeshBlinnPhong.hlsl" />
@@ -57,17 +69,17 @@ move $(TargetDir)*.dll $(TargetDir)lib</PostBuildEvent>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Autoupdater.NET.Official" Version="1.7.0" />
+    <PackageReference Include="BetterFolderBrowser" Version="1.2.0" />
     <PackageReference Include="ControlzEx" Version="3.0.2.4" />
     <PackageReference Include="Cyotek.Drawing.BitmapFont" Version="2.0.4" />
     <PackageReference Include="DotNetZip" Version="1.16.0" />
     <PackageReference Include="EntityFramework" Version="6.4.4" />
     <PackageReference Include="Extended.Wpf.Toolkit" Version="4.5.0" />
-    <PackageReference Include="HelixToolkit" Version="2.17.0" />
-    <PackageReference Include="HelixToolkit.SharpDX.Core" Version="2.17.0" />
-    <PackageReference Include="HelixToolkit.Wpf" Version="2.17.0" />
-    <PackageReference Include="HelixToolkit.Wpf.SharpDX" Version="2.17.0" />
+    <PackageReference Include="HelixToolkit" Version="2.25.0" />
+    <PackageReference Include="HelixToolkit.SharpDX.Core" Version="2.25.0" />
+    <PackageReference Include="HelixToolkit.Wpf" Version="2.25.0" />
+    <PackageReference Include="HelixToolkit.Wpf.SharpDX" Version="2.25.0" />
     <PackageReference Include="IndexRange" Version="1.0.2" />
-    <PackageReference Include="Lumina" Version="3.3.0" />
     <PackageReference Include="MahApps.Metro" Version="1.6.5" />
     <PackageReference Include="MahApps.Metro.IconPacks" Version="2.3.0" />
     <PackageReference Include="MahApps.Metro.IconPacks.Material" Version="2.3.0" />
@@ -84,17 +96,12 @@ move $(TargetDir)*.dll $(TargetDir)lib</PostBuildEvent>
     <PackageReference Include="SharpDX.Direct3D9" Version="4.2.0" />
     <PackageReference Include="SharpDX.DXGI" Version="4.2.0" />
     <PackageReference Include="SharpDX.Mathematics" Version="4.2.0" />
-    <PackageReference Include="SixLabors.ImageSharp" Version="1.0.4" />
-    <PackageReference Include="Stub.System.Data.SQLite.Core.NetFramework" Version="1.0.117" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="2.1.8" />
     <PackageReference Include="System.Buffers" Version="4.5.1" />
     <PackageReference Include="System.Collections.NonGeneric" Version="4.3.0" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
     <PackageReference Include="System.ComponentModel.Primitives" Version="4.3.0" />
     <PackageReference Include="System.ComponentModel.TypeConverter" Version="4.3.0" />
-    <PackageReference Include="System.Data.SQLite" Version="1.0.117" />
-    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.117" />
-    <PackageReference Include="System.Data.SQLite.EF6" Version="1.0.117" />
-    <PackageReference Include="System.Data.SQLite.Linq" Version="1.0.117" />
     <PackageReference Include="System.Drawing.Primitives" Version="4.3.0" />
     <PackageReference Include="System.Memory" Version="4.5.5" />
     <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
@@ -182,5 +189,46 @@ move $(TargetDir)*.dll $(TargetDir)lib</PostBuildEvent>
   <ItemGroup>
     <ProjectReference Include="..\ForceUpdateAssembly\ForceUpdateAssembly.csproj" />
     <ProjectReference Include="..\lib\xivModdingFramework\xivModdingFramework\xivModdingFramework.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Properties\Settings.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\UIStrings.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>UIStrings.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Views\FileControls\MaterialFileControl.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\FileControls\MetadataFileControl.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\ModPack\Simple\FileListExporter.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\Textures\ResizeImageWindow.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\Textures\EyeDiffuseCreator.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <None Update="Resources\default_mod_header.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\FileControls\MaterialFileControl.xaml">
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
 </Project>

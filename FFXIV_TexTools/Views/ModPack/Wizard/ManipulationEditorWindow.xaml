@@ -1,0 +1,42 @@
+﻿<Window x:Class="FFXIV_TexTools.Views.Wizard.ManipulationEditorWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FFXIV_TexTools.Views.Wizard"
+        mc:Ignorable="d"
+        Title="Manipulation Editor" Height="600" Width="640">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*"></RowDefinition>
+            <RowDefinition Height="240"></RowDefinition>
+            <RowDefinition Height="40"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="150"/>
+            <ColumnDefinition Width="150"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="150"/>
+            <ColumnDefinition Width="150"/>
+        </Grid.ColumnDefinitions>
+
+        <GroupBox Header="Manipulations" Grid.Row="0" Grid.ColumnSpan="5">
+            <ListBox x:Name="ManipList" ItemsSource="{Binding Path=Manipulations}" DisplayMemberPath="Key" SelectedValuePath="Value" SelectedValue="{Binding Path=SelectedManipulation}" SelectionChanged="ManipulationChanged">
+                
+            </ListBox>
+        </GroupBox>
+        <GroupBox x:Name="EditorBox" Header="Editor" Grid.Row="1" Grid.ColumnSpan="5">
+        </GroupBox>
+
+        <Button Grid.Row="2" Grid.Column="0" Content="Remove Manipulation" VerticalAlignment="Center" Margin="5" Click="RemoveManipulation_Click"/>
+        <Button Grid.Row="2" Grid.Column="1" Content="Clear Manipulations" VerticalAlignment="Center" Margin="5" Click="ClearManipulations_Click"/>
+        <Button x:Name="AddButton" Grid.Row="2" Grid.Column="3" Content="Add Manipulation" VerticalAlignment="Center" Margin="5" Click="AddManipulation_Click">
+            <Button.ContextMenu>
+                <ContextMenu x:Name="AddContextMenu">
+                    
+                </ContextMenu>
+            </Button.ContextMenu>
+        </Button>
+        <Button Grid.Row="2" Grid.Column="4" Content="Done" VerticalAlignment="Center" Margin="5" Click="Done_Click"/>
+    </Grid>
+</Window>

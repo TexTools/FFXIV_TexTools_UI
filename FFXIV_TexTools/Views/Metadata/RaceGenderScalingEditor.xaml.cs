@@ -2,6 +2,7 @@
 using FFXIV_TexTools.Resources;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -40,7 +41,13 @@ namespace FFXIV_TexTools.Views.Metadata
 
         public async Task Init()
         {
-            _data = await CMP.GetScalingParameter(Race, Gender);
+
+            _data = await CMP.GetScalingParameter(Race, Gender, false, MainWindow.DefaultTransaction);
+            if (_data == null)
+            {
+                this.Close();
+                return;
+            }
 
             Title = $"Racial Settings - {Race.GetDisplayName()._()} - {Gender.ToString()._()}".L();
             TitleBox.Content = $"Racial Settings: {Race.GetDisplayName()._()} - {Gender.ToString()._()}".L();
@@ -116,7 +123,7 @@ namespace FFXIV_TexTools.Views.Metadata
                 SaveButton.IsEnabled = false;
                 SaveButton.Content = "Working...".L();
 
-                await CMP.SaveScalingParameter(_data, XivStrings.TexTools);
+                await CMP.SaveScalingParameter(_data, XivStrings.TexTools, MainWindow.UserTransaction);
 
                 this.Close();
             } catch(Exception ex)
@@ -145,7 +152,7 @@ namespace FFXIV_TexTools.Views.Metadata
                 SaveButton.IsEnabled = false;
                 ResetButton.Content = "Working...".L();
 
-                await CMP.DisableRgspMod(Race, Gender);
+                await CMP.DisableRgspMod(Race, Gender, MainWindow.DefaultTransaction);
 
                 this.Close();
             }

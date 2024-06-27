@@ -1,0 +1,46 @@
+﻿<UserControl x:Class="FFXIV_TexTools.Views.Wizard.ImcOptionRow"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:metadata="clr-namespace:FFXIV_TexTools.Views.Metadata"
+             xmlns:local="clr-namespace:FFXIV_TexTools.Views.Wizard"
+        xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             mc:Ignorable="d" 
+             d:DesignHeight="125" d:DesignWidth="800"
+             DataContextChanged="OnDataContextChanged">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="5"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="100"/>
+            <ColumnDefinition Width="250"/>
+            <ColumnDefinition Width="100"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="50"/>
+            <ColumnDefinition Width="50"/>
+            <ColumnDefinition Width="100"/>
+        </Grid.ColumnDefinitions>
+        <Label Content="Name:" HorizontalAlignment="Right" VerticalAlignment="Center"></Label>
+        <TextBox Grid.Column="1" Text="{Binding Path=Name}" VerticalAlignment="Center" Margin="5" />
+        <Button Content="Set Image" Margin="5" Grid.Column="2" VerticalAlignment="Center" Click="AddImage_Click"/>
+
+        <Image Grid.Row="0" Grid.Column="3" Height="40" Source="{Binding Path=Image}" HorizontalAlignment="Left"></Image>
+
+        <Button Content="Remove" Margin="5" Grid.Column="6" VerticalAlignment="Center" Click="Delete_Click"/>
+
+        <metadata:ImcMaskGrid x:Name="MaskGrid" Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="5"></metadata:ImcMaskGrid>
+        
+        <Label Content="Description:" HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Row="2"></Label>
+        <TextBox Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="5" Margin="5" Text="{Binding Path=Description}"></TextBox>
+
+        <Button x:Name="MoveOptionUpButton" Grid.Column="4" Content="{iconPacks:FontAwesome Kind=ArrowUpSolid}" Click="MoveOptionUpButton_Click"  Margin="5"/>
+        <Button x:Name="MoveOptionDownButton" Grid.Column="5" Content="{iconPacks:FontAwesome Kind=ArrowDownSolid}" Click="MoveOptionDownButton_Click" Margin="5"/>
+        
+        <Separator Grid.Row="3" Grid.ColumnSpan="7"></Separator>
+    </Grid>
+</UserControl>

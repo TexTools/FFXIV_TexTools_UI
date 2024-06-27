@@ -1,0 +1,123 @@
+﻿<local:FileViewControl x:Class="FFXIV_TexTools.Views.Controls.TextureFileControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:local="clr-namespace:FFXIV_TexTools.Views.Controls"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <SolidColorBrush x:Key="DarkSquareColor" Color="#CC000000" />
+        <SolidColorBrush x:Key="LightSquareColor" Color="#BF000000" />
+        <Style x:Key="{x:Type xctk:Zoombox}" TargetType="{x:Type xctk:Zoombox}">
+            <Style.Triggers>
+                <Trigger Property="AreDragModifiersActive" Value="True">
+                    <Setter Property="Cursor" Value="SizeAll" />
+                </Trigger>
+                <Trigger Property="AreZoomModifiersActive" Value="True">
+                    <Setter Property="Cursor" Value="Arrow" />
+                </Trigger>
+                <Trigger Property="AreZoomToSelectionModifiersActive" Value="True">
+                    <Setter Property="Cursor" Value="Cross" />
+                </Trigger>
+                <Trigger Property="AreRelativeZoomModifiersActive" Value="True">
+                    <Setter Property="Cursor" Value="Arrow" />
+                </Trigger>
+                <!-- The IsDraggingContent and IsSelectingRegion triggers should 
+           always be last. -->
+                <Trigger Property="IsDraggingContent" Value="True">
+                    <Setter Property="Cursor" Value="SizeAll" />
+                </Trigger>
+                <Trigger Property="IsSelectingRegion" Value="True">
+                    <Setter Property="Cursor" Value="Cross" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+    <Grid x:Name="TextureViewArea">
+
+        <Border x:Name="StandardTextureDisplay" Grid.Row="0" Visibility="Visible">
+            <Border.Background>
+                <DrawingBrush Viewport="0,0,20,20" ViewportUnits="Absolute" Stretch="None" TileMode="Tile">
+                    <DrawingBrush.Drawing>
+                        <DrawingGroup>
+                            <GeometryDrawing Brush="{DynamicResource DarkSquareColor}">
+                                <GeometryDrawing.Geometry>
+                                    <GeometryGroup>
+                                        <RectangleGeometry Rect="0,0,10,10"/>
+                                        <RectangleGeometry Rect="10,10,10,10"/>
+                                    </GeometryGroup>
+                                </GeometryDrawing.Geometry>
+                            </GeometryDrawing>
+                            <GeometryDrawing Brush="{DynamicResource LightSquareColor}">
+                                <GeometryDrawing.Geometry>
+                                    <GeometryGroup>
+                                        <RectangleGeometry Rect="10,0,10,10"/>
+                                        <RectangleGeometry Rect="0,10,10,10"/>
+                                    </GeometryGroup>
+                                </GeometryDrawing.Geometry>
+                            </GeometryDrawing>
+                        </DrawingGroup>
+                    </DrawingBrush.Drawing>
+                </DrawingBrush>
+            </Border.Background>
+            <Grid>
+                
+                <xctk:Zoombox x:Name="ImageZoombox" DragModifiers="0" ZoomModifiers="0" KeepContentInBounds="True" MinScale="0.05" MaxScale="20" IsAnimated="False" ViewStackMode="Disabled" PanDistance="2" >
+                    <Viewbox>
+                        <Image x:Name="ImageDisplay" Source="{Binding Path=ImageSource}" Effect="{Binding Path=ImageEffect}"  VerticalAlignment="Center" HorizontalAlignment="Center" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
+                    </Viewbox>
+                </xctk:Zoombox>
+
+                <Grid Margin="0" Background="#3FFFFFFF" VerticalAlignment="Top" HorizontalAlignment="Left" Width="200" IsEnabled="{Binding Path=ChannelsEnabled, FallbackValue=true}">
+                    <Grid Margin="5">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="40"></RowDefinition>
+                            <RowDefinition Height="40"></RowDefinition>
+                            <RowDefinition Height="40"></RowDefinition>
+                            <RowDefinition Height="40"></RowDefinition>
+                            <RowDefinition Height="40"></RowDefinition>
+                            <RowDefinition Height="40"></RowDefinition>
+                            <RowDefinition Height="40"></RowDefinition>
+                        </Grid.RowDefinitions>
+
+                        <Label Grid.Row="0" Content="{Binding Path=TextureInfo, FallbackValue=1024x1024 (11 Mips)}" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center"></Label>
+                        
+                        <ComboBox Grid.Row="1" ItemsSource="{Binding Path=Formats}" DisplayMemberPath="Key" SelectedValuePath="Value" SelectedValue="{Binding Path=Format}" VerticalAlignment="Center"></ComboBox>
+
+                        <Grid x:Name="ChannelsRow" Grid.Row="2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <CheckBox x:Name="RedCheckBox" Content="R" HorizontalAlignment="Center" VerticalAlignment="Center" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" IsChecked="{Binding Path=RedChecked, FallbackValue=true}"/>
+                            <CheckBox x:Name="GreenCheckBox" Content="G" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" IsChecked="{Binding Path=GreenChecked, FallbackValue=true}"/>
+                            <CheckBox x:Name="BlueCheckBox" Content="B" Grid.Column="2" HorizontalAlignment="Center"  VerticalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" IsChecked="{Binding Path=BlueChecked, FallbackValue=true}"/>
+                            <CheckBox x:Name="AlphaCheckBox" Content="A" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" IsChecked="{Binding Path=AlphaChecked, FallbackValue=true}"/>
+
+                        </Grid>
+
+                        <Button Grid.ColumnSpan="4" Grid.Row="3" Content="Edit Channels" VerticalAlignment="Center" Click="EditChannels_Click"></Button>
+                        <Button Grid.ColumnSpan="4" Grid.Row="4" Content="Add Overlay" VerticalAlignment="Center" Click="AddOverlay_Click"></Button>
+                        <Button Grid.ColumnSpan="4" Grid.Row="5" Content="Add Alpha Overlay" VerticalAlignment="Center" Click="AddAlphaOverlay_Click"></Button>
+                        <Button Grid.ColumnSpan="4" Grid.Row="6" Content="Resize Image" VerticalAlignment="Center" Click="ResizeImage_Click"></Button>
+                    </Grid>
+                </Grid>
+
+                <Grid Margin="0" Background="#3FFFFFFF" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="200" Visibility="{Binding Path=SharedVariantVisibility, FallbackValue=Visible}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30"></RowDefinition>
+                        <RowDefinition Height="30"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Label Grid.Row="0" x:Name="SharedTextureLabel" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                    <Label Grid.Row="1" x:Name="SharedVariantLabel" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                </Grid>
+
+            </Grid>
+        </Border>
+
+    </Grid>
+</local:FileViewControl>

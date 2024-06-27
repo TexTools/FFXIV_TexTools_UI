@@ -1,4 +1,4 @@
-﻿// FFXIV TexTools
+// FFXIV TexTools
 // Copyright © 2020 Rafael Gonzalez - All Rights Reserved
 // 
 // This program is free software: you can redistribute it and/or modify
@@ -24,9 +24,7 @@ using HelixToolkit.Wpf.SharpDX.Model.Scene;
 using Newtonsoft.Json;
 using SharpDX;
 using SharpDX.Direct3D11;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Formats.Png;
-using SixLabors.ImageSharp.PixelFormats;
+using System.Collections.Concurrent;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -34,47 +32,34 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 using System.Windows.Media.Media3D;
 using HelixToolkit.Wpf.SharpDX.Cameras;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Items.Interfaces;
+using xivModdingFramework.Materials.DataContainers;
 using xivModdingFramework.Models.DataContainers;
 using xivModdingFramework.Models.Helpers;
 using Color = SharpDX.Color;
 using PerspectiveCamera = HelixToolkit.Wpf.SharpDX.PerspectiveCamera;
+using SRGBVector4 = System.Numerics.Vector4;
+using FFXIV_TexTools.Views;
+using System.Diagnostics;
+using MeshGeometry3D = HelixToolkit.Wpf.SharpDX.MeshGeometry3D;
 
 namespace FFXIV_TexTools.ViewModels
 {
     public class FullModelViewport3DViewModel : Viewport3DViewModel
     {
 
-        private readonly FullModelViewModel _modelViewModel;
-        private HashSet<string> shownBonesList = new HashSet<string>();
-        private XivRace _targetRace;
+        private static readonly Regex bodyMaterial = new Regex("[bf][0-9]{4}", RegexOptions.IgnoreCase);
+
         public Dictionary<string, DisplayedModelData> shownModels = new Dictionary<string, DisplayedModelData>();
 
-        public FullModelViewport3DViewModel(FullModelViewModel fmvm)
+        public FullModelViewport3DViewModel()
         {
-            _modelViewModel = fmvm;
-            Title = "";
-            SubTitle = "";
-
-            EffectsManager = new CustomEffectsManager();
-
-            Camera = new PerspectiveCamera();
-
-            BackgroundColor = Properties.Settings.Default.BG_Color;
         }
-
-
-        #region Properties
-        /// <summary>
-        /// Model Group containing skeleton node
-        /// </summary>
-        public SceneNodeGroupModel3D ModelGroup { get; } = new SceneNodeGroupModel3D();
-
-
-        #endregion
 
         #region Public Methods
 
@@ -86,167 +71,99 @@ namespace FFXIV_TexTools.ViewModels
         /// <param name="item">The item for the model</param>
         /// <param name="modelRace">The race of the model</param>
         /// <param name="targetRace">The target race the model should be</param>
-        public void UpdateModel(TTModel model, Dictionary<int, ModelTextureData> textureDataDictionary, IItemModel item, XivRace modelRace, XivRace targetRace)
+        public async Task UpdateModel(TTModel model, Dictionary<int, ModelTextureData> textureDataDictionary, IItemModel item, XivRace modelRace, XivRace targetRace)
         {
-            _targetRace = targetRace;
-            var itemType = $"{item.PrimaryCategory}_{item.SecondaryCategory}";
-
             // If target race is different than the model race Apply racial deforms
-            if (modelRace != targetRace)
+            try
             {
-                ApplyDeformers(model, itemType, modelRace, targetRace);
+                if (modelRace != targetRace)
+                {
+                    await ModelModifiers.RaceConvertRecursive(model, targetRace, modelRace);
+                }
             }
+            catch(Exception ex)
+            {
+                Trace.WriteLine(ex);
+            }
+            var slot = ViewHelpers.GetModelSlot(model.Source);
 
             SharpDX.BoundingBox? boundingBox = null;
             ModelModifiers.CalculateTangents(model);
 
             // Remove any existing models of the same item type
-            RemoveModel(itemType);
+            RemoveSlot(slot);
 
             var totalMeshCount = model.MeshGroups.Count;
 
             for (var i = 0; i < totalMeshCount; i++)
             {
-                var meshGeometry3D = GetMeshGeometry(model, i);
+                var (meshGeometry3D, isBodyMaterial) = GetMeshGeometry(model, i);
 
                 var textureData = textureDataDictionary[model.GetMaterialIndex(i)];
 
-                Stream diffuse = null, specular = null, normal = null, alpha = null, emissive = null;
-
+                TextureModel diffuse = null, specular = null, normal = null, alpha = null, emissive = null;
                 if (textureData.Diffuse != null && textureData.Diffuse.Length > 0)
-                {
-                    using (var img = Image.LoadPixelData<Rgba32>(textureData.Diffuse, textureData.Width, textureData.Height))
-                    {
-                        diffuse = new MemoryStream();
-                        img.Save(diffuse, new PngEncoder());
-                    }
-
-                    streamList.Add(diffuse);
-                }
+                    diffuse = new TextureModel(textureData.Diffuse, SharpDX.DXGI.Format.R8G8B8A8_UNorm, textureData.Width, textureData.Height);
 
                 if (textureData.Specular != null && textureData.Specular.Length > 0)
-                {
-                    using (var img = Image.LoadPixelData<Rgba32>(textureData.Specular, textureData.Width, textureData.Height))
-                    {
-                        specular = new MemoryStream();
-                        img.Save(specular, new PngEncoder());
-                    }
-
-                    streamList.Add(specular);
-                }
+                    specular = new TextureModel(textureData.Specular, SharpDX.DXGI.Format.R8G8B8A8_UNorm, textureData.Width, textureData.Height);
 
                 if (textureData.Normal != null && textureData.Normal.Length > 0)
-                {
-                    using (var img = Image.LoadPixelData<Rgba32>(textureData.Normal, textureData.Width, textureData.Height))
-                    {
-                        normal = new MemoryStream();
-                        img.Save(normal, new PngEncoder());
-                    }
-
-                    streamList.Add(normal);
-                }
-
-                if (textureData.Alpha != null && textureData.Alpha.Length > 0)
-                {
-                    using (var img = Image.LoadPixelData<Rgba32>(textureData.Alpha, textureData.Width, textureData.Height))
-                    {
-                        alpha = new MemoryStream();
-                        img.Save(alpha, new PngEncoder());
-                    }
-
-                    streamList.Add(alpha);
-                }
+                    normal = new TextureModel(textureData.Normal, SharpDX.DXGI.Format.R8G8B8A8_UNorm, textureData.Width, textureData.Height);
 
                 if (textureData.Emissive != null && textureData.Emissive.Length > 0)
+                    emissive = new TextureModel(textureData.Emissive, SharpDX.DXGI.Format.R8G8B8A8_UNorm, textureData.Width, textureData.Height);
+
+                var sampler = HelixToolkit.SharpDX.Core.Shaders.DefaultSamplers.LinearSamplerWrapAni1;
+
+                if (textureData.UTilingMode == TextureSampler.ETilingMode.Mirror)
+                    sampler.AddressU = TextureAddressMode.Mirror;
+                else if (textureData.UTilingMode == TextureSampler.ETilingMode.Clamp)
+                    sampler.AddressU = TextureAddressMode.Clamp;
+                else if (textureData.UTilingMode == TextureSampler.ETilingMode.Border)
+                    sampler.AddressU = TextureAddressMode.Border;
+
+                if (textureData.VTilingMode == TextureSampler.ETilingMode.Mirror)
+                    sampler.AddressV = TextureAddressMode.Mirror;
+                else if (textureData.VTilingMode == TextureSampler.ETilingMode.Clamp)
+                    sampler.AddressV = TextureAddressMode.Clamp;
+                else if (textureData.VTilingMode == TextureSampler.ETilingMode.Border)
+                    sampler.AddressV = TextureAddressMode.Border;
+
+                await System.Windows.Application.Current.Dispatcher.InvokeAsync(() =>
                 {
-                    using (var img = Image.LoadPixelData<Rgba32>(textureData.Emissive, textureData.Width, textureData.Height))
+                    var material = new PhongMaterial
                     {
-                        emissive = new MemoryStream();
-                        img.Save(emissive, new PngEncoder());
-                    }
+                        AmbientColor = PhongMaterials.ToColor(1, 1, 1, 1),
+                        DiffuseColor = PhongMaterials.ToColor(1, 1, 1, 1),
+                        SpecularShininess = ReflectionValue,
+                        DiffuseAlphaMap = diffuse,
+                        SpecularColorMap = specular,
+                        NormalMap = normal,
+                        EmissiveMap = emissive,
+                        DiffuseMapSampler = sampler
+                    };
 
-                    streamList.Add(emissive);
-                }
-
-                var material = new PhongMaterial
-                {
-                    DiffuseColor = PhongMaterials.ToColor(1, 1, 1, 1),
-                    SpecularShininess = 1f,
-                    DiffuseMap = diffuse,
-                    DiffuseAlphaMap = alpha,
-                    SpecularColorMap = specular,
-                    NormalMap = normal,
-                    EmissiveMap = emissive
-                };
-
-                // Geometry that contains skeleton data
-                var smgm3d = new CustomBoneSkinMeshGeometry3D
-                {
-                    Geometry = meshGeometry3D,
-                    Material = material,
-                    ItemType = itemType,
-                    BoneMatrices = GetMatrices(targetRace),
-                    BoneList = model.Bones
-                };
-
-                // Keep track of what bones are showing in the view
-                foreach (var modelBone in model.Bones)
-                {
-                    if (!shownBonesList.Contains(modelBone))
+                    // Geometry that contains skeleton data
+                    var smgm3d = new CustomMeshGeometryModel3D
                     {
-                        shownBonesList.Add(modelBone);
-                    }
-                }
+                        Geometry = meshGeometry3D,
+                        Material = material,
+                        Source = model.Source,
+                    };
 
-                boundingBox = meshGeometry3D.Bound;
+                    boundingBox = meshGeometry3D.Bound;
 
-                smgm3d.CullMode = Properties.Settings.Default.Cull_Mode.Equals("None") ? CullMode.None : CullMode.Back;
+                    smgm3d.CullMode = textureData.RenderBackfaces ? CullMode.None : CullMode.Back;
 
-                Models.Add(smgm3d);
+                    Models.Add(smgm3d);
+                });
             }
-
-            SpecularShine = 1;
-
             var center = boundingBox.GetValueOrDefault().Center;
 
-            _lightX = center.X;
-            _lightY = center.Y;
-            _lightZ = center.Z;
-
-            Light3Direction = new Vector3D(_lightX, _lightY, _lightZ);
-            Camera.UpDirection = new Vector3D(0, 1, 0);
-            Camera.CameraInternal.PropertyChanged += CameraInternal_PropertyChanged;
-
-            // Add the skeleton node for the target race
-            AddSkeletonNode(targetRace);
 
             // Keep track of the models displayed in the viewport
-            shownModels.Add(itemType, new DisplayedModelData{TtModel = model, ItemModel = item, ModelTextureData = textureDataDictionary});
-        }
-
-        /// <summary>
-        /// Adds the skeleton node to the viewport
-        /// </summary>
-        /// <param name="targetRace">The race the skeleton will be obtained from</param>
-        public void AddSkeletonNode(XivRace targetRace)
-        {
-            // Clear existing skeleton
-            ModelGroup.Dispose();
-            ModelGroup.Clear();
-
-            var bones = MakeHelixBones(targetRace);
-
-            var bsmNode = new BoneSkinMeshNode
-            {
-                Bones = bones.ToArray()
-            };
-
-            // Create the skeleton node with the given properties
-            var skelNode = bsmNode.CreateSkeletonNode(new DiffuseMaterialCore { DiffuseColor = Color.Red }, "xrayGrid", 0.02f);
-
-            ModelGroup.AddNode(skelNode);
-
-            ModelGroup.SceneNode.Visible = _modelViewModel.ShowSkeleton;
+            shownModels.Add(slot, new DisplayedModelData{TtModel = model, ItemModel = item, ModelTextureData = textureDataDictionary});
         }
 
         /// <summary>
@@ -254,7 +171,7 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         /// <param name="previousRace">The original or previous race of the model</param>
         /// <param name="targetRace">The target race for the skeleton and model</param>
-        public void UpdateSkeleton(XivRace previousRace, XivRace targetRace)
+        public async void UpdateSkeleton(XivRace previousRace, XivRace targetRace)
         {
             var shownModelList = new List<string>();
 
@@ -263,11 +180,19 @@ namespace FFXIV_TexTools.ViewModels
                 shownModelList.Add(model.Key);
             }
 
-            // Apply racial transforms
-            // This pretty much replaces every model by deleting and recreating them with the target race deforms
-            foreach (var model in shownModelList)
+            try
             {
-                UpdateModel(shownModels[model].TtModel, shownModels[model].ModelTextureData, shownModels[model].ItemModel, previousRace, targetRace);
+                // Apply racial transforms
+                // This pretty much replaces every model by deleting and recreating them with the target race deforms
+                foreach (var model in shownModelList)
+                {
+                    await UpdateModel(shownModels[model].TtModel, shownModels[model].ModelTextureData, shownModels[model].ItemModel, previousRace, targetRace);
+                }
+            }
+            catch(Exception ex)
+            {
+                //ViewHelpers.ShowError(_modelViewModel, "Skeleton Update Errror", "An error occurred while updating the skeleon:\n\n" + ex.Message);
+                Trace.WriteLine(ex);
             }
         }
 
@@ -276,54 +201,48 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         /// <param name="previousRace">The original or previous race of the model</param>
         /// <param name="targetRace">The target race for the skeleton and model</param>
-        public void UpdateSkin(XivRace race)
+        public async void UpdateSkin(XivRace race)
         {
             var shownModelList = new List<string>();
-
-            foreach (var model in shownModels)
+            try
             {
-                shownModelList.Add(model.Key);
+
+                foreach (var model in shownModels)
+                {
+                    shownModelList.Add(model.Key);
+                }
+
+                foreach (var model in shownModelList)
+                {
+                    await UpdateModel(shownModels[model].TtModel, shownModels[model].ModelTextureData, shownModels[model].ItemModel, race, race);
+                }
             }
-
-            foreach (var model in shownModelList)
+            catch(Exception ex)
             {
-                UpdateModel(shownModels[model].TtModel, shownModels[model].ModelTextureData, shownModels[model].ItemModel, race, race);
-            }
-        }
-
-
-
-        /// <summary>
-        /// Toggles the skeleton visibility
-        /// </summary>
-        public void ToggleSkeleton(bool visible)
-        {
-            if (ModelGroup != null)
-            {
-                ModelGroup.SceneNode.Visible = visible;
+                Trace.WriteLine(ex);
             }
         }
+
 
         /// <summary>
         /// Removes a model from the viewport
         /// </summary>
-        /// <param name="modelItemType">The item type of the model to remove</param>
-        public void RemoveModel(string modelItemType)
+        public void RemoveSlot(string slot)
         {
             // Determine which models needs to be removed
-            var modelsToRemove = new List<CustomBoneSkinMeshGeometry3D>();
+            var modelsToRemove = new List<CustomMeshGeometryModel3D>();
 
-            if (!string.IsNullOrEmpty(modelItemType))
+            if (!string.IsNullOrEmpty(slot))
             {
                 foreach (var displayedModel in Models)
                 {
-                    var model = displayedModel as CustomBoneSkinMeshGeometry3D;
-
-                    if (modelItemType == model.ItemType)
+                    var model = displayedModel as CustomMeshGeometryModel3D;
+                    var s = ViewHelpers.GetModelSlot(model.Source);
+                    if (slot == s)
                     {
                         modelsToRemove.Add(model);
 
-                        shownModels.Remove(modelItemType);
+                        shownModels.Remove(slot);
                     }
                 }
             }
@@ -331,19 +250,10 @@ namespace FFXIV_TexTools.ViewModels
 
             foreach (var model in modelsToRemove)
             {
-                // Remove the bones associated with this model
-                foreach (var bone in model.BoneList)
-                {
-                    shownBonesList.Remove(bone);
-                }
-
                 // Remove the model
                 model.Dispose();
                 Models.Remove(model);
             }
-
-            // Update the skeleton
-            AddSkeletonNode(_targetRace);
         }
 
         /// <summary>
@@ -351,10 +261,13 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         public void ClearAll()
         {
+            foreach(var model in Models)
+            {
+                model.Dispose();
+            }
+
             Models.Clear();
-            ModelGroup.Clear();
             shownModels.Clear();
-            shownBonesList.Clear();
         }
 
         /// <summary>
@@ -362,63 +275,7 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         public void CleanUp()
         {
-            ModelGroup.Dispose();
-            foreach (var model in Models)
-            {
-                model.Dispose();
-            }
-
             ClearAll();
-        }
-
-        #endregion
-
-        #region Overrides
-
-        public override void UpdateTransparency(bool transparencyEnabled)
-        {
-            foreach (var model in Models)
-            {
-                var isBody = ((CustomBoneSkinMeshGeometry3D)model).IsBody;
-
-                if (isBody) continue;
-
-                var material = ((CustomBoneSkinMeshGeometry3D)model).Material as PhongMaterial;
-
-                if (transparencyEnabled)
-                {
-                    ((CustomBoneSkinMeshGeometry3D)model).IsTransparent = true;
-                    material.DiffuseColor = PhongMaterials.ToColor(1, 1, 1, .4f);
-                }
-                else
-                {
-                    ((CustomBoneSkinMeshGeometry3D)model).IsTransparent = false;
-                    material.DiffuseColor = PhongMaterials.ToColor(1, 1, 1, 1);
-                }
-            }
-        }
-
-        protected override void CameraInternal_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName.Equals("LookDirection"))
-            {
-                var camera = sender as PerspectiveCameraCore;
-
-                _light1X = -camera.LookDirection.X;
-                _light1Y = -camera.LookDirection.Y;
-                _light1Z = -camera.LookDirection.Z;
-
-                Light1Direction = new Vector3D(_light1X, _light1Y, _light1Z);
-
-                _light2X = camera.LookDirection.X;
-                _light2Y = camera.LookDirection.Y;
-                _light2Z = camera.LookDirection.Z;
-
-                Light2Direction = new Vector3D(_light2X, _light2Y, _light2Z);
-            }
-
-            _modelViewModel.ResetLightValues();
-            _modelViewModel.FlyoutOpen = false;
         }
 
         #endregion
@@ -433,11 +290,11 @@ namespace FFXIV_TexTools.ViewModels
         /// <param name="model">The model to get the geometry from</param>
         /// <param name="meshGroupId">The mesh group ID</param>
         /// <returns>The Skinned Mesh Geometry</returns>
-        private BoneSkinnedMeshGeometry3D GetMeshGeometry(TTModel model, int meshGroupId)
+        private (MeshGeometry3D, bool) GetMeshGeometry(TTModel model, int meshGroupId)
         {
             var group = model.MeshGroups[meshGroupId];
-
-            var mg = new BoneSkinnedMeshGeometry3D
+            var isBodyMaterial = bodyMaterial.IsMatch(group.Material);
+            var mg = new MeshGeometry3D
             {
                 Positions = new Vector3Collection((int)group.VertexCount),
                 Normals = new Vector3Collection((int)group.VertexCount),
@@ -446,7 +303,6 @@ namespace FFXIV_TexTools.ViewModels
                 BiTangents = new Vector3Collection((int)group.VertexCount),
                 Tangents = new Vector3Collection((int)group.VertexCount),
                 Indices = new IntCollection((int)group.IndexCount),
-                VertexBoneIds = new List<BoneIds>((int)group.IndexCount)
             };
 
             var indexCount = 0;
@@ -483,16 +339,6 @@ namespace FFXIV_TexTools.ViewModels
                     var bw3 = boneWeights[2] / 255f;
                     var bw4 = boneWeights[3] / 255f;
 
-                    // Add BoneIds to mesh geometry
-                    mg.VertexBoneIds.Add(new BoneIds
-                    {
-                        Bone1 = boneIndices[0],
-                        Bone2 = boneIndices[1],
-                        Bone3 = boneIndices[2],
-                        Bone4 = boneIndices[3],
-                        Weights = new Vector4(bw1, bw2, bw3, bw4)
-                    });
-
                     // Have to bump these to account for merging the lists together.
                     mg.Indices.Add(vertCount + vertexId);
                 }
@@ -500,7 +346,7 @@ namespace FFXIV_TexTools.ViewModels
                 vertCount += p.Vertices.Count;
                 indexCount += p.TriangleIndices.Count;
             }
-            return mg;
+            return (mg, isBodyMaterial);
         }
 
 
@@ -654,57 +500,6 @@ namespace FFXIV_TexTools.ViewModels
             return matrixList.ToArray();
         }
 
-        /// <summary>
-        /// Applies the deformer to a model
-        /// </summary>
-        /// <param name="model">The model being deformed</param>
-        /// <param name="itemType">The item type of the model</param>
-        /// <param name="currentRace">The current model race</param>
-        /// <param name="targetRace">The target race to convert the model to</param>
-        private void ApplyDeformers(TTModel model, string itemType, XivRace currentRace, XivRace targetRace)
-        {
-            try
-            {
-                // Current race is already parent node
-                // Direct conversion
-                // [ Current > (apply deform) > Target ]
-                if (currentRace.IsDirectParentOf(targetRace))
-                {
-                    ModelModifiers.ApplyRacialDeform(model, targetRace);
-                }
-                // Target race is parent node of Current race
-                // Convert to parent (invert deform)
-                // [ Current > (apply inverse deform) > Target ]
-                else if (targetRace.IsDirectParentOf(currentRace))
-                {
-                    ModelModifiers.ApplyRacialDeform(model, currentRace, true);
-                }
-                // Current race is not parent of Target Race and Current race has parent
-                // Make a recursive call with the current races parent race
-                // [ Current > (apply inverse deform) > Current.Parent > Recursive Call ]
-                else if (currentRace.GetNode().Parent != null)
-                {
-                    ModelModifiers.ApplyRacialDeform(model, currentRace, true);
-                    ApplyDeformers(model, itemType, currentRace.GetNode().Parent.Race, targetRace);
-                }
-                // Current race has no parent
-                // Make a recursive call with the target races parent race
-                // [ Target > (apply deform on Target.Parent) > Target.Parent > Recursive Call ]
-                else
-                {
-                    ModelModifiers.ApplyRacialDeform(model, targetRace.GetNode().Parent.Race);
-                    ApplyDeformers(model, itemType, targetRace.GetNode().Parent.Race, targetRace);
-                }
-            }
-            catch (Exception ex)
-            {
-                // Show a warning that deforms are missing for the target race
-                // This mostly happens with Face, Hair, Tails, Ears, and Female > Male deforms
-                // The model is still added but no deforms are applied
-                FlexibleMessageBox.Show(string.Format(UIMessages.MissingDeforms, targetRace.GetDisplayName(), itemType, ex.Message), UIMessages.MissingDeformsTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
-
-        }
 
         #endregion
 

@@ -467,13 +467,10 @@ New Location: {0}</value>
     <value>Start Over Complete</value>
   </data>
   <data name="StartOverMessage" xml:space="preserve">
-    <value>Starting over will:
+    <value>This will remove ALL mods from the game files and close all open editors.
+(If issues persist, please use Help =&gt; Download Index Backups and then re-run this function.)
 
-Restore index files to their original state.
-Delete all mod dat files from game folder.
-Delete all mod list file entries.
-
-Do you want to start over?</value>
+Are you SURE you wish to proceed?</value>
   </data>
   <data name="StartOverTitle" xml:space="preserve">
     <value>Start Over</value>

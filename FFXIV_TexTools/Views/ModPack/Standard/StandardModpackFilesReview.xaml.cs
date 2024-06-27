@@ -10,7 +10,6 @@ using System.Windows.Controls;
 using xivModdingFramework.Cache;
 using xivModdingFramework.SqPack.FileTypes;
 
-using Index = xivModdingFramework.SqPack.FileTypes.Index;
 
 namespace FFXIV_TexTools.Views
 {
@@ -89,11 +88,11 @@ namespace FFXIV_TexTools.Views
         
         private async Task<bool> AddFile(string file)
         {
-            var _index = new Index(XivCache.GameInfo.GameDirectory);
+            var tx = MainWindow.DefaultTransaction;
 
             if (Path.GetExtension(file) != ".meta")
             {
-                if (!(await _index.FileExists(file)))
+                if (!(await tx.FileExists(file)))
                 {
                     // File doesn't actually exist, can't be added.
                     return false;
@@ -143,16 +142,17 @@ namespace FFXIV_TexTools.Views
         {
             var parentFiles = _entry.MainFiles;
             var files = new SortedSet<string>();
+            var tx = MainWindow.DefaultTransaction;
             if (_entry.Level == XivDependencyLevel.Root)
             {
                 var root = await XivCache.GetFirstRoot(_entry.MainFiles[0]);
-                files = await root.GetAllFiles();
+                files = await root.GetAllFiles(tx);
             }
             else
             {
                 foreach (var file in parentFiles)
                 {
-                    var children = await XivCache.GetChildrenRecursive(file);
+                    var children = await XivCache.GetChildrenRecursive(file, tx);
                     foreach (var child in children)
                     {
                         files.Add(child);

@@ -1,0 +1,108 @@
+﻿<local:FileViewControl x:Class="FFXIV_TexTools.Views.Controls.MaterialFileControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:local="clr-namespace:FFXIV_TexTools.Views.Controls"
+              xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+
+
+
+    <local:FileViewControl.Resources>
+        <DataTemplate x:Key="MtrlTextureTemplate">
+            <Border Name="border" BorderBrush="Gray" BorderThickness="1"
+      Padding="5" Margin="5" Height="90">
+                <Grid Height="80">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="40"/>
+                        <RowDefinition Height="40"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition Width="1*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Texture Path:" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Path=TexturePath}" Grid.ColumnSpan="2" VerticalAlignment="Center" Margin="10,0,10,0" 
+                         TextChanged="TexturePathBox_TextChanged"/>
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Estimated Usage:" VerticalAlignment="Center" Margin="10,0,10,0" HorizontalAlignment="Right"/>
+                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Path=Usage}" VerticalAlignment="Center"  Margin="10,0,10,0"/>
+
+                    <Button Grid.Row="1" Grid.Column="1" Content="View/Edit Texture" VerticalAlignment="Center" Margin="10,0,330,0" HorizontalAlignment="Right" Width="150" Click="EditTexture_Click"/>
+                    <Button Grid.Row="1" Grid.Column="1" Content="Edit Settings" VerticalAlignment="Center" Margin="10,0,170,0" HorizontalAlignment="Right" Width="150" Click="EditUsage_Click"/>
+                    <Button Grid.Row="1" Grid.Column="1" Content="Remove Texture" VerticalAlignment="Center" Margin="10,0,10,0" HorizontalAlignment="Right" Width="150" Click="RemoveTexture_Click"/>
+                </Grid>
+            </Border>
+        </DataTemplate>
+        <ToolTip x:Key="ShpkTooltip">
+            <TextBlock>
+            The shader pack/collection used by this material.
+            <LineBreak/>Altering this will reset your Shader Keys/Shader Constants. *
+            <LineBreak/>* (Unless switching between Legacy and non-legacy of the same type.)
+            </TextBlock>
+        </ToolTip>
+    </local:FileViewControl.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="330"/>
+            <ColumnDefinition MinWidth="220"/>
+            <ColumnDefinition Width="220"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="10"/>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="1*"/>
+        </Grid.RowDefinitions>
+
+        <Label Content="Shader Pack:" Margin="10,0,0,0" VerticalAlignment="Center" FontWeight="Bold" FontSize="14" Height="28" HorizontalAlignment="Left" HorizontalContentAlignment="Right" ToolTip="{StaticResource ShpkTooltip}" Width="94"/>
+        <ComboBox x:Name="ShaderComboBox" Margin="110,0,10,0" VerticalAlignment="Center" Height="26" SelectionChanged="ShaderComboBox_SelectionChanged" ToolTip="{StaticResource ShpkTooltip}" SelectedValue="{Binding Path=ShaderPack}"/>
+
+        <Button x:Name="SavePresetButton" Content="Save Preset" HorizontalAlignment="Left" Margin="110,0,0,0" VerticalAlignment="Center" Width="100" Grid.Column="2" Click="SavePresetButton_Click" Height="28"/>
+        <Button x:Name="LoadPresetButton" Content="Load Preset" HorizontalAlignment="Left" VerticalAlignment="Center" Width="100" Grid.Column="2" Click="LoadPresetButton_Click" Height="28"/>
+
+
+        <Button x:Name="AddMaterialButton" Content="New Material" HorizontalAlignment="Left" VerticalAlignment="Center" Width="100" Grid.Column="2" Click="AddMaterial_Click" Grid.Row="1" Margin="110,0,0,0"/>
+
+        <Button x:Name="EditColorsetButton" Content="View/Edit Colorset" HorizontalAlignment="Left" Margin="0,0,10,0" VerticalAlignment="Center" Width="150" Grid.Column="1" Click="EditColorset_Click" IsEnabled="{Binding Path=ColorsetEnabled}"></Button>
+
+        <Image x:Name="ColorsetImage" Source="/FFXIV_TexTools;component/ffxiv2.ico" Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Margin="160,0,0,0" Height="80" Width="20" HorizontalAlignment="Left" 
+       RenderOptions.BitmapScalingMode="NearestNeighbor"/>
+
+        <Button x:Name="EditShaderFlagsButton" Content="Edit Material Flags" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center" Width="150" Height="28" Grid.Row="1" Click="EditShaderFlags_Click"/>
+        <Button x:Name="EditShaderKeysButton" Content="Edit Shader Keys" HorizontalAlignment="Left" Margin="170,0,0,0" VerticalAlignment="Center" Width="150" Height="28" Grid.Row="1" Click="EditShaderKeys_Click"/>
+        <Button x:Name="EditShaderConstantsButton" Content="Edit Shader Constants" HorizontalAlignment="Left" Margin="0,0,0,0" Grid.Column="1" VerticalAlignment="Center" Width="150" Height="28" Grid.Row="1" Grid.ColumnSpan="2" Click="EditShaderConstants_Click"/>
+
+        <Separator Grid.Row="2" Grid.ColumnSpan="3" Margin="5,0,5,0"/>
+
+
+        <Label Content="Textures" Grid.Row="3" HorizontalContentAlignment="Center" VerticalContentAlignment="Top" Cursor="Arrow" Grid.ColumnSpan="3" FontWeight="Bold" FontStyle="Italic" VerticalAlignment="Center" Height="26" HorizontalAlignment="Center"/>
+
+        <Button Content="Add Texture" Grid.Row="4" Grid.Column="2" HorizontalAlignment="Right" Margin="0,0,10,0" VerticalAlignment="Center" Width="150" Click="AddTexture_Click" Height="28"/>
+        <Button Content="Help" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" HorizontalAlignment="Right" Margin="0,0,170,0" VerticalAlignment="Center" Width="100" Click="HelpButton_Click" Height="28"/>
+
+        <Button x:Name="NewSharedButton" Content="Make Textures Shared" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center" Width="150" Height="28" Grid.Row="4" Click="NewSharedButton_Click"/>
+        <Button x:Name="NewUniqueButton" Content="Make Textures Unique" HorizontalAlignment="Left" Margin="170,0,0,0" VerticalAlignment="Center" Width="150" Height="28" Grid.Row="4" Click="NewUniqueButton_Click"/>
+        <Button x:Name="TilingModeButton" Content="Set Tiling Mode" HorizontalAlignment="Left" Grid.Column="1" VerticalAlignment="Center" Width="150" Height="28" Grid.Row="4" Click="SetTilingMode_Click">
+            <Button.ContextMenu>
+                <ContextMenu x:Name="TilingModeContextMenu">
+                    <MenuItem Header="Set All to Wrap" Click="WrapAll_Click"/>
+                    <MenuItem Header="Set All to Mirror" Click="MirrorAll_Click"/>
+                    <MenuItem Header="Set All to Border" Click="BorderAll_Click"/>
+                    <MenuItem Header="Set All to Clamp" Click="ClampAll_Click"/>
+                </ContextMenu>
+            </Button.ContextMenu>
+        </Button>
+
+
+        <ListBox x:Name="TexturesList" Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="3" Margin="10,10,10,10"
+                    ItemTemplate="{StaticResource MtrlTextureTemplate}">
+        </ListBox>
+
+    </Grid>
+</local:FileViewControl>

@@ -41,7 +41,7 @@
                     the TexTools Github Group
                 </Hyperlink>
             </TextBlock>
-            <TextBlock HorizontalAlignment="Left" Margin="0,0,0,146" Grid.Row="3" TextWrapping="Wrap" Width="422" FontFamily="Segoe UI, Lucida Sans Unicode, Verdana" FontSize="10" TextAlignment="Center" Height="30" VerticalAlignment="Bottom"><Run Text="Final Fantasy XIV © 2010-2020 SQUARE ENIX CO., LTD. All Rights Reserved. "/><LineBreak/><Run Text="This application is not affiliated in any way with SQUARE ENIX CO., LTD"/></TextBlock>
+            <TextBlock HorizontalAlignment="Left" Margin="0,0,0,146" Grid.Row="3" TextWrapping="Wrap" Width="422" FontFamily="Segoe UI, Lucida Sans Unicode, Verdana" FontSize="10" TextAlignment="Center" Height="30" VerticalAlignment="Bottom"><Run Text="Final Fantasy XIV © SQUARE ENIX CO., LTD. All Rights Reserved. "/><LineBreak/><Run Text="This application is not affiliated in any way with SQUARE ENIX CO., LTD"/></TextBlock>
         </Grid>
     </Grid>
 </mah:MetroWindow>

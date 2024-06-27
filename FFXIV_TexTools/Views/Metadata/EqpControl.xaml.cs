@@ -29,6 +29,7 @@ namespace FFXIV_TexTools.Views.Metadata
 
         private static string SlotCopiedFrom = null;
         private static byte[] CopiedBytes = null;
+        public event Action FileChanged;
 
         private ObservableCollection<KeyValuePair<string, byte[]>> PresetCollection = new ObservableCollection<KeyValuePair<string, byte[]>>();
         public EqpControl()
@@ -117,6 +118,7 @@ namespace FFXIV_TexTools.Views.Metadata
             if (bytes == null) return;
 
             entry.SetBytes(bytes);
+            FileChanged?.Invoke();
         }
 
 
@@ -171,6 +173,7 @@ namespace FFXIV_TexTools.Views.Metadata
             var flag = (EquipmentParameterFlag)cb.DataContext;
 
             entry.SetFlag(flag, enabled);
+            FileChanged?.Invoke();
         }
 
         /// <summary>
@@ -237,6 +240,7 @@ namespace FFXIV_TexTools.Views.Metadata
             var bytes = new byte[CopiedBytes.Length];
             Array.Copy(CopiedBytes, bytes, CopiedBytes.Length);
             _metadata.EqpEntry.SetBytes(bytes);
+            FileChanged?.Invoke();
         }
     }
 }

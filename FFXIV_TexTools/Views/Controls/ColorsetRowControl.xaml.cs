@@ -1,4 +1,5 @@
-﻿using System.Windows.Controls;
+﻿using FFXIV_TexTools.Views;
+using System.Windows.Controls;
 using System.Windows.Media;
 
 namespace FFXIV_TexTools.Controls
@@ -11,7 +12,8 @@ namespace FFXIV_TexTools.Controls
         public ColorsetRowControl(int id)
         {
             InitializeComponent();
-            RowNumber.Content = (id + 1).ToString();
+
+            RowNumber.Content = ViewHelpers.ColorsetRowToNiceName(id);
             DataContext = id;
         }
 

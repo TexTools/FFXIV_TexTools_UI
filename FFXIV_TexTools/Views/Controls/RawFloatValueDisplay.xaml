@@ -9,7 +9,7 @@
         resx:Localization.Enabled="True"
         Title="Raw Value Editor"
         SizeToContent="WidthAndHeight">
-    <Grid Height="160" Width="240">
+    <Grid Height="200" Width="240">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="79"></ColumnDefinition>
             <ColumnDefinition Width="161"></ColumnDefinition>
@@ -17,6 +17,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="23.5"></RowDefinition>
             <RowDefinition Height="16.5"/>
+            <RowDefinition Height="40"></RowDefinition>
             <RowDefinition Height="40"></RowDefinition>
             <RowDefinition Height="40"></RowDefinition>
             <RowDefinition Height="40"></RowDefinition>
@@ -30,9 +31,12 @@
 
         <Label Content="Blue" Grid.Row="3" VerticalAlignment="Center" Margin="5,0" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Height="26"></Label>
         <TextBox x:Name="BlueBox" Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" Margin="0,0,10,0" Height="26"></TextBox>
+        
+        <Label Content="Alpha" Grid.Row="4" VerticalAlignment="Center" Margin="5,0" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Height="26"></Label>
+        <TextBox x:Name="AlphaBox" Grid.Row="4" Grid.Column="1" VerticalAlignment="Center" Margin="0,0,10,0" Height="26"></TextBox>
 
-        <Button x:Name="SaveButton" Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="2"  Content="Save" Click="SaveButton_Click" VerticalAlignment="Center" Margin="0,6,10,6" Height="28" HorizontalAlignment="Right" Width="100"/>
-        <Button x:Name="CancelButton" Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="2" Content="Cancel" Click="CancelButton_Click" VerticalAlignment="Center" Margin="10,6" Height="28" Width="100" HorizontalAlignment="Left" />
+        <Button x:Name="SaveButton" Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="2"  Content="Save" Click="SaveButton_Click" VerticalAlignment="Center" Margin="0,6,10,6" Height="28" HorizontalAlignment="Right" Width="100"/>
+        <Button x:Name="CancelButton" Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="2" Content="Cancel" Click="CancelButton_Click" VerticalAlignment="Center" Margin="10,6" Height="28" Width="100" HorizontalAlignment="Left" />
 
     </Grid>
 </Window>

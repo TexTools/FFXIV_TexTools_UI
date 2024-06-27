@@ -1,0 +1,70 @@
+﻿<UserControl x:Class="FFXIV_TexTools.Views.Controls.FileListControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:FFXIV_TexTools.Views.Controls"
+             xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+             xmlns:resx="clr-namespace:FFXIV_TexTools.Resources">
+    <UserControl.Resources>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40"></RowDefinition>
+            <RowDefinition Height="40"></RowDefinition>
+            <RowDefinition Height="1*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <ListView x:Name="FileBox" Grid.Row="2" ItemsSource="{Binding Path=VisibleFiles}" GridViewColumnHeader.Click="Header_Click" >
+
+            <ListView.Resources>
+                <Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource MetroListViewItem}">
+                </Style>
+            </ListView.Resources>
+
+            <ListView.View>
+                <GridView  x:Name="GridViewCol">
+                    <GridViewColumn Width="32">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <CheckBox IsChecked="{Binding Selected}"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn x:Name="ItemCategory" Header="Category" DisplayMemberBinding="{Binding ItemCategory}"/>
+                    <GridViewColumn x:Name="ItemName" Header="Item" DisplayMemberBinding="{Binding ItemName}"/>
+                    <GridViewColumn x:Name="RaceGender" Header="Race/Gender" DisplayMemberBinding="{Binding RaceGender}"/>
+                    <GridViewColumn x:Name="FileType" Header="File Type" DisplayMemberBinding="{Binding FileType}"/>
+                    <GridViewColumn x:Name="FileName" Header="File Name" DisplayMemberBinding="{Binding FileName}"/>
+                    <GridViewColumn x:Name="ModState" Header="Mod Status" DisplayMemberBinding="{Binding ModState}"/>
+                    <GridViewColumn x:Name="Modpack" Header="Modpack" DisplayMemberBinding="{Binding Modpack}"/>
+                    <GridViewColumn x:Name="FilePath" Header="File Path" DisplayMemberBinding="{Binding FilePath}"/>
+                </GridView>
+            </ListView.View>
+        </ListView>
+
+        
+        <Grid x:Name="SearchGrid" Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="100"></ColumnDefinition>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Label Content="Search:" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Center"></Label>
+            <TextBox x:Name="SearchBox" Grid.Column="1" VerticalAlignment="Center" Margin="10,0,10,0" TextChanged="SearchTextChanged"/>
+        </Grid>
+
+        <Grid x:Name="InfoGrid" Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="120"></ColumnDefinition>
+                <ColumnDefinition Width="120"></ColumnDefinition>
+                <ColumnDefinition Width="120"></ColumnDefinition>
+                <ColumnDefinition Width="120"></ColumnDefinition>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0" Content="Select All" VerticalAlignment="Center" Margin="10,0,10,0" Click="SelectAll_Click"/>
+            <Button Grid.Column="1" Content="Clear All" VerticalAlignment="Center" Margin="10,0,10,0" Click="ClearAll_Click"/>
+            <Button Grid.Column="2" Content="Select Visible" VerticalAlignment="Center" Margin="10,0,10,0" Click="SelectVisible_Click"/>
+            <Button Grid.Column="3" Content="Clear Visible" VerticalAlignment="Center" Margin="10,0,10,0" Click="ClearVisible_Click"/>
+            <Label Grid.Column="4" HorizontalAlignment="Left" VerticalAlignment="Center" Content="{Binding Path=SelectedCountLabel}"></Label>
+        </Grid>
+    </Grid>
+</UserControl>

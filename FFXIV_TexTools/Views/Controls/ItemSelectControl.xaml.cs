@@ -20,6 +20,8 @@ using System.Windows;
 using FFXIV_TexTools.Helpers;
 using xivModdingFramework.Items;
 using System.Runtime.CompilerServices;
+using System.Diagnostics;
+using Microsoft.Extensions.Logging;
 
 namespace FFXIV_TexTools.Views.Controls
 {
@@ -89,9 +91,12 @@ namespace FFXIV_TexTools.Views.Controls
 
         public Func<IItem, bool> ExtraSearchFunction;
 
-        Timer SearchTimer;
+        public bool StartExpanded = false;
+
         private ObservableCollection<ItemTreeElement> CategoryElements = new ObservableCollection<ItemTreeElement>();
         private ObservableCollection<ItemTreeElement> SetElements = new ObservableCollection<ItemTreeElement>();
+
+        private Action DebouncedSearch;
 
         private IItem _selectedItem;
         public IItem SelectedItem
@@ -111,18 +116,13 @@ namespace FFXIV_TexTools.Views.Controls
             DataContext = this;
             InitializeComponent();
 
-            if (MainWindow.GetMainWindow() != null)
-            {
-                LockUiFunction = MainWindow.GetMainWindow().LockUi;
-                UnlockUiFunction = MainWindow.GetMainWindow().UnlockUi;
-            }
-
             SelectButton.Click += SelectButton_Click;
             SearchBar.KeyDown += SearchBar_KeyDown;
             CategoryTree.SelectedItemChanged += CategoryTree_Selected;
             SetTree.SelectedItemChanged += CategoryTree_Selected;
             SearchBar.TextChanged += SearchBar_TextChanged;
             Loaded += ItemSelectControl_Loaded;
+            DebouncedSearch = ViewHelpers.Debounce(DoSearch, 500);
 
         }
 
@@ -137,18 +137,13 @@ namespace FFXIV_TexTools.Views.Controls
                 // All the other functions are safety checked on the _READY var.
                 if (CategoryElements.Count == 0)
                 {
-                    LoadItems();
+                    _ = LoadItems();
                 }
             }
         }
 
         ~ItemSelectControl()
         {
-            if (SearchTimer != null)
-            {
-                SearchTimer.Stop();
-                SearchTimer.Dispose();
-            }
         }
 
 
@@ -279,54 +274,116 @@ namespace FFXIV_TexTools.Views.Controls
             }
         }
 
+        private void PreloadBaseCategories()
+        {
+            var gear = new ItemTreeElement(null, null, XivStrings.Gear);
+            CategoryElements.Add(gear);
+
+            gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Head));
+            gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Body));
+            gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Hands));
+            gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Legs));
+            gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Feet));
+
+
+            gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Main_Hand));
+            gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Off_Hand));
+            gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Dual_Wield));
+            gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Two_Handed));
+
+            gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Earring));
+            gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Neck));
+            gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Wrists));
+            gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Rings));
+
+            gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Head_Body));
+            gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Body_Hands));
+            gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Body_Hands_Legs));
+            gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Body_Hands_Legs_Feet));
+            gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Legs_Feet));
+            gear.Children.Add(new ItemTreeElement(null, null, XivStrings.All));
+
+            gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Food));
+        }
+
         private async Task<List<IItem>> BuildCategoryTree()
         {
+            CategoryElements.Clear();
 
-            foreach(var kv in _categoryStructure)
-            {
-                // Make the top level node.
-                var e = new ItemTreeElement(null, null, kv.Key);
+            PreloadBaseCategories();
 
-                foreach(var secondary in kv.Value)
-                {
-                    var e2 = new ItemTreeElement(e, null, secondary);
-                    e.Children.Add(e2);
-                }
-                CategoryElements.Add(e);
-            }
-
-            var gameDir = XivCache.GameInfo.GameDirectory;
-            var language = XivCache.GameInfo.GameLanguage;
 
             var items = await XivCache.GetFullItemList();
 
-            foreach(var item in items)
+            foreach (var item in items)
             {
-                // Find what node we should be attached to.
+                // Find our top level parent.
                 ItemTreeElement catParent = null;
-                var topLevel = CategoryElements.FirstOrDefault(x => x.DisplayName == item.PrimaryCategory);
-                if(topLevel == null)
+                ItemTreeElement topLevel = null;
+                ItemTreeElement secondLevel = null;
+                ItemTreeElement thirdLevel = null;
+                ItemTreeElement fourthLevel = null;
+
+                topLevel = CategoryElements.FirstOrDefault(x => x.DisplayName == item.PrimaryCategory);
+                if (topLevel == null)
                 {
+                    // Create it if it doesn't already exist.
                     topLevel = new ItemTreeElement(null, null, item.PrimaryCategory);
                     CategoryElements.Add(topLevel);
                 }
+                catParent = topLevel;
 
-                var secondLevel = topLevel.Children.FirstOrDefault(x => x.DisplayName == item.SecondaryCategory);
-                if (secondLevel == null)
+
+                // Find our second level parent, if we have one.
+                if (!string.IsNullOrWhiteSpace(item.SecondaryCategory) && item.Name != item.SecondaryCategory)
                 {
-                    if (item.SecondaryCategory == item.Name)
+                    secondLevel = topLevel.Children.FirstOrDefault(x => x.DisplayName == item.SecondaryCategory);
+                    if (secondLevel == null)
                     {
-                        // These are a special snowflake case.
-                        secondLevel = topLevel;
-                    }
-                    else
-                    {
+                        //Create it if it doesn't exist.
                         secondLevel = new ItemTreeElement(topLevel, null, item.SecondaryCategory);
                         topLevel.Children.Add(secondLevel);
                     }
                 }
 
-                catParent = secondLevel;
+                if (item.Name != item.SecondaryCategory)
+                {
+                    // Special catch for face paint/equipment decal category.
+                    catParent = secondLevel;
+                }
+
+                // If we have a Tertiary Category...
+                if (!string.IsNullOrWhiteSpace(item.TertiaryCategory))
+                {
+                    // Parent doesn't already have a Tertiary to attach to...
+                    thirdLevel = secondLevel.Children.FirstOrDefault(x => x.DisplayName == item.TertiaryCategory);
+                    if (thirdLevel == null)
+                    {
+                        // Add tertiary
+                        thirdLevel = new ItemTreeElement(topLevel, null, item.TertiaryCategory);
+                        secondLevel.Children.Add(thirdLevel);
+                    }
+                    catParent = thirdLevel;
+                }
+
+                // Maps are special and go 5 levels deep. (UI => Maps => Region => Zone => SubMap)
+                if (item.SecondaryCategory == XivStrings.Maps)
+                {
+                    var ui = (XivUi)item;
+                    if (!String.IsNullOrWhiteSpace(ui.MapZoneCategory))
+                    {
+                        // Parent doesn't already have a map group to attach to...
+                        fourthLevel = thirdLevel.Children.FirstOrDefault(x => x.DisplayName == ui.MapZoneCategory);
+                        if (fourthLevel == null)
+                        {
+                            // Add tertiary
+                            fourthLevel = new ItemTreeElement(topLevel, null, ui.MapZoneCategory);
+                            thirdLevel.Children.Add(fourthLevel);
+                        }
+                        catParent = fourthLevel;
+                    }
+                }
+
 
                 ItemTreeElement setParent = null;
 
@@ -353,52 +410,43 @@ namespace FFXIV_TexTools.Views.Controls
                     throw;
                 }
 
-                ItemTreeElement e2;
-                if (ExpandCharacterMenu && typeof(XivCharacter) == item.GetType())
-                {
-                    var charItem = (XivCharacter)item;
-                    if (charItem.ModelInfo != null && charItem.ModelInfo.PrimaryID > 0)
-                    {
-                        e2 = new ItemTreeElement(catParent, setParent, item.Name);
-                    } else
-                    {
-                        e2 = new ItemTreeElement(catParent, setParent, item);
-                    }
-                } else
-                {
-                    e2 = new ItemTreeElement(catParent, setParent, item);
-                }
+                var root = item.GetRoot();
+                var element = new ItemTreeElement(catParent, setParent, item, root);
                 if(catParent != null)
                 {
-                    catParent.Children.Add(e2);
+                    catParent.Children.Add(element);
                 }
                 if(setParent != null)
                 {
-                    setParent.Children.Add(e2);
+                    setParent.Children.Add(element);
+                }
+            }
+
+
+            // Prune empty top level categories with no entries.
+            var elems = CategoryElements.ToList();
+            foreach (var cat in elems)
+            {
+                if(cat.Children.Count == 0)
+                {
+                    CategoryElements.Remove(cat);
+                    continue;
                 }
 
-                if (ExpandCharacterMenu)
-                {
-                    if (typeof(XivCharacter) == item.GetType())
+                var ch = cat.Children.ToList();
+                foreach( var cat2 in ch) {
+                    if(cat2.Item != null)
                     {
-                        // Cache the references to our human root nodes.
-                        var charItem = (XivCharacter)item;
-                        var type = charItem.GetSecondaryItemType();
-                        if (type != XivItemType.none)
-                        {
-                            var raceCode = charItem.ModelInfo.PrimaryID;
-                            var race = XivRaces.GetXivRace(raceCode);
+                        continue;
+                    }
 
-                            if (!HumanParentNodes.ContainsKey(type))
-                            {
-                                HumanParentNodes.Add(type, new Dictionary<XivRace, ItemTreeElement>());
-                            }
-
-                            HumanParentNodes[type].Add(race, e2);
-                        }
+                    if(cat2.Children.Count == 0)
+                    {
+                        cat.Children.Remove(cat2);
                     }
                 }
             }
+
             return items;
 
         }
@@ -409,10 +457,17 @@ namespace FFXIV_TexTools.Views.Controls
         /// <returns></returns>
         public async Task LoadItems()
         {
+
+            var wind = Window.GetWindow(this);
+            var mw = MainWindow.GetMainWindow();
+            if (mw != null && wind == mw && LockUiFunction == null && UnlockUiFunction == null)
+            {
+                LockUiFunction = MainWindow.GetMainWindow().LockUi;
+                UnlockUiFunction = MainWindow.GetMainWindow().UnlockUi;
+            }
+
             if (_READY)
             {
-                SearchTimer.Stop();
-                SearchTimer.Dispose();
                 ClearSelection();
             }
 
@@ -422,109 +477,116 @@ namespace FFXIV_TexTools.Views.Controls
             }
 
 
-            // Pump us into another thread so the UI stays nice and fresh.
-            await Task.Run(async () =>
+            try
             {
-                CategoryElements = new ObservableCollection<ItemTreeElement>();
-                SetElements = new ObservableCollection<ItemTreeElement>();
-                DependencyRootNodes = new Dictionary<string, ItemTreeElement>();
-
-                try
+                // Pump us into another thread so the UI stays nice and fresh.
+                await Task.Run(async () =>
                 {
-                    // Gotta build set tree first, so the items from the item list can latch onto the nodes there.
-                    BuildSetTree();
-                    await BuildCategoryTree();
+                    CategoryElements = new ObservableCollection<ItemTreeElement>();
+                    SetElements = new ObservableCollection<ItemTreeElement>();
+                    DependencyRootNodes = new Dictionary<string, ItemTreeElement>();
 
-                }
-                catch (Exception ex)
-                {
-                    FlexibleMessageBox.Show("An error occurred while loading the item list.\n".L() + ex.Message, "Item List Error".L(), System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning);
-                    return;
-                }
-
-
-                var toAdd = new List<(ItemTreeElement parent, ItemTreeElement child)>();
-                foreach (var kv in DependencyRootNodes)
-                {
-                    // This dependency root had no EXD-Items associated with it.
-                    // Gotta make a generic item for it.
-                    if (kv.Value.Children.Count == 0)
+                    try
                     {
-                        // See if we can actually turn this root into a fully fledged item.
-                        try
-                        {
-                            var root = await XivCache.GetFirstRoot(kv.Key);
-                            ItemTreeElement e;
-                            if (root != null)
-                            {
-                                // If we can, add it into the list.
-                                var item = root.ToRawItem();
-                                e = new ItemTreeElement(null, kv.Value, item);
-                                toAdd.Add((kv.Value, e));
-
-                                if (ExpandCharacterMenu && root.Info.PrimaryType == XivItemType.human)
-                                {
-                                    // Cache our human type elements if we need them later.
-                                    var race = XivRaces.GetXivRace(root.Info.PrimaryId);
-                                    var sType = (XivItemType)root.Info.SecondaryType;
-
-                                    if (!HumanParentNodes.ContainsKey(sType)) continue;
-                                    if (!HumanParentNodes[sType].ContainsKey(race)) continue;
-
-                                    var parent = HumanParentNodes[sType][race];
-                                    e.CategoryParent = parent;
-                                    parent.Children.Add(e);
-                                }
-                            }
-                            else
-                            {
-                                e = new ItemTreeElement(null, kv.Value, "[Unsupported]");
-                                toAdd.Add((kv.Value, e));
-                            }
-
-
-
-                        }
-                        catch (Exception ex)
-                        {
-                            throw;
-                        }
+                        // Gotta build set tree first, so the items from the item list can latch onto the nodes there.
+                        BuildSetTree();
+                        await BuildCategoryTree();
 
                     }
-                }
+                    catch (Exception ex)
+                    {
+                        FlexibleMessageBox.Show("An error occurred while loading the item list.\n".L() + ex.Message, "Item List Error".L(), System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning);
+                        return;
+                    }
 
-                // Loop back through to add the new items, so we're not affecting the previous iteration.
-                foreach (var tup in toAdd)
+
+                    var toAdd = new List<(ItemTreeElement parent, ItemTreeElement child)>();
+                    foreach (var kv in DependencyRootNodes)
+                    {
+                        // This dependency root had no EXD-Items associated with it.
+                        // Gotta make a generic item for it.
+                        if (kv.Value.Children.Count == 0)
+                        {
+                            // See if we can actually turn this root into a fully fledged item.
+                            try
+                            {
+                                var root = await XivCache.GetFirstRoot(kv.Key);
+                                ItemTreeElement e;
+                                if (root != null)
+                                {
+                                    // If we can, add it into the list.
+                                    var item = root.ToRawItem();
+                                    e = new ItemTreeElement(null, kv.Value, item, root);
+                                    toAdd.Add((kv.Value, e));
+
+                                    if (ExpandCharacterMenu && root.Info.PrimaryType == XivItemType.human)
+                                    {
+                                        // Cache our human type elements if we need them later.
+                                        var race = XivRaces.GetXivRace(root.Info.PrimaryId);
+                                        var sType = (XivItemType)root.Info.SecondaryType;
+
+                                        if (!HumanParentNodes.ContainsKey(sType)) continue;
+                                        if (!HumanParentNodes[sType].ContainsKey(race)) continue;
+
+                                        var parent = HumanParentNodes[sType][race];
+                                        e.CategoryParent = parent;
+                                        parent.Children.Add(e);
+                                    }
+                                }
+                                else
+                                {
+                                    e = new ItemTreeElement(null, kv.Value, "[Unsupported]");
+                                    toAdd.Add((kv.Value, e));
+                                }
+
+
+
+                            }
+                            catch (Exception ex)
+                            {
+                                throw;
+                            }
+
+                        }
+                    }
+
+                    // Loop back through to add the new items, so we're not affecting the previous iteration.
+                    foreach (var tup in toAdd)
+                    {
+                        tup.parent.Children.Add(tup.child);
+                    }
+                });
+
+                var view = (CollectionView)CollectionViewSource.GetDefaultView(CategoryElements);
+                view.Filter = SearchFilter;
+
+
+                view = (CollectionView)CollectionViewSource.GetDefaultView(SetElements);
+                view.Filter = SearchFilter;
+
+
+                CategoryTree.ItemsSource = CategoryElements;
+                SetTree.ItemsSource = SetElements;
+
+                _READY = true;
+
+                DoSearch();
+
+                if (StartExpanded)
                 {
-                    tup.parent.Children.Add(tup.child);
+                    ExpandTopLevel();
                 }
-
-
-
-
-
-            });
-
-            var view = (CollectionView)CollectionViewSource.GetDefaultView(CategoryElements);
-            view.Filter = SearchFilter;
-
-
-            view = (CollectionView)CollectionViewSource.GetDefaultView(SetElements);
-            view.Filter = SearchFilter;
-
-            SearchTimer = new Timer(300);
-            SearchTimer.Elapsed += Search;
-
-            CategoryTree.ItemsSource = CategoryElements;
-            SetTree.ItemsSource = SetElements;
-
-            _READY = true;
-
-            Search(this, null);
-
-            if (UnlockUiFunction != null)
+            }
+            catch(Exception ex)
             {
-                await UnlockUiFunction(this);
+                ViewHelpers.ShowError("Items List Load Error", "An error occurred while loading the items list:\n\n" + ex.Message);
+            }
+            finally
+            {
+                if (UnlockUiFunction != null)
+                {
+                    await UnlockUiFunction(this);
+                }
             }
 
             if (ItemsLoaded != null)
@@ -533,33 +595,66 @@ namespace FFXIV_TexTools.Views.Controls
             }
         }
 
+
+        /// <summary>
+        /// Retrieves the item from an element, if and only if there is 1 possible item resolution.
+        /// </summary>
+        /// <param name="e"></param>
+        /// <returns></returns>
+        private IItem GetOnlyItem(ItemTreeElement e)
+        {
+            if(e == null)
+            {
+                return null;
+            }
+
+            if(e.Item != null)
+            {
+                return e.Item;
+            }
+
+            IItem item = null;
+            foreach(var e2 in e.Children)
+            {
+                var i = GetOnlyItem(e2);
+                if(i != null && item != null)
+                {
+                    // Multiple items.  Not legal.
+                    return null;
+                } else if(i != null)
+                {
+                    item = i;
+                }
+            }
+
+            return item;
+        }
+
         private void CategoryTree_Selected(object sender, System.Windows.RoutedPropertyChangedEventArgs<object> e)
         {
             if (!_READY) return;
             if (_SILENT) return;
 
-            var oldE = (ItemTreeElement)e.OldValue;
-            var newE = (ItemTreeElement)e.NewValue;
+            var element = (ItemTreeElement)e.NewValue;
 
-            if (RawItemSelected != null) {
-                RawItemSelected.Invoke(null, newE == null ? null : newE.Item);
-            }
+            // Don't allow null selections to escape this controller.
+            if (element == null) return;
 
-            if (newE != null
-             && _selectedItem == null && newE.Item == null)
+            IItem item = GetOnlyItem(element);
+            if(item == null)
             {
-                // If both actual underlying items were null
-                // we didn't really change anything.
                 return;
             }
 
-            // Don't allow null selections to escape this controller.
-            if (newE == null || newE.Item == null) return;
+
+            if (RawItemSelected != null) {
+                RawItemSelected.Invoke(null, item);
+            }
 
             // If we re-selected the same item, selection doesn't escape this controller (didn't actually change).
-            if (_selectedItem == newE.Item) return;
+            if (_selectedItem == item) return;
 
-            _selectedItem = newE.Item;
+            _selectedItem = item;
             if (ItemSelected != null)
             {
                 ItemSelected.Invoke(this, _selectedItem);
@@ -634,7 +729,7 @@ namespace FFXIV_TexTools.Views.Controls
         }
         public void DoFilter()
         {
-            Search(this, null);
+            DoSearch();
         }
         private void ClearSelection(ObservableCollection<ItemTreeElement> elements = null)
 
@@ -656,10 +751,22 @@ namespace FFXIV_TexTools.Views.Controls
             }
         }
 
+        public void ExpandTopLevel()
+        {
+            foreach(var e in CategoryElements)
+            {
+                e.IsExpanded = true;
+            }
+        }
+
         private void Search(object sender, ElapsedEventArgs e)
         {
+            DoSearch();
+        }
+
+        private void DoSearch()
+        {
             if (!_READY) return;
-            SearchTimer.Stop();
 
             // Do stuff.
             Dispatcher.Invoke(() =>
@@ -669,10 +776,7 @@ namespace FFXIV_TexTools.Views.Controls
                 CollectionViewSource.GetDefaultView(CategoryElements).Refresh();
                 CollectionViewSource.GetDefaultView(SetElements).Refresh();
 
-                if (FilterChanged != null)
-                {
-                    FilterChanged.Invoke(this, SearchBar.Text);
-                }
+                FilterChanged?.Invoke(this, SearchBar.Text);
             });
         }
 
@@ -691,14 +795,14 @@ namespace FFXIV_TexTools.Views.Controls
 
             if (e.Key == Key.Return)
             {
-                Search(null, null);
+                DoSearch();
             }
         }
         private void SearchBar_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (!_READY) return;
-            SearchTimer.Stop();
-            SearchTimer.Start();
+
+            DebouncedSearch();
         }
 
         private void SelectButton_Click(object sender, System.Windows.RoutedEventArgs e)
@@ -725,109 +829,77 @@ namespace FFXIV_TexTools.Views.Controls
             if (!_READY) return true;
 
             var e = (ItemTreeElement)o;
-            var groups = SearchBar.Text.Split('|');
             var iMatch = false;
 
-            foreach (var group in groups)
+            if(e.DisplayName == null)
             {
-                var searchTerms = group.Split(' ');
-                bool match = searchTerms.All(term => e.DisplayName.ToLower().Contains(term.Trim().ToLower()));
-                iMatch = iMatch || match;
+                return false;
             }
 
-            if (e.Children.Count > 0)
+            if (SearchBar.Text.Trim() == "")
             {
-                var subItems = (CollectionView)CollectionViewSource.GetDefaultView((e).Children);
+                iMatch = true;
+            }
+            else
+            {
+                var groups = SearchBar.Text.Split('|');
+                foreach (var group in groups)
+                {
+                    var searchTerms = group.Split(' ');
+                    var trimterms = searchTerms.Select(x => x.Trim().ToLower());
+                    bool match = trimterms.All(term =>
+                        e.DisplayName.ToLower().Contains(term));
+                    iMatch = iMatch || match;
+                }
 
+                if (e.Root != null)
+                {
+                    // Root matching doesn't allow spaces because it makes stuff like searching 
+                    // "No 2" for 2b item insane.
+                    foreach (var group in groups)
+                    {
+                        var term = group.Trim().ToLower();
+                        bool match = e.Root.ToString().Contains(term);
+                        iMatch = iMatch || match;
+                    }
+                }
+            }
+            
+            if (e.Children.Count > 0 && e.Item == null)
+            {
+                // Just a blank category.
                 e.IsExpanded = !string.IsNullOrEmpty(SearchBar.Text);
-                if (e.Searchable && iMatch)
-                {
-                    // If the actual group name matches the typed in name, include everything in that group.
-                    // This is only allowed in the set menu, as there's some pretty generic words used in the
-                    // category menu structure that muck this up. (Ex. Searching for "Hands" becomes impossible)
-                    subItems.Filter = IncludeAllSearchFilter;
-                    return true;
-                }
-                else
-                {
-                    subItems.Filter = SearchFilter;
-                    return !subItems.IsEmpty;
-                }
+                var subItems = (CollectionView)CollectionViewSource.GetDefaultView((e).Children);
+                subItems.Filter = SearchFilter;
+                return !subItems.IsEmpty;
             }
             else if(e.Item != null)
             {
                 if(ExtraSearchFunction != null)
                 {
+                    var subHits = false;
+                    if(e.Children.Count > 0)
+                    {
+                        // Category with an item itself.  This only occurs with some rare cases in the maps tree.
+                        var subItems = (CollectionView)CollectionViewSource.GetDefaultView((e).Children);
+                        subItems.Filter = SearchFilter;
+                        subHits =  !subItems.IsEmpty;
+                    }
+
                     // If we have an extra search criteria supplied by an outside function, it has to pass that, too.
-                    iMatch = ExtraSearchFunction(e.Item) && iMatch;
+                    iMatch = ((ExtraSearchFunction(e.Item) || subHits) && iMatch);
+
                 }
             }
 
 
             return iMatch;
         }
-
-        private readonly Dictionary<string, List<string>> _categoryStructure = new Dictionary<string, List<string>>()
-        {
-            { XivStrings.Gear, new List<string>() {
-                {XivStrings.Head },
-                {XivStrings.Body },
-                {XivStrings.Hands },
-                {XivStrings.Legs },
-                {XivStrings.Feet },
-                {XivStrings.Main_Hand },
-                {XivStrings.Off_Hand },
-                {XivStrings.Dual_Wield },
-                {XivStrings.Two_Handed },
-                {XivStrings.Earring },
-                {XivStrings.Neck },
-                {XivStrings.Wrists },
-                {XivStrings.Rings },
-                {XivStrings.Head_Body },
-                {XivStrings.Body_Hands },               
-                {XivStrings.Body_Hands_Legs },
-                {XivStrings.Body_Legs_Feet },
-                {XivStrings.Body_Hands_Legs_Feet },
-                {XivStrings.Legs_Feet },
-                {XivStrings.All },
-                {XivStrings.Food }
-                
-            } },
-            { XivStrings.Character, new List<string>() {
-                /*{ XivStrings.Body },
-                { XivStrings.Face },
-                { XivStrings.Hair },
-                { XivStrings.Tail },
-                { XivStrings.Ear },
-                { XivStrings.Face_Paint },
-                { XivStrings.Equipment_Decals }*/ 
-            } },
-            { XivStrings.Companions, new List<string>() {
-                { XivStrings.Minions },
-                { XivStrings.Mounts },
-                { XivStrings.Pets },
-                { XivStrings.Ornaments },
-            } },
-            { XivStrings.UI, new List<string>() {
-                { XivStrings.Actions },
-                { XivStrings.Loading_Screen },
-                { XivStrings.Maps },
-                { XivStrings.Map_Symbols },
-                { XivStrings.Online_Status },
-                { XivStrings.Status },
-                { XivStrings.Weather },
-                { XivStrings.HUD }
-            } },
-            { XivStrings.Housing, new List<string>() {
-                { XivStrings.Indoor_Furniture },
-                { XivStrings.Paintings },
-                { XivStrings.Outdoor_Furniture },
-            } }
-        };
     }
     public class ItemTreeElement : INotifyPropertyChanged
     {
         public readonly IItem Item;
+        public readonly XivDependencyRoot Root;
 
         /// <summary>
         /// Constructor for an empty header cateogory
@@ -848,12 +920,13 @@ namespace FFXIV_TexTools.Views.Controls
         /// Constructor for an actual valid item.
         /// </summary>
         /// <param name="i"></param>
-        public ItemTreeElement(ItemTreeElement itemParent, ItemTreeElement depencencyParent, IItem i, bool searchable = true)
+        public ItemTreeElement(ItemTreeElement itemParent, ItemTreeElement depencencyParent, IItem i, XivDependencyRoot root, bool searchable = true)
         {
             CategoryParent = itemParent;
             SetParent = depencencyParent;
             Item = i;
             Searchable = searchable;
+            Root = root;
             Children = new ObservableCollection<ItemTreeElement>();
         }
 

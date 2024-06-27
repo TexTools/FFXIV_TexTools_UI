@@ -1,0 +1,335 @@
+﻿<local:FileViewControl x:Class="FFXIV_TexTools.Views.Controls.ColorsetFileControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:local="clr-namespace:FFXIV_TexTools.Views.Controls"
+             xmlns:hx="http://helix-toolkit.org/wpf/SharpDX"
+             xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
+             mc:Ignorable="d" 
+             d:DesignHeight="800" d:DesignWidth="1000">
+    <UserControl.Resources>
+        <ToolTip x:Key="FresnelYTooltip">Affects edge lighting highlight brightness.</ToolTip>
+        <ToolTip x:Key="FresnelZTooltip">Affects edge lighting highlight size.</ToolTip>
+        <ToolTip x:Key="MetalnessTooltip">Affects reflectivity and reflection color.</ToolTip>
+        <ToolTip x:Key="RoughnessTooltip">Affects the size of specular highlights.</ToolTip>
+        <ToolTip x:Key="ShaderTemplateTooltip">Affects SSS and Fur settings.</ToolTip>
+
+    </UserControl.Resources>
+    <Grid x:Name="MaterialGrid" Visibility="Visible">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="160"></ColumnDefinition>
+            <ColumnDefinition Width="2*"></ColumnDefinition>
+            <ColumnDefinition Width="1*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40"></RowDefinition>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid Grid.Column="0" Grid.RowSpan="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40"></RowDefinition>
+                <RowDefinition Height="40"></RowDefinition>
+                <RowDefinition Height="1*"></RowDefinition>
+            </Grid.RowDefinitions>
+            <Button x:Name="CopyRowButton" Content="Copy Row" VerticalAlignment="Center" Margin="5,0" Width="70" HorizontalAlignment="Left" Click="CopyRowButton_Click"/>
+            <Button x:Name="PasteRowButton" Content="Paste Row" IsEnabled="false" VerticalAlignment="Center" HorizontalAlignment="Right" Width="70" Margin="5,0" Click="PasteRowButton_Click"></Button>
+
+            <Button x:Name="MoveRowUpButton" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center" Width="70" Margin="5,0" Click="MoveRowUpButton_Click">
+                <iconPacks:PackIconFontAwesome Kind="ArrowUpSolid"/>
+            </Button>
+            <Button x:Name="MoveRowDownButton" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Right" Width="70" Margin="5,0" Click="MoveRowDownButton_Click">
+                <iconPacks:PackIconFontAwesome Kind="ArrowDownSolid"/>
+
+            </Button>
+
+            <ScrollViewer ScrollViewer.VerticalScrollBarVisibility="Auto"  Grid.Column="0" Grid.Row="2">
+                <StackPanel x:Name="ColorSetRowsPanel">
+
+                </StackPanel>
+            </ScrollViewer>
+
+        </Grid>
+
+        <ScrollViewer Grid.Column="1" Grid.Row="0" Grid.RowSpan="2">
+            <Grid Grid.Column="1">
+
+                <Grid.RowDefinitions>
+                </Grid.RowDefinitions>
+
+                <GroupBox x:Name="DetailsGroupBox" Header="Material - Colorset Row Settings - Row ~" Grid.Row="1">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="40"></RowDefinition>
+
+                            <RowDefinition Height="Auto"></RowDefinition>
+
+                            <RowDefinition Height="Auto"></RowDefinition>
+
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="Auto"></RowDefinition>
+
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="1*"></RowDefinition>
+
+                        </Grid.RowDefinitions>
+
+                        <Image Grid.Row="0" x:Name="SelectedColorsetRowImage" Source="/FFXIV_TexTools;component/ffxiv2.ico" Height="32" VerticalAlignment="Center" Margin="10,9,0,9" Width="128" HorizontalAlignment="Left"/>
+
+
+                        <GroupBox Header="Colors" Grid.Row="1" Margin="0,10,0,0">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="30"></RowDefinition>
+                                    <RowDefinition Height="Auto"></RowDefinition>
+
+                                    <RowDefinition Height="10"></RowDefinition>
+
+                                    <RowDefinition Height="30"></RowDefinition>
+                                    <RowDefinition Height="Auto"></RowDefinition>
+
+                                    <RowDefinition Height="10"></RowDefinition>
+                                    <RowDefinition Height="30"></RowDefinition>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="120" ></ColumnDefinition>
+                                    <ColumnDefinition Width="200" ></ColumnDefinition>
+                                    <ColumnDefinition Width="100"/>
+                                </Grid.ColumnDefinitions>
+
+                                <Label Content="Diffuse Color:" Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Center" Height="26" Margin="0,2" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Width="81"/>
+                                <xctk:ColorPicker x:Name="DiffuseColorPicker" Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left" Width="150" ColorMode="ColorCanvas" ShowAvailableColors="False" ShowStandardColors="False" Height="22" Margin="0,4"></xctk:ColorPicker>
+                                <Label x:Name="SpecularPowerLabel" Content="Specular Power:" Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Center" Height="26" Margin="0,2" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Width="108"/>
+                                <TextBox x:Name="SpecularPowerBox" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" Width="150" VerticalAlignment="Center" Margin="0,2" Height="26"></TextBox>
+                                <Button x:Name="EditRawDiffuse" Grid.Row="0" Grid.Column="2" Content="Edit Raw" VerticalAlignment="Center" Margin="5,0" Click="EditRawDiffuse_Click"/>
+
+
+                                <Label Content="Specular Color:" Grid.Row="3" HorizontalAlignment="Right" VerticalAlignment="Center" Height="26" Margin="0,2" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Width="90"/>
+                                <xctk:ColorPicker x:Name="SpecularColorPicker" Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left" Width="150" ColorMode="ColorCanvas" ShowStandardColors="False"  Height="22" Margin="0,4"></xctk:ColorPicker>
+                                <Label x:Name="GlossLabel"  Content="Gloss:" Grid.Row="4" HorizontalAlignment="Right" VerticalAlignment="Center" Height="26" Margin="0,2" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Width="41"/>
+                                <TextBox x:Name="GlossBox" Grid.Row="4" Grid.Column="1" HorizontalAlignment="Left" Width="150" VerticalAlignment="Center" Margin="0,2" Height="26"></TextBox>
+                                <Button x:Name="EditRawSpecular" Grid.Row="3" Grid.Column="2" Content="Edit Raw" VerticalAlignment="Center" Margin="5,0" Click="EditRawSpecular_Click"/>
+
+
+
+                                <Label Content="Emissive Color:" Grid.Row="6" HorizontalAlignment="Right" VerticalAlignment="Center" Height="26" Margin="0,2" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Width="89"/>
+                                <xctk:ColorPicker x:Name="EmissiveColorPicker" Grid.Row="6" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left" Width="150" ColorMode="ColorCanvas" ShowStandardColors="False"  Height="22" Margin="0,4"></xctk:ColorPicker>
+                                <Button x:Name="EditRawEmmissive" Grid.Row="6" Grid.Column="2" Content="Edit Raw" VerticalAlignment="Center" Margin="5,0" Click="EditRawEmmissive_Click"/>
+
+                            </Grid>
+                        </GroupBox>
+
+
+                        <GroupBox Grid.Row="2" Header="Physical Settings" x:Name="PbrGroup">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="120" ></ColumnDefinition>
+                                    <ColumnDefinition Width="100" ></ColumnDefinition>
+                                    <ColumnDefinition Width="120" ></ColumnDefinition>
+                                    <ColumnDefinition Width="100" ></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="35"></RowDefinition>
+                                    <RowDefinition Height="35"></RowDefinition>
+                                    <RowDefinition Height="35"></RowDefinition>
+                                </Grid.RowDefinitions>
+
+                                <Label Grid.Column="0" Grid.Row="0" HorizontalContentAlignment="Right" VerticalAlignment="Center">Roughness:</Label>
+                                <TextBox x:Name="RoughnessBox" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Width="100"></TextBox>
+
+                                <Label Grid.Column="2" Grid.Row="0" HorizontalContentAlignment="Right" VerticalAlignment="Center">PBR Unknown:</Label>
+                                <TextBox x:Name="PbrUnknownBox" Grid.Column="3" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Width="100"></TextBox>
+
+                                <Label Grid.Column="0" Grid.Row="1" HorizontalContentAlignment="Right" VerticalAlignment="Center">Metalness:</Label>
+                                <TextBox x:Name="MetallicBox" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center" Width="100"></TextBox>
+
+                                <Label x:Name="AnisotropyBlendingLabel" Grid.Column="2" Grid.Row="1" HorizontalContentAlignment="Right" VerticalAlignment="Center">Anisotropy Blending:</Label>
+                                <TextBox x:Name="AnisotropyBlendingBox" Grid.Column="3" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center" Width="100"></TextBox>
+
+                                <Label x:Name="ShaderTemplateLabel" Grid.Column="0" Grid.Row="2" HorizontalContentAlignment="Right" VerticalAlignment="Center">Shader Template:</Label>
+                                <TextBox x:Name="ShaderTemplateBox" Grid.Column="1" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center" Width="100"></TextBox>
+
+                                <Label Grid.Column="2" Grid.Row="2" HorizontalContentAlignment="Right" VerticalAlignment="Center">Wetness?:</Label>
+                                <TextBox x:Name="WetnessBox" Grid.Column="3" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center" Width="100"></TextBox>
+
+
+                            </Grid>
+                        </GroupBox>
+
+                        <GroupBox Grid.Row="3" Header="Fresnel Settings" x:Name="FresnelGroup">
+                            <Grid>
+
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="120" ></ColumnDefinition>
+                                    <ColumnDefinition Width="100" ></ColumnDefinition>
+                                    <ColumnDefinition Width="120" ></ColumnDefinition>
+                                    <ColumnDefinition Width="100" ></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="35"></RowDefinition>
+                                    <RowDefinition Height="35"></RowDefinition>
+                                </Grid.RowDefinitions>
+
+                                <Label Grid.Column="0" Grid.Row="0" HorizontalContentAlignment="Right" VerticalAlignment="Center">Fresnel Y Term:</Label>
+                                <TextBox x:Name="FresnelYBox" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Width="100"></TextBox>
+
+                                <Label Grid.Column="2" Grid.Row="0" HorizontalContentAlignment="Right" VerticalAlignment="Center">Fresnel Albedo:</Label>
+                                <TextBox x:Name="FresnelAlbedoBox" Grid.Column="3" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Width="100"></TextBox>
+
+                                <Label Grid.Column="0" Grid.Row="1" HorizontalContentAlignment="Right" VerticalAlignment="Center">Fresnel Z Ramp:</Label>
+                                <TextBox x:Name="FresnelZBox" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center" Width="100"></TextBox>
+
+                                <Label Grid.Column="2" Grid.Row="1" HorizontalContentAlignment="Right" VerticalAlignment="Center">Fresnel Unknown?:</Label>
+                                <TextBox x:Name="FresnelUnknownBox" Grid.Column="3" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center" Width="100"></TextBox>
+
+                            </Grid>
+                        </GroupBox>
+
+                        <GroupBox Grid.Row="4" Margin="0,0,0,0" Header="SubMaterial" x:Name="SubmatGroup">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="120"></ColumnDefinition>
+                                    <ColumnDefinition Width="100"></ColumnDefinition>
+                                    <ColumnDefinition Width="120"></ColumnDefinition>
+                                    <ColumnDefinition Width="100"></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="35"></RowDefinition>
+                                    <RowDefinition Height="35"></RowDefinition>
+                                    <RowDefinition Height="35"></RowDefinition>
+                                    <RowDefinition Height="35"></RowDefinition>
+                                </Grid.RowDefinitions>
+
+                                <Label Content="Submaterial Id:" Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Center" Height="26" Margin="0,2" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"/>
+                                <ComboBox x:Name="TileIdBox" Grid.Row="0" Grid.Column="1" Width="100" VerticalAlignment="Center" Margin="0,2" Height="26"></ComboBox>
+
+                                <Label x:Name="TileOpacityLabel" Content="Submaterial Opacity:" Grid.Row="0" Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" Height="26" Margin="0,2" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" />
+                                <TextBox x:Name="TileOpacityBox" Grid.Row="0" Grid.Column="3" VerticalAlignment="Center" Width="100"/>
+
+                                <Label Content="Tile Count X:" Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Center"></Label>
+                                <TextBox x:Name="TileCountXBox" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Width="100"/>
+
+                                <Label Grid.Column="2" Grid.Row="1" Content="Tile Count Y:" HorizontalAlignment="Right" VerticalAlignment="Center"></Label>
+                                <TextBox x:Name="TileCountYBox" Grid.Row="1" Grid.Column="3" VerticalAlignment="Center" Width="100"/>
+
+                                <Label Grid.Row="2" Content="Tile Skew X:" HorizontalAlignment="Right" VerticalAlignment="Center"></Label>
+                                <TextBox x:Name="TileSkewXBox" Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" Width="100"/>
+
+                                <Label Grid.Row="2" Grid.Column="2" Content="Tile Skew Y:" HorizontalAlignment="Right" VerticalAlignment="Center"></Label>
+                                <TextBox x:Name="TileSkewYBox" Grid.Row="2"  Grid.Column="3" VerticalAlignment="Center" Width="100"/>
+                                
+                                <Label Grid.Row="3" Content="Submat Unknown:" HorizontalAlignment="Right" VerticalAlignment="Center"></Label>
+                                <TextBox x:Name="TileUnknownBox" Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" Width="100"/>
+                            </Grid>
+                        </GroupBox>
+
+                        <GroupBox Grid.Row="5" Header="Unknown">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+
+                                <Button x:Name="EditCol6" Grid.Row="0" Grid.Column="2" Content="Edit Col6" VerticalAlignment="Top" Margin="5,0,5,0" Click="EditCol6_Click"/>
+                            </Grid>
+                        </GroupBox>
+
+                        <GroupBox Header="Dye Settings" Grid.Row="6">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="35"></RowDefinition>
+                                    <RowDefinition Height="35"></RowDefinition>
+                                    <RowDefinition Height="35"></RowDefinition>
+                                    <RowDefinition Height="35"></RowDefinition>
+                                    <RowDefinition Height="35"></RowDefinition>
+                                    <RowDefinition Height="35"></RowDefinition>
+                                    <RowDefinition Height="35"></RowDefinition>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition></ColumnDefinition>
+                                    <ColumnDefinition></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+
+                                <Label Content="Template:" VerticalAlignment="Center" HorizontalAlignment="Left" ></Label>
+                                <ComboBox x:Name="DyeTemplateIdBox" VerticalAlignment="Center" HorizontalAlignment="Left" Width="100" SelectionChanged="DataChanged" Margin="70,0,0,0"/>
+
+                                <Label x:Name="DyeChannelLabel" Content="Channel:" VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Left" ></Label>
+                                <ComboBox x:Name="DyeChannelBox" VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Left" Width="100" SelectionChanged="DataChanged" Margin="70,0,0,0"/>
+
+                                <CheckBox x:Name="DyeBit0" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Content="Dye Bit 0"></CheckBox>
+                                <CheckBox x:Name="DyeBit1" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Content="Dye Bit 1"></CheckBox>
+
+                                <CheckBox x:Name="DyeBit2" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Content="Dye Bit 2"></CheckBox>
+                                <CheckBox x:Name="DyeBit3" Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" Content="Dye Bit 3"></CheckBox>
+
+                                <CheckBox x:Name="DyeBit4" Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" Content="Dye Bit 4"></CheckBox>
+                                <CheckBox x:Name="DyeBit5" Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" Content="Dye Bit 5"></CheckBox>
+
+                                <CheckBox x:Name="DyeBit6" Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" Content="Dye Bit 6"></CheckBox>
+                                <CheckBox x:Name="DyeBit7" Grid.Row="4" Grid.Column="1" VerticalAlignment="Center" Content="Dye Bit 7"></CheckBox>
+
+                                <CheckBox x:Name="DyeBit8" Grid.Row="5" Grid.Column="0" VerticalAlignment="Center" Content="Dye Bit 8"></CheckBox>
+                                <CheckBox x:Name="DyeBit9" Grid.Row="5" Grid.Column="1" VerticalAlignment="Center" Content="Dye Bit 9"></CheckBox>
+
+                                <CheckBox x:Name="DyeBit10" Grid.Row="6" Grid.Column="0" VerticalAlignment="Center" Content="Dye Bit 10"></CheckBox>
+                                <CheckBox x:Name="DyeBit11" Grid.Row="6" Grid.Column="1" VerticalAlignment="Center" Content="Dye Bit 11"></CheckBox>
+                            </Grid>
+                        </GroupBox>
+
+
+
+
+
+                    </Grid>
+                </GroupBox>
+            </Grid>
+        </ScrollViewer>
+
+        <Grid Grid.Column="2" Grid.Row="0" Grid.RowSpan="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="160"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="35"></RowDefinition>
+                <RowDefinition Height="35"></RowDefinition>
+                <RowDefinition Height="1*"></RowDefinition>
+            </Grid.RowDefinitions>
+
+            <Label Content="Preview Dye #" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.ColumnSpan="2" Margin="10,0" Grid.Row="0"/>
+            <ComboBox x:Name="DyePreviewIdBox" VerticalAlignment="Center" HorizontalAlignment="Left" Width="150" SelectionChanged="DyePreviewIdBox_SelectionChanged" Grid.ColumnSpan="2" Margin="100,0,0,0" Grid.Row="0"/>
+            <Button x:Name="CopyDyeValuesButton" Content="Dye Selected Row" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Column="0" Grid.Row="1" Width="150" Margin="10,0,0,0" Click="CopyDyeValuesButton_Click"></Button>
+            <Button x:Name="CopyAllDyeValuesButton"  Content="Dye All Rows" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Column="1" Grid.Row="1" Margin="10,0,0,0" Width="150" Click="CopyAllDyeValuesButton_Click"></Button>
+
+            <hx:Viewport3DX
+                        x:Name="ColorsetRowViewport"
+                        Grid.Row="2"
+                    Grid.ColumnSpan="2"
+                        EffectsManager="{Binding EffectsManager}"
+                        Camera="{Binding Camera}"
+                        ZoomExtentsWhenLoaded="True"
+                        ZoomDistanceLimitNear="0.0001">
+                <hx:Viewport3DX.InputBindings>
+                    <KeyBinding Command="hx:ViewportCommands.ZoomExtents" Gesture="Control+E" />
+                    <KeyBinding Command="hx:ViewportCommands.Reset" Gesture="Control+R"/>
+                    <MouseBinding Command="hx:ViewportCommands.Rotate" Gesture="RightClick" />
+                    <MouseBinding Command="hx:ViewportCommands.Zoom" Gesture="MiddleClick" />
+                    <MouseBinding Command="hx:ViewportCommands.Pan" Gesture="LeftClick" />
+                </hx:Viewport3DX.InputBindings>
+                <hx:DirectionalLight3D IsRendering="True" Direction="0, 0, -1" Color="White" />
+                <hx:DirectionalLight3D IsRendering="True" Direction="0, 0, 1" Color="White" />
+                <hx:DirectionalLight3D IsRendering="True" Direction="0, 1, 0" Color="White" />
+                <hx:DirectionalLight3D IsRendering="True" Direction="0, -1, 0" Color="White" />
+                <hx:DirectionalLight3D IsRendering="True" Direction="1, 0, 0" Color="White" />
+                <hx:DirectionalLight3D IsRendering="True" Direction="-1, 0, 0" Color="White" />
+                <hx:GroupModel3D ItemsSource="{Binding Models}"/>
+            </hx:Viewport3DX>
+            <Canvas Grid.Row="2" Name="AlternateViewportCanvas" Visibility="Hidden" IsHitTestVisible="False"/>
+        </Grid>
+
+    </Grid>
+</local:FileViewControl>

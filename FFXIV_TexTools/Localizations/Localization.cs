@@ -20,7 +20,6 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Resources;
 using System.ComponentModel;
-using FFXIV_TexTools.Views.Textures;
 
 namespace FFXIV_TexTools.Resources
 {
