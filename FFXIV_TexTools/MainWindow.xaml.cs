@@ -282,7 +282,10 @@ namespace FFXIV_TexTools
             var cwd = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
             Directory.SetCurrentDirectory(cwd);
 
-            CheckForUpdates();
+            if (!CheckForUpdates())
+            {
+                return;
+            }
 
             // This slightly unusual contrivance is to ensure that we actually exit program on updates
             // *before* performing the rest of the startup initialization.  If we let it continue
@@ -757,11 +760,16 @@ namespace FFXIV_TexTools
             await ItemSelect.LoadItems();
         }
 
-        public static void CheckForUpdates()
+        public static bool CheckForUpdates()
         {
+
             // This just checks to make sure we have access to writing our own folder,
             // As .RunUpdateAsAdmin does not seem to work properly on our current AutoUpdater version.
-            OnboardingWindow.CheckRerunAdminSimple();
+            var res = OnboardingWindow.CheckRerunAdminSimple();
+            if (!res)
+            {
+                return res;
+            }
 
             AutoUpdater.Synchronous = true;
             var updateDir = Path.Combine(Environment.CurrentDirectory, "update");
@@ -781,6 +789,8 @@ namespace FFXIV_TexTools
             {
                 AutoUpdater.Start(WebUrl.TexTools_Update_Url);
             }
+
+            return true;
         }
 
         private void CheckForSettingsUpdate()
@@ -819,7 +829,7 @@ namespace FFXIV_TexTools
 
                 if (toKill.Count > 0)
                 {
-                    FlexibleMessageBox.Show("More than one TexTools process detected.  Shutting down other TexTools copies.".L(), "Multi-Application Shutdown.".L(), MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    //FlexibleMessageBox.Show("More than one TexTools process detected.  Shutting down other TexTools copies.".L(), "Multi-Application Shutdown.".L(), MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
                     foreach (var p in toKill)
                     {

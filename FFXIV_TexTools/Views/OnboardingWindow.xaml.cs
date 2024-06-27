@@ -198,7 +198,7 @@ namespace FFXIV_TexTools.Views
             // Return TRUE if user is in role "Administrator"
             return windowsPrincipal.IsInRole(WindowsBuiltInRole.Administrator);
         }
-        public static void CheckRerunAdminSimple()
+        public static bool CheckRerunAdminSimple()
         {
             var cwd = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
             var converterFolder = Path.GetFullPath(Path.Combine(cwd, "converters"));
@@ -221,8 +221,13 @@ namespace FFXIV_TexTools.Views
                 Process.Start(processStartInfo);
 
                 // Shut down the current (old) process
-                System.Windows.Application.Current.Shutdown();
+                if (System.Windows.Application.Current != null)
+                {
+                    System.Windows.Application.Current.Shutdown();
+                }
+                return false;
             }
+            return true;
         }
         public static void CheckRerunAdmin()
         {
