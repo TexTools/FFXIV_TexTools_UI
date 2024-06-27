@@ -890,17 +890,15 @@ namespace FFXIV_TexTools.Views.Controls
             _Mtrl_Loading = true;
 
             STM.EStainingTemplate stainingTemplate;
-            if (Material.ColorSetData.Count == 256)
+            _columnCount = 8;
+            _rowCount = 32;
+            if (Material.ShaderPack == ShaderHelpers.EShaderPack.CharacterLegacy)
             {
                 stainingTemplate = STM.EStainingTemplate.Endwalker;
-                _columnCount = 4;
-                _rowCount = 16;
             }
             else
             {
                 stainingTemplate = STM.EStainingTemplate.Dawntrail;
-                _columnCount = 8;
-                _rowCount = 32;
             }
 
 

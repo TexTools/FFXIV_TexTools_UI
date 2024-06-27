@@ -39,6 +39,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Media3D;
 using System.Windows.Navigation;
+using System.Windows.Threading;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Materials.DataContainers;
 using xivModdingFramework.Models.DataContainers;
@@ -273,7 +274,7 @@ namespace FFXIV_TexTools.ViewModels
 
 
             // Push all the potentially CPU intense stuff onto a new thread.
-            await Task.Run(() =>
+            await Task.Run(async () =>
             {
                 if (newModel && originalModel != _Model)
                 {
@@ -365,25 +366,29 @@ namespace FFXIV_TexTools.ViewModels
                         else if (textureData.VTilingMode == TextureSampler.ETilingMode.Border)
                             sampler.AddressV = TextureAddressMode.Border;
 
-                        var material = new PhongMaterial
+                        await Application.Current.Dispatcher.InvokeAsync(() =>
                         {
-                            AmbientColor = PhongMaterials.ToColor(1, 1, 1, 1),
-                            DiffuseColor = PhongMaterials.ToColor(1, 1, 1, 1),
-                            SpecularShininess = ReflectionValue,
-                            DiffuseAlphaMap = diffuse,
-                            SpecularColorMap = specular,
-                            NormalMap = normal,
-                            EmissiveMap = emissive,
-                            DiffuseMapSampler = sampler
-                        };
+                            var material = new PhongMaterial
+                            {
+                                AmbientColor = PhongMaterials.ToColor(1, 1, 1, 1),
+                                DiffuseColor = PhongMaterials.ToColor(1, 1, 1, 1),
+                                SpecularShininess = ReflectionValue,
+                                DiffuseAlphaMap = diffuse,
+                                SpecularColorMap = specular,
+                                NormalMap = normal,
+                                EmissiveMap = emissive,
+                                DiffuseMapSampler = sampler
+                            };
 
-                        lock (_Materials)
-                        {
-                            _Materials.Add(material);
-                        }
+                            lock (_Materials)
+                            {
+                                _Materials.Add(material);
+                            }
+                        });
                     }
                 }
             });
+
 
             if(myId != LastUpdateId)
             {

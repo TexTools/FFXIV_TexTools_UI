@@ -1523,7 +1523,10 @@ namespace FFXIV_TexTools
                 Trace.WriteLine(ex);
             }
 
-            this.CheckUnsafeOperation(needsWrite, true);
+            if(!this.CheckUnsafeOperation(needsWrite, true))
+            {
+                return;
+            }
 
             if (result == System.Windows.Forms.DialogResult.Yes)
             {
@@ -1671,38 +1674,27 @@ namespace FFXIV_TexTools
             if (result != System.Windows.Forms.DialogResult.OK) return;
 
             await LockUi("Downloading Backups".L());
-            string localPath = null;
+            string zipPath = null;
             try
             {
                 await Task.Run(async () =>
                 {
-                    var tempDir = IOUtil.GetFrameworkTempFolder();
-                    tempDir += "/index_backup";
-                    Directory.CreateDirectory(tempDir);
 
                     _lockProgress.Report("Downloading Indexes...".L());
-                    localPath = IOUtil.GetFrameworkTempFile();
+                    zipPath = IOUtil.GetFrameworkTempFile();
                     using (var client = new WebClient())
                     {
-                        client.DownloadFile(url, localPath);
+                        client.DownloadFile(url, zipPath);
                     }
 
 
-                    var tempDi = new DirectoryInfo(tempDir);
-                    foreach (FileInfo file in tempDi.GetFiles())
-                    {
-                        file.Delete();
-                    }
+                    var verFile = Path.Combine(IOUtil.GetFrameworkTempFolder(), "ffxivgame.ver");
 
-
-                    _lockProgress.Report("Unzipping new Indexes...".L());
-                    ZipFile.ExtractToDirectory(localPath, tempDir);
-
-                    _lockProgress.Report("Checking downloaded index version...".L());
-                    var versionRaw = File.ReadAllText(tempDir + "/ffxivgame.ver");
+                    _lockProgress.Report("Checking game version...".L());
+                    await IOUtil.UnzipFile(zipPath, IOUtil.GetFrameworkTempFolder(), "ffxivgame.ver");
+                    var versionRaw = File.ReadAllText(verFile);
                     
                     Version version = new Version(versionRaw.Substring(0, versionRaw.LastIndexOf(".", StringComparison.Ordinal)));
-
                     if (version != XivCache.GameInfo.GameVersion)
                     {
                         throw new Exception("Downloaded Index version does not match game version.".L());
@@ -1717,21 +1709,7 @@ namespace FFXIV_TexTools
 
 
                     _lockProgress.Report("Copying new indexes to backup directory...".L());
-                    var newFiles = Directory.GetFiles(tempDi.FullName);
-                    foreach (var nFile in newFiles)
-                    {
-                        try
-                        {
-                            if (nFile.Contains(".win32.index"))
-                            {
-                                File.Copy(nFile, $"{Settings.Default.Backup_Directory}/{Path.GetFileName(nFile)}", true);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new Exception("Failed to copy index files.\n\n".L() + ex.Message);
-                        }
-                    }
+                    await IOUtil.UnzipFiles(zipPath, Settings.Default.Backup_Directory);
 
 
                     _lockProgress.Report("Job Done.".L());
@@ -1745,9 +1723,9 @@ namespace FFXIV_TexTools
             }
             finally
             {
-                if(localPath != null)
+                if(zipPath != null)
                 {
-                    File.Delete(localPath);
+                    File.Delete(zipPath);
                 }
                 await UnlockUi();
             }
