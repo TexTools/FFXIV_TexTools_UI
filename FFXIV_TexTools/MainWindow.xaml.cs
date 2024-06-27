@@ -759,6 +759,10 @@ namespace FFXIV_TexTools
 
         public static void CheckForUpdates()
         {
+            // This just checks to make sure we have access to writing our own folder,
+            // As .RunUpdateAsAdmin does not seem to work properly on our current AutoUpdater version.
+            OnboardingWindow.CheckRerunAdminSimple();
+
             AutoUpdater.Synchronous = true;
             var updateDir = Path.Combine(Environment.CurrentDirectory, "update");
             Directory.CreateDirectory(updateDir);

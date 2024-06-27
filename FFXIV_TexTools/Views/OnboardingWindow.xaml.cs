@@ -198,6 +198,32 @@ namespace FFXIV_TexTools.Views
             // Return TRUE if user is in role "Administrator"
             return windowsPrincipal.IsInRole(WindowsBuiltInRole.Administrator);
         }
+        public static void CheckRerunAdminSimple()
+        {
+            var cwd = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
+            var converterFolder = Path.GetFullPath(Path.Combine(cwd, "converters"));
+
+            var allSuccess = true;
+            allSuccess = allSuccess && TestDirectory(converterFolder);
+
+
+
+            if (!allSuccess && !IsRunningAsAdministrator())
+            {
+                // Setting up start info of the new process of the same application
+                ProcessStartInfo processStartInfo = new ProcessStartInfo(Assembly.GetEntryAssembly().CodeBase);
+
+                // Using operating shell and setting the ProcessStartInfo.Verb to “runas” will let it run as admin
+                processStartInfo.UseShellExecute = true;
+                processStartInfo.Verb = "runas";
+
+                // Start the application as new process
+                Process.Start(processStartInfo);
+
+                // Shut down the current (old) process
+                System.Windows.Application.Current.Shutdown();
+            }
+        }
         public static void CheckRerunAdmin()
         {
             var cwd = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
