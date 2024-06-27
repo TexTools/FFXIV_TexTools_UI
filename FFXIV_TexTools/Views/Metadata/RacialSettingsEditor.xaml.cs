@@ -33,7 +33,7 @@ namespace FFXIV_TexTools.Views.Metadata
 
             var races  = Enum.GetValues(typeof(XivSubRace)).Cast<XivSubRace>();
 
-            var rowIdx = 0;
+            var rowIdx = -1;
             foreach(var race in races)
             {
                 var clanId = race.GetSubRaceId();

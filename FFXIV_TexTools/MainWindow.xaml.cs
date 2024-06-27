@@ -1597,7 +1597,14 @@ namespace FFXIV_TexTools
             if (pname.Length == 1)
             {
                 // Only clear temp folder if we're the last TT application closing.
-                IOUtil.ClearTempFolder();
+                try
+                {
+                    IOUtil.ClearTempFolder();
+                }
+                catch
+                {
+                    // Whatever.
+                }
             }
 
             Application.Current.Shutdown();

@@ -864,7 +864,14 @@ namespace FFXIV_TexTools.Helpers
                 SetDialogStartPosition(flexibleMessageBoxForm, owner);
 
                 //Show the dialog
-                return flexibleMessageBoxForm.ShowDialog(owner);
+                try
+                {
+                    return flexibleMessageBoxForm.ShowDialog(owner);
+                }
+                catch
+                {
+                    return DialogResult.Cancel;
+                }
             }
 
             #endregion
