@@ -130,6 +130,8 @@ namespace FFXIV_TexTools.Views.Controls
 
         protected SmartImportOptions LastImportOptions;
 
+        protected SaveFileDialog _SaveDialog;
+        protected OpenFileDialog _OpenDialog;
 
         public FileViewControl()
         {
@@ -146,8 +148,10 @@ namespace FFXIV_TexTools.Views.Controls
 
             DebouncedUpdate = ViewHelpers.Debounce<string>(_UpdateOnMainThread, 200);
 
+
             IsEnabled = false;
         }
+
 
         private Action<string> DebouncedUpdate;
 
@@ -376,6 +380,8 @@ namespace FFXIV_TexTools.Views.Controls
                     InternalFilePath = null;
                     ExternalFilePath = null;
                     ReferenceItem = null;
+                    _SaveDialog = null;
+                    _OpenDialog = null;
 
                 } catch(Exception ex)
                 {
@@ -543,6 +549,9 @@ namespace FFXIV_TexTools.Views.Controls
         {
             var originalPath = InternalFilePath;
             var originalItem = ReferenceItem;
+            var sfd = _SaveDialog;
+            var ofd = _OpenDialog;
+
             if (UnsavedChanges && !string.IsNullOrWhiteSpace(InternalFilePath))
             {
                 if (!this.ConfirmDiscardChanges(InternalFilePath))
@@ -628,14 +637,20 @@ namespace FFXIV_TexTools.Views.Controls
                 {
                     InternalFilePath = internalFile;
                     ReferenceItem = referenceItem;
+                    _SaveDialog = sfd;
+                    _OpenDialog = ofd;
                 }  else if(IOUtil.IsFFXIVInternalPath(originalPath))
                 {
                     InternalFilePath = originalPath;
                     ReferenceItem = originalItem;
+                    _SaveDialog = null;
+                    _OpenDialog = null;
                 } else
                 {
                     InternalFilePath = null;
                     ReferenceItem = null;
+                    _SaveDialog = null;
+                    _OpenDialog = null;
                 }
 
                 await UpdateModState();
@@ -855,13 +870,27 @@ namespace FFXIV_TexTools.Views.Controls
                 return null;
             }
 
-            var ofd = new OpenFileDialog();
+            if(_OpenDialog == null)
+            {
+                _OpenDialog = new OpenFileDialog();
+                _OpenDialog.InitialDirectory = GetDefaultSaveDirectory();
+                _OpenDialog.FileName = GetDefaultSaveName();
+            } else if (!string.IsNullOrWhiteSpace(_OpenDialog.FileName))
+            {
+                try
+                {
+                    _OpenDialog.InitialDirectory = Path.GetDirectoryName(_OpenDialog.FileName);
+                }
+                catch
+                {
+                    //No-OP
+                }
+            }
+
             var extStrings = "*" + string.Join(";*", exts.Keys);
             var filter = GetNiceName() + " Files|" + extStrings;
-            ofd.Filter = filter;
-            ofd.InitialDirectory = GetDefaultSaveDirectory();
-            ofd.FileName = GetDefaultSaveName();
-            return ofd;
+            _OpenDialog.Filter = filter;
+            return _OpenDialog;
         }
 
         public async Task<bool> ImportFileByDialog(string internalFilePath = null)
@@ -989,36 +1018,53 @@ namespace FFXIV_TexTools.Views.Controls
                     return false;
                 }
 
-                var sfd = new SaveFileDialog();
+                if (_SaveDialog == null)
+                {
+                    _SaveDialog = new SaveFileDialog();
+                    _SaveDialog.InitialDirectory = GetDefaultSaveDirectory();
+                    _SaveDialog.FileName = GetDefaultSaveName(extension);
+                } else if(!string.IsNullOrWhiteSpace(_SaveDialog.FileName))
+                {
+                    try
+                    {
+                        _SaveDialog.InitialDirectory = Path.GetDirectoryName(_SaveDialog.FileName);
+                    }
+                    catch
+                    {
+                        //No-OP
+                    }
+                }
 
                 if (string.IsNullOrWhiteSpace(extension))
                 {
                     var extStrings = "*" + string.Join(";*", exts.Keys);
                     var filter = GetNiceName() + " Files|" + extStrings;
-                    sfd.Filter = filter;
-                } else
+
+                    foreach(var f in exts)
+                    {
+                        filter += "|" + f.Value + "|" + "*" + f.Key;
+                    }
+                    _SaveDialog.Filter = filter;
+                }
+                else
                 {
-                    sfd.Filter = ext.Value + " Files|*" + ext.Key;
+                    _SaveDialog.Filter = ext.Value + " Files|*" + ext.Key;
                 }
 
-
-                sfd.InitialDirectory = GetDefaultSaveDirectory();
-                sfd.FileName = GetDefaultSaveName(extension);
-
-                var res = sfd.ShowDialog();
+                var res = _SaveDialog.ShowDialog();
                 if (res != DialogResult.OK)
                 {
                     return false;
                 }
 
-                var userExt = Path.GetExtension(sfd.FileName).ToLower();
+                var userExt = Path.GetExtension(_SaveDialog.FileName).ToLower();
                 if (!exts.ContainsKey(userExt))
                 {
                     return false;
                 }
 
 
-                return await INTERNAL_SaveAs(sfd.FileName);
+                return await INTERNAL_SaveAs(_SaveDialog.FileName);
             } catch (Exception ex)
             {
                 this.ShowError("Save Error", "An Error occured while saving the file:\n\n" + ex.Message);

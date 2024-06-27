@@ -201,6 +201,114 @@ namespace FFXIV_TexTools.Views.Controls
             TxWatcher.SaveStatusChanged += TxWatcher_SaveStatusChanged;
             KeyDown += OnKeyDown;
 
+            DragOver += OnDragOver;
+            Drop += OnDragDrop;
+            PreviewDragOver += OnPreviewDragOver;
+            PreviewDragEnter += OnPreviewDragEnter;
+            AllowDrop = true;
+        }
+
+        private bool DragOk(DragEventArgs e)
+        {
+            if (!LoadButton.IsEnabled)
+            {
+                return false;
+            }
+            if (FileControl == null || FileControl.InternalFilePath == null)
+            {
+                return false;
+            }
+            string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+
+            if (files.Length == 0)
+            {
+                return false;
+            }
+
+            if (files.Length > 1)
+            {
+                return false;
+            }
+
+            var file = files[0];
+            var ext = Path.GetExtension(file);
+            if (!FileControl.GetValidFileExtensions().Keys.Contains(ext))
+            {
+                return false;
+            }
+            return true;
+        }
+
+        private void OnPreviewDragEnter(object sender, DragEventArgs e)
+        {
+            if (DragOk(e))
+            {
+                e.Effects = DragDropEffects.Copy;
+            }
+            else
+            {
+                e.Effects = DragDropEffects.None;
+            }
+        }
+
+        private void OnPreviewDragOver(object sender, DragEventArgs e)
+        {
+            if (DragOk(e))
+            {
+                e.Effects = DragDropEffects.Copy;
+                e.Handled = true;
+            }
+            else
+            {
+                e.Effects = DragDropEffects.None;
+            }
+        }
+
+        private void OnDragOver(object sender, DragEventArgs e)
+        {
+            if (DragOk(e))
+            {
+                e.Effects = DragDropEffects.Copy;
+            }
+            else
+            {
+                e.Effects = DragDropEffects.None;
+            }
+
+        }
+
+        private async void OnDragDrop(object sender, DragEventArgs e)
+        {
+            try
+            {
+                if (!DragOk(e))
+                {
+                    return;
+                }
+
+                string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+                if(files.Length != 1)
+                {
+                    return;
+                }
+
+                var file = files[0];
+                var ext = Path.GetExtension(file);
+                if(!FileControl.GetValidFileExtensions().Keys.Contains(ext))
+                {
+                    return;
+                }
+
+                var success = await FileControl.LoadExternalFile(file);
+                if (!success)
+                {
+                    await FileControl.ReloadFile();
+                }
+            }
+            catch(Exception ex)
+            {
+                this.ShowError("File Load Error", "An error occurred while loading the file:\n\n" + ex.Message);
+            }
         }
 
         public void OnKeyDown(object sender, KeyEventArgs e)

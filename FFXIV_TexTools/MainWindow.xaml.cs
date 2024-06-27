@@ -763,6 +763,7 @@ namespace FFXIV_TexTools
             var updateDir = Path.Combine(Environment.CurrentDirectory, "update");
             Directory.CreateDirectory(updateDir);
             AutoUpdater.DownloadPath = updateDir;
+            AutoUpdater.RunUpdateAsAdmin = true;
             try
             {
                 if (IsBetaVersion)

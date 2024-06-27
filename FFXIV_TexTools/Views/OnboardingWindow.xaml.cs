@@ -12,6 +12,8 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -182,8 +184,67 @@ namespace FFXIV_TexTools.Views
             }
 
             InitializeSettings();
+            CheckRerunAdmin();
         }
 
+        public static bool IsRunningAsAdministrator()
+        {
+            // Get current Windows user
+            WindowsIdentity windowsIdentity = WindowsIdentity.GetCurrent();
+
+            // Get current Windows user principal
+            WindowsPrincipal windowsPrincipal = new WindowsPrincipal(windowsIdentity);
+
+            // Return TRUE if user is in role "Administrator"
+            return windowsPrincipal.IsInRole(WindowsBuiltInRole.Administrator);
+        }
+        public static void CheckRerunAdmin()
+        {
+            var allSuccess = true;
+            allSuccess = allSuccess && TestDirectory(Settings.Default.FFXIV_Directory);
+            allSuccess = allSuccess && TestDirectory(Settings.Default.Backup_Directory);
+            allSuccess = allSuccess && TestDirectory(Settings.Default.ModPack_Directory);
+            allSuccess = allSuccess && TestDirectory(Settings.Default.Save_Directory);
+
+            if (!allSuccess && !IsRunningAsAdministrator()) 
+            {
+                // Setting up start info of the new process of the same application
+                ProcessStartInfo processStartInfo = new ProcessStartInfo(Assembly.GetEntryAssembly().CodeBase);
+
+                // Using operating shell and setting the ProcessStartInfo.Verb to “runas” will let it run as admin
+                processStartInfo.UseShellExecute = true;
+                processStartInfo.Verb = "runas";
+
+                // Start the application as new process
+                Process.Start(processStartInfo);
+
+                // Shut down the current (old) process
+                System.Windows.Application.Current.Shutdown();
+            }
+        }
+
+        private static bool TestDirectory(string path)
+        {
+            if (string.IsNullOrWhiteSpace(path) || !Directory.Exists(path))
+            {
+                return true;
+            }
+
+            var tempFile = Path.GetFullPath(Path.Combine(path, "tt_write_test.temp"));
+            try
+            {
+                using (var fs = File.Create(tempFile))
+                {
+
+                }
+                File.Delete(tempFile);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
 
         public static void DoOnboarding()
         {
