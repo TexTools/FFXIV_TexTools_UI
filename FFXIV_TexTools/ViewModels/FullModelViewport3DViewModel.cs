@@ -130,31 +130,34 @@ namespace FFXIV_TexTools.ViewModels
                 else if (textureData.VTilingMode == TextureSampler.ETilingMode.Border)
                     sampler.AddressV = TextureAddressMode.Border;
 
-                var material = new PhongMaterial
+                await System.Windows.Application.Current.Dispatcher.InvokeAsync(() =>
                 {
-                    AmbientColor = PhongMaterials.ToColor(1, 1, 1, 1),
-                    DiffuseColor = PhongMaterials.ToColor(1, 1, 1, 1),
-                    SpecularShininess = ReflectionValue,
-                    DiffuseAlphaMap = diffuse,
-                    SpecularColorMap = specular,
-                    NormalMap = normal,
-                    EmissiveMap = emissive,
-                    DiffuseMapSampler = sampler
-                };
+                    var material = new PhongMaterial
+                    {
+                        AmbientColor = PhongMaterials.ToColor(1, 1, 1, 1),
+                        DiffuseColor = PhongMaterials.ToColor(1, 1, 1, 1),
+                        SpecularShininess = ReflectionValue,
+                        DiffuseAlphaMap = diffuse,
+                        SpecularColorMap = specular,
+                        NormalMap = normal,
+                        EmissiveMap = emissive,
+                        DiffuseMapSampler = sampler
+                    };
 
-                // Geometry that contains skeleton data
-                var smgm3d = new CustomMeshGeometryModel3D
-                {
-                    Geometry = meshGeometry3D,
-                    Material = material,
-                    Source = model.Source,
-                };
+                    // Geometry that contains skeleton data
+                    var smgm3d = new CustomMeshGeometryModel3D
+                    {
+                        Geometry = meshGeometry3D,
+                        Material = material,
+                        Source = model.Source,
+                    };
 
-                boundingBox = meshGeometry3D.Bound;
+                    boundingBox = meshGeometry3D.Bound;
 
-                smgm3d.CullMode = textureData.RenderBackfaces ? CullMode.None : CullMode.Back;
+                    smgm3d.CullMode = textureData.RenderBackfaces ? CullMode.None : CullMode.Back;
 
-                Models.Add(smgm3d);
+                    Models.Add(smgm3d);
+                });
             }
             var center = boundingBox.GetValueOrDefault().Center;
 
