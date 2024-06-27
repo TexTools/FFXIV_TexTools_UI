@@ -147,7 +147,7 @@ namespace FFXIV_TexTools.Views.Textures
 
                 await TextureHelpers.CreateIndexTexture(data.PixelData, indexData, data.Width, data.Height);
 
-                using (var image = SixLabors.ImageSharp.Image.LoadPixelData<Bgra32>(indexData, data.Width, data.Height))
+                using (var image = SixLabors.ImageSharp.Image.LoadPixelData<Rgba32>(indexData, data.Width, data.Height))
                 {
                     image.SaveAsTga(indexPath, Encoder);
                 }

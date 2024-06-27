@@ -187,11 +187,11 @@ namespace FFXIV_TexTools.Views.Textures
 
                 var normRaw = data.TexA;
                 var maskRaw = data.TexB;
-                using (var image = SixLabors.ImageSharp.Image.LoadPixelData<Bgra32>(normRaw, data.Width, data.Height))
+                using (var image = SixLabors.ImageSharp.Image.LoadPixelData<Rgba32>(normRaw, data.Width, data.Height))
                 {
                     image.SaveAsTga(normalPath, Encoder);
                 }
-                using (var image = SixLabors.ImageSharp.Image.LoadPixelData<Bgra32>(maskRaw, data.Width, data.Height))
+                using (var image = SixLabors.ImageSharp.Image.LoadPixelData<Rgba32>(maskRaw, data.Width, data.Height))
                 {
                     image.SaveAsTga(maskPath, Encoder);
                 }
