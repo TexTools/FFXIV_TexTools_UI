@@ -1027,6 +1027,11 @@ namespace FFXIV_TexTools.Views.Controls
                 {
                     try
                     {
+                        if (extension != null)
+                        {
+                            var path = Path.GetFileNameWithoutExtension(_SaveDialog.FileName);
+                            _SaveDialog.FileName = path + extension;
+                        }
                         _SaveDialog.InitialDirectory = Path.GetDirectoryName(_SaveDialog.FileName);
                     }
                     catch
