@@ -260,7 +260,7 @@ namespace FFXIV_TexTools.Views.Simple
                 }
             } catch(Exception ex)
             {
-                ViewHelpers.ShowError("File Import Error", "The import has been cancelled due to an error:\n\n" + ex.Message);
+                ViewHelpers.ShowError("Modpack File List Import Error", "The import has been cancelled due to an error:\n\n" + ex.Message);
                 return;
             }
             finally

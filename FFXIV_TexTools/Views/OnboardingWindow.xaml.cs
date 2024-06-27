@@ -200,11 +200,17 @@ namespace FFXIV_TexTools.Views
         }
         public static void CheckRerunAdmin()
         {
+            var cwd = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
+            var converterFolder = Path.GetFullPath(Path.Combine(cwd, "converters"));
+
             var allSuccess = true;
             allSuccess = allSuccess && TestDirectory(Settings.Default.FFXIV_Directory);
             allSuccess = allSuccess && TestDirectory(Settings.Default.Backup_Directory);
             allSuccess = allSuccess && TestDirectory(Settings.Default.ModPack_Directory);
             allSuccess = allSuccess && TestDirectory(Settings.Default.Save_Directory);
+            allSuccess = allSuccess && TestDirectory(converterFolder);
+
+
 
             if (!allSuccess && !IsRunningAsAdministrator()) 
             {
