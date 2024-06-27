@@ -401,7 +401,7 @@ namespace FFXIV_TexTools.Views.Controls
             }
             catch (Exception ex)
             {
-                this.ShowError("Model Render Error", "There was an error while rendering the model:\n\n" + ex.Message);
+                this.ShowWarning("Model Render Error", "There was an error while rendering the model:\n\n" + ex.Message);
             }
             finally
             {

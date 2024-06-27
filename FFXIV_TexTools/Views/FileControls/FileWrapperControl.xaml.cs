@@ -299,7 +299,11 @@ namespace FFXIV_TexTools.Views.Controls
                     return;
                 }
 
-                await FileControl.LoadExternalFile(file);
+                var success = await FileControl.LoadExternalFile(file);
+                if (!success)
+                {
+                    await FileControl.ReloadFile();
+                }
             }
             catch(Exception ex)
             {
