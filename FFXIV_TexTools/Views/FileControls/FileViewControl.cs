@@ -724,9 +724,9 @@ namespace FFXIV_TexTools.Views.Controls
         /// This function is expected to catch and handle its own errors.
         /// </summary>
         /// <returns></returns>
-        public async Task<bool> SaveCurrentFile(ModTransaction tx = null)
+        public async Task<bool> SaveCurrentFile(ModTransaction tx = null, bool ignoreWarning = false)
         {
-            if (!this.CheckFileWrite())
+            if ((!ignoreWarning) && !this.CheckFileWrite())
             {
                 return false;
             }
