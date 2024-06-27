@@ -585,7 +585,7 @@ namespace FFXIV_TexTools
 
             if(Enum.TryParse<EModelingTool>(Settings.Default.ModelingTool, true, out var mt))
             {
-                XivCache.ModelingTool = mt;
+                XivCache.FrameworkSettings.ModelingTool = mt;
             }
 
             UpdateWriteStateUi();

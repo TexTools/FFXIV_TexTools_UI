@@ -993,8 +993,8 @@ namespace FFXIV_TexTools.ViewModels
 
             if(Enum.TryParse<EModelingTool>(Settings.Default.ModelingTool, true, out var tool))
             {
-                XivCache.ModelingTool = tool;
-                colorSet.InvertNormalGreen = XivCache.ModelingTool.UsesDirectXNormals();
+                XivCache.FrameworkSettings.ModelingTool = tool;
+                colorSet.InvertNormalGreen = XivCache.FrameworkSettings.ModelingTool.UsesDirectXNormals();
             }
             
 
