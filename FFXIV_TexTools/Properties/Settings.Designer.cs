@@ -12,7 +12,7 @@ namespace FFXIV_TexTools.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.10.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.9.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -133,7 +133,7 @@ namespace FFXIV_TexTools.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("#FF4D7EF0")]
+        [global::System.Configuration.DefaultSettingValueAttribute("#FF5B6E81")]
         public string Hair_Highlight_Color {
             get {
                 return ((string)(this["Hair_Highlight_Color"]));
@@ -157,7 +157,7 @@ namespace FFXIV_TexTools.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("#FFAD6969")]
+        [global::System.Configuration.DefaultSettingValueAttribute("#998B372E")]
         public string Lip_Color {
             get {
                 return ((string)(this["Lip_Color"]));
@@ -169,7 +169,7 @@ namespace FFXIV_TexTools.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("#FF00FF42")]
+        [global::System.Configuration.DefaultSettingValueAttribute("#FF307066")]
         public string Tattoo_Color {
             get {
                 return ((string)(this["Tattoo_Color"]));
@@ -337,7 +337,7 @@ namespace FFXIV_TexTools.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("#FFFFFFFF")]
+        [global::System.Configuration.DefaultSettingValueAttribute("#FFDBB89A")]
         public string Skin_Color {
             get {
                 return ((string)(this["Skin_Color"]));
@@ -349,7 +349,7 @@ namespace FFXIV_TexTools.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("#FF603913")]
+        [global::System.Configuration.DefaultSettingValueAttribute("#FF6E4D23")]
         public string Hair_Color {
             get {
                 return ((string)(this["Hair_Color"]));
@@ -361,7 +361,7 @@ namespace FFXIV_TexTools.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("#FF603913")]
+        [global::System.Configuration.DefaultSettingValueAttribute("#FFAC719F")]
         public string Iris_Color {
             get {
                 return ((string)(this["Iris_Color"]));
@@ -410,48 +410,12 @@ namespace FFXIV_TexTools.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool InvertNormalGreen {
-            get {
-                return ((bool)(this["InvertNormalGreen"]));
-            }
-            set {
-                this["InvertNormalGreen"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool ExportAllBones {
             get {
                 return ((bool)(this["ExportAllBones"]));
             }
             set {
                 this["ExportAllBones"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string Lumina_Directory {
-            get {
-                return ((string)(this["Lumina_Directory"]));
-            }
-            set {
-                this["Lumina_Directory"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool Lumina_IsEnabled {
-            get {
-                return ((bool)(this["Lumina_IsEnabled"]));
-            }
-            set {
-                this["Lumina_IsEnabled"] = value;
             }
         }
         
@@ -488,6 +452,126 @@ namespace FFXIV_TexTools.Properties {
             }
             set {
                 this["AutoMaterialFix"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool FixPreDawntrailOnImport {
+            get {
+                return ((bool)(this["FixPreDawntrailOnImport"]));
+            }
+            set {
+                this["FixPreDawntrailOnImport"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool LiveDangerously {
+            get {
+                return ((bool)(this["LiveDangerously"]));
+            }
+            set {
+                this["LiveDangerously"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string PenumbraFolder {
+            get {
+                return ((string)(this["PenumbraFolder"]));
+            }
+            set {
+                this["PenumbraFolder"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool OpenTransactionOnStart {
+            get {
+                return ((bool)(this["OpenTransactionOnStart"]));
+            }
+            set {
+                this["OpenTransactionOnStart"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ShiftExportUV {
+            get {
+                return ((bool)(this["ShiftExportUV"]));
+            }
+            set {
+                this["ShiftExportUV"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ShiftImportUV {
+            get {
+                return ((bool)(this["ShiftImportUV"]));
+            }
+            set {
+                this["ShiftImportUV"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string ModelingTool {
+            get {
+                return ((string)(this["ModelingTool"]));
+            }
+            set {
+                this["ModelingTool"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool FixPreDawntrailPartialOnImport {
+            get {
+                return ((bool)(this["FixPreDawntrailPartialOnImport"]));
+            }
+            set {
+                this["FixPreDawntrailPartialOnImport"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int MaxImageSize {
+            get {
+                return ((int)(this["MaxImageSize"]));
+            }
+            set {
+                this["MaxImageSize"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool CompressEndwalkerUpgradeTextures {
+            get {
+                return ((bool)(this["CompressEndwalkerUpgradeTextures"]));
+            }
+            set {
+                this["CompressEndwalkerUpgradeTextures"] = value;
             }
         }
     }

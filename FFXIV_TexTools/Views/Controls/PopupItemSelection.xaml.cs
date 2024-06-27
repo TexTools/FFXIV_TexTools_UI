@@ -113,17 +113,34 @@ namespace FFXIV_TexTools.Views.Controls
 
                 if (result)
                 {
-                    ItemSelect.SelectButton.Content = "Select Item";
+                    ItemSelect.SelectButton.Content = "Select Item".L();
                 } else
                 {
-                    ItemSelect.SelectButton.Content = "Invalid Selection";
+                    ItemSelect.SelectButton.Content = "Invalid Selection".L();
                 }
             }
         }
 
-        public static IItem ShowItemSelection(Func<IItem, bool> ExtraFilterFunction = null, Func<IItem, bool> AllowSelectFunction = null)
+        public static IItem ShowItemSelection(Func<IItem, bool> ExtraFilterFunction = null, Func<IItem, bool> AllowSelectFunction = null, UIElement control = null)
         {
+            Window wind = null;
+            if (control != null)
+            {
+                wind = Window.GetWindow(control);
+            }
+
+            return ShowItemSelection(ExtraFilterFunction, AllowSelectFunction, wind);
+        }
+        public static IItem ShowItemSelection(Func<IItem, bool> ExtraFilterFunction = null, Func<IItem, bool> AllowSelectFunction = null, Window owner = null)
+        {
+            if(owner == null)
+            {
+                owner = MainWindow.GetMainWindow();
+            }
+
             var wind = new PopupItemSelection(ExtraFilterFunction, AllowSelectFunction);
+            wind.Owner = owner;
+            wind.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             var result = wind.ShowDialog();
             if (result != true) return null;
 

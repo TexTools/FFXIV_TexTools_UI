@@ -19,6 +19,8 @@ cbuffer cbTransforms : register(b0)
 	// viewport:
 	// [w,h,1/w,1/h]
     float4 vViewport;
+    // [x, y, w, h]
+    float4 vResolution;
 	// camera position
     float3 vEyePos;
     bool SSAOEnabled;
@@ -202,11 +204,12 @@ cbuffer cbPlaneGridModel : register(b4)
 #endif
 cbuffer cbShadow : register(b5)
 {
-    float2 vShadowMapSize = float2(1024, 1024);
-    bool bHasShadowMap = false;
+    float2 vShadowMapSize;
+    bool bHasShadowMap;
     float paddingShadow0;
-    float4 vShadowMapInfo = float4(0.005, 1.0, 0.5, 0.0);
-    float4x4 vLightViewProjection;
+    float4 vShadowMapInfo;
+    float4x4 vLightView;
+    float4x4 vLightProjection;
 };
 #if defined(CLIPPLANE)
 cbuffer cbClipping : register(b6)

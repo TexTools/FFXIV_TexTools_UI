@@ -22,13 +22,13 @@ namespace FFXIV_TexTools.Views.Metadata
         private Dictionary<XivRace, ComboBox> RacialComboBoxes;
         private Dictionary<XivRace, ObservableCollection<KeyValuePair<int, string>>> RacialItemSources;
 
-
+        public event Action FileChanged;
         private bool IsRaceEnabled(XivRace race)
         {
 
             if(_metadata.EqdpEntries.ContainsKey(race))
             {
-                return _metadata.EqdpEntries[race].bit1;
+                return _metadata.EqdpEntries[race].HasModel;
             }
             return false;
         }
@@ -48,7 +48,7 @@ namespace FFXIV_TexTools.Views.Metadata
             RacialComboBoxes = new Dictionary<XivRace, ComboBox>();
             RacialItemSources = new Dictionary<XivRace, ObservableCollection<KeyValuePair<int, string>>>();
 
-            MetadataView.CurrentView.EqdpView.RaceChanged += EqdpView_RaceChanged;
+            //MetadataView.CurrentView.EqdpView.RaceChanged += EqdpView_RaceChanged;
 
         }
 
@@ -127,14 +127,14 @@ namespace FFXIV_TexTools.Views.Metadata
 
             {
                 var label = new Label();
-                label.Content = "Set All Together:";
+                label.Content = "Set All Together:".L();
                 label.Width = 150;
                 label.HorizontalAlignment = HorizontalAlignment.Right;
                 label.HorizontalContentAlignment = HorizontalAlignment.Right;
 
                 var cb = new ComboBox();
                 cb.Width = 150;
-                cb.ToolTip = "Note: Some skeletons are not available for some races.";
+                cb.ToolTip = "Note: Some skeletons are not available for some races.".L();
                 cb.SelectionChanged += AllBoxChanged;
 
                 label.SetValue(Grid.RowProperty, 0);
@@ -222,7 +222,7 @@ namespace FFXIV_TexTools.Views.Metadata
 
             var type = Est.GetEstType(_metadata.Root);
 
-            var options = await Est.GetAllExtraSkeletons(type);
+            var options = await Est.GetAllExtraSkeletons(type,XivRace.All_Races, null, false, MainWindow.DefaultTransaction);
 
             var prefix = Est.GetSystemPrefix(type);
 
@@ -237,7 +237,7 @@ namespace FFXIV_TexTools.Views.Metadata
 
                 var allEntries = options[race];
 
-                RacialItemSources[race].Add(new KeyValuePair<int, string>(0, "None"));
+                RacialItemSources[race].Add(new KeyValuePair<int, string>(0, "None".L()));
 
                 // Add all the entries.
                 foreach (var skel in allEntries)
@@ -271,7 +271,7 @@ namespace FFXIV_TexTools.Views.Metadata
             if (!SingleRaceMode)
             {
                 RacialItemSources[XivRace.All_Races].Add(new KeyValuePair<int, string>(-1, "--"));
-                RacialItemSources[XivRace.All_Races].Add(new KeyValuePair<int, string>(0, "None"));
+                RacialItemSources[XivRace.All_Races].Add(new KeyValuePair<int, string>(0, "None".L()));
 
                 RacialComboBoxes[XivRace.All_Races].SelectedIndex = 0;
                 // Add all the entries.
@@ -294,6 +294,7 @@ namespace FFXIV_TexTools.Views.Metadata
             var skel = (int)cb.SelectedValue;
 
             _metadata.EstEntries[race].SkelId = (ushort)skel;
+            FileChanged?.Invoke();
         }
 
         private void AllBoxChanged(object sender, SelectionChangedEventArgs e)

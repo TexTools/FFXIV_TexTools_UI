@@ -32,6 +32,10 @@ using MahApps.Metro.Controls.Dialogs;
 using xivModdingFramework.Mods;
 using ListBox = System.Windows.Controls.ListBox;
 using System.Threading.Tasks;
+using xivModdingFramework.Mods.Enums;
+using System.Windows.Shapes;
+using System.Collections.Generic;
+using SharpDX;
 
 namespace FFXIV_TexTools.Views
 {
@@ -63,15 +67,19 @@ namespace FFXIV_TexTools.Views
 
 
         private CancellationTokenSource _cts;
-        private TextureViewModel _textureViewModel;
-        private ModelViewModel _modelViewModel;
 
-        public ModListView(TextureViewModel textureViewModel, ModelViewModel modelViewModel)
+        public ModListView()
         {
-            _textureViewModel = textureViewModel;
-            _modelViewModel = modelViewModel;
-
             InitializeComponent();
+            Closing += ModListView_Closing;
+        }
+
+        private void ModListView_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if(Owner != null)
+            {
+                Owner.Activate();
+            }
         }
 
         /// <summary>
@@ -113,7 +121,7 @@ namespace FFXIV_TexTools.Views
             }
             catch(Exception ex)
             {
-                Debug.WriteLine($"Loading Canceled\n\n{ex.Message}");
+                Debug.WriteLine($"Loading Canceled\n\n{ex.Message._()}".L());
             }
 
         }
@@ -121,13 +129,16 @@ namespace FFXIV_TexTools.Views
         /// <summary>
         /// Event handler for listbox selection changed
         /// </summary>
-        private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var listbox = sender as ListBox;
 
             if (listbox.SelectedItem is ModListViewModel.ModListModel selectedModItem)
             {
-                (DataContext as ModListViewModel).ModToggleText = selectedModItem.ModItem.enabled ? FFXIV_TexTools.Resources.UIStrings.Disable : FFXIV_TexTools.Resources.UIStrings.Enable;
+                var tx = MainWindow.DefaultTransaction;
+                var enabled = await selectedModItem.ModItem.GetState(tx) == EModState.Enabled;
+
+                (DataContext as ModListViewModel).ModToggleText = enabled ? FFXIV_TexTools.Resources.UIStrings.Disable : FFXIV_TexTools.Resources.UIStrings.Enable;
 
                 modToggleButton.IsEnabled = true;
                 modDeleteButton.IsEnabled = true;
@@ -140,59 +151,66 @@ namespace FFXIV_TexTools.Views
         /// </summary>
         private async void modToggleButton_Click(object sender, RoutedEventArgs e)
         {
-            var gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
-            var modding = new Modding(gameDirectory);
+            if (!this.CheckFileWrite())
+            {
+                return;
+            }
 
-            await LockUi("Changing Mod Status", "Please wait...", this);
+            await LockUi("Changing Mod Status".L(), "Please wait...".L(), this);
+
+            Category selectedItem = null;
+
+            var tx = MainWindow.UserTransaction;
+            var boiler = await TxBoiler.BeginWrite(tx);
+            tx = boiler.Transaction;
             try
             {
                 if ((ModListTreeView.SelectedItem as Category).ParentCategory.Name.Equals("ModPacks"))
                 {
-                    var selectedItem = (ModListTreeView.SelectedItem as Category);
+                    selectedItem = (ModListTreeView.SelectedItem as Category);
 
                     if ((DataContext as ModListViewModel).ModToggleText == FFXIV_TexTools.Resources.UIStrings.Enable)
                     {
                         try
                         {
-                            await modding.ToggleModPackStatus(selectedItem.Name, true);
+                            await Modding.SetModpackState(EModState.Enabled, selectedItem.Name, tx);
                             (DataContext as ModListViewModel).ModToggleText = FFXIV_TexTools.Resources.UIStrings.Disable;
                         }
                         catch (Exception ex)
                         {
-                            FlexibleMessageBox.Show("Unable to fully disable Modpack.\nPlease use Help => Download Index Backups/Help => Start Over\n" + "Error: " + ex.Message, "Mod Disable Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            FlexibleMessageBox.Show("Unable to fully disable Modpack.\nPlease use Help => Download Index Backups/Help => Start Over\nError: ".L() + ex.Message, "Mod Disable Error".L(), MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
                     }
                     else
                     {
                         try
                         {
-                            await modding.ToggleModPackStatus(selectedItem.Name, false);
+                            await Modding.SetModpackState(EModState.Disabled, selectedItem.Name, tx);
                             (DataContext as ModListViewModel).ModToggleText = FFXIV_TexTools.Resources.UIStrings.Enable;
                         }
                         catch (Exception ex)
                         {
-                            FlexibleMessageBox.Show("Unable to fully enable Modpack.\n\n" + "Error: " + ex.Message, "Mod Enable Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            FlexibleMessageBox.Show("Unable to fully enable Modpack.\n\nError: ".L() + ex.Message, "Mod Enable Error".L(), MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
                     }
-
-                    (DataContext as ModListViewModel).UpdateInfoGrid(selectedItem);
                 }
                 else
                 {
                     var items = ModItemList.SelectedItems;
                     foreach (ModListViewModel.ModListModel selectedModItem in items)
                     {
-                        if (selectedModItem.ModItem.enabled)
+                        if (await selectedModItem.ModItem.GetState(tx) == EModState.Enabled)
                         {
 
                             var success = false;
                             try
                             {
-                                success = await modding.ToggleModStatus(selectedModItem.ModItem.fullPath, false);
+                                await Modding.SetModState(EModState.Disabled, selectedModItem.ModItem.FilePath, tx);
+                                success = true;
                             }
                             catch (Exception ex)
                             {
-                                FlexibleMessageBox.Show("Unable to disable mod.\nPlease use Help => Download Index Backups/Help => Start Over\n" + "Error: " + ex.Message, "Mod Disable Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                FlexibleMessageBox.Show("Unable to disable mod.\nPlease use Help => Download Index Backups/Help => Start Over\nError: ".L() + ex.Message, "Mod Disable Error".L(), MessageBoxButtons.OK, MessageBoxIcon.Error);
                             }
                             if (success)
                             {
@@ -200,7 +218,8 @@ namespace FFXIV_TexTools.Views
                                 selectedModItem.ActiveBorder = Brushes.Red;
                                 selectedModItem.Active = Brushes.Gray;
                                 selectedModItem.ActiveOpacity = 0.5f;
-                                selectedModItem.ModItem.enabled = false;
+                                var m = selectedModItem.ModItem;
+                                selectedModItem.ModItem = m;
                             }
                         }
                         else
@@ -208,11 +227,12 @@ namespace FFXIV_TexTools.Views
                             var success = false;
                             try
                             {
-                                success = await modding.ToggleModStatus(selectedModItem.ModItem.fullPath, true);
+                                await Modding.SetModState(EModState.Enabled, selectedModItem.ModItem.FilePath, tx);
+                                success = true;
                             }
                             catch (Exception ex)
                             {
-                                FlexibleMessageBox.Show("Unable to enable mod.\n\n" + "Error: " + ex.Message, "Mod Disable Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                FlexibleMessageBox.Show("Unable to enable mod.\n\nError: ".L() + ex.Message, "Mod Enable Error".L(), MessageBoxButtons.OK, MessageBoxIcon.Error);
                             }
                             if (success)
                             {
@@ -220,14 +240,27 @@ namespace FFXIV_TexTools.Views
                                 selectedModItem.ActiveBorder = Brushes.Green;
                                 selectedModItem.Active = Brushes.Transparent;
                                 selectedModItem.ActiveOpacity = 1;
-                                selectedModItem.ModItem.enabled = true;
+                                var m = selectedModItem.ModItem;
+                                selectedModItem.ModItem = m;
                             }
                         }
                     }
                 }
+
+                await boiler.Commit();
+            }
+            catch(Exception ex)
+            {
+                await boiler.Cancel();
+                this.ShowError("Enable/Disable Mod Error", "An error occurred while Enabling/Disabling the mod:" + ex.Message);
             }
             finally
             {
+
+                if (selectedItem != null)
+                {
+                    (DataContext as ModListViewModel).UpdateInfoGrid(selectedItem);
+                }
                 await UnlockUi(this);
             }
         }
@@ -237,10 +270,12 @@ namespace FFXIV_TexTools.Views
         /// </summary>
         private async void modDeleteButton_Click(object sender, RoutedEventArgs e)
         {
-            var gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
-            var modding = new Modding(gameDirectory);
+            if (!this.CheckFileWrite())
+            {
+                return;
+            }
 
-            await LockUi("Deleting Mod", "Please wait...", this);
+            await LockUi("Deleting Mod".L(), "Please wait...".L(), this);
             try
             {
                 if ((ModListTreeView.SelectedItem as Category).ParentCategory.Name.Equals("ModPacks"))
@@ -250,7 +285,7 @@ namespace FFXIV_TexTools.Views
                             UIMessages.DeleteModPackTitle,
                             MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == System.Windows.Forms.DialogResult.Yes)
                     {
-                        await modding.DeleteModPack((ModListTreeView.SelectedItem as Category).Name);
+                        await Modding.DeleteModPack((ModListTreeView.SelectedItem as Category).Name, MainWindow.UserTransaction);
                         (DataContext as ModListViewModel).RemoveModPack();
                     }
 
@@ -262,14 +297,14 @@ namespace FFXIV_TexTools.Views
 
                     foreach (var selectedModItem in selectedItems)
                     {
-                        await modding.DeleteMod(selectedModItem.ModItem.fullPath);
-                        (DataContext as ModListViewModel).RemoveItem(selectedModItem, (Category)ModListTreeView.SelectedItem);
+                        await Modding.DeleteMod(selectedModItem.ModItem.FilePath, MainWindow.UserTransaction);
+                        await (DataContext as ModListViewModel).RemoveItem(selectedModItem, (Category)ModListTreeView.SelectedItem);
                     }
                 }
             }
             catch (Exception Ex)
             {
-                FlexibleMessageBox.Show("Unable to delete Mod or Modpack.\n\nError: " + Ex.Message, "Mod Delete Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                FlexibleMessageBox.Show("Unable to delete Mod or Modpack.\n\nError: ".L() + Ex.Message, "Mod Delete Error".L(), MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally {
                 await UnlockUi(this);
@@ -280,7 +315,6 @@ namespace FFXIV_TexTools.Views
         {
             (DataContext as ModListViewModel).Dispose();
             _cts?.Dispose();
-            MainWindow.GetMainWindow().ReloadItem();
         }
     }
 }

@@ -22,6 +22,10 @@ namespace FFXIV_TexTools
 
         protected override void OnStartup(StartupEventArgs e)
         {
+            // Disable hardware acceleration of all windows if requested
+            if (Configuration.EnvironmentConfiguration.TT_Software_Rendering)
+                System.Windows.Media.RenderOptions.ProcessRenderMode = System.Windows.Interop.RenderMode.SoftwareOnly;
+
             var appStyle = ThemeManager.DetectAppStyle(Application.Current);
 
             ThemeManager.ChangeAppStyle(Application.Current, ThemeManager.GetAccent(appStyle.Item2.Name), ThemeManager.GetAppTheme(Settings.Default.Application_Theme));
@@ -54,7 +58,14 @@ namespace FFXIV_TexTools
 
             if (FlexibleMessageBox.Show(errorText, "Crash Report " + ver, MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.Yes)
             {
-                Clipboard.SetText(e.Exception.ToString());
+                if (MainWindow != null)
+                {
+                    // STA error here if this wasn't from main thread, so need to dispatch.
+                    MainWindow.Dispatcher.Invoke(() =>
+                    {
+                        Clipboard.SetText(e.Exception.ToString());
+                    });
+                }
             }
         }
 

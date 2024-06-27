@@ -1,4 +1,5 @@
 ﻿using FFXIV_TexTools.Helpers;
+using FFXIV_TexTools.Properties;
 using FFXIV_TexTools.Resources;
 using FFXIV_TexTools.ViewModels;
 using MahApps.Metro.Controls.Dialogs;
@@ -26,16 +27,16 @@ namespace FFXIV_TexTools.Views
         private List<ModsJson> _modsJsons;
         private bool _messageInImport;
         private DirectoryInfo _modpackDirectory;
+        private ModPackJson _modPackJson;
 
         public BackupModPackImporter(DirectoryInfo modPackDirectory, ModPackJson modPackJson, bool messageInImport = false)
         {
             InitializeComponent();
 
-            MainWindow.MakeHighlander();
-
             _modpackDirectory = modPackDirectory;
             _modsJsons = modPackJson.SimpleModsList;
             _messageInImport = messageInImport;
+            _modPackJson = modPackJson;
 
             DataContext = new BackupModpackViewModel();
             ModPackName.Content = modPackJson.Name;
@@ -107,30 +108,31 @@ namespace FFXIV_TexTools.Views
                 }
 
                 importList.AddRange(from modsJson in _modsJsons
-                                    where (selectedModpackNames.Contains(modsJson.ModPackEntry?.name))
+                                    where (selectedModpackNames.Contains(modsJson.ModPackEntry?.Name))
                                     select modsJson);
 
 
-                var texToolsModPack = new TTMP(new DirectoryInfo(Properties.Settings.Default.ModPack_Directory), XivStrings.TexTools);
-                var gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
-                var modListDirectory = new DirectoryInfo(System.IO.Path.Combine(gameDirectory.Parent.Parent.FullName, XivStrings.ModlistFilePath));
-                var progressIndicator = new Progress<(int current, int total, string message)>(ReportProgress);
-
                 var importResults = await Task.Run(async () =>
                 {
-                    return await texToolsModPack.ImportModPackAsync(_modpackDirectory, importList, gameDirectory, modListDirectory, progressIndicator);
+                    var settings = ViewHelpers.GetDefaultImportSettings(_progressController, this);
+
+                    // Limit the amount of extra actions on backup imports.
+                    settings.RootConversionFunction = null;
+                    settings.AutoAssignSkinMaterials = false;
+
+                    return await TTMP.ImportModPackAsync(_modpackDirectory.FullName, importList, settings, MainWindow.UserTransaction);
                 });
 
-                TotalModsImported = importResults.ImportCount;
-                TotalModsErrored = importResults.ErrorCount;
-                ImportDuration = importResults.Duration;
-
-                if (!string.IsNullOrEmpty(importResults.Errors))
+                if (importResults.Imported == null)
                 {
-                    FlexibleMessageBox.Show(
-                        $"{UIMessages.ErrorImportingModsMessage}\n\n{importResults.Errors}", UIMessages.ErrorImportingModsTitle,
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    // User cancelled or modpack had 0 items.
+                    Close();
+                    return;
                 }
+
+                TotalModsImported = importResults.Imported.Count;
+                TotalModsErrored = importResults.NotImported.Count;
+                ImportDuration = importResults.Duration;
             }
             catch (Exception ex)
             {
@@ -150,9 +152,7 @@ namespace FFXIV_TexTools.Views
                     string.Format(UIMessages.SuccessfulImportCountMessage, TotalModsImported, TotalModsErrored, durationString));
             }
 
-            MainWindow.GetMainWindow().ReloadItem();
-
-            DialogResult = true;
+            Close();
         }
 
         /// <summary>
@@ -161,7 +161,7 @@ namespace FFXIV_TexTools.Views
         private void ModpackList_SelectionChanged(object sender, RoutedEventArgs e)
         {
             List<ModsJson> selectedModsJsons = new List<ModsJson>();
-            ModPack selectedModpack = null;
+            ModPack? selectedModpack = null;
 
             var selectedModpackName = ((BackupModpackItemEntry)ModpackList.SelectedItem).ModpackName;
             if (selectedModpackName == UIStrings.Standalone_Non_ModPack)
@@ -170,7 +170,7 @@ namespace FFXIV_TexTools.Views
             }
             else
             {
-                selectedModsJsons = _modsJsons.FindAll(modsJson => modsJson.ModPackEntry?.name == selectedModpackName);
+                selectedModsJsons = _modsJsons.FindAll(modsJson => modsJson.ModPackEntry?.Name == selectedModpackName);
                 selectedModpack = selectedModsJsons[0].ModPackEntry;
             }
 
@@ -211,7 +211,7 @@ namespace FFXIV_TexTools.Views
             var modPackNames = new List<string>();
             foreach (var modsJson in _modsJsons)
             {
-                var modpackName = modsJson.ModPackEntry?.name ?? UIStrings.Standalone_Non_ModPack;
+                var modpackName = modsJson.ModPackEntry?.Name ?? UIStrings.Standalone_Non_ModPack;
                 if (!modPackNames.Contains(modpackName))
                 {
                     modPackNames.Add(modpackName);
@@ -223,26 +223,6 @@ namespace FFXIV_TexTools.Views
             ModpackList.SelectedIndex = 0;
         }        
 
-        /// <summary>
-        /// Updates the progress bar
-        /// </summary>
-        /// <param name="value">The progress value</param>
-        private void ReportProgress((int current, int total, string message) report)
-        {
-            if (!report.message.Equals(string.Empty))
-            {
-                _progressController.SetMessage(report.message);
-                _progressController.SetIndeterminate();
-            }
-            else
-            {
-                _progressController.SetMessage(
-                    $"{UIMessages.TTMPGettingData} ({report.current} / {report.total})");
-
-                double value = (double)report.current / (double)report.total;
-                _progressController.SetProgress(value);
-            }
-        }
 
         #endregion
 

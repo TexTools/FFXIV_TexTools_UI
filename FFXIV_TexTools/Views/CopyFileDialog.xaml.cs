@@ -8,8 +8,6 @@ using FFXIV_TexTools.Properties;
 using xivModdingFramework.Cache;
 using xivModdingFramework.SqPack.FileTypes;
 
-using Index = xivModdingFramework.SqPack.FileTypes.Index;
-
 namespace FFXIV_TexTools.Views
 {
     /// <summary>
@@ -30,47 +28,46 @@ namespace FFXIV_TexTools.Views
 
         private async Task DoCopy()
         {
+            var tx = MainWindow.DefaultTransaction;
 
             var from = FromBox.Text;
             var to = ToBox.Text;
 
             if (String.IsNullOrWhiteSpace(to) || String.IsNullOrWhiteSpace(to)) return;
 
-            var _dat = new Dat(XivCache.GameInfo.GameDirectory);
-            var _index = new Index(XivCache.GameInfo.GameDirectory);
 
 
             try
             {
-                var exists = await _index.FileExists(from);
+                var exists = await tx.FileExists(from);
                 if(!exists)
                 {
-                    throw new InvalidDataException("Source file does not exist.");
+                    throw new InvalidDataException("Source file does not exist.".L());
                 }
 
-                exists = await _index.FileExists(to);
+                exists = await tx.FileExists(to);
                 if (exists)
                 {
                     var cancel = false;
                     Dispatcher.Invoke(() =>
                     {
-                        var result = FlexibleMessageBox.Show("Destination file already exists.  Overwrite?", "Overwrite Confirmation", System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Warning);
+                        var result = FlexibleMessageBox.Show("Destination file already exists.  Overwrite?".L(), "Overwrite Confirmation".L(), System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Warning);
                         cancel = result == System.Windows.Forms.DialogResult.No;
                     });
 
                     if (cancel) return;
                 }
 
-                await _dat.CopyFile(from, to, XivStrings.TexTools, true);
+                await Dat.CopyFile(from, to, XivStrings.TexTools, true, null, MainWindow.UserTransaction);
 
                 Dispatcher.Invoke(() =>
                 {
-                    FlexibleMessageBox.Show("File Copied Successfully.", "Copy Success", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Information);
+                    FlexibleMessageBox.Show("File Copied Successfully.".L(), "Copy Success".L(), System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Information);
                     Close();
                 });
             } catch(Exception ex)
             {
-                FlexibleMessageBox.Show("File Copy Failed:\n" + ex.Message, "Copy Failure", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
+                FlexibleMessageBox.Show("File Copy Failed:\n".L() + ex.Message, "Copy Failure".L(), System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
             }
         }
     }

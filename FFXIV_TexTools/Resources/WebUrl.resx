@@ -121,7 +121,7 @@
     <value>https://github.com/TexTools/FFXIV_TexTools_UI/issues</value>
   </data>
   <data name="Discord_China" xml:space="preserve">
-    <value>https://discord.gg/jKPqnhk</value>
+    <value>https://discord.gg/QvrVye3</value>
   </data>
   <data name="Discord_Invite" xml:space="preserve">
     <value>https://discord.gg/ffxivtextools</value>
@@ -138,8 +138,8 @@
   <data name="NexusMods_Website" xml:space="preserve">
     <value>https://www.nexusmods.com/finalfantasy14</value>
   </data>
-  <data name="PKEmporium_Website" xml:space="preserve">
-    <value>https://prettykittyemporium.blogspot.com/</value>
+  <data name="PKEmporium_Discord" xml:space="preserve">
+    <value>https://discord.gg/pkemporium</value>
   </data>
   <data name="TexTools_Beta_Update_Url" xml:space="preserve">
     <value>https://raw.githubusercontent.com/TexTools/FFXIV_TexTools_Updater/master/updater_beta.xml</value>

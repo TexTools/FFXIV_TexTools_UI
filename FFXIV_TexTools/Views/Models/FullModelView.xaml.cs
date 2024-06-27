@@ -32,6 +32,9 @@ using xivModdingFramework.Items.Interfaces;
 using xivModdingFramework.Models.DataContainers;
 using xivModdingFramework.Models.FileTypes;
 using xivModdingFramework.Variants.FileTypes;
+using FFXIV_TexTools.Views.Controls;
+using xivModdingFramework.Models.Helpers;
+using System.Threading;
 
 namespace FFXIV_TexTools.Views.Models
 {
@@ -40,17 +43,116 @@ namespace FFXIV_TexTools.Views.Models
     /// </summary>
     public partial class FullModelView
     {
-        private readonly DirectoryInfo _gameDirectory;
         private readonly FullModelViewModel _fmvm;
-        private static readonly Lazy<FullModelView> lazy = new Lazy<FullModelView>(() => new FullModelView());
+        private static FullModelView Instance;
 
-        public static FullModelView Instance => lazy.Value;
+        private int _LockCount = 0;
+        private SemaphoreSlim _lockScreenSemaphore = new SemaphoreSlim(1);
+        private ProgressDialogController _lockProgressController;
+
+        public async Task LockUi(string title = null, string msg = null)
+        {
+            await _lockScreenSemaphore.WaitAsync();
+            try
+            {
+                _LockCount++;
+                if(_lockProgressController != null)
+                {
+                    return;
+                }
+
+                if (title == null)
+                {
+                    title = UIStrings.Loading;
+                }
+
+                if (msg == null)
+                {
+                    msg = UIStrings.Please_Wait;
+                }
+
+                _lockProgressController = await this.ShowProgressAsync(title, msg);
+            }
+            finally
+            {
+                _lockScreenSemaphore.Release();
+            }
+        }
+
+        public async Task UnlockUi()
+        {
+            await _lockScreenSemaphore.WaitAsync();
+            try
+            {
+                _LockCount--;
+                if (_LockCount < 0)
+                {
+                    _LockCount = 0;
+                }
+
+                if (_LockCount > 0)
+                {
+                    return;
+                }
+
+                if (_lockProgressController == null)
+                {
+                    return;
+                }
+
+                await _lockProgressController.CloseAsync();
+                _lockProgressController = null;
+            }
+            finally
+            {
+                _lockScreenSemaphore.Release();
+            }
+        }
+
+
+
+        public static void ShowFmv()
+        {
+            if (Instance == null || !Instance.IsLoaded)
+            {
+                Instance = new FullModelView();
+                Instance.Owner = MainWindow.GetMainWindow();
+            }
+            Instance.Show();
+        }
+        public static void AddModel(TTModel model, List<ModelTextureData> textures, IItemModel item)
+        {
+            // Jank conversion to dictionary for the FMV that needs updating badly.
+            var dict = new Dictionary<int, ModelTextureData>();
+            var i = 0;
+            foreach (var material in model.Materials)
+            {
+                var tex = textures.FirstOrDefault(x => x.MaterialPath == material);
+                if (tex == null)
+                {
+                    
+                    tex = ModelFileControl.GetPlaceholderTexture(material);
+                }
+                dict.Add(i, tex);
+                i++;
+            }
+
+            ShowFmv();
+            Instance.AddModel(model, dict, item);
+
+        }
+
+
+
+        private Helpers.ViewportCanvasRenderer canvasRenderer = null;
 
         private FullModelView()
         {
             InitializeComponent();
 
-            _gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
+            if (Configuration.EnvironmentConfiguration.TT_Unshared_Rendering)
+                canvasRenderer = new Helpers.ViewportCanvasRenderer(viewport3DX, AlternateViewportCanvas);
+
             _fmvm = new FullModelViewModel(this);
 
             this.DataContext = _fmvm;
@@ -63,11 +165,11 @@ namespace FFXIV_TexTools.Views.Models
         /// <param name="materialDictionary">The dictionary of texture data for the model</param>
         /// <param name="item">The item associated with the model</param>
         /// <param name="race">The race of the model</param>
-        public async Task AddModel(TTModel ttModel, Dictionary<int, ModelTextureData> materialDictionary, IItemModel item, XivRace race)
+        public void AddModel(TTModel ttModel, Dictionary<int, ModelTextureData> materialDictionary, IItemModel item)
         {
             try
             {
-                _fmvm.AddModelToView(ttModel, materialDictionary, item, race);
+                _ = _fmvm.AddModelToView(ttModel, materialDictionary, item);
             }
             catch(Exception ex)
             {
@@ -122,20 +224,45 @@ namespace FFXIV_TexTools.Views.Models
                 var mtrlVariant = 1;
                 try
                 {
-                    var imc = new Imc(_gameDirectory);
-                    mtrlVariant = (await imc.GetImcInfo(model.Value.ItemModel)).MaterialSet;
+                    var im = model.Value.ItemModel;
+                    if (im != null && Imc.UsesImc(im))
+                    {
+                        var imc = (await Imc.GetImcInfo(im));
+                        if (imc != null)
+                        {
+                            mtrlVariant = imc.MaterialSet;
+                        }
+                    }
                 }
                 catch (Exception ex)
                 {
                     // No-op, defaulted to 1.
                 }
 
-                await Mdl.ExportMaterialsForModel(model.Value.TtModel, outputFilePath, _gameDirectory, mtrlVariant, _fmvm.SelectedSkeleton.XivRace);
+                await Mdl.ExportMaterialsForModel(model.Value.TtModel, outputFilePath, false, mtrlVariant, _fmvm.SelectedSkeleton.XivRace, MainWindow.DefaultTransaction);
 
                 // Save model to DB
             }
 
-            TTModel.SaveFullToFile(dbPath, _fmvm.SelectedSkeleton.XivRace, fmViewPortVM.shownModels.Select(x => x.Value.TtModel).ToList());
+
+            // Create a cloned list as the model may be modified during export process.
+            List<TTModel> models = new List<TTModel>();
+            foreach(var mdl in fmViewPortVM.shownModels.Select(x => x.Value.TtModel))
+            {
+                var m = (TTModel) mdl.Clone();
+
+                if (Settings.Default.ShiftExportUV)
+                {
+                    // This is not a typo.  Because we haven't flipped the UV yet, we need to -1, not +1.
+                    ModelModifiers.ShiftImportUV(m);
+                }
+                
+                models.Add(m);
+            }
+
+            
+
+            TTModel.SaveFullToFile(dbPath, _fmvm.SelectedSkeleton.XivRace, models);
 
             var proc = new Process
             {
@@ -157,7 +284,7 @@ namespace FFXIV_TexTools.Views.Models
 
             if (code != 0)
             {
-                throw new Exception("Exporter threw error code: " + proc.ExitCode);
+                throw new Exception("Exporter threw error code: ".L() + proc.ExitCode);
             }
 
             var outputFile = converterFolder + "\\result." + fileFormat;
@@ -179,9 +306,8 @@ namespace FFXIV_TexTools.Views.Models
         /// </summary>
         private void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            Instance = null;
             _fmvm.CleanUp();
-            e.Cancel = true;
-            this.Visibility = Visibility.Hidden;
         }
     }
 }

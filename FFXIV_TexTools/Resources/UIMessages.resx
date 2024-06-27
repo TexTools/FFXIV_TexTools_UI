@@ -258,7 +258,13 @@ Use this directory?</value>
   <data name="InstallDirectoryNotFoundMessage" xml:space="preserve">
     <value>Please locate the following directory.
 
-.../FINAL FANTASY XIV - A Realm Reborn/game/sqpack/ffxiv</value>
+Standalone: .../Program Files (x86)/FINAL FANTASY XIV - A Realm Reborn
+Steam: .../steamapps/common/FINAL FANTASY XIV Online
+      and navigate to .../game/sqpack/ffxiv
+
+Standalone clients may be installed elsewhere and named differently.
+This is NOT the directory under Documents/My Games.
+    </value>
   </data>
   <data name="InstallDirectoryNotFoundTitle" xml:space="preserve">
     <value>Install Directory Not Found</value>
@@ -428,7 +434,13 @@ TexTools will attempt to start over without using backups.</value>
 
 Please locate the following directory.
 
-.../FINAL FANTASY XIV - A Realm Reborn/game/sqpack/ffxiv</value>
+Standalone: .../Program Files (x86)/FINAL FANTASY XIV - A Realm Reborn
+Steam: .../steamapps/common/FINAL FANTASY XIV Online
+      and navigate to .../game/sqpack/ffxiv
+
+Standalone clients may be installed elsewhere and named differently.
+This is NOT the directory under Documents/My Games.
+    </value>
   </data>
   <data name="OutOfDateInstallTitle" xml:space="preserve">
     <value>Install Directory Out Of Date</value>
@@ -455,13 +467,10 @@ New Location: {0}</value>
     <value>Start Over Complete</value>
   </data>
   <data name="StartOverMessage" xml:space="preserve">
-    <value>Starting over will:
+    <value>This will remove ALL mods from the game files and close all open editors.
+(If issues persist, please use Help =&gt; Download Index Backups and then re-run this function.)
 
-Restore index files to their original state.
-Delete all mod dat files from game folder.
-Delete all mod list file entries.
-
-Do you want to start over?</value>
+Are you SURE you wish to proceed?</value>
   </data>
   <data name="StartOverTitle" xml:space="preserve">
     <value>Start Over</value>

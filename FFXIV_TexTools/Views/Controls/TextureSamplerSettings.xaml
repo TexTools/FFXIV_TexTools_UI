@@ -1,0 +1,188 @@
+﻿<Window x:Class="FFXIV_TexTools.Views.Controls.TextureSamplerSettings"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FFXIV_TexTools.Views.Controls"
+        mc:Ignorable="d"
+        xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
+        resx:Localization.Enabled="True"
+        Title="Texture Sampler Settings"
+        ResizeMode="NoResize"
+        SizeToContent="WidthAndHeight">
+    <Window.Resources>
+        <ToolTip x:Key="LoDBiasTooltip">
+            <TextBlock>
+                LoD Bias affects how MipMapping/Level of Detail works for Bilinear and Trilinear Texture Filtering options in game.
+                <LineBreak />Lower values will make the texture sharper, but flicker more.  Higher will make the texture blurrier, but flicker less.
+                <LineBreak />0 is Default Texture Filtering behavior.
+            </TextBlock>
+        </ToolTip>
+        <ToolTip x:Key="TokenizedTooltip">The path to this texture, including {Tokens} representing common variables.</ToolTip>
+        <ToolTip x:Key="DetokenizedTooltip">The full, explicit path for this texture.</ToolTip>
+        <ToolTip x:Key="UTilingTooltip">Texture Tiling mode in the U/X Direction.</ToolTip>
+        <ToolTip x:Key="VTilingTooltip">Texture Tiling mode in the V/Y Direction.</ToolTip>
+        <ToolTip x:Key="MinLoDTooltip">
+            <TextBlock>
+                The minimum LoD level/MipMap level to display.
+                <LineBreak/>0 for best quality, 15 for worst.
+            </TextBlock>
+        </ToolTip>
+        <ToolTip x:Key="SamplerHexTooltip">
+            <TextBlock>
+                Hex Code representation of the Sampler Settings data.
+                <LineBreak/>For use when copy/pasting with other tools (Ex. Penumbra).
+            </TextBlock>
+        </ToolTip>
+        <ToolTip x:Key="TextureHexTooltip">
+            <TextBlock>
+                Hex Code representation of the Texture Flags data.
+                <LineBreak/>For use when copy/pasting with other tools (Ex. Penumbra).
+            </TextBlock>
+        </ToolTip>
+        <ToolTip x:Key="SamplerTooltip">
+            <TextBlock>
+                The Texture Sampler determines how this texture is used.  Some shaders may not use all sampler/texture types.
+                <LineBreak/>Certain Shader Keys may need to be present to enable some samplers.
+            </TextBlock>
+        </ToolTip>
+        <ToolTip x:Key="TexFlagsTooltip">
+            <TextBlock>
+                Texture Flags that define texture behavior outside of the Sampler Settings.
+                <LineBreak/>Most of these have unknown effects (or possibly no effect).
+            </TextBlock>
+        </ToolTip>
+    </Window.Resources>
+    <Grid Height="480" Width="600">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*"></RowDefinition>
+            <RowDefinition Height="40"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="120"></ColumnDefinition>
+                <ColumnDefinition Width="100"></ColumnDefinition>
+                <ColumnDefinition Width="100"/>
+                <ColumnDefinition Width="51*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40"></RowDefinition>
+                <RowDefinition Height="40"></RowDefinition>
+                <RowDefinition Height="40"></RowDefinition>
+                <RowDefinition Height="10"></RowDefinition>
+                <RowDefinition Height="40"></RowDefinition>
+                <RowDefinition Height="40"></RowDefinition>
+                <RowDefinition Height="40"></RowDefinition>
+                <RowDefinition Height="40"></RowDefinition>
+                <RowDefinition Height="40"></RowDefinition>
+                <RowDefinition Height="40"></RowDefinition>
+                <RowDefinition Height="1*"></RowDefinition>
+            </Grid.RowDefinitions>
+
+            <Label VerticalAlignment="Center" HorizontalContentAlignment="Right" HorizontalAlignment="Left" Content="Texture Path:" ToolTip="{StaticResource TokenizedTooltip}" Height="26" Width="78" Margin="42,0,0,0"/>
+            <TextBox x:Name="MaterialPathBox" VerticalAlignment="Center" Height="26" Grid.Column="1" Grid.ColumnSpan="3" ToolTip="{StaticResource TokenizedTooltip}" Margin="0,0,10,0">
+                <Binding Path="TexturePath"></Binding>
+            </TextBox>
+
+            <Label VerticalAlignment="Center" HorizontalContentAlignment="Right" HorizontalAlignment="Left" Content="Explicit Path:" Grid.Row="1" ToolTip="{StaticResource DetokenizedTooltip}" Height="26" Width="76" Margin="44,0,0,0"/>
+            <TextBox x:Name="DeTokenizedPathBox" VerticalAlignment="Center" Height="26" Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="3" ToolTip="{StaticResource DetokenizedTooltip}" Margin="0,0,10,0">
+                <Binding Path="DetokenizedPath"></Binding>
+            </TextBox>
+
+            <Button Content="Use Shared Path" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0" Width="150" ToolTip="Change the Texture Path to the default variant-shared Texture Path for this texture." Height="28" Click="SharedPath_Click"/>
+            <Button Content="Use Unique Path" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="70,0,0,0" Width="150" ToolTip="Change the Texture Path to the default variant-exclusive Texture Path for this texture." Height="28" Click="UniquePath_Click"/>
+
+            <Separator Grid.Row="3" Grid.ColumnSpan="4" Margin="0,2,0,2"></Separator>
+
+            <Label VerticalAlignment="Center" HorizontalContentAlignment="Right" HorizontalAlignment="Left" Margin="64,0,0,0" Content="Sampler:" Grid.Column="0" Grid.Row="4" ToolTip="{StaticResource SamplerTooltip}" Height="26"/>
+            <ComboBox x:Name="SamplerBox" Grid.Row="4" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Stretch" Grid.ColumnSpan="2" ToolTip="{StaticResource SamplerTooltip}" Margin="0,0,10,0" 
+                      DisplayMemberPath="Key"
+                      SelectedValuePath="Value"
+                      SelectedValue="{Binding Path=SamplerType}" Height="26">
+            </ComboBox>
+
+            <Label VerticalAlignment="Center" HorizontalContentAlignment="Right" HorizontalAlignment="Left" Margin="62,0,0,0" Content="LoD Bias:" Grid.Column="0" Grid.Row="5" ToolTip="{StaticResource LoDBiasTooltip}" Height="26"/>
+            <Slider x:Name="LoDBiasSlider" Grid.Row="5" Grid.Column="1" ToolTip="{StaticResource LoDBiasTooltip}"/>
+            <TextBox x:Name="LoDBiasBox" Grid.Column="2" Grid.Row="5" Margin="10,0,0,0" VerticalAlignment="Center" Width="60" HorizontalAlignment="Left" HorizontalContentAlignment="Left" ToolTip="{StaticResource LoDBiasTooltip}" Height="26">
+                <Binding Path="LoDBias"></Binding>
+            </TextBox>
+
+
+            <Label VerticalAlignment="Center" HorizontalContentAlignment="Right" HorizontalAlignment="Left" Content="U Tiling Mode:" Grid.Row="7" ToolTip="{StaticResource VTilingTooltip}" Height="26" Margin="33,0,0,0"/>
+            <ComboBox x:Name="UTilingBox" Grid.Row="7" Grid.Column="1" Width="100" VerticalAlignment="Center" HorizontalAlignment="Center" ToolTip="{StaticResource UTilingTooltip}" 
+                      DisplayMemberPath="Key"
+                      SelectedValuePath="Value"
+                      SelectedValue="{Binding Path=UTilingMode}" Height="26">
+            </ComboBox>
+
+            <Label VerticalAlignment="Center" HorizontalContentAlignment="Right" HorizontalAlignment="Left" Content="V Tiling Mode:" Grid.Row="8" ToolTip="{StaticResource VTilingTooltip}" Height="26" Margin="33,0,0,0"/>
+            <ComboBox x:Name="VTilingBox" Grid.Row="8" Grid.Column="1" Width="100" VerticalAlignment="Center" HorizontalAlignment="Center" ToolTip="{StaticResource VTilingTooltip}" 
+                      DisplayMemberPath="Key"
+                      SelectedValuePath="Value"
+                      SelectedValue="{Binding Path=VTilingMode}" Height="26">
+            </ComboBox>
+
+            <Label VerticalAlignment="Center" HorizontalContentAlignment="Right" HorizontalAlignment="Left" Content="Minimum LoD:" Grid.Row="6" ToolTip="{StaticResource MinLoDTooltip}" Height="26" Margin="32,0,0,0"/>
+            <ComboBox x:Name="MinLoDBox" Grid.Row="6" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" ToolTip="{StaticResource MinLoDTooltip}" 
+                      DisplayMemberPath="Key"
+                      SelectedValuePath="Value"
+                      SelectedValue="{Binding Path=MinimumLoD}" Height="26" Width="100"/>
+
+            <Label VerticalAlignment="Center" HorizontalContentAlignment="Right" HorizontalAlignment="Right" Content="Unknown Low:" Grid.Row="9" />
+            <TextBox VerticalAlignment="Center" Grid.Row="9" Grid.Column="1" Text="{Binding Path=UnknownLow}"></TextBox>
+
+            <Label VerticalAlignment="Center" HorizontalContentAlignment="Right" HorizontalAlignment="Left" Content="Hex Representation:" Grid.Row="10" ToolTip="{StaticResource SamplerHexTooltip}" Height="26" Margin="4,0,0,0"/>
+            <TextBox x:Name="HexBox" Grid.Row="10" Grid.Column="1" HorizontalAlignment="Center" Width="100" VerticalAlignment="Center" ToolTip="{StaticResource SamplerHexTooltip}" Height="26" PreviewTextInput="HexInput">
+                <Binding Path="SamplerSettingsRaw" UpdateSourceTrigger="PropertyChanged">
+                    <Binding.ValidationRules>
+                        <local:HexValidationRule />
+                    </Binding.ValidationRules>
+                    <Binding.Converter>
+                        <local:HexValueConverter />
+                    </Binding.Converter>
+                </Binding>
+            </TextBox>
+
+            <Border Grid.Column="3" Grid.Row="4"  Grid.RowSpan="7" Grid.ColumnSpan="2" BorderBrush="Gray" Padding="0" Margin="5" BorderThickness="1" >
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"></ColumnDefinition>
+                        <ColumnDefinition Width="1*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30"></RowDefinition>
+                        <RowDefinition Height="10"></RowDefinition>
+                        <RowDefinition Height="1*"></RowDefinition>
+                        <RowDefinition Height="40"></RowDefinition>
+                    </Grid.RowDefinitions>
+
+                    <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Texture Flags" ToolTip="{StaticResource TexFlagsTooltip}"></Label>
+                    
+                    <Separator Grid.Row="1" Grid.ColumnSpan="4" Margin="0,2,0,2"></Separator>
+
+                    <local:BitflagControl x:Name="BitControl0" HorizontalAlignment="Left" Grid.Row="2" Grid.Column="0"/>
+                    <local:BitflagControl x:Name="BitControl1" HorizontalAlignment="Left" Grid.Row="2" Grid.Column="1"/>
+
+                    <Label VerticalAlignment="Center" HorizontalContentAlignment="Right" HorizontalAlignment="Left" Content="Hex Representation:" Grid.Row="3" ToolTip="{StaticResource TextureHexTooltip}" Height="26" Margin="0,0,0,0"/>
+                    <TextBox Grid.Row="3" Grid.Column="1" HorizontalAlignment="Center" Width="100" VerticalAlignment="Center" ToolTip="{StaticResource TextureHexTooltip}" Height="26" PreviewTextInput="HexInput">
+                        <Binding Path="TextureFlagsRaw" UpdateSourceTrigger="PropertyChanged">
+                            <Binding.ValidationRules>
+                                <local:HexValidationRule />
+                            </Binding.ValidationRules>
+                            <Binding.Converter>
+                                <local:HalfHexValueConverter />
+                            </Binding.Converter>
+                        </Binding>
+                    </TextBox>
+                </Grid>
+            </Border>
+
+        </Grid>
+        <Button x:Name="ConfirmButton" Content="Confirm" Grid.Row="1" Width="100" Height="30" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10,0,10,0" Click="Confirm_Click"/>
+        <Button x:Name="CancelButton" Content="Cancel" Grid.Row="1" Width="100" Height="30" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,10,0" Click="Cancel_Click"/>
+    </Grid>
+</Window>

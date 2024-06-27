@@ -29,6 +29,7 @@ namespace FFXIV_TexTools.Views.Metadata
 
         private static string SlotCopiedFrom = null;
         private static byte[] CopiedBytes = null;
+        public event Action FileChanged;
 
         private ObservableCollection<KeyValuePair<string, byte[]>> PresetCollection = new ObservableCollection<KeyValuePair<string, byte[]>>();
         public EqpControl()
@@ -79,7 +80,7 @@ namespace FFXIV_TexTools.Views.Metadata
             foreach (var flag in flags)
             {
                 var cb = new CheckBox();
-                cb.Content = flag.Key.ToString();
+                cb.Content = flag.Key.ToString().L();
                 cb.DataContext = flag.Key;
                 cb.IsChecked = flag.Value;
 
@@ -94,15 +95,15 @@ namespace FFXIV_TexTools.Views.Metadata
             }
 
             // Simple setup.
-            PresetCollection.Add(new KeyValuePair<string, byte[]>("Custom", null));
+            PresetCollection.Add(new KeyValuePair<string, byte[]>("Custom".L(), null));
 
-            if (Presets.ContainsKey(m.Root.Info.Slot))
+            if (Presets.ContainsKey(m.Root.Info.Slot.L()))
             {
-                var presets = Presets[m.Root.Info.Slot];
+                var presets = Presets[m.Root.Info.Slot.L()];
 
                 foreach(var preset in presets)
                 {
-                    PresetCollection.Add(new KeyValuePair<string, byte[]>(preset.Key, preset.Value ));
+                    PresetCollection.Add(new KeyValuePair<string, byte[]>(preset.Key.L(), preset.Value ));
                 }
             }
 
@@ -117,6 +118,7 @@ namespace FFXIV_TexTools.Views.Metadata
             if (bytes == null) return;
 
             entry.SetBytes(bytes);
+            FileChanged?.Invoke();
         }
 
 
@@ -171,6 +173,7 @@ namespace FFXIV_TexTools.Views.Metadata
             var flag = (EquipmentParameterFlag)cb.DataContext;
 
             entry.SetFlag(flag, enabled);
+            FileChanged?.Invoke();
         }
 
         /// <summary>
@@ -178,45 +181,45 @@ namespace FFXIV_TexTools.Views.Metadata
         /// </summary>
         private static readonly Dictionary<string, Dictionary<string, byte[]>> Presets = new Dictionary<string, Dictionary<string, byte[]>>()
         {
-            { "met", new Dictionary<string, byte[]>()
+            { "met".L(), new Dictionary<string, byte[]>()
             {
                 // 3 Bytes per
-                { "Glasses", new byte [] { 225, 63, 3} },
-                { "Hat", new byte [] { 227, 118, 3} },
-                { "Open Helmet", new byte [] { 21, 240, 3} },
-                { "Full Helmet", new byte [] { 23, 48, 3} },
+                { "Glasses".L(), new byte [] { 225, 63, 3} },
+                { "Hat".L(), new byte [] { 227, 118, 3} },
+                { "Open Helmet".L(), new byte [] { 21, 240, 3} },
+                { "Full Helmet".L(), new byte [] { 23, 48, 3} },
 
             } },
-            { "top", new Dictionary<string, byte[]>()
+            { "top".L(), new Dictionary<string, byte[]>()
             {
                 // 2 Bytes per3
-                { "Sleeveless Top", new byte [] { 1, 63} },
-                {  "Long-Sleeve Top", new byte [] { 115, 103 } },
-                {  "Leotard", new byte [] { 1, 62 } },
-                {  "Bodysuit", new byte [] { 1, 36 } },
+                { "Sleeveless Top".L(), new byte [] { 1, 63} },
+                {  "Long-Sleeve Top".L(), new byte [] { 115, 103 } },
+                {  "Leotard".L(), new byte [] { 1, 62 } },
+                {  "Bodysuit".L(), new byte [] { 1, 36 } },
             } },
-            { "glv", new Dictionary<string, byte[]>()
+            { "glv".L(), new Dictionary<string, byte[]>()
             {
                 // 1 Byte per
-                {  "Bare Hands", new byte [] { 115 } },
-                {  "Mid Gloves", new byte [] { 13 } },
-                {  "Long Gloves", new byte [] { 15 } },
+                {  "Bare Hands".L(), new byte [] { 115 } },
+                {  "Mid Gloves".L(), new byte [] { 13 } },
+                {  "Long Gloves".L(), new byte [] { 15 } },
 
             } },
-            { "dwn", new Dictionary<string, byte[]>()
+            { "dwn".L(), new Dictionary<string, byte[]>()
             {
                 // 1 Byte per
-                {  "Shorts", new byte [] { 97 } },
-                {  "Pants", new byte [] { 105 } },
-                {  "Pants and Shoes", new byte [] { 65 } },
+                {  "Shorts".L(), new byte [] { 97 } },
+                {  "Pants".L(), new byte [] { 105 } },
+                {  "Pants and Shoes".L(), new byte [] { 65 } },
 
             } },
-            { "sho", new Dictionary<string, byte[]>()
+            { "sho".L(), new Dictionary<string, byte[]>()
             {
                 // 1 Byte per
-                {  "Shoes", new byte [] { 3 } },
-                {  "Mid Boots", new byte [] { 13 } },
-                {  "Long Boots", new byte [] { 15 } },
+                {  "Shoes".L(), new byte [] { 3 } },
+                {  "Mid Boots".L(), new byte [] { 13 } },
+                {  "Long Boots".L(), new byte [] { 15 } },
 
             } }
         };
@@ -237,6 +240,7 @@ namespace FFXIV_TexTools.Views.Metadata
             var bytes = new byte[CopiedBytes.Length];
             Array.Copy(CopiedBytes, bytes, CopiedBytes.Length);
             _metadata.EqpEntry.SetBytes(bytes);
+            FileChanged?.Invoke();
         }
     }
 }

@@ -40,13 +40,13 @@ namespace FFXIV_TexTools.ViewModels
         private readonly Regex DefaultSkinRegex = new Regex("\\/mt_c[0-9]{4}b0001_a\\.mtrl");
         private readonly Regex ItemMaterialRegex = new Regex("\\/mt_c([0-9]{4})[e|a][0-9]{4}_[a-z0-9]{3}_([a-z])+\\.mtrl");
         private const string SkinMaterial = "/mt_c0101b0001_a.mtrl";
-        private readonly KeyValuePair<string, string> DefaultTag = new KeyValuePair<string, string>("_!ADDNEW!_", "Add Attributes...");
-        private readonly KeyValuePair<string, string> CustomTag = new KeyValuePair<string, string>("_!CUSTOM!_", "Custom");
-        private readonly KeyValuePair<string, string> SkinTag = new KeyValuePair<string, string>(SkinMaterial, "Skin");
-        private readonly string UnknownText = "Unknown";
+        private readonly KeyValuePair<string, string> DefaultTag = new KeyValuePair<string, string>("_!ADDNEW!_", "Add Attributes...".L());
+        private readonly KeyValuePair<string, string> CustomTag = new KeyValuePair<string, string>("_!CUSTOM!_", "Custom".L());
+        private readonly KeyValuePair<string, string> SkinTag = new KeyValuePair<string, string>(SkinMaterial, "Skin".L());
+        private readonly string UnknownText = "Unknown".L();
 
-        private readonly float OldModelSize;
-        private readonly float NewModelSize;
+        private float OldModelSize;
+        private float NewModelSize;
         private const float MinAcceptableSize = 0.5f;
         private const float MaxAcceptableSize = 2f;
 
@@ -80,9 +80,10 @@ namespace FFXIV_TexTools.ViewModels
             _view = view;
             _newModel = newModel;
             _oldModel = oldModel;
+        }
 
-
-
+        public async Task SetupUi()
+        {
             // Get all the materials available.
 
             // Merge all the default skin materials together, since FFXIV auto-handles them anyways.
@@ -100,6 +101,14 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     m.Material = SkinMaterial;
                 }
+            }
+
+            if(_newModel.MeshGroups.Count <= 1)
+            {
+                _view.DeleteMeshGroupButton.IsEnabled = false;
+            } else
+            {
+                _view.DeleteMeshGroupButton.IsEnabled = true;
             }
 
             // Calculate the model bounding box sizes.
@@ -151,20 +160,19 @@ namespace FFXIV_TexTools.ViewModels
 
             OldModelSize = Vector3.Distance(min, max);
 
+            if (_newModel.MeshGroups.Count > 0)
+            {
+                _view.ModelTypeComboBox.SelectedValue = _newModel.MeshGroups[0].MeshType;
+            }
 
-            AsyncInit();
-        }
-
-        private async Task AsyncInit()
-        {
             // Get this model's root.
             _root = await XivCache.GetFirstRoot(_oldModel.Source);
 
             if (_root != null && _root.Info.PrimaryType != XivItemType.indoor && _root.Info.PrimaryType != XivItemType.outdoor)
             {
                 // Get all the materials in this root, and add them to the selectable list.
-                
-                var materials = await _root.GetMaterialFiles();
+                var tx = MainWindow.DefaultTransaction;
+                var materials = await _root.GetMaterialFiles(-1, tx);
                 foreach (var m in materials)
                 {
                     var mName = Path.GetFileName(m);
@@ -195,8 +203,11 @@ namespace FFXIV_TexTools.ViewModels
 
             _view.ScaleComboBox.SelectionChanged += ScaleComboBox_SelectionChanged;
 
+            _view.ModelTypeComboBox.SelectionChanged += ModelTypeComboBox_SelectionChanged;
+
             _view.MeshNumberBox.SelectedIndex = 0;
         }
+
 
         private void ScaleComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
@@ -206,14 +217,14 @@ namespace FFXIV_TexTools.ViewModels
         private void UpdateModelSizeWarning()
         {
             float size = (float)(NewModelSize * (Convert.ToDouble(_view.ScaleComboBox.SelectedValue)));
-            _view.OldModelSizeBox.Content = OldModelSize.ToString("0.00") + " meters";
-            _view.NewModelSizeBox.Content = size.ToString("0.00") + " meters";
+            _view.OldModelSizeBox.Content = OldModelSize.ToString("0.00") + " meters".L();
+            _view.NewModelSizeBox.Content = size.ToString("0.00") + " meters".L();
 
             if (size < MinAcceptableSize * OldModelSize)
             {
                 _view.ScaleWarningBox.Foreground = System.Windows.Media.Brushes.DarkGoldenrod;
                 _view.ScaleWarningBox.FontWeight = FontWeights.Bold;
-                _view.ScaleWarningBox.Text = "You may wish to consider scaling this model up.";
+                _view.ScaleWarningBox.Text = "You may wish to consider scaling this model up.".L();
 
                 _view.NewModelSizeBox.Foreground = System.Windows.Media.Brushes.DarkGoldenrod;
                 _view.NewModelSizeBox.FontWeight = FontWeights.Bold;
@@ -222,7 +233,7 @@ namespace FFXIV_TexTools.ViewModels
             {
                 _view.ScaleWarningBox.Foreground = System.Windows.Media.Brushes.DarkGoldenrod;
                 _view.ScaleWarningBox.FontWeight = FontWeights.Bold;
-                _view.ScaleWarningBox.Text = "You may wish to consider scaling this model down.";
+                _view.ScaleWarningBox.Text = "You may wish to consider scaling this model down.".L();
 
                 _view.NewModelSizeBox.Foreground = System.Windows.Media.Brushes.DarkGoldenrod;
                 _view.NewModelSizeBox.FontWeight = FontWeights.Bold;
@@ -262,6 +273,12 @@ namespace FFXIV_TexTools.ViewModels
             {
                 _view.RemoveShapeButton.IsEnabled = false;
             }
+        }
+        private void ModelTypeComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            var val = (EMeshType)_view.ModelTypeComboBox.SelectedValue;
+            var m = GetGroup();
+            m.MeshType = val;
         }
 
         private void RemoveAttributeButton_Click(object sender, System.Windows.RoutedEventArgs e)
@@ -332,7 +349,7 @@ namespace FFXIV_TexTools.ViewModels
                 var raceId = result.Groups[1].Value;
                 var partId = result.Groups[2].Value;
                 var race = XivRaces.GetXivRace(raceId);
-                _view.MaterialsSource.Add(new KeyValuePair<string, string>(m, "Material " + partId.ToUpper() + " - " + XivRaces.GetDisplayName(race)));
+                _view.MaterialsSource.Add(new KeyValuePair<string, string>(m, "Material ".L() + partId.ToUpper() + " - " + XivRaces.GetDisplayName(race)));
             }
             else
             {
@@ -494,7 +511,7 @@ namespace FFXIV_TexTools.ViewModels
                 }
 
 
-                var validator = new Regex("[^a-z_]");
+                var validator = new Regex("[^a-z0-9._=]");
                 attr = validator.Replace(attr, "");
                 if (attr == "") return;
 
@@ -561,6 +578,7 @@ namespace FFXIV_TexTools.ViewModels
 
             _view.ShapesListBox.SelectedItem = null;
             _view.AttributesListBox.SelectedItem = null;
+            _view.ModelTypeComboBox.SelectedValue = m.MeshType;
 
             // Set selected part.
             if (m.Parts.Count > 0) {
@@ -607,7 +625,7 @@ namespace FFXIV_TexTools.ViewModels
                     var letter = imcMatch.Groups[2].Value;
                     var niceImcName = NiceImcAttributeNames.ContainsKey(slotPrefix) && NiceImcAttributeNames[slotPrefix] != null ? NiceImcAttributeNames[slotPrefix] : UnknownText;
 
-                    niceName = niceImcName + " Variant " + letter;
+                    niceName = niceImcName + " Variant ".L() + letter;
                 }
             }
             var fullNiceName = niceName + " (" + attribute + ")";
@@ -707,59 +725,59 @@ namespace FFXIV_TexTools.ViewModels
         private static readonly Dictionary<string, string> NiceAttributeNames = new Dictionary<string, string>()
         {
 
-            { "atr_kam", "Scalp" },
-            { "atr_hig", "Facial Hair" },
-            { "atr_mim", "Ear" },
-            { "atr_hrn", "Horn" },
-            { "atr_kao", "Face" },
+            { "atr_kam", "Scalp".L() },
+            { "atr_hig", "Facial Hair".L() },
+            { "atr_mim", "Ear".L() },
+            { "atr_hrn", "Horn".L() },
+            { "atr_kao", "Face".L() },
 
             // Used in weapons
             { "atr_arrow", "Arrow" },
-            { "atr_ar1", "Quiver Arrow 1" },
-            { "atr_ar2", "Quiver Arrow 2" },
-            { "atr_ar3", "Quiver Arrow 3" },
-            { "atr_attach", "Gauss Barrel" },
+            { "atr_ar1", "Quiver Arrow 1".L() },
+            { "atr_ar2", "Quiver Arrow 2".L() },
+            { "atr_ar3", "Quiver Arrow 3".L() },
+            { "atr_attach", "Gauss Barrel".L() },
 
             // Used in Body gear
-            { "atr_hij", "Wrist" },
-            { "atr_ude", "Elbow" },
-            { "atr_nek", "Neck" },
+            { "atr_hij", "Wrist".L() },
+            { "atr_ude", "Elbow".L() },
+            { "atr_nek", "Neck".L() },
 
             // Used in Leg gear
-            { "atr_kod", "Waist" },
-            { "atr_sne", "Shin" },
-            { "atr_hiz", "Knee" },
+            { "atr_kod", "Waist".L() },
+            { "atr_sne", "Shin".L() },
+            { "atr_hiz", "Knee".L() },
 
             // Used in headgear
-            { "atr_inr", "Gorget" },    // Neck only for head items.
+            { "atr_inr", "Gorget".L() },    // Neck only for head items.
             
-            { "atr_lod", "Excess Detail" },
+            { "atr_lod", "Excess Detail".L() },
 
             // Used in Glove items
-            { "atr_arm", "Glove" },
+            { "atr_arm", "Glove".L() },
 
             // Used in Foot items
-            { "atr_lpd", "Knee Pad" },
-            { "atr_leg", "Boot" },
+            { "atr_lpd", "Knee Pad".L() },
+            { "atr_leg", "Boot".L() },
 
             // Misc
-            { "atr_tlh", "Non-Tail Races Only" },
-            { "atr_tls", "Tail Races Only" },
-            { "atr_eye_a", "Reaper Transformation"},
+            { "atr_tlh", "Non-Tail Races Only".L() },
+            { "atr_tls", "Tail Races Only".L() },
+            { "atr_eye_a", "Reaper Transformation".L()},
 
             // Unknown/unverified
             
-            { "atr_blt", "Belt" },
-            { "atr_top", "Miqo'te Ears" },
-            { "atr_sta", "Miqo'te Long Hair Unique" },
-            { "atr_hair","Au Ra F Face Unique" },
+            { "atr_blt", "Belt".L() },
+            { "atr_top", "Miqo'te Ears".L() },
+            { "atr_sta", "Miqo'te Long Hair Unique".L() },
+            { "atr_hair","Au Ra F Face Unique".L() },
 
             // IMC Attributes are handled below in GetNiceAttributeName()
         };
 
         private static readonly Dictionary<string, string> NiceImcAttributeNames = new Dictionary<string, string>()
         {
-            { "bv", "Other" },
+            { "bv", "Other".L() },
             { "dv", XivStrings.Legs },
             { "mv", XivStrings.Head },
             { "gv", XivStrings.Hands},

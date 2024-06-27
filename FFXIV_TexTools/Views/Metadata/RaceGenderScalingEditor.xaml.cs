@@ -2,6 +2,7 @@
 using FFXIV_TexTools.Resources;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -40,10 +41,16 @@ namespace FFXIV_TexTools.Views.Metadata
 
         public async Task Init()
         {
-            _data = await CMP.GetScalingParameter(Race, Gender);
 
-            Title = "Racial Settings - " + Race.GetDisplayName() + " - " + Gender.ToString();
-            TitleBox.Content = "Racial Settings: " + Race.GetDisplayName() + " - " + Gender.ToString();
+            _data = await CMP.GetScalingParameter(Race, Gender, false, MainWindow.DefaultTransaction);
+            if (_data == null)
+            {
+                this.Close();
+                return;
+            }
+
+            Title = $"Racial Settings - {Race.GetDisplayName()._()} - {Gender.ToString()._()}".L();
+            TitleBox.Content = $"Racial Settings: {Race.GetDisplayName()._()} - {Gender.ToString()._()}".L();
 
             MinHeightBox.Text = _data.MinSize.ToString();
             MaxHeightBox.Text = _data.MaxSize.ToString();
@@ -105,7 +112,7 @@ namespace FFXIV_TexTools.Views.Metadata
             }
             catch(Exception Ex)
             {
-                FlexibleMessageBox.Show("Cannot save changes: One or more values are not valid.", "Invalid Data Error", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
+                FlexibleMessageBox.Show("Cannot save changes: One or more values are not valid.".L(), "Invalid Data Error".L(), System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
                 return;
             }
 
@@ -114,14 +121,14 @@ namespace FFXIV_TexTools.Views.Metadata
                 ResetButton.IsEnabled = false;
                 CancelButton.IsEnabled = false;
                 SaveButton.IsEnabled = false;
-                SaveButton.Content = "Working...";
+                SaveButton.Content = "Working...".L();
 
-                await CMP.SaveScalingParameter(_data, XivStrings.TexTools);
+                await CMP.SaveScalingParameter(_data, XivStrings.TexTools, MainWindow.UserTransaction);
 
                 this.Close();
             } catch(Exception ex)
             {
-                FlexibleMessageBox.Show("Cannot save changes:\n\nError: " + ex.Message, "Save Scaling Error", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
+                FlexibleMessageBox.Show("Cannot save changes:\n\nError: ".L() + ex.Message, "Save Scaling Error".L(), System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
 
                 ResetButton.IsEnabled = true;
                 CancelButton.IsEnabled = true;
@@ -143,20 +150,20 @@ namespace FFXIV_TexTools.Views.Metadata
                 ResetButton.IsEnabled = false;
                 CancelButton.IsEnabled = false;
                 SaveButton.IsEnabled = false;
-                ResetButton.Content = "Working...";
+                ResetButton.Content = "Working...".L();
 
-                await CMP.DisableRgspMod(Race, Gender);
+                await CMP.DisableRgspMod(Race, Gender, MainWindow.DefaultTransaction);
 
                 this.Close();
             }
             catch (Exception ex)
             {
-                FlexibleMessageBox.Show("Cannot save changes:\n\nError: " + ex.Message, "Save Scaling Error", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
+                FlexibleMessageBox.Show("Cannot save changes:\n\nError: ".L() + ex.Message, "Save Scaling Error".L(), System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
 
                 ResetButton.IsEnabled = true;
                 CancelButton.IsEnabled = true;
                 SaveButton.IsEnabled = true;
-                ResetButton.Content = "Restore Defaults";
+                ResetButton.Content = "Restore Defaults".L();
                 return;
             }
         }

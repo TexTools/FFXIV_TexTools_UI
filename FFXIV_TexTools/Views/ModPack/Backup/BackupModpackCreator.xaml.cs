@@ -26,13 +26,14 @@ namespace FFXIV_TexTools.Views
         private readonly ModList _modList;
         private ProgressDialogController _progressController;
 
-        public BackupModPackCreator()
+        public BackupModPackCreator(ModList modlist)
         {
             InitializeComponent();
 
             _gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
-            var modding = new Modding(_gameDirectory);
-            _modList = modding.GetModList();
+
+            // Block until modlist is retrieved.
+            _modList = modlist;
 
             DataContext = new BackupModpackViewModel();
             ModpackList.ItemsSource = new List<BackupModpackItemEntry>();
@@ -41,9 +42,10 @@ namespace FFXIV_TexTools.Views
             // Manually add an entry for the mods that don't belong to a modpack
             ((List<BackupModpackItemEntry>)ModpackList.ItemsSource).Add(new BackupModpackItemEntry(UIStrings.Standalone_Non_ModPack));
 
-            foreach (var modpack in _modList.ModPacks)
+            var allModPacks = _modList.GetModPacks();
+            foreach (var modpack in allModPacks)
             {
-                var entry = new BackupModpackItemEntry(modpack.name);
+                var entry = new BackupModpackItemEntry(modpack.Name);
                 ((List<BackupModpackItemEntry>)ModpackList.ItemsSource).Add(entry);
             }
 
@@ -109,24 +111,27 @@ namespace FFXIV_TexTools.Views
                 var selectedEntries = from modpack in (List<BackupModpackItemEntry>)ModpackList.ItemsSource
                                       where modpack.IsChecked
                                       select modpack;
-                if (selectedEntries.Count() == 0) throw new Exception("No selected modpacks detected.");
+                if (selectedEntries.Count() == 0) throw new Exception("No selected modpacks detected.".L());
 
+                var tx = MainWindow.DefaultTransaction;
+                var allMods = _modList.GetMods();
+                var allModPacks = _modList.GetModPacks();
                 foreach (var modpackEntry in selectedEntries)
                 {
-                    ModPack selectedModpack = null;
+                    ModPack? selectedModpack = null;
                     IEnumerable<Mod> modsInModpack = new List<Mod>();
 
                     if (modpackEntry.ModpackName == UIStrings.Standalone_Non_ModPack)
                     {
-                        modsInModpack = from mods in _modList.Mods
-                                        where !mods.name.Equals(string.Empty) && mods.modPack == null
+                        modsInModpack = from mods in allMods
+                                        where !mods.ItemName.Equals(string.Empty) && mods.ModPack == null
                                         select mods;
                     }
                     else
                     {
-                        selectedModpack = _modList.ModPacks.First(modPack => modPack.name == modpackEntry.ModpackName);
-                        modsInModpack = from mods in _modList.Mods
-                                        where (mods.modPack != null && mods.modPack.name == selectedModpack.name)
+                        selectedModpack = allModPacks.First(modPack => modPack.Name == modpackEntry.ModpackName);
+                        modsInModpack = from mods in allMods
+                                        where (mods.ModPack != null && mods.ModPack == selectedModpack?.Name)
                                         select mods;
                     }
 
@@ -134,12 +139,12 @@ namespace FFXIV_TexTools.Views
                     {
                         var simpleModData = new SimpleModData
                         {
-                            Name = mod.name,
-                            Category = mod.category,
-                            FullPath = mod.fullPath,
-                            ModOffset = mod.data.modOffset,
-                            ModSize = mod.data.modSize,
-                            DatFile = mod.datFile
+                            Name = mod.ItemName,
+                            Category = mod.ItemCategory,
+                            FullPath = mod.FilePath,
+                            ModOffset = mod.ModOffset8x,
+                            ModSize = await mod.GetCompressedSize(tx),
+                            DatFile = mod.DataFile.ToString()
                         };
 
                         var backupModData = new BackupModData
@@ -153,7 +158,6 @@ namespace FFXIV_TexTools.Views
 
                 }
 
-                var texToolsModPack = new TTMP(new DirectoryInfo(Properties.Settings.Default.ModPack_Directory), XivStrings.TexTools);
 
                 string modPackPath = System.IO.Path.Combine(Properties.Settings.Default.ModPack_Directory, $"{backupModpackData.Name}.ttmp2");
                 bool overwriteModpack = false;
@@ -173,15 +177,13 @@ namespace FFXIV_TexTools.Views
                     }
                 }
 
-                var progressIndicator = new Progress<(int current, int total, string message)>(ReportProgress);
-
                 ModPackFileName = backupModpackData.Name;
 
-                await texToolsModPack.CreateBackupModpack(backupModpackData, _gameDirectory, progressIndicator, overwriteModpack);
+                await TTMP.CreateBackupModpack(backupModpackData, Properties.Settings.Default.ModPack_Directory, ViewHelpers.BindReportProgress(_progressController), overwriteModpack, MainWindow.DefaultTransaction);
             }
             catch (Exception ex)
             {
-                FlexibleMessageBox.Show("Failed to create modpack.\n\nError: " + ex.Message, "Modpack Creation Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                FlexibleMessageBox.Show("Failed to create modpack.\n\nError: ".L() + ex.Message, "Modpack Creation Error".L(), MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
             finally
@@ -197,21 +199,24 @@ namespace FFXIV_TexTools.Views
         /// </summary>
         private void ModpackList_SelectionChanged(object sender, RoutedEventArgs e)
         {
-            ModPack selectedModpack = null;
+            ModPack? selectedModpack = null;
             List<Mod> modsInModpack = new List<Mod>();
 
             var selectedModpackName = ((BackupModpackItemEntry)ModpackList.SelectedItem).ModpackName;
+            var allMods = _modList.GetMods();
+            var allModPacks = _modList.GetModPacks();
+
             if (selectedModpackName == UIStrings.Standalone_Non_ModPack)
             {
-                modsInModpack = (from mods in _modList.Mods
-                                 where !mods.name.Equals(string.Empty) && mods.modPack == null
+                modsInModpack = (from mods in allMods
+                                 where !mods.ItemName.Equals(string.Empty) && mods.ModPack == null
                                  select mods).ToList();
             }
             else
             {
-                selectedModpack = _modList.ModPacks.First(modPack => modPack.name == selectedModpackName);
-                modsInModpack = (from mods in _modList.Mods
-                                 where (mods.modPack != null && mods.modPack.name == selectedModpack.name)
+                selectedModpack = allModPacks.First(modPack => modPack.Name == selectedModpackName);
+                modsInModpack = (from mods in allMods
+                                 where (mods.ModPack != null && mods.ModPack == selectedModpack?.Name)
                                  select mods).ToList();
             }
             (DataContext as BackupModpackViewModel).UpdateDescription(selectedModpack, modsInModpack);
@@ -230,31 +235,6 @@ namespace FFXIV_TexTools.Views
 
             Process.Start(new ProcessStartInfo(url));
             e.Handled = true;
-        }
-
-        #endregion
-
-        #region Private Methods
-
-        /// <summary>
-        /// Updates the progress bar
-        /// </summary>
-        /// <param name="value">The progress value</param>
-        private void ReportProgress((int current, int total, string message) report)
-        {
-            if (!report.message.Equals(string.Empty))
-            {
-                _progressController.SetMessage(report.message);
-                _progressController.SetIndeterminate();
-            }
-            else
-            {
-                _progressController.SetMessage(
-                    $"{UIMessages.TTMPGettingData} ({report.current} / {report.total})");
-
-                double value = (double)report.current / (double)report.total;
-                _progressController.SetProgress(value);
-            }
         }
 
         #endregion

@@ -5,6 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FFXIV_TexTools.Views"
         mc:Ignorable="d"
+        xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
+        resx:Localization.Enabled="True"        
         Title="Affected Files" Height="340.312" Width="327.5">
     <Grid>
         <ListBox x:Name="FileBox" Margin="5,5,5,40" Style="{DynamicResource SimpleListBox}" ScrollViewer.VerticalScrollBarVisibility="Visible">

@@ -1166,5 +1166,26 @@ namespace FFXIV_TexTools.Resources {
                 return ResourceManager.GetString("Wrists", resourceCulture);
             }
         }
+        internal static string Beneficial
+        {
+            get
+            {
+                return ResourceManager.GetString("Beneficial", resourceCulture);
+            }
+        }
+        internal static string Detrimental
+        {
+            get
+            {
+                return ResourceManager.GetString("Detrimental", resourceCulture);
+            }
+        }
+        internal static string Other
+        {
+            get
+            {
+                return ResourceManager.GetString("Other", resourceCulture);
+            }
+        }
     }
 }

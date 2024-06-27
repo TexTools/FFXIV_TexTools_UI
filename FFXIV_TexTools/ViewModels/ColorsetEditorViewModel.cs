@@ -11,6 +11,7 @@ using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using xivModdingFramework.Cache;
@@ -24,8 +25,6 @@ namespace FFXIV_TexTools.ViewModels
 {
     public class ColorsetEditorViewModel : INotifyPropertyChanged
     {
-        ColorsetEditorControl _view;
-
         private static XivTex TileTextureNormal;
         private static XivTex TileTextureDiffuse;
 
@@ -34,6 +33,7 @@ namespace FFXIV_TexTools.ViewModels
 
         public ObservableElement3DCollection Models { get; } = new ObservableElement3DCollection();
         public Camera Camera { get; set; }
+        bool _NeedLights = true;
         public EffectsManager EffectsManager { get; }
 
         private XivMtrl _mtrl;
@@ -43,22 +43,53 @@ namespace FFXIV_TexTools.ViewModels
 
         private List<Half[]> RowData;
 
-        public ColorsetEditorViewModel(ColorsetEditorControl view)
+        private bool DawnTrail
         {
-            _view = view;
+            get
+            {
+                if (_mtrl == null) return true;
 
-
-            EffectsManager = new DefaultEffectsManager();
-            Camera = new PerspectiveCamera();
+                if(_mtrl.ColorSetData.Count >= 1024)
+                {
+                    return true;
+                }
+                return false;
+            }
         }
 
-        bool _NeedLights = true;
+        private bool LegacyShader
+        {
+            get
+            {
+                if(_mtrl == null) return false;  
+
+                if(DawnTrail)
+                {
+                    return _mtrl.ShaderPack == ShaderHelpers.EShaderPack.CharacterLegacy;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+        }
+
+        public ColorsetEditorViewModel(Viewport3DX viewport)
+        {
+
+            // Eat exception to not immediately crash in VirtualBox
+            try
+            {
+                EffectsManager = new DefaultEffectsManager();
+            } catch { }
+            Camera = new PerspectiveCamera();
+            _viewport = viewport;
+        }
+
 
         public async Task SetMaterial(XivMtrl mtrl, StainingTemplateFile dyeFile) {
             _mtrl = mtrl;
             DyeTemplateFile = dyeFile;
-
-            _viewport = _view.ColorsetRowViewport;
             _viewport.BackgroundColor = System.Windows.Media.Colors.Gray;
             _viewport.Background = Brushes.Gray;
 
@@ -76,15 +107,21 @@ namespace FFXIV_TexTools.ViewModels
 
             if (TileTextureNormal == null)
             {
-                var _tex = new Tex(XivCache.GameInfo.GameDirectory);
-                TileTextureNormal = await _tex.GetTexData("chara/common/texture/-tile_n.tex");
-                TileTextureDiffuse = await _tex.GetTexData("chara/common/texture/-tile_d.tex");
+                try
+                {
+                    TileTextureNormal = await Tex.GetXivTex("chara/common/texture/tile_norm_array.tex");
+                    // This is not the correct usage, but works for the moment.
+                    TileTextureDiffuse = await Tex.GetXivTex("chara/common/texture/tile_orb_array.tex");
+                }
+                catch
+                {
+                }
             }
 
 
         }
 
-        public async Task SetColorsetRow(int row, int dyeId = -1)
+        public async Task SetColorsetRow(int row, int columnCount, int dyeId = -1)
         {
             if (_mtrl == null) return;
 
@@ -93,9 +130,9 @@ namespace FFXIV_TexTools.ViewModels
                 Models.Clear();
                 RowId = row;
 
-                var offset = RowId * 16;
-                RowData = new List<Half[]>(4);
-                for (int i = 0; i < 4; i++)
+                var offset = RowId * columnCount * 4;
+                RowData = new List<Half[]>(columnCount);
+                for (int i = 0; i < columnCount; i++)
                 {
                     var arr = new Half[4];
                     RowData.Add(arr);
@@ -112,85 +149,115 @@ namespace FFXIV_TexTools.ViewModels
                 var sMax = Math.Max(1.0f, Math.Max(RowData[0][0], Math.Max(RowData[0][1], RowData[0][2])));
                 var eMax = Math.Max(1.0f, Math.Max(RowData[0][0], Math.Max(RowData[0][1], RowData[0][2])));
 
+                var dColor = new SharpDX.Color(
+                        (byte)Math.Round(Math.Sqrt(RowData[0][0] / dMax) * 255f),
+                        (byte)Math.Round(Math.Sqrt(RowData[0][1] / dMax) * 255f),
+                        (byte)Math.Round(Math.Sqrt(RowData[0][2] / dMax) * 255f));
+                var sColor = new SharpDX.Color(
+                        (byte)Math.Round(Math.Sqrt(RowData[1][0] / sMax) * 255f),
+                        (byte)Math.Round(Math.Sqrt(RowData[1][1] / sMax) * 255f),
+                        (byte)Math.Round(Math.Sqrt(RowData[1][2] / sMax) * 255f));
+
                 var lmMaterial = new PhongMaterial()
                 {
                     AmbientColor = SharpDX.Color.Gray,
-                    DiffuseColor = new SharpDX.Color(
-                        (byte)Math.Round((RowData[0][0] / dMax) * 255f),
-                        (byte)Math.Round((RowData[0][1] / dMax) * 255f),
-                        (byte)Math.Round((RowData[0][2]/ dMax) * 255f)),
-
-                    SpecularColor = new SharpDX.Color(
-                        (byte)Math.Round((RowData[1][0] / sMax) * 255f),
-                        (byte)Math.Round((RowData[1][1] / sMax) * 255f),
-                        (byte)Math.Round((RowData[1][2] / sMax) * 255f))
+                    DiffuseColor = dColor,
+                    SpecularColor = sColor
                 };
 
                 if (RowData[2][0] != 0 || RowData[2][1] != 0 || RowData[2][2] != 0)
                 {
                     lmMaterial.EmissiveColor = new SharpDX.Color(
-                        (byte)Math.Round((RowData[2][0] / eMax) * 255f),
-                        (byte)Math.Round((RowData[2][1] / eMax) * 255f),
-                        (byte)Math.Round((RowData[2][2] / eMax) * 255f));
+                        (byte)Math.Round(Math.Sqrt(RowData[2][0] / eMax) * 255f),
+                        (byte)Math.Round(Math.Sqrt(RowData[2][1] / eMax) * 255f),
+                        (byte)Math.Round(Math.Sqrt(RowData[2][2] / eMax) * 255f));
                 }
+
 
                 float glossVal = RowData[1][3];
                 float specularPower = RowData[0][3];
-                if (dyeId >= 0 && dyeId < 128)
+
+                if (DawnTrail)
                 {
-                    var byteOffset = RowId * 2;
-                    var templateId = BitConverter.ToUInt16(_mtrl.ColorSetDyeData, byteOffset) >> 5;
-                    var template = DyeTemplateFile.GetTemplate((ushort)templateId);
+                    // Values flipped in Dawntrail.
+                    glossVal = RowData[0][3];
+                    specularPower = RowData[1][3];
+                }
+
+                if (dyeId >= 0 && dyeId < 128 && _mtrl.ColorSetDyeData.Length > 0)
+                {
+                    var templateId = STM.GetTemplateKeyFromMaterialData(_mtrl, RowId);
+                    var template = DyeTemplateFile.GetTemplate(templateId);
+
+
+                    uint data;
+                    if (_mtrl.ColorSetDyeData.Length > 32)
+                    {
+                        var dyeRowSize = 4;
+                        data = BitConverter.ToUInt32(_mtrl.ColorSetDyeData, dyeRowSize * RowId);
+                    }
+                    else
+                    {
+                        var dyeRowSize = 2;
+                        data = BitConverter.ToUInt16(_mtrl.ColorSetDyeData, dyeRowSize * RowId);
+                    }
+
                     if(template != null && templateId != 0)
                     {
 
-                        var flags = _mtrl.ColorSetDyeData[byteOffset] & 0x1F;
+                        bool useDiffuse = (data & 0x01) > 0;
+                        bool useSpecular = (data & 0x02) > 0;
+                        bool useEmissive = (data & 0x04) > 0;
 
-                        bool useDiffuse = (flags & 0x01) > 0;
-                        bool useSpecular = (flags & 0x02) > 0;
-                        bool useEmissive = (flags & 0x04) > 0;
-                        bool useGloss = (flags & 0x08) > 0;
-                        bool useSpecularPower = (flags & 0x10) > 0;
+                        bool useSpecPower = (data & 0x08) > 0;
+                        bool useGloss = (data & 0x10) > 0;
 
-                        if (useDiffuse && template.DiffuseEntries.Count > 0)
+                        var diffuse = template.GetDiffuseData(dyeId);
+                        var spec = template.GetSpecularData(dyeId);
+                        var emissive = template.GetEmissiveData(dyeId);
+                        var gloss = template.GetGlossData(dyeId);
+                        var specPower = template.GetSpecularPowerData(dyeId);
+
+                        if (useDiffuse && diffuse != null)
                         {
-                            var max = Math.Max(1.0f, Math.Max(template.DiffuseEntries[dyeId][0], Math.Max(template.DiffuseEntries[dyeId][1], template.DiffuseEntries[dyeId][2])));
+                            var max = Math.Max(1.0f, Math.Max(diffuse[0], Math.Max(diffuse[1], diffuse[2])));
 
                             lmMaterial.DiffuseColor = new SharpDX.Color(
-                            (byte)Math.Round((template.DiffuseEntries[dyeId][0] / max) * 255f),
-                            (byte)Math.Round((template.DiffuseEntries[dyeId][1] / max) * 255f),
-                            (byte)Math.Round((template.DiffuseEntries[dyeId][2] / max) * 255f));
+                            (byte)Math.Round((diffuse[0] / max) * 255f),
+                            (byte)Math.Round((diffuse[1] / max) * 255f),
+                            (byte)Math.Round((diffuse[2] / max) * 255f));
                         }
 
-                        if (useSpecular && template.SpecularEntries.Count > 0)
+                        if (useSpecular && spec != null)
                         {
-                            var max = Math.Max(1.0f, Math.Max(template.SpecularEntries[dyeId][0], Math.Max(template.SpecularEntries[dyeId][1], template.SpecularEntries[dyeId][2])));
+                            var max = Math.Max(1.0f, Math.Max(spec[0], Math.Max(spec[1], spec[2])));
 
                             lmMaterial.SpecularColor = new SharpDX.Color(
-                            (byte)Math.Round((template.SpecularEntries[dyeId][0] / max) * 255f),
-                            (byte)Math.Round((template.SpecularEntries[dyeId][1] / max) * 255f),
-                            (byte)Math.Round((template.SpecularEntries[dyeId][2] / max) * 255f));
+                            (byte)Math.Round((spec[0] / max) * 255f),
+                            (byte)Math.Round((spec[1] / max) * 255f),
+                            (byte)Math.Round((spec[2] / max) * 255f));
                         }
 
-                        if (useEmissive && template.EmissiveEntries.Count > 0)
+                        if (useEmissive && emissive != null)
                         {
-                            var max = Math.Max(1.0f, Math.Max(template.EmissiveEntries[dyeId][0], Math.Max(template.EmissiveEntries[dyeId][1], template.EmissiveEntries[dyeId][2])));
+                            var max = Math.Max(1.0f, Math.Max(emissive[0], Math.Max(emissive[1], emissive[2])));
 
                             lmMaterial.EmissiveColor = new SharpDX.Color(
-                            (byte)Math.Round((template.EmissiveEntries[dyeId][0] / max) * 255f),
-                            (byte)Math.Round((template.EmissiveEntries[dyeId][1] / max) * 255f),
-                            (byte)Math.Round((template.EmissiveEntries[dyeId][2] / max) * 255f));
+                            (byte)Math.Round((emissive[0] / max) * 255f),
+                            (byte)Math.Round((emissive[1] / max) * 255f),
+                            (byte)Math.Round((emissive[2] / max) * 255f));
                         }
 
-                        if(useGloss && template.GlossEntries.Count > 0)
+                        if(useGloss && LegacyShader && gloss != null)
                         {
-                            glossVal = template.GlossEntries[dyeId];
+                            glossVal = gloss[0];
                         }
-
-                        if(useSpecularPower && template.SpecularPowerEntries.Count > 0)
+                        
+                        if(useSpecPower && LegacyShader && specPower != null)
                         {
-                            specularPower = template.SpecularPowerEntries[dyeId];
+                            specularPower = specPower[0];
                         }
+                                                
                     }
                 }
 
@@ -210,13 +277,20 @@ namespace FFXIV_TexTools.ViewModels
                 if (TileTextureNormal != null)
                 {
                     var tm = await MakeTextureModel(TileTextureNormal);
-                    lmMaterial.NormalMap = tm;
+                    if (tm != null)
+                    {
+                        lmMaterial.NormalMap = tm;
+                    }
                 }
 
-                if (TileTextureDiffuse != null)
+                // Disabled currently since this is no longer a diffuse map, and now an _orm map.
+                if (TileTextureDiffuse != null && false)
                 {
                     var tm = await MakeTextureModel(TileTextureDiffuse);
-                    lmMaterial.DiffuseMap = tm;
+                    if (tm != null)
+                    {
+                        lmMaterial.DiffuseMap = tm;
+                    }
                 }
 
                 MeshGeometryModel3D mgm3 = new MeshGeometryModel3D()
@@ -228,7 +302,7 @@ namespace FFXIV_TexTools.ViewModels
                 Models.Add(mgm3);
             } catch(Exception ex)
             {
-                FlexibleMessageBox.Show("Unable to update 3D Viewport.\n\nError: " + ex.Message, "Viewport Error", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning);
+                FlexibleMessageBox.Show("Unable to update 3D Viewport.\n\nError: ".L() + ex.Message, "Viewport Error".L(), System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning);
             }
         }
 
@@ -242,8 +316,14 @@ namespace FFXIV_TexTools.ViewModels
             var tileSkewX = (float)RowData[3][1];
             var tileSkewY = (float)RowData[3][2];
 
-            var _tex = new Tex(XivCache.GameInfo.GameDirectory);
-            var data = await _tex.GetImageData(tex, layer);
+            byte[] data;
+            try
+            {
+                data = await tex.GetRawPixels(layer);
+            } catch
+            {
+                return null;
+            }
 
             var ogW = 32;
             var ogH = 32;

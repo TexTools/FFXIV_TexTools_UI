@@ -40,37 +40,38 @@ using xivModdingFramework.Models.Helpers;
 using xivModdingFramework.Models.ModelTextures;
 using xivModdingFramework.SqPack.FileTypes;
 using xivModdingFramework.Variants.FileTypes;
-
-using Index = xivModdingFramework.SqPack.FileTypes.Index;
+using xivModdingFramework.Cache;
+using SharpDX;
+using System.Diagnostics;
+using System.Windows.Media.Media3D;
+using System.Threading;
+using FFXIV_TexTools.Views;
 
 namespace FFXIV_TexTools.ViewModels
 {
     public class FullModelViewModel : INotifyPropertyChanged
     {
 
-        private FullModelViewport3DViewModel _viewPortVM;
-        private float _lightingXValue, _lightingYValue, _lightingZValue;
-        private string _lightXLabel = "X  |  0", _lightYLabel = "Y  |  0", _lightZLabel = "Z  |  0", _reflectionLabel = $"{UIStrings.Reflection}  |  1", _modToggleText = UIStrings.Enable_Disable, _modelStatusLabel, _selectedFace;
-        private int _checkedLight, _reflectionValue, _selectedSkeletonIndex, _selectedModelIndex, _selectedSkinIndex, _selectedSkin, _selectedFaceIndex;
-        private bool _flyoutOpen, _lightRenderToggle, _light1Check = true, _light2Check, _light3Check, _transparencyToggle, _cullModeToggle, _showSkeleton, _skeletonComboboxEnabled, _skinComboboxEnabled, _exportEnabled, _removeEnabled, _isFirstModel, _faceComboboxEnabled;
-        private Visibility _lightToggleVisibility = Visibility.Collapsed, _faceComboBoxVisibility = Visibility.Collapsed;
+        private FullModelViewport3DViewModel _viewportVM;
+        private int  _selectedSkeletonIndex, _selectedModelIndex, _selectedSkinIndex, _selectedSkin, _selectedFaceIndex;
+        private bool _showSkeleton, _skeletonComboboxEnabled, _skinComboboxEnabled, _exportEnabled, _removeEnabled, _isFirstModel, _faceComboboxEnabled;
+        private Visibility _faceComboBoxVisibility = Visibility.Collapsed;
         private FullModelView _fullModelView;
         private ObservableCollection<ComboBoxData> _skeletonComboBoxData = new ObservableCollection<ComboBoxData>();
         private ObservableCollection<int> _skins = new ObservableCollection<int>();
-        private ObservableCollection<string> _modelList = new ObservableCollection<string>();
+
+        private ObservableCollection<KeyValuePair<string, string>> _modelList = new ObservableCollection<KeyValuePair<string, string>>();
         private ObservableCollection<string> _facesList = new ObservableCollection<string>();
         private ComboBoxData _selectedSkeleton;
         private XivRace _previousRace;
-        private DirectoryInfo _gameDirectory;
         private Dictionary<XivRace, int[]> _charaRaceAndSkinDictionary;
-
-        private bool _updateNeeded = true;
 
         public FullModelViewModel(FullModelView fullModelView)
         {
-            _gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
             _fullModelView = fullModelView;
-            ViewPortVM = new FullModelViewport3DViewModel(this);
+            ViewportVM = new FullModelViewport3DViewModel();
+            ViewportVM.ZoomExtentsRequested += ZoomExtentsRequested;
+
             FillSkeletonComboBox();
             SelectedSkeletonIndex = 0;
             SkeletonComboboxEnabled = true;
@@ -81,13 +82,13 @@ namespace FFXIV_TexTools.ViewModels
         /// <summary>
         /// The 3D viewport viewmodel which handles the model display
         /// </summary>
-        public FullModelViewport3DViewModel ViewPortVM
+        public FullModelViewport3DViewModel ViewportVM
         {
-            get => _viewPortVM;
+            get => _viewportVM;
             set
             {
-                _viewPortVM = value;
-                NotifyPropertyChanged(nameof(ViewPortVM));
+                _viewportVM = value;
+                NotifyPropertyChanged(nameof(ViewportVM));
             }
         }
 
@@ -120,7 +121,7 @@ namespace FFXIV_TexTools.ViewModels
                 // update the skeleton to the new selected skeleton
                 if (value != null)
                 {
-                    UpdateSkeleton(value.XivRace);
+                    _ = UpdateSkeleton(value.XivRace);
                 }
             }
         }
@@ -175,7 +176,7 @@ namespace FFXIV_TexTools.ViewModels
                 _selectedSkin = value;
                 NotifyPropertyChanged(nameof(SelectedSkin));
 
-                UpdateAllSkin();
+                _ = UpdateAllSkin();
             }
         }
 
@@ -218,9 +219,8 @@ namespace FFXIV_TexTools.ViewModels
             }
         }
 
-        /// <summary>
-        /// The selected face
-        /// </summary>
+     
+        private string _selectedFace;
         public string SelectedFace
         {
             get => _selectedFace;
@@ -229,7 +229,7 @@ namespace FFXIV_TexTools.ViewModels
                 _selectedFace = value;
                 NotifyPropertyChanged(nameof(SelectedFace));
 
-                UpdateFaceTextures();
+                _ = UpdateFaceTextures();
             }
         }
 
@@ -275,7 +275,7 @@ namespace FFXIV_TexTools.ViewModels
         /// <summary>
         /// The list of models by item type
         /// </summary>
-        public ObservableCollection<string> ModelList
+        public ObservableCollection<KeyValuePair<string, string>> ModelList
         {
             get => _modelList;
             set
@@ -335,75 +335,113 @@ namespace FFXIV_TexTools.ViewModels
         /// <param name="_materialDictionary">The dictionary with materials</param>
         /// <param name="item">The item associated with the model being added</param>
         /// <param name="race">The race of the model being added</param>
-        public async void AddModelToView(TTModel ttModel, Dictionary<int, ModelTextureData> _materialDictionary, IItemModel item, XivRace modelRace)
+        private SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
+
+        public async Task AddModelToView(TTModel ttModel, Dictionary<int, ModelTextureData> _materialDictionary, IItemModel item)
         {
-
-            var pc = await _fullModelView.ShowProgressAsync(UIStrings.ModelStatus_Loading, UIMessages.PleaseStandByMessage);
-            // Sets the skeleton to the same as the race of the first model added
-            if (ViewPortVM.Models.Count < 1)
+            // If the semaphore is already locked (method is running), return immediately
+            if (!_semaphore.Wait(0))
             {
-                _isFirstModel = true;
-                if (_charaRaceAndSkinDictionary == null)
-                {
-                    await GetCharaSkinDictionary();
-                }
+                return;
+            }
+
+            try
+            {
+                var modelRace = IOUtil.GetRaceFromPath(ttModel.Source);
                 var firstModelSkeleton = from s in Skeletons where s.XivRace == modelRace select s;
-                SelectedSkeleton = firstModelSkeleton.FirstOrDefault();
 
-                Skins.Clear();
-
-                foreach (var skinNum in _charaRaceAndSkinDictionary[SelectedSkeleton.XivRace.GetSkinRace()])
+                if (ModelList.Count == 0)
                 {
-                    Skins.Add(skinNum);
+                    SelectedSkeleton = firstModelSkeleton.FirstOrDefault();
+                    if (SelectedSkeleton == null)
+                    {
+                        return;
+                    }
                 }
 
-                SelectedSkinIndex = 0;
-            }
+                await _fullModelView.LockUi(UIStrings.ModelStatus_Loading, UIMessages.PleaseStandByMessage);
+                try
+                {
+                    // Sets the skeleton to the same as the race of the first model added
+                    if (ViewportVM.Models.Count < 1)
+                    {
+                        _isFirstModel = true;
+                        if (_charaRaceAndSkinDictionary == null)
+                        {
+                            await GetCharaSkinDictionary();
+                        }
+                        Skins.Clear();
 
-            // Show the face combo box if a face with different textures is added
-            if (item.SecondaryCategory.Equals(XivStrings.Face) && (SelectedSkeleton.XivRace == XivRace.AuRa_Female || SelectedSkeleton.XivRace == XivRace.AuRa_Male ||
-                SelectedSkeleton.XivRace == XivRace.Viera_Female || SelectedSkeleton.XivRace == XivRace.Viera_Male || SelectedSkeleton.XivRace == XivRace.Hrothgar_Male))
+                        foreach (var skinNum in _charaRaceAndSkinDictionary[SelectedSkeleton.XivRace.GetSkinRace()])
+                        {
+                            Skins.Add(skinNum);
+                        }
+
+                        SelectedSkinIndex = 0;
+                    }
+
+                    // Show the face combo box if a face with different textures is added
+                    if (item.SecondaryCategory.Equals(XivStrings.Face) && (SelectedSkeleton.XivRace == XivRace.AuRa_Female || SelectedSkeleton.XivRace == XivRace.AuRa_Male ||
+                        SelectedSkeleton.XivRace == XivRace.Viera_Female || SelectedSkeleton.XivRace == XivRace.Viera_Male || SelectedSkeleton.XivRace == XivRace.Hrothgar_Male))
+                    {
+                        Faces.Clear();
+                        FaceComboboxVisibility = Visibility.Visible;
+                        FaceComboboxEnabled = true;
+                        FillFaceComboBox(SelectedSkeleton.XivRace);
+                        SelectedFaceIndex = 0;
+                    }
+
+                    await UpdateSkin(ttModel, _materialDictionary, item);
+
+                    var path = ttModel.Source;
+                    var slot = ViewHelpers.GetModelSlot(path);
+
+                    // Add the item type to the model list
+                    var itemDisplay = $"{item.Name} ({slot})";
+
+                    var replaceTarget = new KeyValuePair<string, string>(null, null);
+                    foreach (var kv in ModelList)
+                    {
+                        var vSlot = ViewHelpers.GetModelSlot(kv.Value);
+                        if (vSlot == slot)
+                        {
+                            replaceTarget = kv;
+                            break;
+                        }
+                    }
+
+                    if (replaceTarget.Key != null)
+                    {
+                        ModelList.Remove(replaceTarget);
+                    }
+                    var newItem = new KeyValuePair<string, string>(itemDisplay, path);
+                    ModelList.Add(newItem);
+                    SelectedModelIndex = ModelList.IndexOf(newItem);
+
+                    // Disable changes while model and viewport update
+                    SkeletonComboboxEnabled = false;
+                    SkinComboboxEnabled = false;
+
+                    await ViewportVM.UpdateModel(ttModel, _materialDictionary, item, modelRace, SelectedSkeleton.XivRace);
+                    SkeletonComboboxEnabled = true;
+                    SkinComboboxEnabled = true;
+
+                    ExportEnabled = true;
+                    RemoveEnabled = true;
+                    _isFirstModel = false;
+                    _fullModelView.viewport3DX.ZoomExtents();
+
+                }
+                finally
+                {
+                    await _fullModelView.UnlockUi();
+                }
+            }
+            finally
             {
-                Faces.Clear();
-                FaceComboboxVisibility = Visibility.Visible;
-                FaceComboboxEnabled = true;
-                FillFaceComboBox(SelectedSkeleton.XivRace);
-                SelectedFaceIndex = 0;
+                // Release the semaphore so the method can be called again
+                _semaphore.Release();
             }
-
-            await UpdateSkin(ttModel, _materialDictionary, item);
-
-            // Add the item type to the model list
-            var itemType = $"{item.PrimaryCategory}_{item.SecondaryCategory}";
-            var itemDisplay = $"{item.Name} ({itemType})";
-
-            if (!ModelList.Any(x => x.Contains(itemType)))
-            {
-                ModelList.Add(itemDisplay);
-                SelectedModelIndex = ModelList.Count - 1;
-            }
-            else
-            {
-                var removeItem = (from iDisplay in ModelList where iDisplay.Contains(itemType) select iDisplay).FirstOrDefault();
-                ModelList.Remove(removeItem);
-                ModelList.Add(itemDisplay);
-                SelectedModelIndex = ModelList.IndexOf(itemDisplay);
-            }
-
-            // Disable changes while model and viewport update
-            SkeletonComboboxEnabled = false;
-            SkinComboboxEnabled = false;
-
-            ViewPortVM.UpdateModel(ttModel, _materialDictionary, item, modelRace, SelectedSkeleton.XivRace);
-            SkeletonComboboxEnabled = true;
-            SkinComboboxEnabled = true;
-
-            ExportEnabled = true;
-            RemoveEnabled = true;
-            _isFirstModel = false;
-            _fullModelView.viewport3DX.ZoomExtents();
-
-            await pc.CloseAsync();
         }
 
         /// <summary>
@@ -412,7 +450,12 @@ namespace FFXIV_TexTools.ViewModels
         public void CleanUp()
         {
             _modelList.Clear();
-            ViewPortVM.CleanUp();
+
+            ViewportVM.ZoomExtentsRequested -= ZoomExtentsRequested;
+
+            // Hmmm...
+            ViewportVM.CleanUp();
+            ViewportVM.Dispose();
         }
 
         #endregion
@@ -441,6 +484,7 @@ namespace FFXIV_TexTools.ViewModels
                 XivRace.AuRa_Male,
                 XivRace.AuRa_Female,
                 XivRace.Hrothgar_Male,
+                XivRace.Hrothgar_Female,
                 XivRace.Viera_Male,
                 XivRace.Viera_Female
             };
@@ -461,7 +505,7 @@ namespace FFXIV_TexTools.ViewModels
         /// <returns>A dictionary containing an array of skin numbers per race</returns>
         private async Task GetCharaSkinDictionary()
         {
-            var character = new Character(_gameDirectory, XivLanguages.GetXivLanguage(Settings.Default.Application_Language));
+            var character = new Character();
 
             var xivChara = new XivCharacter
             {
@@ -493,6 +537,7 @@ namespace FFXIV_TexTools.ViewModels
                     Faces.Add(XivStringRaces.Veena);
                     break;
                 case XivRace.Hrothgar_Male:
+                case XivRace.Hrothgar_Female:
                     Faces.Add(XivStringRaces.Helion);
                     Faces.Add(XivStringRaces.Lost);
                     break;
@@ -509,37 +554,42 @@ namespace FFXIV_TexTools.ViewModels
             // Update only if races are different and it is not the first model being added
             if (_previousRace != selectedSkeleton && !_isFirstModel)
             {
-                var pc = await _fullModelView.ShowProgressAsync(UIMessages.UpdatingSkeletonTitle, UIMessages.PleaseStandByMessage);
+                await _fullModelView.LockUi(UIMessages.UpdatingSkeletonTitle, UIMessages.PleaseStandByMessage);
 
-                Skins.Clear();
-
-                if (_charaRaceAndSkinDictionary != null)
+                try
                 {
-                    foreach (var skinNum in _charaRaceAndSkinDictionary[selectedSkeleton.GetSkinRace()])
+
+                    Skins.Clear();
+
+                    if (_charaRaceAndSkinDictionary != null)
                     {
-                        Skins.Add(skinNum);
+                        foreach (var skinNum in _charaRaceAndSkinDictionary[selectedSkeleton.GetSkinRace()])
+                        {
+                            Skins.Add(skinNum);
+                        }
                     }
-                }
 
-                // Disable changes while model and viewport update
-                SkeletonComboboxEnabled = false;
-                SkinComboboxEnabled = false;
-                RemoveEnabled = false;
-                ExportEnabled = false;
+                    // Disable changes while model and viewport update
+                    SkeletonComboboxEnabled = false;
+                    SkinComboboxEnabled = false;
+                    RemoveEnabled = false;
+                    ExportEnabled = false;
 
-                if (!_isFirstModel)
+                    if (!_isFirstModel)
+                    {
+                        ViewportVM.UpdateSkeleton(_previousRace, selectedSkeleton);
+                    }
+
+                    SkeletonComboboxEnabled = true;
+                    SkinComboboxEnabled = true;
+                    RemoveEnabled = true;
+                    ExportEnabled = true;
+
+                    SelectedSkinIndex = 0;
+                } finally
                 {
-                    ViewPortVM.UpdateSkeleton(_previousRace, selectedSkeleton);
+                    await _fullModelView.UnlockUi();
                 }
-
-                SkeletonComboboxEnabled = true;
-                SkinComboboxEnabled = true;
-                RemoveEnabled = true;
-                ExportEnabled = true;
-
-                await pc.CloseAsync();
-
-                SelectedSkinIndex = 0;
             }
         }
 
@@ -573,31 +623,36 @@ namespace FFXIV_TexTools.ViewModels
         private async Task UpdateAllSkin()
         {
 
-            if (ViewPortVM.shownModels.Any())
+            if (ViewportVM.shownModels.Any())
             {
-                var pc = await _fullModelView.ShowProgressAsync(UIMessages.UpdatingSkinTitle, UIMessages.PleaseStandByMessage);
-
-                foreach (var shownModel in ViewPortVM.shownModels.Values)
+                await _fullModelView.LockUi(UIMessages.UpdatingSkinTitle, UIMessages.PleaseStandByMessage);
+                try
                 {
-                    var originalBodyIndex = GetBodyTextureIndex(shownModel.TtModel);
-
-                    if (originalBodyIndex != -1)
+                    var models = ViewportVM.shownModels.Values.ToList();
+                    foreach (var shownModel in models)
                     {
-                        var bodyReplacement = $"b{SelectedSkin.ToString().PadLeft(4, '0')}";
-                        ModelModifiers.FixUpSkinReferences(shownModel.TtModel, SelectedSkeleton.XivRace, null, bodyReplacement);
-                        await UpdateBodyTextures(shownModel.TtModel, shownModel.ItemModel, shownModel.ModelTextureData);
+                        var originalBodyIndex = GetBodyTextureIndex(shownModel.TtModel);
+
+                        if (originalBodyIndex != -1)
+                        {
+                            var bodyReplacement = $"b{SelectedSkin.ToString().PadLeft(4, '0')}";
+                            ModelModifiers.FixUpSkinReferences(shownModel.TtModel, SelectedSkeleton.XivRace, null, bodyReplacement);
+                            await UpdateBodyTextures(shownModel.TtModel, shownModel.ItemModel, shownModel.ModelTextureData);
+                        }
+
+                        // Change the tail texture for Au Ra
+                        if (shownModel.ItemModel.Name.Equals(XivStrings.Tail) && (SelectedSkeleton.XivRace == XivRace.AuRa_Female || SelectedSkeleton.XivRace == XivRace.AuRa_Male))
+                        {
+                            await UpdateTailTextures(shownModel.TtModel, shownModel.ModelTextureData);
+                        }
                     }
 
-                    // Change the tail texture for Au Ra
-                    if (shownModel.ItemModel.Name.Equals(XivStrings.Tail) && (SelectedSkeleton.XivRace == XivRace.AuRa_Female || SelectedSkeleton.XivRace == XivRace.AuRa_Male))
-                    {
-                        await UpdateTailTextures(shownModel.TtModel, shownModel.ModelTextureData);
-                    }
+                    ViewportVM.UpdateSkin(SelectedSkeleton.XivRace);
                 }
-
-                ViewPortVM.UpdateSkin(SelectedSkeleton.XivRace);
-
-                await pc.CloseAsync();
+                finally
+                {
+                    await _fullModelView.UnlockUi();
+                }
             }
         }
 
@@ -690,9 +745,6 @@ namespace FFXIV_TexTools.ViewModels
         /// <param name="materialDictionary">The dictionary of materials for the current model</param>
         private async Task UpdateBodyTextures(TTModel ttModel, IItemModel item, Dictionary<int, ModelTextureData> materialDictionary)
         {
-            var _imc = new Imc(_gameDirectory);
-            var _mtrl = new Mtrl(_gameDirectory);
-            var _index = new Index(_gameDirectory);
 
             // Determine which materials in the model need to be replaced
             var bodyMaterialIndex = GetBodyTextureIndex(ttModel);
@@ -727,7 +779,7 @@ namespace FFXIV_TexTools.ViewModels
             var mtrlVariant = 1;
             try
             {
-                mtrlVariant = (await _imc.GetImcInfo(item)).MaterialSet;
+                mtrlVariant = (await Imc.GetImcInfo(item)).MaterialSet;
             }
             catch (Exception ex)
             {
@@ -751,13 +803,12 @@ namespace FFXIV_TexTools.ViewModels
                     .FirstOrDefault();
                 bTex.MaterialPath = newMaterial;
 
-                var mtrlPath = _mtrl.GetMtrlPath(tempMdlPath, newMaterial, mtrlVariant);
-                var mtrlOffset = await _index.GetDataOffset(mtrlPath);
-                var mtrl = await _mtrl.GetMtrlData(mtrlOffset, mtrlPath, 11);
+                var mtrlPath = Mtrl.GetMtrlPath(tempMdlPath, newMaterial, mtrlVariant);
+                var mtrl = await Mtrl.GetXivMtrl(mtrlPath);
 
                 var colors = ModelTexture.GetCustomColors();
                 colors.InvertNormalGreen = false;
-                var modelMaps = await ModelTexture.GetModelMaps(_gameDirectory, mtrl, colors);
+                var modelMaps = await ModelTexture.GetModelMaps(mtrl, false, colors, -1, MainWindow.UserTransaction);
 
                 // Reindex the material dictionary as materials may have sorted differently
                 ReIndexMaterialDictionary(ttModel, materialDictionary, modelMaps);
@@ -776,9 +827,6 @@ namespace FFXIV_TexTools.ViewModels
         /// <param name="materialDictionary">The dictionary of materials for the current model</param>
         private async Task UpdateTailTextures(TTModel ttModel, Dictionary<int, ModelTextureData> materialDictionary)
         {
-            var _imc = new Imc(_gameDirectory);
-            var _mtrl = new Mtrl(_gameDirectory);
-            var _index = new Index(_gameDirectory);
 
             // Determine which materials in the model need to be replaced
             var currTailNum = GetTailNum(ttModel);
@@ -798,12 +846,11 @@ namespace FFXIV_TexTools.ViewModels
                 var mtrlVariant = 1;
                 materialDictionary[0].MaterialPath = newMaterial;
 
-                var mtrlPath = _mtrl.GetMtrlPath(tempMdlPath, newMaterial, mtrlVariant);
-                var mtrlOffset = await _index.GetDataOffset(mtrlPath);
-                var mtrl = await _mtrl.GetMtrlData(mtrlOffset, mtrlPath, 11);
+                var mtrlPath = Mtrl.GetMtrlPath(tempMdlPath, newMaterial, mtrlVariant);
+                var mtrl = await Mtrl.GetXivMtrl(mtrlPath);
                 var colors = ModelTexture.GetCustomColors();
                 colors.InvertNormalGreen = false;
-                var modelMaps = await ModelTexture.GetModelMaps(_gameDirectory, mtrl, colors);
+                var modelMaps = await ModelTexture.GetModelMaps(mtrl, false, colors, -1, MainWindow.UserTransaction);
 
                 materialDictionary[0] = modelMaps;
             }
@@ -818,82 +865,76 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         private async Task UpdateFaceTextures()
         {
-            ProgressDialogController pc = null;
-            if (!_fullModelView.IsAnyDialogOpen)
+            await _fullModelView.LockUi(UIMessages.UpdatingFaceTitle, UIMessages.PleaseStandByMessage);
+            try
             {
-                pc = await _fullModelView.ShowProgressAsync(UIMessages.UpdatingFaceTitle, UIMessages.PleaseStandByMessage);
-            }
+                TTModel ttModel = null;
+                Dictionary<int, ModelTextureData> materialDictionary = null;
 
-            TTModel ttModel = null;
-            Dictionary<int, ModelTextureData> materialDictionary = null;
-
-            foreach (var shownModel in ViewPortVM.shownModels.Values)
-            {
-                if (shownModel.ItemModel.SecondaryCategory.Equals(XivStrings.Face))
+                foreach (var shownModel in ViewportVM.shownModels.Values)
                 {
-                    ttModel = shownModel.TtModel;
-                    materialDictionary = shownModel.ModelTextureData;
-                }
-            }
-
-            if (ttModel != null)
-            {
-                var _mtrl = new Mtrl(_gameDirectory);
-                var _index = new Index(_gameDirectory);
-
-                var faceRegex = new Regex("(f[0-9]{4})");
-                var facePartRegex = new Regex("(_[a-z]{3}_)");
-                var origFaceNum = faceRegex.Match(ttModel.Source).Value;
-                var newFaceNum = origFaceNum;
-
-                // Second clan face add 100
-                if (SelectedFaceIndex == 1)
-                {
-                    newFaceNum = $"f{(int.Parse(origFaceNum.Substring(1)) + 100).ToString().PadLeft(4, '0')}";
-                }
-
-                var currFaceNum = GetFaceNum(ttModel);
-
-                var tempMdlPath = ttModel.Source.Replace(origFaceNum, newFaceNum);
-
-                if (!currFaceNum.Equals(newFaceNum))
-                {
-                    foreach (var meshGroup in ttModel.MeshGroups)
+                    if (shownModel.ItemModel.SecondaryCategory.Equals(XivStrings.Face))
                     {
-                        meshGroup.Material = meshGroup.Material.Replace(currFaceNum, newFaceNum);
+                        ttModel = shownModel.TtModel;
+                        materialDictionary = shownModel.ModelTextureData;
                     }
                 }
 
-                foreach (var material in ttModel.Materials)
+                if (ttModel != null)
                 {
-                    var matPart = facePartRegex.Match(material).Value;
 
-                    var matLoc = from m in materialDictionary where m.Value.MaterialPath.Contains(matPart) select m;
+                    var faceRegex = new Regex("(f[0-9]{4})");
+                    var facePartRegex = new Regex("(_[a-z]{3}_)");
+                    var origFaceNum = faceRegex.Match(ttModel.Source).Value;
+                    var newFaceNum = origFaceNum;
 
-                    try
+                    // Second clan face add 100
+                    if (SelectedFaceIndex == 1)
                     {
-                        var mtrlPath = _mtrl.GetMtrlPath(tempMdlPath, material);
-                        var mtrlOffset = await _index.GetDataOffset(mtrlPath);
-                        var mtrl = await _mtrl.GetMtrlData(mtrlOffset, mtrlPath, 11);
-                        var colors = ModelTexture.GetCustomColors();
-                        colors.InvertNormalGreen = false;
-                        var modelMaps = await ModelTexture.GetModelMaps(_gameDirectory, mtrl, colors);
+                        newFaceNum = $"f{(int.Parse(origFaceNum.Substring(1)) + 100).ToString().PadLeft(4, '0')}";
+                    }
 
-                        materialDictionary[matLoc.First().Key] = modelMaps;
-                    }
-                    catch
+                    var currFaceNum = GetFaceNum(ttModel);
+
+                    var tempMdlPath = ttModel.Source.Replace(origFaceNum, newFaceNum);
+
+                    if (!currFaceNum.Equals(newFaceNum))
                     {
-                        // Material was not present in new material path
-                        // eg. Viera f0101 only has _etc_ and _iri_ in materials, it retains _fac_ from the original f0001
+                        foreach (var meshGroup in ttModel.MeshGroups)
+                        {
+                            meshGroup.Material = meshGroup.Material.Replace(currFaceNum, newFaceNum);
+                        }
                     }
+
+                    foreach (var material in ttModel.Materials)
+                    {
+                        var matPart = facePartRegex.Match(material).Value;
+
+                        var matLoc = from m in materialDictionary where m.Value.MaterialPath.Contains(matPart) select m;
+
+                        try
+                        {
+                            var mtrlPath = Mtrl.GetMtrlPath(tempMdlPath, material);
+                            var mtrl = await Mtrl.GetXivMtrl(mtrlPath);
+                            var colors = ModelTexture.GetCustomColors();
+                            colors.InvertNormalGreen = false;
+                            var modelMaps = await ModelTexture.GetModelMaps(mtrl, false, colors, -1, MainWindow.UserTransaction);
+
+                            materialDictionary[matLoc.First().Key] = modelMaps;
+                        }
+                        catch
+                        {
+                            // Material was not present in new material path
+                            // eg. Viera f0101 only has _etc_ and _iri_ in materials, it retains _fac_ from the original f0001
+                        }
+                    }
+
+                    ViewportVM.UpdateSkin(SelectedSkeleton.XivRace);
                 }
-
-                ViewPortVM.UpdateSkin(SelectedSkeleton.XivRace);
             }
-
-            if (pc != null)
+            finally
             {
-                await pc.CloseAsync();
+                await _fullModelView.UnlockUi();
             }
         }
 
@@ -933,298 +974,7 @@ namespace FFXIV_TexTools.ViewModels
             }
         }
 
-        #endregion
-
-
-        #region ViewPortOptions
-        /// <summary>
-        /// Resets the light position values for the sliders
-        /// </summary>
-        public void ResetLightValues()
-        {
-            if (_checkedLight == 2) return;
-
-            LightingXValue = 0;
-            LightXLabel = "X  |  0";
-            LightingYValue = 0;
-            LightYLabel = "Y  |  0";
-            LightingZValue = 0;
-            LightZLabel = "Z  |  0";
-        }
-
-        /// <summary>
-        /// Update the light position values on the sliders
-        /// </summary>
-        private void UpdateLights()
-        {
-            var lightValues = ViewPortVM.GetLightOffset(_checkedLight);
-
-            LightingXValue = (float)lightValues.x;
-            LightXLabel = $"X  |  {lightValues.x:0.#}";
-            LightingYValue = (float)lightValues.y;
-            LightYLabel = $"Y  |  {lightValues.y:0.#}";
-            LightingZValue = (float)lightValues.z;
-            LightZLabel = $"Z  |  {lightValues.z:0.#}";
-
-            LightToggleVisibility = _checkedLight == 2 ? Visibility.Visible : Visibility.Collapsed;
-        }
-
-        /// <summary>
-        /// The X position of the selected light
-        /// </summary>
-        public float LightingXValue
-        {
-            get => _lightingXValue;
-            set
-            {
-                _lightingXValue = value;
-                ViewPortVM.UpdateLighting(value, _checkedLight, "X");
-                LightXLabel = $"X  |  {value:0.#}";
-                NotifyPropertyChanged(nameof(LightingXValue));
-            }
-        }
-
-        /// <summary>
-        /// The Y position of the selected light
-        /// </summary>
-        public float LightingYValue
-        {
-            get => _lightingYValue;
-            set
-            {
-                _lightingYValue = value;
-                ViewPortVM.UpdateLighting(value, _checkedLight, "Y");
-                LightYLabel = $"Y  |  {value:0.#}";
-                NotifyPropertyChanged(nameof(LightingYValue));
-            }
-        }
-
-        /// <summary>
-        /// The Z position of the selected light
-        /// </summary>
-        public float LightingZValue
-        {
-            get => _lightingZValue;
-            set
-            {
-                _lightingZValue = value;
-                ViewPortVM.UpdateLighting(value, _checkedLight, "Z");
-                LightZLabel = $"Z  |  {value:0.#}";
-                NotifyPropertyChanged(nameof(LightingZValue));
-            }
-        }
-
-        /// <summary>
-        /// The X position value label
-        /// </summary>
-        public string LightXLabel
-        {
-            get => _lightXLabel;
-            set
-            {
-                _lightXLabel = value;
-                NotifyPropertyChanged(nameof(LightXLabel));
-            }
-        }
-
-        /// <summary>
-        /// The Y position value label
-        /// </summary>
-        public string LightYLabel
-        {
-            get => _lightYLabel;
-            set
-            {
-                _lightYLabel = value;
-                NotifyPropertyChanged(nameof(LightYLabel));
-            }
-        }
-
-        /// <summary>
-        /// The Z position value label
-        /// </summary>
-        public string LightZLabel
-        {
-            get => _lightZLabel;
-            set
-            {
-                _lightZLabel = value;
-                NotifyPropertyChanged(nameof(LightZLabel));
-            }
-        }
-
-        /// <summary>
-        /// The open status of the flyout
-        /// </summary>
-        public bool FlyoutOpen
-        {
-            get => _flyoutOpen;
-            set
-            {
-                _flyoutOpen = value;
-                NotifyPropertyChanged(nameof(FlyoutOpen));
-            }
-        }
-
-        /// <summary>
-        /// The status of the light render toggle
-        /// </summary>
-        public bool LightRenderToggle
-        {
-            get => _lightRenderToggle;
-            set
-            {
-                _lightRenderToggle = value;
-                ViewPortVM.RenderLight3 = value;
-                NotifyPropertyChanged(nameof(LightRenderToggle));
-            }
-        }
-
-        /// <summary>
-        /// The visibility of the light render toggle
-        /// </summary>
-        public Visibility LightToggleVisibility
-        {
-            get => _lightToggleVisibility;
-            set
-            {
-                _lightToggleVisibility = value;
-                NotifyPropertyChanged(nameof(LightToggleVisibility));
-            }
-        }
-
-        /// <summary>
-        /// The checked status of the light 1 radio button
-        /// </summary>
-        public bool Light1Check
-        {
-            get => _light1Check;
-            set
-            {
-                _light1Check = value;
-                if (value)
-                {
-                    _checkedLight = 0;
-                    UpdateLights();
-                }
-            }
-        }
-
-        /// <summary>
-        /// The checked status of the light 2 radio button
-        /// </summary>
-        public bool Light2Check
-        {
-            get => _light2Check;
-            set
-            {
-                _light2Check = value;
-                if (value)
-                {
-                    _checkedLight = 1;
-                    UpdateLights();
-                }
-            }
-        }
-
-        /// <summary>
-        /// The checked status of the light 3 radio button
-        /// </summary>
-        public bool Light3Check
-        {
-            get => _light3Check;
-            set
-            {
-                _light3Check = value;
-                if (value)
-                {
-                    _checkedLight = 2;
-                    UpdateLights();
-                }
-            }
-        }
-
-        /// <summary>
-        /// The current reflection value of the model
-        /// </summary>
-        public int ReflectionValue
-        {
-            get => _reflectionValue;
-            set
-            {
-                _reflectionValue = value;
-                ViewPortVM.UpdateReflection(value);
-                ReflectionLabel = $"{UIStrings.Reflection}  |  {value}";
-                NotifyPropertyChanged(nameof(ReflectionValue));
-            }
-        }
-
-        /// <summary>
-        /// The reflection value label
-        /// </summary>
-        public string ReflectionLabel
-        {
-            get => _reflectionLabel;
-            set
-            {
-                _reflectionLabel = value;
-                NotifyPropertyChanged(nameof(ReflectionLabel));
-            }
-        }
-
-        /// <summary>
-        /// The status of the transparency toggle
-        /// </summary>
-        public bool TransparencyToggle
-        {
-            get => _transparencyToggle;
-            set
-            {
-                _transparencyToggle = value;
-                ViewPortVM.UpdateTransparency(value);
-                NotifyPropertyChanged(nameof(TransparencyToggle));
-            }
-        }
-
-        /// <summary>
-        /// The status of the cull mode toggle
-        /// </summary>
-        public bool CullModeToggle
-        {
-            get => _cullModeToggle;
-            set
-            {
-                _cullModeToggle = value;
-                UpdateCullMode(value);
-                NotifyPropertyChanged(nameof(CullModeToggle));
-            }
-        }
-
-        /// <summary>
-        /// Updates the Cull Mode
-        /// </summary>
-        private void UpdateCullMode(bool noneCull)
-        {
-            ViewPortVM.UpdateCullMode(noneCull);
-
-            Settings.Default.Cull_Mode = noneCull ? UIStrings.None : UIStrings.Back;
-
-            Settings.Default.Save();
-        }
-
-        public bool ShowSkeleton
-        {
-            get => _showSkeleton;
-            set
-            {
-                _showSkeleton = value;
-                ViewPortVM.ToggleSkeleton(value);
-
-                NotifyPropertyChanged(nameof(ShowSkeleton));
-            }
-        }
-
-        #endregion
+#endregion
 
 
         #region Buttons
@@ -1240,7 +990,7 @@ namespace FFXIV_TexTools.ViewModels
         {
             if (ModelList.Count == 1)
             {
-                ViewPortVM.ClearAll();
+                ViewportVM.ClearAll();
                 ModelList.Clear();
                 RemoveEnabled = false;
                 ExportEnabled = false;
@@ -1248,27 +998,46 @@ namespace FFXIV_TexTools.ViewModels
             }
             else
             {
-                var modelToRemove = ModelList[SelectedModelIndex].Substring(ModelList[SelectedModelIndex].IndexOf('('))
-                    .Trim('(').Trim(')');
-                if (modelToRemove.Equals($"{XivStrings.Character}_{XivStrings.Face}"))
+                var path = ModelList[SelectedModelIndex].Value;
+                var slot = ViewHelpers.GetModelSlot(path);
+                ViewportVM.RemoveSlot(slot);
+                ModelList.RemoveAt(SelectedModelIndex);
+                SelectedModelIndex = 0;
+                if (slot == "fac")
                 {
                     FaceComboboxVisibility = Visibility.Collapsed;
                 }
 
-                ViewPortVM.RemoveModel(modelToRemove);
-                ModelList.RemoveAt(SelectedModelIndex);
-                SelectedModelIndex = 0;
             }
+
 
         }
 
+        private void ZoomExtentsRequested(Viewport3DViewModel requestor, double animationTime, Rect3D? boundingBox)
+        {
+            try
+            {
+                if (boundingBox != null)
+                {
+                    _fullModelView.viewport3DX.ZoomExtents(boundingBox.Value, animationTime);
+                }
+                else
+                {
+                    _fullModelView.viewport3DX.ZoomExtents(animationTime);
+                }
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine(ex);
+            }
+        }
 
         /// <summary>
         /// Opens and closes the viewer option flyout
         /// </summary>
         private void ViewerOptions(object obj)
         {
-            FlyoutOpen = !FlyoutOpen;
+            _fullModelView.ViewerOptionsFlyout.IsOpen = !_fullModelView.ViewerOptionsFlyout.IsOpen;
         }
 
         #endregion

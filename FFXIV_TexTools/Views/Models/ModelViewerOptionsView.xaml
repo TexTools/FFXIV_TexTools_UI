@@ -5,8 +5,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:FFXIV_TexTools.Views"
              xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls" x:Class="FFXIV_TexTools.Views.ModelViewerOptionsView"
-             xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
              mc:Ignorable="d" 
+             xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
+             resx:Localization.Enabled="True"    
              d:DesignHeight="450" d:DesignWidth="250">
     <Grid >
         <Grid.RowDefinitions>
@@ -18,63 +19,67 @@
         </Grid.RowDefinitions>
         <Grid Grid.Row="0">
             <Grid.ColumnDefinitions>
+                <ColumnDefinition></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
+            <Button Margin="5"  Content="Shape Deformations" IsEnabled="{Binding ShapeButtonEnabled}"  Click="OpenShapesMenu_Click"/>
+        </Grid>
+
+        <Grid Grid.Row="1" Margin="5">
+            <Grid.RowDefinitions>
+                <RowDefinition></RowDefinition>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
+            <Label Content="Colorset Row:" HorizontalAlignment="Right" VerticalAlignment="Center"></Label>
+            <ComboBox Grid.Column="1" VerticalAlignment="Center" ItemsSource="{Binding Path=ColorsetRowSource}" DisplayMemberPath="Key" SelectedValuePath="Value" SelectedValue="{Binding Path=HighlightedColorsetRow}" IsEnabled="{Binding Path=ColorsetButtonEnabled}"></ComboBox>
+        </Grid>
+        
+        <Grid Grid.Row="2" Margin="5">
+            <Grid.RowDefinitions>
+                <RowDefinition></RowDefinition>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
+            <Label Content="Visible Mesh:" HorizontalAlignment="Right" VerticalAlignment="Center"></Label>
+            <ComboBox x:Name="VisibleMeshComboBox" Grid.Column="1" VerticalAlignment="Center" ItemsSource="{Binding Path=VisibleMeshSource}" DisplayMemberPath="Key" SelectedValuePath="Value" SelectedValue="{Binding Path=VisibleMesh}"></ComboBox>
+        </Grid>
+
+        
+        <Grid Grid.Row="3">
+            <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <mah:ToggleSwitch Header="{Binding Source={x:Static resx:UIStrings.Translucency}}" 
+            <Grid.RowDefinitions>
+                <RowDefinition></RowDefinition>
+            </Grid.RowDefinitions>
+            
+            <mah:ToggleSwitch Grid.Row="0" IsChecked="{Binding Path=MoveLightsWithCamera}" Margin="5"
+                              Header="Light Movement"
                               Style="{StaticResource MahApps.Metro.Styles.ToggleSwitch.Win10}"
-                              OffLabel="{Binding Source={x:Static resx:UIStrings.Disabled}}"
-                              OnLabel="{Binding Source={x:Static resx:UIStrings.Enabled}}" Margin="5" IsChecked="{Binding TransparencyToggle}"/>
-            <mah:ToggleSwitch Header="{Binding Source={x:Static resx:UIStrings.Cull_Mode}}" 
-                              Grid.Column="1"
+                              OffLabel="Static"
+                              OnLabel="Mobile" />
+
+            <mah:ToggleSwitch Grid.Row="0" Grid.Column="1" IsChecked="{Binding Path=AllowCameraReset}" Margin="5"
+                              Header="Camera Reset"
                               Style="{StaticResource MahApps.Metro.Styles.ToggleSwitch.Win10}"
-                              OffLabel="{Binding Source={x:Static resx:UIStrings.Back}}"
-                              OnLabel="{Binding Source={x:Static resx:UIStrings.None}}" Margin="5" IsChecked="{Binding CullModeToggle}"/>
+                              OffLabel="Disabled"
+                              OnLabel="Enabled" />
         </Grid>
-        <Grid Grid.Row="1">
+        <Grid Grid.Row="4">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <Label Grid.Row="0" Content="{Binding ReflectionLabel, FallbackValue=Reflection}" Margin="5"/>
             <Slider Grid.Row="1" Margin="5" AutoToolTipPlacement="TopLeft" Value="{Binding ReflectionValue}" Minimum="-1" Maximum="100"/>
-        </Grid>
-        <Grid Grid.Row="2">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
-            <Label Grid.Row="0" Content="{Binding Source={x:Static resx:UIStrings.Lights}}"/>
-            <Grid Grid.Row="1">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
-                <RadioButton Grid.Column="0" Content="1" GroupName="Lights" Margin="5" IsChecked="{Binding Light1Check, FallbackValue=true}"/>
-                <RadioButton Grid.Column="1" Content="2" GroupName="Lights" Margin="5" IsChecked="{Binding Light2Check}"/>
-                <RadioButton Grid.Column="2" Content="3" GroupName="Lights" Margin="5" IsChecked="{Binding Light3Check}"/>
-            </Grid>
-        </Grid>
-        <Grid Grid.Row="3">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
-            <Grid Grid.Row="0">
-                <Label Content="{Binding LightXLabel, FallbackValue=X}" Margin="5"/>
-                <mah:ToggleSwitch Style="{StaticResource MahApps.Metro.Styles.ToggleSwitch.Win10}" HorizontalAlignment="Right" VerticalAlignment="Center"
-                                  Margin="0, 0, 5, 0" IsChecked="{Binding LightRenderToggle}" Visibility="{Binding LightToggleVisibility, FallbackValue=Collapsed}"/>
-            </Grid>
-            <Slider Grid.Row="1" Margin="5" AutoToolTipPlacement="TopLeft" Value="{Binding LightingXValue}" Maximum="10" Minimum="-10" TickFrequency="0.1" LargeChange="0.1"/>
-            <Label Grid.Row="2" Content="{Binding LightYLabel, FallbackValue=Y}" Margin="5"/>
-            <Slider Grid.Row="3" Margin="5" AutoToolTipPlacement="TopLeft" Value="{Binding LightingYValue}" Maximum="10" Minimum="-10" TickFrequency="0.1"/>
-            <Label Grid.Row="4" Content="{Binding LightZLabel, FallbackValue=Z}" Margin="5"/>
-            <Slider Grid.Row="5" Margin="5" AutoToolTipPlacement="TopLeft" Value="{Binding LightingZValue}" Maximum="10" Minimum="-10" TickFrequency="0.1"/>
         </Grid>
     </Grid>
 </UserControl>

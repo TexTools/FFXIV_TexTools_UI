@@ -22,7 +22,7 @@ using System.Windows.Media.Media3D;
 
 namespace FFXIV_TexTools.Textures
 {
-    public class ColorChannels : ShaderEffect
+    public class ColorChannels : ShaderEffect, IDisposable
     {
         public static readonly DependencyProperty InputProperty = RegisterPixelShaderSamplerProperty("Input", typeof(ColorChannels), 0);
 
@@ -34,7 +34,20 @@ namespace FFXIV_TexTools.Textures
 
         private Brush Input
         {
-            get => (Brush)GetValue(InputProperty);
+            get {
+
+                if(InputProperty == null)
+                {
+                    return null;
+                }
+                
+                var val = GetValue(InputProperty);
+                if(val == null)
+                {
+                    return null;
+                }
+                return val as Brush;
+            }
             set => SetValue(InputProperty, value);
         }
 
@@ -61,7 +74,11 @@ namespace FFXIV_TexTools.Textures
 
         public void Dispose()
         {
-            Input.Dispose();
+            if (Input != null)
+            {
+                Input.Dispose();
+                Input = null;
+            }
         }
     }
 }

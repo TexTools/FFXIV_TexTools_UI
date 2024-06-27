@@ -23,15 +23,18 @@ using FolderSelect;
 using ForceUpdateAssembly;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
+using WK.Libraries.BetterFolderBrowserNS;
 using xivModdingFramework.Cache;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Models.DataContainers;
+using xivModdingFramework.Models.FileTypes;
 using xivModdingFramework.Models.ModelTextures;
 
 namespace FFXIV_TexTools.ViewModels
@@ -42,6 +45,18 @@ namespace FFXIV_TexTools.ViewModels
         private string _defaultModpackUrl = Settings.Default.Default_Modpack_Url;
         const string _bgColorDefault = "#FF777777";
         private CustomizeSettingsView _view;
+
+        public ObservableCollection<KeyValuePair<string, string>> ModelingTools { get; set; } = OnboardingViewModel.ModelingToolsList;
+
+        public ObservableCollection<KeyValuePair<string, int>> ImageSizes { get; set; } = new ObservableCollection<KeyValuePair<string, int>>()
+        {
+            new KeyValuePair<string, int>("None", 0),
+            new KeyValuePair<string, int>("512", 512),
+            new KeyValuePair<string, int>("1024", 1024),
+            new KeyValuePair<string, int>("2048", 2048),
+            new KeyValuePair<string, int>("4096", 4096),
+        };
+
 
         public CustomizeViewModel(CustomizeSettingsView view)
         {
@@ -72,18 +87,14 @@ namespace FFXIV_TexTools.ViewModels
                 XivRace.AuRa_Female.GetDisplayName(),
                 XivRace.Viera_Male.GetDisplayName(),
                 XivRace.Viera_Female.GetDisplayName(),
-                XivRace.Hrothgar_Male.GetDisplayName()
+                XivRace.Hrothgar_Male.GetDisplayName(),
+                XivRace.Hrothgar_Female.GetDisplayName()
             };
 
             UpdateBranches  = new List<string>
             {
                 UIStrings.Version_Stable,
                 UIStrings.Version_Latest
-            };
-
-            Target3DPrograms = new List<string>() {
-                blenderName, 
-                maxName 
             };
         }
 
@@ -282,35 +293,112 @@ namespace FFXIV_TexTools.ViewModels
                 }
             }
         }
-
-        public bool DefaultRaceEnabled
+        
+        public bool AutoFixDawntrail
         {
-            get
-            {
-                return Settings.Default.Remember_Race_Selection == false;
-            }
+            get => Settings.Default.FixPreDawntrailOnImport;
             set
             {
-                // --
+                if (AutoFixDawntrail != value)
+                {
+                    Settings.Default.FixPreDawntrailOnImport = value;
+                    Settings.Default.Save();
+                    NotifyPropertyChanged(nameof(AutoFixDawntrail));
+                }
             }
         }
 
-
-
-        const string maxName = "3DS Max/Unreal";
-        const string blenderName = "Blender/Maya/Unity";
-        public string Selected3DProgram
+        public bool AutoFixPartialDawntrail
         {
-            get => Settings.Default.InvertNormalGreen ? maxName : blenderName;
+            get => Settings.Default.FixPreDawntrailPartialOnImport;
             set
             {
-
-                var b = value == maxName ? true : false;
-
-                if (Settings.Default.InvertNormalGreen != b)
+                if (AutoFixPartialDawntrail != value)
                 {
-                    SetInvertNormal(b);
-                    NotifyPropertyChanged(nameof(Selected3DProgram));
+                    Settings.Default.FixPreDawntrailPartialOnImport = value;
+                    Settings.Default.Save();
+                    NotifyPropertyChanged(nameof(AutoFixPartialDawntrail));
+                }
+            }
+        }
+        public int MaxImageSize
+        {
+            get => Settings.Default.MaxImageSize;
+            set
+            {
+                if (MaxImageSize != value)
+                {
+                    Settings.Default.MaxImageSize = value;
+                    Settings.Default.Save();
+                    NotifyPropertyChanged(nameof(MaxImageSize));
+                }
+            }
+        }
+        public bool UnsafeMode
+        {
+            get => Settings.Default.LiveDangerously;
+            set
+            {
+                if (UnsafeMode != value)
+                {
+                    Settings.Default.LiveDangerously = value;
+                    Settings.Default.Save();
+                    NotifyPropertyChanged(nameof(UnsafeMode));
+                }
+            }
+        }
+        public bool ShiftExportUV
+        {
+            get => Settings.Default.ShiftExportUV;
+            set
+            {
+                if (ShiftExportUV != value)
+                {
+                    Settings.Default.ShiftExportUV = value;
+                    Settings.Default.Save();
+                    NotifyPropertyChanged(nameof(ShiftExportUV));
+                }
+            }
+        }
+        public bool OpenTxByDefault
+        {
+            get => Settings.Default.OpenTransactionOnStart;
+            set
+            {
+                if (OpenTxByDefault != value)
+                {
+                    Settings.Default.OpenTransactionOnStart = value;
+                    Settings.Default.Save();
+                    NotifyPropertyChanged(nameof(OpenTxByDefault));
+                }
+            }
+        }
+
+        public bool CompressUpgradeTextures
+        {
+            get => Settings.Default.CompressEndwalkerUpgradeTextures;
+            set
+            {
+                if (CompressUpgradeTextures != value)
+                {
+                    Settings.Default.CompressEndwalkerUpgradeTextures = value;
+                    Settings.Default.Save();
+                    XivCache.FrameworkSettings.DefaultTextureFormat = Settings.Default.CompressEndwalkerUpgradeTextures ? xivModdingFramework.Textures.Enums.XivTexFormat.BC7 : xivModdingFramework.Textures.Enums.XivTexFormat.A8R8G8B8;
+                    NotifyPropertyChanged(nameof(CompressUpgradeTextures));
+                }
+            }
+        }
+
+        public string ModelingTool
+        {
+            get => Settings.Default.ModelingTool;
+            set
+            {
+                if(Enum.TryParse<EModelingTool>(value, false, out var tool)) {
+                    Settings.Default.ModelingTool = value;
+                    UpdateFrameworkColors();
+                    NotifyPropertyChanged(nameof(ModelingTool));
+                    Settings.Default.Save();
                 }
             }
         }
@@ -333,7 +421,7 @@ namespace FFXIV_TexTools.ViewModels
         {
             MainWindow.MakeHighlander();
 
-            var result = FlexibleMessageBox.Show("TexTools will now change to the selected update branch.", "Branch Change Notice", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
+            var result = FlexibleMessageBox.Show("TexTools will now change to the selected update branch.".L(), "Branch Change Notice".L(), MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
             if (result != DialogResult.OK) return;
 
             var beta = false;
@@ -394,29 +482,6 @@ namespace FFXIV_TexTools.ViewModels
         }
 
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public bool RememberRaceSelection
-        {
-            get => Settings.Default.Remember_Race_Selection;
-            set
-            {
-                if (RememberRaceSelection != value)
-                {
-                    SetRememberRaceSelection(value);
-                    NotifyPropertyChanged(nameof(RememberRaceSelection));
-                    NotifyPropertyChanged(nameof(DefaultRaceEnabled));
-                }
-
-            }
-        }
-        public void SetRememberRaceSelection(bool value)
-        {
-            Settings.Default.Remember_Race_Selection = value;
-            Settings.Default.Save();
-        }
-
         public bool AutoMaterialFix
         {
             get => Settings.Default.AutoMaterialFix;
@@ -437,97 +502,6 @@ namespace FFXIV_TexTools.ViewModels
             Settings.Default.Save();
         }
 
-
-
-        /// <summary>
-        /// The lumina directory
-        /// </summary>
-        public string Lumina_Directory
-        {
-            get => !string.IsNullOrEmpty(Settings.Default.Lumina_Directory) ? Path.GetFullPath(Settings.Default.Lumina_Directory) : string.Empty;
-            set {
-                LuminaSettingsUpdated();
-                NotifyPropertyChanged(nameof(Lumina_Directory));
-            }
-        }
-
-        /// <summary>
-        /// Lumina enabled state
-        /// </summary>
-        public bool UseLuminaExports
-        {
-            get => Settings.Default.Lumina_IsEnabled;
-            set
-            {
-                if (UseLuminaExports != value)
-                {
-                    SetLuminaExports(value);
-                    LuminaSettingsUpdated();
-                    NotifyPropertyChanged(nameof(UseLuminaExports));
-                }
-            }
-        }
-
-        public void SetLuminaExports(bool value)
-        {
-            Settings.Default.Lumina_IsEnabled = value;
-            Settings.Default.Save();
-        }
-
-        private static void LuminaSettingsUpdated()
-        {
-            var gi = XivCache.GameInfo;
-
-            // Update the cache's game info object.
-            DirectoryInfo luminaDir = null;
-            var useLumina = Settings.Default.Lumina_IsEnabled;
-            try
-            {
-                // We don't need to revalidate the cache here, as the the Lumina Settings/Operations don't actually interact with the cache itself at all.
-                luminaDir = new DirectoryInfo(Settings.Default.Lumina_Directory);
-                XivCache.SetGameInfo(gi.GameDirectory, gi.GameLanguage, gi.DxMode, false, true, luminaDir, Settings.Default.Lumina_IsEnabled);
-            } catch(Exception ex)
-            {
-                if (!String.IsNullOrWhiteSpace(Properties.Settings.Default.Lumina_Directory) && Properties.Settings.Default.Lumina_IsEnabled == true)
-                {
-                    Helpers.FlexibleMessageBox.Show("Unable to save Lumina settings, invalid Lumina directory.");
-                }
-                Settings.Default.Lumina_IsEnabled = false;
-                XivCache.SetGameInfo(gi.GameDirectory, gi.GameLanguage, gi.DxMode, false, true, null, false);
-            }
-
-        }
-
-
-        /// <summary>
-        /// The selected skin type
-        /// </summary>
-        public bool UseSynchronizedViews
-        {
-            get => Settings.Default.Sync_Views;
-            set
-            {
-                if (UseSynchronizedViews != value)
-                {
-                    SetViewSync(value);
-                    NotifyPropertyChanged(nameof(UseSynchronizedViews));
-                }
-
-            }
-        }
-
-        public void SetViewSync(bool value)
-        {
-            Settings.Default.Sync_Views = value;
-            Settings.Default.Save();
-        }
-
-        public void SetInvertNormal(bool value)
-        {
-            Settings.Default.InvertNormalGreen = value;
-            Settings.Default.Save();
-            UpdateFrameworkColors();
-        }
 
         /// <summary>
         /// The list of default races
@@ -638,7 +612,6 @@ namespace FFXIV_TexTools.ViewModels
         public ICommand Save_SelectDir => new RelayCommand(SaveSelectDir);
         public ICommand Backup_SelectDir => new RelayCommand(BackupSelectDir);
         public ICommand ModPack_SelectDir => new RelayCommand(ModPackSelectDir);
-        public ICommand Lumina_SelectDir => new RelayCommand(LuminaSelectDir);
         public ICommand Customize_Reset => new RelayCommand(ResetToDefault);
         public ICommand CloseCustomize => new RelayCommand(CustomizeClose);
 
@@ -656,20 +629,44 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         private void FFXIVSelectDir(object obj)
         {
-            var folderSelect = new FolderSelectDialog
+            var ofd = new BetterFolderBrowser()
             {
-                Title = UIMessages.SelectffxivFolderTitle
+                Title = "Select FFXIV Folder",
             };
 
-            if (folderSelect.ShowDialog())
+            var previous = Settings.Default.FFXIV_Directory;
+            if (!string.IsNullOrWhiteSpace(Settings.Default.FFXIV_Directory))
             {
-                Settings.Default.FFXIV_Directory = folderSelect.FileName;
-                Settings.Default.Save();
+                ofd.RootFolder = Settings.Default.FFXIV_Directory;
+            }
+            else if (!string.IsNullOrWhiteSpace(OnboardingWindow.GetDefaultInstallDirectory()))
+            {
+                ofd.RootFolder = OnboardingWindow.GetDefaultInstallDirectory();
             }
 
-            FFXIV_Directory = Settings.Default.FFXIV_Directory;
 
-            Helpers.FlexibleMessageBox.Show("TexTools will now restart.");
+            if (ofd.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+            {
+                return;
+            }
+
+            var path = OnboardingWindow.ResolveFFXIVFolder(ofd.SelectedFolder);
+
+            while (!OnboardingWindow.IsGameDirectoryValid(path))
+            {
+                FlexibleMessageBox.Show("Invalid FFXIV Install", "Please select a valid FFXIV install folder.", MessageBoxButtons.OK, MessageBoxIcon.Question);
+                if (ofd.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+                {
+                    return;
+                }
+                path = OnboardingWindow.ResolveFFXIVFolder(ofd.SelectedFolder);
+            }
+
+            Settings.Default.FFXIV_Directory = path;
+            FFXIV_Directory = path;
+            Settings.Default.Save();
+
+            Helpers.FlexibleMessageBox.Show("TexTools will now restart.".L());
             _view.Close();
             MainWindow.GetMainWindow().Restart();
         }
@@ -817,33 +814,6 @@ namespace FFXIV_TexTools.ViewModels
                 FlexibleMessageBox.Show(string.Format(UIMessages.ModPacksLocationChangedMessage, folderSelect.FileName), UIMessages.NewDirectoryTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                 ModPack_Directory = Settings.Default.ModPack_Directory;
-            }
-        }
-
-        /// <summary>
-        /// The select lumina directory command
-        /// </summary>
-        private void LuminaSelectDir(object obj)
-        {
-            var oldSaveLocation = Lumina_Directory;
-            var folderSelect = new FolderSelectDialog
-            {
-                Title = UIMessages.NewSaveLocationTitle,
-                InitialDirectory = oldSaveLocation
-            };
-
-            if (folderSelect.ShowDialog())
-            {
-                var metaPath = Path.Combine(folderSelect.FileName, "meta.json");
-                if (!File.Exists(metaPath))
-                    File.WriteAllText(metaPath, "{\"FileVersion\":0,\"Name\":\"TexTools Redirected Exports\",\"Author\":\"TexTools\",\"Description\":\"TexTools Redirected Exports\",\"Version\":null,\"Website\":null,\"ChangedItems\":[],\"FileSwaps\":{},\"Groups\":{}}");
-
-                Settings.Default.Lumina_Directory = folderSelect.FileName;
-                Settings.Default.Save();
-
-                FlexibleMessageBox.Show(string.Format(UIMessages.SavedLocationChangedMessage, folderSelect.FileName), UIMessages.NewDirectoryTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                Lumina_Directory = Settings.Default.Lumina_Directory;
             }
         }
 
@@ -1002,6 +972,7 @@ namespace FFXIV_TexTools.ViewModels
             Settings.Default.Save();
             UpdateFrameworkColors();
         }
+
         #endregion
 
 
@@ -1034,14 +1005,19 @@ namespace FFXIV_TexTools.ViewModels
             c = (System.Windows.Media.Color)ColorConverter.ConvertFromString(Settings.Default.Furniture_Color);
             colorSet.FurnitureColor = new SharpDX.Color(c.R, c.G, c.B, c.A);
 
-            colorSet.InvertNormalGreen = Settings.Default.InvertNormalGreen;
+
+            if(Enum.TryParse<EModelingTool>(Settings.Default.ModelingTool, true, out var tool))
+            {
+                XivCache.FrameworkSettings.ModelingTool = tool;
+                colorSet.InvertNormalGreen = XivCache.FrameworkSettings.ModelingTool.UsesDirectXNormals();
+            }
+            
 
             ModelTexture.SetCustomColors(colorSet);
         }
 
         public static void UpdateCacheSettings()
         {
-            LuminaSettingsUpdated();
             XivCache.SetMetaValue(TTModel._SETTINGS_KEY_EXPORT_ALL_BONES, Settings.Default.ExportAllBones);
         }
 

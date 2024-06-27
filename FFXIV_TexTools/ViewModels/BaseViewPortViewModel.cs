@@ -133,31 +133,18 @@ namespace FFXIV_TexTools.ViewModels
                 }
                 else
                 {
-                    throw new HelixToolkitException("Camera Model Error.");
+                    throw new HelixToolkitException("Camera Model Error.".L());
                 }
             };
 
             // default camera model
             CameraModel = Perspective;
-
-            Title = "Demo (HelixToolkitDX)";
-            SubTitle = "Default Base View Model";
         }
 
         public void OnCameraModelChanged()
         {
             var eh = CameraModelChanged;
             eh?.Invoke(this, new EventArgs());
-        }
-
-        public static MemoryStream LoadFileToMemory(string filePath)
-        {
-            using (var file = new FileStream(filePath, FileMode.Open))
-            {
-                var memory = new MemoryStream();
-                file.CopyTo(memory);
-                return memory;
-            }
         }
 
         #region IDisposable Support

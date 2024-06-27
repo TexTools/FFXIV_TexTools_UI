@@ -1,0 +1,88 @@
+﻿<Window x:Class="FFXIV_TexTools.Views.Controls.ShaderKeysEditor"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FFXIV_TexTools.Views.Controls"
+        mc:Ignorable="d"
+        xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
+        resx:Localization.Enabled="True"
+        Title="Shader Keys Editor"
+        ResizeMode="NoResize"
+        SizeToContent="WidthAndHeight">
+    <Window.Resources>
+
+        <DataTemplate x:Key="ShaderKeyTemplate">
+        </DataTemplate>
+    </Window.Resources>
+    <Grid Height="400" Width="600">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="60"></RowDefinition>
+            <RowDefinition Height="1*"></RowDefinition>
+            <RowDefinition Height="40"></RowDefinition>
+        </Grid.RowDefinitions>
+        
+        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="5" TextAlignment="Center" FontStyle="Italic" FontSize="10">
+            <Run Text="Shader Keys enable various Shader functionality.  They are specific to each Shader Pack."/><LineBreak/>
+            <Run Text="Shader Keys only work in specific (not entirely known) combinations, with specific values."/><LineBreak/>
+            <Run Text="Shader Key Names are tentative guesses based upon their usage."/>
+        </TextBlock>
+
+        <ListView x:Name="KeyList"  HorizontalAlignment="Center" VerticalAlignment="Top" Grid.Row="1" Grid.Column="0" Padding="0" Margin="0">
+            <ListView.View>
+                <GridView>
+                    <GridView.Columns>
+                        <GridViewColumn Width="200">
+                            <GridViewColumn.Header>
+                                <Label HorizontalAlignment="Stretch" VerticalAlignment="Bottom" FontWeight="Bold" Content="Key" Margin="5,0,5,0"></Label>
+                            </GridViewColumn.Header>
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <ComboBox x:Name="KeyBox" HorizontalAlignment="Stretch" VerticalAlignment="Center"
+                            DisplayMemberPath="Key"
+                            SelectedValuePath="Value"
+                            SelectedValue="{Binding Path=KeyId}"
+                            ItemsSource="{Binding Path=AvailableKeys}"
+                            Margin="5,0,5,0"
+                    />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Width="200">
+                            <GridViewColumn.Header>
+                                <Label HorizontalAlignment="Stretch" VerticalAlignment="Bottom" FontWeight="Bold" Content="Value" Margin="5,0,5,0"></Label>
+                            </GridViewColumn.Header>
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <ComboBox x:Name="ValueBox" HorizontalAlignment="Stretch" VerticalAlignment="Center"
+                            DisplayMemberPath="Key"
+                            SelectedValuePath="Value"
+                            SelectedValue="{Binding Path=Value}"
+                            ItemsSource="{Binding Path=KnownValues}"
+                            Margin="5,0,5,0"
+                    />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Width="150">
+                            <GridViewColumn.Header>
+                                <Button Content="Add New Key" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="100" Click="AddKey_Click" Margin="5,0,5,0"></Button>
+                            </GridViewColumn.Header>
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button Content="Remove Key" HorizontalAlignment="Left" VerticalAlignment="Center" Width="100" Click="RemoveKey_Click"  Margin="5,0,5,0"></Button>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                    </GridView.Columns>
+                </GridView>
+            </ListView.View> 
+        </ListView>
+
+        <Button x:Name="ConfirmButton" Content="Confirm" Grid.Row="2" Width="100" Height="30" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10,0,10,0" Click="Confirm_Click"/>
+        <Button x:Name="CancelButton" Content="Cancel" Grid.Row="2" Width="100" Height="30" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,10,0" Click="Cancel_Click"/>
+    </Grid>
+</Window>

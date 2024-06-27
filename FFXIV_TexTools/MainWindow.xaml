@@ -7,16 +7,15 @@
         xmlns:models="clr-namespace:FFXIV_TexTools.Models"
         xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
-        xmlns:views ="clr-namespace:FFXIV_TexTools.Views"
-        xmlns:metadata ="clr-namespace:FFXIV_TexTools.Views.Metadata"
+        xmlns:item ="clr-namespace:FFXIV_TexTools.Views.Item"
         xmlns:resx="clr-namespace:FFXIV_TexTools.Resources" 
-        xmlns:items="clr-namespace:FFXIV_TexTools.Views.Controls"
+        xmlns:controls="clr-namespace:FFXIV_TexTools.Views.Controls"
                       mc:Ignorable="d"
+        resx:Localization.Enabled="True"
         Title="FFXIV TexTools" Height="720" Width="1280" WindowStartupLocation="CenterScreen" Closing="MetroWindow_Closing" Loaded="MetroWindow_Loaded">
     <Controls:MetroWindow.RightWindowCommands>
         <Controls:WindowCommands>
             <Button x:Name="ChinaDiscordButton" Content="{Binding Source={x:Static resx:UIStrings.ChinaDiscord}}" Visibility="Collapsed" Click="ChinaDiscordButton_Click"/>
-            <Button Content="{Binding DXVersionText}" Command="{Binding DXVersionCommand}" />
             <Button x:Name="LanguageButton" Content="{Binding Source={x:Static resx:UIStrings.Language}}" Click="LanguageButton_Click"/>
             <Button x:Name="DiscordButton" ToolTip="{Binding Source={x:Static resx:UIStrings.Join_us_on_Discord}}" Click="DiscordButton_Click">
                 <iconPacks:PackIconSimpleIcons Kind="Discord" VerticalAlignment="Center" HorizontalAlignment="Center"/>
@@ -32,45 +31,86 @@
             <RowDefinition/>
             <RowDefinition Height="22*"/>
         </Grid.RowDefinitions>
-        <Menu VerticalAlignment="Top" Grid.Row="0">
+        
+        <Grid Grid.Row="0" Margin="5,0" VerticalAlignment="Center">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                <ColumnDefinition Width="120"></ColumnDefinition>
+                <ColumnDefinition MinWidth="200" Width="Auto"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
+            <Label Grid.Column="1" Content="System State:"></Label>
+            <Button Grid.Column="2" x:Name="SafeToggleButton" Content="Safe" VerticalAlignment="Center" Click="SafeToggle_Click" Margin="5,0"></Button>
+
+
+            <Button Grid.Column="4" VerticalAlignment="Center" Click="TransactionStatus_Click" Margin="5,0">
+                <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Column="3" >
+                <Run>Transaction Status:</Run>
+                <Run Text="{Binding Path=TxStatusText, FallbackValue=Unknown}" FontWeight="Bold" Foreground="{Binding Path=TxStatusBrush, FallbackValue=Red}"></Run>
+                </TextBlock>
+            </Button>
+        </Grid>
+        
+        <Menu VerticalAlignment="Top" Grid.Row="0" HorizontalAlignment="Left">
             <Menu.ItemsPanel>
                 <ItemsPanelTemplate>
                     <DockPanel HorizontalAlignment="Stretch"/>
                 </ItemsPanelTemplate>
             </Menu.ItemsPanel>
             <MenuItem Header="{Binding Source={x:Static resx:UIStrings.Mods}}">
-                <MenuItem Header="{Binding Source={x:Static resx:UIStrings.Mod_List}}">
-                    <MenuItem x:Name="Menu_ModList" Header="{Binding Source={x:Static resx:UIStrings.Manage_ModList}}" Click="Menu_ModList_Click"/>
-                    <MenuItem x:Name="Menu_CleanUpModList" Header="{Binding Source={x:Static resx:UIStrings.Clean_Up_ModList}}" Click="Menu_CleanUpModList_Click"/>
-                    <MenuItem x:Name="Menu_RecoverSpace" Header="{Binding Source={x:Static resx:UIStrings.Recover_Space}}" Click="Menu_RecoverSpace_Click"/>
-                </MenuItem>
+                <MenuItem x:Name="Menu_ModList" Header="{Binding Source={x:Static resx:UIStrings.Manage_ModList}}" Click="Menu_ModList_Click"/>
+
                 <MenuItem x:Name="Menu_CreateModPack" Header="{Binding Source={x:Static resx:UIStrings.Create_Modpack}}">
-                    <MenuItem x:Name="Menu_MakeModpackWizard" Header="{Binding Source={x:Static resx:UIStrings.ModPack_Wizard}}" Click="Menu_MakeModpackWizard_Click"/>
-                    <MenuItem x:Name="Menu_MakeStandardModpack" Header="{Binding Source={x:Static resx:UIStrings.Standard_Modpack}}" Click="Menu_MakeStandardModpack_Click"/>
-                    <MenuItem x:Name="Menu_MakeSimpleModpack" Header="{Binding Source={x:Static resx:UIStrings.Simple_ModPack}}" Click="Menu_MakeSimpleModpack_Click"/>
-                    <MenuItem x:Name="Menu_MakeBackupModpack" Header="{Binding Source={x:Static resx:UIStrings.Backup_Modpack}}" Click="Menu_MakeBackupModpack_Click"/>
+                    <MenuItem x:Name="Menu_MakeModpackWizard" Header="Advanced" Click="Menu_MakeModpackWizard_Click"/>
+                    <MenuItem x:Name="Menu_MakeStandardModpack" Header="From Items" Click="Menu_MakeStandardModpack_Click"/>
+                    <MenuItem x:Name="Menu_MakeSimpleModpack" Header="From Files" Click="Menu_MakeSimpleModpack_Click"/>
+                    <MenuItem x:Name="Menu_MakeBackupModpack" Header="Create Backup" Click="Menu_MakeBackupModpack_Click"/>
                 </MenuItem>
                 <MenuItem x:Name="Menu_ImportModpack" Header="{Binding Source={x:Static resx:UIStrings.Import_ModPacks}}" Click="Menu_ImportModpack_Click"/>
-                <MenuItem x:Name="Menu_BatchProcessing" Header="{Binding Source={x:Static resx:UIStrings.Batch}}">
-                    <MenuItem x:Name="Menu_DisableAll" Header="{Binding Source={x:Static resx:UIStrings.Disable_All_Mods}}" Command="{Binding DisableAllModsCommand}"/>
-                    <MenuItem x:Name="Menu_EnableAll" Header="{Binding Source={x:Static resx:UIStrings.Enable_All_Mods}}" Command="{Binding EnableAllModsCommand}"/>
-                </MenuItem>
+                <MenuItem x:Name="Menu_DisableAll" Header="{Binding Source={x:Static resx:UIStrings.Disable_All_Mods}}" Command="{Binding DisableAllModsCommand}"/>
+                <MenuItem x:Name="Menu_EnableAll" Header="{Binding Source={x:Static resx:UIStrings.Enable_All_Mods}}" Command="{Binding EnableAllModsCommand}"/>
+            </MenuItem>
+            <MenuItem Header="{Binding Source={x:Static resx:UIStrings.View}}" StaysOpenOnClick="True">
+                <MenuItem x:Name="Menu_ProjectManager" Header="Project Manager" Click="Menu_ProjectManager_Click"/>
+                <MenuItem Header="Transaction Manager" Click="TransactionStatus_Click"/>
+                <MenuItem Header="New Item Viewer" Click="ItemViewer_Click"/>
+                <MenuItem Header="New File Viewer" Click="FileViewerButton_Click"/>
+                <MenuItem x:Name="Menu_FullModelViewer" Header="Full Model Viewer" Click="FullModelViewer_Click"/>
+                <MenuItem x:Name="Menu_RacialScaling" Header="Racial Settings Editor" Click="Menu_RacialScaling_Click"/>
             </MenuItem>
             <MenuItem Header="{Binding Source={x:Static resx:UIStrings.Tools}}" StaysOpenOnClick="True">
                 <MenuItem x:Name="Menu_ItemConverter" Header="{Binding Source={x:Static resx:UIStrings.Item_Converter}}" Click="Menu_ItemConverter_Click"/>
-                <MenuItem x:Name="Menu_RacialScaling" Header="Edit Racial Settings" Click="Menu_RacialScaling_Click"/>
-                <MenuItem x:Name="Menu_FullModelViewer" Header="Full Model Viewer" Click="FullModelViewer_Click"/>
                 <MenuItem x:Name="Menu_IconSearch" Header="{Binding Source={x:Static resx:UIStrings.Icon_Search}}" Click="Menu_IconIDSearch_Click"/>
-                <MenuItem x:Name="Menu_AutoSkinUpdate" Header="Auto-Assign Skin Materials" Click="Menu_AutoSkinUpdate_Click"/>
+
+                <MenuItem Header="{Binding Source={x:Static resx:UIStrings.Mod_List}}">
+                    <MenuItem x:Name="Menu_CleanUpModList" Header="{Binding Source={x:Static resx:UIStrings.Clean_Up_ModList}}" Click="Menu_CleanUpModList_Click"/>
+                    <MenuItem x:Name="Menu_RecoverSpace" Header="{Binding Source={x:Static resx:UIStrings.Recover_Space}}" Click="Menu_RecoverSpace_Click"/>
+                </MenuItem>
+
+                <MenuItem Header="Dawntrail Upgrades">
+                    <MenuItem Header="Upgrade Modpack" Click="UpdateModpack_Click"/>
+                    <MenuItem Header="Index Texture Creator" Click="IndexTextureCreator_Click"/>
+                    <MenuItem Header="Hair Texture Converter" Click="HairTextureConverter_Click"/>
+                    <MenuItem Header="Eye Diffuse Creator" Click="IrisDiffuseCreator_Click"/>
+                </MenuItem>
+                
+                <MenuItem Header="{Binding Source={x:Static resx:UIStrings.Models}}">
+                    <MenuItem x:Name="Menu_CopyModel" Header="Copy Models" Click="Menu_CopyModel_Click"/>
+                    <MenuItem x:Name="Menu_MergeModels" Header="Merge Models" Click="Menu_MergeModels_Click"/>
+                    <MenuItem x:Name="Menu_AutoSkinUpdate" Header="Auto-Assign Skin Materials" Click="Menu_AutoSkinUpdate_Click"/>
+                </MenuItem>
+
                 <MenuItem Header="{Binding Source={x:Static resx:UIStrings.Raw_File_Operations}}">
+                    <MenuItem Header="Import FFXIV Folder Tree" Click="Menu_ImportFolder_Click"/>
                     <MenuItem x:Name="Menu_ExtractRaw" Header="{Binding Source={x:Static resx:UIStrings.Extract_Raw}}" Click="Menu_ExtractRaw_Click"/>
                     <MenuItem x:Name="Menu_ImportRaw" Header="{Binding Source={x:Static resx:UIStrings.Import_Raw}}" Click="Menu_ImportRaw_Click"/>
                     <MenuItem x:Name="Menu_CopyFile" Header="{Binding Source={x:Static resx:UIStrings.Copy_File}}" Click="Menu_CopyFile_Click"/>
-                    <MenuItem x:Name="Menu_CopyModel" Header="Copy Model File" Click="Menu_CopyModel_Click"/>
                 </MenuItem>
+
             </MenuItem>
             <MenuItem Header="{Binding Source={x:Static resx:UIStrings.Options}}" StaysOpenOnClick="True">
-                <MenuItem x:Name="Menu_Customize" Header="{Binding Source={x:Static resx:UIStrings.Customize}}" Click="Customize_Click"/>
+                <MenuItem x:Name="Menu_Customize" Header="{Binding Source={x:Static resx:UIStrings.Settings}}" Click="Customize_Click"/>
                 <MenuItem Header="{Binding Source={x:Static resx:UIStrings.Theme}}">
                     <MenuItem x:Name="MenuLightTheme" Header="Light" Click="MenuLightTheme_Click"/>
                     <MenuItem x:Name="MenuDarkTheme" Header="Dark" Click="MenuDarkTheme_Click"/>
@@ -87,21 +127,22 @@
                     <MenuItem x:Name="Menu_RebuildCache" Header="{Binding Source={x:Static resx:UIStrings.Rebuild_Cache}}" Click="Menu_RebuildCache_Click" />
                     <MenuItem x:Name="Menu_LoadSets" Header="{Binding Source={x:Static resx:UIStrings.Load_Sets}}" Click="Menu_LoadSets_Click" />
                     <MenuItem x:Name="Menu_ScanForSets" Header="{Binding Source={x:Static resx:UIStrings.Scan_For_Sets}}" Click="Menu_ScanForSets_Click" />
+                    <MenuItem x:Name="Menu_ShaderScan" Header="Scan for Shader Data" Click="ScanShaders_Click" />
                 </MenuItem>
-            </MenuItem>
-            <MenuItem Header="{Binding Source={x:Static resx:UIStrings.About}}">
+                
                 <MenuItem x:Name="Menu_About" Header="{Binding Source={x:Static resx:UIStrings.About_TexTools}}" Click="Menu_About_Click"/>
-
             </MenuItem>
-            <MenuItem Header="{Binding Source={x:Static resx:UIStrings.Mod_Repos}}" HorizontalAlignment="Right">
-                <MenuItem x:Name="PKEmporium" Header="{Binding Source={x:Static resx:UIStrings.PrettyKitty_Emporium}}" Click="PKEmporium_Click"/>
+            <MenuItem Header="{Binding Source={x:Static resx:UIStrings.Mod_Repos}}">
                 <MenuItem x:Name="XivModArchive" Header="{Binding Source={x:Static resx:UIStrings.XIV_Mod_Archive}}" Click="XivModArchive_Click"/>
+                <MenuItem x:Name="PKEmporium" Header="{Binding Source={x:Static resx:UIStrings.PrettyKitty_Emporium}}" Click="PKEmporium_Click"/>
                 <MenuItem x:Name="NexusMods" Header="{Binding Source={x:Static resx:UIStrings.Nexus_Mods}}" Click="NexusMods_Click"/>
             </MenuItem>
         </Menu>
+
+        
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
+                <ColumnDefinition />
                 <ColumnDefinition Width="5"/>
                 <ColumnDefinition Width="3*"/>
             </Grid.ColumnDefinitions>
@@ -112,7 +153,7 @@
                         <RowDefinition/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
-                    <items:ItemSelectControl x:Name="ItemSelect" Height="Auto" Width="Auto" DeferLoading="True" MainMenuMode="True" Margin="0,0,0,0"/>
+                    <controls:ItemSelectControl x:Name="ItemSelect" Height="Auto" Width="Auto" DeferLoading="True" MainMenuMode="True" Margin="0,0,0,0"/>
                 <TextBlock x:Name="StatusTextBox" ToolTip="You may continue using FFXIV/TexTools as normal while TexTools works. You do not need to keep TexTools open." Margin="0" TextWrapping="Wrap" Text="Status Text Goes Here" TextAlignment="Center" Grid.Row="1"/>
                 </Grid>
             </GroupBox>
@@ -126,20 +167,10 @@
                     </VisualBrush>
                 </GridSplitter.Background>
             </GridSplitter>
-            <Controls:MetroTabControl x:Name="TabsControl" Grid.Column="2" Controls:TabControlHelper.Underlined="TabPanel">
-                <TabItem x:Name="TextureTabItem" Header="{Binding Source={x:Static resx:UIStrings.Textures}}">
-                    <views:TextureView/>
-                </TabItem>
-                <TabItem x:Name="ModelTabItem" Header="{Binding Source={x:Static resx:UIStrings.Models}}" IsEnabled="False" Visibility="Hidden">
-                    <views:ModelView/>
-                </TabItem>
-                <TabItem x:Name="SharedItemsTab" Header="{Binding Source={x:Static resx:UIStrings.Variants}}" IsEnabled="False" Visibility="Hidden">
-                    <views:SharedItemsView/>
-                </TabItem>
-                <TabItem x:Name="MetadataTab" Header="Metadata" IsEnabled="False" Visibility="Hidden">
-                    <metadata:MetadataView/>
-                </TabItem>
-            </Controls:MetroTabControl>
+
+            <item:ItemViewControl x:Name="ItemView" Grid.Column="2">
+                
+            </item:ItemViewControl>
         </Grid>
 
         <Controls:FlyoutsControl Grid.Row="0" Grid.RowSpan="2" HorizontalAlignment="Right">

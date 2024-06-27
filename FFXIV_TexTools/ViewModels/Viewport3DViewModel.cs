@@ -15,27 +15,41 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using FFXIV_TexTools.Custom;
+using FFXIV_TexTools.Properties;
 using FFXIV_TexTools.Resources;
+using FFXIV_TexTools.Views;
+using FFXIV_TexTools.Views.Controls;
 using HelixToolkit.Wpf.SharpDX;
 using HelixToolkit.Wpf.SharpDX.Cameras;
+using Newtonsoft.Json.Linq;
 using SharpDX;
 using SharpDX.Direct3D11;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Formats.Png;
-using SixLabors.ImageSharp.PixelFormats;
+using SharpDX.Direct3D9;
+using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media.Media3D;
+using System.Windows.Navigation;
 using xivModdingFramework.General.Enums;
+using xivModdingFramework.Materials.DataContainers;
 using xivModdingFramework.Models.DataContainers;
 using xivModdingFramework.Models.FileTypes;
 using xivModdingFramework.Models.Helpers;
 using MeshBuilder = HelixToolkit.Wpf.SharpDX.MeshBuilder;
 using MeshGeometry3D = HelixToolkit.Wpf.SharpDX.MeshGeometry3D;
 using PerspectiveCamera = HelixToolkit.Wpf.SharpDX.PerspectiveCamera;
+using TextureModel = HelixToolkit.Wpf.SharpDX.TextureModel;
+using Vector4 = System.Numerics.Vector4;
+using WinColor = System.Windows.Media.Color;
 
 namespace FFXIV_TexTools.ViewModels
 {
@@ -45,28 +59,70 @@ namespace FFXIV_TexTools.ViewModels
         private Vector3D _light1Direction;
         private Vector3D _light2Direction;
         private Vector3D _light3Direction;
-        protected double _lightX, _light1X, _light2X, _lightY, _light1Y, _light2Y, _lightZ, _light1Z, _light2Z;
-        private bool _renderLight3;
-        private readonly ModelViewModel _modelViewModel;
-        protected List<Stream> streamList = new List<Stream>();
+        private static readonly Regex bodyMaterial = new Regex("[bf][0-9]{4}", RegexOptions.IgnoreCase);
+
+        public delegate void ViewportEventHandler(Viewport3DViewModel owner);
+        public delegate void ViewportZoomEventHandler(Viewport3DViewModel owner, double animationTime, Rect3D? boundingBox);
+        public event ViewportEventHandler TextureUpdateRequested;
+        public event ViewportZoomEventHandler ZoomExtentsRequested;
+        public event EventHandler<int> VisibleMeshChanged;
 
         public ObservableElement3DCollection Models { get; } = new ObservableElement3DCollection();
 
         public Viewport3DViewModel()
         {
-        }
-
-        public Viewport3DViewModel(ModelViewModel mvm)
-        {
-            _modelViewModel = mvm;
             Title = "";
             SubTitle = "";
 
-            EffectsManager = new CustomEffectsManager();
+            // Eat exception to not immediately crash in VirtualBox
+            try
+            {
+                EffectsManager = new CustomEffectsManager();
+            } catch { }
 
             Camera = new PerspectiveCamera();
+            Camera.CameraInternal.PropertyChanged += CameraInternal_PropertyChanged;
 
             BackgroundColor = Properties.Settings.Default.BG_Color;
+            ReflectionLabel = $"{UIStrings.Reflection}  |  {ReflectionValue}";
+
+            var csetMax = 32;
+            ColorsetRowSource.Add(new KeyValuePair<string, int>("All", -1));
+            for(int i = 0; i < csetMax; i++)
+            {
+                ColorsetRowSource.Add(new KeyValuePair<string, int>(ViewHelpers.ColorsetRowToNiceName(i).ToString(), i));
+            }
+
+            ResetLights();
+        }
+
+
+        protected void CameraInternal_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if(e.PropertyName == "LookDirection")
+            {
+                OnCameraDirectionChanged();
+            }
+        }
+
+        private bool _MoveLightsWithCamera = true;
+        public bool MoveLightsWithCamera
+        {
+            get => _MoveLightsWithCamera;
+            set
+            {
+                _MoveLightsWithCamera = value;
+                ResetLights();
+                OnPropertyChanged(nameof(MoveLightsWithCamera));
+            }
+        }
+
+        private void OnCameraDirectionChanged()
+        {
+            if (_MoveLightsWithCamera)
+            {
+                ResetLights();
+            }
         }
 
         private MeshGeometry3D GetMeshGeometry(TTModel model, int meshGroupId)
@@ -113,7 +169,7 @@ namespace FFXIV_TexTools.ViewModels
                     mg.Tangents.Add(v.Tangent);
                 }
 
-                foreach(var vertexId in p.TriangleIndices)
+                foreach (var vertexId in p.TriangleIndices)
                 {
                     // Have to bump these to account for merging the lists together.
                     mg.Indices.Add(vertCount + vertexId);
@@ -126,150 +182,356 @@ namespace FFXIV_TexTools.ViewModels
             return mg;
         }
 
+        private TTModel _Model;
+        private List<ModelTextureData> _Textures;
+        public TTModel Model {
+            get => _Model;
+        }
+        public List<ModelTextureData> Textures {
+            get => _Textures;
+        }
+
+        private List<MeshGeometry3D> _Geometry = new List<MeshGeometry3D>();
+        private List<PhongMaterial> _Materials = new List<PhongMaterial>();
+
+        private bool _UPDATING = false;
+        private void UpdateVisibleMeshSource()
+        {
+            _UPDATING = true;
+            VisibleMeshSource.Clear();
+            VisibleMeshSource.Add(new KeyValuePair<string, int>("All", -1));
+            if(_Model == null)
+            {
+                VisibleMesh = -1;
+                return;
+            }
+
+            for(int i = 0; i < _Model.MeshGroups.Count; i++)
+            {
+                VisibleMeshSource.Add(new KeyValuePair<string, int>(i.ToString(), i));
+            }
+
+            ActiveShapes.Clear();
+            VisibleMesh = -1;
+            HighlightedColorsetRow = -1;
+
+            _UPDATING = false;
+        }
+
+        private Guid LastUpdateId;
+
         /// <summary>
         /// Updates the model in the 3D viewport
         /// </summary>
         /// <param name="mdlData">The model data</param>
         /// <param name="textureDataDictionary">The texture dictionary for the model</param>
-        public void UpdateModel(TTModel model, Dictionary<int, ModelTextureData> textureDataDictionary)
+        public async Task UpdateModel(TTModel importModel = null, List<ModelTextureData> importTextures = null)
         {
-            SharpDX.BoundingBox? boundingBox = null;
-            ModelModifiers.CalculateTangents(model);
+            if (_UPDATING)
+            {
+                return;
+            }
+
+            var myId = Guid.NewGuid();
+            LastUpdateId = myId;
+
+            var newModel = false;
+            var newTextures = false;
+            var originalModel = _Model;
+
+            if (importModel != null)
+            {
+                newModel = true;
+                _Model = importModel;
+            }
+            var model = _Model;
+
+            if (importTextures != null)
+            {
+                newTextures = true;
+                _Textures = importTextures;
+            }
+            var textureDataDictionary = _Textures;
+
+
+            ShapeButtonEnabled = _Model.HasShapeData;
+            ClearModels();
 
             var totalMeshCount = model.MeshGroups.Count;
 
-            for (var i = 0; i < totalMeshCount; i++)
+            if (VisibleMesh >= totalMeshCount)
             {
-                var meshGeometry3D = GetMeshGeometry(model, i);
-                
-                if(!textureDataDictionary.ContainsKey(model.GetMaterialIndex(i)))
-                {
-                    // This material didn't exist, was corrupt or otherwise didn't get loaded.  Skip it.
-                    continue;
-                }
-                var textureData = textureDataDictionary[model.GetMaterialIndex(i)];
-
-                Stream diffuse = null, specular = null, normal = null, alpha = null, emissive = null;
-
-                if (textureData.Diffuse != null && textureData.Diffuse.Length > 0)
-                {
-                    using (var img = Image.LoadPixelData<Rgba32>(textureData.Diffuse, textureData.Width, textureData.Height))
-                    {
-                        diffuse = new MemoryStream();
-                        img.Save(diffuse, new PngEncoder());
-                    }
-
-                    streamList.Add(diffuse);
-                }
-
-                if (textureData.Specular != null && textureData.Specular.Length > 0)
-                {
-                    using (var img = Image.LoadPixelData<Rgba32>(textureData.Specular, textureData.Width, textureData.Height))
-                    {
-                        specular = new MemoryStream();
-                        img.Save(specular, new PngEncoder());
-                    }
-
-                    streamList.Add(specular);
-                }
-
-                if (textureData.Normal != null && textureData.Normal.Length > 0)
-                {
-                    using (var img = Image.LoadPixelData<Rgba32>(textureData.Normal, textureData.Width, textureData.Height))
-                    {
-                        normal = new MemoryStream();
-                        img.Save(normal, new PngEncoder());
-                    }
-
-                    streamList.Add(normal);
-                }
-
-                if (textureData.Alpha != null && textureData.Alpha.Length > 0)
-                {
-                    using (var img = Image.LoadPixelData<Rgba32>(textureData.Alpha, textureData.Width, textureData.Height))
-                    {
-                        alpha = new MemoryStream();
-                        img.Save(alpha, new PngEncoder());
-                    }
-
-                    streamList.Add(alpha);
-                }
-
-                if (textureData.Emissive != null && textureData.Emissive.Length > 0)
-                {
-                    using (var img = Image.LoadPixelData<Rgba32>(textureData.Emissive, textureData.Width, textureData.Height))
-                    {
-                        emissive = new MemoryStream();
-                        img.Save(emissive, new PngEncoder());
-                    }
-
-                    streamList.Add(emissive);
-                }
-
-                var material = new PhongMaterial
-                {
-                    DiffuseColor = PhongMaterials.ToColor(1, 1, 1, 1),
-                    SpecularShininess = 1f,
-                    DiffuseMap = diffuse,
-                    DiffuseAlphaMap = alpha,
-                    SpecularColorMap = specular,
-                    NormalMap = normal,
-                    EmissiveMap = emissive
-                };
-
-                var mgm3d = new CustomMeshGeometryModel3D
-                {
-                    Geometry = meshGeometry3D,
-                    Material = material//,
-                    //IsBody = mdlData.LoDList[0].MeshDataList[i].IsBody
-                };
-
-                boundingBox = meshGeometry3D.Bound;
-
-                mgm3d.CullMode = Properties.Settings.Default.Cull_Mode.Equals("None") ? CullMode.None : CullMode.Back;
-
-                Models.Add(mgm3d);
+                // This retriggers UpdateModel
+                VisibleMesh = -1;
+                return;
             }
 
-            SpecularShine = 1;
+            if (_Model == null)
+            {
+                return;
+            }
 
-            var center = boundingBox.GetValueOrDefault().Center;
 
-            _lightX = center.X;
-            _lightY = center.Y;
-            _lightZ = center.Z;
+            // Push all the potentially CPU intense stuff onto a new thread.
+            await Task.Run(() =>
+            {
+                if (newModel && originalModel != _Model)
+                {
+                    // Only recalculate if an actually new-new model, since this doesn't change on shape application.
+                    ModelModifiers.CalculateTangents(model);
+                }
 
-            Light3Direction = new Vector3D(_lightX, _lightY, _lightZ);
+                if (newModel)
+                {
+                    lock (_Geometry)
+                    {
+                        _Geometry.Clear();
+                    }
+                    ModelModifiers.ApplyShapes(model, ActiveShapes, true);
+                }
+
+                if (newTextures)
+                {
+                    lock (_Materials)
+                    {
+                        _Materials.Clear();
+                    }
+                }
+
+                for (var i = 0; i < totalMeshCount; i++)
+                {
+                    if (newModel)
+                    {
+                        var meshGeometry3D = GetMeshGeometry(model, i);
+                        lock (_Geometry)
+                        {
+                            _Geometry.Add(meshGeometry3D);
+                        }
+                    }
+
+                    var isBodyMaterial = bodyMaterial.IsMatch(model.MeshGroups[i].Material);
+                    var mtrlName = "/" + Path.GetFileName(model.MeshGroups[i].Material);
+
+                    if (newTextures)
+                    {
+
+                        var textureData = textureDataDictionary.FirstOrDefault(x => x.MaterialPath == mtrlName);
+                        if (textureData == null)
+                        {
+                            if (ModelModifiers.IsSkinMaterial(mtrlName))
+                            {
+                                textureData = textureDataDictionary.FirstOrDefault(x => x.IsSkin);
+                                if(textureData == null)
+                                {
+                                    // Skin material, but we have no textures for skin.
+                                    textureData = ModelFileControl.GetPlaceholderTexture(mtrlName);
+                                }
+                            }
+                            else
+                            {
+                                // Data was invalid somehow, use a placeholder.
+                                textureData = ModelFileControl.GetPlaceholderTexture(mtrlName);
+                            }
+                        }
+
+                        var diffuseBase = new TextureModel(new byte[] { 255, 255, 255, 255 }, SharpDX.DXGI.Format.R8G8B8A8_UNorm, 1,1);
+
+                        TextureModel diffuse = null, specular = null, normal = null, alpha = null, emissive = null;
+                        if (textureData.Diffuse != null && textureData.Diffuse.Length > 0)
+                            diffuse = new TextureModel(textureData.Diffuse, SharpDX.DXGI.Format.R8G8B8A8_UNorm, textureData.Width, textureData.Height);
+
+                        if (textureData.Specular != null && textureData.Specular.Length > 0)
+                            specular = new TextureModel(textureData.Specular, SharpDX.DXGI.Format.R8G8B8A8_UNorm, textureData.Width, textureData.Height);
+
+                        if (textureData.Normal != null && textureData.Normal.Length > 0)
+                            normal = new TextureModel(textureData.Normal, SharpDX.DXGI.Format.R8G8B8A8_UNorm, textureData.Width, textureData.Height);
+
+                        if (textureData.Emissive != null && textureData.Emissive.Length > 0)
+                            emissive = new TextureModel(textureData.Emissive, SharpDX.DXGI.Format.R8G8B8A8_UNorm, textureData.Width, textureData.Height);
+
+                        var sampler = HelixToolkit.SharpDX.Core.Shaders.DefaultSamplers.LinearSamplerWrapAni1;
+
+                        if (textureData.UTilingMode == TextureSampler.ETilingMode.Mirror)
+                            sampler.AddressU = TextureAddressMode.Mirror;
+                        else if (textureData.UTilingMode == TextureSampler.ETilingMode.Clamp)
+                            sampler.AddressU = TextureAddressMode.Clamp;
+                        else if (textureData.UTilingMode == TextureSampler.ETilingMode.Border)
+                            sampler.AddressU = TextureAddressMode.Border;
+
+                        if (textureData.VTilingMode == TextureSampler.ETilingMode.Mirror)
+                            sampler.AddressV = TextureAddressMode.Mirror;
+                        else if (textureData.VTilingMode == TextureSampler.ETilingMode.Clamp)
+                            sampler.AddressV = TextureAddressMode.Clamp;
+                        else if (textureData.VTilingMode == TextureSampler.ETilingMode.Border)
+                            sampler.AddressV = TextureAddressMode.Border;
+
+                        var material = new PhongMaterial
+                        {
+                            AmbientColor = PhongMaterials.ToColor(1, 1, 1, 1),
+                            DiffuseColor = PhongMaterials.ToColor(1, 1, 1, 1),
+                            SpecularShininess = ReflectionValue,
+                            DiffuseAlphaMap = diffuse,
+                            SpecularColorMap = specular,
+                            NormalMap = normal,
+                            EmissiveMap = emissive,
+                            DiffuseMapSampler = sampler
+                        };
+
+                        lock (_Materials)
+                        {
+                            _Materials.Add(material);
+                        }
+                    }
+                }
+            });
+
+            if(myId != LastUpdateId)
+            {
+                // We got re-called while we were off thread.
+                return;
+            }
+
+            if (newModel && originalModel != _Model)
+            {
+                UpdateVisibleMeshSource();
+            }
+
+            for (var i = 0; i < totalMeshCount; i++)
+            {
+                if (VisibleMesh == i || VisibleMesh < 0)
+                {
+                    CustomMeshGeometryModel3D mgm3d;
+                    lock (_Geometry)
+                    {
+                        lock (_Materials)
+                        {
+                            mgm3d = new CustomMeshGeometryModel3D
+                            {
+                                Geometry = _Geometry[i],
+                                Material = _Materials[i],
+                                Source = model.Source,
+                            };
+                        }
+                    }
+
+                    var mtrlName = "/" + Path.GetFileName(model.MeshGroups[i].Material);
+                    var textureData = textureDataDictionary.FirstOrDefault(x => x.MaterialPath == mtrlName);
+                    if (textureData != null && textureData.RenderBackfaces)
+                    {
+                        mgm3d.CullMode = CullMode.None;
+                    }
+                    else
+                    {
+                        mgm3d.CullMode = CullMode.Back;
+                    }
+
+                    Models.Add(mgm3d);
+                }
+            }
+
+            OnPropertyChanged(nameof(Models));
+
+            var center = new Vector3(0, 1, 0);
+            Rect3D r3d = new Rect3D();
+            if (Models.Count > 0)
+            {
+
+                // SharpDX sucks at computing these in a reasonable way.
+                var minPoint = new Vector3(9999.0f);
+                var maxPoint = new Vector3(-9999.0f);
+
+                foreach (var m in Models)
+                {
+                    minPoint.X = minPoint.X < m.Bounds.Minimum.X ? minPoint.X : m.Bounds.Minimum.X;
+                    minPoint.Y = minPoint.Y < m.Bounds.Minimum.Y ? minPoint.Y : m.Bounds.Minimum.Y;
+                    minPoint.Z = minPoint.Z < m.Bounds.Minimum.Z ? minPoint.Z : m.Bounds.Minimum.Z;
+                    maxPoint.X = maxPoint.X > m.Bounds.Maximum.X ? maxPoint.X : m.Bounds.Maximum.X;
+                    maxPoint.Y = maxPoint.Y > m.Bounds.Maximum.Y ? maxPoint.Y : m.Bounds.Maximum.Y;
+                    maxPoint.Z = maxPoint.Z > m.Bounds.Maximum.Z ? maxPoint.Z : m.Bounds.Maximum.Z;
+                }
+
+                center = ((maxPoint - minPoint) / 2.0f) + minPoint;
+                var sizeX = maxPoint.X - minPoint.X;
+                var sizeY = maxPoint.Y - minPoint.Y;
+                var sizeZ = maxPoint.Z - minPoint.Z;
+
+                r3d = new Rect3D(minPoint.X, minPoint.Y, minPoint.Z, sizeX, sizeY, sizeZ);
+
+            }
+
+
+            
             Camera.UpDirection = new Vector3D(0, 1, 0);
-            Camera.CameraInternal.PropertyChanged += CameraInternal_PropertyChanged;
+
+            if(newModel && originalModel != _Model && AllowCameraReset)
+            {
+                ResetLights();
+
+                if (Models.Count == 0) {
+                    ZoomExtentsRequested?.Invoke(this, 0, null);
+                } else
+                {
+                    ZoomExtentsRequested?.Invoke(this, 0, r3d);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Take the square root of every pixels' RGB datapoints to match the behavior of the FF14 engine
+        /// </summary>
+        /// <param name="img"></param>
+        protected static Color4[] NormalizePixelData(byte[] img)
+        {
+            Color4[] result = new Color4[img.Length / 4];
+            Parallel.ForEach(Partitioner.Create(0, img.Length / 4), range =>
+            {
+                for (int i = range.Item1 * 4; i < range.Item2 * 4; i += 4)
+                {
+                    // This is the only way to do a true single-precision sqrt in .NET Framework
+                    var tmp = Vector4.SquareRoot(new Vector4(
+                        img[i] / 255.0f,
+                        img[i + 1] / 255.0f,
+                        img[i + 2] / 255.0f,
+                        img[i + 3] / 255.0f
+                    ));
+                    result[i / 4] = new Color4(tmp.X, tmp.Y, tmp.Z, tmp.W);
+                }
+            });
+            return result;
         }
 
         /// <summary>
         /// Event handler for the camera property changing
         /// </summary>
-        protected virtual void CameraInternal_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        protected virtual void ResetLights()
         {
-            if (e.PropertyName.Equals("LookDirection"))
+            var cam = Camera.CameraInternal.LookDirection;
+            cam.Y = 0;
+            cam.Normalize();
+
+            double angle = 0;
+            if (MoveLightsWithCamera)
             {
-                var camera = sender as PerspectiveCameraCore;
-
-                _light1X = -camera.LookDirection.X;
-                _light1Y = -camera.LookDirection.Y;
-                _light1Z = -camera.LookDirection.Z;
-
-
-                Light1Direction = new Vector3D(_light1X, _light1Y, _light1Z);
-
-                _light2X = camera.LookDirection.X;
-                _light2Y = camera.LookDirection.Y;
-                _light2Z = camera.LookDirection.Z;
-
-
-                Light2Direction = new Vector3D(_light2X, _light2Y, _light2Z);
+                angle = Math.Atan2(cam.X * -1, cam.Z * -1);
             }
 
-            _modelViewModel.ResetLightValues();
-            _modelViewModel.FlyoutOpen = false;
+
+            var rotMatrix = Matrix.RotationAxis(new Vector3(0, 1, 0), (float) angle);
+
+            var light = new Vector3(-1, -0.5f, -1);
+            var res = Vector3.Transform(light, rotMatrix);
+            Light1Direction = new Vector3D(res.X, res.Y, res.Z);
+
+
+            light = new Vector3(1, -0.5f, -1);
+            res = Vector3.Transform(light, rotMatrix);
+            Light2Direction = new Vector3D(res.X, res.Y, res.Z);
+
+            light = new Vector3(0, 0.5f, 1);
+            res = Vector3.Transform(light, rotMatrix);
+            Light3Direction = new Vector3D(res.X, res.Y, res.Z);
+
+            UpdateLightSliders();
         }
 
         #region Properties
@@ -283,7 +545,7 @@ namespace FFXIV_TexTools.ViewModels
             set
             {
                 _backgroundColor = value;
-                NotifyPropertyChanged(nameof(BackgroundColor));
+                OnPropertyChanged(nameof(BackgroundColor));
             }
         }
 
@@ -296,7 +558,7 @@ namespace FFXIV_TexTools.ViewModels
             set
             {
                 _light1Direction = value;
-                NotifyPropertyChanged(nameof(Light1Direction));
+                OnPropertyChanged(nameof(Light1Direction));
             }
         }
 
@@ -309,7 +571,7 @@ namespace FFXIV_TexTools.ViewModels
             set
             {
                 _light2Direction = value;
-                NotifyPropertyChanged(nameof(Light2Direction));
+                OnPropertyChanged(nameof(Light2Direction));
             }
         }
 
@@ -322,66 +584,22 @@ namespace FFXIV_TexTools.ViewModels
             set
             {
                 _light3Direction = value;
-                NotifyPropertyChanged(nameof(Light3Direction));
+                OnPropertyChanged(nameof(Light3Direction));
             }
         }
-
-        /// <summary>
-        /// The render status of light 3
-        /// </summary>
-        public bool RenderLight3
-        {
-            get => _renderLight3;
-            set
-            {
-                _renderLight3 = value;
-                NotifyPropertyChanged(nameof(RenderLight3));
-            }
-        }
-
-        /// <summary>
-        /// The amount of specular shine applied
-        /// </summary>
-        public int SpecularShine { get; set; }
 
         #endregion
 
-        /// <summary>
-        /// Sets the visible flag for the selected mesh
-        /// </summary>
-        /// <param name="selectedMesh">The selected mesh</param>
-        public void VisibleModels(string selectedMesh)
-        {
-            if (selectedMesh.Equals(XivStrings.All))
-            {
-                foreach (var model in Models)
-                {
-                    model.IsRendering = true;
-                }
-            }
-            else
-            {
-                var modelNum = int.Parse(selectedMesh);
-
-                for (var i = 0; i < Models.Count; i++)
-                {
-                    Models[i].IsRendering = (i == modelNum);
-                }
-
-            }
-        }
 
         /// <summary>
         /// Clear all the models in the viewport
         /// </summary>
         public void ClearModels()
         {
-            foreach (var stream in streamList)
+            foreach(var mdl in Models)
             {
-                stream.Dispose();
+                mdl.Dispose();
             }
-
-            streamList.Clear();
             Models.Clear();
         }
 
@@ -397,15 +615,15 @@ namespace FFXIV_TexTools.ViewModels
             {
                 if (num == 0)
                 {
-                    Light1Direction = new Vector3D(_light1X + value, Light1Direction.Y, Light1Direction.Z);
+                    Light1Direction = new Vector3D(value, Light1Direction.Y, Light1Direction.Z);
                 }
                 else if (num == 1)
                 {
-                    Light2Direction = new Vector3D(_light2X + value, Light2Direction.Y, Light2Direction.Z);
+                    Light2Direction = new Vector3D(value, Light2Direction.Y, Light2Direction.Z);
                 }
                 else if (num == 2)
                 {
-                    Light3Direction = new Vector3D(_lightX + value, Light3Direction.Y, Light3Direction.Z);
+                    Light3Direction = new Vector3D(value, Light3Direction.Y, Light3Direction.Z);
                 }
             }
 
@@ -413,15 +631,15 @@ namespace FFXIV_TexTools.ViewModels
             {
                 if (num == 0)
                 {
-                    Light1Direction = new Vector3D(Light1Direction.X, _light1Y + value, Light1Direction.Z);
+                    Light1Direction = new Vector3D(Light1Direction.X, value, Light1Direction.Z);
                 }
                 else if (num == 1)
                 {
-                    Light2Direction = new Vector3D(Light2Direction.X, _light2Y + value, Light2Direction.Z);
+                    Light2Direction = new Vector3D(Light2Direction.X, value, Light2Direction.Z);
                 }
                 else if (num == 2)
                 {
-                    Light3Direction = new Vector3D(Light3Direction.X, _lightY + value, Light3Direction.Z);
+                    Light3Direction = new Vector3D(Light3Direction.X, value, Light3Direction.Z);
                 }
             }
 
@@ -429,15 +647,15 @@ namespace FFXIV_TexTools.ViewModels
             {
                 if (num == 0)
                 {
-                    Light1Direction = new Vector3D(Light1Direction.X, Light1Direction.Y, _light1Z + value);
+                    Light1Direction = new Vector3D(Light1Direction.X, Light1Direction.Y, value);
                 }
                 else if (num == 1)
                 {
-                    Light2Direction = new Vector3D(Light2Direction.X, Light2Direction.Y, _light2Z + value);
+                    Light2Direction = new Vector3D(Light2Direction.X, Light2Direction.Y, value);
                 }
                 else if (num == 2)
                 {
-                    Light3Direction = new Vector3D(Light3Direction.X, Light3Direction.Y, _lightZ + value);
+                    Light3Direction = new Vector3D(Light3Direction.X, Light3Direction.Y, value);
                 }
             }
         }
@@ -453,25 +671,25 @@ namespace FFXIV_TexTools.ViewModels
             {
                 case 0:
                     {
-                        var x = Light1Direction.X - _light1X;
-                        var y = Light1Direction.Y - _light1Y;
-                        var z = Light1Direction.Z - _light1Z;
+                        var x = Light1Direction.X;
+                        var y = Light1Direction.Y;
+                        var z = Light1Direction.Z;
 
                         return (x, y, z);
                     }
                 case 1:
                     {
-                        var x = Light2Direction.X - _light2X;
-                        var y = Light2Direction.Y - _light2Y;
-                        var z = Light2Direction.Z - _light2Z;
+                        var x = Light2Direction.X;
+                        var y = Light2Direction.Y;
+                        var z = Light2Direction.Z;
 
                         return (x, y, z);
                     }
                 case 2:
                     {
-                        var x = Light3Direction.X - _lightX;
-                        var y = Light3Direction.Y - _lightY;
-                        var z = Light3Direction.Z - _lightZ;
+                        var x = Light3Direction.X;
+                        var y = Light3Direction.Y;
+                        var z = Light3Direction.Z;
 
                         return (x, y, z);
                     }
@@ -493,60 +711,271 @@ namespace FFXIV_TexTools.ViewModels
                 material.SpecularShininess = value;
             }
 
-            SpecularShine = value;
+            _ReflectionValue = value;
         }
 
-        /// <summary>
-        /// Updates the transparency flag
-        /// </summary>
-        /// <remarks>
-        /// This will make all models translucent,
-        /// with the exception of any model which contains a body mesh
-        /// </remarks>
-        /// <param name="transparencyEnabled">The transparency enabled flag</param>
-        public virtual void UpdateTransparency(bool transparencyEnabled)
+        #region INotify Properties
+
+        private WinColor _Light1Color = new WinColor() { R = 128, G = 128, B = 128, A = 128 };
+        public WinColor Light1Color
         {
-            foreach (var model in Models)
+            get => _Light1Color;
+            set
             {
-                var isBody = ((CustomMeshGeometryModel3D)model).IsBody;
+                _Light1Color = value;
+                OnPropertyChanged(nameof(Light1Color));
+            }
+        }
+        private WinColor _Light2Color = new WinColor() { R = 128, G = 128, B = 128, A = 128 };
+        public WinColor Light2Color
+        {
+            get => _Light2Color;
+            set
+            {
+                _Light2Color = value;
+                OnPropertyChanged(nameof(Light2Color));
+            }
+        }
+        private WinColor _Light3Color = new WinColor() { R = 128, G = 128, B = 128, A = 128 };
+        public WinColor Light3Color
+        {
+            get => _Light3Color;
+            set
+            {
+                _Light3Color = value;
+                OnPropertyChanged(nameof(Light3Color));
+            }
+        }
 
-                if (isBody) continue;
+        private float _LightingXValue;
+        public float LightingXValue
+        {
+            get => _LightingXValue;
+            set
+            {
+                _LightingXValue = value;
+                UpdateLighting(value, _CheckedLight, "X");
+                OnPropertyChanged(nameof(LightingXValue));
+            }
+        }
 
-                var material = ((CustomMeshGeometryModel3D)model).Material as PhongMaterial;
+        private float _LightingYValue;
+        public float LightingYValue
+        {
+            get => _LightingYValue;
+            set
+            {
+                _LightingYValue = value;
+                UpdateLighting(value, _CheckedLight, "Y");
+                OnPropertyChanged(nameof(LightingYValue));
+            }
+        }
 
-                if (transparencyEnabled)
+        private float _lightingZValue;
+        public float LightingZValue
+        {
+            get => _lightingZValue;
+            set
+            {
+                _lightingZValue = value;
+                UpdateLighting(value, _CheckedLight, "Z");
+                OnPropertyChanged(nameof(LightingZValue));
+            }
+        }
+
+        private int _ReflectionValue  = 5;
+        public int ReflectionValue
+        {
+            get => _ReflectionValue;
+            set
+            {
+                UpdateReflection(value);
+                ReflectionLabel = $"{UIStrings.Reflection}  |  {value}";
+                OnPropertyChanged(nameof(ReflectionValue));
+            }
+        }
+
+        private int _CheckedLight = 0;
+
+        private bool _Light1Check = true;
+        public bool Light1Check
+        {
+            get => _Light1Check;
+            set
+            {
+                _Light1Check = value;
+                if (value)
                 {
-                    ((CustomMeshGeometryModel3D)model).IsTransparent = true;
-                    material.DiffuseColor = PhongMaterials.ToColor(1, 1, 1, .4f);
-                }
-                else
-                {
-                    ((CustomMeshGeometryModel3D)model).IsTransparent = false;
-                    material.DiffuseColor = PhongMaterials.ToColor(1, 1, 1, 1);
+                    _CheckedLight = 0;
+                    UpdateLightSliders();
                 }
             }
         }
 
-        /// <summary>
-        /// Updates the culling mode of the model
-        /// </summary>
-        /// <remarks>
-        /// This will switch the cull mode to none if true, or back if false
-        /// </remarks>
-        /// <param name="noneCullMode">The None cull mode flag</param>
-        public void UpdateCullMode(bool noneCullMode)
+        private bool _Light2Check;
+        public bool Light2Check
         {
-            foreach (var model in Models)
+            get => _Light2Check;
+            set
             {
-                ((MeshGeometryModel3D)model).CullMode = noneCullMode ? CullMode.None : CullMode.Back;
+                _Light2Check = value;
+                if (value)
+                {
+                    _CheckedLight = 1;
+                    UpdateLightSliders();
+                }
             }
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        protected void NotifyPropertyChanged(string propertyName)
+        private bool _Light3Check;
+        public bool Light3Check
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            get => _Light3Check;
+            set
+            {
+                _Light3Check = value;
+                if (value)
+                {
+                    _CheckedLight = 2;
+                    UpdateLightSliders();
+                }
+            }
         }
+        public string _reflectionLabel;
+        public string ReflectionLabel
+        {
+            get => _reflectionLabel;
+            set
+            {
+                _reflectionLabel = value;
+                OnPropertyChanged(nameof(ReflectionLabel));
+            }
+        }
+
+        private bool _ColorsetButtonEnabled;
+        public bool ColorsetButtonEnabled
+        {
+            get => _ColorsetButtonEnabled;
+            set
+            {
+                _ColorsetButtonEnabled = value;
+                OnPropertyChanged(nameof(ColorsetButtonEnabled));
+            }
+        }
+
+        private bool _ShapeButtonEnabled;
+        public bool ShapeButtonEnabled
+        {
+            get => _ShapeButtonEnabled;
+            set
+            {
+                _ShapeButtonEnabled = value;
+                OnPropertyChanged(nameof(ShapeButtonEnabled));
+            }
+        }
+
+        public bool _AllowCameraReset = true;
+        public bool AllowCameraReset
+        {
+            get => _AllowCameraReset;
+            set
+            {
+                _AllowCameraReset = value;
+                OnPropertyChanged(nameof(AllowCameraReset));
+            }
+        }
+
+        private int _VisibleMesh = -1;
+        public int VisibleMesh
+        {
+            get => _VisibleMesh;
+            set
+            {
+                _VisibleMesh = value;
+                _ = UpdateModel();
+                OnPropertyChanged(nameof(VisibleMesh));
+                VisibleMeshChanged?.Invoke(this, VisibleMesh);
+            }
+        }
+
+        private ObservableCollection<KeyValuePair<string, int>> _VisibleMeshSource = new ObservableCollection<KeyValuePair<string, int>>();
+        public ObservableCollection<KeyValuePair<string, int>> VisibleMeshSource
+        {
+            get => _VisibleMeshSource;
+            set
+            {
+                _VisibleMeshSource = value;
+                OnPropertyChanged(nameof(VisibleMeshSource));
+            }
+        }
+
+
+        private int _HighlightedColorsetRow = -1;
+        public int HighlightedColorsetRow
+        {
+            get => _HighlightedColorsetRow;
+            set
+            {
+                var original = _HighlightedColorsetRow;
+                _HighlightedColorsetRow = value;
+                OnPropertyChanged(nameof(HighlightedColorsetRow));
+
+                if (original != _HighlightedColorsetRow)
+                {
+                    // This has to be handled by our external view.
+                    TextureUpdateRequested?.Invoke(this);
+                }
+            }
+        }
+        private ObservableCollection<KeyValuePair<string, int>> _ColorsetRowSource = new ObservableCollection<KeyValuePair<string, int>>();
+        public ObservableCollection<KeyValuePair<string, int>> ColorsetRowSource
+        {
+            get => _ColorsetRowSource;
+            set
+            {
+                _ColorsetRowSource = value;
+                OnPropertyChanged(nameof(ColorsetRowSource));
+            }
+        }
+
+        private List<string> _ActiveShapes = new List<string>();
+
+        public List<string> ActiveShapes
+        {
+            get => _ActiveShapes.ToList();
+        }
+
+        public void AddShape(string shape)
+        {
+            _ActiveShapes.Add(shape);
+            _ = UpdateModel(_Model);
+        }
+
+        public void RemoveShape(string shape)
+        {
+            _ActiveShapes.Remove(shape);
+            _ = UpdateModel(_Model);
+        }
+        
+        public void SetShapes(IEnumerable<string> shapes)
+        {
+            _ActiveShapes = shapes.ToList();
+            _ = UpdateModel(_Model);
+        }
+
+
+        /// <summary>
+        /// Update the light position values on the sliders
+        /// </summary>
+        private void UpdateLightSliders()
+        {
+            var lightValues = GetLightOffset(_CheckedLight);
+
+            LightingXValue = (float)lightValues.x;
+            LightingYValue = (float)lightValues.y;
+            LightingZValue = (float)lightValues.z;
+        }
+
+        #endregion
     }
 }

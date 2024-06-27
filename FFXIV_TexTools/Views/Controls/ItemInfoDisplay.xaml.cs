@@ -26,7 +26,6 @@ using xivModdingFramework.Models.FileTypes;
 using xivModdingFramework.SqPack.FileTypes;
 using xivModdingFramework.Variants.FileTypes;
 
-using Index = xivModdingFramework.SqPack.FileTypes.Index;
 
 namespace FFXIV_TexTools.Views.Controls
 {
@@ -67,7 +66,7 @@ namespace FFXIV_TexTools.Views.Controls
                 AsyncInit();
             } catch(Exception Ex)
             {
-                FlexibleMessageBox.Show("Unable to load item information:\n\nError:" + Ex.Message, "Item Information Error", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning);
+                FlexibleMessageBox.Show("Unable to load item information:\n\nError:".L() + Ex.Message, "Item Information Error".L(), System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning);
             }
         }
 
@@ -94,54 +93,51 @@ namespace FFXIV_TexTools.Views.Controls
             var lang = XivCache.GameInfo.GameLanguage;
             var df = IOUtil.GetDataFileFromPath(root.Info.GetRootFile());
 
-            var _index = new Index(gd);
-            var _mtrl = new Mtrl(XivCache.GameInfo.GameDirectory);
-            var _mdl = new Mdl(gd, df);
-            var _imc = new Imc(gd);
             var raceRegex = new Regex("c([0-9]{4})[^b]");
 
+            var tx = MainWindow.DefaultTransaction;
             ItemNameBox.Text = _item.Name;
 
             var setName = root.Info.GetBaseFileName(false);
 
-            SetLabel.Text = "Set: " + setName;
+            SetLabel.Text = $"Set: {setName._()}".L();
 
             if (!String.IsNullOrWhiteSpace(root.Info.Slot)) {
                 var niceSlot = Mdl.SlotAbbreviationDictionary.FirstOrDefault(x => x.Value == root.Info.Slot);
                 if (niceSlot.Key != null)
                 {
-                    SlotLabel.Text = "Slot: " + niceSlot.Key + " (" + root.Info.Slot + ")";
+                    SlotLabel.Text = $"Slot: {niceSlot.Key._()} ({root.Info.Slot._()})".L();
                 } else
                 {
-                    SlotLabel.Text = "Slot: Unknown (" + root.Info.Slot + ")";
+                    SlotLabel.Text = $"Slot: Unknown ({root.Info.Slot._()})".L();
                 }
             } else
             {
-                SlotLabel.Text = "Slot: --";
+                SlotLabel.Text = $"Slot: --".L();
             }
 
             var usesImc = Imc.UsesImc(_item);
             if (usesImc)
             {
-                VariantLabel.Text = "Variant: " + _item.ModelInfo.ImcSubsetID;
+                VariantLabel.Text = $"Variant: {_item.ModelInfo.ImcSubsetID._()}".L();
             } else
             {
-                VariantLabel.Text = "Variant: --";
+                VariantLabel.Text = $"Variant: --".L();
             }
 
-            var mSet = await _imc.GetMaterialSetId(_item);
+            var mSet = await Imc.GetMaterialSetId(_item, false, tx);
             if (mSet > 0)
             {
-                MaterialSetLabel.Text = "Material Set: " + mSet;
+                MaterialSetLabel.Text = $"Material Set: {mSet._()}".L();
             } else
             {
-                MaterialSetLabel.Text = "Material Set: --";
+                MaterialSetLabel.Text = $"Material Set: --".L();
             }
 
             var races = XivRaces.PlayableRaces;
 
-            var models = await root.GetModelFiles();
-            var materials = await root.GetMaterialFiles(mSet);
+            var models = await root.GetModelFiles(tx);
+            var materials = await root.GetMaterialFiles(mSet, tx);
 
             #region Race Chart
             var rowIdx = 1;
@@ -197,10 +193,10 @@ namespace FFXIV_TexTools.Views.Controls
                     }
                 }
 
-                var mdlRaceString = "None";
+                var mdlRaceString = "None".L();
                 if(usedMdlRace == race)
                 {
-                    mdlRaceString = "Own";
+                    mdlRaceString = "Own".L();
                 } else {
                     if (usedMdlRace != null)
                     {
@@ -219,7 +215,7 @@ namespace FFXIV_TexTools.Views.Controls
                     {
                         // Get the materials used by this racial's model.
                         var mdl = usedMdl;
-                        var mdlMaterials = await XivCache.GetChildFiles(mdl);
+                        var mdlMaterials = await XivCache.GetChildFiles(mdl, tx);
                         var mtrl = mdlMaterials.FirstOrDefault(x => raceRegex.IsMatch(x));
 
                         if(mtrl == null)
@@ -237,10 +233,10 @@ namespace FFXIV_TexTools.Views.Controls
                     }
                 }
 
-                var mtrlRaceString = "None";
+                var mtrlRaceString = "None".L();
                 if (usedMtrlRace == race)
                 {
-                    mtrlRaceString = "Own";
+                    mtrlRaceString = "Own".L();
                 }
                 else
                 {
@@ -271,8 +267,8 @@ namespace FFXIV_TexTools.Views.Controls
             if (Imc.UsesImc(_item) && _item.ModelInfo != null)
             {
                 var myImcSubsetId = _item.ModelInfo.ImcSubsetID;
-                var allItems = await root.GetAllItems();
-                var fInfo = await _imc.GetFullImcInfo(_item);
+                var allItems = await root.GetAllItems(-1, MainWindow.DefaultTransaction);
+                var fInfo = await Imc.GetFullImcInfo(_item, false, tx);
                 var entries = fInfo.GetAllEntries(_item.GetItemSlotAbbreviation(), true);
 
                 foreach (var item in allItems)

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Remoting.Contexts;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -32,7 +33,7 @@ namespace FFXIV_TexTools.Views.Metadata
 
             var races  = Enum.GetValues(typeof(XivSubRace)).Cast<XivSubRace>();
 
-            var rowIdx = -1;
+            var rowIdx = 0;
             foreach(var race in races)
             {
                 var clanId = race.GetSubRaceId();
@@ -49,14 +50,10 @@ namespace FFXIV_TexTools.Views.Metadata
                 MaleGrid.Children.Add(maleButton);
 
                 var baseRace = race.GetBaseRace();
-                if (baseRace != XivBaseRace.Hrothgar)
-                {
-                    var femaleButton = MakeButton(race, XivGender.Female);
-                    femaleButton.SetValue(Grid.RowProperty, rowIdx);
-                    femaleButton.SetValue(Grid.ColumnProperty, clanId);
-                    FemaleGrid.Children.Add(femaleButton);
-                }
-
+                var femaleButton = MakeButton(race, XivGender.Female);
+                femaleButton.SetValue(Grid.RowProperty, rowIdx);
+                femaleButton.SetValue(Grid.ColumnProperty, clanId);
+                FemaleGrid.Children.Add(femaleButton);
             }
         }
 
@@ -82,7 +79,7 @@ namespace FFXIV_TexTools.Views.Metadata
             var wind = new RaceGenderScalingEditor(context.Race, context.Gender) { Owner = this };
             wind.WindowStartupLocation = WindowStartupLocation.CenterOwner;
 
-            wind.Init();
+            _ = wind.Init();
         }
 
         private void DoneButton_Click(object sender, RoutedEventArgs e)

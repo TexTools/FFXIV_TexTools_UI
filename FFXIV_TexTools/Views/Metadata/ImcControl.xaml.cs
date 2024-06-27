@@ -1,6 +1,8 @@
 ﻿using FFXIV_TexTools.Views.Controls;
+using FFXIV_TexTools.Views.Item;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -23,6 +25,10 @@ namespace FFXIV_TexTools.Views.Metadata
     public partial class ImcControl : UserControl
     {
         private ItemMetadata _metadata;
+        public event Action FileChanged;
+
+
+        private bool _LOADING = false;
         public ImcControl()
         {
             InitializeComponent();
@@ -38,8 +44,17 @@ namespace FFXIV_TexTools.Views.Metadata
             }
         }
 
+        private void OnFileChanged()
+        {
+            if (!_LOADING)
+            {
+                FileChanged?.Invoke();
+            }
+        }
+
         public async Task SetMetadata(ItemMetadata m, int startingVariant = 0)
         {
+            _LOADING = true;
             _metadata = m;
             ImcVariantBox.Items.Clear();
             MaterialSetBox.Items.Clear();
@@ -81,14 +96,23 @@ namespace FFXIV_TexTools.Views.Metadata
             {
                 _metadata.ImcEntries[variant].Mask = (ushort)(_metadata.ImcEntries[variant].Mask & ~bit);
             }
+
+            OnFileChanged();
         }
 
-        private void ImcVariantBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void ImcVariantBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (_metadata == null) return;
-            if (ImcVariantBox.SelectedItem == null) return;
+            try
+            {
+                if (_metadata == null) return;
+                if (ImcVariantBox.SelectedItem == null) return;
 
-            SetImcVariant((int)ImcVariantBox.SelectedItem);
+                await SetImcVariant((int)ImcVariantBox.SelectedItem);
+            }
+            catch
+            {
+
+            }
         }
 
         public async Task SetImcVariant(int variant)
@@ -101,15 +125,15 @@ namespace FFXIV_TexTools.Views.Metadata
                 var partIndex = Array.IndexOf(Constants.Alphabet, part);
 
                 ushort bit = (ushort)(1 << partIndex);
-                var active = (bit & entry.Mask) > 0;
+                var active = (bit & entry.AttributeMask) > 0;
                 box.IsChecked = active;
             }
 
             var root = _metadata.Root;
-            var items = await root.GetAllItems(variant);
+            var items = await root.GetAllItems(variant, MainWindow.DefaultTransaction);
             ItemNameBox.Text = "[" + items.Count + "] " + items[0].Name;
 
-            ushort sfx = (ushort)(entry.Mask >> 10);
+            ushort sfx = entry.SoundId;
             SfxBox.Text = sfx.ToString();
 
             ushort vfx = entry.Vfx;
@@ -122,7 +146,9 @@ namespace FFXIV_TexTools.Views.Metadata
             AnimationBox.Text = anim.ToString();
 
             MaterialSetBox.SelectedIndex = entry.MaterialSet;
+            OnFileChanged();
 
+            _LOADING = false;
         }
 
         private void MaterialSetBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -133,6 +159,7 @@ namespace FFXIV_TexTools.Views.Metadata
             }
             var entry = _metadata.ImcEntries[(int)ImcVariantBox.SelectedItem];
             entry.MaterialSet = (byte)MaterialSetBox.SelectedIndex;
+            OnFileChanged();
         }
 
         private void AffectedItemsButton_Click(object sender, RoutedEventArgs e)
@@ -141,7 +168,7 @@ namespace FFXIV_TexTools.Views.Metadata
         }
         private async Task ShowAffectedItems()
         {
-            var items = await _metadata.Root.GetAllItems((int)ImcVariantBox.SelectedItem);
+            var items = await _metadata.Root.GetAllItems((int)ImcVariantBox.SelectedItem, MainWindow.DefaultTransaction);
             var itemNames = items.Select(x => x.Name);
 
             var win = new AffectedFilesView(itemNames, "Affected Items");
@@ -171,6 +198,7 @@ namespace FFXIV_TexTools.Views.Metadata
             if (value < 0) { value = 0; }
 
             entry.Decal = (byte) value;
+            OnFileChanged();
         }
         private void AnimationBox_TextChanged(object sender, TextChangedEventArgs e)
         {
@@ -186,6 +214,8 @@ namespace FFXIV_TexTools.Views.Metadata
             if (value < 0) { value = 0; }
 
             entry.Animation = (byte)value;
+            OnFileChanged();
+
         }
 
         private void SfxBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -201,11 +231,8 @@ namespace FFXIV_TexTools.Views.Metadata
             if(value > 63) { value = 63; }
             if(value < 0) { value = 0; }
 
-            ushort sfxBits = (ushort) (value << 10);
-
-            ushort baseMask = (ushort)(entry.Mask & 0x3FF);
-
-            entry.Mask = (ushort)(baseMask | sfxBits);
+            entry.SoundId = (byte) value;
+            OnFileChanged();
         }
 
         private void VfxBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -222,6 +249,7 @@ namespace FFXIV_TexTools.Views.Metadata
             if (value < 0) { value = 0; }
 
             entry.Vfx = (byte)value;
+            OnFileChanged();
         }
 
 
@@ -231,17 +259,16 @@ namespace FFXIV_TexTools.Views.Metadata
 
             var paths = new List<(string title, string path)>();
 
-            var mtrl = new Mtrl(XivCache.GameInfo.GameDirectory);
-            var folder = mtrl.GetMtrlFolder(_metadata.Root.Info, entry.MaterialSet) + "/";
-            paths.Add(("Material Folder", folder));
+            var folder = Mtrl.GetMtrlFolder(_metadata.Root.Info, entry.MaterialSet) + "/";
+            paths.Add(("Material Folder".L(), folder));
 
             if (entry.Vfx > 0)
             {
                 var pair = await ATex.GetVfxPath(_metadata.Root.Info, entry.Vfx);
-                paths.Add(("VFX File Path", pair.Folder + "/" + pair.File));
+                paths.Add(("VFX File Path".L(), pair.Folder + "/" + pair.File));
             } else
             {
-                paths.Add(("VFX File Path", "--"));
+                paths.Add(("VFX File Path".L(), "--"));
             }
 
 
@@ -260,6 +287,7 @@ namespace FFXIV_TexTools.Views.Metadata
                 entry.MaterialSet = current.MaterialSet;
                 entry.Animation = current.Animation;
             }
+            OnFileChanged();
         }
 
         private void AddVariantButton_Click(object sender, RoutedEventArgs e)
@@ -271,6 +299,7 @@ namespace FFXIV_TexTools.Views.Metadata
             _metadata.ImcEntries.Add(entry);
             ImcVariantBox.Items.Add(idx);
             ImcVariantBox.SelectedIndex = idx;
+            OnFileChanged();
         }
 
         private void AddMaterialSetButton_Click(object sender, RoutedEventArgs e)
@@ -280,6 +309,21 @@ namespace FFXIV_TexTools.Views.Metadata
 
             MaterialSetBox.Items.Add(currentMax);
             MaterialSetBox.SelectedIndex = currentMax;
+            OnFileChanged();
+        }
+
+        private async void OpenSubItem(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var imcSubset = ImcVariantBox.SelectedIndex;
+                var item = _metadata.Root.GetFirstItem(imcSubset);
+                await SimpleItemViewWindow.ShowItem(item, Window.GetWindow(this));
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine(ex);
+            }
         }
     }
 }

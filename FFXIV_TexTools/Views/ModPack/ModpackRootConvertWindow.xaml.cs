@@ -5,6 +5,7 @@ using MahApps.Metro.Controls;
 using SharpDX;
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -25,6 +26,7 @@ using xivModdingFramework.Items.Interfaces;
 using xivModdingFramework.Mods;
 using xivModdingFramework.Mods.DataContainers;
 using xivModdingFramework.SqPack.DataContainers;
+using static xivModdingFramework.Mods.FileTypes.ModPackImportSettings;
 
 namespace FFXIV_TexTools.Views
 {
@@ -35,26 +37,24 @@ namespace FFXIV_TexTools.Views
     {
         Dictionary<XivDependencyRoot, List<IItemModel>> Items;
 
-        ModList _modlist;
-        Dictionary<XivDataFile, IndexFile> _indexFiles;
+        ModTransaction _Transaction;
 
         public Dictionary<XivDependencyRoot, (XivDependencyRoot Root, int Variant)> Results;
         public Dictionary<XivDependencyRoot, (IItemModel SourceItem, IItemModel DestinationItem)> ItemSelections;
         public Dictionary<XivDependencyRoot, (ComboBox SourceItemSelection, TextBox DestinationItemBox, CheckBox EnabledCheckBox, CheckBox VariantCheckBox, Button SearchButton)> UiElements;
 
 
-        public ModpackRootConvertWindow(Dictionary<XivDataFile, IndexFile> indexFiles, ModList modList)
+        public ModpackRootConvertWindow(ModTransaction tx)
         {
             var appStyle = ThemeManager.DetectAppStyle(Application.Current);
             var theme = ((AppTheme)appStyle.Item1);
             if (theme.Name.Equals("BaseDark"))
             {
             }
+            _Transaction = tx;
 
             InitializeComponent();
 
-            _indexFiles = indexFiles;
-            _modlist = modList;
 
             Results = new Dictionary<XivDependencyRoot, (XivDependencyRoot Root, int Variant)>();
             Items = new Dictionary<XivDependencyRoot, List<IItemModel>>();
@@ -62,6 +62,15 @@ namespace FFXIV_TexTools.Views
             UiElements = new Dictionary<XivDependencyRoot, (ComboBox SourceItemSelection, TextBox DestinationItemBox, CheckBox EnabledCheckBox, CheckBox VariantCheckBox, Button SearchButton)>();
 
             // Async init function
+            Closing += ModpackRootConvertWindow_Closing;
+        }
+
+        private void ModpackRootConvertWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (null != Owner)
+            {
+                Owner.Activate();
+            }
         }
 
         private bool Init(HashSet<string> filePaths)
@@ -71,18 +80,19 @@ namespace FFXIV_TexTools.Views
             {
                 var metaFiles = filePaths.Where(x => x.EndsWith(".meta")).OrderBy(x => x);
 
+                var tx = MainWindow.DefaultTransaction;
                 foreach (var file in metaFiles)
                 {
                     var root = await XivCache.GetFirstRoot(file);
                     if (root != null && RootCloner.IsSupported(root))
                     {
-                        var items = await root.GetAllItems();
+                        var items = await root.GetAllItems(-1, tx);
                         Items.Add(root, items);
                         ItemSelections.Add(root, (items[0], items[0]));
 
                         var df = IOUtil.GetDataFileFromPath(root.Info.GetRootFile());
 
-                        var models = await root.GetModelFiles(_indexFiles[df], _modlist);
+                        var models = await root.GetModelFiles(_Transaction);
 
                         // If any models are missing, don't allow conversions.
                         if(models.Any(x => !filePaths.Contains(x)))
@@ -150,7 +160,7 @@ namespace FFXIV_TexTools.Views
 
 
             var destinationCheckbox = new CheckBox();
-            destinationCheckbox.Content = "Change Destination Item";
+            destinationCheckbox.Content = "Change Destination Item".L();
             destinationCheckbox.IsChecked = false;
 
             g.Children.Add(destinationCheckbox);
@@ -161,7 +171,7 @@ namespace FFXIV_TexTools.Views
             destinationCheckbox.VerticalAlignment = VerticalAlignment.Center;
 
             var variantCheckbox = new CheckBox();
-            variantCheckbox.Content = "Make All Variants Identical";
+            variantCheckbox.Content = "Make All Variants Identical".L();
             variantCheckbox.IsChecked = true;
 
             g.Children.Add(variantCheckbox);
@@ -185,7 +195,7 @@ namespace FFXIV_TexTools.Views
             srcCb.SelectedItem = selected.SourceItem;
             srcCb.Margin = new Thickness(5, 0, 5, 0);
             srcCb.IsEnabled = false;
-            srcCb.ToolTip = "The original item(s) this mod applied to.";
+            srcCb.ToolTip = "The original item(s) this mod applied to.".L();
 
 
             var dst = new TextBox();
@@ -197,7 +207,7 @@ namespace FFXIV_TexTools.Views
             dst.IsReadOnly = true;
             dst.Margin = new Thickness(5, 0, 5, 0);
             dst.IsEnabled = false;
-            dst.ToolTip = "The new item(s) this mod will apply to instead.";
+            dst.ToolTip = "The new item(s) this mod will apply to instead.".L();
 
             var lb = new Label();
             g.Children.Add(lb);
@@ -213,7 +223,7 @@ namespace FFXIV_TexTools.Views
             btn.SetValue(Grid.RowProperty, 1);
             btn.SetValue(Grid.ColumnProperty, 3);
             btn.Margin = new Thickness(5,0,5,0);
-            btn.Content = "Choose New Item";
+            btn.Content = "Choose New Item".L();
             btn.IsEnabled = false;
 
             var btn2 = new Button();
@@ -222,7 +232,7 @@ namespace FFXIV_TexTools.Views
             btn2.SetValue(Grid.RowProperty, 0);
             btn2.SetValue(Grid.ColumnProperty, 3);
             btn2.Margin = new Thickness(5, 0, 5, 0);
-            btn2.Content = "Show Affected Items";
+            btn2.Content = "Show Affected Items".L();
             btn2.IsEnabled = true;
 
             variantCheckbox.Checked += VariantBox_Checked;
@@ -251,16 +261,16 @@ namespace FFXIV_TexTools.Views
 
             if (ui.EnabledCheckBox.IsChecked == true)
             {
-                items = await destRoot.GetAllItems();
+                items = await destRoot.GetAllItems(-1, MainWindow.DefaultTransaction);
             } else
             {
-                items = await root.GetAllItems();
+                items = await root.GetAllItems(-1, MainWindow.DefaultTransaction);
             }
 
 
             var strings = items.Select(x => x.Name).ToList();
 
-            var wind = new AffectedFilesView(strings, "Affected Items") { Owner = this };
+            var wind = new AffectedFilesView(strings, "Affected Items".L()) { Owner = this };
             wind.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             wind.Show();
 
@@ -339,40 +349,11 @@ namespace FFXIV_TexTools.Views
 
             var selectedItem = PopupItemSelection.ShowItemSelection((IItem item) =>
             {
-                // Search Filter
-                if (item == null) return false;
-
-                if (item.PrimaryCategory == XivStrings.Gear) return true;
-                if (item.PrimaryCategory == XivStrings.Character)
-                {
-                    if (item.SecondaryCategory == XivStrings.Hair) return true;
-                }
-
-                return false;
+                return ValidationFunction(item, root);
             }, (IItem item) =>
             {
-                // Item Select Acceptance
-                if (item == null) return false;
-
-                var itemRoot = item.GetRoot();
-                if (itemRoot == null) return false;
-
-                if (itemRoot.Info.PrimaryType == root.Info.PrimaryType &&
-                    itemRoot.Info.SecondaryType == root.Info.SecondaryType &&
-                    itemRoot.Info.Slot == root.Info.Slot)
-                {
-
-                    if(itemRoot.Info.PrimaryType == XivItemType.human && 
-                    itemRoot.Info.PrimaryId != root.Info.PrimaryId)
-                    {
-                        return false;
-                    }
-
-                    return true;
-                }
-
-                return false;
-            });
+                return ValidationFunction(item, root);
+            }, this);
 
             if (selectedItem == null) return;
 
@@ -391,6 +372,49 @@ namespace FFXIV_TexTools.Views
             Results[root] = (selectedRoot, Results[root].Variant);
         }
 
+        private static bool ValidationFunction(IItem item, XivDependencyRoot root) {
+            // Item Select Acceptance
+            if (item == null) return false;
+            if (root == null) return false;
+
+            var itemRoot = item.GetRoot();
+            if (itemRoot == null) return false;
+
+            if(root.Info.PrimaryType == XivItemType.equipment || root.Info.PrimaryType == XivItemType.accessory)
+            {
+                if(itemRoot.Info.PrimaryType == XivItemType.accessory)
+                {
+                    // Allow converting most things to accessories.
+                    return true;
+                }
+            }
+
+            if (itemRoot.Info.PrimaryType == root.Info.PrimaryType &&
+                itemRoot.Info.SecondaryType == root.Info.SecondaryType &&
+                itemRoot.Info.Slot == root.Info.Slot)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+
+
+        /// <summary>
+        /// Wrapper that binds the window owner to the delegate function.
+        /// </summary>
+        /// <param name="owner"></param>
+        /// <returns></returns>
+        public static RootConversionDelegate GetRootConversionFunction(Window owner)
+        {
+            RootConversionDelegate del = async (HashSet<string> files, ModTransaction tx) =>
+            {
+                return await GetRootConversions(files, tx, owner);
+            };
+
+            return del;
+        }
 
         /// <summary>
         /// Displays the dialog window to the user, returning the final result after completion, or throwing an error if the user cancelled.
@@ -399,7 +423,7 @@ namespace FFXIV_TexTools.Views
         /// <param name="indexFiles"></param>
         /// <param name="modlist"></param>
         /// <returns></returns>
-        public static async Task<Dictionary<XivDependencyRoot, (XivDependencyRoot Root, int Variant)>> GetRootConversions(HashSet<string> files, Dictionary<XivDataFile, IndexFile> indexFiles, ModList modlist)
+        public static async Task<Dictionary<XivDependencyRoot, (XivDependencyRoot Root, int Variant)>> GetRootConversions(HashSet<string> files, ModTransaction tx, Window owner  = null)
         {
             Dictionary<XivDependencyRoot, (XivDependencyRoot Root, int Variant)> result = null;
             var mw = MainWindow.GetMainWindow();
@@ -409,18 +433,26 @@ namespace FFXIV_TexTools.Views
                 try
                 {
 
-                    if (Application.Current.Windows.Cast<Window>().Any(x => x == mw))
+                    window = new ModpackRootConvertWindow(tx);
+                    if (owner == null)
                     {
-                        window = new ModpackRootConvertWindow(indexFiles, modlist) { Owner = mw };
-                        window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                        if (ViewHelpers.IsWindowOpen(mw))
+                        {
+                            window.Owner = mw;
+                            window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                        }
+                        else
+                        {
+                            window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                        }
                     } else
                     {
-                        window = new ModpackRootConvertWindow(indexFiles, modlist);
-                        window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                        window.Owner = owner;
+                        window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
                     }
                 } catch(Exception ex)
                 {
-                    window = new ModpackRootConvertWindow(indexFiles, modlist);
+                    window = new ModpackRootConvertWindow(tx);
                     window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
                 }
 
@@ -434,7 +466,7 @@ namespace FFXIV_TexTools.Views
                 var dialogResult = window.ShowDialog();
                 if (dialogResult != true)
                 {
-                    throw new OperationCanceledException("User Cancelled Import Process.");
+                    throw new OperationCanceledException("User Cancelled Import Process.".L());
                 }
 
                 result = window.Results;

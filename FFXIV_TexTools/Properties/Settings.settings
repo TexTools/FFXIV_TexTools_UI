@@ -30,16 +30,16 @@
       <Value Profile="(Default)">Hyur Midlander</Value>
     </Setting>
     <Setting Name="Hair_Highlight_Color" Type="System.String" Scope="User">
-      <Value Profile="(Default)">#FF4D7EF0</Value>
+      <Value Profile="(Default)">#FF5B6E81</Value>
     </Setting>
     <Setting Name="Eye_Color" Type="System.String" Scope="User">
       <Value Profile="(Default)">#FF603913</Value>
     </Setting>
     <Setting Name="Lip_Color" Type="System.String" Scope="User">
-      <Value Profile="(Default)">#FFAD6969</Value>
+      <Value Profile="(Default)">#998B372E</Value>
     </Setting>
     <Setting Name="Tattoo_Color" Type="System.String" Scope="User">
-      <Value Profile="(Default)">#FF00FF42</Value>
+      <Value Profile="(Default)">#FF307066</Value>
     </Setting>
     <Setting Name="Furniture_Color" Type="System.String" Scope="User">
       <Value Profile="(Default)">#FF8D3CCC</Value>
@@ -81,13 +81,13 @@
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="Skin_Color" Type="System.String" Scope="User">
-      <Value Profile="(Default)">#FFFFFFFF</Value>
+      <Value Profile="(Default)">#FFDBB89A</Value>
     </Setting>
     <Setting Name="Hair_Color" Type="System.String" Scope="User">
-      <Value Profile="(Default)">#FF603913</Value>
+      <Value Profile="(Default)">#FF6E4D23</Value>
     </Setting>
     <Setting Name="Iris_Color" Type="System.String" Scope="User">
-      <Value Profile="(Default)">#FF603913</Value>
+      <Value Profile="(Default)">#FFAC719F</Value>
     </Setting>
     <Setting Name="Etc_Color" Type="System.String" Scope="User">
       <Value Profile="(Default)">#FF603913</Value>
@@ -98,16 +98,7 @@
     <Setting Name="Remember_Race_Selection" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="InvertNormalGreen" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
-    </Setting>
     <Setting Name="ExportAllBones" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
-    </Setting>
-    <Setting Name="Lumina_Directory" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
-    <Setting Name="Lumina_IsEnabled" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="UseOriginalShapeDataForFace" Type="System.Boolean" Scope="User">
@@ -118,6 +109,36 @@
     </Setting>
     <Setting Name="AutoMaterialFix" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="FixPreDawntrailOnImport" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="LiveDangerously" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="PenumbraFolder" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="OpenTransactionOnStart" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="ShiftExportUV" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="ShiftImportUV" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="ModelingTool" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="FixPreDawntrailPartialOnImport" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="MaxImageSize" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="CompressEndwalkerUpgradeTextures" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
     </Setting>
   </Settings>
 </SettingsFile>

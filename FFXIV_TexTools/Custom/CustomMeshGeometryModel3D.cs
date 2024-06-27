@@ -21,15 +21,17 @@ namespace FFXIV_TexTools.Custom
 {
     public class CustomMeshGeometryModel3D : MeshGeometryModel3D
     {
-        public bool IsBody { get; set; }
-
+        /// <summary>
+        /// The internal file path source that this mesh stems from.
+        /// </summary>
+        public string Source;
         protected override SceneNode OnCreateSceneNode()
         {
             var node = base.OnCreateSceneNode();
 
-            node.OnSetRenderTechnique = host =>
+            node.OnSetRenderTechnique = effectsManager =>
             {
-                return host.EffectsManager[CustomEffectsManager.CustomShaderNames.CustomShader];
+                return effectsManager[CustomEffectsManager.CustomShaderNames.CustomShader];
             };
 
             return node;

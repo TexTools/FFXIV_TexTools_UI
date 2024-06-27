@@ -25,22 +25,17 @@ namespace FFXIV_TexTools.ViewModels
     class SharedItemsViewModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
-        private SharedItemsView _view;
-        private MainWindow _mainWindow;
         private IItem _item;
         private TreeView _tree;
-        private Imc _imc;
-        private Gear _gear;
 
         protected virtual void NotifyPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        public SharedItemsViewModel(SharedItemsView view)
+        public SharedItemsViewModel(TreeView tree)
         {
-            _view = view;
-            _tree = _view.PrimaryTree;
+            _tree = tree;
         }
 
 
@@ -49,28 +44,15 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
-        public async Task<bool> SetItem(IItem item, MainWindow mainWindow = null)
+        public async Task<bool> SetItem(IItem item)
         {
-            var gameDirectory = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
-            _imc = new Imc(gameDirectory);
-            _gear = new Gear(gameDirectory, XivLanguages.GetXivLanguage(Properties.Settings.Default.Application_Language));
+            var tx = MainWindow.DefaultTransaction;
 
-            if (mainWindow != null)
-            {
-                _mainWindow = mainWindow;
-            }
             _item = item;
             _tree.Items.Clear();
-            IItemModel im = null;
-            try
-            {
-                im = (IItemModel)item;
-            } catch(Exception ex)
-            {
-                return false;
-            }
+            IItemModel im = item as IItemModel;
 
-            if(im == null || im.ModelInfo == null)
+            if (im == null || im.ModelInfo == null || !Imc.UsesImc(im))
             {
                 return false;
             }
@@ -79,10 +61,10 @@ namespace FFXIV_TexTools.ViewModels
             topLevelItem.Header = "";
             if(im.ModelInfo.PrimaryID > 0)
             {
-                topLevelItem.Header += CapFirst(item.GetPrimaryItemType().ToString()) + " #" + im.ModelInfo.PrimaryID.ToString().PadLeft(4, '0');
+                topLevelItem.Header += CapFirst(item.GetPrimaryItemType().ToString().L()) + " #" + im.ModelInfo.PrimaryID.ToString().PadLeft(4, '0');
             } else
             {
-                topLevelItem.Header += CapFirst(item.GetPrimaryItemType().ToString());
+                topLevelItem.Header += CapFirst(item.GetPrimaryItemType().ToString().L());
             }
             _tree.Items.Add(topLevelItem);
 
@@ -110,8 +92,13 @@ namespace FFXIV_TexTools.ViewModels
             FullImcInfo fullInfo = null;
             try
             {
-                 fullInfo = await _imc.GetFullImcInfo(im);
-            } catch(Exception ex)
+                fullInfo = await Imc.GetFullImcInfo(im, false, tx);
+                if(fullInfo == null)
+                {
+                    return false;
+                }
+            } 
+            catch(Exception ex)
             {
                 // This item has no IMC file.
                 var nextNode = new TreeViewItem();
@@ -127,9 +114,18 @@ namespace FFXIV_TexTools.ViewModels
                 return false;
 
             }
-            var sharedList = await im.GetSharedModelItems();
 
-            var myMaterialSetNumber = fullInfo.GetEntry(im.ModelInfo.ImcSubsetID, im.GetItemSlotAbbreviation()).MaterialSet;
+            var sharedList = new List<IItemModel>();
+            try
+            {
+                sharedList = await im.GetSharedModelItems(tx);
+            }
+            catch
+            {
+                // No-Op.  If this broke the user is already getting bombarded with errors.
+            }
+
+            var myMaterialSetNumber = fullInfo.GetEntry(im.ModelInfo.ImcSubsetID, abbreviation).MaterialSet;
             var myImcNumber = im.ModelInfo.ImcSubsetID;
 
             var imcVariantHeaders = new Dictionary<int, TreeViewItem>();
@@ -140,7 +136,7 @@ namespace FFXIV_TexTools.ViewModels
             foreach(var i in sharedList)
             {
                 // Get the Variant # information
-                var info = fullInfo.GetEntry(i.ModelInfo.ImcSubsetID, i.GetItemSlotAbbreviation());
+                var info = fullInfo.GetEntry(i.ModelInfo.ImcSubsetID, abbreviation);
                 if(info == null)
                 {
                     // Invalid IMC Set ID for the item.
@@ -152,13 +148,13 @@ namespace FFXIV_TexTools.ViewModels
                 if (!imcVariantHeaders.ContainsKey(imcVariant))
                 {
                     imcVariantHeaders.Add(imcVariant, new TreeViewItem());
-                    imcVariantHeaders[imcVariant].Header = "Variant " + i.ModelInfo.ImcSubsetID;
+                    imcVariantHeaders[imcVariant].Header = "Variant ".L() + i.ModelInfo.ImcSubsetID;
                     imcVariantHeaders[imcVariant].DataContext = i.ModelInfo.ImcSubsetID;
 
-                    imcVariantHeaders[imcVariant].Header += " - Material Set: " + mtrlVariant;
+                    imcVariantHeaders[imcVariant].Header += " - Material Set: ".L() + mtrlVariant;
 
                     var hiddenParts = MaskToHidenParts(info.Mask);
-                    imcVariantHeaders[i.ModelInfo.ImcSubsetID].Header += " | Hidden Parts: ";
+                    imcVariantHeaders[i.ModelInfo.ImcSubsetID].Header += " | Hidden Parts: ".L();
 
                     if (hiddenParts.Count > 0)
                     {
@@ -166,7 +162,7 @@ namespace FFXIV_TexTools.ViewModels
                     }
                     else
                     {
-                        imcVariantHeaders[imcVariant].Header += "None";
+                        imcVariantHeaders[imcVariant].Header += "None".L();
                     }
 
                     imcVariantHeaders[imcVariant].Header += " - [%] " + i.Name;
@@ -188,10 +184,8 @@ namespace FFXIV_TexTools.ViewModels
                 if (i.Name == im.Name)
                 {
                     myNode = nextNode;
-                } else
-                {
-                    nextNode.MouseDoubleClick += ItemNode_Activated;
                 }
+                nextNode.MouseDoubleClick += ItemNode_Activated;
             }
 
             foreach (var h in imcVariantHeaders)
@@ -226,7 +220,7 @@ namespace FFXIV_TexTools.ViewModels
         {
             var treeItem = (TreeViewItem)sender;
             var item = (IItem) treeItem.DataContext;
-            _mainWindow.SetSelectedItem(item);
+            MainWindow.GetMainWindow().SetSelectedItem(item);
         }
 
         /// <summary>
