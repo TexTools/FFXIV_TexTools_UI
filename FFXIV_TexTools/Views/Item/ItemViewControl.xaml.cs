@@ -38,6 +38,7 @@ using xivModdingFramework.Materials.DataContainers;
 using xivModdingFramework.Materials.FileTypes;
 using xivModdingFramework.Models.FileTypes;
 using xivModdingFramework.Mods;
+using xivModdingFramework.SqPack.FileTypes;
 using xivModdingFramework.Textures.Enums;
 using xivModdingFramework.Textures.FileTypes;
 using xivModdingFramework.Variants.FileTypes;
@@ -777,10 +778,13 @@ namespace FFXIV_TexTools.Views.Item
             var models = await Root.GetModelFiles(tx);
             foreach (var m in models)
             {
-                Files.Add(m, new Dictionary<string, HashSet<string>>());
+                if (await tx.FileExists(m))
+                {
+                    Files.Add(m, new Dictionary<string, HashSet<string>>());
+                }
             }
 
-            if(Files.Count == 0)
+                if (Files.Count == 0)
             {
                 Files.Add("", new Dictionary<string, HashSet<string>>());
             }
@@ -826,7 +830,10 @@ namespace FFXIV_TexTools.Views.Item
                 {
                     if (!Files[key].ContainsKey(mat))
                     {
-                        Files[key].Add(mat, new HashSet<string>());
+                        if (await tx.FileExists(mat))
+                        {
+                            Files[key].Add(mat, new HashSet<string>());
+                        }
                     }
                 }
             }
@@ -840,7 +847,10 @@ namespace FFXIV_TexTools.Views.Item
                     {
                         if (!Files[""].ContainsKey(mat))
                         {
-                            Files[""].Add(mat, new HashSet<string>());
+                            if (await tx.FileExists(mat))
+                            {
+                                Files[""].Add(mat, new HashSet<string>());
+                            }
                         }
                     }
                 }
@@ -859,7 +869,11 @@ namespace FFXIV_TexTools.Views.Item
                         {
                             if (!Files[model].ContainsKey(mat))
                             {
-                                Files[model].Add(mat, new HashSet<string>());
+
+                                if (await tx.FileExists(mat))
+                                {
+                                    Files[model].Add(mat, new HashSet<string>());
+                                }
                             }
                         }
                     }
@@ -875,9 +889,12 @@ namespace FFXIV_TexTools.Views.Item
                 foreach (var orph in orphanMaterials)
                 {
                     if (foundMaterials.Contains(orph)) continue;
-
                     if (!entry.ContainsKey(orph)) {
-                        entry.Add(orph, new HashSet<string>());
+
+                        if (await tx.FileExists(orph))
+                        {
+                            entry.Add(orph, new HashSet<string>());
+                        }
                     }
                 }
             }
@@ -895,7 +912,10 @@ namespace FFXIV_TexTools.Views.Item
                     {
                         if (!match.Value.ContainsKey(orph))
                         {
-                            match.Value.Add(orph, new HashSet<string>());
+                            if (await tx.FileExists(orph))
+                            {
+                                match.Value.Add(orph, new HashSet<string>());
+                            }
                         }
                     }
                     else
@@ -903,7 +923,10 @@ namespace FFXIV_TexTools.Views.Item
                         var entry = Files.First().Value;
                         if (!entry.ContainsKey(orph))
                         {
-                            entry.Add(orph, new HashSet<string>());
+                            if (await tx.FileExists(orph))
+                            {
+                                entry.Add(orph, new HashSet<string>());
+                            }
                         }
                     }
                 }
@@ -1017,7 +1040,10 @@ namespace FFXIV_TexTools.Views.Item
 
                     foreach(var tex in textures)
                     {
-                        mtrlKv.Value.Add(tex);
+                        if (await tx.FileExists(tex))
+                        {
+                            mtrlKv.Value.Add(tex);
+                        }
                     }
                 }
             }
