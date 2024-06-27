@@ -1523,7 +1523,10 @@ namespace FFXIV_TexTools
                 Trace.WriteLine(ex);
             }
 
-            this.CheckUnsafeOperation(needsWrite, true);
+            if(!this.CheckUnsafeOperation(needsWrite, true))
+            {
+                return;
+            }
 
             if (result == System.Windows.Forms.DialogResult.Yes)
             {
