@@ -750,22 +750,22 @@ namespace FFXIV_TexTools.Views.Controls
 
         private async void ResizeImage_Click(object sender, RoutedEventArgs e)
         {
-            var tex = Texture;
-            if (PixelChanges)
-            {
-                tex = (XivTex)Texture.Clone();
-
-                await Tex.MergePixelData(tex, PixelData);
-            }
-
-            var res = ResizeImageWindow.ShowResizeWindow(this, tex);
-            if (res == null) 
-            {
-                return;
-            }
-
             try
             {
+                var tex = Texture;
+                if (PixelChanges)
+                {
+                    tex = (XivTex)Texture.Clone();
+
+                    await Tex.MergePixelData(tex, PixelData);
+                }
+
+                var res = ResizeImageWindow.ShowResizeWindow(this, tex);
+                if (res == null) 
+                {
+                    return;
+                }
+
                 _Texture = res;
                 PixelData = await Texture.GetRawPixels();
                 UnsavedChanges = true;
@@ -776,8 +776,7 @@ namespace FFXIV_TexTools.Views.Controls
             }
             catch(Exception ex)
             {
-                // Should never hit this, but safety.
-                Trace.WriteLine(ex);
+                this.ShowError("Resize Error", "Unable to resize image:\n\n" + ex.Message);
             }
         }
     }
