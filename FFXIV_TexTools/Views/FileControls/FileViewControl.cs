@@ -148,8 +148,10 @@ namespace FFXIV_TexTools.Views.Controls
 
             DebouncedUpdate = ViewHelpers.Debounce<string>(_UpdateOnMainThread, 200);
 
+
             IsEnabled = false;
         }
+
 
         private Action<string> DebouncedUpdate;
 
