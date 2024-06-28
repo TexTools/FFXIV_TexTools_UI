@@ -391,12 +391,12 @@ namespace FFXIV_TexTools.Views.Controls
             }
         }
 
-        private async void TxWatcher_SaveStatusChanged(bool allowed, string text)
+        private void TxWatcher_SaveStatusChanged(bool allowed, string text)
         {
             try
             {
                 // Refresh this value to indicate a change occurred.
-                await Dispatcher.InvokeAsync(() =>
+                Dispatcher.Invoke(() =>
                 {
                     // We don't know what event thread we're propogating from, so this needs to be dispatcher invoked.
                     SaveText.Text = TxWatcher.SaveLabel;
