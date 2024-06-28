@@ -500,15 +500,7 @@ namespace FFXIV_TexTools.Views.Item
 
         private async void OnMetadataSaved(FileViewControl sender, bool success)
         {
-            try
-            {
-                // Always reload the item on Metadata reload, to be safe.
-                await SetItem(Item, Item.GetRoot().Info.GetRootFile());
-            }
-            catch
-            {
-                // No-Op, just safety catch.
-            }
+            // Don't need to reload here because TX trigger will do it already.
         }
 
         /// <summary>
@@ -867,10 +859,9 @@ namespace FFXIV_TexTools.Views.Item
 
                         foreach (var mat in materials)
                         {
-                            if (!Files[model].ContainsKey(mat))
+                            if (await tx.FileExists(mat))
                             {
-
-                                if (await tx.FileExists(mat))
+                                if (!Files[model].ContainsKey(mat))
                                 {
                                     Files[model].Add(mat, new HashSet<string>());
                                 }
