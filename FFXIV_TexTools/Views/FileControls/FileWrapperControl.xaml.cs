@@ -852,7 +852,7 @@ namespace FFXIV_TexTools.Views.Controls
                     tx = MainWindow.UserTransaction;
                 }
 
-                await FileControl.SaveCurrentFile(tx);
+                await FileControl.SaveCurrentFile(tx, ignoreWarning);
             }
             catch(Exception ex)
             {
