@@ -86,6 +86,7 @@ namespace FFXIV_TexTools
     /// </summary>
     public partial class MainWindow
     {
+        private bool _Loaded = false;
         private int _LockCount = 0;
         private static MainWindow _mainWindow;
         public readonly System.Windows.Forms.IWin32Window Win32Window;
@@ -95,6 +96,14 @@ namespace FFXIV_TexTools
             get
             {
                 return BetaSuffix != null;
+            }
+        }
+
+        public bool MainWindowLoaded
+        {
+            get
+            {
+                return _Loaded;
             }
         }
 
@@ -635,6 +644,11 @@ namespace FFXIV_TexTools
 
         public async Task LockUi(string title = null, string msg = null, object caller = null)
         {
+            if(!this.IsInitialized || !ViewHelpers.IsWindowOpen(this))
+            {
+                return;
+            }
+
             await _lockScreenSemaphore.WaitAsync();
             try
             {
@@ -654,7 +668,15 @@ namespace FFXIV_TexTools
                     msg = UIStrings.Please_Wait;
                 }
 
-                _lockProgressController = await this.ShowProgressAsync(title, msg);
+                try
+                {
+                    _lockProgressController = await this.ShowProgressAsync(title, msg);
+                }
+                catch
+                {
+                    // Window wasn't actually visible/etc.
+                    return;
+                }
                 _lockProgress = new Progress<string>((update) =>
                 {
                     _lockProgressController.SetMessage(update);
@@ -1638,6 +1660,8 @@ namespace FFXIV_TexTools
             var tmps = fileVersion.Split('.');
             var pre = tmps[tmps.Length - 1] == "0" ? "" : $".{tmps[tmps.Length - 1]}";
             Title += $" {fileVersion.Substring(0, fileVersion.LastIndexOf("."))}{pre}";
+
+            _Loaded = true;
         }
 
         private void GithubButton_Click(object sender, RoutedEventArgs e)

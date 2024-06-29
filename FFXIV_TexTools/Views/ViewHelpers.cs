@@ -11,6 +11,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -586,6 +587,20 @@ namespace FFXIV_TexTools.Views
         }
         public static bool IsWindowOpen<T>(T wind) where T : Window
         {
+            if(wind == null)
+            {
+                return false;
+            }
+
+            if(typeof(T) == typeof(MainWindow))
+            {
+                var mw = wind as MainWindow;
+                if (!mw.MainWindowLoaded)
+                {
+                    return false;
+                }
+            }
+
             var w = Application.Current.Windows.OfType<T>().FirstOrDefault(x => x == wind);
             if(w == null)
             {

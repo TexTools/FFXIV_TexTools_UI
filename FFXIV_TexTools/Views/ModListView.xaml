@@ -71,6 +71,21 @@
                         <ListView.ItemTemplate>
                             <DataTemplate>
                                 <Border BorderBrush="{Binding ActiveBorder}" BorderThickness="2" Background="{Binding Active}" Opacity="{Binding ActiveOpacity}" ToolTip="{Binding Path=FilePath}" Width="160">
+
+                                    <Border.ContextMenu>
+                                        <ContextMenu>
+                                            <MenuItem Header="View/Edit File" Click="OpenFile_Click">
+                                            </MenuItem>
+                                            <MenuItem Click="CopyPath_Click">
+                                                <MenuItem.Header>
+                                                    <TextBlock>
+                                                            <Run>Copy Path: </Run> 
+                                                            <Run Text="{Binding Path=FilePath}"></Run>
+                                                    </TextBlock>
+                                                </MenuItem.Header>
+                                            </MenuItem>
+                                        </ContextMenu>
+                                    </Border.ContextMenu>
                                     <Grid>
                                         <Grid.RowDefinitions>
                                             <RowDefinition/>
@@ -84,6 +99,7 @@
                                             <ColumnDefinition/>
                                             <ColumnDefinition/>
                                         </Grid.ColumnDefinitions>
+
 
                                         <!-- Top Line Header -->
                                         <!-- Row 0 Data-->
