@@ -873,6 +873,16 @@ namespace FFXIV_TexTools.Views.Item
 
 
             var orphanMaterials = await Root.GetModdedMaterials(materialSet, tx);
+            if(Root.Info.PrimaryType == XivItemType.human && Root.Info.SecondaryType == XivItemType.hair)
+            {
+                var hairRoot = new XivDependencyRoot(Mtrl.GetHairMaterialRoot(Root.Info));
+
+                if (hairRoot != null && hairRoot != Root) {
+                    var extras = await hairRoot.GetModdedMaterials(materialSet, tx);
+                    orphanMaterials.UnionWith(extras);
+                }
+            }
+
             if (Root.Info.SecondaryType != null)
             {
                 // If there is a secondary ID, just snap these onto the first entry, because there's only one model (or 0).
