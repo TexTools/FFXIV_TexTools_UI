@@ -46,6 +46,8 @@ using TeximpNet;
 using TeximpNet.DDS;
 using xivModdingFramework.Cache;
 using xivModdingFramework.Exd.FileTypes;
+using xivModdingFramework.General;
+using xivModdingFramework.General.DataContainers;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Items.Categories;
@@ -1107,6 +1109,58 @@ namespace FFXIV_TexTools.Views
                 LockCount--;
             }
         }
+        private void AddRgspManipulations(RacialGenderScalingParameter rgsp)
+        {
+            if (SelectedOption == null) return;
+
+
+            if (SelectedOption.StandardData.Manipulations == null)
+            {
+                SelectedOption.StandardData.Manipulations = new List<PMPManipulationWrapperJson>();
+            }
+
+            LockCount++;
+            try
+            {
+                var toRemove = new List<PMPManipulationWrapperJson>();
+                var manips = SelectedOption.StandardData.Manipulations;
+
+                var entries = PMPRspManipulationJson.FromRgspEntry(rgsp);
+
+
+                foreach (var m in manips)
+                {
+                    var rm = m.GetManipulation() as PMPRspManipulationJson;
+                    if (rm == null) continue;
+
+                    if(entries.Any(x => x.SubRace == rm.SubRace && x.Attribute == rm.Attribute)){
+                        toRemove.Add(m);
+                    }
+
+                }
+
+                foreach (var m in toRemove)
+                {
+                    manips.Remove(m);
+                }
+
+                var wrapped = new List<PMPRspManipulationWrapperJson>();
+
+                foreach(var e in entries)
+                {
+                    var w = new PMPRspManipulationWrapperJson() { Manipulation = e, Type = "Rsp" };
+                    wrapped.Add(w);
+                }
+
+                manips.AddRange(wrapped);
+                SelectedOption.StandardData.SortManipulations();
+                UpdateManipulationText();
+            }
+            finally
+            {
+                LockCount--;
+            }
+        }
 
         private async void AddMetadataButton_Click(object sender, RoutedEventArgs e)
         {
@@ -1215,7 +1269,7 @@ namespace FFXIV_TexTools.Views
             ModpackContents.UnselectAll();
         }
 
-        private void AddButton_Click(object sender, RoutedEventArgs e)
+        private async void AddButton_Click(object sender, RoutedEventArgs e)
         {
             foreach (var i in ModpackContents.SelectedItems)
             {
@@ -1226,7 +1280,21 @@ namespace FFXIV_TexTools.Views
                     Path = item.FilePath
                 };
 
-                _ = AddFile(fi, item.StorageInfo);
+                if (fi.Path.EndsWith(".meta"))
+                {
+                    var data = await TransactionDataHandler.GetUncompressedFile(item.StorageInfo);
+                    var meta = await ItemMetadata.Deserialize(data);
+                    AddMetadataManipulations(meta);
+                } else if (fi.Path.EndsWith(".rgsp"))
+                {
+                    var data = await TransactionDataHandler.GetUncompressedFile(item.StorageInfo);
+                    var n = new RacialGenderScalingParameter(data);
+                    AddRgspManipulations(n);
+                }
+                else
+                {
+                    await AddFile(fi, item.StorageInfo);
+                }
             }
         }
 

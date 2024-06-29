@@ -36,6 +36,8 @@ using xivModdingFramework.Mods.Enums;
 using System.Windows.Shapes;
 using System.Collections.Generic;
 using SharpDX;
+using FFXIV_TexTools.Views.Controls;
+using static FFXIV_TexTools.ViewModels.ModListViewModel;
 
 namespace FFXIV_TexTools.Views
 {
@@ -315,6 +317,35 @@ namespace FFXIV_TexTools.Views
         {
             (DataContext as ModListViewModel).Dispose();
             _cts?.Dispose();
+        }
+
+        private void CopyPath_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender == null) return;
+
+            var ml = (sender as FrameworkElement).DataContext as ModListModel;
+            if (ml == null) return;
+
+
+            System.Windows.Clipboard.SetText(ml.FilePath);
+
+        }
+
+        private async void OpenFile_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender == null) return;
+
+            var ml = (sender as FrameworkElement).DataContext as ModListModel;
+            if (ml == null) return;
+
+
+            try
+            {
+                await SimpleFileViewWindow.OpenFile(ml.FilePath);
+            } catch (Exception Ex)
+            {
+                Trace.WriteLine(Ex);
+            }
         }
     }
 }
