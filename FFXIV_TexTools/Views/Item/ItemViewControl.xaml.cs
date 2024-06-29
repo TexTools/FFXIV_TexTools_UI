@@ -340,7 +340,18 @@ namespace FFXIV_TexTools.Views.Item
 
                 // This is where we can listen for files getting modified.
                 var fRoot = XivCache.GetFilePathRoot(changedFile);
-                if(Root == fRoot)
+
+                var isHairRoot = false;
+                if(fRoot != null && Root != null && Root.Info.PrimaryType == XivItemType.human && Root.Info.SecondaryType == XivItemType.hair)
+                {
+                    var hRoot = Mtrl.GetHairMaterialRoot(Root.Info);
+                    if(hRoot == fRoot.Info)
+                    {
+                        isHairRoot = true;
+                    }
+                }
+
+                if(Root == fRoot || isHairRoot)
                 {
                     // File is contained in our root...
                     var keys = GetFileKeys(changedFile);
