@@ -1488,7 +1488,7 @@ namespace FFXIV_TexTools.Views.Wizard
                     var ttmp = await TTMP.UnzipTtmp(modpack);
                     return await WizardData.FromWizardTtmp(ttmp.Mpl, ttmp.UnzipFolder);
                 }
-                else if (modpackType == TTMP.EModpackType.TtmpSimple || modpackType == TTMP.EModpackType.TtmpOriginal)
+                else if (modpackType == TTMP.EModpackType.TtmpSimple || modpackType == TTMP.EModpackType.TtmpOriginal || modpackType == TTMP.EModpackType.TtmpBackup)
                 {
                     var ttmp = await TTMP.UnzipTtmp(modpack);
                     return await WizardData.FromSimpleTtmp(ttmp.Mpl, ttmp.UnzipFolder);

@@ -374,7 +374,7 @@ namespace FFXIV_TexTools.Views
                 foreach (var entry in ViewModel.Entries)
                 {
                     var option = new WizardOptionEntry(group);
-                    option.Name = "Default Option";
+                    option.Name = entry.Item.Name;
                     group.Options.Add(option);
                     option.Selected = true;
                     foreach (var file in entry.AllFiles)
