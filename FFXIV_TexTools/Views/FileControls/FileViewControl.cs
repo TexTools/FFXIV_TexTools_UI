@@ -248,7 +248,7 @@ namespace FFXIV_TexTools.Views.Controls
                         return;
                     }
 
-                    var task = ReloadFile();
+                    await ReloadFile();
                 });
             }
             catch(Exception ex)

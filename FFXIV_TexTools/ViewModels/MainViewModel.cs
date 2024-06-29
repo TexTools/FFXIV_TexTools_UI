@@ -463,7 +463,7 @@ namespace FFXIV_TexTools.ViewModels
         {
             try
             {
-                await await _mainWindow.Dispatcher.InvokeAsync(async () =>
+                await _mainWindow.Dispatcher.InvokeAsync(async () =>
                 {
                     UpdateTxState(newState);
                 });

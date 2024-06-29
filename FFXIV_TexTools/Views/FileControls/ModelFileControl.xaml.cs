@@ -872,7 +872,7 @@ namespace FFXIV_TexTools.Views.Controls
             }
         }
 
-        private async void AddModel_Click(object sender, RoutedEventArgs e)
+        private void AddModel_Click(object sender, RoutedEventArgs e)
         {
             AddModelContextMenu.PlacementTarget = AddModelGrid;
             AddModelContextMenu.IsOpen = true;

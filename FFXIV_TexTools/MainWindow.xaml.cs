@@ -603,16 +603,17 @@ namespace FFXIV_TexTools
         bool _modelLoaded = false;
         bool _texturesLoaded = false;
         bool _waitingForItemLoad = false;
-        private void ModelViewModelOnLoadingComplete(object sender, EventArgs e)
+        private async void ModelViewModelOnLoadingComplete(object sender, EventArgs e)
         {
             _modelLoaded = true;
-            CheckItemLoadComplete();
+            await CheckItemLoadComplete();
         }
 
-        private void TextureViewModelOnLoadingComplete(object sender, EventArgs e)
+        private async void TextureViewModelOnLoadingComplete(object sender, EventArgs e)
+
         {
             _texturesLoaded = true;
-            CheckItemLoadComplete();
+            await CheckItemLoadComplete();
         }
 
         private async Task CheckItemLoadComplete()
@@ -1146,7 +1147,7 @@ namespace FFXIV_TexTools
             }
         }
 
-        private async void Menu_MakeStandardModpack_Click(object sender, RoutedEventArgs e)
+        private void Menu_MakeStandardModpack_Click(object sender, RoutedEventArgs e)
         {
             NotifyUnsaved();
             var dialog = new StandardModpackCreator { Owner = this };
@@ -1302,7 +1303,7 @@ namespace FFXIV_TexTools
         /// <summary>
         /// Event handler for the simple mod pack menu item clicked
         /// </summary>
-        private async void Menu_MakeSimpleModpack_Click(object sender, RoutedEventArgs e)
+        private void Menu_MakeSimpleModpack_Click(object sender, RoutedEventArgs e)
         {
             NotifyUnsaved();
             FileListExporter.ShowModpackExport();
@@ -1674,7 +1675,7 @@ namespace FFXIV_TexTools
             Process.Start(WebUrl.Discord_China);
         }
 
-        private async void Menu_ItemConverter_Click(object sender, RoutedEventArgs e)
+        private void Menu_ItemConverter_Click(object sender, RoutedEventArgs e)
         {
             if (!this.CheckFileWrite())
             {
