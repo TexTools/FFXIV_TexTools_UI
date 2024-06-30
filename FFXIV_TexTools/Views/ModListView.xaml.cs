@@ -38,6 +38,7 @@ using System.Collections.Generic;
 using SharpDX;
 using FFXIV_TexTools.Views.Controls;
 using static FFXIV_TexTools.ViewModels.ModListViewModel;
+using xivModdingFramework.Helpers;
 
 namespace FFXIV_TexTools.Views
 {
@@ -277,12 +278,13 @@ namespace FFXIV_TexTools.Views
                 return;
             }
 
+            var wind = ViewHelpers.GetWin32Window(this);
             await LockUi("Deleting Mod".L(), "Please wait...".L(), this);
             try
             {
                 if ((ModListTreeView.SelectedItem as Category).ParentCategory.Name.Equals("ModPacks"))
                 {
-                    if (FlexibleMessageBox.Show(
+                    if (FlexibleMessageBox.Show(wind,
                             UIMessages.DeleteModPackMessage,
                             UIMessages.DeleteModPackTitle,
                             MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == System.Windows.Forms.DialogResult.Yes)
@@ -306,7 +308,7 @@ namespace FFXIV_TexTools.Views
             }
             catch (Exception Ex)
             {
-                FlexibleMessageBox.Show("Unable to delete Mod or Modpack.\n\nError: ".L() + Ex.Message, "Mod Delete Error".L(), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                FlexibleMessageBox.Show(wind,"Unable to delete Mod or Modpack.\n\nError: ".L() + Ex.Message, "Mod Delete Error".L(), MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally {
                 await UnlockUi(this);
