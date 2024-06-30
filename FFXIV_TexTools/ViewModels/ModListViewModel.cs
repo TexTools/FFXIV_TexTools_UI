@@ -171,10 +171,7 @@ namespace FFXIV_TexTools.ViewModels
                 var allmods = modList.GetMods(x => !x.IsInternal());
                 foreach (var modEntry in allmods)
                 {
-                    if (!modEntry.ItemName.Equals(string.Empty))
-                    {
-                        mainCategories.Add(modEntry.ItemCategory);
-                    }
+                    mainCategories.Add(modEntry.ItemCategory);
                 }
 
                 foreach (var mainCategory in mainCategories)
@@ -318,10 +315,7 @@ namespace FFXIV_TexTools.ViewModels
 
                     foreach (var modEntry in modsInModpack)
                     {
-                        if (!modEntry.ItemName.Equals(string.Empty))
-                        {
-                            mainCategories.Add(modEntry.ItemCategory);
-                        }
+                        mainCategories.Add(modEntry.ItemCategory);
                     }
 
                     foreach (var mainCategory in mainCategories)
@@ -723,7 +717,7 @@ namespace FFXIV_TexTools.ViewModels
             if (category.Name.Equals(UIStrings.Standalone_Non_ModPack))
             {
                 modPackModList = (from items in allMods
-                    where !items.ItemName.Equals(string.Empty) && items.ModPack == null
+                    where string.IsNullOrWhiteSpace(items.ModPack)
                     select items).ToList();
 
                 ModPackModAuthorLabel = "[ N/A ]";
