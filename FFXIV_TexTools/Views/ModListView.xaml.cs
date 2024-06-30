@@ -113,6 +113,8 @@ namespace FFXIV_TexTools.Views
                     else
                     {
                         await (DataContext as ModListViewModel).UpdateList(selectedItem, _cts);
+                        modToggleButton.IsEnabled = false;
+                        modDeleteButton.IsEnabled = false;
                     }
                 }
                 else
