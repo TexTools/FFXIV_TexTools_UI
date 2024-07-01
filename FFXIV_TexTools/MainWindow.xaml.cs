@@ -520,7 +520,8 @@ namespace FFXIV_TexTools
                     XivCache.CacheRebuilding += OnCacheRebuild;
 
 
-                    await XivCache.SetGameInfo(gameDir, lang, true);
+                    // Disable cache worker entirely for now.
+                    await XivCache.SetGameInfo(gameDir, lang, false);
                     CustomizeViewModel.UpdateCacheSettings();
 
                 } catch(Exception ex)
