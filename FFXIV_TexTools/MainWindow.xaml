@@ -60,6 +60,11 @@
             </Menu.ItemsPanel>
             <MenuItem Header="{Binding Source={x:Static resx:UIStrings.Mods}}">
                 <MenuItem x:Name="Menu_ModList" Header="{Binding Source={x:Static resx:UIStrings.Manage_ModList}}" Click="Menu_ModList_Click"/>
+                <MenuItem Header="All Mods...">
+                    <MenuItem x:Name="Menu_EnableAll" Header="{Binding Source={x:Static resx:UIStrings.Enable_All_Mods}}" Command="{Binding EnableAllModsCommand}"/>
+                    <MenuItem x:Name="Menu_DisableAll" Header="{Binding Source={x:Static resx:UIStrings.Disable_All_Mods}}" Command="{Binding DisableAllModsCommand}"/>
+                    <MenuItem x:Name="Menu_DeleteAll" Header="Delete All Mods" Click="Menu_StartOver_Click"/>
+                </MenuItem>
 
                 <MenuItem x:Name="Menu_CreateModPack" Header="{Binding Source={x:Static resx:UIStrings.Create_Modpack}}">
                     <MenuItem x:Name="Menu_MakeModpackWizard" Header="Advanced" Click="Menu_MakeModpackWizard_Click"/>
@@ -68,8 +73,6 @@
                     <MenuItem x:Name="Menu_MakeBackupModpack" Header="Create Backup" Click="Menu_MakeBackupModpack_Click"/>
                 </MenuItem>
                 <MenuItem x:Name="Menu_ImportModpack" Header="{Binding Source={x:Static resx:UIStrings.Import_ModPacks}}" Click="Menu_ImportModpack_Click"/>
-                <MenuItem x:Name="Menu_DisableAll" Header="{Binding Source={x:Static resx:UIStrings.Disable_All_Mods}}" Command="{Binding DisableAllModsCommand}"/>
-                <MenuItem x:Name="Menu_DeleteAll" Header="Delete All Mods" Click="Menu_StartOver_Click"/>
             </MenuItem>
             <MenuItem Header="{Binding Source={x:Static resx:UIStrings.View}}" StaysOpenOnClick="True">
                 <MenuItem x:Name="Menu_ProjectManager" Header="Project Manager" Click="Menu_ProjectManager_Click"/>
