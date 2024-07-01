@@ -977,7 +977,7 @@ namespace FFXIV_TexTools
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private async void ItemSelect_ItemSelected(object sender, IItem item)
+        private async void ItemSelect_ItemSelected(IItem item, XivDependencyRoot root)
         {
             try
             {

@@ -64,7 +64,13 @@ namespace FFXIV_TexTools.Views
             ItemSelect.UnlockUiFunction = _window.UnlockUi;
             ItemSelect.ExtraSearchFunction = Filter;
 
-            ItemSelect_RawItemSelected(this, ItemSelect.SelectedItem);
+            if (ItemSelect.SelectedItem != null)
+            {
+                ItemSelect_RawItemSelected(ItemSelect.SelectedItem, ItemSelect.SelectedItem.GetRoot());
+            } else
+            {
+                ItemSelect_RawItemSelected(null, null);
+            }
 
             foreach (var entry in vm.Entries)
             {
@@ -94,7 +100,7 @@ namespace FFXIV_TexTools.Views
         /// <summary>
         /// Extra search filter criterion.  Lets us filter out unsupported items.
         /// </summary>
-        private bool Filter(IItem item) {
+        private bool Filter(IItem item, XivDependencyRoot root) {
 
             // Character is kind of messy and needs a little work to make support work smoothly in this menu.
             // UI Won't ever be supported since there's nothing to connect them together via (that I know of at least -Sel)
@@ -105,10 +111,10 @@ namespace FFXIV_TexTools.Views
             return true;
         }
 
-        private void ItemSelect_RawItemSelected(object sender, IItem e)
+        private void ItemSelect_RawItemSelected(IItem e, XivDependencyRoot root)
         {
             var enable = false;
-            if (e != null && e.GetRoot() != null) {
+            if (e != null && root != null) {
                 enable = true;
             }
 

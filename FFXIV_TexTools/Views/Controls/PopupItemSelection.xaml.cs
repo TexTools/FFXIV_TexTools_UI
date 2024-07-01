@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
+using xivModdingFramework.Cache;
 using xivModdingFramework.Items.Interfaces;
 
 namespace FFXIV_TexTools.Views.Controls
@@ -24,7 +25,7 @@ namespace FFXIV_TexTools.Views.Controls
     {
         public static PopupItemSelection CurrentPopup;
         public IItem SelectedItem;
-        private Func<IItem, bool> _selectFunction;
+        private Func<IItem, XivDependencyRoot, bool> _selectFunction;
 
 
         public static ItemSelectControl ItemSelect;
@@ -53,7 +54,7 @@ namespace FFXIV_TexTools.Views.Controls
         }
         #endregion
 
-        public PopupItemSelection(Func<IItem, bool> ExtraFilterFunction = null, Func<IItem, bool> AllowSelectFunction = null)
+        public PopupItemSelection(Func<IItem, XivDependencyRoot, bool> ExtraFilterFunction = null, Func<IItem, XivDependencyRoot, bool> AllowSelectFunction = null)
         {
             InitializeComponent();
             CurrentPopup = this;
@@ -104,11 +105,11 @@ namespace FFXIV_TexTools.Views.Controls
             CurrentPopup.DialogResult = true;
         }
 
-        private static void ItemSelect_RawItemSelected(object sender, IItem e)
+        private static void ItemSelect_RawItemSelected(IItem e, XivDependencyRoot root)
         {
             if (CurrentPopup._selectFunction != null)
             {
-                var result = CurrentPopup._selectFunction(e);
+                var result = CurrentPopup._selectFunction(e, root);
                 ItemSelect.SelectButton.IsEnabled = result;
 
                 if (result)
@@ -131,7 +132,7 @@ namespace FFXIV_TexTools.Views.Controls
 
             return ShowItemSelection(ExtraFilterFunction, AllowSelectFunction, wind);
         }
-        public static IItem ShowItemSelection(Func<IItem, bool> ExtraFilterFunction = null, Func<IItem, bool> AllowSelectFunction = null, Window owner = null)
+        public static IItem ShowItemSelection(Func<IItem, XivDependencyRoot, bool> ExtraFilterFunction = null, Func<IItem, XivDependencyRoot, bool> AllowSelectFunction = null, Window owner = null)
         {
             if(owner == null)
             {

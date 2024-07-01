@@ -208,7 +208,7 @@ namespace FFXIV_TexTools.Views
         /// <summary>
         /// Extra search filter criterion.  Lets us filter out unsupported items.
         /// </summary>
-        private bool Filter(IItem item)
+        private bool Filter(IItem item, XivDependencyRoot root)
         {
             return true;
         }
@@ -435,7 +435,13 @@ namespace FFXIV_TexTools.Views
 
                 if (SelectedItem != null)
                 {
-                    ItemList_ItemSelected(this, SelectedItem);
+                    if(SelectedItem != null)
+                    {
+                        ItemList_ItemSelected(SelectedItem, SelectedItem.GetRoot());
+                    } else
+                    {
+                        ItemList_ItemSelected(null, null);
+                    }
                 }
             }
             finally
@@ -465,7 +471,7 @@ namespace FFXIV_TexTools.Views
             OptionImage.Source = res.Image;
         }
 
-        private void ItemList_ItemSelected(object sender, IItem item)
+        private void ItemList_ItemSelected(IItem item, XivDependencyRoot root)
         {
             if(item == null)
             {
@@ -473,8 +479,6 @@ namespace FFXIV_TexTools.Views
             }
 
             SelectedItem = item;
-
-            var root = item.GetRoot();
 
             TextureMapComboBox.Items.Clear();
             ModelTypeComboBox.Items.Clear();
