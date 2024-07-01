@@ -380,7 +380,6 @@ namespace FFXIV_TexTools.ViewModels
         public ICommand EnableAllModsCommand => new RelayCommand(EnableAllMods);
         public ICommand DisableAllModsCommand => new RelayCommand(DisableAllMods);
 
-
         /// <summary>
         /// Enables all mods in the mod list
         /// </summary>
