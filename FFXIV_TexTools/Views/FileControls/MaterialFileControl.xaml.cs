@@ -226,6 +226,20 @@ namespace FFXIV_TexTools.Views.Controls
             // The incoming data is an uncompressed MTRL file.
             var mtrl = Mtrl.GetXivMtrl(data, path);
 
+
+            var msetRegex = new Regex("\\/v[0-9]{4}\\/");
+
+            if (path != null && msetRegex.IsMatch(path))
+            {
+                NewSharedButton.IsEnabled = true;
+                NewUniqueButton.IsEnabled = true;
+            } else
+            { 
+                NewSharedButton.IsEnabled = false;
+                NewUniqueButton.IsEnabled = false;
+            }
+
+
             Material = mtrl;
             return true;
         }

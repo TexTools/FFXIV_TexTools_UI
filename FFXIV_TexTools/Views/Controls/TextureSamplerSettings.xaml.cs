@@ -12,6 +12,7 @@ using static xivModdingFramework.Materials.DataContainers.TextureSampler;
 using SharpDX;
 using xivModdingFramework.Textures.FileTypes;
 using System.Text.RegularExpressions;
+using System.Windows.Shapes;
 
 namespace FFXIV_TexTools.Views.Controls
 {
@@ -214,6 +215,19 @@ namespace FFXIV_TexTools.Views.Controls
             }
             MinLoDBox.ItemsSource = MinimumLoDSource;
 
+            var msetRegex = new Regex("\\/v[0-9]{4}\\/");
+
+            var mtrlPath = mtrl.MTRLPath;
+            if (mtrlPath != null && msetRegex.IsMatch(mtrlPath))
+            {
+                SharedButton.IsEnabled = true;
+                UniqueButton.IsEnabled = true;
+            }
+            else
+            {
+                SharedButton.IsEnabled = false;
+                UniqueButton.IsEnabled = false;
+            }
 
             // UI config has to go after Initialize.
             LoDBiasSlider.Minimum = -8.0f;
