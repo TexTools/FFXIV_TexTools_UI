@@ -100,14 +100,14 @@ namespace FFXIV_TexTools.Views.Wizard.ManipulationEditors
         }
 
 
-        private bool ItemSelectFunc(IItem item)
+        private bool ItemSelectFunc(IItem item, XivDependencyRoot root)
         {
             var type = item.GetPrimaryItemType();
             if (type != XivItemType.equipment) return false;
             return true;
         }
 
-        private bool ItemFilterFunc(IItem item)
+        private bool ItemFilterFunc(IItem item, XivDependencyRoot root)
         {
             var type = item.GetPrimaryItemType();
             if (type != XivItemType.equipment) return false;
