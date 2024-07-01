@@ -271,7 +271,16 @@ namespace FFXIV_TexTools.Views.Controls
 
         protected override async Task<bool> INTERNAL_WriteModFile(ModTransaction tx)
         {
-
+            foreach (var tex in Material.Textures)
+            {
+                if (!IOUtil.IsFFXIVInternalPath(tex.TexturePath))
+                {
+                    if (!tex.TexturePath.Contains("/") && tex.TexturePath.EndsWith(".tex"))
+                    {
+                        tex.TexturePath = Material.GetTextureRootDirectory() + "/" + tex.TexturePath;
+                    }
+                }
+            }
 
             // We override this in order to use MTRL's import function, which checks for missing texture files, etc.
             await Mtrl.ImportMtrl(Material, ReferenceItem, XivStrings.TexTools, true, tx);
@@ -515,7 +524,7 @@ namespace FFXIV_TexTools.Views.Controls
             }
             foreach (var tex in Material.Textures)
             {
-                var path = Material.GetTextureRootDirectoy() + "/" + Material.GetDefaultTexureName(Material.ResolveFullUsage(tex), false);
+                var path = Material.GetTextureRootDirectory() + "/" + Material.GetDefaultTexureName(Material.ResolveFullUsage(tex), false);
                 tex.TexturePath = path;
             }
             UnsavedChanges = true;
@@ -530,7 +539,7 @@ namespace FFXIV_TexTools.Views.Controls
             }
             foreach (var tex in Material.Textures)
             {
-                var path = Material.GetTextureRootDirectoy() + "/" + Material.GetDefaultTexureName(Material.ResolveFullUsage(tex), true);
+                var path = Material.GetTextureRootDirectory() + "/" + Material.GetDefaultTexureName(Material.ResolveFullUsage(tex), true);
                 tex.TexturePath = path;
             }
             UnsavedChanges = true;
