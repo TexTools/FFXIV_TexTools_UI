@@ -48,6 +48,7 @@ using System.Threading;
 using System.CodeDom;
 using xivModdingFramework.Helpers;
 using SharpDX;
+using xivModdingFramework.Models.DataContainers;
 
 namespace FFXIV_TexTools.Views.Controls
 {
@@ -273,12 +274,20 @@ namespace FFXIV_TexTools.Views.Controls
         {
             foreach (var tex in Material.Textures)
             {
+                if (string.IsNullOrEmpty(tex.TexturePath)) continue;
+
+                tex.TexturePath = tex.TexturePath.ToLower();
                 if (!IOUtil.IsFFXIVInternalPath(tex.TexturePath))
                 {
                     if (!tex.TexturePath.Contains("/") && tex.TexturePath.EndsWith(".tex"))
                     {
                         tex.TexturePath = Material.GetTextureRootDirectory() + "/" + tex.TexturePath;
                     }
+                }
+
+                if (!IOUtil.IsFFXIVInternalPath(tex.TexturePath) || !tex.TexturePath.EndsWith(".tex"))
+                {
+                    throw new InvalidDataException("Texture path is not a valid FFXIV texture path: " + tex.TexturePath);
                 }
             }
 
