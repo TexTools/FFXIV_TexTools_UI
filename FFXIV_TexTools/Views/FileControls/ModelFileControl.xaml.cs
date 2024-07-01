@@ -246,6 +246,17 @@ namespace FFXIV_TexTools.Views.Controls
         {
             // We override this to perform material validation first.
             Model.Source = InternalFilePath;
+
+            foreach (var mtrl in Model.Materials)
+            {
+                if (string.IsNullOrEmpty(mtrl)) continue;
+
+                if (!IOUtil.IsFFXIVInternalPath(mtrl) || !mtrl.EndsWith(".mtrl"))
+                {
+                    throw new InvalidDataException("Material path is not a valid FFXIV material path: " + mtrl);
+                }
+            }
+
             await Mdl.FillMissingMaterials(Model, ReferenceItem, XivStrings.TexTools, tx);
             return await base.INTERNAL_WriteModFile(tx);   
         }

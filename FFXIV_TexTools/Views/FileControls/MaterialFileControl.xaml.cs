@@ -48,6 +48,7 @@ using System.Threading;
 using System.CodeDom;
 using xivModdingFramework.Helpers;
 using SharpDX;
+using xivModdingFramework.Models.DataContainers;
 
 namespace FFXIV_TexTools.Views.Controls
 {
@@ -226,6 +227,20 @@ namespace FFXIV_TexTools.Views.Controls
             // The incoming data is an uncompressed MTRL file.
             var mtrl = Mtrl.GetXivMtrl(data, path);
 
+
+            var msetRegex = new Regex("\\/v[0-9]{4}\\/");
+
+            if (path != null && msetRegex.IsMatch(path))
+            {
+                NewSharedButton.IsEnabled = true;
+                NewUniqueButton.IsEnabled = true;
+            } else
+            { 
+                NewSharedButton.IsEnabled = false;
+                NewUniqueButton.IsEnabled = false;
+            }
+
+
             Material = mtrl;
             return true;
         }
@@ -257,7 +272,24 @@ namespace FFXIV_TexTools.Views.Controls
 
         protected override async Task<bool> INTERNAL_WriteModFile(ModTransaction tx)
         {
+            foreach (var tex in Material.Textures)
+            {
+                if (string.IsNullOrEmpty(tex.TexturePath)) continue;
 
+                tex.TexturePath = tex.TexturePath.ToLower();
+                if (!IOUtil.IsFFXIVInternalPath(tex.TexturePath))
+                {
+                    if (!tex.TexturePath.Contains("/") && tex.TexturePath.EndsWith(".tex"))
+                    {
+                        tex.TexturePath = Material.GetTextureRootDirectory() + "/" + tex.TexturePath;
+                    }
+                }
+
+                if (!IOUtil.IsFFXIVInternalPath(tex.TexturePath) || !tex.TexturePath.EndsWith(".tex"))
+                {
+                    throw new InvalidDataException("Texture path is not a valid FFXIV texture path: " + tex.TexturePath);
+                }
+            }
 
             // We override this in order to use MTRL's import function, which checks for missing texture files, etc.
             await Mtrl.ImportMtrl(Material, ReferenceItem, XivStrings.TexTools, true, tx);
@@ -501,7 +533,7 @@ namespace FFXIV_TexTools.Views.Controls
             }
             foreach (var tex in Material.Textures)
             {
-                var path = Material.GetTextureRootDirectoy() + "/" + Material.GetDefaultTexureName(Material.ResolveFullUsage(tex), false);
+                var path = Material.GetTextureRootDirectory() + "/" + Material.GetDefaultTexureName(Material.ResolveFullUsage(tex), false);
                 tex.TexturePath = path;
             }
             UnsavedChanges = true;
@@ -516,7 +548,7 @@ namespace FFXIV_TexTools.Views.Controls
             }
             foreach (var tex in Material.Textures)
             {
-                var path = Material.GetTextureRootDirectoy() + "/" + Material.GetDefaultTexureName(Material.ResolveFullUsage(tex), true);
+                var path = Material.GetTextureRootDirectory() + "/" + Material.GetDefaultTexureName(Material.ResolveFullUsage(tex), true);
                 tex.TexturePath = path;
             }
             UnsavedChanges = true;

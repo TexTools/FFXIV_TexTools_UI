@@ -196,7 +196,7 @@ namespace FFXIV_TexTools.Views.ItemConverter
 
             return true;
         }
-        private void ItemSelect_RawItemSelected(object sender, IItem item)
+        private void ItemSelect_RawItemSelected(IItem item, XivDependencyRoot root)
         {
             if(item == null)
             {
@@ -205,7 +205,6 @@ namespace FFXIV_TexTools.Views.ItemConverter
                 return;
             }
 
-            var root = item.GetRoot();
             if (!IsSupported(root))
             {
                 ItemSelect.SelectButton.IsEnabled = false;
@@ -231,14 +230,13 @@ namespace FFXIV_TexTools.Views.ItemConverter
         }
 
         #region Item List Filters
-        private bool Filter(IItem item)
+        private bool Filter(IItem item, XivDependencyRoot root)
         {
             if (item == null)
             {
                 return false;
             }
 
-            var root = item.GetRoot();
             if (!IsSupported(root))
             {
                 return false;

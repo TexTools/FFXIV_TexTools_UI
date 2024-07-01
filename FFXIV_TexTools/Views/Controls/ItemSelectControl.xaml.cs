@@ -69,14 +69,16 @@ namespace FFXIV_TexTools.Views.Controls
         private bool _READY = false;
         private bool _SILENT = false;
 
+        public delegate void ItemEventHandler(IItem item, XivDependencyRoot root);
+
         // Fired when tree finishes loading.
         public event EventHandler ItemsLoaded;
 
         // Fired whenever the selected item actually changes.  (NULLs and Duplicates are filtered out)
-        public event EventHandler<IItem> ItemSelected;
+        public event ItemEventHandler ItemSelected;
 
         // Fired any time the UI selection event fires, regardless of the selection.
-        public event EventHandler<IItem> RawItemSelected;
+        public event ItemEventHandler RawItemSelected;
 
         // Fired whenever the user clicks the confirmation, or double clicks an item.
         public event EventHandler<IItem> ItemConfirmed;
@@ -89,7 +91,7 @@ namespace FFXIV_TexTools.Views.Controls
         public Func<string, string, object, Task> LockUiFunction;
         public Func<object, Task> UnlockUiFunction;
 
-        public Func<IItem, bool> ExtraSearchFunction;
+        public Func<IItem, XivDependencyRoot, bool> ExtraSearchFunction;
 
         public bool StartExpanded = false;
 
@@ -648,7 +650,7 @@ namespace FFXIV_TexTools.Views.Controls
 
 
             if (RawItemSelected != null) {
-                RawItemSelected.Invoke(null, item);
+                RawItemSelected.Invoke(item, element.Root);
             }
 
             // If we re-selected the same item, selection doesn't escape this controller (didn't actually change).
@@ -657,7 +659,7 @@ namespace FFXIV_TexTools.Views.Controls
             _selectedItem = item;
             if (ItemSelected != null)
             {
-                ItemSelected.Invoke(this, _selectedItem);
+                ItemSelected.Invoke(_selectedItem, element.Root);
             }
         }
 
@@ -708,7 +710,7 @@ namespace FFXIV_TexTools.Views.Controls
                 _selectedItem = item;
 
                 // Manually invoke this in case the item isn't in the filter currently.
-                ItemSelected.Invoke(this, _selectedItem);
+                ItemSelected.Invoke(_selectedItem, e.Root);
             }
             else
             {
@@ -716,7 +718,7 @@ namespace FFXIV_TexTools.Views.Controls
                 if (_selectedItem != item)
                 {
                     _selectedItem = item;
-                    ItemSelected.Invoke(this, _selectedItem);
+                    ItemSelected.Invoke(_selectedItem, e.Root);
                 }
 
             }
@@ -785,7 +787,7 @@ namespace FFXIV_TexTools.Views.Controls
             if (!_READY) return;
             if (SelectedItem != null && ItemConfirmed != null)
             {
-                ItemConfirmed.Invoke(this, _selectedItem);
+                ItemConfirmed.Invoke(null, _selectedItem);
             }
         }
 
@@ -887,7 +889,7 @@ namespace FFXIV_TexTools.Views.Controls
                     }
 
                     // If we have an extra search criteria supplied by an outside function, it has to pass that, too.
-                    iMatch = ((ExtraSearchFunction(e.Item) || subHits) && iMatch);
+                    iMatch = ((ExtraSearchFunction(e.Item, e.Root) || subHits) && iMatch);
 
                 }
             }
