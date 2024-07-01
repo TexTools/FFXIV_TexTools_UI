@@ -1727,6 +1727,7 @@ namespace FFXIV_TexTools
         }
         private async Task DownloadIndexBackups()
         {
+            var success = false;
             var url = UIStrings.Index_Backups_Url;
             if (url == "NONE" || String.IsNullOrWhiteSpace(url))
             {
@@ -1776,15 +1777,10 @@ namespace FFXIV_TexTools
                     _lockProgress.Report("Copying new indexes to backup directory...".L());
                     await IOUtil.UnzipFiles(zipPath, Settings.Default.Backup_Directory);
 
-
                     _lockProgress.Report("Job Done.".L());
+                    success = true;
                 });
 
-                var res = (FlexibleMessageBox.Show("Successfully downloaded fresh index backups.\nWould you like to delete all mods and apply these backups/[Start Over]?.".L(), "Backup Download Success".L(), MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1));
-                if(res == System.Windows.Forms.DialogResult.Yes)
-                {
-                    Menu_StartOver_Click(null, null);
-                }
             }
             catch(Exception Ex)
             {
@@ -1798,6 +1794,15 @@ namespace FFXIV_TexTools
                     File.Delete(zipPath);
                 }
                 await UnlockUi();
+            }
+            if (success)
+            {
+                var res = (FlexibleMessageBox.Show("Successfully downloaded fresh index backups.\nWould you like to delete all mods and apply these backups/[Start Over]?.".L(), "Backup Download Success".L(), MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1));
+                if (res == System.Windows.Forms.DialogResult.Yes)
+                {
+                    _lockProgressController.SetTitle("Removing All Mods");
+                    Menu_StartOver_Click(null, null);
+                }
             }
         }
 
