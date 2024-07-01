@@ -251,7 +251,7 @@ namespace FFXIV_TexTools.Views.Controls
             {
                 if (string.IsNullOrEmpty(mtrl)) continue;
 
-                if (!IOUtil.IsFFXIVInternalPath(mtrl) || !mtrl.EndsWith(".mtrl"))
+                if (!mtrl.StartsWith("/") && !IOUtil.IsFFXIVInternalPath(mtrl) || !mtrl.EndsWith(".mtrl"))
                 {
                     throw new InvalidDataException("Material path is not a valid FFXIV material path: " + mtrl);
                 }
