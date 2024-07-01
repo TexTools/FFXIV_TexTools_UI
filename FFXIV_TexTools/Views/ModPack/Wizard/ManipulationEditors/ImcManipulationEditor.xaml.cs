@@ -59,7 +59,8 @@ namespace FFXIV_TexTools.Views.Wizard.ManipulationEditors
             {
                 if (value == null) return;
                 var id = PmpIdentifierJson.FromRoot(value.Info);
-                
+
+                Manipulation.ObjectType = PMPExtensions.XivItemTypeToPenumbraObject[value.Info.PrimaryType];
                 Manipulation.EquipSlot = id.EquipSlot;
                 Manipulation.BodySlot = id.BodySlot;
                 Manipulation.PrimaryId = id.PrimaryId;
