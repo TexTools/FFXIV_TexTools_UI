@@ -1,4 +1,5 @@
-﻿using FFXIV_TexTools.Helpers;
+﻿using FFXIV_TexTools.Annotations;
+using FFXIV_TexTools.Helpers;
 using FFXIV_TexTools.Properties;
 using FFXIV_TexTools.Resources;
 using FolderSelect;
@@ -28,6 +29,7 @@ using WK.Libraries.BetterFolderBrowserNS;
 using xivModdingFramework.Cache;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Models.DataContainers;
+using xivModdingFramework.Mods;
 
 namespace FFXIV_TexTools.Views
 {
@@ -185,6 +187,15 @@ namespace FFXIV_TexTools.Views
 
             InitializeSettings();
             CheckRerunAdmin();
+            ValidateModlist();
+        }
+
+        public static void ValidateModlist()
+        {
+            if (!Modding.ValidateModlist(Settings.Default.FFXIV_Directory))
+            {
+                ViewHelpers.ShowWarning(MainWindow.GetMainWindow(), "Invalid Modlist Error", "The Modlist file was invalid, corrupt, or from an incompatible TexTools version, and will be removed.\n\nPlease use Help => Download Index Backups/Start Over after TexTools has finished starting.");
+            }
         }
 
         public static bool IsRunningAsAdministrator()

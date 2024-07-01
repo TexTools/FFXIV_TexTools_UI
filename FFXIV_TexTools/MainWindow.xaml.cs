@@ -521,7 +521,7 @@ namespace FFXIV_TexTools
 
 
                     // Disable cache worker entirely for now.
-                    await XivCache.SetGameInfo(gameDir, lang, false);
+                    await XivCache.SetGameInfo(gameDir, lang, true);
                     CustomizeViewModel.UpdateCacheSettings();
 
                 } catch(Exception ex)
@@ -1468,11 +1468,26 @@ namespace FFXIV_TexTools
         /// </summary>
         private async void Menu_StartOver_Click(object sender, RoutedEventArgs e)
         {
-            if(!this.CheckUnsafeOperation(true, true))
+            var lastWriteMode = XivCache.GameWriteEnabled;
+            if(!XivCache.GameWriteEnabled)
             {
-                return;
+                var r = FlexibleMessageBox.Show(ViewHelpers.GetWin32Window(this), "You are currently in SAFE mode.  To proceed, UNSAFE mode must be activated.\n\nThis will alter your real/live game files if you continue.", "Safe Mod Toggle Prompt",MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
+                if(r != System.Windows.Forms.DialogResult.OK)
+                {
+                    return;
+                }
             }
 
+            if (MainWindow.UserTransaction != null)
+            {
+                if(MainWindow.UserTransaction.ModifiedFiles.Count > 0)
+                {
+                    var r = FlexibleMessageBox.Show(ViewHelpers.GetWin32Window(this), "Your current transaction must be closed in order to proceed.\n\nYou will lose any active changes if you continue.", "Transaction Cancel Warning", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
+                }
+                await ModTransaction.CancelTransaction(MainWindow.UserTransaction, true);
+            }
+
+            XivCache.GameWriteEnabled = true;
             try
             {
 
@@ -1539,6 +1554,10 @@ namespace FFXIV_TexTools
             {
                 this.ShowError(UIMessages.StartOverErrorTitle, "An unhandled error occurred when Starting Over:\n\n" + ex.Message);
             }
+            finally
+            {
+                XivCache.GameWriteEnabled = lastWriteMode;
+            }
         }
 
         private void Menu_Donate_Click(object sender, RoutedEventArgs e)
@@ -1568,7 +1587,6 @@ namespace FFXIV_TexTools
 
             if (result == System.Windows.Forms.DialogResult.Yes)
             {
-                var gameDirectory = new DirectoryInfo(Settings.Default.FFXIV_Directory);
                 var backupsDirectory = new DirectoryInfo(Properties.Settings.Default.Backup_Directory);
                 await LockUi("Backing Up Indexes".L(), "Please wait...".L());
                 try
@@ -1761,7 +1779,12 @@ namespace FFXIV_TexTools
 
                     _lockProgress.Report("Job Done.".L());
                 });
-                FlexibleMessageBox.Show("Successfully downloaded fresh index backups.\nYou may now use [Start Over] to apply them, if desired.".L(), "Backup Download Success".L(), MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
+
+                var res = (FlexibleMessageBox.Show("Successfully downloaded fresh index backups.\nWould you like to delete all mods and apply these backups/[Start Over]?.".L(), "Backup Download Success".L(), MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1));
+                if(res == System.Windows.Forms.DialogResult.Yes)
+                {
+                    Menu_StartOver_Click(null, null);
+                }
             }
             catch(Exception Ex)
             {
