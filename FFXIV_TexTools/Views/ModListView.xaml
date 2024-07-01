@@ -63,14 +63,14 @@
             <GroupBox Grid.Row="0" Header="{Binding Source={x:Static resx:UIStrings.Previe_List}}" Margin="5">
                 <Grid>
                     <ListView x:Name="ModItemList" ItemsSource="{Binding ModListPreviewList}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="ListBox_SelectionChanged" BorderThickness="0" BorderBrush="{x:Null}" Visibility="{Binding ListVisibility}">
-                        <ListView.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <WrapPanel/>
-                            </ItemsPanelTemplate>
-                        </ListView.ItemsPanel>
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="ListBoxItem">
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch"></Setter>
+                            </Style>
+                        </ListBox.ItemContainerStyle>
                         <ListView.ItemTemplate>
                             <DataTemplate>
-                                <Border BorderBrush="{Binding ActiveBorder}" BorderThickness="2" Background="{Binding Active}" Opacity="{Binding ActiveOpacity}" ToolTip="{Binding Path=FilePath}" Width="160">
+                                <Border BorderBrush="{Binding ActiveBorder}" BorderThickness="2" Background="{Binding Active}" Opacity="{Binding ActiveOpacity}" ToolTip="{Binding Path=FilePath}" HorizontalAlignment="Stretch">
 
                                     <Border.ContextMenu>
                                         <ContextMenu>
@@ -86,66 +86,54 @@
                                             </MenuItem>
                                         </ContextMenu>
                                     </Border.ContextMenu>
-                                    <Grid>
+
+                                    <Grid HorizontalAlignment="Stretch">
                                         <Grid.RowDefinitions>
-                                            <RowDefinition/>
-                                            <RowDefinition/>
-                                            <RowDefinition/>
-                                            <RowDefinition/>
-                                            <RowDefinition/>
                                             <RowDefinition/>
                                         </Grid.RowDefinitions>
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition/>
-                                            <ColumnDefinition/>
+                                            <ColumnDefinition Width="120"/>
+                                            <ColumnDefinition Width="1*"/>
                                         </Grid.ColumnDefinitions>
 
-
-                                        <!-- Top Line Header -->
-                                        <!-- Row 0 Data-->
-                                        <Border BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" BorderThickness="1" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
-                                            <Viewbox StretchDirection="DownOnly">
-                                                <Label Content="{Binding ItemName}"/>
-                                            </Viewbox>
-                                        </Border>
-
-                                        <Border BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" BorderThickness="1" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
-                                            <Viewbox StretchDirection="DownOnly">
-                                                <Label Content="{Binding FileName}"/>
-                                            </Viewbox>
-                                        </Border>
-
-
                                         <!-- Preview Image -->
-                                        <Grid Margin="5" Grid.Row="2" Grid.ColumnSpan="2" Width="150" Height="150">
-                                            <Image Source="{Binding Image}" MaxWidth="150" MaxHeight="150" VerticalAlignment="Center" HorizontalAlignment="Center"  RenderOptions.BitmapScalingMode="NearestNeighbor"/>
+                                        <Grid Margin="2" Grid.Row="0" Grid.Column="0" Width="76" Height="76">
+                                            <Image Source="{Binding Image}" MaxWidth="76" MaxHeight="76" VerticalAlignment="Center" HorizontalAlignment="Center"  RenderOptions.BitmapScalingMode="NearestNeighbor"/>
                                         </Grid>
 
-                                        <!-- Type and Race-->
-                                        <Border BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" BorderThickness="1" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2">
-                                            <Viewbox StretchDirection="DownOnly">
-                                                <Label Content="{Binding Type}"/>
-                                            </Viewbox>
-                                        </Border>
-                                        <Border BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" BorderThickness="1" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2">
-                                            <Viewbox StretchDirection="DownOnly">
-                                                <Label Content="{Binding Race}"/>
-                                            </Viewbox>
-                                        </Border>
+                                        <Grid Grid.Column="1">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="28"/>
+                                                <RowDefinition Height="28"/>
+                                                <RowDefinition Height="28"/>
+                                            </Grid.RowDefinitions>
 
+                                            <Border Grid.Row="0" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" BorderThickness="1">
+                                                <TextBlock Margin="5,0" VerticalAlignment="Center">
+                                                    <Run Text="{Binding ItemName}"/>
+                                                    <Run Text=" - "/>
+                                                    <Run Text="{Binding FileName}"/>
+                                                </TextBlock>
+                                            </Border>
 
-                                        <!-- Material -->
-                                        <Border Background="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="1">
-                                            <Viewbox StretchDirection="DownOnly">
-                                                <Label Content="{Binding Source={x:Static resx:UIStrings.Material}}" VerticalContentAlignment="Top" Padding="0" HorizontalContentAlignment="Center"/>
-                                            </Viewbox>
-                                        </Border>
-                                        <Border BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" BorderThickness="1" Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="1">
-                                            <Viewbox StretchDirection="DownOnly">
-                                                <Label Content="{Binding Material}"/>
-                                            </Viewbox>
-                                        </Border>
+                                            <Border Grid.Row="1" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" BorderThickness="1">
+                                                <TextBlock Margin="5,0" VerticalAlignment="Center">
+                                                    <Run Text="{Binding Type}"/>
+                                                    <Run Text=" - "/>
+                                                    <Run Text="{Binding Race}"/>
+                                                    <Run Text=" - "/>
+                                                    <Run Text="{Binding Material}"/>
+                                                </TextBlock>
+                                            </Border>
+
+                                            <Border Grid.Row="2" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" BorderThickness="1">
+                                                <TextBlock Margin="5,0" VerticalAlignment="Center">
+                                                    <Run Text="{Binding FilePath}"/>
+                                                </TextBlock>
+                                            </Border>
+                                        </Grid>
                                     </Grid>
+                                    
                                 </Border>
                             </DataTemplate>
                         </ListView.ItemTemplate>
