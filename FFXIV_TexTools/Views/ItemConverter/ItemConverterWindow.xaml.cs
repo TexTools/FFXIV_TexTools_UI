@@ -150,7 +150,7 @@ namespace FFXIV_TexTools.Views.ItemConverter
             }
         }
 
-        private bool IsSupported(XivDependencyRoot fullRoot)
+        public static bool IsSupported(XivDependencyRoot fullRoot)
         {
 
             if (fullRoot == null) return false;
@@ -174,13 +174,13 @@ namespace FFXIV_TexTools.Views.ItemConverter
             return true;
         }
 
-        private bool DestinationOk(XivDependencyRoot fullRoot)
+        public static bool DestinationOk(XivDependencyRoot source, XivDependencyRoot target)
         {
-            if (fullRoot == null) return false;
-            if (Source == null) return false;
+            if (target == null) return false;
+            if (source == null) return false;
 
-            var root = fullRoot.Info;
-            var src = Source.Info;
+            var root = target.Info;
+            var src = source.Info;
 
             // Convert To Accessory Handling
             if((src.PrimaryType == XivItemType.equipment || src.PrimaryType == XivItemType.accessory) && root.PrimaryType == XivItemType.accessory)
@@ -212,7 +212,7 @@ namespace FFXIV_TexTools.Views.ItemConverter
                 return;
             }
 
-            if(State == ItemConverterState.DestinationSelect && !DestinationOk(root))
+            if(State == ItemConverterState.DestinationSelect && !DestinationOk(Source, root))
             {
                 ItemSelect.SelectButton.IsEnabled = false;
                 ItemSelect.SelectButton.Content = "Invalid Destination".L();
@@ -229,6 +229,7 @@ namespace FFXIV_TexTools.Views.ItemConverter
             }
         }
 
+
         #region Item List Filters
         private bool Filter(IItem item, XivDependencyRoot root)
         {
@@ -242,7 +243,7 @@ namespace FFXIV_TexTools.Views.ItemConverter
                 return false;
             }
 
-            if (State == ItemConverterState.DestinationSelect && !DestinationOk(root))
+            if (State == ItemConverterState.DestinationSelect && !DestinationOk(Source, root))
             {
                 return false;
             }
@@ -306,7 +307,7 @@ namespace FFXIV_TexTools.Views.ItemConverter
 
         public async Task ShowConversionStats()
         {
-            if (!DestinationOk(Destination)) return;
+            if (!DestinationOk(Source, Destination)) return;
 
 
             SourceBox.Text = Source.Info.GetBaseFileName() + " (" + SourceItem.Name + ")";

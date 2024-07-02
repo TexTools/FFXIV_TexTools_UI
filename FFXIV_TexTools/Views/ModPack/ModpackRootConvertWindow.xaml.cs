@@ -347,12 +347,12 @@ namespace FFXIV_TexTools.Views
 
             var srcItem = ItemSelections[root].SourceItem;
 
-            var selectedItem = PopupItemSelection.ShowItemSelection((IItem item, XivDependencyRoot root) =>
+            var selectedItem = PopupItemSelection.ShowItemSelection((IItem item, XivDependencyRoot innerRoot) =>
             {
-                return ValidationFunction(item, root);
-            }, (IItem item, XivDependencyRoot root) =>
+                return ValidationFunction(root, item, innerRoot);
+            }, (IItem item, XivDependencyRoot innerRoot) =>
             {
-                return ValidationFunction(item, root);
+                return ValidationFunction(root, item, innerRoot);
             }, this);
 
             if (selectedItem == null) return;
@@ -372,26 +372,24 @@ namespace FFXIV_TexTools.Views
             Results[root] = (selectedRoot, Results[root].Variant);
         }
 
-        private static bool ValidationFunction(IItem item, XivDependencyRoot root) {
+        private static bool ValidationFunction(XivDependencyRoot source, IItem item, XivDependencyRoot target) {
             // Item Select Acceptance
             if (item == null) return false;
-            if (root == null) return false;
+            if (source == null) return false;
+            if (target == null) return false;
 
-            var itemRoot = item.GetRoot();
-            if (itemRoot == null) return false;
-
-            if(root.Info.PrimaryType == XivItemType.equipment || root.Info.PrimaryType == XivItemType.accessory)
+            if(source.Info.PrimaryType == XivItemType.equipment || source.Info.PrimaryType == XivItemType.accessory)
             {
-                if(itemRoot.Info.PrimaryType == XivItemType.accessory)
+                if(target.Info.PrimaryType == XivItemType.accessory)
                 {
                     // Allow converting most things to accessories.
                     return true;
                 }
             }
 
-            if (itemRoot.Info.PrimaryType == root.Info.PrimaryType &&
-                itemRoot.Info.SecondaryType == root.Info.SecondaryType &&
-                itemRoot.Info.Slot == root.Info.Slot)
+            if (source.Info.PrimaryType == target.Info.PrimaryType &&
+                source.Info.SecondaryType == target.Info.SecondaryType &&
+                source.Info.Slot == target.Info.Slot)
             {
                 return true;
             }
