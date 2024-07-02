@@ -1,4 +1,5 @@
 ﻿using FFXIV_TexTools.Views.Controls;
+using FFXIV_TexTools.Views.ItemConverter;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -18,6 +19,7 @@ using System.Windows.Shapes;
 using xivModdingFramework.Cache;
 using xivModdingFramework.Items;
 using xivModdingFramework.Items.Interfaces;
+using xivModdingFramework.Mods;
 using UserControl = System.Windows.Controls.UserControl;
 
 namespace FFXIV_TexTools.Views.Controls
