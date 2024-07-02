@@ -347,10 +347,10 @@ namespace FFXIV_TexTools.Views
 
             var srcItem = ItemSelections[root].SourceItem;
 
-            var selectedItem = PopupItemSelection.ShowItemSelection((IItem item) =>
+            var selectedItem = PopupItemSelection.ShowItemSelection((IItem item, XivDependencyRoot root) =>
             {
                 return ValidationFunction(item, root);
-            }, (IItem item) =>
+            }, (IItem item, XivDependencyRoot root) =>
             {
                 return ValidationFunction(item, root);
             }, this);

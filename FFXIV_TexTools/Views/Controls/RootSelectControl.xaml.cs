@@ -39,8 +39,8 @@ namespace FFXIV_TexTools.Views.Controls
             set { SetValue(RootProperty, value); }
         }
 
-        public Func<IItem, bool> ItemSelect = ItemSelectFunc;
-        public Func<IItem, bool> ItemFilter = ItemFilterFunc;
+        public Func<IItem, XivDependencyRoot, bool> ItemSelect = ItemSelectFunc;
+        public Func<IItem, XivDependencyRoot, bool> ItemFilter = ItemFilterFunc;
 
         public string LabelText
         {
@@ -79,17 +79,17 @@ namespace FFXIV_TexTools.Views.Controls
             Root = root;
         }
 
-        public static bool ItemSelectFunc(IItem item)
+        public static bool ItemSelectFunc(IItem item, XivDependencyRoot root)
         {
             if (item == null) return false;
-            if(item.GetRoot() == null) return false;
+            if(root == null) return false;
             return true;
         }
 
-        public static bool ItemFilterFunc(IItem item)
+        public static bool ItemFilterFunc(IItem item, XivDependencyRoot root)
         {
             if (item == null) return false;
-            if (item.GetRoot() == null) return false;
+            if (root == null) return false;
             return true;
         }
     }
