@@ -710,7 +710,7 @@ namespace FFXIV_TexTools.Views.Controls
                 _selectedItem = item;
 
                 // Manually invoke this in case the item isn't in the filter currently.
-                ItemSelected.Invoke(_selectedItem, e.Root);
+                ItemSelected?.Invoke(_selectedItem, e.Root);
             }
             else
             {
@@ -718,7 +718,7 @@ namespace FFXIV_TexTools.Views.Controls
                 if (_selectedItem != item)
                 {
                     _selectedItem = item;
-                    ItemSelected.Invoke(_selectedItem, e.Root);
+                    ItemSelected?.Invoke(_selectedItem, _selectedItem.GetRoot());
                 }
 
             }
