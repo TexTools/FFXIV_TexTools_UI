@@ -367,6 +367,9 @@ namespace FFXIV_TexTools
                 return;
             }
 
+            ModTransaction.ActiveTransactionBlocked += ModTransaction_ActiveTransactionBlocked;
+            ModTransaction.ActiveTransactionUnblocked += ModTransaction_ActiveTransactionUnblocked;
+
             if (args != null && args.Length > 0)
             {
 
@@ -383,9 +386,6 @@ namespace FFXIV_TexTools
                 // This can be set whereever, since the item select won't fire it unless things are loaded fully.
                 ItemSelect.ItemSelected += ItemSelect_ItemSelected;
                 ItemSelect.ItemsLoaded += OnTreeLoaded;
-
-                ModTransaction.ActiveTransactionBlocked += ModTransaction_ActiveTransactionBlocked;
-                ModTransaction.ActiveTransactionUnblocked += ModTransaction_ActiveTransactionUnblocked;
                 _ = AsyncStartup();
 
             }
