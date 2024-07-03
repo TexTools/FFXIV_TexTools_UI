@@ -227,6 +227,7 @@ namespace FFXIV_TexTools.Views
                 // Using operating shell and setting the ProcessStartInfo.Verb to “runas” will let it run as admin
                 processStartInfo.UseShellExecute = true;
                 processStartInfo.Verb = "runas";
+                processStartInfo.Arguments = GetRejoinedArgs();
 
                 // Start the application as new process
                 Process.Start(processStartInfo);
@@ -252,8 +253,6 @@ namespace FFXIV_TexTools.Views
             allSuccess = allSuccess && TestDirectory(Settings.Default.Save_Directory);
             allSuccess = allSuccess && TestDirectory(converterFolder);
 
-
-
             if (!allSuccess && !IsRunningAsAdministrator()) 
             {
                 // Setting up start info of the new process of the same application
@@ -262,6 +261,7 @@ namespace FFXIV_TexTools.Views
                 // Using operating shell and setting the ProcessStartInfo.Verb to “runas” will let it run as admin
                 processStartInfo.UseShellExecute = true;
                 processStartInfo.Verb = "runas";
+                processStartInfo.Arguments = GetRejoinedArgs();
 
                 // Start the application as new process
                 Process.Start(processStartInfo);
@@ -269,6 +269,23 @@ namespace FFXIV_TexTools.Views
                 // Shut down the current (old) process
                 System.Windows.Application.Current.Shutdown();
             }
+        }
+
+        private static string GetRejoinedArgs()
+        {
+            var args = MainWindow._Args;
+            if(args == null || args.Length == 0)
+            {
+                return "";
+            }
+
+            var st = "";
+            foreach(var s in args)
+            {
+                st += '"' + s + '"' + ' ';
+            }
+
+            return st;
         }
 
         private static bool TestDirectory(string path)

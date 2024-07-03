@@ -92,6 +92,8 @@ namespace FFXIV_TexTools
         public readonly System.Windows.Forms.IWin32Window Win32Window;
 
         public static readonly string BetaSuffix = null;
+
+        public static string[] _Args;
         public static bool IsBetaVersion {
             get
             {
@@ -282,6 +284,7 @@ namespace FFXIV_TexTools
         }
         public MainWindow(string[] args)
         {
+            _Args = args;
             _mainWindow = this;
 
             AutoUpdater.ApplicationExitEvent += AutoUpdater_ApplicationExitEvent;
@@ -520,9 +523,15 @@ namespace FFXIV_TexTools
                     XivCache.CacheRebuilding += OnCacheRebuild;
 
 
-                    // Disable cache worker entirely for now.
                     await XivCache.SetGameInfo(gameDir, lang, true);
                     CustomizeViewModel.UpdateCacheSettings();
+
+                    var tx = DefaultTransaction;
+
+                    if(!await tx.FileExists(Eqp.DawntrailTestFile, true))
+                    {
+                        this.ShowWarning("Non-Dawntrail Install", "TexTools is currently assigned to a Endwalker or previous install.\n\nMany parts of the application will not operate correctly on old FFXIV installs.");
+                    }
 
                 } catch(Exception ex)
                 {
