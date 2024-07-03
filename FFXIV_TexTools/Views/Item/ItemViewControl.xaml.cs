@@ -647,7 +647,7 @@ namespace FFXIV_TexTools.Views.Item
             }
             catch(Exception ex) 
             {
-                this.ShowError("Item Load Error", "An error occurred while loading the item:\n\n" + ex.Message);
+                this.ShowWarning("Item Load Error", "An error occurred while loading the item:\n\n" + ex.Message);
                 return false;
             }
             finally
