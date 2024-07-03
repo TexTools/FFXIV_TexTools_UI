@@ -24,6 +24,17 @@
             <Label HorizontalAlignment="Right" VerticalAlignment="Center" FontStyle="Italic" FontSize="10">You may close this window after beginning a transaction.</Label>
         </Grid>
 
+        <Grid x:Name="TxTutorialGrid" Grid.Row="1">
+            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" FontStyle="Italic">
+                Transactions are a scratch-pad like fake-file system ontop of your FFXIV install.
+                <LineBreak/>While using a Transaction, your real FFXIV files will not be altered.
+                <LineBreak/>Likewise, they will not be reflected in game (without being connected to Penumbra).
+                <LineBreak/>
+                <LineBreak/>You may commit your transaction changes to the game files via the [Commit] button,
+                <LineBreak/>otherwise they will be discarded when TexTools is closed or the Transaction cancelled.
+            </TextBlock>
+        </Grid>
+        
         <Grid x:Name="TxStatusGrid" Grid.Row="1" IsEnabled="{Binding Path=TxActionEnabled}" >
             <Grid.RowDefinitions>
                 <RowDefinition Height="1*"></RowDefinition>
