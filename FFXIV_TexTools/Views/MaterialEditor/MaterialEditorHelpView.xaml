@@ -38,9 +38,9 @@
             <TextBlock Text="{}{shared_folder}" TextAlignment="Right" FontWeight="Bold" FontSize="14" FontStyle="Italic" />
         </Label>
         <TextBlock Margin="10" Grid.Row="4" TextWrapping="Wrap" Grid.Column="1"><Run Text="The common folder shared "/><Run FontStyle="Italic" Text="by ALL"/><Run Text=" items in FFXIV."/></TextBlock>
-        <TextBlock Margin="10" Grid.Row="5" TextWrapping="Wrap" Text="The item's Material Set/Version #, ex [v01, v05, v12]" Grid.Column="1" />
+        <TextBlock Margin="10" Grid.Row="5" TextWrapping="Wrap" Text="The item's Material Version #, ex [v01, v05, v12]" Grid.Column="1" />
         <Label Margin="10" Grid.Row="5" HorizontalContentAlignment="Right" FontSize="12" VerticalContentAlignment="Center">
-            <TextBlock Text="{}{variant}" TextAlignment="Right" FontWeight="Bold" FontSize="14" FontStyle="Italic" />
+            <TextBlock Text="{}{version}" TextAlignment="Right" FontWeight="Bold" FontSize="14" FontStyle="Italic" />
         </Label>
         <TextBlock Margin="10" Grid.Row="6" TextWrapping="Wrap" Text="Paths may only contain lowercase characters, numbers, tokens and &#xA;the following special characters: /.-_" Grid.ColumnSpan="2" TextAlignment="Center"/>
     </Grid>

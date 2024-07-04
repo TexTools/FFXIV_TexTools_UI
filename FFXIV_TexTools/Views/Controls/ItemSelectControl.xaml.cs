@@ -648,7 +648,6 @@ namespace FFXIV_TexTools.Views.Controls
                 return;
             }
 
-
             if (RawItemSelected != null) {
                 RawItemSelected.Invoke(item, element.Root);
             }
