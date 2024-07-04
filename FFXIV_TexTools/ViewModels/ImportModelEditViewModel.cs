@@ -669,6 +669,7 @@ namespace FFXIV_TexTools.ViewModels
         // Sets the material selection at the UI level
         private void SetMaterial(string mat)
         {
+            mat = mat.Trim();
             var element = _view.MaterialsSource.FirstOrDefault(x => x.Key == mat);
             if (element.Key != null)
             {
