@@ -28,6 +28,7 @@ using FFXIV_TexTools.Views.Projects;
 using FFXIV_TexTools.Views.Simple;
 using FFXIV_TexTools.Views.Textures;
 using FFXIV_TexTools.Views.Transactions;
+using FFXIV_TexTools.Views.Upgrades;
 using FFXIV_TexTools.Views.Wizard;
 using FolderSelect;
 using ForceUpdateAssembly;
@@ -2096,6 +2097,12 @@ namespace FFXIV_TexTools
         {
             EyeDiffuseCreator.ShowWindow(this);
 
+        }
+
+        private void AboutUpgrades_Click(object sender, RoutedEventArgs e)
+        {
+            var wind = new DawntrailUpgradeHelpWindow() { Owner = this };
+            wind.Show();
         }
     }
 }
