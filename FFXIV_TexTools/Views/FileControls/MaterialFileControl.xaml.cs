@@ -276,7 +276,7 @@ namespace FFXIV_TexTools.Views.Controls
             {
                 if (string.IsNullOrEmpty(tex.TexturePath)) continue;
 
-                tex.TexturePath = tex.TexturePath.ToLower();
+                tex.TexturePath = tex.TexturePath.ToLower().Trim();
                 if (!IOUtil.IsFFXIVInternalPath(tex.TexturePath))
                 {
                     if (!tex.TexturePath.Contains("/") && tex.TexturePath.EndsWith(".tex"))
@@ -455,7 +455,7 @@ namespace FFXIV_TexTools.Views.Controls
 
         private EShaderPack _LastShpk;
 
-        private void ShaderComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void ShaderComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (Material == null)
             {
@@ -499,9 +499,27 @@ namespace FFXIV_TexTools.Views.Controls
                 return;
             }
 
+            if(ShaderPack.UsesColorset() && (Material.ColorSetData == null || Material.ColorSetData.Count == 0))
+            {
+                Material.ColorSetData = new List<Half>();
+                for(int i = 0; i < 32; i++)
+                {
+                    Material.ColorSetData.AddRange(EndwalkerUpgrade.GetDefaultColorsetRow(ShaderPack));
+                    Material.ColorSetDyeData = new byte[128];
+                }
+
+            } else if (!ShaderPack.UsesColorset() && (Material.ColorSetData == null || Material.ColorSetData.Count != 0))
+            {
+                Material.ColorSetData = new List<Half>();
+                Material.ColorSetDyeData = new byte[0];
+            }
+
+            await UpdateColorsetImage();
+            OnPropertyChanged(nameof(ColorsetEnabled));
+
 
             // Create or purge colorset as necessary.
-            if(ShaderPack != EShaderPack.Character)
+            if (ShaderPack != EShaderPack.Character)
             {
                 Material.ColorSetData = new List<Half>();
                 Material.ColorSetDyeData = new byte[0];
