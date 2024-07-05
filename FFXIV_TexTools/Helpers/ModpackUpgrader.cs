@@ -84,6 +84,10 @@ namespace FFXIV_TexTools.Helpers
 
         public static async Task<WizardData> UpgradeModpack(string path, bool includePartials = true)
         {
+            if (Directory.Exists(path))
+            {
+                path = Path.GetFullPath(Path.Combine(path, "meta.json"));
+            }
 
             var data = await WizardData.FromModpack(path);
             var textureUpgradeTargets = new Dictionary<string, EndwalkerUpgrade.UpgradeInfo>();
@@ -96,6 +100,7 @@ namespace FFXIV_TexTools.Helpers
             {
                 foreach (var g in p.Groups)
                 {
+                    if (g == null) continue;
                     foreach (var o in g.Options)
                     {
                         if (o.StandardData != null)
@@ -130,6 +135,7 @@ namespace FFXIV_TexTools.Helpers
             {
                 foreach (var g in p.Groups)
                 {
+                    if (g == null) continue;
                     foreach (var o in g.Options)
                     {
                         if (o.StandardData != null)
@@ -165,6 +171,7 @@ namespace FFXIV_TexTools.Helpers
                 {
                     foreach (var g in p.Groups)
                     {
+                        if (g == null) continue;
                         foreach (var o in g.Options)
                         {
                             if (o.StandardData != null)

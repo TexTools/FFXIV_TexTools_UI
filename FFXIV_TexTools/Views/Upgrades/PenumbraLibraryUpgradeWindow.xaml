@@ -1,0 +1,70 @@
+﻿<Window x:Class="FFXIV_TexTools.Views.Upgrades.PenumbraLibraryUpgradeWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FFXIV_TexTools.Views.Upgrades"
+        mc:Ignorable="d"
+        Title="Penumbra Library Update Tool" Height="450" Width="800">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+            <RowDefinition Height="40"/>
+        </Grid.RowDefinitions>
+        
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="200"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40"/>
+                <RowDefinition Height="40"/>
+            </Grid.RowDefinitions>
+            <Button Grid.Row="0" Grid.Column="0" Content="Select Penumbra Library" Margin="5" Click="SelectPenumbraPath_Click" IsEnabled="{Binding Path=PathEnabled}"/>
+            <TextBox IsEnabled="False" Grid.Row="0" Grid.Column="1" Text="{Binding Path=PenumbraPath}" Margin="5"/>
+
+            <Button Grid.Row="1" Grid.Column="0" Content="Select Destination Folder" Margin="5" Click="SelectDestinationPath_Click" IsEnabled="{Binding Path=PathEnabled}"/>
+            <TextBox IsEnabled="False" Grid.Row="1" Grid.Column="1" Text="{Binding Path=DestinationPath}" Margin="5"/>
+        </Grid>
+
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <Grid Grid.Column="0" Margin="10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Label HorizontalAlignment="Center" Content="{Binding Path=RemainingText}" VerticalAlignment="Center" FontStyle="Italic"/>
+                <ListBox Grid.Row="1" ItemsSource="{Binding Path=RemainingMods}" DisplayMemberPath="Key" SelectedValuePath="Value" BorderBrush="Gray" BorderThickness="1"></ListBox>
+
+            </Grid>
+
+            <Grid Grid.Column="1" Margin="10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Label HorizontalAlignment="Center" Content="{Binding Path=ProcessedText}" VerticalAlignment="Center" FontStyle="Italic"/>
+                <ListBox Grid.Row="1" ItemsSource="{Binding Path=ProcessedMods}" DisplayMemberPath="Key" SelectedValuePath="Value"  BorderBrush="Gray" BorderThickness="1"></ListBox>
+
+            </Grid>
+        </Grid>
+
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="150"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBox Margin="5" IsEnabled="False" Text="{Binding Path=StatusText}"/>
+            <Button Grid.Column="1" Margin="5" Content="{Binding Path=ContinuePauseText}" Click="ContinuePause_Click" IsEnabled="{Binding Path=ContinuePauseEnabled}"/>
+        </Grid>
+    </Grid>
+</Window>

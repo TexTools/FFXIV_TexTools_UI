@@ -217,7 +217,7 @@ namespace FFXIV_TexTools.Views.Controls
             TileUnknownBox.TextChanged += ValueChanged;
             AnisotropyBlendingBox.TextChanged += ValueChanged;
             ShaderTemplateBox.TextChanged += ValueChanged;
-
+            WetnessBox.TextChanged += ValueChanged;
 
             FresnelAlbedoBox.TextChanged += ValueChanged;
             FresnelUnknownBox.TextChanged += ValueChanged;

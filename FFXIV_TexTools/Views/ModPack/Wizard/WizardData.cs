@@ -1063,7 +1063,7 @@ namespace FFXIV_TexTools.Views.Wizard
             data.ModPack = mp;
             data.RawSource = pmp;
 
-            if (pmp.Groups.Count > 0)
+            if (pmp.Groups.Count > 0 && pmp.Groups.Any(x => x.Options.Count > 0))
             {
                 // Create sufficient pages.
                 var pageMax = pmp.Groups.Max(x => x.Page);
@@ -1191,7 +1191,7 @@ namespace FFXIV_TexTools.Views.Wizard
                 var groups = p.Groups.ToList();
                 foreach(var g in groups)
                 {
-                    if (!g.HasData)
+                    if (g == null || !g.HasData)
                     {
                         p.Groups.Remove(g);
                         continue;
@@ -1224,9 +1224,17 @@ namespace FFXIV_TexTools.Views.Wizard
             {
                 await WritePmp(targetPath);
             }
-            else
+            else if(targetPath.ToLower().EndsWith(".ttmp2"))
             {
                 await WriteWizardPack(targetPath);
+            }
+            else if (Directory.Exists(targetPath))
+            {
+                await WritePmp(targetPath, false);
+            }
+            else
+            {
+                throw new ArgumentException("Invalid Modpack Path: " + targetPath);
             }
         }
         public async Task WriteWizardPack(string targetPath)
@@ -1300,7 +1308,7 @@ namespace FFXIV_TexTools.Views.Wizard
             }
         }
 
-        public async Task WritePmp(string targetPath)
+        public async Task WritePmp(string targetPath, bool zip = true)
         {
             ClearEmpties();
 
@@ -1355,7 +1363,17 @@ namespace FFXIV_TexTools.Views.Wizard
 
                             var optionPrefix = MakeOptionPrefix(p, g, o);
 
-                            allFiles.Add(optionPrefix, files);
+                            if (allFiles.ContainsKey(optionPrefix))
+                            {
+                                foreach(var f in files)
+                                {
+                                    allFiles[optionPrefix].Add(f.Key, f.Value);
+                                }
+                            }
+                            else
+                            {
+                                allFiles.Add(optionPrefix, files);
+                            }
                         }
                     }
                     pIdx++;
@@ -1387,7 +1405,15 @@ namespace FFXIV_TexTools.Views.Wizard
 
 
                 // This performs the final json serialization/writing and zipping.
-                await PMP.WritePmp(pmp, tempFolder, targetPath);
+                if (zip)
+                {
+                    await PMP.WritePmp(pmp, tempFolder, targetPath);
+                } else
+                {
+                    await PMP.WritePmp(pmp, tempFolder);
+                    Directory.CreateDirectory(targetPath);
+                    IOUtil.CopyFolder(tempFolder, targetPath);
+                }
             }
             finally
             {

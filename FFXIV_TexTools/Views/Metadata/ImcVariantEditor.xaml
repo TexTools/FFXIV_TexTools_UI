@@ -22,7 +22,7 @@
             <ColumnDefinition Width="200"/>
         </Grid.ColumnDefinitions>
 
-        <Label Grid.Row="0" Grid.Column="0" Content="Material Set:" HorizontalAlignment="Right" VerticalAlignment="Center"></Label>
+        <Label Grid.Row="0" Grid.Column="0" Content="Material Ver:" HorizontalAlignment="Right" VerticalAlignment="Center"></Label>
         <Label Grid.Row="1" Grid.Column="0" Content="Decal ID:" HorizontalAlignment="Right" VerticalAlignment="Center"></Label>
         <Label Grid.Row="2" Grid.Column="0" Content="Sound ID:" HorizontalAlignment="Right" VerticalAlignment="Center"></Label>
 

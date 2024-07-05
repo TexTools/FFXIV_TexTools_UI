@@ -28,6 +28,7 @@ using FFXIV_TexTools.Views.Projects;
 using FFXIV_TexTools.Views.Simple;
 using FFXIV_TexTools.Views.Textures;
 using FFXIV_TexTools.Views.Transactions;
+using FFXIV_TexTools.Views.Upgrades;
 using FFXIV_TexTools.Views.Wizard;
 using FolderSelect;
 using ForceUpdateAssembly;
@@ -349,6 +350,11 @@ namespace FFXIV_TexTools
             var mainViewModel = new MainViewModel(this);
             this.DataContext = mainViewModel;
             InitializeComponent();
+
+#if !DEBUG
+            PenumbraUpgradeButton.IsEnabled = false;
+#endif
+
 
             var fileVersion = FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location).FileVersion;
 
@@ -2096,6 +2102,18 @@ namespace FFXIV_TexTools
         {
             EyeDiffuseCreator.ShowWindow(this);
 
+        }
+
+        private void AboutUpgrades_Click(object sender, RoutedEventArgs e)
+        {
+            var wind = new DawntrailUpgradeHelpWindow() { Owner = this };
+            wind.Show();
+        }
+
+        private void UpdatePenumbra_Click(object sender, RoutedEventArgs e)
+        {
+            var wind = new PenumbraLibraryUpgradeWindow() { Owner = this };
+            wind.ShowDialog();
         }
     }
 }
