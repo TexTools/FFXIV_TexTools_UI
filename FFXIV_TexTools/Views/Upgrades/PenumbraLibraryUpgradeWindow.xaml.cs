@@ -180,6 +180,11 @@ namespace FFXIV_TexTools.Views.Upgrades
             State = UpgradeState.Stopped;
             Closing += PenumbraLibraryUpgradeWindow_Closing;
             CheckPaths();
+
+            var p = IOUtil.GetPenumbraDirectory();
+            if (!string.IsNullOrWhiteSpace(p)) {
+                PenumbraPath = p;
+            }
         }
 
         private void PenumbraLibraryUpgradeWindow_Closing(object sender, CancelEventArgs e)
@@ -201,6 +206,7 @@ namespace FFXIV_TexTools.Views.Upgrades
         private void SelectPenumbraPath_Click(object sender, RoutedEventArgs e)
         {
             var bfb = new BetterFolderBrowser() { Title = "Select Penumbra Library..." };
+            bfb.RootFolder = PenumbraPath;
             if(bfb.ShowDialog() != System.Windows.Forms.DialogResult.OK)
             {
                 return;
@@ -213,6 +219,7 @@ namespace FFXIV_TexTools.Views.Upgrades
         private void SelectDestinationPath_Click(object sender, RoutedEventArgs e)
         {
             var bfb = new BetterFolderBrowser() { Title = "Select Destination Folder..." };
+            bfb.RootFolder = DestinationPath;
             if (bfb.ShowDialog() != System.Windows.Forms.DialogResult.OK)
             {
                 return;

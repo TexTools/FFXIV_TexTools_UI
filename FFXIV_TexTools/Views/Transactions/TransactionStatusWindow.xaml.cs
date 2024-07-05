@@ -687,6 +687,11 @@ namespace FFXIV_TexTools.Views.Transactions
 
             PenumbraAttachDialog.Title = "Select Penumbra Mod Folder...";
 
+            if (string.IsNullOrEmpty(PenumbraAttachDialog.RootFolder))
+            {
+                PenumbraAttachDialog.RootFolder = IOUtil.GetPenumbraDirectory();
+            }
+
             var res = PenumbraAttachDialog.ShowDialog();
             if (res != System.Windows.Forms.DialogResult.OK)
             {
