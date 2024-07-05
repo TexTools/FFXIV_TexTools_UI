@@ -64,6 +64,28 @@ namespace FFXIV_TexTools.Views.Upgrades
             }
         }
 
+        private string _RemainingText;
+        public string RemainingText
+        {
+            get => _RemainingText;
+            set
+            {
+                _RemainingText = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(RemainingText)));
+            }
+        }
+        private string _ProcessedText;
+        public string ProcessedText
+        {
+            get => _ProcessedText;
+            set
+            {
+                _ProcessedText = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ProcessedText)));
+            }
+        }
+
+
         private string _StatusText;
         public string StatusText
         {
@@ -278,22 +300,29 @@ namespace FFXIV_TexTools.Views.Upgrades
 
             if (Results == null) return;
 
+            var proc = 0;
+            var rem = 0;
             foreach(var m in Results.Upgrades)
             {
                 if(m.Value == PenumbraUpgradeStatus.EUpgradeResult.NotStarted
                     || m.Value == PenumbraUpgradeStatus.EUpgradeResult.InProgress)
                 {
+                    rem++;
                     RemainingMods.Add(new KeyValuePair<string, string>(m.Key, m.Key));
                 } else if (m.Value == PenumbraUpgradeStatus.EUpgradeResult.Success)
                 {
+                    proc++;
                     ProcessedMods.Add(new KeyValuePair<string, string>("✓ " + m.Key, m.Key));
                 } else if(m.Value == PenumbraUpgradeStatus.EUpgradeResult.Failure)
                 {
+                    proc++;
                     ProcessedMods.Add(new KeyValuePair<string, string>("𝑿 " + m.Key, m.Key));
                 }
             }
 
-            Trace.WriteLine("ASDF");
+            ProcessedText = "Processed Mods: " + proc.ToString();
+            RemainingText = "Remaining Mods: " + rem.ToString();
+
         }
 
 

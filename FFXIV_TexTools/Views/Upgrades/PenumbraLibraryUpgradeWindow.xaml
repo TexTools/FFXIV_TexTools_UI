@@ -41,7 +41,7 @@
                     <RowDefinition Height="30"/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
-                <Label HorizontalAlignment="Center" Content="Remaining Mods" VerticalAlignment="Center" FontStyle="Italic"/>
+                <Label HorizontalAlignment="Center" Content="{Binding Path=RemainingText}" VerticalAlignment="Center" FontStyle="Italic"/>
                 <ListBox Grid.Row="1" ItemsSource="{Binding Path=RemainingMods}" DisplayMemberPath="Key" SelectedValuePath="Value" BorderBrush="Gray" BorderThickness="1"></ListBox>
 
             </Grid>
@@ -51,7 +51,7 @@
                     <RowDefinition Height="30"/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
-                <Label HorizontalAlignment="Center" Content="Processed Mods" VerticalAlignment="Center" FontStyle="Italic"/>
+                <Label HorizontalAlignment="Center" Content="{Binding Path=ProcessedText}" VerticalAlignment="Center" FontStyle="Italic"/>
                 <ListBox Grid.Row="1" ItemsSource="{Binding Path=ProcessedMods}" DisplayMemberPath="Key" SelectedValuePath="Value"  BorderBrush="Gray" BorderThickness="1"></ListBox>
 
             </Grid>

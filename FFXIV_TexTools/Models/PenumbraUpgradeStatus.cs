@@ -35,7 +35,6 @@ namespace FFXIV_TexTools.Models
             }
 
             Directory.CreateDirectory(target);
-            IOUtil.CompressWindowsDirectory(target);
 
             var res = EUpgradeResult.Failure;
             try
@@ -47,7 +46,6 @@ namespace FFXIV_TexTools.Models
                 if (source != target)
                 {
                     IOUtil.RecursiveDeleteDirectory(target);
-                    IOUtil.CompressWindowsDirectory(target);
                     IOUtil.CopyFolder(source, target);
                 }
 
@@ -56,6 +54,7 @@ namespace FFXIV_TexTools.Models
                 Trace.WriteLine(ex);
             }
 
+            await IOUtil.CompressWindowsDirectory(target);
 
             if (Upgrades.ContainsKey(mod))
             {

@@ -1191,7 +1191,7 @@ namespace FFXIV_TexTools.Views.Wizard
                 var groups = p.Groups.ToList();
                 foreach(var g in groups)
                 {
-                    if (!g.HasData)
+                    if (g == null || !g.HasData)
                     {
                         p.Groups.Remove(g);
                         continue;
