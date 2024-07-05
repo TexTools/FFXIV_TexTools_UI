@@ -18,6 +18,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using WK.Libraries.BetterFolderBrowserNS;
+using xivModdingFramework.Cache;
+using xivModdingFramework.Helpers;
 using xivModdingFramework.Mods.DataContainers;
 
 namespace FFXIV_TexTools.Views.Upgrades
@@ -303,6 +305,8 @@ namespace FFXIV_TexTools.Views.Upgrades
 
             await Task.Run(async () =>
             {
+                var workerState = XivCache.CacheWorkerEnabled;
+                await XivCache.SetCacheWorkerState(false);
                 var nextMod = Results.Upgrades.FirstOrDefault(x => x.Value == PenumbraUpgradeStatus.EUpgradeResult.NotStarted);
                 while (!string.IsNullOrWhiteSpace(nextMod.Key) && !_RequestStop)
                 {
@@ -313,6 +317,10 @@ namespace FFXIV_TexTools.Views.Upgrades
                     });
 
                     var res = await Results.ProcessMod(PenumbraPath, DestinationPath, mod);
+
+                    // Always clear the temp folder between actions.
+                    IOUtil.ClearTempFolder();
+
                     SaveJson();
 
                     Dispatcher.Invoke(() =>
@@ -330,6 +338,8 @@ namespace FFXIV_TexTools.Views.Upgrades
                 {
                     State = UpgradeState.Completed;
                 }
+
+                await XivCache.SetCacheWorkerState(workerState);
             });
         }
         private async Task Stop()
