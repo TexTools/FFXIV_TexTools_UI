@@ -35,6 +35,7 @@ namespace FFXIV_TexTools.Models
             }
 
             Directory.CreateDirectory(target);
+            IOUtil.CompressWindowsDirectory(target);
 
             var res = EUpgradeResult.Failure;
             try
@@ -43,10 +44,18 @@ namespace FFXIV_TexTools.Models
                 res = EUpgradeResult.Success;
             } catch (Exception ex)
             {
+                if (source != target)
+                {
+                    IOUtil.RecursiveDeleteDirectory(target);
+                    IOUtil.CompressWindowsDirectory(target);
+                    IOUtil.CopyFolder(source, target);
+                }
+
                 res = EUpgradeResult.Failure;
                 Trace.WriteLine("Modpack Upgrade Failure for Penumbra Mod: " + mod);
                 Trace.WriteLine(ex);
             }
+
 
             if (Upgrades.ContainsKey(mod))
             {

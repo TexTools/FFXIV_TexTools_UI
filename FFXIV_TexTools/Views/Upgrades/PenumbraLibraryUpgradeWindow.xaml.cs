@@ -215,6 +215,8 @@ namespace FFXIV_TexTools.Views.Upgrades
 
             Directory.CreateDirectory(DestinationPath);
 
+            var di = new DirectoryInfo(DestinationPath);
+
             LoadOrCreateJson();
             UpdateLists();
         }

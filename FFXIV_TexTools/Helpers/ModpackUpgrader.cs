@@ -135,6 +135,7 @@ namespace FFXIV_TexTools.Helpers
             {
                 foreach (var g in p.Groups)
                 {
+                    if (g == null) continue;
                     foreach (var o in g.Options)
                     {
                         if (o.StandardData != null)

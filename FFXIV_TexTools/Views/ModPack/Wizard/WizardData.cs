@@ -1363,7 +1363,17 @@ namespace FFXIV_TexTools.Views.Wizard
 
                             var optionPrefix = MakeOptionPrefix(p, g, o);
 
-                            allFiles.Add(optionPrefix, files);
+                            if (allFiles.ContainsKey(optionPrefix))
+                            {
+                                foreach(var f in files)
+                                {
+                                    allFiles[optionPrefix].Add(f.Key, f.Value);
+                                }
+                            }
+                            else
+                            {
+                                allFiles.Add(optionPrefix, files);
+                            }
                         }
                     }
                     pIdx++;
