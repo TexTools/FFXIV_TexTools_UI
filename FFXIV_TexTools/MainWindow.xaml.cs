@@ -351,6 +351,11 @@ namespace FFXIV_TexTools
             this.DataContext = mainViewModel;
             InitializeComponent();
 
+#if !DEBUG
+            PenumbraUpgradeButton.IsEnabled = false;
+#endif
+
+
             var fileVersion = FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location).FileVersion;
 
             // Clear out the debug message shown in the xaml designer.
@@ -2103,6 +2108,12 @@ namespace FFXIV_TexTools
         {
             var wind = new DawntrailUpgradeHelpWindow() { Owner = this };
             wind.Show();
+        }
+
+        private void UpdatePenumbra_Click(object sender, RoutedEventArgs e)
+        {
+            var wind = new PenumbraLibraryUpgradeWindow() { Owner = this };
+            wind.ShowDialog();
         }
     }
 }

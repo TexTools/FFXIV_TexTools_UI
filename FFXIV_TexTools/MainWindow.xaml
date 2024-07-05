@@ -94,6 +94,7 @@
                 <MenuItem Header="Dawntrail Upgrades">
                     <MenuItem Header="About Upgrades" Click="AboutUpgrades_Click"/>
                     <MenuItem Header="Upgrade Modpack" Click="UpdateModpack_Click"/>
+                    <MenuItem x:Name="PenumbraUpgradeButton" Header="Upgrade Penumbra Library" Click="UpdatePenumbra_Click"/>
                     <MenuItem Header="Index Texture Creator" Click="IndexTextureCreator_Click"/>
                     <MenuItem Header="Hair Texture Converter" Click="HairTextureConverter_Click"/>
                     <MenuItem Header="Eye Diffuse Creator" Click="IrisDiffuseCreator_Click"/>
