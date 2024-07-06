@@ -4,21 +4,40 @@ using HelixToolkit.Wpf.SharpDX.Utilities;
 using MahApps.Metro;
 using System;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Threading;
+using static System.Net.Mime.MediaTypeNames;
 using Application = System.Windows.Application;
 using Clipboard = System.Windows.Clipboard;
 
 namespace FFXIV_TexTools
 {
+    public static class EntryPoint
+    {
+        [STAThread]
+        public static int Main(string[] args)
+        {
+            var application = new App();
+            var r = application.Run();
+            return r;
+        }
+
+    }
+
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>
     public partial class App : Application
     {
         static NVOptimusEnabler nvEnabler = new NVOptimusEnabler();
+
+        public App()
+        {
+            InitializeComponent();
+        }
 
         protected override void OnStartup(StartupEventArgs e)
         {
