@@ -209,6 +209,7 @@ namespace FFXIV_TexTools.ViewModels
                     var modList = await tx.GetModList();
                     var allMods = modList.GetMods().ToList();
 
+                    var anyChanges = false;
                     foreach(var mod in allMods)
                     {
                         var state = await mod.GetState(tx);
@@ -218,6 +219,7 @@ namespace FFXIV_TexTools.ViewModels
                             // Mod is fine.  Can continue on as normal.
                             continue;
                         }
+                        anyChanges = true;
 
                         // An Invalid state mod points to Neither the original, nor the modded offset.
                         var df = IOUtil.GetDataFileFromPath(mod.FilePath);
@@ -251,9 +253,15 @@ namespace FFXIV_TexTools.ViewModels
                         await tx.Set8xDataOffset(mod.FilePath, await tx.Get8xDataOffset(mod.FilePath));
                     }
 
-                    // We now have a working, valid modlist.  Nice.
-                    // Make some fresh backups.
-                    await ModTransaction.CommitTransaction(tx);
+                    if (anyChanges)
+                    {
+                        // We now have a working, valid modlist.  Nice.
+                        // Make some fresh backups.
+                        await ModTransaction.CommitTransaction(tx);
+                    } else
+                    {
+                        await ModTransaction.CancelTransaction(tx, true);
+                    }
 
                 }
 

@@ -23,8 +23,8 @@
     <AssemblyTitle>FFXIV_TexTools</AssemblyTitle>
     <Product>FFXIV_TexTools</Product>
     <Copyright>Copyright ©  2024</Copyright>
-    <AssemblyVersion>3.0.3.1</AssemblyVersion>
-    <FileVersion>3.0.3.1</FileVersion>
+    <AssemblyVersion>3.0.3.2</AssemblyVersion>
+    <FileVersion>3.0.3.2</FileVersion>
     <LangVersion>9.0</LangVersion>
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <UseWPF>true</UseWPF>
@@ -62,6 +62,7 @@ move $(TargetDir)*.dll $(TargetDir)lib</PostBuildEvent>
   <PropertyGroup>
     <PostBuildEvent>mkdir $(TargetDir)lib
 move $(TargetDir)*.dll $(TargetDir)lib</PostBuildEvent>
+    <StartupObject>FFXIV_TexTools.EntryPoint</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Resources\Shaders\psCustomMeshBlinnPhong.hlsl" />

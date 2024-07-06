@@ -156,14 +156,11 @@ Please set your Index Backups directory in Options &gt; Customize and try again.
     <value>ColorSet BMP import is not supported.</value>
   </data>
   <data name="CreateBackupsMessage" xml:space="preserve">
-    <value>This will create a backup of all index files.
+    <value>This will create a backup of all index files for use when removing all mods.
 
+If you have mods enabled, this will automatically disable them (and re-enable them after).
 
-Do you want to Backup Now?
-
-
-Warning:
-In order to create a clean backup, all active modifications will be set to disabled, they will have to be re-enabled manually.</value>
+Are you sure you wish to proceed?</value>
   </data>
   <data name="CreateBackupsTitle" xml:space="preserve">
     <value>Backup Index Files</value>

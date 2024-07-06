@@ -1228,8 +1228,9 @@ namespace FFXIV_TexTools.Views.Wizard
             {
                 await WriteWizardPack(targetPath);
             }
-            else if (Directory.Exists(targetPath))
+            else if (Directory.Exists(targetPath) || !Path.GetFileName(targetPath).Contains("."))
             {
+                Directory.CreateDirectory(targetPath);
                 await WritePmp(targetPath, false);
             }
             else
