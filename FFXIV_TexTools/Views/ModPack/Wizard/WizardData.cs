@@ -1319,7 +1319,7 @@ namespace FFXIV_TexTools.Views.Wizard
                 Meta = new PMPMetaJson(),
             };
 
-            var tempFolder = Path.Combine(IOUtil.GetFrameworkTempFolder(), Guid.NewGuid().ToString());
+            var tempFolder = IOUtil.GetFrameworkTempSubfolder("PMP");
             Directory.CreateDirectory(tempFolder);
             try
             {
