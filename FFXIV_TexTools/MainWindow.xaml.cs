@@ -14,6 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using AutoUpdaterDotNET;
+using FFXIV_TexTools.Console;
 using FFXIV_TexTools.Helpers;
 using FFXIV_TexTools.Properties;
 using FFXIV_TexTools.Resources;
@@ -381,8 +382,7 @@ namespace FFXIV_TexTools
 
             if (args != null && args.Length > 0)
             {
-
-                OnlyImport(args[0]);
+                _ = HandleArgs(args);
             }
             else
             {
@@ -400,6 +400,16 @@ namespace FFXIV_TexTools
             }
 
             KeyDown += OnKeyDown;
+        }
+
+        private async Task HandleArgs(string[] args)
+        {
+            if(await ConsoleManager.HandleConsoleArgs(args))
+            {
+                return;
+            }
+
+            OnlyImport(args[0]);
         }
 
         private void OnKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
