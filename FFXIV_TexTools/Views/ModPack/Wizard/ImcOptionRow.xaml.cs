@@ -16,6 +16,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using UserControl = System.Windows.Controls.UserControl;
+using xivModdingFramework.Mods;
 
 namespace FFXIV_TexTools.Views.Wizard
 {

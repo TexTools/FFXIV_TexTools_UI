@@ -14,7 +14,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using AutoUpdaterDotNET;
-using FFXIV_TexTools.Console;
 using FFXIV_TexTools.Helpers;
 using FFXIV_TexTools.Properties;
 using FFXIV_TexTools.Resources;
@@ -404,11 +403,6 @@ namespace FFXIV_TexTools
 
         private async Task HandleArgs(string[] args)
         {
-            if(await ConsoleManager.HandleConsoleArgs(args))
-            {
-                return;
-            }
-
             OnlyImport(args[0]);
         }
 
@@ -2102,7 +2096,7 @@ namespace FFXIV_TexTools
                 // Should we use this setting here? Or just always upgrade for modpacks?
                 //includePartials = Settings.Default.FixPreDawntrailPartialOnImport;
 
-                await ModpackUpgrader.UpgradeModpackPrompted(includePartials);
+                await ModpackUpgraderWrapper.UpgradeModpackPrompted(includePartials);
             }
             catch
             {

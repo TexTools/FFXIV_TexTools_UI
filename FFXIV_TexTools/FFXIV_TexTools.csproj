@@ -17,52 +17,43 @@
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>2.0.0.0</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
     <AssemblyTitle>FFXIV_TexTools</AssemblyTitle>
     <Product>FFXIV_TexTools</Product>
     <Copyright>Copyright ©  2024</Copyright>
+    
+    <ApplicationVersion>3.0.3.2</ApplicationVersion>
     <AssemblyVersion>3.0.3.2</AssemblyVersion>
     <FileVersion>3.0.3.2</FileVersion>
+    
     <LangVersion>9.0</LangVersion>
-    <OutputPath>bin\$(Configuration)\</OutputPath>
     <UseWPF>true</UseWPF>
+    <OutputPath>..\\bin\\$(Configuration)\\</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <PostBuildEvent>mkdir $(TargetDir)lib
-move $(TargetDir)*.dll $(TargetDir)lib</PostBuildEvent>
-    <PostBuildEvent>mkdir $(TargetDir)lib
-move $(TargetDir)*.dll $(TargetDir)lib</PostBuildEvent>
-    <PostBuildEvent>mkdir $(TargetDir)lib
-move $(TargetDir)*.dll $(TargetDir)lib</PostBuildEvent>
-    <Configurations>Debug;Release;Endwalker Debug;Endwalker Release</Configurations>
+    <PostBuildEvent>
+      echo Moving DLL Files
+      mkdir $(TargetDir)lib
+      xcopy $(TargetDir)*.dll $(TargetDir)lib /y
+      del *.dll
+      del *.cso
+      move $(TargetDir)lib\\ConsoleTools.dll $(TargetDir)ConsoleTools.dll
+    </PostBuildEvent>
+    <Configurations>Debug;Release</Configurations>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>full</DebugType>
     <DefineConstants>$(DefineConstants);DAWNTRAIL</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Endwalker Debug|AnyCPU'">
-    <DebugType>full</DebugType>
-    <DefineConstants>$(DefineConstants);ENDWALKER</DefineConstants>
-  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <DefineConstants>$(DefineConstants);DAWNTRAIL</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Endwalker Release|AnyCPU'">
-    <DebugType>pdbonly</DebugType>
-    <DefineConstants>$(DefineConstants);ENDWALKER</DefineConstants>
-  </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>ffxiv2.ico</ApplicationIcon>
-  </PropertyGroup>
-  <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
-  </PropertyGroup>
-  <PropertyGroup>
-    <PostBuildEvent>mkdir $(TargetDir)lib
-move $(TargetDir)*.dll $(TargetDir)lib</PostBuildEvent>
-    <StartupObject>FFXIV_TexTools.EntryPoint</StartupObject>
+    <StartupObject>FFXIV_TexTools.App</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Resources\Shaders\psCustomMeshBlinnPhong.hlsl" />
@@ -231,5 +222,8 @@ move $(TargetDir)*.dll $(TargetDir)lib</PostBuildEvent>
     <Page Update="Views\FileControls\MaterialFileControl.xaml">
       <SubType>Designer</SubType>
     </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Console\" />
   </ItemGroup>
 </Project>

@@ -4,22 +4,21 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.4.33205.214
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FFXIV_TexTools", "FFXIV_TexTools\FFXIV_TexTools.csproj", "{4A5F7AB1-F296-450B-8F57-2FB82465964E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{60DC3C4C-9911-4536-90A7-171C8336ED0A} = {60DC3C4C-9911-4536-90A7-171C8336ED0A}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "xivModdingFramework", "lib\xivModdingFramework\xivModdingFramework\xivModdingFramework.csproj", "{CDC45CC3-60E7-4CB1-A267-BE1CB3BDE340}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ForceUpdateAssembly", "ForceUpdateAssembly\ForceUpdateAssembly.csproj", "{734ACC29-8F05-4193-B981-F5266150F11F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleTools", "ConsoleTools\ConsoleTools.csproj", "{60DC3C4C-9911-4536-90A7-171C8336ED0A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|x64 = Debug|x64
 		Debug|x86 = Debug|x86
-		Endwalker Debug|Any CPU = Endwalker Debug|Any CPU
-		Endwalker Debug|x64 = Endwalker Debug|x64
-		Endwalker Debug|x86 = Endwalker Debug|x86
-		Endwalker Release|Any CPU = Endwalker Release|Any CPU
-		Endwalker Release|x64 = Endwalker Release|x64
-		Endwalker Release|x86 = Endwalker Release|x86
 		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
@@ -31,18 +30,6 @@ Global
 		{4A5F7AB1-F296-450B-8F57-2FB82465964E}.Debug|x64.Build.0 = Debug|Any CPU
 		{4A5F7AB1-F296-450B-8F57-2FB82465964E}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{4A5F7AB1-F296-450B-8F57-2FB82465964E}.Debug|x86.Build.0 = Debug|Any CPU
-		{4A5F7AB1-F296-450B-8F57-2FB82465964E}.Endwalker Debug|Any CPU.ActiveCfg = Endwalker Debug|Any CPU
-		{4A5F7AB1-F296-450B-8F57-2FB82465964E}.Endwalker Debug|Any CPU.Build.0 = Endwalker Debug|Any CPU
-		{4A5F7AB1-F296-450B-8F57-2FB82465964E}.Endwalker Debug|x64.ActiveCfg = Endwalker Debug|Any CPU
-		{4A5F7AB1-F296-450B-8F57-2FB82465964E}.Endwalker Debug|x64.Build.0 = Endwalker Debug|Any CPU
-		{4A5F7AB1-F296-450B-8F57-2FB82465964E}.Endwalker Debug|x86.ActiveCfg = Endwalker Debug|Any CPU
-		{4A5F7AB1-F296-450B-8F57-2FB82465964E}.Endwalker Debug|x86.Build.0 = Endwalker Debug|Any CPU
-		{4A5F7AB1-F296-450B-8F57-2FB82465964E}.Endwalker Release|Any CPU.ActiveCfg = Endwalker Release|Any CPU
-		{4A5F7AB1-F296-450B-8F57-2FB82465964E}.Endwalker Release|Any CPU.Build.0 = Endwalker Release|Any CPU
-		{4A5F7AB1-F296-450B-8F57-2FB82465964E}.Endwalker Release|x64.ActiveCfg = Endwalker Release|Any CPU
-		{4A5F7AB1-F296-450B-8F57-2FB82465964E}.Endwalker Release|x64.Build.0 = Endwalker Release|Any CPU
-		{4A5F7AB1-F296-450B-8F57-2FB82465964E}.Endwalker Release|x86.ActiveCfg = Endwalker Release|Any CPU
-		{4A5F7AB1-F296-450B-8F57-2FB82465964E}.Endwalker Release|x86.Build.0 = Endwalker Release|Any CPU
 		{4A5F7AB1-F296-450B-8F57-2FB82465964E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4A5F7AB1-F296-450B-8F57-2FB82465964E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4A5F7AB1-F296-450B-8F57-2FB82465964E}.Release|x64.ActiveCfg = Release|Any CPU
@@ -55,18 +42,6 @@ Global
 		{CDC45CC3-60E7-4CB1-A267-BE1CB3BDE340}.Debug|x64.Build.0 = Debug|Any CPU
 		{CDC45CC3-60E7-4CB1-A267-BE1CB3BDE340}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{CDC45CC3-60E7-4CB1-A267-BE1CB3BDE340}.Debug|x86.Build.0 = Debug|Any CPU
-		{CDC45CC3-60E7-4CB1-A267-BE1CB3BDE340}.Endwalker Debug|Any CPU.ActiveCfg = Endwalker Debug|Any CPU
-		{CDC45CC3-60E7-4CB1-A267-BE1CB3BDE340}.Endwalker Debug|Any CPU.Build.0 = Endwalker Debug|Any CPU
-		{CDC45CC3-60E7-4CB1-A267-BE1CB3BDE340}.Endwalker Debug|x64.ActiveCfg = Endwalker Debug|Any CPU
-		{CDC45CC3-60E7-4CB1-A267-BE1CB3BDE340}.Endwalker Debug|x64.Build.0 = Endwalker Debug|Any CPU
-		{CDC45CC3-60E7-4CB1-A267-BE1CB3BDE340}.Endwalker Debug|x86.ActiveCfg = Endwalker Debug|Any CPU
-		{CDC45CC3-60E7-4CB1-A267-BE1CB3BDE340}.Endwalker Debug|x86.Build.0 = Endwalker Debug|Any CPU
-		{CDC45CC3-60E7-4CB1-A267-BE1CB3BDE340}.Endwalker Release|Any CPU.ActiveCfg = Endwalker Release|Any CPU
-		{CDC45CC3-60E7-4CB1-A267-BE1CB3BDE340}.Endwalker Release|Any CPU.Build.0 = Endwalker Release|Any CPU
-		{CDC45CC3-60E7-4CB1-A267-BE1CB3BDE340}.Endwalker Release|x64.ActiveCfg = Endwalker Release|Any CPU
-		{CDC45CC3-60E7-4CB1-A267-BE1CB3BDE340}.Endwalker Release|x64.Build.0 = Endwalker Release|Any CPU
-		{CDC45CC3-60E7-4CB1-A267-BE1CB3BDE340}.Endwalker Release|x86.ActiveCfg = Endwalker Release|Any CPU
-		{CDC45CC3-60E7-4CB1-A267-BE1CB3BDE340}.Endwalker Release|x86.Build.0 = Endwalker Release|Any CPU
 		{CDC45CC3-60E7-4CB1-A267-BE1CB3BDE340}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CDC45CC3-60E7-4CB1-A267-BE1CB3BDE340}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CDC45CC3-60E7-4CB1-A267-BE1CB3BDE340}.Release|x64.ActiveCfg = Release|Any CPU
@@ -79,24 +54,24 @@ Global
 		{734ACC29-8F05-4193-B981-F5266150F11F}.Debug|x64.Build.0 = Debug|Any CPU
 		{734ACC29-8F05-4193-B981-F5266150F11F}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{734ACC29-8F05-4193-B981-F5266150F11F}.Debug|x86.Build.0 = Debug|Any CPU
-		{734ACC29-8F05-4193-B981-F5266150F11F}.Endwalker Debug|Any CPU.ActiveCfg = Endwalker Debug|Any CPU
-		{734ACC29-8F05-4193-B981-F5266150F11F}.Endwalker Debug|Any CPU.Build.0 = Endwalker Debug|Any CPU
-		{734ACC29-8F05-4193-B981-F5266150F11F}.Endwalker Debug|x64.ActiveCfg = Endwalker Debug|Any CPU
-		{734ACC29-8F05-4193-B981-F5266150F11F}.Endwalker Debug|x64.Build.0 = Endwalker Debug|Any CPU
-		{734ACC29-8F05-4193-B981-F5266150F11F}.Endwalker Debug|x86.ActiveCfg = Endwalker Debug|Any CPU
-		{734ACC29-8F05-4193-B981-F5266150F11F}.Endwalker Debug|x86.Build.0 = Endwalker Debug|Any CPU
-		{734ACC29-8F05-4193-B981-F5266150F11F}.Endwalker Release|Any CPU.ActiveCfg = Endwalker Release|Any CPU
-		{734ACC29-8F05-4193-B981-F5266150F11F}.Endwalker Release|Any CPU.Build.0 = Endwalker Release|Any CPU
-		{734ACC29-8F05-4193-B981-F5266150F11F}.Endwalker Release|x64.ActiveCfg = Endwalker Release|Any CPU
-		{734ACC29-8F05-4193-B981-F5266150F11F}.Endwalker Release|x64.Build.0 = Endwalker Release|Any CPU
-		{734ACC29-8F05-4193-B981-F5266150F11F}.Endwalker Release|x86.ActiveCfg = Endwalker Release|Any CPU
-		{734ACC29-8F05-4193-B981-F5266150F11F}.Endwalker Release|x86.Build.0 = Endwalker Release|Any CPU
 		{734ACC29-8F05-4193-B981-F5266150F11F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{734ACC29-8F05-4193-B981-F5266150F11F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{734ACC29-8F05-4193-B981-F5266150F11F}.Release|x64.ActiveCfg = Release|Any CPU
 		{734ACC29-8F05-4193-B981-F5266150F11F}.Release|x64.Build.0 = Release|Any CPU
 		{734ACC29-8F05-4193-B981-F5266150F11F}.Release|x86.ActiveCfg = Release|Any CPU
 		{734ACC29-8F05-4193-B981-F5266150F11F}.Release|x86.Build.0 = Release|Any CPU
+		{60DC3C4C-9911-4536-90A7-171C8336ED0A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{60DC3C4C-9911-4536-90A7-171C8336ED0A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{60DC3C4C-9911-4536-90A7-171C8336ED0A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{60DC3C4C-9911-4536-90A7-171C8336ED0A}.Debug|x64.Build.0 = Debug|Any CPU
+		{60DC3C4C-9911-4536-90A7-171C8336ED0A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{60DC3C4C-9911-4536-90A7-171C8336ED0A}.Debug|x86.Build.0 = Debug|Any CPU
+		{60DC3C4C-9911-4536-90A7-171C8336ED0A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{60DC3C4C-9911-4536-90A7-171C8336ED0A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{60DC3C4C-9911-4536-90A7-171C8336ED0A}.Release|x64.ActiveCfg = Release|Any CPU
+		{60DC3C4C-9911-4536-90A7-171C8336ED0A}.Release|x64.Build.0 = Release|Any CPU
+		{60DC3C4C-9911-4536-90A7-171C8336ED0A}.Release|x86.ActiveCfg = Release|Any CPU
+		{60DC3C4C-9911-4536-90A7-171C8336ED0A}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -15,18 +15,6 @@ using Clipboard = System.Windows.Clipboard;
 
 namespace FFXIV_TexTools
 {
-    public static class EntryPoint
-    {
-        [STAThread]
-        public static int Main(string[] args)
-        {
-            var application = new App();
-            var r = application.Run();
-            return r;
-        }
-
-    }
-
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>

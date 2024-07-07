@@ -25,6 +25,7 @@ using Image = SixLabors.ImageSharp.Image;
 using SixLabors.ImageSharp;
 using Point = SixLabors.ImageSharp.Point;
 using xivModdingFramework.Helpers;
+using xivModdingFramework.Mods;
 
 namespace FFXIV_TexTools.Views.Textures
 {

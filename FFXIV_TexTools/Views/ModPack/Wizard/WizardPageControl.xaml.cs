@@ -29,6 +29,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using xivModdingFramework.Mods.DataContainers;
 using Image = SixLabors.ImageSharp.Image;
+using xivModdingFramework.Mods;
 
 namespace FFXIV_TexTools.Views.Wizard
 {

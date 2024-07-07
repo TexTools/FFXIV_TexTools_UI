@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -9,7 +9,9 @@
     <Description>A stub library with version 0.0.0.0 for use when forcing updates.</Description>
     <PackageId>ForceUpdateAssembly</PackageId>
     <AssemblyName>Branch Change Update</AssemblyName>
-    <Configurations>Debug;Release;Endwalker Debug;Endwalker Release</Configurations>
+    <Configurations>Debug;Release</Configurations>
+    <OutputPath>..\\bin\\$(Configuration)\\lib\\</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
 
 </Project>

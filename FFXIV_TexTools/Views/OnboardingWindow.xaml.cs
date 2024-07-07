@@ -189,6 +189,71 @@ namespace FFXIV_TexTools.Views
             CheckRerunAdmin();
             ValidateModlist();
         }
+        public static void InitializeSettings()
+        {
+            SetDirectories();
+            XivCache.FrameworkSettings.DefaultTextureFormat = Settings.Default.CompressEndwalkerUpgradeTextures ? xivModdingFramework.Textures.Enums.XivTexFormat.BC7 : xivModdingFramework.Textures.Enums.XivTexFormat.A8R8G8B8;
+
+            if (Enum.TryParse<EModelingTool>(Settings.Default.ModelingTool, true, out var mt))
+            {
+                XivCache.FrameworkSettings.ModelingTool = mt;
+            }
+            XivCache.FrameworkSettings.DefaultTextureFormat = Settings.Default.CompressEndwalkerUpgradeTextures ? xivModdingFramework.Textures.Enums.XivTexFormat.BC7 : xivModdingFramework.Textures.Enums.XivTexFormat.A8R8G8B8;
+
+            UpdateConsoleConfig();
+            Properties.Settings.Default.SettingsSaving += (object sender, System.ComponentModel.CancelEventArgs e) => {
+                UpdateConsoleConfig();
+            };
+
+        }
+
+        private static void UpdateConsoleConfig()
+        {
+            ConsoleConfig.Update(x =>
+            {
+                x.XivPath = Settings.Default.FFXIV_Directory;
+                x.Language = Settings.Default.Application_Language;
+            });
+        }
+
+
+
+        /// <summary>
+        /// Validates the various directories TexTools relies on.
+        /// </summary>
+        private static void SetDirectories()
+        {
+            // Create/assign directories if they don't exist already.
+            SetSaveDirectory();
+
+            SetBackupsDirectory();
+
+            SetModPackDirectory();
+        }
+
+        private static void SetSaveDirectory()
+        {
+            if (!Directory.Exists(Properties.Settings.Default.Save_Directory))
+            {
+                Directory.CreateDirectory(Properties.Settings.Default.Save_Directory);
+            }
+        }
+
+        private static void SetBackupsDirectory()
+        {
+            if (!Directory.Exists(Properties.Settings.Default.Backup_Directory))
+            {
+                Directory.CreateDirectory(Properties.Settings.Default.Backup_Directory);
+            }
+        }
+
+        private static void SetModPackDirectory()
+        {
+            if (!Directory.Exists(Properties.Settings.Default.ModPack_Directory))
+            {
+                Directory.CreateDirectory(Properties.Settings.Default.ModPack_Directory);
+            }
+        }
 
         public static void ValidateModlist()
         {
@@ -241,7 +306,7 @@ namespace FFXIV_TexTools.Views
             }
             return true;
         }
-        public static void CheckRerunAdmin()
+        public static void CheckRerunAdmin(bool throwErrors = false)
         {
             var cwd = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
             var converterFolder = Path.GetFullPath(Path.Combine(cwd, "converters"));
@@ -255,6 +320,11 @@ namespace FFXIV_TexTools.Views
 
             if (!allSuccess && !IsRunningAsAdministrator()) 
             {
+                if (throwErrors)
+                {
+                    throw new ApplicationException("Application must be run as administrator for proper file access due to current folder configurations.");
+                }
+
                 // Setting up start info of the new process of the same application
                 ProcessStartInfo processStartInfo = new ProcessStartInfo(Assembly.GetEntryAssembly().CodeBase);
 
@@ -362,19 +432,6 @@ namespace FFXIV_TexTools.Views
             return installDirectory;
         }
 
-        public static void InitializeSettings()
-        {
-            SetDirectories();
-            XivCache.FrameworkSettings.DefaultTextureFormat = Settings.Default.CompressEndwalkerUpgradeTextures ? xivModdingFramework.Textures.Enums.XivTexFormat.BC7 : xivModdingFramework.Textures.Enums.XivTexFormat.A8R8G8B8;
-
-            if (Enum.TryParse<EModelingTool>(Settings.Default.ModelingTool, true, out var mt))
-            {
-                XivCache.FrameworkSettings.ModelingTool = mt;
-            }
-            XivCache.FrameworkSettings.DefaultTextureFormat = Settings.Default.CompressEndwalkerUpgradeTextures ? xivModdingFramework.Textures.Enums.XivTexFormat.BC7 : xivModdingFramework.Textures.Enums.XivTexFormat.A8R8G8B8;
-
-        }
-
         public static bool IsGameDirectoryValid(string dir)
         {
             if (string.IsNullOrEmpty(dir))
@@ -395,45 +452,6 @@ namespace FFXIV_TexTools.Views
             return true;
         }
 
-
-
-
-        /// <summary>
-        /// Validates the various directories TexTools relies on.
-        /// </summary>
-        private static void SetDirectories()
-        {
-            // Create/assign directories if they don't exist already.
-            SetSaveDirectory();
-
-            SetBackupsDirectory();
-
-            SetModPackDirectory();
-        }
-
-        private static void SetSaveDirectory()
-        {
-            if (!Directory.Exists(Properties.Settings.Default.Save_Directory))
-            {
-                Directory.CreateDirectory(Properties.Settings.Default.Save_Directory);
-            }
-        }
-
-        private static void SetBackupsDirectory()
-        {
-            if (!Directory.Exists(Properties.Settings.Default.Backup_Directory))
-            {
-                Directory.CreateDirectory(Properties.Settings.Default.Backup_Directory);
-            }
-        }
-
-        private static void SetModPackDirectory()
-        {
-            if (!Directory.Exists(Properties.Settings.Default.ModPack_Directory))
-            {
-                Directory.CreateDirectory(Properties.Settings.Default.ModPack_Directory);
-            }
-        }
 
         /// <summary>
         /// Resolves a valid TexTools desired FFXIV folder from a given user folder, if at all possible.

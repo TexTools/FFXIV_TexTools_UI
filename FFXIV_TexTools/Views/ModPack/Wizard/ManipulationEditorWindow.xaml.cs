@@ -8,6 +8,7 @@ using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Input;
 using xivModdingFramework.Mods.FileTypes;
+using xivModdingFramework.Mods;
 
 namespace FFXIV_TexTools.Views.Wizard
 {
