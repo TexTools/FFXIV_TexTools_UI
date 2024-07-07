@@ -38,7 +38,6 @@
       xcopy $(TargetDir)*.dll $(TargetDir)lib /y
       del *.dll
       del *.cso
-      move $(TargetDir)lib\\ConsoleTools.dll $(TargetDir)ConsoleTools.dll
     </PostBuildEvent>
     <Configurations>Debug;Release</Configurations>
   </PropertyGroup>

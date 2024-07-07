@@ -4,9 +4,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.4.33205.214
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FFXIV_TexTools", "FFXIV_TexTools\FFXIV_TexTools.csproj", "{4A5F7AB1-F296-450B-8F57-2FB82465964E}"
-	ProjectSection(ProjectDependencies) = postProject
-		{60DC3C4C-9911-4536-90A7-171C8336ED0A} = {60DC3C4C-9911-4536-90A7-171C8336ED0A}
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "xivModdingFramework", "lib\xivModdingFramework\xivModdingFramework\xivModdingFramework.csproj", "{CDC45CC3-60E7-4CB1-A267-BE1CB3BDE340}"
 EndProject
