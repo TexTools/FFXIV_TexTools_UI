@@ -10,9 +10,10 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 
 
-    <PostBuildEvent>echo Moving DLL Files
-      mkdir $(TargetDir)lib
-      xcopy $(TargetDir)*.dll $(TargetDir)lib /y
+    <PostBuildEvent>
+      echo Moving DLL Files
+      mkdir $(TargetDir)console_lib
+      xcopy $(TargetDir)*.dll $(TargetDir)console_lib /y
       del *.dll
       del *.cso
     </PostBuildEvent>

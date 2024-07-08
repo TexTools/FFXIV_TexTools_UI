@@ -55,6 +55,12 @@
     <StartupObject>FFXIV_TexTools.App</StartupObject>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Console\**" />
+    <EmbeddedResource Remove="Console\**" />
+    <None Remove="Console\**" />
+    <Page Remove="Console\**" />
+  </ItemGroup>
+  <ItemGroup>
     <None Remove="Resources\Shaders\psCustomMeshBlinnPhong.hlsl" />
     <None Remove="Resources\Shaders\psCustomMeshBlinnPhongOIT.hlsl" />
   </ItemGroup>
@@ -221,8 +227,5 @@
     <Page Update="Views\FileControls\MaterialFileControl.xaml">
       <SubType>Designer</SubType>
     </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Console\" />
   </ItemGroup>
 </Project>

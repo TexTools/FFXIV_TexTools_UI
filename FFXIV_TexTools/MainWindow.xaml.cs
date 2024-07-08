@@ -1822,7 +1822,6 @@ namespace FFXIV_TexTools
                 var res = (FlexibleMessageBox.Show("Successfully downloaded fresh index backups.\nWould you like to delete all mods and apply these backups/[Start Over]?.".L(), "Backup Download Success".L(), MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1));
                 if (res == System.Windows.Forms.DialogResult.Yes)
                 {
-                    _lockProgressController.SetTitle("Removing All Mods");
                     Menu_StartOver_Click(null, null);
                 }
             }
