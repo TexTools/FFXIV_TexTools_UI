@@ -113,13 +113,13 @@ namespace ConsoleTools
 
         public static async Task<int> HandleUpgrade()
         {
-            if (_Args.Length < 4)
+            if (_Args.Length < 3)
             {
                 return -1;
             }
 
-            var src = _Args[2];
-            var dest = _Args[3];
+            var src = _Args[1];
+            var dest = _Args[2];
             System.Console.Write("Upgrading Modpack: " + src);
 
             try
@@ -138,24 +138,31 @@ namespace ConsoleTools
 
         public static async Task<int> HandleResaveModpack()
         {
-            if (_Args.Length < 4)
+            if (_Args.Length < 3)
             {
+                Console.WriteLine("Insufficient argument count for function.");
                 return -1;
             }
 
-            var src = _Args[2];
-            var dest = _Args[3];
-            System.Console.Write("Resaving Modpack: " + src);
+            var src = _Args[1];
+            var dest = _Args[2];
+            System.Console.WriteLine("Loading Modpack: " + src);
             try
             {
                 var data = await WizardData.FromModpack(src);
+                if(data == null)
+                {
+                    Console.WriteLine("Failed to load Modpack at: " + src);
+                    return -1;
+                }
+
                 await data.WriteModpack(dest);
 
                 System.Console.Write("Modpack Saved to: " + dest);
             }
             catch (Exception ex)
             {
-                Trace.WriteLine(ex);
+                Console.WriteLine(ex);
                 return -1;
             }
             return 0;
@@ -163,24 +170,24 @@ namespace ConsoleTools
 
         public static async Task<int> ExtractFile()
         {
-            if (_Args.Length < 4)
+            if (_Args.Length < 3)
             {
+                Console.WriteLine("Insufficient argument count for function.");
                 return -1;
             }
 
             var sqpack = GetFlag("/sqpack");
-            var src = _Args[2];
-            var dest = _Args[3];
+            var src = _Args[1];
+            var dest = _Args[2];
+
+            Console.WriteLine("Extracting File: " + src);
 
             var rtx = ModTransaction.BeginReadonlyTransaction();
             if (Path.GetExtension(src).ToLower() == Path.GetExtension(dest).ToLower())
             {
                 var data = await rtx.ReadFile(src, false, sqpack);
                 File.WriteAllBytes(dest, data);
-                return 0;
-            }
-                
-            if (src.EndsWith(".tex") || src.EndsWith(".atex"))
+            } else if (src.EndsWith(".tex") || src.EndsWith(".atex"))
             {
                 var data = await rtx.ReadFile(src);
                 var tex = XivTex.FromUncompressedTex(data);
@@ -196,26 +203,28 @@ namespace ConsoleTools
                 File.WriteAllBytes(dest, data);
             }
 
+            Console.WriteLine("File saved to:" + dest);
             return 0;
         }
         public static async Task<int> WrapFile()
         {
-            if (_Args.Length < 4)
+            if (_Args.Length < 3)
             {
+                Console.WriteLine("Insufficient argument count for function.");
                 return -1;
             }
 
-            var src = _Args[2];
-            var dest = _Args[3];
+            var src = _Args[1];
+            var dest = _Args[2];
 
             // Just dub something in with same extention if we weren't given one.
             // This will work for anything other than MDL.
             var ffPath = "chara/file" + Path.GetExtension(dest);
-            if (_Args.Length > 4)
+            if (_Args.Length > 3)
             {
-                ffPath = _Args[4];
+                ffPath = _Args[3];
             }
-            Console.WriteLine("Converting File: " + src);
+            Console.WriteLine("Wrapping File: " + src);
 
             var sqpack = GetFlag("/sqpack");
             var parsed = new byte[0];
@@ -228,29 +237,26 @@ namespace ConsoleTools
             }
 
             File.WriteAllBytes(dest, parsed);
+            Console.WriteLine("Wrapped File saved to: " + dest);
             return 0;
         }
 
         public static async Task<int> UnwrapFile()
         {
-            if (_Args.Length < 4)
+            if (_Args.Length < 3)
             {
-                return -1;
-            }
-
-            if (_Args.Length < 4)
-            {
+                Console.WriteLine("Insufficient argument count for function.");
                 return -1;
             }
 
             var ffPath = "";
-            if(_Args.Length > 4)
+            if(_Args.Length > 3)
             {
-                ffPath = _Args[4];
+                ffPath = _Args[3];
             }
 
-            var src = _Args[2];
-            var dest = _Args[3];
+            var src = _Args[1];
+            var dest = _Args[2];
 
             Console.WriteLine("Unwrapping file: " + src);
             var data = File.ReadAllBytes(src);
@@ -276,10 +282,8 @@ namespace ConsoleTools
             if (Path.GetExtension(src).ToLower() == Path.GetExtension(dest).ToLower())
             {
                 File.WriteAllBytes(dest, data);
-                return 0;
             }
-
-            if (src.EndsWith(".tex") || src.EndsWith(".atex"))
+            else if (src.EndsWith(".tex") || src.EndsWith(".atex"))
             {
                 var tex = XivTex.FromUncompressedTex(data);
                 await tex.SaveAs(dest);
@@ -296,6 +300,7 @@ namespace ConsoleTools
                 File.WriteAllBytes(dest, data);
             }
 
+            Console.WriteLine("Unwrapped File saved to: " + dest);
             return 0;
         }
 
