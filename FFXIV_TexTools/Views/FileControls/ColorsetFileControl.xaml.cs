@@ -48,6 +48,8 @@ using Xceed.Wpf.Toolkit;
 using xivModdingFramework.Helpers;
 using System.Diagnostics;
 using FFXIV_TexTools.Resources;
+using xivModdingFramework.Textures;
+using FFXIV_TexTools.Views.Textures;
 
 namespace FFXIV_TexTools.Views.Controls
 {
@@ -300,7 +302,8 @@ namespace FFXIV_TexTools.Views.Controls
             return new Dictionary<string, string>()
             {
                 { ".mtrl", "FFXIV Material" },
-                { ".dds", "DDS Image" }
+                { ".dds", "DDS Image" },
+                //{ ".tga", "TGA Image" }
             };
         }
 
@@ -342,6 +345,10 @@ namespace FFXIV_TexTools.Views.Controls
                 mtrl.ColorSetDyeData = csetData.DyeData;
                 return Mtrl.XivMtrlToUncompressedMtrl(mtrl);
             }
+            else if (ext == ".tga")
+            {
+                throw new Exception("TGA is supported for Colorset Export only.");
+            }
             else
             {
                 throw new NotImplementedException();
@@ -371,6 +378,27 @@ namespace FFXIV_TexTools.Views.Controls
             if(ext == ".mtrl")
             {
                 File.WriteAllBytes(externalFilePath, await INTERNAL_GetUncompressedData());
+                return true;
+            }
+            else if(ext == ".tga")
+            {
+                var tex = await Mtrl.GetColorsetXivTex(Material);
+                var pix = await tex.GetRawPixels();
+
+                await TextureHelpers.ModifyPixels((offset) =>
+                {
+                    pix[offset + 3] = 255;
+                }, tex.Width, tex.Height);
+
+                using var img = SixLabors.ImageSharp.Image.LoadPixelData<Rgba32>(pix, tex.Width, tex.Height);
+
+                img.SaveAsTga(externalFilePath,
+                    new SixLabors.ImageSharp.Formats.Tga.TgaEncoder()
+                    {
+                        BitsPerPixel = SixLabors.ImageSharp.Formats.Tga.TgaBitsPerPixel.Pixel32,
+                        Compression = SixLabors.ImageSharp.Formats.Tga.TgaCompression.None
+                    });
+
                 return true;
             }
             else
