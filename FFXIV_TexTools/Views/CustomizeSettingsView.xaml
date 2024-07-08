@@ -25,7 +25,13 @@
         <ToolTip x:Key="ModelingToolTooltip">Affects the behavior of FBX file export.</ToolTip>
         <ToolTip x:Key="CompleteSkeletonsTooltip">Include all available bones when exporting models, even if they are not currently used.</ToolTip>
 
-        <ToolTip x:Key="ShiftModelUvsTooltip">Shift exported Model UVs by V+1.</ToolTip>
+        <ToolTip x:Key="ShiftModelUvsTooltip">
+            <TextBlock>
+                Shift exported Model UVs by V+1 after flipping.
+                <LineBreak/>This helps account for conversions in UV addressing space on XIV models.
+                <LineBreak/>Which helps bring them into normal UV [1/1] space when exporting FBX or other 0-is-bottom-left formats.
+            </TextBlock>
+        </ToolTip>
         <ToolTip x:Key="AutoAssignBodyTooltip">Automatically fix Bibo+/Gen3 body materials when they are on the wrong material ID.</ToolTip>
 
 

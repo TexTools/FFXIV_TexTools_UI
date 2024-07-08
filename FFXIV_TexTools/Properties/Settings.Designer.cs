@@ -574,5 +574,17 @@ namespace FFXIV_TexTools.Properties {
                 this["CompressEndwalkerUpgradeTextures"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool UseImportedTangents {
+            get {
+                return ((bool)(this["UseImportedTangents"]));
+            }
+            set {
+                this["UseImportedTangents"] = value;
+            }
+        }
     }
 }

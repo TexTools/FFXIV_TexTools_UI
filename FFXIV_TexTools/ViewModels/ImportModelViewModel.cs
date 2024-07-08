@@ -206,6 +206,7 @@ namespace FFXIV_TexTools.ViewModels
             _view.OverrideRaceButton.Unchecked += OverrideRaceButton_Unchecked;
 
             _view.ShiftUVsButton.IsChecked = Settings.Default.ShiftImportUV;
+            _view.UseImportedTangentButton.IsChecked = Settings.Default.UseImportedTangents;
 
             // Default Settings for specific categories, event handlers are added to allow users to opt out of these defaults
             if (referenceItem != null)
@@ -218,11 +219,12 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     _view.CloneUV1Button.IsChecked = Settings.Default.CloneUV1toUV2ForHair;
                 }
-
-                _view.UseOriginalShapeDataButton.Click += UseOriginalShapeDataButton_Clicked;
-                _view.CloneUV1Button.Click += CloneUV1Button_Clicked;
-                _view.ShiftUVsButton.Click += ForceUVsButton_Clicked;
             }
+
+            _view.UseOriginalShapeDataButton.Click += UseOriginalShapeDataButton_Clicked;
+            _view.CloneUV1Button.Click += CloneUV1Button_Clicked;
+            _view.ShiftUVsButton.Click += ForceUVsButton_Clicked;
+            _view.UseImportedTangentButton.Click += UseExternalTangents_Clicked;
         }
 
         private void UseOriginalShapeDataButton_Clicked(object sender, RoutedEventArgs e)
@@ -243,6 +245,11 @@ namespace FFXIV_TexTools.ViewModels
             Settings.Default.Save();
         }
 
+        private void UseExternalTangents_Clicked(object sender, RoutedEventArgs e)
+        {
+            Settings.Default.UseImportedTangents = _view.UseImportedTangentButton.IsChecked == true;
+            Settings.Default.Save();
+        }
 
         private void OverrideRaceButton_Checked(object sender, RoutedEventArgs e)
         {
@@ -337,6 +344,7 @@ namespace FFXIV_TexTools.ViewModels
             options.ClearVAlpha = _view.ClearVAlphaButton.IsChecked == true ? true : false;
             options.ClearVColor = _view.ClearVColorButton.IsChecked == true ? true : false;
             options.AutoScale = _view.AutoScaleButton.IsChecked == true ? true : false;
+            options.UseImportedTangents = _view.UseImportedTangentButton.IsChecked == true ? true : false;
 
             options.SourceApplication = XivStrings.TexTools;
 

@@ -129,6 +129,7 @@ namespace FFXIV_TexTools.Views.Simple
             FileList.SetFiles(files);
 
             ModpackAuthor = Properties.Settings.Default.Default_Author;
+            ModpackUrl = Properties.Settings.Default.Default_Modpack_Url;
             ModpackVersion = "1.0";
 
             FileList.SelectionChanged += FileList_SelectionChanged;
