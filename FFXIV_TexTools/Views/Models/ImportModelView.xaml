@@ -7,11 +7,11 @@
         xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
         resx:Localization.Enabled="True"                     
         mc:Ignorable="d"
-        Title="Model Importer" Height="250" IsMinButtonEnabled="False" IsMaxRestoreButtonEnabled="False" WindowStartupLocation="CenterOwner" FontSize="14" Width="640" ResizeMode="NoResize">
+        Title="Model Importer" Height="290" IsMinButtonEnabled="False" IsMaxRestoreButtonEnabled="False" WindowStartupLocation="CenterOwner" FontSize="14" Width="640" ResizeMode="NoResize">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="60"></RowDefinition>
-            <RowDefinition Height="120"></RowDefinition>
+            <RowDefinition Height="160"></RowDefinition>
             <RowDefinition Height="40"></RowDefinition>
             <RowDefinition Height="1*"></RowDefinition>
         </Grid.RowDefinitions>
@@ -36,6 +36,7 @@
                 <RowDefinition Height ="1*"></RowDefinition>
                 <RowDefinition Height ="1*"></RowDefinition>
                 <RowDefinition Height ="1*"></RowDefinition>
+                <RowDefinition Height ="1*"></RowDefinition>
             </Grid.RowDefinitions>
             <CheckBox x:Name="UseOriginalShapeDataButton" Content="Use Original Shape Data" Style="{DynamicResource SimpleCheckBox}" Grid.Row="0" Grid.Column="0" VerticalContentAlignment="Center" VerticalAlignment="Center" ToolTipService.ShowOnDisabled="True" ToolTip="Enable the model's original shape data. (Should be ON for Faces)"  IsEnabled="{Binding Path=ComplexOptionsEnabled}"/>
             <CheckBox x:Name="ClearUV2Button" Content="Clear UV2" Style="{DynamicResource SimpleCheckBox}" Grid.Row="0" Grid.Column="1"  VerticalContentAlignment="Center" VerticalAlignment="Center" ToolTipService.ShowOnDisabled="True" ToolTip="Reset the second UV layer to [0,0]" />
@@ -47,6 +48,9 @@
 
             <CheckBox x:Name="OverrideRaceButton" Content="Override Incoming Race:" Style="{DynamicResource SimpleCheckBox}" Grid.Row="2" Grid.Column="1" VerticalContentAlignment="Center" VerticalAlignment="Center" ToolTipService.ShowOnDisabled="True" ToolTip="Make TexTools convert your model from a different race to appropriate one for this item." />
             <ComboBox Grid.Row="2" Grid.Column="2" x:Name="RaceComboBox" Width="200" VerticalAlignment="Center"></ComboBox>
+            
+            <CheckBox x:Name="UseImportedTangentButton" Content="Use Imported Tangents" Style="{DynamicResource SimpleCheckBox}" Grid.Row="3" Grid.Column="0" VerticalContentAlignment="Center" VerticalAlignment="Center" ToolTipService.ShowOnDisabled="True" ToolTip="Use Tangent/Binormal Data from the imported file, rather than recalculating it."  />
+            
         </Grid>
         <UniformGrid Margin="10,5,10,5" Columns="3" Grid.Row="2">
             <Button x:Name="CancelButton" Content="Cancel" Margin="0,0,10,0" Click="CancelButton_Click"  />

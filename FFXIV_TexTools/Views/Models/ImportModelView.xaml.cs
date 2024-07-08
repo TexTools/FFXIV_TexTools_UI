@@ -155,6 +155,7 @@ namespace FFXIV_TexTools.Views.Models
             CloneUV1Button.IsEnabled = enabled;
             ClearVColorButton.IsEnabled = enabled;
             ClearVAlphaButton.IsEnabled = enabled;
+            UseImportedTangentButton.IsEnabled = enabled;
             UseOriginalShapeDataButton.IsEnabled = enabled;
             ShiftUVsButton.IsEnabled = enabled;
             FileNameTextBox.IsEnabled = enabled;
