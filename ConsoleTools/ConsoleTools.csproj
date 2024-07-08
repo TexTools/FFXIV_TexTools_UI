@@ -12,8 +12,8 @@
 
     <PostBuildEvent>
       echo Moving DLL Files
-      mkdir $(TargetDir)console_lib
-      xcopy $(TargetDir)*.dll $(TargetDir)console_lib /y
+      mkdir $(TargetDir)lib_console
+      xcopy $(TargetDir)*.dll $(TargetDir)lib_console /y
       del *.dll
       del *.cso
     </PostBuildEvent>

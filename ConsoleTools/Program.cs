@@ -27,7 +27,7 @@ namespace ConsoleTools
         public static int Main(string[] args)
         {
             // Manual lib loader because the app.config method isn't working for some reason.
-            var cwd = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "console_lib");
+            var cwd = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "lib_console");
             var referenceFiles = Directory.GetFiles(cwd, "*.dll", SearchOption.AllDirectories);
 
             AppDomain.CurrentDomain.AssemblyResolve += (obj, arg) =>
@@ -82,15 +82,15 @@ namespace ConsoleTools
             {
                 code = await ShowHelp();
             }
-            else if (cmd == "/u")
+            else if (cmd == "/upgrade")
             {
                 code = await HandleUpgrade();
             }
-            else if(cmd == "/s")
+            else if(cmd == "/resave")
             {
                 code = await HandleResaveModpack();
             }
-            else if (cmd == "/e")
+            else if (cmd == "/extract")
             {
                 code = await ExtractFile();
             }
@@ -312,11 +312,11 @@ namespace ConsoleTools
             System.Console.WriteLine("== Commands ==");
             System.Console.WriteLine("\t/? - Help => You're looking at it.");
             System.Console.WriteLine("");
-            System.Console.WriteLine("\t/u [ModpackFilePath] [DestFilePath] - Updates a given Modpack for Dawntrail.");
+            System.Console.WriteLine("\t/upgrade [ModpackFilePath] [DestFilePath] - Updates a given Modpack for Dawntrail.");
             System.Console.WriteLine("");
-            System.Console.WriteLine("\t/s [ModpackFilePath] [DestFilePath] - Saves a given modpack file to a new path or type, after performing basic file processing.");
+            System.Console.WriteLine("\t/resave [ModpackFilePath] [DestFilePath] - Re-Saves a given modpack file to a new path or type, after performing basic file processing.");
             System.Console.WriteLine("");
-            System.Console.WriteLine("\t/e [FfxivInternalPath] [DestFilePath] - Extracts a given file from FFXIV.  May be SQPacked with /sqpack");
+            System.Console.WriteLine("\t/extract [FfxivInternalPath] [DestFilePath] - Extracts a given file from FFXIV.  May be SQPacked with /sqpack");
             System.Console.WriteLine("");
             System.Console.WriteLine("\t/wrap [SourceFilePath] [DestFilePath] [IntendedFfxivFilePath] - Creates an FFXIV format file from the given source file.  May be SQPacked with /sqpack.  FF Path only needed for MDLs.");
             System.Console.WriteLine("");

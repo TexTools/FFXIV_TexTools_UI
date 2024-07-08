@@ -166,7 +166,7 @@ namespace FFXIV_TexTools.Views
 
             Settings.Default.Save();
             DialogResult = true;
-            System.Windows.Forms.Application.Restart();
+            MainWindow.GetMainWindow().Restart();
             System.Windows.Application.Current.Shutdown();
         }
 
