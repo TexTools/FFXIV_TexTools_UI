@@ -37,6 +37,7 @@ using xivModdingFramework.Mods.FileTypes;
 using xivModdingFramework.Mods.FileTypes.PMP;
 using xivModdingFramework.Mods.Interfaces;
 using Image = SixLabors.ImageSharp.Image;
+using xivModdingFramework.Mods;
 
 namespace FFXIV_TexTools.Views
 {

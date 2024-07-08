@@ -38,6 +38,8 @@ using xivModdingFramework.Helpers;
 using xivModdingFramework.Mods.DataContainers;
 using xivModdingFramework.Mods.FileTypes;
 using xivModdingFramework.Mods.FileTypes.PMP;
+using xivModdingFramework.Mods;
+
 namespace FFXIV_TexTools.Views.Wizard
 {
     /// <summary>

@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ConsoleTools": {
+      "commandName": "Project",
+      "commandLineArgs": "/?"
+    }
+  }
+}

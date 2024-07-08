@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net48</TargetFramework>
+    <LangVersion>9.0</LangVersion>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <OutputPath>..\\bin\\$(Configuration)\\</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+
+
+    <PostBuildEvent>
+      echo Moving DLL Files
+      mkdir $(TargetDir)lib_console
+      xcopy $(TargetDir)*.dll $(TargetDir)lib_console /y
+      del *.dll
+      del *.cso
+    </PostBuildEvent>
+  </PropertyGroup>
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\lib\xivModdingFramework\xivModdingFramework\xivModdingFramework.csproj" />
+  </ItemGroup>
+  
+</Project>

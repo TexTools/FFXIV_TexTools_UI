@@ -9,6 +9,7 @@ using System.IO;
 using xivModdingFramework.Helpers;
 using FFXIV_TexTools.Helpers;
 using System.Diagnostics;
+using xivModdingFramework.Mods;
 
 namespace FFXIV_TexTools.Models
 {

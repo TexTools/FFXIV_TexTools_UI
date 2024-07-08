@@ -20,6 +20,7 @@ using System.Windows.Shapes;
 using xivModdingFramework.Cache;
 using xivModdingFramework.Items.Interfaces;
 using xivModdingFramework.Variants.FileTypes;
+using xivModdingFramework.Mods;
 
 namespace FFXIV_TexTools.Views.Wizard
 {
