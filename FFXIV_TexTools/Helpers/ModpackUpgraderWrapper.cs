@@ -64,7 +64,7 @@ namespace FFXIV_TexTools.Helpers
                     return;
                 }
                 var newPath = sfd.FileName;
-                await data.WriteModpack(newPath);
+                await data.WriteModpack(newPath, true);
             }
             catch (Exception ex)
             {

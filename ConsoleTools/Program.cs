@@ -156,7 +156,7 @@ namespace ConsoleTools
                     return -1;
                 }
 
-                await data.WriteModpack(dest);
+                await data.WriteModpack(dest, true);
 
                 System.Console.Write("Modpack Saved to: " + dest);
             }
