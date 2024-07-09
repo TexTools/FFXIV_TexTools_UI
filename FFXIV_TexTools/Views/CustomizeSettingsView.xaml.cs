@@ -20,6 +20,9 @@ using FFXIV_TexTools.ViewModels;
 using System.Windows;
 using System.Windows.Controls;
 using xivModdingFramework.Helpers;
+using Microsoft.Win32;
+using FFXIV_TexTools.Helpers;
+using xivModdingFramework.Exd.FileTypes;
 
 namespace FFXIV_TexTools.Views
 {
@@ -41,6 +44,28 @@ namespace FFXIV_TexTools.Views
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
             Close();
+        }
+
+        private void EnableLongPaths_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                
+                RegistryKey myKey = Registry.LocalMachine.OpenSubKey("SYSTEM\\CurrentControlSet\\Control\\FileSystem", true);
+                if (myKey != null)
+                {
+                    myKey.SetValue("LongPathsEnabled", "1", RegistryValueKind.DWord);
+                    myKey.Close();
+                    FlexibleMessageBox.Show(ViewHelpers.GetWin32Window(this), "Windows Long-Path support has been successfully enabled.", "Registry Change Success");
+                } else
+                {
+                    ViewHelpers.ShowError("Registry Change Error", "An error occurred while attempting to set Long-Paths enabled:\n\nRegistry SubKey did not exist.");
+                }
+            }
+            catch(Exception ex)
+            {
+                ViewHelpers.ShowError("Registry Change Error", "An error occurred while attempting to set Long-Paths enabled:\n\n" + ex.Message);
+            }
         }
     }
 

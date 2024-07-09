@@ -351,9 +351,6 @@ namespace FFXIV_TexTools
             this.DataContext = mainViewModel;
             InitializeComponent();
 
-#if !DEBUG
-            PenumbraUpgradeButton.IsEnabled = false;
-#endif
 
 
             var fileVersion = FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location).FileVersion;

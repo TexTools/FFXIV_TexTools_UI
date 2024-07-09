@@ -8,8 +8,8 @@
         mc:Ignorable="d"
         Title="Dawntrail Upgrade Disclaimer" Height="450" Width="800">
     <Grid>
-        <controls:DawntTrailUpgradeDisclaimer>
+        <controls:DawnTrailUpgradeDisclaimer>
             
-        </controls:DawntTrailUpgradeDisclaimer>
+        </controls:DawnTrailUpgradeDisclaimer>
     </Grid>
 </Window>
