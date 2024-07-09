@@ -240,6 +240,18 @@ namespace FFXIV_TexTools.Views.Upgrades
                 return;
             }
 
+            var existing = File.Exists(JsonPath);
+            var fcount = Directory.GetFiles(DestinationPath).Length;
+            var dcount = Directory.GetDirectories(DestinationPath).Length;
+            if ((fcount > 0 || dcount > 0) && !existing)
+            {
+                ContinuePauseEnabled = false;
+                Results = null;
+                ViewHelpers.ShowError("Invalid Target Folder", "Please select or create a new empty folder to use for the copy.");
+                return;
+            }
+
+
             ContinuePauseEnabled = true;
 
             Directory.CreateDirectory(DestinationPath);
@@ -387,6 +399,10 @@ namespace FFXIV_TexTools.Views.Upgrades
             ContinuePauseEnabled = false;
         }
 
-
+        private void Explain_Click(object sender, RoutedEventArgs e)
+        {
+            var wind = new PenumbraLibraryUpgradeHelp() { Owner = this };
+            wind.Show();
+        }
     }
 }
