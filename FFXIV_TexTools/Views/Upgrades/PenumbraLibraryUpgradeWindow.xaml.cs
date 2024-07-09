@@ -189,6 +189,7 @@ namespace FFXIV_TexTools.Views.Upgrades
 
         private void PenumbraLibraryUpgradeWindow_Closing(object sender, CancelEventArgs e)
         {
+            _RequestStop = true;
             Owner?.Activate();
         }
 

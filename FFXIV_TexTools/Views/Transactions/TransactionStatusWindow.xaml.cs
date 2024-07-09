@@ -687,20 +687,23 @@ namespace FFXIV_TexTools.Views.Transactions
 
             PenumbraAttachDialog.Title = "Select Penumbra Mod Folder...";
 
-            if (string.IsNullOrEmpty(PenumbraAttachDialog.RootFolder))
-            {
-                PenumbraAttachDialog.RootFolder = IOUtil.GetPenumbraDirectory();
-            }
+            PenumbraAttachDialog.RootFolder = IOUtil.GetPenumbraDirectory();
 
             var res = PenumbraAttachDialog.ShowDialog();
             if (res != System.Windows.Forms.DialogResult.OK)
             {
                 return;
             }
-            
+
+            var path = Path.GetFullPath(Path.Combine(PenumbraAttachDialog.SelectedPath, "meta.json"));
+            if (!File.Exists(path))
+            {
+                ViewHelpers.ShowError("Invalid Penumbra Mod Folder", "The selected folder was not a valid Penumbra mod folder.\nPlease select an individual Penumbra Mod folder.");
+                return;
+            }
+
             _AutoCommit = false;
             _KeepOpen = false;
-
 
             var backupFolder = Path.Combine(Path.GetTempPath(), "TexTools_Transaction_Backup");
             IOUtil.DeleteTempDirectory(backupFolder);
