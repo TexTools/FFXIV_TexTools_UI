@@ -459,7 +459,7 @@ namespace FFXIV_TexTools.ViewModels
                     }
                     else
                     {
-                        modItems.Add(mod);
+                        //modItems.Add(mod);
                     }
                 }
             }
