@@ -205,8 +205,7 @@
                                 <ComboBox x:Name="ModelTypeComboBox" Grid.Row="0" Grid.Column="0" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.Model_Type}}" VerticalAlignment="Center" Margin="5,0" DisplayMemberPath="Name"/>
                                 <CheckBox x:Name="ModelIncludeChildFilesBox" Content="Include Child Files" IsChecked="True" Grid.Row="0" Grid.Column="1" Margin="5,0" VerticalAlignment="Center"/>
                                 <Button x:Name="AddCurrentModelButton" Grid.Column="2" Content="Add Existing" VerticalAlignment="Center" Margin="5,0" Click="AddCurrentModelButton_Click" IsEnabled="False"  ToolTip="{x:Static resx:UIStrings.AddToModpackTooltip}"/>
-                                <Button x:Name="AdvOptionsButton" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="1" Content="Add With Custom Settings" VerticalAlignment="Center" Margin="5,0" Click="AdvOptionsButton_Click" IsEnabled="False" HorizontalAlignment="Right" Width="180"  ToolTip="{x:Static resx:UIStrings.AddCustomToModpackTooltip}"/>
-                                <Button x:Name="AddRawModel" Grid.Column="2" Grid.Row="2" Content="Load" VerticalAlignment="Center" Margin="5,0" Click="AddRawModel_Click" IsEnabled="False"  ToolTip="{x:Static resx:UIStrings.LoadToModpackTooltip}"/>
+                                <Button x:Name="AddRawModel" Grid.Column="2" Grid.Row="1" Content="Load" VerticalAlignment="Center" Margin="5,0" Click="AddRawModel_Click" IsEnabled="False"  ToolTip="{x:Static resx:UIStrings.LoadToModpackTooltip}"/>
                             </Grid>
                         </GroupBox>
                     </TabItem>

@@ -628,7 +628,6 @@ namespace FFXIV_TexTools.Views
             if (ModelTypeComboBox.Items.Count > 0)
             {
                 AddCurrentModelButton.IsEnabled = true;
-                AdvOptionsButton.IsEnabled = true;
                 AddRawModel.IsEnabled = true;
                 ModelTypeComboBox.SelectedIndex = 0;
 
@@ -637,7 +636,6 @@ namespace FFXIV_TexTools.Views
             {
                 AddCurrentModelButton.IsEnabled = false;
                 AddRawModel.IsEnabled = false;
-                AdvOptionsButton.IsEnabled = false;
             }
 
             if (MaterialComboBox.Items.Count > 0)
@@ -964,12 +962,17 @@ namespace FFXIV_TexTools.Views
         /// </summary>
         private async void AdvOptionsButton_Click(object sender, RoutedEventArgs e)
         {
+            await ShowModelImporter();
+        }
+
+        private async Task ShowModelImporter(string file = null)
+        {
             var selectedFile = ModelTypeComboBox.SelectedItem as FileEntry;
-            var itemModel = (IItemModel) SelectedItem;
+            var itemModel = (IItemModel)SelectedItem;
             LockCount++;
             try
             {
-                var result = await ImportModelView.ImportModel(selectedFile.Path, itemModel, null, false, Window.GetWindow(this));
+                var result = await ImportModelView.ImportModel(selectedFile.Path, itemModel, file, false, Window.GetWindow(this));
                 if (!result.Success)
                 {
                     return;
@@ -988,7 +991,6 @@ namespace FFXIV_TexTools.Views
             {
                 LockCount--;
             }
-
         }
 
         /// <summary>
@@ -1318,6 +1320,12 @@ namespace FFXIV_TexTools.Views
             var result = openFileDialog.ShowDialog();
 
             if (result != System.Windows.Forms.DialogResult.OK) return;
+
+            if(Path.GetExtension(openFileDialog.FileName) != ".mdl")
+            {
+                await ShowModelImporter(openFileDialog.FileName);
+                return;
+            }
 
             LockCount++;
             try
