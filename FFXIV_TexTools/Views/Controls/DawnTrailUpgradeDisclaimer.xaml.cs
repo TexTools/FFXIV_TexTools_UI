@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace FFXIV_TexTools.Views.Controls
 {
     /// <summary>
-    /// Interaction logic for DawntTrailUpgradeDisclaimer.xaml
+    /// Interaction logic for DawnTrailUpgradeDisclaimer.xaml
     /// </summary>
-    public partial class DawntTrailUpgradeDisclaimer : UserControl
+    public partial class DawnTrailUpgradeDisclaimer : UserControl
     {
-        public DawntTrailUpgradeDisclaimer()
+        public DawnTrailUpgradeDisclaimer()
         {
             InitializeComponent();
         }

@@ -40,8 +40,8 @@
             </Grid>
         </Border>
 
-        <controls:DawntTrailUpgradeDisclaimer Grid.Row="1">
+        <controls:DawnTrailUpgradeDisclaimer Grid.Row="1">
 
-        </controls:DawntTrailUpgradeDisclaimer>
+        </controls:DawnTrailUpgradeDisclaimer>
     </Grid>
 </Window>
