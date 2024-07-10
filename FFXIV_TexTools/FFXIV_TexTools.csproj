@@ -23,9 +23,9 @@
     <Product>FFXIV_TexTools</Product>
     <Copyright>Copyright ©  2024</Copyright>
     
-    <ApplicationVersion>3.0.4.9</ApplicationVersion>
-    <AssemblyVersion>3.0.4.9</AssemblyVersion>
-    <FileVersion>3.0.4.9</FileVersion>
+    <ApplicationVersion>3.0.5.0</ApplicationVersion>
+    <AssemblyVersion>3.0.5.0</AssemblyVersion>
+    <FileVersion>3.0.5.0</FileVersion>
     
     <LangVersion>9.0</LangVersion>
     <UseWPF>true</UseWPF>

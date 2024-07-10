@@ -19,6 +19,13 @@
     </PostBuildEvent>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="app.manifest" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\lib\xivModdingFramework\xivModdingFramework\xivModdingFramework.csproj" />

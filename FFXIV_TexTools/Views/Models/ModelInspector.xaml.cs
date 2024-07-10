@@ -257,10 +257,10 @@ namespace FFXIV_TexTools.Views.Models
                     AddText(textBox, $"{_xivMdl.UnkData0.Unknown.Length}\n\n", _textColor, true);
                 }
 
-                if (_xivMdl.UnkData1?.Unknown != null)
+                if (_xivMdl.UnkData1?.TerrainShadowMeshHeader != null)
                 {
                     AddText(textBox, "Unknown 1 Size:\t".L(), _textColor, false);
-                    AddText(textBox, $"{_xivMdl.UnkData1.Unknown.Length}\n\n", _textColor, true);
+                    AddText(textBox, $"{_xivMdl.UnkData1.TerrainShadowMeshHeader.Length}\n\n", _textColor, true);
                 }
 
                 if (_xivMdl.UnkData2?.Unknown != null)

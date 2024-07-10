@@ -53,7 +53,13 @@
                     <RowDefinition/>
                 </Grid.RowDefinitions>
                 <Label HorizontalAlignment="Center" Content="{Binding Path=RemainingText}" VerticalAlignment="Center" FontStyle="Italic"/>
-                <ListBox Grid.Row="1" ItemsSource="{Binding Path=RemainingMods}" DisplayMemberPath="Key" SelectedValuePath="Value" BorderBrush="Gray" BorderThickness="1"></ListBox>
+                <ListBox x:Name="RemainingModsBox" Grid.Row="1" ItemsSource="{Binding Path=RemainingMods}" DisplayMemberPath="Key" SelectedValuePath="Value" BorderBrush="Gray" BorderThickness="1" SelectionMode="Extended">
+                    <ListBox.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Skip Selected Item(s)" Click="SkipItems_Click"></MenuItem>
+                        </ContextMenu>
+                    </ListBox.ContextMenu>
+                </ListBox>
 
             </Grid>
 
