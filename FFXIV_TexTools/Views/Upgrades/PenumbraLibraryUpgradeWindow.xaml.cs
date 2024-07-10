@@ -317,13 +317,13 @@ namespace FFXIV_TexTools.Views.Upgrades
                 State = UpgradeState.Stopped;
             }
 
-            File.WriteAllText(JsonPath, JsonConvert.SerializeObject(Results));
+            File.WriteAllText(JsonPath, JsonConvert.SerializeObject(Results, Formatting.Indented));
         }
 
         private void SaveJson()
         {
             if (Results == null || string.IsNullOrEmpty(DestinationPath)) return;
-            File.WriteAllText(JsonPath, JsonConvert.SerializeObject(Results));
+            File.WriteAllText(JsonPath, JsonConvert.SerializeObject(Results, Formatting.Indented));
         }
         private void UpdateLists()
         {
@@ -399,6 +399,7 @@ namespace FFXIV_TexTools.Views.Upgrades
                     ContinuePauseEnabled = true;
                 } else
                 {
+                    StatusText = "Complete! :D";
                     State = UpgradeState.Completed;
                 }
 
