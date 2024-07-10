@@ -856,6 +856,14 @@ namespace FFXIV_TexTools
                 {
                     System.IO.File.Move(filename, filename + ".bak");
                     CheckForSettingsUpdate(); // Try again.
+
+                    // Inform the user that the settings have been restored from an older version
+                    MessageBox.Show("FFXIV TexTools has detected that your user settings file was corrupted" + 
+                                    "and has restored the settings from an older version of the file. " +
+                                    "Please review your settings", 
+                                    "Settings upgrade encountered an error", 
+                                    MessageBoxButton.OK, 
+                                    MessageBoxImage.Information);
                 }
             }
         }
