@@ -136,7 +136,7 @@
                                 <RowDefinition/>
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
-                            <ListBox x:Name="IncludedModsList" Grid.Row="0" Margin="5" DisplayMemberPath="Name" SelectionChanged="IncludedModsList_SelectionChanged" SelectionMode="Multiple"/>
+                            <ListBox x:Name="IncludedModsList" Grid.Row="0" Margin="5" DisplayMemberPath="Name" SelectionChanged="IncludedModsList_SelectionChanged" SelectionMode="Extended"/>
                             <Button x:Name="RemoveModItemButton" Grid.Row="1" Content="{Binding Source={x:Static resx:UIStrings.Remove}}" Click="RemoveModItemButton_Click"/>
                         </Grid>
                     </GroupBox>
@@ -271,7 +271,7 @@
                                     <Button x:Name="DeselectAllButton" Click="DeselectAllButton_Click" Content="{Binding Source={x:Static resx:UIStrings.Deselect_All}}" Grid.Column="2" VerticalAlignment="Center" Margin="5,0" IsEnabled="False" />
                                     <Button x:Name="AddButton" Click="AddButton_Click" Content="Add File(s)" Grid.Column="3" VerticalAlignment="Center" Margin="5,0" IsEnabled="False" />
                                 </Grid>
-                                <ListView Style="{x:Null}" x:Name="ModpackContents" Grid.Row="1" SelectionMode="Multiple" SelectionChanged="ModpackContents_SelectionChanged" BorderBrush="Black" BorderThickness="0,1" AlternationCount="2">
+                                <ListView Style="{x:Null}" x:Name="ModpackContents" Grid.Row="1" SelectionMode="Extended" SelectionChanged="ModpackContents_SelectionChanged" BorderBrush="Black" BorderThickness="0,1" AlternationCount="2">
                                     <ListView.View>
                                     <GridView  x:Name="GridViewCol">
                                         <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Path=Name}"/>

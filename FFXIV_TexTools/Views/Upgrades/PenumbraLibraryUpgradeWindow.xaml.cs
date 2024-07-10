@@ -1,4 +1,5 @@
-﻿using FFXIV_TexTools.Models;
+﻿using AutoUpdaterDotNET;
+using FFXIV_TexTools.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -20,7 +21,9 @@ using System.Windows.Media.Imaging;
 using WK.Libraries.BetterFolderBrowserNS;
 using xivModdingFramework.Cache;
 using xivModdingFramework.Helpers;
+using xivModdingFramework.Mods;
 using xivModdingFramework.Mods.DataContainers;
+using static FFXIV_TexTools.Models.PenumbraUpgradeStatus;
 
 namespace FFXIV_TexTools.Views.Upgrades
 {
@@ -417,6 +420,48 @@ namespace FFXIV_TexTools.Views.Upgrades
         {
             var wind = new PenumbraLibraryUpgradeHelp() { Owner = this, WindowStartupLocation = WindowStartupLocation.CenterOwner };
             wind.Show();
+        }
+
+        private void SkipItems_Click(object sender, RoutedEventArgs e)
+        {
+            if(State == UpgradeState.Working)
+            {
+                ViewHelpers.ShowWarning(this, "Busy Warning", "Cannot skip mods while the updater is running.  Please pause the updater before skipping mods.");
+                return;
+            }
+
+            var items = RemainingModsBox.SelectedItems;
+            foreach(KeyValuePair<string, string> kv in items)
+            {
+                if (Results.Upgrades.ContainsKey(kv.Key)) {
+                    Results.Upgrades[kv.Key] = PenumbraUpgradeStatus.EUpgradeResult.Failure;
+                    try
+                    {
+
+                        var source = Path.GetFullPath(Path.Combine(PenumbraPath, kv.Key));
+                        var target = Path.GetFullPath(Path.Combine(DestinationPath, kv.Key));
+
+                        if (source != target)
+                        {
+                            IOUtil.RecursiveDeleteDirectory(target);
+                        }
+
+                        Directory.CreateDirectory(target);
+                        if (source != target)
+                        {
+                            IOUtil.RecursiveDeleteDirectory(target);
+                            IOUtil.CopyFolder(source, target);
+                        }
+                    }
+                    catch(Exception ex) 
+                    {
+                        ViewHelpers.ShowError("Mod Copy Failure:", "The mod: " + kv.Key + " was unable to be copied to the destination folder.\n\nThis is usually due to a permissions issue or the mod paths being too long for windows.\n\nYou will need to copy the mod folder over by hand.");
+                    }
+                }
+            }
+
+            SaveJson();
+            UpdateLists();
         }
     }
 }
