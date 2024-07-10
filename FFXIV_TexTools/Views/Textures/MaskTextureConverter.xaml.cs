@@ -1,8 +1,8 @@
 ﻿using FFXIV_TexTools.Views.Controls;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.Formats.Tga;
 using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp.Processing;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -20,20 +20,13 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using xivModdingFramework.Textures;
 using xivModdingFramework.Textures.FileTypes;
-using xivModdingFramework.Variants.FileTypes;
-using Image = SixLabors.ImageSharp.Image;
-using SixLabors.ImageSharp;
-using Point = SixLabors.ImageSharp.Point;
-using xivModdingFramework.Helpers;
-using xivModdingFramework.Mods;
-using SixLabors.ImageSharp.Formats.Png;
 
 namespace FFXIV_TexTools.Views.Textures
 {
     /// <summary>
     /// Interaction logic for IndexTextureCreator.xaml
     /// </summary>
-    public partial class EyeDiffuseCreator : Window, INotifyPropertyChanged
+    public partial class MaskTextureConverter : Window, INotifyPropertyChanged
     {
         private static OpenFileDialog OpenDialog = new OpenFileDialog()
         {
@@ -80,10 +73,20 @@ namespace FFXIV_TexTools.Views.Textures
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ConvertEnabled)));
             }
         }
+        private bool _InvertGreen = false;
+        public bool InvertGreen
+        {
+            get => _InvertGreen;
+            set
+            {
+                _InvertGreen = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(InvertGreen)));
+            }
+        }
 
 
 
-        public EyeDiffuseCreator()
+        public MaskTextureConverter()
         {
             DataContext = this;
             InitializeComponent();
@@ -105,7 +108,7 @@ namespace FFXIV_TexTools.Views.Textures
                 owner = MainWindow.GetMainWindow();
             }
 
-            var wind = new EyeDiffuseCreator()
+            var wind = new IndexTextureCreator()
             {
                 Owner = owner,
             };
@@ -140,9 +143,9 @@ namespace FFXIV_TexTools.Views.Textures
             var dir = Path.GetDirectoryName(MaskPath);
             var fName = Path.GetFileNameWithoutExtension(MaskPath);
 
-            fName += "_diffuse.tga";
+            fName += "_dtmask.tga";
 
-            SaveDialog.Title = "Save Eye Texture...";
+            SaveDialog.Title = "Save Mask Texture...";
             SaveDialog.InitialDirectory = dir;
             SaveDialog.FileName = fName;
 
@@ -150,31 +153,28 @@ namespace FFXIV_TexTools.Views.Textures
             {
                 return;
             }
-            var outPath = SaveDialog.FileName;
+            var newPath = SaveDialog.FileName;
 
             ConvertEnabled = false;
             try
             {
-                // Load and conver the image.
-                var maskData = await Tex.GetPixelDataFromFile(MaskPath);
+                var data = await Tex.GetPixelDataFromFile(MaskPath);
 
-                var result = await EndwalkerUpgrade.ConvertEyeMaskToDiffuse(maskData.PixelData, maskData.Width, maskData.Height);
+                await TextureHelpers.UpgradeGearMask(data.PixelData, data.Width, data.Height, !InvertGreen);
 
-
-                using (var mainImage = Image.LoadPixelData<Rgba32>(result.PixelData, result.Width, result.Height))
+                using (var image = SixLabors.ImageSharp.Image.LoadPixelData<Rgba32>(data.PixelData, data.Width, data.Height))
                 {
-                    if (outPath.ToLower().EndsWith(".png"))
+                    if (newPath.ToLower().EndsWith(".png"))
                     {
-                        mainImage.Save(outPath, PngEncoder);
+                        image.Save(newPath, PngEncoder);
                     }
                     else
                     {
-                        mainImage.Save(outPath, TgaEncoder);
+                        image.Save(newPath, TgaEncoder);
                     }
                 }
 
-            }
-            catch (Exception ex)
+            } catch(Exception ex)
             {
                 this.ShowError("Conversion Error", "An error occurred while converting the texture(s):\n\n" + ex.Message);
             }

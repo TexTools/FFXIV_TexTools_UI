@@ -414,7 +414,7 @@ namespace FFXIV_TexTools.Views.Upgrades
 
         private void Explain_Click(object sender, RoutedEventArgs e)
         {
-            var wind = new PenumbraLibraryUpgradeHelp() { Owner = this };
+            var wind = new PenumbraLibraryUpgradeHelp() { Owner = this, WindowStartupLocation = WindowStartupLocation.CenterOwner };
             wind.Show();
         }
     }

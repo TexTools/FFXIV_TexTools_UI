@@ -37,6 +37,8 @@ namespace FFXIV_TexTools.Views
     public static class ViewHelpers
     {
 
+        public const string ConverterImageSaveFilter = "Image Files|*.tga;*.png|Targa Image File|*.tga|PNG Image File|*.png";
+
         public const string LoadModpackFilter = "Modpack Files|*.pmp;*.ttmp2;*.ttmp;*.pmp;*.json";
         public const string ModpackFileFilter = "Modpack Files|*.pmp;*.ttmp2|Penumbra Modpack|*.pmp|TexTools Modpack|*.ttmp2";
         public static Progress<(int current, int total, string message)> BindReportProgress(ProgressDialogController controller)
