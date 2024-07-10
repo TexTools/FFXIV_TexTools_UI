@@ -30,7 +30,7 @@ namespace FFXIV_TexTools.Helpers
             var path = ofd.FileName;
 
 
-            await mw.LockUi("Upgrading Modpack");
+            await mw.LockUi("Upgrading Modpack", "Please Wait...\n\nIf this takes more than 3-5 minutes, please close TexTools and retry with \nOptions => Settings => 'Compress Upgrade Textures' turned off.");
             try
             {
 

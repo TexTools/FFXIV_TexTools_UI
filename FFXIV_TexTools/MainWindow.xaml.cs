@@ -534,12 +534,6 @@ namespace FFXIV_TexTools
                     await XivCache.SetGameInfo(gameDir, lang, false);
                     CustomizeViewModel.UpdateCacheSettings();
 
-                    var tx = DefaultTransaction;
-
-                    if(!await tx.FileExists(Eqp.DawntrailTestFile, true))
-                    {
-                        this.ShowWarning("Non-Dawntrail Install", "TexTools is currently assigned to a Endwalker or previous install.\n\nMany parts of the application will not operate correctly on old FFXIV installs.");
-                    }
 
                 } catch(Exception ex)
                 {
@@ -557,6 +551,20 @@ namespace FFXIV_TexTools
                     FlexibleMessageBox.Show(("An error occurred while attempting to rebuild the cache. This may be caused by this version of Final Fantasy XIV " +
                         "not being supported by this version of TexTools.\n\n").L() + ex.Message, "Cache Rebuild Error.".L(), MessageBoxButtons.OK,  MessageBoxIcon.Error, 
                         MessageBoxDefaultButton.Button1);
+                }
+
+                try
+                {
+                    var tx = DefaultTransaction;
+
+                    if (!await tx.FileExists(Eqp.DawntrailTestFile, true))
+                    {
+                        this.ShowWarning("Non-Dawntrail Install", "TexTools is currently assigned to a Endwalker or previous install.\n\nMany parts of the application will not operate correctly on old FFXIV installs.");
+                    }
+                }
+                catch(Exception ex)
+                {
+                    this.ShowWarning("Unable to read base game files.  FFXIV Install location may be corrupt or invalid:\n" + Settings.Default.FFXIV_Directory, "Unable to Read Files");
                 }
 
                 await Dispatcher.Invoke(async () =>
