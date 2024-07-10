@@ -50,7 +50,9 @@
   <!-- Indicates that the application is DPI-aware and will not be automatically scaled by Windows at higher
        DPIs. Windows Presentation Foundation (WPF) applications are automatically DPI-aware and do not need 
        to opt in. Windows Forms applications targeting .NET Framework 4.6 that opt into this setting, should 
-       also set the 'EnableWindowsFormsHighDpiAutoResizing' setting to 'true' in their app.config. -->
+       also set the 'EnableWindowsFormsHighDpiAutoResizing' setting to 'true' in their app.config.
+       Also flags the application as long path aware, so that we can exceed the 260 character limit, 
+       as per MSFT long path policies. -->
   <!--
   <application xmlns="urn:schemas-microsoft-com:asm.v3">
     <windowsSettings>
