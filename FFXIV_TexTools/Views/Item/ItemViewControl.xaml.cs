@@ -429,7 +429,7 @@ namespace FFXIV_TexTools.Views.Item
 
                 var mtrls = modelEntry.Count(x => x.Key.EndsWith(".mtrl"));
                 // If the materials don't match...
-                if (mtrls != materials.Count || modelEntry.Any(x => !materials.Contains(x.Key) && x.Key.EndsWith(".mtrl")))
+                if (mtrls < materials.Count || materials.Any(x => !modelEntry.ContainsKey(x)))
                 {
                     // Then we need to reload the item.
                     await SetItem(Item);
