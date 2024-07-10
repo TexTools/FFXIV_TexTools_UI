@@ -140,6 +140,7 @@ namespace FFXIV_TexTools.Views.Wizard
             DataContext = this;
             InitializeComponent();
 
+            data.ClearEmpties();
             _Data = data;
             _Path = path;
 

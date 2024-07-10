@@ -236,8 +236,20 @@ namespace FFXIV_TexTools.Views.Upgrades
                 || PenumbraPath.Contains(DestinationPath + Path.DirectorySeparatorChar) || DestinationPath.Contains(PenumbraPath + Path.DirectorySeparatorChar)
                 || DestinationPath == PenumbraPath || !Directory.Exists(PenumbraPath))
             {
-                ContinuePauseEnabled = false;
-                Results = null;
+                if (string.IsNullOrWhiteSpace(PenumbraPath) || string.IsNullOrWhiteSpace(DestinationPath))
+                {
+                    ContinuePauseEnabled = false;
+                    Results = null;
+                    return;
+                }
+                else if (!Directory.Exists(PenumbraPath))
+                {
+                    ViewHelpers.ShowWarning(this, "Invalid Folder Settings", "Penumbra Library does not exist.");
+                }
+                else
+                {
+                    ViewHelpers.ShowWarning(this, "Invalid Folder Settings", "The Source/Destination folders cannot be sub-folders of each other. \nPlease use an empty folder that is not part of your Penumbra Library.");
+                }
                 return;
             }
 

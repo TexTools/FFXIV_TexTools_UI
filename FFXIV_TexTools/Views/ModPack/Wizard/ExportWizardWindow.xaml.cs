@@ -490,6 +490,8 @@ namespace FFXIV_TexTools.Views
             }
             finally
             {
+
+                CleanupInvalidData();
                 await UnlockUi();
             }
 
@@ -500,6 +502,14 @@ namespace FFXIV_TexTools.Views
             }
 
 
+        }
+
+        private void CleanupInvalidData()
+        {
+            var idx = CurrentIndex;
+            CurrentIndex = 0;
+            Data = Data;
+            CurrentIndex = idx;
         }
 
         private void RemoveImage_Click(object sender, System.Windows.RoutedEventArgs e)
