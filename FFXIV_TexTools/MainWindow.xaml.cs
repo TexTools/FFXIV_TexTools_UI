@@ -2109,14 +2109,20 @@ namespace FFXIV_TexTools
 
         private void AboutUpgrades_Click(object sender, RoutedEventArgs e)
         {
-            var wind = new DawntrailUpgradeHelpWindow() { Owner = this };
+            var wind = new DawntrailUpgradeHelpWindow() { Owner = this, WindowStartupLocation = WindowStartupLocation.CenterOwner };
             wind.Show();
         }
 
         private void UpdatePenumbra_Click(object sender, RoutedEventArgs e)
         {
-            var wind = new PenumbraLibraryUpgradeWindow() { Owner = this };
+            var wind = new PenumbraLibraryUpgradeWindow() { Owner = this, WindowStartupLocation = WindowStartupLocation.CenterOwner };
             wind.ShowDialog();
+        }
+
+        private void GearMaskConverter_Click(object sender, RoutedEventArgs e)
+        {
+            var wind = new MaskTextureConverter() { Owner = this, WindowStartupLocation = WindowStartupLocation.CenterOwner };
+            wind.Show();
         }
     }
 }

@@ -18,6 +18,8 @@ using xivModdingFramework.Textures.FileTypes;
 using xivModdingFramework.Textures;
 using SixLabors.ImageSharp.Formats.Tga;
 using System.IO;
+using SixLabors.ImageSharp.Formats.Png;
+using SixLabors.ImageSharp.Formats;
 
 namespace FFXIV_TexTools.Views.Textures
 {
@@ -26,23 +28,29 @@ namespace FFXIV_TexTools.Views.Textures
     /// </summary>
     public partial class HairTextureConverter : Window, INotifyPropertyChanged
     {
-        private static OpenFileDialog OpenDialog = new OpenFileDialog()
+        public static OpenFileDialog OpenDialog = new OpenFileDialog()
         {
             Filter = "Image Files|*.dds;*.png;*.tga;*.bmp;*.tex",
             Title = "Select Image File",
         };
 
-        private static SaveFileDialog SaveDialog = new SaveFileDialog()
+        public static SaveFileDialog SaveDialog = new SaveFileDialog()
         {
-            Filter = "Image Files|*.dds;*.png;*.tga;*.bmp;*.tex",
+            Filter = ViewHelpers.ConverterImageSaveFilter,
             Title = "Save Image File",
         };
 
-        private static TgaEncoder Encoder = new TgaEncoder()
+        public static TgaEncoder TgaEncoder = new TgaEncoder()
         {
             BitsPerPixel = TgaBitsPerPixel.Pixel32,
             Compression = TgaCompression.None
         };
+
+        public static PngEncoder PngEncoder = new PngEncoder()
+        {
+            BitDepth = PngBitDepth.Bit16
+        };
+
 
         public event PropertyChangedEventHandler PropertyChanged;
         private string _NormalPath;
@@ -187,13 +195,29 @@ namespace FFXIV_TexTools.Views.Textures
 
                 var normRaw = data.TexA;
                 var maskRaw = data.TexB;
+
+
                 using (var image = SixLabors.ImageSharp.Image.LoadPixelData<Rgba32>(normRaw, data.Width, data.Height))
                 {
-                    image.SaveAsTga(normalPath, Encoder);
+                    if (normalPath.ToLower().EndsWith(".png"))
+                    {
+                        image.Save(normalPath, PngEncoder);
+                    }
+                    else
+                    {
+                        image.Save(normalPath, TgaEncoder);
+                    }
                 }
                 using (var image = SixLabors.ImageSharp.Image.LoadPixelData<Rgba32>(maskRaw, data.Width, data.Height))
                 {
-                    image.SaveAsTga(maskPath, Encoder);
+                    if (maskPath.ToLower().EndsWith(".png"))
+                    {
+                        image.Save(maskPath, PngEncoder);
+                    }
+                    else
+                    {
+                        image.Save(maskPath, TgaEncoder);
+                    }
                 }
             }
             catch (Exception ex)
