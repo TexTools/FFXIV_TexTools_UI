@@ -774,6 +774,13 @@ namespace FFXIV_TexTools.Views.Item
 
             if (Root == null)
             {
+                var asFake = Item as SimpleItemModel;
+                if(asFake != null)
+                {
+                    Files.Add(asFake.ModelPath, new Dictionary<string, HashSet<string>>());
+                    return;
+                }
+
                 Files.Add("", new Dictionary<string, HashSet<string>>());
                 return;
             }
@@ -787,7 +794,7 @@ namespace FFXIV_TexTools.Views.Item
                 }
             }
 
-                if (Files.Count == 0)
+            if (Files.Count == 0)
             {
                 Files.Add("", new Dictionary<string, HashSet<string>>());
             }
@@ -801,7 +808,9 @@ namespace FFXIV_TexTools.Views.Item
         /// <returns></returns>
         private async Task GetMaterials(ModTransaction tx)
         {
-            if(Root == null)
+            var asFake = Item as SimpleItemModel;
+            var isFake = asFake != null;
+            if(Root == null && !isFake)
             {
                 if (Files.Count >= 1)
                 {
@@ -823,7 +832,7 @@ namespace FFXIV_TexTools.Views.Item
             }
 
             HashSet<string> foundMaterials = new HashSet<string>();
-            if (Root.Info.PrimaryType == XivItemType.human && Root.Info.SecondaryType == XivItemType.body)
+            if (Root != null && Root.Info.PrimaryType == XivItemType.human && Root.Info.SecondaryType == XivItemType.body)
             {
                 // Exceptions class.
                 var materials = await Root.GetMaterialFiles(-1, tx, false);
@@ -865,7 +874,14 @@ namespace FFXIV_TexTools.Views.Item
                         var model = file.Key;
 
                         if (string.IsNullOrWhiteSpace(model)) break;
-                        var materials = await Root.GetVariantShiftedMaterials(model, materialSet, tx);
+                        HashSet<string> materials;
+                        if (Root != null)
+                        {
+                            materials = await Root.GetVariantShiftedMaterials(model, materialSet, tx);
+                        } else
+                        {
+                            materials = new HashSet<string>(await Mdl.GetReferencedMaterialPaths(model, materialSet, false, false, tx));
+                        }
                         foundMaterials.UnionWith(materials);
 
                         foreach (var mat in materials)
@@ -883,58 +899,27 @@ namespace FFXIV_TexTools.Views.Item
             }
 
 
-            var orphanMaterials = await Root.GetModdedMaterials(materialSet, tx);
-            if(Root.Info.PrimaryType == XivItemType.human && Root.Info.SecondaryType == XivItemType.hair)
-            {
-                var hairRoot = new XivDependencyRoot(Mtrl.GetHairMaterialRoot(Root.Info));
-
-                if (hairRoot != null && hairRoot != Root) {
-                    var extras = await hairRoot.GetModdedMaterials(materialSet, tx);
-                    orphanMaterials.UnionWith(extras);
-                }
-            }
-
-            if (Root.Info.SecondaryType != null)
-            {
-                // If there is a secondary ID, just snap these onto the first entry, because there's only one model (or 0).
-                var entry = Files.First().Value;
-                foreach (var orph in orphanMaterials)
+            if(Root != null) { 
+                var orphanMaterials = await Root.GetModdedMaterials(materialSet, tx);
+                if(Root.Info.PrimaryType == XivItemType.human && Root.Info.SecondaryType == XivItemType.hair)
                 {
-                    if (foundMaterials.Contains(orph)) continue;
-                    if (!entry.ContainsKey(orph)) {
+                    var hairRoot = new XivDependencyRoot(Mtrl.GetHairMaterialRoot(Root.Info));
 
-                        if (await tx.FileExists(orph))
-                        {
-                            entry.Add(orph, new HashSet<string>());
-                        }
+                    if (hairRoot != null && hairRoot != Root) {
+                        var extras = await hairRoot.GetModdedMaterials(materialSet, tx);
+                        orphanMaterials.UnionWith(extras);
                     }
                 }
-            }
-            else
-            {
-                foreach (var orph in orphanMaterials)
-                {
-                    //if (foundMaterials.Contains(orph)) continue;
 
-                    // This goes to the matching fake-secondary entry, if there is one.
-                    // Ex. on Equipment, the race is a fake primary value.
-                    var primary = IOUtil.GetPrimaryIdFromFileName(orph);
-                    var match = Files.FirstOrDefault(x => IOUtil.GetPrimaryIdFromFileName(x.Key) == primary);
-                    if(match.Key != null && match.Value != null && !string.IsNullOrWhiteSpace(primary))
+                if (Root.Info.SecondaryType != null)
+                {
+                    // If there is a secondary ID, just snap these onto the first entry, because there's only one model (or 0).
+                    var entry = Files.First().Value;
+                    foreach (var orph in orphanMaterials)
                     {
-                        if (!match.Value.ContainsKey(orph))
-                        {
-                            if (await tx.FileExists(orph))
-                            {
-                                match.Value.Add(orph, new HashSet<string>());
-                            }
-                        }
-                    }
-                    else
-                    {
-                        var entry = Files.First().Value;
-                        if (!entry.ContainsKey(orph))
-                        {
+                        if (foundMaterials.Contains(orph)) continue;
+                        if (!entry.ContainsKey(orph)) {
+
                             if (await tx.FileExists(orph))
                             {
                                 entry.Add(orph, new HashSet<string>());
@@ -942,10 +927,40 @@ namespace FFXIV_TexTools.Views.Item
                         }
                     }
                 }
-            }
+                else
+                {
+                    foreach (var orph in orphanMaterials)
+                    {
+                        //if (foundMaterials.Contains(orph)) continue;
 
-            if (Root != null)
-            {
+                        // This goes to the matching fake-secondary entry, if there is one.
+                        // Ex. on Equipment, the race is a fake primary value.
+                        var primary = IOUtil.GetPrimaryIdFromFileName(orph);
+                        var match = Files.FirstOrDefault(x => IOUtil.GetPrimaryIdFromFileName(x.Key) == primary);
+                        if(match.Key != null && match.Value != null && !string.IsNullOrWhiteSpace(primary))
+                        {
+                            if (!match.Value.ContainsKey(orph))
+                            {
+                                if (await tx.FileExists(orph))
+                                {
+                                    match.Value.Add(orph, new HashSet<string>());
+                                }
+                            }
+                        }
+                        else
+                        {
+                            var entry = Files.First().Value;
+                            if (!entry.ContainsKey(orph))
+                            {
+                                if (await tx.FileExists(orph))
+                                {
+                                    entry.Add(orph, new HashSet<string>());
+                                }
+                            }
+                        }
+                    }
+                }
+
                 var variant = -1;
                 if (asIm != null && asIm.ModelInfo != null)
                 {
@@ -994,7 +1009,8 @@ namespace FFXIV_TexTools.Views.Item
                 return;
             }
 
-            if (Root == null)
+            var fake = Item as SimpleItemModel;
+            if (Root == null && fake == null)
             {
                 var uiItem = Item as XivUi;
                 var asChar = Item as XivCharacter;
@@ -1074,6 +1090,10 @@ namespace FFXIV_TexTools.Views.Item
                 if (model == "")
                 {
                     Models.Add(new KeyValuePair<string, string>("--", ""));
+                    break;
+                } else if(Root == null)
+                {
+                    Models.Add(new KeyValuePair<string, string>(model, model));
                     break;
                 }
 

@@ -2124,5 +2124,10 @@ namespace FFXIV_TexTools
             var wind = new MaskTextureConverter() { Owner = this, WindowStartupLocation = WindowStartupLocation.CenterOwner };
             wind.Show();
         }
+
+        private void ViewBGPart_Click(object sender, RoutedEventArgs e)
+        {
+            _ = SimpleItemViewWindow.ShowModel(null, this);
+        }
     }
 }

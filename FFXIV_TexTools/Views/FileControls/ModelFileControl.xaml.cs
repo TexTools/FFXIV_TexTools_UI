@@ -481,13 +481,6 @@ namespace FFXIV_TexTools.Views.Controls
                 var mtrlList = new List<XivMtrl>();
 
 
-                var root = await XivCache.GetFirstRoot(InternalFilePath);
-                if (root == null)
-                {
-                    return;
-                }
-
-
                 for (int i = 0; i < materials.Count; i++)
                 {
                     var originalFilePath = materials[i];

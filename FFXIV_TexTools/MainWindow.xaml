@@ -79,6 +79,7 @@
                 <MenuItem Header="Transaction Manager" Click="TransactionStatus_Click"/>
                 <MenuItem Header="New Item Viewer" Click="ItemViewer_Click"/>
                 <MenuItem Header="New File Viewer" Click="FileViewerButton_Click"/>
+                <MenuItem Header="View Model as Item" Click="ViewBGPart_Click"/>
                 <MenuItem x:Name="Menu_FullModelViewer" Header="Full Model Viewer" Click="FullModelViewer_Click"/>
                 <MenuItem x:Name="Menu_RacialScaling" Header="Racial Settings Editor" Click="Menu_RacialScaling_Click"/>
             </MenuItem>
