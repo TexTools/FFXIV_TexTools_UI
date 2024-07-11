@@ -36,6 +36,15 @@ namespace FFXIV_TexTools.Helpers
 
                 var data = await xivModdingFramework.Mods.ModpackUpgrader.UpgradeModpack(path, includePartials);
 
+                if(!data.AnyChanges)
+                {
+                    FlexibleMessageBox.Show(ViewHelpers.GetWin32Window(MainWindow.GetMainWindow()),
+                         "The upgrader found nothing to upgrade in the modpack.\n\nThis typically means the mod either does not need to be upgraded, must be manually upgraded, or was already upgraded, possibly by another tool (Ex. Penumbra).",
+                         "No Upgrade Needed",
+                         MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
+
                 var ext = Path.GetExtension(path);
 
                 var name = Path.GetFileNameWithoutExtension(path);
