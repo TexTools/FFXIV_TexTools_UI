@@ -22,6 +22,7 @@ namespace FFXIV_TexTools.Models
             InProgress,
             Failure,
             Success,
+            Unchanged,
         }
 
         public Dictionary<string, EUpgradeResult> Upgrades = new Dictionary<string, EUpgradeResult>();
@@ -40,8 +41,8 @@ namespace FFXIV_TexTools.Models
             var res = EUpgradeResult.Failure;
             try
             {
-                await ModpackUpgrader.UpgradeModpack(source, target);
-                res = EUpgradeResult.Success;
+                var s = await ModpackUpgrader.UpgradeModpack(source, target);
+                res = s ? EUpgradeResult.Success : EUpgradeResult.Unchanged;
             } catch (Exception ex)
             {
                 if (Directory.Exists(target))

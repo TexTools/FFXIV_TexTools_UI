@@ -352,6 +352,10 @@ namespace FFXIV_TexTools.Views.Upgrades
                 {
                     proc++;
                     ProcessedMods.Add(new KeyValuePair<string, string>("𝑿 " + m.Key, m.Key));
+                } else if (m.Value == PenumbraUpgradeStatus.EUpgradeResult.Unchanged)
+                {
+                    proc++;
+                    ProcessedMods.Add(new KeyValuePair<string, string>("-- " + m.Key, m.Key));
                 }
             }
 
@@ -471,6 +475,14 @@ namespace FFXIV_TexTools.Views.Upgrades
 
             SaveJson();
             UpdateLists();
+        }
+
+        private void Details_Click(object sender, RoutedEventArgs e)
+        {
+            if (Results == null) return;
+            if (Results.Upgrades.Count == 0) return;
+            var wind = new PenumbraUpgradeResults(Results) { Owner = this, WindowStartupLocation = WindowStartupLocation.CenterOwner };
+            wind.Show();
         }
     }
 }

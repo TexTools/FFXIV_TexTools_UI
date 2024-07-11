@@ -69,6 +69,7 @@
                     <RowDefinition/>
                 </Grid.RowDefinitions>
                 <Label HorizontalAlignment="Center" Content="{Binding Path=ProcessedText}" VerticalAlignment="Center" FontStyle="Italic"/>
+                <Button Grid.Row="0" HorizontalAlignment="Right" Width="100" Content="Details" Click="Details_Click"/>
                 <ListBox Grid.Row="1" ItemsSource="{Binding Path=ProcessedMods}" DisplayMemberPath="Key" SelectedValuePath="Value"  BorderBrush="Gray" BorderThickness="1"></ListBox>
 
             </Grid>
