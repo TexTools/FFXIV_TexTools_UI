@@ -37,6 +37,7 @@ namespace FFXIV_TexTools.ViewModels
         private string _internalPath;
         private System.Timers.Timer _closeTimer;
         private bool _anyWarnings = false;
+        private bool _clearEmpties = false;
 
         private bool _simpleMode = false;
 
@@ -128,12 +129,13 @@ namespace FFXIV_TexTools.ViewModels
         }
 
 
-        public ImportModelViewModel(ImportModelView view, string internalPath, IItem referenceItem, Action<ModelImportResult> onComplete = null, string startingFilePath = null, bool simpleMode = false)
+        public ImportModelViewModel(ImportModelView view, string internalPath, IItem referenceItem, Action<ModelImportResult> onComplete = null, string startingFilePath = null, bool simpleMode = false, bool clearEmptyMaterials = false)
         {
             _view = view;
             _onComplete = onComplete;
             _internalPath = internalPath;
             _simpleMode = simpleMode;
+            _clearEmpties = clearEmptyMaterials;
 
             ComplexOptionsEnabled = !simpleMode;
 

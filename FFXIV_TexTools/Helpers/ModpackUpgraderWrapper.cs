@@ -41,7 +41,7 @@ namespace FFXIV_TexTools.Helpers
                 var name = Path.GetFileNameWithoutExtension(path);
                 if (ext == ".json")
                 {
-                    name = IOUtil.MakePathSafe(data.MetaPage.Name, false);
+                    name = IOUtil.MakePathSafe(data.Data.MetaPage.Name, false);
                 }
 
                 if (ext != ".ttmp2" && ext != ".pmp")
@@ -64,7 +64,7 @@ namespace FFXIV_TexTools.Helpers
                     return;
                 }
                 var newPath = sfd.FileName;
-                await data.WriteModpack(newPath, true);
+                await data.Data.WriteModpack(newPath, true);
             }
             catch (Exception ex)
             {

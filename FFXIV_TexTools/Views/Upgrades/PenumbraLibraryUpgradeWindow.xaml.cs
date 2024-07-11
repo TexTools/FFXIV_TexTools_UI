@@ -352,6 +352,10 @@ namespace FFXIV_TexTools.Views.Upgrades
                 {
                     proc++;
                     ProcessedMods.Add(new KeyValuePair<string, string>("𝑿 " + m.Key, m.Key));
+                } else if (m.Value == PenumbraUpgradeStatus.EUpgradeResult.Unchanged)
+                {
+                    proc++;
+                    ProcessedMods.Add(new KeyValuePair<string, string>("-- " + m.Key, m.Key));
                 }
             }
 
@@ -384,10 +388,19 @@ namespace FFXIV_TexTools.Views.Upgrades
 
                     var res = await Results.ProcessMod(PenumbraPath, DestinationPath, mod);
 
-                    // Always clear the temp folder between actions.
-                    IOUtil.ClearTempFolder();
-
                     SaveJson();
+
+                    // Always clear the temp folder between actions.
+                    try
+                    {
+                        IOUtil.ClearTempFolder();
+                    }
+                    catch
+                    {
+                        ViewHelpers.ShowWarning(this, "Temp File Clear Error", "Unable to clear TexTools temp folder.\nThe mod as converted successfully, cannot clear its temp folder due to unusual permissions issues with some mod file that was used.\n\nPlease manually delete the folder: %TEMP%/xivmf/\n\n(The upgrade process has been paused.)");
+                        _RequestStop = true;
+                    }
+
 
                     Dispatcher.Invoke(() =>
                     {
@@ -462,6 +475,14 @@ namespace FFXIV_TexTools.Views.Upgrades
 
             SaveJson();
             UpdateLists();
+        }
+
+        private void Details_Click(object sender, RoutedEventArgs e)
+        {
+            if (Results == null) return;
+            if (Results.Upgrades.Count == 0) return;
+            var wind = new PenumbraUpgradeResults(Results) { Owner = this, WindowStartupLocation = WindowStartupLocation.CenterOwner };
+            wind.Show();
         }
     }
 }
