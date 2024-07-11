@@ -518,19 +518,6 @@ namespace FFXIV_TexTools.Views.Controls
             OnPropertyChanged(nameof(ColorsetEnabled));
 
 
-            // Create or purge colorset as necessary.
-            if (ShaderPack != EShaderPack.Character)
-            {
-                Material.ColorSetData = new List<Half>();
-                Material.ColorSetDyeData = new byte[0];
-            } else
-            {
-                var length = 1024;
-                var dyeLength = 128;
-                Material.ColorSetData = new List<Half>(new Half[length]);
-                Material.ColorSetDyeData = new byte[dyeLength];
-            }
-
             // Reset shader vars.
             Material.ShaderKeys = new List<ShaderKey>();
             Material.ShaderConstants = new List<ShaderConstant>();
