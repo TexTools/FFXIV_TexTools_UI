@@ -84,7 +84,7 @@
                             <ColumnDefinition Width="150"/>
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
-                        <Label Grid.Column="0" Grid.Row="2" HorizontalAlignment="Right">Hair:</Label>
+                        <Label Grid.Column="0" Grid.Row="2" HorizontalAlignment="Right">Hair/Fluffy Tails:</Label>
                         <Label Grid.Column="1" Grid.Row="2" HorizontalAlignment="Left" Foreground="Green">~85%+</Label>
                         <Label Grid.Column="2" Grid.Row="2" HorizontalAlignment="Left" Foreground="Gray" FontStyle="Italic">Single-texture mods are not upgraded.</Label>
 
