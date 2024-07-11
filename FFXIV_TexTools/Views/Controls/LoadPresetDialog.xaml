@@ -10,11 +10,12 @@
         Title="Load Material Preset"
         ResizeMode="NoResize"
         SizeToContent="WidthAndHeight">
-    <Grid Height="160" Width="600">
+    <Grid Width="600">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1*"></ColumnDefinition>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
+            <RowDefinition Height="40"></RowDefinition>
             <RowDefinition Height="40"></RowDefinition>
             <RowDefinition Height="40"></RowDefinition>
             <RowDefinition Height="40"></RowDefinition>
@@ -34,8 +35,9 @@
         <CheckBox x:Name="TextureBox" Grid.Row="2" Margin="10,0,0,0" IsChecked="True" Content="Load Texture Settings"></CheckBox>
         <CheckBox x:Name="OtherBox" Grid.Row="1" Margin="200,0,0,0" IsChecked="True" Content="Load Other Settings"></CheckBox>
         <CheckBox x:Name="ColorsetBox" Grid.Row="2" Margin="200,0,0,0"  Content="Load Colorset"></CheckBox>
-
-        <Button x:Name="ConfirmButton" Content="Load" Grid.Row="3" Width="100" Height="30" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10,0,10,0" Click="LoadButton_Click"/>
-        <Button x:Name="CancelButton" Content="Cancel" Grid.Row="3" Width="100" Height="30" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,10,0" Click="CancelButton_Click"/>
+        <CheckBox x:Name="TexturePathsBox" Grid.Row="3" Margin="10,0,0,0" IsChecked="False" Content="Load Texture Paths"></CheckBox>
+        
+        <Button x:Name="ConfirmButton" Content="Load" Grid.Row="4" Width="100" Height="30" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10,0,10,0" Click="LoadButton_Click"/>
+        <Button x:Name="CancelButton" Content="Cancel" Grid.Row="4" Width="100" Height="30" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,10,0" Click="CancelButton_Click"/>
     </Grid>
 </Window>

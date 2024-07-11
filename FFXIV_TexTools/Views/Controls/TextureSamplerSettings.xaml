@@ -93,8 +93,7 @@
                 <Binding Path="DetokenizedPath"></Binding>
             </TextBox>
 
-            <Button x:Name="SharedButton" Content="Use Shared Path" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0" Width="150" ToolTip="Change the Texture Path to the default variant-shared Texture Path for this texture." Height="28" Click="SharedPath_Click"/>
-            <Button x:Name="UniqueButton" Content="Use Unique Path" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="70,0,0,0" Width="150" ToolTip="Change the Texture Path to the default variant-exclusive Texture Path for this texture." Height="28" Click="UniquePath_Click"/>
+            <Button x:Name="UniqueButton" Content="Use Unique Path" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="70,0,0,0" Width="150" ToolTip="Change the Texture Path to an arbitrary unqiue path for this texture." Height="28" Click="UniquePath_Click"/>
 
             <Separator Grid.Row="3" Grid.ColumnSpan="4" Margin="0,2,0,2"></Separator>
 

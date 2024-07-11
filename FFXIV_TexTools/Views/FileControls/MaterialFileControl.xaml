@@ -86,8 +86,9 @@
         <Button Content="Add Texture" Grid.Row="4" Grid.Column="2" HorizontalAlignment="Right" Margin="0,0,10,0" VerticalAlignment="Center" Width="150" Click="AddTexture_Click" Height="28"/>
         <Button Content="Help" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" HorizontalAlignment="Right" Margin="0,0,170,0" VerticalAlignment="Center" Width="100" Click="HelpButton_Click" Height="28"/>
 
-        <Button x:Name="NewSharedButton" Content="Make Textures Shared" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center" Width="150" Height="28" Grid.Row="4" Click="NewSharedButton_Click"/>
-        <Button x:Name="NewUniqueButton" Content="Make Textures Unique" HorizontalAlignment="Left" Margin="170,0,0,0" VerticalAlignment="Center" Width="150" Height="28" Grid.Row="4" Click="NewUniqueButton_Click"/>
+        <Button x:Name="MakeUniqueButton" Content="Make Textures Unique" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center" Width="150" Height="28" Grid.Row="4" Click="MakeUnique_Click"
+                ToolTip="Use arbitrary, unique file names for all texture paths."/>
+
         <Button x:Name="TilingModeButton" Content="Set Tiling Mode" HorizontalAlignment="Left" Grid.Column="1" VerticalAlignment="Center" Width="150" Height="28" Grid.Row="4" Click="SetTilingMode_Click">
             <Button.ContextMenu>
                 <ContextMenu x:Name="TilingModeContextMenu">

@@ -220,12 +220,10 @@ namespace FFXIV_TexTools.Views.Controls
             var mtrlPath = mtrl.MTRLPath;
             if (mtrlPath != null && msetRegex.IsMatch(mtrlPath))
             {
-                SharedButton.IsEnabled = true;
                 UniqueButton.IsEnabled = true;
             }
             else
             {
-                SharedButton.IsEnabled = false;
                 UniqueButton.IsEnabled = false;
             }
 
@@ -377,16 +375,10 @@ namespace FFXIV_TexTools.Views.Controls
             e.Handled = regex.IsMatch(e.Text);
         }
 
-        private void SharedPath_Click(object sender, RoutedEventArgs e)
-        {
-
-            var path = _Material.GetTextureRootDirectory() + "/" + _Material.GetDefaultTexureName(_Material.ResolveFullUsage(Texture), false);
-            TexturePath = path;
-        }
 
         private void UniquePath_Click(object sender, RoutedEventArgs e)
         {
-            var path = _Material.GetTextureRootDirectory() + "/" + _Material.GetDefaultTexureName(_Material.ResolveFullUsage(Texture), true);
+            var path = _Material.GetTextureRootDirectory() + "/" + _Material.GetUniqueTextureName(_Material.ResolveFullUsage(Texture), true);
             TexturePath = path;
         }
     }
