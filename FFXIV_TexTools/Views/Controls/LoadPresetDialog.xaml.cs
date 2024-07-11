@@ -11,6 +11,8 @@ using xivModdingFramework.Materials.DataContainers;
 using xivModdingFramework.Cache;
 using xivModdingFramework.Materials.FileTypes;
 using MahApps.Metro.IconPacks;
+using SharpDX;
+using xivModdingFramework.Mods;
 
 namespace FFXIV_TexTools.Views.Controls
 {
@@ -79,10 +81,54 @@ namespace FFXIV_TexTools.Views.Controls
                 newMtrl.AdditionalData = Material.AdditionalData;
             }
 
+            var originalTextures = Material.Textures;
             // Carry our Texture information through.
-            if(TextureBox.IsChecked == false)
+            if (TextureBox.IsChecked == false)
             {
                 newMtrl.Textures = Material.Textures;
+            }
+
+
+            if(TexturePathsBox.IsChecked == false)
+            {
+                foreach(var tex in newMtrl.Textures)
+                {
+                    if (tex.Sampler == null)
+                    {
+                        tex.TexturePath = "";
+                        continue;
+                    }
+
+                    var samp = tex.Sampler.SamplerId;
+                    var oldtex = originalTextures.FirstOrDefault(x => x.Sampler != null && x.Sampler.SamplerId == samp);
+                    if (oldtex != null)
+                    {
+                        tex.TexturePath = oldtex.Dx11Path;
+                    } else
+                    {
+                        tex.TexturePath = Material.GetTextureRootDirectory() + "/" + newMtrl.GetDefaultTexureName(newMtrl.ResolveFullUsage(tex), false);
+                    }
+                }
+            }
+
+            // Validate colorset settings.
+            if(newMtrl.ShaderPack.UsesColorset() && newMtrl.ColorSetDataSize != 1024)
+            {
+                if (newMtrl.ShaderPack.UsesColorset() && (newMtrl.ColorSetData == null || newMtrl.ColorSetData.Count == 0))
+                {
+                    newMtrl.ColorSetData = new List<Half>();
+                    for (int i = 0; i < 32; i++)
+                    {
+                        newMtrl.ColorSetData.AddRange(EndwalkerUpgrade.GetDefaultColorsetRow(newMtrl.ShaderPack));
+                        newMtrl.ColorSetDyeData = new byte[128];
+                    }
+
+                }
+                else if (!newMtrl.ShaderPack.UsesColorset() && (newMtrl.ColorSetData == null || newMtrl.ColorSetData.Count != 0))
+                {
+                    newMtrl.ColorSetData = new List<Half>();
+                    newMtrl.ColorSetDyeData = new byte[0];
+                }
             }
 
             Material = newMtrl;

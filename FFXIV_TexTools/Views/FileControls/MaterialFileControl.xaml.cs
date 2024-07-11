@@ -228,18 +228,6 @@ namespace FFXIV_TexTools.Views.Controls
             var mtrl = Mtrl.GetXivMtrl(data, path);
 
 
-            var msetRegex = new Regex("\\/v[0-9]{4}\\/");
-
-            if (path != null && msetRegex.IsMatch(path))
-            {
-                NewSharedButton.IsEnabled = true;
-                NewUniqueButton.IsEnabled = true;
-            } else
-            { 
-                NewSharedButton.IsEnabled = false;
-                NewUniqueButton.IsEnabled = false;
-            }
-
 
             Material = mtrl;
             return true;
@@ -530,7 +518,7 @@ namespace FFXIV_TexTools.Views.Controls
             help.ShowDialog();
         }
 
-        private void NewSharedButton_Click(object sender, RoutedEventArgs e)
+        private void MakeUnique_Click(object sender, RoutedEventArgs e)
         {
             if (Material == null)
             {
@@ -538,22 +526,7 @@ namespace FFXIV_TexTools.Views.Controls
             }
             foreach (var tex in Material.Textures)
             {
-                var path = Material.GetTextureRootDirectory() + "/" + Material.GetDefaultTexureName(Material.ResolveFullUsage(tex), false);
-                tex.TexturePath = path;
-            }
-            UnsavedChanges = true;
-            UpdateTextureList();
-        }
-
-        private void NewUniqueButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (Material == null)
-            {
-                return;
-            }
-            foreach (var tex in Material.Textures)
-            {
-                var path = Material.GetTextureRootDirectory() + "/" + Material.GetDefaultTexureName(Material.ResolveFullUsage(tex), true);
+                var path = Material.GetTextureRootDirectory() + "/" + Material.GetUniqueTextureName(Material.ResolveFullUsage(tex));
                 tex.TexturePath = path;
             }
             UnsavedChanges = true;
