@@ -397,7 +397,10 @@ namespace FFXIV_TexTools.Views.Upgrades
                     }
                     catch
                     {
-                        ViewHelpers.ShowWarning(this, "Temp File Clear Error", "Unable to clear TexTools temp folder.\nThe mod as converted successfully, cannot clear its temp folder due to unusual permissions issues with some mod file that was used.\n\nPlease manually delete the folder: %TEMP%/xivmf/\n\n(The upgrade process has been paused.)");
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            ViewHelpers.ShowWarning(this, "Temp File Clear Error", "Unable to clear TexTools temp folder.\nThe mod as converted successfully, cannot clear its temp folder due to unusual permissions issues with some mod file that was used.\n\nPlease manually delete the folder: %TEMP%/xivmf/\n\n(The upgrade process has been paused.)");
+                        });
                         _RequestStop = true;
                     }
 
