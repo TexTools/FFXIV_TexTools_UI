@@ -237,6 +237,7 @@ namespace FFXIV_TexTools.ViewModels
                         {
                             // Original offset moved.  Just update the mod entry.
                             var m = mod;
+                            Dat.AssertOriginalOffsetIsSafe(mod.DataFile, currentOffset);
                             m.OriginalOffset8x = currentOffset;
                             await tx.UpdateMod(mod, mod.FilePath);
                         } else if(currentOK && !moddedOk && !originalOk)

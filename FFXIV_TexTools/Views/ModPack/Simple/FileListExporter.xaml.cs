@@ -126,7 +126,7 @@ namespace FFXIV_TexTools.Views.Simple
 
             DataContext = this;
             InitializeComponent();
-            FileList.SetFiles(files);
+            FileList.SetFiles(files, false);
 
             ModpackAuthor = Properties.Settings.Default.Default_Author;
             ModpackUrl = Properties.Settings.Default.Default_Modpack_Url;

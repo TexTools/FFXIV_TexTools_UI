@@ -322,14 +322,14 @@ namespace FFXIV_TexTools.Views.Controls
             InitializeComponent();
 
         }
-        public void SetFiles(IEnumerable<string> files)
+        public void SetFiles(IEnumerable<string> files, bool selected = true)
         {
             _Files = new ObservableCollection<UiWrappedFile>();
             var dist = files.Distinct();
             var tx = MainWindow.DefaultTransaction;
             foreach (var file in dist)
             {
-                var uif = new UiWrappedFile(file, null, true, tx);
+                var uif = new UiWrappedFile(file, null, selected, tx);
                 uif.PropertyChanged += Uif_PropertyChanged;
                 _Files.Add(uif);
             }
@@ -508,6 +508,21 @@ namespace FFXIV_TexTools.Views.Controls
                 }
 
                 SortBy(prop);
+            }
+        }
+
+        public void SelectAll()
+        {
+            foreach (UiWrappedFile file in _Files)
+            {
+                file.Selected = true;
+            }
+        }
+        public void ClearAll()
+        {
+            foreach (UiWrappedFile file in _Files)
+            {
+                file.Selected = false;
             }
         }
 
