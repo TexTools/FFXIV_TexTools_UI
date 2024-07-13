@@ -448,12 +448,17 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     modPackCategory = modPackCategory.ParentCategory;
                 }
+                var mpName = modPackCategory.Name;
+                if(mpName == UIStrings.Standalone_Non_ModPack)
+                {
+                    mpName = "";
+                }
 
                 foreach (var mod in allMods)
                 {
                     if (!mod.ItemName.Equals(category.Name)) continue;
 
-                    if (mod.ModPack == modPackCategory.Name)
+                    if (mod.ModPack == mpName)
                     {
                         modItems.Add(mod);
                     }
