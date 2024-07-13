@@ -129,7 +129,7 @@
                         </Grid.ColumnDefinitions>
                         <Label Grid.Column="0" Grid.Row="4" HorizontalAlignment="Right">Faces:</Label>
                         <Label Grid.Column="1" Grid.Row="4" HorizontalAlignment="Left" Foreground="Red">0%</Label>
-                        <Label Grid.Column="2" Grid.Row="4" HorizontalAlignment="Left" Foreground="Red" FontStyle="Italic">ALL Face Mods must be manually upgraded.</Label>
+                        <Label Grid.Column="2" Grid.Row="4" HorizontalAlignment="Left" Foreground="Red" FontStyle="Italic">ALL Face Mods Must be manually upgraded.</Label>
 
                     </Grid>
                 </Border>
