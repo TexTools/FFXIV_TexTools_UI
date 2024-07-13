@@ -37,6 +37,9 @@ namespace FFXIV_TexTools.Views.Controls
 
     public abstract class FileViewControl : System.Windows.Controls.UserControl, INotifyPropertyChanged, IDisposable
     {
+
+        public const int _DEBOUNCE_TIME = 1000;
+
         public delegate void FileDeletedEventHandler(string internalPath);
         public event FileDeletedEventHandler FileDeleted;
 
@@ -146,14 +149,14 @@ namespace FFXIV_TexTools.Views.Controls
             TxWatcher.UserTxStarted += OnUserTransactionStarted;
 
 
-            DebouncedUpdate = ViewHelpers.Debounce<string>(_UpdateOnMainThread, 200);
+            DebouncedUpdate = ViewHelpers.CancellableDebounce<string>(_UpdateOnMainThread, _DEBOUNCE_TIME);
 
 
             IsEnabled = false;
         }
 
 
-        private Action<string> DebouncedUpdate;
+        private Action<string, bool> DebouncedUpdate;
 
         private void OnUserTransactionStarted(ModTransaction tx)
         {
@@ -204,7 +207,7 @@ namespace FFXIV_TexTools.Views.Controls
             {
                 _UpdateQueued = true;
                 // File was deleted.
-                DebouncedUpdate(InternalFilePath);
+                DebouncedUpdate(InternalFilePath, false);
                 FileDeleted?.Invoke(InternalFilePath);
                 return;
             }
@@ -215,7 +218,7 @@ namespace FFXIV_TexTools.Views.Controls
                 if (await ShouldUpdateOnFileChange(changedFile))
                 {
                     _UpdateQueued = true;
-                    DebouncedUpdate(InternalFilePath);
+                    DebouncedUpdate(InternalFilePath, false);
                 }
             });
         }
@@ -237,7 +240,6 @@ namespace FFXIV_TexTools.Views.Controls
 
         private async void  _UpdateOnMainThread(string file)
         {
-            Trace.WriteLine("Main Thread Update Called: " + file);
             try
             {
                 await await Dispatcher.InvokeAsync(async () =>
@@ -392,6 +394,10 @@ namespace FFXIV_TexTools.Views.Controls
 
         public abstract void INTERNAL_ClearFile();
 
+        public virtual void CancelPendingReload()
+        {
+            DebouncedUpdate(null, true);
+        }
 
         protected bool _LOADING = false;
         /// <summary>
@@ -405,7 +411,6 @@ namespace FFXIV_TexTools.Views.Controls
         /// <returns></returns>
         public virtual async Task<bool> LoadInternalFile(string internalFile, bool forceOriginal = false, IItem referenceItem = null, byte[] decompData = null)
         {
-
             if (_LOADING)
             {
                 // Safety reject.

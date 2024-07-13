@@ -98,6 +98,8 @@ namespace FFXIV_TexTools.Views.Controls
         private bool _MTRL_LOADING = false;
 
         private XivMtrl _Material;
+
+        private XivMtrl _OriginalMaterial;
         public XivMtrl Material
         {
             get
@@ -230,6 +232,7 @@ namespace FFXIV_TexTools.Views.Controls
 
 
             Material = mtrl;
+            _OriginalMaterial = (XivMtrl) mtrl.Clone();
             return true;
         }
 
@@ -333,10 +336,10 @@ namespace FFXIV_TexTools.Views.Controls
                 }
 
                 var newMtrl = await Mtrl.GetXivMtrl(changedFile, false, tx);
-
                 var result = Mtrl.CompareMaterials(Material, newMtrl);
+                var originalResult = Mtrl.CompareMaterials(_OriginalMaterial, newMtrl);
 
-                if (result.OtherDifferences)
+                if (result.OtherDifferences && originalResult.OtherDifferences)
                 {
                     // If parts other than the colorset were changed, we need to prompt a reload.
                     return true;
@@ -345,7 +348,7 @@ namespace FFXIV_TexTools.Views.Controls
                 if (!result.ColorsetDifferences)
                 {
                     // Nothing actually changed, don't bother reloading.
-                    return true;
+                    return false;
                 }
 
 

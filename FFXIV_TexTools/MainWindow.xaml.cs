@@ -285,6 +285,9 @@ namespace FFXIV_TexTools
         }
         public MainWindow(string[] args)
         {
+
+            var hasPenumbra = PenumbraAPI.IsPenumbraInstalled();
+            
             _Args = args;
             _mainWindow = this;
 
