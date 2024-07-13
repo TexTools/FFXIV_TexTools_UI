@@ -283,6 +283,26 @@ namespace FFXIV_TexTools.Views
                     }, TaskScheduler.Default);
             };
         }
+        public static Action<bool> CancellableDebounce(Action func, int milliseconds = 300)
+        {
+            CancellationTokenSource cancelTokenSource = null;
+
+            return (cancel) =>
+            {
+                cancelTokenSource?.Cancel();
+                if (cancel) return;
+                cancelTokenSource = new CancellationTokenSource();
+
+                Task.Delay(milliseconds, cancelTokenSource.Token)
+                    .ContinueWith(t =>
+                    {
+                        if (t.IsCompleted && !t.IsCanceled)
+                        {
+                            func();
+                        }
+                    }, TaskScheduler.Default);
+            };
+        }
         public static Action<T> Debounce<T>(Action<T> func, int milliseconds = 300)
         {
             CancellationTokenSource cancelTokenSource = null;
@@ -290,6 +310,28 @@ namespace FFXIV_TexTools.Views
             return arg =>
             {
                 cancelTokenSource?.Cancel();
+                cancelTokenSource = new CancellationTokenSource();
+
+                Task.Delay(milliseconds, cancelTokenSource.Token)
+                    .ContinueWith(t =>
+                    {
+                        if (t.IsCompleted && !t.IsCanceled)
+                        {
+                            func(arg);
+                        }
+                    }, TaskScheduler.Default);
+            };
+        }
+        public static Action<T, bool> CancellableDebounce<T>(Action<T> func, int milliseconds = 300)
+        {
+            CancellationTokenSource cancelTokenSource = null;
+
+            return (arg, cancel) =>
+            {
+                cancelTokenSource?.Cancel();
+
+                if (cancel) return;
+
                 cancelTokenSource = new CancellationTokenSource();
 
                 Task.Delay(milliseconds, cancelTokenSource.Token)

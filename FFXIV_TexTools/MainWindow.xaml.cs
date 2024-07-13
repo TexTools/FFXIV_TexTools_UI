@@ -285,6 +285,9 @@ namespace FFXIV_TexTools
         }
         public MainWindow(string[] args)
         {
+
+            var hasPenumbra = PenumbraAPI.IsPenumbraInstalled();
+            
             _Args = args;
             _mainWindow = this;
 
@@ -1518,6 +1521,10 @@ namespace FFXIV_TexTools
                 if(MainWindow.UserTransaction.ModifiedFiles.Count > 0)
                 {
                     var r = FlexibleMessageBox.Show(ViewHelpers.GetWin32Window(this), "Your current transaction must be closed in order to proceed.\n\nYou will lose any active changes if you continue.", "Transaction Cancel Warning", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
+                    if (r != System.Windows.Forms.DialogResult.OK)
+                    {
+                        return;
+                    }
                 }
                 await ModTransaction.CancelTransaction(MainWindow.UserTransaction, true);
             }

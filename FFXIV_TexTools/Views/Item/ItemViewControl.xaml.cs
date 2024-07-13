@@ -361,7 +361,14 @@ namespace FFXIV_TexTools.Views.Item
 
                         // But is not already listed in our file structure.
                         // This means we need to reload the item.
+
+                        foreach( var c in FileControls)
+                        {
+                            var fc = c.FileControl;
+                            fc?.CancelPendingReload();
+                        }
                         _DebouncedRebuildComboBoxes(Item);
+
                     } else if (changedFile.EndsWith(".mdl"))
                     {
                         _ModelsNeedingValidation.Add(changedFile);
@@ -2005,6 +2012,12 @@ namespace FFXIV_TexTools.Views.Item
         {
             try
             {
+                foreach (var c in FileControls)
+                {
+                    var fc = c.FileControl;
+                    fc?.CancelPendingReload();
+                }
+
                 await await Dispatcher.InvokeAsync(async () =>
                 {
                     var tx = MainWindow.DefaultTransaction;

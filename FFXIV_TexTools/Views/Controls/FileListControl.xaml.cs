@@ -284,6 +284,32 @@ namespace FFXIV_TexTools.Views.Controls
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(VisibleFiles)));
             }
         }
+        private string _SelectAllText = "Select All";
+        public string SelectAllText
+        {
+            get
+            {
+                return _SelectAllText;
+            }
+            set
+            {
+                _SelectAllText = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectAllText)));
+            }
+        }
+        private string _ClearAllText = "Clear All";
+        public string ClearAllText
+        {
+            get
+            {
+                return _ClearAllText;
+            }
+            set
+            {
+                _ClearAllText = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ClearAllText)));
+            }
+        }
 
         public FileListControl()
         {
@@ -296,14 +322,14 @@ namespace FFXIV_TexTools.Views.Controls
             InitializeComponent();
 
         }
-        public void SetFiles(IEnumerable<string> files)
+        public void SetFiles(IEnumerable<string> files, bool selected = true)
         {
             _Files = new ObservableCollection<UiWrappedFile>();
             var dist = files.Distinct();
             var tx = MainWindow.DefaultTransaction;
             foreach (var file in dist)
             {
-                var uif = new UiWrappedFile(file, null, true, tx);
+                var uif = new UiWrappedFile(file, null, selected, tx);
                 uif.PropertyChanged += Uif_PropertyChanged;
                 _Files.Add(uif);
             }
@@ -364,6 +390,16 @@ namespace FFXIV_TexTools.Views.Controls
         {
             this.Invoke(() =>
             {
+                if (string.IsNullOrWhiteSpace(_SearchText))
+                {
+                    SelectAllText = "Select All";
+                    ClearAllText = "Clear All";
+                } else
+                {
+                    SelectAllText = "Select Visible";
+                    ClearAllText = "Clear Visible";
+                }
+
                 _VisibleFiles.Refresh();
             });
         }
@@ -475,35 +511,53 @@ namespace FFXIV_TexTools.Views.Controls
             }
         }
 
-        private void SelectAll_Click(object sender, RoutedEventArgs e)
+        public void SelectAll()
         {
             foreach (UiWrappedFile file in _Files)
             {
                 file.Selected = true;
+            }
+        }
+        public void ClearAll()
+        {
+            foreach (UiWrappedFile file in _Files)
+            {
+                file.Selected = false;
+            }
+        }
+
+        private void SelectAll_Click(object sender, RoutedEventArgs e)
+        {
+
+            if (string.IsNullOrWhiteSpace(_SearchText))
+            {
+                foreach (UiWrappedFile file in _Files)
+                {
+                    file.Selected = true;
+                }
+            } else
+            {
+                foreach (UiWrappedFile file in VisibleFiles)
+                {
+                    file.Selected = true;
+                }
             }
         }
 
         private void ClearAll_Click(object sender, RoutedEventArgs e)
         {
-            foreach (UiWrappedFile file in _Files)
+            if (string.IsNullOrWhiteSpace(_SearchText))
             {
-                file.Selected = false;
-            }
-        }
-
-        private void SelectVisible_Click(object sender, RoutedEventArgs e)
-        {
-            foreach (UiWrappedFile file in VisibleFiles)
+                foreach (UiWrappedFile file in _Files)
+                {
+                    file.Selected = false;
+                }
+            } else
             {
-                file.Selected = true;
-            }
-        }
-
-        private void ClearVisible_Click(object sender, RoutedEventArgs e)
-        {
-            foreach (UiWrappedFile file in VisibleFiles)
-            {
-                file.Selected = false;
+                foreach (UiWrappedFile file in VisibleFiles)
+                {
+                    file.Selected = false;
+                }
             }
         }
 

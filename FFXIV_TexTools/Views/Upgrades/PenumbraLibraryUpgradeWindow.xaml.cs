@@ -184,7 +184,7 @@ namespace FFXIV_TexTools.Views.Upgrades
             Closing += PenumbraLibraryUpgradeWindow_Closing;
             CheckPaths();
 
-            var p = IOUtil.GetPenumbraDirectory();
+            var p = PenumbraAPI.GetPenumbraDirectory();
             if (!string.IsNullOrWhiteSpace(p)) {
                 PenumbraPath = p;
             }

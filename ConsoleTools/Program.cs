@@ -102,13 +102,43 @@ namespace ConsoleTools
             {
                 code = await UnwrapFile();
             }
+            else if (cmd == "/list")
+            {
+                code = await ListRoot();
+            }
             else
             {
-                await ShowHelp();
+                Console.WriteLine("Unknown Command: " + cmd);
                 code = -1;
             }
 
             return code;
+        }
+
+        private static async Task<int> ListRoot()
+        {
+            if (_Args.Length < 2)
+            {
+                return -1;
+            }
+
+            var rootSt = _Args[1];
+            var rootInfo = XivCache.GetFileNameRootInfo(rootSt, true);
+
+            if (!rootInfo.IsValid())
+            {
+                Console.WriteLine("Given Root ID is not valid: " + rootSt);
+                return -1;
+            }
+            var root = new XivDependencyRoot(rootInfo);
+
+            var files = await root.GetAllFiles();
+
+            foreach(var file in files)
+            {
+                Console.WriteLine(file);
+            }
+            return 0;
         }
 
         public static async Task<int> HandleUpgrade()
@@ -321,6 +351,8 @@ namespace ConsoleTools
             System.Console.WriteLine("\t/wrap [SourceFilePath] [DestFilePath] [IntendedFfxivFilePath] - Creates an FFXIV format file from the given source file.  May be SQPacked with /sqpack.  FF Path only needed for MDLs.");
             System.Console.WriteLine("");
             System.Console.WriteLine("\t/unwrap [SourceFilePath] [DestFilePath] [IntendedFfxivFilePath] - Unwraps a given on-disk SqPacked or Flat FFXIV file into the given format. FF Path only needed for MDLs Skeleton/Texture info.");
+            System.Console.WriteLine("");
+            System.Console.WriteLine("\t/list [RootId] - List the entire collection of files associated with a given root ID. ( Ex. c0101h0010 )");
             System.Console.WriteLine("");
             System.Console.WriteLine("== FORMATS ==");
             System.Console.WriteLine("\tModpacks may be read or written in .ttmp2, .pmp, or unzipped PMP folder path formats.");

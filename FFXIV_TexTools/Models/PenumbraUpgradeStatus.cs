@@ -10,6 +10,7 @@ using xivModdingFramework.Helpers;
 using FFXIV_TexTools.Helpers;
 using System.Diagnostics;
 using xivModdingFramework.Mods;
+using xivModdingFramework.Exd.FileTypes;
 
 namespace FFXIV_TexTools.Models
 {
@@ -49,8 +50,23 @@ namespace FFXIV_TexTools.Models
                 {
                     if (source != target)
                     {
-                        IOUtil.RecursiveDeleteDirectory(target);
-                        IOUtil.CopyFolder(source, target);
+                        try
+                        {
+                            IOUtil.RecursiveDeleteDirectory(target);
+                        }
+                        catch(Exception ex2)
+                        {
+                            throw new Exception("Unable to delete directory for failed conversion, possibly due to security issue: " + target + "\n"+ ex2.Message + "\n\nOriginal Conversion Failure: " + ex.Message);
+                        }
+
+                        try
+                        {
+                            IOUtil.CopyFolder(source, target);
+                        }
+                        catch (Exception ex2)
+                        {
+                            throw new Exception("Unable to copy failed mod directory to destination.\nFrom: " + source + "\nTo: " + target + "\n" + ex2.Message + "\n\nOriginal Conversion Failure: " + ex.Message);
+                        }
                     }
                 }
                 res = EUpgradeResult.Failure;

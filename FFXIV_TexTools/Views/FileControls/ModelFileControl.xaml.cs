@@ -89,6 +89,8 @@ namespace FFXIV_TexTools.Views.Controls
             InitializeComponent();
             ViewportVM = new Viewport3DViewModel();
 
+            DebouncedUpdateVisual = ViewHelpers.CancellableDebounce(InvokeUpdateVisual, _DEBOUNCE_TIME);
+
             if (Configuration.EnvironmentConfiguration.TT_Unshared_Rendering)
                 _CanvasRenderer = new Helpers.ViewportCanvasRenderer(Viewport, AlternateViewportCanvas);
             ViewType = EFileViewType.Editor;
@@ -134,6 +136,12 @@ namespace FFXIV_TexTools.Views.Controls
             var tx = MainWindow.DefaultTransaction;
             var data = await Mdl.MakeUncompressedMdlFile(Model, InternalFilePath, false, tx);
             return data;
+        }
+
+        public override void CancelPendingReload()
+        {
+            base.CancelPendingReload();
+            DebouncedUpdateVisual(true);
         }
 
         protected override async Task<bool> INTERNAL_LoadFile(byte[] data, string path, IItem referenceItem, ModTransaction tx)
@@ -260,27 +268,49 @@ namespace FFXIV_TexTools.Views.Controls
             await Mdl.FillMissingMaterials(Model, ReferenceItem, XivStrings.TexTools, tx);
             return await base.INTERNAL_WriteModFile(tx);   
         }
+
+        private static bool _FullUpdateRequested = false;
         protected override async Task<bool> ShouldUpdateOnFileChange(string changedFile)
         {
+            // We do not use the baseline functionality here since
+            // models can have 'partial reloads.  Thus we always return false.
             if(changedFile == InternalFilePath)
             {
-                return true;
+                _FullUpdateRequested = true;
+                DebouncedUpdateVisual(false);
             }
 
             if(Model == null || _MaterialPaths == null)
             {
-                return true;
+                _FullUpdateRequested = true;
+                DebouncedUpdateVisual(false);
             }
 
             if(_ChildFiles.Contains(changedFile))
             {
                 // Queue visual update if one of our constituent files chnaged, doesn't really matter if it fails.
-                _ = await Dispatcher.InvokeAsync(async () =>
-                {
-                    await UpdateVisual();
-                });
+                DebouncedUpdateVisual(false);
             }
             return false;
+        }
+
+        private Action<bool> DebouncedUpdateVisual;
+
+        private async void InvokeUpdateVisual()
+        {
+            _ = await Dispatcher.InvokeAsync(async () =>
+            {
+                if (_FullUpdateRequested)
+                {
+                    await ReloadFile();
+                }
+                else
+                {
+                    await UpdateVisual();
+                }
+
+                _FullUpdateRequested = false;
+            });
         }
 
         public override string GetNiceName()
