@@ -788,7 +788,7 @@ namespace FFXIV_TexTools.ViewModels
             }
         }
 
-        private int _ReflectionValue  = 5;
+        private int _ReflectionValue  = 2;
         public int ReflectionValue
         {
             get => _ReflectionValue;
