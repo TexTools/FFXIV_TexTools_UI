@@ -450,7 +450,7 @@ namespace FFXIV_TexTools.Views.Upgrades
             foreach(KeyValuePair<string, string> kv in items)
             {
                 if (Results.Upgrades.ContainsKey(kv.Key)) {
-                    Results.Upgrades[kv.Key] = PenumbraUpgradeStatus.EUpgradeResult.Failure;
+                    Results.Upgrades[kv.Key] = PenumbraUpgradeStatus.EUpgradeResult.Unchanged;
                     try
                     {
 
