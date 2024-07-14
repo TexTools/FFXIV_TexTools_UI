@@ -115,7 +115,7 @@
                         </Grid.ColumnDefinitions>
                         <Label Grid.Column="0" Grid.Row="5" HorizontalAlignment="Right">Body/Scale-Tail Textures:</Label>
                         <Label Grid.Column="1" Grid.Row="5" HorizontalAlignment="Left" Foreground="Red">25%</Label>
-                        <Label Grid.Column="2" Grid.Row="5" HorizontalAlignment="Left" Foreground="Red" FontStyle="Italic">Tattoos and Normal Maps are upgraded, but may have seams.</Label>
+                        <Label Grid.Column="2" Grid.Row="5" HorizontalAlignment="Left" Foreground="Red" FontStyle="Italic">Only Tattoos/Diffuse Textures upgraded.</Label>
 
                     </Grid>
                 </Border>
