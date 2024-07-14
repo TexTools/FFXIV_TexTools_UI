@@ -342,7 +342,14 @@ namespace FFXIV_TexTools.Views
             if (ml == null) return;
 
 
-            System.Windows.Clipboard.SetText(ml.FilePath);
+            try
+            {
+                System.Windows.Clipboard.SetText(ml.FilePath);
+            }
+            catch
+            {
+                // No-Op
+            }
 
         }
 
