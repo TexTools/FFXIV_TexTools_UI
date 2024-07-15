@@ -90,9 +90,12 @@ namespace FFXIV_TexTools.Models
                 await IOUtil.CompressWindowsDirectory(target);
             }
 
-            if (Upgrades.ContainsKey(mod))
+            lock (Upgrades)
             {
-                Upgrades[mod] = res;
+                if (Upgrades.ContainsKey(mod))
+                {
+                    Upgrades[mod] = res;
+                }
             }
             return res;
         }
