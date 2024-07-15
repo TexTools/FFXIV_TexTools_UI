@@ -9,7 +9,7 @@
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
              mc:Ignorable="d" 
-             d:DesignHeight="1200" d:DesignWidth="1000">
+             d:DesignHeight="1200" d:DesignWidth="1200">
     <UserControl.Resources>
         <ToolTip x:Key="FresnelYTooltip">Affects edge lighting highlight brightness.</ToolTip>
         <ToolTip x:Key="FresnelZTooltip">Affects edge lighting highlight size.</ToolTip>
@@ -97,6 +97,7 @@
                                     <ColumnDefinition Width="120" ></ColumnDefinition>
                                     <ColumnDefinition Width="160" ></ColumnDefinition>
                                     <ColumnDefinition Width="120"/>
+                                    <ColumnDefinition Width="100"/>
                                     <ColumnDefinition/>
                                 </Grid.ColumnDefinitions>
 
@@ -106,6 +107,7 @@
                                 <Label x:Name="DiffuseAlphaLabel" Grid.Column="2" Grid.Row="0" HorizontalContentAlignment="Right" VerticalAlignment="Center">Diffuse Unknown:</Label>
                                 <TextBox x:Name="DiffuseAlphaBox" Grid.Column="3" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Width="100"></TextBox>
 
+                                <Button x:Name="EditRawDiffuse" Grid.Row="0" Grid.Column="5" Content="Edit HDR" VerticalAlignment="Center" Margin="5,0" Click="EditRawDiffuse_Click"/>
 
                                 <Label Content="Specular Color:" Grid.Row="3" HorizontalAlignment="Right" VerticalAlignment="Center" Height="26" Margin="0,2" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Width="90"/>
                                 <xctk:ColorPicker x:Name="SpecularColorPicker" Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left" Width="150" ColorMode="ColorCanvas" ShowStandardColors="False"  Height="22" Margin="0,4"></xctk:ColorPicker>
@@ -113,12 +115,16 @@
                                 <Label x:Name="SpecAlphaLabel" Grid.Column="2" Grid.Row="3" HorizontalContentAlignment="Right" VerticalAlignment="Center">Specular Unknown:</Label>
                                 <TextBox x:Name="SpecAlphaBox" Grid.Column="3" Grid.Row="3" HorizontalAlignment="Left" VerticalAlignment="Center" Width="100"></TextBox>
 
+                                <Button Grid.Row="3" Grid.Column="5" Content="Edit HDR" VerticalAlignment="Center" Margin="5,0" Click="EditRawSpecular_Click"/>
+
 
                                 <Label Content="Emissive Color:" Grid.Row="6" HorizontalAlignment="Right" VerticalAlignment="Center" Height="26" Margin="0,2" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Width="89"/>
                                 <xctk:ColorPicker x:Name="EmissiveColorPicker" Grid.Row="6" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left" Width="150" ColorMode="ColorCanvas" ShowStandardColors="False"  Height="22" Margin="0,4"></xctk:ColorPicker>
 
                                 <Label x:Name="EmissAlphaLabel" Grid.Column="2" Grid.Row="6" HorizontalContentAlignment="Right" VerticalAlignment="Center">Emissive Unknown:</Label>
                                 <TextBox x:Name="EmissAlphaBox" Grid.Column="3" Grid.Row="6" HorizontalAlignment="Left" VerticalAlignment="Center" Width="100"></TextBox>
+
+                                <Button Grid.Row="6" Grid.Column="5" Content="Edit HDR" VerticalAlignment="Center" Margin="5,0" Click="EditRawEmmissive_Click"/>
 
                             </Grid>
                         </GroupBox>
