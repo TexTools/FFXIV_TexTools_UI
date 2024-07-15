@@ -11,10 +11,11 @@ using FFXIV_TexTools.Helpers;
 using System.Diagnostics;
 using xivModdingFramework.Mods;
 using xivModdingFramework.Exd.FileTypes;
+using FFXIV_TexTools.Views.Upgrades;
 
 namespace FFXIV_TexTools.Models
 {
-    public class PenumbraUpgradeStatus
+    public class PenumbraUpgradeStatus : ICloneable
     {
         [JsonConverter(typeof(StringEnumConverter))]
         public enum EUpgradeResult
@@ -90,7 +91,7 @@ namespace FFXIV_TexTools.Models
                 await IOUtil.CompressWindowsDirectory(target);
             }
 
-            lock (Upgrades)
+            lock (PenumbraLibraryUpgradeWindow._ResultsLock)
             {
                 if (Upgrades.ContainsKey(mod))
                 {
@@ -98,6 +99,13 @@ namespace FFXIV_TexTools.Models
                 }
             }
             return res;
+        }
+
+        public object Clone()
+        {
+            var cl = (PenumbraUpgradeStatus) MemberwiseClone();
+            cl.Upgrades = new Dictionary<string, EUpgradeResult>(Upgrades);
+            return cl;
         }
     }
 }

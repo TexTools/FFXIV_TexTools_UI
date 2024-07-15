@@ -142,6 +142,8 @@ namespace FFXIV_TexTools.Views.Upgrades
             }
         }
 
+        public static object _ResultsLock = new object();
+
 
         public ObservableCollection<KeyValuePair<string, int>> ConcurrentSource { get; set; } = new ObservableCollection<KeyValuePair<string, int>>()
         {
@@ -226,7 +228,6 @@ namespace FFXIV_TexTools.Views.Upgrades
         private void PenumbraLibraryUpgradeWindow_Closing(object sender, CancelEventArgs e)
         {
             _RequestStop = true;
-            StatusText = "Pausing when current mods are done processing...";
             Owner?.Activate();
         }
 
@@ -360,9 +361,9 @@ namespace FFXIV_TexTools.Views.Upgrades
         private void SaveJson()
         {
             if (Results == null || string.IsNullOrEmpty(DestinationPath)) return;
-            lock (Results)
+            lock (_ResultsLock)
             {
-                File.WriteAllText(JsonPath, JsonConvert.SerializeObject(Results, Formatting.Indented));
+                File.WriteAllText(JsonPath, JsonConvert.SerializeObject((PenumbraUpgradeStatus)Results.Clone(), Formatting.Indented));
             }
         }
         private void UpdateLists()
@@ -520,6 +521,7 @@ namespace FFXIV_TexTools.Views.Upgrades
         {
             if (Results == null) return;
             _RequestStop = true;
+            StatusText = "Pausing when current mods are done processing...";
             ContinuePauseEnabled = false;
         }
 
