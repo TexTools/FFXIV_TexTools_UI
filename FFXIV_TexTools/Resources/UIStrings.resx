@@ -1004,7 +1004,7 @@ If you would like to enable this, first import a texture for the selected item.<
     <value>Import Raw File</value>
   </data>
   <data name="Raw_File_Operations" xml:space="preserve">
-    <value>Raw File Operations</value>
+    <value>File Operations</value>
   </data>
   <data name="Clean_Up_ModList" xml:space="preserve">
     <value>Clean Up Modlist</value>
@@ -1163,7 +1163,7 @@ If you would like to enable this, first import a texture for the selected item.<
     <value>Extract File</value>
   </data>
   <data name="Import Raw File" xml:space="preserve">
-    <value>Import Raw File</value>
+    <value>Import File</value>
   </data>
   <data name="Destination Path:" xml:space="preserve">
     <value>Destination Path:</value>
