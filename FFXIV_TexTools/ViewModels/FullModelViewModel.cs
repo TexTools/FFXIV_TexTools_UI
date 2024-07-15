@@ -803,12 +803,13 @@ namespace FFXIV_TexTools.ViewModels
                     .FirstOrDefault();
                 bTex.MaterialPath = newMaterial;
 
+                var tx = MainWindow.DefaultTransaction;
                 var mtrlPath = Mtrl.GetMtrlPath(tempMdlPath, newMaterial, mtrlVariant);
-                var mtrl = await Mtrl.GetXivMtrl(mtrlPath);
+                var mtrl = await Mtrl.GetXivMtrl(mtrlPath, false, tx);
 
                 var colors = ModelTexture.GetCustomColors();
                 colors.InvertNormalGreen = false;
-                var modelMaps = await ModelTexture.GetModelMaps(mtrl, false, colors, -1, MainWindow.UserTransaction);
+                var modelMaps = await ModelTexture.GetModelMaps(mtrl, false, colors, -1, tx);
 
                 // Reindex the material dictionary as materials may have sorted differently
                 ReIndexMaterialDictionary(ttModel, materialDictionary, modelMaps);

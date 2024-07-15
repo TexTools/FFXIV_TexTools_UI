@@ -278,6 +278,50 @@ namespace FFXIV_TexTools.Views.Controls
 
         private void PreloadBaseCategories()
         {
+            var weapons = new ItemTreeElement(null, null, XivStrings.Weapons);
+            CategoryElements.Add(weapons);
+
+            weapons.Children.Add(new ItemTreeElement(null, null, XivWeaponType.Shield.GetNiceName()));
+
+            weapons.Children.Add(new ItemTreeElement(null, null, XivWeaponType.Sword.GetNiceName()));
+            weapons.Children.Add(new ItemTreeElement(null, null, XivWeaponType.Axe.GetNiceName()));
+            weapons.Children.Add(new ItemTreeElement(null, null, XivWeaponType.Broadsword.GetNiceName()));
+            weapons.Children.Add(new ItemTreeElement(null, null, XivWeaponType.Gunblade.GetNiceName()));
+
+            weapons.Children.Add(new ItemTreeElement(null, null, XivWeaponType.Staff.GetNiceName()));
+            weapons.Children.Add(new ItemTreeElement(null, null, XivWeaponType.Orrery.GetNiceName()));
+            weapons.Children.Add(new ItemTreeElement(null, null, XivWeaponType.Nouliths.GetNiceName()));
+
+            weapons.Children.Add(new ItemTreeElement(null, null, XivWeaponType.Fists.GetNiceName()));
+            weapons.Children.Add(new ItemTreeElement(null, null, XivWeaponType.Lance.GetNiceName()));
+            weapons.Children.Add(new ItemTreeElement(null, null, XivWeaponType.Daggers.GetNiceName()));
+            weapons.Children.Add(new ItemTreeElement(null, null, XivWeaponType.Katana.GetNiceName()));
+            weapons.Children.Add(new ItemTreeElement(null, null, XivWeaponType.Scythe.GetNiceName()));
+            weapons.Children.Add(new ItemTreeElement(null, null, XivWeaponType.Twinfangs.GetNiceName()));
+            weapons.Children.Add(new ItemTreeElement(null, null, XivWeaponType.Bow.GetNiceName()));
+            weapons.Children.Add(new ItemTreeElement(null, null, XivWeaponType.Gun.GetNiceName()));
+            weapons.Children.Add(new ItemTreeElement(null, null, XivWeaponType.Glaives.GetNiceName()));
+            weapons.Children.Add(new ItemTreeElement(null, null, XivWeaponType.Wand.GetNiceName()));
+            weapons.Children.Add(new ItemTreeElement(null, null, XivWeaponType.Book.GetNiceName()));
+            weapons.Children.Add(new ItemTreeElement(null, null, XivWeaponType.Rapier.GetNiceName()));
+            weapons.Children.Add(new ItemTreeElement(null, null, XivWeaponType.Brush.GetNiceName()));
+            weapons.Children.Add(new ItemTreeElement(null, null, XivWeaponType.Cane.GetNiceName()));
+
+
+            weapons.Children.Add(new ItemTreeElement(null, null, XivWeaponType.Saw.GetNiceName()));
+            weapons.Children.Add(new ItemTreeElement(null, null, XivWeaponType.CrossPeinHammer.GetNiceName()));
+            weapons.Children.Add(new ItemTreeElement(null, null, XivWeaponType.RaisingHammer.GetNiceName()));
+            weapons.Children.Add(new ItemTreeElement(null, null, XivWeaponType.LapidaryHammer.GetNiceName()));
+            weapons.Children.Add(new ItemTreeElement(null, null, XivWeaponType.Needle.GetNiceName()));
+            weapons.Children.Add(new ItemTreeElement(null, null, XivWeaponType.RoundKnife.GetNiceName()));
+            weapons.Children.Add(new ItemTreeElement(null, null, XivWeaponType.Alembic.GetNiceName()));
+            weapons.Children.Add(new ItemTreeElement(null, null, XivWeaponType.CulinaryKnife.GetNiceName()));
+
+            weapons.Children.Add(new ItemTreeElement(null, null, XivWeaponType.Pickaxe.GetNiceName()));
+            weapons.Children.Add(new ItemTreeElement(null, null, XivWeaponType.Hatchet.GetNiceName()));
+            weapons.Children.Add(new ItemTreeElement(null, null, XivWeaponType.FishingRod.GetNiceName()));
+
+
             var gear = new ItemTreeElement(null, null, XivStrings.Gear);
             CategoryElements.Add(gear);
 
@@ -287,17 +331,6 @@ namespace FFXIV_TexTools.Views.Controls
             gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Legs));
             gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Feet));
 
-
-            gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Main_Hand));
-            gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Off_Hand));
-            gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Dual_Wield));
-            gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Two_Handed));
-
-            gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Earring));
-            gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Neck));
-            gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Wrists));
-            gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Rings));
-
             gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Head_Body));
             gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Body_Hands));
             gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Body_Hands_Legs));
@@ -305,7 +338,15 @@ namespace FFXIV_TexTools.Views.Controls
             gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Legs_Feet));
             gear.Children.Add(new ItemTreeElement(null, null, XivStrings.All));
 
-            gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Food));
+            //gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Food));
+
+
+            var accessories = new ItemTreeElement(null, null, XivStrings.Accessories);
+            CategoryElements.Add(accessories);
+            accessories.Children.Add(new ItemTreeElement(null, null, XivStrings.Earring));
+            accessories.Children.Add(new ItemTreeElement(null, null, XivStrings.Neck));
+            accessories.Children.Add(new ItemTreeElement(null, null, XivStrings.Wrists));
+            accessories.Children.Add(new ItemTreeElement(null, null, XivStrings.Rings));
         }
 
         private async Task<List<IItem>> BuildCategoryTree()

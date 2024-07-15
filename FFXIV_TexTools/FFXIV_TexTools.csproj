@@ -156,6 +156,10 @@
       <LastGenOutput>XivStringRaces.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Update="Resources\XivStrings.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>XivStrings.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <None Include="app.manifest" />
     <Resource Include="Resources\rgbaChannels.cso" />
   </ItemGroup>
@@ -197,6 +201,11 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>UIStrings.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\XivStrings.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>XivStrings.resx</DependentUpon>
     </Compile>
     <Compile Update="Views\FileControls\MaterialFileControl.xaml.cs">
       <SubType>Code</SubType>

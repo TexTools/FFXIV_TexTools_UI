@@ -19,7 +19,7 @@ namespace FFXIV_TexTools.Resources {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class XivStrings {
@@ -57,6 +57,15 @@ namespace FFXIV_TexTools.Resources {
             }
             set {
                 resourceCulture = value;
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Accessories.
+        /// </summary>
+        internal static string Accessories {
+            get {
+                return ResourceManager.GetString("Accessories", resourceCulture);
             }
         }
         
@@ -120,6 +129,15 @@ namespace FFXIV_TexTools.Resources {
         internal static string AutodeskCollada {
             get {
                 return ResourceManager.GetString("AutodeskCollada", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Beneficial.
+        /// </summary>
+        internal static string Beneficial {
+            get {
+                return ResourceManager.GetString("Beneficial", resourceCulture);
             }
         }
         
@@ -219,6 +237,15 @@ namespace FFXIV_TexTools.Resources {
         internal static string DemiHuman {
             get {
                 return ResourceManager.GetString("DemiHuman", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Detrimental.
+        /// </summary>
+        internal static string Detrimental {
+            get {
+                return ResourceManager.GetString("Detrimental", resourceCulture);
             }
         }
         
@@ -853,6 +880,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Other.
+        /// </summary>
+        internal static string Other {
+            get {
+                return ResourceManager.GetString("Other", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Outdoor Furniture.
         /// </summary>
         internal static string Outdoor_Furniture {
@@ -1150,6 +1186,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Weapons.
+        /// </summary>
+        internal static string Weapons {
+            get {
+                return ResourceManager.GetString("Weapons", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Weather.
         /// </summary>
         internal static string Weather {
@@ -1164,27 +1209,6 @@ namespace FFXIV_TexTools.Resources {
         internal static string Wrists {
             get {
                 return ResourceManager.GetString("Wrists", resourceCulture);
-            }
-        }
-        internal static string Beneficial
-        {
-            get
-            {
-                return ResourceManager.GetString("Beneficial", resourceCulture);
-            }
-        }
-        internal static string Detrimental
-        {
-            get
-            {
-                return ResourceManager.GetString("Detrimental", resourceCulture);
-            }
-        }
-        internal static string Other
-        {
-            get
-            {
-                return ResourceManager.GetString("Other", resourceCulture);
             }
         }
     }
