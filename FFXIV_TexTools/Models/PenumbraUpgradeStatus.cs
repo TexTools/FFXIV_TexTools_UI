@@ -58,6 +58,7 @@ namespace FFXIV_TexTools.Models
 
             } catch (Exception ex)
             {
+                LogUpgradeError(targetDir, mod, ex);
                 if (Directory.Exists(target))
                 {
                     if (source != target)
@@ -99,6 +100,44 @@ namespace FFXIV_TexTools.Models
                 }
             }
             return res;
+        }
+
+        private static object _logLock = new object();
+
+        private static void LogUpgradeError(string targetDir, string mod, Exception ex)
+        {
+            try
+            {
+                lock (_logLock)
+                {
+                    Directory.CreateDirectory(targetDir);
+                    var path = Path.GetFullPath(Path.Combine(targetDir, "upgrade_errors.txt"));
+
+                    var text = "";
+                    if (File.Exists(path))
+                    {
+                        text = File.ReadAllText(path);
+                    }
+
+                    text += "\n\n ================ MOD FAILURE : " + mod + " ================== \n";
+                    text += ex.Message + "\n";
+                    text += ex.StackTrace;
+
+                    while(ex.InnerException != null)
+                    {
+                        ex = ex.InnerException;
+                        text += "";
+                        text += ex.Message + "\n";
+                        text += ex.StackTrace;
+                    }
+
+                    File.WriteAllText(path, text);
+                }
+            }
+            catch(Exception e)
+            {
+                Trace.WriteLine(e);
+            }
         }
 
         public object Clone()
