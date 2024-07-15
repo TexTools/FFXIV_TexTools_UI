@@ -438,11 +438,24 @@ namespace FFXIV_TexTools.Views.Controls
                 var b = BlueChecked ? 1.0f : 0.0f;
                 var a = AlphaChecked ? 1.0f : 0.0f;
 
-                if(ImageEffect == null)
+                var allChannels = RedChecked && GreenChecked && BlueChecked && AlphaChecked;
+
+                if(ImageEffect == null && !allChannels)
                 {
                     ImageEffect = new ColorChannels();
                 }
-                ImageEffect.Channel = new System.Windows.Media.Media3D.Point4D(r, g, b, a);
+
+                if (!allChannels)
+                {
+                    ImageEffect.Channel = new System.Windows.Media.Media3D.Point4D(r, g, b, a);
+                } else
+                {
+                    if (ImageEffect != null)
+                    {
+                        ImageEffect.Dispose();
+                    }
+                    ImageEffect = null;
+                }
                 OnPropertyChanged(nameof(ImageEffect));
 
 

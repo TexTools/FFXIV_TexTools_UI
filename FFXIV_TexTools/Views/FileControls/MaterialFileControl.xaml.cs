@@ -461,6 +461,7 @@ namespace FFXIV_TexTools.Views.Controls
                 return;
             }
 
+
             UnsavedChanges = true;
 
             if (ShaderComboBox.SelectedValue == null || _MTRL_LOADING)
@@ -468,6 +469,7 @@ namespace FFXIV_TexTools.Views.Controls
                 _LastShpk = ShaderPack;
                 return;
             }
+
             if (_LastShpk == EShaderPack.Unknown || ShaderPack == EShaderPack.Unknown)
             {
                 // Don't mess with anything if we were on a broken state before, or are transitioning to one.
@@ -490,7 +492,18 @@ namespace FFXIV_TexTools.Views.Controls
                 return;
             }
 
-            if(ShaderPack.UsesColorset() && (Material.ColorSetData == null || Material.ColorSetData.Count == 0))
+            var res = FlexibleMessageBox.Show(ViewHelpers.GetWin32Window(this), "Are you sure you wish to change shader pack?\nThis will reset the Shader settings (Keys/Constants).\n\nIt is advised in most cases to copy an existing material or load a preset when changing Shaders."
+                , "Shader Change Confirmation", System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Warning);
+
+            if(res != System.Windows.Forms.DialogResult.Yes)
+            {
+                ShaderPack = _LastShpk;
+                return;
+            }
+
+
+
+            if (ShaderPack.UsesColorset() && (Material.ColorSetData == null || Material.ColorSetData.Count == 0))
             {
                 Material.ColorSetData = new List<Half>();
                 for(int i = 0; i < 32; i++)
