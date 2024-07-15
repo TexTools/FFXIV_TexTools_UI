@@ -32,7 +32,7 @@
         <Label Content="Blue" Grid.Row="3" VerticalAlignment="Center" Margin="5,0" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Height="26"></Label>
         <TextBox x:Name="BlueBox" Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" Margin="0,0,10,0" Height="26"></TextBox>
         
-        <Label Content="Alpha" Grid.Row="4" VerticalAlignment="Center" Margin="5,0" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Height="26"></Label>
+        <Label x:Name="AlphaLabel" Content="Alpha" Grid.Row="4" VerticalAlignment="Center" Margin="5,0" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Height="26"></Label>
         <TextBox x:Name="AlphaBox" Grid.Row="4" Grid.Column="1" VerticalAlignment="Center" Margin="0,0,10,0" Height="26"></TextBox>
 
         <Button x:Name="SaveButton" Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="2"  Content="Save" Click="SaveButton_Click" VerticalAlignment="Center" Margin="0,6,10,6" Height="28" HorizontalAlignment="Right" Width="100"/>

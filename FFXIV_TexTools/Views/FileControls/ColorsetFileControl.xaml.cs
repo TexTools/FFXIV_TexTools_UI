@@ -1237,23 +1237,11 @@ namespace FFXIV_TexTools.Views.Controls
 
         private void RawAssignColorPixel(int col, string name, ColorPicker picker)
         {
-            if (!RawEditPixel(col, name, true))
+            if (!RawEditPixel(col, name, false))
             {
                 return;
             }
             _Mtrl_Loading = true;
-
-            if(col == 0)
-            {
-                DiffuseAlphaBox.Text = RowData[col][3].ToString();
-            } else if(col == 1)
-            {
-                SpecAlphaBox.Text = RowData[col][3].ToString();
-            } else if (col == 2)
-            {
-                EmissAlphaBox.Text = RowData[col][3].ToString();
-            }
-
 
             var c = GetDisplayColor(col);
             picker.SelectedColor = new System.Windows.Media.Color()

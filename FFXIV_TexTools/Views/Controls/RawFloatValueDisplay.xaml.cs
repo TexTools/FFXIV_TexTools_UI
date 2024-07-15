@@ -37,6 +37,7 @@ namespace FFXIV_TexTools.Views.Controls
             RedBox.Text = red.ToString();
             GreenBox.Text = green.ToString();
             BlueBox.Text = blue.ToString();
+            AlphaLabel.Visibility = Visibility.Collapsed;
             AlphaBox.Visibility = Visibility.Collapsed;
 
         }
