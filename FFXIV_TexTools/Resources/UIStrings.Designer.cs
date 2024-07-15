@@ -1963,7 +1963,7 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Import Raw File.
+        ///   Looks up a localized string similar to Import File.
         /// </summary>
         public static string Import_Raw_File {
             get {
@@ -3616,7 +3616,7 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Raw File Operations.
+        ///   Looks up a localized string similar to File Operations.
         /// </summary>
         public static string Raw_File_Operations {
             get {

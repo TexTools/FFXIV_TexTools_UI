@@ -9,6 +9,7 @@ using System.Data;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -119,6 +120,40 @@ namespace FFXIV_TexTools.Views.Upgrades
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ContinuePauseEnabled)));
             }
         }
+        private bool _UseCompression = true;
+        public bool UseCompression
+        {
+            get => _UseCompression;
+            set
+            {
+                _UseCompression = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(UseCompression)));
+            }
+        }
+
+        private int _ConcurrentMax = 3;
+        public int ConcurrentMax
+        {
+            get => _ConcurrentMax;
+            set
+            {
+                _ConcurrentMax = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ConcurrentMax)));
+            }
+        }
+
+        public static object _ResultsLock = new object();
+
+
+        public ObservableCollection<KeyValuePair<string, int>> ConcurrentSource { get; set; } = new ObservableCollection<KeyValuePair<string, int>>()
+        {
+            new KeyValuePair<string, int>("Slow (Batch Size 1)", 1),
+            new KeyValuePair<string, int>("Medium (Batch Size 3)", 3),
+            new KeyValuePair<string, int>("Fast (Batch Size 5)", 5),
+            new KeyValuePair<string, int>("Faster (Batch Size 10)", 10),
+            new KeyValuePair<string, int>("Fastest (Batch Size 20)", 20),
+        };
+
 
         PenumbraUpgradeStatus Results;
 
@@ -326,7 +361,10 @@ namespace FFXIV_TexTools.Views.Upgrades
         private void SaveJson()
         {
             if (Results == null || string.IsNullOrEmpty(DestinationPath)) return;
-            File.WriteAllText(JsonPath, JsonConvert.SerializeObject(Results, Formatting.Indented));
+            lock (_ResultsLock)
+            {
+                File.WriteAllText(JsonPath, JsonConvert.SerializeObject((PenumbraUpgradeStatus)Results.Clone(), Formatting.Indented));
+            }
         }
         private void UpdateLists()
         {
@@ -364,6 +402,47 @@ namespace FFXIV_TexTools.Views.Upgrades
 
         }
 
+        private async Task ProcessMods(List<string> mods)
+        {
+            if (mods.Count == 0) return;
+
+            object _lock = new object();
+            var tasks = new List<Task>();
+            Dispatcher.Invoke(() =>
+            {
+                StatusText = "Processing Mod: " + mods[0] + " and " + (mods.Count-1) + " other mods...";
+            });
+
+            foreach (var mod in mods)
+            {
+                tasks.Add(Task.Run(async () =>
+                {
+                    await Results.ProcessMod(PenumbraPath, DestinationPath, mod, UseCompression);
+                    lock (_lock)
+                    {
+                        SaveJson();
+                    }
+                }));
+            }
+            await Task.WhenAll(tasks);
+
+        }
+
+        private List<string> GetNextMods(int count)
+        {
+            var ret = new HashSet<string>();
+
+            int i = 0;
+            var nextMod = Results.Upgrades.FirstOrDefault(x => x.Value == PenumbraUpgradeStatus.EUpgradeResult.NotStarted);
+            while (i < count && !string.IsNullOrWhiteSpace(nextMod.Key))
+            {
+                Results.Upgrades[nextMod.Key] = EUpgradeResult.InProgress;
+                ret.Add(nextMod.Key);
+                i++;
+                nextMod = Results.Upgrades.FirstOrDefault(x => x.Value == PenumbraUpgradeStatus.EUpgradeResult.NotStarted);
+            }
+            return ret.ToList();
+        }
 
         private bool _RequestStop = false;
         private async Task Start()
@@ -373,22 +452,16 @@ namespace FFXIV_TexTools.Views.Upgrades
             _RequestStop = false;
             ContinuePauseEnabled = true;
 
+
             await Task.Run(async () =>
             {
                 var workerState = XivCache.CacheWorkerEnabled;
                 await XivCache.SetCacheWorkerState(false);
-                var nextMod = Results.Upgrades.FirstOrDefault(x => x.Value == PenumbraUpgradeStatus.EUpgradeResult.NotStarted);
-                while (!string.IsNullOrWhiteSpace(nextMod.Key) && !_RequestStop)
+                
+                var nextMods = GetNextMods(ConcurrentMax);
+                while (nextMods.Count > 0 && !_RequestStop)
                 {
-                    var mod = nextMod.Key;
-                    Dispatcher.Invoke(() =>
-                    {
-                        StatusText = "Processing Mod: " + mod;
-                    });
-
-                    var res = await Results.ProcessMod(PenumbraPath, DestinationPath, mod);
-
-                    SaveJson();
+                    await ProcessMods(nextMods);
 
                     // Always clear the temp folder between actions.
                     try
@@ -409,15 +482,34 @@ namespace FFXIV_TexTools.Views.Upgrades
                     {
                         UpdateLists();
                     });
-                    nextMod = Results.Upgrades.FirstOrDefault(x => x.Value == PenumbraUpgradeStatus.EUpgradeResult.NotStarted);
+                    nextMods = GetNextMods(ConcurrentMax);
                 }
 
                 if (_RequestStop)
                 {
                     State = UpgradeState.Paused;
+                    StatusText = "Update Paused";
                     ContinuePauseEnabled = true;
                 } else
                 {
+                    // Copy any final files from the old Library.
+
+                    StatusText = "Copying lingering library files...";
+                    try
+                    {
+                        //Copy all the files & Replaces any files with the same name
+                        foreach (string newPath in Directory.GetFiles(PenumbraPath, "*.*", SearchOption.TopDirectoryOnly))
+                        {
+                            var path = IOUtil.MakeLongPath(newPath);
+                            File.Copy(path, newPath.Replace(PenumbraPath, DestinationPath), true);
+                        }
+                    }
+                    catch
+                    {
+                        // No-Op.
+                    }
+
+
                     StatusText = "Complete! :D";
                     State = UpgradeState.Completed;
                 }
@@ -429,6 +521,7 @@ namespace FFXIV_TexTools.Views.Upgrades
         {
             if (Results == null) return;
             _RequestStop = true;
+            StatusText = "Pausing when current mods are done processing...";
             ContinuePauseEnabled = false;
         }
 

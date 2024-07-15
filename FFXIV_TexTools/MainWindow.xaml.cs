@@ -240,7 +240,7 @@ namespace FFXIV_TexTools
         public IProgress<string> LockProgress { get { return _lockProgress; } }
 
 
-        private ProgressDialogController _lockProgressController ;
+        internal ProgressDialogController _lockProgressController ;
 
         /// <summary>
         /// Fired when the old tree is about to be discarded.

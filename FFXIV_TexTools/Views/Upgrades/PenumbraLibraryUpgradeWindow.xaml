@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FFXIV_TexTools.Views.Upgrades"
         mc:Ignorable="d"
-        Title="Penumbra Library Update Tool" Height="450" Width="800">
+        Title="Penumbra Library Update Tool" Height="600" Width="800">
     <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -32,12 +32,25 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="40"/>
                 <RowDefinition Height="40"/>
+                <RowDefinition Height="40"/>
             </Grid.RowDefinitions>
             <Button Grid.Row="0" Grid.Column="0" Content="Select Penumbra Library" Margin="5" Click="SelectPenumbraPath_Click" IsEnabled="{Binding Path=PathEnabled}"/>
             <TextBox IsEnabled="False" Grid.Row="0" Grid.Column="1" Text="{Binding Path=PenumbraPath}" Margin="5"/>
 
             <Button Grid.Row="1" Grid.Column="0" Content="Select Destination Folder" Margin="5" Click="SelectDestinationPath_Click" IsEnabled="{Binding Path=PathEnabled}"/>
             <TextBox IsEnabled="False" Grid.Row="1" Grid.Column="1" Text="{Binding Path=DestinationPath}" Margin="5"/>
+
+            <Grid Grid.Row="2" Grid.ColumnSpan="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="200"/>
+                    <ColumnDefinition Width="200"/>
+                </Grid.ColumnDefinitions>
+
+                <Label Content="Speed:" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5" ToolTip="How many mods to process at once.  Higher speed will use more computer resources."></Label>
+                <ComboBox Grid.Column="1" Margin="5" VerticalAlignment="Center" ItemsSource="{Binding Path=ConcurrentSource}" SelectedValue="{Binding Path=ConcurrentMax}" DisplayMemberPath="Key" SelectedValuePath="Value" ToolTip="How many mods to process at once.  Higher speed will use more computer resources."></ComboBox>
+                <CheckBox Grid.Column="2" Margin="10,5" Content="Compress Results" ToolTip="Enable file compression on the converted mod folders." IsChecked="{Binding Path=UseCompression}"></CheckBox>
+            </Grid>
         </Grid>
 
 

@@ -110,8 +110,8 @@
 
                 <MenuItem Header="{Binding Source={x:Static resx:UIStrings.Raw_File_Operations}}">
                     <MenuItem Header="Import FFXIV Folder Tree" Click="Menu_ImportFolder_Click"/>
-                    <MenuItem x:Name="Menu_ExtractRaw" Header="{Binding Source={x:Static resx:UIStrings.Extract_Raw}}" Click="Menu_ExtractRaw_Click"/>
-                    <MenuItem x:Name="Menu_ImportRaw" Header="{Binding Source={x:Static resx:UIStrings.Import_Raw}}" Click="Menu_ImportRaw_Click"/>
+                    <MenuItem x:Name="Menu_ExtractRaw" Header="{Binding Source={x:Static resx:UIStrings.Extract_File}}" Click="Menu_ExtractRaw_Click"/>
+                    <MenuItem x:Name="Menu_ImportRaw" Header="{Binding Source={x:Static resx:UIStrings.Import_File}}" Click="Menu_ImportRaw_Click"/>
                     <MenuItem x:Name="Menu_CopyFile" Header="{Binding Source={x:Static resx:UIStrings.Copy_File}}" Click="Menu_CopyFile_Click"/>
                 </MenuItem>
 
