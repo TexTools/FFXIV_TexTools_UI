@@ -28,7 +28,7 @@ namespace FFXIV_TexTools.Models
 
         public Dictionary<string, EUpgradeResult> Upgrades = new Dictionary<string, EUpgradeResult>();
 
-        public async Task<EUpgradeResult> ProcessMod(string baseDir, string targetDir, string mod)
+        public async Task<EUpgradeResult> ProcessMod(string baseDir, string targetDir, string mod, bool compress = true)
         {
             var source = Path.GetFullPath(Path.Combine(baseDir, mod));
             var target = Path.GetFullPath(Path.Combine(targetDir, mod));
@@ -42,8 +42,19 @@ namespace FFXIV_TexTools.Models
             var res = EUpgradeResult.Failure;
             try
             {
-                var s = await ModpackUpgrader.UpgradeModpack(source, target);
-                res = s ? EUpgradeResult.Success : EUpgradeResult.Unchanged;
+                var result = await ModpackUpgrader.UpgradeModpack(source, target, false);
+
+                if (!result)
+                {
+                    // If we did nothing, just direct copy the mod, rather than doing the more expensive
+                    // PMP write.
+                    IOUtil.CopyFolder(source, target);
+                }
+
+                res = result ? EUpgradeResult.Success : EUpgradeResult.Unchanged;
+
+
+
             } catch (Exception ex)
             {
                 if (Directory.Exists(target))
@@ -74,7 +85,10 @@ namespace FFXIV_TexTools.Models
                 Trace.WriteLine(ex);
             }
 
-            await IOUtil.CompressWindowsDirectory(target);
+            if (compress)
+            {
+                await IOUtil.CompressWindowsDirectory(target);
+            }
 
             if (Upgrades.ContainsKey(mod))
             {

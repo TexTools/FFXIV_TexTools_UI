@@ -22,58 +22,73 @@ namespace FFXIV_TexTools.Helpers
                 InitialDirectory = Path.GetFullPath(Settings.Default.ModPack_Directory),
             };
 
+            ofd.Multiselect = true;
             if (ofd.ShowDialog() != System.Windows.Forms.DialogResult.OK)
             {
                 return;
             }
 
-            var path = ofd.FileName;
+
+            var paths = ofd.FileNames;
 
 
             await mw.LockUi("Upgrading Modpack", "Please Wait...\n\nIf this takes more than 3-5 minutes, please close TexTools and retry with \nOptions => Settings => 'Compress Upgrade Textures' turned off.");
             try
             {
-
-                var data = await xivModdingFramework.Mods.ModpackUpgrader.UpgradeModpack(path, includePartials);
-
-                if(!data.AnyChanges)
+                var i = 1;
+                foreach (var path in paths)
                 {
-                    FlexibleMessageBox.Show(ViewHelpers.GetWin32Window(MainWindow.GetMainWindow()),
-                         "The upgrader found nothing to upgrade in the modpack.\n\nThis typically means the mod either does not need to be upgraded, must be manually upgraded, or was already upgraded, possibly by another tool (Ex. Penumbra).",
-                         "No Upgrade Needed",
-                         MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    return;
+                    if(paths.Length > 1)
+                    {
+                        mw._lockProgressController.SetMessage("Updating Mod #" + i + "/" + paths.Length);
+                    }
+
+                    var data = await xivModdingFramework.Mods.ModpackUpgrader.UpgradeModpack(path, includePartials);
+
+                    if (!data.AnyChanges && paths.Length == 1)
+                    {
+                        FlexibleMessageBox.Show(ViewHelpers.GetWin32Window(MainWindow.GetMainWindow()),
+                             "The upgrader found nothing to upgrade in the modpack.\n\nThis typically means the mod either does not need to be upgraded, must be manually upgraded, or was already upgraded, possibly by another tool (Ex. Penumbra).",
+                             "No Upgrade Needed",
+                             MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        return;
+                    }
+
+                    var ext = Path.GetExtension(path);
+
+                    var name = Path.GetFileNameWithoutExtension(path);
+                    if (ext == ".json")
+                    {
+                        name = IOUtil.MakePathSafe(data.Data.MetaPage.Name, false);
+                    }
+
+                    if (ext != ".ttmp2" && ext != ".pmp")
+                    {
+                        ext = ".pmp";
+                    }
+
+
+                    // Final Save location
+                    var dir = Path.GetDirectoryName(path);
+                    var fName = name + "_dt" + ext;
+                    var newPath = Path.GetFullPath(Path.Combine(dir, fName));
+                    if (paths.Length == 1)
+                    {
+                        var sfd = new SaveFileDialog()
+                        {
+                            FileName = fName,
+                            Filter = ViewHelpers.ModpackFileFilter,
+                            InitialDirectory = dir,
+                        };
+                        if (sfd.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+                        {
+                            return;
+                        }
+                        newPath = sfd.FileName;
+                    }
+
+                    await data.Data.WriteModpack(newPath, true);
                 }
-
-                var ext = Path.GetExtension(path);
-
-                var name = Path.GetFileNameWithoutExtension(path);
-                if (ext == ".json")
-                {
-                    name = IOUtil.MakePathSafe(data.Data.MetaPage.Name, false);
-                }
-
-                if (ext != ".ttmp2" && ext != ".pmp")
-                {
-                    ext = ".pmp";
-                }
-
-
-                // Final Save location
-                var dir = Path.GetDirectoryName(path);
-                var fName = name + "_dt" + ext;
-                var sfd = new SaveFileDialog()
-                {
-                    FileName = fName,
-                    Filter = ViewHelpers.ModpackFileFilter,
-                    InitialDirectory = dir,
-                };
-                if (sfd.ShowDialog() != System.Windows.Forms.DialogResult.OK)
-                {
-                    return;
-                }
-                var newPath = sfd.FileName;
-                await data.Data.WriteModpack(newPath, true);
             }
             catch (Exception ex)
             {
