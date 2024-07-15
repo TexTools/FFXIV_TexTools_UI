@@ -42,6 +42,7 @@ namespace FFXIV_TexTools.Helpers
                     {
                         mw._lockProgressController.SetMessage("Updating Mod #" + i + "/" + paths.Length);
                     }
+                    i++;
 
                     var data = await xivModdingFramework.Mods.ModpackUpgrader.UpgradeModpack(path, includePartials);
 
