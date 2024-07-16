@@ -40,9 +40,13 @@ namespace FFXIV_TexTools.ViewModels
         private readonly Regex DefaultSkinRegex = new Regex("\\/mt_c[0-9]{4}b0001_a\\.mtrl");
         private readonly Regex ItemMaterialRegex = new Regex("\\/mt_c([0-9]{4})[e|a][0-9]{4}_[a-z0-9]{3}_([a-z])+\\.mtrl");
         private const string SkinMaterial = "/mt_c0101b0001_a.mtrl";
+        private const string SkinBMaterial = "/mt_c0101b0001_b.mtrl";
+        private const string SkinBiboMaterial = "/mt_c0101b0001_bibo.mtrl";
         private readonly KeyValuePair<string, string> DefaultTag = new KeyValuePair<string, string>("_!ADDNEW!_", "Add Attributes...".L());
         private readonly KeyValuePair<string, string> CustomTag = new KeyValuePair<string, string>("_!CUSTOM!_", "Custom".L());
-        private readonly KeyValuePair<string, string> SkinTag = new KeyValuePair<string, string>(SkinMaterial, "Skin".L());
+        private readonly KeyValuePair<string, string> SkinTag = new KeyValuePair<string, string>(SkinMaterial, "Skin A (Gen2/Vanilla)".L());
+        private readonly KeyValuePair<string, string> SkinBTag = new KeyValuePair<string, string>(SkinBMaterial, "Skin B (Gen3/TBSE)".L());
+        private readonly KeyValuePair<string, string> SkinBiboTag = new KeyValuePair<string, string>(SkinBiboMaterial, "Skin Bibo (Bibo+)".L());
         private readonly string UnknownText = "Unknown".L();
 
         private float OldModelSize;
@@ -317,9 +321,11 @@ namespace FFXIV_TexTools.ViewModels
             if (!_view.MaterialsSource.Contains(SkinTag))
             {
                 _view.MaterialsSource.Add(SkinTag);
+                _view.MaterialsSource.Add(SkinBTag);
+                _view.MaterialsSource.Add(SkinBiboTag);
 
                 // Get our root materials, if we have any
-                foreach(var m in RootMaterials)
+                foreach (var m in RootMaterials)
                 {
                     AddMaterial(m);
                 }
