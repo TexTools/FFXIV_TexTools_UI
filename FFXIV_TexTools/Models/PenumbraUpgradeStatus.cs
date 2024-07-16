@@ -43,7 +43,7 @@ namespace FFXIV_TexTools.Models
             var res = EUpgradeResult.Failure;
             try
             {
-                var result = await ModpackUpgrader.UpgradeModpack(source, target, false);
+                var result = await ModpackUpgrader.UpgradeModpack(source, target);
 
                 if (!result)
                 {
