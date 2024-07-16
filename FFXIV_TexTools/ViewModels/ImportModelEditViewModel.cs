@@ -38,6 +38,8 @@ namespace FFXIV_TexTools.ViewModels
         private readonly Regex ImcAttributeRegex = new Regex("^atr_([a-z]{2})_([a-j])$");
 
         private readonly Regex DefaultSkinRegex = new Regex("\\/mt_c[0-9]{4}b0001_a\\.mtrl");
+        private readonly Regex SkinBRegex = new Regex("\\/mt_c[0-9]{4}b0001_b\\.mtrl");
+        private readonly Regex SkinBiboRegex = new Regex("\\/mt_c[0-9]{4}b0001_bibo\\.mtrl");
         private readonly Regex ItemMaterialRegex = new Regex("\\/mt_c([0-9]{4})[e|a][0-9]{4}_[a-z0-9]{3}_([a-z])+\\.mtrl");
         private const string SkinMaterial = "/mt_c0101b0001_a.mtrl";
         private const string SkinBMaterial = "/mt_c0101b0001_b.mtrl";
@@ -104,6 +106,14 @@ namespace FFXIV_TexTools.ViewModels
                 if (result.Success)
                 {
                     m.Material = SkinMaterial;
+                }
+                if(SkinBRegex.IsMatch(m.Material))
+                {
+                    m.Material = SkinBMaterial;
+                }
+                if (SkinBiboRegex.IsMatch(m.Material))
+                {
+                    m.Material = SkinBiboMaterial;
                 }
             }
 
