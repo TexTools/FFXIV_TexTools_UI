@@ -1498,7 +1498,7 @@ namespace FFXIV_TexTools.Views.Controls
             {
                 var dyeId = (int)DyePreviewIdBox.SelectedValue;
 
-                ApplyDye(RowId, dyeId);
+                ApplyDye(RowId, dyeId, -1);
 
                 // Reload the UI.
                 await SetMaterial(Material, RowId);
@@ -1510,25 +1510,10 @@ namespace FFXIV_TexTools.Views.Controls
         }
         private async void CopyAllDyeValuesButton_Click(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                var dyeId = (int)DyePreviewIdBox.SelectedValue;
-                
-                for(int i = 0; i < _rowCount; i++)
-                {
-                    ApplyDye(i, dyeId);
-                }
-
-                // Reload the UI.
-                await SetMaterial(Material, RowId);
-            }
-            catch (Exception ex)
-            {
-                this.ShowError("Unknown Error", "An error occurred:\n\n" + ex.Message);
-            }
+            DyeContextMenu.IsOpen = true;
         }
 
-        private void ApplyDye(int rowId, int dyeId)
+        private void ApplyDye(int rowId, int dyeId, int channel)
         {
             ushort dyeTemplateId = STM.GetTemplateKeyFromMaterialData(Material.ColorSetDyeData, rowId);
             var template = DyeTemplateFile.GetTemplate(dyeTemplateId);
@@ -1557,8 +1542,9 @@ namespace FFXIV_TexTools.Views.Controls
             var rowData = GetRowData(rowId);
             for (int i = 0; i < dyeCount; i++)
             {
+                uint dyeChannel = dyeData << 3 >> 30;
                 var shifted = (uint)(0x1 << i);
-                if ((dyeData & shifted) > 0)
+                if ((dyeData & shifted) > 0 && (dyeChannel == channel || channel < 0))
                 {
                     // Apply this template dye value to the row.
                     var data = template.GetData(i, dyeId);
@@ -1606,6 +1592,50 @@ namespace FFXIV_TexTools.Views.Controls
                 ColorsetRowViewport.Dispose();
             }
             CopyUpdated -= OnCopyUpdated;
+        }
+
+        private async Task DyeAllRows(int channel)
+        {
+            try
+            {
+                var dyeId = (int)DyePreviewIdBox.SelectedValue;
+
+                for (int i = 0; i < _rowCount; i++)
+                {
+                    ApplyDye(i, dyeId, channel);
+                }
+
+                // Reload the UI.
+                await SetMaterial(Material, RowId);
+            }
+            catch (Exception ex)
+            {
+                this.ShowError("Unknown Error", "An error occurred:\n\n" + ex.Message);
+            }
+        }
+        private void DyeChannel1_Click(object sender, RoutedEventArgs e)
+        {
+            _ = DyeAllRows(0);
+        }
+
+        private void DyeChannel2_Click(object sender, RoutedEventArgs e)
+        {
+            _ = DyeAllRows(1);
+        }
+
+        private void DyeChannel3_Click(object sender, RoutedEventArgs e)
+        {
+            _ = DyeAllRows(2);
+        }
+
+        private void DyeChannel4_Click(object sender, RoutedEventArgs e)
+        {
+            _ = DyeAllRows(3);
+        }
+
+        private void DyeAllChannels_Click(object sender, RoutedEventArgs e)
+        {
+            _ = DyeAllRows(-1);
         }
     }
 }

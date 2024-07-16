@@ -323,7 +323,17 @@
             <Label Content="Preview Dye #" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.ColumnSpan="2" Margin="10,0" Grid.Row="0"/>
             <ComboBox x:Name="DyePreviewIdBox" VerticalAlignment="Center" HorizontalAlignment="Left" Width="150" SelectionChanged="DyePreviewIdBox_SelectionChanged" Grid.ColumnSpan="2" Margin="100,0,0,0" Grid.Row="0"/>
             <Button x:Name="CopyDyeValuesButton" Content="Dye Selected Row" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Column="0" Grid.Row="1" Width="150" Margin="10,0,0,0" Click="CopyDyeValuesButton_Click"></Button>
-            <Button x:Name="CopyAllDyeValuesButton"  Content="Dye All Rows" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Column="1" Grid.Row="1" Margin="10,0,0,0" Width="150" Click="CopyAllDyeValuesButton_Click"></Button>
+            <Button x:Name="CopyAllDyeValuesButton"  Content="Dye All Rows" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Column="1" Grid.Row="1" Margin="10,0,0,0" Width="150" Click="CopyAllDyeValuesButton_Click">
+                <Button.ContextMenu>
+                    <ContextMenu x:Name="DyeContextMenu">
+                        <MenuItem Header="Dye Channel 1" Click="DyeChannel1_Click"/>
+                        <MenuItem Header="Dye Channel 2" Click="DyeChannel2_Click"/>
+                        <MenuItem Header="Dye Channel 3" Click="DyeChannel3_Click"/>
+                        <MenuItem Header="Dye Channel 4" Click="DyeChannel4_Click"/>
+                        <MenuItem Header="Dye All Channels" Click="DyeAllChannels_Click"/>
+                    </ContextMenu>
+                </Button.ContextMenu>
+            </Button>
 
             <hx:Viewport3DX
                         x:Name="ColorsetRowViewport"
