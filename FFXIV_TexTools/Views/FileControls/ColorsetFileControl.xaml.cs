@@ -802,14 +802,14 @@ namespace FFXIV_TexTools.Views.Controls
             await _vm.SetColorsetRow(RowId, _columnCount, dyeId);
         }
 
-        private byte ColorHalfToByte(Half half)
+        public static byte ColorHalfToByte(Half half)
         {
             var b = (byte)Math.Round((Math.Sqrt(half) * 255));
 
             return b;
         }
 
-        private Half ColorByteToHalf(byte b)
+        public static Half ColorByteToHalf(byte b)
         {
             var f = (b / 255.0f);
             var half = f * f;
@@ -1590,6 +1590,7 @@ namespace FFXIV_TexTools.Views.Controls
             if (ColorsetRowViewport != null)
             {
                 ColorsetRowViewport.Dispose();
+                _vm.Dispose();
             }
             CopyUpdated -= OnCopyUpdated;
         }

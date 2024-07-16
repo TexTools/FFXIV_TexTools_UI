@@ -1,5 +1,6 @@
 ﻿using FFXIV_TexTools.Controls;
 using FFXIV_TexTools.Helpers;
+using FFXIV_TexTools.Views.Controls;
 using HelixToolkit.Wpf.SharpDX;
 using MahApps.Metro.Controls;
 using SharpDX;
@@ -18,15 +19,18 @@ using xivModdingFramework.Cache;
 using xivModdingFramework.General;
 using xivModdingFramework.Materials.DataContainers;
 using xivModdingFramework.Materials.FileTypes;
+using xivModdingFramework.Textures;
 using xivModdingFramework.Textures.DataContainers;
 using xivModdingFramework.Textures.FileTypes;
+using Vector3D = System.Windows.Media.Media3D.Vector3D;
+using WinColor = System.Windows.Media.Color;
 
 namespace FFXIV_TexTools.ViewModels
 {
-    public class ColorsetEditorViewModel : INotifyPropertyChanged
+    public class ColorsetEditorViewModel : INotifyPropertyChanged, IDisposable
     {
         private static XivTex TileTextureNormal;
-        private static XivTex TileTextureDiffuse;
+        private static XivTex TileTextureOrb;
 
         // SharpDX 3D Model Viewing Stuff, which is really all this VM is used for.
         private Viewport3DX _viewport;
@@ -111,7 +115,7 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     TileTextureNormal = await Tex.GetXivTex("chara/common/texture/tile_norm_array.tex");
                     // This is not the correct usage, but works for the moment.
-                    TileTextureDiffuse = await Tex.GetXivTex("chara/common/texture/tile_orb_array.tex");
+                    TileTextureOrb = await Tex.GetXivTex("chara/common/texture/tile_orb_array.tex");
                 }
                 catch
                 {
@@ -127,7 +131,6 @@ namespace FFXIV_TexTools.ViewModels
 
             try
             {
-                Models.Clear();
                 RowId = row;
 
                 var offset = RowId * columnCount * 4;
@@ -145,44 +148,46 @@ namespace FFXIV_TexTools.ViewModels
 
                 var mg3 = MakeCube();
 
+                var lmMaterial = new PhongMaterial()
+                {
+                    AmbientColor = SharpDX.Color.Gray,
+                };
+                float[] diffuseColor = new float[3];
+                float[] specularColor = new float[3];
+
+
                 var dMax = Math.Max(1.0f, Math.Max(RowData[0][0], Math.Max(RowData[0][1], RowData[0][2])));
                 var sMax = Math.Max(1.0f, Math.Max(RowData[0][0], Math.Max(RowData[0][1], RowData[0][2])));
                 var eMax = Math.Max(1.0f, Math.Max(RowData[0][0], Math.Max(RowData[0][1], RowData[0][2])));
 
-                var dColor = new SharpDX.Color(
-                        (byte)Math.Round(Math.Sqrt(RowData[0][0] / dMax) * 255f),
-                        (byte)Math.Round(Math.Sqrt(RowData[0][1] / dMax) * 255f),
-                        (byte)Math.Round(Math.Sqrt(RowData[0][2] / dMax) * 255f));
-                var sColor = new SharpDX.Color(
-                        (byte)Math.Round(Math.Sqrt(RowData[1][0] / sMax) * 255f),
-                        (byte)Math.Round(Math.Sqrt(RowData[1][1] / sMax) * 255f),
-                        (byte)Math.Round(Math.Sqrt(RowData[1][2] / sMax) * 255f));
+                diffuseColor[0] = RowData[0][0] / dMax;
+                diffuseColor[1] = RowData[0][1] / dMax;
+                diffuseColor[2] = RowData[0][2] / dMax;
 
-                var lmMaterial = new PhongMaterial()
-                {
-                    AmbientColor = SharpDX.Color.Gray,
-                    DiffuseColor = dColor,
-                    SpecularColor = sColor
-                };
+                specularColor[0] = RowData[1][0] / sMax;
+                specularColor[1] = RowData[1][1] / sMax;
+                specularColor[2] = RowData[1][2] / sMax;
+
 
                 if (RowData[2][0] != 0 || RowData[2][1] != 0 || RowData[2][2] != 0)
                 {
                     lmMaterial.EmissiveColor = new SharpDX.Color(
-                        (byte)Math.Round(Math.Sqrt(RowData[2][0] / eMax) * 255f),
-                        (byte)Math.Round(Math.Sqrt(RowData[2][1] / eMax) * 255f),
-                        (byte)Math.Round(Math.Sqrt(RowData[2][2] / eMax) * 255f));
+                    ColorsetFileControl.ColorHalfToByte(RowData[2][0] / eMax),
+                    ColorsetFileControl.ColorHalfToByte(RowData[2][1] / eMax),
+                    ColorsetFileControl.ColorHalfToByte(RowData[2][2] / eMax));
                 }
 
-
-                float glossVal = RowData[1][3];
-                float specularPower = RowData[0][3];
-
-                if (DawnTrail)
+                float glossVal = RowData[0][3];
+                float specularPower = RowData[1][3];
+                float metallicVal = 0;
+                if (!LegacyShader)
                 {
-                    // Values flipped in Dawntrail.
-                    glossVal = RowData[0][3];
-                    specularPower = RowData[1][3];
+                    glossVal = 32 * Math.Max(Math.Min(1, (1 - RowData[4][0])), 0);
+                    metallicVal = Math.Max(Math.Min(1, (1 - RowData[4][2])), 0) ;
+                    specularPower = 1.0f;
                 }
+
+
 
                 if (dyeId >= 0 && dyeId < 128 && _mtrl.ColorSetDyeData.Length > 0)
                 {
@@ -212,30 +217,28 @@ namespace FFXIV_TexTools.ViewModels
                         bool useSpecPower = (data & 0x08) > 0;
                         bool useGloss = (data & 0x10) > 0;
 
+                        bool useMetallic = (data & 0x10) != 0;
+                        bool useRoughness = (data & 0x20) != 0;
+
                         var diffuse = template.GetDiffuseData(dyeId);
                         var spec = template.GetSpecularData(dyeId);
                         var emissive = template.GetEmissiveData(dyeId);
-                        var gloss = template.GetGlossData(dyeId);
-                        var specPower = template.GetSpecularPowerData(dyeId);
 
                         if (useDiffuse && diffuse != null)
                         {
                             var max = Math.Max(1.0f, Math.Max(diffuse[0], Math.Max(diffuse[1], diffuse[2])));
+                            diffuseColor[0] = diffuse[0] / max;
+                            diffuseColor[1] = diffuse[1] / max;
+                            diffuseColor[2] = diffuse[2] / max;
 
-                            lmMaterial.DiffuseColor = new SharpDX.Color(
-                            (byte)Math.Round((diffuse[0] / max) * 255f),
-                            (byte)Math.Round((diffuse[1] / max) * 255f),
-                            (byte)Math.Round((diffuse[2] / max) * 255f));
                         }
 
                         if (useSpecular && spec != null)
                         {
                             var max = Math.Max(1.0f, Math.Max(spec[0], Math.Max(spec[1], spec[2])));
-
-                            lmMaterial.SpecularColor = new SharpDX.Color(
-                            (byte)Math.Round((spec[0] / max) * 255f),
-                            (byte)Math.Round((spec[1] / max) * 255f),
-                            (byte)Math.Round((spec[2] / max) * 255f));
+                            specularColor[0] = diffuse[0] / max;
+                            specularColor[1] = diffuse[1] / max;
+                            specularColor[2] = diffuse[2] / max;
                         }
 
                         if (useEmissive && emissive != null)
@@ -243,54 +246,108 @@ namespace FFXIV_TexTools.ViewModels
                             var max = Math.Max(1.0f, Math.Max(emissive[0], Math.Max(emissive[1], emissive[2])));
 
                             lmMaterial.EmissiveColor = new SharpDX.Color(
-                            (byte)Math.Round((emissive[0] / max) * 255f),
-                            (byte)Math.Round((emissive[1] / max) * 255f),
-                            (byte)Math.Round((emissive[2] / max) * 255f));
+                            ColorsetFileControl.ColorHalfToByte(emissive[0] / max),
+                            ColorsetFileControl.ColorHalfToByte(emissive[1] / max),
+                            ColorsetFileControl.ColorHalfToByte(emissive[2] / max));
                         }
 
-                        if(useGloss && LegacyShader && gloss != null)
+
+                        if (LegacyShader)
                         {
-                            glossVal = gloss[0];
+                            var gloss = template.GetGlossData(dyeId);
+                            var specPower = template.GetSpecularPowerData(dyeId);
+                            if (useGloss && gloss != null)
+                            {
+                                glossVal = gloss[0];
+                            }
+
+                            if (useSpecPower && specPower != null)
+                            {
+                                specularPower = specPower[0];
+                            }
                         }
-                        
-                        if(useSpecPower && LegacyShader && specPower != null)
+                        else
                         {
-                            specularPower = specPower[0];
+                            var metallicDye = template.GetData(5, dyeId);
+                            var roughDye = template.GetData(6, dyeId);
+                            if (useMetallic && metallicDye != null)
+                            {
+                                metallicVal = metallicDye[0];
+                            } 
+                            if (useRoughness && roughDye != null)
+                            {
+                                glossVal = 32 * Math.Max(Math.Min(1, (1 - roughDye[0])), 0);
+                            }
                         }
                                                 
                     }
                 }
 
-                // This is some arbitrary math to make the gloss more or less reflected in the visual.
-                glossVal = (glossVal * glossVal) * 10;
-                lmMaterial.SpecularShininess = glossVal;
 
                 if (specularPower == 0)
                 {
                     glossVal = 1;
                 }
 
+                // This is some arbitrary math to make the gloss more or less reflected in the visual.
+                lmMaterial.SpecularShininess = (glossVal * glossVal) + 15;
                 lmMaterial.SpecularColor = lmMaterial.SpecularColor * specularPower;
 
 
 
                 if (TileTextureNormal != null)
                 {
-                    var tm = await MakeTextureModel(TileTextureNormal);
-                    if (tm != null)
-                    {
-                        lmMaterial.NormalMap = tm;
-                    }
-                }
+                    var layer = (int)Math.Floor(RowData[6][1] * 64);
+                    if (layer > 63 || layer < 0) layer = 0;
+                    var normData = await TileTextureNormal.GetRawPixels(layer);
+                    lmMaterial.NormalMap = MakeTextureModel(normData);
 
-                // Disabled currently since this is no longer a diffuse map, and now an _orm map.
-                if (TileTextureDiffuse != null && false)
-                {
-                    var tm = await MakeTextureModel(TileTextureDiffuse);
-                    if (tm != null)
+                    var orbData = await TileTextureOrb.GetRawPixels();
+                    var size = TileTextureOrb.Width * TileTextureOrb.Height * 4;
+                    var specularMask = new byte[size];
+                    var diffuseMask = new byte[size];
+                    var roughMask = new byte[size];
+
+                    await TextureHelpers.ModifyPixels((offset) =>
                     {
-                        lmMaterial.DiffuseMap = tm;
-                    }
+                        var specPix = ColorsetFileControl.ColorByteToHalf(orbData[offset + 0]);
+                        var roughPix = ColorsetFileControl.ColorByteToHalf(orbData[offset + 1]);
+                        var diffPix = ColorsetFileControl.ColorByteToHalf(orbData[offset + 2]);
+
+                        specPix *= (1 - roughPix);
+
+                        Color4 diff = new Color4(
+                            diffPix * diffuseColor[0],
+                            diffPix * diffuseColor[1],
+                            diffPix * diffuseColor[2],
+                            1.0f);
+
+                        Color4 spec = new Color4(
+                            specPix * specularColor[0],
+                            specPix * specularColor[1],
+                            specPix * specularColor[2],
+                            1.0f); 
+
+                        // As metalness rises, the diffuse/specular colors merge.
+                        diff = Color4.Lerp(diff, diff * spec, metallicVal);
+                        spec = Color4.Lerp(spec, diff * spec, metallicVal);
+
+
+                        diffuseMask[offset + 0] = ColorsetFileControl.ColorHalfToByte(diff[0]);
+                        diffuseMask[offset + 1] = ColorsetFileControl.ColorHalfToByte(diff[1]);
+                        diffuseMask[offset + 2] = ColorsetFileControl.ColorHalfToByte(diff[2]);
+                        diffuseMask[offset + 3] = 255;
+
+                        specularMask[offset + 0] = ColorsetFileControl.ColorHalfToByte(spec[0]);
+                        specularMask[offset + 1] = ColorsetFileControl.ColorHalfToByte(spec[1]);
+                        specularMask[offset + 2] = ColorsetFileControl.ColorHalfToByte(spec[2]);
+                        specularMask[offset + 3] = 255;
+
+                    }, TileTextureOrb.Width, TileTextureOrb.Height);
+
+                    lmMaterial.DiffuseAlphaMap = MakeTextureModel(diffuseMask);
+                    lmMaterial.SpecularColorMap = MakeTextureModel(specularMask);
+
                 }
 
                 MeshGeometryModel3D mgm3 = new MeshGeometryModel3D()
@@ -299,6 +356,12 @@ namespace FFXIV_TexTools.ViewModels
                     Material = lmMaterial
                 };
 
+
+                foreach (var m in Models)
+                {
+                    m.Dispose();
+                }
+                Models.Clear();
                 Models.Add(mgm3);
             } catch(Exception ex)
             {
@@ -306,31 +369,29 @@ namespace FFXIV_TexTools.ViewModels
             }
         }
 
-        private async Task<TextureModel> MakeTextureModel(XivTex tex)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static float Lerp(float a, float b, float t)
         {
+            return a + (b - a) * t;
+        }
 
-            var layer = (int)Math.Floor(RowData[2][3] * 64);
-            if (layer > 63 || layer < 0) layer = 0;
-            var tileX = (float)RowData[3][0];
-            var tileY = (float)RowData[3][3];
-            var tileSkewX = (float)RowData[3][1];
-            var tileSkewY = (float)RowData[3][2];
-
-            byte[] data;
-            try
-            {
-                data = await tex.GetRawPixels(layer);
-            } catch
-            {
-                return null;
-            }
+        /// <summary>
+        /// Handles converting the byte array to color
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        private TextureModel MakeTextureModel(byte[] data)
+        {
+            var tileX = (float)RowData[7][0];
+            var tileY = (float)RowData[7][3];
+            var tileSkewX = (float)RowData[7][1];
+            var tileSkewY = (float)RowData[7][2];
 
             var ogW = 32;
             var ogH = 32;
             var w = 256;
             var h = 256;
             Color4[] colors = new Color4[w * h];
-
 
             for (int y = 0; y < h; y++)
             {
@@ -358,6 +419,7 @@ namespace FFXIV_TexTools.ViewModels
                     var ogPixel = (yPx * ogW) + xPx;
                     var ogDataOffset = ogPixel * 4;
 
+                    
                     colors[nPixel] = new Color4()
                     {
                         Red = data[ogDataOffset] / 255.0f,
@@ -365,7 +427,6 @@ namespace FFXIV_TexTools.ViewModels
                         Blue = data[ogDataOffset + 2] / 255.0f,
                         Alpha = 1.0f,
                     };
-
                 }
             }
 
@@ -383,7 +444,6 @@ namespace FFXIV_TexTools.ViewModels
 
             if (axis == PlaneAxis.X)
             {
-                return;
                 if (offset > 0)
                 {
                     plane.AddQuad(
@@ -405,7 +465,6 @@ namespace FFXIV_TexTools.ViewModels
             }
             else if (axis == PlaneAxis.Y)
             {
-                return;
                 if (offset > 0)
                 {
                     plane.AddQuad(
@@ -438,7 +497,6 @@ namespace FFXIV_TexTools.ViewModels
                 }
                 else
                 {
-                    return;
                     plane.AddQuad(
                         new SharpDX.Vector3(-offset, offset, offset),
                         new SharpDX.Vector3(offset, offset, offset),
@@ -464,12 +522,12 @@ namespace FFXIV_TexTools.ViewModels
             var plane = new MeshBuilder();
             plane.CreateTextureCoordinates = true;
 
-            AddQuad(plane, PlaneAxis.X, 0.5f);
-            AddQuad(plane, PlaneAxis.X, -0.5f);
-            AddQuad(plane, PlaneAxis.Y, 0.5f);
-            AddQuad(plane, PlaneAxis.Y, -0.5f);
-            AddQuad(plane, PlaneAxis.Z, 0.5f);
-            AddQuad(plane, PlaneAxis.Z, -0.5f);
+            //AddQuad(plane, PlaneAxis.X, 0.5f);
+            //AddQuad(plane, PlaneAxis.X, -0.5f);
+            //AddQuad(plane, PlaneAxis.Y, 0.5f);
+            //AddQuad(plane, PlaneAxis.Y, -0.5f);
+            AddQuad(plane, PlaneAxis.Z, 100.0f);
+            //AddQuad(plane, PlaneAxis.Z, -0.5f);
 
             plane.ComputeTangents(MeshFaces.Default);
 
@@ -499,6 +557,17 @@ namespace FFXIV_TexTools.ViewModels
             backingField = value;
             OnPropertyChanged(propertyName);
             return true;
+        }
+
+        public void Dispose()
+        {
+            if(Models != null)
+            {
+                foreach(var m in Models)
+                {
+                    m?.Dispose();
+                }
+            }
         }
         #endregion
     }
