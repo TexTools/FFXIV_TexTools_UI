@@ -205,13 +205,28 @@ namespace FFXIV_TexTools.Views
 
         public static void ShowError(string title, string message)
         {
-            var wind = MainWindow.GetMainWindow();
-            if (!IsWindowOpen(wind))
+            try
             {
-                wind = null;
+                var wind = MainWindow.GetMainWindow();
+                if (!IsWindowOpen(wind))
+                {
+                    wind = null;
+                }
+                if (wind == null)
+                {
+                    FlexibleMessageBox.Show(message, title, MessageBoxButtons.OK, MessageBoxIcon.Error,
+                        MessageBoxDefaultButton.Button1);
+                }
+                else
+                {
+                    FlexibleMessageBox.Show(wind.Win32Window, message, title, MessageBoxButtons.OK, MessageBoxIcon.Error,
+                        MessageBoxDefaultButton.Button1);
+                }
             }
-            FlexibleMessageBox.Show(wind.Win32Window, message, title, MessageBoxButtons.OK, MessageBoxIcon.Error,
-                MessageBoxDefaultButton.Button1);
+            catch(Exception ex)
+            {
+                Trace.WriteLine(ex);
+            }
         }
         public static bool InfoPrompt(this Window wind, string title, string message)
         {
