@@ -21,7 +21,7 @@
     <Grid x:Name="MaterialGrid" Visibility="Visible">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="160"></ColumnDefinition>
-            <ColumnDefinition Width="2*"></ColumnDefinition>
+            <ColumnDefinition Width="700"></ColumnDefinition>
             <ColumnDefinition Width="1*"></ColumnDefinition>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
@@ -323,12 +323,22 @@
             <Label Content="Preview Dye #" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.ColumnSpan="2" Margin="10,0" Grid.Row="0"/>
             <ComboBox x:Name="DyePreviewIdBox" VerticalAlignment="Center" HorizontalAlignment="Left" Width="150" SelectionChanged="DyePreviewIdBox_SelectionChanged" Grid.ColumnSpan="2" Margin="100,0,0,0" Grid.Row="0"/>
             <Button x:Name="CopyDyeValuesButton" Content="Dye Selected Row" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Column="0" Grid.Row="1" Width="150" Margin="10,0,0,0" Click="CopyDyeValuesButton_Click"></Button>
-            <Button x:Name="CopyAllDyeValuesButton"  Content="Dye All Rows" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Column="1" Grid.Row="1" Margin="10,0,0,0" Width="150" Click="CopyAllDyeValuesButton_Click"></Button>
+            <Button x:Name="CopyAllDyeValuesButton"  Content="Dye All Rows" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Column="1" Grid.Row="1" Margin="10,0,0,0" Width="150" Click="CopyAllDyeValuesButton_Click">
+                <Button.ContextMenu>
+                    <ContextMenu x:Name="DyeContextMenu">
+                        <MenuItem Header="Dye Channel 1" Click="DyeChannel1_Click"/>
+                        <MenuItem Header="Dye Channel 2" Click="DyeChannel2_Click"/>
+                        <MenuItem Header="Dye Channel 3" Click="DyeChannel3_Click"/>
+                        <MenuItem Header="Dye Channel 4" Click="DyeChannel4_Click"/>
+                        <MenuItem Header="Dye All Channels" Click="DyeAllChannels_Click"/>
+                    </ContextMenu>
+                </Button.ContextMenu>
+            </Button>
 
             <hx:Viewport3DX
                         x:Name="ColorsetRowViewport"
                         Grid.Row="2"
-                    Grid.ColumnSpan="2"
+                        Grid.ColumnSpan="2"
                         EffectsManager="{Binding EffectsManager}"
                         Camera="{Binding Camera}"
                         ZoomExtentsWhenLoaded="True"
@@ -340,12 +350,11 @@
                     <MouseBinding Command="hx:ViewportCommands.Zoom" Gesture="MiddleClick" />
                     <MouseBinding Command="hx:ViewportCommands.Pan" Gesture="LeftClick" />
                 </hx:Viewport3DX.InputBindings>
-                <hx:DirectionalLight3D IsRendering="True" Direction="0, 0, -1" Color="White" />
-                <hx:DirectionalLight3D IsRendering="True" Direction="0, 0, 1" Color="White" />
-                <hx:DirectionalLight3D IsRendering="True" Direction="0, 1, 0" Color="White" />
-                <hx:DirectionalLight3D IsRendering="True" Direction="0, -1, 0" Color="White" />
-                <hx:DirectionalLight3D IsRendering="True" Direction="1, 0, 0" Color="White" />
-                <hx:DirectionalLight3D IsRendering="True" Direction="-1, 0, 0" Color="White" />
+                
+                <hx:DirectionalLight3D
+                     Direction="0,0,-1" 
+                    Color="#AAAAAAAA" IsRendering="True" />
+                
                 <hx:GroupModel3D ItemsSource="{Binding Models}"/>
             </hx:Viewport3DX>
             <Canvas Grid.Row="2" Name="AlternateViewportCanvas" Visibility="Hidden" IsHitTestVisible="False"/>

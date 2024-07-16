@@ -185,7 +185,17 @@ namespace FFXIV_TexTools.Views
                 return;
             }
 
-            InitializeSettings();
+            try
+            {
+                InitializeSettings();
+            }
+            catch
+            {
+                ViewHelpers.ShowError("Initialization Failure", "TexTools was unable to initialize all startup directories properly.\n\nPlease check your folder paths are valid and accessible.");
+                DoOnboarding();
+                return;
+            }
+
             CheckRerunAdmin();
             ValidateModlist();
         }
