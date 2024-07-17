@@ -245,7 +245,7 @@ namespace FFXIV_TexTools.Views.Models
         {
             OtherDataRichTextBox.Document.Blocks.Clear();
 
-            var selectedItem = (string) OtherDataComboBox.SelectedItem;
+            var selectedItem = (string)OtherDataComboBox.SelectedItem;
 
             var textBox = OtherDataRichTextBox;
 
@@ -336,6 +336,34 @@ namespace FFXIV_TexTools.Views.Models
                 {
                     AddText(textBox, $"{i}:\t", _textColor, false);
                     AddText(textBox, $"{boneIndex.BoneIndices[i]}\n\n", _textColor, true);
+                }
+            }
+
+
+            if (selectedItem.Equals("Bounding Box".L()))
+            {
+                var bbId = 0;
+                foreach(var l in _xivMdl.BoundingBoxes)
+                {
+                    AddText(textBox, $"\n\nMain BB {bbId}: \n", _textColor, false);
+                    bbId++;
+                    foreach (var bb in l)
+                    {
+                        AddText(textBox, $"{bb[0]}, {bb[1]}, {bb[2]},{bb[3]}\n", _textColor, false);
+                    }
+                }
+
+                bbId = 0;
+                foreach (var l in _xivMdl.BoneBoundingBoxes)
+                {
+                    var bName = _xivMdl.PathData.BoneList[bbId];
+                    AddText(textBox, $"\n\nBone BB {bName}: \n", _textColor, false);
+                    bbId++;
+
+                    foreach (var bb in l)
+                    {
+                        AddText(textBox, $"{bb[0]}, {bb[1]}, {bb[2]}, {bb[3]}\n", _textColor, false);
+                    }
                 }
             }
         }
