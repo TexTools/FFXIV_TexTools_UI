@@ -65,7 +65,7 @@ namespace FFXIV_TexTools.Helpers
 
                     if (ext != ".ttmp2" && ext != ".pmp")
                     {
-                        ext = ".pmp";
+                        ext = "." + Settings.Default.Default_Modpack_Format;
                     }
 
 
