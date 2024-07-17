@@ -467,27 +467,12 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         private void FillSkeletonComboBox()
         {
-            var deformRaceList = new List<XivRace>
+            var deformRaceList = new List<XivRace>();
+            foreach(XivRace race in Enum.GetValues(typeof(XivRace)))
             {
-                XivRace.Hyur_Midlander_Male,
-                XivRace.Hyur_Midlander_Female,
-                XivRace.Hyur_Highlander_Male,
-                XivRace.Hyur_Highlander_Female,
-                XivRace.Elezen_Male,
-                XivRace.Elezen_Female,
-                XivRace.Miqote_Male,
-                XivRace.Miqote_Female,
-                XivRace.Roegadyn_Male,
-                XivRace.Roegadyn_Female,
-                XivRace.Lalafell_Male,
-                XivRace.Lalafell_Female,
-                XivRace.AuRa_Male,
-                XivRace.AuRa_Female,
-                XivRace.Hrothgar_Male,
-                XivRace.Hrothgar_Female,
-                XivRace.Viera_Male,
-                XivRace.Viera_Female
-            };
+                if ((int)race < 100) continue;
+                deformRaceList.Add(race);
+            }
 
             foreach (var xivRace in deformRaceList)
             {
