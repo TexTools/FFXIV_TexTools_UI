@@ -586,5 +586,29 @@ namespace FFXIV_TexTools.Properties {
                 this["UseImportedTangents"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("dds")]
+        public string Default_Image_Format {
+            get {
+                return ((string)(this["Default_Image_Format"]));
+            }
+            set {
+                this["Default_Image_Format"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("pmp")]
+        public string Default_Modpack_Format {
+            get {
+                return ((string)(this["Default_Modpack_Format"]));
+            }
+            set {
+                this["Default_Modpack_Format"] = value;
+            }
+        }
     }
 }

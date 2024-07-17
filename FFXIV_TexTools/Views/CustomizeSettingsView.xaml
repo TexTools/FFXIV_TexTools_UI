@@ -14,9 +14,15 @@
         <ToolTip x:Key="UpgradeDawntrailTooltip">Automatically update pre-Dawntrail Modpacks on Import."</ToolTip>
         <ToolTip x:Key="UpgradeDawntrailPartialTooltip">Automatically upgrade Texture-only Hair and Eye mods contained in pre-Dawntrail Modpacks.</ToolTip>
 
+        <ToolTip x:Key="DefaultModpackFormatTooltip">Determines the default format when saving Modpacks.</ToolTip>
         <ToolTip x:Key="ImageSizeTooltip">
             <TextBlock>
                 Images above this size will automatically be scaled down on import when importing image files (not Modpacks).
+            </TextBlock>
+        </ToolTip>
+        <ToolTip x:Key="ImageFormatTooltip">
+            <TextBlock>
+                Determines the default format for exporting images/textures.
             </TextBlock>
         </ToolTip>
 
@@ -74,7 +80,7 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <GroupBox Header="{Binding Source={x:Static resx:UIStrings.Directories}}" Grid.Row="0" Margin="5">
+            <GroupBox Header="{Binding Source={x:Static resx:UIStrings.Directories}}" Grid.Row="0" Margin="5,0">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -86,34 +92,34 @@
                         <ColumnDefinition />
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <TextBox x:Name="FfxivDir" Grid.Row="0" Text="{Binding FFXIV_Directory}" TextWrapping="NoWrap" IsReadOnly="True" Margin="5" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.FFXIV_Directory}}" mah:TextBoxHelper.UseFloatingWatermark="True"/>
-                    <TextBox x:Name="SaveDir" Grid.Row="1" Text="{Binding Save_Directory}" TextWrapping="NoWrap" IsReadOnly="True" Margin="5" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.Save_Directory}}" mah:TextBoxHelper.UseFloatingWatermark="True"/>
-                    <TextBox x:Name="BackupDir" Grid.Row="2" Text="{Binding Backups_Directory}" TextWrapping="NoWrap" IsReadOnly="True" Margin="5" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.Backups_Directory}}" mah:TextBoxHelper.UseFloatingWatermark="True"/>
-                    <TextBox x:Name="ModPackDir" Grid.Row="3" Text="{Binding ModPack_Directory}" TextWrapping="NoWrap" IsReadOnly="True" Margin="5" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.Mod_Pack_Directory}}" mah:TextBoxHelper.UseFloatingWatermark="True"/>
+                    <TextBox x:Name="FfxivDir" Grid.Row="0" Text="{Binding FFXIV_Directory}" TextWrapping="NoWrap" IsReadOnly="True" Margin="5,0" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.FFXIV_Directory}}" mah:TextBoxHelper.UseFloatingWatermark="True"/>
+                    <TextBox x:Name="SaveDir" Grid.Row="1" Text="{Binding Save_Directory}" TextWrapping="NoWrap" IsReadOnly="True" Margin="5,0" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.Save_Directory}}" mah:TextBoxHelper.UseFloatingWatermark="True"/>
+                    <TextBox x:Name="BackupDir" Grid.Row="2" Text="{Binding Backups_Directory}" TextWrapping="NoWrap" IsReadOnly="True" Margin="5,0" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.Backups_Directory}}" mah:TextBoxHelper.UseFloatingWatermark="True"/>
+                    <TextBox x:Name="ModPackDir" Grid.Row="3" Text="{Binding ModPack_Directory}" TextWrapping="NoWrap" IsReadOnly="True" Margin="5,0" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.Mod_Pack_Directory}}" mah:TextBoxHelper.UseFloatingWatermark="True"/>
 
-                    <Button Content="..." Grid.Row="0" Grid.Column="1" Margin="5" Command="{Binding FFXIV_SelectDir}" HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="25" MinHeight="25" HorizontalContentAlignment="Center" VerticalContentAlignment="Top"/>
-                    <Button Content="..." Grid.Row="1" Grid.Column="1" Margin="5" Command="{Binding Save_SelectDir}" HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="25" MinHeight="25" VerticalContentAlignment="Top" HorizontalContentAlignment="Center"/>
-                    <Button Content="..." Grid.Row="2" Grid.Column="1" Margin="5" Command="{Binding Backup_SelectDir}" HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="25" MinHeight="25" VerticalContentAlignment="Top" HorizontalContentAlignment="Center"/>
-                    <Button Content="..." Grid.Row="3" Grid.Column="1" Margin="5" Command="{Binding ModPack_SelectDir}" HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="25" MinHeight="25" VerticalContentAlignment="Top" HorizontalContentAlignment="Center"/>
+                    <Button Content="..." Grid.Row="0" Grid.Column="1" Margin="5,0" Command="{Binding FFXIV_SelectDir}" HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="25" MinHeight="25" HorizontalContentAlignment="Center" VerticalContentAlignment="Top"/>
+                    <Button Content="..." Grid.Row="1" Grid.Column="1" Margin="5,0" Command="{Binding Save_SelectDir}" HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="25" MinHeight="25" VerticalContentAlignment="Top" HorizontalContentAlignment="Center"/>
+                    <Button Content="..." Grid.Row="2" Grid.Column="1" Margin="5,0" Command="{Binding Backup_SelectDir}" HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="25" MinHeight="25" VerticalContentAlignment="Top" HorizontalContentAlignment="Center"/>
+                    <Button Content="..." Grid.Row="3" Grid.Column="1" Margin="5,0" Command="{Binding ModPack_SelectDir}" HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="25" MinHeight="25" VerticalContentAlignment="Top" HorizontalContentAlignment="Center"/>
                 </Grid>
             </GroupBox>
-            <GroupBox Grid.Row="1" Header="System Settings" Margin="5">
+            <GroupBox Grid.Row="1" Header="System Settings" Margin="5,0">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="175"></ColumnDefinition>
                         <ColumnDefinition></ColumnDefinition>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="40"/>
-                        <RowDefinition Height="40"/>
-                        <RowDefinition Height="40"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="30"/>
                     </Grid.RowDefinitions>
 
-                    <Label Grid.Column="0" Grid.Row="0"  Margin="5" Content="Default Modack Author" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"  ToolTip="{StaticResource ModpackAuthorTooltip}"></Label>
-                    <TextBox x:Name="AuthorTextBox" Grid.Column="1" Grid.Row="0" Text="{Binding DefaultAuthor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="5" VerticalContentAlignment="Center"  ToolTip="{StaticResource ModpackAuthorTooltip}"/>
+                    <Label Grid.Column="0" Grid.Row="0"  Margin="5,0" Content="Default Modack Author" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"  ToolTip="{StaticResource ModpackAuthorTooltip}"></Label>
+                    <TextBox x:Name="AuthorTextBox" Grid.Column="1" Grid.Row="0" Text="{Binding DefaultAuthor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="5,0" VerticalAlignment="Center" VerticalContentAlignment="Center"  ToolTip="{StaticResource ModpackAuthorTooltip}"/>
 
-                    <Label Grid.Column="0" Grid.Row="1"  Margin="5" Content="Default Modpack URL" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"  ToolTip="{StaticResource ModpackUrlTooltip}"></Label>
-                    <TextBox x:Name="UrlTextBox" Grid.Column="1" Grid.Row="1" Margin="5" VerticalContentAlignment="Center"  ToolTip="{StaticResource ModpackUrlTooltip}">
+                    <Label Grid.Column="0" Grid.Row="1"  Margin="5,0" Content="Default Modpack URL" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"  ToolTip="{StaticResource ModpackUrlTooltip}"></Label>
+                    <TextBox x:Name="UrlTextBox" Grid.Column="1" Grid.Row="1" Margin="5,0" VerticalContentAlignment="Center" VerticalAlignment="Center"  ToolTip="{StaticResource ModpackUrlTooltip}">
                         <TextBox.Text>
                             <Binding  NotifyOnValidationError="True" UpdateSourceTrigger="PropertyChanged" Path="DefaultModpackUrl" Mode="TwoWay">
                                 <Binding.ValidationRules>
@@ -123,12 +129,12 @@
                         </TextBox.Text>
                     </TextBox>
 
-                    <Label Grid.Column="0" Grid.Row="2" Margin="5" Content="Default Race" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"  ToolTip="{StaticResource DefaultRaceTooltip}"></Label>
-                    <ComboBox x:Name="DefaultRacesBox" Grid.Column="1" Grid.Row="2"  VerticalAlignment="Center" ItemsSource="{Binding DefaultRaces}" SelectedItem="{Binding SelectedDefaultRace}" Margin="5"  ToolTip="{StaticResource DefaultRaceTooltip}"/>
+                    <Label Grid.Column="0" Grid.Row="2" Margin="5,0" Content="Default Race" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"  ToolTip="{StaticResource DefaultRaceTooltip}"></Label>
+                    <ComboBox x:Name="DefaultRacesBox" Grid.Column="1" Grid.Row="2"  VerticalAlignment="Center" ItemsSource="{Binding DefaultRaces}" SelectedItem="{Binding SelectedDefaultRace}" Margin="5,0"  ToolTip="{StaticResource DefaultRaceTooltip}"/>
 
                 </Grid>
             </GroupBox>
-            <GroupBox Grid.Row="2" Header="Import/Export Settings" Margin="5">
+            <GroupBox Grid.Row="2" Header="Import/Export Settings" Margin="5,0">
                 <Grid>
 
                     <Grid.ColumnDefinitions>
@@ -137,46 +143,57 @@
 
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="40"/>
-                        <RowDefinition Height="40"/>
-                        <RowDefinition Height="40"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="30"/>
                         <RowDefinition Height="4"/>
-                        <RowDefinition Height="40"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="30"/>
                         <RowDefinition Height="4"/>
-                        <RowDefinition Height="40"/>
-                        <RowDefinition Height="40"/>
-                        <RowDefinition Height="40"/>
-                        <RowDefinition Height="40"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="30"/>
                     </Grid.RowDefinitions>
 
-                    <Label Grid.Column="0" Grid.Row="0" Margin="5" Content="Update Endwalker Modpacks" VerticalAlignment="Center" ToolTip="{StaticResource UpgradeDawntrailTooltip}" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
-                    <CheckBox x:Name="DawntrailFixBox"  Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" Margin="5" ToolTip="{StaticResource UpgradeDawntrailTooltip}"  IsChecked="{Binding AutoFixDawntrail}"></CheckBox>
+                    <Label Grid.Column="0" Grid.Row="0" Margin="5,0" Content="Update Endwalker Modpacks" VerticalAlignment="Center" ToolTip="{StaticResource UpgradeDawntrailTooltip}" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
+                    <CheckBox x:Name="DawntrailFixBox"  Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" Margin="5,0" ToolTip="{StaticResource UpgradeDawntrailTooltip}"  IsChecked="{Binding AutoFixDawntrail}"></CheckBox>
 
-                    <Label Grid.Column="0" Grid.Row="1" Margin="5" Content="Update Partial Endwalker Files" VerticalAlignment="Center" ToolTip="{StaticResource UpgradeDawntrailPartialTooltip}"  HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
-                    <CheckBox Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" Margin="5" ToolTip="{StaticResource UpgradeDawntrailPartialTooltip}" IsChecked="{Binding AutoFixPartialDawntrail}" IsEnabled="{Binding AutoFixDawntrail}"></CheckBox>
+                    <Label Grid.Column="0" Grid.Row="1" Margin="5,0" Content="Update Partial Endwalker Files" VerticalAlignment="Center" ToolTip="{StaticResource UpgradeDawntrailPartialTooltip}"  HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
+                    <CheckBox Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" Margin="5,0" ToolTip="{StaticResource UpgradeDawntrailPartialTooltip}" IsChecked="{Binding AutoFixPartialDawntrail}" IsEnabled="{Binding AutoFixDawntrail}"></CheckBox>
 
-                    <Label Grid.Column="0" Grid.Row="2" Margin="5" Content="Compress Upgrade Textures" VerticalAlignment="Center" ToolTip="{StaticResource CompressUpgradesTooltip}"  HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
-                    <CheckBox Grid.Column="1" Grid.Row="2" VerticalAlignment="Center" Margin="5" ToolTip="{StaticResource CompressUpgradesTooltip}" IsChecked="{Binding CompressUpgradeTextures}" ></CheckBox>
+                    <Label Grid.Column="0" Grid.Row="2" Margin="5,0" Content="Compress Upgrade Textures" VerticalAlignment="Center" ToolTip="{StaticResource CompressUpgradesTooltip}"  HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
+                    <CheckBox Grid.Column="1" Grid.Row="2" VerticalAlignment="Center" Margin="5,0" ToolTip="{StaticResource CompressUpgradesTooltip}" IsChecked="{Binding CompressUpgradeTextures}" ></CheckBox>
 
-                    <Separator Grid.Row="3" Grid.ColumnSpan="10" Margin="20,0"></Separator>
-
-                    <Label Grid.Column="0" Grid.Row="4" Margin="5" Content="Maximum Imported Image Size" ToolTip="{StaticResource ImageSizeTooltip}" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
-                    <ComboBox Grid.Column="1" Grid.Row="4"  VerticalAlignment="Center" ToolTip="{StaticResource ImageSizeTooltip}" ItemsSource="{Binding Path=ImageSizes}" SelectedValue="{Binding Path=MaxImageSize}" SelectedValuePath="Value" DisplayMemberPath="Key" Margin="5,0" />
+                    <Label Grid.Column="0" Grid.Row="3" Margin="5,0" Content="Default Modpack Format" ToolTip="{StaticResource DefaultModpackFormatTooltip}" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
+                    <ComboBox Grid.Column="1" Grid.Row="3"  VerticalAlignment="Center" ToolTip="{StaticResource DefaultModpackFormatTooltip}" ItemsSource="{Binding Path=ModpackFormats}" SelectedValue="{Binding Path=DefaultModpackFormat}" SelectedValuePath="Value" DisplayMemberPath="Key" Margin="5,0" />
 
 
-                    <Separator Grid.Row="5" Grid.ColumnSpan="10" Margin="20,0"></Separator>
 
-                    <Label Grid.Column="0" Grid.Row="6" Margin="5" Content="External Modeling Tool" VerticalAlignment="Center" ToolTip="{StaticResource ModelingToolTooltip}" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
-                    <ComboBox x:Name="Target3DProgramBox" Grid.Column="1" Grid.Row="6"  VerticalAlignment="Center" ToolTip="{StaticResource ModelingToolTooltip}" ItemsSource="{Binding Path=ModelingTools}" SelectedValue="{Binding Path=ModelingTool}" SelectedValuePath="Value" DisplayMemberPath="Key" Margin="5,0" />
+                    <Separator Grid.Row="4" Grid.ColumnSpan="10" Margin="20,0"></Separator>
 
-                    <Label Grid.Column="0" Grid.Row="7" Margin="5" Content="Export Complete Skeletons" VerticalAlignment="Center" ToolTip="{StaticResource CompleteSkeletonsTooltip}" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
-                    <CheckBox x:Name="ExportAllBonesBox"  Grid.Column="1" Grid.Row="7" VerticalAlignment="Center" Margin="5,0" ToolTip="{StaticResource CompleteSkeletonsTooltip}" IsChecked="{Binding ExportAllBones}"></CheckBox>
 
-                    <Label Grid.Column="0" Grid.Row="8" Margin="5" Content="Shift Exported Model UVs" VerticalAlignment="Center" ToolTip="{StaticResource ShiftModelUvsTooltip}"  HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
-                    <CheckBox x:Name="UvShiftBox"  Grid.Column="1" Grid.Row="8" VerticalAlignment="Center" Margin="5,0"  ToolTip="{StaticResource ShiftModelUvsTooltip}"  IsChecked="{Binding Path=ShiftExportUV}"></CheckBox>
+                    <Label Grid.Column="0" Grid.Row="5" Margin="5,0" Content="Default Image Format" ToolTip="{StaticResource ImageFormatTooltip}" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
+                    <ComboBox Grid.Column="1" Grid.Row="5"  VerticalAlignment="Center" ToolTip="{StaticResource ImageFormatTooltip}" ItemsSource="{Binding Path=ImageFormats}" SelectedValue="{Binding Path=DefaultImageFormat}" SelectedValuePath="Value" DisplayMemberPath="Key" Margin="5,0" />
 
-                    <Label Grid.Column="0" Grid.Row="9" Margin="5" Content="Auto-Assign Body Materials" VerticalAlignment="Center" HorizontalContentAlignment="Right" ToolTip="{StaticResource AutoAssignBodyTooltip}"  VerticalContentAlignment="Center"></Label>
-                    <CheckBox x:Name="AutoMatFixBox"  Grid.Column="1" Grid.Row="9" VerticalAlignment="Center" Margin="5,0" ToolTip="{StaticResource AutoAssignBodyTooltip}" IsChecked="{Binding AutoMaterialFix}"></CheckBox>
+                    <Label Grid.Column="0" Grid.Row="6" Margin="5,0" Content="Maximum Imported Image Size" ToolTip="{StaticResource ImageSizeTooltip}" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
+                    <ComboBox Grid.Column="1" Grid.Row="6"  VerticalAlignment="Center" ToolTip="{StaticResource ImageSizeTooltip}" ItemsSource="{Binding Path=ImageSizes}" SelectedValue="{Binding Path=MaxImageSize}" SelectedValuePath="Value" DisplayMemberPath="Key" Margin="5,0" />
+
+
+                    <Separator Grid.Row="7" Grid.ColumnSpan="10" Margin="20,0"></Separator>
+
+                    <Label Grid.Column="0" Grid.Row="8" Margin="5,0" Content="External Modeling Tool" VerticalAlignment="Center" ToolTip="{StaticResource ModelingToolTooltip}" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
+                    <ComboBox x:Name="Target3DProgramBox" Grid.Column="1" Grid.Row="8"  VerticalAlignment="Center" ToolTip="{StaticResource ModelingToolTooltip}" ItemsSource="{Binding Path=ModelingTools}" SelectedValue="{Binding Path=ModelingTool}" SelectedValuePath="Value" DisplayMemberPath="Key" Margin="5,0" />
+
+                    <Label Grid.Column="0" Grid.Row="9" Margin="5,0" Content="Export Complete Skeletons" VerticalAlignment="Center" ToolTip="{StaticResource CompleteSkeletonsTooltip}" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
+                    <CheckBox x:Name="ExportAllBonesBox"  Grid.Column="1" Grid.Row="9" VerticalAlignment="Center" Margin="5,0" ToolTip="{StaticResource CompleteSkeletonsTooltip}" IsChecked="{Binding ExportAllBones}"></CheckBox>
+
+                    <Label Grid.Column="0" Grid.Row="10" Margin="5,0" Content="Shift Exported Model UVs" VerticalAlignment="Center" ToolTip="{StaticResource ShiftModelUvsTooltip}"  HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
+                    <CheckBox x:Name="UvShiftBox"  Grid.Column="1" Grid.Row="10" VerticalAlignment="Center" Margin="5,0"  ToolTip="{StaticResource ShiftModelUvsTooltip}"  IsChecked="{Binding Path=ShiftExportUV}"></CheckBox>
+
+                    <Label Grid.Column="0" Grid.Row="11" Margin="5,0" Content="Auto-Assign Body Materials" VerticalAlignment="Center" HorizontalContentAlignment="Right" ToolTip="{StaticResource AutoAssignBodyTooltip}"  VerticalContentAlignment="Center"></Label>
+                    <CheckBox x:Name="AutoMatFixBox"  Grid.Column="1" Grid.Row="11" VerticalAlignment="Center" Margin="5,0" ToolTip="{StaticResource AutoAssignBodyTooltip}" IsChecked="{Binding AutoMaterialFix}"></CheckBox>
 
                 </Grid>
             </GroupBox>
@@ -188,7 +205,7 @@
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition></RowDefinition>
             </Grid.RowDefinitions>
-            <GroupBox Header="{Binding Source={x:Static resx:UIStrings.Colors_Skins}}" Margin="5">
+            <GroupBox Header="{Binding Source={x:Static resx:UIStrings.Colors_Skins}}" Margin="5,0">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -208,39 +225,39 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
-                    <Label Content="Skin Race" Grid.Column="0" Margin="5" ToolTip="{StaticResource SkinRaceTooltip}"/>
+                    <Label Content="Skin Race" Grid.Column="0" Margin="5,0" ToolTip="{StaticResource SkinRaceTooltip}"/>
                     <ComboBox x:Name="SkinComboBox" ItemsSource="{Binding SkinTypes}" SelectedItem="{Binding Selected_SkinType}" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left" ToolTip="{StaticResource SkinRaceTooltip}" mah:TextBoxHelper.UseFloatingWatermark="True"/>
 
-                    <Label Content="{Binding Source={x:Static resx:UIStrings.Skin_Color}}" Grid.Row="1" Margin="5"/>
+                    <Label Content="{Binding Source={x:Static resx:UIStrings.Skin_Color}}" Grid.Row="1" Margin="5,0"/>
                     <xctk:ColorPicker x:Name="SkinColorPicker" SelectedColor="{Binding Selected_SkinColor}" ColorMode="ColorCanvas" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Top" MinWidth="120" DropDownBackground="Gainsboro" Margin="0,7,0,0" />
 
-                    <Label Content="{Binding Source={x:Static resx:UIStrings.Hair_Color}}" Grid.Row="2" Margin="5"/>
+                    <Label Content="{Binding Source={x:Static resx:UIStrings.Hair_Color}}" Grid.Row="2" Margin="5,0"/>
                     <xctk:ColorPicker x:Name="HairColorPicker" SelectedColor="{Binding Selected_HairColor}" ColorMode="ColorCanvas" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" MinWidth="120" DropDownBackground="Gainsboro"/>
 
-                    <Label Content="Hair Highlight Color" Grid.Row="3" Margin="5"/>
+                    <Label Content="Hair Highlight Color" Grid.Row="3" Margin="5,0"/>
                     <xctk:ColorPicker x:Name="HairHighlightColorPicker" SelectedColor="{Binding Selected_HairHighlightColor}" ColorMode="ColorCanvas" Grid.Row="3" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" MinWidth="120" DropDownBackground="Gainsboro"/>
 
-                    <Label Content="{Binding Source={x:Static resx:UIStrings.Iris_Color}}" Grid.Row="4" Margin="5"/>
+                    <Label Content="{Binding Source={x:Static resx:UIStrings.Iris_Color}}" Grid.Row="4" Margin="5,0"/>
                     <xctk:ColorPicker x:Name="IrisColorPicker" SelectedColor="{Binding Selected_IrisColor}" ColorMode="ColorCanvas" Grid.Row="4" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" MinWidth="120" DropDownBackground="Gainsboro"/>
 
-                    <Label Content="Lip Color" Grid.Row="5" Margin="5"/>
+                    <Label Content="Lip Color" Grid.Row="5" Margin="5,0"/>
                     <xctk:ColorPicker x:Name="LipColorPicker" SelectedColor="{Binding Selected_LipColor}" ColorMode="ColorCanvas" Grid.Row="5" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" MinWidth="120" DropDownBackground="Gainsboro"/>
 
 
-                    <Label Content="Tattoo Color" Grid.Row="6" Margin="5"/>
+                    <Label Content="Tattoo Color" Grid.Row="6" Margin="5,0"/>
                     <xctk:ColorPicker x:Name="TattooColorPicker" SelectedColor="{Binding Selected_TattooColor}" ColorMode="ColorCanvas" Grid.Row="6" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" MinWidth="120" DropDownBackground="Gainsboro"/>
 
-                    <Label Content="Furniture Color" Grid.Row="7" Margin="5"/>
+                    <Label Content="Furniture Color" Grid.Row="7" Margin="5,0"/>
                     <xctk:ColorPicker x:Name="FurnitureColorPicker" SelectedColor="{Binding Selected_FurnitureColor}" ColorMode="ColorCanvas" Grid.Row="7" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" MinWidth="120" DropDownBackground="Gainsboro"/>
 
-                    <Label Content="{Binding Source={x:Static resx:UIStrings.BG_Color}}" Grid.Row="8" Margin="5"/>
+                    <Label Content="{Binding Source={x:Static resx:UIStrings.BG_Color}}" Grid.Row="8" Margin="5,0"/>
                     <xctk:ColorPicker x:Name="BGColorPicker" SelectedColor="{Binding Selected_BgColor}" ColorMode="ColorCanvas" Grid.Row="8" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" MinWidth="120" DropDownBackground="Gainsboro"/>
 
-                    <Button x:Name="DefaultButton" Content="{Binding Source={x:Static resx:UIStrings.Reset_to_Default}}" Command="{Binding Customize_Reset}" Grid.Row="9" Grid.Column="0" Margin="5"/>
+                    <Button x:Name="DefaultButton" Content="{Binding Source={x:Static resx:UIStrings.Reset_to_Default}}" Command="{Binding Customize_Reset}" Grid.Row="9" Grid.Column="0" Margin="5,0"/>
                 </Grid>
             </GroupBox>
 
-            <GroupBox Header="Danger Zone" Grid.Row="1" Margin="5">
+            <GroupBox Header="Danger Zone" Grid.Row="1" Margin="5,0">
 
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -248,22 +265,22 @@
                         <ColumnDefinition></ColumnDefinition>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="40"/>
-                        <RowDefinition Height="40"/>
-                        <RowDefinition Height="40"/>
-                        <RowDefinition Height="40"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="30"/>
                     </Grid.RowDefinitions>
 
-                    <Label Grid.Column="0" Grid.Row="0" Margin="5" Content="TexTools Branch" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" ToolTip="{StaticResource UpdateBranchTooltip}" ></Label>
-                    <ComboBox x:Name="UpdateBranchBox" Grid.Column="1" Grid.Row="0"  VerticalAlignment="Center" ItemsSource="{Binding UpdateBranches}" SelectedItem="{Binding UpdateBranch}" Margin="5" ToolTip="{StaticResource UpdateBranchTooltip}" />
+                    <Label Grid.Column="0" Grid.Row="0" Margin="5,0" Content="TexTools Branch" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" ToolTip="{StaticResource UpdateBranchTooltip}" ></Label>
+                    <ComboBox x:Name="UpdateBranchBox" Grid.Column="1" Grid.Row="0"  VerticalAlignment="Center" ItemsSource="{Binding UpdateBranches}" SelectedItem="{Binding UpdateBranch}" Margin="5,0" ToolTip="{StaticResource UpdateBranchTooltip}" />
 
-                    <Label Grid.Column="0" Grid.Row="1" Margin="5" Content="Open Transaction on Startup" VerticalAlignment="Center" ToolTip="{StaticResource StartTxTooltip}"  HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
-                    <CheckBox x:Name="OpenTxDefault"  Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" Margin="5" ToolTip="{StaticResource StartTxTooltip}" IsChecked="{Binding Path=OpenTxByDefault}"></CheckBox>
+                    <Label Grid.Column="0" Grid.Row="1" Margin="5,0" Content="Open Transaction on Startup" VerticalAlignment="Center" ToolTip="{StaticResource StartTxTooltip}"  HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
+                    <CheckBox x:Name="OpenTxDefault"  Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" Margin="5,0" ToolTip="{StaticResource StartTxTooltip}" IsChecked="{Binding Path=OpenTxByDefault}"></CheckBox>
 
-                    <Label Grid.Column="0" Grid.Row="2" Margin="5" Content="Default to UNSAFE Mode" VerticalAlignment="Center" ToolTip="{StaticResource UnsafeModeTooltip}" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
-                    <CheckBox x:Name="UnsafeModeDefault"  Grid.Column="1" Grid.Row="2" VerticalAlignment="Center" Margin="5" ToolTip="{StaticResource UnsafeModeTooltip}"  IsChecked="{Binding Path=UnsafeMode}"></CheckBox>
+                    <Label Grid.Column="0" Grid.Row="2" Margin="5,0" Content="Default to UNSAFE Mode" VerticalAlignment="Center" ToolTip="{StaticResource UnsafeModeTooltip}" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
+                    <CheckBox x:Name="UnsafeModeDefault"  Grid.Column="1" Grid.Row="2" VerticalAlignment="Center" Margin="5,0" ToolTip="{StaticResource UnsafeModeTooltip}"  IsChecked="{Binding Path=UnsafeMode}"></CheckBox>
 
-                    <Button Grid.Row="3" Grid.ColumnSpan="2" Content="Enable Windows Long-Path Support" Margin="5" Click="EnableLongPaths_Click"/>
+                    <Button Grid.Row="3" Grid.ColumnSpan="2" Content="Enable Windows Long-Path Support" Margin="5,0" Click="EnableLongPaths_Click"/>
 
                 </Grid>
             </GroupBox>

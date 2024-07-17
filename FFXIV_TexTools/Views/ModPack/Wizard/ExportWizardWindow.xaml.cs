@@ -438,7 +438,7 @@ namespace FFXIV_TexTools.Views
 
             var sfd = new SaveFileDialog();
             sfd.Filter = ViewHelpers.ModpackFileFilter;
-            sfd.FileName = Data.MetaPage.Name + ".pmp";
+            sfd.FileName = Data.MetaPage.Name + "." + Settings.Default.Default_Modpack_Format;
             sfd.InitialDirectory = Path.GetFullPath(Settings.Default.ModPack_Directory);
 
             if(sfd.ShowDialog() != System.Windows.Forms.DialogResult.OK)

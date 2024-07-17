@@ -57,7 +57,18 @@ namespace FFXIV_TexTools.ViewModels
             new KeyValuePair<string, int>("4096", 4096),
         };
 
+        public ObservableCollection<KeyValuePair<string, string>> ImageFormats { get; set; } = new ObservableCollection<KeyValuePair<string, string>>()
+        {
+            new KeyValuePair<string, string>("DDS", "dds"),
+            new KeyValuePair<string, string>("TGA", "tga"),
+            new KeyValuePair<string, string>("PNG", "png"),
+        };
 
+        public ObservableCollection<KeyValuePair<string, string>> ModpackFormats { get; set; } = new ObservableCollection<KeyValuePair<string, string>>()
+        {
+            new KeyValuePair<string, string>("PMP", "pmp"),
+            new KeyValuePair<string, string>("TTMP2", "ttmp2"),
+        };
         public CustomizeViewModel(CustomizeSettingsView view)
         {
             _view = view;
@@ -166,6 +177,26 @@ namespace FFXIV_TexTools.ViewModels
                     Settings.Default.Default_Modpack_Url = value?.Trim();
                     Settings.Default.Save();
                 }
+            }
+        }
+        public string DefaultModpackFormat
+        {
+            get => Settings.Default.Default_Modpack_Format;
+            set
+            {
+                Settings.Default.Default_Modpack_Format = value;
+                Settings.Default.Save();
+                NotifyPropertyChanged(nameof(DefaultModpackFormat));
+            }
+        }
+        public string DefaultImageFormat
+        {
+            get => Settings.Default.Default_Image_Format;
+            set
+            {
+                Settings.Default.Default_Image_Format = value;
+                Settings.Default.Save();
+                NotifyPropertyChanged(nameof(DefaultImageFormat));
             }
         }
 

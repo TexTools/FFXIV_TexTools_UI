@@ -143,5 +143,11 @@
     <Setting Name="UseImportedTangents" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
+    <Setting Name="Default_Image_Format" Type="System.String" Scope="User">
+      <Value Profile="(Default)">dds</Value>
+    </Setting>
+    <Setting Name="Default_Modpack_Format" Type="System.String" Scope="User">
+      <Value Profile="(Default)">pmp</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

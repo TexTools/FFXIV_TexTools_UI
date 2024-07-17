@@ -229,8 +229,8 @@ namespace FFXIV_TexTools.Views.Controls
             {
                 encoder = new BmpEncoder()
                 {
-                    SupportTransparency = true,
-                    BitsPerPixel = BmpBitsPerPixel.Pixel32
+                    SupportTransparency = false,
+                    BitsPerPixel = BmpBitsPerPixel.Pixel24
                 };
             }
             else if (ext == ".png")
@@ -377,13 +377,27 @@ namespace FFXIV_TexTools.Views.Controls
         {
             return "Texture";
         }
+
+        protected override KeyValuePair<string, string> GetDefaultExtension()
+        {
+            if (Settings.Default.Default_Image_Format == "tga")
+            {
+                return new KeyValuePair<string, string>(".tga", "TGA Image");
+            } else if (Settings.Default.Default_Image_Format == "png")
+            {
+                return new KeyValuePair<string, string>(".png", "PNG Image");
+            } else
+            {
+                return new KeyValuePair<string, string>(".dds", "DDS Image");
+            }
+        }
         public override Dictionary<string, string> GetValidFileExtensions()
         {
             return new Dictionary<string, string>()
             {
                 { ".dds", "DDS Image" },
-                { ".png", "PNG Image" },
                 { ".tga", "TGA Image" },
+                { ".png", "PNG Image" },
                 { ".bmp", "Bitmap Image" },
                 { ".tex", "FFXIV Texture" },
                 { ".atex", "FFXIV VFX Texture" },

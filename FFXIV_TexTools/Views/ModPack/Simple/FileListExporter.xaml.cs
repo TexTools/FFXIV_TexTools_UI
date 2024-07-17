@@ -186,7 +186,7 @@ namespace FFXIV_TexTools.Views.Simple
                 Filter = ViewHelpers.ModpackFileFilter,
                 Title = "Save Modpack...",
                 InitialDirectory = startingFolder,
-                FileName = pathSafe + ".pmp"
+                FileName = pathSafe + "." + Settings.Default.Default_Modpack_Format
             };
 
             if (sfd.ShowDialog() != System.Windows.Forms.DialogResult.OK)
