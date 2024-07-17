@@ -338,6 +338,46 @@ namespace FFXIV_TexTools.Views.Models
                     AddText(textBox, $"{boneIndex.BoneIndices[i]}\n\n", _textColor, true);
                 }
             }
+
+            if (selectedItem.Equals("Bounding Box".L()))
+            {
+                var bbs = _xivMdl.BoundingBoxes;
+
+                AddText(textBox, "BoundingBox Count:\t".L(), _textColor, false);
+                AddText(textBox, $"{bbs.Count}\n\n", _textColor, true);
+
+                for (var bbi = 0; bbi < bbs.Count; bbi++)
+                {
+                    var bb = bbs[bbi];
+                    if (bb.Count >= 2)
+                    {
+                        AddText(textBox, $"{bbi} Min:\t", _textColor, false);
+                        AddText(textBox, $"{bb[0]}\n", _textColor, true);
+                        AddText(textBox, $"{bbi} Max:\t", _textColor, false);
+                        AddText(textBox, $"{bb[1]}\n\n", _textColor, true);
+                    }
+                }
+            }
+
+            if (selectedItem.Equals("Transforms".L()))
+            {
+                var bbbs = _xivMdl.BoneBoundingBoxes;
+
+                AddText(textBox, "BoneBoundingBox Count:\t".L(), _textColor, false);
+                AddText(textBox, $"{bbbs.Count}\n\n", _textColor, true);
+
+                for (var bbi = 0; bbi < bbbs.Count; bbi++)
+                {
+                    var bbb = bbbs[bbi];
+                    if (bbb.Count >= 2)
+                    {
+                        AddText(textBox, $"{bbi} Min:\t", _textColor, false);
+                        AddText(textBox, $"{bbb[0]}\n", _textColor, true);
+                        AddText(textBox, $"{bbi} Max:\t", _textColor, false);
+                        AddText(textBox, $"{bbb[1]}\n\n", _textColor, true);
+                    }
+                }
+            }
         }
 
         /// <summary>
