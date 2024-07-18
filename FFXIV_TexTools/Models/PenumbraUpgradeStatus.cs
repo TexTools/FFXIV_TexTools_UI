@@ -59,7 +59,7 @@ namespace FFXIV_TexTools.Models
             } catch (Exception ex)
             {
                 LogUpgradeError(targetDir, mod, ex);
-                if (Directory.Exists(target))
+                if (Directory.Exists(target) && Directory.Exists(source))
                 {
                     if (source != target)
                     {
