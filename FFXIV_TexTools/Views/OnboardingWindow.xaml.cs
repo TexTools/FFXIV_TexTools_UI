@@ -429,6 +429,14 @@ namespace FFXIV_TexTools.Views
 
         public static string GetDefaultInstallDirectory()
         {
+            var qlDir = PenumbraAPI.GetQuickLauncherGameDirectory();
+
+            // If the user has the quick launcher configured, use that.
+            if (!string.IsNullOrWhiteSpace(qlDir))
+            {
+                return qlDir;
+            }
+
             var resourceManager = CommonInstallDirectories.ResourceManager;
             var resourceSet = resourceManager.GetResourceSet(CultureInfo.CurrentCulture, true, true);
 
