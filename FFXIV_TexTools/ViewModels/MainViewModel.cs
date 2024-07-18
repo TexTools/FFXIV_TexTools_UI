@@ -395,6 +395,11 @@ namespace FFXIV_TexTools.ViewModels
         /// <param name="obj"></param>
         private async void EnableAllMods(object obj)
         {
+            if (!MainWindow.GetMainWindow().CheckFileWrite())
+            {
+                return;
+            }
+
             _progressController = await _mainWindow.ShowProgressAsync(UIMessages.EnablingModsTitle, UIMessages.PleaseWaitMessage);
 
             if (FlexibleMessageBox.Show(
@@ -431,6 +436,11 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         private async void DisableAllMods(object obj)
         {
+            if (!MainWindow.GetMainWindow().CheckFileWrite())
+            {
+                return;
+            }
+
             _progressController = await _mainWindow.ShowProgressAsync(UIMessages.DisablingModsTitle, UIMessages.PleaseWaitMessage);
 
             if (FlexibleMessageBox.Show(

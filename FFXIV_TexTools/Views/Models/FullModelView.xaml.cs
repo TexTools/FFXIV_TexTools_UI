@@ -262,7 +262,7 @@ namespace FFXIV_TexTools.Views.Models
 
             
 
-            TTModel.SaveFullToFile(dbPath, _fmvm.SelectedSkeleton.XivRace, models);
+            TTModel.SaveFullToFile(dbPath, _fmvm.SelectedSkeleton.XivRace, models, null, MainWindow.DefaultTransaction);
 
             var proc = new Process
             {
