@@ -19,11 +19,26 @@ using HelixToolkit.Wpf.SharpDX.Shaders;
 using System;
 using System.IO;
 using SharpDX.Direct3D;
+using SharpDX.Direct3D11;
+using SharpDX.DXGI;
 
 namespace FFXIV_TexTools.Custom
 {
     public class CustomEffectsManager : DefaultEffectsManager
     {
+        private static readonly InputElement[] CustomVSInput = new InputElement[10]
+        {
+                new InputElement("POSITION", 0, Format.R32G32B32A32_Float, InputElement.AppendAligned, 0),
+                new InputElement("NORMAL", 0,   Format.R32G32B32_Float, InputElement.AppendAligned, 0),
+                new InputElement("TANGENT", 0,  Format.R32G32B32_Float, InputElement.AppendAligned, 0),
+                new InputElement("BINORMAL", 0, Format.R32G32B32_Float, InputElement.AppendAligned, 0),
+                new InputElement("TEXCOORD", 0, Format.R32G32_Float, InputElement.AppendAligned, 1),
+                new InputElement("COLOR", 0,    Format.R32G32B32A32_Float, InputElement.AppendAligned, 2),
+                new InputElement("TEXCOORD", 1, Format.R32G32B32A32_Float, InputElement.AppendAligned, 3, InputClassification.PerInstanceData, 1),
+                new InputElement("TEXCOORD", 2, Format.R32G32B32A32_Float, InputElement.AppendAligned, 3, InputClassification.PerInstanceData, 1),
+                new InputElement("TEXCOORD", 3, Format.R32G32B32A32_Float, InputElement.AppendAligned, 3, InputClassification.PerInstanceData, 1),
+                new InputElement("TEXCOORD", 4, Format.R32G32B32A32_Float, InputElement.AppendAligned, 3, InputClassification.PerInstanceData, 1)
+        };
         public static class CustomShaderNames
         {
             public static readonly string CustomShader = "CustomShader";
@@ -36,7 +51,7 @@ namespace FFXIV_TexTools.Custom
         {
             var customMesh = new TechniqueDescription(CustomShaderNames.CustomShader)
             {
-                InputLayoutDescription = new InputLayoutDescription(DefaultVSShaderByteCodes.VSMeshDefault, DefaultInputLayout.VSInput),
+                InputLayoutDescription = new InputLayoutDescription(DefaultVSShaderByteCodes.VSMeshDefault, CustomVSInput),
                 PassDescriptions = new[]
                 {
                     new ShaderPassDescription(DefaultPassNames.Default)
@@ -371,21 +386,18 @@ namespace FFXIV_TexTools.Custom
         public static class CustomPSShaderDescription
         {
             public static ShaderDescription PSCustomMesh = new ShaderDescription(nameof(PSCustomMesh), ShaderStage.Pixel,
-                new ShaderReflector(), ShaderHelper.LoadShaderCode($"{AppDomain.CurrentDomain.BaseDirectory}\\Resources\\Shaders\\psCustomMeshBlinnPhong.cso"));
+                new ShaderReflector(), LoadShaderCode($"{AppDomain.CurrentDomain.BaseDirectory}\\Resources\\Shaders\\psCustomMeshBlinnPhong.cso"));
         }
 
-        public static class ShaderHelper
+        public static byte[] LoadShaderCode(string path)
         {
-            public static byte[] LoadShaderCode(string path)
+            if (File.Exists(path))
             {
-                if (File.Exists(path))
-                {
-                    return File.ReadAllBytes(path);
-                }
-                else
-                {
-                    throw new ArgumentException($"Shader File not found: {path}");
-                }
+                return File.ReadAllBytes(path);
+            }
+            else
+            {
+                throw new ArgumentException($"Shader File not found: {path}");
             }
         }
     }
