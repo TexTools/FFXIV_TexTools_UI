@@ -538,5 +538,40 @@ namespace FFXIV_TexTools.Views
                 Title = "Create Modpack - Page " + CurrentIndex;
             }
         }
+
+        private async void ShrinkModpack_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+
+            var imgSize = Settings.Default.MaxImageSize > 0 ? Settings.Default.MaxImageSize.ToString() : "No Limit";
+            if(!this.ShowConfirmation("Shrink Confirmation", "This will:\n"
+                + "\n- Shrink all Textures to your current Max Image Size: " + imgSize
+                + "\n- Resave/Repack all MDLs in the modpack."
+                + "\n- Generate missing Mipmaps, and remove unnecessary Mipmaps."
+                + "\n- Resize invalid-sized textures."
+                + "\n- Repack all Textures in the modpack (for TTMPs)."
+                + "\n- Remove unused files from the modpack."
+                + "\n\n This will NOT update Endwalker files (other than MDLs) for Dawntrail."))
+            {
+                return;
+            }
+
+            var settings = new ShrinkRay.ShrinkRaySettings();
+            settings.MaxTextureSize = Settings.Default.MaxImageSize;
+
+            try
+            {
+                await LockUi();
+                var res = await ShrinkRay.ShrinkModpack(Data, settings);
+                Data = res;
+            }
+            catch(Exception ex)
+            {
+                this.ShowError("Shrink Ray Failure", "Unable to shrink modpack:\n\n" + ex.Message);
+            }
+            finally
+            {
+                await UnlockUi();
+            }
+        }
     }
 }
