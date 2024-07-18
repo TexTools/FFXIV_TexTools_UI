@@ -839,7 +839,8 @@ namespace FFXIV_TexTools.Views.Item
             }
 
             HashSet<string> foundMaterials = new HashSet<string>();
-            if (Root != null && Root.Info.PrimaryType == XivItemType.human && Root.Info.SecondaryType == XivItemType.body)
+            if (Root != null && ((Root.Info.PrimaryType == XivItemType.human && Root.Info.SecondaryType == XivItemType.body)
+                || Root.Info.IsHumanMaterialVersionException()))
             {
                 // Exceptions class.
                 var materials = await Root.GetMaterialFiles(-1, tx, false);
