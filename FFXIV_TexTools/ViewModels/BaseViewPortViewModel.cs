@@ -83,6 +83,7 @@ namespace FFXIV_TexTools.ViewModels
             {
                 Trace.WriteLine(ex);
             }
+            Camera = new PerspectiveCamera();
         }
 
         #region IDisposable Support

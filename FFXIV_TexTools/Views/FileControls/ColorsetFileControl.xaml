@@ -341,7 +341,7 @@
                         Grid.ColumnSpan="2"
                         EffectsManager="{Binding EffectsManager}"
                         Camera="{Binding Camera}"
-                        ZoomExtentsWhenLoaded="True"
+                        ZoomExtentsWhenLoaded="False"
                         ZoomDistanceLimitNear="0.0001">
                 <hx:Viewport3DX.InputBindings>
                     <KeyBinding Command="hx:ViewportCommands.ZoomExtents" Gesture="Control+E" />
@@ -350,11 +350,11 @@
                     <MouseBinding Command="hx:ViewportCommands.Zoom" Gesture="MiddleClick" />
                     <MouseBinding Command="hx:ViewportCommands.Pan" Gesture="LeftClick" />
                 </hx:Viewport3DX.InputBindings>
-                
+
                 <hx:DirectionalLight3D
-                     Direction="0,0,-1" 
+                     Direction="-1,-1,1" 
                     Color="#AAAAAAAA" IsRendering="True" />
-                
+
                 <hx:GroupModel3D ItemsSource="{Binding Models}"/>
             </hx:Viewport3DX>
             <Canvas Grid.Row="2" Name="AlternateViewportCanvas" Visibility="Hidden" IsHitTestVisible="False"/>

@@ -75,7 +75,6 @@ namespace FFXIV_TexTools.ViewModels
             Title = "";
             SubTitle = "";
 
-            Camera = new PerspectiveCamera();
             Camera.CameraInternal.PropertyChanged += CameraInternal_PropertyChanged;
 
             BackgroundColor = Properties.Settings.Default.BG_Color;
@@ -373,6 +372,7 @@ namespace FFXIV_TexTools.ViewModels
                                 EmissiveMap = emissive,
                                 DiffuseMapSampler = sampler
                             };
+
 
                             lock (_Materials)
                             {
