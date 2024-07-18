@@ -24,10 +24,12 @@ using xivModdingFramework.Textures.DataContainers;
 using xivModdingFramework.Textures.FileTypes;
 using Vector3D = System.Windows.Media.Media3D.Vector3D;
 using WinColor = System.Windows.Media.Color;
+using Point3D = System.Windows.Media.Media3D.Point3D;
+using SharpDX.Direct3D11;
 
 namespace FFXIV_TexTools.ViewModels
 {
-    public class ColorsetEditorViewModel : INotifyPropertyChanged, IDisposable
+    public class ColorsetEditorViewModel : BaseViewPortViewModel, INotifyPropertyChanged, IDisposable
     {
         private static XivTex TileTextureNormal;
         private static XivTex TileTextureOrb;
@@ -36,9 +38,6 @@ namespace FFXIV_TexTools.ViewModels
         private Viewport3DX _viewport;
 
         public ObservableElement3DCollection Models { get; } = new ObservableElement3DCollection();
-        public Camera Camera { get; set; }
-        bool _NeedLights = true;
-        public EffectsManager EffectsManager { get; }
 
         private XivMtrl _mtrl;
         private int RowId;
@@ -78,16 +77,11 @@ namespace FFXIV_TexTools.ViewModels
             }
         }
 
-        public ColorsetEditorViewModel(Viewport3DX viewport)
+        public ColorsetEditorViewModel(Viewport3DX viewport) : base()
         {
-
-            // Eat exception to not immediately crash in VirtualBox
-            try
-            {
-                EffectsManager = new DefaultEffectsManager();
-            } catch { }
-            Camera = new PerspectiveCamera();
             _viewport = viewport;
+            Camera.UpDirection = new System.Windows.Media.Media3D.Vector3D(0, 1, 0);
+            Camera.LookAt(new Point3D(0, 0, 0), new Vector3D(-4, 0, 0), 0);
         }
 
 
@@ -96,16 +90,6 @@ namespace FFXIV_TexTools.ViewModels
             DyeTemplateFile = dyeFile;
             _viewport.BackgroundColor = System.Windows.Media.Colors.Gray;
             _viewport.Background = Brushes.Gray;
-
-            if (_NeedLights) {
-
-
-                _NeedLights = false;
-            }
-
-            _viewport.Camera.UpDirection = new System.Windows.Media.Media3D.Vector3D(0, 1, 0);
-            _viewport.Camera.LookDirection = new System.Windows.Media.Media3D.Vector3D(0, 0, -1);
-            _viewport.Camera.Position = new System.Windows.Media.Media3D.Point3D(0, 0, 3);
 
 
 
@@ -348,6 +332,10 @@ namespace FFXIV_TexTools.ViewModels
                     lmMaterial.DiffuseAlphaMap = MakeTextureModel(diffuseMask);
                     lmMaterial.SpecularColorMap = MakeTextureModel(specularMask);
 
+                    var sampler = HelixToolkit.SharpDX.Core.Shaders.DefaultSamplers.LinearSamplerWrapAni1;
+                    sampler.AddressU = TextureAddressMode.Wrap;
+                    sampler.AddressV = TextureAddressMode.Wrap;
+                    lmMaterial.DiffuseMapSampler = sampler;
                 }
 
                 MeshGeometryModel3D mgm3 = new MeshGeometryModel3D()
@@ -517,21 +505,33 @@ namespace FFXIV_TexTools.ViewModels
             plane.Normals[uvOffset + 2] = new SharpDX.Vector3(0, 0, 1);
             plane.Normals[uvOffset + 3] = new SharpDX.Vector3(0, 0, 1);
         }
+
+        private bool _UseSphere = true;
         private MeshGeometry3D MakeCube()
         {
-            var plane = new MeshBuilder();
-            plane.CreateTextureCoordinates = true;
 
-            //AddQuad(plane, PlaneAxis.X, 0.5f);
-            //AddQuad(plane, PlaneAxis.X, -0.5f);
-            //AddQuad(plane, PlaneAxis.Y, 0.5f);
-            //AddQuad(plane, PlaneAxis.Y, -0.5f);
-            AddQuad(plane, PlaneAxis.Z, 100.0f);
-            //AddQuad(plane, PlaneAxis.Z, -0.5f);
+            if (_UseSphere)
+            {
+                var builder = new MeshBuilder();
+                builder.AddSphere(SharpDX.Vector3.Zero);
+                builder.ComputeTangents(MeshFaces.Default);
+                var mg = builder.ToMesh();
+                return mg;
+            }
+            else
+            {
+                var builder = new MeshBuilder();
+                builder.AddCube();
+                /*AddQuad(builder, PlaneAxis.X, 0.5f);
+                AddQuad(builder, PlaneAxis.X, -0.5f);
+                AddQuad(builder, PlaneAxis.Y, 0.5f);
+                AddQuad(builder, PlaneAxis.Y, -0.5f);
+                AddQuad(builder, PlaneAxis.Z, 0.5f);
+                AddQuad(builder, PlaneAxis.Z, -0.5f);*/
 
-            plane.ComputeTangents(MeshFaces.Default);
-
-            return plane.ToMeshGeometry3D();
+                builder.ComputeTangents(MeshFaces.Default);
+                return builder.ToMeshGeometry3D();
+            }
         }
 
 

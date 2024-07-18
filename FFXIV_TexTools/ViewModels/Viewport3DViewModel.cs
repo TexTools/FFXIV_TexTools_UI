@@ -70,18 +70,11 @@ namespace FFXIV_TexTools.ViewModels
 
         public ObservableElement3DCollection Models { get; } = new ObservableElement3DCollection();
 
-        public Viewport3DViewModel()
+        public Viewport3DViewModel() : base()
         {
             Title = "";
             SubTitle = "";
 
-            // Eat exception to not immediately crash in VirtualBox
-            try
-            {
-                EffectsManager = new CustomEffectsManager();
-            } catch { }
-
-            Camera = new PerspectiveCamera();
             Camera.CameraInternal.PropertyChanged += CameraInternal_PropertyChanged;
 
             BackgroundColor = Properties.Settings.Default.BG_Color;
@@ -379,6 +372,7 @@ namespace FFXIV_TexTools.ViewModels
                                 EmissiveMap = emissive,
                                 DiffuseMapSampler = sampler
                             };
+
 
                             lock (_Materials)
                             {

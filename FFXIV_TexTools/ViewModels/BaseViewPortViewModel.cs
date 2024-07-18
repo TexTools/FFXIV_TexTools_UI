@@ -14,137 +14,76 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+using FFXIV_TexTools.Custom;
 using FFXIV_TexTools.Helpers;
 using HelixToolkit.Wpf.SharpDX;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 
 namespace FFXIV_TexTools.ViewModels
 {
     public class BaseViewPortViewModel: ObservableObject, IDisposable
     {
-        private const string Orthographic = "Orthographic Camera";
+        private Camera _Camera;
 
-        private const string Perspective = "Perspective Camera";
+        private IRenderTechnique _RenderTechnique;
 
-        private string _cameraModel;
+        private string _SubTitle;
 
-        private Camera _camera;
-
-        private IRenderTechnique _renderTechnique;
-
-        private string _subTitle;
-
-        private string _title;
+        private string _Title;
 
         public string Title
         {
-            get => _title;
-            set => SetValue(ref _title, value, "Title");
+            get => _Title;
+            set => SetValue(ref _Title, value, "Title");
         }
 
         public string SubTitle
         {
-            get => _subTitle;
-            set => SetValue(ref _subTitle, value, "SubTitle");
+            get => _SubTitle;
+            set => SetValue(ref _SubTitle, value, "SubTitle");
         }
 
         public IRenderTechnique RenderTechnique
         {
-            get => _renderTechnique;
-            set => SetValue(ref _renderTechnique, value, "RenderTechnique");
+            get => _RenderTechnique;
+            set => SetValue(ref _RenderTechnique, value, "RenderTechnique");
         }
 
-        private List<string> CameraModelCollection { get; set; }
 
-        public string CameraModel
-        {
-            get => _cameraModel;
-            set
-            {
-                if (SetValue(ref _cameraModel, value, "CameraModel"))
-                {
-                    OnCameraModelChanged();
-                }
-            }
-        }
 
         public Camera Camera
         {
-            get => _camera;
+            get => _Camera;
 
             set
             {
-                SetValue(ref _camera, value, "Camera");
-                CameraModel = value is PerspectiveCamera
-                                       ? Perspective
-                                       : value is OrthographicCamera ? Orthographic : null;
+                SetValue(ref _Camera, value, "Camera");
             }
         }
 
-        private IEffectsManager effectsManager;
+        private IEffectsManager _EffectsManager;
 
         public IEffectsManager EffectsManager
         {
-            get => effectsManager;
-            set => SetValue(ref effectsManager, value);
+            get => _EffectsManager;
+            set => SetValue(ref _EffectsManager, value);
         }
-
-        private string _renderTechniqueName = DefaultRenderTechniqueNames.Mesh;
-        public string RenderTechniqueName
-        {
-            get => _renderTechniqueName;
-            set
-            {
-                _renderTechniqueName = value;
-                RenderTechnique = EffectsManager[value];
-            }
-
-        }
-
-        private readonly OrthographicCamera _defaultOrthographicCamera = new OrthographicCamera { Position = new System.Windows.Media.Media3D.Point3D(0, 0, 5), LookDirection = new System.Windows.Media.Media3D.Vector3D(-0, -0, -5), UpDirection = new System.Windows.Media.Media3D.Vector3D(0, 1, 0), NearPlaneDistance = 1, FarPlaneDistance = 100 };
-
-        private readonly PerspectiveCamera _defaultPerspectiveCamera = new PerspectiveCamera { Position = new System.Windows.Media.Media3D.Point3D(0, 0, 5), LookDirection = new System.Windows.Media.Media3D.Vector3D(-0, -0, -5), UpDirection = new System.Windows.Media.Media3D.Vector3D(0, 1, 0), NearPlaneDistance = 0.5, FarPlaneDistance = 150 };
-
-        public event EventHandler CameraModelChanged;
 
         public BaseViewPortViewModel()
         {
-            // camera models
-            CameraModelCollection = new List<string>()
+            try
             {
-                Orthographic,
-                Perspective,
-            };
-
-            // on camera changed callback
-            CameraModelChanged += (s, e) =>
+                // The effect manager automatically attaches itself to the renderer via AddTechnique() somehow.
+                EffectsManager = new CustomEffectsManager();
+            }
+            catch (Exception ex)
             {
-                if (_cameraModel == Orthographic)
-                {
-                    if (!(Camera is OrthographicCamera))
-                        Camera = _defaultOrthographicCamera;
-                }
-                else if (_cameraModel == Perspective)
-                {
-                    if (!(Camera is PerspectiveCamera))
-                        Camera = _defaultPerspectiveCamera;
-                }
-                else
-                {
-                    throw new HelixToolkitException("Camera Model Error.".L());
-                }
-            };
-
-            // default camera model
-            CameraModel = Perspective;
-        }
-
-        public void OnCameraModelChanged()
-        {
-            var eh = CameraModelChanged;
-            eh?.Invoke(this, new EventArgs());
+                Trace.WriteLine(ex);
+            }
+            Camera = new PerspectiveCamera();
         }
 
         #region IDisposable Support
