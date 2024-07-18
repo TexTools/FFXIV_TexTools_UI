@@ -1149,6 +1149,11 @@ namespace FFXIV_TexTools
         /// </summary>
         private void Menu_ProblemCheck_Click(object sender, RoutedEventArgs e)
         {
+            if (!MainWindow.GetMainWindow().CheckFileWrite())
+            {
+                return;
+            }
+
             var problemCheckView = new ProblemCheckView {Owner = this};
             try
             {

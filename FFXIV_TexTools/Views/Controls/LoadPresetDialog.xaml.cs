@@ -71,6 +71,7 @@ namespace FFXIV_TexTools.Views.Controls
                 newMtrl.ShaderPack = Material.ShaderPack;
                 newMtrl.ShaderConstants = Material.ShaderConstants;
                 newMtrl.ShaderKeys = Material.ShaderKeys;
+                newMtrl.AdditionalData = Material.AdditionalData;
             }
 
             // Carry our Other information through.
