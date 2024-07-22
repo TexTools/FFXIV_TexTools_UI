@@ -27,7 +27,7 @@ using xivModdingFramework.Models.Helpers;
 
 namespace FFXIV_TexTools.ViewModels
 {
-    public class ImportModelEditViewModel
+    public class ImportModelEditViewModel : INotifyPropertyChanged
     {
 
 
@@ -59,6 +59,163 @@ namespace FFXIV_TexTools.ViewModels
         private HashSet<string> RootMaterials = new HashSet<string>();
 
         private XivDependencyRoot _root;
+
+
+        public bool DisableShadows
+        {
+            get {
+                return (_newModel.Flags & EMeshFlags1.ShadowDisabled) != 0;
+            }
+            set
+            {
+                if (value)
+                {
+                    _newModel.Flags |= EMeshFlags1.ShadowDisabled;
+                } else
+                {
+                    _newModel.Flags &= ~EMeshFlags1.ShadowDisabled;
+                }
+            }
+        }
+        public bool DisableLightShadow
+        {
+            get
+            {
+                return (_newModel.Flags & EMeshFlags1.LightShadowDisabled) != 0;
+            }
+            set
+            {
+                if (value)
+                {
+                    _newModel.Flags |= EMeshFlags1.LightShadowDisabled;
+                }
+                else
+                {
+                    _newModel.Flags &= ~EMeshFlags1.LightShadowDisabled;
+                }
+            }
+        }
+        public bool EnableAnisotropy
+        {
+            get
+            {
+                return _newModel.AnisotropicLightingEnabled;
+            }
+            set
+            {
+
+                _newModel.AnisotropicLightingEnabled = value;
+            }
+        }
+        public bool DisableWavingAnimation
+        {
+            get
+            {
+                return (_newModel.Flags & EMeshFlags1.WavingAnimationDisabled) != 0;
+            }
+            set
+            {
+                if (value)
+                {
+                    _newModel.Flags |= EMeshFlags1.WavingAnimationDisabled;
+                }
+                else
+                {
+                    _newModel.Flags &= ~EMeshFlags1.WavingAnimationDisabled;
+                }
+            }
+        }
+        public bool EnableLightingReflection
+        {
+            get
+            {
+                return (_newModel.Flags & EMeshFlags1.LightingReflectionEnabled) != 0;
+            }
+            set
+            {
+                if (value)
+                {
+                    _newModel.Flags |= EMeshFlags1.LightingReflectionEnabled;
+                }
+                else
+                {
+                    _newModel.Flags &= ~EMeshFlags1.LightingReflectionEnabled;
+                }
+            }
+        }
+        public bool UnknownFlag
+        {
+            get
+            {
+                return (_newModel.Flags & EMeshFlags1.Unknown10) != 0;
+            }
+            set
+            {
+                if (value)
+                {
+                    _newModel.Flags |= EMeshFlags1.Unknown10;
+                }
+                else
+                {
+                    _newModel.Flags &= ~EMeshFlags1.Unknown10;
+                }
+            }
+        }
+        public bool OccludeRain
+        {
+            get
+            {
+                return (_newModel.Flags & EMeshFlags1.RainOcclusionEnabled) != 0;
+            }
+            set
+            {
+                if (value)
+                {
+                    _newModel.Flags |= EMeshFlags1.RainOcclusionEnabled;
+                }
+                else
+                {
+                    _newModel.Flags &= ~EMeshFlags1.RainOcclusionEnabled;
+                }
+            }
+        }
+        public bool OccludeSnow
+        {
+            get
+            {
+                return (_newModel.Flags & EMeshFlags1.SnowOcclusionEnabled) != 0;
+            }
+            set
+            {
+                if (value)
+                {
+                    _newModel.Flags |= EMeshFlags1.SnowOcclusionEnabled;
+                }
+                else
+                {
+                    _newModel.Flags &= ~EMeshFlags1.SnowOcclusionEnabled;
+                }
+            }
+        }
+        public bool OccludeDust
+        {
+            get
+            {
+                return (_newModel.Flags & EMeshFlags1.DustOcclusionEnabled) != 0;
+            }
+            set
+            {
+                if (value)
+                {
+                    _newModel.Flags |= EMeshFlags1.DustOcclusionEnabled;
+                }
+                else
+                {
+                    _newModel.Flags &= ~EMeshFlags1.DustOcclusionEnabled;
+                }
+            }
+        }
+
 
         private TTMeshGroup GetGroup()
         {
@@ -1009,5 +1166,7 @@ namespace FFXIV_TexTools.ViewModels
             { "shp_nse_d", "Nose d" },
             { "shp_nse_e", "Nose e" },
         };
+
+        public event PropertyChangedEventHandler PropertyChanged;
     }
 }

@@ -111,6 +111,7 @@ namespace FFXIV_TexTools.Views.Wizard
             var options = new List<WizardOptionEntry>();
             foreach (var g in Data.Groups)
             {
+                if (g == null) continue;
                 options.AddRange(g.Options);
             }
             OptionsList.ItemsSource = options;

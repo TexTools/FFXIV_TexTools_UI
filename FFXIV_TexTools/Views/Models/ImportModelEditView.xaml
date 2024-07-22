@@ -8,12 +8,13 @@
         resx:Localization.Enabled="True"                     
         mc:Ignorable="d"
         Title="Model Editor" IsMinButtonEnabled="False" IsMaxRestoreButtonEnabled="False" WindowStartupLocation="CenterOwner" FontSize="14" ResizeMode="NoResize"
-                 Width="640"
-                 Height="680">
+                 Width="860"
+                 Height="610">
     <Grid x:Name="MainGrid">
         
         <!-- Main Grid Definitions -->
         <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
             <ColumnDefinition Width="1*"/>
             <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
@@ -24,40 +25,181 @@
             <RowDefinition Height="40"/>
         </Grid.RowDefinitions>
 
-        <Grid x:Name="HeaderGrid" Grid.Row="0" Grid.ColumnSpan="2">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition></ColumnDefinition>
-                <ColumnDefinition></ColumnDefinition>
-            </Grid.ColumnDefinitions>
+        <Grid Grid.Column="0" Grid.Row="1">
             <Grid.RowDefinitions>
-                <RowDefinition Height="40"/>
-                <RowDefinition Height="10" />
+                <RowDefinition Height="45"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
             </Grid.RowDefinitions>
 
-            <Grid Grid.Column="0" Margin="5">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="100"></ColumnDefinition>
-                    <ColumnDefinition></ColumnDefinition>
-                </Grid.ColumnDefinitions>
-                <Label Grid.Row="0" Grid.Column="0" Content="Mesh Group:" HorizontalAlignment="Right" VerticalContentAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"/>
-                <ComboBox Grid.Row="0" Grid.Column="1"  x:Name="MeshNumberBox"  VerticalContentAlignment="Center" VerticalAlignment="Center" />
+            <Label Content="Model Settings" Margin="0" VerticalAlignment="Center" HorizontalContentAlignment="Center" FontSize="18" FontWeight="Bold" Height="34"/>
+
+            <Grid Grid.Row="1" Margin="5">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="40"/>
+                    <RowDefinition Height="35"/>
+                    <RowDefinition Height="35"/>
+                    <RowDefinition Height="35"/>
+                    <RowDefinition Height="35"/>
+                    <RowDefinition Height="35"/>
+                    <RowDefinition Height="35"/>
+                    <RowDefinition Height="35"/>
+                    <RowDefinition Height="35"/>
+                    <RowDefinition Height="35"/>
+                </Grid.RowDefinitions>
+                
+                <Grid Grid.Row="0">
+                    <Grid.ToolTip>You probably shouldn't change this unless you really know what you're doing.</Grid.ToolTip>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="100"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Column="0" Content="Mdl Version:" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                    <ComboBox Grid.Column="1"  x:Name="MdlVersionComboBox" VerticalContentAlignment="Center" VerticalAlignment="Center"/>
+                </Grid>
+
+
+                <CheckBox Grid.Row="1" Content="Enable Anistropic Lighting (Hair Only)" Margin="10,0" IsChecked="{Binding Path=EnableAnisotropy}">
+                    <CheckBox.ToolTip>
+                        <TextBlock>
+                            <Run>Determines if hair materials should show anisotropic specular highlights.</Run>
+                            <LineBreak/>
+                            <LineBreak/>
+                            <Run>This will make the hair 'shinier', and the specular highlights will be skewed based on UV orientation.</Run>
+                            <LineBreak/>
+                            <Run>Hair strand UVs should be laid out from Top-Left to Bottom-Right for correct lighting effects with this on.</Run>
+                            <LineBreak/>
+                            <LineBreak/>
+                            <Run>Turning this off on a hair which is already using it will make the lighting significantly more matte.</Run>
+                            <LineBreak/>
+                            <Run>Has no effect on non-hair meshes/materials.</Run>
+                        </TextBlock>
+                    </CheckBox.ToolTip>
+                </CheckBox>
+
+                <CheckBox Grid.Row="2" Content="Disable Shadow Casting" Margin="10,0" IsChecked="{Binding Path=DisableShadows}">
+                    <CheckBox.ToolTip>
+                        <TextBlock>
+                            Globally disabled shadows for this model.
+                        </TextBlock>
+                    </CheckBox.ToolTip>
+                </CheckBox>
+
+                <CheckBox Grid.Row="3" Content="Disable Light Shadow (?)" Margin="10,0" IsChecked="{Binding Path=DisableLightShadow}">
+                    <CheckBox.ToolTip>
+                        <TextBlock>
+                            Disable shadow receiving maybe?
+                        </TextBlock>
+                    </CheckBox.ToolTip>
+                </CheckBox>
+                <CheckBox Grid.Row="4" Content="Enable Lighting Reflection (?)" Margin="10,0" IsChecked="{Binding Path=EnableLightingReflection}">
+                    <CheckBox.ToolTip>
+                        <TextBlock>
+                            Some kind of reflection thing?
+                        </TextBlock>
+                    </CheckBox.ToolTip>
+                </CheckBox>
+                <CheckBox Grid.Row="5" Content="Disable Waving Animation (?)" Margin="10,0" IsChecked="{Binding Path=DisableWavingAnimation}">
+                    <CheckBox.ToolTip>
+                        <TextBlock>
+                            Water wave effect possibly?
+                        </TextBlock>
+                    </CheckBox.ToolTip>
+                </CheckBox>
+                
+                <CheckBox Grid.Row="6" Content="Unknown Flag (?)" Margin="10,0" IsChecked="{Binding Path=UnknownFlag}">
+                    <CheckBox.ToolTip>
+                        <TextBlock>
+                            Maybe does something.  Maybe does nothing.
+                        </TextBlock>
+                    </CheckBox.ToolTip>
+                </CheckBox>
+                <CheckBox Grid.Row="7" Content="Block Rain" Margin="10,0" IsChecked="{Binding Path=OccludeRain}">
+                    <CheckBox.ToolTip>
+                        <TextBlock>
+                            Determines if the model occludes/blocks rain effects.
+                        </TextBlock>
+                    </CheckBox.ToolTip>
+                </CheckBox>
+                <CheckBox Grid.Row="8" Content="Block Snow" Margin="10,0" IsChecked="{Binding Path=OccludeSnow}">
+                    <CheckBox.ToolTip>
+                        <TextBlock>
+                            Determines if the model occludes/blocks snow effects.
+                        </TextBlock>
+                    </CheckBox.ToolTip>
+                </CheckBox>
+                <CheckBox Grid.Row="9" Content="Block Dust" Margin="10,0" IsChecked="{Binding Path=OccludeDust}">
+                    <CheckBox.ToolTip>
+                        <TextBlock>
+                            Determines if the model occludes/blocks dust effects.
+                        </TextBlock>
+                    </CheckBox.ToolTip>
+                </CheckBox>
             </Grid>
 
-            <Button x:Name="DeleteMeshGroupButton" Grid.Column="1" Content="Delete Mesh Group" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,5,5,5" Click="DeleteMeshGroup_Click"></Button>
+            <Grid Grid.Row="2" Margin="5, 0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="40"/>
+                    <RowDefinition Height="100"/>
+                </Grid.RowDefinitions>
 
-            <Separator BorderBrush="{DynamicResource NormalBorderBrush}" Background="{DynamicResource NormalBorderBrush}" BorderThickness="8" Grid.Row="1" Grid.ColumnSpan="2" VerticalAlignment="Bottom"/>
+                <Label Grid.Row="0" Grid.Column="0"  Content="Model Scale:" HorizontalAlignment="Right" VerticalAlignment="Center" />
+                <ComboBox Grid.Row="0" Grid.Column="1"  x:Name="ScaleComboBox" VerticalContentAlignment="Top" VerticalAlignment="Center" />
+
+                <Grid x:Name="SizeInfo" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="5, 0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="20"></RowDefinition>
+                        <RowDefinition Height="20"></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="100"></ColumnDefinition>
+                        <ColumnDefinition></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+
+                    <Label Grid.Column="0"  FontStyle="Italic" FontSize="11" Content="Old Model Size:" HorizontalContentAlignment="Right" Height="24" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                    <Label Grid.Column="0" Grid.Row="1" FontStyle="Italic" FontSize="11" Content="New Model Size:" HorizontalContentAlignment="Right" Height="24" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+
+                    <Label Grid.Column="1" x:Name="OldModelSizeBox"  FontStyle="Italic" FontSize="11" Content="11 Meters" Height="24" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                    <Label Grid.Column="1" Grid.Row="1" x:Name="NewModelSizeBox"  FontStyle="Italic" FontSize="11" Content="11 Meters"  Height="24" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+
+                    <TextBlock x:Name="ScaleWarningBox" Grid.Row="2" FontStyle="Italic" FontSize="12" Text="Warning Text Goes Here" Grid.Column="0" Grid.ColumnSpan="2" TextAlignment="Center" Height="20" VerticalAlignment="Top" TextWrapping="Wrap"/>
+                </Grid>
+            </Grid>
 
         </Grid>
 
-        <Grid x:Name="MeshGroupGrid" Grid.Row="1" Grid.Column="0">
+
+        <Grid x:Name="MeshGroupGrid" Grid.Row="1" Grid.Column="1">
             <!-- Mesh Group Grid Definitions -->
             <Grid.RowDefinitions>
+                <RowDefinition Height="45"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="125"/>
                 <RowDefinition Height="1*"/>
             </Grid.RowDefinitions>
 
-            <Grid x:Name="MeshGroupSettings" Margin="5">
+
+            <Grid Grid.Row="0" Margin="5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="50"></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition Width="100"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Label Grid.Row="0" Grid.Column="0" Content="Mesh:" HorizontalAlignment="Right" VerticalContentAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"/>
+                <ComboBox Grid.Row="0" Grid.Column="1"  x:Name="MeshNumberBox"  VerticalContentAlignment="Center" VerticalAlignment="Center" />
+                <Button x:Name="DeleteMeshGroupButton" Grid.Column="2" Content="Delete Mesh" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,5,5,5" Click="DeleteMeshGroup_Click"></Button>
+            </Grid>
+
+
+
+            <Grid x:Name="MeshGroupSettings" Margin="5" Grid.Row="1">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="100"></ColumnDefinition>
                     <ColumnDefinition></ColumnDefinition>
@@ -70,7 +212,7 @@
 
             </Grid>
 
-            <Border Grid.Row="1" BorderBrush="{DynamicResource NormalBorderBrush}" BorderThickness="1" Margin="10,5,10,10">
+            <Border Grid.Row="2" BorderBrush="{DynamicResource NormalBorderBrush}" BorderThickness="1" Margin="10,5,10,10">
                 <Grid>
                     <Label Content="Material" Margin="0" VerticalAlignment="Top" HorizontalContentAlignment="Center" FontSize="18" FontWeight="Bold" Height="34"/>
                     <ComboBox x:Name="MaterialSelectorBox" Margin="10,40,10,40" VerticalAlignment="Top" Height="26"/>
@@ -78,7 +220,7 @@
                 </Grid>
             </Border>
 
-            <Border Grid.Row="2" BorderBrush="{DynamicResource NormalBorderBrush}" BorderThickness="1" Margin="10,5,10,10">
+            <Border Grid.Row="3" BorderBrush="{DynamicResource NormalBorderBrush}" BorderThickness="1" Margin="10,5,10,10">
                 <Grid>
                     <Label Content="Shapes" Margin="0,0,0,0" Grid.Row="0" VerticalAlignment="Top" HorizontalContentAlignment="Center" FontSize="18" FontWeight="Bold" Height="34"/>
                     <ListBox x:Name="ShapesListBox" Margin="10,40,10,50" Grid.Row="0" Style="{DynamicResource SimpleListBox}" MinHeight="100"/>
@@ -90,7 +232,7 @@
 
         </Grid>
         
-        <Grid x:Name="MeshPartGrid" Grid.Row="1" Grid.Column="1">
+        <Grid x:Name="MeshPartGrid" Grid.Row="1" Grid.Column="2">
             <!-- Mesh Part Grid Definitions -->
             <Grid.RowDefinitions>
                 <RowDefinition Height="45"/>
@@ -129,6 +271,8 @@
 
         <Rectangle Stroke="Transparent" Fill="{DynamicResource NormalBorderBrush}" Width="2" Grid.Row="1" Grid.RowSpan="1" Grid.ColumnSpan="2" />
 
+        <Rectangle Stroke="Transparent" Fill="{DynamicResource NormalBorderBrush}" Width="2" Grid.Row="1" Grid.RowSpan="1" Grid.Column="1" Grid.ColumnSpan="2" />
+
 
         <Grid Grid.Row="2" Grid.ColumnSpan="2" x:Name="MeshInfoGrid">
             <Grid.RowDefinitions>
@@ -138,47 +282,10 @@
                 <ColumnDefinition></ColumnDefinition>
             </Grid.ColumnDefinitions>
 
-            <Grid x:Name="SizeInfo" Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Margin="5">
-                <Grid.RowDefinitions>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="100"></ColumnDefinition>
-                    <ColumnDefinition></ColumnDefinition>
-                </Grid.ColumnDefinitions>
-
-                <Label Grid.Column="0"  FontStyle="Italic" FontSize="11" Content="Old Model Size:" HorizontalContentAlignment="Right" Height="24" VerticalAlignment="Center" HorizontalAlignment="Right"/>
-                <Label Grid.Column="0" Grid.Row="1" FontStyle="Italic" FontSize="11" Content="New Model Size:" HorizontalContentAlignment="Right" Height="24" VerticalAlignment="Center" HorizontalAlignment="Right"/>
-
-                <Label Grid.Column="1" x:Name="OldModelSizeBox"  FontStyle="Italic" FontSize="11" Content="11 Meters" Height="24" HorizontalAlignment="Left" VerticalAlignment="Center" Width="56"/>
-                <Label Grid.Column="1" Grid.Row="1" x:Name="NewModelSizeBox"  FontStyle="Italic" FontSize="11" Content="11 Meters"  Height="24" HorizontalAlignment="Left" VerticalAlignment="Center" Width="56"/>
-
-
-                <TextBlock x:Name="ScaleWarningBox" Grid.Row="2" FontStyle="Italic" FontSize="12" Text="Warning Text Goes Here" Grid.Column="0" Grid.ColumnSpan="2" TextAlignment="Center" Height="20" VerticalAlignment="Center" />
-            </Grid>
-
-            <Grid x:Name="MeshSettingsGrid" Margin="5">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="40"></RowDefinition>
-                    <RowDefinition Height="40"></RowDefinition>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition></ColumnDefinition>
-                    <ColumnDefinition></ColumnDefinition>
-                </Grid.ColumnDefinitions>
-
-                <Label Grid.Row="0" Grid.Column="0"  Content="Model Scale:" HorizontalAlignment="Right" VerticalAlignment="Center" />
-                <ComboBox Grid.Row="0" Grid.Column="1"  x:Name="ScaleComboBox" VerticalContentAlignment="Top" VerticalAlignment="Center" />
-
-                <Label Grid.Row="1" Grid.Column="0" Content="Mdl Version:" HorizontalAlignment="Right" Width="98" VerticalAlignment="Center"/>
-                <ComboBox Grid.Row="1" Grid.Column="1"  x:Name="MdlVersionComboBox" VerticalContentAlignment="Center" VerticalAlignment="Center"/>
-            </Grid>
         </Grid>
 
 
-        <Grid Grid.Row="3" x:Name="BottomRow" Grid.ColumnSpan="2">
+        <Grid Grid.Row="3" x:Name="BottomRow" Grid.ColumnSpan="3">
             <Button x:Name="CancelButton" Content="Cancel" HorizontalAlignment="Left" Width="200" Margin="5" VerticalContentAlignment="Center" Click="CancelButton_Click" VerticalAlignment="Center"/>
             <Button x:Name="ImportButton" Content="Confirm" HorizontalAlignment="Right" Width="200" Margin="5" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Grid.Column="1" Click="ImportButton_Click" VerticalAlignment="Center"/>
         </Grid>
