@@ -150,7 +150,7 @@ namespace FFXIV_TexTools.Views.Controls
             // The data coming in here is an uncompressed .mdl file.
             return await Task.Run(async () =>
             {
-                return await LoadModel(Mdl.GetTTModel(data, path));
+                return await LoadModel(await Mdl.GetTTModel(data, path));
             });
         }
         protected async Task<bool> LoadModel(TTModel model) {
