@@ -856,15 +856,24 @@ namespace FFXIV_TexTools
 
         private void CheckForSettingsUpdate()
         {
-            if (Settings.Default.UpgradeRequired)
+            try
             {
-                Settings.Default.Upgrade();
-                Settings.Default.UpgradeRequired = false;
+                if (Settings.Default.UpgradeRequired)
+                {
+                    Settings.Default.Upgrade();
+                    Settings.Default.UpgradeRequired = false;
+                    Settings.Default.Save();
+
+                    // Set theme according to settings now that the settings have been upgraded to the new version
+                    var appStyle = ThemeManager.DetectAppStyle(Application.Current);
+                    ThemeManager.ChangeAppStyle(Application.Current, ThemeManager.GetAccent(appStyle.Item2.Name), ThemeManager.GetAppTheme(Settings.Default.Application_Theme));
+                }
+            }
+            catch(Exception ex)
+            {
+                ViewHelpers.ShowError("Corrupt Settings File", "User settings file is corrupt or invalid.  Settings will be reset.");
+                Settings.Default.Reset();
                 Settings.Default.Save();
-                
-                // Set theme according to settings now that the settings have been upgraded to the new version
-                var appStyle = ThemeManager.DetectAppStyle(Application.Current);
-                ThemeManager.ChangeAppStyle(Application.Current, ThemeManager.GetAccent(appStyle.Item2.Name), ThemeManager.GetAppTheme(Settings.Default.Application_Theme));
             }
         }
 
