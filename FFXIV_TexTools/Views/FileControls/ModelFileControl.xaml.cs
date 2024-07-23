@@ -415,7 +415,7 @@ namespace FFXIV_TexTools.Views.Controls
 
                 FmvButtonEnabled = true;
                 // Disable FMV button if we're an unsupported type.
-                if (Model.IsInternal)
+                if (Model.HasPath)
                 {
                     var modelRoot = await XivCache.GetFirstRoot(Model.Source);
                     if (modelRoot == null ||
@@ -699,7 +699,7 @@ namespace FFXIV_TexTools.Views.Controls
 
         private void FullModel_Click(object sender, RoutedEventArgs e)
         {
-            if (Model == null || !Model.IsInternal) return;
+            if (Model == null || !Model.HasPath) return;
             try
             {
                 // Load a clean copy of the model.
