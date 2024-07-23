@@ -974,6 +974,11 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         private void Remove(object obj)
         {
+            if (ModelList.Count == 0 || ModelList == null)
+            {
+                return;
+            }
+
             if (ModelList.Count == 1)
             {
                 ViewportVM.ClearAll();

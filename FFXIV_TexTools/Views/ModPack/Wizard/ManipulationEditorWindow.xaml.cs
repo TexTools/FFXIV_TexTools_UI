@@ -159,8 +159,11 @@ namespace FFXIV_TexTools.Views.Wizard
 
         private void RemoveManipulation_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            Data.Manipulations.Remove(SelectedManipulation);
-            RebuildList();
+            if (SelectedManipulation != null && Data.Manipulations != null)
+            {
+                Data.Manipulations.Remove(SelectedManipulation);
+                RebuildList();
+            }
         }
 
         private void Done_Click(object sender, System.Windows.RoutedEventArgs e)

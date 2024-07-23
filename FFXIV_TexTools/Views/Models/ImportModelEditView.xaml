@@ -37,7 +37,7 @@
             <Label Content="Model Settings" Margin="0" VerticalAlignment="Center" HorizontalContentAlignment="Center" FontSize="18" FontWeight="Bold" Height="34"/>
 
             <Grid Grid.Row="1">
-                <Button Margin="10,0" Content="Modify Model Vertices" Click="ModifyModel_Click" VerticalAlignment="Center"></Button>
+                <Button Margin="10,0" Content="Modify All Vertices" Click="ModifyModel_Click" VerticalAlignment="Center"></Button>
             </Grid>
             
             <Grid Grid.Row="2" Margin="5">
