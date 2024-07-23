@@ -25,6 +25,10 @@ namespace FFXIV_TexTools.Views.Controls
             {
                 _Editor = editor;
                 Key = key;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(KnownValues)));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(KeyId)));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Name)));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Value)));
             }
 
             public event PropertyChangedEventHandler PropertyChanged;
@@ -41,10 +45,6 @@ namespace FFXIV_TexTools.Views.Controls
                 set
                 {
                     Key.KeyId = value;
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(KeyId)));
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Name)));
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(KnownValues)));
-
                     var ninfo = Key.GetKeyInfo(_Editor.Material.ShaderPack);
                     if (ninfo != null)
                     {
@@ -54,6 +54,12 @@ namespace FFXIV_TexTools.Views.Controls
                     {
                         Value = 0;
                     }
+
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(KnownValues)));
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(KeyId)));
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Name)));
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Value)));
+
                 }
             }
             public uint Value
@@ -107,6 +113,7 @@ namespace FFXIV_TexTools.Views.Controls
                         values.Add(new KeyValuePair<string, uint>(name, val.Key));
                     }
 
+                    var asHex = Value.ToString("X8");
                     if (!values.Any(x => x.Value == Value))
                     {
                         values.Add(new KeyValuePair<string, uint>(Value.ToString("X8"), Value));
