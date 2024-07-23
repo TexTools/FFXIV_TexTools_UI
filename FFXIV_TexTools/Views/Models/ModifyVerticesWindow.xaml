@@ -1,0 +1,140 @@
+﻿<mah:MetroWindow x:Class="FFXIV_TexTools.Views.Models.ModifyVerticesWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FFXIV_TexTools.Views.Models"
+        xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+        mc:Ignorable="d"
+        Title="Modify Part" Width="500" SizeToContent="Height">
+    <Grid Margin="5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="5"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="5"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="5"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="5"></RowDefinition>
+            <RowDefinition Height="30"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+        </Grid.RowDefinitions>
+        
+        <Grid Grid.Row="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="40"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <Label Grid.Row="0" Grid.ColumnSpan="2" Content="UV2 Alterations" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"/>
+            <TextBlock FontSize="10" FontStyle="Italic" Grid.Row="1" Grid.ColumnSpan="2" HorizontalAlignment="Center" TextAlignment="Center">
+                <Run>The UV2 Layer typically controls Decal/Icon placement, such as Legacy Marks or FC Crests.</Run>
+                <LineBreak/>
+                <Run>As such, it should usually either be cleared/empty, or have a specific location masked out for Decals</Run>
+                <LineBreak/>
+                <LineBreak/>
+                <Run>On hair specifically, it is instead used for checking Opacity, and should typically match UV1.</Run>
+            </TextBlock>
+
+
+            <Button Grid.Row="2" Grid.Column="0" Content="Clear UV2" Margin="10,5" Click="ClearUv2_Click"></Button>
+            <Button Grid.Row="2" Grid.Column="1" Content="Copy UV1 to UV2" Margin="10,5" Click="CopyUv_Click"></Button>
+        </Grid>
+
+        <Separator Grid.Row="1" Margin="2" VerticalAlignment="Center"></Separator>
+
+        <Grid Grid.Row="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="40"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <Label Grid.Row="0" Grid.ColumnSpan="2" Content="Vertex Color 1 Alterations" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"/>
+            <TextBlock FontSize="10" FontStyle="Italic" Grid.Row="1" Grid.ColumnSpan="2" HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap">
+                <Run>Vertex Color 1 is typically read as per-channel mask data.</Run>
+                <LineBreak/>
+                <Run>The exact usage varies by shader.  If not specifically authored, this typically should be fully white/opaque.</Run>
+                <LineBreak/>
+                <LineBreak/>
+                <Run>Clearing this data from existing FFXIV models, such as skin or hair, make cause seems, unexpected shadows, or other issues.</Run>
+            </TextBlock>
+
+
+            <Button Grid.Row="2" Grid.Column="0" Content="Clear Vertex Color 1" Margin="10,5" Click="ClearVColor1_Click"></Button>
+            <Button Grid.Row="2" Grid.Column="1" Content="Clear Vertex Alpha 1" Margin="10,5" Click="ClearVAlpha_Click"></Button>
+        </Grid>
+        <Separator Grid.Row="3" Margin="2" VerticalAlignment="Center"></Separator>
+
+        <Grid Grid.Row="4">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="40"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <Label Grid.Row="0" Grid.ColumnSpan="2" Content="Vertex Color 2 Alterations" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"/>
+            <TextBlock FontSize="10" FontStyle="Italic" Grid.Row="1" Grid.ColumnSpan="2" HorizontalAlignment="Center" TextAlignment="Center">
+                <Run>Vertex Color 2 is typically used for fake-wind Influence.</Run>
+                <LineBreak/>
+                <Run>When not specifically intended, this data should typically be fully black (Disabled).</Run>
+            </TextBlock>
+
+
+            <Button Grid.Row="2" Grid.Column="0" Content="Clear Vertex Color 2" Margin="10,5" Click="ClearVColor2_Click"></Button>
+        </Grid>
+
+        <Separator Grid.Row="5" Margin="2" VerticalAlignment="Center"></Separator>
+
+        <Grid Grid.Row="6">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="40"/>
+                <RowDefinition Height="40"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <Label Grid.Row="0" Grid.ColumnSpan="2" Content="Hair Flow Data (Vertex Color 3)" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"/>
+            <TextBlock FontSize="10" FontStyle="Italic" Grid.Row="1" Grid.ColumnSpan="2" HorizontalAlignment="Center" TextAlignment="Center">
+                <Run>Anisotropic Flow data affects hair lighting.  Typically, this data should be manually authored...</Run>
+                <LineBreak/>
+                <Run>However, we also provide some simplified tools for creating flow data automatically.</Run>
+                <LineBreak/>
+                <LineBreak/>
+                <Run>For automatic generation, specify the UV orientation of the hair strands in this Model/Mesh/Part.</Run>
+                <LineBreak/>
+                <Run>Clearing this data will generate a somewhat sharp generic specular highlighting effect.</Run>
+                <LineBreak/>
+                <Run>Disabling this data at the full model level will instead generate a more flat lighting effect.</Run>
+            </TextBlock>
+
+            <Button Grid.Row="2" Grid.Column="0" Content="Clear Flow Data" Margin="10,5" Click="ClearFlow_Click"></Button>
+            <Button Grid.Row="2" Grid.Column="1" Content="Disable Flow Data (Entire Model)" Margin="10,5" Click="DisableFlow_Click"></Button>
+            <Button Grid.Row="3" Grid.Column="0" Content="Generate Flow Data" Margin="10,5" Click="GenerateFlow_Click"></Button>
+            <ComboBox Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" Margin="10,0" ItemsSource="{Binding Path=FlowSource}" SelectedValue="{Binding Path=FlowDataDirection}" SelectedValuePath="Value" DisplayMemberPath="Key"/>
+        </Grid>
+
+        <Separator Grid.Row="7" Margin="2" VerticalAlignment="Center"></Separator>
+        
+        <Label x:Name="NoticeLabel" Grid.Row="8" Margin="10,0" Grid.Column="0" Content="ASDF" FontStyle="Italic" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        <Button Grid.Row="9" Content="Done" Margin="10,5" Click="Done_Click"></Button>
+    </Grid>
+</mah:MetroWindow>

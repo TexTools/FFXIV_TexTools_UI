@@ -29,7 +29,6 @@ namespace FFXIV_TexTools.ViewModels
 {
     public class ImportModelViewModel : INotifyPropertyChanged
     {
-        private const int ExpandedHeight = 680;
         private const double CloseDelay = 3000f;
 
         private ImportModelView _view;
@@ -213,27 +212,22 @@ namespace FFXIV_TexTools.ViewModels
             // Default Settings for specific categories, event handlers are added to allow users to opt out of these defaults
             if (referenceItem != null)
             {
-                if (referenceItem.SecondaryCategory == XivStrings.Face && ComplexOptionsEnabled)
-                {
-                    _view.UseOriginalShapeDataButton.IsChecked = Settings.Default.UseOriginalShapeDataForFace;
-                }
                 if (referenceItem.SecondaryCategory == XivStrings.Hair)
                 {
                     _view.CloneUV1Button.IsChecked = Settings.Default.CloneUV1toUV2ForHair;
                 }
             }
 
-            _view.UseOriginalShapeDataButton.Click += UseOriginalShapeDataButton_Clicked;
             _view.CloneUV1Button.Click += CloneUV1Button_Clicked;
             _view.ShiftUVsButton.Click += ForceUVsButton_Clicked;
             _view.UseImportedTangentButton.Click += UseExternalTangents_Clicked;
+
+            if (!string.IsNullOrWhiteSpace(startingFilePath))
+            {
+                SetRaceOverrideByFileName();
+            }
         }
 
-        private void UseOriginalShapeDataButton_Clicked(object sender, RoutedEventArgs e)
-        {
-            Settings.Default.UseOriginalShapeDataForFace = _view.UseOriginalShapeDataButton.IsChecked == true;
-            Settings.Default.Save();
-        }
 
         private void CloneUV1Button_Clicked(object sender, RoutedEventArgs e)
         {
@@ -331,7 +325,7 @@ namespace FFXIV_TexTools.ViewModels
                 }
             }
 
-            _view.Height = ExpandedHeight;
+            _view.LogGrid.Height = 400;
             _view.EnableAll(false);
 
             // Clear log.
@@ -339,12 +333,8 @@ namespace FFXIV_TexTools.ViewModels
             _view.LogTextBox.AppendText("");
 
             var options = new ModelImportOptions();
-            options.UseOriginalShapeData = _view.UseOriginalShapeDataButton.IsChecked == true ? true : false;
             options.ShiftImportUV = _view.ShiftUVsButton.IsChecked == true ? true : false;
-            options.ClearUV2 = _view.ClearUV2Button.IsChecked == true ? true : false;
             options.CloneUV2 = _view.CloneUV1Button.IsChecked == true ? true : false;
-            options.ClearVAlpha = _view.ClearVAlphaButton.IsChecked == true ? true : false;
-            options.ClearVColor = _view.ClearVColorButton.IsChecked == true ? true : false;
             options.AutoScale = _view.AutoScaleButton.IsChecked == true ? true : false;
             options.UseImportedTangents = _view.UseImportedTangentButton.IsChecked == true ? true : false;
 

@@ -60,6 +60,11 @@ namespace FFXIV_TexTools.ViewModels
 
         private XivDependencyRoot _root;
 
+        public void UpdateFlow()
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(EnableAnisotropy)));
+        }
+
 
         public bool DisableShadows
         {
@@ -75,6 +80,7 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     _newModel.Flags &= ~EMeshFlags1.ShadowDisabled;
                 }
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DisableShadows)));
             }
         }
         public bool DisableLightShadow
@@ -93,6 +99,7 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     _newModel.Flags &= ~EMeshFlags1.LightShadowDisabled;
                 }
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DisableLightShadow)));
             }
         }
         public bool EnableAnisotropy
@@ -103,8 +110,8 @@ namespace FFXIV_TexTools.ViewModels
             }
             set
             {
-
                 _newModel.AnisotropicLightingEnabled = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(EnableAnisotropy)));
             }
         }
         public bool DisableWavingAnimation
@@ -123,6 +130,7 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     _newModel.Flags &= ~EMeshFlags1.WavingAnimationDisabled;
                 }
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DisableWavingAnimation)));
             }
         }
         public bool EnableLightingReflection
@@ -141,6 +149,7 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     _newModel.Flags &= ~EMeshFlags1.LightingReflectionEnabled;
                 }
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(EnableLightingReflection)));
             }
         }
         public bool UnknownFlag
@@ -159,6 +168,7 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     _newModel.Flags &= ~EMeshFlags1.Unknown10;
                 }
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(UnknownFlag)));
             }
         }
         public bool OccludeRain
@@ -177,6 +187,7 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     _newModel.Flags &= ~EMeshFlags1.RainOcclusionEnabled;
                 }
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(OccludeRain)));
             }
         }
         public bool OccludeSnow
@@ -195,6 +206,7 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     _newModel.Flags &= ~EMeshFlags1.SnowOcclusionEnabled;
                 }
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(OccludeSnow)));
             }
         }
         public bool OccludeDust
@@ -213,6 +225,7 @@ namespace FFXIV_TexTools.ViewModels
                 {
                     _newModel.Flags &= ~EMeshFlags1.DustOcclusionEnabled;
                 }
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(OccludeDust)));
             }
         }
 

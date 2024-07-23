@@ -7,56 +7,54 @@
         xmlns:resx="clr-namespace:FFXIV_TexTools.Resources"
         resx:Localization.Enabled="True"                     
         mc:Ignorable="d"
-        Title="Model Importer" Height="290" IsMinButtonEnabled="False" IsMaxRestoreButtonEnabled="False" WindowStartupLocation="CenterOwner" FontSize="14" Width="640" ResizeMode="NoResize">
+        Title="Model Importer" IsMinButtonEnabled="False" IsMaxRestoreButtonEnabled="False" WindowStartupLocation="CenterOwner" FontSize="14" Width="640" ResizeMode="NoResize" SizeToContent="Height">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="60"></RowDefinition>
-            <RowDefinition Height="160"></RowDefinition>
             <RowDefinition Height="40"></RowDefinition>
-            <RowDefinition Height="1*"></RowDefinition>
+            <RowDefinition Height="80"></RowDefinition>
+            <RowDefinition Height="40"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
         </Grid.RowDefinitions>
-        <Grid VerticalAlignment="Top" Grid.Row="0">
+        <Grid VerticalAlignment="Center" Grid.Row="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="223*"/>
                 <ColumnDefinition Width="39*"/>
                 <ColumnDefinition Width="55*"/>
             </Grid.ColumnDefinitions>
-            <TextBox x:Name="FileNameTextBox" mah:TextBoxHelper.Watermark="Using existing model" Text="" Grid.ColumnSpan="1" Margin="10,14,5,14" VerticalAlignment="Center" VerticalContentAlignment="Center" FontStyle="Italic" Height="26" />
-            <Button x:Name="SelectFileButton" Content="..." Grid.ColumnSpan="1" Grid.Column="1" Margin="5,14" VerticalAlignment="Center" Height="26" />
-            <Button x:Name="UseExistingButton" Content="Use Existing" Grid.ColumnSpan="1" Margin="5,14,10,14" VerticalAlignment="Center" Grid.Column="2" Height="26" Click="UseExistingButton_Click" />
+            <TextBox x:Name="FileNameTextBox" mah:TextBoxHelper.Watermark="Using existing model" Text="" Grid.ColumnSpan="1" Margin="10,0" VerticalAlignment="Center" VerticalContentAlignment="Center" FontStyle="Italic" />
+            <Button x:Name="SelectFileButton" Content="..." Grid.ColumnSpan="1" Grid.Column="1" Margin="10,0" VerticalAlignment="Center" />
+            <Button x:Name="UseExistingButton" Content="Use Existing" Grid.ColumnSpan="1" Margin="10,0" VerticalAlignment="Center" Grid.Column="2" Click="UseExistingButton_Click" />
 
         </Grid>
-        <Grid Margin="10,10,10,10" Grid.Row="1">
+        <Grid Margin="10,0" Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*"></ColumnDefinition>
                 <ColumnDefinition Width="1*"></ColumnDefinition>
                 <ColumnDefinition Width="1*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height ="1*"></RowDefinition>
-                <RowDefinition Height ="1*"></RowDefinition>
-                <RowDefinition Height ="1*"></RowDefinition>
-                <RowDefinition Height ="1*"></RowDefinition>
+                <RowDefinition Height ="40"></RowDefinition>
+                <RowDefinition Height ="40"></RowDefinition>
+                <RowDefinition Height ="40"></RowDefinition>
             </Grid.RowDefinitions>
-            <CheckBox x:Name="UseOriginalShapeDataButton" Content="Use Original Shape Data" Style="{DynamicResource SimpleCheckBox}" Grid.Row="0" Grid.Column="0" VerticalContentAlignment="Center" VerticalAlignment="Center" ToolTipService.ShowOnDisabled="True" ToolTip="Enable the model's original shape data. (Should be ON for Faces)"  IsEnabled="{Binding Path=ComplexOptionsEnabled}"/>
-            <CheckBox x:Name="ClearUV2Button" Content="Clear UV2" Style="{DynamicResource SimpleCheckBox}" Grid.Row="0" Grid.Column="1"  VerticalContentAlignment="Center" VerticalAlignment="Center" ToolTipService.ShowOnDisabled="True" ToolTip="Reset the second UV layer to [0,0]" />
-            <CheckBox x:Name="ClearVColorButton" Content="Clear Vertex Color" Style="{DynamicResource SimpleCheckBox}" Grid.Row="0" Grid.Column="2"  VerticalContentAlignment="Center" VerticalAlignment="Center" ToolTipService.ShowOnDisabled="True" ToolTip="Reset the Vertex Color to [255,255,255]" />
-            <CheckBox x:Name="ShiftUVsButton" Content="Shift Imported UVs" Style="{DynamicResource SimpleCheckBox}" Grid.Row="1" Grid.Column="0"  VerticalContentAlignment="Center" VerticalAlignment="Center" ToolTipService.ShowOnDisabled="True" ToolTip="Shift the incoming UV by -1 V.  If you are importing an Old TT2.0 model, this should be OFF."  />
-            <CheckBox x:Name="CloneUV1Button" Content="Clone UV1 to UV2" Style="{DynamicResource SimpleCheckBox}" Grid.Row="1" Grid.Column="1" VerticalContentAlignment="Center" VerticalAlignment="Center" ToolTipService.ShowOnDisabled="True" ToolTip="Copy UV1 into UV2. (Useful for Hair shader items)"  />
-            <CheckBox x:Name="ClearVAlphaButton" Content="Clear Vertex Alpha" Style="{DynamicResource SimpleCheckBox}" Grid.Row="1" Grid.Column="2" VerticalContentAlignment="Center" VerticalAlignment="Center" ToolTipService.ShowOnDisabled="True" ToolTip="Reset the Vertex Alpha to [255]" />
-            <CheckBox x:Name="AutoScaleButton" Content="Automatically Adjust Scale" Style="{DynamicResource SimpleCheckBox}" Grid.Row="2" Grid.Column="0" VerticalContentAlignment="Center" VerticalAlignment="Center" ToolTipService.ShowOnDisabled="True" ToolTip="Automatically attempt to fix errors caused by improper unit scalings."  IsEnabled="{Binding Path=ComplexOptionsEnabled}"/>
+            <CheckBox x:Name="ShiftUVsButton" Content="Shift Imported UVs" Style="{DynamicResource SimpleCheckBox}" Grid.Row="0" Grid.Column="0"  VerticalContentAlignment="Center" VerticalAlignment="Center" ToolTipService.ShowOnDisabled="True" ToolTip="Shift the incoming UV by -1 V.  If you are importing an Old TT2.0 model, this should be OFF."  />
+            <CheckBox x:Name="CloneUV1Button" Content="Clone UV1 to UV2" Style="{DynamicResource SimpleCheckBox}" Grid.Row="0" Grid.Column="1" VerticalContentAlignment="Center" VerticalAlignment="Center" ToolTipService.ShowOnDisabled="True" ToolTip="Copy UV1 into UV2. (Useful for Hair shader items)"  />
+            <CheckBox x:Name="AutoScaleButton" Content="Automatically Adjust Scale" Style="{DynamicResource SimpleCheckBox}" Grid.Row="1" Grid.Column="0" VerticalContentAlignment="Center" VerticalAlignment="Center" ToolTipService.ShowOnDisabled="True" ToolTip="Automatically attempt to fix errors caused by improper unit scalings."  IsEnabled="{Binding Path=ComplexOptionsEnabled}"/>
 
-            <CheckBox x:Name="OverrideRaceButton" Content="Override Incoming Race:" Style="{DynamicResource SimpleCheckBox}" Grid.Row="2" Grid.Column="1" VerticalContentAlignment="Center" VerticalAlignment="Center" ToolTipService.ShowOnDisabled="True" ToolTip="Make TexTools convert your model from a different race to appropriate one for this item." />
-            <ComboBox Grid.Row="2" Grid.Column="2" x:Name="RaceComboBox" Width="200" VerticalAlignment="Center"></ComboBox>
-            
-            <CheckBox x:Name="UseImportedTangentButton" Content="Use Imported Tangents" Style="{DynamicResource SimpleCheckBox}" Grid.Row="3" Grid.Column="0" VerticalContentAlignment="Center" VerticalAlignment="Center" ToolTipService.ShowOnDisabled="True" ToolTip="Use Tangent/Binormal Data from the imported file, rather than recalculating it."  />
-            
+            <CheckBox x:Name="OverrideRaceButton" Content="Override Incoming Race:" Style="{DynamicResource SimpleCheckBox}" Grid.Row="1" Grid.Column="1" VerticalContentAlignment="Center" VerticalAlignment="Center" ToolTipService.ShowOnDisabled="True" ToolTip="Make TexTools convert your model from a different race to appropriate one for this item." />
+            <ComboBox Grid.Row="1" Grid.Column="2" x:Name="RaceComboBox" Width="200" VerticalAlignment="Center"></ComboBox>
+
+            <CheckBox x:Name="UseImportedTangentButton" Content="Use Imported Tangents" Style="{DynamicResource SimpleCheckBox}" Grid.Row="0" Grid.Column="2" VerticalContentAlignment="Center" VerticalAlignment="Center" ToolTipService.ShowOnDisabled="True" ToolTip="Use Tangent/Binormal Data from the imported file, rather than recalculating it."  />
+
         </Grid>
-        <UniformGrid Margin="10,5,10,5" Columns="3" Grid.Row="2">
-            <Button x:Name="CancelButton" Content="Cancel" Margin="0,0,10,0" Click="CancelButton_Click"  />
-            <Button x:Name="EditButton" Content="Open Editor" Margin="0" IsEnabled="{Binding Path=ComplexOptionsEnabled}" />
-            <Button x:Name="ImportButton" Content="{Binding Path=FinishText}" Margin="10,0,0,0" />
+        <UniformGrid Margin="10,0" Columns="3" Grid.Row="2">
+            <Button x:Name="CancelButton" Content="Cancel" Margin="10,0" Click="CancelButton_Click" VerticalAlignment="Center" />
+            <Button x:Name="EditButton" Content="Open Editor" Margin="10,0" IsEnabled="{Binding Path=ComplexOptionsEnabled}" VerticalAlignment="Center" />
+            <Button x:Name="ImportButton" Content="{Binding Path=FinishText}" Margin="10,0" VerticalAlignment="Center" />
         </UniformGrid>
-        <RichTextBox x:Name="LogTextBox" Block.LineHeight="2" Height="418"  Grid.Row="3" Margin="8,0,8,0" VerticalAlignment="Top" Background="#FFE2E2E2" Foreground="Black" FontFamily="Courier New" VerticalScrollBarVisibility="Visible" Padding="5" IsUndoEnabled="True" IsReadOnly="True" mah:TextBoxHelper.WatermarkWrapping="Wrap"/>
+
+        <Grid Grid.Row="3" Height="0" x:Name="LogGrid">
+            <RichTextBox x:Name="LogTextBox" Block.LineHeight="2" Grid.Row="3" Margin="10" VerticalAlignment="Stretch" Background="#FFE2E2E2" Foreground="Black" FontFamily="Courier New" VerticalScrollBarVisibility="Visible" Padding="5" IsUndoEnabled="True" IsReadOnly="True" mah:TextBoxHelper.WatermarkWrapping="Wrap"/>
+        </Grid>
     </Grid>
 </mah:MetroWindow>

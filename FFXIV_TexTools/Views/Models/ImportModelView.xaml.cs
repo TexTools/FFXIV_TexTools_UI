@@ -47,8 +47,6 @@ namespace FFXIV_TexTools.Views.Models
         private ImportModelViewModel _viewModel;
         private byte[] _data;
 
-        // Height to expand to when opening the log window.
-
         public ImportModelView(string internalPath, IItem referenceItem, Action<ModelImportResult> onComplete = null, string startingFilePath = null, bool simpleMode = false, bool clearEmptyMaterials = false)
         {
             InitializeComponent();
@@ -151,12 +149,8 @@ namespace FFXIV_TexTools.Views.Models
             CancelButton.IsEnabled = enabled;
             ImportButton.IsEnabled = enabled;
             EditButton.IsEnabled = enabled;
-            ClearUV2Button.IsEnabled = enabled;
             CloneUV1Button.IsEnabled = enabled;
-            ClearVColorButton.IsEnabled = enabled;
-            ClearVAlphaButton.IsEnabled = enabled;
             UseImportedTangentButton.IsEnabled = enabled;
-            UseOriginalShapeDataButton.IsEnabled = enabled;
             ShiftUVsButton.IsEnabled = enabled;
             FileNameTextBox.IsEnabled = enabled;
             UseExistingButton.IsEnabled = enabled;
