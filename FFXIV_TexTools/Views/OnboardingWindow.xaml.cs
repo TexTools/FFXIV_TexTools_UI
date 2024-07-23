@@ -447,7 +447,7 @@ namespace FFXIV_TexTools.Views
             // If the user has the quick launcher configured, use that.
             if (!string.IsNullOrWhiteSpace(qlDir))
             {
-                return qlDir;
+                return Path.GetFullPath(Path.Combine(qlDir, "game", "sqpack", "ffxiv"));
             }
 
             var resourceManager = CommonInstallDirectories.ResourceManager;
