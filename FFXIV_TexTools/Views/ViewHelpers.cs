@@ -92,23 +92,26 @@ namespace FFXIV_TexTools.Views
         public static bool ConfirmDiscardChanges(this UserControl control, string filePath)
         {
 
-            WindowWrapper win32Window = null;
-            var wind = Window.GetWindow(control);
-            if (!IsWindowOpen(wind))
+            return Application.Current.Dispatcher.Invoke(() =>
             {
-                wind = null;
-            }
-            else
-            {
-                win32Window = new WindowWrapper(new WindowInteropHelper(wind).Handle);
-            }
-            var fileName = Path.GetFileName(filePath);
-            var res = FlexibleMessageBox.Show(win32Window, "You have unsaved changes to the file: " + fileName +  "\nThey will be lost if you continue.\n\nAre you sure you wish to continue and discard these changes?", "Discard Changes Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1);
-            if(res == DialogResult.Yes || res == DialogResult.OK)
-            {
-                return true;
-            }
-            return false;
+                WindowWrapper win32Window = null;
+                var wind = Window.GetWindow(control);
+                if (!IsWindowOpen(wind))
+                {
+                    wind = null;
+                }
+                else
+                {
+                    win32Window = new WindowWrapper(new WindowInteropHelper(wind).Handle);
+                }
+                var fileName = Path.GetFileName(filePath);
+                var res = FlexibleMessageBox.Show(win32Window, "You have unsaved changes to the file: " + fileName + "\nThey will be lost if you continue.\n\nAre you sure you wish to continue and discard these changes?", "Discard Changes Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1);
+                if (res == DialogResult.Yes || res == DialogResult.OK)
+                {
+                    return true;
+                }
+                return false;
+            });
         }
 
 
