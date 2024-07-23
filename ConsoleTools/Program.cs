@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using xivModdingFramework.Cache;
+using xivModdingFramework.Helpers;
 using xivModdingFramework.Models.DataContainers;
 using xivModdingFramework.Models.FileTypes;
 using xivModdingFramework.Mods;
@@ -40,7 +41,27 @@ namespace ConsoleTools
                 return null;
             };
 
-            return Run(args).GetAwaiter().GetResult();
+            int res = -1;
+            try
+            {
+                res = Run(args).GetAwaiter().GetResult();
+            }
+            catch(Exception ex) 
+            {
+                Console.WriteLine(ex);
+            }
+
+            try
+            {
+                // Always clear the temp folder, or try to.
+                IOUtil.ClearTempFolder();
+            }
+            catch
+            {
+
+            }
+
+            return res;
         }
 
 
