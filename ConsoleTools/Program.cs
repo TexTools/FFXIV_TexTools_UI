@@ -321,7 +321,7 @@ namespace ConsoleTools
             else if (src.EndsWith(".mdl"))
             {
                 var mdl = Mdl.GetXivMdl(data);
-                var ttm = TTModel.FromRaw(mdl);
+                var ttm = await TTModel.FromRaw(mdl);
                 ttm.Source = ffPath;
                 await Mdl.ExportTTModelToFile(ttm, ffPath, 1, null, rtx);
             }

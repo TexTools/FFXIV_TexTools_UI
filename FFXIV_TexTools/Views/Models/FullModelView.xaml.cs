@@ -250,19 +250,12 @@ namespace FFXIV_TexTools.Views.Models
             foreach(var mdl in fmViewPortVM.shownModels.Select(x => x.Value.TtModel))
             {
                 var m = (TTModel) mdl.Clone();
-
-                if (Settings.Default.ShiftExportUV)
-                {
-                    // This is not a typo.  Because we haven't flipped the UV yet, we need to -1, not +1.
-                    ModelModifiers.ShiftImportUV(m);
-                }
-                
                 models.Add(m);
             }
 
             
 
-            TTModel.SaveFullToFile(dbPath, _fmvm.SelectedSkeleton.XivRace, models, null, MainWindow.DefaultTransaction);
+            TTModel.SaveFullToFile(dbPath, _fmvm.SelectedSkeleton.XivRace, models, null, MainWindow.DefaultTransaction, Settings.Default.ShiftExportUV);
 
             var proc = new Process
             {

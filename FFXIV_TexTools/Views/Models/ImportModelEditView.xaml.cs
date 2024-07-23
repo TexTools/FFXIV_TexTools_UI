@@ -30,6 +30,8 @@ namespace FFXIV_TexTools.Views.Models
         public ObservableCollection<KeyValuePair<double, string>> SizeMultiplierSource = new ObservableCollection<KeyValuePair<double, string>>();
         public ObservableCollection<KeyValuePair<int, string>> MdlVersionSource = new ObservableCollection<KeyValuePair<int, string>>();
 
+        private bool _CloseConfirmed = false;
+
         public ImportModelEditView(TTModel newModel, TTModel oldModel)
         {
             InitializeComponent();
@@ -124,6 +126,18 @@ namespace FFXIV_TexTools.Views.Models
 
         private void ImportModelEditView_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            if (!_CloseConfirmed)
+            {
+                if (!this.ShowConfirmation("Model Editor Cancel Confirmation", "Any changes you made in the model editor will be lost.\n\nAre you sure you wish to cancel these changes?"))
+                {
+                    e.Cancel = true;
+                    return;
+                } else
+                {
+                    _CloseConfirmed = true;
+                }
+            }
+
             if (null != Owner)
             {
                 Owner.Activate();
@@ -162,11 +176,14 @@ namespace FFXIV_TexTools.Views.Models
             }
             var val = (int)MdlVersionComboBox.SelectedValue;
             _newModel.MdlVersion = (ushort)val;
+
+            _CloseConfirmed = true;
             DialogResult = true;
         }
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
+            _CloseConfirmed = true;
             DialogResult = false;
         }
 
@@ -253,7 +270,27 @@ namespace FFXIV_TexTools.Views.Models
             {
                 return;
             }
-            ModifyPartWindow.ShowPartModifier(mg.Parts[part], this);
+            ModifyVerticesWindow.ShowVertexModifier(mg.Parts[part], _newModel, this);
+            _viewModel.UpdateFlow();
+        }
+
+        private void ModifyMesh_Click(object sender, RoutedEventArgs e)
+        {
+            var mesh = (int)MeshNumberBox.SelectedValue;
+            if (_newModel.MeshGroups.Count <= mesh || mesh < 0)
+            {
+                return;
+            }
+            var mg = _newModel.MeshGroups[mesh];
+
+            ModifyVerticesWindow.ShowVertexModifier(mg, _newModel, this);
+            _viewModel.UpdateFlow();
+        }
+
+        private void ModifyModel_Click(object sender, RoutedEventArgs e)
+        {
+            ModifyVerticesWindow.ShowVertexModifier(_newModel, _newModel, this);
+            _viewModel.UpdateFlow();
         }
     }
 }
