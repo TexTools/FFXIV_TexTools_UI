@@ -197,7 +197,20 @@ namespace FFXIV_TexTools.Views
             }
 
             CheckRerunAdmin();
-            ValidateModlist();
+            try
+            {
+                ValidateModlist();
+            }
+            catch(Exception ex)
+            {
+                ViewHelpers.ShowError("Invalid FFXIV Path", "TexTools was unable to initialize properly with the given FFXIV path.");
+
+                // Clear the FFXIV directory and reset them back to the init.
+                Settings.Default.FFXIV_Directory = null;
+                Settings.Default.Save();
+                OnboardAndInitialize();
+                return;
+            }
         }
         public static void InitializeSettings()
         {
@@ -452,7 +465,7 @@ namespace FFXIV_TexTools.Views
 
         public static bool IsGameDirectoryValid(string dir)
         {
-            if (string.IsNullOrEmpty(dir))
+            if (string.IsNullOrWhiteSpace(dir))
             {
                 return false;
             }
@@ -467,6 +480,22 @@ namespace FFXIV_TexTools.Views
                 return false;
             }
 
+            try
+            {
+                var di = new DirectoryInfo(dir);
+                var par = di.Parent.Parent;
+                var path = Path.GetFullPath(Path.Combine(par.FullName, "ffxiv_dx11.exe"));
+                if (!File.Exists(path))
+                {
+                    return false;
+                }
+            }
+            catch
+            {
+                return false;
+            }
+
+
             return true;
         }
 
@@ -479,9 +508,16 @@ namespace FFXIV_TexTools.Views
         /// <returns></returns>
         public static string ResolveFFXIVFolder(string path, bool recursive = false)
         {
+            const string _exe = "ffxiv_dx11.exe";
+
+            // Only allow base ffxiv folder selection if it has the EXE in it,
+            // to avoid issues with users having a parent folder name 'ffxiv'.
             if (path.EndsWith("ffxiv"))
             {
-                return path;
+                if (File.Exists(Path.Combine(path, _exe)))
+                {
+                    return path;
+                }
             }
 
 
