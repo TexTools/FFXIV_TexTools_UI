@@ -68,7 +68,7 @@ namespace FFXIV_TexTools.Views
         public ObservableCollection<KeyValuePair<string, InstallAction>> Actions { get; set; } = new ObservableCollection<KeyValuePair<string, InstallAction>>()
         {
             new KeyValuePair<string, InstallAction>("Upgrade and Install to Penumbra", InstallAction.InstallPenumbra),
-            new KeyValuePair<string, InstallAction>("Install to FFXIV", InstallAction.InstallXiv),
+            new KeyValuePair<string, InstallAction>("Upgrade and Install to FFXIV (UNSAFE)", InstallAction.InstallXiv),
             new KeyValuePair<string, InstallAction>("Upgrade Modpack for Dawntrail", InstallAction.UpdateMod),
             new KeyValuePair<string, InstallAction>("Shrink Modpack", InstallAction.ShrinkMod),
         };
