@@ -403,7 +403,19 @@ namespace FFXIV_TexTools
 
         private async Task HandleArgs(string[] args)
         {
-            OnlyImport(args[0]);
+            try
+            {
+                var gameDir = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
+                var lang = XivLanguages.GetXivLanguage(Properties.Settings.Default.Application_Language);
+                await XivCache.SetGameInfo(gameDir, lang, false);
+            }
+            catch (Exception ex)
+            {
+                FlexibleMessageBox.Show("An error occurred while initializing:\n\n" + ex.Message, "Init Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            ImportOnlyWindow.ShowImportDialog(args[0]);
+            Application.Current.Shutdown();
         }
 
         private void OnKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
@@ -411,28 +423,6 @@ namespace FFXIV_TexTools
             if (ItemView != null)
             {
                 ItemView.OnKeyDown(sender, e);
-            }
-        }
-
-        private void LanguageSelection()
-        {
-            var lang = Properties.Settings.Default.Application_Language;
-
-            if (lang.Equals(string.Empty))
-            {
-                var langSelectView = new LanguageSelectView();
-                langSelectView.ShowDialog();
-
-                var langCode = langSelectView.LanguageCode;
-
-                Properties.Settings.Default.Application_Language = langCode;
-                Properties.Settings.Default.Save();
-            } else if (lang != Properties.Settings.Default.Application_Language)
-            {
-                // We shouldn't evet actually get here, as this function is only called on 
-                // first time installs, where lang would be empty, and other calls force-restart the application.
-                // But doesn't hurt to have a safety check here anyways.
-                _ = InitializeCache();
             }
         }
 
@@ -912,33 +902,6 @@ namespace FFXIV_TexTools
                 // If this fails because of some security issue on getting the process list or the like,
                 // just try to continue as normal.
             }
-        }
-
-        private async void OnlyImport(string modpack)
-        {
-
-            try
-            {
-                
-                var gameDir = new DirectoryInfo(Properties.Settings.Default.FFXIV_Directory);
-                var lang = XivLanguages.GetXivLanguage(Properties.Settings.Default.Application_Language);
-                await XivCache.SetGameInfo(gameDir, lang, false);
-                if (!ViewHelpers.ShowConfirmation(this, "Import Confirmation", "This will install the modpack to your live FFXIV files.\n\nAre you sure you wish to continue?"))
-                {
-                    Application.Current.Shutdown();
-                }
-
-                XivCache.GameWriteEnabled = true;
-
-                await ImportModpack(modpack, true);
-            }
-            catch(Exception ex)
-            {
-                FlexibleMessageBox.Show("An error occurred while initializing or importing the mod:\n\n" + ex.Message, "Import Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                throw;
-            }
-
-            Application.Current.Shutdown();
         }
 
         /// <summary>

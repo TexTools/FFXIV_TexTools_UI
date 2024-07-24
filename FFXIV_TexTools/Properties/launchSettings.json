@@ -1,7 +1,8 @@
 {
   "profiles": {
     "FFXIV_TexTools": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "commandLineArgs": "\"S:\\Mods\\#GrisSwimsuit.ttmp2\""
     }
   }
 }
