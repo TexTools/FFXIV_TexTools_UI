@@ -65,7 +65,7 @@
     <None Remove="Resources\Shaders\psCustomMeshBlinnPhongOIT.hlsl" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Autoupdater.NET.Official" Version="1.7.0" />
+    <PackageReference Include="Autoupdater.NET.Official" Version="1.9.1" />
     <PackageReference Include="BetterFolderBrowser" Version="1.2.0" />
     <PackageReference Include="ControlzEx" Version="3.0.2.4" />
     <PackageReference Include="Cyotek.Drawing.BitmapFont" Version="2.0.4" />
@@ -93,7 +93,7 @@
     <PackageReference Include="SharpDX.Direct3D9" Version="4.2.0" />
     <PackageReference Include="SharpDX.DXGI" Version="4.2.0" />
     <PackageReference Include="SharpDX.Mathematics" Version="4.2.0" />
-    <PackageReference Include="SixLabors.ImageSharp" Version="2.1.8" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="2.1.9" />
     <PackageReference Include="System.Buffers" Version="4.5.1" />
     <PackageReference Include="System.Collections.NonGeneric" Version="4.3.0" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />

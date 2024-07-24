@@ -71,8 +71,16 @@
 
         <Button x:Name="EditColorsetButton" Content="View/Edit Colorset" HorizontalAlignment="Left" Margin="0,0,10,0" VerticalAlignment="Center" Width="150" Grid.Column="1" Click="EditColorset_Click" IsEnabled="{Binding Path=ColorsetEnabled}"></Button>
 
+        <Button x:Name="ForceAddColorsetButton" Content="Add Colorset" HorizontalAlignment="Left" Margin="160,0,0,0" VerticalAlignment="Center" Width="150" Grid.Column="1" Click="ForceAddColorset_Click"></Button>
+
         <Image x:Name="ColorsetImage" Source="/FFXIV_TexTools;component/ffxiv2.ico" Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Margin="160,0,0,0" Height="80" Width="20" HorizontalAlignment="Left" 
-       RenderOptions.BitmapScalingMode="NearestNeighbor"/>
+       RenderOptions.BitmapScalingMode="NearestNeighbor">
+            <Image.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Force-Add Colorset" Click="ForceAddColorset_Click"/>
+                </ContextMenu>
+            </Image.ContextMenu>
+        </Image>
 
         <Button x:Name="EditShaderFlagsButton" Content="Edit Material Flags" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center" Width="150" Height="28" Grid.Row="1" Click="EditShaderFlags_Click"/>
         <Button x:Name="EditShaderKeysButton" Content="Edit Shader Keys" HorizontalAlignment="Left" Margin="170,0,0,0" VerticalAlignment="Center" Width="150" Height="28" Grid.Row="1" Click="EditShaderKeys_Click"/>

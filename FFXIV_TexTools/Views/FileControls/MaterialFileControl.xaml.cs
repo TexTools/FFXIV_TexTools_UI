@@ -383,11 +383,13 @@ namespace FFXIV_TexTools.Views.Controls
         {
             if(Material == null || Material.ColorSetDataSize <= 0)
             {
+                ForceAddColorsetButton.Visibility = Visibility.Visible;
                 ColorsetImage.Source = null;
                 return;
             }
             try
             {
+                ForceAddColorsetButton.Visibility = Visibility.Collapsed;
 
                 ImageSource imageSource = null;
                 var pixels = new byte[0];
@@ -865,6 +867,28 @@ namespace FFXIV_TexTools.Views.Controls
         {
             TilingModeContextMenu.PlacementTarget = TilingModeButton;
             TilingModeContextMenu.IsOpen = true;
+        }
+
+        private void ForceAddColorset_Click(object sender, RoutedEventArgs e)
+        {
+            if(Material.ColorSetDataSize != 1024)
+            {
+                Material.ColorSetData = new List<Half>(1024);
+                for(int i = 0; i <32; i++)
+                {
+                    Material.ColorSetData.AddRange(EndwalkerUpgrade.GetDefaultColorsetRow(Material.ShaderPack));
+                }
+                Material.ColorSetDyeData = new byte[128];
+
+                if(Material.AdditionalData.Length != 4)
+                {
+                    Material.AdditionalData = new byte[4];
+                }
+                Material.AdditionalData[0] = 0x3C;
+                Material.AdditionalData[1] = 0x05;
+
+                _ = UpdateColorsetImage();
+            }
         }
     }
 }
