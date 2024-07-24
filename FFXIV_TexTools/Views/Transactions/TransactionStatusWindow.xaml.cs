@@ -489,7 +489,7 @@ namespace FFXIV_TexTools.Views.Transactions
                 if(!XivCache.GameWriteEnabled && MainWindow.UserTransaction.Settings.Target == ETransactionTarget.GameFiles)
                 {
                     var res = FlexibleMessageBox.Show(ViewHelpers.GetWin32Window(Window.GetWindow(this)),
-                        "You are committing to the live FFXIV game files while SAFE mode is enabled.\n\nAre you SURE this is what you meant to do?", "Safe Mode Write Confirmation", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1);
+                        "You are committing to the live FFXIV game files while SAFE mode is enabled.\n\nThis will alter your real, live FFXIV Game Files.\n\nAre you SURE this is what you meant to do?", "Safe Mode Write Confirmation", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1);
                     if(res != System.Windows.Forms.DialogResult.OK)
                     {
                         return;

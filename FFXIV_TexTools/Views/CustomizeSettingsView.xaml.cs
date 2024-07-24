@@ -23,6 +23,13 @@ using xivModdingFramework.Helpers;
 using Microsoft.Win32;
 using FFXIV_TexTools.Helpers;
 using xivModdingFramework.Exd.FileTypes;
+using System.Threading.Tasks;
+using xivModdingFramework.Models.FileTypes;
+using xivModdingFramework.Cache;
+using xivModdingFramework.General.Enums;
+using System.Collections.Generic;
+using System.IO;
+using MahApps.Metro.Controls.Dialogs;
 
 namespace FFXIV_TexTools.Views
 {
@@ -66,6 +73,46 @@ namespace FFXIV_TexTools.Views
             {
                 ViewHelpers.ShowError("Registry Change Error", "An error occurred while attempting to set Long-Paths enabled:\n\n" + ex.Message);
             }
+        }
+
+        private async void RegenSkeletons_Click(object sender, RoutedEventArgs e)
+        {
+            if(!this.ShowConfirmation("Regenerate Skeletons Confirmation", "This will purge the skeleton cache, and regenerate it based on the CURRENT system state.\n\nIf you have custom Skeletons installed such as Skelomae, NFLB, or IVCS, those will be reflected in the new skeleton cache.\n\nAre you sure you wish to continue?"))
+            {
+                return;
+            }
+            var _lock = await this.ShowProgressAsync("Regenerating Skeletons", "Please wait...");
+            try
+            {
+                await RegenerateSkeletons();
+            } catch(Exception ex)
+            {
+                this.ShowError("Skeleton Error", "Failed to regenerate one or more skeletons:\n\n" + ex.Message);
+            }
+            finally
+            {
+                await _lock.CloseAsync();
+            }
+        }
+
+        public static async Task RegenerateSkeletons()
+        {
+            var cwd = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
+            var skelFolder = Path.Combine(cwd, Sklb.SkeletonsFolder);
+            IOUtil.RecursiveDeleteDirectory(skelFolder);
+
+            var tx = MainWindow.DefaultTransaction;
+            var root = new XivDependencyRootInfo() {
+                PrimaryId = 0,
+                PrimaryType = xivModdingFramework.Items.Enums.XivItemType.equipment
+            };
+
+            var tasks = new List<Task>();
+            foreach(var race in XivRaces.PlayableRaces)
+            {
+                tasks.Add(Task.Run(async () => { await Sklb.GetBaseSkeletonFile(root, race, tx); }));
+            }
+            await Task.WhenAll(tasks);
         }
     }
 
