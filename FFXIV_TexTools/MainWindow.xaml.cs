@@ -2144,5 +2144,50 @@ namespace FFXIV_TexTools
         {
             _ = SimpleItemViewWindow.ShowModel(null, this);
         }
+
+        private async void Menu_ImportModpackPenumbra_Click(object sender, RoutedEventArgs e)
+        {
+            var ofd = new OpenFileDialog();
+            ofd.Filter = ViewHelpers.LoadModpackFilter;
+            ofd.Title = "Import Modpack to Penumbra...";
+            if(ofd.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+            {
+                return;
+            }
+
+            var success = false;
+            await LockUi("Upgrading and Importing Modpack to Penumbra", "Please wait...");
+            try
+            {
+                var modpack = ofd.FileName;
+                var info = await TTMP.GetModpackInfo(modpack);
+                var fname = IOUtil.MakePathSafe(info.ModPack.Name);
+                var dir = PenumbraAPI.GetPenumbraDirectory();
+
+                if (string.IsNullOrWhiteSpace(dir))
+                {
+                    throw new Exception("Penumbra is not installed or the library directory could not be found.");
+                }
+                var newPath = IOUtil.GetUniqueSubfolder(dir, fname, true);
+
+                var newName = System.IO.Path.GetFileName(newPath);
+
+                await ModpackUpgrader.UpgradeModpack(modpack, newPath, true, true);
+                await PenumbraAPI.ReloadMod(newName);
+                success = true;
+            } catch (Exception ex)
+            {
+                this.ShowError("Import Error", "An error occurred while upgrading or importing the modpack: " +  ex.Message);
+            }
+            finally
+            {
+                await UnlockUi();
+            }
+
+            if (success)
+            {
+                await this.ShowMessageAsync("Penumbra Import Complete", "The modpack was imported successfully.");
+            }
+        }
     }
 }
