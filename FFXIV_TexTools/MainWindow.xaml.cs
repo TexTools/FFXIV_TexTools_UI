@@ -414,8 +414,19 @@ namespace FFXIV_TexTools
                 FlexibleMessageBox.Show("An error occurred while initializing:\n\n" + ex.Message, "Init Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
-            ImportOnlyWindow.ShowImportDialog(args[0]);
-            Application.Current.Shutdown();
+            // Set a unique temp path.
+            var tempDir = IOUtil.GetUniqueSubfolder(Path.GetTempPath(), "tt_io");
+            XivCache.FrameworkSettings.TempDirectory = tempDir;
+
+            try
+            {
+                ImportOnlyWindow.ShowImportDialog(args[0]);
+            }
+            finally
+            {
+                IOUtil.ClearTempFolder();
+                Application.Current.Shutdown();
+            }
         }
 
         private void OnKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
