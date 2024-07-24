@@ -269,12 +269,6 @@ namespace FFXIV_TexTools.ViewModels
             // Push all the potentially CPU intense stuff onto a new thread.
             await Task.Run(async () =>
             {
-                if (newModel && originalModel != _Model)
-                {
-                    // Only recalculate if an actually new-new model, since this doesn't change on shape application.
-                    ModelModifiers.CalculateTangents(model);
-                }
-
                 if (newModel)
                 {
                     lock (_Geometry)

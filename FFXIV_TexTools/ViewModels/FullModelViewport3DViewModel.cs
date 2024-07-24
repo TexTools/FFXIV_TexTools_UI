@@ -88,7 +88,6 @@ namespace FFXIV_TexTools.ViewModels
             var slot = ViewHelpers.GetModelSlot(model.Source);
 
             SharpDX.BoundingBox? boundingBox = null;
-            ModelModifiers.CalculateTangents(model);
 
             // Remove any existing models of the same item type
             RemoveSlot(slot);
