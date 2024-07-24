@@ -484,8 +484,8 @@ namespace FFXIV_TexTools.Views
             {
                 var di = new DirectoryInfo(dir);
                 var par = di.Parent.Parent;
-                if (File.Exists(Path.Combine(par.FullName, _exe))
-                    || File.Exists(Path.Combine(par.FullName, _verFile)))
+                if (!File.Exists(Path.Combine(par.FullName, _exe))
+                    && !File.Exists(Path.Combine(par.FullName, _verFile)))
                 {
                     return false;
                 }
