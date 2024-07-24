@@ -13,23 +13,31 @@ namespace FFXIV_TexTools.Helpers
 {
     internal class ModpackUpgraderWrapper
     {
-        public static async Task UpgradeModpackPrompted(bool includePartials = true)
+        public static async Task UpgradeModpackPrompted(bool includePartials = true, string initialPath = null)
         {
             var mw = MainWindow.GetMainWindow();
-            var ofd = new OpenFileDialog()
-            {
-                Filter = ViewHelpers.LoadModpackFilter,
-                InitialDirectory = Path.GetFullPath(Settings.Default.ModPack_Directory),
-            };
 
-            ofd.Multiselect = true;
-            if (ofd.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+            string[] paths = new string[0];
+            if (initialPath == null)
             {
-                return;
+                var ofd = new OpenFileDialog()
+                {
+                    Filter = ViewHelpers.LoadModpackFilter,
+                    InitialDirectory = Path.GetFullPath(Settings.Default.ModPack_Directory),
+                };
+
+                ofd.Multiselect = true;
+                if (ofd.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+                {
+                    return;
+                }
+
+
+                paths = ofd.FileNames;
+            } else
+            {
+                paths = new string[1] { initialPath };
             }
-
-
-            var paths = ofd.FileNames;
 
 
             await mw.LockUi("Upgrading Modpack", "Please Wait...\n\nIf this takes more than 3-5 minutes, please close TexTools and retry with \nOptions => Settings => 'Compress Upgrade Textures' turned off.");
