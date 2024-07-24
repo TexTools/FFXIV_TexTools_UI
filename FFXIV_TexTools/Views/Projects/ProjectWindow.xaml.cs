@@ -218,6 +218,7 @@ namespace FFXIV_TexTools.Views.Projects
                 }
             }
             var sfd = new BetterFolderBrowser();
+            sfd.RootFolder = PenumbraAPI.GetPenumbraDirectory();
             if (sfd.ShowDialog() != System.Windows.Forms.DialogResult.OK)
             {
                 return;

@@ -853,7 +853,7 @@ namespace FFXIV_TexTools.Views.Controls
             }
 
             var ofd = GetOpenDialog();
-            var res = ofd.ShowDialog();
+            var res = ofd.ShowDialog(ViewHelpers.GetWin32Window(this));
             if(res != DialogResult.OK)
             {
                 return false;
@@ -1061,7 +1061,7 @@ namespace FFXIV_TexTools.Views.Controls
                     _SaveDialog.Filter = ext.Value + " Files|*" + ext.Key;
                 }
 
-                var res = _SaveDialog.ShowDialog();
+                var res = _SaveDialog.ShowDialog(ViewHelpers.GetWin32Window(this));
                 if (res != DialogResult.OK)
                 {
                     return false;

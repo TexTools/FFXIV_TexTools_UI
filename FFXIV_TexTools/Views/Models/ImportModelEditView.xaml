@@ -71,9 +71,9 @@
                             <Run>Determines if hair materials should show anisotropic specular highlights.</Run>
                             <LineBreak/>
                             <LineBreak/>
-                            <Run>This will make the hair 'shinier', and the specular highlights will be skewed based on UV orientation.</Run>
+                            <Run>This will make the hair 'shinier', and the specular highlights will be skewed based on UV orientation and Flow Data Settings.</Run>
                             <LineBreak/>
-                            <Run>Hair strand UVs should be laid out from Top-Left to Bottom-Right for correct lighting effects with this on.</Run>
+                            <Run>Flow Data may be auto-generated based on UV Layout via the Modify Vertices menus.</Run>
                             <LineBreak/>
                             <LineBreak/>
                             <Run>Turning this off on a hair which is already using it will make the lighting significantly more matte.</Run>

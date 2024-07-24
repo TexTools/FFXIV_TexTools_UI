@@ -64,7 +64,10 @@ namespace FFXIV_TexTools.Views.Controls
                 Red = float.Parse(RedBox.Text);
                 Green = float.Parse(GreenBox.Text);
                 Blue = float.Parse(BlueBox.Text);
-                Alpha = float.Parse(AlphaBox.Text);
+                if (!string.IsNullOrWhiteSpace(AlphaBox.Text))
+                {
+                    Alpha = float.Parse(AlphaBox.Text);
+                }
 
                 DialogResult = true;
             } catch
