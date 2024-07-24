@@ -484,8 +484,8 @@ namespace FFXIV_TexTools.Views
             {
                 var di = new DirectoryInfo(dir);
                 var par = di.Parent.Parent;
-                var path = Path.GetFullPath(Path.Combine(par.FullName, "ffxiv_dx11.exe"));
-                if (!File.Exists(path))
+                if (File.Exists(Path.Combine(par.FullName, _exe))
+                    || File.Exists(Path.Combine(par.FullName, _verFile)))
                 {
                     return false;
                 }
@@ -499,6 +499,8 @@ namespace FFXIV_TexTools.Views
             return true;
         }
 
+        const string _exe = "ffxiv_dx11.exe";
+        const string _verFile = "ffxivgame.ver";
 
         /// <summary>
         /// Resolves a valid TexTools desired FFXIV folder from a given user folder, if at all possible.
@@ -508,13 +510,12 @@ namespace FFXIV_TexTools.Views
         /// <returns></returns>
         public static string ResolveFFXIVFolder(string path, bool recursive = false)
         {
-            const string _exe = "ffxiv_dx11.exe";
-
             // Only allow base ffxiv folder selection if it has the EXE in it,
             // to avoid issues with users having a parent folder name 'ffxiv'.
             if (path.EndsWith("ffxiv"))
             {
-                if (File.Exists(Path.Combine(path, _exe)))
+                if (File.Exists(Path.Combine(path, _exe))
+                    || File.Exists(Path.Combine(path, _verFile)))
                 {
                     return path;
                 }
