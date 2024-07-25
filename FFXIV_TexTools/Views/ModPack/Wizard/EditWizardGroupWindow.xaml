@@ -141,7 +141,7 @@
                         </Grid>
                     </GroupBox>
 
-                    <GroupBox Grid.Row="2" Header="Penumbra Manipulations">
+                    <GroupBox Grid.Row="2" Header="Metadata Manipulations">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition></RowDefinition>

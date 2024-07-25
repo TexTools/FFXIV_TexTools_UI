@@ -186,9 +186,15 @@ namespace FFXIV_TexTools.Views.Models
             // Show the export dialog
             var fullModelExportDialog = new FullModelExportDialogView(_fmvm.SelectedSkeleton.Name) {Owner = this};
 
-            if (fullModelExportDialog.ShowDialog() == true)
+            try
             {
-                await Export(fullModelExportDialog.ModelName);
+                if (fullModelExportDialog.ShowDialog() == true)
+                {
+                    await Export(fullModelExportDialog.ModelName);
+                }
+            } catch(Exception ex)
+            {
+                this.ShowError("Model Export Error", "An error occurred while exporting the model:\n\n" + ex.Message);
             }
         }
 
