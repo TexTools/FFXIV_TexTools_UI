@@ -69,6 +69,21 @@ namespace FFXIV_TexTools.ViewModels
             }
         }
 
+        private bool _AutoHeels = true;
+        public bool AutoHeels
+        {
+            get => _AutoHeels;
+            set
+            {
+                if(_AutoHeels != value)
+                {
+                    Settings.Default.UseAutoHeels = value;
+                    Settings.Default.Save();
+                }
+                _AutoHeels = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AutoHeels)));
+            }
+        }
         private ModelImportOptions ImportOptions;
 
 
@@ -135,6 +150,7 @@ namespace FFXIV_TexTools.ViewModels
             _internalPath = internalPath;
             _simpleMode = simpleMode;
             _clearEmpties = clearEmptyMaterials;
+            _AutoHeels = Settings.Default.UseAutoHeels;
 
             ComplexOptionsEnabled = !simpleMode;
 
@@ -218,6 +234,7 @@ namespace FFXIV_TexTools.ViewModels
                 }
             }
 
+
             _view.CloneUV1Button.Click += CloneUV1Button_Clicked;
             _view.ShiftUVsButton.Click += ForceUVsButton_Clicked;
             _view.UseImportedTangentButton.Click += UseExternalTangents_Clicked;
@@ -227,7 +244,6 @@ namespace FFXIV_TexTools.ViewModels
                 SetRaceOverrideByFileName();
             }
         }
-
 
         private void CloneUV1Button_Clicked(object sender, RoutedEventArgs e)
         {
@@ -337,6 +353,7 @@ namespace FFXIV_TexTools.ViewModels
             options.CloneUV2 = _view.CloneUV1Button.IsChecked == true ? true : false;
             options.AutoScale = _view.AutoScaleButton.IsChecked == true ? true : false;
             options.UseImportedTangents = _view.UseImportedTangentButton.IsChecked == true ? true : false;
+            options.AutoAssignHeels = AutoHeels;
 
             options.SourceApplication = XivStrings.TexTools;
 

@@ -149,5 +149,8 @@
     <Setting Name="Default_Modpack_Format" Type="System.String" Scope="User">
       <Value Profile="(Default)">pmp</Value>
     </Setting>
+    <Setting Name="UseAutoHeels" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

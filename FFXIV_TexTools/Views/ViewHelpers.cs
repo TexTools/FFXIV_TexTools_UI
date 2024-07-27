@@ -119,17 +119,21 @@ namespace FFXIV_TexTools.Views
         {
             try
             {
-                WindowWrapper win32Window = null;
-                if (!IsWindowOpen(wind))
+
+                Application.Current.Dispatcher.Invoke(() =>
                 {
-                    wind = null;
-                }
-                else
-                {
-                    win32Window = new WindowWrapper(new WindowInteropHelper(wind).Handle);
-                }
-                FlexibleMessageBox.Show(win32Window, message, title, MessageBoxButtons.OK, MessageBoxIcon.Error,
-                    MessageBoxDefaultButton.Button1);
+                    WindowWrapper win32Window = null;
+                    if (!IsWindowOpen(wind))
+                    {
+                        wind = null;
+                    }
+                    else
+                    {
+                        win32Window = new WindowWrapper(new WindowInteropHelper(wind).Handle);
+                    }
+                    FlexibleMessageBox.Show(win32Window, message, title, MessageBoxButtons.OK, MessageBoxIcon.Error,
+                        MessageBoxDefaultButton.Button1);
+                });
             }
             catch (Exception ex)
             {
@@ -141,18 +145,22 @@ namespace FFXIV_TexTools.Views
         {
             try
             {
-                WindowWrapper win32Window = null;
-                var wind = Window.GetWindow(control);
-                if (!IsWindowOpen(wind))
+
+                Application.Current.Dispatcher.Invoke(() =>
                 {
-                    wind = null;
-                }
-                else
-                {
-                    win32Window = new WindowWrapper(new WindowInteropHelper(wind).Handle);
-                }
-                FlexibleMessageBox.Show(win32Window, message, title, MessageBoxButtons.OK, MessageBoxIcon.Error,
-                    MessageBoxDefaultButton.Button1);
+                    WindowWrapper win32Window = null;
+                    var wind = Window.GetWindow(control);
+                    if (!IsWindowOpen(wind))
+                    {
+                        wind = null;
+                    }
+                    else
+                    {
+                        win32Window = new WindowWrapper(new WindowInteropHelper(wind).Handle);
+                    }
+                    FlexibleMessageBox.Show(win32Window, message, title, MessageBoxButtons.OK, MessageBoxIcon.Error,
+                        MessageBoxDefaultButton.Button1);
+                });
             }
             catch(Exception ex)
             {
@@ -164,17 +172,21 @@ namespace FFXIV_TexTools.Views
         {
             try
             {
-                WindowWrapper win32Window = null;
-                if (!IsWindowOpen(wind))
+
+                Application.Current.Dispatcher.Invoke(() =>
                 {
-                    wind = null;
-                }
-                else
-                {
-                    win32Window = new WindowWrapper(new WindowInteropHelper(wind).Handle);
-                }
-                FlexibleMessageBox.Show(win32Window, message, title, MessageBoxButtons.OK, MessageBoxIcon.Warning,
-                    MessageBoxDefaultButton.Button1);
+                    WindowWrapper win32Window = null;
+                    if (!IsWindowOpen(wind))
+                    {
+                        wind = null;
+                    }
+                    else
+                    {
+                        win32Window = new WindowWrapper(new WindowInteropHelper(wind).Handle);
+                    }
+                    FlexibleMessageBox.Show(win32Window, message, title, MessageBoxButtons.OK, MessageBoxIcon.Warning,
+                        MessageBoxDefaultButton.Button1);
+                });
             }
             catch (Exception ex)
             {
@@ -186,18 +198,49 @@ namespace FFXIV_TexTools.Views
         {
             try
             {
-                WindowWrapper win32Window = null;
-                var wind = Window.GetWindow(control);
-                if (!IsWindowOpen(wind))
+
+                Application.Current.Dispatcher.Invoke(() =>
                 {
-                    wind = null;
-                }
-                else
+                    WindowWrapper win32Window = null;
+                    var wind = Window.GetWindow(control);
+                    if (!IsWindowOpen(wind))
+                    {
+                        wind = null;
+                    }
+                    else
+                    {
+                        win32Window = new WindowWrapper(new WindowInteropHelper(wind).Handle);
+                    }
+                    FlexibleMessageBox.Show(win32Window, message, title, MessageBoxButtons.OK, MessageBoxIcon.Warning,
+                        MessageBoxDefaultButton.Button1);
+                });
+            }
+            catch (Exception ex)
+            {
+                // Can't let the error function crash us.
+                Trace.WriteLine(ex);
+            }
+        }
+        public static void ShowInfo(this DependencyObject control, string title, string message)
+        {
+            try
+            {
+
+                Application.Current.Dispatcher.Invoke(() =>
                 {
-                    win32Window = new WindowWrapper(new WindowInteropHelper(wind).Handle);
-                }
-                FlexibleMessageBox.Show(win32Window, message, title, MessageBoxButtons.OK, MessageBoxIcon.Warning,
-                    MessageBoxDefaultButton.Button1);
+                    WindowWrapper win32Window = null;
+                    var wind = Window.GetWindow(control);
+                    if (!IsWindowOpen(wind))
+                    {
+                        wind = null;
+                    }
+                    else
+                    {
+                        win32Window = new WindowWrapper(new WindowInteropHelper(wind).Handle);
+                    }
+                    FlexibleMessageBox.Show(win32Window, message, title, MessageBoxButtons.OK, MessageBoxIcon.Information,
+                        MessageBoxDefaultButton.Button1);
+                });
             }
             catch (Exception ex)
             {
@@ -206,25 +249,30 @@ namespace FFXIV_TexTools.Views
             }
         }
 
+
         public static void ShowError(string title, string message)
         {
             try
             {
-                var wind = MainWindow.GetMainWindow();
-                if (!IsWindowOpen(wind))
+
+                Application.Current.Dispatcher.Invoke(() =>
                 {
-                    wind = null;
-                }
-                if (wind == null)
-                {
-                    FlexibleMessageBox.Show(message, title, MessageBoxButtons.OK, MessageBoxIcon.Error,
-                        MessageBoxDefaultButton.Button1);
-                }
-                else
-                {
-                    FlexibleMessageBox.Show(wind.Win32Window, message, title, MessageBoxButtons.OK, MessageBoxIcon.Error,
-                        MessageBoxDefaultButton.Button1);
-                }
+                    var wind = MainWindow.GetMainWindow();
+                    if (!IsWindowOpen(wind))
+                    {
+                        wind = null;
+                    }
+                    if (wind == null)
+                    {
+                        FlexibleMessageBox.Show(message, title, MessageBoxButtons.OK, MessageBoxIcon.Error,
+                            MessageBoxDefaultButton.Button1);
+                    }
+                    else
+                    {
+                        FlexibleMessageBox.Show(wind.Win32Window, message, title, MessageBoxButtons.OK, MessageBoxIcon.Error,
+                            MessageBoxDefaultButton.Button1);
+                    }
+                });
             }
             catch(Exception ex)
             {
@@ -235,19 +283,23 @@ namespace FFXIV_TexTools.Views
         {
             try
             {
-                WindowWrapper win32Window = null;
-                if (!IsWindowOpen(wind))
-                {
-                    wind = null;
-                }
-                else
-                {
-                    win32Window = new WindowWrapper(new WindowInteropHelper(wind).Handle);
-                }
-                var res = FlexibleMessageBox.Show(win32Window, message, title, MessageBoxButtons.OKCancel, MessageBoxIcon.Information,
-                    MessageBoxDefaultButton.Button1);
 
-                return res == DialogResult.OK;
+                return Application.Current.Dispatcher.Invoke(() =>
+                {
+                    WindowWrapper win32Window = null;
+                    if (!IsWindowOpen(wind))
+                    {
+                        wind = null;
+                    }
+                    else
+                    {
+                        win32Window = new WindowWrapper(new WindowInteropHelper(wind).Handle);
+                    }
+                    var res = FlexibleMessageBox.Show(win32Window, message, title, MessageBoxButtons.OKCancel, MessageBoxIcon.Information,
+                        MessageBoxDefaultButton.Button1);
+
+                    return res == DialogResult.OK;
+                });
             }
             catch (Exception ex)
             {
@@ -260,19 +312,23 @@ namespace FFXIV_TexTools.Views
         {
             try
             {
-                WindowWrapper win32Window = null;
-                if (!IsWindowOpen(wind))
-                {
-                    wind = null;
-                }
-                else
-                {
-                    win32Window = new WindowWrapper(new WindowInteropHelper(wind).Handle);
-                }
-                var res = FlexibleMessageBox.Show(win32Window, message, title, MessageBoxButtons.OKCancel, MessageBoxIcon.Warning,
-                    MessageBoxDefaultButton.Button1);
 
-                return res == DialogResult.OK;
+                return Application.Current.Dispatcher.Invoke(() =>
+                {
+                    WindowWrapper win32Window = null;
+                    if (!IsWindowOpen(wind))
+                    {
+                        wind = null;
+                    }
+                    else
+                    {
+                        win32Window = new WindowWrapper(new WindowInteropHelper(wind).Handle);
+                    }
+                    var res = FlexibleMessageBox.Show(win32Window, message, title, MessageBoxButtons.OKCancel, MessageBoxIcon.Warning,
+                        MessageBoxDefaultButton.Button1);
+
+                    return res == DialogResult.OK;
+                });
             }
             catch (Exception ex)
             {

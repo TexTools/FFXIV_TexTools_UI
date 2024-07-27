@@ -1071,7 +1071,14 @@ namespace FFXIV_TexTools.Views.Item
                     }
                     else
                     {
-                        textures = await Mtrl.GetTexturePathsFromMtrlPath(mtrl, false, false, tx);
+                        try
+                        {
+                            textures = await Mtrl.GetTexturePathsFromMtrlPath(mtrl, false, false, tx);
+                        }
+                        catch
+                        {
+                            //this.ShowWarning("Unable to read Material")
+                        }
                     }
 
                     foreach(var tex in textures)

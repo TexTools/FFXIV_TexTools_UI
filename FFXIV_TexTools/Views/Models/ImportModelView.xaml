@@ -11,7 +11,7 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="40"></RowDefinition>
-            <RowDefinition Height="80"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="40"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
         </Grid.RowDefinitions>
@@ -45,6 +45,7 @@
             <ComboBox Grid.Row="1" Grid.Column="2" x:Name="RaceComboBox" Width="200" VerticalAlignment="Center"></ComboBox>
 
             <CheckBox x:Name="UseImportedTangentButton" Content="Use Imported Tangents" Style="{DynamicResource SimpleCheckBox}" Grid.Row="0" Grid.Column="2" VerticalContentAlignment="Center" VerticalAlignment="Center" ToolTipService.ShowOnDisabled="True" ToolTip="Use Tangent/Binormal Data from the imported file, rather than recalculating it."  />
+            <CheckBox x:Name="AutoHeelsBox" Content="Automatic Heels Attribute" Style="{DynamicResource SimpleCheckBox}" Grid.Row="2" Grid.Column="0" VerticalContentAlignment="Center" VerticalAlignment="Center" ToolTipService.ShowOnDisabled="True" ToolTip="Automatically assign attributes for SimpleHeels Plugin compatibility. (Only affects Body/Leg/Heel equipment models)"  IsChecked="{Binding Path=AutoHeels}"/>
 
         </Grid>
         <UniformGrid Margin="10,0" Columns="3" Grid.Row="2">

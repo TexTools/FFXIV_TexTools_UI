@@ -244,6 +244,7 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="45"/>
                 <RowDefinition Height="45"/>
+                <RowDefinition Height="45"/>
                 <RowDefinition Height="125"/>
                 <RowDefinition Height="1*"/>
             </Grid.RowDefinitions>
@@ -261,16 +262,18 @@
 
             <Button Grid.Row="1" Margin="10,0" Content="Modify Part Vertices" Click="ModifyPart_Click" VerticalAlignment="Center"></Button>
 
-            <Label Content="Attributes" Margin="10,10,10,0" Grid.Row="2" VerticalAlignment="Top" HorizontalContentAlignment="Center" FontSize="18" FontWeight="Bold" Height="34" Grid.Column="1"/>
+            <Button Grid.Row="2" Margin="10,0" Content="Auto-Assign Simple-Heels Attribute" Click="AssignHeels_Click" VerticalAlignment="Center" ToolTip="Automatically assigns an offset attribute for the SimpleHeels plugin.  Only affects body/leg/foot equipment."></Button>
 
-            <Rectangle Grid.Row="2" Stroke="{DynamicResource NormalBorderBrush}" Margin="10,5,10,10" Grid.Column="1" Grid.RowSpan="2"/>
+            <Label Content="Attributes" Margin="10,10,10,0" Grid.Row="3" VerticalAlignment="Top" HorizontalContentAlignment="Center" FontSize="18" FontWeight="Bold" Height="34" Grid.Column="1"/>
+
+            <Rectangle Grid.Row="3" Stroke="{DynamicResource NormalBorderBrush}" Margin="10,5,10,10" Grid.Column="1" Grid.RowSpan="2"/>
 
 
-            <ComboBox x:Name="AddAttributeBox" Margin="20,50,19,0" Grid.Row="2" VerticalAlignment="Top" Height="26" Grid.Column="1"/>
-            <TextBox x:Name="AddAttributeTextBox" Height="26" Margin="20,0,20,15" Grid.Row="2" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Bottom" IsEnabled="False" Grid.Column="1"/>
+            <ComboBox x:Name="AddAttributeBox" Margin="20,50,19,0" Grid.Row="3" VerticalAlignment="Top" Height="26" Grid.Column="1"/>
+            <TextBox x:Name="AddAttributeTextBox" Height="26" Margin="20,0,20,15" Grid.Row="3" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Bottom" IsEnabled="False" Grid.Column="1"/>
             
-            <ListBox x:Name="AttributesListBox" Margin="20,0,20,50" Grid.Row="3" Style="{DynamicResource SimpleListBox}" Grid.Column="1" MinHeight="150"/>
-            <Button x:Name="RemoveAttributeButton" Content="Remove Attribute" Margin="20,0,20,15" Grid.Row="3" Height="27" VerticalAlignment="Bottom" Grid.Column="1" IsEnabled="False"/>
+            <ListBox x:Name="AttributesListBox" Margin="20,0,20,50" Grid.Row="4" Style="{DynamicResource SimpleListBox}" Grid.Column="1" MinHeight="150"/>
+            <Button x:Name="RemoveAttributeButton" Content="Remove Attribute" Margin="20,0,20,15" Grid.Row="4" Height="27" VerticalAlignment="Bottom" Grid.Column="1" IsEnabled="False"/>
 
 
         </Grid>

@@ -610,5 +610,17 @@ namespace FFXIV_TexTools.Properties {
                 this["Default_Modpack_Format"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool UseAutoHeels {
+            get {
+                return ((bool)(this["UseAutoHeels"]));
+            }
+            set {
+                this["UseAutoHeels"] = value;
+            }
+        }
     }
 }

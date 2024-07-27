@@ -292,5 +292,24 @@ namespace FFXIV_TexTools.Views.Models
             ModifyVerticesWindow.ShowVertexModifier(_newModel, _newModel, this);
             _viewModel.UpdateFlow();
         }
+
+        private async void AssignHeels_Click(object sender, RoutedEventArgs e)
+        {
+            var mesh = (int)MeshNumberBox.SelectedValue;
+            var part = (int)PartNumberBox.SelectedValue;
+            var atr = ModelModifiers.AssignHeelAttribute(_newModel);
+            await SetupUi();
+
+            MeshNumberBox.SelectedValue = mesh;
+            PartNumberBox.SelectedValue = part;
+
+            if (!string.IsNullOrWhiteSpace(atr))
+            {
+                this.ShowInfo("Heel Offset Assigned", "The heel offset attribute: " + atr + " has been assigned to the first available part in the model.");
+            } else
+            {
+                this.ShowInfo("No Attribute Assigned", "The mesh either does not stick through the floor, or is not a valid target for the heels plugin.\n\nThe model attributes have not been changed.");
+            }
+        }
     }
 }
