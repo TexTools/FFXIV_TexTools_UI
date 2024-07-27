@@ -221,6 +221,34 @@ namespace FFXIV_TexTools.Views
                 Trace.WriteLine(ex);
             }
         }
+        public static void ShowInfo(this DependencyObject control, string title, string message)
+        {
+            try
+            {
+
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    WindowWrapper win32Window = null;
+                    var wind = Window.GetWindow(control);
+                    if (!IsWindowOpen(wind))
+                    {
+                        wind = null;
+                    }
+                    else
+                    {
+                        win32Window = new WindowWrapper(new WindowInteropHelper(wind).Handle);
+                    }
+                    FlexibleMessageBox.Show(win32Window, message, title, MessageBoxButtons.OK, MessageBoxIcon.Information,
+                        MessageBoxDefaultButton.Button1);
+                });
+            }
+            catch (Exception ex)
+            {
+                // Can't let the error function crash us.
+                Trace.WriteLine(ex);
+            }
+        }
+
 
         public static void ShowError(string title, string message)
         {
