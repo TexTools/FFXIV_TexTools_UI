@@ -100,6 +100,9 @@ namespace FFXIV_TexTools.ViewModels
                     TileTextureNormal = await Tex.GetXivTex("chara/common/texture/tile_norm_array.tex");
                     // This is not the correct usage, but works for the moment.
                     TileTextureOrb = await Tex.GetXivTex("chara/common/texture/tile_orb_array.tex");
+
+                    // Sphere Array
+                    // chara/common/texture/sphere_d_array.tex 
                 }
                 catch
                 {
