@@ -176,10 +176,10 @@
                                     <RowDefinition Height="35"></RowDefinition>
                                     <RowDefinition Height="35"></RowDefinition>
                                 </Grid.RowDefinitions>
-                                <Label Grid.Row="0" Content="Effect ID:" HorizontalAlignment="Right" VerticalAlignment="Center"></Label>
+                                <Label Grid.Row="0" Content="Sphere Map ID:" HorizontalAlignment="Right" VerticalAlignment="Center"></Label>
                                 <TextBox x:Name="ShaderEffectBox" Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Width="100"/>
 
-                                <Label Grid.Column="2" Grid.Row="0" HorizontalContentAlignment="Right" VerticalAlignment="Center">Effect Opacity:</Label>
+                                <Label Grid.Column="2" Grid.Row="0" HorizontalContentAlignment="Right" VerticalAlignment="Center">Sphere Map Opacity:</Label>
                                 <TextBox x:Name="EffectOpacityBox" Grid.Column="3" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Width="100"></TextBox>
 
                                 <Label Grid.Column="0" Grid.Row="1" HorizontalContentAlignment="Right" VerticalAlignment="Center">Effect Unknown R:</Label>
@@ -209,10 +209,10 @@
                                     <RowDefinition Height="35"></RowDefinition>
                                 </Grid.RowDefinitions>
 
-                                <Label Content="Submaterial ID:" Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Center" Height="26" Margin="0,2" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"/>
+                                <Label Content="Tile Map ID:" Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Center" Height="26" Margin="0,2" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"/>
                                 <ComboBox x:Name="TileIdBox" Grid.Row="0" Grid.Column="1" Width="100" VerticalAlignment="Center" Margin="0,2" Height="26"></ComboBox>
 
-                                <Label x:Name="TileOpacityLabel" Content="Submaterial Opacity:" Grid.Row="0" Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" Height="26" Margin="0,2" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" />
+                                <Label x:Name="TileOpacityLabel" Content="Tile Map Opacity:" Grid.Row="0" Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" Height="26" Margin="0,2" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" />
                                 <TextBox x:Name="TileOpacityBox" Grid.Row="0" Grid.Column="3" VerticalAlignment="Center" Width="100"/>
 
                                 <Label Content="Tile Count X:" Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Center"></Label>
