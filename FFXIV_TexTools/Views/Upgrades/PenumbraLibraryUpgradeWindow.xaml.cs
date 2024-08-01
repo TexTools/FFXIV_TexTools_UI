@@ -332,7 +332,14 @@ namespace FFXIV_TexTools.Views.Upgrades
                 Results = new PenumbraUpgradeStatus();
             }
 
+            if (!Directory.Exists(PenumbraPath))
+            {
+                this.ShowWarning("Invalid Penumbra Path", "The selected Penumbra Libraray path does not exist.");
+                return;
+            }
+
             var di = new DirectoryInfo(PenumbraPath);
+
             var children = di.EnumerateDirectories().ToList();
 
             foreach(var c in children)
