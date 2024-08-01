@@ -469,17 +469,17 @@ namespace FFXIV_TexTools.Views.Controls
             if (Material == null || Material.ShaderPack != ShaderHelpers.EShaderPack.CharacterLegacy)
             {
                 DyeBit0.Content = "Dye Diffuse";
-                DyeBit1.Content = "Dye Specular(?)";
+                DyeBit1.Content = "Dye Specular";
                 DyeBit2.Content = "Dye Emissive";
-                DyeBit3.Content = "Dye Emissive Alpha(?)";
+                DyeBit3.Content = "Dye Emissive Unknown";
                 DyeBit4.Content = "Dye Metallic";
                 DyeBit5.Content = "Dye Roughness";
-                DyeBit6.Content = "Dye Fresnel Y";
-                DyeBit7.Content = "Dye Fresnel Z";
-                DyeBit8.Content = "Dye Fresnel Albedo";
+                DyeBit6.Content = "Dye Sheen Rate";
+                DyeBit7.Content = "Dye Sheen Aperture";
+                DyeBit8.Content = "Dye Sheen Tint Rate";
                 DyeBit9.Content = "Dye Anisotropy";
-                DyeBit10.Content = "Dye Shader Effect";
-                DyeBit11.Content = "Dye Effect Opacity";
+                DyeBit10.Content = "Dye Sphere Map ID";
+                DyeBit11.Content = "Dye Sphere Map Opacity";
                 DyeBit5.Visibility = Visibility.Visible;
                 DyeBit6.Visibility = Visibility.Visible;
                 DyeBit7.Visibility = Visibility.Visible;
