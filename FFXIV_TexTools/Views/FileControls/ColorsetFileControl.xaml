@@ -229,7 +229,7 @@
                                 
                             </Grid>
                         </GroupBox>
-                        <GroupBox Grid.Row="5" Header="Fresnel Settings" x:Name="FresnelGroup">
+                        <GroupBox Grid.Row="5" Header="Sheen/Fresnel Settings" x:Name="FresnelGroup">
                             <Grid>
 
                                 <Grid.ColumnDefinitions>
@@ -243,17 +243,17 @@
                                     <RowDefinition Height="35"></RowDefinition>
                                 </Grid.RowDefinitions>
 
-                                <Label Grid.Column="0" Grid.Row="0" HorizontalContentAlignment="Right" VerticalAlignment="Center">Fresnel Y Term:</Label>
-                                <TextBox x:Name="FresnelYBox" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Width="100"></TextBox>
+                                <Label Grid.Column="0" Grid.Row="0" HorizontalContentAlignment="Right" VerticalAlignment="Center">Sheen Rate:</Label>
+                                <TextBox x:Name="SheenRateBox" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Width="100"></TextBox>
 
-                                <Label Grid.Column="2" Grid.Row="0" HorizontalContentAlignment="Right" VerticalAlignment="Center">Fresnel Albedo:</Label>
-                                <TextBox x:Name="FresnelAlbedoBox" Grid.Column="3" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Width="100"></TextBox>
+                                <Label Grid.Column="2" Grid.Row="0" HorizontalContentAlignment="Right" VerticalAlignment="Center">Sheen Tint Rate:</Label>
+                                <TextBox x:Name="SheenTintRateBox" Grid.Column="3" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Width="100"></TextBox>
 
-                                <Label Grid.Column="0" Grid.Row="1" HorizontalContentAlignment="Right" VerticalAlignment="Center">Fresnel Z Ramp:</Label>
-                                <TextBox x:Name="FresnelZBox" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center" Width="100"></TextBox>
+                                <Label Grid.Column="0" Grid.Row="1" HorizontalContentAlignment="Right" VerticalAlignment="Center">Sheen Aperture:</Label>
+                                <TextBox x:Name="SheenApertureBox" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center" Width="100"></TextBox>
 
-                                <Label Grid.Column="2" Grid.Row="1" HorizontalContentAlignment="Right" VerticalAlignment="Center">Fresnel Unknown?:</Label>
-                                <TextBox x:Name="FresnelUnknownBox" Grid.Column="3" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center" Width="100"></TextBox>
+                                <Label Grid.Column="2" Grid.Row="1" HorizontalContentAlignment="Right" VerticalAlignment="Center">Sheen Unknown?:</Label>
+                                <TextBox x:Name="SheenUnknownBox" Grid.Column="3" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center" Width="100"></TextBox>
 
                             </Grid>
                         </GroupBox>

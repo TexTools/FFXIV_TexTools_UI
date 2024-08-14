@@ -226,10 +226,10 @@ namespace FFXIV_TexTools.Views.Controls
             AnisotropyBlendingBox.TextChanged += ValueChanged;
             ShaderTemplateBox.TextChanged += ValueChanged;
 
-            FresnelAlbedoBox.TextChanged += ValueChanged;
-            FresnelUnknownBox.TextChanged += ValueChanged;
-            FresnelYBox.TextChanged += ValueChanged;
-            FresnelZBox.TextChanged += ValueChanged;
+            SheenTintRateBox.TextChanged += ValueChanged;
+            SheenUnknownBox.TextChanged += ValueChanged;
+            SheenRateBox.TextChanged += ValueChanged;
+            SheenApertureBox.TextChanged += ValueChanged;
 
 
             DyePreviewIdBox.ItemsSource = PreviewDyeCollection;
@@ -469,17 +469,17 @@ namespace FFXIV_TexTools.Views.Controls
             if (Material == null || Material.ShaderPack != ShaderHelpers.EShaderPack.CharacterLegacy)
             {
                 DyeBit0.Content = "Dye Diffuse";
-                DyeBit1.Content = "Dye Specular(?)";
+                DyeBit1.Content = "Dye Specular";
                 DyeBit2.Content = "Dye Emissive";
-                DyeBit3.Content = "Dye Emissive Alpha(?)";
+                DyeBit3.Content = "Dye Emissive Unknown";
                 DyeBit4.Content = "Dye Metallic";
                 DyeBit5.Content = "Dye Roughness";
-                DyeBit6.Content = "Dye Fresnel Y";
-                DyeBit7.Content = "Dye Fresnel Z";
-                DyeBit8.Content = "Dye Fresnel Albedo";
+                DyeBit6.Content = "Dye Sheen Rate";
+                DyeBit7.Content = "Dye Sheen Aperture";
+                DyeBit8.Content = "Dye Sheen Tint Rate";
                 DyeBit9.Content = "Dye Anisotropy";
-                DyeBit10.Content = "Dye Shader Effect";
-                DyeBit11.Content = "Dye Effect Opacity";
+                DyeBit10.Content = "Dye Sphere Map ID";
+                DyeBit11.Content = "Dye Sphere Map Opacity";
                 DyeBit5.Visibility = Visibility.Visible;
                 DyeBit6.Visibility = Visibility.Visible;
                 DyeBit7.Visibility = Visibility.Visible;
@@ -699,10 +699,10 @@ namespace FFXIV_TexTools.Views.Controls
             EmissAlphaBox.Text = RowData[2][3].ToString();
 
 
-            FresnelYBox.Text = RowData[3][0].ToString();
-            FresnelAlbedoBox.Text = RowData[3][1].ToString();
-            FresnelZBox.Text = RowData[3][2].ToString();
-            FresnelUnknownBox.Text = RowData[3][3].ToString();
+            SheenRateBox.Text = RowData[3][0].ToString();
+            SheenTintRateBox.Text = RowData[3][1].ToString();
+            SheenApertureBox.Text = RowData[3][2].ToString();
+            SheenUnknownBox.Text = RowData[3][3].ToString();
 
 
             RoughnessBox.Text = RowData[4][0].ToString();
@@ -1082,19 +1082,19 @@ namespace FFXIV_TexTools.Views.Controls
 
 
                 fl = 0.0f;
-                float.TryParse(FresnelYBox.Text, out fl);
+                float.TryParse(SheenRateBox.Text, out fl);
                 RowData[3][0] = new Half(fl);
 
                 fl = 0.0f;
-                float.TryParse(FresnelAlbedoBox.Text, out fl);
+                float.TryParse(SheenTintRateBox.Text, out fl);
                 RowData[3][1] = new Half(fl);
 
                 fl = 0.0f;
-                float.TryParse(FresnelZBox.Text, out fl);
+                float.TryParse(SheenApertureBox.Text, out fl);
                 RowData[3][2] = new Half(fl);
 
                 fl = 0.0f;
-                float.TryParse(FresnelUnknownBox.Text, out fl);
+                float.TryParse(SheenUnknownBox.Text, out fl);
                 RowData[3][3] = new Half(fl);
 
                 fl = 0.0f;
