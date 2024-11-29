@@ -41,6 +41,15 @@ namespace FFXIV_TexTools.Views.Wizard
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(GroupName)));
             }
         }
+        public string GroupDescription
+        {
+            get => Group.Description;
+            set
+            {
+                Group.Description = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(GroupDescription)));
+            }
+        }
         public ushort Variant
         {
             get => Group.ImcData.Variant;
