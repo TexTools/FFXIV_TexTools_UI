@@ -75,6 +75,15 @@ namespace FFXIV_TexTools.Views.Wizard
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AllVariants)));
             }
         }
+        public bool OnlyAttributes
+        {
+            get => Group.ImcData.OnlyAttributes;
+            set
+            {
+                Group.ImcData.OnlyAttributes = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(OnlyAttributes)));
+            }
+        }
 
         private ObservableCollection<WrappedImcOption> _Options = new ObservableCollection<WrappedImcOption>();
         public ObservableCollection<WrappedImcOption> Options
