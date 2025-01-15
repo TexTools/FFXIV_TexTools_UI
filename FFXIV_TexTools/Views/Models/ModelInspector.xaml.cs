@@ -193,14 +193,14 @@ namespace FFXIV_TexTools.Views.Models
                 otherList.Add($"Bone Index (Part)".L());
             }
 
-            if (_xivMdl.BoundingBoxes != null)
+            if (_xivMdl.BoundingBoxes != null && _xivMdl.BoneBoundingBoxes.Count > 0)
             {
                 otherList.Add("Bounding Box".L());
             }
 
-            if (_xivMdl.BoneBoundingBoxes.Count > 0)
+            if (_xivMdl.NeckMorphTable != null && _xivMdl.NeckMorphTable.Count > 0)
             {
-                otherList.Add("Transforms".L());
+                otherList.Add("Neck Morph".L());
             }
 
             OtherDataComboBox.ItemsSource = otherList;
@@ -364,6 +364,26 @@ namespace FFXIV_TexTools.Views.Models
                     {
                         AddText(textBox, $"{bb[0]}, {bb[1]}, {bb[2]}, {bb[3]}\n", _textColor, false);
                     }
+                }
+            }
+
+            if (selectedItem.Equals("Neck Morph".L()))
+            {
+                var nmId = 0;
+                foreach (var l in _xivMdl.NeckMorphTable)
+                {
+                    AddText(textBox, $"==== Morph Vertex #{nmId} ====\n\n", _textColor, false);
+                    nmId++;
+                    AddText(textBox, $"Pos: \t{l.PositionAdjust}\n", _textColor, false);
+                    AddText(textBox, $"Norm: \t{l.NormalAdjust}\n", _textColor, false);
+                    AddText(textBox, $"Bones: \t", _textColor, false);
+                    foreach (var bone in l.Bones)
+                    {
+                        var bName = _xivMdl.PathData.BoneList[bone];
+                        AddText(textBox, $"{bName} ", _textColor, false);
+                    }
+
+                    AddText(textBox, "\n\n", _textColor, false);
                 }
             }
         }
