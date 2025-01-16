@@ -41,6 +41,15 @@ namespace FFXIV_TexTools.Views.Wizard
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(GroupName)));
             }
         }
+        public string GroupDescription
+        {
+            get => Group.Description;
+            set
+            {
+                Group.Description = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(GroupDescription)));
+            }
+        }
         public ushort Variant
         {
             get => Group.ImcData.Variant;
@@ -73,6 +82,15 @@ namespace FFXIV_TexTools.Views.Wizard
             {
                 Group.ImcData.AllVariants = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AllVariants)));
+            }
+        }
+        public bool OnlyAttributes
+        {
+            get => Group.ImcData.OnlyAttributes;
+            set
+            {
+                Group.ImcData.OnlyAttributes = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(OnlyAttributes)));
             }
         }
 

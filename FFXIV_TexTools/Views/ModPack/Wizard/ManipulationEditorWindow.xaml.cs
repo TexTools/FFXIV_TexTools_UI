@@ -62,6 +62,7 @@ namespace FFXIV_TexTools.Views.Wizard
             { typeof(PMPImcManipulationWrapperJson), typeof(ImcManipulationEditor) },
             { typeof(PMPGmpManipulationWrapperJson), typeof(GmpManipulationEditor) },
             { typeof(PMPRspManipulationWrapperJson), typeof(RspManipulationEditor) },
+            { typeof(PMPAtchManipulationWrapperJson), typeof(AtchManipulationEditor) },
             { typeof(PMPGlobalEqpManipulationWrapperJson), typeof(GlobalEqpEditor) },
         };
         private static Dictionary<string, Type> ManipulationTypes = new Dictionary<string, Type>()
@@ -72,6 +73,7 @@ namespace FFXIV_TexTools.Views.Wizard
             { "Est", typeof(PMPEstManipulationWrapperJson) },
             { "Gmp", typeof(PMPGmpManipulationWrapperJson) },
             { "Rsp", typeof(PMPRspManipulationWrapperJson) },
+            { "Atch", typeof(PMPAtchManipulationWrapperJson) },
             { "GlobalEqp", typeof(PMPGlobalEqpManipulationWrapperJson) },
         };
 
