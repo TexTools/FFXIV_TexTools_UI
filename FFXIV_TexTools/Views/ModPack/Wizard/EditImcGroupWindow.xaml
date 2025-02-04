@@ -14,7 +14,7 @@
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="280"></RowDefinition>
+            <RowDefinition Height="340"></RowDefinition>
             <RowDefinition Height="1*"></RowDefinition>
             <RowDefinition Height="40"></RowDefinition>
         </Grid.RowDefinitions>
@@ -22,6 +22,7 @@
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="40"/>
+                    <RowDefinition Height="60"/>
                     <RowDefinition Height="40"/>
                     <RowDefinition Height="1*"/>
                 </Grid.RowDefinitions>
@@ -42,15 +43,17 @@
                 <Label Grid.Column="4" Content="Group Priority:" HorizontalAlignment="Right" VerticalAlignment="Center"></Label>
                 <TextBox Grid.Column="5" Text="{Binding Path=GroupPriority}" Width="100" VerticalAlignment="Center" HorizontalAlignment="Left"></TextBox>
 
-                <Label Grid.Row="1" Grid.Column="0" Content="Variant:" HorizontalAlignment="Right" VerticalAlignment="Center"></Label>
-                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Path=Variant}" Width="100" HorizontalAlignment="Left" VerticalAlignment="Center"></TextBox>
-                
-                <CheckBox x:Name="IncludeDisableBox" Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2" Margin="5" Checked="IncludeDisable_Checked" Unchecked="IncludeDisable_Unchecked" Content="Include Disable Option"></CheckBox>
+                <Label Content="Description:" HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Row="1"></Label>
+                <TextBox Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="3" Text="{Binding Path=GroupDescription}" TextWrapping="Wrap" AcceptsReturn="True"></TextBox>
 
-                <CheckBox Grid.Row="1" Grid.Column="4" Grid.ColumnSpan="2" Margin="5" Content="Apply to All Variants" IsChecked="{Binding Path=AllVariants}"></CheckBox>
-
-                <metadata:ImcVariantEditor Grid.Row="2" Grid.ColumnSpan="6" x:Name="VariantEditor"></metadata:ImcVariantEditor>
+                <Label Grid.Row="2" Grid.Column="0" Content="Variant:" HorizontalAlignment="Right" VerticalAlignment="Center"></Label>
+                <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Path=Variant}" Width="100" HorizontalAlignment="Left" VerticalAlignment="Center"></TextBox>
                 
+                <CheckBox Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2" Margin="5" Content="Apply to All Variants" ToolTip="Apply to all variants and ignore variant ID value" IsChecked="{Binding Path=AllVariants}"></CheckBox>
+                <CheckBox Grid.Row="2" Grid.Column="4" Grid.ColumnSpan="2" Margin="5" Content="Apply Only Attribute Flags" ToolTip="Only apply attribute flags and ignore other values" IsChecked="{Binding Path=OnlyAttributes}"></CheckBox>
+
+                <metadata:ImcVariantEditor Grid.Row="3" Grid.ColumnSpan="6" x:Name="VariantEditor"></metadata:ImcVariantEditor>
+
             </Grid>
         </GroupBox>
 
@@ -61,9 +64,17 @@
                     <RowDefinition Height="40"/>
                     <RowDefinition Height="1*"/>
                 </Grid.RowDefinitions>
-                <Button Content="Add Option" Width="150" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,5,5,5" Click="AddOption_Click"></Button>
-                
-                <ListView x:Name="OptionList" Grid.Row="1" ItemTemplate="{StaticResource RowTemplate}" ItemsSource="{Binding Path=Options}">
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="200"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
+
+                <CheckBox x:Name="IncludeDisableBox" Grid.Row="0" Grid.Column="0" Margin="5" Checked="IncludeDisable_Checked" Unchecked="IncludeDisable_Unchecked" Content="Include Disable Option"></CheckBox>
+
+                <Button Grid.Column="2" Content="Add Option" Width="150" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,5,5,5" Click="AddOption_Click"></Button>
+
+                <ListView x:Name="OptionList" Grid.Row="1" Grid.ColumnSpan="2" ItemTemplate="{StaticResource RowTemplate}" ItemsSource="{Binding Path=Options}">
 
                 </ListView>
             </Grid>

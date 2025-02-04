@@ -460,6 +460,7 @@ namespace FFXIV_TexTools.ViewModels
         }
         private void ModelTypeComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
+            if (_view.ModelTypeComboBox.SelectedValue == null) return;
             var val = (EMeshType)_view.ModelTypeComboBox.SelectedValue;
             var m = GetGroup();
             m.MeshType = val;
