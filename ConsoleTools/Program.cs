@@ -14,6 +14,7 @@ using xivModdingFramework.Cache;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Models.DataContainers;
 using xivModdingFramework.Models.FileTypes;
+using xivModdingFramework.Models.Helpers;
 using xivModdingFramework.Mods;
 using xivModdingFramework.SqPack.FileTypes;
 using xivModdingFramework.Textures.DataContainers;
@@ -46,7 +47,7 @@ namespace ConsoleTools
             {
                 res = Run(args).GetAwaiter().GetResult();
             }
-            catch(Exception ex) 
+            catch (Exception ex)
             {
                 Console.WriteLine(ex);
             }
@@ -107,7 +108,7 @@ namespace ConsoleTools
             {
                 code = await HandleUpgrade();
             }
-            else if(cmd == "/resave")
+            else if (cmd == "/resave")
             {
                 code = await HandleResaveModpack();
             }
@@ -126,6 +127,10 @@ namespace ConsoleTools
             else if (cmd == "/list")
             {
                 code = await ListRoot();
+            }
+            else if (cmd == "/wrapf")
+            {
+                code = await WrapFileFlagged();
             }
             else
             {
@@ -155,7 +160,7 @@ namespace ConsoleTools
 
             var files = await root.GetAllFiles();
 
-            foreach(var file in files)
+            foreach (var file in files)
             {
                 Console.WriteLine(file);
             }
@@ -201,7 +206,7 @@ namespace ConsoleTools
             try
             {
                 var data = await WizardData.FromModpack(src);
-                if(data == null)
+                if (data == null)
                 {
                     Console.WriteLine("Failed to load Modpack at: " + src);
                     return -1;
@@ -238,7 +243,8 @@ namespace ConsoleTools
             {
                 var data = await rtx.ReadFile(src, false, sqpack);
                 File.WriteAllBytes(dest, data);
-            } else if (src.EndsWith(".tex") || src.EndsWith(".atex"))
+            }
+            else if (src.EndsWith(".tex") || src.EndsWith(".atex"))
             {
                 var data = await rtx.ReadFile(src);
                 var tex = XivTex.FromUncompressedTex(data);
@@ -257,6 +263,93 @@ namespace ConsoleTools
             Console.WriteLine("File saved to:" + dest);
             return 0;
         }
+        public static async Task<int> WrapFileFlagged()
+        {
+            if (!GetFlag("/in") && !GetFlag("/out"))
+            {
+                Console.WriteLine("Insufficient argument count for function.");
+                return -1;
+            }
+            int index = 0;
+
+            var src = _Args[Array.IndexOf(_Args, "/in") + 1];
+            var dest = _Args[Array.IndexOf(_Args, "/out") + 1];
+
+            // Just dub something in with same extention if we weren't given one.
+            // This will work for anything other than MDL.
+            var ffPath = "chara/file" + Path.GetExtension(dest);
+            if (GetFlag("/path"))
+            {
+
+                ffPath = _Args[Array.IndexOf(_Args, "/path") + 1];
+            }
+            Console.WriteLine("Wrapping File: " + src);
+
+            //option handling :3 this is going to be a massive conditional sowwy
+            var options = new SmartImportOptions()
+            {
+                ModelOptions = new ModelImportOptions()
+            };
+
+
+
+            string flagStr = String.Empty;
+            if (GetFlag("/tangents"))
+            {
+                options.ModelOptions.UseImportedTangents = true;
+                flagStr += " Using Imported Tangents,";
+            }
+            if (GetFlag("/mats"))
+            {
+                options.ModelOptions.CopyMaterials = false;
+                flagStr += " Not Copying Materials,";
+            }
+            if (GetFlag("/attributes"))
+            {
+                options.ModelOptions.CopyAttributes = false;
+                flagStr += " Not Copying Attributes,";
+            }
+            if (GetFlag("/shiftuvs"))
+            {
+                options.ModelOptions.ShiftImportUV = false;
+                flagStr += " Not Shifting Imported UV's,";
+            }
+            if (GetFlag("/cloneuv2"))
+            {
+                options.ModelOptions.CloneUV2 = true;
+                flagStr += " Cloning UV1 to UV2,";
+            }
+            if (GetFlag("/autoscale"))
+            {
+                options.ModelOptions.AutoScale = false;
+                flagStr += " Automatically Scaling Model,";
+            }
+            if (GetFlag("/heels"))
+            {
+                options.ModelOptions.AutoAssignHeels = false;
+                flagStr += " Applying Automatic Heels Attribute,";
+            }
+            if (flagStr != String.Empty)
+            {
+                Console.WriteLine("Creating model with the following options:" + flagStr.Remove(flagStr.Length - 1) + ".");
+            }
+            var sqpack = GetFlag("/sqpack");
+            var parsed = new byte[0];
+            if (sqpack)
+            {
+                parsed = await SmartImport.CreateCompressedFile(src, ffPath);
+            }
+            else
+            {
+
+                parsed = await SmartImport.CreateUncompressedFile(src, ffPath, options: options);
+            }
+
+            File.WriteAllBytes(dest, parsed);
+            Console.WriteLine("Wrapped File saved to: " + dest);
+            return 0;
+        }
+
         public static async Task<int> WrapFile()
         {
             if (_Args.Length < 3)
@@ -282,7 +375,8 @@ namespace ConsoleTools
             if (sqpack)
             {
                 parsed = await SmartImport.CreateCompressedFile(src, ffPath);
-            } else
+            }
+            else
             {
                 parsed = await SmartImport.CreateUncompressedFile(src, ffPath);
             }
@@ -301,7 +395,7 @@ namespace ConsoleTools
             }
 
             var ffPath = "";
-            if(_Args.Length > 3)
+            if (_Args.Length > 3)
             {
                 ffPath = _Args[3];
             }
@@ -315,7 +409,7 @@ namespace ConsoleTools
             using var br = new BinaryReader(new MemoryStream(data));
             var type = Dat.GetSqPackType(br);
 
-            if(type > 1 && type < 4)
+            if (type > 1 && type < 4)
             {
                 try
                 {
@@ -372,6 +466,8 @@ namespace ConsoleTools
             System.Console.WriteLine("\t/wrap [SourceFilePath] [DestFilePath] [IntendedFfxivFilePath] - Creates an FFXIV format file from the given source file.  May be SQPacked with /sqpack.  FF Path only needed for MDLs.");
             System.Console.WriteLine("");
             System.Console.WriteLine("\t/unwrap [SourceFilePath] [DestFilePath] [IntendedFfxivFilePath] - Unwraps a given on-disk SqPacked or Flat FFXIV file into the given format. FF Path only needed for MDLs Skeleton/Texture info.");
+            System.Console.WriteLine("");
+            System.Console.WriteLine("\t/unwrapf /in [SourceFilePath] /out [DestFilePath] /path [IntendedFfxivFilePath] - Same as unwrap with flag support. Supports the flags /tangents to use imported tangents, /mats to not copy materials, /attributes to not copy attributes, /shiftuvs to not shift imported uvs, /cloneuv2 to clone uv1 to uv2, /autoscale to automatically scale the model, and /heels to auto-assign the heels attribute  ");
             System.Console.WriteLine("");
             System.Console.WriteLine("\t/list [RootId] - List the entire collection of files associated with a given root ID. ( Ex. c0101h0010 )");
             System.Console.WriteLine("");
