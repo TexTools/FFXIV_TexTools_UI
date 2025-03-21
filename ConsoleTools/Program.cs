@@ -281,7 +281,7 @@ namespace ConsoleTools
 
             } while (paramStart == 0);
 
-            if (!File.Exists(_Args[paramStart]) || !File.Exists(_Args[paramStart+1]))
+            if (!File.Exists(_Args[paramStart]) || !Path.IsPathRooted(_Args[paramStart+1]))
             {
                 Console.WriteLine("Insufficient argument count for function.");
                 return -1;
@@ -294,7 +294,7 @@ namespace ConsoleTools
             // Just dub something in with same extention if we weren't given one.
             // This will work for anything other than MDL.
             var ffPath = "chara/file" + Path.GetExtension(dest);
-            if (!_Args[paramStart+2].StartsWith("/"))
+            if (paramStart + 2 < _Args.Length &&!_Args[paramStart+2].StartsWith("/"))
             {
 
                 ffPath = _Args[paramStart + 2];
@@ -313,22 +313,22 @@ namespace ConsoleTools
             if (GetFlag("/tangents"))
             {
                 options.ModelOptions.UseImportedTangents = true;
-                flagStr += " Using Imported Tangents,";
+                flagStr += " Using imported tangents,";
             }
             if (GetFlag("/mats"))
             {
                 options.ModelOptions.CopyMaterials = false;
-                flagStr += " Not Copying Materials,";
+                flagStr += " Not copying materials,";
             }
             if (GetFlag("/attributes"))
             {
                 options.ModelOptions.CopyAttributes = false;
-                flagStr += " Not Copying Attributes,";
+                flagStr += " Not copying attributes,";
             }
             if (GetFlag("/shiftuvs"))
             {
                 options.ModelOptions.ShiftImportUV = false;
-                flagStr += " Not Shifting Imported UV's,";
+                flagStr += " Not shifting imported UV's,";
             }
             if (GetFlag("/cloneuv2"))
             {
@@ -338,12 +338,12 @@ namespace ConsoleTools
             if (GetFlag("/autoscale"))
             {
                 options.ModelOptions.AutoScale = false;
-                flagStr += " Automatically Scaling Model,";
+                flagStr += " Ignoring automatic model scaling,";
             }
             if (GetFlag("/heels"))
             {
                 options.ModelOptions.AutoAssignHeels = false;
-                flagStr += " Applying Automatic Heels Attribute,";
+                flagStr += " Ignoring automatic heels attribute,";
             }
             if (flagStr != String.Empty)
             {
@@ -362,7 +362,7 @@ namespace ConsoleTools
             }
 
             File.WriteAllBytes(dest, parsed);
-            Console.WriteLine("Wrapped File saved to: " + dest);
+            Console.WriteLine("Wrapped file saved to: " + dest);
             return 0;
         }
 
@@ -443,7 +443,7 @@ namespace ConsoleTools
             System.Console.WriteLine("");
             System.Console.WriteLine("\t/extract [FfxivInternalPath] [DestFilePath] - Extracts a given file from FFXIV.  May be SQPacked with /sqpack");
             System.Console.WriteLine("");
-            System.Console.WriteLine("\t/wrap [SourceFilePath] [DestFilePath] [IntendedFfxivFilePath] - Creates an FFXIV format file from the given source file.  May be SQPacked with /sqpack.  FF Path only needed for MDLs. Supports the flags /tangents to use imported tangents, /mats to not copy materials, /attributes to not copy attributes, /shiftuvs to not shift imported uvs, /cloneuv2 to clone uv1 to uv2, /autoscale to automatically scale the model, and /heels to auto-assign the heels attribute  \");");
+            System.Console.WriteLine("\t/wrap [SourceFilePath] [DestFilePath] [IntendedFfxivFilePath] [Options] - Creates an FFXIV format file from the given source file.  May be SQPacked with /sqpack.  FF Path only needed for MDLs. Supports the flags /tangents to use imported tangents, /mats to not copy materials, /attributes to not copy attributes, /shiftuvs to not shift imported uvs, /cloneuv2 to clone uv1 to uv2, /autoscale to ignore automatic model scaling, and /heels to ignore automatic heels attribute \");");
             System.Console.WriteLine("");
             System.Console.WriteLine("\t/unwrap [SourceFilePath] [DestFilePath] [IntendedFfxivFilePath] - Unwraps a given on-disk SqPacked or Flat FFXIV file into the given format. FF Path only needed for MDLs Skeleton/Texture info.");
             System.Console.WriteLine("");
