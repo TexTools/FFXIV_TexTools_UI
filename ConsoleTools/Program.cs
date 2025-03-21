@@ -467,7 +467,7 @@ namespace ConsoleTools
             System.Console.WriteLine("");
             System.Console.WriteLine("\t/unwrap [SourceFilePath] [DestFilePath] [IntendedFfxivFilePath] - Unwraps a given on-disk SqPacked or Flat FFXIV file into the given format. FF Path only needed for MDLs Skeleton/Texture info.");
             System.Console.WriteLine("");
-            System.Console.WriteLine("\t/unwrapf /in [SourceFilePath] /out [DestFilePath] /path [IntendedFfxivFilePath] - Same as unwrap with flag support. Supports the flags /tangents to use imported tangents, /mats to not copy materials, /attributes to not copy attributes, /shiftuvs to not shift imported uvs, /cloneuv2 to clone uv1 to uv2, /autoscale to automatically scale the model, and /heels to auto-assign the heels attribute  ");
+            System.Console.WriteLine("\t/wrapf /in [SourceFilePath] /out [DestFilePath] /path [IntendedFfxivFilePath] - Same as unwrap with flag support. Supports the flags /tangents to use imported tangents, /mats to not copy materials, /attributes to not copy attributes, /shiftuvs to not shift imported uvs, /cloneuv2 to clone uv1 to uv2, /autoscale to automatically scale the model, and /heels to auto-assign the heels attribute  ");
             System.Console.WriteLine("");
             System.Console.WriteLine("\t/list [RootId] - List the entire collection of files associated with a given root ID. ( Ex. c0101h0010 )");
             System.Console.WriteLine("");
