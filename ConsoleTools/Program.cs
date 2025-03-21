@@ -47,7 +47,7 @@ namespace ConsoleTools
             {
                 res = Run(args).GetAwaiter().GetResult();
             }
-            catch (Exception ex)
+            catch(Exception ex) 
             {
                 Console.WriteLine(ex);
             }
@@ -156,7 +156,7 @@ namespace ConsoleTools
 
             var files = await root.GetAllFiles();
 
-            foreach (var file in files)
+            foreach(var file in files)
             {
                 Console.WriteLine(file);
             }
@@ -202,7 +202,7 @@ namespace ConsoleTools
             try
             {
                 var data = await WizardData.FromModpack(src);
-                if (data == null)
+                if(data == null)
                 {
                     Console.WriteLine("Failed to load Modpack at: " + src);
                     return -1;
@@ -239,8 +239,7 @@ namespace ConsoleTools
             {
                 var data = await rtx.ReadFile(src, false, sqpack);
                 File.WriteAllBytes(dest, data);
-            }
-            else if (src.EndsWith(".tex") || src.EndsWith(".atex"))
+            } else if (src.EndsWith(".tex") || src.EndsWith(".atex"))
             {
                 var data = await rtx.ReadFile(src);
                 var tex = XivTex.FromUncompressedTex(data);
@@ -375,7 +374,7 @@ namespace ConsoleTools
             }
 
             var ffPath = "";
-            if (_Args.Length > 3)
+            if(_Args.Length > 3)
             {
                 ffPath = _Args[3];
             }
@@ -389,7 +388,7 @@ namespace ConsoleTools
             using var br = new BinaryReader(new MemoryStream(data));
             var type = Dat.GetSqPackType(br);
 
-            if (type > 1 && type < 4)
+            if(type > 1 && type < 4)
             {
                 try
                 {
