@@ -128,10 +128,6 @@ namespace ConsoleTools
             {
                 code = await ListRoot();
             }
-            else if (cmd == "/wrapf")
-            {
-                code = await WrapFileFlagged();
-            }
             else
             {
                 Console.WriteLine("Unknown Command: " + cmd);
@@ -263,25 +259,45 @@ namespace ConsoleTools
             Console.WriteLine("File saved to:" + dest);
             return 0;
         }
-        public static async Task<int> WrapFileFlagged()
+        public static async Task<int> WrapFile()
         {
-            if (!GetFlag("/in") && !GetFlag("/out"))
+            int paramStart = 0;
+            int id = 0;
+            do
+            {
+                if (id == _Args.Length)
+                {
+                    Console.WriteLine("Could not find file paths");
+                    return -1;
+                }
+                if (!_Args[id].StartsWith("/"))
+                {
+                    paramStart = id;
+                }
+                else
+                {
+                    id++;
+                }
+
+            } while (paramStart == 0);
+
+            if (!File.Exists(_Args[paramStart]) || !File.Exists(_Args[paramStart+1]))
             {
                 Console.WriteLine("Insufficient argument count for function.");
                 return -1;
             }
-            int index = 0;
 
-            var src = _Args[Array.IndexOf(_Args, "/in") + 1];
-            var dest = _Args[Array.IndexOf(_Args, "/out") + 1];
+
+            var src = _Args[paramStart];
+            var dest = _Args[paramStart + 1];
 
             // Just dub something in with same extention if we weren't given one.
             // This will work for anything other than MDL.
             var ffPath = "chara/file" + Path.GetExtension(dest);
-            if (GetFlag("/path"))
+            if (!_Args[paramStart+2].StartsWith("/"))
             {
 
-                ffPath = _Args[Array.IndexOf(_Args, "/path") + 1];
+                ffPath = _Args[paramStart + 2];
             }
             Console.WriteLine("Wrapping File: " + src);
 
@@ -343,42 +359,6 @@ namespace ConsoleTools
             {
 
                 parsed = await SmartImport.CreateUncompressedFile(src, ffPath, options: options);
-            }
-
-            File.WriteAllBytes(dest, parsed);
-            Console.WriteLine("Wrapped File saved to: " + dest);
-            return 0;
-        }
-
-        public static async Task<int> WrapFile()
-        {
-            if (_Args.Length < 3)
-            {
-                Console.WriteLine("Insufficient argument count for function.");
-                return -1;
-            }
-
-            var src = _Args[1];
-            var dest = _Args[2];
-
-            // Just dub something in with same extention if we weren't given one.
-            // This will work for anything other than MDL.
-            var ffPath = "chara/file" + Path.GetExtension(dest);
-            if (_Args.Length > 3)
-            {
-                ffPath = _Args[3];
-            }
-            Console.WriteLine("Wrapping File: " + src);
-
-            var sqpack = GetFlag("/sqpack");
-            var parsed = new byte[0];
-            if (sqpack)
-            {
-                parsed = await SmartImport.CreateCompressedFile(src, ffPath);
-            }
-            else
-            {
-                parsed = await SmartImport.CreateUncompressedFile(src, ffPath);
             }
 
             File.WriteAllBytes(dest, parsed);
@@ -463,11 +443,9 @@ namespace ConsoleTools
             System.Console.WriteLine("");
             System.Console.WriteLine("\t/extract [FfxivInternalPath] [DestFilePath] - Extracts a given file from FFXIV.  May be SQPacked with /sqpack");
             System.Console.WriteLine("");
-            System.Console.WriteLine("\t/wrap [SourceFilePath] [DestFilePath] [IntendedFfxivFilePath] - Creates an FFXIV format file from the given source file.  May be SQPacked with /sqpack.  FF Path only needed for MDLs.");
+            System.Console.WriteLine("\t/wrap [SourceFilePath] [DestFilePath] [IntendedFfxivFilePath] - Creates an FFXIV format file from the given source file.  May be SQPacked with /sqpack.  FF Path only needed for MDLs. Supports the flags /tangents to use imported tangents, /mats to not copy materials, /attributes to not copy attributes, /shiftuvs to not shift imported uvs, /cloneuv2 to clone uv1 to uv2, /autoscale to automatically scale the model, and /heels to auto-assign the heels attribute  \");");
             System.Console.WriteLine("");
             System.Console.WriteLine("\t/unwrap [SourceFilePath] [DestFilePath] [IntendedFfxivFilePath] - Unwraps a given on-disk SqPacked or Flat FFXIV file into the given format. FF Path only needed for MDLs Skeleton/Texture info.");
-            System.Console.WriteLine("");
-            System.Console.WriteLine("\t/wrapf /in [SourceFilePath] /out [DestFilePath] /path [IntendedFfxivFilePath] - Same as unwrap with flag support. Supports the flags /tangents to use imported tangents, /mats to not copy materials, /attributes to not copy attributes, /shiftuvs to not shift imported uvs, /cloneuv2 to clone uv1 to uv2, /autoscale to automatically scale the model, and /heels to auto-assign the heels attribute  ");
             System.Console.WriteLine("");
             System.Console.WriteLine("\t/list [RootId] - List the entire collection of files associated with a given root ID. ( Ex. c0101h0010 )");
             System.Console.WriteLine("");
