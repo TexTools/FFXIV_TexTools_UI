@@ -976,7 +976,7 @@ namespace FFXIV_TexTools.Views.Controls
 
                 PreviewDyeCollection.Clear();
                 PreviewDyeCollection.Add(new KeyValuePair<int, string>(-1, "Undyed".L()));
-                for (ushort i = 0; i < 128; i++)
+                for (ushort i = 0; i < 255; i++)
                 {
                     var name = "Dye " + i.ToString();
                     if (dyes.ContainsKey(i))
