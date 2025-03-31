@@ -268,6 +268,12 @@ namespace FFXIV_TexTools.Views.Models
                     AddText(textBox, "Unknown 2 Size:\t".L(), _textColor, false);
                     AddText(textBox, $"{_xivMdl.UnkData2.Unknown.Length}\n\n", _textColor, true);
                 }
+
+                if (_xivMdl.UnkDataPatch72?.Unknown != null)
+                {
+                    AddText(textBox, "Unknown Patch72 Size:\t".L(), _textColor, false);
+                    AddText(textBox, $"{_xivMdl.UnkDataPatch72.Unknown.Length}\n\n", _textColor, true);
+                }
             }
 
             if (selectedItem.Equals("Data Blocks".L()))
