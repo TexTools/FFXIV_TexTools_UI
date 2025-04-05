@@ -8,15 +8,6 @@
     <Nullable>enable</Nullable>
     <OutputPath>..\\bin\\$(Configuration)\\</OutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-
-
-    <PostBuildEvent>
-      echo Moving DLL Files
-      mkdir $(TargetDir)lib_console
-      xcopy $(TargetDir)*.dll $(TargetDir)lib_console /y
-      del *.dll
-      del *.cso
-    </PostBuildEvent>
   </PropertyGroup>
 
   <PropertyGroup>
