@@ -176,7 +176,7 @@ namespace FFXIV_TexTools.ViewModels
 
 
 
-                if (dyeId >= 0 && dyeId < 128 && _mtrl.ColorSetDyeData.Length > 0)
+                if (dyeId >= 0 && dyeId <= 254 && _mtrl.ColorSetDyeData.Length > 0)
                 {
                     var templateId = STM.GetTemplateKeyFromMaterialData(_mtrl, RowId);
                     var template = DyeTemplateFile.GetTemplate(templateId);

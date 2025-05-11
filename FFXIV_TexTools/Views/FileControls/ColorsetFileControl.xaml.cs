@@ -1521,7 +1521,7 @@ namespace FFXIV_TexTools.Views.Controls
             var templateType = LegacyShader ? STM.EStainingTemplate.Endwalker : STM.EStainingTemplate.Dawntrail;
 
             if (template == null) return;
-            if (dyeId < 0 || dyeId >= 128) return;
+            if (dyeId < 0 || dyeId > 254) return;
 
             uint dyeData = 0;
             if (Material.ColorSetDyeData.Length == 0)
