@@ -53,6 +53,7 @@
     <ApplicationIcon>ffxiv2.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <StartupObject>FFXIV_TexTools.App</StartupObject>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Console\**" />

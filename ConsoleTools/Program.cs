@@ -28,7 +28,7 @@ namespace ConsoleTools
         public static int Main(string[] args)
         {
             // Manual lib loader because the app.config method isn't working for some reason.
-            var cwd = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "lib_console");
+            var cwd = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "lib");
             var referenceFiles = Directory.GetFiles(cwd, "*.dll", SearchOption.AllDirectories);
 
             AppDomain.CurrentDomain.AssemblyResolve += (obj, arg) =>

@@ -751,7 +751,7 @@ namespace FFXIV_TexTools.ViewModels
                 foreach (var shpKv in p.ShapeParts)
                 {
                     var shape = shpKv.Value;
-                    if (!shape.Name.StartsWith("shp_")) continue;
+                    if (!shape.Name.StartsWith("shp")) continue;
                     shapeNames.Add(shape.Name);
                 }
             }
