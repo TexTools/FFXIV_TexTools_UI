@@ -14,6 +14,7 @@ using xivModdingFramework.Cache;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Models.DataContainers;
 using xivModdingFramework.Models.FileTypes;
+using xivModdingFramework.Models.Helpers;
 using xivModdingFramework.Mods;
 using xivModdingFramework.SqPack.FileTypes;
 using xivModdingFramework.Textures.DataContainers;
@@ -107,7 +108,7 @@ namespace ConsoleTools
             {
                 code = await HandleUpgrade();
             }
-            else if(cmd == "/resave")
+            else if (cmd == "/resave")
             {
                 code = await HandleResaveModpack();
             }
@@ -259,36 +260,108 @@ namespace ConsoleTools
         }
         public static async Task<int> WrapFile()
         {
-            if (_Args.Length < 3)
+            int paramStart = 0;
+            int id = 0;
+            do
+            {
+                if (id == _Args.Length)
+                {
+                    Console.WriteLine("Could not find file paths");
+                    return -1;
+                }
+                if (!_Args[id].StartsWith("/"))
+                {
+                    paramStart = id;
+                }
+                else
+                {
+                    id++;
+                }
+
+            } while (paramStart == 0);
+
+            if (!File.Exists(_Args[paramStart]) || !Path.IsPathRooted(_Args[paramStart+1]))
             {
                 Console.WriteLine("Insufficient argument count for function.");
                 return -1;
             }
 
-            var src = _Args[1];
-            var dest = _Args[2];
+
+            var src = _Args[paramStart];
+            var dest = _Args[paramStart + 1];
 
             // Just dub something in with same extention if we weren't given one.
             // This will work for anything other than MDL.
             var ffPath = "chara/file" + Path.GetExtension(dest);
-            if (_Args.Length > 3)
+            if (paramStart + 2 < _Args.Length &&!_Args[paramStart+2].StartsWith("/"))
             {
-                ffPath = _Args[3];
+
+                ffPath = _Args[paramStart + 2];
             }
             Console.WriteLine("Wrapping File: " + src);
 
+            //option handling :3 this is going to be a massive conditional sowwy
+            var options = new SmartImportOptions()
+            {
+                ModelOptions = new ModelImportOptions()
+            };
+
+
+
+            string flagStr = String.Empty;
+            if (GetFlag("/tangents"))
+            {
+                options.ModelOptions.UseImportedTangents = true;
+                flagStr += " Using imported tangents,";
+            }
+            if (GetFlag("/mats"))
+            {
+                options.ModelOptions.CopyMaterials = false;
+                flagStr += " Not copying materials,";
+            }
+            if (GetFlag("/attributes"))
+            {
+                options.ModelOptions.CopyAttributes = false;
+                flagStr += " Not copying attributes,";
+            }
+            if (GetFlag("/shiftuvs"))
+            {
+                options.ModelOptions.ShiftImportUV = false;
+                flagStr += " Not shifting imported UV's,";
+            }
+            if (GetFlag("/cloneuv2"))
+            {
+                options.ModelOptions.CloneUV2 = true;
+                flagStr += " Cloning UV1 to UV2,";
+            }
+            if (GetFlag("/autoscale"))
+            {
+                options.ModelOptions.AutoScale = false;
+                flagStr += " Ignoring automatic model scaling,";
+            }
+            if (GetFlag("/heels"))
+            {
+                options.ModelOptions.AutoAssignHeels = false;
+                flagStr += " Ignoring automatic heels attribute,";
+            }
+            if (flagStr != String.Empty)
+            {
+                Console.WriteLine("Creating model with the following options:" + flagStr.Remove(flagStr.Length - 1) + ".");
+            }
             var sqpack = GetFlag("/sqpack");
             var parsed = new byte[0];
             if (sqpack)
             {
                 parsed = await SmartImport.CreateCompressedFile(src, ffPath);
-            } else
+            }
+            else
             {
-                parsed = await SmartImport.CreateUncompressedFile(src, ffPath);
+
+                parsed = await SmartImport.CreateUncompressedFile(src, ffPath, options: options);
             }
 
             File.WriteAllBytes(dest, parsed);
-            Console.WriteLine("Wrapped File saved to: " + dest);
+            Console.WriteLine("Wrapped file saved to: " + dest);
             return 0;
         }
 
@@ -369,7 +442,7 @@ namespace ConsoleTools
             System.Console.WriteLine("");
             System.Console.WriteLine("\t/extract [FfxivInternalPath] [DestFilePath] - Extracts a given file from FFXIV.  May be SQPacked with /sqpack");
             System.Console.WriteLine("");
-            System.Console.WriteLine("\t/wrap [SourceFilePath] [DestFilePath] [IntendedFfxivFilePath] - Creates an FFXIV format file from the given source file.  May be SQPacked with /sqpack.  FF Path only needed for MDLs.");
+            System.Console.WriteLine("\t/wrap [SourceFilePath] [DestFilePath] [IntendedFfxivFilePath] [Options] - Creates an FFXIV format file from the given source file.  May be SQPacked with /sqpack.  FF Path only needed for MDLs. Supports the flags /tangents to use imported tangents, /mats to not copy materials, /attributes to not copy attributes, /shiftuvs to not shift imported uvs, /cloneuv2 to clone uv1 to uv2, /autoscale to ignore automatic model scaling, and /heels to ignore automatic heels attribute \");");
             System.Console.WriteLine("");
             System.Console.WriteLine("\t/unwrap [SourceFilePath] [DestFilePath] [IntendedFfxivFilePath] - Unwraps a given on-disk SqPacked or Flat FFXIV file into the given format. FF Path only needed for MDLs Skeleton/Texture info.");
             System.Console.WriteLine("");
