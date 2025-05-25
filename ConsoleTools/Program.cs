@@ -344,7 +344,7 @@ namespace ConsoleTools
                 var mdl = Mdl.GetXivMdl(data);
                 var ttm = await TTModel.FromRaw(mdl);
                 ttm.Source = ffPath;
-                await Mdl.ExportTTModelToFile(ttm, ffPath, 1, null, rtx);
+                await Mdl.ExportTTModelToFile(ttm, dest, 1, null, rtx);
             }
             else
             {
