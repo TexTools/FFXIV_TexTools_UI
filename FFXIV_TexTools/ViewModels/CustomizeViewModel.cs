@@ -147,6 +147,32 @@ namespace FFXIV_TexTools.ViewModels
             set => NotifyPropertyChanged(nameof(ModPack_Directory));
         }
 
+        /// <summary>
+        /// The batch export directory
+        /// </summary>
+        public string BatchExport_Directory
+        {
+            get
+            {
+                // Ensure directory exists or return empty string to avoid errors with Path.GetFullPath on null/empty
+                if (string.IsNullOrEmpty(Settings.Default.BatchExportDirectory))
+                {
+                    // Optionally, create a default directory here if one doesn't exist.
+                    // For now, just return empty or a placeholder if not set.
+                    // Consider returning a user-friendly placeholder like "Not Set" or an actual default path.
+                    // For binding, an actual path or empty string is better than null.
+                    return ""; // Or Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) for a fallback.
+                }
+                return Path.GetFullPath(Settings.Default.BatchExportDirectory);
+            }
+            set
+            {
+                Settings.Default.BatchExportDirectory = value;
+                Settings.Default.Save();
+                NotifyPropertyChanged(nameof(BatchExport_Directory));
+            }
+        }
+
 
         /// <summary>
         /// The default author
@@ -643,8 +669,30 @@ namespace FFXIV_TexTools.ViewModels
         public ICommand Save_SelectDir => new RelayCommand(SaveSelectDir);
         public ICommand Backup_SelectDir => new RelayCommand(BackupSelectDir);
         public ICommand ModPack_SelectDir => new RelayCommand(ModPackSelectDir);
+        public ICommand BatchExport_SelectDir => new RelayCommand(BatchExportSelectDir);
         public ICommand Customize_Reset => new RelayCommand(ResetToDefault);
         public ICommand CloseCustomize => new RelayCommand(CustomizeClose);
+
+        private void BatchExportSelectDir(object obj)
+        {
+            var currentBatchExportDir = Settings.Default.BatchExportDirectory;
+            if (string.IsNullOrEmpty(currentBatchExportDir) || !Directory.Exists(currentBatchExportDir))
+            {
+                currentBatchExportDir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            }
+
+            var folderSelect = new FolderSelectDialog
+            {
+                Title = "Select Default Batch Export Directory",
+                InitialDirectory = currentBatchExportDir
+            };
+
+            if (folderSelect.ShowDialog())
+            {
+                BatchExport_Directory = folderSelect.FileName; // This setter will save and notify
+                FlexibleMessageBox.Show($"Default Batch Export directory updated to: {folderSelect.FileName}", "Directory Updated", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
 
         private void CustomizeClose(object obj)
         {

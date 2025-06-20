@@ -116,6 +116,10 @@
                     <MenuItem x:Name="Menu_CopyFile" Header="{Binding Source={x:Static resx:UIStrings.Copy_File}}" Click="Menu_CopyFile_Click"/>
                 </MenuItem>
 
+                <MenuItem Header="Batch Operations">
+                    <MenuItem Header="Batch Export Housing Indoor Furniture" Command="{Binding BatchExportHousingIndoorFurnitureCommand}"/>
+                </MenuItem>
+
             </MenuItem>
             <MenuItem Header="{Binding Source={x:Static resx:UIStrings.Options}}" StaysOpenOnClick="True">
                 <MenuItem x:Name="Menu_Customize" Header="{Binding Source={x:Static resx:UIStrings.Settings}}" Click="Customize_Click"/>
