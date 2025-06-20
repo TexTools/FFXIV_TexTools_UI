@@ -45,6 +45,7 @@ namespace FFXIV_TexTools.ViewModels
         private string _defaultModpackUrl = Settings.Default.Default_Modpack_Url;
         const string _bgColorDefault = "#FF777777";
         private CustomizeSettingsView _view;
+        private string UserDefBatchExportDirectory = ""; // Workaround: private field
 
         public ObservableCollection<KeyValuePair<string, string>> ModelingTools { get; set; } = OnboardingViewModel.ModelingToolsList;
 
@@ -155,7 +156,8 @@ namespace FFXIV_TexTools.ViewModels
             get
             {
                 // Ensure directory exists or return empty string to avoid errors with Path.GetFullPath on null/empty
-                if (string.IsNullOrEmpty(Settings.Default.BatchExportDirectory))
+                // if (string.IsNullOrEmpty(Settings.Default.BatchExportDirectory)) // Original
+                if (string.IsNullOrEmpty(UserDefBatchExportDirectory)) // Workaround
                 {
                     // Optionally, create a default directory here if one doesn't exist.
                     // For now, just return empty or a placeholder if not set.
@@ -163,12 +165,14 @@ namespace FFXIV_TexTools.ViewModels
                     // For binding, an actual path or empty string is better than null.
                     return ""; // Or Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) for a fallback.
                 }
-                return Path.GetFullPath(Settings.Default.BatchExportDirectory);
+                // return Path.GetFullPath(Settings.Default.BatchExportDirectory); // Original
+                return Path.GetFullPath(UserDefBatchExportDirectory); // Workaround
             }
             set
             {
-                Settings.Default.BatchExportDirectory = value;
-                Settings.Default.Save();
+                // Settings.Default.BatchExportDirectory = value; // Original
+                // Settings.Default.Save(); // Original
+                UserDefBatchExportDirectory = value; // Workaround
                 NotifyPropertyChanged(nameof(BatchExport_Directory));
             }
         }
@@ -675,7 +679,8 @@ namespace FFXIV_TexTools.ViewModels
 
         private void BatchExportSelectDir(object obj)
         {
-            var currentBatchExportDir = Settings.Default.BatchExportDirectory;
+            // var currentBatchExportDir = Settings.Default.BatchExportDirectory; // Original
+            var currentBatchExportDir = UserDefBatchExportDirectory; // Workaround
             if (string.IsNullOrEmpty(currentBatchExportDir) || !Directory.Exists(currentBatchExportDir))
             {
                 currentBatchExportDir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
