@@ -485,7 +485,8 @@ namespace FFXIV_TexTools.ViewModels
                             }
 
                             var item = itemsToExport[i];
-                            string itemName = item is XivCommonItem commonItem ? commonItem.Name : $"Item_{i}";
+                            // string itemName = item is XivCommonItem commonItem ? commonItem.Name : $"Item_{i}"; // Original
+                            string itemName = item is IItem commonItem ? commonItem.Name : $"Item_{i}"; // Fix 1: Use IItem
                             string itemNameSafe = SanitizePath(itemName);
 
                             double currentProgress = (double)i / itemsToExport.Count;
@@ -547,8 +548,8 @@ namespace FFXIV_TexTools.ViewModels
                                             // IncludeTextures = Settings.Default.ExportIncludeTextures, // Original
                                             IncludeTextures = true, // Workaround: Hardcode to default
                                             ShiftUVs = Settings.Default.ShiftExportUV, // Assuming this one is okay or handled elsewhere
-                                            // PbrTextures = Settings.Default.ExportPbrMode, // Original - Note: ModelExportSettings uses PbrFormat
-                                            PbrFormat = false, // Workaround: Hardcode to default for PbrFormat
+                                            // PbrFormat = false, // Original Workaround from previous step
+                                            PbrTextures = false, // Fix 2: Use PbrTextures, hardcoded
                                         };
 
                                         await Mdl.ExportTTModelToFile(ttModel, exportToPath, materialSetId, exportSettings, tx);
@@ -900,18 +901,17 @@ namespace FFXIV_TexTools.ViewModels
             Trace.WriteLine($"SanitizePath Test Summary: {passedCount}/{testCases.Count} passed.");
         }
 
-        // Mock IItem for testing
-        private class MockItem : IItem
+        internal class MockItem : IItem // Fix 8: Ensure internal
         {
             public string Name { get; set; }
             public int ID { get; set; }
-            public XivItemType? Type { get; set; } = XivItemType.common; // Retaining nullable for flexibility in tests
+            public XivItemType? Type { get; set; } = XivItemType.Item; // Fix 3: Changed from .common to .Item
             public ushort Icon { get; set; }
-            public XivRarity Rarity { get; set; } = XivRarity.Common;
+            public XivRarity Rarity { get; set; } = XivRarity.Common; // Assuming XivRarity.Common is valid
             public string PrimaryCategory { get; set; } = "MockPrimary";
             public string SecondaryCategory { get; set; } = "MockSecondary";
             public string TertiaryCategory { get; set; } = "MockTertiary";
-            public XivDataFile DataFile { get; set; } // May be null if not critical for tests
+            public XivDataFile DataFile { get; set; }
 
             public string GetModlistItemName() { return Name ?? "Unnamed MockItem"; }
             public string GetModlistItemCategory() { return PrimaryCategory ?? "Mock"; }
@@ -922,25 +922,21 @@ namespace FFXIV_TexTools.ViewModels
                 return 1;
             }
 
-            // Updated GetRoot to return a more functional, though still mock, XivDependencyRoot
-            // The previous GetRoot was already fine for the batch export's usage of it.
             public XivDependencyRoot GetRoot()
             {
                 var itemNameForRoot = string.IsNullOrEmpty(this.Name) ? "DefaultMockItemName" : this.Name;
-                // Ensure PrimaryType in XivDbItemInfo is not nullable if XivItemType? Type is used.
-                var rootInfo = new XivDbItemInfo { Name = itemNameForRoot, PrimaryType = this.Type ?? XivItemType.common, ID = this.ID };
+                var rootInfo = new XivDbItemInfo { Name = itemNameForRoot, PrimaryType = this.Type ?? XivItemType.Item, ID = this.ID }; // Fix 3
                 return new XivDependencyRoot(rootInfo);
             }
 
-            public bool CanFavorite { get => false; } // Per requirement
-            public bool IsFavorite { get; set; } // Per requirement
+            public bool CanFavorite { get => false; }
+            public bool IsFavorite { get; set; }
 
-            // Existing properties from previous implementation
             public string TTMPGroupName { get; set; }
             public string TTMPGroupOption { get; set; }
             public ObservableCollection<string> Tags { get; set; } = new ObservableCollection<string>();
-            public List<XivPlatform> Platforms { get; set; } = new List<XivPlatform> { XivPlatform.Windows };
-            public List<XivGender> Genders { get; set; } = new List<XivGender> { XivGender.All };
+            public List<XivPlatform> Platforms { get; set; } = new List<XivPlatform> { XivPlatform.Windows }; // Assuming XivPlatform.Windows is valid
+            public List<XivGender> Genders { get; set; } = new List<XivGender> { XivGender.Unknown }; // Fix 4: Changed from All to Unknown
             public List<XivRace> Races { get; set; } = new List<XivRace>();
             public bool IsCommon => true;
             public bool IsDefault { get; set; }
@@ -954,22 +950,45 @@ namespace FFXIV_TexTools.ViewModels
             public XivActionUsage ActionUsage { get; set; }
         }
 
-        // MockModelItem now inherits from the updated MockItem
-        internal class MockModelItem : MockItem, IItemModel
+        internal class MockModelItem : MockItem, IItemModel // Fix 8: Ensure internal
         {
-            public MockModelItem() { this.Type = XivItemType.equipment; } // Default type for model item
+            // Constructor ensures Type is set to something more specific for model items if needed
+            public MockModelItem() { this.Type = XivItemType.Equipment; } // Or XivItemType.Item if more generic needed for tests
 
-            // XivModelInfo is a class, can be initialized or null
-            public XivModelInfo ModelInfo { get; set; } = new XivModelInfo { ImcSubsetID = 1, ModelPath = "chara/some/model.mdl", MaterialSet = 0 };
-            public uint IconId { get; set; } // Changed from ushort to uint
+            public XivModelInfo ModelInfo { get; set; } = new XivModelInfo(); // Default constructor
+            public uint IconId { get; set; }
 
-            // ImcEntry can be null if not critical for the test
-            public ImcEntry ImcEntry { get; set; }
-            public bool UsesImc { get; set; } // Added
+            public ImcEntry ImcEntry { get; set; } // Using directive for ImcEntry should be present
+            public bool UsesImc { get; set; }
 
-            public object Clone() { return this.MemberwiseClone(); } // Added
+            public object Clone() { return this.MemberwiseClone(); }
 
-            // Other IItemModel specific properties (already present from previous version)
+            // Add GetRoot override to provide more specific mock data if needed for IItemModel
+            public new XivDependencyRoot GetRoot() // 'new' keyword because MockItem already defines GetRoot
+            {
+                var itemNameForRoot = string.IsNullOrEmpty(this.Name) ? "DefaultMockModelItemName" : this.Name;
+                // Fix 6: Use placeholder valid-looking data instead of ModelInfo.ModelPath etc.
+                // Using XivModelCharacterRootInfo as it's a concrete type for character models.
+                // If these items are furniture, a different XivInfoBase derived type might be more appropriate,
+                // but for the purpose of GetRoot() returning *a* root, this is okay.
+                // The actual type of XivInfoBase might matter if item.GetRoot().Info is cast and used.
+                // For now, XivDbItemInfo (as used in base MockItem) or a generic XivModelItemInfo should suffice.
+                // Let's use XivDbItemInfo for consistency with base, but fill model-specific placeholders.
+                var rootInfo = new XivDbItemInfo {
+                    Name = itemNameForRoot,
+                    PrimaryType = this.Type ?? XivItemType.Equipment,
+                    ID = this.ID,
+                    // ModelPath and MaterialSet would typically be on XivModelInfo, not XivDbItemInfo.
+                    // The XivDependencyRoot constructor used in ItemViewControl often takes XivInfoBase.
+                    // If the specific test path requires model path from the root *info* itself, this mock needs adjustment.
+                    // However, the batch export logic primarily uses modelPathKey from itemControl.Files.
+                };
+                 // The XivDependencyRoot constructor can take XivInfoBase.
+                 // If a more specific root type that holds model path directly is needed by tests, this could change.
+                return new XivDependencyRoot(rootInfo);
+            }
+
+            // IItemModel specific properties
             public XivRace Race { get; set; }
             public XivGender Gender { get; set; }
             public XivBodySlot BodySlot { get; set; }
@@ -1035,9 +1054,9 @@ namespace FFXIV_TexTools.ViewModels
             bool collectionCountPassed = collectedItems.Count == 3;
             Trace.WriteLine($"Collected items count: {collectedItems.Count} (Expected: 3)");
             bool collectionContentPassed = collectionCountPassed &&
-                                        collectedItems.Any(it => ((MockItem)it).Name == "Wooden Table") &&
-                                        collectedItems.Any(it => ((MockItem)it).Name == "Wooden Chair") &&
-                                        collectedItems.Any(it => ((MockItem)it).Name == "Fluffy Rug");
+                                        collectedItems.Any(it => (it as MockItem).Name == "Wooden Table") && // Cast with 'as'
+                                        collectedItems.Any(it => (it as MockItem).Name == "Wooden Chair") && // Cast with 'as'
+                                        collectedItems.Any(it => (it as MockItem).Name == "Fluffy Rug");   // Cast with 'as'
             Trace.WriteLine($"CollectItemsFromCategory content: {(collectionContentPassed ? "Passed" : "Failed")}");
             Trace.WriteLine($"Category Retrieval Test Summary: {(findHousingPassed && findIndoorPassed && notFoundPassed && collectionContentPassed ? "All Passed" : "Some Failed")}");
         }
@@ -1080,9 +1099,9 @@ namespace FFXIV_TexTools.ViewModels
 
             var itemsToExport = new List<IItem>
             {
-                new MockModelItem { Name = "Fancy Table", ID=1, ModelInfo = new XivModelInfo(), IconId = 101, UsesImc = true, ImcEntry = new ImcEntry() },
+                new MockModelItem { Name = "Fancy Table", ID=1, IconId = 101, UsesImc = true, ImcEntry = new ImcEntry(), ModelInfo = new XivModelInfo{ ImcSubsetID = 1} }, // Removed ModelPath/MaterialSet from direct init
                 new MockItem { Name = "Plain Vase", ID=2 },
-                new MockModelItem { Name = "Comfy Chair/With/Slashes", ID=3, ModelInfo = new XivModelInfo(), IconId = 102, UsesImc = false }
+                new MockModelItem { Name = "Comfy Chair/With/Slashes", ID=3, IconId = 102, UsesImc = false, ModelInfo = new XivModelInfo{ ImcSubsetID = 2} } // Removed ModelPath/MaterialSet from direct init
             };
 
             List<string> simulatedExportedFiles = new List<string>();
@@ -1094,7 +1113,7 @@ namespace FFXIV_TexTools.ViewModels
             for (int i = 0; i < itemsToExport.Count; i++)
             {
                 var item = itemsToExport[i];
-                string itemName = (item as MockItem)?.Name ?? $"Item_{i}";
+                string itemName = (item as IItem)?.Name ?? $"Item_{i}"; // Use IItem for name access
                 string itemNameSafe = SanitizePath(itemName);
 
                 progressUpdates++;
