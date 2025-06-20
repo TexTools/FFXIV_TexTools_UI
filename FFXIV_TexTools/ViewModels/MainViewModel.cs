@@ -619,60 +619,81 @@ namespace FFXIV_TexTools.ViewModels
 
                         try
                         {
-                            string modelPath = item.ModelInfo?.ModelPath;
-
-                            if (string.IsNullOrEmpty(modelPath))
+                            XivDependencyRoot root = item.GetRoot();
+                            if (root == null)
                             {
-                                _BatchExportErrors.Add($"Skipped item (no model path): {currentItemName}");
-                                Trace.WriteLine($"Skipped item (no model path from item.ModelInfo.ModelPath): {currentItemName}");
+                                _BatchExportErrors.Add($"Skipped item (no XivDependencyRoot): {currentItemName}");
+                                Trace.WriteLine($"Skipped item (no XivDependencyRoot): {currentItemName}");
                                 continue;
                             }
 
-                            TTModel ttModel = await Mdl.GetTTModel(modelPath, false, MainWindow.DefaultTransaction);
-                            if (ttModel == null)
+                            List<string> modelPaths = await root.GetModelFiles(MainWindow.DefaultTransaction);
+                            if (modelPaths == null || !modelPaths.Any())
                             {
-                                _BatchExportErrors.Add($"Skipped item (TTModel load failed for {modelPath}): {currentItemName}");
-                                Trace.WriteLine($"Skipped item (TTModel load failed): {currentItemName} from path {modelPath}");
+                                _BatchExportErrors.Add($"Skipped item (no model paths found via root.GetModelFiles): {currentItemName}");
+                                Trace.WriteLine($"Skipped item (no model paths found via root.GetModelFiles): {currentItemName}");
                                 continue;
                             }
 
-                            var version = 1;
-                            if (item.UsesImc)
+                            foreach (string modelPath in modelPaths)
                             {
-                                version = await Imc.GetMaterialSetId(item, false, MainWindow.DefaultTransaction);
-                            }
+                                if (string.IsNullOrEmpty(modelPath))
+                                {
+                                    _BatchExportErrors.Add($"Skipped model (empty path) for item: {currentItemName}");
+                                    Trace.WriteLine($"Skipped model (empty path) for item: {currentItemName}");
+                                    continue;
+                                }
 
-                            var modelExportSettings = new ModelExportSettings()
+                                TTModel ttModel = await Mdl.GetTTModel(modelPath, false, MainWindow.DefaultTransaction);
+                                if (ttModel == null)
+                                {
+                                    _BatchExportErrors.Add($"Skipped model (TTModel load failed for {modelPath}): {currentItemName}");
+                                    Trace.WriteLine($"Skipped model (TTModel load failed for {modelPath}): {currentItemName}");
+                                    continue;
+                                }
+
+                                var version = 1;
+                                if (root != null && Imc.UsesImc(root))
+                                {
+                                    version = await Imc.GetMaterialSetId(item, false, MainWindow.DefaultTransaction);
+                                }
+
+                                var modelExportSettings = new ModelExportSettings()
                             {
                                 IncludeTextures = true,
                                 ShiftUVs = false,
                                 PbrTextures = false
                             };
 
-                            string itemNameSafe = SanitizePath(currentItemName);
-                            string modelFileName = Path.GetFileNameWithoutExtension(ttModel.Source);
-                            string modelFileNameSafe = SanitizePath(modelFileName + ".fbx");
 
-                            string itemExportDir = Path.Combine(userSelectedBaseDir, "TexTools", "Saved", "Indoor Furniture", itemNameSafe);
-                            Directory.CreateDirectory(itemExportDir);
-                            string exportPath = Path.Combine(itemExportDir, modelFileNameSafe);
+                                string itemNameSafe = SanitizePath(currentItemName);
+                                // Use current modelPath for the filename, not ttModel.Source, to be certain
+                                string modelFileName = Path.GetFileNameWithoutExtension(modelPath);
+                                string modelFileNameSafe = SanitizePath(modelFileName + ".fbx");
 
-                            await Application.Current.Dispatcher.InvokeAsync(() => {
-                                progressController.SetMessage($"Exporting: {itemNameSafe}/{modelFileNameSafe}.fbx");
-                            });
-                            Trace.WriteLine($"Exporting model {ttModel.Source} for item {itemNameSafe} to {exportPath}");
+                                string itemExportDir = Path.Combine(userSelectedBaseDir, "TexTools", "Saved", "Indoor Furniture", itemNameSafe);
+                                Directory.CreateDirectory(itemExportDir);
+                                string exportPath = Path.Combine(itemExportDir, modelFileNameSafe);
 
-                            await Mdl.ExportTTModelToFile(ttModel, exportPath, version, modelExportSettings, MainWindow.DefaultTransaction);
+                                // This UI update should be fine here as it's within the Task.Run but dispatched.
+                                await Application.Current.Dispatcher.InvokeAsync(() => {
+                                    progressController.SetMessage($"Exporting: {itemNameSafe}/{modelFileNameSafe}.fbx");
+                                });
+                                Trace.WriteLine($"Exporting model {modelPath} for item {itemNameSafe} to {exportPath}");
+
+                                await Mdl.ExportTTModelToFile(ttModel, exportPath, version, modelExportSettings, MainWindow.DefaultTransaction);
+                            } // End foreach modelPath
                         }
                         catch (Exception ex)
                         {
-                            _BatchExportErrors.Add($"Error processing item {currentItemName}: {ex.Message}");
+                            // This catch block is for errors during GetRoot, GetModelFiles, or general item processing before individual model export.
+                            _BatchExportErrors.Add($"Error processing item {currentItemName} (before model loop or if model loop itself failed): {ex.Message}");
                             Trace.WriteLine($"Error processing item {currentItemName}: {ex.Message} - {ex.StackTrace}");
                         }
-                    }
-                });
+                    } // End foreach item
+                }); // End Task.Run
 
-                if (progressController.IsOpen) await progressController.CloseAsync();
+                if (progressController.IsOpen) await progressController.CloseAsync(); // Ensure it's closed if open
 
                 if (_BatchExportErrors.Any())
                 {
