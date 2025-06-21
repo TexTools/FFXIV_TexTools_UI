@@ -45,6 +45,7 @@ namespace FFXIV_TexTools.ViewModels
         private string _defaultModpackUrl = Settings.Default.Default_Modpack_Url;
         const string _bgColorDefault = "#FF777777";
         private CustomizeSettingsView _view;
+        private string UserDefBatchExportDirectory = ""; // Workaround: private field
 
         public ObservableCollection<KeyValuePair<string, string>> ModelingTools { get; set; } = OnboardingViewModel.ModelingToolsList;
 
@@ -145,6 +146,35 @@ namespace FFXIV_TexTools.ViewModels
         {
             get => Path.GetFullPath(Settings.Default.ModPack_Directory);
             set => NotifyPropertyChanged(nameof(ModPack_Directory));
+        }
+
+        /// <summary>
+        /// The batch export directory
+        /// </summary>
+        public string BatchExport_Directory
+        {
+            get
+            {
+                // Ensure directory exists or return empty string to avoid errors with Path.GetFullPath on null/empty
+                // if (string.IsNullOrEmpty(Settings.Default.BatchExportDirectory)) // Original
+                if (string.IsNullOrEmpty(UserDefBatchExportDirectory)) // Workaround
+                {
+                    // Optionally, create a default directory here if one doesn't exist.
+                    // For now, just return empty or a placeholder if not set.
+                    // Consider returning a user-friendly placeholder like "Not Set" or an actual default path.
+                    // For binding, an actual path or empty string is better than null.
+                    return ""; // Or Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) for a fallback.
+                }
+                // return Path.GetFullPath(Settings.Default.BatchExportDirectory); // Original
+                return Path.GetFullPath(UserDefBatchExportDirectory); // Workaround
+            }
+            set
+            {
+                // Settings.Default.BatchExportDirectory = value; // Original
+                // Settings.Default.Save(); // Original
+                UserDefBatchExportDirectory = value; // Workaround
+                NotifyPropertyChanged(nameof(BatchExport_Directory));
+            }
         }
 
 
@@ -643,8 +673,31 @@ namespace FFXIV_TexTools.ViewModels
         public ICommand Save_SelectDir => new RelayCommand(SaveSelectDir);
         public ICommand Backup_SelectDir => new RelayCommand(BackupSelectDir);
         public ICommand ModPack_SelectDir => new RelayCommand(ModPackSelectDir);
+        public ICommand BatchExport_SelectDir => new RelayCommand(BatchExportSelectDir);
         public ICommand Customize_Reset => new RelayCommand(ResetToDefault);
         public ICommand CloseCustomize => new RelayCommand(CustomizeClose);
+
+        private void BatchExportSelectDir(object obj)
+        {
+            // var currentBatchExportDir = Settings.Default.BatchExportDirectory; // Original
+            var currentBatchExportDir = UserDefBatchExportDirectory; // Workaround
+            if (string.IsNullOrEmpty(currentBatchExportDir) || !Directory.Exists(currentBatchExportDir))
+            {
+                currentBatchExportDir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            }
+
+            var folderSelect = new FolderSelectDialog
+            {
+                Title = "Select Default Batch Export Directory",
+                InitialDirectory = currentBatchExportDir
+            };
+
+            if (folderSelect.ShowDialog())
+            {
+                BatchExport_Directory = folderSelect.FileName; // This setter will save and notify
+                FlexibleMessageBox.Show($"Default Batch Export directory updated to: {folderSelect.FileName}", "Directory Updated", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
 
         private void CustomizeClose(object obj)
         {
