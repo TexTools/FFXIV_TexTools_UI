@@ -577,11 +577,14 @@ namespace FFXIV_TexTools.ViewModels
                 progressController = await _mainWindow.ShowProgressAsync("Batch Exporting Furniture...", "Starting operation...");
                 progressController.SetIndeterminate();
 
-                var housingCategoryProvider = new xivModdingFramework.Items.Categories.Housing();
-                // Ensure this is awaited as GetIndoorFurniture is async
-                List<IItemModel> itemsToExport = await housingCategoryProvider.GetIndoorFurniture(MainWindow.DefaultTransaction);
+                var housingCategoryProvider = new Housing();
 
-                if (itemsToExport == null || !itemsToExport.Any())
+				const string IndoorFurnitureCategoryName = "Indoor Furniture";
+				List<IItemModel> allFurniture = await housingCategoryProvider.GetUncachedFurnitureList(MainWindow.DefaultTransaction);
+				List<IItemModel> itemsToExport = allFurniture.Where(item =>
+					item is XivFurniture furniture &&
+					string.Equals(furniture.SecondaryCategory, IndoorFurnitureCategoryName, StringComparison.OrdinalIgnoreCase)).ToList();
+				if (itemsToExport == null || !itemsToExport.Any())
                 {
                     if (progressController.IsOpen) await progressController.CloseAsync();
                     await _mainWindow.ShowMessageAsync("No Items Found", "No indoor furniture items were found to export.");
@@ -663,14 +666,14 @@ namespace FFXIV_TexTools.ViewModels
                                 string modelFileName = Path.GetFileNameWithoutExtension(modelPath);
                                 string modelFileNameSafe = SanitizePath(modelFileName + ".fbx");
 
-                                string itemExportDir = Path.Combine(userSelectedBaseDir, "TexTools", "Saved", "Indoor Furniture", itemNameSafe);
+                                string itemExportDir = Path.Combine(userSelectedBaseDir, "BatchExport", "IndoorFurniture", itemNameSafe);
                                 Directory.CreateDirectory(itemExportDir);
                                 string exportPath = Path.Combine(itemExportDir, modelFileNameSafe);
 
                                 // This UI update should be fine here as it's within the Task.Run but dispatched.
                                 await System.Windows.Application.Current.Dispatcher.InvokeAsync(() => {
-                                    progressController.SetMessage($"Exporting: {itemNameSafe}");
-                                });
+									progressController.SetMessage($"Exporting: {itemNameSafe} ({currentItemCount}/{totalItemCount})");
+								});
                                 Trace.WriteLine($"Exporting model {modelPath} for item {itemNameSafe} to {exportPath}");
 
                                 await Mdl.ExportTTModelToFile(ttModel, exportPath, version, modelExportSettings, MainWindow.DefaultTransaction);
