@@ -241,7 +241,7 @@ namespace FFXIV_TexTools.Views.Item
         /// 
         /// If a layer is missing, empty string is used as the only key.
         /// </summary>
-        private Dictionary<string, Dictionary<string, HashSet<string>>> Files;
+        public Dictionary<string, Dictionary<string, HashSet<string>>> Files;
 
         private XivDependencyRoot Root;
 

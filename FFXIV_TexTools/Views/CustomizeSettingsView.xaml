@@ -87,6 +87,7 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition />
@@ -96,11 +97,13 @@
                     <TextBox x:Name="SaveDir" Grid.Row="1" Text="{Binding Save_Directory}" TextWrapping="NoWrap" IsReadOnly="True" Margin="5,0" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.Save_Directory}}" mah:TextBoxHelper.UseFloatingWatermark="True"/>
                     <TextBox x:Name="BackupDir" Grid.Row="2" Text="{Binding Backups_Directory}" TextWrapping="NoWrap" IsReadOnly="True" Margin="5,0" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.Backups_Directory}}" mah:TextBoxHelper.UseFloatingWatermark="True"/>
                     <TextBox x:Name="ModPackDir" Grid.Row="3" Text="{Binding ModPack_Directory}" TextWrapping="NoWrap" IsReadOnly="True" Margin="5,0" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.Mod_Pack_Directory}}" mah:TextBoxHelper.UseFloatingWatermark="True"/>
+                    <TextBox x:Name="BatchExportDir" Grid.Row="4" Text="{Binding BatchExport_Directory}" TextWrapping="NoWrap" IsReadOnly="True" Margin="5,0" mah:TextBoxHelper.Watermark="Default Batch Export Directory" mah:TextBoxHelper.UseFloatingWatermark="True"/>
 
                     <Button Content="..." Grid.Row="0" Grid.Column="1" Margin="5,0" Command="{Binding FFXIV_SelectDir}" HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="25" MinHeight="25" HorizontalContentAlignment="Center" VerticalContentAlignment="Top"/>
                     <Button Content="..." Grid.Row="1" Grid.Column="1" Margin="5,0" Command="{Binding Save_SelectDir}" HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="25" MinHeight="25" VerticalContentAlignment="Top" HorizontalContentAlignment="Center"/>
                     <Button Content="..." Grid.Row="2" Grid.Column="1" Margin="5,0" Command="{Binding Backup_SelectDir}" HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="25" MinHeight="25" VerticalContentAlignment="Top" HorizontalContentAlignment="Center"/>
                     <Button Content="..." Grid.Row="3" Grid.Column="1" Margin="5,0" Command="{Binding ModPack_SelectDir}" HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="25" MinHeight="25" VerticalContentAlignment="Top" HorizontalContentAlignment="Center"/>
+                    <Button Content="..." Grid.Row="4" Grid.Column="1" Margin="5,0" Command="{Binding BatchExport_SelectDir}" HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="25" MinHeight="25" VerticalContentAlignment="Top" HorizontalContentAlignment="Center"/>
                 </Grid>
             </GroupBox>
             <GroupBox Grid.Row="1" Header="System Settings" Margin="5,0">

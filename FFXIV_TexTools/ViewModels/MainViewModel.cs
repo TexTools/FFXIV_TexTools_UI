@@ -51,6 +51,14 @@ using System.ComponentModel.Composition.Primitives;
 using AutoUpdaterDotNET;
 using System.Windows.Threading;
 using System.Windows.Media;
+using xivModdingFramework.Items.Categories;
+using xivModdingFramework.Models.FileTypes;
+using xivModdingFramework.Models.DataContainers;
+using xivModdingFramework.Items.Interfaces;
+using xivModdingFramework.Items.DataContainers;
+using System.Text.RegularExpressions;
+using xivModdingFramework.Variants.FileTypes;
+using System.Text; // For Imc
 
 namespace FFXIV_TexTools.ViewModels
 {
@@ -389,6 +397,10 @@ namespace FFXIV_TexTools.ViewModels
         public ICommand EnableAllModsCommand => new RelayCommand(EnableAllMods);
         public ICommand DisableAllModsCommand => new RelayCommand(DisableAllMods);
 
+        #region Batch Operations
+        public ICommand BatchExportHousingIndoorFurnitureCommand => new RelayCommand(BatchExportHousingIndoorFurniture);
+        #endregion
+
         /// <summary>
         /// Enables all mods in the mod list
         /// </summary>
@@ -531,5 +543,195 @@ namespace FFXIV_TexTools.ViewModels
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
+        private async void BatchExportHousingIndoorFurniture(object obj)
+        {
+            var folderDialog = new FolderSelectDialog
+            {
+                Title = "Select Base Export Directory for Housing Furniture",
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+            };
+
+            bool? dialogResult;
+            if (System.Windows.Application.Current.Dispatcher.CheckAccess())
+            {
+                 dialogResult = folderDialog.ShowDialog(new WindowInteropHelper(_mainWindow).Handle);
+            }
+            else
+            {
+                dialogResult = await System.Windows.Application.Current.Dispatcher.InvokeAsync(() => folderDialog.ShowDialog(new WindowInteropHelper(_mainWindow).Handle));
+            }
+
+
+            if (dialogResult != true)
+            {
+                await _mainWindow.ShowMessageAsync("Operation Cancelled", "Batch export was cancelled by the user.");
+                return;
+            }
+            string userSelectedBaseDir = folderDialog.FileName;
+
+            ProgressDialogController progressController = null;
+            var _BatchExportErrors = new List<string>();
+
+            try
+            {
+                progressController = await _mainWindow.ShowProgressAsync("Batch Exporting Furniture...", "Starting operation...");
+                progressController.SetIndeterminate();
+
+                var housingCategoryProvider = new xivModdingFramework.Items.Categories.Housing();
+                // Ensure this is awaited as GetIndoorFurniture is async
+                List<IItemModel> itemsToExport = await housingCategoryProvider.GetIndoorFurniture(MainWindow.DefaultTransaction);
+
+                if (itemsToExport == null || !itemsToExport.Any())
+                {
+                    if (progressController.IsOpen) await progressController.CloseAsync();
+                    await _mainWindow.ShowMessageAsync("No Items Found", "No indoor furniture items were found to export.");
+                    return;
+                }
+
+                progressController.SetCancelable(true);
+                double currentItemCount = 0;
+                double totalItemCount = itemsToExport.Count;
+                progressController.SetProgress(0);
+                progressController.SetMessage("Preparing to export " + totalItemCount + " items...");
+
+
+                await Task.Run(async () => // Run the loop on a background thread
+                {
+                    foreach (IItemModel item in itemsToExport)
+                    {
+                        if (progressController.IsCanceled) break;
+                        currentItemCount++;
+                        string currentItemName = item.Name ?? "UnknownItem";
+
+						// Dispatcher needed for progress updates to UI thread
+						await System.Windows.Application.Current.Dispatcher.InvokeAsync(() => {
+                            progressController.SetMessage($"Processing item {currentItemCount} of {totalItemCount}: {currentItemName}");
+                            progressController.SetProgress(currentItemCount / totalItemCount);
+                        });
+
+                        try
+                        {
+                            XivDependencyRoot root = item.GetRoot();
+                            if (root == null)
+                            {
+                                _BatchExportErrors.Add($"Skipped item (no XivDependencyRoot): {currentItemName}");
+                                Trace.WriteLine($"Skipped item (no XivDependencyRoot): {currentItemName}");
+                                continue;
+                            }
+
+                            List<string> modelPaths = await root.GetModelFiles(MainWindow.DefaultTransaction);
+                            if (modelPaths == null || !modelPaths.Any())
+                            {
+                                _BatchExportErrors.Add($"Skipped item (no model paths found via root.GetModelFiles): {currentItemName}");
+                                Trace.WriteLine($"Skipped item (no model paths found via root.GetModelFiles): {currentItemName}");
+                                continue;
+                            }
+
+                            foreach (string modelPath in modelPaths)
+                            {
+                                if (string.IsNullOrEmpty(modelPath))
+                                {
+                                    _BatchExportErrors.Add($"Skipped model (empty path) for item: {currentItemName}");
+                                    Trace.WriteLine($"Skipped model (empty path) for item: {currentItemName}");
+                                    continue;
+                                }
+
+                                TTModel ttModel = await Mdl.GetTTModel(modelPath, false, MainWindow.DefaultTransaction);
+                                if (ttModel == null)
+                                {
+                                    _BatchExportErrors.Add($"Skipped model (TTModel load failed for {modelPath}): {currentItemName}");
+                                    Trace.WriteLine($"Skipped model (TTModel load failed for {modelPath}): {currentItemName}");
+                                    continue;
+                                }
+
+                                var version = 1;
+                                if (root != null && Imc.UsesImc(root))
+                                {
+                                    version = await Imc.GetMaterialSetId(item, false, MainWindow.DefaultTransaction);
+                                }
+
+                                var modelExportSettings = new ModelExportSettings()
+                            {
+                                IncludeTextures = true,
+                                ShiftUVs = false,
+                                PbrTextures = false
+                            };
+
+
+                                string itemNameSafe = SanitizePath(currentItemName);
+                                // Use current modelPath for the filename, not ttModel.Source, to be certain
+                                string modelFileName = Path.GetFileNameWithoutExtension(modelPath);
+                                string modelFileNameSafe = SanitizePath(modelFileName + ".fbx");
+
+                                string itemExportDir = Path.Combine(userSelectedBaseDir, "TexTools", "Saved", "Indoor Furniture", itemNameSafe);
+                                Directory.CreateDirectory(itemExportDir);
+                                string exportPath = Path.Combine(itemExportDir, modelFileNameSafe);
+
+                                // This UI update should be fine here as it's within the Task.Run but dispatched.
+                                await System.Windows.Application.Current.Dispatcher.InvokeAsync(() => {
+                                    progressController.SetMessage($"Exporting: {itemNameSafe}");
+                                });
+                                Trace.WriteLine($"Exporting model {modelPath} for item {itemNameSafe} to {exportPath}");
+
+                                await Mdl.ExportTTModelToFile(ttModel, exportPath, version, modelExportSettings, MainWindow.DefaultTransaction);
+                            } // End foreach modelPath
+                        }
+                        catch (Exception ex)
+                        {
+                            // This catch block is for errors during GetRoot, GetModelFiles, or general item processing before individual model export.
+                            _BatchExportErrors.Add($"Error processing item {currentItemName} (before model loop or if model loop itself failed): {ex.Message}");
+                            Trace.WriteLine($"Error processing item {currentItemName}: {ex.Message} - {ex.StackTrace}");
+                        }
+                    } // End foreach item
+                }); // End Task.Run
+
+                if (progressController.IsOpen) await progressController.CloseAsync(); // Ensure it's closed if open
+
+                if (_BatchExportErrors.Any())
+                {
+                    StringBuilder sb = new StringBuilder();
+                    sb.AppendLine("Batch export completed with some errors:");
+                    foreach (string error in _BatchExportErrors.Take(20))
+                    {
+                        sb.AppendLine($"- {error}");
+                    }
+                    if (_BatchExportErrors.Count > 20)
+                    {
+                        sb.AppendLine($"...and {_BatchExportErrors.Count - 20} more errors.");
+                    }
+                    await _mainWindow.ShowMessageAsync("Export Completed with Errors", sb.ToString());
+                }
+                else if (progressController.IsCanceled)
+                {
+                     await _mainWindow.ShowMessageAsync("Operation Cancelled", "Batch export was cancelled by the user.");
+                }
+                else
+                {
+                    await _mainWindow.ShowMessageAsync("Export Complete", $"Successfully exported {Convert.ToInt32(totalItemCount - _BatchExportErrors.Count)} items to {Path.Combine(userSelectedBaseDir, "TexTools", "Saved", "Indoor Furniture")}");
+                }
+            }
+            catch (Exception ex)
+            {
+                if (progressController != null && progressController.IsOpen) await progressController.CloseAsync();
+                await _mainWindow.ShowMessageAsync("Batch Export Error", $"An unexpected error occurred: {ex.Message}");
+                Trace.WriteLine($"Batch Export General Error: {ex.Message} - {ex.StackTrace}");
+            }
+            finally
+            {
+                 if (progressController != null && progressController.IsOpen)
+                 {
+                     await progressController.CloseAsync();
+                 }
+            }
+        }
+
+        private static string SanitizePath(string name)
+        {
+             if (string.IsNullOrEmpty(name)) return "Unnamed";
+             string invalidChars = Regex.Escape(new string(Path.GetInvalidFileNameChars()) + new string(Path.GetInvalidPathChars()));
+             string invalidRegStr = string.Format(@"([{0}]*\.+$)|([{0}]+)", invalidChars);
+             string sanitized = Regex.Replace(name, invalidRegStr, "_");
+             return sanitized.Length > 100 ? sanitized.Substring(0, 100) : sanitized; // Limit length
+        }
     }
 }
