@@ -57,7 +57,8 @@ using xivModdingFramework.Models.DataContainers;
 using xivModdingFramework.Items.Interfaces;
 using xivModdingFramework.Items.DataContainers;
 using System.Text.RegularExpressions;
-using xivModdingFramework.Variants.FileTypes; // For Imc
+using xivModdingFramework.Variants.FileTypes;
+using System.Text; // For Imc
 
 namespace FFXIV_TexTools.ViewModels
 {
@@ -544,29 +545,20 @@ namespace FFXIV_TexTools.ViewModels
 
         private async void BatchExportHousingIndoorFurniture(object obj)
         {
-            if (!MainWindow.GetMainWindow().CheckFileWrite()) // Though for export, write isn't to game files. Might not be strictly necessary.
-            {
-                // return; // Decided to allow export even if game files are not writable.
-            }
-
             var folderDialog = new FolderSelectDialog
             {
                 Title = "Select Base Export Directory for Housing Furniture",
-                // Consider using Settings.Default.BatchExportDirectory if it were properly set up and validated.
                 InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
             };
 
-            // The ShowDialog for FolderSelectDialog in this project seems to expect a handle.
-            // Let's try to show it without if it's problematic, or get handle if _mainWindow is available.
-            // For now, assuming _mainWindow is accessible and has a window handle.
             bool? dialogResult;
-            if (Application.Current.Dispatcher.CheckAccess())
+            if (System.Windows.Application.Current.Dispatcher.CheckAccess())
             {
                  dialogResult = folderDialog.ShowDialog(new WindowInteropHelper(_mainWindow).Handle);
             }
             else
             {
-                dialogResult = await Application.Current.Dispatcher.InvokeAsync(() => folderDialog.ShowDialog(new WindowInteropHelper(_mainWindow).Handle));
+                dialogResult = await System.Windows.Application.Current.Dispatcher.InvokeAsync(() => folderDialog.ShowDialog(new WindowInteropHelper(_mainWindow).Handle));
             }
 
 
@@ -611,8 +603,8 @@ namespace FFXIV_TexTools.ViewModels
                         currentItemCount++;
                         string currentItemName = item.Name ?? "UnknownItem";
 
-                        // Dispatcher needed for progress updates to UI thread
-                        await Application.Current.Dispatcher.InvokeAsync(() => {
+						// Dispatcher needed for progress updates to UI thread
+						await System.Windows.Application.Current.Dispatcher.InvokeAsync(() => {
                             progressController.SetMessage($"Processing item {currentItemCount} of {totalItemCount}: {currentItemName}");
                             progressController.SetProgress(currentItemCount / totalItemCount);
                         });
@@ -676,8 +668,8 @@ namespace FFXIV_TexTools.ViewModels
                                 string exportPath = Path.Combine(itemExportDir, modelFileNameSafe);
 
                                 // This UI update should be fine here as it's within the Task.Run but dispatched.
-                                await Application.Current.Dispatcher.InvokeAsync(() => {
-                                    progressController.SetMessage($"Exporting: {itemNameSafe}/{modelFileNameSafe}.fbx");
+                                await System.Windows.Application.Current.Dispatcher.InvokeAsync(() => {
+                                    progressController.SetMessage($"Exporting: {itemNameSafe}");
                                 });
                                 Trace.WriteLine($"Exporting model {modelPath} for item {itemNameSafe} to {exportPath}");
 

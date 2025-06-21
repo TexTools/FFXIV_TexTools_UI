@@ -66,7 +66,7 @@
     <None Remove="Resources\Shaders\psCustomMeshBlinnPhongOIT.hlsl" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Autoupdater.NET.Official" Version="1.9.1" />
+    <PackageReference Include="Autoupdater.NET.Official" Version="1.9.2" />
     <PackageReference Include="BetterFolderBrowser" Version="1.2.0" />
     <PackageReference Include="ControlzEx" Version="3.0.2.4" />
     <PackageReference Include="Cyotek.Drawing.BitmapFont" Version="2.0.4" />
