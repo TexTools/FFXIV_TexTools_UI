@@ -46,6 +46,7 @@ namespace FFXIV_TexTools.Views
             new KeyValuePair<string, string>("Français (French)", "fr"),
             new KeyValuePair<string, string>("한국어 (Korean)", "ko"),
             new KeyValuePair<string, string>("汉语 (Chinese)", "zh"),
+            new KeyValuePair<string, string>("正體字 (Traditional Chinese)", "tc"),
         };
 
         public static ObservableCollection<KeyValuePair<string, string>> ModelingToolsList { get; set; } = new ObservableCollection<KeyValuePair<string, string>>()
