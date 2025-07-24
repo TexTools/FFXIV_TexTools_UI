@@ -333,7 +333,14 @@ namespace FFXIV_TexTools
             // Validate settings and perform first-time-setup if needed.
             OnboardingWindow.OnboardAndInitialize();
 
-            var ci = new CultureInfo(Properties.Settings.Default.Application_Language)
+            var cultureName = Properties.Settings.Default.Application_Language;
+
+            if (cultureName == "zh")
+                cultureName = "zh-Hans";
+            else if (cultureName == "tc")
+                cultureName = "zh-Hant";
+
+            var ci = new CultureInfo(cultureName)
             {
                 NumberFormat = { NumberDecimalSeparator = "." }
             };
@@ -363,7 +370,7 @@ namespace FFXIV_TexTools
 
             try
             {
-                if (System.Globalization.CultureInfo.CurrentUICulture.Name == "zh")
+                if (System.Globalization.CultureInfo.CurrentUICulture.Name == "zh-Hans")
                 {
                     this.ChinaDiscordButton.Visibility = Visibility.Visible;
                 }
