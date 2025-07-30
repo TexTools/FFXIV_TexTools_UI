@@ -40,7 +40,7 @@ We do not support the use of Textools from, or with application directories plac
 - In other cases, files are not able to be loaded at all because the one drive service has been disabled or uninstalled, in this case a big error message that includes the line "Cloud File Provider is not running." to be thrown when attempting to import, export or create packs.
 
 ## Useful Links
-- [Official TexTools Discord](https://discord.gg/ffxivtextools) (Backup Link(https://discord.gg/rXaaYh3GpE))
+- [Official TexTools Discord](https://discord.gg/ffxivtextools) ([Backup Link](https://discord.gg/rXaaYh3GpE))
 - [XIV Mod Archive Website](https://www.xivmodarchive.com/)
 
 
