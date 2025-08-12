@@ -129,9 +129,6 @@
   <data name="AuRa_Male" xml:space="preserve">
     <value>Ao Ra Homme</value>
   </data>
-  <data name="AutodeskCollada" xml:space="preserve">
-    <value>Autodesk Collada</value>
-  </data>
   <data name="Au_Ra" xml:space="preserve">
     <value>Ao Ra</value>
   </data>
@@ -153,23 +150,11 @@
   <data name="Body_Legs_Feet" xml:space="preserve">
     <value>Torse + Jambes + Pieds</value>
   </data>
-  <data name="Carbuncle" xml:space="preserve">
-    <value>Carbuncle</value>
-  </data>
   <data name="Character" xml:space="preserve">
     <value>Personnage</value>
   </data>
-  <data name="ColorSet" xml:space="preserve">
-    <value>ColorSet</value>
-  </data>
   <data name="Companions" xml:space="preserve">
     <value>Compagnon</value>
-  </data>
-  <data name="DemiHuman" xml:space="preserve">
-    <value>DemiHuman</value>
-  </data>
-  <data name="Diffuse" xml:space="preserve">
-    <value>Diffuse</value>
   </data>
   <data name="Ears" xml:space="preserve">
     <value>Oreilles</value>
@@ -183,15 +168,6 @@
   <data name="Elezen_Male" xml:space="preserve">
     <value>Elezen Homme</value>
   </data>
-  <data name="Eos" xml:space="preserve">
-    <value>Eos</value>
-  </data>
-  <data name="EquipDecalFile" xml:space="preserve">
-    <value>-decal_{0}.tex</value>
-  </data>
-  <data name="EquipDecalFolder" xml:space="preserve">
-    <value>chara/common/texture/decal_equip</value>
-  </data>
   <data name="Equipment" xml:space="preserve">
     <value>Equipement</value>
   </data>
@@ -204,17 +180,8 @@
   <data name="Error_FileNotFound" xml:space="preserve">
     <value>Impossible de trouver le fichier, veuillez vérifier les répertoires dans les Réglages.</value>
   </data>
-  <data name="Etc" xml:space="preserve">
-    <value>Etc</value>
-  </data>
   <data name="Face" xml:space="preserve">
     <value>Visage</value>
-  </data>
-  <data name="FacePaintFile" xml:space="preserve">
-    <value>_decal_{0}.tex</value>
-  </data>
-  <data name="FacePaintFolder" xml:space="preserve">
-    <value>chara/common/texture/decal_face</value>
   </data>
   <data name="Face_Paint" xml:space="preserve">
     <value>Maquillage</value>
@@ -230,9 +197,6 @@
   </data>
   <data name="Furniture" xml:space="preserve">
     <value>Ameublement</value>
-  </data>
-  <data name="Garuda_Egi" xml:space="preserve">
-    <value>Garuda-Egi</value>
   </data>
   <data name="Gear" xml:space="preserve">
     <value>Équipement</value>
@@ -276,15 +240,6 @@
   <data name="Icon" xml:space="preserve">
     <value>Icône</value>
   </data>
-  <data name="Ifrit_Egi" xml:space="preserve">
-    <value>Ifrit-Egi</value>
-  </data>
-  <data name="Iris" xml:space="preserve">
-    <value>Iris</value>
-  </data>
-  <data name="Lalafell" xml:space="preserve">
-    <value>Lalafell</value>
-  </data>
   <data name="Lalafell_Female" xml:space="preserve">
     <value>Lalafell Femme</value>
   </data>
@@ -315,26 +270,14 @@
   <data name="Maps" xml:space="preserve">
     <value>Carte</value>
   </data>
-  <data name="Mask" xml:space="preserve">
-    <value>Mask</value>
-  </data>
-  <data name="Mesh" xml:space="preserve">
-    <value>Mesh</value>
-  </data>
   <data name="Minions" xml:space="preserve">
     <value>Mascottes</value>
-  </data>
-  <data name="Miqote" xml:space="preserve">
-    <value>Miqote</value>
   </data>
   <data name="Miqote_Female" xml:space="preserve">
     <value>Miqo'te Femme</value>
   </data>
   <data name="Miqote_Male" xml:space="preserve">
     <value>Miqo'te Homme</value>
-  </data>
-  <data name="ModlistFilePath" xml:space="preserve">
-    <value>XivMods.json</value>
   </data>
   <data name="Monster" xml:space="preserve">
     <value>Monstre</value>
@@ -345,17 +288,11 @@
   <data name="Neck" xml:space="preserve">
     <value>Cou</value>
   </data>
-  <data name="Normal" xml:space="preserve">
-    <value>Normal</value>
-  </data>
   <data name="Number" xml:space="preserve">
     <value>Nombre</value>
   </data>
   <data name="Off_Hand" xml:space="preserve">
     <value>Main non directrice</value>
-  </data>
-  <data name="OpenCollada" xml:space="preserve">
-    <value>OpenCOLLADA</value>
   </data>
   <data name="Part" xml:space="preserve">
     <value>Partie</value>
@@ -365,12 +302,6 @@
   </data>
   <data name="Primary" xml:space="preserve">
     <value>Primaire</value>
-  </data>
-  <data name="Race" xml:space="preserve">
-    <value>Race</value>
-  </data>
-  <data name="Ramuh_Egi" xml:space="preserve">
-    <value>Ramuh Egi</value>
   </data>
   <data name="Right" xml:space="preserve">
     <value>Droite</value>
@@ -383,9 +314,6 @@
   </data>
   <data name="Ring_Right" xml:space="preserve">
     <value>Anneau Droit</value>
-  </data>
-  <data name="Roegadyn" xml:space="preserve">
-    <value>Roegadyn</value>
   </data>
   <data name="Roegadyn_Female" xml:space="preserve">
     <value>Roegadyn Femme</value>
@@ -402,14 +330,8 @@
   <data name="Secondary" xml:space="preserve">
     <value>Secondaire</value>
   </data>
-  <data name="Selene" xml:space="preserve">
-    <value>Selene</value>
-  </data>
   <data name="Soul_Crystal" xml:space="preserve">
     <value>Cristal d'âme</value>
-  </data>
-  <data name="Specular" xml:space="preserve">
-    <value>Specular</value>
   </data>
   <data name="Status" xml:space="preserve">
     <value>États</value>
@@ -417,29 +339,11 @@
   <data name="Tail" xml:space="preserve">
     <value>Queue</value>
   </data>
-  <data name="TexTools" xml:space="preserve">
-    <value>TexTools</value>
-  </data>
-  <data name="Texture_Map" xml:space="preserve">
-    <value>Texture Map</value>
-  </data>
-  <data name="Titan_Egi" xml:space="preserve">
-    <value>Titan-Egi</value>
-  </data>
   <data name="Two_Handed" xml:space="preserve">
     <value>Deux Mains</value>
   </data>
-  <data name="Type" xml:space="preserve">
-    <value>Type</value>
-  </data>
   <data name="TypePart" xml:space="preserve">
     <value>Partie de type</value>
-  </data>
-  <data name="UI" xml:space="preserve">
-    <value>UI</value>
-  </data>
-  <data name="ULD" xml:space="preserve">
-    <value>ULD</value>
   </data>
   <data name="Waist" xml:space="preserve">
     <value>Ceinture</value>

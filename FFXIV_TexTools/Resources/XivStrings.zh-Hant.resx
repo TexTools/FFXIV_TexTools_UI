@@ -615,34 +615,4 @@
   <data name="Viera_Veena" xml:space="preserve">
     <value>維埃拉族 - 山林之民</value>
   </data>
-  <data name="EquipDecalFile" xml:space="preserve">
-    <value>-decal_{0}.tex</value>
-  </data>
-  <data name="EquipDecalFolder" xml:space="preserve">
-    <value>chara/common/texture/decal_equip</value>
-  </data>
-  <data name="FacePaintFile" xml:space="preserve">
-    <value>_decal_{0}.tex</value>
-  </data>
-  <data name="FacePaintFolder" xml:space="preserve">
-    <value>chara/common/texture/decal_face</value>
-  </data>
-  <data name="UI" xml:space="preserve">
-    <value>UI</value>
-  </data>
-  <data name="ULD" xml:space="preserve">
-    <value>ULD</value>
-  </data>
-  <data name="TexTools" xml:space="preserve">
-    <value>TexTools</value>
-  </data>
-  <data name="ModlistFilePath" xml:space="preserve">
-    <value>XivMods.json</value>
-  </data>
-  <data name="AutodeskCollada" xml:space="preserve">
-    <value>Autodesk Collada</value>
-  </data>
-  <data name="OpenCollada" xml:space="preserve">
-    <value>OpenCOLLADA</value>
-  </data>
 </root>

@@ -132,9 +132,6 @@
   <data name="AuRa_Male" xml:space="preserve">
     <value>アウラ♂</value>
   </data>
-  <data name="AutodeskCollada" xml:space="preserve">
-    <value>Autodesk Collada</value>
-  </data>
   <data name="Au_Ra" xml:space="preserve">
     <value>アウラ</value>
   </data>
@@ -162,17 +159,8 @@
   <data name="Character" xml:space="preserve">
     <value>キャラクター</value>
   </data>
-  <data name="ColorSet" xml:space="preserve">
-    <value>ColorSet</value>
-  </data>
   <data name="Companions" xml:space="preserve">
     <value>バディ</value>
-  </data>
-  <data name="DemiHuman" xml:space="preserve">
-    <value>DemiHuman</value>
-  </data>
-  <data name="Diffuse" xml:space="preserve">
-    <value>Diffuse</value>
   </data>
   <data name="Ears" xml:space="preserve">
     <value>耳</value>
@@ -189,35 +177,14 @@
   <data name="Eos" xml:space="preserve">
     <value>フェアリー・エオス</value>
   </data>
-  <data name="EquipDecalFile" xml:space="preserve">
-    <value>-decal_{0}.tex</value>
-  </data>
-  <data name="EquipDecalFolder" xml:space="preserve">
-    <value>chara/common/texture/decal_equip</value>
-  </data>
-  <data name="Equipment" xml:space="preserve">
-    <value>Equipment</value>
-  </data>
   <data name="Equipment_Decals" xml:space="preserve">
     <value>クレスト</value>
-  </data>
-  <data name="Error_DirectoryError" xml:space="preserve">
-    <value>Directory Error</value>
-  </data>
-  <data name="Error_FileNotFound" xml:space="preserve">
-    <value>Unable to find file, please check your directories under settings</value>
   </data>
   <data name="Etc" xml:space="preserve">
     <value>その他</value>
   </data>
   <data name="Face" xml:space="preserve">
     <value>顔</value>
-  </data>
-  <data name="FacePaintFile" xml:space="preserve">
-    <value>_decal_{0}.tex</value>
-  </data>
-  <data name="FacePaintFolder" xml:space="preserve">
-    <value>chara/common/texture/decal_face</value>
   </data>
   <data name="Face_Paint" xml:space="preserve">
     <value>フェイスペイント</value>
@@ -303,9 +270,6 @@
   <data name="Legs_Feet" xml:space="preserve">
     <value>脚 + 足</value>
   </data>
-  <data name="Loading_Screen" xml:space="preserve">
-    <value>Loading Screen</value>
-  </data>
   <data name="Main_Hand" xml:space="preserve">
     <value>メインアーム</value>
   </data>
@@ -317,9 +281,6 @@
   </data>
   <data name="Maps" xml:space="preserve">
     <value>マップ</value>
-  </data>
-  <data name="Mask" xml:space="preserve">
-    <value>Mask</value>
   </data>
   <data name="Mesh" xml:space="preserve">
     <value>メッシュ</value>
@@ -336,9 +297,6 @@
   <data name="Miqote_Male" xml:space="preserve">
     <value>ミコッテ♂</value>
   </data>
-  <data name="ModlistFilePath" xml:space="preserve">
-    <value>XivMods.json</value>
-  </data>
   <data name="Monster" xml:space="preserve">
     <value>モンスター</value>
   </data>
@@ -348,17 +306,11 @@
   <data name="Neck" xml:space="preserve">
     <value>首</value>
   </data>
-  <data name="Normal" xml:space="preserve">
-    <value>Normal</value>
-  </data>
   <data name="Number" xml:space="preserve">
     <value>数</value>
   </data>
   <data name="Off_Hand" xml:space="preserve">
     <value>サブアーム</value>
-  </data>
-  <data name="OpenCollada" xml:space="preserve">
-    <value>OpenCOLLADA</value>
   </data>
   <data name="Part" xml:space="preserve">
     <value>パート</value>
@@ -399,9 +351,6 @@
   <data name="Rook_Autoturret" xml:space="preserve">
     <value>オートタレット・ルーク</value>
   </data>
-  <data name="SearchBox" xml:space="preserve">
-    <value>Search Textures</value>
-  </data>
   <data name="Secondary" xml:space="preserve">
     <value>セカンダリー</value>
   </data>
@@ -411,17 +360,11 @@
   <data name="Soul_Crystal" xml:space="preserve">
     <value>ソウルクリスタル</value>
   </data>
-  <data name="Specular" xml:space="preserve">
-    <value>Specular</value>
-  </data>
   <data name="Status" xml:space="preserve">
     <value>ステータス</value>
   </data>
   <data name="Tail" xml:space="preserve">
     <value>尾</value>
-  </data>
-  <data name="TexTools" xml:space="preserve">
-    <value>TexTools</value>
   </data>
   <data name="Texture_Map" xml:space="preserve">
     <value>テクスチャマップ</value>
@@ -437,12 +380,6 @@
   </data>
   <data name="TypePart" xml:space="preserve">
     <value>タイプパート</value>
-  </data>
-  <data name="UI" xml:space="preserve">
-    <value>UI</value>
-  </data>
-  <data name="ULD" xml:space="preserve">
-    <value>ULD</value>
   </data>
   <data name="Waist" xml:space="preserve">
     <value>帯</value>

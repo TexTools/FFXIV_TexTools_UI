@@ -1651,8 +1651,8 @@ If you would like to enable this, first import a texture for the selected item.<
   <data name="Use Shared Textures" xml:space="preserve">
     <value>Use Shared Textures</value>
   </data>
-  <data name="USe Unique Textures" xml:space="preserve">
-    <value>USe Unique Textures</value>
+  <data name="Use Unique Textures" xml:space="preserve">
+    <value>Use Unique Textures</value>
   </data>
   <data name="Colorset:" xml:space="preserve">
     <value>Colorset:</value>
@@ -1752,5 +1752,1181 @@ If you would like to enable this, first import a texture for the selected item.<
   </data>
   <data name="View" xml:space="preserve">
     <value>View</value>
+  </data>
+  <data name="Create_Modpack" xml:space="preserve">
+    <value>Create Modpack</value>
+  </data>
+  <data name="DAE_file_to_import" xml:space="preserve">
+    <value>DAE file to import</value>
+  </data>
+  <data name="DAE_Info" xml:space="preserve">
+    <value>DAE Info</value>
+  </data>
+  <data name="Export_DAE_file" xml:space="preserve">
+    <value>Export DAE file</value>
+  </data>
+  <data name="Export_DAE_Materials" xml:space="preserve">
+    <value>Export DAE Materials</value>
+  </data>
+  <data name="Viewer_Options" xml:space="preserve">
+    <value>Viewer Options</value>
+  </data>
+  <data name="Set: e0123" xml:space="preserve">
+    <value>Set: e0123</value>
+  </data>
+  <data name="Slot: Head(met)" xml:space="preserve">
+    <value>Slot: Head(met)</value>
+  </data>
+  <data name="Variant: 5" xml:space="preserve">
+    <value>Variant: 5</value>
+  </data>
+  <data name="Material Set: 3" xml:space="preserve">
+    <value>Material Set: 3</value>
+  </data>
+  <data name="Race Information" xml:space="preserve">
+    <value>Race Information</value>
+  </data>
+  <data name="Model Used" xml:space="preserve">
+    <value>Model Used</value>
+  </data>
+  <data name="Material Used" xml:space="preserve">
+    <value>Material Used</value>
+  </data>
+  <data name="Copy_File" xml:space="preserve">
+    <value>Copy_File</value>
+  </data>
+  <data name="Item_Converter" xml:space="preserve">
+    <value>Item_Converter</value>
+  </data>
+  <data name="Reflection:" xml:space="preserve">
+    <value>Reflection:</value>
+  </data>
+  <data name="VFX -" xml:space="preserve">
+    <value>VFX -</value>
+  </data>
+  <data name="VFX:" xml:space="preserve">
+    <value>VFX:</value>
+  </data>
+  <data name="Multi:" xml:space="preserve">
+    <value>Multi:</value>
+  </data>
+  <data name="Manage Mod List" xml:space="preserve">
+    <value>Manage Mod List</value>
+  </data>
+  <data name="Clean Up Modlist" xml:space="preserve">
+    <value>Clean Up Modlist</value>
+  </data>
+  <data name="Recover Unused Space" xml:space="preserve">
+    <value>Recover Unused Space</value>
+  </data>
+  <data name="Standard Modpack" xml:space="preserve">
+    <value>Standard Modpack</value>
+  </data>
+  <data name="Backup Modpack" xml:space="preserve">
+    <value>Backup Modpack</value>
+  </data>
+  <data name="Edit Racial Settings" xml:space="preserve">
+    <value>Edit Racial Settings</value>
+  </data>
+  <data name="Auto-Assign Skin Materials" xml:space="preserve">
+    <value>Auto-Assign Skin Materials</value>
+  </data>
+  <data name="Raw File Operations" xml:space="preserve">
+    <value>Raw File Operations</value>
+  </data>
+  <data name="Light" xml:space="preserve">
+    <value>Light</value>
+  </data>
+  <data name="Dark" xml:space="preserve">
+    <value>Dark</value>
+  </data>
+  <data name="Download Index Backups" xml:space="preserve">
+    <value>Download Index Backups</value>
+  </data>
+  <data name="Cache Operations" xml:space="preserve">
+    <value>Cache Operations</value>
+  </data>
+  <data name="Rebuild Cache" xml:space="preserve">
+    <value>Rebuild Cache</value>
+  </data>
+  <data name="Load Item Sets File" xml:space="preserve">
+    <value>Load Item Sets File</value>
+  </data>
+  <data name="Scan for new Item Sets" xml:space="preserve">
+    <value>Scan for new Item Sets</value>
+  </data>
+  <data name="Mesh" xml:space="preserve">
+    <value>Mesh</value>
+  </data>
+  <data name="HIGHLIGHT COLORSET ROW" xml:space="preserve">
+    <value>HIGHLIGHT COLORSET ROW</value>
+  </data>
+  <data name="ADD TO FMV" xml:space="preserve">
+    <value>ADD TO FMV</value>
+  </data>
+  <data name="Off" xml:space="preserve">
+    <value>Off</value>
+  </data>
+  <data name="MDL Path" xml:space="preserve">
+    <value>MDL Path</value>
+  </data>
+  <data name="Enable /visor" xml:space="preserve">
+    <value>Enable /visor</value>
+  </data>
+  <data name="Instant" xml:space="preserve">
+    <value>Instant</value>
+  </data>
+  <data name="Animated" xml:space="preserve">
+    <value>Animated</value>
+  </data>
+  <data name="Own" xml:space="preserve">
+    <value>Own</value>
+  </data>
+  <data name="Item Information" xml:space="preserve">
+    <value>Item Information</value>
+  </data>
+  <data name="Used by {0}/{1} Variants" xml:space="preserve">
+    <value>Used by {0}/{1} Variants</value>
+  </data>
+  <data name="Used by {0} Other Materials" xml:space="preserve">
+    <value>Used by {0} Other Materials</value>
+  </data>
+  <data name="Material Editor" xml:space="preserve">
+    <value>Material Editor</value>
+  </data>
+  <data name="Default" xml:space="preserve">
+    <value>Default</value>
+  </data>
+  <data name="Dyeable Furniture" xml:space="preserve">
+    <value>Dyeable Furniture</value>
+  </data>
+  <data name="Furniture" xml:space="preserve">
+    <value>Furniture</value>
+  </data>
+  <data name="Glass" xml:space="preserve">
+    <value>Glass</value>
+  </data>
+  <data name="Hair" xml:space="preserve">
+    <value>Hair</value>
+  </data>
+  <data name="Hide Backfaces" xml:space="preserve">
+    <value>Hide Backfaces</value>
+  </data>
+  <data name="Iris" xml:space="preserve">
+    <value>Iris</value>
+  </data>
+  <data name="Item Load Error" xml:space="preserve">
+    <value>Item Load Error</value>
+  </data>
+  <data name="Loading usage data..." xml:space="preserve">
+    <value>Loading usage data...</value>
+  </data>
+  <data name="No Texture Selected" xml:space="preserve">
+    <value>No Texture Selected</value>
+  </data>
+  <data name="Show Backfaces" xml:space="preserve">
+    <value>Show Backfaces</value>
+  </data>
+  <data name="Standard" xml:space="preserve">
+    <value>Standard</value>
+  </data>
+  <data name="Texture File Error" xml:space="preserve">
+    <value>Texture File Error</value>
+  </data>
+  <data name="This race uses {0}'s body material(s)." xml:space="preserve">
+    <value>This race uses {0}'s body material(s).</value>
+  </data>
+  <data name="This race's model uses {0}'s material(s)." xml:space="preserve">
+    <value>This race's model uses {0}'s material(s).</value>
+  </data>
+  <data name="CacheOK" xml:space="preserve">
+    <value>Cache OK</value>
+  </data>
+  <data name="CacheVersionUpdate" xml:space="preserve">
+    <value>Cache Version Update</value>
+  </data>
+  <data name="Creating Initial Backups" xml:space="preserve">
+    <value>Creating Initial Backups</value>
+  </data>
+  <data name="DiffuseSpecular" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Index Access Error" xml:space="preserve">
+    <value>Index Access Error</value>
+  </data>
+  <data name="InvalidData" xml:space="preserve">
+    <value>Invalid Data</value>
+  </data>
+  <data name="LanguageChanged" xml:space="preserve">
+    <value>Language Changed</value>
+  </data>
+  <data name="Lumina Directory Error." xml:space="preserve">
+    <value>Lumina Directory Error.</value>
+  </data>
+  <data name="ManualRequest" xml:space="preserve">
+    <value>Manual Request</value>
+  </data>
+  <data name="Monster" xml:space="preserve">
+    <value>Monster</value>
+  </data>
+  <data name="NoCache" xml:space="preserve">
+    <value>No Cache</value>
+  </data>
+  <data name="RebuildFlag" xml:space="preserve">
+    <value />
+  </data>
+  <data name="TexToolsModPack TTMP (*.ttmp;*.ttmp2)|*.ttmp;*.ttmp2" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Editing Multiple Materials: Material" xml:space="preserve">
+    <value>Editing Multiple Materials: Material</value>
+  </data>
+  <data name="New Material" xml:space="preserve">
+    <value>New Material</value>
+  </data>
+  <data name="New Material: Material" xml:space="preserve">
+    <value>New Material: Material</value>
+  </data>
+  <data name="New Materials" xml:space="preserve">
+    <value>New Materials</value>
+  </data>
+  <data name="New Materials: Material" xml:space="preserve">
+    <value>New Materials: Material</value>
+  </data>
+  <data name="New Racial Material" xml:space="preserve">
+    <value>New Racial Material</value>
+  </data>
+  <data name="Updated {0}/{1} Material Sets..." xml:space="preserve">
+    <value>Updated {0}/{1} Material Sets...</value>
+  </data>
+  <data name="BodyNoPores" xml:space="preserve">
+    <value />
+  </data>
+  <data name="BodyWithHair" xml:space="preserve">
+    <value />
+  </data>
+  <data name="FaceBright" xml:space="preserve">
+    <value />
+  </data>
+  <data name="FaceNoPores" xml:space="preserve">
+    <value />
+  </data>
+  <data name="ColorSet" xml:space="preserve">
+    <value>ColorSet</value>
+  </data>
+  <data name="Decal" xml:space="preserve">
+    <value>Decal</value>
+  </data>
+  <data name="Diffuse" xml:space="preserve">
+    <value>Diffuse</value>
+  </data>
+  <data name="HQ Icon" xml:space="preserve">
+    <value>HQ Icon</value>
+  </data>
+  <data name="Icon" xml:space="preserve">
+    <value>Icon</value>
+  </data>
+  <data name="Mask" xml:space="preserve">
+    <value>Mask</value>
+  </data>
+  <data name="Material Set: --" xml:space="preserve">
+    <value>Material Set: --</value>
+  </data>
+  <data name="Material Set: {0}" xml:space="preserve">
+    <value>Material Set: {0}</value>
+  </data>
+  <data name="Material:" xml:space="preserve">
+    <value>Material:</value>
+  </data>
+  <data name="Multi" xml:space="preserve">
+    <value>Multi</value>
+  </data>
+  <data name="Normal" xml:space="preserve">
+    <value>Normal</value>
+  </data>
+  <data name="Set: {0}" xml:space="preserve">
+    <value>Set: {0}</value>
+  </data>
+  <data name="Slot: --" xml:space="preserve">
+    <value>Slot: --</value>
+  </data>
+  <data name="Slot: Unknown ({0})" xml:space="preserve">
+    <value>Slot: Unknown ({0})</value>
+  </data>
+  <data name="Slot: {0} ({1})" xml:space="preserve">
+    <value>Slot: {0} ({1})</value>
+  </data>
+  <data name="Specular" xml:space="preserve">
+    <value>Specular</value>
+  </data>
+  <data name="UI Elements" xml:space="preserve">
+    <value>UI Elements</value>
+  </data>
+  <data name="Variant: --" xml:space="preserve">
+    <value>Variant: --</value>
+  </data>
+  <data name="Variant: {0}" xml:space="preserve">
+    <value>Variant: {0}</value>
+  </data>
+  <data name="AlphaLimiter" xml:space="preserve">
+    <value>AlphaLimiter</value>
+  </data>
+  <data name="Equipment1" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Face1" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Furniture1" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Furniture10" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Furniture11" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Furniture12" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Furniture13" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Furniture2" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Furniture3" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Furniture4" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Furniture5" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Furniture6" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Furniture7" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Furniture8" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Furniture9" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Hair1" xml:space="preserve">
+    <value>Hair1</value>
+  </data>
+  <data name="Hair2" xml:space="preserve">
+    <value>Hair2</value>
+  </data>
+  <data name="Occlusion" xml:space="preserve">
+    <value>Occlusion</value>
+  </data>
+  <data name="Raw Shader Parameters" xml:space="preserve">
+    <value>Raw Shader Parameters</value>
+  </data>
+  <data name="SkinColor" xml:space="preserve">
+    <value>SkinColor</value>
+  </data>
+  <data name="SkinFresnel" xml:space="preserve">
+    <value>SkinFresnel</value>
+  </data>
+  <data name="SkinMatParamRow2" xml:space="preserve">
+    <value>SkinMatParamRow2</value>
+  </data>
+  <data name="SkinTileMaterial" xml:space="preserve">
+    <value>SkinTileMaterial</value>
+  </data>
+  <data name="SkinTileMultiplier" xml:space="preserve">
+    <value>SkinTileMultiplier</value>
+  </data>
+  <data name="SkinUnknown2" xml:space="preserve">
+    <value>SkinUnknown2</value>
+  </data>
+  <data name="SkinWetnessLerp" xml:space="preserve">
+    <value>SkinWetnessLerp</value>
+  </data>
+  <data name="Emissive" xml:space="preserve">
+    <value>Emissive</value>
+  </data>
+  <data name="Raw" xml:space="preserve">
+    <value>Raw</value>
+  </data>
+  <data name="Undyable" xml:space="preserve">
+    <value>Undyable</value>
+  </data>
+  <data name="Undyed" xml:space="preserve">
+    <value>Undyed</value>
+  </data>
+  <data name="Value Editor" xml:space="preserve">
+    <value>Value Editor</value>
+  </data>
+  <data name="Material - Colorset Row Editor - Row #{0}" xml:space="preserve">
+    <value>Material - Colorset Row Editor - Row #{0}</value>
+  </data>
+  <data name="Hrothgar Male" xml:space="preserve">
+    <value>Hrothgar Male</value>
+  </data>
+  <data name="Hrothgar_Male" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Import_ModPack_Wizard1" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Previous_Page1" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Texture Files(*.DDS;*.BMP;*.PNG) |*.DDS;*.BMP;*.PNG" xml:space="preserve">
+    <value>Texture Files(*.DDS;*.BMP;*.PNG) |*.DDS;*.BMP;*.PNG</value>
+  </data>
+  <data name="This_will_only_affect_shared_races1" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Viera Female" xml:space="preserve">
+    <value>Viera Female</value>
+  </data>
+  <data name="Visor Settings" xml:space="preserve">
+    <value>Visor Settings</value>
+  </data>
+  <data name="0.039x (Legacy Fix)" xml:space="preserve">
+    <value>0.039x (Legacy Fix)</value>
+  </data>
+  <data name="Attribute Index:" xml:space="preserve">
+    <value>Attribute Index:</value>
+  </data>
+  <data name="Bare Hands" xml:space="preserve">
+    <value>Bare Hands</value>
+  </data>
+  <data name="Bodysuit" xml:space="preserve">
+    <value>Bodysuit</value>
+  </data>
+  <data name="Bone Count:" xml:space="preserve">
+    <value>Bone Count:</value>
+  </data>
+  <data name="Bone List Index:" xml:space="preserve">
+    <value>Bone List Index:</value>
+  </data>
+  <data name="Bone Start Offset:" xml:space="preserve">
+    <value>Bone Start Offset:</value>
+  </data>
+  <data name="Custom" xml:space="preserve">
+    <value>Custom</value>
+  </data>
+  <data name="Data Block Count:" xml:space="preserve">
+    <value>Data Block Count:</value>
+  </data>
+  <data name="Data Block:" xml:space="preserve">
+    <value>Data Block:</value>
+  </data>
+  <data name="Data Offset:" xml:space="preserve">
+    <value>Data Offset:</value>
+  </data>
+  <data name="Data Type:" xml:space="preserve">
+    <value>Data Type:</value>
+  </data>
+  <data name="Data Usage:" xml:space="preserve">
+    <value>Data Usage:</value>
+  </data>
+  <data name="dwn" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Final Confirmation" xml:space="preserve">
+    <value>Final Confirmation</value>
+  </data>
+  <data name="Full Helmet" xml:space="preserve">
+    <value>Full Helmet</value>
+  </data>
+  <data name="Glasses" xml:space="preserve">
+    <value>Glasses</value>
+  </data>
+  <data name="glv" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Hat" xml:space="preserve">
+    <value>Hat</value>
+  </data>
+  <data name="Index Count:" xml:space="preserve">
+    <value>Index Count:</value>
+  </data>
+  <data name="Index Data Offset:" xml:space="preserve">
+    <value>Index Data Offset:</value>
+  </data>
+  <data name="Index Offset:" xml:space="preserve">
+    <value>Index Offset:</value>
+  </data>
+  <data name="Invalid Selection" xml:space="preserve">
+    <value>Invalid Selection</value>
+  </data>
+  <data name="Leotard" xml:space="preserve">
+    <value>Leotard</value>
+  </data>
+  <data name="Long Boots" xml:space="preserve">
+    <value>Long Boots</value>
+  </data>
+  <data name="Long Gloves" xml:space="preserve">
+    <value>Long Gloves</value>
+  </data>
+  <data name="Long-Sleeve Top" xml:space="preserve">
+    <value>Long-Sleeve Top</value>
+  </data>
+  <data name="Material Index:" xml:space="preserve">
+    <value>Material Index:</value>
+  </data>
+  <data name="Mesh Part Count:" xml:space="preserve">
+    <value>Mesh Part Count:</value>
+  </data>
+  <data name="Mesh Part Index:" xml:space="preserve">
+    <value>Mesh Part Index:</value>
+  </data>
+  <data name="met" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Mid Boots" xml:space="preserve">
+    <value>Mid Boots</value>
+  </data>
+  <data name="Mid Gloves" xml:space="preserve">
+    <value>Mid Gloves</value>
+  </data>
+  <data name="Note: Some skeletons are not available for some races." xml:space="preserve">
+    <value>Note: Some skeletons are not available for some races.</value>
+  </data>
+  <data name="Open Helmet" xml:space="preserve">
+    <value>Open Helmet</value>
+  </data>
+  <data name="Pants" xml:space="preserve">
+    <value>Pants</value>
+  </data>
+  <data name="Pants and Shoes" xml:space="preserve">
+    <value>Pants and Shoes</value>
+  </data>
+  <data name="Racial Settings - {0} - {1}" xml:space="preserve">
+    <value>Racial Settings - {0} - {1}</value>
+  </data>
+  <data name="Racial Settings: {0} - {1}" xml:space="preserve">
+    <value>Racial Settings: {0} - {1}</value>
+  </data>
+  <data name="Select Destination Item" xml:space="preserve">
+    <value>Select Destination Item</value>
+  </data>
+  <data name="Set All Together:" xml:space="preserve">
+    <value>Set All Together:</value>
+  </data>
+  <data name="sho" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Shoes" xml:space="preserve">
+    <value>Shoes</value>
+  </data>
+  <data name="Shorts" xml:space="preserve">
+    <value>Shorts</value>
+  </data>
+  <data name="Sleeveless Top" xml:space="preserve">
+    <value>Sleeveless Top</value>
+  </data>
+  <data name="top" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Unknown" xml:space="preserve">
+    <value>Unknown</value>
+  </data>
+  <data name="Vertex Count:" xml:space="preserve">
+    <value>Vertex Count:</value>
+  </data>
+  <data name="Vertex Data Offset 0:" xml:space="preserve">
+    <value>Vertex Data Offset 0:</value>
+  </data>
+  <data name="Vertex Data Offset 1:" xml:space="preserve">
+    <value>Vertex Data Offset 1:</value>
+  </data>
+  <data name="Vertex Data Offset 2:" xml:space="preserve">
+    <value>Vertex Data Offset 2:</value>
+  </data>
+  <data name="Vertex Entry Size 0:" xml:space="preserve">
+    <value>Vertex Entry Size 0:</value>
+  </data>
+  <data name="Vertex Entry Size 1:" xml:space="preserve">
+    <value>Vertex Entry Size 1:</value>
+  </data>
+  <data name="Vertex Entry Size 2:" xml:space="preserve">
+    <value>Vertex Entry Size 2:</value>
+  </data>
+  <data name="Attribute Count:" xml:space="preserve">
+    <value>Attribute Count:</value>
+  </data>
+  <data name="Attribute Offset Count:" xml:space="preserve">
+    <value>Attribute Offset Count:</value>
+  </data>
+  <data name="Bone Index (Mesh)" xml:space="preserve">
+    <value>Bone Index (Mesh)</value>
+  </data>
+  <data name="Bone Index (Mesh) {0}" xml:space="preserve">
+    <value>Bone Index (Mesh) {0}</value>
+  </data>
+  <data name="Bone Index (Part)" xml:space="preserve">
+    <value>Bone Index (Part)</value>
+  </data>
+  <data name="Bone List Count:" xml:space="preserve">
+    <value>Bone List Count:</value>
+  </data>
+  <data name="Bone Offset Count:" xml:space="preserve">
+    <value>Bone Offset Count:</value>
+  </data>
+  <data name="Bounding Box" xml:space="preserve">
+    <value>Bounding Box</value>
+  </data>
+  <data name="Data Blocks" xml:space="preserve">
+    <value>Data Blocks</value>
+  </data>
+  <data name="Extra LoD Count:" xml:space="preserve">
+    <value>Extra LoD Count:</value>
+  </data>
+  <data name="Extra Mesh Count:" xml:space="preserve">
+    <value>Extra Mesh Count:</value>
+  </data>
+  <data name="Extras" xml:space="preserve">
+    <value>Extras</value>
+  </data>
+  <data name="Index Size:" xml:space="preserve">
+    <value>Index Size:</value>
+  </data>
+  <data name="Index Start:" xml:space="preserve">
+    <value>Index Start:</value>
+  </data>
+  <data name="Material Count:" xml:space="preserve">
+    <value>Material Count:</value>
+  </data>
+  <data name="Material Offset Count:" xml:space="preserve">
+    <value>Material Offset Count:</value>
+  </data>
+  <data name="Mesh Count:" xml:space="preserve">
+    <value>Mesh Count:</value>
+  </data>
+  <data name="Mesh End:" xml:space="preserve">
+    <value>Mesh End:</value>
+  </data>
+  <data name="Mesh Offset:" xml:space="preserve">
+    <value>Mesh Offset:</value>
+  </data>
+  <data name="Mesh Sum:" xml:space="preserve">
+    <value>Mesh Sum:</value>
+  </data>
+  <data name="Shape Info Count:" xml:space="preserve">
+    <value>Shape Info Count:</value>
+  </data>
+  <data name="Transform Count:" xml:space="preserve">
+    <value>Transform Count:</value>
+  </data>
+  <data name="Transforms" xml:space="preserve">
+    <value>Transforms</value>
+  </data>
+  <data name="Unknown 0 Size:" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Unknown 0:" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Unknown 1 Size:" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Unknown 10a:" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Unknown 10b:" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Unknown 11:" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Unknown 12:" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Unknown 13:" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Unknown 14:" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Unknown 15:" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Unknown 16:" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Unknown 17:" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Unknown 1:" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Unknown 2 Size:" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Unknown 2:" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Unknown 3:" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Unknown 4:" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Unknown 5:" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Unknown 6:" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Unknown 7:" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Unknown 8:" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Unknown 9:" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Vector Count:" xml:space="preserve">
+    <value>Vector Count:</value>
+  </data>
+  <data name="Vertex Offset:" xml:space="preserve">
+    <value>Vertex Offset:</value>
+  </data>
+  <data name="Vertex Size:" xml:space="preserve">
+    <value>Vertex Size:</value>
+  </data>
+  <data name="Everything" xml:space="preserve">
+    <value>Everything</value>
+  </data>
+  <data name="Item: {0}&#xA;Inclusion Level: {1}&#xA;Primary Files:{2}&#xA;Total Files:{3}" xml:space="preserve">
+    <value>Item: {0}
+Inclusion Level: {1}
+Primary Files:{2}
+Total Files:{3}</value>
+  </data>
+  <data name="ModPack" xml:space="preserve">
+    <value>ModPack</value>
+  </data>
+  <data name="Selected All Files - [{0}] Total File(s)" xml:space="preserve">
+    <value>Selected All Files - [{0}] Total File(s)</value>
+  </data>
+  <data name="Selected [{0}] {1} File(s) - [{2}] Total File(s)" xml:space="preserve">
+    <value>Selected [{0}] {1} File(s) - [{2}] Total File(s)</value>
+  </data>
+  <data name="TexTools User" xml:space="preserve">
+    <value>TexTools User</value>
+  </data>
+  <data name="Total File(s)" xml:space="preserve">
+    <value>Total File(s)</value>
+  </data>
+  <data name="3D Models ({0})|{1}" xml:space="preserve">
+    <value>3D Models ({0})|{1}</value>
+  </data>
+  <data name="Add Attributes..." xml:space="preserve">
+    <value>Add Attributes...</value>
+  </data>
+  <data name="Change Destination Item" xml:space="preserve">
+    <value>Change Destination Item</value>
+  </data>
+  <data name="Choose New Item" xml:space="preserve">
+    <value>Choose New Item</value>
+  </data>
+  <data name="Default Base View Model" xml:space="preserve">
+    <value>Default Base View Model</value>
+  </data>
+  <data name="Demo (HelixToolkitDX)" xml:space="preserve">
+    <value>Demo (HelixToolkitDX)</value>
+  </data>
+  <data name="Final Modpack Review" xml:space="preserve">
+    <value>Final Modpack Review</value>
+  </data>
+  <data name="GroupName" xml:space="preserve">
+    <value>GroupName</value>
+  </data>
+  <data name="Image Files(*.BMP;*.JPG;*.GIF;*.PNG)|*.BMP;*.JPG;*.GIF;*.PNG" xml:space="preserve">
+    <value>Image Files(*.BMP;*.JPG;*.GIF;*.PNG)|*.BMP;*.JPG;*.GIF;*.PNG</value>
+  </data>
+  <data name="Make All Variants Identical" xml:space="preserve">
+    <value>Make All Variants Identical</value>
+  </data>
+  <data name="meters" xml:space="preserve">
+    <value>meters</value>
+  </data>
+  <data name="Modifications at the {0} level will affect (at least) the following [{1}] item(s):" xml:space="preserve">
+    <value>Modifications at the {0} level will affect (at least) the following [{1}] item(s):</value>
+  </data>
+  <data name="ModPacks" xml:space="preserve">
+    <value>ModPacks</value>
+  </data>
+  <data name="Review Affected Items" xml:space="preserve">
+    <value>Review Affected Items</value>
+  </data>
+  <data name="Review [{0}] Total File(s)" xml:space="preserve">
+    <value>Review [{0}] Total File(s)</value>
+  </data>
+  <data name="Select {0} Files" xml:space="preserve">
+    <value>Select {0} Files</value>
+  </data>
+  <data name="Show Affected Items" xml:space="preserve">
+    <value>Show Affected Items</value>
+  </data>
+  <data name="Single" xml:space="preserve">
+    <value>Single</value>
+  </data>
+  <data name="The new item(s) this mod will apply to instead." xml:space="preserve">
+    <value>The new item(s) this mod will apply to instead.</value>
+  </data>
+  <data name="The original item(s) this mod applied to." xml:space="preserve">
+    <value>The original item(s) this mod applied to.</value>
+  </data>
+  <data name="Version {0}" xml:space="preserve">
+    <value>Version {0}</value>
+  </data>
+  <data name="Version {0} {0}" xml:space="preserve">
+    <value>Version {0} {0}</value>
+  </data>
+  <data name="[Loading]" xml:space="preserve">
+    <value>[Loading]</value>
+  </data>
+  <data name="{0} - {1} Level" xml:space="preserve">
+    <value>{0} - {1} Level</value>
+  </data>
+  <data name="{0} Dat Files" xml:space="preserve">
+    <value>{0} Dat Files</value>
+  </data>
+  <data name="{0} Files (*.{1})|*.{2}" xml:space="preserve">
+    <value>{0} Files (*.{1})|*.{2}</value>
+  </data>
+  <data name="{0} Index Files" xml:space="preserve">
+    <value>{0} Index Files</value>
+  </data>
+  <data name="{0} Material File(s)" xml:space="preserve">
+    <value>{0} Material File(s)</value>
+  </data>
+  <data name="{0} Meta File(s)" xml:space="preserve">
+    <value>{0} Meta File(s)</value>
+  </data>
+  <data name="{0} Model File(s)" xml:space="preserve">
+    <value>{0} Model File(s)</value>
+  </data>
+  <data name="{0} Texture" xml:space="preserve">
+    <value>{0} Texture</value>
+  </data>
+  <data name="{0} Texture File(s)" xml:space="preserve">
+    <value>{0} Texture File(s)</value>
+  </data>
+  <data name="Show Skeleton" xml:space="preserve">
+    <value>Show Skeleton</value>
+  </data>
+  <data name="Arrow" xml:space="preserve">
+    <value>Arrow</value>
+  </data>
+  <data name="Au Ra F Face Unique" xml:space="preserve">
+    <value>Au Ra F Face Unique</value>
+  </data>
+  <data name="Belt" xml:space="preserve">
+    <value>Belt</value>
+  </data>
+  <data name="Boot" xml:space="preserve">
+    <value>Boot</value>
+  </data>
+  <data name="Ear" xml:space="preserve">
+    <value>Ear</value>
+  </data>
+  <data name="Elbow" xml:space="preserve">
+    <value>Elbow</value>
+  </data>
+  <data name="Excess Detail" xml:space="preserve">
+    <value>Excess Detail</value>
+  </data>
+  <data name="Facial Hair" xml:space="preserve">
+    <value>Facial Hair</value>
+  </data>
+  <data name="Gauss Barrel" xml:space="preserve">
+    <value>Gauss Barrel</value>
+  </data>
+  <data name="Glove" xml:space="preserve">
+    <value>Glove</value>
+  </data>
+  <data name="Gorget" xml:space="preserve">
+    <value>Gorget</value>
+  </data>
+  <data name="Horn" xml:space="preserve">
+    <value>Horn</value>
+  </data>
+  <data name="Knee" xml:space="preserve">
+    <value>Knee</value>
+  </data>
+  <data name="Knee Pad" xml:space="preserve">
+    <value>Knee Pad</value>
+  </data>
+  <data name="Miqo'te Ears" xml:space="preserve">
+    <value>Miqo'te Ears</value>
+  </data>
+  <data name="Miqo'te Long Hair Unique" xml:space="preserve">
+    <value>Miqo'te Long Hair Unique</value>
+  </data>
+  <data name="Neck" xml:space="preserve">
+    <value>Neck</value>
+  </data>
+  <data name="Non-Tail Races Only" xml:space="preserve">
+    <value>Non-Tail Races Only</value>
+  </data>
+  <data name="Quiver Arrow 1" xml:space="preserve">
+    <value>Quiver Arrow 1</value>
+  </data>
+  <data name="Quiver Arrow 2" xml:space="preserve">
+    <value>Quiver Arrow 2</value>
+  </data>
+  <data name="Quiver Arrow 3" xml:space="preserve">
+    <value>Quiver Arrow 3</value>
+  </data>
+  <data name="Reaper Transformation" xml:space="preserve">
+    <value>Reaper Transformation</value>
+  </data>
+  <data name="Scalp" xml:space="preserve">
+    <value>Scalp</value>
+  </data>
+  <data name="Shin" xml:space="preserve">
+    <value>Shin</value>
+  </data>
+  <data name="Tail Races Only" xml:space="preserve">
+    <value>Tail Races Only</value>
+  </data>
+  <data name="Waist" xml:space="preserve">
+    <value>Waist</value>
+  </data>
+  <data name="Wrist" xml:space="preserve">
+    <value>Wrist</value>
+  </data>
+  <data name="Default Author" xml:space="preserve">
+    <value>Default Author</value>
+  </data>
+  <data name="Furniture Color" xml:space="preserve">
+    <value>Furniture Color</value>
+  </data>
+  <data name="Hair Highlight Color" xml:space="preserve">
+    <value>Hair Highlight Color</value>
+  </data>
+  <data name="Lip Color" xml:space="preserve">
+    <value>Lip Color</value>
+  </data>
+  <data name="Redirect imports to Lumina" xml:space="preserve">
+    <value>Redirect imports to Lumina</value>
+  </data>
+  <data name="Skin Race" xml:space="preserve">
+    <value>Skin Race</value>
+  </data>
+  <data name="System Settings" xml:space="preserve">
+    <value>System Settings</value>
+  </data>
+  <data name="Tattoo Color" xml:space="preserve">
+    <value>Tattoo Color</value>
+  </data>
+  <data name="- Material Set:" xml:space="preserve">
+    <value>- Material Set:</value>
+  </data>
+  <data name="Equipment" xml:space="preserve">
+    <value>Equipment</value>
+  </data>
+  <data name="| Hidden Parts:" xml:space="preserve">
+    <value>| Hidden Parts:</value>
+  </data>
+  <data name="BodyDisableBreastPhysics" xml:space="preserve">
+    <value />
+  </data>
+  <data name="BodyHideGorget" xml:space="preserve">
+    <value />
+  </data>
+  <data name="BodyHideLongGloves" xml:space="preserve">
+    <value />
+  </data>
+  <data name="BodyHideMidGloves" xml:space="preserve">
+    <value />
+  </data>
+  <data name="BodyHideShortGloves" xml:space="preserve">
+    <value />
+  </data>
+  <data name="BodyHideWaist" xml:space="preserve">
+    <value />
+  </data>
+  <data name="BodyShowBracelet" xml:space="preserve">
+    <value />
+  </data>
+  <data name="BodyShowHand" xml:space="preserve">
+    <value />
+  </data>
+  <data name="BodyShowHead" xml:space="preserve">
+    <value />
+  </data>
+  <data name="BodyShowLeg" xml:space="preserve">
+    <value />
+  </data>
+  <data name="BodyShowNecklace" xml:space="preserve">
+    <value />
+  </data>
+  <data name="BodyShowTail" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Decompress Type 2 Data" xml:space="preserve">
+    <value>Decompress Type 2 Data</value>
+  </data>
+  <data name="EnableBodyFlags" xml:space="preserve">
+    <value />
+  </data>
+  <data name="EnableFootFlags" xml:space="preserve">
+    <value />
+  </data>
+  <data name="EnableHandFlags" xml:space="preserve">
+    <value />
+  </data>
+  <data name="EnableHeadFlags" xml:space="preserve">
+    <value />
+  </data>
+  <data name="EnableLegFlags" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Female" xml:space="preserve">
+    <value>Female</value>
+  </data>
+  <data name="File Path Display" xml:space="preserve">
+    <value>File Path Display</value>
+  </data>
+  <data name="FootHideAnkle" xml:space="preserve">
+    <value />
+  </data>
+  <data name="FootHideCalf" xml:space="preserve">
+    <value />
+  </data>
+  <data name="FootHideKnee" xml:space="preserve">
+    <value />
+  </data>
+  <data name="HandHideElbow" xml:space="preserve">
+    <value />
+  </data>
+  <data name="HandHideForearm" xml:space="preserve">
+    <value />
+  </data>
+  <data name="HandShowBracelet" xml:space="preserve">
+    <value />
+  </data>
+  <data name="HandShowRingL" xml:space="preserve">
+    <value />
+  </data>
+  <data name="HandShowRingR" xml:space="preserve">
+    <value />
+  </data>
+  <data name="HeadHideHair" xml:space="preserve">
+    <value />
+  </data>
+  <data name="HeadHideNeck" xml:space="preserve">
+    <value />
+  </data>
+  <data name="HeadHideScalp" xml:space="preserve">
+    <value />
+  </data>
+  <data name="HeadShowEarAura" xml:space="preserve">
+    <value />
+  </data>
+  <data name="HeadShowEarHuman" xml:space="preserve">
+    <value />
+  </data>
+  <data name="HeadShowEarMiqo" xml:space="preserve">
+    <value />
+  </data>
+  <data name="HeadShowEarrings" xml:space="preserve">
+    <value />
+  </data>
+  <data name="HeadShowEarringsAura" xml:space="preserve">
+    <value />
+  </data>
+  <data name="HeadShowEarringsHuman" xml:space="preserve">
+    <value />
+  </data>
+  <data name="HeadShowEarViera" xml:space="preserve">
+    <value />
+  </data>
+  <data name="HeadShowHairOverride" xml:space="preserve">
+    <value />
+  </data>
+  <data name="HeadShowHrothgarHat" xml:space="preserve">
+    <value />
+  </data>
+  <data name="HeadShowNecklace" xml:space="preserve">
+    <value />
+  </data>
+  <data name="HeadShowVieraHat" xml:space="preserve">
+    <value />
+  </data>
+  <data name="HeadUnknownHelmet1" xml:space="preserve">
+    <value />
+  </data>
+  <data name="HeadUnknownHelmet2" xml:space="preserve">
+    <value />
+  </data>
+  <data name="LegBootUnknown" xml:space="preserve">
+    <value />
+  </data>
+  <data name="LegHideHalfBoot" xml:space="preserve">
+    <value />
+  </data>
+  <data name="LegHideKneePads" xml:space="preserve">
+    <value />
+  </data>
+  <data name="LegHideShortBoot" xml:space="preserve">
+    <value />
+  </data>
+  <data name="LegShowFoot" xml:space="preserve">
+    <value />
+  </data>
+  <data name="LegShowTail" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Male" xml:space="preserve">
+    <value>Male</value>
+  </data>
+  <data name="Material Folder" xml:space="preserve">
+    <value>Material Folder</value>
+  </data>
+  <data name="VFX File Path" xml:space="preserve">
+    <value>VFX File Path</value>
+  </data>
+  <data name="AVFX" xml:space="preserve">
+    <value>AVFX</value>
+  </data>
+  <data name="Include all files used by this item.  Automatically includes all metadata, models, materials, and textures used.  (Excluding racial skin materials)" xml:space="preserve">
+    <value>Include all files used by this item.  Automatically includes all metadata, models, materials, and textures used.  (Excluding racial skin materials)</value>
+  </data>
+  <data name="Raw Files" xml:space="preserve">
+    <value>Raw Files</value>
+  </data>
+  <data name="Select one or more materials to include.  Automatically includes all textures used." xml:space="preserve">
+    <value>Select one or more materials to include.  Automatically includes all textures used.</value>
+  </data>
+  <data name="Select one or more models to include.  Automatically includes all materials and textures used.  (Excluding racial skin materials)" xml:space="preserve">
+    <value>Select one or more models to include.  Automatically includes all materials and textures used.  (Excluding racial skin materials)</value>
+  </data>
+  <data name="Select one or more textures to include.  Does not include any other files." xml:space="preserve">
+    <value>Select one or more textures to include.  Does not include any other files.</value>
+  </data>
+  <data name="Texture -" xml:space="preserve">
+    <value>Texture -</value>
+  </data>
+  <data name="UNIDENTIFIABLE FILE -" xml:space="preserve">
+    <value>UNIDENTIFIABLE FILE -</value>
+  </data>
+  <data name="Import Item Selection" xml:space="preserve">
+    <value>Import Item Selection</value>
+  </data>
+  <data name="Item List" xml:space="preserve">
+    <value>Item List</value>
+  </data>
+  <data name="Metadata Options" xml:space="preserve">
+    <value>Metadata Options</value>
+  </data>
+  <data name="You may choose new items for this modpack to apply to, if desired. Press [Continue] when done." xml:space="preserve">
+    <value>You may choose new items for this modpack to apply to, if desired. Press [Continue] when done.</value>
   </data>
 </root>

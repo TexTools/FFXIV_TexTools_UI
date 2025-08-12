@@ -189,9 +189,6 @@
   <data name="ModPack_Wizard" xml:space="preserve">
     <value>Mod 包向导</value>
   </data>
-  <data name="Mods" xml:space="preserve">
-    <value>Mods</value>
-  </data>
   <data name="Mod_List" xml:space="preserve">
     <value>Mod 列表</value>
   </data>
@@ -201,14 +198,8 @@
   <data name="More_Options" xml:space="preserve">
     <value>更多选项</value>
   </data>
-  <data name="Nexus_Mods" xml:space="preserve">
-    <value>Nexus Mods</value>
-  </data>
   <data name="Options" xml:space="preserve">
     <value>选项</value>
-  </data>
-  <data name="PrettyKitty_Emporium" xml:space="preserve">
-    <value>PrettyKitty Emporium</value>
   </data>
   <data name="Report_Bug" xml:space="preserve">
     <value>报告 Bug</value>
@@ -404,9 +395,6 @@
   </data>
   <data name="Lights" xml:space="preserve">
     <value>灯光</value>
-  </data>
-  <data name="Map" xml:space="preserve">
-    <value>Map</value>
   </data>
   <data name="Materials" xml:space="preserve">
     <value>材质</value>
@@ -753,29 +741,11 @@
   <data name="Index_Backups_Url" xml:space="preserve">
     <value>NONE</value>
   </data>
-  <data name="..." xml:space="preserve">
-    <value>...</value>
-  </data>
-  <data name="A" xml:space="preserve">
-    <value>A</value>
-  </data>
-  <data name="B" xml:space="preserve">
-    <value>B</value>
-  </data>
   <data name="By Category" xml:space="preserve">
     <value>按类别</value>
   </data>
   <data name="By Set" xml:space="preserve">
     <value>按集合</value>
-  </data>
-  <data name="DDS" xml:space="preserve">
-    <value>DDS</value>
-  </data>
-  <data name="DX: 9" xml:space="preserve">
-    <value>DX: 9</value>
-  </data>
-  <data name="G" xml:space="preserve">
-    <value>G</value>
   </data>
   <data name="HD Texture" xml:space="preserve">
     <value>高清纹理</value>
@@ -1389,9 +1359,6 @@
   <data name="Use Shared Textures" xml:space="preserve">
     <value>使用共享纹理</value>
   </data>
-  <data name="USe Unique Textures" xml:space="preserve">
-    <value>使用唯一纹理</value>
-  </data>
   <data name="Colorset:" xml:space="preserve">
     <value>颜色集：</value>
   </data>
@@ -1916,9 +1883,6 @@
   <data name="Material_Editor" xml:space="preserve">
     <value>材质编辑器</value>
   </data>
-  <data name="MATERIAL_ITEM_NAME" xml:space="preserve">
-    <value>MATERIAL_ITEM_NAME</value>
-  </data>
   <data name="MeshPart_No_Difference" xml:space="preserve">
     <value>此网格的网格部件计数没有差异</value>
   </data>
@@ -1942,9 +1906,6 @@
   </data>
   <data name="ModelStatus_UpdateSuccess" xml:space="preserve">
     <value>模型更新成功</value>
-  </data>
-  <data name="MODEL_ITEM_NAME" xml:space="preserve">
-    <value>MODEL_ITEM_NAME</value>
   </data>
   <data name="Model_Skeleton" xml:space="preserve">
     <value>模型骨架</value>
@@ -2157,9 +2118,6 @@
   <data name="Data Usage:" xml:space="preserve">
     <value>数据使用：</value>
   </data>
-  <data name="dwn" xml:space="preserve">
-    <value>衣</value>
-  </data>
   <data name="Final Confirmation" xml:space="preserve">
     <value>最终确认</value>
   </data>
@@ -2168,9 +2126,6 @@
   </data>
   <data name="Glasses" xml:space="preserve">
     <value>眼镜</value>
-  </data>
-  <data name="glv" xml:space="preserve">
-    <value>手</value>
   </data>
   <data name="Hat" xml:space="preserve">
     <value>帽子</value>
@@ -2208,9 +2163,6 @@
   <data name="Mesh Part Index:" xml:space="preserve">
     <value>网格部件索引：</value>
   </data>
-  <data name="met" xml:space="preserve">
-    <value>帽子</value>
-  </data>
   <data name="Mid Boots" xml:space="preserve">
     <value>中靴</value>
   </data>
@@ -2241,9 +2193,6 @@
   <data name="Set All Together:" xml:space="preserve">
     <value>集合：</value>
   </data>
-  <data name="sho" xml:space="preserve">
-    <value>鞋子</value>
-  </data>
   <data name="Shoes" xml:space="preserve">
     <value>鞋子</value>
   </data>
@@ -2252,9 +2201,6 @@
   </data>
   <data name="Sleeveless Top" xml:space="preserve">
     <value>无袖上衣</value>
-  </data>
-  <data name="top" xml:space="preserve">
-    <value>衣服</value>
   </data>
   <data name="Unknown" xml:space="preserve">
     <value>未知</value>
@@ -2859,7 +2805,7 @@
   <data name="Rename" xml:space="preserve">
     <value>改名</value>
   </data>
-  <data name="R" xml:space="preserve">
-    <value>r</value>
+  <data name="Use Unique Textures" xml:space="preserve">
+    <value>使用唯一纹理</value>
   </data>
 </root>

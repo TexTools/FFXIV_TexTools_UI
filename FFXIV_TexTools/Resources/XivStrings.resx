@@ -211,7 +211,7 @@
     <value>Type</value>
   </data>
   <data name="TypePart" xml:space="preserve">
-    <value>Type Part</value>
+    <value>Part Type</value>
   </data>
   <data name="UI" xml:space="preserve">
     <value>UI</value>
@@ -502,174 +502,174 @@
     <value>Weapons</value>
   </data>
   <data name="Ears" xml:space="preserve">
-    <value />
+    <value>Ears</value>
   </data>
   <data name="Company" xml:space="preserve">
-    <value />
+    <value>Company</value>
   </data>
   <data name="Craft" xml:space="preserve">
-    <value />
+    <value>Craft</value>
   </data>
   <data name="Cure" xml:space="preserve">
-    <value />
+    <value>Cure</value>
   </data>
   <data name="Elezen_Duskwight" xml:space="preserve">
-    <value />
+    <value>Elezen Duskwight</value>
   </data>
   <data name="Elezen_Female_NPC" xml:space="preserve">
-    <value />
+    <value>Elezen Female NPC</value>
   </data>
   <data name="Elezen_Male_NPC" xml:space="preserve">
-    <value />
+    <value>Elezen Male NPC</value>
   </data>
   <data name="Elezen_Wildwood" xml:space="preserve">
-    <value />
+    <value>Elezen Wildwood</value>
   </data>
   <data name="Emote" xml:space="preserve">
-    <value />
+    <value>Emote</value>
   </data>
   <data name="Event" xml:space="preserve">
-    <value />
+    <value>Event</value>
   </data>
   <data name="Furniture_Indoor" xml:space="preserve">
-    <value />
+    <value>Indoor Furniture</value>
   </data>
   <data name="Furniture_Outdoor" xml:space="preserve">
-    <value />
+    <value>Outdoor Furniture</value>
   </data>
   <data name="General" xml:space="preserve">
-    <value />
+    <value>General</value>
   </data>
   <data name="Hrothgar" xml:space="preserve">
-    <value />
+    <value>Hrothgar</value>
   </data>
   <data name="Hrothgar_Female" xml:space="preserve">
-    <value />
+    <value>Hrothgar Female</value>
   </data>
   <data name="Hrothgar_Female_NPC" xml:space="preserve">
-    <value />
+    <value>Hrothgar Female NPC</value>
   </data>
   <data name="Hrothgar_Helion" xml:space="preserve">
-    <value />
+    <value>Hrothgar Helion</value>
   </data>
   <data name="Hrothgar_Lost" xml:space="preserve">
-    <value />
+    <value>Hrothgar Lost</value>
   </data>
   <data name="Hrothgar_Male" xml:space="preserve">
-    <value />
+    <value>Hrothgar Male</value>
   </data>
   <data name="Hrothgar_Male_NPC" xml:space="preserve">
-    <value />
+    <value>Hrothgar Male NPC</value>
   </data>
   <data name="Hrothgar_NPC" xml:space="preserve">
-    <value />
+    <value>Hrothgar NPC</value>
   </data>
   <data name="Human" xml:space="preserve">
-    <value />
+    <value>Human</value>
   </data>
   <data name="Hyur_Highlander" xml:space="preserve">
-    <value />
+    <value>Hyur Highlander</value>
   </data>
   <data name="Hyur_Highlander_Female_NPC" xml:space="preserve">
-    <value />
+    <value>Hyur Highlander Female NPC</value>
   </data>
   <data name="Hyur_Highlander_Male_NPC" xml:space="preserve">
-    <value />
+    <value>Hyur Highlander Male NPC</value>
   </data>
   <data name="Hyur_Midlander" xml:space="preserve">
-    <value />
+    <value>Hyur Midlander</value>
   </data>
   <data name="Hyur_Midlander_Female_NPC" xml:space="preserve">
-    <value />
+    <value>Hyur Midlander Female NPC</value>
   </data>
   <data name="Hyur_Midlander_Male_NPC" xml:space="preserve">
-    <value />
+    <value>Hyur Midlander Male NPC</value>
   </data>
   <data name="Items" xml:space="preserve">
-    <value />
+    <value>Items</value>
   </data>
   <data name="Lalafell_Dunesfolk" xml:space="preserve">
-    <value />
+    <value>Lalafell Dunesfolk</value>
   </data>
   <data name="Lalafell_Female_NPC" xml:space="preserve">
-    <value />
+    <value>Lalafell Female NPC</value>
   </data>
   <data name="Lalafell_Male_NPC" xml:space="preserve">
-    <value />
+    <value>Lalafell Male NPC</value>
   </data>
   <data name="Lalafell_Plainsfolk" xml:space="preserve">
-    <value />
+    <value>Lalafell Plainsfolk</value>
   </data>
   <data name="Language" xml:space="preserve">
-    <value />
+    <value>Language</value>
   </data>
   <data name="LeftRing" xml:space="preserve">
-    <value />
+    <value>Left Ring</value>
   </data>
   <data name="LoadingScreen" xml:space="preserve">
-    <value />
+    <value>Loading Screen</value>
   </data>
   <data name="Marker" xml:space="preserve">
-    <value />
+    <value>Marker</value>
   </data>
   <data name="Miqote_Female_NPC" xml:space="preserve">
-    <value />
+    <value>Miqote Female NPC</value>
   </data>
   <data name="Miqote_Keeper" xml:space="preserve">
-    <value />
+    <value>Miqote Keeper</value>
   </data>
   <data name="Miqote_Male_NPC" xml:space="preserve">
-    <value />
+    <value>Miqote Male NPC</value>
   </data>
   <data name="Miqote_Seeker" xml:space="preserve">
-    <value />
+    <value>Miqote Seeker</value>
   </data>
   <data name="OnlineStatus" xml:space="preserve">
-    <value />
+    <value>Online Status</value>
   </data>
   <data name="Roegadyn_Female_NPC" xml:space="preserve">
-    <value />
+    <value>Roegadyn Female NPC</value>
   </data>
   <data name="Roegadyn_Hellsguard" xml:space="preserve">
-    <value />
+    <value>Roegadyn Hellsguard</value>
   </data>
   <data name="Roegadyn_Male_NPC" xml:space="preserve">
-    <value />
+    <value>Roegadyn Male NPC</value>
   </data>
   <data name="Roegadyn_SeaWolf" xml:space="preserve">
-    <value />
+    <value>Roegadyn SeaWolf</value>
   </data>
   <data name="Sephirot_Egi" xml:space="preserve">
-    <value />
+    <value>Sephirot Egi</value>
   </data>
   <data name="Seraph" xml:space="preserve">
-    <value />
+    <value>Seraph</value>
   </data>
   <data name="Skin" xml:space="preserve">
-    <value />
+    <value>Skin</value>
   </data>
   <data name="Viera" xml:space="preserve">
-    <value />
+    <value>Viera</value>
   </data>
   <data name="Viera_Female" xml:space="preserve">
-    <value />
+    <value>Viera Female</value>
   </data>
   <data name="Viera_Female_NPC" xml:space="preserve">
-    <value />
+    <value>Viera Female NPC</value>
   </data>
   <data name="Viera_Male" xml:space="preserve">
-    <value />
+    <value>Viera Male</value>
   </data>
   <data name="Viera_Male_NPC" xml:space="preserve">
-    <value />
+    <value>Viera Male NPC</value>
   </data>
   <data name="Viera_NPC" xml:space="preserve">
-    <value />
+    <value>Viera NPC</value>
   </data>
   <data name="Viera_Rava" xml:space="preserve">
-    <value />
+    <value>Viera Rava</value>
   </data>
   <data name="Viera_Veena" xml:space="preserve">
-    <value />
+    <value>Viera Veena</value>
   </data>
 </root>

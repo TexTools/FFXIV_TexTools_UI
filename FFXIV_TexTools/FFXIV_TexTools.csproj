@@ -130,7 +130,7 @@
     <PackageReference Include="SharpDX.Mathematics" Version="4.2.0">
       <TreatAsUsed>true</TreatAsUsed>
     </PackageReference>
-    <PackageReference Include="SixLabors.ImageSharp" Version="2.1.10">
+    <PackageReference Include="SixLabors.ImageSharp" Version="2.1.11">
       <TreatAsUsed>true</TreatAsUsed>
     </PackageReference>
     <PackageReference Include="System.Buffers" Version="4.5.1">

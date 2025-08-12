@@ -117,11 +117,540 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AddNewTexturePartErrorMessageWrongCategoryOfItem" xml:space="preserve">
-    <value>目前只支持“装备”,"角色“,有需要请联系萌小新.</value>
+  <data name="AdvancedImportErrorTitle" xml:space="preserve">
+    <value>高级导入错误</value>
   </data>
-  <data name="AddNewTexturePartErrorMessageWrongItemCategoryOfItem" xml:space="preserve">
-    <value>"面妆","Equipment Decals" 不受支持.</value>
+  <data name="AdvancedImportWindowErrorMessage" xml:space="preserve">
+    <value>生成高级导入窗口时出错.
+
+
+
+
+
+{0}</value>
+  </data>
+  <data name="BackupCompleteMessage" xml:space="preserve">
+    <value>已成功备份索引文件.</value>
+  </data>
+  <data name="BackupCompleteTitle" xml:space="preserve">
+    <value>备份完成</value>
+  </data>
+  <data name="BackupFailedErrorMessage" xml:space="preserve">
+    <value>无法创建备份文件.
+
+
+
+错误消息：
+
+{0}</value>
+  </data>
+  <data name="BackupFailedTitle" xml:space="preserve">
+    <value>备份创建失败</value>
+  </data>
+  <data name="BackupFilesMissingTitle" xml:space="preserve">
+    <value>缺少备份文件</value>
+  </data>
+  <data name="BackupFolderAccessErrorMessage" xml:space="preserve">
+    <value>访问索引备份文件夹时出错
+
+
+
+
+
+请在“选项”&gt;“自定义”中设置索引备份目录，然后重试.</value>
+  </data>
+  <data name="BackupsDirectoryErrorMessage" xml:space="preserve">
+    <value>找不到备份目录</value>
+  </data>
+  <data name="ColorSetBMPNotSupportedMessage" xml:space="preserve">
+    <value>不支持颜色集BMP导入.</value>
+  </data>
+  <data name="CreateBackupsMessage" xml:space="preserve">
+    <value>这将创建所有索引文件的备份.
+
+
+
+
+是否要立即备份？
+
+
+
+
+警告：
+
+为了创建干净的备份，所有活动修改都将设置为禁用，必须手动重新启用.</value>
+  </data>
+  <data name="CreateBackupsTitle" xml:space="preserve">
+    <value>备份索引文件</value>
+  </data>
+  <data name="CreateBackupTitle" xml:space="preserve">
+    <value>是否创建备份？</value>
+  </data>
+  <data name="DependencyErrorMessage" xml:space="preserve">
+    <value>TexTools无法找到依赖项文件.
+请确保您正在其所在的文件夹中运行TexTools.
+
+如果您继续收到此错误，
+请确保您的防病毒软件没有阻止TexTools.
+
+错误：{0}
+
+异常：{1}</value>
+  </data>
+  <data name="DependencyErrorTitle" xml:space="preserve">
+    <value>依赖项错误v{0}</value>
+  </data>
+  <data name="DisableAllModsMessage" xml:space="preserve">
+    <value>这将禁用modlist中的所有Mod.
+
+是否确实要继续？</value>
+  </data>
+  <data name="DisableAllModsTitle" xml:space="preserve">
+    <value>禁用所有MOD</value>
+  </data>
+  <data name="DisablingModsTitle" xml:space="preserve">
+    <value>禁用Mods</value>
+  </data>
+  <data name="EmptyTTMPFileErrorMessage" xml:space="preserve">
+    <value>TTMP文件[{0}]为空
+
+导入已取消.</value>
+  </data>
+  <data name="EnableAllModsMessage" xml:space="preserve">
+    <value>这将启用mod列表中的所有Mod.
+
+是否确实要继续？</value>
+  </data>
+  <data name="EnableAllModsTitle" xml:space="preserve">
+    <value>启用所有MOD</value>
+  </data>
+  <data name="EnablingModsTitle" xml:space="preserve">
+    <value>启用Mods</value>
+  </data>
+  <data name="GameVersionErrorMessage" xml:space="preserve">
+    <value>TexTools无法确定游戏版本.</value>
+  </data>
+  <data name="GameVersionErrorTitle" xml:space="preserve">
+    <value>版本检查错误{0}</value>
+  </data>
+  <data name="ImportCompleteTitle" xml:space="preserve">
+    <value>导入完成</value>
+  </data>
+  <data name="ImportErrorTitle" xml:space="preserve">
+    <value>导入错误</value>
+  </data>
+  <data name="IndexBackupLocationChangedMessage" xml:space="preserve">
+    <value>索引备份文件夹的位置已更改.
+
+新位置：{0}</value>
+  </data>
+  <data name="IndexBackupsErrorTitle" xml:space="preserve">
+    <value>索引备份错误</value>
+  </data>
+  <data name="IndexLockedBackupFailedMessage" xml:space="preserve">
+    <value>游戏运行时无法创建备份.</value>
+  </data>
+  <data name="IndexLockedErrorMessage" xml:space="preserve">
+    <value>访问索引文件时出错
+
+
+继续之前，请退出游戏.
+-----------------------------------------------------</value>
+  </data>
+  <data name="IndexLockedErrorTitle" xml:space="preserve">
+    <value>索引访问错误</value>
+  </data>
+  <data name="InstallDirectoryFoundMessage" xml:space="preserve">
+    <value>FF14安装目录位于
+
+{0}
+
+是否使用此目录？</value>
+  </data>
+  <data name="InstallDirectoryFoundTitle" xml:space="preserve">
+    <value>找到安装目录</value>
+  </data>
+  <data name="InstallDirectoryNotFoundMessage" xml:space="preserve">
+    <value>请找到以下目录.
+
+.../最终幻想14/game/sqpack/ffxiv</value>
+  </data>
+  <data name="InstallDirectoryNotFoundTitle" xml:space="preserve">
+    <value>找不到安装目录</value>
+  </data>
+  <data name="ItemsListErrorMessage" xml:space="preserve">
+    <value>获取道具列表时出错
+
+{0}</value>
+  </data>
+  <data name="ItemsListErrorTitle" xml:space="preserve">
+    <value>道具列表错误</value>
+  </data>
+  <data name="MaterialDataReadErrorTitle" xml:space="preserve">
+    <value>读取材料数据时出错</value>
+  </data>
+  <data name="MaterialFileReadErrorMessage" xml:space="preserve">
+    <value>读取材质文件{0}时出错
+
+{1}</value>
+  </data>
+  <data name="MDLReadErrorMessage" xml:space="preserve">
+    <value>读取MDL文件时出错.
+
+{0}</value>
+  </data>
+  <data name="MDLReadErrorTitle" xml:space="preserve">
+    <value>读取模型数据时出错</value>
+  </data>
+  <data name="ModelDataErrorMessage" xml:space="preserve">
+    <value>模型添加错误获取{0}{1}的模型数据时出错</value>
+  </data>
+  <data name="ModelImportErrorMessage" xml:space="preserve">
+    <value>尝试导入模型时出错.
+
+{0}</value>
+  </data>
+  <data name="ModelImportErrorTitle" xml:space="preserve">
+    <value>导入DAE时出错</value>
+  </data>
+  <data name="ModListDisableFailedTitle" xml:space="preserve">
+    <value>Mod列表禁用失败</value>
+  </data>
+  <data name="ModListIndexLockedErrorMessage" xml:space="preserve">
+    <value>游戏运行时无法继续.
+
+请退出游戏并重试.</value>
+  </data>
+  <data name="ModPackCreationCompleteMessage" xml:space="preserve">
+    <value>已成功创建Mod包（{0}.ttmp2）.</value>
+  </data>
+  <data name="ModPackCreationCompleteTitle" xml:space="preserve">
+    <value>Mod包创建完成</value>
+  </data>
+  <data name="ModPackCreationFailedErrorTitle" xml:space="preserve">
+    <value>错误：Mod包创建失败</value>
+  </data>
+  <data name="ModPackImportErrorMessage" xml:space="preserve">
+    <value>在{0}导入mod pack时出错
+消息：{1}</value>
+  </data>
+  <data name="ModPackImportErrorTitle" xml:space="preserve">
+    <value>Mod包导入错误</value>
+  </data>
+  <data name="ModPacksLocationChangedMessage" xml:space="preserve">
+    <value>Mod包文件夹的位置已更改.
+
+
+新位置：{0}</value>
+  </data>
+  <data name="ModsDisabledSuccessMessage" xml:space="preserve">
+    <value>已成功禁用所有MOD</value>
+  </data>
+  <data name="ModsEnabledSuccessMessage" xml:space="preserve">
+    <value>已成功启用所有MOD</value>
+  </data>
+  <data name="ModToggleErrorMessage" xml:space="preserve">
+    <value>尝试切换mod状态时出错.
+
+{0}</value>
+  </data>
+  <data name="ModToggleErrorTitle" xml:space="preserve">
+    <value>切换Mod时出错</value>
+  </data>
+  <data name="MoveDataMessage" xml:space="preserve">
+    <value>是否要将现有数据移动到新位置？</value>
+  </data>
+  <data name="MoveDataTitle" xml:space="preserve">
+    <value>是否移动数据？</value>
+  </data>
+  <data name="NewBackupLocationTitle" xml:space="preserve">
+    <value>Selec选择Index_Backups文件夹的新位置</value>
+  </data>
+  <data name="NewDirectoryTitle" xml:space="preserve">
+    <value>新建目录</value>
+  </data>
+  <data name="NewerVersionDetectedBackupMessage" xml:space="preserve">
+    <value>检测到更新版本的FFXIV.
+是否立即创建索引文件的新备份？（推荐）
+
+警告：
+为了创建干净的备份，所有活动修改都将设置为禁用，必须手动重新启用.</value>
+  </data>
+  <data name="NewInstallDetectedBackupMessage" xml:space="preserve">
+    <value>检测到新的TexTools安装.
+
+是否立即创建索引文件的新备份？（推荐）</value>
+  </data>
+  <data name="newModpacksLocationTitle" xml:space="preserve">
+    <value>选择Mod包文件夹的新位置</value>
+  </data>
+  <data name="NewSaveLocationTitle" xml:space="preserve">
+    <value>为保存的文件夹选择新位置</value>
+  </data>
+  <data name="NoBackupsFoundErrorMessage" xml:space="preserve">
+    <value>在以下目录中找不到备份文件：
+{0}
+
+
+索引项将被放回原始偏移量
+-----------------------------------------------------</value>
+  </data>
+  <data name="NoBackupsFoundMessage" xml:space="preserve">
+    <value>未找到索引备份.
+是否立即创建索引文件的新备份？（推荐）
+
+警告：
+为了创建干净的备份，所有活动修改都将设置为禁用，必须手动重新启用.</value>
+  </data>
+  <data name="NoModsDetectedErrorMessage" xml:space="preserve">
+    <value>在选项列表中未检测到MOD.</value>
+  </data>
+  <data name="OldModListDisableFailedMessage" xml:space="preserve">
+    <value>试图从以前的版本中禁用mod时出错.
+
+错误消息：
+{0}
+
+建议先从以前的版本重新开始.</value>
+  </data>
+  <data name="OldModListFoundTitle" xml:space="preserve">
+    <value>找到旧的Mod列表</value>
+  </data>
+  <data name="OldTexToolsFoundMessage" xml:space="preserve">
+    <value>找到旧的TextTools Mod列表.
+
+旧的Mod列表与此版本不兼容.
+
+为了使用此版本，将禁用所有以前的MOD，并删除以前的Mod列表.
+
+
+如果您想保留您的Mod，建议您在较旧的TexTools版本中创建一个备份Mod包，然后将其导入到此版本中.
+
+是否要继续？</value>
+  </data>
+  <data name="OutdatedBackupsErrorMessage" xml:space="preserve">
+    <value>索引备份已过时.
+
+
+请从“帮助”&gt;“备份索引文件”创建新备份
+
+
+TexTools将尝试在不使用备份的情况下重新启动.</value>
+  </data>
+  <data name="OutOfDateInstallMessage" xml:space="preserve">
+    <value>选择的安装位置已过期
+
+请找到以下目录.
+
+
+
+.../最终幻想14/game/sqpack/ffxiv</value>
+  </data>
+  <data name="OutOfDateInstallTitle" xml:space="preserve">
+    <value>安装目录已过期</value>
+  </data>
+  <data name="PleaseWaitMessage" xml:space="preserve">
+    <value>请稍候...</value>
+  </data>
+  <data name="PreviousVersionErrorTitle" xml:space="preserve">
+    <value>上一版本错误</value>
+  </data>
+  <data name="SavedLocationChangedMessage" xml:space="preserve">
+    <value>已更改保存文件夹的位置.
+
+
+新位置：{0}</value>
+  </data>
+  <data name="SelectffxivFolderTitle" xml:space="preserve">
+    <value>选择sqpack/ffxiv文件夹</value>
+  </data>
+  <data name="StartOverCompleteMessage" xml:space="preserve">
+    <value>初始化已经完成.</value>
+  </data>
+  <data name="StartOverCompleteTitle" xml:space="preserve">
+    <value>初始化完成</value>
+  </data>
+  <data name="StartOverMessage" xml:space="preserve">
+    <value>初始化将：
+
+1.将游戏文件还原.
+2.删除所有mod及数据.
+3.清除所有mod记录.
+
+是否初始化？</value>
+  </data>
+  <data name="StartOverTitle" xml:space="preserve">
+    <value>初始化</value>
+  </data>
+  <data name="SuccessfulImportCountMessage" xml:space="preserve">
+    <value>{0}个mod在{2}秒内成功导入.（{1}个错误）</value>
+  </data>
+  <data name="SuccessTitle" xml:space="preserve">
+    <value>成功</value>
+  </data>
+  <data name="TextureDataReadErrorTitle" xml:space="preserve">
+    <value>读取纹理数据时出错</value>
+  </data>
+  <data name="TextureFileReadErrorMessage" xml:space="preserve">
+    <value>读取纹理文件{0}时出错.
+
+
+
+
+
+{1}</value>
+  </data>
+  <data name="TextureImportErrorMessage" xml:space="preserve">
+    <value>导入纹理时出错.
+
+
+
+
+
+错误消息：
+
+
+{0}</value>
+  </data>
+  <data name="TextureImportErrorTitle" xml:space="preserve">
+    <value>导入纹理时出错</value>
+  </data>
+  <data name="TranslucencyToggleErrorMessage" xml:space="preserve">
+    <value>尝试切换半透明时出错
+
+{0}</value>
+  </data>
+  <data name="TranslucencyToggleErrorTitle" xml:space="preserve">
+    <value>切换半透明时出错</value>
+  </data>
+  <data name="DefaultDescriptionMessage" xml:space="preserve">
+    <value>是否创建备份？没有为Mod包描述输入任何内容
+
+
+
+
+
+说明将保留为空.</value>
+  </data>
+  <data name="DefaultModPackAuthorMessage" xml:space="preserve">
+    <value>没有为Mod包作者输入任何内容
+
+
+
+
+
+作者将默认为“TexTools用户”</value>
+  </data>
+  <data name="DefaultModPackNameMessage" xml:space="preserve">
+    <value>没有为Mod包名称输入任何内容
+
+
+
+
+
+Mod包名称默认为“ModPack”</value>
+  </data>
+  <data name="DefaultModPackVersionMessage" xml:space="preserve">
+    <value>没有为Mod包版本输入任何内容
+
+
+
+
+
+版本将默认为“1.0.0”</value>
+  </data>
+  <data name="DeleteGroupMessage" xml:space="preserve">
+    <value>这将删除整个组以及其中的所有选项.</value>
+  </data>
+  <data name="DeleteGroupTitle" xml:space="preserve">
+    <value>组删除警告</value>
+  </data>
+  <data name="ErrorImportingModsMessage" xml:space="preserve">
+    <value>导入某些MOD时出错.</value>
+  </data>
+  <data name="ErrorImportingModsTitle" xml:space="preserve">
+    <value>导入Mods时出错</value>
+  </data>
+  <data name="ExistingGroupMessage" xml:space="preserve">
+    <value>组已存在，请重命名该组.
+
+如果要添加到该组，请返回并单击编辑按钮.</value>
+  </data>
+  <data name="ExistingGroupTitle" xml:space="preserve">
+    <value>组名称已存在.</value>
+  </data>
+  <data name="ExistingOption" xml:space="preserve">
+    <value>组名称已存在.此选项已包括{0}
+
+是否覆盖此选项的现有mod？</value>
+  </data>
+  <data name="ModDataReadErrorTitle" xml:space="preserve">
+    <value>读取Mod数据时出错</value>
+  </data>
+  <data name="ModPackCreationMessage" xml:space="preserve">
+    <value>创建Mod包</value>
+  </data>
+  <data name="ModPackImportTitle" xml:space="preserve">
+    <value>导入Mod包</value>
+  </data>
+  <data name="NoAuthorFoundTitle" xml:space="preserve">
+    <value>找不到作者</value>
+  </data>
+  <data name="NoDescriptionFoundTitle" xml:space="preserve">
+    <value>找不到描述</value>
+  </data>
+  <data name="NoNameFoundTitle" xml:space="preserve">
+    <value>找不到名称</value>
+  </data>
+  <data name="NoVersionFoundTitle" xml:space="preserve">
+    <value>找不到版本</value>
+  </data>
+  <data name="OverwriteTitle" xml:space="preserve">
+    <value>是否覆盖？</value>
+  </data>
+  <data name="PleaseStandByMessage" xml:space="preserve">
+    <value>请稍候...</value>
+  </data>
+  <data name="RawDataErrorMessage" xml:space="preserve">
+    <value>获取Mod的原始数据时出现问题.
+
+偏移量：{0}
+数据文件：{1}</value>
+  </data>
+  <data name="DeleteModPackMessage" xml:space="preserve">
+    <value>警告：这将删除当前选定Mod包的所有Mod.
+
+
+
+
+
+此过程不可逆，是否继续？</value>
+  </data>
+  <data name="DeleteModPackTitle" xml:space="preserve">
+    <value>Mod包删除警告.</value>
+  </data>
+  <data name="ProblemCheckDatIssueMessage" xml:space="preserve">
+    <value>存在问题检查索引Dat计数</value>
+  </data>
+  <data name="ProblemCheckErrorTitle" xml:space="preserve">
+    <value>问题检查错误</value>
+  </data>
+  <data name="TTMPGettingData" xml:space="preserve">
+    <value>正在获取数据...</value>
+  </data>
+  <data name="LanguageError" xml:space="preserve">
+    <value>读取所选语言的数据时出错，是否恢复为英语？
+
+以后可以从“语言”菜单再次更改语言.</value>
+  </data>
+  <data name="LanguageErrorTitle" xml:space="preserve">
+    <value>语言数据错误</value>
+  </data>
+  <data name="AddNewTexturePartErrorMessage" xml:space="preserve">
+    <value>无法添加更多纹理部分</value>
+  </data>
+  <data name="AddNewTexturePartErrorTitle" xml:space="preserve">
+    <value>添加新纹理部分时出错</value>
   </data>
   <data name="AddNewTexturePartQuestionMessage" xml:space="preserve">
     <value>是否添加漫反射贴图？
@@ -136,30 +665,146 @@
   <data name="NotWizardModPack" xml:space="preserve">
     <value>这不是一个向导型Mod包</value>
   </data>
-  <data name="StartOverMessage" xml:space="preserve">
-    <value>初始化将：
+  <data name="AddNewTexturePartErrorMessageWrongCategoryOfItem" xml:space="preserve">
+    <value>目前只支持“装备”,"角色“,有需要请联系萌小新.</value>
+  </data>
+  <data name="AddNewTexturePartErrorMessageWrongItemCategoryOfItem" xml:space="preserve">
+    <value>"面妆","Equipment Decals" 不受支持.</value>
+  </data>
+  <data name="ModPack_Delete" xml:space="preserve">
+    <value>删除Mod包</value>
+  </data>
+  <data name="ModPackOverwriteMessage" xml:space="preserve">
+    <value>具有此名称的Mod包已存在.
 
-1.将游戏文件还原.
-2.删除所有mod及数据.
-3.清除所有mod记录.
+是否覆盖现有Mod包？</value>
+  </data>
+  <data name="StartOverErrorMessage" xml:space="preserve">
+    <value>初始化时出错.
 
-是否初始化？</value>
+
+
+请选择帮助-&gt;检查问题来检查问题.</value>
   </data>
-  <data name="StartOverTitle" xml:space="preserve">
-    <value>初始化</value>
+  <data name="StartOverErrorTitle" xml:space="preserve">
+    <value>初始化出错</value>
   </data>
-  <data name="ModPackImportErrorMessage" xml:space="preserve">
-    <value>在{0}导入mod pack时出错
-消息：{1}</value>
+  <data name="InvalidCharacterModpackNameMessage" xml:space="preserve">
+    <value>N名称不能包含以下任何字符：: \ / : * ? " &lt; &gt;|</value>
   </data>
-  <data name="ModPackImportErrorTitle" xml:space="preserve">
-    <value>Mod包导入错误</value>
+  <data name="InvalidCharacterModpackNameTitle" xml:space="preserve">
+    <value>Mod包名称无效</value>
   </data>
-  <data name="ModPackCreationCompleteMessage" xml:space="preserve">
-    <value>已成功创建Mod包（{0}.ttmp2）.</value>
+  <data name="ViewportErrorMessage" xml:space="preserve">
+    <value>无法更新视口.
+
+{0}.
+
+3D模型上的任何mod都将被禁用.</value>
   </data>
-  <data name="ModPackCreationCompleteTitle" xml:space="preserve">
-    <value>Mod包创建完成</value>
+  <data name="ViewportErrorTitle" xml:space="preserve">
+    <value>更新视口时出错</value>
+  </data>
+  <data name="MaterialEditorErrorMessage" xml:space="preserve">
+    <value>尝试修改材质时出错.</value>
+  </data>
+  <data name="MaterialEditorErrorTitle" xml:space="preserve">
+    <value>材质编辑器错误</value>
+  </data>
+  <data name="UnsupportedFileExtensionErrorMessage" xml:space="preserve">
+    <value>检测到不支持的文件扩展名：{0}.
+
+TexTools仅支持导入*.ttmp和*.ttmp2Mod包.</value>
+  </data>
+  <data name="UnsupportedFileExtensionErrorTitle" xml:space="preserve">
+    <value>文件扩展名错误</value>
+  </data>
+  <data name="ExportErrorMessage" xml:space="preserve">
+    <value>尝试导出模型时出错.</value>
+  </data>
+  <data name="ExportErrorTitle" xml:space="preserve">
+    <value>导出错误</value>
+  </data>
+  <data name="MissingDeforms" xml:space="preserve">
+    <value>无法将[{0}]变形应用于[{1}].
+
+缺少变形：{2}
+
+未应用缩放.</value>
+  </data>
+  <data name="MissingDeformsTitle" xml:space="preserve">
+    <value>模型变形器警告</value>
+  </data>
+  <data name="MissingBones" xml:space="preserve">
+    <value>找不到{0}的以下骨骼.
+{1}
+
+这可能会影响动画.</value>
+  </data>
+  <data name="MissingBonesTitle" xml:space="preserve">
+    <value>缺少骨骼</value>
+  </data>
+  <data name="ModelAddErrorTitle" xml:space="preserve">
+    <value>模型添加错误</value>
+  </data>
+  <data name="UpdateBodyTextureError" xml:space="preserve">
+    <value>更新身体纹理时遇到错误.
+
+错误：{0}</value>
+  </data>
+  <data name="UpdatingFaceTitle" xml:space="preserve">
+    <value>更新面部纹理</value>
+  </data>
+  <data name="UpdatingSkeletonTitle" xml:space="preserve">
+    <value>更新骨架</value>
+  </data>
+  <data name="UpdatingSkinTitle" xml:space="preserve">
+    <value>更新皮肤</value>
+  </data>
+  <data name="ExportingFullModelTitle" xml:space="preserve">
+    <value>导出完整模型</value>
+  </data>
+  <data name="FullModelExportSuccessMessage" xml:space="preserve">
+    <value>完整模型成功导出到：
+
+{0}</value>
+  </data>
+  <data name="FullModelExportSuccessTitle" xml:space="preserve">
+    <value>导出成功</value>
+  </data>
+  <data name="PatchDetectedMessage" xml:space="preserve">
+    <value>在此FFXIV安装上检测到FFXIV更新.
+
+现在将检查Modlist的错误和更改.
+请确保FFXIV已关闭，并且在该过程完成之前不要关闭TextTools.</value>
+  </data>
+  <data name="PostPatchBackupPrompt" xml:space="preserve">
+    <value>Mod列表已成功验证.
+是否要立即禁用所有mod并创建更新的索引备份？</value>
+  </data>
+  <data name="PatchDestroyedFiles" xml:space="preserve">
+    <value>以下mod文件已被FFXIV补丁破坏.
+建议创建或下载索引备份并执行[重新开始]，以避免潜在问题.
+
+{0}</value>
+  </data>
+  <data name="PostPatchBackupsComplete" xml:space="preserve">
+    <value>已成功创建索引备份.
+修补后过程现已完成.
+
+您现在可以通过mods=&gt;批处理=&gt;启用所有mod来启用mod
+如果遇到问题，请使用帮助=&gt;下载索引备份/初始化.</value>
+  </data>
+  <data name="PostPatchComplete" xml:space="preserve">
+    <value>修补后过程现已完成.
+
+如果遇到问题，请使用帮助=&gt;下载索引备份/初始化.</value>
+  </data>
+  <data name="PostPatchError" xml:space="preserve">
+    <value>无法完成修补程序后整理.
+请使用[帮助=&gt;下载索引备份]，然后使用[帮助=&gt;初始化].
+
+错误消息：{0}</value>
   </data>
   <data name="An error occured while trying to scan for new item sets." xml:space="preserve">
     <value>尝试扫描新道具集时出错.
@@ -181,24 +826,6 @@
   </data>
   <data name="Backup Download Success" xml:space="preserve">
     <value>备份下载成功</value>
-  </data>
-  <data name="BackupCompleteMessage" xml:space="preserve">
-    <value>已成功备份索引文件.</value>
-  </data>
-  <data name="BackupCompleteTitle" xml:space="preserve">
-    <value>备份完成</value>
-  </data>
-  <data name="BackupFailedErrorMessage" xml:space="preserve">
-    <value>无法创建备份文件.
-
-
-
-错误消息：
-
-{0}</value>
-  </data>
-  <data name="BackupFailedTitle" xml:space="preserve">
-    <value>备份创建失败</value>
   </data>
   <data name="Cache Rebuild Confirmation" xml:space="preserve">
     <value>缓存重建确认</value>
@@ -223,24 +850,6 @@
   </data>
   <data name="Copying new indexes to backup directory..." xml:space="preserve">
     <value>正在将新索引复制到备份目录...</value>
-  </data>
-  <data name="CreateBackupsMessage" xml:space="preserve">
-    <value>这将创建所有索引文件的备份.
-
-
-
-
-是否要立即备份？
-
-
-
-
-警告：
-
-为了创建干净的备份，所有活动修改都将设置为禁用，必须手动重新启用.</value>
-  </data>
-  <data name="CreateBackupsTitle" xml:space="preserve">
-    <value>备份索引文件</value>
   </data>
   <data name="DAT File Defragmentation completed successfully.&#xA;&#xA;{0} of unused space has been recovered." xml:space="preserve">
     <value>DAT文件碎片整理成功完成.
@@ -300,22 +909,6 @@
   </data>
   <data name="Set Scan Confirmation" xml:space="preserve">
     <value>设置扫描确认</value>
-  </data>
-  <data name="StartOverCompleteMessage" xml:space="preserve">
-    <value>初始化已经完成.</value>
-  </data>
-  <data name="StartOverCompleteTitle" xml:space="preserve">
-    <value>初始化完成</value>
-  </data>
-  <data name="StartOverErrorMessage" xml:space="preserve">
-    <value>初始化时出错.
-
-
-
-请选择帮助-&gt;检查问题来检查问题.</value>
-  </data>
-  <data name="StartOverErrorTitle" xml:space="preserve">
-    <value>初始化出错</value>
   </data>
   <data name="Successfully downloaded fresh index backups.&#xA;You may now use [Start Over] to apply them, if desired." xml:space="preserve">
     <value>已成功下载新索引备份.
@@ -519,604 +1112,11 @@
 
 错误：</value>
   </data>
-  <data name="AddNewTexturePartErrorMessage" xml:space="preserve">
-    <value>无法添加更多纹理部分</value>
-  </data>
-  <data name="AddNewTexturePartErrorTitle" xml:space="preserve">
-    <value>添加新纹理部分时出错</value>
-  </data>
-  <data name="AdvancedImportErrorTitle" xml:space="preserve">
-    <value>高级导入错误</value>
-  </data>
-  <data name="AdvancedImportWindowErrorMessage" xml:space="preserve">
-    <value>生成高级导入窗口时出错.
-
-
-
-
-
-{0}</value>
-  </data>
-  <data name="BackupFilesMissingTitle" xml:space="preserve">
-    <value>缺少备份文件</value>
-  </data>
-  <data name="BackupFolderAccessErrorMessage" xml:space="preserve">
-    <value>访问索引备份文件夹时出错
-
-
-
-
-
-请在“选项”&gt;“自定义”中设置索引备份目录，然后重试.</value>
-  </data>
-  <data name="BackupsDirectoryErrorMessage" xml:space="preserve">
-    <value>找不到备份目录</value>
-  </data>
-  <data name="ColorSetBMPNotSupportedMessage" xml:space="preserve">
-    <value>不支持颜色集BMP导入.</value>
-  </data>
-  <data name="CreateBackupTitle" xml:space="preserve">
-    <value>是否创建备份？</value>
-  </data>
-  <data name="DefaultDescriptionMessage" xml:space="preserve">
-    <value>是否创建备份？没有为Mod包描述输入任何内容
-
-
-
-
-
-说明将保留为空.</value>
-  </data>
-  <data name="DefaultModPackAuthorMessage" xml:space="preserve">
-    <value>没有为Mod包作者输入任何内容
-
-
-
-
-
-作者将默认为“TexTools用户”</value>
-  </data>
-  <data name="DefaultModPackNameMessage" xml:space="preserve">
-    <value>没有为Mod包名称输入任何内容
-
-
-
-
-
-Mod包名称默认为“ModPack”</value>
-  </data>
-  <data name="DefaultModPackVersionMessage" xml:space="preserve">
-    <value>没有为Mod包版本输入任何内容
-
-
-
-
-
-版本将默认为“1.0.0”</value>
-  </data>
-  <data name="DeleteGroupMessage" xml:space="preserve">
-    <value>这将删除整个组以及其中的所有选项.</value>
-  </data>
-  <data name="DeleteGroupTitle" xml:space="preserve">
-    <value>组删除警告</value>
-  </data>
-  <data name="DeleteModPackMessage" xml:space="preserve">
-    <value>警告：这将删除当前选定Mod包的所有Mod.
-
-
-
-
-
-此过程不可逆，是否继续？</value>
-  </data>
-  <data name="DeleteModPackTitle" xml:space="preserve">
-    <value>Mod包删除警告.</value>
-  </data>
-  <data name="DependencyErrorMessage" xml:space="preserve">
-    <value>TexTools无法找到依赖项文件.
-请确保您正在其所在的文件夹中运行TexTools.
-
-如果您继续收到此错误，
-请确保您的防病毒软件没有阻止TexTools.
-
-错误：{0}
-
-异常：{1}</value>
-  </data>
-  <data name="DependencyErrorTitle" xml:space="preserve">
-    <value>依赖项错误v{0}</value>
-  </data>
-  <data name="DisableAllModsMessage" xml:space="preserve">
-    <value>这将禁用modlist中的所有Mod.
-
-是否确实要继续？</value>
-  </data>
-  <data name="DisableAllModsTitle" xml:space="preserve">
-    <value>禁用所有MOD</value>
-  </data>
-  <data name="DisablingModsTitle" xml:space="preserve">
-    <value>禁用Mods</value>
-  </data>
-  <data name="EmptyTTMPFileErrorMessage" xml:space="preserve">
-    <value>TTMP文件[{0}]为空
-
-导入已取消.</value>
-  </data>
-  <data name="EnableAllModsMessage" xml:space="preserve">
-    <value>这将启用mod列表中的所有Mod.
-
-是否确实要继续？</value>
-  </data>
-  <data name="EnableAllModsTitle" xml:space="preserve">
-    <value>启用所有MOD</value>
-  </data>
-  <data name="EnablingModsTitle" xml:space="preserve">
-    <value>启用Mods</value>
-  </data>
-  <data name="ErrorImportingModsMessage" xml:space="preserve">
-    <value>导入某些MOD时出错.</value>
-  </data>
-  <data name="ErrorImportingModsTitle" xml:space="preserve">
-    <value>导入Mods时出错</value>
-  </data>
-  <data name="ExistingGroupMessage" xml:space="preserve">
-    <value>组已存在，请重命名该组.
-
-如果要添加到该组，请返回并单击编辑按钮.</value>
-  </data>
-  <data name="ExistingGroupTitle" xml:space="preserve">
-    <value>组名称已存在.</value>
-  </data>
-  <data name="ExistingOption" xml:space="preserve">
-    <value>组名称已存在.此选项已包括{0}
-
-是否覆盖此选项的现有mod？</value>
-  </data>
-  <data name="ExportErrorMessage" xml:space="preserve">
-    <value>尝试导出模型时出错.</value>
-  </data>
-  <data name="ExportErrorTitle" xml:space="preserve">
-    <value>导出错误</value>
-  </data>
-  <data name="ExportingFullModelTitle" xml:space="preserve">
-    <value>导出完整模型</value>
-  </data>
-  <data name="FullModelExportSuccessMessage" xml:space="preserve">
-    <value>完整模型成功导出到：
-
-{0}</value>
-  </data>
-  <data name="FullModelExportSuccessTitle" xml:space="preserve">
-    <value>导出成功</value>
-  </data>
-  <data name="GameVersionErrorMessage" xml:space="preserve">
-    <value>TexTools无法确定游戏版本.</value>
-  </data>
-  <data name="GameVersionErrorTitle" xml:space="preserve">
-    <value>版本检查错误{0}</value>
-  </data>
-  <data name="ImportCompleteTitle" xml:space="preserve">
-    <value>导入完成</value>
-  </data>
-  <data name="ImportErrorTitle" xml:space="preserve">
-    <value>导入错误</value>
-  </data>
-  <data name="IndexBackupLocationChangedMessage" xml:space="preserve">
-    <value>索引备份文件夹的位置已更改.
-
-新位置：{0}</value>
-  </data>
-  <data name="IndexBackupsErrorTitle" xml:space="preserve">
-    <value>索引备份错误</value>
-  </data>
-  <data name="IndexLockedBackupFailedMessage" xml:space="preserve">
-    <value>游戏运行时无法创建备份.</value>
-  </data>
-  <data name="IndexLockedErrorMessage" xml:space="preserve">
-    <value>访问索引文件时出错
-
-
-继续之前，请退出游戏.
------------------------------------------------------</value>
-  </data>
-  <data name="IndexLockedErrorTitle" xml:space="preserve">
-    <value>索引访问错误</value>
-  </data>
-  <data name="InstallDirectoryFoundMessage" xml:space="preserve">
-    <value>FF14安装目录位于
-
-{0}
-
-是否使用此目录？</value>
-  </data>
-  <data name="InstallDirectoryFoundTitle" xml:space="preserve">
-    <value>找到安装目录</value>
-  </data>
-  <data name="InstallDirectoryNotFoundMessage" xml:space="preserve">
-    <value>请找到以下目录.
-
-.../最终幻想14/game/sqpack/ffxiv</value>
-  </data>
-  <data name="InstallDirectoryNotFoundTitle" xml:space="preserve">
-    <value>找不到安装目录</value>
-  </data>
-  <data name="InvalidCharacterModpackNameMessage" xml:space="preserve">
-    <value>N名称不能包含以下任何字符：: \ / : * ? " &lt; &gt;|</value>
-  </data>
-  <data name="InvalidCharacterModpackNameTitle" xml:space="preserve">
-    <value>Mod包名称无效</value>
-  </data>
-  <data name="ItemsListErrorMessage" xml:space="preserve">
-    <value>获取道具列表时出错
-
-{0}</value>
-  </data>
-  <data name="ItemsListErrorTitle" xml:space="preserve">
-    <value>道具列表错误</value>
-  </data>
-  <data name="LanguageError" xml:space="preserve">
-    <value>读取所选语言的数据时出错，是否恢复为英语？
-
-以后可以从“语言”菜单再次更改语言.</value>
-  </data>
-  <data name="LanguageErrorTitle" xml:space="preserve">
-    <value>语言数据错误</value>
-  </data>
-  <data name="MaterialDataReadErrorTitle" xml:space="preserve">
-    <value>读取材料数据时出错</value>
-  </data>
-  <data name="MaterialEditorErrorMessage" xml:space="preserve">
-    <value>尝试修改材质时出错.</value>
-  </data>
-  <data name="MaterialEditorErrorTitle" xml:space="preserve">
-    <value>材质编辑器错误</value>
-  </data>
-  <data name="MaterialFileReadErrorMessage" xml:space="preserve">
-    <value>读取材质文件{0}时出错
-
-{1}</value>
-  </data>
-  <data name="MDLReadErrorMessage" xml:space="preserve">
-    <value>读取MDL文件时出错.
-
-{0}</value>
-  </data>
-  <data name="MDLReadErrorTitle" xml:space="preserve">
-    <value>读取模型数据时出错</value>
-  </data>
-  <data name="MissingBones" xml:space="preserve">
-    <value>找不到{0}的以下骨骼.
-{1}
-
-这可能会影响动画.</value>
-  </data>
-  <data name="MissingBonesTitle" xml:space="preserve">
-    <value>缺少骨骼</value>
-  </data>
-  <data name="MissingDeforms" xml:space="preserve">
-    <value>无法将[{0}]变形应用于[{1}].
-
-缺少变形：{2}
-
-未应用缩放.</value>
-  </data>
-  <data name="MissingDeformsTitle" xml:space="preserve">
-    <value>模型变形器警告</value>
-  </data>
-  <data name="ModDataReadErrorTitle" xml:space="preserve">
-    <value>读取Mod数据时出错</value>
-  </data>
-  <data name="ModelAddErrorTitle" xml:space="preserve">
-    <value>模型添加错误</value>
-  </data>
-  <data name="ModelDataErrorMessage" xml:space="preserve">
-    <value>模型添加错误获取{0}{1}的模型数据时出错</value>
-  </data>
-  <data name="ModelImportErrorMessage" xml:space="preserve">
-    <value>尝试导入模型时出错.
-
-{0}</value>
-  </data>
-  <data name="ModelImportErrorTitle" xml:space="preserve">
-    <value>导入DAE时出错</value>
-  </data>
-  <data name="ModListDisableFailedTitle" xml:space="preserve">
-    <value>Mod列表禁用失败</value>
-  </data>
-  <data name="ModListIndexLockedErrorMessage" xml:space="preserve">
-    <value>游戏运行时无法继续.
-
-请退出游戏并重试.</value>
-  </data>
-  <data name="ModPackCreationFailedErrorTitle" xml:space="preserve">
-    <value>错误：Mod包创建失败</value>
-  </data>
-  <data name="ModPackCreationMessage" xml:space="preserve">
-    <value>创建Mod包</value>
-  </data>
-  <data name="ModPackImportTitle" xml:space="preserve">
-    <value>导入Mod包</value>
-  </data>
-  <data name="ModPackOverwriteMessage" xml:space="preserve">
-    <value>具有此名称的Mod包已存在.
-
-是否覆盖现有Mod包？</value>
-  </data>
-  <data name="ModPacksLocationChangedMessage" xml:space="preserve">
-    <value>Mod包文件夹的位置已更改.
-
-
-新位置：{0}</value>
-  </data>
-  <data name="ModPack_Delete" xml:space="preserve">
-    <value>删除Mod包</value>
-  </data>
-  <data name="ModsDisabledSuccessMessage" xml:space="preserve">
-    <value>已成功禁用所有MOD</value>
-  </data>
-  <data name="ModsEnabledSuccessMessage" xml:space="preserve">
-    <value>已成功启用所有MOD</value>
-  </data>
-  <data name="ModToggleErrorMessage" xml:space="preserve">
-    <value>尝试切换mod状态时出错.
-
-{0}</value>
-  </data>
-  <data name="ModToggleErrorTitle" xml:space="preserve">
-    <value>切换Mod时出错</value>
-  </data>
-  <data name="MoveDataMessage" xml:space="preserve">
-    <value>是否要将现有数据移动到新位置？</value>
-  </data>
-  <data name="MoveDataTitle" xml:space="preserve">
-    <value>是否移动数据？</value>
-  </data>
-  <data name="NewBackupLocationTitle" xml:space="preserve">
-    <value>Selec选择Index_Backups文件夹的新位置</value>
-  </data>
-  <data name="NewDirectoryTitle" xml:space="preserve">
-    <value>新建目录</value>
-  </data>
-  <data name="NewerVersionDetectedBackupMessage" xml:space="preserve">
-    <value>检测到更新版本的FFXIV.
-是否立即创建索引文件的新备份？（推荐）
-
-警告：
-为了创建干净的备份，所有活动修改都将设置为禁用，必须手动重新启用.</value>
-  </data>
-  <data name="NewInstallDetectedBackupMessage" xml:space="preserve">
-    <value>检测到新的TexTools安装.
-
-是否立即创建索引文件的新备份？（推荐）</value>
-  </data>
-  <data name="newModpacksLocationTitle" xml:space="preserve">
-    <value>选择Mod包文件夹的新位置</value>
-  </data>
-  <data name="NewSaveLocationTitle" xml:space="preserve">
-    <value>为保存的文件夹选择新位置</value>
-  </data>
-  <data name="NoAuthorFoundTitle" xml:space="preserve">
-    <value>找不到作者</value>
-  </data>
-  <data name="NoBackupsFoundErrorMessage" xml:space="preserve">
-    <value>在以下目录中找不到备份文件：
-{0}
-
-
-索引项将被放回原始偏移量
------------------------------------------------------</value>
-  </data>
-  <data name="NoBackupsFoundMessage" xml:space="preserve">
-    <value>未找到索引备份.
-是否立即创建索引文件的新备份？（推荐）
-
-警告：
-为了创建干净的备份，所有活动修改都将设置为禁用，必须手动重新启用.</value>
-  </data>
-  <data name="NoDescriptionFoundTitle" xml:space="preserve">
-    <value>找不到描述</value>
-  </data>
-  <data name="NoModsDetectedErrorMessage" xml:space="preserve">
-    <value>在选项列表中未检测到MOD.</value>
-  </data>
-  <data name="NoNameFoundTitle" xml:space="preserve">
-    <value>找不到名称</value>
-  </data>
-  <data name="NoVersionFoundTitle" xml:space="preserve">
-    <value>找不到版本</value>
-  </data>
-  <data name="OldModListDisableFailedMessage" xml:space="preserve">
-    <value>试图从以前的版本中禁用mod时出错.
-
-错误消息：
-{0}
-
-建议先从以前的版本重新开始.</value>
-  </data>
-  <data name="OldModListFoundTitle" xml:space="preserve">
-    <value>找到旧的Mod列表</value>
-  </data>
-  <data name="OldTexToolsFoundMessage" xml:space="preserve">
-    <value>找到旧的TextTools Mod列表.
-
-旧的Mod列表与此版本不兼容.
-
-为了使用此版本，将禁用所有以前的MOD，并删除以前的Mod列表.
-
-
-如果您想保留您的Mod，建议您在较旧的TexTools版本中创建一个备份Mod包，然后将其导入到此版本中.
-
-是否要继续？</value>
-  </data>
-  <data name="OutdatedBackupsErrorMessage" xml:space="preserve">
-    <value>索引备份已过时.
-
-
-请从“帮助”&gt;“备份索引文件”创建新备份
-
-
-TexTools将尝试在不使用备份的情况下重新启动.</value>
-  </data>
-  <data name="OutOfDateInstallMessage" xml:space="preserve">
-    <value>选择的安装位置已过期
-
-请找到以下目录.
-
-
-
-.../最终幻想14/game/sqpack/ffxiv</value>
-  </data>
-  <data name="OutOfDateInstallTitle" xml:space="preserve">
-    <value>安装目录已过期</value>
-  </data>
-  <data name="OverwriteTitle" xml:space="preserve">
-    <value>是否覆盖？</value>
-  </data>
-  <data name="PatchDestroyedFiles" xml:space="preserve">
-    <value>以下mod文件已被FFXIV补丁破坏.
-建议创建或下载索引备份并执行[重新开始]，以避免潜在问题.
-
-{0}</value>
-  </data>
-  <data name="PatchDetectedMessage" xml:space="preserve">
-    <value>在此FFXIV安装上检测到FFXIV更新.
-
-现在将检查Modlist的错误和更改.
-请确保FFXIV已关闭，并且在该过程完成之前不要关闭TextTools.</value>
-  </data>
-  <data name="PleaseStandByMessage" xml:space="preserve">
-    <value>请稍候...</value>
-  </data>
-  <data name="PleaseWaitMessage" xml:space="preserve">
-    <value>请稍候...</value>
-  </data>
-  <data name="PostPatchBackupPrompt" xml:space="preserve">
-    <value>Mod列表已成功验证.
-是否要立即禁用所有mod并创建更新的索引备份？</value>
-  </data>
-  <data name="PostPatchBackupsComplete" xml:space="preserve">
-    <value>已成功创建索引备份.
-修补后过程现已完成.
-
-您现在可以通过mods=&gt;批处理=&gt;启用所有mod来启用mod
-如果遇到问题，请使用帮助=&gt;下载索引备份/初始化.</value>
-  </data>
-  <data name="PostPatchComplete" xml:space="preserve">
-    <value>修补后过程现已完成.
-
-如果遇到问题，请使用帮助=&gt;下载索引备份/初始化.</value>
-  </data>
-  <data name="PostPatchError" xml:space="preserve">
-    <value>无法完成修补程序后整理.
-请使用[帮助=&gt;下载索引备份]，然后使用[帮助=&gt;初始化].
-
-错误消息：{0}</value>
-  </data>
-  <data name="PreviousVersionErrorTitle" xml:space="preserve">
-    <value>上一版本错误</value>
-  </data>
-  <data name="ProblemCheckDatIssueMessage" xml:space="preserve">
-    <value>存在问题检查索引Dat计数</value>
-  </data>
-  <data name="ProblemCheckErrorTitle" xml:space="preserve">
-    <value>问题检查错误</value>
-  </data>
-  <data name="RawDataErrorMessage" xml:space="preserve">
-    <value>获取Mod的原始数据时出现问题.
-
-偏移量：{0}
-数据文件：{1}</value>
-  </data>
-  <data name="SavedLocationChangedMessage" xml:space="preserve">
-    <value>已更改保存文件夹的位置.
-
-
-新位置：{0}</value>
-  </data>
-  <data name="SelectffxivFolderTitle" xml:space="preserve">
-    <value>选择sqpack/ffxiv文件夹</value>
-  </data>
-  <data name="SuccessfulImportCountMessage" xml:space="preserve">
-    <value>{0}个mod在{2}秒内成功导入.（{1}个错误）</value>
-  </data>
-  <data name="SuccessTitle" xml:space="preserve">
-    <value>成功</value>
-  </data>
   <data name="Texture format not supported: {0}" xml:space="preserve">
     <value>不支持纹理格式：{0}</value>
   </data>
-  <data name="TextureDataReadErrorTitle" xml:space="preserve">
-    <value>读取纹理数据时出错</value>
-  </data>
-  <data name="TextureFileReadErrorMessage" xml:space="preserve">
-    <value>读取纹理文件{0}时出错.
-
-
-
-
-
-{1}</value>
-  </data>
-  <data name="TextureImportErrorMessage" xml:space="preserve">
-    <value>导入纹理时出错.
-
-
-
-
-
-错误消息：
-
-
-{0}</value>
-  </data>
-  <data name="TextureImportErrorTitle" xml:space="preserve">
-    <value>导入纹理时出错</value>
-  </data>
-  <data name="TranslucencyToggleErrorMessage" xml:space="preserve">
-    <value>尝试切换半透明时出错
-
-{0}</value>
-  </data>
-  <data name="TranslucencyToggleErrorTitle" xml:space="preserve">
-    <value>切换半透明时出错</value>
-  </data>
-  <data name="TTMPGettingData" xml:space="preserve">
-    <value>正在获取数据...</value>
-  </data>
   <data name="Unsupported item type" xml:space="preserve">
     <value>不支持的道具类型</value>
-  </data>
-  <data name="UnsupportedFileExtensionErrorMessage" xml:space="preserve">
-    <value>检测到不支持的文件扩展名：{0}.
-
-TexTools仅支持导入*.ttmp和*.ttmp2Mod包.</value>
-  </data>
-  <data name="UnsupportedFileExtensionErrorTitle" xml:space="preserve">
-    <value>文件扩展名错误</value>
-  </data>
-  <data name="UpdateBodyTextureError" xml:space="preserve">
-    <value>更新身体纹理时遇到错误.
-
-错误：{0}</value>
-  </data>
-  <data name="UpdatingFaceTitle" xml:space="preserve">
-    <value>更新面部纹理</value>
-  </data>
-  <data name="UpdatingSkeletonTitle" xml:space="preserve">
-    <value>更新骨架</value>
-  </data>
-  <data name="UpdatingSkinTitle" xml:space="preserve">
-    <value>更新皮肤</value>
-  </data>
-  <data name="ViewportErrorMessage" xml:space="preserve">
-    <value>无法更新视口.
-
-{0}.
-
-3D模型上的任何mod都将被禁用.</value>
-  </data>
-  <data name="ViewportErrorTitle" xml:space="preserve">
-    <value>更新视口时出错</value>
   </data>
   <data name="An error occurred while loading the item list." xml:space="preserve">
     <value>加载道具列表时出错.
@@ -1313,12 +1313,6 @@ TexTools仅支持导入*.ttmp和*.ttmp2Mod包.</value>
   <data name="Changing Mod Status" xml:space="preserve">
     <value>更改Mod状态</value>
   </data>
-  <data name="Changing TexTools Application Mode to DX11 to match FFXIV settings..." xml:space="preserve">
-    <value>	正在将TexTools应用程序模式更改为DX11以匹配FF14设置...</value>
-  </data>
-  <data name="Changing TexTools Application Mode to DX9 to match FFXIV settings..." xml:space="preserve">
-    <value>	正在将TexTools应用程序模式更改为DX9以匹配FFXIV设置...</value>
-  </data>
   <data name="Corrupted ModList Detected" xml:space="preserve">
     <value>检测到损坏的Mod列表</value>
   </data>
@@ -1338,16 +1332,6 @@ TexTools仅支持导入*.ttmp和*.ttmp2Mod包.</value>
   </data>
   <data name="Extraction Success" xml:space="preserve">
     <value>提取成功</value>
-  </data>
-  <data name="FFXIV is set to DX9 Mode.  This may cause issues with some mods and will reduce the available mod data limit." xml:space="preserve">
-    <value>	FF14设置为DX9模式.这可能会导致某些mod出现问题，并会降低可用mod数据限制.
-</value>
-  </data>
-  <data name="FFXIV set to DX11 Mode" xml:space="preserve">
-    <value>	FF14设置为DX11模式</value>
-  </data>
-  <data name="FFXIV set to DX9 Mode" xml:space="preserve">
-    <value>	FF14设置为DX9模式</value>
   </data>
   <data name="File does not exist.&#xA;&#xA;File:" xml:space="preserve">
     <value>文件不存在.

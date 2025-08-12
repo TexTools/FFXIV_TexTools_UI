@@ -1262,12 +1262,6 @@ Please see the text log for more information.</value>
   <data name="Changing Mod Status" xml:space="preserve">
     <value>Changing Mod Status</value>
   </data>
-  <data name="Changing TexTools Application Mode to DX11 to match FFXIV settings..." xml:space="preserve">
-    <value />
-  </data>
-  <data name="Changing TexTools Application Mode to DX9 to match FFXIV settings..." xml:space="preserve">
-    <value />
-  </data>
   <data name="Corrupted ModList Detected" xml:space="preserve">
     <value>Corrupted ModList Detected</value>
   </data>
@@ -1287,15 +1281,6 @@ Please see the text log for more information.</value>
   </data>
   <data name="Extraction Success" xml:space="preserve">
     <value>Extraction Success</value>
-  </data>
-  <data name="FFXIV is set to DX9 Mode.  This may cause issues with some mods and will reduce the available mod data limit." xml:space="preserve">
-    <value />
-  </data>
-  <data name="FFXIV set to DX11 Mode" xml:space="preserve">
-    <value />
-  </data>
-  <data name="FFXIV set to DX9 Mode" xml:space="preserve">
-    <value />
   </data>
   <data name="File does not exist.&#xA;&#xA;File:" xml:space="preserve">
     <value>File does not exist.
