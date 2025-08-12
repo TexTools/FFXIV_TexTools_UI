@@ -117,44 +117,8 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Accessory" xml:space="preserve">
-    <value>アクセサリ</value>
-  </data>
-  <data name="Actions" xml:space="preserve">
-    <value>アクション</value>
-  </data>
-  <data name="All" xml:space="preserve">
-    <value>すべて</value>
-  </data>
-  <data name="AuRa_Female" xml:space="preserve">
-    <value>アウラ♀</value>
-  </data>
-  <data name="AuRa_Male" xml:space="preserve">
-    <value>アウラ♂</value>
-  </data>
-  <data name="Au_Ra" xml:space="preserve">
-    <value>アウラ</value>
-  </data>
-  <data name="Bishop_Autoturret" xml:space="preserve">
-    <value>オートタレット・ビショップ</value>
-  </data>
   <data name="Body" xml:space="preserve">
     <value>胴</value>
-  </data>
-  <data name="Body_Hands" xml:space="preserve">
-    <value>胴 + 手</value>
-  </data>
-  <data name="Body_Hands_Legs" xml:space="preserve">
-    <value>胴 + 手 + 脚</value>
-  </data>
-  <data name="Body_Hands_Legs_Feet" xml:space="preserve">
-    <value>胴 + 手 + 脚 + 足</value>
-  </data>
-  <data name="Body_Legs_Feet" xml:space="preserve">
-    <value>胴 + 脚 + 足</value>
-  </data>
-  <data name="Carbuncle" xml:space="preserve">
-    <value>カーバンクル</value>
   </data>
   <data name="Character" xml:space="preserve">
     <value>キャラクター</value>
@@ -162,26 +126,8 @@
   <data name="Companions" xml:space="preserve">
     <value>バディ</value>
   </data>
-  <data name="Ears" xml:space="preserve">
-    <value>耳</value>
-  </data>
-  <data name="Elezen" xml:space="preserve">
-    <value>エレゼン</value>
-  </data>
-  <data name="Elezen_Female" xml:space="preserve">
-    <value>エレゼン♀</value>
-  </data>
-  <data name="Elezen_Male" xml:space="preserve">
-    <value>エレゼン♂</value>
-  </data>
-  <data name="Eos" xml:space="preserve">
-    <value>フェアリー・エオス</value>
-  </data>
   <data name="Equipment_Decals" xml:space="preserve">
     <value>クレスト</value>
-  </data>
-  <data name="Etc" xml:space="preserve">
-    <value>その他</value>
   </data>
   <data name="Face" xml:space="preserve">
     <value>顔</value>
@@ -191,18 +137,6 @@
   </data>
   <data name="Feet" xml:space="preserve">
     <value>足</value>
-  </data>
-  <data name="Female" xml:space="preserve">
-    <value>女性</value>
-  </data>
-  <data name="Food" xml:space="preserve">
-    <value>調理品</value>
-  </data>
-  <data name="Furniture" xml:space="preserve">
-    <value>調度品</value>
-  </data>
-  <data name="Garuda_Egi" xml:space="preserve">
-    <value>ガルーダ・エギ</value>
   </data>
   <data name="Gear" xml:space="preserve">
     <value>装備</value>
@@ -216,14 +150,173 @@
   <data name="Head" xml:space="preserve">
     <value>頭</value>
   </data>
-  <data name="Head_Body" xml:space="preserve">
-    <value>頭 + 胴</value>
+  <data name="HUD" xml:space="preserve">
+    <value>HUD</value>
+  </data>
+  <data name="Legs" xml:space="preserve">
+    <value>脚</value>
+  </data>
+  <data name="Maps" xml:space="preserve">
+    <value>マップ</value>
+  </data>
+  <data name="Minions" xml:space="preserve">
+    <value>ミニオン</value>
+  </data>
+  <data name="Mounts" xml:space="preserve">
+    <value>マウント</value>
+  </data>
+  <data name="Neck" xml:space="preserve">
+    <value>首</value>
+  </data>
+  <data name="Number" xml:space="preserve">
+    <value>数</value>
+  </data>
+  <data name="Part" xml:space="preserve">
+    <value>パート</value>
+  </data>
+  <data name="Pets" xml:space="preserve">
+    <value>ペット</value>
+  </data>
+  <data name="Race" xml:space="preserve">
+    <value>種族</value>
+  </data>
+  <data name="Ring_Right" xml:space="preserve">
+    <value>右指</value>
+  </data>
+  <data name="Tail" xml:space="preserve">
+    <value>尾</value>
+  </data>
+  <data name="Texture_Map" xml:space="preserve">
+    <value>テクスチャマップ</value>
+  </data>
+  <data name="Type" xml:space="preserve">
+    <value>タイプ</value>
+  </data>
+  <data name="TypePart" xml:space="preserve">
+    <value>タイプパート</value>
+  </data>
+  <data name="Wrists" xml:space="preserve">
+    <value>腕</value>
+  </data>
+  <data name="All" xml:space="preserve">
+    <value>すべて</value>
+  </data>
+  <data name="Mesh" xml:space="preserve">
+    <value>メッシュ</value>
+  </data>
+  <data name="Furniture" xml:space="preserve">
+    <value>調度品</value>
   </data>
   <data name="Housing" xml:space="preserve">
     <value>ハウジング</value>
   </data>
-  <data name="HUD" xml:space="preserve">
-    <value>HUD</value>
+  <data name="Accessory" xml:space="preserve">
+    <value>アクセサリ</value>
+  </data>
+  <data name="Etc" xml:space="preserve">
+    <value>その他</value>
+  </data>
+  <data name="Iris" xml:space="preserve">
+    <value>瞳</value>
+  </data>
+  <data name="Monster" xml:space="preserve">
+    <value>モンスター</value>
+  </data>
+  <data name="Ring_Left" xml:space="preserve">
+    <value>左指</value>
+  </data>
+  <data name="Body_Hands_Legs" xml:space="preserve">
+    <value>胴 + 手 + 脚</value>
+  </data>
+  <data name="Body_Hands_Legs_Feet" xml:space="preserve">
+    <value>胴 + 手 + 脚 + 足</value>
+  </data>
+  <data name="Body_Legs_Feet" xml:space="preserve">
+    <value>胴 + 脚 + 足</value>
+  </data>
+  <data name="Food" xml:space="preserve">
+    <value>調理品</value>
+  </data>
+  <data name="Head_Body" xml:space="preserve">
+    <value>頭 + 胴</value>
+  </data>
+  <data name="Legs_Feet" xml:space="preserve">
+    <value>脚 + 足</value>
+  </data>
+  <data name="Main_Hand" xml:space="preserve">
+    <value>メインアーム</value>
+  </data>
+  <data name="Main_Off" xml:space="preserve">
+    <value>メインアーム + サブアーム</value>
+  </data>
+  <data name="Off_Hand" xml:space="preserve">
+    <value>サブアーム</value>
+  </data>
+  <data name="Rings" xml:space="preserve">
+    <value>指</value>
+  </data>
+  <data name="Soul_Crystal" xml:space="preserve">
+    <value>ソウルクリスタル</value>
+  </data>
+  <data name="Two_Handed" xml:space="preserve">
+    <value>両手</value>
+  </data>
+  <data name="Waist" xml:space="preserve">
+    <value>帯</value>
+  </data>
+  <data name="Icon" xml:space="preserve">
+    <value>アイコン</value>
+  </data>
+  <data name="Left" xml:space="preserve">
+    <value>左</value>
+  </data>
+  <data name="Primary" xml:space="preserve">
+    <value>プライマリ</value>
+  </data>
+  <data name="Right" xml:space="preserve">
+    <value>右</value>
+  </data>
+  <data name="Secondary" xml:space="preserve">
+    <value>セカンダリー</value>
+  </data>
+  <data name="Weapon" xml:space="preserve">
+    <value>武器</value>
+  </data>
+  <data name="AuRa_Female" xml:space="preserve">
+    <value>アウラ♀</value>
+  </data>
+  <data name="AuRa_Male" xml:space="preserve">
+    <value>アウラ♂</value>
+  </data>
+  <data name="Au_Ra" xml:space="preserve">
+    <value>アウラ</value>
+  </data>
+  <data name="Bishop_Autoturret" xml:space="preserve">
+    <value>オートタレット・ビショップ</value>
+  </data>
+  <data name="Body_Hands" xml:space="preserve">
+    <value>胴 + 手</value>
+  </data>
+  <data name="Carbuncle" xml:space="preserve">
+    <value>カーバンクル</value>
+  </data>
+  <data name="Elezen" xml:space="preserve">
+    <value>エレゼン</value>
+  </data>
+  <data name="Elezen_Female" xml:space="preserve">
+    <value>エレゼン♀</value>
+  </data>
+  <data name="Elezen_Male" xml:space="preserve">
+    <value>エレゼン♂</value>
+  </data>
+  <data name="Eos" xml:space="preserve">
+    <value>フェアリー・エオス</value>
+  </data>
+  <data name="Female" xml:space="preserve">
+    <value>女性</value>
+  </data>
+  <data name="Garuda_Egi" xml:space="preserve">
+    <value>ガルーダ・エギ</value>
   </data>
   <data name="Hyur_H" xml:space="preserve">
     <value>ヒューラン・ハイランダ</value>
@@ -243,14 +336,8 @@
   <data name="Hyur_Midlander_Male" xml:space="preserve">
     <value>ヒューラン・ミッドランダ♂</value>
   </data>
-  <data name="Icon" xml:space="preserve">
-    <value>アイコン</value>
-  </data>
   <data name="Ifrit_Egi" xml:space="preserve">
     <value>イフリート・エギ</value>
-  </data>
-  <data name="Iris" xml:space="preserve">
-    <value>瞳</value>
   </data>
   <data name="Lalafell" xml:space="preserve">
     <value>ララフェル</value>
@@ -261,32 +348,8 @@
   <data name="Lalafell_Male" xml:space="preserve">
     <value>ララフェル♂</value>
   </data>
-  <data name="Left" xml:space="preserve">
-    <value>左</value>
-  </data>
-  <data name="Legs" xml:space="preserve">
-    <value>脚</value>
-  </data>
-  <data name="Legs_Feet" xml:space="preserve">
-    <value>脚 + 足</value>
-  </data>
-  <data name="Main_Hand" xml:space="preserve">
-    <value>メインアーム</value>
-  </data>
-  <data name="Main_Off" xml:space="preserve">
-    <value>メインアーム + サブアーム</value>
-  </data>
   <data name="Male" xml:space="preserve">
     <value>男性</value>
-  </data>
-  <data name="Maps" xml:space="preserve">
-    <value>マップ</value>
-  </data>
-  <data name="Mesh" xml:space="preserve">
-    <value>メッシュ</value>
-  </data>
-  <data name="Minions" xml:space="preserve">
-    <value>ミニオン</value>
   </data>
   <data name="Miqote" xml:space="preserve">
     <value>ミコッテ</value>
@@ -297,47 +360,8 @@
   <data name="Miqote_Male" xml:space="preserve">
     <value>ミコッテ♂</value>
   </data>
-  <data name="Monster" xml:space="preserve">
-    <value>モンスター</value>
-  </data>
-  <data name="Mounts" xml:space="preserve">
-    <value>マウント</value>
-  </data>
-  <data name="Neck" xml:space="preserve">
-    <value>首</value>
-  </data>
-  <data name="Number" xml:space="preserve">
-    <value>数</value>
-  </data>
-  <data name="Off_Hand" xml:space="preserve">
-    <value>サブアーム</value>
-  </data>
-  <data name="Part" xml:space="preserve">
-    <value>パート</value>
-  </data>
-  <data name="Pets" xml:space="preserve">
-    <value>ペット</value>
-  </data>
-  <data name="Primary" xml:space="preserve">
-    <value>プライマリ</value>
-  </data>
-  <data name="Race" xml:space="preserve">
-    <value>種族</value>
-  </data>
   <data name="Ramuh_Egi" xml:space="preserve">
     <value>ラムウ・エギ</value>
-  </data>
-  <data name="Right" xml:space="preserve">
-    <value>右</value>
-  </data>
-  <data name="Rings" xml:space="preserve">
-    <value>指</value>
-  </data>
-  <data name="Ring_Left" xml:space="preserve">
-    <value>左指</value>
-  </data>
-  <data name="Ring_Right" xml:space="preserve">
-    <value>右指</value>
   </data>
   <data name="Roegadyn" xml:space="preserve">
     <value>ルガディン</value>
@@ -351,43 +375,19 @@
   <data name="Rook_Autoturret" xml:space="preserve">
     <value>オートタレット・ルーク</value>
   </data>
-  <data name="Secondary" xml:space="preserve">
-    <value>セカンダリー</value>
-  </data>
   <data name="Selene" xml:space="preserve">
     <value>フェアリー・セレネ</value>
-  </data>
-  <data name="Soul_Crystal" xml:space="preserve">
-    <value>ソウルクリスタル</value>
-  </data>
-  <data name="Status" xml:space="preserve">
-    <value>ステータス</value>
-  </data>
-  <data name="Tail" xml:space="preserve">
-    <value>尾</value>
-  </data>
-  <data name="Texture_Map" xml:space="preserve">
-    <value>テクスチャマップ</value>
   </data>
   <data name="Titan_Egi" xml:space="preserve">
     <value>タイタン・エギ</value>
   </data>
-  <data name="Two_Handed" xml:space="preserve">
-    <value>両手</value>
+  <data name="Actions" xml:space="preserve">
+    <value>アクション</value>
   </data>
-  <data name="Type" xml:space="preserve">
-    <value>タイプ</value>
+  <data name="Status" xml:space="preserve">
+    <value>ステータス</value>
   </data>
-  <data name="TypePart" xml:space="preserve">
-    <value>タイプパート</value>
-  </data>
-  <data name="Waist" xml:space="preserve">
-    <value>帯</value>
-  </data>
-  <data name="Weapon" xml:space="preserve">
-    <value>武器</value>
-  </data>
-  <data name="Wrists" xml:space="preserve">
-    <value>腕</value>
+  <data name="Ears" xml:space="preserve">
+    <value>耳</value>
   </data>
 </root>

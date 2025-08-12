@@ -1753,9 +1753,6 @@ If you would like to enable this, first import a texture for the selected item.<
   <data name="View" xml:space="preserve">
     <value>View</value>
   </data>
-  <data name="Create_Modpack" xml:space="preserve">
-    <value>Create Modpack</value>
-  </data>
   <data name="DAE_file_to_import" xml:space="preserve">
     <value>DAE file to import</value>
   </data>
@@ -1767,9 +1764,6 @@ If you would like to enable this, first import a texture for the selected item.<
   </data>
   <data name="Export_DAE_Materials" xml:space="preserve">
     <value>Export DAE Materials</value>
-  </data>
-  <data name="Viewer_Options" xml:space="preserve">
-    <value>Viewer Options</value>
   </data>
   <data name="Set: e0123" xml:space="preserve">
     <value>Set: e0123</value>
@@ -1794,9 +1788,6 @@ If you would like to enable this, first import a texture for the selected item.<
   </data>
   <data name="Copy_File" xml:space="preserve">
     <value>Copy_File</value>
-  </data>
-  <data name="Item_Converter" xml:space="preserve">
-    <value>Item_Converter</value>
   </data>
   <data name="Reflection:" xml:space="preserve">
     <value>Reflection:</value>
