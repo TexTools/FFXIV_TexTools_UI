@@ -1,0 +1,1803 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AddNewTexturePartErrorMessageWrongCategoryOfItem" xml:space="preserve">
+    <value>目前只支持“裝備”,"角色“,有需要請聯繫萌小新.</value>
+  </data>
+  <data name="AddNewTexturePartErrorMessageWrongItemCategoryOfItem" xml:space="preserve">
+    <value>"面妝","Equipment Decals" 不受支持.</value>
+  </data>
+  <data name="AddNewTexturePartQuestionMessage" xml:space="preserve">
+    <value>是否添加漫反射貼圖？
+選擇“是”將添加漫反射貼圖，選擇“否”將添加默認貼圖.</value>
+  </data>
+  <data name="AddNewTexturePartQuestionTitle" xml:space="preserve">
+    <value>添加漫反射貼圖</value>
+  </data>
+  <data name="ModPackLoadingTitle" xml:space="preserve">
+    <value>加載Mod包</value>
+  </data>
+  <data name="NotWizardModPack" xml:space="preserve">
+    <value>這不是一個嚮導型Mod包</value>
+  </data>
+  <data name="StartOverMessage" xml:space="preserve">
+    <value>初始化將：
+
+1.將遊戲文件還原.
+2.刪除所有mod及數據.
+3.清除所有mod記錄.
+
+是否初始化？</value>
+  </data>
+  <data name="StartOverTitle" xml:space="preserve">
+    <value>初始化</value>
+  </data>
+  <data name="ModPackImportErrorMessage" xml:space="preserve">
+    <value>在{0}導入mod pack時出錯
+消息：{1}</value>
+  </data>
+  <data name="ModPackImportErrorTitle" xml:space="preserve">
+    <value>Mod包導入錯誤</value>
+  </data>
+  <data name="ModPackCreationCompleteMessage" xml:space="preserve">
+    <value>已成功創建Mod包（{0}.ttmp2）.</value>
+  </data>
+  <data name="ModPackCreationCompleteTitle" xml:space="preserve">
+    <value>Mod包創建完成</value>
+  </data>
+  <data name="An error occured while trying to scan for new item sets." xml:space="preserve">
+    <value>嘗試掃描新道具集時出錯.
+
+</value>
+  </data>
+  <data name="An error occurred during the cleanup process.&#xA;&#xA;Error:" xml:space="preserve">
+    <value>整理過程中出錯.
+
+錯誤：</value>
+  </data>
+  <data name="An error occurred during the defragmentation process.&#xA;&#xA;Error:" xml:space="preserve">
+    <value>碎片整理過程中出錯.
+
+錯誤：</value>
+  </data>
+  <data name="Backing Up Indexes" xml:space="preserve">
+    <value>備份索引</value>
+  </data>
+  <data name="Backup Download Success" xml:space="preserve">
+    <value>備份下載成功</value>
+  </data>
+  <data name="BackupCompleteMessage" xml:space="preserve">
+    <value>已成功備份索引文件.</value>
+  </data>
+  <data name="BackupCompleteTitle" xml:space="preserve">
+    <value>備份完成</value>
+  </data>
+  <data name="BackupFailedErrorMessage" xml:space="preserve">
+    <value>無法創建備份文件.
+
+
+
+錯誤消息：
+
+{0}</value>
+  </data>
+  <data name="BackupFailedTitle" xml:space="preserve">
+    <value>備份創建失敗</value>
+  </data>
+  <data name="Cache Rebuild Confirmation" xml:space="preserve">
+    <value>緩存重建確認</value>
+  </data>
+  <data name="Cache Rebuild Error" xml:space="preserve">
+    <value>緩存重建錯誤</value>
+  </data>
+  <data name="Cannot perform Start Over while Lumina Mode is active." xml:space="preserve">
+    <value>當Lumina模式處於活動狀態時，無法執行重新啓動.</value>
+  </data>
+  <data name="Checking downloaded index version..." xml:space="preserve">
+    <value>正在檢查下載的索引版本...</value>
+  </data>
+  <data name="Cleaning up Modlist" xml:space="preserve">
+    <value>正在整理Mod列表</value>
+  </data>
+  <data name="Cleanup Complete" xml:space="preserve">
+    <value>整理完成</value>
+  </data>
+  <data name="Cleanup Error" xml:space="preserve">
+    <value>整理錯誤</value>
+  </data>
+  <data name="Copying new indexes to backup directory..." xml:space="preserve">
+    <value>正在將新索引複製到備份目錄...</value>
+  </data>
+  <data name="CreateBackupsMessage" xml:space="preserve">
+    <value>這將創建所有索引文件的備份.
+
+
+
+
+是否要立即備份？
+
+
+
+
+警告：
+
+爲了創建乾淨的備份，所有活動修改都將設置爲禁用，必須手動重新啓用.</value>
+  </data>
+  <data name="CreateBackupsTitle" xml:space="preserve">
+    <value>備份索引文件</value>
+  </data>
+  <data name="DAT File Defragmentation completed successfully.&#xA;&#xA;{0} of unused space has been recovered." xml:space="preserve">
+    <value>DAT文件碎片整理成功完成.
+
+已恢復{0}個未使用的空間.</value>
+  </data>
+  <data name="Defragmentation Complete" xml:space="preserve">
+    <value>碎片整理完成</value>
+  </data>
+  <data name="Downloaded Index version does not match game version." xml:space="preserve">
+    <value>下載的索引版本與遊戲版本不匹配.</value>
+  </data>
+  <data name="Downloading Backups" xml:space="preserve">
+    <value>下載備份</value>
+  </data>
+  <data name="Downloading Indexes..." xml:space="preserve">
+    <value>正在下載索引...</value>
+  </data>
+  <data name="Failed to copy index files." xml:space="preserve">
+    <value>未能複製索引文件.
+
+</value>
+  </data>
+  <data name="If you have many mods enabled, this may take some time..." xml:space="preserve">
+    <value>如果您啓用了許多MOD，這可能需要一些時間...</value>
+  </data>
+  <data name="Index backup download is not currently supported for your client language." xml:space="preserve">
+    <value>您的客戶端語言當前不支持索引備份下載.</value>
+  </data>
+  <data name="Item Scan Error" xml:space="preserve">
+    <value>道具掃描錯誤</value>
+  </data>
+  <data name="Item Sets loaded.&#xA;Restarting TexTools." xml:space="preserve">
+    <value>已加載道具集.
+重新啓動TextTools</value>
+  </data>
+  <data name="Job Done." xml:space="preserve">
+    <value>任務完成.</value>
+  </data>
+  <data name="Modlist Cleanup Confirmation" xml:space="preserve">
+    <value>Mod列表整理確認</value>
+  </data>
+  <data name="Modlist Defragmentation Error" xml:space="preserve">
+    <value>Mod列表碎片整理錯誤</value>
+  </data>
+  <data name="Rebuilding Cache" xml:space="preserve">
+    <value>正在重建緩存</value>
+  </data>
+  <data name="Recover Space Confirmation" xml:space="preserve">
+    <value>回收空間確認</value>
+  </data>
+  <data name="Removing old Backups..." xml:space="preserve">
+    <value>正在刪除舊備份...</value>
+  </data>
+  <data name="Scanning for new Item Sets" xml:space="preserve">
+    <value>正在掃描新道具集</value>
+  </data>
+  <data name="Set Scan Confirmation" xml:space="preserve">
+    <value>設置掃描確認</value>
+  </data>
+  <data name="StartOverCompleteMessage" xml:space="preserve">
+    <value>初始化已經完成.</value>
+  </data>
+  <data name="StartOverCompleteTitle" xml:space="preserve">
+    <value>初始化完成</value>
+  </data>
+  <data name="StartOverErrorMessage" xml:space="preserve">
+    <value>初始化時出錯.
+
+
+
+請選擇幫助-&gt;檢查問題來檢查問題.</value>
+  </data>
+  <data name="StartOverErrorTitle" xml:space="preserve">
+    <value>初始化出錯</value>
+  </data>
+  <data name="Successfully downloaded fresh index backups.&#xA;You may now use [Start Over] to apply them, if desired." xml:space="preserve">
+    <value>已成功下載新索引備份.
+如果需要，您現在可以使用[重新開始]應用它們.</value>
+  </data>
+  <data name="The Modlist was cleaned up successfully." xml:space="preserve">
+    <value>已成功整理Mod列表.</value>
+  </data>
+  <data name="This can take up to roughly an hour, depending on computer specs." xml:space="preserve">
+    <value>這可能需要大約一個小時，具體取決於計算機配置.</value>
+  </data>
+  <data name="This will download index backups from the internet. Proceed?" xml:space="preserve">
+    <value>這將從internet下載索引備份.繼續</value>
+  </data>
+  <data name="This will rebuild the TexTools cache.&#xA;This may take up to 5 minutes if you have many mods installed." xml:space="preserve">
+    <value>這將重建TexTools緩存.
+如果安裝了多個MOD，這可能需要5分鐘.</value>
+  </data>
+  <data name="This will recover unused space in the game files by defragmenting the modded DAT files.&#xA;&#xA;Please do not close TexTools or open FFXIV until this operation is complete" xml:space="preserve">
+    <value>這將通過整理修改後的DAT文件來恢復遊戲文件中未使用的空間.
+
+在此操作完成之前，請不要關閉TextTools或打開FF14</value>
+  </data>
+  <data name="This will scan the entire FFXIV file system for new item sets.&#xA;&#xA;This operation can take up to an hour.&#xA;Are you sure you wish to proceed?." xml:space="preserve">
+    <value>這將掃描整個FF14文件系統以查找新的項目集.
+
+此操作可能需要一個小時.
+您確定要繼續嗎？.</value>
+  </data>
+  <data name="This will update the Modlist to ensure all modded files are&#xA;labeled under the correct items.&#xA;&#xA;As the Queue currently has a large amount of files still processing,&#xA;this operation may take an extended amount of time to complete.&#xA;(Up to one hour)" xml:space="preserve">
+    <value>這將更新Mod列表，以確保所有修改過的文件都標記在正確的項目下.
+
+由於隊列當前有大量文件仍在處理，
+此操作可能需要較長的時間才能完成.
+（最多一小時）</value>
+  </data>
+  <data name="This will update the Modlist to ensure all modded files are&#xA;labeled under the correct items.&#xA;&#xA;This may take up to 5 minutes to complete." xml:space="preserve">
+    <value>這將更新Mod列表，以確保所有修改過的文件都標記在正確的項目下.
+
+這可能需要5分鐘才能完成.</value>
+  </data>
+  <data name="Unable to download Index Backups." xml:space="preserve">
+    <value>無法下載索引備份.
+
+</value>
+  </data>
+  <data name="Unable to rebuild cache file.&#xA;&#xA;Error:" xml:space="preserve">
+    <value>無法重建緩存文件.
+
+錯誤：</value>
+  </data>
+  <data name="Unzipping new Indexes..." xml:space="preserve">
+    <value>正在解壓縮新索引...</value>
+  </data>
+  <data name="Web Download Confirmation" xml:space="preserve">
+    <value>Web下載確認</value>
+  </data>
+  <data name="Web Download Error" xml:space="preserve">
+    <value>Web下載錯誤</value>
+  </data>
+  <data name="&#xA;&#xA;Error:" xml:space="preserve">
+    <value>
+
+錯誤</value>
+  </data>
+  <data name="This may take a few minutes if you have many mods." xml:space="preserve">
+    <value>如果您有許多MOD，這可能需要幾分鐘.</value>
+  </data>
+  <data name="This should only take a moment..." xml:space="preserve">
+    <value>這應該只需要一點時間...</value>
+  </data>
+  <data name="This will auto-assign the skin materials for all moded player models.&#xA; Are you sure you wish to proceed?" xml:space="preserve">
+    <value>這將自動爲打過mod的玩家模型分配皮膚材質.
+是否確實要繼續？</value>
+  </data>
+  <data name="Unable to restore Lumina settings, directory was invalid." xml:space="preserve">
+    <value>無法還原Lumina設置，目錄無效.</value>
+  </data>
+  <data name="Updating skin materials for all modded models..." xml:space="preserve">
+    <value>正在更新所有已修改模型的皮膚材質...</value>
+  </data>
+  <data name="Rebuilding Cache... This may take up to 60 seconds.  (Rebuild Reason: {0})" xml:space="preserve">
+    <value>正在重建緩存...這可能需要60秒.（重建原因：{0})</value>
+  </data>
+  <data name="Skin Auto - Assign Complete" xml:space="preserve">
+    <value>皮膚自動分配完成</value>
+  </data>
+  <data name="Skin Auto-Assigment is complete.&#xA;&#xA;{0} Models updated." xml:space="preserve">
+    <value>皮膚自動分配完成.
+
+{0}個模型已更新.</value>
+  </data>
+  <data name="Skin Auto-Assign Confirmation" xml:space="preserve">
+    <value>皮膚自動分配確認</value>
+  </data>
+  <data name="Skin Auto-Assign Error" xml:space="preserve">
+    <value>皮膚自動分配錯誤</value>
+  </data>
+  <data name="More than one TexTools process detected.  Shutting down other TexTools copies." xml:space="preserve">
+    <value>檢測到多個TexTools進程.正在關閉其他TexTools副本.</value>
+  </data>
+  <data name="Multi-Application Shutdown." xml:space="preserve">
+    <value>多應用程序關閉.</value>
+  </data>
+  <data name="Item List Loaded Successfully." xml:space="preserve">
+    <value>已成功加載道具列表.</value>
+  </data>
+  <data name="Item Loaded Successfully." xml:space="preserve">
+    <value>已成功加載項目.</value>
+  </data>
+  <data name="Error Accessing Index File&#xA;&#xA;&#xA;Please exit the game before proceeding.&#xA;---------------------------------------------------- -" xml:space="preserve">
+    <value>訪問索引文件時出錯
+
+
+請退出遊戲，然後繼續.
+---------------------------------------------</value>
+  </data>
+  <data name="FFXIVUpdate" xml:space="preserve">
+    <value>FF14更新</value>
+  </data>
+  <data name="Unable to load texture file:&#xA;&#xA;Error:" xml:space="preserve">
+    <value>無法加載紋理文件：
+
+錯誤：</value>
+  </data>
+  <data name="An error occured while trying to update player models.&#xA;Your mods/game files have not been altered.&#xA;&#xA;Error:" xml:space="preserve">
+    <value>嘗試更新玩家模型出錯.
+您的mod和遊戲文件未做任何更改.n
+錯誤：</value>
+  </data>
+  <data name="An error occurred while attempting to rebuild the cache. This may be caused by this version of Final Fantasy XIV not being supported by this version of TexTools." xml:space="preserve">
+    <value>嘗試重建緩存時出錯.這可能是因爲此版本的TexTools不支持此版本的最終幻想14.
+
+</value>
+  </data>
+  <data name="Cache Rebuild Error." xml:space="preserve">
+    <value>緩存重建錯誤.</value>
+  </data>
+  <data name="ERROR: FILE DOES NOT EXIST/HAS NO INDEX ENTRY -- PLEASE RE-ENABLE MODDED TEXTURE, OR DISABLE MODDED MATERIAL REFERENCING IT." xml:space="preserve">
+    <value>錯誤：文件不存在/沒有索引項--請重新啓用模型紋理，或禁用引用它的模型材質.</value>
+  </data>
+  <data name="An error occurred when saving the Material." xml:space="preserve">
+    <value>保存材料時出錯.</value>
+  </data>
+  <data name="Maximum Material Limit Reached." xml:space="preserve">
+    <value>已達到最大材質數限制.</value>
+  </data>
+  <data name="Mod Delete Error" xml:space="preserve">
+    <value>Mod刪除錯誤</value>
+  </data>
+  <data name="Unable to delete Mod.&#xA;&#xA;Error:" xml:space="preserve">
+    <value>無法刪除Mod.
+
+錯誤：</value>
+  </data>
+  <data name="Blank paths will automatically be replaced with the" xml:space="preserve">
+    <value>空白路徑將自動替換爲</value>
+  </data>
+  <data name="default path for the item/material/texture." xml:space="preserve">
+    <value>道具/材質/紋理的默認路徑.</value>
+  </data>
+  <data name="Texture file names may be explicit paths in FFXIV's File System," xml:space="preserve">
+    <value>紋理文件名可以是FF14文件系統中的顯式路徑，</value>
+  </data>
+  <data name="Tokenized Paths, or combinations of the two." xml:space="preserve">
+    <value>標記化路徑，或兩者的組合.</value>
+  </data>
+  <data name="The following tokens are available for use:" xml:space="preserve">
+    <value>以下標記可供使用：</value>
+  </data>
+  <data name="The item's personal folder (shared among all Variants of that item)" xml:space="preserve">
+    <value>道具的個人文件夾（在該道具的所有變體之間共享）</value>
+  </data>
+  <data name="The common folder shared" xml:space="preserve">
+    <value>FF14中</value>
+  </data>
+  <data name="by ALL" xml:space="preserve">
+    <value>所有道具</value>
+  </data>
+  <data name="items in FFXIV." xml:space="preserve">
+    <value>共享的公用文件夾.</value>
+  </data>
+  <data name="The item's variant number, ex [v01, v05, v12]" xml:space="preserve">
+    <value>道具的變體編號，例如[v01、v05、v12]</value>
+  </data>
+  <data name="Use the default texture name, rather than a custom one.  Unique per Item/Material/Texture Type." xml:space="preserve">
+    <value>使用默認紋理名稱，而不是自定義名稱.每個道具/材質/紋理類型都是唯一的.</value>
+  </data>
+  <data name="Paths may only contain lowercase characters, numbers, tokens and &#xA;;the following special characters: /.-_" xml:space="preserve">
+    <value>路徑只能包含小寫字符、數字、標記和以下特殊字符：
+/.-_</value>
+  </data>
+  <data name="Click here for the full Material Editor Guide." xml:space="preserve">
+    <value>單擊此處獲取完整的“材質編輯器”指南.</value>
+  </data>
+  <data name="Item Information Error" xml:space="preserve">
+    <value>道具信息錯誤</value>
+  </data>
+  <data name="Unable to load item information:&#xA;&#xA;Error:" xml:space="preserve">
+    <value>無法加載道具信息：
+
+錯誤：</value>
+  </data>
+  <data name="AddNewTexturePartErrorMessage" xml:space="preserve">
+    <value>無法添加更多紋理部分</value>
+  </data>
+  <data name="AddNewTexturePartErrorTitle" xml:space="preserve">
+    <value>添加新紋理部分時出錯</value>
+  </data>
+  <data name="AdvancedImportErrorTitle" xml:space="preserve">
+    <value>高級導入錯誤</value>
+  </data>
+  <data name="AdvancedImportWindowErrorMessage" xml:space="preserve">
+    <value>生成高級導入窗口時出錯.
+
+
+
+
+
+{0}</value>
+  </data>
+  <data name="BackupFilesMissingTitle" xml:space="preserve">
+    <value>缺少備份文件</value>
+  </data>
+  <data name="BackupFolderAccessErrorMessage" xml:space="preserve">
+    <value>訪問索引備份文件夾時出錯
+
+
+
+
+
+請在“選項”&gt;“自定義”中設置索引備份目錄，然後重試.</value>
+  </data>
+  <data name="BackupsDirectoryErrorMessage" xml:space="preserve">
+    <value>找不到備份目錄</value>
+  </data>
+  <data name="ColorSetBMPNotSupportedMessage" xml:space="preserve">
+    <value>不支持顏色集BMP導入.</value>
+  </data>
+  <data name="CreateBackupTitle" xml:space="preserve">
+    <value>是否創建備份？</value>
+  </data>
+  <data name="DefaultDescriptionMessage" xml:space="preserve">
+    <value>是否創建備份？沒有爲Mod包描述輸入任何內容
+
+
+
+
+
+說明將保留爲空.</value>
+  </data>
+  <data name="DefaultModPackAuthorMessage" xml:space="preserve">
+    <value>沒有爲Mod包作者輸入任何內容
+
+
+
+
+
+作者將默認爲“TexTools用戶”</value>
+  </data>
+  <data name="DefaultModPackNameMessage" xml:space="preserve">
+    <value>沒有爲Mod包名稱輸入任何內容
+
+
+
+
+
+Mod包名稱默認爲“ModPack”</value>
+  </data>
+  <data name="DefaultModPackVersionMessage" xml:space="preserve">
+    <value>沒有爲Mod包版本輸入任何內容
+
+
+
+
+
+版本將默認爲“1.0.0”</value>
+  </data>
+  <data name="DeleteGroupMessage" xml:space="preserve">
+    <value>這將刪除整個組以及其中的所有選項.</value>
+  </data>
+  <data name="DeleteGroupTitle" xml:space="preserve">
+    <value>組刪除警告</value>
+  </data>
+  <data name="DeleteModPackMessage" xml:space="preserve">
+    <value>警告：這將刪除當前選定Mod包的所有Mod.
+
+
+
+
+
+此過程不可逆，是否繼續？</value>
+  </data>
+  <data name="DeleteModPackTitle" xml:space="preserve">
+    <value>Mod包刪除警告.</value>
+  </data>
+  <data name="DependencyErrorMessage" xml:space="preserve">
+    <value>TexTools無法找到依賴項文件.
+請確保您正在其所在的文件夾中運行TexTools.
+
+如果您繼續收到此錯誤，
+請確保您的防病毒軟件沒有阻止TexTools.
+
+錯誤：{0}
+
+異常：{1}</value>
+  </data>
+  <data name="DependencyErrorTitle" xml:space="preserve">
+    <value>依賴項錯誤v{0}</value>
+  </data>
+  <data name="DisableAllModsMessage" xml:space="preserve">
+    <value>這將禁用modlist中的所有Mod.
+
+是否確實要繼續？</value>
+  </data>
+  <data name="DisableAllModsTitle" xml:space="preserve">
+    <value>禁用所有MOD</value>
+  </data>
+  <data name="DisablingModsTitle" xml:space="preserve">
+    <value>禁用Mods</value>
+  </data>
+  <data name="EmptyTTMPFileErrorMessage" xml:space="preserve">
+    <value>TTMP文件[{0}]爲空
+
+導入已取消.</value>
+  </data>
+  <data name="EnableAllModsMessage" xml:space="preserve">
+    <value>這將啓用mod列表中的所有Mod.
+
+是否確實要繼續？</value>
+  </data>
+  <data name="EnableAllModsTitle" xml:space="preserve">
+    <value>啓用所有MOD</value>
+  </data>
+  <data name="EnablingModsTitle" xml:space="preserve">
+    <value>啓用Mods</value>
+  </data>
+  <data name="ErrorImportingModsMessage" xml:space="preserve">
+    <value>導入某些MOD時出錯.</value>
+  </data>
+  <data name="ErrorImportingModsTitle" xml:space="preserve">
+    <value>導入Mods時出錯</value>
+  </data>
+  <data name="ExistingGroupMessage" xml:space="preserve">
+    <value>組已存在，請重命名該組.
+
+如果要添加到該組，請返回並單擊編輯按鈕.</value>
+  </data>
+  <data name="ExistingGroupTitle" xml:space="preserve">
+    <value>組名稱已存在.</value>
+  </data>
+  <data name="ExistingOption" xml:space="preserve">
+    <value>組名稱已存在.此選項已包括{0}
+
+是否覆蓋此選項的現有mod？</value>
+  </data>
+  <data name="ExportErrorMessage" xml:space="preserve">
+    <value>嘗試導出模型時出錯.</value>
+  </data>
+  <data name="ExportErrorTitle" xml:space="preserve">
+    <value>導出錯誤</value>
+  </data>
+  <data name="ExportingFullModelTitle" xml:space="preserve">
+    <value>導出完整模型</value>
+  </data>
+  <data name="FullModelExportSuccessMessage" xml:space="preserve">
+    <value>完整模型成功導出到：
+
+{0}</value>
+  </data>
+  <data name="FullModelExportSuccessTitle" xml:space="preserve">
+    <value>導出成功</value>
+  </data>
+  <data name="GameVersionErrorMessage" xml:space="preserve">
+    <value>TexTools無法確定遊戲版本.</value>
+  </data>
+  <data name="GameVersionErrorTitle" xml:space="preserve">
+    <value>版本檢查錯誤{0}</value>
+  </data>
+  <data name="ImportCompleteTitle" xml:space="preserve">
+    <value>導入完成</value>
+  </data>
+  <data name="ImportErrorTitle" xml:space="preserve">
+    <value>導入錯誤</value>
+  </data>
+  <data name="IndexBackupLocationChangedMessage" xml:space="preserve">
+    <value>索引備份文件夾的位置已更改.
+
+新位置：{0}</value>
+  </data>
+  <data name="IndexBackupsErrorTitle" xml:space="preserve">
+    <value>索引備份錯誤</value>
+  </data>
+  <data name="IndexLockedBackupFailedMessage" xml:space="preserve">
+    <value>遊戲運行時無法創建備份.</value>
+  </data>
+  <data name="IndexLockedErrorMessage" xml:space="preserve">
+    <value>訪問索引文件時出錯
+
+
+繼續之前，請退出遊戲.
+-----------------------------------------------------</value>
+  </data>
+  <data name="IndexLockedErrorTitle" xml:space="preserve">
+    <value>索引訪問錯誤</value>
+  </data>
+  <data name="InstallDirectoryFoundMessage" xml:space="preserve">
+    <value>FF14安裝目錄位於
+
+{0}
+
+是否使用此目錄？</value>
+  </data>
+  <data name="InstallDirectoryFoundTitle" xml:space="preserve">
+    <value>找到安裝目錄</value>
+  </data>
+  <data name="InstallDirectoryNotFoundMessage" xml:space="preserve">
+    <value>請找到以下目錄.
+
+.../最終幻想14/game/sqpack/ffxiv</value>
+  </data>
+  <data name="InstallDirectoryNotFoundTitle" xml:space="preserve">
+    <value>找不到安裝目錄</value>
+  </data>
+  <data name="InvalidCharacterModpackNameMessage" xml:space="preserve">
+    <value>N名稱不能包含以下任何字符：: \ / : * ? " &lt; &gt;|</value>
+  </data>
+  <data name="InvalidCharacterModpackNameTitle" xml:space="preserve">
+    <value>Mod包名稱無效</value>
+  </data>
+  <data name="ItemsListErrorMessage" xml:space="preserve">
+    <value>獲取道具列表時出錯
+
+{0}</value>
+  </data>
+  <data name="ItemsListErrorTitle" xml:space="preserve">
+    <value>道具列表錯誤</value>
+  </data>
+  <data name="LanguageError" xml:space="preserve">
+    <value>讀取所選語言的數據時出錯，是否恢復爲英語？
+
+以後可以從“語言”菜單再次更改語言.</value>
+  </data>
+  <data name="LanguageErrorTitle" xml:space="preserve">
+    <value>語言數據錯誤</value>
+  </data>
+  <data name="MaterialDataReadErrorTitle" xml:space="preserve">
+    <value>讀取材料數據時出錯</value>
+  </data>
+  <data name="MaterialEditorErrorMessage" xml:space="preserve">
+    <value>嘗試修改材質時出錯.</value>
+  </data>
+  <data name="MaterialEditorErrorTitle" xml:space="preserve">
+    <value>材質編輯器錯誤</value>
+  </data>
+  <data name="MaterialFileReadErrorMessage" xml:space="preserve">
+    <value>讀取材質文件{0}時出錯
+
+{1}</value>
+  </data>
+  <data name="MDLReadErrorMessage" xml:space="preserve">
+    <value>讀取MDL文件時出錯.
+
+{0}</value>
+  </data>
+  <data name="MDLReadErrorTitle" xml:space="preserve">
+    <value>讀取模型數據時出錯</value>
+  </data>
+  <data name="MissingBones" xml:space="preserve">
+    <value>找不到{0}的以下骨骼.
+{1}
+
+這可能會影響動畫.</value>
+  </data>
+  <data name="MissingBonesTitle" xml:space="preserve">
+    <value>缺少骨骼</value>
+  </data>
+  <data name="MissingDeforms" xml:space="preserve">
+    <value>無法將[{0}]變形應用於[{1}].
+
+缺少變形：{2}
+
+未應用縮放.</value>
+  </data>
+  <data name="MissingDeformsTitle" xml:space="preserve">
+    <value>模型變形器警告</value>
+  </data>
+  <data name="ModDataReadErrorTitle" xml:space="preserve">
+    <value>讀取Mod數據時出錯</value>
+  </data>
+  <data name="ModelAddErrorTitle" xml:space="preserve">
+    <value>模型添加錯誤</value>
+  </data>
+  <data name="ModelDataErrorMessage" xml:space="preserve">
+    <value>模型添加錯誤獲取{0}{1}的模型數據時出錯</value>
+  </data>
+  <data name="ModelImportErrorMessage" xml:space="preserve">
+    <value>嘗試導入模型時出錯.
+
+{0}</value>
+  </data>
+  <data name="ModelImportErrorTitle" xml:space="preserve">
+    <value>導入DAE時出錯</value>
+  </data>
+  <data name="ModListDisableFailedTitle" xml:space="preserve">
+    <value>Mod列表禁用失敗</value>
+  </data>
+  <data name="ModListIndexLockedErrorMessage" xml:space="preserve">
+    <value>遊戲運行時無法繼續.
+
+請退出遊戲並重試.</value>
+  </data>
+  <data name="ModPackCreationFailedErrorTitle" xml:space="preserve">
+    <value>錯誤：Mod包創建失敗</value>
+  </data>
+  <data name="ModPackCreationMessage" xml:space="preserve">
+    <value>創建Mod包</value>
+  </data>
+  <data name="ModPackImportTitle" xml:space="preserve">
+    <value>導入Mod包</value>
+  </data>
+  <data name="ModPackOverwriteMessage" xml:space="preserve">
+    <value>具有此名稱的Mod包已存在.
+
+是否覆蓋現有Mod包？</value>
+  </data>
+  <data name="ModPacksLocationChangedMessage" xml:space="preserve">
+    <value>Mod包文件夾的位置已更改.
+
+
+新位置：{0}</value>
+  </data>
+  <data name="ModPack_Delete" xml:space="preserve">
+    <value>刪除Mod包</value>
+  </data>
+  <data name="ModsDisabledSuccessMessage" xml:space="preserve">
+    <value>已成功禁用所有MOD</value>
+  </data>
+  <data name="ModsEnabledSuccessMessage" xml:space="preserve">
+    <value>已成功啓用所有MOD</value>
+  </data>
+  <data name="ModToggleErrorMessage" xml:space="preserve">
+    <value>嘗試切換mod狀態時出錯.
+
+{0}</value>
+  </data>
+  <data name="ModToggleErrorTitle" xml:space="preserve">
+    <value>切換Mod時出錯</value>
+  </data>
+  <data name="MoveDataMessage" xml:space="preserve">
+    <value>是否要將現有數據移動到新位置？</value>
+  </data>
+  <data name="MoveDataTitle" xml:space="preserve">
+    <value>是否移動數據？</value>
+  </data>
+  <data name="NewBackupLocationTitle" xml:space="preserve">
+    <value>Selec選擇Index_Backups文件夾的新位置</value>
+  </data>
+  <data name="NewDirectoryTitle" xml:space="preserve">
+    <value>新建目錄</value>
+  </data>
+  <data name="NewerVersionDetectedBackupMessage" xml:space="preserve">
+    <value>檢測到更新版本的FFXIV.
+是否立即創建索引文件的新備份？（推薦）
+
+警告：
+爲了創建乾淨的備份，所有活動修改都將設置爲禁用，必須手動重新啓用.</value>
+  </data>
+  <data name="NewInstallDetectedBackupMessage" xml:space="preserve">
+    <value>檢測到新的TexTools安裝.
+
+是否立即創建索引文件的新備份？（推薦）</value>
+  </data>
+  <data name="newModpacksLocationTitle" xml:space="preserve">
+    <value>選擇Mod包文件夾的新位置</value>
+  </data>
+  <data name="NewSaveLocationTitle" xml:space="preserve">
+    <value>爲保存的文件夾選擇新位置</value>
+  </data>
+  <data name="NoAuthorFoundTitle" xml:space="preserve">
+    <value>找不到作者</value>
+  </data>
+  <data name="NoBackupsFoundErrorMessage" xml:space="preserve">
+    <value>在以下目錄中找不到備份文件：
+{0}
+
+
+索引項將被放回原始偏移量
+-----------------------------------------------------</value>
+  </data>
+  <data name="NoBackupsFoundMessage" xml:space="preserve">
+    <value>未找到索引備份.
+是否立即創建索引文件的新備份？（推薦）
+
+警告：
+爲了創建乾淨的備份，所有活動修改都將設置爲禁用，必須手動重新啓用.</value>
+  </data>
+  <data name="NoDescriptionFoundTitle" xml:space="preserve">
+    <value>找不到描述</value>
+  </data>
+  <data name="NoModsDetectedErrorMessage" xml:space="preserve">
+    <value>在選項列表中未檢測到MOD.</value>
+  </data>
+  <data name="NoNameFoundTitle" xml:space="preserve">
+    <value>找不到名稱</value>
+  </data>
+  <data name="NoVersionFoundTitle" xml:space="preserve">
+    <value>找不到版本</value>
+  </data>
+  <data name="OldModListDisableFailedMessage" xml:space="preserve">
+    <value>試圖從以前的版本中禁用mod時出錯.
+
+錯誤消息：
+{0}
+
+建議先從以前的版本重新開始.</value>
+  </data>
+  <data name="OldModListFoundTitle" xml:space="preserve">
+    <value>找到舊的Mod列表</value>
+  </data>
+  <data name="OldTexToolsFoundMessage" xml:space="preserve">
+    <value>找到舊的TextTools Mod列表.
+
+舊的Mod列表與此版本不兼容.
+
+爲了使用此版本，將禁用所有以前的MOD，並刪除以前的Mod列表.
+
+
+如果您想保留您的Mod，建議您在較舊的TexTools版本中創建一個備份Mod包，然後將其導入到此版本中.
+
+是否要繼續？</value>
+  </data>
+  <data name="OutdatedBackupsErrorMessage" xml:space="preserve">
+    <value>索引備份已過時.
+
+
+請從“幫助”&gt;“備份索引文件”創建新備份
+
+
+TexTools將嘗試在不使用備份的情況下重新啓動.</value>
+  </data>
+  <data name="OutOfDateInstallMessage" xml:space="preserve">
+    <value>選擇的安裝位置已過期
+
+請找到以下目錄.
+
+
+
+.../最終幻想14/game/sqpack/ffxiv</value>
+  </data>
+  <data name="OutOfDateInstallTitle" xml:space="preserve">
+    <value>安裝目錄已過期</value>
+  </data>
+  <data name="OverwriteTitle" xml:space="preserve">
+    <value>是否覆蓋？</value>
+  </data>
+  <data name="PatchDestroyedFiles" xml:space="preserve">
+    <value>以下mod文件已被FFXIV補丁破壞.
+建議創建或下載索引備份並執行[重新開始]，以避免潛在問題.
+
+{0}</value>
+  </data>
+  <data name="PatchDetectedMessage" xml:space="preserve">
+    <value>在此FFXIV安裝上檢測到FFXIV更新.
+
+現在將檢查Modlist的錯誤和更改.
+請確保FFXIV已關閉，並且在該過程完成之前不要關閉TextTools.</value>
+  </data>
+  <data name="PleaseStandByMessage" xml:space="preserve">
+    <value>請稍候...</value>
+  </data>
+  <data name="PleaseWaitMessage" xml:space="preserve">
+    <value>請稍候...</value>
+  </data>
+  <data name="PostPatchBackupPrompt" xml:space="preserve">
+    <value>Mod列表已成功驗證.
+是否要立即禁用所有mod並創建更新的索引備份？</value>
+  </data>
+  <data name="PostPatchBackupsComplete" xml:space="preserve">
+    <value>已成功創建索引備份.
+修補後過程現已完成.
+
+您現在可以通過mods=&gt;批處理=&gt;啓用所有mod來啓用mod
+如果遇到問題，請使用幫助=&gt;下載索引備份/初始化.</value>
+  </data>
+  <data name="PostPatchComplete" xml:space="preserve">
+    <value>修補後過程現已完成.
+
+如果遇到問題，請使用幫助=&gt;下載索引備份/初始化.</value>
+  </data>
+  <data name="PostPatchError" xml:space="preserve">
+    <value>無法完成修補程序後整理.
+請使用[幫助=&gt;下載索引備份]，然後使用[幫助=&gt;初始化].
+
+錯誤消息：{0}</value>
+  </data>
+  <data name="PreviousVersionErrorTitle" xml:space="preserve">
+    <value>上一版本錯誤</value>
+  </data>
+  <data name="ProblemCheckDatIssueMessage" xml:space="preserve">
+    <value>存在問題檢查索引Dat計數</value>
+  </data>
+  <data name="ProblemCheckErrorTitle" xml:space="preserve">
+    <value>問題檢查錯誤</value>
+  </data>
+  <data name="RawDataErrorMessage" xml:space="preserve">
+    <value>獲取Mod的原始數據時出現問題.
+
+偏移量：{0}
+數據文件：{1}</value>
+  </data>
+  <data name="SavedLocationChangedMessage" xml:space="preserve">
+    <value>已更改保存文件夾的位置.
+
+
+新位置：{0}</value>
+  </data>
+  <data name="SelectffxivFolderTitle" xml:space="preserve">
+    <value>選擇sqpack/ffxiv文件夾</value>
+  </data>
+  <data name="SuccessfulImportCountMessage" xml:space="preserve">
+    <value>{0}個mod在{2}秒內成功導入.（{1}個錯誤）</value>
+  </data>
+  <data name="SuccessTitle" xml:space="preserve">
+    <value>成功</value>
+  </data>
+  <data name="Texture format not supported: {0}" xml:space="preserve">
+    <value>不支持紋理格式：{0}</value>
+  </data>
+  <data name="TextureDataReadErrorTitle" xml:space="preserve">
+    <value>讀取紋理數據時出錯</value>
+  </data>
+  <data name="TextureFileReadErrorMessage" xml:space="preserve">
+    <value>讀取紋理文件{0}時出錯.
+
+
+
+
+
+{1}</value>
+  </data>
+  <data name="TextureImportErrorMessage" xml:space="preserve">
+    <value>導入紋理時出錯.
+
+
+
+
+
+錯誤消息：
+
+
+{0}</value>
+  </data>
+  <data name="TextureImportErrorTitle" xml:space="preserve">
+    <value>導入紋理時出錯</value>
+  </data>
+  <data name="TranslucencyToggleErrorMessage" xml:space="preserve">
+    <value>嘗試切換半透明時出錯
+
+{0}</value>
+  </data>
+  <data name="TranslucencyToggleErrorTitle" xml:space="preserve">
+    <value>切換半透明時出錯</value>
+  </data>
+  <data name="TTMPGettingData" xml:space="preserve">
+    <value>正在獲取數據...</value>
+  </data>
+  <data name="Unsupported item type" xml:space="preserve">
+    <value>不支持的道具類型</value>
+  </data>
+  <data name="UnsupportedFileExtensionErrorMessage" xml:space="preserve">
+    <value>檢測到不支持的文件擴展名：{0}.
+
+TexTools僅支持導入*.ttmp和*.ttmp2Mod包.</value>
+  </data>
+  <data name="UnsupportedFileExtensionErrorTitle" xml:space="preserve">
+    <value>文件擴展名錯誤</value>
+  </data>
+  <data name="UpdateBodyTextureError" xml:space="preserve">
+    <value>更新身體紋理時遇到錯誤.
+
+錯誤：{0}</value>
+  </data>
+  <data name="UpdatingFaceTitle" xml:space="preserve">
+    <value>更新面部紋理</value>
+  </data>
+  <data name="UpdatingSkeletonTitle" xml:space="preserve">
+    <value>更新骨架</value>
+  </data>
+  <data name="UpdatingSkinTitle" xml:space="preserve">
+    <value>更新皮膚</value>
+  </data>
+  <data name="ViewportErrorMessage" xml:space="preserve">
+    <value>無法更新視口.
+
+{0}.
+
+3D模型上的任何mod都將被禁用.</value>
+  </data>
+  <data name="ViewportErrorTitle" xml:space="preserve">
+    <value>更新視口時出錯</value>
+  </data>
+  <data name="An error occurred while loading the item list." xml:space="preserve">
+    <value>加載道具列表時出錯.
+個</value>
+  </data>
+  <data name="Cannot save changes: One or more values are not valid." xml:space="preserve">
+    <value>無法保存更改：一個或多個值無效.</value>
+  </data>
+  <data name="Cannot save changes:&#xA;&#xA;Error:" xml:space="preserve">
+    <value>無法保存更改：
+
+錯誤：</value>
+  </data>
+  <data name="Cloning Items" xml:space="preserve">
+    <value>克隆道具</value>
+  </data>
+  <data name="Colorset Editor Error" xml:space="preserve">
+    <value>顏色集編輯器錯誤</value>
+  </data>
+  <data name="Defragmenting DAT Files" xml:space="preserve">
+    <value>整理DAT文件</value>
+  </data>
+  <data name="Dual-Wield Conversion Required" xml:space="preserve">
+    <value>需要雙持轉換</value>
+  </data>
+  <data name="Exporter threw error code:" xml:space="preserve">
+    <value>導出程序引發錯誤代碼：</value>
+  </data>
+  <data name="In order to fully convert this item, the following items may also need to be converted with it.&#xA;&#xA;{0}&#xA;Perform these conversions as well?" xml:space="preserve">
+    <value>爲了完全轉換此道具，可能還需要使用它轉換以下道具.
+
+{0}
+還要執行這些轉換嗎？</value>
+  </data>
+  <data name="In order to properly convert this item, the following item may also need to be converted with it:&#xA;&#xA;{0}&#xA;Perform these conversions as well?" xml:space="preserve">
+    <value>爲了正確轉換此道具，可能還需要使用它轉換以下道具：
+
+{0}
+還要執行這些轉換嗎？</value>
+  </data>
+  <data name="Invalid Data Error" xml:space="preserve">
+    <value>無效數據錯誤</value>
+  </data>
+  <data name="Invalid Values Error" xml:space="preserve">
+    <value>無效值錯誤</value>
+  </data>
+  <data name="Item Conversion Error" xml:space="preserve">
+    <value>道具轉換錯誤</value>
+  </data>
+  <data name="Item Conversion Successful" xml:space="preserve">
+    <value>道具轉換成功</value>
+  </data>
+  <data name="Item List Error" xml:space="preserve">
+    <value>道具列表錯誤</value>
+  </data>
+  <data name="Items converted successfully." xml:space="preserve">
+    <value>已成功轉換項目.</value>
+  </data>
+  <data name="Loading..." xml:space="preserve">
+    <value>正在加載...</value>
+  </data>
+  <data name="Material Save Error" xml:space="preserve">
+    <value>材質保存錯誤</value>
+  </data>
+  <data name="Mod Toggle Error" xml:space="preserve">
+    <value>Mod切換錯誤</value>
+  </data>
+  <data name="Multi-Slot Convert Required" xml:space="preserve">
+    <value>需要多位置轉換</value>
+  </data>
+  <data name="Off-Ring Conversion Required" xml:space="preserve">
+    <value>需要Off-Ring轉換</value>
+  </data>
+  <data name="Please wait..." xml:space="preserve">
+    <value>請稍等...</value>
+  </data>
+  <data name="Save Scaling Error" xml:space="preserve">
+    <value>保存縮放錯誤</value>
+  </data>
+  <data name="Unable to convert items:&#xA;&#xA;Error:" xml:space="preserve">
+    <value>無法轉換道具：
+
+錯誤：</value>
+  </data>
+  <data name="Unable to load material into colorset editor.&#xA;&#xA;Error:" xml:space="preserve">
+    <value>無法將材質加載到顏色集編輯器中.
+
+錯誤：</value>
+  </data>
+  <data name="Unable to save Material.&#xA;&#xA;Error:" xml:space="preserve">
+    <value>無法保存材質.
+
+錯誤：</value>
+  </data>
+  <data name="Unable to set values.  Some values are invalid." xml:space="preserve">
+    <value>無法設置值.某些值無效.</value>
+  </data>
+  <data name="Unable to toggle mod status.&#xA;&#xA;Error:" xml:space="preserve">
+    <value>無法切換mod狀態.
+
+錯誤：</value>
+  </data>
+  <data name="Updating Metadata" xml:space="preserve">
+    <value>正在更新元數據</value>
+  </data>
+  <data name="Working..." xml:space="preserve">
+    <value>處理中...</value>
+  </data>
+  <data name="Adding this item will overwrite your existing entry for item: {0}&#xA;Are you sure you wish to proceed?" xml:space="preserve">
+    <value>添加此項目將覆蓋項目{0}的現有條目
+確實要繼續嗎？</value>
+  </data>
+  <data name="An Error occured while creating the modpack." xml:space="preserve">
+    <value>創建modpack時出錯.
+
+</value>
+  </data>
+  <data name="Failed to create modpack.&#xA;&#xA;Error:" xml:space="preserve">
+    <value>未能創建mod包.
+
+錯誤：</value>
+  </data>
+  <data name="Framework Version Error" xml:space="preserve">
+    <value>框架版本錯誤</value>
+  </data>
+  <data name="Item Overwrite Confirmation" xml:space="preserve">
+    <value>道具覆蓋確認</value>
+  </data>
+  <data name="Modpack Created" xml:space="preserve">
+    <value>已創建Mod包</value>
+  </data>
+  <data name="Modpack Created Successfully." xml:space="preserve">
+    <value>Mod包創建成功.</value>
+  </data>
+  <data name="Modpack Creation Error" xml:space="preserve">
+    <value>Mod包創建錯誤</value>
+  </data>
+  <data name="No selected modpacks detected." xml:space="preserve">
+    <value>未檢測到選定的mod包.</value>
+  </data>
+  <data name="This Modpack requires a more recent version of TexTools to install." xml:space="preserve">
+    <value>此Mod包需要安裝更新版本的TexTools.</value>
+  </data>
+  <data name="Cannot include file, file offset invalid." xml:space="preserve">
+    <value>無法包含文件，文件偏移量無效.</value>
+  </data>
+  <data name="Copy Failure" xml:space="preserve">
+    <value>複製失敗</value>
+  </data>
+  <data name="Copy Success" xml:space="preserve">
+    <value>複製成功</value>
+  </data>
+  <data name="Destination file already exists.  Overwrite?" xml:space="preserve">
+    <value>目標文件已存在.是否覆蓋？</value>
+  </data>
+  <data name="File Copied Successfully." xml:space="preserve">
+    <value>文件複製成功.</value>
+  </data>
+  <data name="File Copy Failed:" xml:space="preserve">
+    <value>文件複製失敗：
+</value>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>正在加載</value>
+  </data>
+  <data name="Overwrite Confirmation" xml:space="preserve">
+    <value>覆蓋確認</value>
+  </data>
+  <data name="Source file does not exist." xml:space="preserve">
+    <value>源文件不存在.</value>
+  </data>
+  <data name="Texture Files(*.ttmp2)|*.ttmp2" xml:space="preserve">
+    <value>紋理文件(*.ttmp2)|*.ttmp2</value>
+  </data>
+  <data name="User Cancelled Import Process." xml:space="preserve">
+    <value>用戶取消了導入過程.</value>
+  </data>
+  <data name="An error occurred during import:&#xA;{0}&#xA;&#xA;The import has been cancelled.&#xA;Please see the text log for more information." xml:space="preserve">
+    <value>導入期間出錯：
+{0}
+
+導入已取消.
+有關詳細信息，請參閱文本日誌.</value>
+  </data>
+  <data name="At least one file path is not a valid internal FFXIV file path." xml:space="preserve">
+    <value>至少有一個文件路徑不是有效的內部FF14文件路徑.</value>
+  </data>
+  <data name="Branch Change Notice" xml:space="preserve">
+    <value>分支變更通知</value>
+  </data>
+  <data name="Camera Model Error." xml:space="preserve">
+    <value>攝像頭型號錯誤.</value>
+  </data>
+  <data name="Changing Mod Status" xml:space="preserve">
+    <value>更改Mod狀態</value>
+  </data>
+  <data name="Changing TexTools Application Mode to DX11 to match FFXIV settings..." xml:space="preserve">
+    <value>	正在將TexTools應用程序模式更改爲DX11以匹配FF14設置...</value>
+  </data>
+  <data name="Changing TexTools Application Mode to DX9 to match FFXIV settings..." xml:space="preserve">
+    <value>	正在將TexTools應用程序模式更改爲DX9以匹配FFXIV設置...</value>
+  </data>
+  <data name="Corrupted ModList Detected" xml:space="preserve">
+    <value>檢測到損壞的Mod列表</value>
+  </data>
+  <data name="Critical Error: Unable to Correct Index Discrepency for Mod: {0}&#xA;	Please use [Download Index Backups] =&gt;  [Start Over]" xml:space="preserve">
+    <value>嚴重錯誤：無法更正Mod:{0}的索引差異
+請使用[下載索引備份]=&gt;[初始化]</value>
+  </data>
+  <data name="Critical Error: Unable to Disable or Delete Mod: {0}&#xA;	Please use [Download Index Backups] =&gt;  [Start Over]" xml:space="preserve">
+    <value>嚴重錯誤：無法禁用或刪除Mod：{0}
+請使用[下載索引備份]=&gt;[初始化]</value>
+  </data>
+  <data name="Data Type Error" xml:space="preserve">
+    <value>數據類型錯誤</value>
+  </data>
+  <data name="Deleting Mod" xml:space="preserve">
+    <value>正在刪除Mod</value>
+  </data>
+  <data name="Extraction Success" xml:space="preserve">
+    <value>提取成功</value>
+  </data>
+  <data name="FFXIV is set to DX9 Mode.  This may cause issues with some mods and will reduce the available mod data limit." xml:space="preserve">
+    <value>	FF14設置爲DX9模式.這可能會導致某些mod出現問題，並會降低可用mod數據限制.
+</value>
+  </data>
+  <data name="FFXIV set to DX11 Mode" xml:space="preserve">
+    <value>	FF14設置爲DX11模式</value>
+  </data>
+  <data name="FFXIV set to DX9 Mode" xml:space="preserve">
+    <value>	FF14設置爲DX9模式</value>
+  </data>
+  <data name="File does not exist.&#xA;&#xA;File:" xml:space="preserve">
+    <value>文件不存在.
+
+文件：</value>
+  </data>
+  <data name="File Imported Successfully." xml:space="preserve">
+    <value>文件導入成功.</value>
+  </data>
+  <data name="File Not Found" xml:space="preserve">
+    <value>找不到文件</value>
+  </data>
+  <data name="How did this even happen?" xml:space="preserve">
+    <value>這是怎麼發生的？</value>
+  </data>
+  <data name="Import Error" xml:space="preserve">
+    <value>導入錯誤</value>
+  </data>
+  <data name="Import Success" xml:space="preserve">
+    <value>導入成功</value>
+  </data>
+  <data name="Index 1/2 Mismatch: Index 2 entry will be updated to match Index 1." xml:space="preserve">
+    <value>索引1/2不匹配：將更新索引2條目以匹配索引1.
+</value>
+  </data>
+  <data name="Invalid Data Type.&#xA;Generic binary files should be imported as decompressed type 2 Data." xml:space="preserve">
+    <value>無效的數據類型.
+應將通用二進制文件作爲解壓縮的類型2數據導入.</value>
+  </data>
+  <data name="Invalid or Unknown Data Type." xml:space="preserve">
+    <value>無效或未知的數據類型.</value>
+  </data>
+  <data name="Invalid URL." xml:space="preserve">
+    <value>無效的URL.</value>
+  </data>
+  <data name="Loading Canceled&#xA;&#xA;{0}" xml:space="preserve">
+    <value>加載已取消
+
+{0}</value>
+  </data>
+  <data name="Materials and textures will be copied to destination root folder." xml:space="preserve">
+    <value>材質和紋理將複製到目標根文件夾.</value>
+  </data>
+  <data name="Missing File: {0}" xml:space="preserve">
+    <value>缺少文件：{0}
+</value>
+  </data>
+  <data name="Mod Data Offset is invalid. &#xA;	 The Mod will be disabled, deleted, and the mod slot will be purged from the ModList." xml:space="preserve">
+    <value>	Mod數據偏移無效.
+將禁用、刪除Mod，並從ModList中清除Mod插槽.
+</value>
+  </data>
+  <data name="Mod Disable Error" xml:space="preserve">
+    <value>禁用Mod錯誤</value>
+  </data>
+  <data name="Mod Enable Error" xml:space="preserve">
+    <value>啓用mod錯誤</value>
+  </data>
+  <data name="Mod had an incorrectly reported file size.  The reported size has been corrected." xml:space="preserve">
+    <value>	Mod報告的文件大小不正確.已更正報告的大小.
+</value>
+  </data>
+  <data name="Model Copied Failed.&#xA;&#xA;Error:" xml:space="preserve">
+    <value>複製模型失敗.
+
+錯誤：</value>
+  </data>
+  <data name="Model Copied Successfully." xml:space="preserve">
+    <value>模型複製成功.</value>
+  </data>
+  <data name="Model Copy Confirmation" xml:space="preserve">
+    <value>模型複製確認</value>
+  </data>
+  <data name="Model Copy Error" xml:space="preserve">
+    <value>模型複製錯誤</value>
+  </data>
+  <data name="Model is not racial - Model will not be racially adjusted." xml:space="preserve">
+    <value>模型不是種族的-模型不會被種族調整.</value>
+  </data>
+  <data name="Model races are identical - Model will not be racially adjusted." xml:space="preserve">
+    <value>模型種族是相同的-模型不會進行種族調整.</value>
+  </data>
+  <data name="Model will be adjusted from {0} to {1}." xml:space="preserve">
+    <value>模型將從{0}調整爲{1}.</value>
+  </data>
+  <data name="ModList Corrupted" xml:space="preserve">
+    <value>	Mod列表已損壞
+</value>
+  </data>
+  <data name="ModList restored" xml:space="preserve">
+    <value>	Mod列表已還原</value>
+  </data>
+  <data name="Original FFXIV Offset is Invalid.  Unrecoverable ModList state.&#xA;	 Please use [Download Index Backups] =&gt;  [Start Over]." xml:space="preserve">
+    <value>	原始FF14偏移量無效.無法恢復的Mod列表狀態.
+請使用[下載索引備份]=&gt;[重新開始].
+</value>
+  </data>
+  <data name="Per-DAT File Size Limit: {0}" xml:space="preserve">
+    <value>	每DAT文件大小限制：{0}
+</value>
+  </data>
+  <data name="Problem Check Error" xml:space="preserve">
+    <value>問題檢查錯誤</value>
+  </data>
+  <data name="Purged {0} invalid unused mod data slots." xml:space="preserve">
+    <value>	清除了{0}個無效的未使用mod數據插槽.
+</value>
+  </data>
+  <data name="Raw file extracted successfully to path:" xml:space="preserve">
+    <value>已成功將原始文件提取到路徑：
+</value>
+  </data>
+  <data name="Repair Failed" xml:space="preserve">
+    <value>修復失敗</value>
+  </data>
+  <data name="Scanned {0} modded files." xml:space="preserve">
+    <value>已掃描{0}個修改過的文件.
+</value>
+  </data>
+  <data name="Some files this mod references are missing or disabled." xml:space="preserve">
+    <value>	此mod引用的某些文件丟失或禁用.
+</value>
+  </data>
+  <data name="Source and target files must exist within the same data file." xml:space="preserve">
+    <value>源文件和目標文件必須存在於同一數據文件中.</value>
+  </data>
+  <data name="Sum Total Mod Files Size: {0}" xml:space="preserve">
+    <value>	Mod文件大小總和：{0}
+</value>
+  </data>
+  <data name="TexTools is running in 32bit Mode. This will reduce the available mod data limit." xml:space="preserve">
+    <value>TexTools正在32位模式下運行.這將減少可用的mod數據限制.
+</value>
+  </data>
+  <data name="TexTools will now change to the selected update branch." xml:space="preserve">
+    <value>TexTools現在將更改爲選定的更新分支.</value>
+  </data>
+  <data name="TexTools will now restart." xml:space="preserve">
+    <value>TexTools現在將重新啓動.</value>
+  </data>
+  <data name="The given file path is invalid." xml:space="preserve">
+    <value>給定的文件路徑無效.</value>
+  </data>
+  <data name="The Mod will automatically be disabled and deleted." xml:space="preserve">
+    <value>	Mod將自動禁用和刪除.
+</value>
+  </data>
+  <data name="This may cause some racial models to be invisible in game." xml:space="preserve">
+    <value>	這可能會導致一些種族模型在遊戲中不可見.
+</value>
+  </data>
+  <data name="This may cause some variants of this model to be invisible in game." xml:space="preserve">
+    <value>	這可能會導致此模型的某些變體在遊戲中不可見.
+</value>
+  </data>
+  <data name="Unable to decompress or read file:&#xA;{0}&#xA;&#xA;Error:" xml:space="preserve">
+    <value>無法解壓縮或讀取文件：
+{0}
+
+錯誤：</value>
+  </data>
+  <data name="Unable to decompress Texture file.  File is most likely corrupt.  The mod will be deleted." xml:space="preserve">
+    <value>	無法解壓縮紋理文件.文件很可能已損壞.mod將被刪除.
+</value>
+  </data>
+  <data name="Unable to delete Mod or Modpack.&#xA;&#xA;Error:" xml:space="preserve">
+    <value>無法刪除Mod或Mod包.
+
+錯誤：</value>
+  </data>
+  <data name="Unable to disable mod.&#xA;Please use Help =&gt; Download Index Backups/Help =&gt; Start Over&#xA;Error:" xml:space="preserve">
+    <value>無法禁用mod
+請使用幫助=&gt;下載索引備份/幫助=&gt;初始化
+錯誤：</value>
+  </data>
+  <data name="Unable to enable mod.&#xA;&#xA;Error:" xml:space="preserve">
+    <value>無法啓用mod
+
+錯誤：</value>
+  </data>
+  <data name="Unable to fully disable Modpack.&#xA;Please use Help =&gt; Download Index Backups/Help =&gt; Start Over&#xA;Error:" xml:space="preserve">
+    <value>無法完全禁用Mod包.
+請使用幫助=&gt;下載索引備份/幫助=&gt;初始化
+錯誤：</value>
+  </data>
+  <data name="Unable to fully enable Modpack.&#xA;&#xA;Error:" xml:space="preserve">
+    <value>無法完全啓用Mod包.
+
+錯誤：</value>
+  </data>
+  <data name="Unable to import file.&#xA;&#xA;Error:" xml:space="preserve">
+    <value>無法導入文件.
+
+錯誤：</value>
+  </data>
+  <data name="Unable to repair TexTools&#xA;&#xA;Please manually update your index backups." xml:space="preserve">
+    <value>無法修復TexTools
+請手動更新索引備份.</value>
+  </data>
+  <data name="Unable to resolve child files for mod.  File is mod likely corrupt. The mod will be deleted." xml:space="preserve">
+    <value>	無法解析mod的子文件.文件可能已損壞.mod將被刪除.
+</value>
+  </data>
+  <data name="Unable to save Lumina settings, invalid Lumina directory." xml:space="preserve">
+    <value>無法保存Lumina設置，Lumina目錄無效.</value>
+  </data>
+  <data name="Unable to update 3D Viewport.&#xA;Error:" xml:space="preserve">
+    <value>無法更新三維視口.
+
+錯誤：</value>
+  </data>
+  <data name="Unknown File Root - Materials and textures will not be copied" xml:space="preserve">
+    <value>未知文件根-不會複製材質和紋理</value>
+  </data>
+  <data name="Unknown File Root - Model will not be racially adjusted." xml:space="preserve">
+    <value>未知的文件根-模型將不會進行種族調整.</value>
+  </data>
+  <data name="Viewport Error" xml:space="preserve">
+    <value>視口錯誤</value>
+  </data>
+  <data name="You may wish to consider scaling this model down." xml:space="preserve">
+    <value>您可能希望考慮縮小此模型的比例.</value>
+  </data>
+  <data name="You may wish to consider scaling this model up." xml:space="preserve">
+    <value>您可能希望考慮放大此模型.</value>
+  </data>
+  <data name="{0} Resolved Errors (Mod files disabled/deleted)" xml:space="preserve">
+    <value>	{0}已解決錯誤（Mod文件已禁用/刪除）
+</value>
+  </data>
+  <data name="{0} Unresolved Critical Errors (May cause crashes in game)" xml:space="preserve">
+    <value>	{0}未解決的關鍵錯誤（可能導致遊戲崩潰）
+</value>
+  </data>
+  <data name="{0} Warnings (May cause invisible items/models in game)" xml:space="preserve">
+    <value>	{0}警告（可能導致遊戲中不可見的項目/模型）
+</value>
+  </data>
+  <data name="A critical error occurred when attempting to read the FFXIV index files.&#xA;&#xA;Would you like to restore your index backups?&#xA;&#xA;Error:" xml:space="preserve">
+    <value>嘗試讀取FF14索引文件時發生嚴重錯誤.
+
+是否要還原索引備份？
+
+錯誤：</value>
+  </data>
+  <data name="An Error occured while saving the Metadata: " xml:space="preserve">
+    <value>保存元數據時出錯：
+</value>
+  </data>
+  <data name="Creating Index Backups..." xml:space="preserve">
+    <value>正在創建索引備份...</value>
+  </data>
+  <data name="Critical Error Shutdown" xml:space="preserve">
+    <value>嚴重錯誤關閉</value>
+  </data>
+  <data name="Critical Index Error" xml:space="preserve">
+    <value>關鍵索引錯誤</value>
+  </data>
+  <data name="Destroyed Files Notification" xml:space="preserve">
+    <value>已銷燬文件通知</value>
+  </data>
+  <data name="Disable Mod Error" xml:space="preserve">
+    <value>禁用Mod錯誤</value>
+  </data>
+  <data name="Disabling Mods..." xml:space="preserve">
+    <value>正在禁用Mods...</value>
+  </data>
+  <data name="Enable Mod Error" xml:space="preserve">
+    <value>啓用Mod錯誤</value>
+  </data>
+  <data name="Failed to Disable all Mods: &#xA;&#xA;Error:" xml:space="preserve">
+    <value>無法禁用所有MOD:
+
+錯誤：</value>
+  </data>
+  <data name="Failed to Enable all Mods: &#xA;&#xA;Error:" xml:space="preserve">
+    <value>未能啓用所有MOD:
+
+錯誤：</value>
+  </data>
+  <data name="Metadata Error" xml:space="preserve">
+    <value>元數據錯誤</value>
+  </data>
+  <data name="Patch-Broken file has no valid index to restore.  Clean Index Restoration required." xml:space="preserve">
+    <value>修補損壞的文件沒有可還原的有效索引.需要清除索引恢復.</value>
+  </data>
+  <data name="Performing Post-Patch Maintenence" xml:space="preserve">
+    <value>執行補丁後維護</value>
+  </data>
+  <data name="Post Patch Cleanup Starting" xml:space="preserve">
+    <value>修補程序後清理開始</value>
+  </data>
+  <data name="Post-Patch Failure" xml:space="preserve">
+    <value>修補後故障</value>
+  </data>
+  <data name="Post-Patch Process Complete" xml:space="preserve">
+    <value>補丁後處理完成</value>
+  </data>
+  <data name="Queue Length: {0}" xml:space="preserve">
+    <value>隊列長度：{0}</value>
+  </data>
+  <data name="Shutting Down TexTools." xml:space="preserve">
+    <value>正在關閉TexTools.</value>
+  </data>
+  <data name="This may take a few minutes if you have many mods installed." xml:space="preserve">
+    <value>如果安裝了許多mod，這可能需要幾分鐘的時間.</value>
+  </data>
+  <data name="Unable to create index backups.&#xA;The Index Backup directory is invalid or inaccessible:" xml:space="preserve">
+    <value>無法創建索引備份.
+索引備份目錄無效或無法訪問：</value>
+  </data>
+  <data name="Unable to determine working offset for file:" xml:space="preserve">
+    <value>無法確定文件的工作偏移量：</value>
+  </data>
+  <data name="Unable to determine working original offset for file:" xml:space="preserve">
+    <value>無法確定文件的工作原始偏移量：</value>
+  </data>
+  <data name="Unable to restore Index Backups, shutting down TexTools." xml:space="preserve">
+    <value>無法還原索引備份，正在關閉TexTools.</value>
+  </data>
+  <data name="Analyzing items and variants..." xml:space="preserve">
+    <value>正在分析道具和變體...</value>
+  </data>
+  <data name="Calculating files to copy..." xml:space="preserve">
+    <value>正在計算要複製的文件...</value>
+  </data>
+  <data name="Cannot clone unsupported root." xml:space="preserve">
+    <value>無法克隆不受支持的根.</value>
+  </data>
+  <data name="Copying materials..." xml:space="preserve">
+    <value>正在複製材質...</value>
+  </data>
+  <data name="Copying metdata..." xml:space="preserve">
+    <value>正在複製元數據...</value>
+  </data>
+  <data name="Copying models..." xml:space="preserve">
+    <value>正在複製模型...</value>
+  </data>
+  <data name="Copying textures..." xml:space="preserve">
+    <value>正在複製紋理...</value>
+  </data>
+  <data name="Copying VFX..." xml:space="preserve">
+    <value>正在複製視覺效果...</value>
+  </data>
+  <data name="VFX ID:" xml:space="preserve">
+    <value>視效ID:</value>
+  </data>
+  <data name="SFX ID:" xml:space="preserve">
+    <value>特效ID:</value>
+  </data>
+  <data name="Creating missing variants..." xml:space="preserve">
+    <value>正在創建缺少的變體...</value>
+  </data>
+  <data name="Creating TTMP File..." xml:space="preserve">
+    <value>正在創建TTMP文件...</value>
+  </data>
+  <data name="Filling in missing material sets..." xml:space="preserve">
+    <value>正在填充缺少的材質集...</value>
+  </data>
+  <data name="Game files currently in use." xml:space="preserve">
+    <value>當前正在使用的遊戲文件.</value>
+  </data>
+  <data name="Getting modlist..." xml:space="preserve">
+    <value>正在獲取mod列表...</value>
+  </data>
+  <data name="Item Conversion cannot be used with Lumina import mode." xml:space="preserve">
+    <value>道具轉換不能與Lumina導入模式一起使用.</value>
+  </data>
+  <data name="Removing existing modifications to destination root..." xml:space="preserve">
+    <value>正在刪除對目標根的現有修改...</value>
+  </data>
+  <data name="Root copy complete." xml:space="preserve">
+    <value>根複製完成.</value>
+  </data>
+  <data name="Setting single-variant data..." xml:space="preserve">
+    <value>正在設置單變量數據...</value>
+  </data>
+  <data name="Stopping Cache Worker..." xml:space="preserve">
+    <value>正在停止緩存工作進程...</value>
+  </data>
+  <data name="Updating modlist..." xml:space="preserve">
+    <value>正在更新mod列表...</value>
+  </data>
+  <data name="Adding modified files to Cache Queue..." xml:space="preserve">
+    <value>正在將修改的文件添加到緩存隊列...</value>
+  </data>
+  <data name="Expanding Metadata Entries..." xml:space="preserve">
+    <value>正在擴展元數據項...</value>
+  </data>
+  <data name="Expanding Metadata Files..." xml:space="preserve">
+    <value>正在擴展元數據文件...</value>
+  </data>
+  <data name="Fixing up item names..." xml:space="preserve">
+    <value>正在修復道具名稱...</value>
+  </data>
+  <data name="Loading Modlist file..." xml:space="preserve">
+    <value>正在加載Mod列表文件...</value>
+  </data>
+  <data name="Queuing Cache Updates..." xml:space="preserve">
+    <value>正在排隊緩存更新...</value>
+  </data>
+  <data name="Removing empty mod slots..." xml:space="preserve">
+    <value>正在刪除空的mod插槽...</value>
+  </data>
+  <data name="Removing empty modpacks..." xml:space="preserve">
+    <value>正在刪除空mod包...</value>
+  </data>
+  <data name="Removing old modded DAT files..." xml:space="preserve">
+    <value>正在刪除舊的已修改DAT文件...</value>
+  </data>
+  <data name="Renaming temporary DAT files..." xml:space="preserve">
+    <value>正在重命名臨時DAT文件...</value>
+  </data>
+  <data name="Restoring Metadata Entries..." xml:space="preserve">
+    <value>正在還原元數據項...</value>
+  </data>
+  <data name="Saving Modlist file..." xml:space="preserve">
+    <value>正在保存Mod列表文件...</value>
+  </data>
+  <data name="Saving updated Index Files..." xml:space="preserve">
+    <value>正在保存更新的索引文件...</value>
+  </data>
+  <data name="Saving updated Modlist..." xml:space="preserve">
+    <value>正在保存更新的Mod列表...</value>
+  </data>
+  <data name="Scanning and updating body models..." xml:space="preserve">
+    <value>正在掃描和更新身體模型...</value>
+  </data>
+  <data name="Scanning for body material corrections..." xml:space="preserve">
+    <value>正在掃描身體材質更正...</value>
+  </data>
+  <data name="Unzipping TTMP File..." xml:space="preserve">
+    <value>正在解壓縮TTMP文件...</value>
+  </data>
+  <data name="Updating Destination Items..." xml:space="preserve">
+    <value>正在更新目標道具...</value>
+  </data>
+  <data name="Updating Index file references..." xml:space="preserve">
+    <value>正在更新索引文件引用...</value>
+  </data>
+  <data name="Updating Mod List file..." xml:space="preserve">
+    <value>正在更新Mod列表文件...</value>
+  </data>
+  <data name="Waiting on Destination Item Selection..." xml:space="preserve">
+    <value>正在等待目標道具選擇...</value>
+  </data>
+  <data name="Writing mod data to temporary DAT files..." xml:space="preserve">
+    <value>正在將mod數據寫入臨時DAT文件...</value>
+  </data>
+  <data name="Writing new mod data to DAT files..." xml:space="preserve">
+    <value>正在將新mod數據寫入DAT文件...</value>
+  </data>
+</root>

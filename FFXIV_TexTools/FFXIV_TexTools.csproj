@@ -200,9 +200,6 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="..\lib\xivModdingFramework\xivModdingFramework\Resources\XivStrings.zh.resx" Link="Resources\XivStrings.zh.resx">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <EmbeddedResource Update="Resources\UIMessages.zh.resx">
       <SubType>Designer</SubType>
     </EmbeddedResource>

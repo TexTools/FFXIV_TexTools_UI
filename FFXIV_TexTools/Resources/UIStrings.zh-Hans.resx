@@ -2859,4 +2859,7 @@
   <data name="Rename" xml:space="preserve">
     <value>改名</value>
   </data>
+  <data name="R" xml:space="preserve">
+    <value>r</value>
+  </data>
 </root>
