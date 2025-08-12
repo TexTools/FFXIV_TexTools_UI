@@ -1604,10 +1604,10 @@ The Index Backup directory is invalid or inaccessible:</value>
     <value>Copying VFX...</value>
   </data>
   <data name="VFX ID:" xml:space="preserve">
-    <value />
+    <value>VFX ID:</value>
   </data>
   <data name="SFX ID:" xml:space="preserve">
-    <value />
+    <value>SFX ID:</value>
   </data>
   <data name="Creating missing variants..." xml:space="preserve">
     <value>Creating missing variants...</value>

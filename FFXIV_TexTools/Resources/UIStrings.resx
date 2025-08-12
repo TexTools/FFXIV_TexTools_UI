@@ -1051,9 +1051,6 @@ If you would like to enable this, first import a texture for the selected item.<
   <data name="DDS" xml:space="preserve">
     <value>DDS</value>
   </data>
-  <data name="DX: 9" xml:space="preserve">
-    <value>DX: 9</value>
-  </data>
   <data name="G" xml:space="preserve">
     <value>G</value>
   </data>
@@ -1940,7 +1937,7 @@ If you would like to enable this, first import a texture for the selected item.<
     <value>Creating Initial Backups</value>
   </data>
   <data name="DiffuseSpecular" xml:space="preserve">
-    <value />
+    <value>DiffuseSpecular</value>
   </data>
   <data name="Index Access Error" xml:space="preserve">
     <value>Index Access Error</value>
@@ -1964,10 +1961,10 @@ If you would like to enable this, first import a texture for the selected item.<
     <value>No Cache</value>
   </data>
   <data name="RebuildFlag" xml:space="preserve">
-    <value />
+    <value>RebuildFlag</value>
   </data>
   <data name="TexToolsModPack TTMP (*.ttmp;*.ttmp2)|*.ttmp;*.ttmp2" xml:space="preserve">
-    <value />
+    <value>TexToolsModPack TTMP (*.ttmp;*.ttmp2)|*.ttmp;*.ttmp2</value>
   </data>
   <data name="Editing Multiple Materials: Material" xml:space="preserve">
     <value>Editing Multiple Materials: Material</value>
@@ -1991,16 +1988,16 @@ If you would like to enable this, first import a texture for the selected item.<
     <value>Updated {0}/{1} Material Sets...</value>
   </data>
   <data name="BodyNoPores" xml:space="preserve">
-    <value />
+    <value>BodyNoPores</value>
   </data>
   <data name="BodyWithHair" xml:space="preserve">
-    <value />
+    <value>BodyWithHair</value>
   </data>
   <data name="FaceBright" xml:space="preserve">
-    <value />
+    <value>FaceBright</value>
   </data>
   <data name="FaceNoPores" xml:space="preserve">
-    <value />
+    <value>FaceNoPores</value>
   </data>
   <data name="ColorSet" xml:space="preserve">
     <value>ColorSet</value>
@@ -2063,49 +2060,49 @@ If you would like to enable this, first import a texture for the selected item.<
     <value>AlphaLimiter</value>
   </data>
   <data name="Equipment1" xml:space="preserve">
-    <value />
+    <value>Equipment1</value>
   </data>
   <data name="Face1" xml:space="preserve">
-    <value />
+    <value>Face1</value>
   </data>
   <data name="Furniture1" xml:space="preserve">
-    <value />
+    <value>Furniture1</value>
   </data>
   <data name="Furniture10" xml:space="preserve">
-    <value />
+    <value>Furniture10</value>
   </data>
   <data name="Furniture11" xml:space="preserve">
-    <value />
+    <value>Furniture11</value>
   </data>
   <data name="Furniture12" xml:space="preserve">
-    <value />
+    <value>Furniture12</value>
   </data>
   <data name="Furniture13" xml:space="preserve">
-    <value />
+    <value>Furniture13</value>
   </data>
   <data name="Furniture2" xml:space="preserve">
-    <value />
+    <value>Furniture2</value>
   </data>
   <data name="Furniture3" xml:space="preserve">
-    <value />
+    <value>Furniture3</value>
   </data>
   <data name="Furniture4" xml:space="preserve">
-    <value />
+    <value>Furniture4</value>
   </data>
   <data name="Furniture5" xml:space="preserve">
-    <value />
+    <value>Furniture5</value>
   </data>
   <data name="Furniture6" xml:space="preserve">
-    <value />
+    <value>Furniture6</value>
   </data>
   <data name="Furniture7" xml:space="preserve">
-    <value />
+    <value>Furniture7</value>
   </data>
   <data name="Furniture8" xml:space="preserve">
-    <value />
+    <value>Furniture8</value>
   </data>
   <data name="Furniture9" xml:space="preserve">
-    <value />
+    <value>Furniture9</value>
   </data>
   <data name="Hair1" xml:space="preserve">
     <value>Hair1</value>
@@ -2162,19 +2159,19 @@ If you would like to enable this, first import a texture for the selected item.<
     <value>Hrothgar Male</value>
   </data>
   <data name="Hrothgar_Male" xml:space="preserve">
-    <value />
+    <value>Hrothgar_Male</value>
   </data>
   <data name="Import_ModPack_Wizard1" xml:space="preserve">
-    <value />
+    <value>Import_ModPack_Wizard1</value>
   </data>
   <data name="Previous_Page1" xml:space="preserve">
-    <value />
+    <value>Previous_Page1</value>
   </data>
   <data name="Texture Files(*.DDS;*.BMP;*.PNG) |*.DDS;*.BMP;*.PNG" xml:space="preserve">
     <value>Texture Files(*.DDS;*.BMP;*.PNG) |*.DDS;*.BMP;*.PNG</value>
   </data>
   <data name="This_will_only_affect_shared_races1" xml:space="preserve">
-    <value />
+    <value>This_will_only_affect_shared_races1</value>
   </data>
   <data name="Viera Female" xml:space="preserve">
     <value>Viera Female</value>
@@ -2222,7 +2219,7 @@ If you would like to enable this, first import a texture for the selected item.<
     <value>Data Usage:</value>
   </data>
   <data name="dwn" xml:space="preserve">
-    <value />
+    <value>dwn</value>
   </data>
   <data name="Final Confirmation" xml:space="preserve">
     <value>Final Confirmation</value>
@@ -2234,7 +2231,7 @@ If you would like to enable this, first import a texture for the selected item.<
     <value>Glasses</value>
   </data>
   <data name="glv" xml:space="preserve">
-    <value />
+    <value>glv</value>
   </data>
   <data name="Hat" xml:space="preserve">
     <value>Hat</value>
@@ -2273,7 +2270,7 @@ If you would like to enable this, first import a texture for the selected item.<
     <value>Mesh Part Index:</value>
   </data>
   <data name="met" xml:space="preserve">
-    <value />
+    <value>met</value>
   </data>
   <data name="Mid Boots" xml:space="preserve">
     <value>Mid Boots</value>
@@ -2306,7 +2303,7 @@ If you would like to enable this, first import a texture for the selected item.<
     <value>Set All Together:</value>
   </data>
   <data name="sho" xml:space="preserve">
-    <value />
+    <value>sho</value>
   </data>
   <data name="Shoes" xml:space="preserve">
     <value>Shoes</value>
@@ -2318,7 +2315,7 @@ If you would like to enable this, first import a texture for the selected item.<
     <value>Sleeveless Top</value>
   </data>
   <data name="top" xml:space="preserve">
-    <value />
+    <value>top</value>
   </data>
   <data name="Unknown" xml:space="preserve">
     <value>Unknown</value>
@@ -2414,70 +2411,70 @@ If you would like to enable this, first import a texture for the selected item.<
     <value>Transforms</value>
   </data>
   <data name="Unknown 0 Size:" xml:space="preserve">
-    <value />
+    <value>Unknown 0 Size:</value>
   </data>
   <data name="Unknown 0:" xml:space="preserve">
-    <value />
+    <value>Unknown 0:</value>
   </data>
   <data name="Unknown 1 Size:" xml:space="preserve">
-    <value />
+    <value>Unknown 1 Size:</value>
   </data>
   <data name="Unknown 10a:" xml:space="preserve">
-    <value />
+    <value>Unknown 10a:</value>
   </data>
   <data name="Unknown 10b:" xml:space="preserve">
-    <value />
+    <value>Unknown 10b:</value>
   </data>
   <data name="Unknown 11:" xml:space="preserve">
-    <value />
+    <value>Unknown 11:</value>
   </data>
   <data name="Unknown 12:" xml:space="preserve">
-    <value />
+    <value>Unknown 12:</value>
   </data>
   <data name="Unknown 13:" xml:space="preserve">
-    <value />
+    <value>Unknown 13:</value>
   </data>
   <data name="Unknown 14:" xml:space="preserve">
-    <value />
+    <value>Unknown 14:</value>
   </data>
   <data name="Unknown 15:" xml:space="preserve">
-    <value />
+    <value>Unknown 15:</value>
   </data>
   <data name="Unknown 16:" xml:space="preserve">
-    <value />
+    <value>Unknown 16:</value>
   </data>
   <data name="Unknown 17:" xml:space="preserve">
-    <value />
+    <value>Unknown 17:</value>
   </data>
   <data name="Unknown 1:" xml:space="preserve">
-    <value />
+    <value>Unknown 1:</value>
   </data>
   <data name="Unknown 2 Size:" xml:space="preserve">
-    <value />
+    <value>Unknown 2 Size:</value>
   </data>
   <data name="Unknown 2:" xml:space="preserve">
-    <value />
+    <value>Unknown 2:</value>
   </data>
   <data name="Unknown 3:" xml:space="preserve">
-    <value />
+    <value>Unknown 3:</value>
   </data>
   <data name="Unknown 4:" xml:space="preserve">
-    <value />
+    <value>Unknown 4:</value>
   </data>
   <data name="Unknown 5:" xml:space="preserve">
-    <value />
+    <value>Unknown 5:</value>
   </data>
   <data name="Unknown 6:" xml:space="preserve">
-    <value />
+    <value>Unknown 6:</value>
   </data>
   <data name="Unknown 7:" xml:space="preserve">
-    <value />
+    <value>Unknown 7:</value>
   </data>
   <data name="Unknown 8:" xml:space="preserve">
-    <value />
+    <value>Unknown 8:</value>
   </data>
   <data name="Unknown 9:" xml:space="preserve">
-    <value />
+    <value>Unknown 9:</value>
   </data>
   <data name="Vector Count:" xml:space="preserve">
     <value>Vector Count:</value>
@@ -2726,58 +2723,58 @@ Total Files:{3}</value>
     <value>| Hidden Parts:</value>
   </data>
   <data name="BodyDisableBreastPhysics" xml:space="preserve">
-    <value />
+    <value>BodyDisableBreastPhysics</value>
   </data>
   <data name="BodyHideGorget" xml:space="preserve">
-    <value />
+    <value>BodyHideGorget</value>
   </data>
   <data name="BodyHideLongGloves" xml:space="preserve">
-    <value />
+    <value>BodyHideLongGloves</value>
   </data>
   <data name="BodyHideMidGloves" xml:space="preserve">
-    <value />
+    <value>BodyHideMidGloves</value>
   </data>
   <data name="BodyHideShortGloves" xml:space="preserve">
-    <value />
+    <value>BodyHideShortGloves</value>
   </data>
   <data name="BodyHideWaist" xml:space="preserve">
-    <value />
+    <value>BodyHideWaist</value>
   </data>
   <data name="BodyShowBracelet" xml:space="preserve">
-    <value />
+    <value>BodyShowBracelet</value>
   </data>
   <data name="BodyShowHand" xml:space="preserve">
-    <value />
+    <value>BodyShowHand</value>
   </data>
   <data name="BodyShowHead" xml:space="preserve">
-    <value />
+    <value>BodyShowHead</value>
   </data>
   <data name="BodyShowLeg" xml:space="preserve">
-    <value />
+    <value>BodyShowLeg</value>
   </data>
   <data name="BodyShowNecklace" xml:space="preserve">
-    <value />
+    <value>BodyShowNecklace</value>
   </data>
   <data name="BodyShowTail" xml:space="preserve">
-    <value />
+    <value>BodyShowTail</value>
   </data>
   <data name="Decompress Type 2 Data" xml:space="preserve">
     <value>Decompress Type 2 Data</value>
   </data>
   <data name="EnableBodyFlags" xml:space="preserve">
-    <value />
+    <value>EnableBodyFlags</value>
   </data>
   <data name="EnableFootFlags" xml:space="preserve">
-    <value />
+    <value>EnableFootFlags</value>
   </data>
   <data name="EnableHandFlags" xml:space="preserve">
-    <value />
+    <value>EnableHandFlags</value>
   </data>
   <data name="EnableHeadFlags" xml:space="preserve">
-    <value />
+    <value>EnableHeadFlags</value>
   </data>
   <data name="EnableLegFlags" xml:space="preserve">
-    <value />
+    <value>EnableLegFlags</value>
   </data>
   <data name="Female" xml:space="preserve">
     <value>Female</value>
@@ -2786,94 +2783,94 @@ Total Files:{3}</value>
     <value>File Path Display</value>
   </data>
   <data name="FootHideAnkle" xml:space="preserve">
-    <value />
+    <value>FootHideAnkle</value>
   </data>
   <data name="FootHideCalf" xml:space="preserve">
-    <value />
+    <value>FootHideCalf</value>
   </data>
   <data name="FootHideKnee" xml:space="preserve">
-    <value />
+    <value>FootHideKnee</value>
   </data>
   <data name="HandHideElbow" xml:space="preserve">
-    <value />
+    <value>HandHideElbow</value>
   </data>
   <data name="HandHideForearm" xml:space="preserve">
-    <value />
+    <value>HandHideForearm</value>
   </data>
   <data name="HandShowBracelet" xml:space="preserve">
-    <value />
+    <value>HandShowBracelet</value>
   </data>
   <data name="HandShowRingL" xml:space="preserve">
-    <value />
+    <value>HandShowRingL</value>
   </data>
   <data name="HandShowRingR" xml:space="preserve">
-    <value />
+    <value>HandShowRingR</value>
   </data>
   <data name="HeadHideHair" xml:space="preserve">
-    <value />
+    <value>HeadHideHair</value>
   </data>
   <data name="HeadHideNeck" xml:space="preserve">
-    <value />
+    <value>HeadHideNeck</value>
   </data>
   <data name="HeadHideScalp" xml:space="preserve">
-    <value />
+    <value>HeadHideScalp</value>
   </data>
   <data name="HeadShowEarAura" xml:space="preserve">
-    <value />
+    <value>HeadShowEarAura</value>
   </data>
   <data name="HeadShowEarHuman" xml:space="preserve">
-    <value />
+    <value>HeadShowEarHuman</value>
   </data>
   <data name="HeadShowEarMiqo" xml:space="preserve">
-    <value />
+    <value>HeadShowEarMiqo</value>
   </data>
   <data name="HeadShowEarrings" xml:space="preserve">
-    <value />
+    <value>HeadShowEarrings</value>
   </data>
   <data name="HeadShowEarringsAura" xml:space="preserve">
-    <value />
+    <value>HeadShowEarringsAura</value>
   </data>
   <data name="HeadShowEarringsHuman" xml:space="preserve">
-    <value />
+    <value>HeadShowEarringsHuman</value>
   </data>
   <data name="HeadShowEarViera" xml:space="preserve">
-    <value />
+    <value>HeadShowEarViera</value>
   </data>
   <data name="HeadShowHairOverride" xml:space="preserve">
-    <value />
+    <value>HeadShowHairOverride</value>
   </data>
   <data name="HeadShowHrothgarHat" xml:space="preserve">
-    <value />
+    <value>HeadShowHrothgarHat</value>
   </data>
   <data name="HeadShowNecklace" xml:space="preserve">
-    <value />
+    <value>HeadShowNecklace</value>
   </data>
   <data name="HeadShowVieraHat" xml:space="preserve">
-    <value />
+    <value>HeadShowVieraHat</value>
   </data>
   <data name="HeadUnknownHelmet1" xml:space="preserve">
-    <value />
+    <value>HeadUnknownHelmet1</value>
   </data>
   <data name="HeadUnknownHelmet2" xml:space="preserve">
-    <value />
+    <value>HeadUnknownHelmet2</value>
   </data>
   <data name="LegBootUnknown" xml:space="preserve">
-    <value />
+    <value>LegBootUnknown</value>
   </data>
   <data name="LegHideHalfBoot" xml:space="preserve">
-    <value />
+    <value>LegHideHalfBoot</value>
   </data>
   <data name="LegHideKneePads" xml:space="preserve">
-    <value />
+    <value>LegHideKneePads</value>
   </data>
   <data name="LegHideShortBoot" xml:space="preserve">
-    <value />
+    <value>LegHideShortBoot</value>
   </data>
   <data name="LegShowFoot" xml:space="preserve">
-    <value />
+    <value>LegShowFoot</value>
   </data>
   <data name="LegShowTail" xml:space="preserve">
-    <value />
+    <value>LegShowTail</value>
   </data>
   <data name="Male" xml:space="preserve">
     <value>Male</value>
