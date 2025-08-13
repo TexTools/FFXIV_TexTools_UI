@@ -1201,6 +1201,11 @@ namespace FFXIV_TexTools.Views.Item
             }
 
             var userRace = XivRaces.GetXivRaceFromDisplayName(Settings.Default.Default_Race_Selection);
+            if (userRace == default)
+            {
+                // Default race setting not valid
+                return null;
+            }
             return GetRacialModel(userRace);
         }
 
