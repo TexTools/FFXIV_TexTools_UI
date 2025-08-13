@@ -69,6 +69,14 @@ namespace FFXIV_TexTools.ViewModels
             new KeyValuePair<string, string>("PMP", "pmp"),
             new KeyValuePair<string, string>("TTMP2", "ttmp2"),
         };
+
+        public ObservableCollection<KeyValuePair<string, string>> PenumbraRedrawModes { get; set; } = new ObservableCollection<KeyValuePair<string, string>>()
+        {
+            new KeyValuePair<string, string>("Redraw All", "RedrawAll"),
+            new KeyValuePair<string, string>("Redraw Self", "RedrawSelf"),
+            new KeyValuePair<string, string>("Don't Redraw", "NoRedraw"),
+        };
+
         public CustomizeViewModel(CustomizeSettingsView view)
         {
             _view = view;
@@ -566,6 +574,28 @@ namespace FFXIV_TexTools.ViewModels
             }
         }
 
+        public string SelectedPenumbraRedrawMode
+        {
+            get
+            {
+                try
+                {
+                    return Settings.Default.PenumbraRedrawMode;
+                }
+                catch
+                {
+                    return default(FrameworkSettings.EPenumbraRedrawMode).ToString();
+                }
+            }
+            set
+            {
+                if (SelectedPenumbraRedrawMode != value)
+                {
+                    SetPenumbraRedrawMode(value);
+                }
+            }
+        }
+
         public bool ExportTextureAsDDS
         {
             get => Settings.Default.ExportTexDDS;
@@ -905,6 +935,16 @@ namespace FFXIV_TexTools.ViewModels
         {
             Settings.Default.Default_Race_Selection = selectedRace;
             Settings.Default.Save();
+            NotifyPropertyChanged(nameof(SelectedDefaultRace));
+        }
+
+        private void SetPenumbraRedrawMode(string selectedMode)
+        {
+            Settings.Default.PenumbraRedrawMode = selectedMode;
+            Settings.Default.Save();
+            if (Enum.TryParse<FrameworkSettings.EPenumbraRedrawMode>(selectedMode, out var mode))
+                XivCache.FrameworkSettings.PenumbraRedrawMode = mode;
+            NotifyPropertyChanged(nameof(SelectedPenumbraRedrawMode));
         }
 
         /// <summary>

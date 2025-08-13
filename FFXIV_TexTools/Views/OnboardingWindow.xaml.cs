@@ -224,6 +224,9 @@ namespace FFXIV_TexTools.Views
             }
             XivCache.FrameworkSettings.DefaultTextureFormat = Settings.Default.CompressEndwalkerUpgradeTextures ? xivModdingFramework.Textures.Enums.XivTexFormat.BC7 : xivModdingFramework.Textures.Enums.XivTexFormat.A8R8G8B8;
 
+            if (Enum.TryParse<FrameworkSettings.EPenumbraRedrawMode>(Settings.Default.PenumbraRedrawMode, out var mode))
+                XivCache.FrameworkSettings.PenumbraRedrawMode = mode;
+
             UpdateConsoleConfig();
             Properties.Settings.Default.SettingsSaving += (object sender, System.ComponentModel.CancelEventArgs e) => {
                 UpdateConsoleConfig();

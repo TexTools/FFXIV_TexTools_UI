@@ -152,5 +152,8 @@
     <Setting Name="UseAutoHeels" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
+    <Setting Name="PenumbraRedrawMode" Type="System.String" Scope="User">
+      <Value Profile="(Default)">RedrawAll</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

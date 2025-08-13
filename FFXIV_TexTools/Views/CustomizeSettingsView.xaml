@@ -59,6 +59,7 @@
         <ToolTip x:Key="ModpackAuthorTooltip">Sets the default Author Name when creating modpacks.</ToolTip>
         <ToolTip x:Key="ModpackUrlTooltip">Sets the default Author Url/Website when creating modpacks.</ToolTip>
         <ToolTip x:Key="DefaultRaceTooltip">Sets the default race the UI will attempt to navigate to when selecting an item for the first time.</ToolTip>
+        <ToolTip x:Key="PenumbraRedrawModeTooltip">Automatic redraw mode when making mod file changes using Penumbra Attach.</ToolTip>
 
         <ToolTip x:Key="SkinRaceTooltip">
             <TextBlock>
@@ -113,6 +114,7 @@
                         <RowDefinition Height="30"/>
                         <RowDefinition Height="30"/>
                         <RowDefinition Height="30"/>
+                        <RowDefinition Height="30"/>
                     </Grid.RowDefinitions>
 
                     <Label Grid.Column="0" Grid.Row="0"  Margin="5,0" Content="Default Modack Author" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"  ToolTip="{StaticResource ModpackAuthorTooltip}"></Label>
@@ -131,6 +133,9 @@
 
                     <Label Grid.Column="0" Grid.Row="2" Margin="5,0" Content="Default Race" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"  ToolTip="{StaticResource DefaultRaceTooltip}"></Label>
                     <ComboBox x:Name="DefaultRacesBox" Grid.Column="1" Grid.Row="2"  VerticalAlignment="Center" ItemsSource="{Binding DefaultRaces}" SelectedItem="{Binding SelectedDefaultRace}" Margin="5,0"  ToolTip="{StaticResource DefaultRaceTooltip}"/>
+
+                    <Label Grid.Column="0" Grid.Row="3" Margin="5,0" Content="Penumbra Redraw Mode" VerticalAlignment="Center" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"  ToolTip="{StaticResource PenumbraRedrawModeTooltip}"></Label>
+                    <ComboBox x:Name="PenumbraRedrawModesBox" Grid.Column="1" Grid.Row="3"  VerticalAlignment="Center" ItemsSource="{Binding PenumbraRedrawModes}" SelectedValue="{Binding SelectedPenumbraRedrawMode}" SelectedValuePath="Value" DisplayMemberPath="Key" Margin="5,0" ToolTip="{StaticResource PenumbraRedrawModeTooltip}"/>
 
                 </Grid>
             </GroupBox>
