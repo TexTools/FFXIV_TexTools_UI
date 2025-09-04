@@ -233,7 +233,7 @@
   </data>
   <data name="Body_Legs" xml:space="preserve">
     <value>胴 + 脚</value>
-  </data>  
+  </data>
   <data name="Body_Legs_Feet" xml:space="preserve">
     <value>胴 + 脚 + 足</value>
   </data>
@@ -389,6 +389,12 @@
   </data>
   <data name="Status" xml:space="preserve">
     <value>ステータス</value>
+  </data>
+  <data name="Accessories" xml:space="preserve">
+    <value>アクセサリ</value>
+  </data>
+  <data name="Weapons" xml:space="preserve">
+    <value>武器 </value>
   </data>
   <data name="Ears" xml:space="preserve">
     <value>耳</value>

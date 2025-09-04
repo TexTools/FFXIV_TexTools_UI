@@ -202,7 +202,7 @@
     <value>Logement</value>
   </data>
   <data name="Accessory" xml:space="preserve">
-    <value>Accessoires</value>
+    <value>Accessoire</value>
   </data>
   <data name="Monster" xml:space="preserve">
     <value>Monstre</value>
@@ -218,7 +218,7 @@
   </data>
   <data name="Body_Legs" xml:space="preserve">
     <value>Torse + Jambes</value>
-  </data>  
+  </data>
   <data name="Body_Legs_Feet" xml:space="preserve">
     <value>Torse + Jambes + Pieds</value>
   </data>
@@ -353,6 +353,12 @@
   </data>
   <data name="Status" xml:space="preserve">
     <value>États</value>
+  </data>
+  <data name="Accessories" xml:space="preserve">
+    <value>Accessoires</value>
+  </data>
+  <data name="Weapons" xml:space="preserve">
+    <value>Armes</value>
   </data>
   <data name="Ears" xml:space="preserve">
     <value>Oreilles</value>

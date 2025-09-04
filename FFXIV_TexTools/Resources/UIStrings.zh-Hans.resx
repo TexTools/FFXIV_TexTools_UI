@@ -186,6 +186,9 @@
   <data name="ModPack_Wizard" xml:space="preserve">
     <value>Mod 包向导</value>
   </data>
+  <data name="Mods" xml:space="preserve">
+    <value>模组</value>
+  </data>
   <data name="Mod_List" xml:space="preserve">
     <value>Mod 列表</value>
   </data>
@@ -1643,6 +1646,12 @@
   </data>
   <data name="Other" xml:space="preserve">
     <value>其他</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>设置</value>
+  </data>
+  <data name="View" xml:space="preserve">
+    <value>查看</value>
   </data>
   <data name="DAE_file_to_import" xml:space="preserve">
     <value>被导入的 DAE 文件</value>

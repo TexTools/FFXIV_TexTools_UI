@@ -1021,6 +1021,12 @@
   <data name="Rename" xml:space="preserve">
     <value>이름 바꾸기</value>
   </data>
+  <data name="Settings" xml:space="preserve">
+    <value>설정</value>
+  </data>
+  <data name="View" xml:space="preserve">
+    <value>보기</value>
+  </data>
   <data name="Copy_File" xml:space="preserve">
     <value>미가공 파일 복사</value>
   </data>

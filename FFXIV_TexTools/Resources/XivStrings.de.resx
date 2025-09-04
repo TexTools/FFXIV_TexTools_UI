@@ -180,6 +180,9 @@
   <data name="All" xml:space="preserve">
     <value>Alle</value>
   </data>
+  <data name="Accessory" xml:space="preserve">
+    <value>Accessoire </value>
+  </data>
   <data name="Body_Hands_Legs" xml:space="preserve">
     <value>Rumpf + Hände + Beine</value>
   </data>
@@ -188,7 +191,7 @@
   </data>
   <data name="Body_Legs" xml:space="preserve">
     <value>Rumpf + Beine</value>
-  </data>  
+  </data>
   <data name="Body_Legs_Feet" xml:space="preserve">
     <value>Rumpf + Beine + Füße</value>
   </data>
@@ -245,6 +248,12 @@
   </data>
   <data name="Actions" xml:space="preserve">
     <value>Kommandos</value>
+  </data>
+  <data name="Accessories" xml:space="preserve">
+    <value>Accessoires</value>
+  </data>
+  <data name="Weapons" xml:space="preserve">
+    <value>Waffen</value>
   </data>
   <data name="Ears" xml:space="preserve">
     <value>Ohren</value>

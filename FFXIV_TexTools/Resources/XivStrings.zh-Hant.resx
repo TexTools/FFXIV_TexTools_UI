@@ -236,7 +236,7 @@
   </data>
   <data name="Body_Legs" xml:space="preserve">
     <value>身體 + 腿部</value>
-  </data>  
+  </data>
   <data name="Body_Legs_Feet" xml:space="preserve">
     <value>身體 + 腿部 + 腳部</value>
   </data>
@@ -446,6 +446,12 @@
   </data>
   <data name="Other" xml:space="preserve">
     <value>Other</value>
+  </data>
+  <data name="Accessories" xml:space="preserve">
+    <value>附件</value>
+  </data>
+  <data name="Weapons" xml:space="preserve">
+    <value>武器</value>
   </data>
   <data name="Ears" xml:space="preserve">
     <value>耳部</value>

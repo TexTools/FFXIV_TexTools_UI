@@ -239,7 +239,7 @@
   </data>
   <data name="Body_Legs" xml:space="preserve">
     <value>몸통 + 다리</value>
-  </data>  
+  </data>
   <data name="Body_Legs_Feet" xml:space="preserve">
     <value>몸통 + 다리 + 발</value>
   </data>
@@ -458,5 +458,11 @@
   </data>
   <data name="Material" xml:space="preserve">
     <value>머티리얼</value>
+  </data>
+  <data name="Accessories" xml:space="preserve">
+    <value>장신구</value>
+  </data>
+  <data name="Weapons" xml:space="preserve">
+    <value>무기</value>
   </data>
 </root>

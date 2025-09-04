@@ -185,7 +185,7 @@ namespace FFXIV_TexTools.Resources {
                 return ResourceManager.GetString("Body_Hands_Legs_Feet", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Body + Legs.
         /// </summary>
@@ -237,6 +237,33 @@ namespace FFXIV_TexTools.Resources {
         internal static string Companions {
             get {
                 return ResourceManager.GetString("Companions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Company.
+        /// </summary>
+        internal static string Company {
+            get {
+                return ResourceManager.GetString("Company", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Craft.
+        /// </summary>
+        internal static string Craft {
+            get {
+                return ResourceManager.GetString("Craft", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cure.
+        /// </summary>
+        internal static string Cure {
+            get {
+                return ResourceManager.GetString("Cure", resourceCulture);
             }
         }
         
@@ -295,11 +322,29 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Ears.
+        /// </summary>
+        internal static string Ears {
+            get {
+                return ResourceManager.GetString("Ears", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Elezen.
         /// </summary>
         internal static string Elezen {
             get {
                 return ResourceManager.GetString("Elezen", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Elezen Duskwight.
+        /// </summary>
+        internal static string Elezen_Duskwight {
+            get {
+                return ResourceManager.GetString("Elezen_Duskwight", resourceCulture);
             }
         }
         
@@ -313,11 +358,47 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Elezen Female NPC.
+        /// </summary>
+        internal static string Elezen_Female_NPC {
+            get {
+                return ResourceManager.GetString("Elezen_Female_NPC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Elezen Male.
         /// </summary>
         internal static string Elezen_Male {
             get {
                 return ResourceManager.GetString("Elezen_Male", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Elezen Male NPC.
+        /// </summary>
+        internal static string Elezen_Male_NPC {
+            get {
+                return ResourceManager.GetString("Elezen_Male_NPC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Elezen Wildwood.
+        /// </summary>
+        internal static string Elezen_Wildwood {
+            get {
+                return ResourceManager.GetString("Elezen_Wildwood", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Emote.
+        /// </summary>
+        internal static string Emote {
+            get {
+                return ResourceManager.GetString("Emote", resourceCulture);
             }
         }
         
@@ -394,6 +475,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Event.
+        /// </summary>
+        internal static string Event {
+            get {
+                return ResourceManager.GetString("Event", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Face.
         /// </summary>
         internal static string Face {
@@ -466,6 +556,24 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Indoor Furniture.
+        /// </summary>
+        internal static string Furniture_Indoor {
+            get {
+                return ResourceManager.GetString("Furniture_Indoor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Outdoor Furniture.
+        /// </summary>
+        internal static string Furniture_Outdoor {
+            get {
+                return ResourceManager.GetString("Furniture_Outdoor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Garuda-Egi.
         /// </summary>
         internal static string Garuda_Egi {
@@ -480,6 +588,15 @@ namespace FFXIV_TexTools.Resources {
         internal static string Gear {
             get {
                 return ResourceManager.GetString("Gear", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to General.
+        /// </summary>
+        internal static string General {
+            get {
+                return ResourceManager.GetString("General", resourceCulture);
             }
         }
         
@@ -529,11 +646,92 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Hrothgar.
+        /// </summary>
+        internal static string Hrothgar {
+            get {
+                return ResourceManager.GetString("Hrothgar", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hrothgar Female.
+        /// </summary>
+        internal static string Hrothgar_Female {
+            get {
+                return ResourceManager.GetString("Hrothgar_Female", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hrothgar Female NPC.
+        /// </summary>
+        internal static string Hrothgar_Female_NPC {
+            get {
+                return ResourceManager.GetString("Hrothgar_Female_NPC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hrothgar Helion.
+        /// </summary>
+        internal static string Hrothgar_Helion {
+            get {
+                return ResourceManager.GetString("Hrothgar_Helion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hrothgar Lost.
+        /// </summary>
+        internal static string Hrothgar_Lost {
+            get {
+                return ResourceManager.GetString("Hrothgar_Lost", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hrothgar Male.
+        /// </summary>
+        internal static string Hrothgar_Male {
+            get {
+                return ResourceManager.GetString("Hrothgar_Male", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hrothgar Male NPC.
+        /// </summary>
+        internal static string Hrothgar_Male_NPC {
+            get {
+                return ResourceManager.GetString("Hrothgar_Male_NPC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hrothgar NPC.
+        /// </summary>
+        internal static string Hrothgar_NPC {
+            get {
+                return ResourceManager.GetString("Hrothgar_NPC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to HUD.
         /// </summary>
         internal static string HUD {
             get {
                 return ResourceManager.GetString("HUD", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Human.
+        /// </summary>
+        internal static string Human {
+            get {
+                return ResourceManager.GetString("Human", resourceCulture);
             }
         }
         
@@ -547,11 +745,29 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Hyur Highlander.
+        /// </summary>
+        internal static string Hyur_Highlander {
+            get {
+                return ResourceManager.GetString("Hyur_Highlander", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Hyur Highlander Female.
         /// </summary>
         internal static string Hyur_Highlander_Female {
             get {
                 return ResourceManager.GetString("Hyur_Highlander_Female", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hyur Highlander Female NPC.
+        /// </summary>
+        internal static string Hyur_Highlander_Female_NPC {
+            get {
+                return ResourceManager.GetString("Hyur_Highlander_Female_NPC", resourceCulture);
             }
         }
         
@@ -565,11 +781,29 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Hyur Highlander Male NPC.
+        /// </summary>
+        internal static string Hyur_Highlander_Male_NPC {
+            get {
+                return ResourceManager.GetString("Hyur_Highlander_Male_NPC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Hyur Midlander.
         /// </summary>
         internal static string Hyur_M {
             get {
                 return ResourceManager.GetString("Hyur_M", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hyur Midlander.
+        /// </summary>
+        internal static string Hyur_Midlander {
+            get {
+                return ResourceManager.GetString("Hyur_Midlander", resourceCulture);
             }
         }
         
@@ -583,11 +817,29 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Hyur Midlander Female NPC.
+        /// </summary>
+        internal static string Hyur_Midlander_Female_NPC {
+            get {
+                return ResourceManager.GetString("Hyur_Midlander_Female_NPC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Hyur Midlander Male.
         /// </summary>
         internal static string Hyur_Midlander_Male {
             get {
                 return ResourceManager.GetString("Hyur_Midlander_Male", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hyur Midlander Male NPC.
+        /// </summary>
+        internal static string Hyur_Midlander_Male_NPC {
+            get {
+                return ResourceManager.GetString("Hyur_Midlander_Male_NPC", resourceCulture);
             }
         }
         
@@ -628,11 +880,29 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Items.
+        /// </summary>
+        internal static string Items {
+            get {
+                return ResourceManager.GetString("Items", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Lalafell.
         /// </summary>
         internal static string Lalafell {
             get {
                 return ResourceManager.GetString("Lalafell", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Lalafell Dunesfolk.
+        /// </summary>
+        internal static string Lalafell_Dunesfolk {
+            get {
+                return ResourceManager.GetString("Lalafell_Dunesfolk", resourceCulture);
             }
         }
         
@@ -646,6 +916,15 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Lalafell Female NPC.
+        /// </summary>
+        internal static string Lalafell_Female_NPC {
+            get {
+                return ResourceManager.GetString("Lalafell_Female_NPC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Lalafell Male.
         /// </summary>
         internal static string Lalafell_Male {
@@ -655,11 +934,47 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Lalafell Male NPC.
+        /// </summary>
+        internal static string Lalafell_Male_NPC {
+            get {
+                return ResourceManager.GetString("Lalafell_Male_NPC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Lalafell Plainsfolk.
+        /// </summary>
+        internal static string Lalafell_Plainsfolk {
+            get {
+                return ResourceManager.GetString("Lalafell_Plainsfolk", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Language.
+        /// </summary>
+        internal static string Language {
+            get {
+                return ResourceManager.GetString("Language", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Left.
         /// </summary>
         internal static string Left {
             get {
                 return ResourceManager.GetString("Left", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Left Ring.
+        /// </summary>
+        internal static string LeftRing {
+            get {
+                return ResourceManager.GetString("LeftRing", resourceCulture);
             }
         }
         
@@ -687,6 +1002,15 @@ namespace FFXIV_TexTools.Resources {
         internal static string Loading_Screen {
             get {
                 return ResourceManager.GetString("Loading_Screen", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Loading Screen.
+        /// </summary>
+        internal static string LoadingScreen {
+            get {
+                return ResourceManager.GetString("LoadingScreen", resourceCulture);
             }
         }
         
@@ -732,6 +1056,15 @@ namespace FFXIV_TexTools.Resources {
         internal static string Maps {
             get {
                 return ResourceManager.GetString("Maps", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Marker.
+        /// </summary>
+        internal static string Marker {
+            get {
+                return ResourceManager.GetString("Marker", resourceCulture);
             }
         }
         
@@ -790,11 +1123,47 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Miqote Female NPC.
+        /// </summary>
+        internal static string Miqote_Female_NPC {
+            get {
+                return ResourceManager.GetString("Miqote_Female_NPC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Miqote Keeper.
+        /// </summary>
+        internal static string Miqote_Keeper {
+            get {
+                return ResourceManager.GetString("Miqote_Keeper", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Miqote Male.
         /// </summary>
         internal static string Miqote_Male {
             get {
                 return ResourceManager.GetString("Miqote_Male", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Miqote Male NPC.
+        /// </summary>
+        internal static string Miqote_Male_NPC {
+            get {
+                return ResourceManager.GetString("Miqote_Male_NPC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Miqote Seeker.
+        /// </summary>
+        internal static string Miqote_Seeker {
+            get {
+                return ResourceManager.GetString("Miqote_Seeker", resourceCulture);
             }
         }
         
@@ -867,6 +1236,15 @@ namespace FFXIV_TexTools.Resources {
         internal static string Online_Status {
             get {
                 return ResourceManager.GetString("Online_Status", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Online Status.
+        /// </summary>
+        internal static string OnlineStatus {
+            get {
+                return ResourceManager.GetString("OnlineStatus", resourceCulture);
             }
         }
         
@@ -1015,11 +1393,47 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Roegadyn Female NPC.
+        /// </summary>
+        internal static string Roegadyn_Female_NPC {
+            get {
+                return ResourceManager.GetString("Roegadyn_Female_NPC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Roegadyn Hellsguard.
+        /// </summary>
+        internal static string Roegadyn_Hellsguard {
+            get {
+                return ResourceManager.GetString("Roegadyn_Hellsguard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Roegadyn Male.
         /// </summary>
         internal static string Roegadyn_Male {
             get {
                 return ResourceManager.GetString("Roegadyn_Male", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Roegadyn Male NPC.
+        /// </summary>
+        internal static string Roegadyn_Male_NPC {
+            get {
+                return ResourceManager.GetString("Roegadyn_Male_NPC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Roegadyn SeaWolf.
+        /// </summary>
+        internal static string Roegadyn_SeaWolf {
+            get {
+                return ResourceManager.GetString("Roegadyn_SeaWolf", resourceCulture);
             }
         }
         
@@ -1056,6 +1470,33 @@ namespace FFXIV_TexTools.Resources {
         internal static string Selene {
             get {
                 return ResourceManager.GetString("Selene", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sephirot Egi.
+        /// </summary>
+        internal static string Sephirot_Egi {
+            get {
+                return ResourceManager.GetString("Sephirot_Egi", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Seraph.
+        /// </summary>
+        internal static string Seraph {
+            get {
+                return ResourceManager.GetString("Seraph", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Skin.
+        /// </summary>
+        internal static string Skin {
+            get {
+                return ResourceManager.GetString("Skin", resourceCulture);
             }
         }
         
@@ -1141,7 +1582,7 @@ namespace FFXIV_TexTools.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Type Part.
+        ///   Looks up a localized string similar to Part Type.
         /// </summary>
         internal static string TypePart {
             get {
@@ -1173,6 +1614,78 @@ namespace FFXIV_TexTools.Resources {
         internal static string Variant {
             get {
                 return ResourceManager.GetString("Variant", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Viera.
+        /// </summary>
+        internal static string Viera {
+            get {
+                return ResourceManager.GetString("Viera", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Viera Female.
+        /// </summary>
+        internal static string Viera_Female {
+            get {
+                return ResourceManager.GetString("Viera_Female", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Viera Female NPC.
+        /// </summary>
+        internal static string Viera_Female_NPC {
+            get {
+                return ResourceManager.GetString("Viera_Female_NPC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Viera Male.
+        /// </summary>
+        internal static string Viera_Male {
+            get {
+                return ResourceManager.GetString("Viera_Male", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Viera Male NPC.
+        /// </summary>
+        internal static string Viera_Male_NPC {
+            get {
+                return ResourceManager.GetString("Viera_Male_NPC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Viera NPC.
+        /// </summary>
+        internal static string Viera_NPC {
+            get {
+                return ResourceManager.GetString("Viera_NPC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Viera Rava.
+        /// </summary>
+        internal static string Viera_Rava {
+            get {
+                return ResourceManager.GetString("Viera_Rava", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Viera Veena.
+        /// </summary>
+        internal static string Viera_Veena {
+            get {
+                return ResourceManager.GetString("Viera_Veena", resourceCulture);
             }
         }
         

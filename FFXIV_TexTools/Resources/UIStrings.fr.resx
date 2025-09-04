@@ -821,6 +821,12 @@ Pour activer cette option, veuillez d'abord importer une Texture pour l'objet s�
   <data name="Rename" xml:space="preserve">
     <value>Renommer</value>
   </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Paramètres</value>
+  </data>
+  <data name="View" xml:space="preserve">
+    <value>Affichage</value>
+  </data>
   <data name="DAE_file_to_import" xml:space="preserve">
     <value>Fichier DAE à importer</value>
   </data>
