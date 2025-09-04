@@ -1024,4 +1024,10 @@
   <data name="Copy_File" xml:space="preserve">
     <value>미가공 파일 복사</value>
   </data>
+  <data name="Create" xml:space="preserve">
+    <value>추가 </value>
+  </data>
+  <data name="Create New Material" xml:space="preserve">
+    <value>새 재질 만들기</value>
+  </data>
 </root>

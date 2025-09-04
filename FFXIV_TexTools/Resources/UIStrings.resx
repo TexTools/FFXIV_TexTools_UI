@@ -2218,9 +2218,6 @@ If you would like to enable this, first import a texture for the selected item.<
   <data name="Data Usage:" xml:space="preserve">
     <value>Data Usage:</value>
   </data>
-  <data name="dwn" xml:space="preserve">
-    <value>dwn</value>
-  </data>
   <data name="Final Confirmation" xml:space="preserve">
     <value>Final Confirmation</value>
   </data>
@@ -2229,9 +2226,6 @@ If you would like to enable this, first import a texture for the selected item.<
   </data>
   <data name="Glasses" xml:space="preserve">
     <value>Glasses</value>
-  </data>
-  <data name="glv" xml:space="preserve">
-    <value>glv</value>
   </data>
   <data name="Hat" xml:space="preserve">
     <value>Hat</value>
@@ -2269,9 +2263,6 @@ If you would like to enable this, first import a texture for the selected item.<
   <data name="Mesh Part Index:" xml:space="preserve">
     <value>Mesh Part Index:</value>
   </data>
-  <data name="met" xml:space="preserve">
-    <value>met</value>
-  </data>
   <data name="Mid Boots" xml:space="preserve">
     <value>Mid Boots</value>
   </data>
@@ -2302,9 +2293,6 @@ If you would like to enable this, first import a texture for the selected item.<
   <data name="Set All Together:" xml:space="preserve">
     <value>Set All Together:</value>
   </data>
-  <data name="sho" xml:space="preserve">
-    <value>sho</value>
-  </data>
   <data name="Shoes" xml:space="preserve">
     <value>Shoes</value>
   </data>
@@ -2313,9 +2301,6 @@ If you would like to enable this, first import a texture for the selected item.<
   </data>
   <data name="Sleeveless Top" xml:space="preserve">
     <value>Sleeveless Top</value>
-  </data>
-  <data name="top" xml:space="preserve">
-    <value>top</value>
   </data>
   <data name="Unknown" xml:space="preserve">
     <value>Unknown</value>
@@ -2916,5 +2901,26 @@ Total Files:{3}</value>
   </data>
   <data name="You may choose new items for this modpack to apply to, if desired. Press [Continue] when done." xml:space="preserve">
     <value>You may choose new items for this modpack to apply to, if desired. Press [Continue] when done.</value>
+  </data>
+  <data name="dwn" xml:space="preserve">
+    <value>dwn</value>
+  </data>
+  <data name="glv" xml:space="preserve">
+    <value>glv</value>
+  </data>
+  <data name="met" xml:space="preserve">
+    <value>met</value>
+  </data>
+  <data name="sho" xml:space="preserve">
+    <value>sho</value>
+  </data>
+  <data name="top" xml:space="preserve">
+    <value>top</value>
+  </data>
+  <data name="Create" xml:space="preserve">
+    <value>Create</value>
+  </data>
+  <data name="Create New Material" xml:space="preserve">
+    <value>Create New Material</value>
   </data>
 </root>
