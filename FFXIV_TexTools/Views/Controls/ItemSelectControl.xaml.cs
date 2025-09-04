@@ -335,6 +335,8 @@ namespace FFXIV_TexTools.Views.Controls
             gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Body_Hands));
             gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Body_Hands_Legs));
             gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Body_Hands_Legs_Feet));
+            gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Body_Legs));
+            gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Body_Legs_Feet));
             gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Legs_Feet));
             gear.Children.Add(new ItemTreeElement(null, null, XivStrings.All));
 
