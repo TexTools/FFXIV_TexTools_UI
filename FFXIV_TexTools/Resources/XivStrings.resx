@@ -267,6 +267,9 @@
   <data name="Body_Hands_Legs_Feet" xml:space="preserve">
     <value>Body + Hands + Legs + Feet</value>
   </data>
+  <data name="Body_Legs" xml:space="preserve">
+    <value>Body + Legs</value>
+  </data>  
   <data name="Body_Legs_Feet" xml:space="preserve">
     <value>Body + Legs + Feet</value>
   </data>

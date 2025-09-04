@@ -185,6 +185,15 @@ namespace FFXIV_TexTools.Resources {
                 return ResourceManager.GetString("Body_Hands_Legs_Feet", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Body + Legs.
+        /// </summary>
+        internal static string Body_Legs {
+            get {
+                return ResourceManager.GetString("Body_Legs", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to Body + Legs + Feet.

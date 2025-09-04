@@ -186,6 +186,9 @@
   <data name="Body_Hands_Legs_Feet" xml:space="preserve">
     <value>Rumpf + Hände +Beine + Füße</value>
   </data>
+  <data name="Body_Legs" xml:space="preserve">
+    <value>Rumpf + Beine</value>
+  </data>  
   <data name="Body_Legs_Feet" xml:space="preserve">
     <value>Rumpf + Beine + Füße</value>
   </data>
