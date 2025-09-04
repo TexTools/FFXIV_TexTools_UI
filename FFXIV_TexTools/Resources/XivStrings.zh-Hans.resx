@@ -234,6 +234,9 @@
   <data name="Body_Hands_Legs_Feet" xml:space="preserve">
     <value>身体 + 手臂 + 腿部+ 脚部</value>
   </data>
+  <data name="Body_Legs" xml:space="preserve">
+    <value>身体 + 腿部</value>
+  </data>  
   <data name="Body_Legs_Feet" xml:space="preserve">
     <value>身体 + 腿部 + 脚部</value>
   </data>

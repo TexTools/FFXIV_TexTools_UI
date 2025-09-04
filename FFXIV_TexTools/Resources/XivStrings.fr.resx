@@ -216,6 +216,9 @@
   <data name="Body_Hands_Legs_Feet" xml:space="preserve">
     <value>Torse + Mains + Jambes + Pieds</value>
   </data>
+  <data name="Body_Legs" xml:space="preserve">
+    <value>Torse + Jambes</value>
+  </data>  
   <data name="Body_Legs_Feet" xml:space="preserve">
     <value>Torse + Jambes + Pieds</value>
   </data>
