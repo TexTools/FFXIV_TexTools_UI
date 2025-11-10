@@ -52,7 +52,13 @@
                 <Button x:Name="PenumbraRestore" Content="Restore Mod Backup" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,155,0" Width="150" Click="RestorePenumbraBackup_Click" IsEnabled="{Binding Path=TxActionEnabled}"></Button>
                 <Button Content="Reset Selected File(s)" HorizontalAlignment="Right" VerticalAlignment="Center" Click="ResetFiles_Click" Width="150"></Button>
                 <Border Grid.Row="1" BorderBrush="{DynamicResource NormalBorderBrush}" BorderThickness="1">
-                    <ListBox x:Name="FileListBox" Grid.Row="0" ItemsSource="{Binding Path=FileListSource}" SelectionMode="Extended"></ListBox>
+                    <ListBox x:Name="FileListBox" Grid.Row="0" ItemsSource="{Binding Path=FileListSource}" SelectionMode="Extended">
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="ListBoxItem">
+                                <EventSetter Event="MouseDoubleClick" Handler="FileListBoxItem_DoubleClick" />
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                    </ListBox>
                 </Border>
             </Grid>
 
