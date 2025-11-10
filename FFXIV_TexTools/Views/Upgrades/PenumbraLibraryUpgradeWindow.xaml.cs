@@ -1,5 +1,6 @@
 ﻿using AutoUpdaterDotNET;
 using FFXIV_TexTools.Models;
+using FolderSelect;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -19,7 +20,6 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using WK.Libraries.BetterFolderBrowserNS;
 using xivModdingFramework.Cache;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Mods;
@@ -244,27 +244,27 @@ namespace FFXIV_TexTools.Views.Upgrades
 
         private void SelectPenumbraPath_Click(object sender, RoutedEventArgs e)
         {
-            var bfb = new BetterFolderBrowser() { Title = "Select Penumbra Library..." };
-            bfb.RootFolder = PenumbraPath;
-            if(bfb.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+            var fsb = new FolderSelectDialog() { Title = "Select Penumbra Library..." };
+            fsb.InitialDirectory = PenumbraPath;
+            if(!fsb.ShowDialog())
             {
                 return;
             }
 
-            PenumbraPath = bfb.SelectedFolder;
+            PenumbraPath = fsb.FileName;
             CheckPaths();
         }
 
         private void SelectDestinationPath_Click(object sender, RoutedEventArgs e)
         {
-            var bfb = new BetterFolderBrowser() { Title = "Select Destination Folder..." };
-            bfb.RootFolder = DestinationPath;
-            if (bfb.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+            var fsb = new FolderSelectDialog() { Title = "Select Destination Folder..." };
+            fsb.InitialDirectory = DestinationPath;
+            if (!fsb.ShowDialog())
             {
                 return;
             }
 
-            DestinationPath = bfb.SelectedFolder;
+            DestinationPath = fsb.FileName;
             CheckPaths();
         }
 

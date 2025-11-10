@@ -2,6 +2,7 @@
 using FFXIV_TexTools.Resources;
 using FFXIV_TexTools.Views.Controls;
 using FFXIV_TexTools.Views.Transactions;
+using FolderSelect;
 using MahApps.Metro.Controls.Dialogs;
 using Newtonsoft.Json;
 using System;
@@ -20,7 +21,6 @@ using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using WK.Libraries.BetterFolderBrowserNS;
 using xivModdingFramework.Exd.FileTypes;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Models.Helpers;
@@ -217,14 +217,14 @@ namespace FFXIV_TexTools.Views.Projects
                     return;
                 }
             }
-            var sfd = new BetterFolderBrowser();
-            sfd.RootFolder = PenumbraAPI.GetPenumbraDirectory();
-            if (sfd.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+            var sfd = new FolderSelectDialog();
+            sfd.InitialDirectory = PenumbraAPI.GetPenumbraDirectory();
+            if (!sfd.ShowDialog())
             {
                 return;
             }
 
-            var folder = sfd.SelectedPath;
+            var folder = sfd.FileName;
 
             try
             {

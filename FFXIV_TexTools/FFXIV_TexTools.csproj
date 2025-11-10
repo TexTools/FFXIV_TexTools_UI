@@ -67,7 +67,6 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Autoupdater.NET.Official" Version="1.9.1" />
-    <PackageReference Include="BetterFolderBrowser" Version="1.2.0" />
     <PackageReference Include="ControlzEx" Version="3.0.2.4">
       <TreatAsUsed>true</TreatAsUsed>
     </PackageReference>
