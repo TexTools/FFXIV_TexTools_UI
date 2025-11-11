@@ -45,8 +45,8 @@ using SharpDX;
 using ControlzEx.Standard;
 using System.Windows.Media.Media3D;
 using System.Runtime.CompilerServices;
-using WK.Libraries.BetterFolderBrowserNS;
 using System.Text.RegularExpressions;
+using FolderSelect;
 
 namespace FFXIV_TexTools.Views.Controls
 {
@@ -873,18 +873,18 @@ namespace FFXIV_TexTools.Views.Controls
 
         private async void ExportTextures_Click(object sender, RoutedEventArgs e)
         {
-            var bf = new BetterFolderBrowser();
-            bf.Title = "Select Export Folder";
+            var fsd = new FolderSelectDialog();
+            fsd.Title = "Select Export Folder";
 
             var path = Path.GetFullPath(Path.Combine(GetDefaultSaveDirectory() + "../RawTextures/"));
             Directory.CreateDirectory(path);
-            bf.RootFolder = path;
+            fsd.InitialDirectory = path;
 
-            if (bf.ShowDialog() != DialogResult.OK)
+            if (!fsd.ShowDialog())
             {
                 return;
             }
-            path = bf.SelectedFolder;
+            path = fsd.FileName;
 
 
             try
@@ -898,7 +898,7 @@ namespace FFXIV_TexTools.Views.Controls
                         set = await Imc.GetMaterialSetId(im, false, MainWindow.DefaultTransaction);
                     }
                     Model.Source = InternalFilePath;
-                    await Mdl.ExportAllTextures(Model, bf.SelectedPath, set, MainWindow.DefaultTransaction);
+                    await Mdl.ExportAllTextures(Model, fsd.FileName, set, MainWindow.DefaultTransaction);
                 });
             } catch(Exception ex)
             {
@@ -985,19 +985,19 @@ namespace FFXIV_TexTools.Views.Controls
 
         private async void ExportPbrTextures_Click(object sender, RoutedEventArgs e)
         {
-            var bf = new BetterFolderBrowser();
-            bf.Title = "Select Export Folder";
+            var fsd = new FolderSelectDialog();
+            fsd.Title = "Select Export Folder";
 
             var path = Path.GetFullPath(Path.Combine(GetDefaultSaveDirectory(), "PbrTextures"));
             Directory.CreateDirectory(path);
-            bf.RootFolder = path;
+            fsd.InitialDirectory = path;
 
-            if (bf.ShowDialog() != DialogResult.OK)
+            if (!fsd.ShowDialog())
             {
                 return;
             }
 
-            path = bf.SelectedFolder;
+            path = fsd.FileName;
 
             // Because the export for model expects an actual file path, not a folder path.
             path = Path.GetFullPath(Path.Combine(path, "asdf.fbx"));

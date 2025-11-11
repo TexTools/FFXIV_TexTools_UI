@@ -3,6 +3,7 @@ using FFXIV_TexTools.Properties;
 using FFXIV_TexTools.Resources;
 using FFXIV_TexTools.Views.Controls;
 using FFXIV_TexTools.Views.Projects;
+using FolderSelect;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -22,7 +23,6 @@ using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using WK.Libraries.BetterFolderBrowserNS;
 using xivModdingFramework.Cache;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Mods;
@@ -704,15 +704,14 @@ namespace FFXIV_TexTools.Views.Transactions
 
             PenumbraAttachDialog.Title = "Select Penumbra Mod Folder...";
 
-            PenumbraAttachDialog.RootFolder = PenumbraAPI.GetPenumbraDirectory();
+            PenumbraAttachDialog.InitialDirectory = PenumbraAPI.GetPenumbraDirectory();
 
-            var res = PenumbraAttachDialog.ShowDialog();
-            if (res != System.Windows.Forms.DialogResult.OK)
+            if (!PenumbraAttachDialog.ShowDialog())
             {
                 return;
             }
 
-            var path = Path.GetFullPath(Path.Combine(PenumbraAttachDialog.SelectedPath, "meta.json"));
+            var path = Path.GetFullPath(Path.Combine(PenumbraAttachDialog.FileName, "meta.json"));
             if (!File.Exists(path))
             {
                 ViewHelpers.ShowError("Invalid Penumbra Mod Folder", "The selected folder was not a valid Penumbra mod folder.\nPlease select an individual Penumbra Mod folder.");
@@ -724,7 +723,7 @@ namespace FFXIV_TexTools.Views.Transactions
 
             var backupFolder = Path.Combine(Path.GetTempPath(), "TexTools_Transaction_Backup");
             IOUtil.DeleteTempDirectory(backupFolder);
-            IOUtil.CopyFolder(PenumbraAttachDialog.SelectedPath, backupFolder);
+            IOUtil.CopyFolder(PenumbraAttachDialog.FileName, backupFolder);
 
             var tx = MainWindow.UserTransaction;
             if(tx == null)
@@ -733,14 +732,14 @@ namespace FFXIV_TexTools.Views.Transactions
                 {
                     StorageType = xivModdingFramework.SqPack.FileTypes.EFileStorageType.UncompressedIndividual,
                     Target = ETransactionTarget.PenumbraModFolder,
-                    TargetPath = PenumbraAttachDialog.SelectedPath,
+                    TargetPath = PenumbraAttachDialog.FileName,
                     Unsafe = false
                 };
                 tx = await ModTransaction.BeginTransaction(true, null, settings, true, true);
                 MainWindow.UserTransaction = tx;
             }
 
-             await PenumbraAttachHandler.Attach(PenumbraAttachDialog.SelectedPath, MainWindow.UserTransaction);
+             await PenumbraAttachHandler.Attach(PenumbraAttachDialog.FileName, MainWindow.UserTransaction);
         }
 
         private void Close_Click(object sender, RoutedEventArgs e)
