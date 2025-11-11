@@ -1,6 +1,7 @@
 ﻿using FFXIV_TexTools.Helpers;
 using FFXIV_TexTools.Properties;
 using FFXIV_TexTools.Resources;
+using FFXIV_TexTools.Views.Controls;
 using FFXIV_TexTools.Views.Projects;
 using FolderSelect;
 using System;
@@ -665,7 +666,23 @@ namespace FFXIV_TexTools.Views.Transactions
             }
         }
 
+        private async void FileListBoxItem_DoubleClick(object sender, RoutedEventArgs e)
+        {
+            if (sender is ListBoxItem item && item.DataContext is string filePath)
+            {
+                try
+                {
+                    await SimpleFileViewWindow.OpenFile(filePath);
+                }
+                catch (Exception Ex)
+                {
+                    Trace.WriteLine(Ex);
+                }
+            }
+        }
+
         static FolderSelectDialog PenumbraAttachDialog = new FolderSelectDialog();
+
         private async void AttachPenumbra_Click(object sender, RoutedEventArgs e)
         {
 
