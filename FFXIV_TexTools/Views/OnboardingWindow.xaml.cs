@@ -25,7 +25,6 @@ using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using WK.Libraries.BetterFolderBrowserNS;
 using xivModdingFramework.Cache;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Models.DataContainers;
@@ -627,7 +626,7 @@ namespace FFXIV_TexTools.Views
 
         private void SelectGamePath_Click(object sender, RoutedEventArgs e)
         {
-            var ofd = new BetterFolderBrowser()
+            var ofd = new FolderSelectDialog()
             {
                 Title = "Select FFXIV Folder",
             };
@@ -635,29 +634,29 @@ namespace FFXIV_TexTools.Views
             var previous = Settings.Default.FFXIV_Directory;
             if (!string.IsNullOrWhiteSpace(Settings.Default.FFXIV_Directory))
             {
-                ofd.RootFolder = Settings.Default.FFXIV_Directory;
+                ofd.InitialDirectory = Settings.Default.FFXIV_Directory;
             } else if(!string.IsNullOrWhiteSpace(GetDefaultInstallDirectory()))
             {
-                ofd.RootFolder = GetDefaultInstallDirectory();
+                ofd.InitialDirectory = GetDefaultInstallDirectory();
             }
 
             var win = ViewHelpers.GetWin32Window(this);
 
-            if (ofd.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+            if (!ofd.ShowDialog())
             {
                 return;
             }
 
-            var path = ResolveFFXIVFolder(ofd.SelectedFolder);
+            var path = ResolveFFXIVFolder(ofd.FileName);
 
             while (!IsGameDirectoryValid(path))
             {
                 FlexibleMessageBox.Show(win, "Invalid FFXIV Install", "Please select a valid FFXIV install folder.", MessageBoxButtons.OK, MessageBoxIcon.Question);
-                if (ofd.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+                if (!ofd.ShowDialog())
                 {
                     return;
                 }
-                path = ResolveFFXIVFolder(ofd.SelectedFolder);
+                path = ResolveFFXIVFolder(ofd.FileName);
             }
 
             ViewModel.FFXIV_Directory = path;
@@ -665,56 +664,56 @@ namespace FFXIV_TexTools.Views
 
         private void SelectSavePath_Click(object sender, RoutedEventArgs e)
         {
-            var ofd = new BetterFolderBrowser()
+            var ofd = new FolderSelectDialog()
             {
                 Title = "Select Default Save Folder",
             };
 
             Directory.CreateDirectory(Settings.Default.Save_Directory);
-            ofd.RootFolder = Path.GetFullPath(Settings.Default.Save_Directory);
+            ofd.InitialDirectory = Path.GetFullPath(Settings.Default.Save_Directory);
 
-            if (ofd.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+            if (!ofd.ShowDialog())
             {
                 return;
             }
 
-            ViewModel.Save_Directory = ofd.SelectedFolder;
+            ViewModel.Save_Directory = ofd.FileName;
         }
 
         private void SelectModpackPath_Click(object sender, RoutedEventArgs e)
         {
-            var ofd = new BetterFolderBrowser()
+            var ofd = new FolderSelectDialog()
             {
                 Title = "Select Modpack Folder",
             };
 
             Directory.CreateDirectory(Settings.Default.ModPack_Directory);
-            ofd.RootFolder = Path.GetFullPath(Settings.Default.ModPack_Directory);
+            ofd.InitialDirectory = Path.GetFullPath(Settings.Default.ModPack_Directory);
 
-            if (ofd.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+            if (!ofd.ShowDialog())
             {
                 return;
             }
 
-            ViewModel.ModPack_Directory = ofd.SelectedFolder;
+            ViewModel.ModPack_Directory = ofd.FileName;
         }
 
         private void SelectBackupPath_Click(object sender, RoutedEventArgs e)
         {
-            var ofd = new BetterFolderBrowser()
+            var ofd = new FolderSelectDialog()
             {
                 Title = "Select Index Backup Folder",
             };
 
             Directory.CreateDirectory(Settings.Default.Backup_Directory);
-            ofd.RootFolder = Path.GetFullPath(Settings.Default.Backup_Directory);
+            ofd.InitialDirectory = Path.GetFullPath(Settings.Default.Backup_Directory);
 
-            if (ofd.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+            if (!ofd.ShowDialog())
             {
                 return;
             }
 
-            ViewModel.Backup_Directory = ofd.SelectedFolder;
+            ViewModel.Backup_Directory = ofd.FileName;
         }
 
         private void UseCase_Changed(object sender, SelectionChangedEventArgs e)
