@@ -118,285 +118,510 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Body" xml:space="preserve">
-    <value>胴</value>
+    <value>身体</value>
   </data>
   <data name="Character" xml:space="preserve">
-    <value>キャラクター</value>
+    <value>角色</value>
   </data>
   <data name="Companions" xml:space="preserve">
-    <value>バディ</value>
+    <value>同伴</value>
+  </data>
+  <data name="Ear" xml:space="preserve">
+    <value>耳朵</value>
   </data>
   <data name="Equipment_Decals" xml:space="preserve">
-    <value>クレスト</value>
+    <value>装备贴花</value>
   </data>
   <data name="Face" xml:space="preserve">
-    <value>顔</value>
+    <value>面对</value>
   </data>
   <data name="Face_Paint" xml:space="preserve">
-    <value>フェイスペイント</value>
+    <value>面妆</value>
   </data>
   <data name="Feet" xml:space="preserve">
-    <value>足</value>
+    <value>脚部</value>
   </data>
   <data name="Gear" xml:space="preserve">
-    <value>装備</value>
+    <value>装备</value>
   </data>
   <data name="Hair" xml:space="preserve">
-    <value>髪</value>
+    <value>发型</value>
   </data>
   <data name="Hands" xml:space="preserve">
-    <value>手</value>
+    <value>手臂</value>
   </data>
   <data name="Head" xml:space="preserve">
-    <value>頭</value>
+    <value>头部</value>
   </data>
   <data name="HUD" xml:space="preserve">
     <value>HUD</value>
   </data>
   <data name="Legs" xml:space="preserve">
-    <value>脚</value>
+    <value>腿部</value>
   </data>
   <data name="Maps" xml:space="preserve">
-    <value>マップ</value>
+    <value>地图</value>
   </data>
   <data name="Minions" xml:space="preserve">
-    <value>ミニオン</value>
+    <value>宠物</value>
   </data>
   <data name="Mounts" xml:space="preserve">
-    <value>マウント</value>
+    <value>坐骑</value>
   </data>
   <data name="Neck" xml:space="preserve">
-    <value>首</value>
+    <value>颈部</value>
   </data>
   <data name="Number" xml:space="preserve">
     <value>数</value>
   </data>
   <data name="Part" xml:space="preserve">
-    <value>パート</value>
+    <value>部分</value>
   </data>
   <data name="Pets" xml:space="preserve">
-    <value>ペット</value>
+    <value>召唤兽</value>
   </data>
   <data name="Race" xml:space="preserve">
-    <value>種族</value>
+    <value>种族</value>
   </data>
   <data name="Ring_Right" xml:space="preserve">
     <value>右指</value>
   </data>
   <data name="Tail" xml:space="preserve">
-    <value>尾</value>
+    <value>尾巴</value>
   </data>
   <data name="Texture_Map" xml:space="preserve">
-    <value>テクスチャマップ</value>
+    <value>纹理</value>
   </data>
   <data name="Type" xml:space="preserve">
-    <value>タイプ</value>
+    <value>类型</value>
   </data>
   <data name="TypePart" xml:space="preserve">
-    <value>タイプパート</value>
+    <value>类型部件</value>
   </data>
   <data name="Wrists" xml:space="preserve">
-    <value>腕</value>
+    <value>腕部</value>
   </data>
   <data name="All" xml:space="preserve">
-    <value>すべて</value>
+    <value>全部</value>
   </data>
   <data name="Mesh" xml:space="preserve">
-    <value>メッシュ</value>
+    <value>网格</value>
   </data>
   <data name="Furniture" xml:space="preserve">
-    <value>調度品</value>
+    <value>家具</value>
   </data>
   <data name="Housing" xml:space="preserve">
-    <value>ハウジング</value>
+    <value>房屋</value>
   </data>
   <data name="Accessory" xml:space="preserve">
-    <value>アクセサリ</value>
+    <value>附件</value>
   </data>
   <data name="Etc" xml:space="preserve">
-    <value>その他</value>
+    <value>等等</value>
   </data>
   <data name="Iris" xml:space="preserve">
-    <value>瞳</value>
+    <value>眼</value>
   </data>
   <data name="Monster" xml:space="preserve">
-    <value>モンスター</value>
+    <value>魔物</value>
   </data>
   <data name="Ring_Left" xml:space="preserve">
     <value>左指</value>
   </data>
   <data name="Body_Hands_Legs" xml:space="preserve">
-    <value>胴 + 手 + 脚</value>
+    <value>身体 + 手臂 + 腿部</value>
   </data>
   <data name="Body_Hands_Legs_Feet" xml:space="preserve">
-    <value>胴 + 手 + 脚 + 足</value>
+    <value>身体 + 手臂 + 腿部+ 脚部</value>
   </data>
   <data name="Body_Legs" xml:space="preserve">
-    <value>胴 + 脚</value>
+    <value>身体 + 腿部</value>
   </data>
   <data name="Body_Legs_Feet" xml:space="preserve">
-    <value>胴 + 脚 + 足</value>
+    <value>身体 + 腿部 + 脚部</value>
   </data>
   <data name="Food" xml:space="preserve">
-    <value>調理品</value>
+    <value>食品</value>
   </data>
   <data name="Head_Body" xml:space="preserve">
-    <value>頭 + 胴</value>
+    <value>头部 + 身体</value>
   </data>
   <data name="Legs_Feet" xml:space="preserve">
-    <value>脚 + 足</value>
+    <value>腿部 + 脚部</value>
   </data>
   <data name="Main_Hand" xml:space="preserve">
-    <value>メインアーム</value>
+    <value>主手</value>
   </data>
   <data name="Main_Off" xml:space="preserve">
-    <value>メインアーム + サブアーム</value>
+    <value>主手 + 副手</value>
   </data>
   <data name="Off_Hand" xml:space="preserve">
-    <value>サブアーム</value>
+    <value>副手</value>
   </data>
   <data name="Rings" xml:space="preserve">
-    <value>指</value>
+    <value>戒指</value>
   </data>
   <data name="Soul_Crystal" xml:space="preserve">
-    <value>ソウルクリスタル</value>
+    <value>灵魂水晶</value>
   </data>
   <data name="Two_Handed" xml:space="preserve">
-    <value>両手</value>
+    <value>双手</value>
   </data>
   <data name="Waist" xml:space="preserve">
-    <value>帯</value>
+    <value>腰带</value>
+  </data>
+  <data name="DemiHuman" xml:space="preserve">
+    <value>半人</value>
+  </data>
+  <data name="Equipment" xml:space="preserve">
+    <value>装备</value>
   </data>
   <data name="Icon" xml:space="preserve">
-    <value>アイコン</value>
+    <value>图标</value>
   </data>
   <data name="Left" xml:space="preserve">
     <value>左</value>
   </data>
   <data name="Primary" xml:space="preserve">
-    <value>プライマリ</value>
+    <value>主要的</value>
   </data>
   <data name="Right" xml:space="preserve">
     <value>右</value>
   </data>
   <data name="Secondary" xml:space="preserve">
-    <value>セカンダリー</value>
+    <value>次要的</value>
   </data>
   <data name="Weapon" xml:space="preserve">
-    <value>武器</value>
-  </data>
-  <data name="AuRa_Female" xml:space="preserve">
-    <value>アウラ♀</value>
-  </data>
-  <data name="AuRa_Male" xml:space="preserve">
-    <value>アウラ♂</value>
+    <value>武具</value>
   </data>
   <data name="Au_Ra" xml:space="preserve">
-    <value>アウラ</value>
+    <value>敖龙族</value>
   </data>
   <data name="Bishop_Autoturret" xml:space="preserve">
-    <value>オートタレット・ビショップ</value>
+    <value>象式浮空炮塔</value>
   </data>
   <data name="Body_Hands" xml:space="preserve">
-    <value>胴 + 手</value>
+    <value>身体 + 手臂</value>
   </data>
   <data name="Carbuncle" xml:space="preserve">
-    <value>カーバンクル</value>
+    <value>石兽</value>
+  </data>
+  <data name="ColorSet" xml:space="preserve">
+    <value>颜色集</value>
+  </data>
+  <data name="Diffuse" xml:space="preserve">
+    <value>漫反射</value>
   </data>
   <data name="Elezen" xml:space="preserve">
-    <value>エレゼン</value>
+    <value>精灵族</value>
   </data>
   <data name="Elezen_Female" xml:space="preserve">
-    <value>エレゼン♀</value>
+    <value>精灵族 女性</value>
   </data>
   <data name="Elezen_Male" xml:space="preserve">
-    <value>エレゼン♂</value>
+    <value>精灵族 男性</value>
   </data>
   <data name="Eos" xml:space="preserve">
-    <value>フェアリー・エオス</value>
+    <value>朝日小仙女</value>
+  </data>
+  <data name="Error_DirectoryError" xml:space="preserve">
+    <value>目录错误</value>
+  </data>
+  <data name="Error_FileNotFound" xml:space="preserve">
+    <value>无法找到文件，请确定设置的目录是否有误</value>
   </data>
   <data name="Female" xml:space="preserve">
     <value>女性</value>
   </data>
   <data name="Garuda_Egi" xml:space="preserve">
-    <value>ガルーダ・エギ</value>
+    <value>迦楼罗之灵</value>
   </data>
   <data name="Hyur_H" xml:space="preserve">
-    <value>ヒューラン・ハイランダ</value>
+    <value>人族 高地之民</value>
   </data>
   <data name="Hyur_Highlander_Female" xml:space="preserve">
-    <value>ヒューラン・ハイランダ♀</value>
+    <value>人族 高地之民 女性</value>
   </data>
   <data name="Hyur_Highlander_Male" xml:space="preserve">
-    <value>ヒューラン・ハイランダ♂</value>
+    <value>人族 高地之民 男性</value>
   </data>
   <data name="Hyur_M" xml:space="preserve">
-    <value>ヒューラン・ミッドランダ</value>
+    <value>人族 中原之民</value>
   </data>
   <data name="Hyur_Midlander_Female" xml:space="preserve">
-    <value>ヒューラン・ミッドランダ♀</value>
+    <value>人族 中原之民 女性</value>
   </data>
   <data name="Hyur_Midlander_Male" xml:space="preserve">
-    <value>ヒューラン・ミッドランダ♂</value>
+    <value>人族 中原之民 男性</value>
   </data>
   <data name="Ifrit_Egi" xml:space="preserve">
-    <value>イフリート・エギ</value>
+    <value>伊弗利特之灵</value>
   </data>
   <data name="Lalafell" xml:space="preserve">
-    <value>ララフェル</value>
+    <value>拉拉菲尔族</value>
   </data>
   <data name="Lalafell_Female" xml:space="preserve">
-    <value>ララフェル♀</value>
+    <value>拉拉菲尔族 女性</value>
   </data>
   <data name="Lalafell_Male" xml:space="preserve">
-    <value>ララフェル♂</value>
+    <value>拉拉菲尔族 男性</value>
   </data>
   <data name="Male" xml:space="preserve">
     <value>男性</value>
   </data>
+  <data name="Mask" xml:space="preserve">
+    <value>遮罩</value>
+  </data>
   <data name="Miqote" xml:space="preserve">
-    <value>ミコッテ</value>
+    <value>猫魅族</value>
   </data>
   <data name="Miqote_Female" xml:space="preserve">
-    <value>ミコッテ♀</value>
+    <value>猫魅族 女性</value>
   </data>
   <data name="Miqote_Male" xml:space="preserve">
-    <value>ミコッテ♂</value>
+    <value>猫魅族 男性</value>
+  </data>
+  <data name="Normal" xml:space="preserve">
+    <value>法线</value>
   </data>
   <data name="Ramuh_Egi" xml:space="preserve">
-    <value>ラムウ・エギ</value>
+    <value>拉姆之灵</value>
   </data>
   <data name="Roegadyn" xml:space="preserve">
-    <value>ルガディン</value>
+    <value>鲁加族</value>
   </data>
   <data name="Roegadyn_Female" xml:space="preserve">
-    <value>ルガディン♀</value>
+    <value>鲁加族 女性</value>
   </data>
   <data name="Roegadyn_Male" xml:space="preserve">
-    <value>ルガディン♂</value>
+    <value>鲁加族 男性</value>
   </data>
   <data name="Rook_Autoturret" xml:space="preserve">
-    <value>オートタレット・ルーク</value>
+    <value>车式浮空炮塔</value>
+  </data>
+  <data name="SearchBox" xml:space="preserve">
+    <value>搜索 Textures</value>
   </data>
   <data name="Selene" xml:space="preserve">
-    <value>フェアリー・セレネ</value>
+    <value>夕月小仙女</value>
+  </data>
+  <data name="Specular" xml:space="preserve">
+    <value>镜面反射</value>
   </data>
   <data name="Titan_Egi" xml:space="preserve">
-    <value>タイタン・エギ</value>
+    <value>泰坦之灵</value>
   </data>
-  <data name="Actions" xml:space="preserve">
-    <value>アクション</value>
+  <data name="Paintings" xml:space="preserve">
+    <value>绘画作品</value>
+  </data>
+  <data name="Variant" xml:space="preserve">
+    <value>变体</value>
+  </data>
+  <data name="Ornaments" xml:space="preserve">
+    <value>装饰品</value>
+  </data>
+  <data name="Dual_Wield" xml:space="preserve">
+    <value>双持</value>
+  </data>
+  <data name="Indoor_Furniture" xml:space="preserve">
+    <value>室内家具</value>
+  </data>
+  <data name="Outdoor_Furniture" xml:space="preserve">
+    <value>户外家具</value>
   </data>
   <data name="Status" xml:space="preserve">
-    <value>ステータス</value>
+    <value>状态</value>
+  </data>
+  <data name="Weather" xml:space="preserve">
+    <value>天气</value>
+  </data>
+  <data name="Earring" xml:space="preserve">
+    <value>耳环</value>
+  </data>
+  <data name="Material" xml:space="preserve">
+    <value>材质</value>
+  </data>
+  <data name="Detrimental" xml:space="preserve">
+    <value>Detrimental</value>
+  </data>
+  <data name="Other" xml:space="preserve">
+    <value>Other</value>
   </data>
   <data name="Accessories" xml:space="preserve">
-    <value>アクセサリ</value>
+    <value>附件</value>
   </data>
   <data name="Weapons" xml:space="preserve">
-    <value>武器 </value>
+    <value>武器</value>
   </data>
   <data name="Ears" xml:space="preserve">
-    <value>耳</value>
+    <value>耳部</value>
+  </data>
+  <data name="Company" xml:space="preserve">
+    <value>Company</value>
+  </data>
+  <data name="Craft" xml:space="preserve">
+    <value>Craft</value>
+  </data>
+  <data name="Cure" xml:space="preserve">
+    <value>Cure</value>
+  </data>
+  <data name="Elezen_Duskwight" xml:space="preserve">
+    <value>精灵族 - 黑影之民</value>
+  </data>
+  <data name="Elezen_Female_NPC" xml:space="preserve">
+    <value>精灵族女性NPC</value>
+  </data>
+  <data name="Elezen_Male_NPC" xml:space="preserve">
+    <value>精灵族男性NPC</value>
+  </data>
+  <data name="Elezen_Wildwood" xml:space="preserve">
+    <value>精灵族 - 森林之民</value>
+  </data>
+  <data name="Emote" xml:space="preserve">
+    <value>Emote</value>
+  </data>
+  <data name="Event" xml:space="preserve">
+    <value>Event</value>
+  </data>
+  <data name="Furniture_Indoor" xml:space="preserve">
+    <value>Indoor Furniture</value>
+  </data>
+  <data name="Furniture_Outdoor" xml:space="preserve">
+    <value>Outdoor Furniture</value>
+  </data>
+  <data name="General" xml:space="preserve">
+    <value>General</value>
+  </data>
+  <data name="Hrothgar" xml:space="preserve">
+    <value>硌狮族</value>
+  </data>
+  <data name="Hrothgar_Female" xml:space="preserve">
+    <value>硌狮族 女性</value>
+  </data>
+  <data name="Hrothgar_Female_NPC" xml:space="preserve">
+    <value>硌狮族女性NPC</value>
+  </data>
+  <data name="Hrothgar_Helion" xml:space="preserve">
+    <value>硌狮族 - 掠日之民</value>
+  </data>
+  <data name="Hrothgar_Lost" xml:space="preserve">
+    <value>硌狮族 - 迷踪之民</value>
+  </data>
+  <data name="Hrothgar_Male" xml:space="preserve">
+    <value>硌狮族 男性</value>
+  </data>
+  <data name="Hrothgar_Male_NPC" xml:space="preserve">
+    <value>硌狮族男性NPC</value>
+  </data>
+  <data name="Hrothgar_NPC" xml:space="preserve">
+    <value>硌狮族NPC</value>
+  </data>
+  <data name="Human" xml:space="preserve">
+    <value>人族</value>
+  </data>
+  <data name="Hyur_Highlander" xml:space="preserve">
+    <value>人族 - 高地之民</value>
+  </data>
+  <data name="Hyur_Highlander_Female_NPC" xml:space="preserve">
+    <value>人族高地之民女性NPC</value>
+  </data>
+  <data name="Hyur_Highlander_Male_NPC" xml:space="preserve">
+    <value>人族高地之民男性NPC</value>
+  </data>
+  <data name="Hyur_Midlander" xml:space="preserve">
+    <value>人族 - 中原之民</value>
+  </data>
+  <data name="Hyur_Midlander_Female_NPC" xml:space="preserve">
+    <value>人族中原之民女性NPC</value>
+  </data>
+  <data name="Hyur_Midlander_Male_NPC" xml:space="preserve">
+    <value>人族中原之民男性NPC</value>
+  </data>
+  <data name="Items" xml:space="preserve">
+    <value>Items</value>
+  </data>
+  <data name="Lalafell_Dunesfolk" xml:space="preserve">
+    <value>拉拉菲尔族 - 沙漠之民</value>
+  </data>
+  <data name="Lalafell_Female_NPC" xml:space="preserve">
+    <value>拉拉菲尔族女性NPC</value>
+  </data>
+  <data name="Lalafell_Male_NPC" xml:space="preserve">
+    <value>拉拉菲尔族男性NPC</value>
+  </data>
+  <data name="Lalafell_Plainsfolk" xml:space="preserve">
+    <value>拉拉菲尔族 - 平原之民</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>chs</value>
+  </data>
+  <data name="LeftRing" xml:space="preserve">
+    <value>Left Ring</value>
+  </data>
+  <data name="LoadingScreen" xml:space="preserve">
+    <value>加载画面</value>
+  </data>
+  <data name="Marker" xml:space="preserve">
+    <value>Marker</value>
+  </data>
+  <data name="Miqote_Female_NPC" xml:space="preserve">
+    <value>猫魅族女性NPC</value>
+  </data>
+  <data name="Miqote_Keeper" xml:space="preserve">
+    <value>猫魅族 - 护月之民</value>
+  </data>
+  <data name="Miqote_Male_NPC" xml:space="preserve">
+    <value>猫魅族男性NPC</value>
+  </data>
+  <data name="Miqote_Seeker" xml:space="preserve">
+    <value>猫魅族 - 逐日之民</value>
+  </data>
+  <data name="OnlineStatus" xml:space="preserve">
+    <value>联机状态</value>
+  </data>
+  <data name="Roegadyn_Female_NPC" xml:space="preserve">
+    <value>鲁加族女性NPC</value>
+  </data>
+  <data name="Roegadyn_Hellsguard" xml:space="preserve">
+    <value>鲁加族 - 红焰之民</value>
+  </data>
+  <data name="Roegadyn_Male_NPC" xml:space="preserve">
+    <value>鲁加族男性NPC</value>
+  </data>
+  <data name="Roegadyn_SeaWolf" xml:space="preserve">
+    <value>鲁加族 - 北洋之名</value>
+  </data>
+  <data name="Sephirot_Egi" xml:space="preserve">
+    <value>Sephirot-Egi</value>
+  </data>
+  <data name="Seraph" xml:space="preserve">
+    <value>Seraph</value>
+  </data>
+  <data name="Skin" xml:space="preserve">
+    <value>Skin</value>
+  </data>
+  <data name="Viera" xml:space="preserve">
+    <value>维埃拉族</value>
+  </data>
+  <data name="Viera_Female" xml:space="preserve">
+    <value>维埃拉族 女性</value>
+  </data>
+  <data name="Viera_Female_NPC" xml:space="preserve">
+    <value>维埃拉族女性NPC</value>
+  </data>
+  <data name="Viera_Male" xml:space="preserve">
+    <value>维埃拉族 男性</value>
+  </data>
+  <data name="Viera_Male_NPC" xml:space="preserve">
+    <value>维埃拉族男性NPC</value>
+  </data>
+  <data name="Viera_NPC" xml:space="preserve">
+    <value>维埃拉族NPC</value>
+  </data>
+  <data name="Viera_Rava" xml:space="preserve">
+    <value>维埃拉族 - 密林之民</value>
+  </data>
+  <data name="Viera_Veena" xml:space="preserve">
+    <value>维埃拉族 - 山林之民</value>
   </data>
 </root>

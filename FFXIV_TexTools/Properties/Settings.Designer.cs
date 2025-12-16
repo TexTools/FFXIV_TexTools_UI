@@ -622,5 +622,17 @@ namespace FFXIV_TexTools.Properties {
                 this["UseAutoHeels"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("RedrawAll")]
+        public string PenumbraRedrawMode {
+            get {
+                return ((string)(this["PenumbraRedrawMode"]));
+            }
+            set {
+                this["PenumbraRedrawMode"] = value;
+            }
+        }
     }
 }

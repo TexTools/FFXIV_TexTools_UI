@@ -14,4 +14,8 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="DotNetZip.Original" Version="2025.2.15" />
+  </ItemGroup>
+
 </Project>

@@ -23,5 +23,6 @@
         <Button x:Name="FrenchBtn" Content="Français (French)" Margin="10" Click="FrenchBtn_Click"/>
         <Button x:Name="KoreanBtn" Content="한국어 (Korean)" Margin="10" Click="KoreanBtn_Click"/>
         <Button x:Name="ChineseBtn" Content="汉语 (Chinese)" Margin="10" Click="ChineseBtn_Click"/>
+        <Button x:Name="TraditionalChineseBtn" Content="正體字 (Traditional Chinese)" Margin="10" Click="TraditionalChineseBtn_Click"/>
     </StackPanel>
 </UserControl>

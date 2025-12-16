@@ -29,7 +29,6 @@ using System.IO;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
-using WK.Libraries.BetterFolderBrowserNS;
 using xivModdingFramework.Cache;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Helpers;
@@ -69,6 +68,14 @@ namespace FFXIV_TexTools.ViewModels
             new KeyValuePair<string, string>("PMP", "pmp"),
             new KeyValuePair<string, string>("TTMP2", "ttmp2"),
         };
+
+        public ObservableCollection<KeyValuePair<string, string>> PenumbraRedrawModes { get; set; } = new ObservableCollection<KeyValuePair<string, string>>()
+        {
+            new KeyValuePair<string, string>("Redraw All", "RedrawAll"),
+            new KeyValuePair<string, string>("Redraw Self", "RedrawSelf"),
+            new KeyValuePair<string, string>("Don't Redraw", "NoRedraw"),
+        };
+
         public CustomizeViewModel(CustomizeSettingsView view)
         {
             _view = view;
@@ -566,6 +573,28 @@ namespace FFXIV_TexTools.ViewModels
             }
         }
 
+        public string SelectedPenumbraRedrawMode
+        {
+            get
+            {
+                try
+                {
+                    return Settings.Default.PenumbraRedrawMode;
+                }
+                catch
+                {
+                    return default(FrameworkSettings.EPenumbraRedrawMode).ToString();
+                }
+            }
+            set
+            {
+                if (SelectedPenumbraRedrawMode != value)
+                {
+                    SetPenumbraRedrawMode(value);
+                }
+            }
+        }
+
         public bool ExportTextureAsDDS
         {
             get => Settings.Default.ExportTexDDS;
@@ -660,7 +689,7 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         private void FFXIVSelectDir(object obj)
         {
-            var ofd = new BetterFolderBrowser()
+            var ofd = new FolderSelectDialog()
             {
                 Title = "Select FFXIV Folder",
             };
@@ -668,29 +697,29 @@ namespace FFXIV_TexTools.ViewModels
             var previous = Settings.Default.FFXIV_Directory;
             if (!string.IsNullOrWhiteSpace(Settings.Default.FFXIV_Directory))
             {
-                ofd.RootFolder = Settings.Default.FFXIV_Directory;
+                ofd.InitialDirectory = Settings.Default.FFXIV_Directory;
             }
             else if (!string.IsNullOrWhiteSpace(OnboardingWindow.GetDefaultInstallDirectory()))
             {
-                ofd.RootFolder = OnboardingWindow.GetDefaultInstallDirectory();
+                ofd.InitialDirectory = OnboardingWindow.GetDefaultInstallDirectory();
             }
 
 
-            if (ofd.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+            if (!ofd.ShowDialog())
             {
                 return;
             }
 
-            var path = OnboardingWindow.ResolveFFXIVFolder(ofd.SelectedFolder);
+            var path = OnboardingWindow.ResolveFFXIVFolder(ofd.FileName);
 
             while (!OnboardingWindow.IsGameDirectoryValid(path))
             {
                 FlexibleMessageBox.Show("Invalid FFXIV Install", "Please select a valid FFXIV install folder.", MessageBoxButtons.OK, MessageBoxIcon.Question);
-                if (ofd.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+                if (!ofd.ShowDialog())
                 {
                     return;
                 }
-                path = OnboardingWindow.ResolveFFXIVFolder(ofd.SelectedFolder);
+                path = OnboardingWindow.ResolveFFXIVFolder(ofd.FileName);
             }
 
             Settings.Default.FFXIV_Directory = path;
@@ -905,6 +934,16 @@ namespace FFXIV_TexTools.ViewModels
         {
             Settings.Default.Default_Race_Selection = selectedRace;
             Settings.Default.Save();
+            NotifyPropertyChanged(nameof(SelectedDefaultRace));
+        }
+
+        private void SetPenumbraRedrawMode(string selectedMode)
+        {
+            Settings.Default.PenumbraRedrawMode = selectedMode;
+            Settings.Default.Save();
+            if (Enum.TryParse<FrameworkSettings.EPenumbraRedrawMode>(selectedMode, out var mode))
+                XivCache.FrameworkSettings.PenumbraRedrawMode = mode;
+            NotifyPropertyChanged(nameof(SelectedPenumbraRedrawMode));
         }
 
         /// <summary>

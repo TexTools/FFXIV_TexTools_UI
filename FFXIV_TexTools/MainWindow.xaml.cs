@@ -57,7 +57,6 @@ using System.Windows.Forms;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Threading;
-using WK.Libraries.BetterFolderBrowserNS;
 using xivModdingFramework.Cache;
 using xivModdingFramework.Exd.FileTypes;
 using xivModdingFramework.General.Enums;
@@ -333,7 +332,14 @@ namespace FFXIV_TexTools
             // Validate settings and perform first-time-setup if needed.
             OnboardingWindow.OnboardAndInitialize();
 
-            var ci = new CultureInfo(Properties.Settings.Default.Application_Language)
+            var cultureName = Properties.Settings.Default.Application_Language;
+
+            if (cultureName == "zh")
+                cultureName = "zh-Hans";
+            else if (cultureName == "tc")
+                cultureName = "zh-Hant";
+
+            var ci = new CultureInfo(cultureName)
             {
                 NumberFormat = { NumberDecimalSeparator = "." }
             };
@@ -363,7 +369,7 @@ namespace FFXIV_TexTools
 
             try
             {
-                if (System.Globalization.CultureInfo.CurrentUICulture.Name == "zh")
+                if (System.Globalization.CultureInfo.CurrentUICulture.Name == "zh-Hans")
                 {
                     this.ChinaDiscordButton.Visibility = Visibility.Visible;
                 }
@@ -1229,21 +1235,21 @@ namespace FFXIV_TexTools
             }
 
 
-            var ofd = new BetterFolderBrowser {
+            var ofd = new FolderSelectDialog {
                 Title = "Import FFXIV Folder Tree"
             };
 
-            if (ofd.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+            if (!ofd.ShowDialog())
                 return;
 
             try
             {
                 // See if we can get the information in simple mode.
-                var modPackFiles = await TTMP.ModPackToSimpleFileList(ofd.SelectedPath, false, MainWindow.UserTransaction);
+                var modPackFiles = await TTMP.ModPackToSimpleFileList(ofd.FileName, false, MainWindow.UserTransaction);
 
                 if (modPackFiles != null)
                 {
-                    FileListImporter.ShowModpackImport(ofd.SelectedPath, modPackFiles.Keys.ToList(), this);
+                    FileListImporter.ShowModpackImport(ofd.FileName, modPackFiles.Keys.ToList(), this);
                     return;
                 }
             } catch(Exception ex)

@@ -129,23 +129,11 @@
   <data name="Ear" xml:space="preserve">
     <value>귀</value>
   </data>
-  <data name="EquipDecalFile" xml:space="preserve">
-    <value>-decal_{0}.tex</value>
-  </data>
-  <data name="EquipDecalFolder" xml:space="preserve">
-    <value>chara/common/texture/decal_equip</value>
-  </data>
   <data name="Equipment_Decals" xml:space="preserve">
     <value>장비 데칼</value>
   </data>
   <data name="Face" xml:space="preserve">
     <value>얼굴</value>
-  </data>
-  <data name="FacePaintFile" xml:space="preserve">
-    <value>_decal_{0}.tex</value>
-  </data>
-  <data name="FacePaintFolder" xml:space="preserve">
-    <value>chara/common/texture/decal_face</value>
   </data>
   <data name="Face_Paint" xml:space="preserve">
     <value>얼굴 치장</value>
@@ -213,12 +201,6 @@
   <data name="TypePart" xml:space="preserve">
     <value>유형 파트</value>
   </data>
-  <data name="UI" xml:space="preserve">
-    <value>UI</value>
-  </data>
-  <data name="ULD" xml:space="preserve">
-    <value>ULD</value>
-  </data>
   <data name="Wrists" xml:space="preserve">
     <value>손목</value>
   </data>
@@ -233,12 +215,6 @@
   </data>
   <data name="Housing" xml:space="preserve">
     <value>하우징</value>
-  </data>
-  <data name="TexTools" xml:space="preserve">
-    <value>TexTools</value>
-  </data>
-  <data name="ModlistFilePath" xml:space="preserve">
-    <value>XivMods.json</value>
   </data>
   <data name="Accessory" xml:space="preserve">
     <value>장신구</value>
@@ -255,17 +231,14 @@
   <data name="Ring_Left" xml:space="preserve">
     <value>왼쪽 반지</value>
   </data>
-  <data name="AutodeskCollada" xml:space="preserve">
-    <value>Autodesk Collada</value>
-  </data>
-  <data name="OpenCollada" xml:space="preserve">
-    <value>OpenCOLLADA</value>
-  </data>
   <data name="Body_Hands_Legs" xml:space="preserve">
     <value>몸통 + 손 + 다리</value>
   </data>
   <data name="Body_Hands_Legs_Feet" xml:space="preserve">
     <value>몸통 + 손 + 다리 + 발</value>
+  </data>
+  <data name="Body_Legs" xml:space="preserve">
+    <value>몸통 + 다리</value>
   </data>
   <data name="Body_Legs_Feet" xml:space="preserve">
     <value>몸통 + 다리 + 발</value>
@@ -485,5 +458,11 @@
   </data>
   <data name="Material" xml:space="preserve">
     <value>머티리얼</value>
+  </data>
+  <data name="Accessories" xml:space="preserve">
+    <value>장신구</value>
+  </data>
+  <data name="Weapons" xml:space="preserve">
+    <value>무기</value>
   </data>
 </root>

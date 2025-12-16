@@ -23,9 +23,9 @@
     <Product>FFXIV_TexTools</Product>
     <Copyright>Copyright ©  2024</Copyright>
     
-    <ApplicationVersion>3.0.9.5</ApplicationVersion>
-    <AssemblyVersion>3.0.9.5</AssemblyVersion>
-    <FileVersion>3.0.9.5</FileVersion>
+    <ApplicationVersion>3.1.0.1</ApplicationVersion>
+    <AssemblyVersion>3.1.0.1</AssemblyVersion>
+    <FileVersion>3.1.0.1</FileVersion>
     
     <LangVersion>9.0</LangVersion>
     <UseWPF>true</UseWPF>
@@ -67,51 +67,120 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Autoupdater.NET.Official" Version="1.9.1" />
-    <PackageReference Include="BetterFolderBrowser" Version="1.2.0" />
-    <PackageReference Include="ControlzEx" Version="3.0.2.4" />
-    <PackageReference Include="Cyotek.Drawing.BitmapFont" Version="2.0.4" />
-    <PackageReference Include="DotNetZip" Version="1.16.0" />
-    <PackageReference Include="EntityFramework" Version="6.4.4" />
+    <PackageReference Include="ControlzEx" Version="3.0.2.4">
+      <TreatAsUsed>true</TreatAsUsed>
+    </PackageReference>
+    <PackageReference Include="Cyotek.Drawing.BitmapFont" Version="2.0.4">
+      <TreatAsUsed>true</TreatAsUsed>
+    </PackageReference>
+    <PackageReference Include="DotNetZip.Original" Version="2025.2.15">
+      <TreatAsUsed>true</TreatAsUsed>
+    </PackageReference>
+    <PackageReference Include="EntityFramework" Version="6.4.4">
+      <TreatAsUsed>true</TreatAsUsed>
+    </PackageReference>
     <PackageReference Include="Extended.Wpf.Toolkit" Version="4.5.0" />
-    <PackageReference Include="HelixToolkit" Version="2.25.0" />
-    <PackageReference Include="HelixToolkit.SharpDX.Core" Version="2.25.0" />
-    <PackageReference Include="HelixToolkit.Wpf" Version="2.25.0" />
+    <PackageReference Include="HelixToolkit" Version="2.25.0">
+      <TreatAsUsed>true</TreatAsUsed>
+    </PackageReference>
+    <PackageReference Include="HelixToolkit.SharpDX.Core" Version="2.25.0">
+      <TreatAsUsed>true</TreatAsUsed>
+    </PackageReference>
+    <PackageReference Include="HelixToolkit.Wpf" Version="2.25.0">
+      <TreatAsUsed>true</TreatAsUsed>
+    </PackageReference>
     <PackageReference Include="HelixToolkit.Wpf.SharpDX" Version="2.25.0" />
-    <PackageReference Include="IndexRange" Version="1.0.2" />
+    <PackageReference Include="IndexRange" Version="1.0.2">
+      <TreatAsUsed>true</TreatAsUsed>
+    </PackageReference>
     <PackageReference Include="MahApps.Metro" Version="1.6.5" />
     <PackageReference Include="MahApps.Metro.IconPacks" Version="2.3.0" />
-    <PackageReference Include="MahApps.Metro.IconPacks.Material" Version="2.3.0" />
-    <PackageReference Include="MahApps.Metro.IconPacks.Modern" Version="2.3.0" />
+    <PackageReference Include="MahApps.Metro.IconPacks.Material" Version="2.3.0">
+      <TreatAsUsed>true</TreatAsUsed>
+    </PackageReference>
+    <PackageReference Include="MahApps.Metro.IconPacks.Modern" Version="2.3.0">
+      <TreatAsUsed>true</TreatAsUsed>
+    </PackageReference>
     <PackageReference Include="Microsoft.HLSL.CSharpVB" Version="1.0.2" />
     <PackageReference Include="Microsoft.Net.Compilers.Toolset" Version="4.5.0">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="SharpDX" Version="4.2.0" />
-    <PackageReference Include="SharpDX.D3DCompiler" Version="4.2.0" />
-    <PackageReference Include="SharpDX.Direct2D1" Version="4.2.0" />
-    <PackageReference Include="SharpDX.Direct3D11" Version="4.2.0" />
-    <PackageReference Include="SharpDX.Direct3D9" Version="4.2.0" />
-    <PackageReference Include="SharpDX.DXGI" Version="4.2.0" />
-    <PackageReference Include="SharpDX.Mathematics" Version="4.2.0" />
-    <PackageReference Include="SixLabors.ImageSharp" Version="2.1.10" />
-    <PackageReference Include="System.Buffers" Version="4.5.1" />
-    <PackageReference Include="System.Collections.NonGeneric" Version="4.3.0" />
-    <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
-    <PackageReference Include="System.ComponentModel.Primitives" Version="4.3.0" />
-    <PackageReference Include="System.ComponentModel.TypeConverter" Version="4.3.0" />
-    <PackageReference Include="System.Drawing.Primitives" Version="4.3.0" />
-    <PackageReference Include="System.Memory" Version="4.5.5" />
-    <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
-    <PackageReference Include="System.Private.DataContractSerialization" Version="4.3.0" />
-    <PackageReference Include="System.Reflection" Version="4.3.0" />
-    <PackageReference Include="System.Reflection.TypeExtensions" Version="4.7.0" />
-    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.0.0" />
-    <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
-    <PackageReference Include="System.Runtime.Serialization.Xml" Version="4.3.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3">
+      <TreatAsUsed>true</TreatAsUsed>
+    </PackageReference>
+    <PackageReference Include="SharpDX" Version="4.2.0">
+      <TreatAsUsed>true</TreatAsUsed>
+    </PackageReference>
+    <PackageReference Include="SharpDX.D3DCompiler" Version="4.2.0">
+      <TreatAsUsed>true</TreatAsUsed>
+    </PackageReference>
+    <PackageReference Include="SharpDX.Direct2D1" Version="4.2.0">
+      <TreatAsUsed>true</TreatAsUsed>
+    </PackageReference>
+    <PackageReference Include="SharpDX.Direct3D11" Version="4.2.0">
+      <TreatAsUsed>true</TreatAsUsed>
+    </PackageReference>
+    <PackageReference Include="SharpDX.Direct3D9" Version="4.2.0">
+      <TreatAsUsed>true</TreatAsUsed>
+    </PackageReference>
+    <PackageReference Include="SharpDX.DXGI" Version="4.2.0">
+      <TreatAsUsed>true</TreatAsUsed>
+    </PackageReference>
+    <PackageReference Include="SharpDX.Mathematics" Version="4.2.0">
+      <TreatAsUsed>true</TreatAsUsed>
+    </PackageReference>
+    <PackageReference Include="SixLabors.ImageSharp" Version="2.1.11">
+      <TreatAsUsed>true</TreatAsUsed>
+    </PackageReference>
+    <PackageReference Include="System.Buffers" Version="4.5.1">
+      <TreatAsUsed>true</TreatAsUsed>
+    </PackageReference>
+    <PackageReference Include="System.Collections.NonGeneric" Version="4.3.0">
+      <TreatAsUsed>true</TreatAsUsed>
+    </PackageReference>
+    <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0">
+      <TreatAsUsed>true</TreatAsUsed>
+    </PackageReference>
+    <PackageReference Include="System.ComponentModel.Primitives" Version="4.3.0">
+      <TreatAsUsed>true</TreatAsUsed>
+    </PackageReference>
+    <PackageReference Include="System.ComponentModel.TypeConverter" Version="4.3.0">
+      <TreatAsUsed>true</TreatAsUsed>
+    </PackageReference>
+    <PackageReference Include="System.Drawing.Primitives" Version="4.3.0">
+      <TreatAsUsed>true</TreatAsUsed>
+    </PackageReference>
+    <PackageReference Include="System.Memory" Version="4.5.5">
+      <TreatAsUsed>true</TreatAsUsed>
+    </PackageReference>
+    <PackageReference Include="System.Numerics.Vectors" Version="4.5.0">
+      <TreatAsUsed>true</TreatAsUsed>
+    </PackageReference>
+    <PackageReference Include="System.Private.DataContractSerialization" Version="4.3.0">
+      <TreatAsUsed>true</TreatAsUsed>
+    </PackageReference>
+    <PackageReference Include="System.Reflection" Version="4.3.0">
+      <TreatAsUsed>true</TreatAsUsed>
+    </PackageReference>
+    <PackageReference Include="System.Reflection.TypeExtensions" Version="4.7.0">
+      <TreatAsUsed>true</TreatAsUsed>
+    </PackageReference>
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.0.0">
+      <TreatAsUsed>true</TreatAsUsed>
+    </PackageReference>
+    <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0">
+      <TreatAsUsed>true</TreatAsUsed>
+    </PackageReference>
+    <PackageReference Include="System.Runtime.Serialization.Xml" Version="4.3.0">
+      <TreatAsUsed>true</TreatAsUsed>
+    </PackageReference>
     <PackageReference Include="System.Threading.Tasks.Parallel" Version="4.3.0" />
-    <PackageReference Include="System.Xml.XmlDocument" Version="4.3.0" />
-    <PackageReference Include="TeximpNet" Version="1.4.3" />
+    <PackageReference Include="System.Xml.XmlDocument" Version="4.3.0">
+      <TreatAsUsed>true</TreatAsUsed>
+    </PackageReference>
+    <PackageReference Include="TeximpNet" Version="1.4.3">
+      <TreatAsUsed>true</TreatAsUsed>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="netstandard, Version=2.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51" />
@@ -130,8 +199,8 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="..\lib\xivModdingFramework\xivModdingFramework\Resources\XivStrings.zh.resx" Link="Resources\XivStrings.zh.resx">
-      <SubType>Designer</SubType>
+    <EmbeddedResource Update="Resources\UIMessages.resx">
+      <Generator></Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="Resources\UIMessages.zh.resx">
       <SubType>Designer</SubType>
@@ -145,8 +214,7 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Update="Resources\UIStrings.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>UIStrings.Designer.cs</LastGenOutput>
+      <Generator></Generator>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Update="Resources\XivStringRaces.zh.resx">
@@ -189,7 +257,9 @@
     </PixelShader>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ForceUpdateAssembly\ForceUpdateAssembly.csproj" />
+    <ProjectReference Include="..\ForceUpdateAssembly\ForceUpdateAssembly.csproj">
+      <TreatAsUsed>true</TreatAsUsed>
+    </ProjectReference>
     <ProjectReference Include="..\lib\xivModdingFramework\xivModdingFramework\xivModdingFramework.csproj" />
   </ItemGroup>
   <ItemGroup>
@@ -197,11 +267,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
-    </Compile>
-    <Compile Update="Resources\UIStrings.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>UIStrings.resx</DependentUpon>
     </Compile>
     <Compile Update="Resources\XivStrings.Designer.cs">
       <DesignTime>True</DesignTime>

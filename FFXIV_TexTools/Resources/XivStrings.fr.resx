@@ -117,122 +117,26 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Accessory" xml:space="preserve">
-    <value>Accessoires</value>
-  </data>
-  <data name="All" xml:space="preserve">
-    <value>Tous</value>
-  </data>
-  <data name="AuRa_Female" xml:space="preserve">
-    <value>Ao Ra Femme</value>
-  </data>
-  <data name="AuRa_Male" xml:space="preserve">
-    <value>Ao Ra Homme</value>
-  </data>
-  <data name="AutodeskCollada" xml:space="preserve">
-    <value>Autodesk Collada</value>
-  </data>
-  <data name="Au_Ra" xml:space="preserve">
-    <value>Ao Ra</value>
-  </data>
-  <data name="Bishop_Autoturret" xml:space="preserve">
-    <value>Auto-tourelle Fou</value>
-  </data>
   <data name="Body" xml:space="preserve">
     <value>Torse</value>
-  </data>
-  <data name="Body_Hands" xml:space="preserve">
-    <value>Torse + Mains</value>
-  </data>
-  <data name="Body_Hands_Legs" xml:space="preserve">
-    <value>Torse + Mains + Jambes</value>
-  </data>
-  <data name="Body_Hands_Legs_Feet" xml:space="preserve">
-    <value>Torse + Mains + Jambes + Pieds</value>
-  </data>
-  <data name="Body_Legs_Feet" xml:space="preserve">
-    <value>Torse + Jambes + Pieds</value>
-  </data>
-  <data name="Carbuncle" xml:space="preserve">
-    <value>Carbuncle</value>
   </data>
   <data name="Character" xml:space="preserve">
     <value>Personnage</value>
   </data>
-  <data name="ColorSet" xml:space="preserve">
-    <value>ColorSet</value>
-  </data>
   <data name="Companions" xml:space="preserve">
     <value>Compagnon</value>
-  </data>
-  <data name="DemiHuman" xml:space="preserve">
-    <value>DemiHuman</value>
-  </data>
-  <data name="Diffuse" xml:space="preserve">
-    <value>Diffuse</value>
-  </data>
-  <data name="Ears" xml:space="preserve">
-    <value>Oreilles</value>
-  </data>
-  <data name="Elezen" xml:space="preserve">
-    <value>Élézen</value>
-  </data>
-  <data name="Elezen_Female" xml:space="preserve">
-    <value>Elezen Femme</value>
-  </data>
-  <data name="Elezen_Male" xml:space="preserve">
-    <value>Elezen Homme</value>
-  </data>
-  <data name="Eos" xml:space="preserve">
-    <value>Eos</value>
-  </data>
-  <data name="EquipDecalFile" xml:space="preserve">
-    <value>-decal_{0}.tex</value>
-  </data>
-  <data name="EquipDecalFolder" xml:space="preserve">
-    <value>chara/common/texture/decal_equip</value>
-  </data>
-  <data name="Equipment" xml:space="preserve">
-    <value>Equipement</value>
   </data>
   <data name="Equipment_Decals" xml:space="preserve">
     <value>Blason</value>
   </data>
-  <data name="Error_DirectoryError" xml:space="preserve">
-    <value>Erreur de répertoire</value>
-  </data>
-  <data name="Error_FileNotFound" xml:space="preserve">
-    <value>Impossible de trouver le fichier, veuillez vérifier les répertoires dans les Réglages.</value>
-  </data>
-  <data name="Etc" xml:space="preserve">
-    <value>Etc</value>
-  </data>
   <data name="Face" xml:space="preserve">
     <value>Visage</value>
-  </data>
-  <data name="FacePaintFile" xml:space="preserve">
-    <value>_decal_{0}.tex</value>
-  </data>
-  <data name="FacePaintFolder" xml:space="preserve">
-    <value>chara/common/texture/decal_face</value>
   </data>
   <data name="Face_Paint" xml:space="preserve">
     <value>Maquillage</value>
   </data>
   <data name="Feet" xml:space="preserve">
     <value>Pieds</value>
-  </data>
-  <data name="Female" xml:space="preserve">
-    <value>Femme</value>
-  </data>
-  <data name="Food" xml:space="preserve">
-    <value>Plat ou boisson</value>
-  </data>
-  <data name="Furniture" xml:space="preserve">
-    <value>Ameublement</value>
-  </data>
-  <data name="Garuda_Egi" xml:space="preserve">
-    <value>Garuda-Egi</value>
   </data>
   <data name="Gear" xml:space="preserve">
     <value>Équipement</value>
@@ -246,14 +150,161 @@
   <data name="Head" xml:space="preserve">
     <value>Tête</value>
   </data>
-  <data name="Head_Body" xml:space="preserve">
-    <value>Tête + Torse</value>
+  <data name="HUD" xml:space="preserve">
+    <value>HUD</value>
+  </data>
+  <data name="Legs" xml:space="preserve">
+    <value>Jambes</value>
+  </data>
+  <data name="Loading_Screen" xml:space="preserve">
+    <value>Ecran de chargement</value>
+  </data>
+  <data name="Maps" xml:space="preserve">
+    <value>Carte</value>
+  </data>
+  <data name="Minions" xml:space="preserve">
+    <value>Mascottes</value>
+  </data>
+  <data name="Mounts" xml:space="preserve">
+    <value>Montures</value>
+  </data>
+  <data name="Neck" xml:space="preserve">
+    <value>Cou</value>
+  </data>
+  <data name="Number" xml:space="preserve">
+    <value>Nombre</value>
+  </data>
+  <data name="Part" xml:space="preserve">
+    <value>Partie</value>
+  </data>
+  <data name="Pets" xml:space="preserve">
+    <value>Familiers</value>
+  </data>
+  <data name="Ring_Right" xml:space="preserve">
+    <value>Anneau Droit</value>
+  </data>
+  <data name="Tail" xml:space="preserve">
+    <value>Queue</value>
+  </data>
+  <data name="TypePart" xml:space="preserve">
+    <value>Partie de type</value>
+  </data>
+  <data name="Wrists" xml:space="preserve">
+    <value>Poignets</value>
+  </data>
+  <data name="All" xml:space="preserve">
+    <value>Tous</value>
+  </data>
+  <data name="Furniture" xml:space="preserve">
+    <value>Ameublement</value>
   </data>
   <data name="Housing" xml:space="preserve">
     <value>Logement</value>
   </data>
-  <data name="HUD" xml:space="preserve">
-    <value>HUD</value>
+  <data name="Accessory" xml:space="preserve">
+    <value>Accessoire</value>
+  </data>
+  <data name="Monster" xml:space="preserve">
+    <value>Monstre</value>
+  </data>
+  <data name="Ring_Left" xml:space="preserve">
+    <value>Anneau Gauche</value>
+  </data>
+  <data name="Body_Hands_Legs" xml:space="preserve">
+    <value>Torse + Mains + Jambes</value>
+  </data>
+  <data name="Body_Hands_Legs_Feet" xml:space="preserve">
+    <value>Torse + Mains + Jambes + Pieds</value>
+  </data>
+  <data name="Body_Legs" xml:space="preserve">
+    <value>Torse + Jambes</value>
+  </data>
+  <data name="Body_Legs_Feet" xml:space="preserve">
+    <value>Torse + Jambes + Pieds</value>
+  </data>
+  <data name="Food" xml:space="preserve">
+    <value>Plat ou boisson</value>
+  </data>
+  <data name="Head_Body" xml:space="preserve">
+    <value>Tête + Torse</value>
+  </data>
+  <data name="Legs_Feet" xml:space="preserve">
+    <value>Jambes + Pieds</value>
+  </data>
+  <data name="Main_Hand" xml:space="preserve">
+    <value>Main directrice</value>
+  </data>
+  <data name="Main_Off" xml:space="preserve">
+    <value>Main directrice + Main non directrice</value>
+  </data>
+  <data name="Off_Hand" xml:space="preserve">
+    <value>Main non directrice</value>
+  </data>
+  <data name="Rings" xml:space="preserve">
+    <value>Bagues</value>
+  </data>
+  <data name="Soul_Crystal" xml:space="preserve">
+    <value>Cristal d'âme</value>
+  </data>
+  <data name="Two_Handed" xml:space="preserve">
+    <value>Deux Mains</value>
+  </data>
+  <data name="Waist" xml:space="preserve">
+    <value>Ceinture</value>
+  </data>
+  <data name="Equipment" xml:space="preserve">
+    <value>Equipement</value>
+  </data>
+  <data name="Icon" xml:space="preserve">
+    <value>Icône</value>
+  </data>
+  <data name="Left" xml:space="preserve">
+    <value>Gauche</value>
+  </data>
+  <data name="Primary" xml:space="preserve">
+    <value>Primaire</value>
+  </data>
+  <data name="Right" xml:space="preserve">
+    <value>Droite</value>
+  </data>
+  <data name="Secondary" xml:space="preserve">
+    <value>Secondaire</value>
+  </data>
+  <data name="Weapon" xml:space="preserve">
+    <value>Arme</value>
+  </data>
+  <data name="AuRa_Female" xml:space="preserve">
+    <value>Ao Ra Femme</value>
+  </data>
+  <data name="AuRa_Male" xml:space="preserve">
+    <value>Ao Ra Homme</value>
+  </data>
+  <data name="Au_Ra" xml:space="preserve">
+    <value>Ao Ra</value>
+  </data>
+  <data name="Bishop_Autoturret" xml:space="preserve">
+    <value>Auto-tourelle Fou</value>
+  </data>
+  <data name="Body_Hands" xml:space="preserve">
+    <value>Torse + Mains</value>
+  </data>
+  <data name="Elezen" xml:space="preserve">
+    <value>Élézen</value>
+  </data>
+  <data name="Elezen_Female" xml:space="preserve">
+    <value>Elezen Femme</value>
+  </data>
+  <data name="Elezen_Male" xml:space="preserve">
+    <value>Elezen Homme</value>
+  </data>
+  <data name="Error_DirectoryError" xml:space="preserve">
+    <value>Erreur de répertoire</value>
+  </data>
+  <data name="Error_FileNotFound" xml:space="preserve">
+    <value>Impossible de trouver le fichier, veuillez vérifier les répertoires dans les Réglages.</value>
+  </data>
+  <data name="Female" xml:space="preserve">
+    <value>Femme</value>
   </data>
   <data name="Hyur_H" xml:space="preserve">
     <value>Hyurgoth</value>
@@ -273,119 +324,20 @@
   <data name="Hyur_Midlander_Male" xml:space="preserve">
     <value>Hyurois Homme</value>
   </data>
-  <data name="Icon" xml:space="preserve">
-    <value>Icône</value>
-  </data>
-  <data name="Ifrit_Egi" xml:space="preserve">
-    <value>Ifrit-Egi</value>
-  </data>
-  <data name="Iris" xml:space="preserve">
-    <value>Iris</value>
-  </data>
-  <data name="Lalafell" xml:space="preserve">
-    <value>Lalafell</value>
-  </data>
   <data name="Lalafell_Female" xml:space="preserve">
     <value>Lalafell Femme</value>
   </data>
   <data name="Lalafell_Male" xml:space="preserve">
     <value>Lalafell Homme</value>
   </data>
-  <data name="Left" xml:space="preserve">
-    <value>Gauche</value>
-  </data>
-  <data name="Legs" xml:space="preserve">
-    <value>Jambes</value>
-  </data>
-  <data name="Legs_Feet" xml:space="preserve">
-    <value>Jambes + Pieds</value>
-  </data>
-  <data name="Loading_Screen" xml:space="preserve">
-    <value>Ecran de chargement</value>
-  </data>
-  <data name="Main_Hand" xml:space="preserve">
-    <value>Main directrice</value>
-  </data>
-  <data name="Main_Off" xml:space="preserve">
-    <value>Main directrice + Main non directrice</value>
-  </data>
   <data name="Male" xml:space="preserve">
     <value>Homme</value>
-  </data>
-  <data name="Maps" xml:space="preserve">
-    <value>Carte</value>
-  </data>
-  <data name="Mask" xml:space="preserve">
-    <value>Mask</value>
-  </data>
-  <data name="Mesh" xml:space="preserve">
-    <value>Mesh</value>
-  </data>
-  <data name="Minions" xml:space="preserve">
-    <value>Mascottes</value>
-  </data>
-  <data name="Miqote" xml:space="preserve">
-    <value>Miqote</value>
   </data>
   <data name="Miqote_Female" xml:space="preserve">
     <value>Miqo'te Femme</value>
   </data>
   <data name="Miqote_Male" xml:space="preserve">
     <value>Miqo'te Homme</value>
-  </data>
-  <data name="ModlistFilePath" xml:space="preserve">
-    <value>XivMods.json</value>
-  </data>
-  <data name="Monster" xml:space="preserve">
-    <value>Monstre</value>
-  </data>
-  <data name="Mounts" xml:space="preserve">
-    <value>Montures</value>
-  </data>
-  <data name="Neck" xml:space="preserve">
-    <value>Cou</value>
-  </data>
-  <data name="Normal" xml:space="preserve">
-    <value>Normal</value>
-  </data>
-  <data name="Number" xml:space="preserve">
-    <value>Nombre</value>
-  </data>
-  <data name="Off_Hand" xml:space="preserve">
-    <value>Main non directrice</value>
-  </data>
-  <data name="OpenCollada" xml:space="preserve">
-    <value>OpenCOLLADA</value>
-  </data>
-  <data name="Part" xml:space="preserve">
-    <value>Partie</value>
-  </data>
-  <data name="Pets" xml:space="preserve">
-    <value>Familiers</value>
-  </data>
-  <data name="Primary" xml:space="preserve">
-    <value>Primaire</value>
-  </data>
-  <data name="Race" xml:space="preserve">
-    <value>Race</value>
-  </data>
-  <data name="Ramuh_Egi" xml:space="preserve">
-    <value>Ramuh Egi</value>
-  </data>
-  <data name="Right" xml:space="preserve">
-    <value>Droite</value>
-  </data>
-  <data name="Rings" xml:space="preserve">
-    <value>Bagues</value>
-  </data>
-  <data name="Ring_Left" xml:space="preserve">
-    <value>Anneau Gauche</value>
-  </data>
-  <data name="Ring_Right" xml:space="preserve">
-    <value>Anneau Droit</value>
-  </data>
-  <data name="Roegadyn" xml:space="preserve">
-    <value>Roegadyn</value>
   </data>
   <data name="Roegadyn_Female" xml:space="preserve">
     <value>Roegadyn Femme</value>
@@ -399,55 +351,16 @@
   <data name="SearchBox" xml:space="preserve">
     <value>Rechercher des textures</value>
   </data>
-  <data name="Secondary" xml:space="preserve">
-    <value>Secondaire</value>
-  </data>
-  <data name="Selene" xml:space="preserve">
-    <value>Selene</value>
-  </data>
-  <data name="Soul_Crystal" xml:space="preserve">
-    <value>Cristal d'âme</value>
-  </data>
-  <data name="Specular" xml:space="preserve">
-    <value>Specular</value>
-  </data>
   <data name="Status" xml:space="preserve">
     <value>États</value>
   </data>
-  <data name="Tail" xml:space="preserve">
-    <value>Queue</value>
+  <data name="Accessories" xml:space="preserve">
+    <value>Accessoires</value>
   </data>
-  <data name="TexTools" xml:space="preserve">
-    <value>TexTools</value>
+  <data name="Weapons" xml:space="preserve">
+    <value>Armes</value>
   </data>
-  <data name="Texture_Map" xml:space="preserve">
-    <value>Texture Map</value>
-  </data>
-  <data name="Titan_Egi" xml:space="preserve">
-    <value>Titan-Egi</value>
-  </data>
-  <data name="Two_Handed" xml:space="preserve">
-    <value>Deux Mains</value>
-  </data>
-  <data name="Type" xml:space="preserve">
-    <value>Type</value>
-  </data>
-  <data name="TypePart" xml:space="preserve">
-    <value>Partie de type</value>
-  </data>
-  <data name="UI" xml:space="preserve">
-    <value>UI</value>
-  </data>
-  <data name="ULD" xml:space="preserve">
-    <value>ULD</value>
-  </data>
-  <data name="Waist" xml:space="preserve">
-    <value>Ceinture</value>
-  </data>
-  <data name="Weapon" xml:space="preserve">
-    <value>Arme</value>
-  </data>
-  <data name="Wrists" xml:space="preserve">
-    <value>Poignets</value>
+  <data name="Ears" xml:space="preserve">
+    <value>Oreilles</value>
   </data>
 </root>
