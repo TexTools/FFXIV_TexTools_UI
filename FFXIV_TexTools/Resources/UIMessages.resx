@@ -117,6 +117,44 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="&#xA;&#xA;Error:" xml:space="preserve">
+    <value>
+
+Error:</value>
+  </data>
+  <data name="A critical error occurred when attempting to read the FFXIV index files.&#xA;&#xA;Would you like to restore your index backups?&#xA;&#xA;Error:" xml:space="preserve">
+    <value>A critical error occurred when attempting to read the FFXIV index files.
+
+Would you like to restore your index backups?
+
+Error:</value>
+  </data>
+  <data name="Adding modified files to Cache Queue..." xml:space="preserve">
+    <value>Adding modified files to Cache Queue...</value>
+  </data>
+  <data name="Adding this item will overwrite your existing entry for item: {0}&#xA;Are you sure you wish to proceed?" xml:space="preserve">
+    <value>Adding this item will overwrite your existing entry for item: {0}
+Are you sure you wish to proceed?</value>
+  </data>
+  <data name="AddNewTexturePartErrorMessage" xml:space="preserve">
+    <value>Can't add more texture part</value>
+  </data>
+  <data name="AddNewTexturePartErrorMessageWrongCategoryOfItem" xml:space="preserve">
+    <value>Currently only supports "Gear", "Character", please contact esrin if necessary.</value>
+  </data>
+  <data name="AddNewTexturePartErrorMessageWrongItemCategoryOfItem" xml:space="preserve">
+    <value>"Face Paint","Equipment Decals" Unsupported.</value>
+  </data>
+  <data name="AddNewTexturePartErrorTitle" xml:space="preserve">
+    <value>Error Add New Texture Part</value>
+  </data>
+  <data name="AddNewTexturePartQuestionMessage" xml:space="preserve">
+    <value>Whether to add diffuse mapping?
+Selecting Yes will add a diffuse map, and selecting No will add a default map.</value>
+  </data>
+  <data name="AddNewTexturePartQuestionTitle" xml:space="preserve">
+    <value>Add Diffuse Mapping</value>
+  </data>
   <data name="AdvancedImportErrorTitle" xml:space="preserve">
     <value>Advanced Import Error</value>
   </data>
@@ -124,6 +162,59 @@
     <value>There was an error building Advanced Import Window.
 
 {0}</value>
+  </data>
+  <data name="An Error occured while creating the modpack." xml:space="preserve">
+    <value>An Error occured while creating the modpack.</value>
+  </data>
+  <data name="An Error occured while saving the Metadata: " xml:space="preserve">
+    <value>An Error occured while saving the Metadata: </value>
+  </data>
+  <data name="An error occured while trying to scan for new item sets." xml:space="preserve">
+    <value>An error occured while trying to scan for new item sets.</value>
+  </data>
+  <data name="An error occured while trying to update player models.&#xA;Your mods/game files have not been altered.&#xA;&#xA;Error:" xml:space="preserve">
+    <value>An error occured while trying to update player models.
+Your mods/game files have not been altered.
+
+Error:</value>
+  </data>
+  <data name="An error occurred during import:&#xA;{0}&#xA;&#xA;The import has been cancelled.&#xA;Please see the text log for more information." xml:space="preserve">
+    <value>An error occurred during import:
+{0}
+
+The import has been cancelled.
+Please see the text log for more information.</value>
+  </data>
+  <data name="An error occurred during the cleanup process.&#xA;&#xA;Error:" xml:space="preserve">
+    <value>An error occurred during the cleanup process.
+
+Error:</value>
+  </data>
+  <data name="An error occurred during the defragmentation process.&#xA;&#xA;Error:" xml:space="preserve">
+    <value>An error occurred during the defragmentation process.
+
+Error:</value>
+  </data>
+  <data name="An error occurred when saving the Material." xml:space="preserve">
+    <value>An error occurred when saving the Material.</value>
+  </data>
+  <data name="An error occurred while attempting to rebuild the cache. This may be caused by this version of Final Fantasy XIV not being supported by this version of TexTools." xml:space="preserve">
+    <value>An error occurred while attempting to rebuild the cache. This may be caused by this version of Final Fantasy XIV not being supported by this version of TexTools.</value>
+  </data>
+  <data name="An error occurred while loading the item list." xml:space="preserve">
+    <value>An error occurred while loading the item list.</value>
+  </data>
+  <data name="Analyzing items and variants..." xml:space="preserve">
+    <value>Analyzing items and variants...</value>
+  </data>
+  <data name="At least one file path is not a valid internal FFXIV file path." xml:space="preserve">
+    <value>At least one file path is not a valid internal FFXIV file path.</value>
+  </data>
+  <data name="Backing Up Indexes" xml:space="preserve">
+    <value>Backing Up Indexes</value>
+  </data>
+  <data name="Backup Download Success" xml:space="preserve">
+    <value>Backup Download Success</value>
   </data>
   <data name="BackupCompleteMessage" xml:space="preserve">
     <value>The index files have been successfully backed up.</value>
@@ -152,8 +243,100 @@ Please set your Index Backups directory in Options &gt; Customize and try again.
   <data name="BackupsDirectoryErrorMessage" xml:space="preserve">
     <value>Unable to find backup directory</value>
   </data>
+  <data name="Blank paths will automatically be replaced with the" xml:space="preserve">
+    <value>Blank paths will automatically be replaced with the</value>
+  </data>
+  <data name="Branch Change Notice" xml:space="preserve">
+    <value>Branch Change Notice</value>
+  </data>
+  <data name="by ALL" xml:space="preserve">
+    <value>by ALL</value>
+  </data>
+  <data name="Cache Rebuild Confirmation" xml:space="preserve">
+    <value>Cache Rebuild Confirmation</value>
+  </data>
+  <data name="Cache Rebuild Error" xml:space="preserve">
+    <value>Cache Rebuild Error</value>
+  </data>
+  <data name="Cache Rebuild Error." xml:space="preserve">
+    <value>Cache Rebuild Error.</value>
+  </data>
+  <data name="Calculating files to copy..." xml:space="preserve">
+    <value>Calculating files to copy...</value>
+  </data>
+  <data name="Camera Model Error." xml:space="preserve">
+    <value>Camera Model Error.</value>
+  </data>
+  <data name="Cannot clone unsupported root." xml:space="preserve">
+    <value>Cannot clone unsupported root.</value>
+  </data>
+  <data name="Cannot include file, file offset invalid." xml:space="preserve">
+    <value>Cannot include file, file offset invalid.</value>
+  </data>
+  <data name="Cannot perform Start Over while Lumina Mode is active." xml:space="preserve">
+    <value>Cannot perform Start Over while Lumina Mode is active.</value>
+  </data>
+  <data name="Cannot save changes:&#xA;&#xA;Error:" xml:space="preserve">
+    <value>Cannot save changes:
+
+Error:</value>
+  </data>
+  <data name="Cannot save changes: One or more values are not valid." xml:space="preserve">
+    <value>Cannot save changes: One or more values are not valid.</value>
+  </data>
+  <data name="Changing Mod Status" xml:space="preserve">
+    <value>Changing Mod Status</value>
+  </data>
+  <data name="Checking downloaded index version..." xml:space="preserve">
+    <value>Checking downloaded index version...</value>
+  </data>
+  <data name="Cleaning up Modlist" xml:space="preserve">
+    <value>Cleaning up Modlist</value>
+  </data>
+  <data name="Cleanup Complete" xml:space="preserve">
+    <value>Cleanup Complete</value>
+  </data>
+  <data name="Cleanup Error" xml:space="preserve">
+    <value>Cleanup Error</value>
+  </data>
+  <data name="Click here for the full Material Editor Guide." xml:space="preserve">
+    <value>Click here for the full Material Editor Guide.</value>
+  </data>
+  <data name="Cloning Items" xml:space="preserve">
+    <value>Cloning Items</value>
+  </data>
+  <data name="Colorset Editor Error" xml:space="preserve">
+    <value>Colorset Editor Error</value>
+  </data>
   <data name="ColorSetBMPNotSupportedMessage" xml:space="preserve">
     <value>ColorSet BMP import is not supported.</value>
+  </data>
+  <data name="Copy Failure" xml:space="preserve">
+    <value>Copy Failure</value>
+  </data>
+  <data name="Copy Success" xml:space="preserve">
+    <value>Copy Success</value>
+  </data>
+  <data name="Copying materials..." xml:space="preserve">
+    <value>Copying materials...</value>
+  </data>
+  <data name="Copying metdata..." xml:space="preserve">
+    <value>Copying metdata...</value>
+  </data>
+  <data name="Copying models..." xml:space="preserve">
+    <value>Copying models...</value>
+  </data>
+  <data name="Copying new indexes to backup directory..." xml:space="preserve">
+    <value>Copying new indexes to backup directory...</value>
+  </data>
+  <data name="Copying textures..." xml:space="preserve">
+    <value>Copying textures...</value>
+  </data>
+  <data name="Copying VFX..." xml:space="preserve">
+    <value>Copying VFX...</value>
+  </data>
+  <data name="Corrupted ModList Detected" xml:space="preserve">
+    <value>Corrupted ModList Detected</value>
   </data>
   <data name="CreateBackupsMessage" xml:space="preserve">
     <value>This will create a backup of all index files for use when removing all mods.
@@ -167,6 +350,83 @@ Are you sure you wish to proceed?</value>
   </data>
   <data name="CreateBackupTitle" xml:space="preserve">
     <value>Create Backup?</value>
+  </data>
+  <data name="Creating Index Backups..." xml:space="preserve">
+    <value>Creating Index Backups...</value>
+  </data>
+  <data name="Creating missing variants..." xml:space="preserve">
+    <value>Creating missing variants...</value>
+  </data>
+  <data name="Creating TTMP File..." xml:space="preserve">
+    <value>Creating TTMP File...</value>
+  </data>
+  <data name="Critical Error Shutdown" xml:space="preserve">
+    <value>Critical Error Shutdown</value>
+  </data>
+  <data name="Critical Error: Unable to Correct Index Discrepency for Mod: {0}&#xA; Please use [Download Index Backups] =&gt;  [Start Over]" xml:space="preserve">
+    <value>Critical Error: Unable to Correct Index Discrepency for Mod: {0}
+ Please use [Download Index Backups] =&gt;  [Start Over]</value>
+  </data>
+  <data name="Critical Error: Unable to Disable or Delete Mod: {0}&#xA; Please use [Download Index Backups] =&gt;  [Start Over]" xml:space="preserve">
+    <value>Critical Error: Unable to Disable or Delete Mod: {0}
+ Please use [Download Index Backups] =&gt;  [Start Over]</value>
+  </data>
+  <data name="Critical Index Error" xml:space="preserve">
+    <value>Critical Index Error</value>
+  </data>
+  <data name="DAT File Defragmentation completed successfully.&#xA;&#xA;{0} of unused space has been recovered." xml:space="preserve">
+    <value>DAT File Defragmentation completed successfully.
+
+{0} of unused space has been recovered.</value>
+  </data>
+  <data name="Data Type Error" xml:space="preserve">
+    <value>Data Type Error</value>
+  </data>
+  <data name="default path for the item/material/texture." xml:space="preserve">
+    <value>default path for the item/material/texture.</value>
+  </data>
+  <data name="DefaultDescriptionMessage" xml:space="preserve">
+    <value>Nothing was entered for ModPack Description
+
+Description will be left empty.</value>
+  </data>
+  <data name="DefaultModPackAuthorMessage" xml:space="preserve">
+    <value>Nothing was entered for ModPack Author
+
+Author will default to "TexTools User"</value>
+  </data>
+  <data name="DefaultModPackNameMessage" xml:space="preserve">
+    <value>Nothing was entered for ModPack Name
+
+ModPack Name will default to "ModPack"</value>
+  </data>
+  <data name="DefaultModPackVersionMessage" xml:space="preserve">
+    <value>Nothing was entered for ModPack Version
+
+Version will default to "1.0.0"</value>
+  </data>
+  <data name="Defragmentation Complete" xml:space="preserve">
+    <value>Defragmentation Complete</value>
+  </data>
+  <data name="Defragmenting DAT Files" xml:space="preserve">
+    <value>Defragmenting DAT Files</value>
+  </data>
+  <data name="DeleteGroupMessage" xml:space="preserve">
+    <value>This will delete the entire group, and all the options in it.</value>
+  </data>
+  <data name="DeleteGroupTitle" xml:space="preserve">
+    <value>Group Deletion Warning</value>
+  </data>
+  <data name="DeleteModPackMessage" xml:space="preserve">
+    <value>Caution: This will delete all the mods for the currently selected Mod Pack.
+
+This process is not reversible, do you want to continue?</value>
+  </data>
+  <data name="DeleteModPackTitle" xml:space="preserve">
+    <value>Mod Pack Deletion Warning.</value>
+  </data>
+  <data name="Deleting Mod" xml:space="preserve">
+    <value>Deleting Mod</value>
   </data>
   <data name="DependencyErrorMessage" xml:space="preserve">
     <value>TexTools was unable to locate dependency files.
@@ -182,6 +442,15 @@ Exception:{1}</value>
   <data name="DependencyErrorTitle" xml:space="preserve">
     <value>Dependencies Error v{0}</value>
   </data>
+  <data name="Destination file already exists.  Overwrite?" xml:space="preserve">
+    <value>Destination file already exists.  Overwrite?</value>
+  </data>
+  <data name="Destroyed Files Notification" xml:space="preserve">
+    <value>Destroyed Files Notification</value>
+  </data>
+  <data name="Disable Mod Error" xml:space="preserve">
+    <value>Disable Mod Error</value>
+  </data>
   <data name="DisableAllModsMessage" xml:space="preserve">
     <value>This will Disable all mods located in the modlist.
 
@@ -190,13 +459,31 @@ Are you sure you want to proceed?</value>
   <data name="DisableAllModsTitle" xml:space="preserve">
     <value>Disable All Mods</value>
   </data>
+  <data name="Disabling Mods..." xml:space="preserve">
+    <value>Disabling Mods...</value>
+  </data>
   <data name="DisablingModsTitle" xml:space="preserve">
     <value>Disabling Mods</value>
+  </data>
+  <data name="Downloaded Index version does not match game version." xml:space="preserve">
+    <value>Downloaded Index version does not match game version.</value>
+  </data>
+  <data name="Downloading Backups" xml:space="preserve">
+    <value>Downloading Backups</value>
+  </data>
+  <data name="Downloading Indexes..." xml:space="preserve">
+    <value>Downloading Indexes...</value>
+  </data>
+  <data name="Dual-Wield Conversion Required" xml:space="preserve">
+    <value>Dual-Wield Conversion Required</value>
   </data>
   <data name="EmptyTTMPFileErrorMessage" xml:space="preserve">
     <value>TTMP file [ {0} ] is empty.
 
 Importing Canceled.</value>
+  </data>
+  <data name="Enable Mod Error" xml:space="preserve">
+    <value>Enable Mod Error</value>
   </data>
   <data name="EnableAllModsMessage" xml:space="preserve">
     <value>This will Enable all mods located in the modlist.
@@ -209,17 +496,158 @@ Are you sure you want to proceed?</value>
   <data name="EnablingModsTitle" xml:space="preserve">
     <value>Enabling Mods</value>
   </data>
+  <data name="Error Accessing Index File&#xA;&#xA;&#xA;Please exit the game before proceeding.&#xA;---------------------------------------------------- -" xml:space="preserve">
+    <value>Error Accessing Index File
+
+
+Please exit the game before proceeding.
+---------------------------------------------------- -</value>
+  </data>
+  <data name="ERROR: FILE DOES NOT EXIST/HAS NO INDEX ENTRY -- PLEASE RE-ENABLE MODDED TEXTURE, OR DISABLE MODDED MATERIAL REFERENCING IT." xml:space="preserve">
+    <value>ERROR: FILE DOES NOT EXIST/HAS NO INDEX ENTRY -- PLEASE RE-ENABLE MODDED TEXTURE, OR DISABLE MODDED MATERIAL REFERENCING IT.</value>
+  </data>
+  <data name="ErrorImportingModsMessage" xml:space="preserve">
+    <value>There were errors importing some mods.</value>
+  </data>
+  <data name="ErrorImportingModsTitle" xml:space="preserve">
+    <value>Error Importing Mods</value>
+  </data>
+  <data name="ExistingGroupMessage" xml:space="preserve">
+    <value>group already exists, please rename the group.
+
+If you would like to add to that group instead, go back and click the edit button.</value>
+  </data>
+  <data name="ExistingGroupTitle" xml:space="preserve">
+    <value>Group Name already exists.</value>
+  </data>
+  <data name="ExistingOption" xml:space="preserve">
+    <value>This Option already includes {0}
+
+Would you like to overwrite the existing mod for this option?</value>
+  </data>
+  <data name="Expanding Metadata Entries..." xml:space="preserve">
+    <value>Expanding Metadata Entries...</value>
+  </data>
+  <data name="Expanding Metadata Files..." xml:space="preserve">
+    <value>Expanding Metadata Files...</value>
+  </data>
+  <data name="Exporter threw error code:" xml:space="preserve">
+    <value>Exporter threw error code:</value>
+  </data>
+  <data name="ExportErrorMessage" xml:space="preserve">
+    <value>An error occured while attempting to export the model.</value>
+  </data>
+  <data name="ExportErrorTitle" xml:space="preserve">
+    <value>Export Error</value>
+  </data>
+  <data name="ExportingFullModelTitle" xml:space="preserve">
+    <value>Exporting Full Model</value>
+  </data>
+  <data name="Extraction Success" xml:space="preserve">
+    <value>Extraction Success</value>
+  </data>
+  <data name="Failed to copy index files." xml:space="preserve">
+    <value>Failed to copy index files.</value>
+  </data>
+  <data name="Failed to create modpack.&#xA;&#xA;Error:" xml:space="preserve">
+    <value>Failed to create modpack.
+
+Error:</value>
+  </data>
+  <data name="Failed to Disable all Mods: &#xA;&#xA;Error:" xml:space="preserve">
+    <value>Failed to Disable all Mods: 
+
+Error:</value>
+  </data>
+  <data name="Failed to Enable all Mods: &#xA;&#xA;Error:" xml:space="preserve">
+    <value>Failed to Enable all Mods: 
+
+Error:</value>
+  </data>
+  <data name="FFXIVUpdate" xml:space="preserve">
+    <value>FFXIVUpdate</value>
+  </data>
+  <data name="File Copied Successfully." xml:space="preserve">
+    <value>File Copied Successfully.</value>
+  </data>
+  <data name="File Copy Failed:" xml:space="preserve">
+    <value>File Copy Failed:</value>
+  </data>
+  <data name="File does not exist.&#xA;&#xA;File:" xml:space="preserve">
+    <value>File does not exist.
+
+File:</value>
+  </data>
+  <data name="File Imported Successfully." xml:space="preserve">
+    <value>File Imported Successfully.</value>
+  </data>
+  <data name="File Not Found" xml:space="preserve">
+    <value>File Not Found</value>
+  </data>
+  <data name="Filling in missing material sets..." xml:space="preserve">
+    <value>Filling in missing material sets...</value>
+  </data>
+  <data name="Fixing up item names..." xml:space="preserve">
+    <value>Fixing up item names...</value>
+  </data>
+  <data name="Framework Version Error" xml:space="preserve">
+    <value>Framework Version Error</value>
+  </data>
+  <data name="FullModelExportSuccessMessage" xml:space="preserve">
+    <value>Full Model successfuly exported to:
+
+{0}</value>
+  </data>
+  <data name="FullModelExportSuccessTitle" xml:space="preserve">
+    <value>Export Successful</value>
+  </data>
+  <data name="Game files currently in use." xml:space="preserve">
+    <value>Game files currently in use.</value>
+  </data>
   <data name="GameVersionErrorMessage" xml:space="preserve">
     <value>TexTools was unable to determine the game version.</value>
   </data>
   <data name="GameVersionErrorTitle" xml:space="preserve">
     <value>Version Check Error {0}</value>
   </data>
+  <data name="Getting modlist..." xml:space="preserve">
+    <value>Getting modlist...</value>
+  </data>
+  <data name="How did this even happen?" xml:space="preserve">
+    <value>How did this even happen?</value>
+  </data>
+  <data name="If you have many mods enabled, this may take some time..." xml:space="preserve">
+    <value>If you have many mods enabled, this may take some time...</value>
+  </data>
+  <data name="Import Error" xml:space="preserve">
+    <value>Import Error</value>
+  </data>
+  <data name="Import Success" xml:space="preserve">
+    <value>Import Success</value>
+  </data>
   <data name="ImportCompleteTitle" xml:space="preserve">
     <value>Import Complete</value>
   </data>
   <data name="ImportErrorTitle" xml:space="preserve">
     <value>Import Error</value>
+  </data>
+  <data name="In order to fully convert this item, the following items may also need to be converted with it.&#xA;&#xA;{0}&#xA;Perform these conversions as well?" xml:space="preserve">
+    <value>In order to fully convert this item, the following items may also need to be converted with it.
+
+{0}
+Perform these conversions as well?</value>
+  </data>
+  <data name="In order to properly convert this item, the following item may also need to be converted with it:&#xA;&#xA;{0}&#xA;Perform these conversions as well?" xml:space="preserve">
+    <value>In order to properly convert this item, the following item may also need to be converted with it:
+
+{0}
+Perform these conversions as well?</value>
+  </data>
+  <data name="Index 1/2 Mismatch: Index 2 entry will be updated to match Index 1." xml:space="preserve">
+    <value>Index 1/2 Mismatch: Index 2 entry will be updated to match Index 1.</value>
+  </data>
+  <data name="Index backup download is not currently supported for your client language." xml:space="preserve">
+    <value>Index backup download is not currently supported for your client language.</value>
   </data>
   <data name="IndexBackupLocationChangedMessage" xml:space="preserve">
     <value>Location of Index Backup folder changed.
@@ -266,6 +694,65 @@ This is NOT the directory under Documents/My Games.
   <data name="InstallDirectoryNotFoundTitle" xml:space="preserve">
     <value>Install Directory Not Found</value>
   </data>
+  <data name="Invalid Data Error" xml:space="preserve">
+    <value>Invalid Data Error</value>
+  </data>
+  <data name="Invalid Data Type.&#xA;Generic binary files should be imported as decompressed type 2 Data." xml:space="preserve">
+    <value>Invalid Data Type.
+Generic binary files should be imported as decompressed type 2 Data.</value>
+  </data>
+  <data name="Invalid or Unknown Data Type." xml:space="preserve">
+    <value>Invalid or Unknown Data Type.</value>
+  </data>
+  <data name="Invalid URL." xml:space="preserve">
+    <value>Invalid URL.</value>
+  </data>
+  <data name="Invalid Values Error" xml:space="preserve">
+    <value>Invalid Values Error</value>
+  </data>
+  <data name="InvalidCharacterModpackNameMessage" xml:space="preserve">
+    <value>Name cannot contain any of the following characters: \ / : * ? " &lt; &gt;|</value>
+  </data>
+  <data name="InvalidCharacterModpackNameTitle" xml:space="preserve">
+    <value>ModPack Name Invalid</value>
+  </data>
+  <data name="Item Conversion cannot be used with Lumina import mode." xml:space="preserve">
+    <value>Item Conversion cannot be used with Lumina import mode.</value>
+  </data>
+  <data name="Item Conversion Error" xml:space="preserve">
+    <value>Item Conversion Error</value>
+  </data>
+  <data name="Item Conversion Successful" xml:space="preserve">
+    <value>Item Conversion Successful</value>
+  </data>
+  <data name="Item Information Error" xml:space="preserve">
+    <value>Item Information Error</value>
+  </data>
+  <data name="Item List Error" xml:space="preserve">
+    <value>Item List Error</value>
+  </data>
+  <data name="Item List Loaded Successfully." xml:space="preserve">
+    <value>Item List Loaded Successfully.</value>
+  </data>
+  <data name="Item Loaded Successfully." xml:space="preserve">
+    <value>Item Loaded Successfully.</value>
+  </data>
+  <data name="Item Overwrite Confirmation" xml:space="preserve">
+    <value>Item Overwrite Confirmation</value>
+  </data>
+  <data name="Item Scan Error" xml:space="preserve">
+    <value>Item Scan Error</value>
+  </data>
+  <data name="Item Sets loaded.&#xA;Restarting TexTools." xml:space="preserve">
+    <value>Item Sets loaded.
+Restarting TexTools.</value>
+  </data>
+  <data name="Items converted successfully." xml:space="preserve">
+    <value>Items converted successfully.</value>
+  </data>
+  <data name="items in FFXIV." xml:space="preserve">
+    <value>items in FFXIV.</value>
+  </data>
   <data name="ItemsListErrorMessage" xml:space="preserve">
     <value>There was an error getting the Items List
 
@@ -274,13 +761,53 @@ This is NOT the directory under Documents/My Games.
   <data name="ItemsListErrorTitle" xml:space="preserve">
     <value>Items List Error</value>
   </data>
+  <data name="Job Done." xml:space="preserve">
+    <value>Job Done.</value>
+  </data>
+  <data name="LanguageError" xml:space="preserve">
+    <value>There was an error reading data for the selected language, would you like to revert to English? 
+
+Language may be changed again later from the Language menu.</value>
+  </data>
+  <data name="LanguageErrorTitle" xml:space="preserve">
+    <value>Language Data Error</value>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>Loading</value>
+  </data>
+  <data name="Loading Canceled&#xA;&#xA;{0}" xml:space="preserve">
+    <value>Loading Canceled
+
+{0}</value>
+  </data>
+  <data name="Loading Modlist file..." xml:space="preserve">
+    <value>Loading Modlist file...</value>
+  </data>
+  <data name="Loading..." xml:space="preserve">
+    <value>Loading...</value>
+  </data>
+  <data name="Material Save Error" xml:space="preserve">
+    <value>Material Save Error</value>
+  </data>
   <data name="MaterialDataReadErrorTitle" xml:space="preserve">
     <value>Error Reading Material Data</value>
+  </data>
+  <data name="MaterialEditorErrorMessage" xml:space="preserve">
+    <value>An error occurred when trying to modify the material.</value>
+  </data>
+  <data name="MaterialEditorErrorTitle" xml:space="preserve">
+    <value>Material Editor Error</value>
   </data>
   <data name="MaterialFileReadErrorMessage" xml:space="preserve">
     <value>There was an error reading the material file {0}
 
 {1}</value>
+  </data>
+  <data name="Materials and textures will be copied to destination root folder." xml:space="preserve">
+    <value>Materials and textures will be copied to destination root folder.</value>
+  </data>
+  <data name="Maximum Material Limit Reached." xml:space="preserve">
+    <value>Maximum Material Limit Reached.</value>
   </data>
   <data name="MDLReadErrorMessage" xml:space="preserve">
     <value>There was an error reading the MDL file.
@@ -289,6 +816,79 @@ This is NOT the directory under Documents/My Games.
   </data>
   <data name="MDLReadErrorTitle" xml:space="preserve">
     <value>Error Reading Model Data</value>
+  </data>
+  <data name="Metadata Error" xml:space="preserve">
+    <value>Metadata Error</value>
+  </data>
+  <data name="Missing File: {0}" xml:space="preserve">
+    <value>Missing File: {0}</value>
+  </data>
+  <data name="MissingBones" xml:space="preserve">
+    <value>Could not find the following bones for {0}.
+{1}
+
+This may affect animations.</value>
+  </data>
+  <data name="MissingBonesTitle" xml:space="preserve">
+    <value>Missing Bones</value>
+  </data>
+  <data name="MissingDeforms" xml:space="preserve">
+    <value>Could not apply [{0}] deform to [{1}].
+
+Missing Deforms:{2}
+
+No scaling was applied.</value>
+  </data>
+  <data name="MissingDeformsTitle" xml:space="preserve">
+    <value>Model Deformer Warning</value>
+  </data>
+  <data name="Mod Data Offset is invalid. &#xA;  The Mod will be disabled, deleted, and the mod slot will be purged from the ModList." xml:space="preserve">
+    <value>Mod Data Offset is invalid. 
+  The Mod will be disabled, deleted, and the mod slot will be purged from the ModList.</value>
+  </data>
+  <data name="Mod Delete Error" xml:space="preserve">
+    <value>Mod Delete Error</value>
+  </data>
+  <data name="Mod Disable Error" xml:space="preserve">
+    <value>Mod Disable Error</value>
+  </data>
+  <data name="Mod Enable Error" xml:space="preserve">
+    <value>Mod Enable Error</value>
+  </data>
+  <data name="Mod had an incorrectly reported file size.  The reported size has been corrected." xml:space="preserve">
+    <value>Mod had an incorrectly reported file size.  The reported size has been corrected.</value>
+  </data>
+  <data name="Mod Toggle Error" xml:space="preserve">
+    <value>Mod Toggle Error</value>
+  </data>
+  <data name="ModDataReadErrorTitle" xml:space="preserve">
+    <value>Error Reading Mod Data</value>
+  </data>
+  <data name="Model Copied Failed.&#xA;&#xA;Error:" xml:space="preserve">
+    <value>Model Copied Failed.
+
+Error:</value>
+  </data>
+  <data name="Model Copied Successfully." xml:space="preserve">
+    <value>Model Copied Successfully.</value>
+  </data>
+  <data name="Model Copy Confirmation" xml:space="preserve">
+    <value>Model Copy Confirmation</value>
+  </data>
+  <data name="Model Copy Error" xml:space="preserve">
+    <value>Model Copy Error</value>
+  </data>
+  <data name="Model is not racial - Model will not be racially adjusted." xml:space="preserve">
+    <value>Model is not racial - Model will not be racially adjusted.</value>
+  </data>
+  <data name="Model races are identical - Model will not be racially adjusted." xml:space="preserve">
+    <value>Model races are identical - Model will not be racially adjusted.</value>
+  </data>
+  <data name="Model will be adjusted from {0} to {1}." xml:space="preserve">
+    <value>Model will be adjusted from {0} to {1}.</value>
+  </data>
+  <data name="ModelAddErrorTitle" xml:space="preserve">
+    <value>Model Add Error</value>
   </data>
   <data name="ModelDataErrorMessage" xml:space="preserve">
     <value>There was an error getting the model data for {0} | {1}</value>
@@ -301,6 +901,18 @@ This is NOT the directory under Documents/My Games.
   <data name="ModelImportErrorTitle" xml:space="preserve">
     <value>Error Importing DAE</value>
   </data>
+  <data name="Modlist Cleanup Confirmation" xml:space="preserve">
+    <value>Modlist Cleanup Confirmation</value>
+  </data>
+  <data name="ModList Corrupted" xml:space="preserve">
+    <value>ModList Corrupted</value>
+  </data>
+  <data name="Modlist Defragmentation Error" xml:space="preserve">
+    <value>Modlist Defragmentation Error</value>
+  </data>
+  <data name="ModList restored" xml:space="preserve">
+    <value>ModList restored</value>
+  </data>
   <data name="ModListDisableFailedTitle" xml:space="preserve">
     <value>ModList Disable Failed</value>
   </data>
@@ -308,6 +920,15 @@ This is NOT the directory under Documents/My Games.
     <value>Unable to continue while game is running.
 
 Please exit the game and try again.</value>
+  </data>
+  <data name="Modpack Created" xml:space="preserve">
+    <value>Modpack Created</value>
+  </data>
+  <data name="Modpack Created Successfully." xml:space="preserve">
+    <value>Modpack Created Successfully.</value>
+  </data>
+  <data name="Modpack Creation Error" xml:space="preserve">
+    <value>Modpack Creation Error</value>
   </data>
   <data name="ModPackCreationCompleteMessage" xml:space="preserve">
     <value>The ModPack ({0}.ttmp2) has been successfully Created.</value>
@@ -318,6 +939,9 @@ Please exit the game and try again.</value>
   <data name="ModPackCreationFailedErrorTitle" xml:space="preserve">
     <value>Error: Mod Pack Creation Failed</value>
   </data>
+  <data name="ModPackCreationMessage" xml:space="preserve">
+    <value>Creating ModPack</value>
+  </data>
   <data name="ModPackImportErrorMessage" xml:space="preserve">
     <value>There was an error importing the mod pack at {0}
 
@@ -326,11 +950,25 @@ Message: {1}</value>
   <data name="ModPackImportErrorTitle" xml:space="preserve">
     <value>ModPack Import Error</value>
   </data>
+  <data name="ModPackImportTitle" xml:space="preserve">
+    <value>Importing ModPack</value>
+  </data>
+  <data name="ModPackLoadingTitle" xml:space="preserve">
+    <value>Loading ModPack</value>
+  </data>
+  <data name="ModPackOverwriteMessage" xml:space="preserve">
+    <value>A ModPack with this name already exists.
+
+Would you like to overwrite the existing ModPack?</value>
+  </data>
   <data name="ModPacksLocationChangedMessage" xml:space="preserve">
     <value>Location of ModPacks folder changed.
 
 
 New Location: {0}</value>
+  </data>
+  <data name="ModPack_Delete" xml:space="preserve">
+    <value>Deleting ModPack</value>
   </data>
   <data name="ModsDisabledSuccessMessage" xml:space="preserve">
     <value>All Mods were Disabled Successfully</value>
@@ -346,11 +984,20 @@ New Location: {0}</value>
   <data name="ModToggleErrorTitle" xml:space="preserve">
     <value>Error Toggling Mod</value>
   </data>
+  <data name="More than one TexTools process detected.  Shutting down other TexTools copies." xml:space="preserve">
+    <value>More than one TexTools process detected.  Shutting down other TexTools copies.</value>
+  </data>
   <data name="MoveDataMessage" xml:space="preserve">
     <value>Would you like to move the existing data to the new location?</value>
   </data>
   <data name="MoveDataTitle" xml:space="preserve">
     <value>Move Data?</value>
+  </data>
+  <data name="Multi-Application Shutdown." xml:space="preserve">
+    <value>Multi-Application Shutdown.</value>
+  </data>
+  <data name="Multi-Slot Convert Required" xml:space="preserve">
+    <value>Multi-Slot Convert Required</value>
   </data>
   <data name="NewBackupLocationTitle" xml:space="preserve">
     <value>Select new location of Index_Backups folder</value>
@@ -376,6 +1023,12 @@ Would you like to create a new backup of your index files now? (Recommended)</va
   <data name="NewSaveLocationTitle" xml:space="preserve">
     <value>Select new location for Saved folder</value>
   </data>
+  <data name="No selected modpacks detected." xml:space="preserve">
+    <value>No selected modpacks detected.</value>
+  </data>
+  <data name="NoAuthorFoundTitle" xml:space="preserve">
+    <value>No Author Found</value>
+  </data>
   <data name="NoBackupsFoundErrorMessage" xml:space="preserve">
     <value>No backup files found in the following directory:
 {0}
@@ -391,8 +1044,23 @@ Would you like to create a new backup of your index files now? (Recommended)
 Warning:
 In order to create a clean backup, all active modifications will be set to disabled, they will have to be re-enabled manually.</value>
   </data>
+  <data name="NoDescriptionFoundTitle" xml:space="preserve">
+    <value>No Description Found</value>
+  </data>
   <data name="NoModsDetectedErrorMessage" xml:space="preserve">
     <value>No mods were detected in the options list.</value>
+  </data>
+  <data name="NoNameFoundTitle" xml:space="preserve">
+    <value>No Name Found</value>
+  </data>
+  <data name="NotWizardModPack" xml:space="preserve">
+    <value>This is not a wizard modPack</value>
+  </data>
+  <data name="NoVersionFoundTitle" xml:space="preserve">
+    <value>No Version Found</value>
+  </data>
+  <data name="Off-Ring Conversion Required" xml:space="preserve">
+    <value>Off-Ring Conversion Required</value>
   </data>
   <data name="OldModListDisableFailedMessage" xml:space="preserve">
     <value>There was an error attempting to disable a mod from previous version.
@@ -416,6 +1084,10 @@ In order to use this version, all previous mods will be disabled, and the previo
 If you would like to retain your mods, it is recommended that you create a backup ModPack in the older TexTools Version, then import it into this one.
 
 Would you like to continue?</value>
+  </data>
+  <data name="Original FFXIV Offset is Invalid.  Unrecoverable ModList state.&#xA;  Please use [Download Index Backups] =&gt;  [Start Over]." xml:space="preserve">
+    <value>Original FFXIV Offset is Invalid.  Unrecoverable ModList state.
+  Please use [Download Index Backups] =&gt;  [Start Over].</value>
   </data>
   <data name="OutdatedBackupsErrorMessage" xml:space="preserve">
     <value>Index Backups are outdated.
@@ -442,293 +1114,20 @@ This is NOT the directory under Documents/My Games.
   <data name="OutOfDateInstallTitle" xml:space="preserve">
     <value>Install Directory Out Of Date</value>
   </data>
-  <data name="PleaseWaitMessage" xml:space="preserve">
-    <value>Please Wait...</value>
-  </data>
-  <data name="PreviousVersionErrorTitle" xml:space="preserve">
-    <value>Previous Version Error</value>
-  </data>
-  <data name="SavedLocationChangedMessage" xml:space="preserve">
-    <value>Location of Saved folder changed.
-
-
-New Location: {0}</value>
-  </data>
-  <data name="SelectffxivFolderTitle" xml:space="preserve">
-    <value>Select sqpack/ffxiv Folder</value>
-  </data>
-  <data name="StartOverCompleteMessage" xml:space="preserve">
-    <value>The start over process has been completed.</value>
-  </data>
-  <data name="StartOverCompleteTitle" xml:space="preserve">
-    <value>Start Over Complete</value>
-  </data>
-  <data name="StartOverMessage" xml:space="preserve">
-    <value>This will remove ALL mods from the game files and close all open editors.
-(If issues persist, please use Help =&gt; Download Index Backups and then re-run this function.)
-
-Are you SURE you wish to proceed?</value>
-  </data>
-  <data name="StartOverTitle" xml:space="preserve">
-    <value>Start Over</value>
-  </data>
-  <data name="SuccessfulImportCountMessage" xml:space="preserve">
-    <value>{0} mod(s) successfully imported in {2} Seconds.  ({1} Error(s))</value>
-  </data>
-  <data name="SuccessTitle" xml:space="preserve">
-    <value>Success</value>
-  </data>
-  <data name="TextureDataReadErrorTitle" xml:space="preserve">
-    <value>Error Reading Texture Data</value>
-  </data>
-  <data name="TextureFileReadErrorMessage" xml:space="preserve">
-    <value>There was an error reading the texture file {0}.
-
-{1}</value>
-  </data>
-  <data name="TextureImportErrorMessage" xml:space="preserve">
-    <value>There was an error Importing the Texture.
-
-Error Message:
-{0}</value>
-  </data>
-  <data name="TextureImportErrorTitle" xml:space="preserve">
-    <value>Error Importing Texture</value>
-  </data>
-  <data name="TranslucencyToggleErrorMessage" xml:space="preserve">
-    <value>There was an error attempting to toggle translucency
-
-{0}</value>
-  </data>
-  <data name="TranslucencyToggleErrorTitle" xml:space="preserve">
-    <value>Error Toggling Translucency</value>
-  </data>
-  <data name="DefaultDescriptionMessage" xml:space="preserve">
-    <value>Nothing was entered for ModPack Description
-
-Description will be left empty.</value>
-  </data>
-  <data name="DefaultModPackAuthorMessage" xml:space="preserve">
-    <value>Nothing was entered for ModPack Author
-
-Author will default to "TexTools User"</value>
-  </data>
-  <data name="DefaultModPackNameMessage" xml:space="preserve">
-    <value>Nothing was entered for ModPack Name
-
-ModPack Name will default to "ModPack"</value>
-  </data>
-  <data name="DefaultModPackVersionMessage" xml:space="preserve">
-    <value>Nothing was entered for ModPack Version
-
-Version will default to "1.0.0"</value>
-  </data>
-  <data name="DeleteGroupMessage" xml:space="preserve">
-    <value>This will delete the entire group, and all the options in it.</value>
-  </data>
-  <data name="DeleteGroupTitle" xml:space="preserve">
-    <value>Group Deletion Warning</value>
-  </data>
-  <data name="ErrorImportingModsMessage" xml:space="preserve">
-    <value>There were errors importing some mods.</value>
-  </data>
-  <data name="ErrorImportingModsTitle" xml:space="preserve">
-    <value>Error Importing Mods</value>
-  </data>
-  <data name="ExistingGroupMessage" xml:space="preserve">
-    <value>group already exists, please rename the group.
-
-If you would like to add to that group instead, go back and click the edit button.</value>
-  </data>
-  <data name="ExistingGroupTitle" xml:space="preserve">
-    <value>Group Name already exists.</value>
-  </data>
-  <data name="ExistingOption" xml:space="preserve">
-    <value>This Option already includes {0}
-
-Would you like to overwrite the existing mod for this option?</value>
-  </data>
-  <data name="ModDataReadErrorTitle" xml:space="preserve">
-    <value>Error Reading Mod Data</value>
-  </data>
-  <data name="ModPackCreationMessage" xml:space="preserve">
-    <value>Creating ModPack</value>
-  </data>
-  <data name="ModPackImportTitle" xml:space="preserve">
-    <value>Importing ModPack</value>
-  </data>
-  <data name="NoAuthorFoundTitle" xml:space="preserve">
-    <value>No Author Found</value>
-  </data>
-  <data name="NoDescriptionFoundTitle" xml:space="preserve">
-    <value>No Description Found</value>
-  </data>
-  <data name="NoNameFoundTitle" xml:space="preserve">
-    <value>No Name Found</value>
-  </data>
-  <data name="NoVersionFoundTitle" xml:space="preserve">
-    <value>No Version Found</value>
+  <data name="Overwrite Confirmation" xml:space="preserve">
+    <value>Overwrite Confirmation</value>
   </data>
   <data name="OverwriteTitle" xml:space="preserve">
     <value>Overwrite?</value>
   </data>
-  <data name="PleaseStandByMessage" xml:space="preserve">
-    <value>Please Stand By...</value>
+  <data name="Patch-Broken file has no valid index to restore.  Clean Index Restoration required." xml:space="preserve">
+    <value>Patch-Broken file has no valid index to restore.  Clean Index Restoration required.</value>
   </data>
-  <data name="RawDataErrorMessage" xml:space="preserve">
-    <value>There was an issue obtaining the Raw Data for the mod.
-
-Offset: {0}
-Data File: {1}</value>
-  </data>
-  <data name="DeleteModPackMessage" xml:space="preserve">
-    <value>Caution: This will delete all the mods for the currently selected Mod Pack.
-
-This process is not reversible, do you want to continue?</value>
-  </data>
-  <data name="DeleteModPackTitle" xml:space="preserve">
-    <value>Mod Pack Deletion Warning.</value>
-  </data>
-  <data name="ProblemCheckDatIssueMessage" xml:space="preserve">
-    <value>There was an issue checking Index Dat Counts</value>
-  </data>
-  <data name="ProblemCheckErrorTitle" xml:space="preserve">
-    <value>Problem Check Error</value>
-  </data>
-  <data name="TTMPGettingData" xml:space="preserve">
-    <value>Getting Data...</value>
-  </data>
-  <data name="LanguageError" xml:space="preserve">
-    <value>There was an error reading data for the selected language, would you like to revert to English? 
-
-Language may be changed again later from the Language menu.</value>
-  </data>
-  <data name="LanguageErrorTitle" xml:space="preserve">
-    <value>Language Data Error</value>
-  </data>
-  <data name="AddNewTexturePartErrorMessage" xml:space="preserve">
-    <value>Can't add more texture part</value>
-  </data>
-  <data name="AddNewTexturePartErrorTitle" xml:space="preserve">
-    <value>Error Add New Texture Part</value>
-  </data>
-  <data name="AddNewTexturePartQuestionMessage" xml:space="preserve">
-    <value>Whether to add diffuse mapping?
-Selecting Yes will add a diffuse map, and selecting No will add a default map.</value>
-  </data>
-  <data name="AddNewTexturePartQuestionTitle" xml:space="preserve">
-    <value>Add Diffuse Mapping</value>
-  </data>
-  <data name="ModPackLoadingTitle" xml:space="preserve">
-    <value>Loading ModPack</value>
-  </data>
-  <data name="NotWizardModPack" xml:space="preserve">
-    <value>This is not a wizard modPack</value>
-  </data>
-  <data name="AddNewTexturePartErrorMessageWrongCategoryOfItem" xml:space="preserve">
-    <value>Currently only supports "Gear", "Character", please contact esrin if necessary.</value>
-  </data>
-  <data name="AddNewTexturePartErrorMessageWrongItemCategoryOfItem" xml:space="preserve">
-    <value>"Face Paint","Equipment Decals" Unsupported.</value>
-  </data>
-  <data name="ModPack_Delete" xml:space="preserve">
-    <value>Deleting ModPack</value>
-  </data>
-  <data name="ModPackOverwriteMessage" xml:space="preserve">
-    <value>A ModPack with this name already exists.
-
-Would you like to overwrite the existing ModPack?</value>
-  </data>
-  <data name="StartOverErrorMessage" xml:space="preserve">
-    <value>There was an error while starting over.
-
-Please check for problems by selecting Help -&gt; Check For Problems.</value>
-  </data>
-  <data name="StartOverErrorTitle" xml:space="preserve">
-    <value>Error Starting Over</value>
-  </data>
-  <data name="InvalidCharacterModpackNameMessage" xml:space="preserve">
-    <value>Name cannot contain any of the following characters: \ / : * ? " &lt; &gt;|</value>
-  </data>
-  <data name="InvalidCharacterModpackNameTitle" xml:space="preserve">
-    <value>ModPack Name Invalid</value>
-  </data>
-  <data name="ViewportErrorMessage" xml:space="preserve">
-    <value>Failed to update the viewport. 
-
-{0}.
-
-Any mod on the 3D model will be disabled.</value>
-  </data>
-  <data name="ViewportErrorTitle" xml:space="preserve">
-    <value>Error Updating Viewport</value>
-  </data>
-  <data name="MaterialEditorErrorMessage" xml:space="preserve">
-    <value>An error occurred when trying to modify the material.</value>
-  </data>
-  <data name="MaterialEditorErrorTitle" xml:space="preserve">
-    <value>Material Editor Error</value>
-  </data>
-  <data name="UnsupportedFileExtensionErrorMessage" xml:space="preserve">
-    <value>Unsupported file extension detected: {0}. 
-
-TexTools only supports importing *.ttmp and *.ttmp2 ModPacks. </value>
-  </data>
-  <data name="UnsupportedFileExtensionErrorTitle" xml:space="preserve">
-    <value>File Extension Error</value>
-  </data>
-  <data name="ExportErrorMessage" xml:space="preserve">
-    <value>An error occured while attempting to export the model.</value>
-  </data>
-  <data name="ExportErrorTitle" xml:space="preserve">
-    <value>Export Error</value>
-  </data>
-  <data name="MissingDeforms" xml:space="preserve">
-    <value>Could not apply [{0}] deform to [{1}].
-
-Missing Deforms:{2}
-
-No scaling was applied.</value>
-  </data>
-  <data name="MissingDeformsTitle" xml:space="preserve">
-    <value>Model Deformer Warning</value>
-  </data>
-  <data name="MissingBones" xml:space="preserve">
-    <value>Could not find the following bones for {0}.
-{1}
-
-This may affect animations.</value>
-  </data>
-  <data name="MissingBonesTitle" xml:space="preserve">
-    <value>Missing Bones</value>
-  </data>
-  <data name="ModelAddErrorTitle" xml:space="preserve">
-    <value>Model Add Error</value>
-  </data>
-  <data name="UpdateBodyTextureError" xml:space="preserve">
-    <value>Encountered an error while updating body textures.
-
-Error: {0}</value>
-  </data>
-  <data name="UpdatingFaceTitle" xml:space="preserve">
-    <value>Updating Face Textures</value>
-  </data>
-  <data name="UpdatingSkeletonTitle" xml:space="preserve">
-    <value>Updating Skeleton</value>
-  </data>
-  <data name="UpdatingSkinTitle" xml:space="preserve">
-    <value>Updating Skin</value>
-  </data>
-  <data name="ExportingFullModelTitle" xml:space="preserve">
-    <value>Exporting Full Model</value>
-  </data>
-  <data name="FullModelExportSuccessMessage" xml:space="preserve">
-    <value>Full Model successfuly exported to:
+  <data name="PatchDestroyedFiles" xml:space="preserve">
+    <value>The following mod files were destroyed by the FFXIV Patch.
+It is recommended to create or download index backups and perform a [Start Over] to avoid potential problems.
 
 {0}</value>
-  </data>
-  <data name="FullModelExportSuccessTitle" xml:space="preserve">
-    <value>Export Successful</value>
   </data>
   <data name="PatchDetectedMessage" xml:space="preserve">
     <value>An FFXIV Update has been detected on this FFXIV Install.
@@ -736,15 +1135,37 @@ Error: {0}</value>
 The Modlist will now be checked for errors and changes.
 Please ensure FFXIV is closed, and do not close TexTools until this process is complete.</value>
   </data>
+  <data name="Paths may only contain lowercase characters, numbers, tokens and &#xA;;the following special characters: /.-_" xml:space="preserve">
+    <value>Paths may only contain lowercase characters, numbers, tokens and 
+;the following special characters: /.-_</value>
+  </data>
+  <data name="Per-DAT File Size Limit: {0}" xml:space="preserve">
+    <value>Per-DAT File Size Limit: {0}</value>
+  </data>
+  <data name="Performing Post-Patch Maintenence" xml:space="preserve">
+    <value>Performing Post-Patch Maintenence</value>
+  </data>
+  <data name="Please wait..." xml:space="preserve">
+    <value>Please wait...</value>
+  </data>
+  <data name="PleaseStandByMessage" xml:space="preserve">
+    <value>Please Stand By...</value>
+  </data>
+  <data name="PleaseWaitMessage" xml:space="preserve">
+    <value>Please Wait...</value>
+  </data>
+  <data name="Post Patch Cleanup Starting" xml:space="preserve">
+    <value>Post Patch Cleanup Starting</value>
+  </data>
+  <data name="Post-Patch Failure" xml:space="preserve">
+    <value>Post-Patch Failure</value>
+  </data>
+  <data name="Post-Patch Process Complete" xml:space="preserve">
+    <value>Post-Patch Process Complete</value>
+  </data>
   <data name="PostPatchBackupPrompt" xml:space="preserve">
     <value>The Modlist has been validated successfully.
 Would you like like to disable all mods and create updated index backups now?</value>
-  </data>
-  <data name="PatchDestroyedFiles" xml:space="preserve">
-    <value>The following mod files were destroyed by the FFXIV Patch.
-It is recommended to create or download index backups and perform a [Start Over] to avoid potential problems.
-
-{0}</value>
   </data>
   <data name="PostPatchBackupsComplete" xml:space="preserve">
     <value>Index Backups Created Successfully.
@@ -764,115 +1185,259 @@ Please use [Help =&gt; Download Index Backups], then [Help =&gt; Start Over].
 
 Error Message: {0}</value>
   </data>
-  <data name="An error occured while trying to scan for new item sets." xml:space="preserve">
-    <value>An error occured while trying to scan for new item sets.</value>
+  <data name="PreviousVersionErrorTitle" xml:space="preserve">
+    <value>Previous Version Error</value>
   </data>
-  <data name="An error occurred during the cleanup process.&#xA;&#xA;Error:" xml:space="preserve">
-    <value>An error occurred during the cleanup process.
+  <data name="Problem Check Error" xml:space="preserve">
+    <value>Problem Check Error</value>
+  </data>
+  <data name="ProblemCheckDatIssueMessage" xml:space="preserve">
+    <value>There was an issue checking Index Dat Counts</value>
+  </data>
+  <data name="ProblemCheckErrorTitle" xml:space="preserve">
+    <value>Problem Check Error</value>
+  </data>
+  <data name="Purged {0} invalid unused mod data slots." xml:space="preserve">
+    <value>Purged {0} invalid unused mod data slots.</value>
+  </data>
+  <data name="Queue Length: {0}" xml:space="preserve">
+    <value>Queue Length: {0}</value>
+  </data>
+  <data name="Queuing Cache Updates..." xml:space="preserve">
+    <value>Queuing Cache Updates...</value>
+  </data>
+  <data name="Raw file extracted successfully to path:" xml:space="preserve">
+    <value>Raw file extracted successfully to path:</value>
+  </data>
+  <data name="RawDataErrorMessage" xml:space="preserve">
+    <value>There was an issue obtaining the Raw Data for the mod.
 
-Error:</value>
-  </data>
-  <data name="An error occurred during the defragmentation process.&#xA;&#xA;Error:" xml:space="preserve">
-    <value>An error occurred during the defragmentation process.
-
-Error:</value>
-  </data>
-  <data name="Backing Up Indexes" xml:space="preserve">
-    <value>Backing Up Indexes</value>
-  </data>
-  <data name="Backup Download Success" xml:space="preserve">
-    <value>Backup Download Success</value>
-  </data>
-  <data name="Cache Rebuild Confirmation" xml:space="preserve">
-    <value>Cache Rebuild Confirmation</value>
-  </data>
-  <data name="Cache Rebuild Error" xml:space="preserve">
-    <value>Cache Rebuild Error</value>
-  </data>
-  <data name="Cannot perform Start Over while Lumina Mode is active." xml:space="preserve">
-    <value>Cannot perform Start Over while Lumina Mode is active.</value>
-  </data>
-  <data name="Checking downloaded index version..." xml:space="preserve">
-    <value>Checking downloaded index version...</value>
-  </data>
-  <data name="Cleaning up Modlist" xml:space="preserve">
-    <value>Cleaning up Modlist</value>
-  </data>
-  <data name="Cleanup Complete" xml:space="preserve">
-    <value>Cleanup Complete</value>
-  </data>
-  <data name="Cleanup Error" xml:space="preserve">
-    <value>Cleanup Error</value>
-  </data>
-  <data name="Copying new indexes to backup directory..." xml:space="preserve">
-    <value>Copying new indexes to backup directory...</value>
-  </data>
-  <data name="DAT File Defragmentation completed successfully.&#xA;&#xA;{0} of unused space has been recovered." xml:space="preserve">
-    <value>DAT File Defragmentation completed successfully.
-
-{0} of unused space has been recovered.</value>
-  </data>
-  <data name="Defragmentation Complete" xml:space="preserve">
-    <value>Defragmentation Complete</value>
-  </data>
-  <data name="Downloaded Index version does not match game version." xml:space="preserve">
-    <value>Downloaded Index version does not match game version.</value>
-  </data>
-  <data name="Downloading Backups" xml:space="preserve">
-    <value>Downloading Backups</value>
-  </data>
-  <data name="Downloading Indexes..." xml:space="preserve">
-    <value>Downloading Indexes...</value>
-  </data>
-  <data name="Failed to copy index files." xml:space="preserve">
-    <value>Failed to copy index files.</value>
-  </data>
-  <data name="If you have many mods enabled, this may take some time..." xml:space="preserve">
-    <value>If you have many mods enabled, this may take some time...</value>
-  </data>
-  <data name="Index backup download is not currently supported for your client language." xml:space="preserve">
-    <value>Index backup download is not currently supported for your client language.</value>
-  </data>
-  <data name="Item Scan Error" xml:space="preserve">
-    <value>Item Scan Error</value>
-  </data>
-  <data name="Item Sets loaded.&#xA;Restarting TexTools." xml:space="preserve">
-    <value>Item Sets loaded.
-Restarting TexTools.</value>
-  </data>
-  <data name="Job Done." xml:space="preserve">
-    <value>Job Done.</value>
-  </data>
-  <data name="Modlist Cleanup Confirmation" xml:space="preserve">
-    <value>Modlist Cleanup Confirmation</value>
-  </data>
-  <data name="Modlist Defragmentation Error" xml:space="preserve">
-    <value>Modlist Defragmentation Error</value>
+Offset: {0}
+Data File: {1}</value>
   </data>
   <data name="Rebuilding Cache" xml:space="preserve">
     <value>Rebuilding Cache</value>
   </data>
+  <data name="Rebuilding Cache... This may take up to 60 seconds.  (Rebuild Reason: {0})" xml:space="preserve">
+    <value>Rebuilding Cache... This may take up to 60 seconds.  (Rebuild Reason: {0})</value>
+  </data>
   <data name="Recover Space Confirmation" xml:space="preserve">
     <value>Recover Space Confirmation</value>
+  </data>
+  <data name="Removing empty mod slots..." xml:space="preserve">
+    <value>Removing empty mod slots...</value>
+  </data>
+  <data name="Removing empty modpacks..." xml:space="preserve">
+    <value>Removing empty modpacks...</value>
+  </data>
+  <data name="Removing existing modifications to destination root..." xml:space="preserve">
+    <value>Removing existing modifications to destination root...</value>
   </data>
   <data name="Removing old Backups..." xml:space="preserve">
     <value>Removing old Backups...</value>
   </data>
+  <data name="Removing old modded DAT files..." xml:space="preserve">
+    <value>Removing old modded DAT files...</value>
+  </data>
+  <data name="Renaming temporary DAT files..." xml:space="preserve">
+    <value>Renaming temporary DAT files...</value>
+  </data>
+  <data name="Repair Failed" xml:space="preserve">
+    <value>Repair Failed</value>
+  </data>
+  <data name="Restoring Metadata Entries..." xml:space="preserve">
+    <value>Restoring Metadata Entries...</value>
+  </data>
+  <data name="Root copy complete." xml:space="preserve">
+    <value>Root copy complete.</value>
+  </data>
+  <data name="Save Scaling Error" xml:space="preserve">
+    <value>Save Scaling Error</value>
+  </data>
+  <data name="SavedLocationChangedMessage" xml:space="preserve">
+    <value>Location of Saved folder changed.
+
+
+New Location: {0}</value>
+  </data>
+  <data name="Saving Modlist file..." xml:space="preserve">
+    <value>Saving Modlist file...</value>
+  </data>
+  <data name="Saving updated Index Files..." xml:space="preserve">
+    <value>Saving updated Index Files...</value>
+  </data>
+  <data name="Saving updated Modlist..." xml:space="preserve">
+    <value>Saving updated Modlist...</value>
+  </data>
+  <data name="Scanned {0} modded files." xml:space="preserve">
+    <value>Scanned {0} modded files.</value>
+  </data>
+  <data name="Scanning and updating body models..." xml:space="preserve">
+    <value>Scanning and updating body models...</value>
+  </data>
+  <data name="Scanning for body material corrections..." xml:space="preserve">
+    <value>Scanning for body material corrections...</value>
+  </data>
   <data name="Scanning for new Item Sets" xml:space="preserve">
     <value>Scanning for new Item Sets</value>
+  </data>
+  <data name="SelectffxivFolderTitle" xml:space="preserve">
+    <value>Select sqpack/ffxiv Folder</value>
   </data>
   <data name="Set Scan Confirmation" xml:space="preserve">
     <value>Set Scan Confirmation</value>
   </data>
+  <data name="Setting single-variant data..." xml:space="preserve">
+    <value>Setting single-variant data...</value>
+  </data>
+  <data name="SFX ID:" xml:space="preserve">
+    <value>SFX ID:</value>
+  </data>
+  <data name="Shutting Down TexTools." xml:space="preserve">
+    <value>Shutting Down TexTools.</value>
+  </data>
+  <data name="Skin Auto - Assign Complete" xml:space="preserve">
+    <value>Skin Auto - Assign Complete</value>
+  </data>
+  <data name="Skin Auto-Assigment is complete.&#xA;&#xA;{0} Models updated." xml:space="preserve">
+    <value>Skin Auto-Assigment is complete.
+
+{0} Models updated.</value>
+  </data>
+  <data name="Skin Auto-Assign Confirmation" xml:space="preserve">
+    <value>Skin Auto-Assign Confirmation</value>
+  </data>
+  <data name="Skin Auto-Assign Error" xml:space="preserve">
+    <value>Skin Auto-Assign Error</value>
+  </data>
+  <data name="Some files this mod references are missing or disabled." xml:space="preserve">
+    <value>Some files this mod references are missing or disabled.</value>
+  </data>
+  <data name="Source and target files must exist within the same data file." xml:space="preserve">
+    <value>Source and target files must exist within the same data file.</value>
+  </data>
+  <data name="Source file does not exist." xml:space="preserve">
+    <value>Source file does not exist.</value>
+  </data>
+  <data name="StartOverCompleteMessage" xml:space="preserve">
+    <value>The start over process has been completed.</value>
+  </data>
+  <data name="StartOverCompleteTitle" xml:space="preserve">
+    <value>Start Over Complete</value>
+  </data>
+  <data name="StartOverErrorMessage" xml:space="preserve">
+    <value>There was an error while starting over.
+
+Please check for problems by selecting Help -&gt; Check For Problems.</value>
+  </data>
+  <data name="StartOverErrorTitle" xml:space="preserve">
+    <value>Error Starting Over</value>
+  </data>
+  <data name="StartOverMessage" xml:space="preserve">
+    <value>This will remove ALL mods from the game files and close all open editors.
+(If issues persist, please use Help =&gt; Download Index Backups and then re-run this function.)
+
+Are you SURE you wish to proceed?</value>
+  </data>
+  <data name="StartOverTitle" xml:space="preserve">
+    <value>Start Over</value>
+  </data>
+  <data name="Stopping Cache Worker..." xml:space="preserve">
+    <value>Stopping Cache Worker...</value>
+  </data>
+  <data name="SuccessfulImportCountMessage" xml:space="preserve">
+    <value>{0} mod(s) successfully imported in {2} Seconds.  ({1} Error(s))</value>
+  </data>
   <data name="Successfully downloaded fresh index backups.&#xA;You may now use [Start Over] to apply them, if desired." xml:space="preserve">
     <value>Successfully downloaded fresh index backups.
 You may now use [Start Over] to apply them, if desired.</value>
+  </data>
+  <data name="SuccessTitle" xml:space="preserve">
+    <value>Success</value>
+  </data>
+  <data name="Sum Total Mod Files Size: {0}" xml:space="preserve">
+    <value>Sum Total Mod Files Size: {0}</value>
+  </data>
+  <data name="TexTools is running in 32bit Mode. This will reduce the available mod data limit." xml:space="preserve">
+    <value>TexTools is running in 32bit Mode. This will reduce the available mod data limit.</value>
+  </data>
+  <data name="TexTools will now change to the selected update branch." xml:space="preserve">
+    <value>TexTools will now change to the selected update branch.</value>
+  </data>
+  <data name="TexTools will now restart." xml:space="preserve">
+    <value>TexTools will now restart.</value>
+  </data>
+  <data name="Texture file names may be explicit paths in FFXIV's File System," xml:space="preserve">
+    <value>Texture file names may be explicit paths in FFXIV's File System,</value>
+  </data>
+  <data name="Texture Files(*.ttmp2)|*.ttmp2" xml:space="preserve">
+    <value>Texture Files(*.ttmp2)|*.ttmp2</value>
+  </data>
+  <data name="Texture format not supported: {0}" xml:space="preserve">
+    <value>Texture format not supported: {0}</value>
+  </data>
+  <data name="TextureDataReadErrorTitle" xml:space="preserve">
+    <value>Error Reading Texture Data</value>
+  </data>
+  <data name="TextureFileReadErrorMessage" xml:space="preserve">
+    <value>There was an error reading the texture file {0}.
+
+{1}</value>
+  </data>
+  <data name="TextureImportErrorMessage" xml:space="preserve">
+    <value>There was an error Importing the Texture.
+
+Error Message:
+{0}</value>
+  </data>
+  <data name="TextureImportErrorTitle" xml:space="preserve">
+    <value>Error Importing Texture</value>
+  </data>
+  <data name="The common folder shared" xml:space="preserve">
+    <value>The common folder shared</value>
+  </data>
+  <data name="The following tokens are available for use:" xml:space="preserve">
+    <value>The following tokens are available for use:</value>
+  </data>
+  <data name="The given file path is invalid." xml:space="preserve">
+    <value>The given file path is invalid.</value>
+  </data>
+  <data name="The item's personal folder (shared among all Variants of that item)" xml:space="preserve">
+    <value>The item's personal folder (shared among all Variants of that item)</value>
+  </data>
+  <data name="The item's variant number, ex [v01, v05, v12]" xml:space="preserve">
+    <value>The item's variant number, ex [v01, v05, v12]</value>
+  </data>
+  <data name="The Mod will automatically be disabled and deleted." xml:space="preserve">
+    <value>The Mod will automatically be disabled and deleted.</value>
   </data>
   <data name="The Modlist was cleaned up successfully." xml:space="preserve">
     <value>The Modlist was cleaned up successfully.</value>
   </data>
   <data name="This can take up to roughly an hour, depending on computer specs." xml:space="preserve">
     <value>This can take up to roughly an hour, depending on computer specs.</value>
+  </data>
+  <data name="This may cause some racial models to be invisible in game." xml:space="preserve">
+    <value>This may cause some racial models to be invisible in game.</value>
+  </data>
+  <data name="This may cause some variants of this model to be invisible in game." xml:space="preserve">
+    <value>This may cause some variants of this model to be invisible in game.</value>
+  </data>
+  <data name="This may take a few minutes if you have many mods installed." xml:space="preserve">
+    <value>This may take a few minutes if you have many mods installed.</value>
+  </data>
+  <data name="This may take a few minutes if you have many mods." xml:space="preserve">
+    <value>This may take a few minutes if you have many mods.</value>
+  </data>
+  <data name="This Modpack requires a more recent version of TexTools to install." xml:space="preserve">
+    <value>This Modpack requires a more recent version of TexTools to install.</value>
+  </data>
+  <data name="This should only take a moment..." xml:space="preserve">
+    <value>This should only take a moment...</value>
+  </data>
+  <data name="This will auto-assign the skin materials for all moded player models.&#xA; Are you sure you wish to proceed?" xml:space="preserve">
+    <value>This will auto-assign the skin materials for all moded player models.
+ Are you sure you wish to proceed?</value>
   </data>
   <data name="This will download index backups from the internet. Proceed?" xml:space="preserve">
     <value>This will download index backups from the internet. Proceed?</value>
@@ -906,519 +1471,28 @@ labeled under the correct items.
 
 This may take up to 5 minutes to complete.</value>
   </data>
-  <data name="Unable to download Index Backups." xml:space="preserve">
-    <value>Unable to download Index Backups.</value>
-  </data>
-  <data name="Unable to rebuild cache file.&#xA;&#xA;Error:" xml:space="preserve">
-    <value>Unable to rebuild cache file.
-
-Error:</value>
-  </data>
-  <data name="Unzipping new Indexes..." xml:space="preserve">
-    <value>Unzipping new Indexes...</value>
-  </data>
-  <data name="Web Download Confirmation" xml:space="preserve">
-    <value>Web Download Confirmation</value>
-  </data>
-  <data name="Web Download Error" xml:space="preserve">
-    <value>Web Download Error</value>
-  </data>
-  <data name="&#xA;&#xA;Error:" xml:space="preserve">
-    <value>
-
-Error:</value>
-  </data>
-  <data name="This may take a few minutes if you have many mods." xml:space="preserve">
-    <value>This may take a few minutes if you have many mods.</value>
-  </data>
-  <data name="This should only take a moment..." xml:space="preserve">
-    <value>This should only take a moment...</value>
-  </data>
-  <data name="This will auto-assign the skin materials for all moded player models.&#xA; Are you sure you wish to proceed?" xml:space="preserve">
-    <value>This will auto-assign the skin materials for all moded player models.
- Are you sure you wish to proceed?</value>
-  </data>
-  <data name="Unable to restore Lumina settings, directory was invalid." xml:space="preserve">
-    <value>Unable to restore Lumina settings, directory was invalid.</value>
-  </data>
-  <data name="Updating skin materials for all modded models..." xml:space="preserve">
-    <value>Updating skin materials for all modded models...</value>
-  </data>
-  <data name="Rebuilding Cache... This may take up to 60 seconds.  (Rebuild Reason: {0})" xml:space="preserve">
-    <value>Rebuilding Cache... This may take up to 60 seconds.  (Rebuild Reason: {0})</value>
-  </data>
-  <data name="Skin Auto - Assign Complete" xml:space="preserve">
-    <value>Skin Auto - Assign Complete</value>
-  </data>
-  <data name="Skin Auto-Assigment is complete.&#xA;&#xA;{0} Models updated." xml:space="preserve">
-    <value>Skin Auto-Assigment is complete.
-
-{0} Models updated.</value>
-  </data>
-  <data name="Skin Auto-Assign Confirmation" xml:space="preserve">
-    <value>Skin Auto-Assign Confirmation</value>
-  </data>
-  <data name="Skin Auto-Assign Error" xml:space="preserve">
-    <value>Skin Auto-Assign Error</value>
-  </data>
-  <data name="More than one TexTools process detected.  Shutting down other TexTools copies." xml:space="preserve">
-    <value>More than one TexTools process detected.  Shutting down other TexTools copies.</value>
-  </data>
-  <data name="Multi-Application Shutdown." xml:space="preserve">
-    <value>Multi-Application Shutdown.</value>
-  </data>
-  <data name="Item List Loaded Successfully." xml:space="preserve">
-    <value>Item List Loaded Successfully.</value>
-  </data>
-  <data name="Item Loaded Successfully." xml:space="preserve">
-    <value>Item Loaded Successfully.</value>
-  </data>
-  <data name="Error Accessing Index File&#xA;&#xA;&#xA;Please exit the game before proceeding.&#xA;---------------------------------------------------- -" xml:space="preserve">
-    <value>Error Accessing Index File
-
-
-Please exit the game before proceeding.
----------------------------------------------------- -</value>
-  </data>
-  <data name="FFXIVUpdate" xml:space="preserve">
-    <value>FFXIVUpdate</value>
-  </data>
-  <data name="Unable to load texture file:&#xA;&#xA;Error:" xml:space="preserve">
-    <value>Unable to load texture file:
-
-Error:</value>
-  </data>
-  <data name="An error occured while trying to update player models.&#xA;Your mods/game files have not been altered.&#xA;&#xA;Error:" xml:space="preserve">
-    <value>An error occured while trying to update player models.
-Your mods/game files have not been altered.
-
-Error:</value>
-  </data>
-  <data name="An error occurred while attempting to rebuild the cache. This may be caused by this version of Final Fantasy XIV not being supported by this version of TexTools." xml:space="preserve">
-    <value>An error occurred while attempting to rebuild the cache. This may be caused by this version of Final Fantasy XIV not being supported by this version of TexTools.</value>
-  </data>
-  <data name="Cache Rebuild Error." xml:space="preserve">
-    <value>Cache Rebuild Error.</value>
-  </data>
-  <data name="ERROR: FILE DOES NOT EXIST/HAS NO INDEX ENTRY -- PLEASE RE-ENABLE MODDED TEXTURE, OR DISABLE MODDED MATERIAL REFERENCING IT." xml:space="preserve">
-    <value>ERROR: FILE DOES NOT EXIST/HAS NO INDEX ENTRY -- PLEASE RE-ENABLE MODDED TEXTURE, OR DISABLE MODDED MATERIAL REFERENCING IT.</value>
-  </data>
-  <data name="An error occurred when saving the Material." xml:space="preserve">
-    <value>An error occurred when saving the Material.</value>
-  </data>
-  <data name="Maximum Material Limit Reached." xml:space="preserve">
-    <value>Maximum Material Limit Reached.</value>
-  </data>
-  <data name="Mod Delete Error" xml:space="preserve">
-    <value>Mod Delete Error</value>
-  </data>
-  <data name="Unable to delete Mod.&#xA;&#xA;Error:" xml:space="preserve">
-    <value>Unable to delete Mod.
-
-Error:</value>
-  </data>
-  <data name="Blank paths will automatically be replaced with the" xml:space="preserve">
-    <value>Blank paths will automatically be replaced with the</value>
-  </data>
-  <data name="default path for the item/material/texture." xml:space="preserve">
-    <value>default path for the item/material/texture.</value>
-  </data>
-  <data name="Texture file names may be explicit paths in FFXIV's File System," xml:space="preserve">
-    <value>Texture file names may be explicit paths in FFXIV's File System,</value>
-  </data>
   <data name="Tokenized Paths, or combinations of the two." xml:space="preserve">
     <value>Tokenized Paths, or combinations of the two.</value>
   </data>
-  <data name="The following tokens are available for use:" xml:space="preserve">
-    <value>The following tokens are available for use:</value>
-  </data>
-  <data name="The item's personal folder (shared among all Variants of that item)" xml:space="preserve">
-    <value>The item's personal folder (shared among all Variants of that item)</value>
-  </data>
-  <data name="The common folder shared" xml:space="preserve">
-    <value>The common folder shared</value>
-  </data>
-  <data name="by ALL" xml:space="preserve">
-    <value>by ALL</value>
-  </data>
-  <data name="items in FFXIV." xml:space="preserve">
-    <value>items in FFXIV.</value>
-  </data>
-  <data name="The item's variant number, ex [v01, v05, v12]" xml:space="preserve">
-    <value>The item's variant number, ex [v01, v05, v12]</value>
-  </data>
-  <data name="Use the default texture name, rather than a custom one.  Unique per Item/Material/Texture Type." xml:space="preserve">
-    <value>Use the default texture name, rather than a custom one.  Unique per Item/Material/Texture Type.</value>
-  </data>
-  <data name="Paths may only contain lowercase characters, numbers, tokens and &#xA;;the following special characters: /.-_" xml:space="preserve">
-    <value>Paths may only contain lowercase characters, numbers, tokens and 
-;the following special characters: /.-_</value>
-  </data>
-  <data name="Click here for the full Material Editor Guide." xml:space="preserve">
-    <value>Click here for the full Material Editor Guide.</value>
-  </data>
-  <data name="Item Information Error" xml:space="preserve">
-    <value>Item Information Error</value>
-  </data>
-  <data name="Unable to load item information:&#xA;&#xA;Error:" xml:space="preserve">
-    <value>Unable to load item information:
+  <data name="TranslucencyToggleErrorMessage" xml:space="preserve">
+    <value>There was an error attempting to toggle translucency
 
-Error:</value>
+{0}</value>
   </data>
-  <data name="Texture format not supported: {0}" xml:space="preserve">
-    <value>Texture format not supported: {0}</value>
+  <data name="TranslucencyToggleErrorTitle" xml:space="preserve">
+    <value>Error Toggling Translucency</value>
   </data>
-  <data name="Unsupported item type" xml:space="preserve">
-    <value>Unsupported item type</value>
-  </data>
-  <data name="An error occurred while loading the item list." xml:space="preserve">
-    <value>An error occurred while loading the item list.</value>
-  </data>
-  <data name="Cannot save changes: One or more values are not valid." xml:space="preserve">
-    <value>Cannot save changes: One or more values are not valid.</value>
-  </data>
-  <data name="Cannot save changes:&#xA;&#xA;Error:" xml:space="preserve">
-    <value>Cannot save changes:
-
-Error:</value>
-  </data>
-  <data name="Cloning Items" xml:space="preserve">
-    <value>Cloning Items</value>
-  </data>
-  <data name="Colorset Editor Error" xml:space="preserve">
-    <value>Colorset Editor Error</value>
-  </data>
-  <data name="Defragmenting DAT Files" xml:space="preserve">
-    <value>Defragmenting DAT Files</value>
-  </data>
-  <data name="Dual-Wield Conversion Required" xml:space="preserve">
-    <value>Dual-Wield Conversion Required</value>
-  </data>
-  <data name="Exporter threw error code:" xml:space="preserve">
-    <value>Exporter threw error code:</value>
-  </data>
-  <data name="In order to fully convert this item, the following items may also need to be converted with it.&#xA;&#xA;{0}&#xA;Perform these conversions as well?" xml:space="preserve">
-    <value>In order to fully convert this item, the following items may also need to be converted with it.
-
-{0}
-Perform these conversions as well?</value>
-  </data>
-  <data name="In order to properly convert this item, the following item may also need to be converted with it:&#xA;&#xA;{0}&#xA;Perform these conversions as well?" xml:space="preserve">
-    <value>In order to properly convert this item, the following item may also need to be converted with it:
-
-{0}
-Perform these conversions as well?</value>
-  </data>
-  <data name="Invalid Data Error" xml:space="preserve">
-    <value>Invalid Data Error</value>
-  </data>
-  <data name="Invalid Values Error" xml:space="preserve">
-    <value>Invalid Values Error</value>
-  </data>
-  <data name="Item Conversion Error" xml:space="preserve">
-    <value>Item Conversion Error</value>
-  </data>
-  <data name="Item Conversion Successful" xml:space="preserve">
-    <value>Item Conversion Successful</value>
-  </data>
-  <data name="Item List Error" xml:space="preserve">
-    <value>Item List Error</value>
-  </data>
-  <data name="Items converted successfully." xml:space="preserve">
-    <value>Items converted successfully.</value>
-  </data>
-  <data name="Loading..." xml:space="preserve">
-    <value>Loading...</value>
-  </data>
-  <data name="Material Save Error" xml:space="preserve">
-    <value>Material Save Error</value>
-  </data>
-  <data name="Mod Toggle Error" xml:space="preserve">
-    <value>Mod Toggle Error</value>
-  </data>
-  <data name="Multi-Slot Convert Required" xml:space="preserve">
-    <value>Multi-Slot Convert Required</value>
-  </data>
-  <data name="Off-Ring Conversion Required" xml:space="preserve">
-    <value>Off-Ring Conversion Required</value>
-  </data>
-  <data name="Please wait..." xml:space="preserve">
-    <value>Please wait...</value>
-  </data>
-  <data name="Save Scaling Error" xml:space="preserve">
-    <value>Save Scaling Error</value>
+  <data name="TTMPGettingData" xml:space="preserve">
+    <value>Getting Data...</value>
   </data>
   <data name="Unable to convert items:&#xA;&#xA;Error:" xml:space="preserve">
     <value>Unable to convert items:
 
 Error:</value>
   </data>
-  <data name="Unable to load material into colorset editor.&#xA;&#xA;Error:" xml:space="preserve">
-    <value>Unable to load material into colorset editor.
-
-Error:</value>
-  </data>
-  <data name="Unable to save Material.&#xA;&#xA;Error:" xml:space="preserve">
-    <value>Unable to save Material.
-
-Error:</value>
-  </data>
-  <data name="Unable to set values.  Some values are invalid." xml:space="preserve">
-    <value>Unable to set values.  Some values are invalid.</value>
-  </data>
-  <data name="Unable to toggle mod status.&#xA;&#xA;Error:" xml:space="preserve">
-    <value>Unable to toggle mod status.
-
-Error:</value>
-  </data>
-  <data name="Updating Metadata" xml:space="preserve">
-    <value>Updating Metadata</value>
-  </data>
-  <data name="Working..." xml:space="preserve">
-    <value>Working...</value>
-  </data>
-  <data name="Adding this item will overwrite your existing entry for item: {0}&#xA;Are you sure you wish to proceed?" xml:space="preserve">
-    <value>Adding this item will overwrite your existing entry for item: {0}
-Are you sure you wish to proceed?</value>
-  </data>
-  <data name="An Error occured while creating the modpack." xml:space="preserve">
-    <value>An Error occured while creating the modpack.</value>
-  </data>
-  <data name="Failed to create modpack.&#xA;&#xA;Error:" xml:space="preserve">
-    <value>Failed to create modpack.
-
-Error:</value>
-  </data>
-  <data name="Framework Version Error" xml:space="preserve">
-    <value>Framework Version Error</value>
-  </data>
-  <data name="Item Overwrite Confirmation" xml:space="preserve">
-    <value>Item Overwrite Confirmation</value>
-  </data>
-  <data name="Modpack Created" xml:space="preserve">
-    <value>Modpack Created</value>
-  </data>
-  <data name="Modpack Created Successfully." xml:space="preserve">
-    <value>Modpack Created Successfully.</value>
-  </data>
-  <data name="Modpack Creation Error" xml:space="preserve">
-    <value>Modpack Creation Error</value>
-  </data>
-  <data name="No selected modpacks detected." xml:space="preserve">
-    <value>No selected modpacks detected.</value>
-  </data>
-  <data name="This Modpack requires a more recent version of TexTools to install." xml:space="preserve">
-    <value>This Modpack requires a more recent version of TexTools to install.</value>
-  </data>
-  <data name="Cannot include file, file offset invalid." xml:space="preserve">
-    <value>Cannot include file, file offset invalid.</value>
-  </data>
-  <data name="Copy Failure" xml:space="preserve">
-    <value>Copy Failure</value>
-  </data>
-  <data name="Copy Success" xml:space="preserve">
-    <value>Copy Success</value>
-  </data>
-  <data name="Destination file already exists.  Overwrite?" xml:space="preserve">
-    <value>Destination file already exists.  Overwrite?</value>
-  </data>
-  <data name="File Copied Successfully." xml:space="preserve">
-    <value>File Copied Successfully.</value>
-  </data>
-  <data name="File Copy Failed:" xml:space="preserve">
-    <value>File Copy Failed:</value>
-  </data>
-  <data name="Loading" xml:space="preserve">
-    <value>Loading</value>
-  </data>
-  <data name="Overwrite Confirmation" xml:space="preserve">
-    <value>Overwrite Confirmation</value>
-  </data>
-  <data name="Source file does not exist." xml:space="preserve">
-    <value>Source file does not exist.</value>
-  </data>
-  <data name="Texture Files(*.ttmp2)|*.ttmp2" xml:space="preserve">
-    <value>Texture Files(*.ttmp2)|*.ttmp2</value>
-  </data>
-  <data name="User Cancelled Import Process." xml:space="preserve">
-    <value>User Cancelled Import Process.</value>
-  </data>
-  <data name="An error occurred during import:&#xA;{0}&#xA;&#xA;The import has been cancelled.&#xA;Please see the text log for more information." xml:space="preserve">
-    <value>An error occurred during import:
-{0}
-
-The import has been cancelled.
-Please see the text log for more information.</value>
-  </data>
-  <data name="At least one file path is not a valid internal FFXIV file path." xml:space="preserve">
-    <value>At least one file path is not a valid internal FFXIV file path.</value>
-  </data>
-  <data name="Branch Change Notice" xml:space="preserve">
-    <value>Branch Change Notice</value>
-  </data>
-  <data name="Camera Model Error." xml:space="preserve">
-    <value>Camera Model Error.</value>
-  </data>
-  <data name="Changing Mod Status" xml:space="preserve">
-    <value>Changing Mod Status</value>
-  </data>
-  <data name="Corrupted ModList Detected" xml:space="preserve">
-    <value>Corrupted ModList Detected</value>
-  </data>
-  <data name="Critical Error: Unable to Correct Index Discrepency for Mod: {0}&#xA;	Please use [Download Index Backups] =&gt;  [Start Over]" xml:space="preserve">
-    <value>Critical Error: Unable to Correct Index Discrepency for Mod: {0}
- Please use [Download Index Backups] =&gt;  [Start Over]</value>
-  </data>
-  <data name="Critical Error: Unable to Disable or Delete Mod: {0}&#xA;	Please use [Download Index Backups] =&gt;  [Start Over]" xml:space="preserve">
-    <value>Critical Error: Unable to Disable or Delete Mod: {0}
- Please use [Download Index Backups] =&gt;  [Start Over]</value>
-  </data>
-  <data name="Data Type Error" xml:space="preserve">
-    <value>Data Type Error</value>
-  </data>
-  <data name="Deleting Mod" xml:space="preserve">
-    <value>Deleting Mod</value>
-  </data>
-  <data name="Extraction Success" xml:space="preserve">
-    <value>Extraction Success</value>
-  </data>
-  <data name="File does not exist.&#xA;&#xA;File:" xml:space="preserve">
-    <value>File does not exist.
-
-File:</value>
-  </data>
-  <data name="File Imported Successfully." xml:space="preserve">
-    <value>File Imported Successfully.</value>
-  </data>
-  <data name="File Not Found" xml:space="preserve">
-    <value>File Not Found</value>
-  </data>
-  <data name="How did this even happen?" xml:space="preserve">
-    <value>How did this even happen?</value>
-  </data>
-  <data name="Import Error" xml:space="preserve">
-    <value>Import Error</value>
-  </data>
-  <data name="Import Success" xml:space="preserve">
-    <value>Import Success</value>
-  </data>
-  <data name="Index 1/2 Mismatch: Index 2 entry will be updated to match Index 1." xml:space="preserve">
-    <value>Index 1/2 Mismatch: Index 2 entry will be updated to match Index 1.</value>
-  </data>
-  <data name="Invalid Data Type.&#xA;Generic binary files should be imported as decompressed type 2 Data." xml:space="preserve">
-    <value>Invalid Data Type.
-Generic binary files should be imported as decompressed type 2 Data.</value>
-  </data>
-  <data name="Invalid or Unknown Data Type." xml:space="preserve">
-    <value>Invalid or Unknown Data Type.</value>
-  </data>
-  <data name="Invalid URL." xml:space="preserve">
-    <value>Invalid URL.</value>
-  </data>
-  <data name="Loading Canceled&#xA;&#xA;{0}" xml:space="preserve">
-    <value>Loading Canceled
-
-{0}</value>
-  </data>
-  <data name="Materials and textures will be copied to destination root folder." xml:space="preserve">
-    <value>Materials and textures will be copied to destination root folder.</value>
-  </data>
-  <data name="Missing File: {0}" xml:space="preserve">
-    <value>Missing File: {0}</value>
-  </data>
-  <data name="Mod Data Offset is invalid. &#xA;	 The Mod will be disabled, deleted, and the mod slot will be purged from the ModList." xml:space="preserve">
-    <value>Mod Data Offset is invalid. 
-  The Mod will be disabled, deleted, and the mod slot will be purged from the ModList.</value>
-  </data>
-  <data name="Mod Disable Error" xml:space="preserve">
-    <value>Mod Disable Error</value>
-  </data>
-  <data name="Mod Enable Error" xml:space="preserve">
-    <value>Mod Enable Error</value>
-  </data>
-  <data name="Mod had an incorrectly reported file size.  The reported size has been corrected." xml:space="preserve">
-    <value>Mod had an incorrectly reported file size.  The reported size has been corrected.</value>
-  </data>
-  <data name="Model Copied Failed.&#xA;&#xA;Error:" xml:space="preserve">
-    <value>Model Copied Failed.
-
-Error:</value>
-  </data>
-  <data name="Model Copied Successfully." xml:space="preserve">
-    <value>Model Copied Successfully.</value>
-  </data>
-  <data name="Model Copy Confirmation" xml:space="preserve">
-    <value>Model Copy Confirmation</value>
-  </data>
-  <data name="Model Copy Error" xml:space="preserve">
-    <value>Model Copy Error</value>
-  </data>
-  <data name="Model is not racial - Model will not be racially adjusted." xml:space="preserve">
-    <value>Model is not racial - Model will not be racially adjusted.</value>
-  </data>
-  <data name="Model races are identical - Model will not be racially adjusted." xml:space="preserve">
-    <value>Model races are identical - Model will not be racially adjusted.</value>
-  </data>
-  <data name="Model will be adjusted from {0} to {1}." xml:space="preserve">
-    <value>Model will be adjusted from {0} to {1}.</value>
-  </data>
-  <data name="ModList Corrupted" xml:space="preserve">
-    <value>ModList Corrupted</value>
-  </data>
-  <data name="ModList restored" xml:space="preserve">
-    <value>ModList restored</value>
-  </data>
-  <data name="Original FFXIV Offset is Invalid.  Unrecoverable ModList state.&#xA;	 Please use [Download Index Backups] =&gt;  [Start Over]." xml:space="preserve">
-    <value>Original FFXIV Offset is Invalid.  Unrecoverable ModList state.
-  Please use [Download Index Backups] =&gt;  [Start Over].</value>
-  </data>
-  <data name="Per-DAT File Size Limit: {0}" xml:space="preserve">
-    <value>Per-DAT File Size Limit: {0}</value>
-  </data>
-  <data name="Problem Check Error" xml:space="preserve">
-    <value>Problem Check Error</value>
-  </data>
-  <data name="Purged {0} invalid unused mod data slots." xml:space="preserve">
-    <value>Purged {0} invalid unused mod data slots.</value>
-  </data>
-  <data name="Raw file extracted successfully to path:" xml:space="preserve">
-    <value>Raw file extracted successfully to path:</value>
-  </data>
-  <data name="Repair Failed" xml:space="preserve">
-    <value>Repair Failed</value>
-  </data>
-  <data name="Scanned {0} modded files." xml:space="preserve">
-    <value>Scanned {0} modded files.</value>
-  </data>
-  <data name="Some files this mod references are missing or disabled." xml:space="preserve">
-    <value>Some files this mod references are missing or disabled.</value>
-  </data>
-  <data name="Source and target files must exist within the same data file." xml:space="preserve">
-    <value>Source and target files must exist within the same data file.</value>
-  </data>
-  <data name="Sum Total Mod Files Size: {0}" xml:space="preserve">
-    <value>Sum Total Mod Files Size: {0}</value>
-  </data>
-  <data name="TexTools is running in 32bit Mode. This will reduce the available mod data limit." xml:space="preserve">
-    <value>TexTools is running in 32bit Mode. This will reduce the available mod data limit.</value>
-  </data>
-  <data name="TexTools will now change to the selected update branch." xml:space="preserve">
-    <value>TexTools will now change to the selected update branch.</value>
-  </data>
-  <data name="TexTools will now restart." xml:space="preserve">
-    <value>TexTools will now restart.</value>
-  </data>
-  <data name="The given file path is invalid." xml:space="preserve">
-    <value>The given file path is invalid.</value>
-  </data>
-  <data name="The Mod will automatically be disabled and deleted." xml:space="preserve">
-    <value>The Mod will automatically be disabled and deleted.</value>
-  </data>
-  <data name="This may cause some racial models to be invisible in game." xml:space="preserve">
-    <value>This may cause some racial models to be invisible in game.</value>
-  </data>
-  <data name="This may cause some variants of this model to be invisible in game." xml:space="preserve">
-    <value>This may cause some variants of this model to be invisible in game.</value>
+  <data name="Unable to create index backups.&#xA;The Index Backup directory is invalid or inaccessible:" xml:space="preserve">
+    <value>Unable to create index backups.
+The Index Backup directory is invalid or inaccessible:</value>
   </data>
   <data name="Unable to decompress or read file:&#xA;{0}&#xA;&#xA;Error:" xml:space="preserve">
     <value>Unable to decompress or read file:
@@ -1434,10 +1508,24 @@ Error:</value>
 
 Error:</value>
   </data>
+  <data name="Unable to delete Mod.&#xA;&#xA;Error:" xml:space="preserve">
+    <value>Unable to delete Mod.
+
+Error:</value>
+  </data>
+  <data name="Unable to determine working offset for file:" xml:space="preserve">
+    <value>Unable to determine working offset for file:</value>
+  </data>
+  <data name="Unable to determine working original offset for file:" xml:space="preserve">
+    <value>Unable to determine working original offset for file:</value>
+  </data>
   <data name="Unable to disable mod.&#xA;Please use Help =&gt; Download Index Backups/Help =&gt; Start Over&#xA;Error:" xml:space="preserve">
     <value>Unable to disable mod.
 Please use Help =&gt; Download Index Backups/Help =&gt; Start Over
 Error:</value>
+  </data>
+  <data name="Unable to download Index Backups." xml:space="preserve">
+    <value>Unable to download Index Backups.</value>
   </data>
   <data name="Unable to enable mod.&#xA;&#xA;Error:" xml:space="preserve">
     <value>Unable to enable mod.
@@ -1459,6 +1547,26 @@ Error:</value>
 
 Error:</value>
   </data>
+  <data name="Unable to load item information:&#xA;&#xA;Error:" xml:space="preserve">
+    <value>Unable to load item information:
+
+Error:</value>
+  </data>
+  <data name="Unable to load material into colorset editor.&#xA;&#xA;Error:" xml:space="preserve">
+    <value>Unable to load material into colorset editor.
+
+Error:</value>
+  </data>
+  <data name="Unable to load texture file:&#xA;&#xA;Error:" xml:space="preserve">
+    <value>Unable to load texture file:
+
+Error:</value>
+  </data>
+  <data name="Unable to rebuild cache file.&#xA;&#xA;Error:" xml:space="preserve">
+    <value>Unable to rebuild cache file.
+
+Error:</value>
+  </data>
   <data name="Unable to repair TexTools&#xA;&#xA;Please manually update your index backups." xml:space="preserve">
     <value>Unable to repair TexTools
 
@@ -1467,8 +1575,27 @@ Please manually update your index backups.</value>
   <data name="Unable to resolve child files for mod.  File is mod likely corrupt. The mod will be deleted." xml:space="preserve">
     <value>Unable to resolve child files for mod.  File is mod likely corrupt. The mod will be deleted.</value>
   </data>
+  <data name="Unable to restore Index Backups, shutting down TexTools." xml:space="preserve">
+    <value>Unable to restore Index Backups, shutting down TexTools.</value>
+  </data>
+  <data name="Unable to restore Lumina settings, directory was invalid." xml:space="preserve">
+    <value>Unable to restore Lumina settings, directory was invalid.</value>
+  </data>
   <data name="Unable to save Lumina settings, invalid Lumina directory." xml:space="preserve">
     <value>Unable to save Lumina settings, invalid Lumina directory.</value>
+  </data>
+  <data name="Unable to save Material.&#xA;&#xA;Error:" xml:space="preserve">
+    <value>Unable to save Material.
+
+Error:</value>
+  </data>
+  <data name="Unable to set values.  Some values are invalid." xml:space="preserve">
+    <value>Unable to set values.  Some values are invalid.</value>
+  </data>
+  <data name="Unable to toggle mod status.&#xA;&#xA;Error:" xml:space="preserve">
+    <value>Unable to toggle mod status.
+
+Error:</value>
   </data>
   <data name="Unable to update 3D Viewport.&#xA;Error:" xml:space="preserve">
     <value>Unable to update 3D Viewport.
@@ -1480,8 +1607,94 @@ Error:</value>
   <data name="Unknown File Root - Model will not be racially adjusted." xml:space="preserve">
     <value>Unknown File Root - Model will not be racially adjusted.</value>
   </data>
+  <data name="Unsupported item type" xml:space="preserve">
+    <value>Unsupported item type</value>
+  </data>
+  <data name="UnsupportedFileExtensionErrorMessage" xml:space="preserve">
+    <value>Unsupported file extension detected: {0}. 
+
+TexTools only supports importing *.ttmp and *.ttmp2 ModPacks. </value>
+  </data>
+  <data name="UnsupportedFileExtensionErrorTitle" xml:space="preserve">
+    <value>File Extension Error</value>
+  </data>
+  <data name="Unzipping new Indexes..." xml:space="preserve">
+    <value>Unzipping new Indexes...</value>
+  </data>
+  <data name="Unzipping TTMP File..." xml:space="preserve">
+    <value>Unzipping TTMP File...</value>
+  </data>
+  <data name="UpdateBodyTextureError" xml:space="preserve">
+    <value>Encountered an error while updating body textures.
+
+Error: {0}</value>
+  </data>
+  <data name="Updating Destination Items..." xml:space="preserve">
+    <value>Updating Destination Items...</value>
+  </data>
+  <data name="Updating Index file references..." xml:space="preserve">
+    <value>Updating Index file references...</value>
+  </data>
+  <data name="Updating Metadata" xml:space="preserve">
+    <value>Updating Metadata</value>
+  </data>
+  <data name="Updating Mod List file..." xml:space="preserve">
+    <value>Updating Mod List file...</value>
+  </data>
+  <data name="Updating modlist..." xml:space="preserve">
+    <value>Updating modlist...</value>
+  </data>
+  <data name="Updating skin materials for all modded models..." xml:space="preserve">
+    <value>Updating skin materials for all modded models...</value>
+  </data>
+  <data name="UpdatingFaceTitle" xml:space="preserve">
+    <value>Updating Face Textures</value>
+  </data>
+  <data name="UpdatingSkeletonTitle" xml:space="preserve">
+    <value>Updating Skeleton</value>
+  </data>
+  <data name="UpdatingSkinTitle" xml:space="preserve">
+    <value>Updating Skin</value>
+  </data>
+  <data name="Use the default texture name, rather than a custom one.  Unique per Item/Material/Texture Type." xml:space="preserve">
+    <value>Use the default texture name, rather than a custom one.  Unique per Item/Material/Texture Type.</value>
+  </data>
+  <data name="User Cancelled Import Process." xml:space="preserve">
+    <value>User Cancelled Import Process.</value>
+  </data>
+  <data name="VFX ID:" xml:space="preserve">
+    <value>VFX ID:</value>
+  </data>
   <data name="Viewport Error" xml:space="preserve">
     <value>Viewport Error</value>
+  </data>
+  <data name="ViewportErrorMessage" xml:space="preserve">
+    <value>Failed to update the viewport. 
+
+{0}.
+
+Any mod on the 3D model will be disabled.</value>
+  </data>
+  <data name="ViewportErrorTitle" xml:space="preserve">
+    <value>Error Updating Viewport</value>
+  </data>
+  <data name="Waiting on Destination Item Selection..." xml:space="preserve">
+    <value>Waiting on Destination Item Selection...</value>
+  </data>
+  <data name="Web Download Confirmation" xml:space="preserve">
+    <value>Web Download Confirmation</value>
+  </data>
+  <data name="Web Download Error" xml:space="preserve">
+    <value>Web Download Error</value>
+  </data>
+  <data name="Working..." xml:space="preserve">
+    <value>Working...</value>
+  </data>
+  <data name="Writing mod data to temporary DAT files..." xml:space="preserve">
+    <value>Writing mod data to temporary DAT files...</value>
+  </data>
+  <data name="Writing new mod data to DAT files..." xml:space="preserve">
+    <value>Writing new mod data to DAT files...</value>
   </data>
   <data name="You may wish to consider scaling this model down." xml:space="preserve">
     <value>You may wish to consider scaling this model down.</value>
@@ -1497,218 +1710,5 @@ Error:</value>
   </data>
   <data name="{0} Warnings (May cause invisible items/models in game)" xml:space="preserve">
     <value>{0} Warnings (May cause invisible items/models in game)</value>
-  </data>
-  <data name="A critical error occurred when attempting to read the FFXIV index files.&#xA;&#xA;Would you like to restore your index backups?&#xA;&#xA;Error:" xml:space="preserve">
-    <value>A critical error occurred when attempting to read the FFXIV index files.
-
-Would you like to restore your index backups?
-
-Error:</value>
-  </data>
-  <data name="An Error occured while saving the Metadata: " xml:space="preserve">
-    <value>An Error occured while saving the Metadata: </value>
-  </data>
-  <data name="Creating Index Backups..." xml:space="preserve">
-    <value>Creating Index Backups...</value>
-  </data>
-  <data name="Critical Error Shutdown" xml:space="preserve">
-    <value>Critical Error Shutdown</value>
-  </data>
-  <data name="Critical Index Error" xml:space="preserve">
-    <value>Critical Index Error</value>
-  </data>
-  <data name="Destroyed Files Notification" xml:space="preserve">
-    <value>Destroyed Files Notification</value>
-  </data>
-  <data name="Disable Mod Error" xml:space="preserve">
-    <value>Disable Mod Error</value>
-  </data>
-  <data name="Disabling Mods..." xml:space="preserve">
-    <value>Disabling Mods...</value>
-  </data>
-  <data name="Enable Mod Error" xml:space="preserve">
-    <value>Enable Mod Error</value>
-  </data>
-  <data name="Failed to Disable all Mods: &#xA;&#xA;Error:" xml:space="preserve">
-    <value>Failed to Disable all Mods: 
-
-Error:</value>
-  </data>
-  <data name="Failed to Enable all Mods: &#xA;&#xA;Error:" xml:space="preserve">
-    <value>Failed to Enable all Mods: 
-
-Error:</value>
-  </data>
-  <data name="Metadata Error" xml:space="preserve">
-    <value>Metadata Error</value>
-  </data>
-  <data name="Patch-Broken file has no valid index to restore.  Clean Index Restoration required." xml:space="preserve">
-    <value>Patch-Broken file has no valid index to restore.  Clean Index Restoration required.</value>
-  </data>
-  <data name="Performing Post-Patch Maintenence" xml:space="preserve">
-    <value>Performing Post-Patch Maintenence</value>
-  </data>
-  <data name="Post Patch Cleanup Starting" xml:space="preserve">
-    <value>Post Patch Cleanup Starting</value>
-  </data>
-  <data name="Post-Patch Failure" xml:space="preserve">
-    <value>Post-Patch Failure</value>
-  </data>
-  <data name="Post-Patch Process Complete" xml:space="preserve">
-    <value>Post-Patch Process Complete</value>
-  </data>
-  <data name="Queue Length: {0}" xml:space="preserve">
-    <value>Queue Length: {0}</value>
-  </data>
-  <data name="Shutting Down TexTools." xml:space="preserve">
-    <value>Shutting Down TexTools.</value>
-  </data>
-  <data name="This may take a few minutes if you have many mods installed." xml:space="preserve">
-    <value>This may take a few minutes if you have many mods installed.</value>
-  </data>
-  <data name="Unable to create index backups.&#xA;The Index Backup directory is invalid or inaccessible:" xml:space="preserve">
-    <value>Unable to create index backups.
-The Index Backup directory is invalid or inaccessible:</value>
-  </data>
-  <data name="Unable to determine working offset for file:" xml:space="preserve">
-    <value>Unable to determine working offset for file:</value>
-  </data>
-  <data name="Unable to determine working original offset for file:" xml:space="preserve">
-    <value>Unable to determine working original offset for file:</value>
-  </data>
-  <data name="Unable to restore Index Backups, shutting down TexTools." xml:space="preserve">
-    <value>Unable to restore Index Backups, shutting down TexTools.</value>
-  </data>
-  <data name="Analyzing items and variants..." xml:space="preserve">
-    <value>Analyzing items and variants...</value>
-  </data>
-  <data name="Calculating files to copy..." xml:space="preserve">
-    <value>Calculating files to copy...</value>
-  </data>
-  <data name="Cannot clone unsupported root." xml:space="preserve">
-    <value>Cannot clone unsupported root.</value>
-  </data>
-  <data name="Copying materials..." xml:space="preserve">
-    <value>Copying materials...</value>
-  </data>
-  <data name="Copying metdata..." xml:space="preserve">
-    <value>Copying metdata...</value>
-  </data>
-  <data name="Copying models..." xml:space="preserve">
-    <value>Copying models...</value>
-  </data>
-  <data name="Copying textures..." xml:space="preserve">
-    <value>Copying textures...</value>
-  </data>
-  <data name="Copying VFX..." xml:space="preserve">
-    <value>Copying VFX...</value>
-  </data>
-  <data name="VFX ID:" xml:space="preserve">
-    <value>VFX ID:</value>
-  </data>
-  <data name="SFX ID:" xml:space="preserve">
-    <value>SFX ID:</value>
-  </data>
-  <data name="Creating missing variants..." xml:space="preserve">
-    <value>Creating missing variants...</value>
-  </data>
-  <data name="Creating TTMP File..." xml:space="preserve">
-    <value>Creating TTMP File...</value>
-  </data>
-  <data name="Filling in missing material sets..." xml:space="preserve">
-    <value>Filling in missing material sets...</value>
-  </data>
-  <data name="Game files currently in use." xml:space="preserve">
-    <value>Game files currently in use.</value>
-  </data>
-  <data name="Getting modlist..." xml:space="preserve">
-    <value>Getting modlist...</value>
-  </data>
-  <data name="Item Conversion cannot be used with Lumina import mode." xml:space="preserve">
-    <value>Item Conversion cannot be used with Lumina import mode.</value>
-  </data>
-  <data name="Removing existing modifications to destination root..." xml:space="preserve">
-    <value>Removing existing modifications to destination root...</value>
-  </data>
-  <data name="Root copy complete." xml:space="preserve">
-    <value>Root copy complete.</value>
-  </data>
-  <data name="Setting single-variant data..." xml:space="preserve">
-    <value>Setting single-variant data...</value>
-  </data>
-  <data name="Stopping Cache Worker..." xml:space="preserve">
-    <value>Stopping Cache Worker...</value>
-  </data>
-  <data name="Updating modlist..." xml:space="preserve">
-    <value>Updating modlist...</value>
-  </data>
-  <data name="Adding modified files to Cache Queue..." xml:space="preserve">
-    <value>Adding modified files to Cache Queue...</value>
-  </data>
-  <data name="Expanding Metadata Entries..." xml:space="preserve">
-    <value>Expanding Metadata Entries...</value>
-  </data>
-  <data name="Expanding Metadata Files..." xml:space="preserve">
-    <value>Expanding Metadata Files...</value>
-  </data>
-  <data name="Fixing up item names..." xml:space="preserve">
-    <value>Fixing up item names...</value>
-  </data>
-  <data name="Loading Modlist file..." xml:space="preserve">
-    <value>Loading Modlist file...</value>
-  </data>
-  <data name="Queuing Cache Updates..." xml:space="preserve">
-    <value>Queuing Cache Updates...</value>
-  </data>
-  <data name="Removing empty mod slots..." xml:space="preserve">
-    <value>Removing empty mod slots...</value>
-  </data>
-  <data name="Removing empty modpacks..." xml:space="preserve">
-    <value>Removing empty modpacks...</value>
-  </data>
-  <data name="Removing old modded DAT files..." xml:space="preserve">
-    <value>Removing old modded DAT files...</value>
-  </data>
-  <data name="Renaming temporary DAT files..." xml:space="preserve">
-    <value>Renaming temporary DAT files...</value>
-  </data>
-  <data name="Restoring Metadata Entries..." xml:space="preserve">
-    <value>Restoring Metadata Entries...</value>
-  </data>
-  <data name="Saving Modlist file..." xml:space="preserve">
-    <value>Saving Modlist file...</value>
-  </data>
-  <data name="Saving updated Index Files..." xml:space="preserve">
-    <value>Saving updated Index Files...</value>
-  </data>
-  <data name="Saving updated Modlist..." xml:space="preserve">
-    <value>Saving updated Modlist...</value>
-  </data>
-  <data name="Scanning and updating body models..." xml:space="preserve">
-    <value>Scanning and updating body models...</value>
-  </data>
-  <data name="Scanning for body material corrections..." xml:space="preserve">
-    <value>Scanning for body material corrections...</value>
-  </data>
-  <data name="Unzipping TTMP File..." xml:space="preserve">
-    <value>Unzipping TTMP File...</value>
-  </data>
-  <data name="Updating Destination Items..." xml:space="preserve">
-    <value>Updating Destination Items...</value>
-  </data>
-  <data name="Updating Index file references..." xml:space="preserve">
-    <value>Updating Index file references...</value>
-  </data>
-  <data name="Updating Mod List file..." xml:space="preserve">
-    <value>Updating Mod List file...</value>
-  </data>
-  <data name="Waiting on Destination Item Selection..." xml:space="preserve">
-    <value>Waiting on Destination Item Selection...</value>
-  </data>
-  <data name="Writing mod data to temporary DAT files..." xml:space="preserve">
-    <value>Writing mod data to temporary DAT files...</value>
-  </data>
-  <data name="Writing new mod data to DAT files..." xml:space="preserve">
-    <value>Writing new mod data to DAT files...</value>
   </data>
 </root>

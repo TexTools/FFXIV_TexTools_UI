@@ -123,116 +123,32 @@
   <data name="About_TexTools" xml:space="preserve">
     <value>À propos de TexTools</value>
   </data>
-  <data name="Backup_Index_Files" xml:space="preserve">
-    <value>Sauvegarder les fichiers d'Index</value>
-  </data>
-  <data name="Batch" xml:space="preserve">
-    <value>Batch</value>
-  </data>
-  <data name="Check_For_Problems" xml:space="preserve">
-    <value>Vérifier les problèmes</value>
-  </data>
-  <data name="Customize" xml:space="preserve">
-    <value>Personnaliser</value>
-  </data>
-  <data name="Disable" xml:space="preserve">
-    <value>Désactiver</value>
-  </data>
-  <data name="Disable_All_Mods" xml:space="preserve">
-    <value>Désactiver tous les mods</value>
-  </data>
-  <data name="Donate" xml:space="preserve">
-    <value>Dons</value>
-  </data>
-  <data name="Enable" xml:space="preserve">
-    <value>Activer</value>
-  </data>
-  <data name="Enable_All_Mods" xml:space="preserve">
-    <value>Activer tous les mods</value>
-  </data>
-  <data name="Enable_Disable" xml:space="preserve">
-    <value>Activer/Désactiver</value>
-  </data>
-  <data name="Export" xml:space="preserve">
-    <value>Exporter</value>
-  </data>
-  <data name="Help" xml:space="preserve">
-    <value>Aide</value>
-  </data>
-  <data name="Icon_ID" xml:space="preserve">
-    <value>ID d'Icône</value>
-  </data>
-  <data name="Import" xml:space="preserve">
-    <value>Importer</value>
-  </data>
-  <data name="Import_ModPacks" xml:space="preserve">
-    <value>Importer des Modpacks</value>
-  </data>
-  <data name="Item_List" xml:space="preserve">
-    <value>Liste d'Objets</value>
-  </data>
-  <data name="Join_us_on_Discord" xml:space="preserve">
-    <value>Rejoignez nous sur Discord!</value>
-  </data>
-  <data name="Language" xml:space="preserve">
-    <value>Langages</value>
-  </data>
-  <data name="Model" xml:space="preserve">
-    <value>Modèle 3D</value>
-  </data>
-  <data name="Model_ID" xml:space="preserve">
-    <value>ID de Modèle 3D</value>
-  </data>
-  <data name="ModPack_Wizard" xml:space="preserve">
-    <value>Créateur Wizard de Mod Pack</value>
-  </data>
-  <data name="Mod_List" xml:space="preserve">
-    <value>Liste de Mods</value>
-  </data>
-  <data name="Mod_Repos" xml:space="preserve">
-    <value>Archives de Mods</value>
-  </data>
-  <data name="More_Options" xml:space="preserve">
-    <value>Plus d'Options</value>
-  </data>
-  <data name="Report_Bug" xml:space="preserve">
-    <value>Rapporter un Bug</value>
-  </data>
-  <data name="Search" xml:space="preserve">
-    <value>Rechercher</value>
-  </data>
-  <data name="Search_dot" xml:space="preserve">
-    <value>Recherche...</value>
-  </data>
-  <data name="Select_Language" xml:space="preserve">
-    <value>Sélectionner la langue</value>
-  </data>
-  <data name="Simple_ModPack" xml:space="preserve">
-    <value>ModPack Simple</value>
-  </data>
-  <data name="Theme" xml:space="preserve">
-    <value>Thème</value>
-  </data>
-  <data name="Tutorials" xml:space="preserve">
-    <value>Tutoriaux</value>
-  </data>
-  <data name="View_Github_Repo" xml:space="preserve">
-    <value>Visiter notre archive Github</value>
-  </data>
-  <data name="XIV_Mod_Archive" xml:space="preserve">
-    <value>XIV Mod Archive</value>
-  </data>
   <data name="Active" xml:space="preserve">
     <value>Actif</value>
   </data>
   <data name="Add" xml:space="preserve">
     <value>Ajouter</value>
   </data>
+  <data name="Added_Mesh" xml:space="preserve">
+    <value>Meshs 3D ajoutés.Veuillez changer le matériau pour les nouveaux meshs 3D si nécessaire.</value>
+  </data>
+  <data name="Added_MeshParts" xml:space="preserve">
+    <value>Parties de mesh 3D ajoutées sur ce mesh.Veuillez changer lees attributs pour les nouvelles parties 3D si nécessaire.</value>
+  </data>
+  <data name="Add_a_Model_using_advanced_options" xml:space="preserve">
+    <value>Ajouter un Modèle en utilisant les options avancées</value>
+  </data>
+  <data name="Add_Group" xml:space="preserve">
+    <value>Ajouter un groupe</value>
+  </data>
   <data name="Add_Remove" xml:space="preserve">
     <value>Ajouter/Retirer</value>
   </data>
   <data name="Add_To_Part_Attribute" xml:space="preserve">
     <value>Ajouter à un attribut de partie</value>
+  </data>
+  <data name="Add_w_Adv_Options" xml:space="preserve">
+    <value>Ajouter avec les Options Avancées</value>
   </data>
   <data name="Advanced_Import" xml:space="preserve">
     <value>Importation avancée</value>
@@ -258,6 +174,12 @@
   <data name="Backups_Directory" xml:space="preserve">
     <value>Dossier de sauvegardes</value>
   </data>
+  <data name="Backup_Index_Files" xml:space="preserve">
+    <value>Sauvegarder les fichiers d'Index</value>
+  </data>
+  <data name="Batch" xml:space="preserve">
+    <value>Batch</value>
+  </data>
   <data name="BG_Color" xml:space="preserve">
     <value>Couleur de fond</value>
   </data>
@@ -273,8 +195,17 @@
   <data name="Cancel" xml:space="preserve">
     <value>Annuler</value>
   </data>
+  <data name="Check_For_Problems" xml:space="preserve">
+    <value>Vérifier les problèmes</value>
+  </data>
+  <data name="ChinaDiscord" xml:space="preserve">
+    <value>Discord Chinois</value>
+  </data>
   <data name="Clear_Selected" xml:space="preserve">
     <value>Enlever la sélection</value>
+  </data>
+  <data name="Clic_here_to_add_a_preview_image" xml:space="preserve">
+    <value>Cliquer ici pour ajouter une miniature</value>
   </data>
   <data name="Close" xml:space="preserve">
     <value>Fermer</value>
@@ -294,6 +225,18 @@
   <data name="Current_Language_colon" xml:space="preserve">
     <value>Langage actuel:</value>
   </data>
+  <data name="Customize" xml:space="preserve">
+    <value>Personnaliser</value>
+  </data>
+  <data name="Customize_DefaultRace" xml:space="preserve">
+    <value>Textools choisira la race sélectionnée par défaut pendant l'affichage de Textures et de Modèles 3D.</value>
+  </data>
+  <data name="DAE_file_to_import" xml:space="preserve">
+    <value>Fichier DAE à importer</value>
+  </data>
+  <data name="DAE_Info" xml:space="preserve">
+    <value>Info DAE</value>
+  </data>
   <data name="Default_Skin" xml:space="preserve">
     <value>Skin par défaut</value>
   </data>
@@ -303,29 +246,71 @@
   <data name="Directories" xml:space="preserve">
     <value>Dossiers</value>
   </data>
+  <data name="Disable" xml:space="preserve">
+    <value>Désactiver</value>
+  </data>
   <data name="Disabled" xml:space="preserve">
     <value>Désactivé</value>
+  </data>
+  <data name="Disable_All_Mods" xml:space="preserve">
+    <value>Désactiver tous les mods</value>
   </data>
   <data name="Disable_Shape_Data" xml:space="preserve">
     <value>Désactiver les données de forme</value>
   </data>
+  <data name="Donate" xml:space="preserve">
+    <value>Dons</value>
+  </data>
+  <data name="Done" xml:space="preserve">
+    <value>Terminé</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Éditer</value>
+  </data>
+  <data name="Edit_Group" xml:space="preserve">
+    <value>Éditer le groupe</value>
+  </data>
+  <data name="Enable" xml:space="preserve">
+    <value>Activer</value>
+  </data>
   <data name="Enabled" xml:space="preserve">
     <value>Activé</value>
+  </data>
+  <data name="Enable_All_Mods" xml:space="preserve">
+    <value>Activer tous les mods</value>
+  </data>
+  <data name="Enable_Disable" xml:space="preserve">
+    <value>Activer/Désactiver</value>
   </data>
   <data name="Enter_a_brief_description_of_your_Mod_Pack" xml:space="preserve">
     <value>Entrez une brève description de votre Modpack</value>
   </data>
+  <data name="Enter_a_description_for_the_selected_option_here_dot" xml:space="preserve">
+    <value>Entrez une description pour l'option sélectionnée ici.</value>
+  </data>
   <data name="Enter_a_Model_ID_dot" xml:space="preserve">
     <value>Saisir l'ID d'un modèle</value>
   </data>
+  <data name="Enter_a_Name_for_the_Group_here" xml:space="preserve">
+    <value>Saisir un nom pour le Groupe ici</value>
+  </data>
   <data name="Etc_Color" xml:space="preserve">
     <value>Couleur d'ETC</value>
+  </data>
+  <data name="Export" xml:space="preserve">
+    <value>Exporter</value>
   </data>
   <data name="Export_BMP" xml:space="preserve">
     <value>Exporter BMP</value>
   </data>
   <data name="Export_Both" xml:space="preserve">
     <value>Exporter les deux</value>
+  </data>
+  <data name="Export_DAE_file" xml:space="preserve">
+    <value>Exporter DAE</value>
+  </data>
+  <data name="Export_DAE_Materials" xml:space="preserve">
+    <value>Exporter DAE + Matériaux</value>
   </data>
   <data name="Export_DDS" xml:space="preserve">
     <value>Exporter DDS</value>
@@ -342,239 +327,11 @@
   <data name="Filter_By_colon" xml:space="preserve">
     <value>Filtrer par:</value>
   </data>
-  <data name="Flip_Alpha" xml:space="preserve">
-    <value>Retourner l'Alpha</value>
-  </data>
-  <data name="Hair_Color" xml:space="preserve">
-    <value>Couleur de cheveux</value>
-  </data>
-  <data name="Icon_Search" xml:space="preserve">
-    <value>Recherche d'Icône</value>
-  </data>
-  <data name="Import_BMP" xml:space="preserve">
-    <value>Importer un fichier BMP</value>
-  </data>
-  <data name="Import_DDS" xml:space="preserve">
-    <value>Importer un fichier DDS</value>
-  </data>
-  <data name="Import_From_dot" xml:space="preserve">
-    <value>Importer depuis....</value>
-  </data>
-  <data name="Iris_Color" xml:space="preserve">
-    <value>Couleur d'Iris</value>
-  </data>
-  <data name="Item" xml:space="preserve">
-    <value>Objet</value>
-  </data>
-  <data name="Level_Of_Detail" xml:space="preserve">
-    <value>Niveau de Détail</value>
-  </data>
-  <data name="Lights" xml:space="preserve">
-    <value>Lumières</value>
-  </data>
-  <data name="Materials" xml:space="preserve">
-    <value>Matériaux</value>
-  </data>
-  <data name="Mesh_Data" xml:space="preserve">
-    <value>Données de Mesh 3D</value>
-  </data>
-  <data name="Mesh_Inspector" xml:space="preserve">
-    <value>Inspecteur de Mesh 3D</value>
-  </data>
-  <data name="Mesh_MetaData" xml:space="preserve">
-    <value>Métadonnées de Mesh 3D</value>
-  </data>
-  <data name="Mesh_Parts" xml:space="preserve">
-    <value>Parties_de_Meshs_3D</value>
-  </data>
-  <data name="Modded_Items" xml:space="preserve">
-    <value>Objets Moddés</value>
-  </data>
-  <data name="Model_Inspector" xml:space="preserve">
-    <value>Inspecteur de Modèle 3D</value>
-  </data>
-  <data name="Model_MetaData" xml:space="preserve">
-    <value>Métadonnées de Modèle 3D</value>
-  </data>
-  <data name="Model_Search" xml:space="preserve">
-    <value>Recherche de Modèle 3D</value>
-  </data>
-  <data name="ModPackDescription" xml:space="preserve">
-    <value>(ex: ce Modpack modifie blablabla, il remplace blablabla, et il a différentes options pour blablabla)</value>
-  </data>
-  <data name="ModPackGeneralInfo" xml:space="preserve">
-    <value>Veuillez renseigner les informations générales du Mod Pack que vous allez créer.</value>
-  </data>
-  <data name="Mod_Count_colon" xml:space="preserve">
-    <value>Nombre de mods</value>
-  </data>
-  <data name="Mod_Pack_Author" xml:space="preserve">
-    <value>Auteur du Mod Pack</value>
-  </data>
-  <data name="Mod_Pack_Content" xml:space="preserve">
-    <value>Contenu du mod pack</value>
-  </data>
-  <data name="Mod_Pack_Directory" xml:space="preserve">
-    <value>Répertoire du Mod Pack</value>
-  </data>
-  <data name="Mod_Pack_General_Info" xml:space="preserve">
-    <value>Information Générale du Mod Pack</value>
-  </data>
-  <data name="Mod_Pack_Name" xml:space="preserve">
-    <value>Nom du Mod Pack</value>
-  </data>
-  <data name="Name" xml:space="preserve">
-    <value>Nom</value>
-  </data>
-  <data name="Name_colon" xml:space="preserve">
-    <value>Nom:</value>
-  </data>
-  <data name="New_Page" xml:space="preserve">
-    <value>Nouvelle page &gt;</value>
-  </data>
-  <data name="None" xml:space="preserve">
-    <value>Aucun</value>
-  </data>
-  <data name="Num" xml:space="preserve">
-    <value>Numéro</value>
-  </data>
-  <data name="Open" xml:space="preserve">
-    <value>Ouvrir</value>
-  </data>
-  <data name="Open_Mesh_Inspector" xml:space="preserve">
-    <value>Ouvrir l'inspecteur de Mesh 3D</value>
-  </data>
-  <data name="Other_Data" xml:space="preserve">
-    <value>Autres Données</value>
-  </data>
-  <data name="Part" xml:space="preserve">
-    <value>Partie</value>
-  </data>
-  <data name="Part_Attributes" xml:space="preserve">
-    <value>Attributs de la partie</value>
-  </data>
-  <data name="Part_Count" xml:space="preserve">
-    <value>Nombre de parties</value>
-  </data>
-  <data name="Part_Data" xml:space="preserve">
-    <value>Données de partie</value>
-  </data>
-  <data name="Paths" xml:space="preserve">
-    <value>Chemins d'accès</value>
-  </data>
-  <data name="Previe_List" xml:space="preserve">
-    <value>Liste d'examples</value>
-  </data>
-  <data name="Previous_Page" xml:space="preserve">
-    <value>&lt;Page précédente</value>
-  </data>
-  <data name="Problem_Checker" xml:space="preserve">
-    <value>Solveur de problèmes</value>
-  </data>
-  <data name="Reflection" xml:space="preserve">
-    <value>Réflection</value>
-  </data>
-  <data name="Remove_Part_Attribute" xml:space="preserve">
-    <value>Retirer les Attributs de la Partie</value>
-  </data>
-  <data name="Reset_to_Default" xml:space="preserve">
-    <value>Réinitialiser par défaut</value>
-  </data>
-  <data name="Save_Directory" xml:space="preserve">
-    <value>Répertoire de Sauvegarde</value>
-  </data>
-  <data name="Select_Active" xml:space="preserve">
-    <value>Sélectionner les objets actifs</value>
-  </data>
-  <data name="Select_All" xml:space="preserve">
-    <value>Sélectionner tout</value>
-  </data>
-  <data name="ShapeDescription1_line1" xml:space="preserve">
-    <value>Cette option va désactiver toutes les données de formes pour ce(s) mesh(s) 3D.</value>
-  </data>
-  <data name="ShapeDescription1_line2" xml:space="preserve">
-    <value>Cette option est utilisée lorsque des "trous" apparaissent lors de l'équipage d'autres objets.</value>
-  </data>
-  <data name="ShapeDescription1_line3" xml:space="preserve">
-    <value>Plus d'Options pour les données de forme seront disponibles dans une version future.</value>
-  </data>
-  <data name="ShapeDescription2_line1" xml:space="preserve">
-    <value>Il n'y a pas de données de forme pour ce mesh 3D.</value>
-  </data>
-  <data name="ShapeDescription2_line2" xml:space="preserve">
-    <value>Les Options sont désactivées.</value>
-  </data>
-  <data name="Shapes" xml:space="preserve">
-    <value>Formes</value>
-  </data>
-  <data name="Simple_ModPack_Creator" xml:space="preserve">
-    <value>Créateur de ModPack Simple</value>
-  </data>
-  <data name="Size_colon" xml:space="preserve">
-    <value>Taille:</value>
-  </data>
-  <data name="Skin_Color" xml:space="preserve">
-    <value>Couleur de Peau</value>
-  </data>
-  <data name="Skin_Color_Note_Info" xml:space="preserve">
-    <value>Note : la Couleur de Peau est mélangée avec la couleur de peau par défaut de la texture. Toutes les autres sont des couleurs directes.</value>
-  </data>
-  <data name="Slot" xml:space="preserve">
-    <value>Position</value>
-  </data>
-  <data name="Standalone_Non_ModPack" xml:space="preserve">
-    <value>Import Seul (Sans Modpack)</value>
-  </data>
-  <data name="This_will_only_affect_shared_races" xml:space="preserve">
-    <value>Ceci n'affectera que les races en commun</value>
-  </data>
-  <data name="Translucency" xml:space="preserve">
-    <value>Transparence</value>
-  </data>
-  <data name="Type" xml:space="preserve">
-    <value>Type</value>
-  </data>
-  <data name="Update_TEX" xml:space="preserve">
-    <value>Mettre à jour la Texture</value>
-  </data>
-  <data name="Variant" xml:space="preserve">
-    <value>Variante</value>
-  </data>
-  <data name="Vertex_Colors" xml:space="preserve">
-    <value>Couleurs de vertex</value>
-  </data>
-  <data name="Vertex_Data_Structure" xml:space="preserve">
-    <value>Structure des données de vertex</value>
-  </data>
-  <data name="Visit_Website" xml:space="preserve">
-    <value>Visiter notre site Web</value>
-  </data>
-  <data name="Add_a_Model_using_advanced_options" xml:space="preserve">
-    <value>Ajouter un Modèle en utilisant les options avancées</value>
-  </data>
-  <data name="Add_Group" xml:space="preserve">
-    <value>Ajouter un groupe</value>
-  </data>
-  <data name="Add_w_Adv_Options" xml:space="preserve">
-    <value>Ajouter avec les Options Avancées</value>
-  </data>
-  <data name="Clic_here_to_add_a_preview_image" xml:space="preserve">
-    <value>Cliquer ici pour ajouter une miniature</value>
-  </data>
-  <data name="Done" xml:space="preserve">
-    <value>Terminé</value>
-  </data>
-  <data name="Edit" xml:space="preserve">
-    <value>Éditer</value>
-  </data>
-  <data name="Enter_a_description_for_the_selected_option_here_dot" xml:space="preserve">
-    <value>Entrez une description pour l'option sélectionnée ici.</value>
-  </data>
-  <data name="Enter_a_Name_for_the_Group_here" xml:space="preserve">
-    <value>Saisir un nom pour le Groupe ici</value>
-  </data>
   <data name="Finish" xml:space="preserve">
     <value>Terminer</value>
+  </data>
+  <data name="Flip_Alpha" xml:space="preserve">
+    <value>Retourner l'Alpha</value>
   </data>
   <data name="For_Translucency_or_ColorSet" xml:space="preserve">
     <value>(Pour la Transparence ou le Colorset)</value>
@@ -591,8 +348,35 @@
   <data name="Group_Title_colon" xml:space="preserve">
     <value>Titre de Groupe:</value>
   </data>
+  <data name="Hair_Color" xml:space="preserve">
+    <value>Couleur de cheveux</value>
+  </data>
+  <data name="Help" xml:space="preserve">
+    <value>Aide</value>
+  </data>
+  <data name="Icon_ID" xml:space="preserve">
+    <value>ID d'Icône</value>
+  </data>
+  <data name="Icon_Search" xml:space="preserve">
+    <value>Recherche d'Icône</value>
+  </data>
+  <data name="Import" xml:space="preserve">
+    <value>Importer</value>
+  </data>
+  <data name="Import_BMP" xml:space="preserve">
+    <value>Importer un fichier BMP</value>
+  </data>
+  <data name="Import_DDS" xml:space="preserve">
+    <value>Importer un fichier DDS</value>
+  </data>
+  <data name="Import_From_dot" xml:space="preserve">
+    <value>Importer depuis....</value>
+  </data>
   <data name="Import_ModPack" xml:space="preserve">
     <value>Importer un Modpack</value>
+  </data>
+  <data name="Import_ModPacks" xml:space="preserve">
+    <value>Importer des Modpacks</value>
   </data>
   <data name="Import_ModPack_Wizard" xml:space="preserve">
     <value>Importer un Modpack Wizard</value>
@@ -600,86 +384,68 @@
   <data name="Included_Mods_in_Option" xml:space="preserve">
     <value>Mods Inclus dans l'Option</value>
   </data>
-  <data name="Material" xml:space="preserve">
-    <value>Matériau</value>
+  <data name="Index_Locked" xml:space="preserve">
+    <value>Vous ne pouvez pas importer pendant que le jeu est en marche.</value>
   </data>
-  <data name="Material_Options" xml:space="preserve">
-    <value>Options de Matériau</value>
+  <data name="Iris_Color" xml:space="preserve">
+    <value>Couleur d'Iris</value>
   </data>
-  <data name="Model_Options" xml:space="preserve">
-    <value>Options du modèle 3D</value>
+  <data name="Item" xml:space="preserve">
+    <value>Objet</value>
   </data>
-  <data name="Model_Type" xml:space="preserve">
-    <value>Type de Modèle 3D</value>
+  <data name="Item_List" xml:space="preserve">
+    <value>Liste d'Objets</value>
   </data>
-  <data name="Mod_Pack_Importer" xml:space="preserve">
-    <value>Importateur de Mod Pack</value>
-  </data>
-  <data name="Multi_Selection" xml:space="preserve">
-    <value>Sélection Multiple</value>
-  </data>
-  <data name="Options_List" xml:space="preserve">
-    <value>Liste d'Options</value>
-  </data>
-  <data name="Option_Description" xml:space="preserve">
-    <value>Description de l'Option</value>
-  </data>
-  <data name="Option_List" xml:space="preserve">
-    <value>Liste de l'Option</value>
-  </data>
-  <data name="Option_Name" xml:space="preserve">
-    <value>Nom de l'Option</value>
-  </data>
-  <data name="Option_Preview_Image" xml:space="preserve">
-    <value>Image d'example de l'Option</value>
-  </data>
-  <data name="Preview" xml:space="preserve">
-    <value>Image d'Example</value>
-  </data>
-  <data name="Remove" xml:space="preserve">
-    <value>Retirer</value>
-  </data>
-  <data name="Select_a_file_dot" xml:space="preserve">
-    <value>Sélectionner un fichier...</value>
-  </data>
-  <data name="Select_Mod" xml:space="preserve">
-    <value>Selectionner un Mod</value>
-  </data>
-  <data name="Simple_ModPack_Importer" xml:space="preserve">
-    <value>Importateur de ModPack Simple</value>
-  </data>
-  <data name="Single_Selection" xml:space="preserve">
-    <value>Sélection unique</value>
-  </data>
-  <data name="TD_Model" xml:space="preserve">
-    <value>Modèle 3D</value>
-  </data>
-  <data name="Texture_Options" xml:space="preserve">
-    <value>Options de Texture</value>
-  </data>
-  <data name="Use_Currently_Modded_Item" xml:space="preserve">
-    <value>Utiliser l'objet moddé actuel</value>
-  </data>
-  <data name="ChinaDiscord" xml:space="preserve">
-    <value>Discord Chinois</value>
-  </data>
-  <data name="Loading" xml:space="preserve">
-    <value>Chargement</value>
+  <data name="Join_us_on_Discord" xml:space="preserve">
+    <value>Rejoignez nous sur Discord!</value>
   </data>
   <data name="Keep_Camera_Position" xml:space="preserve">
     <value>Garder la position de la Caméra</value>
   </data>
-  <data name="Added_Mesh" xml:space="preserve">
-    <value>Meshs 3D ajoutés.Veuillez changer le matériau pour les nouveaux meshs 3D si nécessaire.</value>
+  <data name="Language" xml:space="preserve">
+    <value>Langages</value>
   </data>
-  <data name="Added_MeshParts" xml:space="preserve">
-    <value>Parties de mesh 3D ajoutées sur ce mesh.Veuillez changer lees attributs pour les nouvelles parties 3D si nécessaire.</value>
+  <data name="Level_Of_Detail" xml:space="preserve">
+    <value>Niveau de Détail</value>
+  </data>
+  <data name="Lights" xml:space="preserve">
+    <value>Lumières</value>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>Chargement</value>
+  </data>
+  <data name="Material" xml:space="preserve">
+    <value>Matériau</value>
+  </data>
+  <data name="Materials" xml:space="preserve">
+    <value>Matériaux</value>
+  </data>
+  <data name="Material_Options" xml:space="preserve">
+    <value>Options de Matériau</value>
   </data>
   <data name="MeshPart_No_Difference" xml:space="preserve">
     <value>Pas de différence dans le nombre de parties de mesh pour ce mesh 3D.</value>
   </data>
+  <data name="Mesh_Data" xml:space="preserve">
+    <value>Données de Mesh 3D</value>
+  </data>
+  <data name="Mesh_Inspector" xml:space="preserve">
+    <value>Inspecteur de Mesh 3D</value>
+  </data>
+  <data name="Mesh_MetaData" xml:space="preserve">
+    <value>Métadonnées de Mesh 3D</value>
+  </data>
   <data name="Mesh_No_Difference" xml:space="preserve">
     <value>Pas de différence dans le nombre de Meshs 3D</value>
+  </data>
+  <data name="Mesh_Parts" xml:space="preserve">
+    <value>Parties_de_Meshs_3D</value>
+  </data>
+  <data name="Modded_Items" xml:space="preserve">
+    <value>Objets Moddés</value>
+  </data>
+  <data name="Model" xml:space="preserve">
+    <value>Modèle 3D</value>
   </data>
   <data name="ModelSearch_EnterID" xml:space="preserve">
     <value>Entrez l'ID d'un Modèle 3D....</value>
@@ -699,40 +465,80 @@
   <data name="ModelStatus_UpdateSuccess" xml:space="preserve">
     <value>Modèle mis à jour avec succès</value>
   </data>
+  <data name="Model_ID" xml:space="preserve">
+    <value>ID de Modèle 3D</value>
+  </data>
+  <data name="Model_Inspector" xml:space="preserve">
+    <value>Inspecteur de Modèle 3D</value>
+  </data>
+  <data name="Model_MetaData" xml:space="preserve">
+    <value>Métadonnées de Modèle 3D</value>
+  </data>
+  <data name="Model_Options" xml:space="preserve">
+    <value>Options du modèle 3D</value>
+  </data>
+  <data name="Model_Search" xml:space="preserve">
+    <value>Recherche de Modèle 3D</value>
+  </data>
+  <data name="Model_Type" xml:space="preserve">
+    <value>Type de Modèle 3D</value>
+  </data>
+  <data name="ModPackDescription" xml:space="preserve">
+    <value>(ex: ce Modpack modifie blablabla, il remplace blablabla, et il a différentes options pour blablabla)</value>
+  </data>
+  <data name="ModPackGeneralInfo" xml:space="preserve">
+    <value>Veuillez renseigner les informations générales du Mod Pack que vous allez créer.</value>
+  </data>
+  <data name="ModPack_Wizard" xml:space="preserve">
+    <value>Créateur Wizard de Mod Pack</value>
+  </data>
+  <data name="Mod_Count_colon" xml:space="preserve">
+    <value>Nombre de mods</value>
+  </data>
+  <data name="Mod_List" xml:space="preserve">
+    <value>Liste de Mods</value>
+  </data>
+  <data name="Mod_Pack_Author" xml:space="preserve">
+    <value>Auteur du Mod Pack</value>
+  </data>
+  <data name="Mod_Pack_Content" xml:space="preserve">
+    <value>Contenu du mod pack</value>
+  </data>
+  <data name="Mod_Pack_Directory" xml:space="preserve">
+    <value>Répertoire du Mod Pack</value>
+  </data>
+  <data name="Mod_Pack_General_Info" xml:space="preserve">
+    <value>Information Générale du Mod Pack</value>
+  </data>
+  <data name="Mod_Pack_Importer" xml:space="preserve">
+    <value>Importateur de Mod Pack</value>
+  </data>
+  <data name="Mod_Pack_Name" xml:space="preserve">
+    <value>Nom du Mod Pack</value>
+  </data>
+  <data name="Mod_Repos" xml:space="preserve">
+    <value>Archives de Mods</value>
+  </data>
+  <data name="More_Options" xml:space="preserve">
+    <value>Plus d'Options</value>
+  </data>
+  <data name="Multi_Selection" xml:space="preserve">
+    <value>Sélection Multiple</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Nom</value>
+  </data>
+  <data name="Name_colon" xml:space="preserve">
+    <value>Nom:</value>
+  </data>
   <data name="New_Mesh_MeshPart_Count" xml:space="preserve">
     <value>Ceci est un nouveau mesh 3D contenant {0} parties.</value>
   </data>
-  <data name="Removed_Mesh" xml:space="preserve">
-    <value>Mesh(s) Retirés.
- Nombre de meshs 3D retirés:</value>
+  <data name="New_Page" xml:space="preserve">
+    <value>Nouvelle page &gt;</value>
   </data>
-  <data name="Removed_MeshParts" xml:space="preserve">
-    <value>Parties de mesh 3D retirées.
- Numéro des Parties retirées :</value>
-  </data>
-  <data name="Removed_MeshParts_Note" xml:space="preserve">
-    <value>Les changements aux parties retirées çi-dessous n'auront pas d'effet.</value>
-  </data>
-  <data name="Removed_Mesh_Note" xml:space="preserve">
-    <value>Les changements aux parties de mesh(s) çi-dessus n'auront pas d'effet.</value>
-  </data>
-  <data name="Start_Over" xml:space="preserve">
-    <value>Reprendre à Zéro</value>
-  </data>
-  <data name="UI_SearchStatus_Max" xml:space="preserve">
-    <value>Les valeurs des icônes sont à 6 chiffres, veuillez réessayer.</value>
-  </data>
-  <data name="UI_SearchStatus_Numeric" xml:space="preserve">
-    <value>Veuillez entrer uniquement des nombres.</value>
-  </data>
-  <data name="UI_Search_NothingFound" xml:space="preserve">
-    <value>Aucune donnée trouvée pour l'icône {0}, veuillez en essayer une autre.</value>
-  </data>
-  <data name="Edit_Group" xml:space="preserve">
-    <value>Éditer le groupe</value>
-  </data>
-  <data name="Index_Locked" xml:space="preserve">
-    <value>Vous ne pouvez pas importer pendant que le jeu est en marche.</value>
+  <data name="None" xml:space="preserve">
+    <value>Aucun</value>
   </data>
   <data name="No_3D_Mods" xml:space="preserve">
     <value>Il n'y a pas de mods pour le Modèle 3D sélectionné. 
@@ -749,8 +555,56 @@ Pour activer cette option, veuillez d'abord importer un Matériau pour l'objet s
 
 Pour activer cette option, veuillez d'abord importer une Texture pour l'objet sélectionné.</value>
   </data>
-  <data name="Customize_DefaultRace" xml:space="preserve">
-    <value>Textools choisira la race sélectionnée par défaut pendant l'affichage de Textures et de Modèles 3D.</value>
+  <data name="Num" xml:space="preserve">
+    <value>Numéro</value>
+  </data>
+  <data name="Open" xml:space="preserve">
+    <value>Ouvrir</value>
+  </data>
+  <data name="Open_Mesh_Inspector" xml:space="preserve">
+    <value>Ouvrir l'inspecteur de Mesh 3D</value>
+  </data>
+  <data name="Options_List" xml:space="preserve">
+    <value>Liste d'Options</value>
+  </data>
+  <data name="Option_Description" xml:space="preserve">
+    <value>Description de l'Option</value>
+  </data>
+  <data name="Option_List" xml:space="preserve">
+    <value>Liste de l'Option</value>
+  </data>
+  <data name="Option_Name" xml:space="preserve">
+    <value>Nom de l'Option</value>
+  </data>
+  <data name="Option_Preview_Image" xml:space="preserve">
+    <value>Image d'example de l'Option</value>
+  </data>
+  <data name="Other_Data" xml:space="preserve">
+    <value>Autres Données</value>
+  </data>
+  <data name="Part" xml:space="preserve">
+    <value>Partie</value>
+  </data>
+  <data name="Part_Attributes" xml:space="preserve">
+    <value>Attributs de la partie</value>
+  </data>
+  <data name="Part_Count" xml:space="preserve">
+    <value>Nombre de parties</value>
+  </data>
+  <data name="Part_Data" xml:space="preserve">
+    <value>Données de partie</value>
+  </data>
+  <data name="Paths" xml:space="preserve">
+    <value>Chemins d'accès</value>
+  </data>
+  <data name="Preview" xml:space="preserve">
+    <value>Image d'Example</value>
+  </data>
+  <data name="Previe_List" xml:space="preserve">
+    <value>Liste d'examples</value>
+  </data>
+  <data name="Previous_Page" xml:space="preserve">
+    <value>&lt;Page précédente</value>
   </data>
   <data name="ProblemCheck_BackupError" xml:space="preserve">
     <value>Erreur: les Fichiers d'Index n'ont pas pu être vérifiés</value>
@@ -818,25 +672,171 @@ Pour activer cette option, veuillez d'abord importer une Texture pour l'objet s�
   <data name="ProblemCheck_UnkType" xml:space="preserve">
     <value>Fichier de type inconnu trouvé. ( {0} ) Offset probablement corrompu.</value>
   </data>
+  <data name="Problem_Checker" xml:space="preserve">
+    <value>Solveur de problèmes</value>
+  </data>
+  <data name="Reflection" xml:space="preserve">
+    <value>Réflection</value>
+  </data>
+  <data name="Remove" xml:space="preserve">
+    <value>Retirer</value>
+  </data>
+  <data name="Removed_Mesh" xml:space="preserve">
+    <value>Mesh(s) Retirés.
+ Nombre de meshs 3D retirés:</value>
+  </data>
+  <data name="Removed_MeshParts" xml:space="preserve">
+    <value>Parties de mesh 3D retirées.
+ Numéro des Parties retirées :</value>
+  </data>
+  <data name="Removed_MeshParts_Note" xml:space="preserve">
+    <value>Les changements aux parties retirées çi-dessous n'auront pas d'effet.</value>
+  </data>
+  <data name="Removed_Mesh_Note" xml:space="preserve">
+    <value>Les changements aux parties de mesh(s) çi-dessus n'auront pas d'effet.</value>
+  </data>
+  <data name="Remove_Part_Attribute" xml:space="preserve">
+    <value>Retirer les Attributs de la Partie</value>
+  </data>
   <data name="Rename" xml:space="preserve">
     <value>Renommer</value>
+  </data>
+  <data name="Report_Bug" xml:space="preserve">
+    <value>Rapporter un Bug</value>
+  </data>
+  <data name="Reset_to_Default" xml:space="preserve">
+    <value>Réinitialiser par défaut</value>
+  </data>
+  <data name="Save_Directory" xml:space="preserve">
+    <value>Répertoire de Sauvegarde</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>Rechercher</value>
+  </data>
+  <data name="Search_dot" xml:space="preserve">
+    <value>Recherche...</value>
+  </data>
+  <data name="Select_Active" xml:space="preserve">
+    <value>Sélectionner les objets actifs</value>
+  </data>
+  <data name="Select_All" xml:space="preserve">
+    <value>Sélectionner tout</value>
+  </data>
+  <data name="Select_a_file_dot" xml:space="preserve">
+    <value>Sélectionner un fichier...</value>
+  </data>
+  <data name="Select_Language" xml:space="preserve">
+    <value>Sélectionner la langue</value>
+  </data>
+  <data name="Select_Mod" xml:space="preserve">
+    <value>Selectionner un Mod</value>
   </data>
   <data name="Settings" xml:space="preserve">
     <value>Paramètres</value>
   </data>
+  <data name="ShapeDescription1_line1" xml:space="preserve">
+    <value>Cette option va désactiver toutes les données de formes pour ce(s) mesh(s) 3D.</value>
+  </data>
+  <data name="ShapeDescription1_line2" xml:space="preserve">
+    <value>Cette option est utilisée lorsque des "trous" apparaissent lors de l'équipage d'autres objets.</value>
+  </data>
+  <data name="ShapeDescription1_line3" xml:space="preserve">
+    <value>Plus d'Options pour les données de forme seront disponibles dans une version future.</value>
+  </data>
+  <data name="ShapeDescription2_line1" xml:space="preserve">
+    <value>Il n'y a pas de données de forme pour ce mesh 3D.</value>
+  </data>
+  <data name="ShapeDescription2_line2" xml:space="preserve">
+    <value>Les Options sont désactivées.</value>
+  </data>
+  <data name="Shapes" xml:space="preserve">
+    <value>Formes</value>
+  </data>
+  <data name="Simple_ModPack" xml:space="preserve">
+    <value>ModPack Simple</value>
+  </data>
+  <data name="Simple_ModPack_Creator" xml:space="preserve">
+    <value>Créateur de ModPack Simple</value>
+  </data>
+  <data name="Simple_ModPack_Importer" xml:space="preserve">
+    <value>Importateur de ModPack Simple</value>
+  </data>
+  <data name="Single_Selection" xml:space="preserve">
+    <value>Sélection unique</value>
+  </data>
+  <data name="Size_colon" xml:space="preserve">
+    <value>Taille:</value>
+  </data>
+  <data name="Skin_Color" xml:space="preserve">
+    <value>Couleur de Peau</value>
+  </data>
+  <data name="Skin_Color_Note_Info" xml:space="preserve">
+    <value>Note : la Couleur de Peau est mélangée avec la couleur de peau par défaut de la texture. Toutes les autres sont des couleurs directes.</value>
+  </data>
+  <data name="Slot" xml:space="preserve">
+    <value>Position</value>
+  </data>
+  <data name="Standalone_Non_ModPack" xml:space="preserve">
+    <value>Import Seul (Sans Modpack)</value>
+  </data>
+  <data name="Start_Over" xml:space="preserve">
+    <value>Reprendre à Zéro</value>
+  </data>
+  <data name="TD_Model" xml:space="preserve">
+    <value>Modèle 3D</value>
+  </data>
+  <data name="Texture_Options" xml:space="preserve">
+    <value>Options de Texture</value>
+  </data>
+  <data name="Theme" xml:space="preserve">
+    <value>Thème</value>
+  </data>
+  <data name="This_will_only_affect_shared_races" xml:space="preserve">
+    <value>Ceci n'affectera que les races en commun</value>
+  </data>
+  <data name="Translucency" xml:space="preserve">
+    <value>Transparence</value>
+  </data>
+  <data name="Tutorials" xml:space="preserve">
+    <value>Tutoriaux</value>
+  </data>
+  <data name="Type" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="UI_SearchStatus_Max" xml:space="preserve">
+    <value>Les valeurs des icônes sont à 6 chiffres, veuillez réessayer.</value>
+  </data>
+  <data name="UI_SearchStatus_Numeric" xml:space="preserve">
+    <value>Veuillez entrer uniquement des nombres.</value>
+  </data>
+  <data name="UI_Search_NothingFound" xml:space="preserve">
+    <value>Aucune donnée trouvée pour l'icône {0}, veuillez en essayer une autre.</value>
+  </data>
+  <data name="Update_TEX" xml:space="preserve">
+    <value>Mettre à jour la Texture</value>
+  </data>
+  <data name="Use_Currently_Modded_Item" xml:space="preserve">
+    <value>Utiliser l'objet moddé actuel</value>
+  </data>
+  <data name="Variant" xml:space="preserve">
+    <value>Variante</value>
+  </data>
+  <data name="Vertex_Colors" xml:space="preserve">
+    <value>Couleurs de vertex</value>
+  </data>
+  <data name="Vertex_Data_Structure" xml:space="preserve">
+    <value>Structure des données de vertex</value>
+  </data>
   <data name="View" xml:space="preserve">
     <value>Affichage</value>
   </data>
-  <data name="DAE_file_to_import" xml:space="preserve">
-    <value>Fichier DAE à importer</value>
+  <data name="View_Github_Repo" xml:space="preserve">
+    <value>Visiter notre archive Github</value>
   </data>
-  <data name="DAE_Info" xml:space="preserve">
-    <value>Info DAE</value>
+  <data name="Visit_Website" xml:space="preserve">
+    <value>Visiter notre site Web</value>
   </data>
-  <data name="Export_DAE_file" xml:space="preserve">
-    <value>Exporter DAE</value>
-  </data>
-  <data name="Export_DAE_Materials" xml:space="preserve">
-    <value>Exporter DAE + Matériaux</value>
+  <data name="XIV_Mod_Archive" xml:space="preserve">
+    <value>XIV Mod Archive</value>
   </data>
 </root>

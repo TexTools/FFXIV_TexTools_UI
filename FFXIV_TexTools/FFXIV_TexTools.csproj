@@ -202,22 +202,45 @@
     <EmbeddedResource Update="Resources\UIMessages.resx">
       <Generator></Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="Resources\UIMessages.zh.resx">
+    <EmbeddedResource Update="Resources\UIMessages.zh-Hans.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\UIMessages.zh-Hant.resx">
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Update="Resources\UIStrings.ko.resx">
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Update="Resources\UIStrings.zh.resx">
+    <EmbeddedResource Update="Resources\UIStrings.zh-Hans.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>UIStrings.zh.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Update="Resources\UIStrings.zh-Hant.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>UIStrings.zh.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>	
     <EmbeddedResource Update="Resources\UIStrings.resx">
       <Generator></Generator>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Update="Resources\XivStringRaces.zh.resx">
+    <EmbeddedResource Update="Resources\XivStringRaces.de.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>	
+    <EmbeddedResource Update="Resources\XivStringRaces.fr.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>	
+    <EmbeddedResource Update="Resources\XivStringRaces.ja.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>	
+    <EmbeddedResource Update="Resources\XivStringRaces.ko.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>	
+    <EmbeddedResource Update="Resources\XivStringRaces.zh-Hans.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>	
+    <EmbeddedResource Update="Resources\XivStringRaces.zh-Hant.resx">
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Update="Resources\XivStringRaces.resx">

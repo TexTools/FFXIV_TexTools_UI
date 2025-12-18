@@ -117,119 +117,29 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="- Material Set:" xml:space="preserve">
+    <value>- 材質集：</value>
+  </data>
+  <data name="/FILE PATH/" xml:space="preserve">
+    <value>/文件路徑/</value>
+  </data>
+  <data name="0.039x (Legacy Fix)" xml:space="preserve">
+    <value>0.039x（舊版修復）</value>
+  </data>
+  <data name="105 Total Files" xml:space="preserve">
+    <value>105 個文件</value>
+  </data>
+  <data name="11 Meters" xml:space="preserve">
+    <value>11 米</value>
+  </data>
+  <data name="3D Models ({0})|{1}" xml:space="preserve">
+    <value>三維模型 ({0})|{1}</value>
+  </data>
   <data name="About" xml:space="preserve">
     <value>關於</value>
   </data>
   <data name="About_TexTools" xml:space="preserve">
     <value>關於 TexTools</value>
-  </data>
-  <data name="Backup_Index_Files" xml:space="preserve">
-    <value>備份索引文件</value>
-  </data>
-  <data name="Batch" xml:space="preserve">
-    <value>批處理</value>
-  </data>
-  <data name="Check_For_Problems" xml:space="preserve">
-    <value>數據檢查</value>
-  </data>
-  <data name="Customize" xml:space="preserve">
-    <value>自定義</value>
-  </data>
-  <data name="Disable" xml:space="preserve">
-    <value>禁用</value>
-  </data>
-  <data name="Disable_All_Mods" xml:space="preserve">
-    <value>禁用所有 Mod</value>
-  </data>
-  <data name="Donate" xml:space="preserve">
-    <value>捐助</value>
-  </data>
-  <data name="Enable" xml:space="preserve">
-    <value>啓用</value>
-  </data>
-  <data name="Enable_All_Mods" xml:space="preserve">
-    <value>啓用所有 Mod</value>
-  </data>
-  <data name="Enable_Disable" xml:space="preserve">
-    <value>啓用/禁用</value>
-  </data>
-  <data name="Export" xml:space="preserve">
-    <value>導出</value>
-  </data>
-  <data name="Help" xml:space="preserve">
-    <value>幫助</value>
-  </data>
-  <data name="Icon_ID" xml:space="preserve">
-    <value>圖標 ID</value>
-  </data>
-  <data name="Import" xml:space="preserve">
-    <value>導入</value>
-  </data>
-  <data name="Import_ModPacks" xml:space="preserve">
-    <value>導入 Mod 包</value>
-  </data>
-  <data name="Item_List" xml:space="preserve">
-    <value>道具列表</value>
-  </data>
-  <data name="Join_us_on_Discord" xml:space="preserve">
-    <value>加入我們的 Discord 交流羣</value>
-  </data>
-  <data name="Language" xml:space="preserve">
-    <value>語言</value>
-  </data>
-  <data name="Model" xml:space="preserve">
-    <value>模型</value>
-  </data>
-  <data name="Model_ID" xml:space="preserve">
-    <value>模型 ID</value>
-  </data>
-  <data name="ModPack_Wizard" xml:space="preserve">
-    <value>Mod 包嚮導</value>
-  </data>
-  <data name="Mods" xml:space="preserve">
-    <value>模组</value>
-  </data>
-  <data name="Mod_List" xml:space="preserve">
-    <value>Mod 列表</value>
-  </data>
-  <data name="Mod_Repos" xml:space="preserve">
-    <value>Mod 倉庫</value>
-  </data>
-  <data name="More_Options" xml:space="preserve">
-    <value>更多選項</value>
-  </data>
-  <data name="Options" xml:space="preserve">
-    <value>選項</value>
-  </data>
-  <data name="Report_Bug" xml:space="preserve">
-    <value>報告 Bug</value>
-  </data>
-  <data name="Search" xml:space="preserve">
-    <value>搜索</value>
-  </data>
-  <data name="Search_dot" xml:space="preserve">
-    <value>搜索...</value>
-  </data>
-  <data name="Select_Language" xml:space="preserve">
-    <value>選擇語言</value>
-  </data>
-  <data name="Simple_ModPack" xml:space="preserve">
-    <value>簡單 Mod 包</value>
-  </data>
-  <data name="Texture" xml:space="preserve">
-    <value>紋理</value>
-  </data>
-  <data name="Theme" xml:space="preserve">
-    <value>主題</value>
-  </data>
-  <data name="Tutorials" xml:space="preserve">
-    <value>指南</value>
-  </data>
-  <data name="View_Github_Repo" xml:space="preserve">
-    <value>顯示 Github 倉庫</value>
-  </data>
-  <data name="XIV_Mod_Archive" xml:space="preserve">
-    <value>XIV Mod Archive</value>
   </data>
   <data name="Active" xml:space="preserve">
     <value>激活</value>
@@ -237,11 +147,46 @@
   <data name="Add" xml:space="preserve">
     <value>添加</value>
   </data>
+  <data name="Add Attributes..." xml:space="preserve">
+    <value>添加屬性...</value>
+  </data>
+  <data name="Add New" xml:space="preserve">
+    <value>添加新內容</value>
+  </data>
+  <data name="ADD NEW MATERIAL" xml:space="preserve">
+    <value>添加新材質</value>
+  </data>
+  <data name="ADD TO FMV" xml:space="preserve">
+    <value>添加到查看器</value>
+  </data>
+  <data name="Added_Mesh" xml:space="preserve">
+    <value>添加的網格
+如有必要，更改新網格的材質.</value>
+  </data>
+  <data name="Added_MeshParts" xml:space="preserve">
+    <value>爲此網格添加了網格部件
+如有必要，請更改以下新部件的屬性</value>
+  </data>
+  <data name="Add_a_Model_using_advanced_options" xml:space="preserve">
+    <value>使用高級選項添加一個模型</value>
+  </data>
+  <data name="Add_Group" xml:space="preserve">
+    <value>添加組</value>
+  </data>
+  <data name="Add_NewTexturePart" xml:space="preserve">
+    <value>添加新的貼圖組</value>
+  </data>
   <data name="Add_Remove" xml:space="preserve">
     <value>添加/移除</value>
   </data>
   <data name="Add_To_Part_Attribute" xml:space="preserve">
     <value>添加部件屬性</value>
+  </data>
+  <data name="Add_w_Adv_Options" xml:space="preserve">
+    <value>高級選項</value>
+  </data>
+  <data name="Advanced" xml:space="preserve">
+    <value>高級</value>
   </data>
   <data name="Advanced_Import" xml:space="preserve">
     <value>高級導入</value>
@@ -252,26 +197,200 @@
   <data name="Advanced_Model_Options" xml:space="preserve">
     <value>高級模型選項</value>
   </data>
+  <data name="Affected Files" xml:space="preserve">
+    <value>受影響的文件</value>
+  </data>
+  <data name="Affected Items" xml:space="preserve">
+    <value>受影響的道具</value>
+  </data>
+  <data name="All Files" xml:space="preserve">
+    <value>所有文件</value>
+  </data>
+  <data name="AlphaLimiter" xml:space="preserve">
+    <value>透明限制器</value>
+  </data>
+  <data name="Anim ID:" xml:space="preserve">
+    <value>Anim ID：</value>
+  </data>
+  <data name="Animated" xml:space="preserve">
+    <value>有生氣的</value>
+  </data>
+  <data name="Animation Type:" xml:space="preserve">
+    <value>動畫類型：</value>
+  </data>
+  <data name="Apply" xml:space="preserve">
+    <value>運用</value>
+  </data>
+  <data name="Apply Deformation Shapes" xml:space="preserve">
+    <value>應用變形形狀</value>
+  </data>
+  <data name="Apply Shapes" xml:space="preserve">
+    <value>應用形狀</value>
+  </data>
+  <data name="Apply to All Variants" xml:space="preserve">
+    <value>適用於所有變體</value>
+  </data>
+  <data name="Apply to Diffuse" xml:space="preserve">
+    <value>使用漫反射</value>
+  </data>
+  <data name="Apply to Emissive" xml:space="preserve">
+    <value>使用自發光</value>
+  </data>
+  <data name="Apply to Gloss" xml:space="preserve">
+    <value>使用光澤度</value>
+  </data>
+  <data name="Apply to Specular" xml:space="preserve">
+    <value>使用鏡面反射</value>
+  </data>
+  <data name="Apply to Specular Power" xml:space="preserve">
+    <value>使用鏡面反射強度</value>
+  </data>
+  <data name="Arrow" xml:space="preserve">
+    <value>Arrow</value>
+  </data>
+  <data name="Attribute Count:" xml:space="preserve">
+    <value>屬性計數：</value>
+  </data>
+  <data name="Attribute Index:" xml:space="preserve">
+    <value>屬性索引：</value>
+  </data>
+  <data name="Attribute Offset Count:" xml:space="preserve">
+    <value>屬性偏移計數：</value>
+  </data>
   <data name="Attributes" xml:space="preserve">
     <value>屬性</value>
+  </data>
+  <data name="Au Ra F Face Unique" xml:space="preserve">
+    <value>敖龍族女性臉</value>
   </data>
   <data name="Author_colon" xml:space="preserve">
     <value>作者：</value>
   </data>
+  <data name="Auto-Assign Skin Materials" xml:space="preserve">
+    <value>自動指定皮膚材質</value>
+  </data>
+  <data name="Automatically Adjust Scale" xml:space="preserve">
+    <value>自動調整比例</value>
+  </data>
   <data name="Available_Attributes" xml:space="preserve">
     <value>可用屬性</value>
+  </data>
+  <data name="AVFX" xml:space="preserve">
+    <value>視覺特效</value>
   </data>
   <data name="Back" xml:space="preserve">
     <value>後退</value>
   </data>
+  <data name="Backfaces:" xml:space="preserve">
+    <value>背面：</value>
+  </data>
+  <data name="Backup Modpack" xml:space="preserve">
+    <value>備份 Mod 包</value>
+  </data>
   <data name="Backups_Directory" xml:space="preserve">
     <value>遊戲索引文件備份文件夾</value>
+  </data>
+  <data name="Backup_Index_Files" xml:space="preserve">
+    <value>備份索引文件</value>
+  </data>
+  <data name="Backup_Modpack" xml:space="preserve">
+    <value>備份 Mod 包</value>
+  </data>
+  <data name="Backup_Modpack_Creator" xml:space="preserve">
+    <value>備份 Mod 包創建器</value>
+  </data>
+  <data name="Backup_Modpack_Importer" xml:space="preserve">
+    <value>備份 Mod 包導入器</value>
+  </data>
+  <data name="Bare Hands" xml:space="preserve">
+    <value>赤手</value>
+  </data>
+  <data name="Batch" xml:space="preserve">
+    <value>批處理</value>
+  </data>
+  <data name="Belt" xml:space="preserve">
+    <value>皮帶</value>
   </data>
   <data name="BG_Color" xml:space="preserve">
     <value>背景顏色</value>
   </data>
+  <data name="Blue" xml:space="preserve">
+    <value>藍</value>
+  </data>
   <data name="Body" xml:space="preserve">
     <value>身體</value>
+  </data>
+  <data name="Body Material Auto-Assign" xml:space="preserve">
+    <value>身體材質自動指定</value>
+  </data>
+  <data name="BodyDisableBreastPhysics" xml:space="preserve">
+    <value>身體禁用乳房物理</value>
+  </data>
+  <data name="BodyHideGorget" xml:space="preserve">
+    <value>身體隱藏護喉甲</value>
+  </data>
+  <data name="BodyHideLongGloves" xml:space="preserve">
+    <value>身體隱藏長手套</value>
+  </data>
+  <data name="BodyHideMidGloves" xml:space="preserve">
+    <value>身體隱藏中手套</value>
+  </data>
+  <data name="BodyHideShortGloves" xml:space="preserve">
+    <value>身體隱藏短手套</value>
+  </data>
+  <data name="BodyHideWaist" xml:space="preserve">
+    <value>身體隱藏腰部</value>
+  </data>
+  <data name="BodyNoPores" xml:space="preserve">
+    <value>身體無孔</value>
+  </data>
+  <data name="BodyShowBracelet" xml:space="preserve">
+    <value>身體顯示手鐲</value>
+  </data>
+  <data name="BodyShowHand" xml:space="preserve">
+    <value>身體顯示手</value>
+  </data>
+  <data name="BodyShowHead" xml:space="preserve">
+    <value>身體顯示頭</value>
+  </data>
+  <data name="BodyShowLeg" xml:space="preserve">
+    <value>身體顯示腿</value>
+  </data>
+  <data name="BodyShowNecklace" xml:space="preserve">
+    <value>身體顯示項鍊</value>
+  </data>
+  <data name="BodyShowTail" xml:space="preserve">
+    <value>身體顯示尾巴</value>
+  </data>
+  <data name="Bodysuit" xml:space="preserve">
+    <value>連體衣</value>
+  </data>
+  <data name="BodyWithHair" xml:space="preserve">
+    <value>身體和頭髮</value>
+  </data>
+  <data name="Bone Count:" xml:space="preserve">
+    <value>骨骼計數：</value>
+  </data>
+  <data name="Bone Index (Mesh)" xml:space="preserve">
+    <value>骨骼索引（網格）</value>
+  </data>
+  <data name="Bone Index (Mesh) {0}" xml:space="preserve">
+    <value>骨骼索引（網格）{0}</value>
+  </data>
+  <data name="Bone Index (Part)" xml:space="preserve">
+    <value>骨骼索引（部件）</value>
+  </data>
+  <data name="Bone List Count:" xml:space="preserve">
+    <value>骨骼列表計數：</value>
+  </data>
+  <data name="Bone List Index:" xml:space="preserve">
+    <value>骨骼列表索引：</value>
+  </data>
+  <data name="Bone Offset Count:" xml:space="preserve">
+    <value>骨骼偏移計數：</value>
+  </data>
+  <data name="Bone Start Offset:" xml:space="preserve">
+    <value>骨骼起始偏移：</value>
   </data>
   <data name="Bones" xml:space="preserve">
     <value>骨骼</value>
@@ -279,20 +398,143 @@
   <data name="Bone_addition_is_automatic" xml:space="preserve">
     <value>骨骼添加是自動的</value>
   </data>
+  <data name="Boot" xml:space="preserve">
+    <value>靴子</value>
+  </data>
+  <data name="Bounding Box" xml:space="preserve">
+    <value>邊界盒</value>
+  </data>
+  <data name="By Category" xml:space="preserve">
+    <value>按類別</value>
+  </data>
+  <data name="By Set" xml:space="preserve">
+    <value>按集合</value>
+  </data>
+  <data name="Cache" xml:space="preserve">
+    <value>緩存操作</value>
+  </data>
+  <data name="Cache Operations" xml:space="preserve">
+    <value>緩存操作</value>
+  </data>
+  <data name="CacheOK" xml:space="preserve">
+    <value>緩存正常</value>
+  </data>
+  <data name="CacheVersionUpdate" xml:space="preserve">
+    <value>緩存版本更新</value>
+  </data>
   <data name="Cancel" xml:space="preserve">
     <value>取消</value>
+  </data>
+  <data name="Change Destination Item" xml:space="preserve">
+    <value>更改目標道具</value>
+  </data>
+  <data name="Check_For_Problems" xml:space="preserve">
+    <value>數據檢查</value>
+  </data>
+  <data name="Child Files" xml:space="preserve">
+    <value>子文件</value>
+  </data>
+  <data name="ChinaDiscord" xml:space="preserve">
+    <value>國服 Mod 交流羣</value>
+  </data>
+  <data name="Choose Destination Items" xml:space="preserve">
+    <value>選擇目標道具</value>
+  </data>
+  <data name="Choose New Item" xml:space="preserve">
+    <value>選擇新道具</value>
+  </data>
+  <data name="Clean Up Modlist" xml:space="preserve">
+    <value>整理 Mod 列表</value>
+  </data>
+  <data name="Clean_Up_ModList" xml:space="preserve">
+    <value>整理 Mod 列表</value>
+  </data>
+  <data name="Clear UV2" xml:space="preserve">
+    <value>清除 UV2</value>
+  </data>
+  <data name="Clear Vertex Alpha" xml:space="preserve">
+    <value>清除頂點 Alpha</value>
+  </data>
+  <data name="Clear Vertex Color" xml:space="preserve">
+    <value>清除頂點顏色</value>
   </data>
   <data name="Clear_Selected" xml:space="preserve">
     <value>清除選擇</value>
   </data>
+  <data name="Clic_here_to_add_a_preview_image" xml:space="preserve">
+    <value>單擊此處添加一個預覽圖</value>
+  </data>
+  <data name="Clone UV1 to UV2" xml:space="preserve">
+    <value>將 UV1 克隆到 UV2</value>
+  </data>
+  <data name="Clone_UV1_to_UV2" xml:space="preserve">
+    <value>將 UV1 克隆到 UV2</value>
+  </data>
   <data name="Close" xml:space="preserve">
     <value>關閉</value>
+  </data>
+  <data name="ColorSet" xml:space="preserve">
+    <value>顏色集</value>
+  </data>
+  <data name="Colorset Row Highlight Selection" xml:space="preserve">
+    <value>顏色集行高亮顯示選擇</value>
+  </data>
+  <data name="Colorset:" xml:space="preserve">
+    <value>顏色集：</value>
   </data>
   <data name="Colors_Skins" xml:space="preserve">
     <value>顏色和皮膚</value>
   </data>
-  <data name="Lumina_Output" xml:space="preserve">
-    <value>Penumbra 輸出</value>
+  <data name="CompleteModpackFilesReview" xml:space="preserve">
+    <value>完成 Mod 包文件審查</value>
+  </data>
+  <data name="CompleteModpackLevelSelect" xml:space="preserve">
+    <value>選擇完成 Mod 包級別</value>
+  </data>
+  <data name="Confirm" xml:space="preserve">
+    <value>確認</value>
+  </data>
+  <data name="Continue" xml:space="preserve">
+    <value>繼續</value>
+  </data>
+  <data name="Convert" xml:space="preserve">
+    <value>轉換</value>
+  </data>
+  <data name="Convert_To" xml:space="preserve">
+    <value>轉換到</value>
+  </data>
+  <data name="Copy Dye Values to Row" xml:space="preserve">
+    <value>複製染色效果到行</value>
+  </data>
+  <data name="Copy File" xml:space="preserve">
+    <value>複製文件</value>
+  </data>
+  <data name="Copy From:" xml:space="preserve">
+    <value>複製自：</value>
+  </data>
+  <data name="Copy Material" xml:space="preserve">
+    <value>複製材質</value>
+  </data>
+  <data name="Copy Model" xml:space="preserve">
+    <value>複製模型</value>
+  </data>
+  <data name="Copy Model File" xml:space="preserve">
+    <value>複製模型文件</value>
+  </data>
+  <data name="Copy Raw File" xml:space="preserve">
+    <value>複製原始文件</value>
+  </data>
+  <data name="Copy Row" xml:space="preserve">
+    <value>複製行</value>
+  </data>
+  <data name="Copy To:" xml:space="preserve">
+    <value>複製到：</value>
+  </data>
+  <data name="Copy Visibility Settings" xml:space="preserve">
+    <value>複製可見性設置</value>
+  </data>
+  <data name="Copy_File" xml:space="preserve">
+    <value>複製原始文件</value>
   </data>
   <data name="Count" xml:space="preserve">
     <value>數量</value>
@@ -300,14 +542,101 @@
   <data name="Count_colon" xml:space="preserve">
     <value>數量：</value>
   </data>
+  <data name="Create" xml:space="preserve">
+    <value>新增</value>
+  </data>
+  <data name="Create As:" xml:space="preserve">
+    <value>創建爲：</value>
+  </data>
+  <data name="Create Modpack" xml:space="preserve">
+    <value>創建 Mod 包</value>
+  </data>
+  <data name="Create Modpack from Affected Items" xml:space="preserve">
+    <value>從受影響的道具創建 Mod 包</value>
+  </data>
+  <data name="Create New Material" xml:space="preserve">
+    <value>創建新材質</value>
+  </data>
   <data name="Create_ModPack_Wizard" xml:space="preserve">
     <value>Mod 包創建嚮導</value>
+  </data>
+  <data name="Creating Initial Backups" xml:space="preserve">
+    <value>創建初始備份</value>
+  </data>
+  <data name="Creating_Modpack" xml:space="preserve">
+    <value>創建 Mod 包</value>
   </data>
   <data name="Cull_Mode" xml:space="preserve">
     <value>遮擋模式</value>
   </data>
+  <data name="Currently Added Items" xml:space="preserve">
+    <value>當前添加的道具</value>
+  </data>
   <data name="Current_Language_colon" xml:space="preserve">
     <value>當前語言：</value>
+  </data>
+  <data name="Custom" xml:space="preserve">
+    <value>自定義</value>
+  </data>
+  <data name="Customize" xml:space="preserve">
+    <value>自定義</value>
+  </data>
+  <data name="Customize_DefaultRace" xml:space="preserve">
+    <value>TexTools 將在查看紋理和模型時默認選擇所選種族（如果可用）。</value>
+  </data>
+  <data name="DAE_file_to_import" xml:space="preserve">
+    <value>被導入的 DAE 文件</value>
+  </data>
+  <data name="DAE_Info" xml:space="preserve">
+    <value>DAE 信息</value>
+  </data>
+  <data name="Dark" xml:space="preserve">
+    <value>暗</value>
+  </data>
+  <data name="Data Block Count:" xml:space="preserve">
+    <value>數據塊計數：</value>
+  </data>
+  <data name="Data Block:" xml:space="preserve">
+    <value>數據塊：</value>
+  </data>
+  <data name="Data Blocks" xml:space="preserve">
+    <value>數據塊</value>
+  </data>
+  <data name="Data Offset:" xml:space="preserve">
+    <value>數據偏移量：</value>
+  </data>
+  <data name="Data Type:" xml:space="preserve">
+    <value>數據類型：</value>
+  </data>
+  <data name="Data Usage:" xml:space="preserve">
+    <value>數據使用：</value>
+  </data>
+  <data name="Date" xml:space="preserve">
+    <value>日期</value>
+  </data>
+  <data name="Decal" xml:space="preserve">
+    <value>貼花</value>
+  </data>
+  <data name="Decal ID:" xml:space="preserve">
+    <value>貼花 ID：</value>
+  </data>
+  <data name="Decompress Type 2 Data" xml:space="preserve">
+    <value>解壓縮類型2數據</value>
+  </data>
+  <data name="Default" xml:space="preserve">
+    <value>默認</value>
+  </data>
+  <data name="Default Author" xml:space="preserve">
+    <value>默認作者</value>
+  </data>
+  <data name="Default Base View Model" xml:space="preserve">
+    <value>默認基礎視圖模型</value>
+  </data>
+  <data name="Default Modpack URL" xml:space="preserve">
+    <value>默認 Mod 包的 URL</value>
+  </data>
+  <data name="Default Race" xml:space="preserve">
+    <value>默認種族</value>
   </data>
   <data name="Default_Skin" xml:space="preserve">
     <value>默認皮膚</value>
@@ -315,32 +644,188 @@
   <data name="Delete" xml:space="preserve">
     <value>刪除</value>
   </data>
+  <data name="Demo (HelixToolkitDX)" xml:space="preserve">
+    <value>演示（HelixToolkitDX）</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>描述</value>
+  </data>
+  <data name="Deselect_All" xml:space="preserve">
+    <value>全部取消選擇</value>
+  </data>
+  <data name="Destination Path:" xml:space="preserve">
+    <value>目標路徑：</value>
+  </data>
+  <data name="Destination Variants:" xml:space="preserve">
+    <value>目標變體：</value>
+  </data>
+  <data name="Destination:" xml:space="preserve">
+    <value>目標：</value>
+  </data>
+  <data name="Diffuse" xml:space="preserve">
+    <value>漫反射</value>
+  </data>
+  <data name="Diffuse Color:" xml:space="preserve">
+    <value>漫反射顏色：</value>
+  </data>
+  <data name="Diffuse:" xml:space="preserve">
+    <value>漫反射：</value>
+  </data>
+  <data name="DiffuseSpecular" xml:space="preserve">
+    <value>漫反射鏡面反射</value>
+  </data>
   <data name="Directories" xml:space="preserve">
     <value>文件夾</value>
+  </data>
+  <data name="Disable" xml:space="preserve">
+    <value>禁用</value>
+  </data>
+  <data name="Disable/Delete" xml:space="preserve">
+    <value>禁用/刪除</value>
   </data>
   <data name="Disabled" xml:space="preserve">
     <value>已禁用</value>
   </data>
+  <data name="Disable_All_Mods" xml:space="preserve">
+    <value>禁用所有 Mod</value>
+  </data>
   <data name="Disable_Shape_Data" xml:space="preserve">
     <value>禁用形狀數據</value>
+  </data>
+  <data name="Donate" xml:space="preserve">
+    <value>捐助</value>
+  </data>
+  <data name="Done" xml:space="preserve">
+    <value>確定</value>
+  </data>
+  <data name="Download Index Backups" xml:space="preserve">
+    <value>下載索引備份</value>
+  </data>
+  <data name="Download_Backups" xml:space="preserve">
+    <value>下載索引備份</value>
+  </data>
+  <data name="Dye Settings" xml:space="preserve">
+    <value>染色設置</value>
+  </data>
+  <data name="Dye Template:" xml:space="preserve">
+    <value>染色模板：</value>
+  </data>
+  <data name="Dyeable Furniture" xml:space="preserve">
+    <value>可染色傢俱</value>
+  </data>
+  <data name="Each race must have an extra skeleton set in order to have /visor settings work in-game." xml:space="preserve">
+    <value>爲了讓 /visor 設置在遊戲中起作用，每個種族都必須設置額外的骨架。</value>
+  </data>
+  <data name="Ear" xml:space="preserve">
+    <value>耳朵</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>編輯</value>
+  </data>
+  <data name="EDIT ALL MATERIAL SETS" xml:space="preserve">
+    <value>編輯所有材質集</value>
+  </data>
+  <data name="EDIT MATERIAL" xml:space="preserve">
+    <value>編輯材質</value>
+  </data>
+  <data name="Edit Racial Settings" xml:space="preserve">
+    <value>編輯種族設置</value>
+  </data>
+  <data name="Edit Raw" xml:space="preserve">
+    <value>編輯原始數據</value>
+  </data>
+  <data name="Editing Multiple Materials: Material" xml:space="preserve">
+    <value>編輯多個材質：材質  </value>
+  </data>
+  <data name="Edit_Group" xml:space="preserve">
+    <value>編輯組</value>
+  </data>
+  <data name="Elbow" xml:space="preserve">
+    <value>肘部</value>
+  </data>
+  <data name="Emissive" xml:space="preserve">
+    <value>自發光</value>
+  </data>
+  <data name="Emissive Color:" xml:space="preserve">
+    <value>自發光顏色：</value>
+  </data>
+  <data name="Enable" xml:space="preserve">
+    <value>啓用</value>
+  </data>
+  <data name="Enable /visor" xml:space="preserve">
+    <value>啓用/查看器</value>
+  </data>
+  <data name="EnableBodyFlags" xml:space="preserve">
+    <value>啓用身體標記</value>
   </data>
   <data name="Enabled" xml:space="preserve">
     <value>已啓用</value>
   </data>
+  <data name="EnableFootFlags" xml:space="preserve">
+    <value>啓用足部標記</value>
+  </data>
+  <data name="EnableHandFlags" xml:space="preserve">
+    <value>啓用手部標記</value>
+  </data>
+  <data name="EnableHeadFlags" xml:space="preserve">
+    <value>啓用頭部標記</value>
+  </data>
+  <data name="EnableLegFlags" xml:space="preserve">
+    <value>啓用腿部標記</value>
+  </data>
+  <data name="Enable_All_Mods" xml:space="preserve">
+    <value>啓用所有 Mod</value>
+  </data>
+  <data name="Enable_Disable" xml:space="preserve">
+    <value>啓用/禁用</value>
+  </data>
   <data name="Enter_a_brief_description_of_your_Mod_Pack" xml:space="preserve">
     <value>輸入 Mod 包的簡要說明</value>
+  </data>
+  <data name="Enter_a_description_for_the_selected_option_here_dot" xml:space="preserve">
+    <value>爲選擇的選項輸入一個描述</value>
   </data>
   <data name="Enter_a_Model_ID_dot" xml:space="preserve">
     <value>請輸入一個模型 ID...</value>
   </data>
+  <data name="Enter_a_Name_for_the_Group_here" xml:space="preserve">
+    <value>爲組輸入一個名稱</value>
+  </data>
+  <data name="Equipment" xml:space="preserve">
+    <value>裝備</value>
+  </data>
+  <data name="Equipment1" xml:space="preserve">
+    <value>裝備1</value>
+  </data>
   <data name="Etc_Color" xml:space="preserve">
     <value>Etc 顏色</value>
+  </data>
+  <data name="Everything" xml:space="preserve">
+    <value>任何</value>
+  </data>
+  <data name="Excess Detail" xml:space="preserve">
+    <value>多餘細節</value>
+  </data>
+  <data name="Export" xml:space="preserve">
+    <value>導出</value>
+  </data>
+  <data name="Export Complete Skeletons" xml:space="preserve">
+    <value>導出完整骨架</value>
+  </data>
+  <data name="Export Full Model" xml:space="preserve">
+    <value>導出完整模型</value>
   </data>
   <data name="Export_BMP" xml:space="preserve">
     <value>導出 BMP</value>
   </data>
   <data name="Export_Both" xml:space="preserve">
     <value>導出兩種</value>
+  </data>
+  <data name="Export_DAE_file" xml:space="preserve">
+    <value>導出 DAE 文件</value>
+  </data>
+  <data name="Export_DAE_Materials" xml:space="preserve">
+    <value>導出 DAE 和材質</value>
   </data>
   <data name="Export_DDS" xml:space="preserve">
     <value>導出 DDS</value>
@@ -351,23 +836,350 @@
   <data name="Export_Settings" xml:space="preserve">
     <value>導出設置</value>
   </data>
+  <data name="External Model Viewer Type" xml:space="preserve">
+    <value>外部模型查看器類型</value>
+  </data>
+  <data name="Extra LoD Count:" xml:space="preserve">
+    <value>額外 LoD 計數：</value>
+  </data>
+  <data name="Extra Mesh Count:" xml:space="preserve">
+    <value>額外網格數：</value>
+  </data>
+  <data name="Extra Skeleton Settings" xml:space="preserve">
+    <value>額外骨骼設置</value>
+  </data>
+  <data name="Extract File" xml:space="preserve">
+    <value>提取文件</value>
+  </data>
+  <data name="Extract Raw File" xml:space="preserve">
+    <value>提取原始文件</value>
+  </data>
+  <data name="Extract_Raw" xml:space="preserve">
+    <value>提取原始文件</value>
+  </data>
+  <data name="Extras" xml:space="preserve">
+    <value>額外</value>
+  </data>
+  <data name="Extra_Import_Settings" xml:space="preserve">
+    <value>額外導入設置</value>
+  </data>
+  <data name="Face" xml:space="preserve">
+    <value>臉</value>
+  </data>
+  <data name="Face1" xml:space="preserve">
+    <value>臉1</value>
+  </data>
+  <data name="FaceBright" xml:space="preserve">
+    <value>臉高光</value>
+  </data>
+  <data name="FaceNoPores" xml:space="preserve">
+    <value>臉無孔</value>
+  </data>
+  <data name="Facial Hair" xml:space="preserve">
+    <value>面部毛髮</value>
+  </data>
+  <data name="Female" xml:space="preserve">
+    <value>女性</value>
+  </data>
   <data name="FFXIV_Directory" xml:space="preserve">
     <value>FF14 文件夾</value>
   </data>
-  <data name="Lumina_Directory" xml:space="preserve">
-    <value>Penumbra 輸出目錄</value>
+  <data name="File Count" xml:space="preserve">
+    <value>文件計數</value>
+  </data>
+  <data name="File Info" xml:space="preserve">
+    <value>文件信息</value>
+  </data>
+  <data name="File is Decompressed Type 2 Data" xml:space="preserve">
+    <value>文件是解壓縮的類型2數據</value>
+  </data>
+  <data name="File Name:" xml:space="preserve">
+    <value>文件名：</value>
+  </data>
+  <data name="File Path Display" xml:space="preserve">
+    <value>文件路徑顯示</value>
+  </data>
+  <data name="File Path:" xml:space="preserve">
+    <value>文件路徑：</value>
+  </data>
+  <data name="FileName" xml:space="preserve">
+    <value>文件名</value>
   </data>
   <data name="Filter_By_colon" xml:space="preserve">
     <value>過濾：</value>
   </data>
+  <data name="Final Confirmation" xml:space="preserve">
+    <value>最終確認</value>
+  </data>
+  <data name="Final Modpack Review" xml:space="preserve">
+    <value>最終 Mod 包審查</value>
+  </data>
+  <data name="Final Review" xml:space="preserve">
+    <value>最終審查</value>
+  </data>
+  <data name="Finalizing" xml:space="preserve">
+    <value>正在完成...</value>
+  </data>
+  <data name="Finish" xml:space="preserve">
+    <value>完成</value>
+  </data>
+  <data name="First Root Name:" xml:space="preserve">
+    <value>第一個根名稱：</value>
+  </data>
   <data name="Flip_Alpha" xml:space="preserve">
     <value>翻轉 Alpha</value>
+  </data>
+  <data name="FootHideAnkle" xml:space="preserve">
+    <value>足部隱藏腳踝</value>
+  </data>
+  <data name="FootHideCalf" xml:space="preserve">
+    <value>足部隱藏小腿</value>
+  </data>
+  <data name="FootHideKnee" xml:space="preserve">
+    <value>足部隱藏膝蓋</value>
+  </data>
+  <data name="Force UV1 to [1,-1]" xml:space="preserve">
+    <value>強制 UV1 to [1,-1]</value>
+  </data>
+  <data name="Force_UV_Quadrant" xml:space="preserve">
+    <value>強制 UV 象限</value>
+  </data>
+  <data name="For_Translucency_or_ColorSet" xml:space="preserve">
+    <value>（用於半透明或 ColorSet）</value>
+  </data>
+  <data name="Full Helmet" xml:space="preserve">
+    <value>全頭盔</value>
+  </data>
+  <data name="Full Model Viewer" xml:space="preserve">
+    <value>完整模型查看器</value>
+  </data>
+  <data name="FullModel_Export_Location" xml:space="preserve">
+    <value>導出位置：</value>
+  </data>
+  <data name="Full_Model_Name" xml:space="preserve">
+    <value>完整模型名稱</value>
+  </data>
+  <data name="Furniture" xml:space="preserve">
+    <value>傢俱</value>
+  </data>
+  <data name="Furniture Color" xml:space="preserve">
+    <value>傢俱顏色</value>
+  </data>
+  <data name="Furniture1" xml:space="preserve">
+    <value>傢俱1</value>
+  </data>
+  <data name="Furniture10" xml:space="preserve">
+    <value>傢俱10</value>
+  </data>
+  <data name="Furniture11" xml:space="preserve">
+    <value>傢俱11</value>
+  </data>
+  <data name="Furniture12" xml:space="preserve">
+    <value>傢俱12</value>
+  </data>
+  <data name="Furniture13" xml:space="preserve">
+    <value>傢俱13</value>
+  </data>
+  <data name="Furniture2" xml:space="preserve">
+    <value>傢俱2</value>
+  </data>
+  <data name="Furniture3" xml:space="preserve">
+    <value>傢俱3</value>
+  </data>
+  <data name="Furniture4" xml:space="preserve">
+    <value>傢俱4</value>
+  </data>
+  <data name="Furniture5" xml:space="preserve">
+    <value>傢俱5</value>
+  </data>
+  <data name="Furniture6" xml:space="preserve">
+    <value>傢俱6</value>
+  </data>
+  <data name="Furniture7" xml:space="preserve">
+    <value>傢俱7</value>
+  </data>
+  <data name="Furniture8" xml:space="preserve">
+    <value>傢俱8</value>
+  </data>
+  <data name="Furniture9" xml:space="preserve">
+    <value>傢俱9</value>
+  </data>
+  <data name="Gauss Barrel" xml:space="preserve">
+    <value>Gauss Barrel</value>
+  </data>
+  <data name="Glass" xml:space="preserve">
+    <value>玻璃</value>
+  </data>
+  <data name="Glasses" xml:space="preserve">
+    <value>眼鏡</value>
+  </data>
+  <data name="Gloss:" xml:space="preserve">
+    <value>光澤度：</value>
+  </data>
+  <data name="Glove" xml:space="preserve">
+    <value>手套</value>
+  </data>
+  <data name="Gorget" xml:space="preserve">
+    <value>Gorget</value>
+  </data>
+  <data name="Go_through_the_wizard_and_select_relevant_options_to_import_mod_pack" xml:space="preserve">
+    <value>通過嚮導選擇相關選項以導入 Mod 包</value>
+  </data>
+  <data name="Green" xml:space="preserve">
+    <value>綠</value>
+  </data>
+  <data name="Group:" xml:space="preserve">
+    <value>組：</value>
+  </data>
+  <data name="GroupName" xml:space="preserve">
+    <value>組名</value>
+  </data>
+  <data name="Group_Options" xml:space="preserve">
+    <value>組選項</value>
+  </data>
+  <data name="Group_Settings" xml:space="preserve">
+    <value>組設置</value>
+  </data>
+  <data name="Group_Title_colon" xml:space="preserve">
+    <value>組標題：</value>
+  </data>
+  <data name="Hair" xml:space="preserve">
+    <value>頭髮</value>
+  </data>
+  <data name="Hair Highlight Color" xml:space="preserve">
+    <value>頭髮高亮顏色</value>
+  </data>
+  <data name="Hair1" xml:space="preserve">
+    <value>頭髮1</value>
+  </data>
+  <data name="Hair2" xml:space="preserve">
+    <value>頭髮2</value>
   </data>
   <data name="Hair_Color" xml:space="preserve">
     <value>頭髮顏色</value>
   </data>
+  <data name="HandHideElbow" xml:space="preserve">
+    <value>手部隱藏肘部</value>
+  </data>
+  <data name="HandHideForearm" xml:space="preserve">
+    <value>手部隱藏前臂</value>
+  </data>
+  <data name="Hands(glv)" xml:space="preserve">
+    <value>手（glv）</value>
+  </data>
+  <data name="HandShowBracelet" xml:space="preserve">
+    <value>手部顯示手鐲</value>
+  </data>
+  <data name="HandShowRingL" xml:space="preserve">
+    <value>手部顯示左手戒指</value>
+  </data>
+  <data name="HandShowRingR" xml:space="preserve">
+    <value>手部顯示右手戒指</value>
+  </data>
+  <data name="Hat" xml:space="preserve">
+    <value>帽子</value>
+  </data>
+  <data name="HD Texture" xml:space="preserve">
+    <value>高清紋理</value>
+  </data>
+  <data name="HeadHideHair" xml:space="preserve">
+    <value>頭部隱藏頭髮</value>
+  </data>
+  <data name="HeadHideNeck" xml:space="preserve">
+    <value>頭部隱藏頸部</value>
+  </data>
+  <data name="HeadHideScalp" xml:space="preserve">
+    <value>頭部隱藏頭皮</value>
+  </data>
+  <data name="HeadShowEarAura" xml:space="preserve">
+    <value>頭部顯示耳朵敖龍族</value>
+  </data>
+  <data name="HeadShowEarHuman" xml:space="preserve">
+    <value>頭部顯示耳朵人類</value>
+  </data>
+  <data name="HeadShowEarMiqo" xml:space="preserve">
+    <value>頭部顯示耳朵貓魅族</value>
+  </data>
+  <data name="HeadShowEarrings" xml:space="preserve">
+    <value>頭部顯示耳環</value>
+  </data>
+  <data name="HeadShowEarringsAura" xml:space="preserve">
+    <value>頭部顯示耳環敖龍族</value>
+  </data>
+  <data name="HeadShowEarringsHuman" xml:space="preserve">
+    <value>頭部顯示耳環人類</value>
+  </data>
+  <data name="HeadShowEarViera" xml:space="preserve">
+    <value>頭部顯示耳朵維埃拉族</value>
+  </data>
+  <data name="HeadShowHairOverride" xml:space="preserve">
+    <value>頭部顯示頭髮替代</value>
+  </data>
+  <data name="HeadShowHrothgarHat" xml:space="preserve">
+    <value>頭部顯示硌獅族帽子</value>
+  </data>
+  <data name="HeadShowNecklace" xml:space="preserve">
+    <value>頭部顯示項鍊</value>
+  </data>
+  <data name="HeadShowVieraHat" xml:space="preserve">
+    <value>頭部顯示維埃拉族帽子</value>
+  </data>
+  <data name="HeadUnknownHelmet1" xml:space="preserve">
+    <value>頭部未知頭盔1</value>
+  </data>
+  <data name="HeadUnknownHelmet2" xml:space="preserve">
+    <value>頭部未知頭盔2</value>
+  </data>
+  <data name="Help" xml:space="preserve">
+    <value>幫助</value>
+  </data>
+  <data name="Hide Backfaces" xml:space="preserve">
+    <value>隱藏背面</value>
+  </data>
+  <data name="HIGHLIGHT COLORSET ROW" xml:space="preserve">
+    <value>突出顯示顏色集行</value>
+  </data>
+  <data name="Highlighted Row:" xml:space="preserve">
+    <value>高亮顯示的行：</value>
+  </data>
+  <data name="Horn" xml:space="preserve">
+    <value>角質</value>
+  </data>
+  <data name="HQ Icon" xml:space="preserve">
+    <value>高清圖標</value>
+  </data>
+  <data name="Hrothgar Male" xml:space="preserve">
+    <value>硌獅族男性</value>
+  </data>
+  <data name="Hrothgar_Male" xml:space="preserve">
+    <value>硌獅族男性</value>
+  </data>
+  <data name="Icon" xml:space="preserve">
+    <value>圖標</value>
+  </data>
+  <data name="Icon_ID" xml:space="preserve">
+    <value>圖標 ID</value>
+  </data>
   <data name="Icon_Search" xml:space="preserve">
     <value>圖標搜索</value>
+  </data>
+  <data name="Image Files(*.BMP;*.JPG;*.GIF;*.PNG)|*.BMP;*.JPG;*.GIF;*.PNG" xml:space="preserve">
+    <value>圖像文件 (*.BMP;*.JPG;*.GIF;*.PNG)|*.BMP;*.JPG;*.GIF;*.PNG</value>
+  </data>
+  <data name="IMC Variant:" xml:space="preserve">
+    <value>IMC 變體：</value>
+  </data>
+  <data name="Import" xml:space="preserve">
+    <value>導入</value>
+  </data>
+  <data name="Import File" xml:space="preserve">
+    <value>導入文件</value>
+  </data>
+  <data name="Import Item Selection" xml:space="preserve">
+    <value>導入道具選擇</value>
+  </data>
+  <data name="Import Raw File" xml:space="preserve">
+    <value>導入原始文件</value>
   </data>
   <data name="Import_BMP" xml:space="preserve">
     <value>導入 BMP</value>
@@ -378,20 +1190,332 @@
   <data name="Import_From_dot" xml:space="preserve">
     <value>從其他位置導入</value>
   </data>
+  <data name="Import_ModPack" xml:space="preserve">
+    <value>導入 Mod 包</value>
+  </data>
+  <data name="Import_ModPacks" xml:space="preserve">
+    <value>導入 Mod 包</value>
+  </data>
+  <data name="Import_ModPack_Wizard" xml:space="preserve">
+    <value>Mod 包導入嚮導</value>
+  </data>
+  <data name="Import_ModPack_Wizard1" xml:space="preserve">
+    <value>導入 Mod 包嚮導</value>
+  </data>
+  <data name="Import_Raw" xml:space="preserve">
+    <value>導入原始文件</value>
+  </data>
+  <data name="Include all files used by this item.  Automatically includes all metadata, models, materials, and textures used.  (Excluding racial skin materials)" xml:space="preserve">
+    <value>包括此道具使用的所有文件。自動包括使用的所有元數據、模型、材質和紋理。（不包括種族皮膚材料）</value>
+  </data>
+  <data name="Include Child Files" xml:space="preserve">
+    <value>包括子文件</value>
+  </data>
+  <data name="Included_Mods_in_Option" xml:space="preserve">
+    <value>選項中包含的 Mod</value>
+  </data>
+  <data name="Index Access Error" xml:space="preserve">
+    <value>索引訪問錯誤</value>
+  </data>
+  <data name="Index Count:" xml:space="preserve">
+    <value>索引計數：</value>
+  </data>
+  <data name="Index Data Offset:" xml:space="preserve">
+    <value>索引數據偏移量：</value>
+  </data>
+  <data name="Index Offset:" xml:space="preserve">
+    <value>索引偏移：</value>
+  </data>
+  <data name="Index Size:" xml:space="preserve">
+    <value>索引大小：</value>
+  </data>
+  <data name="Index Start:" xml:space="preserve">
+    <value>索引起始：</value>
+  </data>
+  <data name="Index_Backups_Url" xml:space="preserve">
+    <value>NONE</value>
+  </data>
+  <data name="Index_Locked" xml:space="preserve">
+    <value>遊戲運行時無法導入。</value>
+  </data>
+  <data name="Inspect" xml:space="preserve">
+    <value>檢查</value>
+  </data>
+  <data name="Instant" xml:space="preserve">
+    <value>瞬間</value>
+  </data>
+  <data name="Invalid Selection" xml:space="preserve">
+    <value>無效的選擇</value>
+  </data>
+  <data name="InvalidData" xml:space="preserve">
+    <value>無效數據</value>
+  </data>
+  <data name="Iris" xml:space="preserve">
+    <value>虹膜</value>
+  </data>
   <data name="Iris_Color" xml:space="preserve">
     <value>瞳孔顏色</value>
   </data>
   <data name="Item" xml:space="preserve">
     <value>道具</value>
   </data>
+  <data name="Item Converter" xml:space="preserve">
+    <value>道具轉換器</value>
+  </data>
+  <data name="Item Information" xml:space="preserve">
+    <value>道具信息</value>
+  </data>
+  <data name="Item Level" xml:space="preserve">
+    <value>道具級別</value>
+  </data>
+  <data name="Item List" xml:space="preserve">
+    <value>道具列表</value>
+  </data>
+  <data name="Item Load Error" xml:space="preserve">
+    <value>道具加載錯誤</value>
+  </data>
+  <data name="Item Name" xml:space="preserve">
+    <value>道具名稱</value>
+  </data>
+  <data name="Item Selection" xml:space="preserve">
+    <value>道具選擇</value>
+  </data>
+  <data name="Item: {0}&#xA;Inclusion Level: {1}&#xA;Primary Files:{2}&#xA;Total Files:{3}" xml:space="preserve">
+    <value>道具：{0}
+包含級別：{1}
+主文件：{2}
+總文件：{3}</value>
+  </data>
+  <data name="ItemPlural" xml:space="preserve">
+    <value>道具</value>
+  </data>
+  <data name="Items in Variant (Identical Items)" xml:space="preserve">
+    <value>變體道具</value>
+  </data>
+  <data name="Items with same Material Set" xml:space="preserve">
+    <value>具有相同材質集的道具</value>
+  </data>
+  <data name="Items with same Model" xml:space="preserve">
+    <value>具有相變體型的道具</value>
+  </data>
+  <data name="Item_List" xml:space="preserve">
+    <value>道具列表</value>
+  </data>
+  <data name="Join_us_on_Discord" xml:space="preserve">
+    <value>加入我們的 Discord 交流羣</value>
+  </data>
+  <data name="Keep_Camera_Position" xml:space="preserve">
+    <value>保持攝影機位置</value>
+  </data>
+  <data name="Knee" xml:space="preserve">
+    <value>膝</value>
+  </data>
+  <data name="Knee Pad" xml:space="preserve">
+    <value>護膝墊</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>語言</value>
+  </data>
+  <data name="LanguageChanged" xml:space="preserve">
+    <value>語言改變</value>
+  </data>
+  <data name="LegBootUnknown" xml:space="preserve">
+    <value>腿靴未知</value>
+  </data>
+  <data name="LegHideHalfBoot" xml:space="preserve">
+    <value>腿部隱藏半靴</value>
+  </data>
+  <data name="LegHideKneePads" xml:space="preserve">
+    <value>腿部隱藏護膝</value>
+  </data>
+  <data name="LegHideShortBoot" xml:space="preserve">
+    <value>腿部隱藏短靴</value>
+  </data>
+  <data name="LegShowFoot" xml:space="preserve">
+    <value>腿部顯示腳部</value>
+  </data>
+  <data name="LegShowTail" xml:space="preserve">
+    <value>腿部顯示尾巴</value>
+  </data>
+  <data name="Leotard" xml:space="preserve">
+    <value>緊身衣褲</value>
+  </data>
   <data name="Level_Of_Detail" xml:space="preserve">
     <value>默認級別</value>
+  </data>
+  <data name="Light" xml:space="preserve">
+    <value>亮</value>
   </data>
   <data name="Lights" xml:space="preserve">
     <value>燈光</value>
   </data>
+  <data name="Lip Color" xml:space="preserve">
+    <value>嘴脣顏色</value>
+  </data>
+  <data name="Load Item Sets File" xml:space="preserve">
+    <value>加載道具集文件</value>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>加載中</value>
+  </data>
+  <data name="Loading usage data..." xml:space="preserve">
+    <value>正在加載需要使用的數據...</value>
+  </data>
+  <data name="Loading_Items" xml:space="preserve">
+    <value>加載道具列表...</value>
+  </data>
+  <data name="Load_From" xml:space="preserve">
+    <value>從外部加載</value>
+  </data>
+  <data name="Load_Sets" xml:space="preserve">
+    <value>加載道具集文件</value>
+  </data>
+  <data name="Long Boots" xml:space="preserve">
+    <value>長靴</value>
+  </data>
+  <data name="Long Gloves" xml:space="preserve">
+    <value>長手套</value>
+  </data>
+  <data name="Long-Sleeve Top" xml:space="preserve">
+    <value>長袖上衣</value>
+  </data>
+  <data name="Lumina Directory Error." xml:space="preserve">
+    <value>Lumina 目錄錯誤。</value>
+  </data>
+  <data name="Lumina_Directory" xml:space="preserve">
+    <value>Penumbra 輸出目錄</value>
+  </data>
+  <data name="Lumina_Output" xml:space="preserve">
+    <value>Penumbra 輸出</value>
+  </data>
+  <data name="Maintained and Updated by" xml:space="preserve">
+    <value>維護和更新人</value>
+  </data>
+  <data name="Make all destination variants identical" xml:space="preserve">
+    <value>使所有目標變體相同</value>
+  </data>
+  <data name="Make All Variants Identical" xml:space="preserve">
+    <value>使所有變體相同</value>
+  </data>
+  <data name="Male" xml:space="preserve">
+    <value>男性</value>
+  </data>
+  <data name="Manage Mod List" xml:space="preserve">
+    <value>管理 Mod 列表</value>
+  </data>
+  <data name="Manage_ModList" xml:space="preserve">
+    <value>管理 Mod 列表</value>
+  </data>
+  <data name="ManualRequest" xml:space="preserve">
+    <value>手動請求</value>
+  </data>
+  <data name="Mask" xml:space="preserve">
+    <value>遮罩</value>
+  </data>
+  <data name="Material" xml:space="preserve">
+    <value>材質</value>
+  </data>
+  <data name="Material - Colorset Row Editor - Row #{0}" xml:space="preserve">
+    <value>材質-顏色集行設置 #{0}</value>
+  </data>
+  <data name="Material - Colorset Row Settings - Row ~" xml:space="preserve">
+    <value>材質-顏色集行設置-行~</value>
+  </data>
+  <data name="Material Count:" xml:space="preserve">
+    <value>材質計數：</value>
+  </data>
+  <data name="Material Editor" xml:space="preserve">
+    <value>材質編輯器</value>
+  </data>
+  <data name="Material Files" xml:space="preserve">
+    <value>材質文件</value>
+  </data>
+  <data name="Material Folder" xml:space="preserve">
+    <value>材質文件夾</value>
+  </data>
+  <data name="Material Index:" xml:space="preserve">
+    <value>材質索引：</value>
+  </data>
+  <data name="Material Level Item:" xml:space="preserve">
+    <value>材質級道具：</value>
+  </data>
+  <data name="Material Offset Count:" xml:space="preserve">
+    <value>材質偏移計數：</value>
+  </data>
+  <data name="Material Path" xml:space="preserve">
+    <value>紋理路徑</value>
+  </data>
+  <data name="Material Set:" xml:space="preserve">
+    <value>材質集：</value>
+  </data>
+  <data name="Material Set: --" xml:space="preserve">
+    <value>材質集：--</value>
+  </data>
+  <data name="Material Set: 3" xml:space="preserve">
+    <value>材質集：3</value>
+  </data>
+  <data name="Material Set: {0}" xml:space="preserve">
+    <value>材質集：{0}</value>
+  </data>
+  <data name="Material Used" xml:space="preserve">
+    <value>使用的材質</value>
+  </data>
+  <data name="Material:" xml:space="preserve">
+    <value>材質：</value>
+  </data>
+  <data name="MaterialEditorHelp" xml:space="preserve">
+    <value>材質編輯器幫助</value>
+  </data>
   <data name="Materials" xml:space="preserve">
     <value>材質</value>
+  </data>
+  <data name="Material_Editor" xml:space="preserve">
+    <value>材質編輯器</value>
+  </data>
+  <data name="Material_Options" xml:space="preserve">
+    <value>材質選項</value>
+  </data>
+  <data name="Maximum Bust X Multiplier:" xml:space="preserve">
+    <value>最大胸圍 X 軸倍增器：</value>
+  </data>
+  <data name="Maximum Bust Y Multiplier:" xml:space="preserve">
+    <value>最大胸圍 Y 軸倍增器：</value>
+  </data>
+  <data name="Maximum Bust Z Multiplier:" xml:space="preserve">
+    <value>最大胸圍 Z 軸倍增器：</value>
+  </data>
+  <data name="Maximum Height Multiplier:" xml:space="preserve">
+    <value>最大高度倍增器：</value>
+  </data>
+  <data name="Maximum Tail/Ear Multiplier:" xml:space="preserve">
+    <value>最大尾巴/耳朵倍增器：</value>
+  </data>
+  <data name="MDL Path" xml:space="preserve">
+    <value>模型路徑</value>
+  </data>
+  <data name="Mesh" xml:space="preserve">
+    <value>網格</value>
+  </data>
+  <data name="Mesh Count:" xml:space="preserve">
+    <value>網格計數：</value>
+  </data>
+  <data name="Mesh End:" xml:space="preserve">
+    <value>網格結束：</value>
+  </data>
+  <data name="Mesh Offset:" xml:space="preserve">
+    <value>網格偏移：</value>
+  </data>
+  <data name="Mesh Part Count:" xml:space="preserve">
+    <value>網格部件計數：</value>
+  </data>
+  <data name="Mesh Part Index:" xml:space="preserve">
+    <value>網格部件索引：</value>
+  </data>
+  <data name="Mesh Sum:" xml:space="preserve">
+    <value>網格總和：</value>
+  </data>
+  <data name="MeshPart_No_Difference" xml:space="preserve">
+    <value>此網格的網格部件計數沒有差異</value>
   </data>
   <data name="Mesh_Data" xml:space="preserve">
     <value>網格數據</value>
@@ -402,11 +1526,101 @@
   <data name="Mesh_MetaData" xml:space="preserve">
     <value>網格元數據</value>
   </data>
+  <data name="Mesh_No_Difference" xml:space="preserve">
+    <value>網格數無差異</value>
+  </data>
   <data name="Mesh_Parts" xml:space="preserve">
     <value>網格部件</value>
   </data>
+  <data name="Metadata" xml:space="preserve">
+    <value>元數據</value>
+  </data>
+  <data name="Metadata Files" xml:space="preserve">
+    <value>元數據文件</value>
+  </data>
+  <data name="Metadata Options" xml:space="preserve">
+    <value>元數據選項</value>
+  </data>
+  <data name="meters" xml:space="preserve">
+    <value>單位</value>
+  </data>
+  <data name="Mid Boots" xml:space="preserve">
+    <value>中靴</value>
+  </data>
+  <data name="Mid Gloves" xml:space="preserve">
+    <value>中手套</value>
+  </data>
+  <data name="Minimum Bust X Multiplier:" xml:space="preserve">
+    <value>最小胸圍 X 軸倍增器：</value>
+  </data>
+  <data name="Minimum Bust Y Multiplier:" xml:space="preserve">
+    <value>最小胸圍 Y 軸倍增器：</value>
+  </data>
+  <data name="Minimum Bust Z Multiplier:" xml:space="preserve">
+    <value>最小胸圍 Z 軸倍增器：</value>
+  </data>
+  <data name="Minimum Height Multiplier:" xml:space="preserve">
+    <value>最小高度倍增器：</value>
+  </data>
+  <data name="Minimum Tail/Ear Multiplier:" xml:space="preserve">
+    <value>最小尾巴/耳朵倍增器：</value>
+  </data>
+  <data name="Miqo'te Ears" xml:space="preserve">
+    <value>貓魅族耳朵</value>
+  </data>
+  <data name="Miqo'te Long Hair Unique" xml:space="preserve">
+    <value>貓魅族長髮</value>
+  </data>
   <data name="Modded_Items" xml:space="preserve">
     <value>已打 Mod 道具</value>
+  </data>
+  <data name="Model" xml:space="preserve">
+    <value>模型</value>
+  </data>
+  <data name="Model Editor" xml:space="preserve">
+    <value>模型編輯器</value>
+  </data>
+  <data name="Model Files" xml:space="preserve">
+    <value>模型文件</value>
+  </data>
+  <data name="Model Importer" xml:space="preserve">
+    <value>模型導入器</value>
+  </data>
+  <data name="Model Level Item:" xml:space="preserve">
+    <value>模型級道具：</value>
+  </data>
+  <data name="Model Scale:" xml:space="preserve">
+    <value>模型比例：</value>
+  </data>
+  <data name="Model Used" xml:space="preserve">
+    <value>使用的模型</value>
+  </data>
+  <data name="Models" xml:space="preserve">
+    <value>模型</value>
+  </data>
+  <data name="ModelSearch_EnterID" xml:space="preserve">
+    <value>輸入模型 ID</value>
+  </data>
+  <data name="ModelSearch_ItemsFound" xml:space="preserve">
+    <value>找到 {0} 件道具</value>
+  </data>
+  <data name="ModelSearch_NoItemsFound" xml:space="preserve">
+    <value>未找到任何道具</value>
+  </data>
+  <data name="ModelSearch_Numeric" xml:space="preserve">
+    <value>必須是數字</value>
+  </data>
+  <data name="ModelStatus_Loading" xml:space="preserve">
+    <value>正在加載模型...</value>
+  </data>
+  <data name="ModelStatus_Success" xml:space="preserve">
+    <value>模型加載成功</value>
+  </data>
+  <data name="ModelStatus_UpdateSuccess" xml:space="preserve">
+    <value>模型更新成功</value>
+  </data>
+  <data name="Model_ID" xml:space="preserve">
+    <value>模型 ID</value>
   </data>
   <data name="Model_Inspector" xml:space="preserve">
     <value>模型檢查器</value>
@@ -414,8 +1628,26 @@
   <data name="Model_MetaData" xml:space="preserve">
     <value>模型元數據</value>
   </data>
+  <data name="Model_Options" xml:space="preserve">
+    <value>模型選項</value>
+  </data>
   <data name="Model_Search" xml:space="preserve">
     <value>模型搜索</value>
+  </data>
+  <data name="Model_Skeleton" xml:space="preserve">
+    <value>模型骨架</value>
+  </data>
+  <data name="Model_Type" xml:space="preserve">
+    <value>模型類型</value>
+  </data>
+  <data name="Modifications at the {0} level will affect (at least) the following [{1}] item(s):" xml:space="preserve">
+    <value>{0} 級別的修改將影響（至少）以下 [{1}] 道具：</value>
+  </data>
+  <data name="Modifications at this level will affect the following items:" xml:space="preserve">
+    <value>此級別的修改將影響以下道具：</value>
+  </data>
+  <data name="ModPack" xml:space="preserve">
+    <value>Mod 包</value>
   </data>
   <data name="ModPackDescription" xml:space="preserve">
     <value>Mod 包描述</value>
@@ -423,8 +1655,26 @@
   <data name="ModPackGeneralInfo" xml:space="preserve">
     <value>Mod 包一般信息</value>
   </data>
+  <data name="ModPacks" xml:space="preserve">
+    <value>Mod 包</value>
+  </data>
+  <data name="Modpacks_To_Include" xml:space="preserve">
+    <value>Mod 包要包括</value>
+  </data>
+  <data name="ModPack_Wizard" xml:space="preserve">
+    <value>Mod 包嚮導</value>
+  </data>
+  <data name="Mods" xml:space="preserve">
+    <value>模组</value>
+  </data>
+  <data name="Mod_Converter" xml:space="preserve">
+    <value>Mod 轉換器</value>
+  </data>
   <data name="Mod_Count_colon" xml:space="preserve">
     <value>Mod 數量</value>
+  </data>
+  <data name="Mod_List" xml:space="preserve">
+    <value>Mod 列表</value>
   </data>
   <data name="Mod_Pack" xml:space="preserve">
     <value>Mod 包</value>
@@ -441,8 +1691,29 @@
   <data name="Mod_Pack_General_Info" xml:space="preserve">
     <value>Mod 包一般信息</value>
   </data>
+  <data name="Mod_Pack_Importer" xml:space="preserve">
+    <value>Mod 包導入器</value>
+  </data>
   <data name="Mod_Pack_Name" xml:space="preserve">
     <value>Mod 包名稱</value>
+  </data>
+  <data name="Mod_Repos" xml:space="preserve">
+    <value>Mod 倉庫</value>
+  </data>
+  <data name="Monster" xml:space="preserve">
+    <value>怪物</value>
+  </data>
+  <data name="More_Options" xml:space="preserve">
+    <value>更多選項</value>
+  </data>
+  <data name="Multi" xml:space="preserve">
+    <value>反射</value>
+  </data>
+  <data name="Multi:" xml:space="preserve">
+    <value>反射：</value>
+  </data>
+  <data name="Multi_Selection" xml:space="preserve">
+    <value>多選</value>
   </data>
   <data name="Name" xml:space="preserve">
     <value>名稱</value>
@@ -450,329 +1721,59 @@
   <data name="Name_colon" xml:space="preserve">
     <value>名稱：</value>
   </data>
-  <data name="New_Page" xml:space="preserve">
-    <value>下一頁&gt;</value>
+  <data name="Neck" xml:space="preserve">
+    <value>脖子</value>
   </data>
-  <data name="None" xml:space="preserve">
-    <value>無</value>
+  <data name="New Material" xml:space="preserve">
+    <value>新材質</value>
   </data>
-  <data name="Num" xml:space="preserve">
-    <value>序號</value>
+  <data name="New Material: Material" xml:space="preserve">
+    <value>新材質：材質</value>
   </data>
-  <data name="Open" xml:space="preserve">
-    <value>打開</value>
+  <data name="New Materials" xml:space="preserve">
+    <value>新材質</value>
   </data>
-  <data name="Open_Mesh_Inspector" xml:space="preserve">
-    <value>打開網格檢查器</value>
+  <data name="New Materials: Material" xml:space="preserve">
+    <value>新材質：材質</value>
   </data>
-  <data name="Other_Data" xml:space="preserve">
-    <value>其他數據</value>
+  <data name="New Model Size:" xml:space="preserve">
+    <value>新模型尺寸：</value>
   </data>
-  <data name="Part" xml:space="preserve">
-    <value>部件</value>
-  </data>
-  <data name="Part_Attributes" xml:space="preserve">
-    <value>部件屬性</value>
-  </data>
-  <data name="Part_Count" xml:space="preserve">
-    <value>部件數量</value>
-  </data>
-  <data name="Part_Data" xml:space="preserve">
-    <value>部件數據</value>
-  </data>
-  <data name="Paths" xml:space="preserve">
-    <value>路徑</value>
-  </data>
-  <data name="Previe_List" xml:space="preserve">
-    <value>預覽列表</value>
-  </data>
-  <data name="Previous_Page" xml:space="preserve">
-    <value>&lt;上一頁</value>
-  </data>
-  <data name="Problem_Checker" xml:space="preserve">
-    <value>數據檢查器</value>
-  </data>
-  <data name="Race" xml:space="preserve">
-    <value>種族</value>
-  </data>
-  <data name="Reflection" xml:space="preserve">
-    <value>反光</value>
-  </data>
-  <data name="Remove_Part_Attribute" xml:space="preserve">
-    <value>移除部件屬性</value>
-  </data>
-  <data name="Reset_to_Default" xml:space="preserve">
-    <value>默認</value>
-  </data>
-  <data name="Save_Directory" xml:space="preserve">
-    <value>Mod 導出資源保存文件夾</value>
-  </data>
-  <data name="Select_Active" xml:space="preserve">
-    <value>選擇激活的</value>
-  </data>
-  <data name="Select_All" xml:space="preserve">
-    <value>選擇所有</value>
-  </data>
-  <data name="ShapeDescription1_line1" xml:space="preserve">
-    <value>這將禁用此網格的所有形狀數據。</value>
-  </data>
-  <data name="ShapeDescription1_line2" xml:space="preserve">
-    <value>如果道具與其他道具組合時出現鏤空，請使用這些選項。</value>
-  </data>
-  <data name="ShapeDescription1_line3" xml:space="preserve">
-    <value>以後的版本將提供更多形狀數據選項。</value>
-  </data>
-  <data name="ShapeDescription2_line1" xml:space="preserve">
-    <value>此網格沒有形狀數據。</value>
-  </data>
-  <data name="ShapeDescription2_line2" xml:space="preserve">
-    <value>選項被禁用。</value>
-  </data>
-  <data name="Shapes" xml:space="preserve">
-    <value>形狀</value>
-  </data>
-  <data name="Simple_ModPack_Creator" xml:space="preserve">
-    <value>簡單 Mod 創建器</value>
-  </data>
-  <data name="Size_colon" xml:space="preserve">
-    <value>大小：</value>
-  </data>
-  <data name="Skin_Color" xml:space="preserve">
-    <value>皮膚顏色</value>
-  </data>
-  <data name="Skin_Color_Note_Info" xml:space="preserve">
-    <value>注意：皮膚顏色與紋理中的默認皮膚顏色混合，其他的都是直接的顏色。</value>
-  </data>
-  <data name="Slot" xml:space="preserve">
-    <value>部位</value>
-  </data>
-  <data name="Standalone_Non_ModPack" xml:space="preserve">
-    <value>孤立（非 Mod 包）</value>
-  </data>
-  <data name="This_will_only_affect_shared_races" xml:space="preserve">
-    <value>這隻會影響共享種族</value>
-  </data>
-  <data name="Translucency" xml:space="preserve">
-    <value>半透明性</value>
-  </data>
-  <data name="Type" xml:space="preserve">
-    <value>類型</value>
-  </data>
-  <data name="Update_TEX" xml:space="preserve">
-    <value>刷新紋理</value>
-  </data>
-  <data name="Variant" xml:space="preserve">
-    <value>變體</value>
-  </data>
-  <data name="Version_colon" xml:space="preserve">
-    <value>版本：</value>
-  </data>
-  <data name="Vertex_Colors" xml:space="preserve">
-    <value>頂點顏色</value>
-  </data>
-  <data name="Vertex_Data_Structure" xml:space="preserve">
-    <value>頂點數據結構</value>
-  </data>
-  <data name="Visit_Website" xml:space="preserve">
-    <value>官網</value>
-  </data>
-  <data name="Add_a_Model_using_advanced_options" xml:space="preserve">
-    <value>使用高級選項添加一個模型</value>
-  </data>
-  <data name="Add_Group" xml:space="preserve">
-    <value>添加組</value>
-  </data>
-  <data name="Add_w_Adv_Options" xml:space="preserve">
-    <value>高級選項</value>
-  </data>
-  <data name="Clic_here_to_add_a_preview_image" xml:space="preserve">
-    <value>單擊此處添加一個預覽圖</value>
-  </data>
-  <data name="Description" xml:space="preserve">
-    <value>描述</value>
-  </data>
-  <data name="Done" xml:space="preserve">
-    <value>確定</value>
-  </data>
-  <data name="Edit" xml:space="preserve">
-    <value>編輯</value>
-  </data>
-  <data name="Enter_a_description_for_the_selected_option_here_dot" xml:space="preserve">
-    <value>爲選擇的選項輸入一個描述</value>
-  </data>
-  <data name="Enter_a_Name_for_the_Group_here" xml:space="preserve">
-    <value>爲組輸入一個名稱</value>
-  </data>
-  <data name="Finish" xml:space="preserve">
-    <value>完成</value>
-  </data>
-  <data name="For_Translucency_or_ColorSet" xml:space="preserve">
-    <value>（用於半透明或 ColorSet）</value>
-  </data>
-  <data name="Go_through_the_wizard_and_select_relevant_options_to_import_mod_pack" xml:space="preserve">
-    <value>通過嚮導選擇相關選項以導入 Mod 包</value>
-  </data>
-  <data name="Group_Options" xml:space="preserve">
-    <value>組選項</value>
-  </data>
-  <data name="Group_Settings" xml:space="preserve">
-    <value>組設置</value>
-  </data>
-  <data name="Group_Title_colon" xml:space="preserve">
-    <value>組標題：</value>
-  </data>
-  <data name="Import_ModPack" xml:space="preserve">
-    <value>導入 Mod 包</value>
-  </data>
-  <data name="Import_ModPack_Wizard" xml:space="preserve">
-    <value>Mod 包導入嚮導</value>
-  </data>
-  <data name="Included_Mods_in_Option" xml:space="preserve">
-    <value>選項中包含的 Mod</value>
-  </data>
-  <data name="Material" xml:space="preserve">
-    <value>材質</value>
-  </data>
-  <data name="Material_Options" xml:space="preserve">
-    <value>材質選項</value>
-  </data>
-  <data name="Model_Options" xml:space="preserve">
-    <value>模型選項</value>
-  </data>
-  <data name="Model_Type" xml:space="preserve">
-    <value>模型類型</value>
-  </data>
-  <data name="Mod_Pack_Importer" xml:space="preserve">
-    <value>Mod 包導入器</value>
-  </data>
-  <data name="Multi_Selection" xml:space="preserve">
-    <value>多選</value>
-  </data>
-  <data name="Options_List" xml:space="preserve">
-    <value>選項列表</value>
-  </data>
-  <data name="Option_Description" xml:space="preserve">
-    <value>選項描述</value>
-  </data>
-  <data name="Option_List" xml:space="preserve">
-    <value>選項列表</value>
-  </data>
-  <data name="Option_Name" xml:space="preserve">
-    <value>選項名</value>
-  </data>
-  <data name="Option_Preview_Image" xml:space="preserve">
-    <value>選項預覽圖</value>
-  </data>
-  <data name="Preview" xml:space="preserve">
-    <value>預覽</value>
-  </data>
-  <data name="Remove" xml:space="preserve">
-    <value>移除</value>
-  </data>
-  <data name="Select_a_file_dot" xml:space="preserve">
-    <value>選擇一個文件...</value>
-  </data>
-  <data name="Select_Mod" xml:space="preserve">
-    <value>選擇 Mod</value>
-  </data>
-  <data name="Simple_ModPack_Importer" xml:space="preserve">
-    <value>簡單 Mod 包導入器</value>
-  </data>
-  <data name="Single_Selection" xml:space="preserve">
-    <value>單選</value>
-  </data>
-  <data name="TD_Model" xml:space="preserve">
-    <value>3D 模型</value>
-  </data>
-  <data name="Textures" xml:space="preserve">
-    <value>紋理</value>
-  </data>
-  <data name="Texture_Map" xml:space="preserve">
-    <value>紋理 Map</value>
-  </data>
-  <data name="Texture_Options" xml:space="preserve">
-    <value>紋理選項</value>
-  </data>
-  <data name="Use_Currently_Modded_Item" xml:space="preserve">
-    <value>使用現有的的 Mod 道具</value>
-  </data>
-  <data name="ChinaDiscord" xml:space="preserve">
-    <value>國服 Mod 交流羣</value>
-  </data>
-  <data name="Loading" xml:space="preserve">
-    <value>加載中</value>
-  </data>
-  <data name="Keep_Camera_Position" xml:space="preserve">
-    <value>保持攝影機位置</value>
-  </data>
-  <data name="Added_Mesh" xml:space="preserve">
-    <value>添加的網格
-如有必要，更改新網格的材質.</value>
-  </data>
-  <data name="Added_MeshParts" xml:space="preserve">
-    <value>爲此網格添加了網格部件
-如有必要，請更改以下新部件的屬性</value>
-  </data>
-  <data name="MeshPart_No_Difference" xml:space="preserve">
-    <value>此網格的網格部件計數沒有差異</value>
-  </data>
-  <data name="Mesh_No_Difference" xml:space="preserve">
-    <value>網格數無差異</value>
-  </data>
-  <data name="ModelSearch_EnterID" xml:space="preserve">
-    <value>輸入模型 ID</value>
-  </data>
-  <data name="ModelSearch_ItemsFound" xml:space="preserve">
-    <value>找到 {0} 件道具</value>
-  </data>
-  <data name="ModelSearch_NoItemsFound" xml:space="preserve">
-    <value>未找到任何道具</value>
-  </data>
-  <data name="ModelSearch_Numeric" xml:space="preserve">
-    <value>必須是數字</value>
-  </data>
-  <data name="ModelStatus_Success" xml:space="preserve">
-    <value>模型加載成功</value>
-  </data>
-  <data name="ModelStatus_UpdateSuccess" xml:space="preserve">
-    <value>模型更新成功</value>
+  <data name="New Racial Material" xml:space="preserve">
+    <value>新種族材質</value>
   </data>
   <data name="New_Mesh_MeshPart_Count" xml:space="preserve">
     <value>這是一個包含 {0} 個部件的新網格。</value>
   </data>
-  <data name="Removed_Mesh" xml:space="preserve">
-    <value>移除的網格
-刪除的網格數：</value>
+  <data name="New_Page" xml:space="preserve">
+    <value>下一頁&gt;</value>
   </data>
-  <data name="Removed_MeshParts" xml:space="preserve">
-    <value>已刪除此網格的網格部件
-
-
-刪除的部件號：</value>
+  <data name="Next" xml:space="preserve">
+    <value>下一個</value>
   </data>
-  <data name="Removed_MeshParts_Note" xml:space="preserve">
-    <value>對以下這些移除的部件進行更改不會產生任何影響</value>
+  <data name="Next_Page" xml:space="preserve">
+    <value>下一頁&gt;</value>
   </data>
-  <data name="Removed_Mesh_Note" xml:space="preserve">
-    <value>對上述刪除的網格所做的更改不會產生任何效果</value>
+  <data name="No Texture Selected" xml:space="preserve">
+    <value>未選擇紋理</value>
   </data>
-  <data name="Start_Over" xml:space="preserve">
-    <value>初始化</value>
+  <data name="NoCache" xml:space="preserve">
+    <value>無緩存</value>
   </data>
-  <data name="UI_SearchStatus_Max" xml:space="preserve">
-    <value>圖標值最多爲 6 位，請重試。</value>
+  <data name="Non-Tail Races Only" xml:space="preserve">
+    <value>僅限無尾種族</value>
   </data>
-  <data name="UI_SearchStatus_Numeric" xml:space="preserve">
-    <value>輸入只能是數字，請重試。</value>
+  <data name="None" xml:space="preserve">
+    <value>無</value>
   </data>
-  <data name="UI_Search_NothingFound" xml:space="preserve">
-    <value>找不到圖標 {0} 的數據，請嘗試其他。</value>
+  <data name="Normal" xml:space="preserve">
+    <value>法線</value>
   </data>
-  <data name="Edit_Group" xml:space="preserve">
-    <value>編輯組</value>
+  <data name="Normal:" xml:space="preserve">
+    <value>法線：</value>
   </data>
-  <data name="Index_Locked" xml:space="preserve">
-    <value>遊戲運行時無法導入。</value>
+  <data name="Note: Some skeletons are not available for some races." xml:space="preserve">
+    <value>注意：有些骨架不適用於某些種族。</value>
   </data>
   <data name="No_3D_Mods" xml:space="preserve">
     <value>不存在 3D Mod
@@ -789,8 +1790,116 @@
 
 如果要啓用此功能，請首先爲選定道具導入紋理。</value>
   </data>
-  <data name="Customize_DefaultRace" xml:space="preserve">
-    <value>TexTools 將在查看紋理和模型時默認選擇所選種族（如果可用）。</value>
+  <data name="Num" xml:space="preserve">
+    <value>序號</value>
+  </data>
+  <data name="Occlusion" xml:space="preserve">
+    <value>遮擋</value>
+  </data>
+  <data name="Off" xml:space="preserve">
+    <value>關閉</value>
+  </data>
+  <data name="Old Model Size:" xml:space="preserve">
+    <value>舊模型尺寸：</value>
+  </data>
+  <data name="Open" xml:space="preserve">
+    <value>打開</value>
+  </data>
+  <data name="Open Editor" xml:space="preserve">
+    <value>打開編輯器</value>
+  </data>
+  <data name="Open Helmet" xml:space="preserve">
+    <value>開放式頭盔</value>
+  </data>
+  <data name="Open_Mesh_Inspector" xml:space="preserve">
+    <value>打開網格檢查器</value>
+  </data>
+  <data name="Options" xml:space="preserve">
+    <value>選項</value>
+  </data>
+  <data name="Options_List" xml:space="preserve">
+    <value>選項列表</value>
+  </data>
+  <data name="Option_Description" xml:space="preserve">
+    <value>選項描述</value>
+  </data>
+  <data name="Option_List" xml:space="preserve">
+    <value>選項列表</value>
+  </data>
+  <data name="Option_Name" xml:space="preserve">
+    <value>選項名</value>
+  </data>
+  <data name="Option_Preview_Image" xml:space="preserve">
+    <value>選項預覽圖</value>
+  </data>
+  <data name="Other" xml:space="preserve">
+    <value>其他</value>
+  </data>
+  <data name="Other_Data" xml:space="preserve">
+    <value>其他數據</value>
+  </data>
+  <data name="Override Incoming Race:" xml:space="preserve">
+    <value>覆蓋傳入種族：</value>
+  </data>
+  <data name="Own" xml:space="preserve">
+    <value>自己</value>
+  </data>
+  <data name="Pants" xml:space="preserve">
+    <value>內褲</value>
+  </data>
+  <data name="Pants and Shoes" xml:space="preserve">
+    <value>內褲和鞋子</value>
+  </data>
+  <data name="Parent Files" xml:space="preserve">
+    <value>父文件</value>
+  </data>
+  <data name="Part" xml:space="preserve">
+    <value>部件</value>
+  </data>
+  <data name="Part:" xml:space="preserve">
+    <value>部件：</value>
+  </data>
+  <data name="Part_Attributes" xml:space="preserve">
+    <value>部件屬性</value>
+  </data>
+  <data name="Part_Count" xml:space="preserve">
+    <value>部件數量</value>
+  </data>
+  <data name="Part_Data" xml:space="preserve">
+    <value>部件數據</value>
+  </data>
+  <data name="Paste Material" xml:space="preserve">
+    <value>粘貼材質</value>
+  </data>
+  <data name="Paste Row" xml:space="preserve">
+    <value>粘貼行</value>
+  </data>
+  <data name="Paste Visibility Settings" xml:space="preserve">
+    <value>粘貼可見性設置</value>
+  </data>
+  <data name="Paths" xml:space="preserve">
+    <value>路徑</value>
+  </data>
+  <data name="Please_Wait" xml:space="preserve">
+    <value>請稍等...</value>
+  </data>
+  <data name="Preset:" xml:space="preserve">
+    <value>預設：</value>
+  </data>
+  <data name="Preview" xml:space="preserve">
+    <value>預覽</value>
+  </data>
+  <data name="Preview Dye #" xml:space="preserve">
+    <value>染色預覽 #</value>
+  </data>
+  <data name="Previe_List" xml:space="preserve">
+    <value>預覽列表</value>
+  </data>
+  <data name="Previous_Page" xml:space="preserve">
+    <value>&lt;上一頁</value>
+  </data>
+  <data name="Previous_Page1" xml:space="preserve">
+    <value>&lt;上一頁</value>
   </data>
   <data name="ProblemCheck_BackupError" xml:space="preserve">
     <value>檢查備份索引文件時出現問題</value>
@@ -800,6 +1909,9 @@
   </data>
   <data name="ProblemCheck_DatMissing" xml:space="preserve">
     <value>找不到 Dat 文件（060000.win32.dat1）。</value>
+  </data>
+  <data name="ProblemCheck_DatSize" xml:space="preserve">
+    <value>正在檢查空 Dat 文件....</value>
   </data>
   <data name="ProblemCheck_ErrorsFound" xml:space="preserve">
     <value>嘗試修復時發現錯誤....</value>
@@ -858,533 +1970,141 @@
   <data name="ProblemCheck_UnkType" xml:space="preserve">
     <value>發現未知文件類型（{0}）偏移量很可能已損壞</value>
   </data>
-  <data name="ModelStatus_Loading" xml:space="preserve">
-    <value>正在加載模型...</value>
+  <data name="Problem_Checker" xml:space="preserve">
+    <value>數據檢查器</value>
   </data>
-  <data name="Finalizing" xml:space="preserve">
-    <value>正在完成...</value>
+  <data name="Quiver Arrow 1" xml:space="preserve">
+    <value>Quiver Arrow 1</value>
   </data>
-  <data name="ProblemCheck_DatSize" xml:space="preserve">
-    <value>正在檢查空 Dat 文件....</value>
+  <data name="Quiver Arrow 2" xml:space="preserve">
+    <value>Quiver Arrow 2</value>
   </data>
-  <data name="Add_NewTexturePart" xml:space="preserve">
-    <value>添加新的貼圖組</value>
+  <data name="Quiver Arrow 3" xml:space="preserve">
+    <value>Quiver Arrow 3</value>
   </data>
-  <data name="Load_From" xml:space="preserve">
-    <value>從外部加載</value>
+  <data name="Race" xml:space="preserve">
+    <value>種族</value>
   </data>
-  <data name="Mod_Converter" xml:space="preserve">
-    <value>Mod 轉換器</value>
-  </data>
-  <data name="Convert" xml:space="preserve">
-    <value>轉換</value>
-  </data>
-  <data name="Convert_To" xml:space="preserve">
-    <value>轉換到</value>
-  </data>
-  <data name="Sort_By_colon" xml:space="preserve">
-    <value>排序依據：</value>
-  </data>
-  <data name="Date" xml:space="preserve">
-    <value>日期</value>
-  </data>
-  <data name="Clone_UV1_to_UV2" xml:space="preserve">
-    <value>將 UV1 克隆到 UV2</value>
-  </data>
-  <data name="Extra_Import_Settings" xml:space="preserve">
-    <value>額外導入設置</value>
-  </data>
-  <data name="Force_UV_Quadrant" xml:space="preserve">
-    <value>強制 UV 象限</value>
-  </data>
-  <data name="Material_Editor" xml:space="preserve">
-    <value>材質編輯器</value>
-  </data>
-  <data name="MaterialEditorHelp" xml:space="preserve">
-    <value>材質編輯器幫助</value>
-  </data>
-  <data name="Models" xml:space="preserve">
-    <value>模型</value>
-  </data>
-  <data name="Variants" xml:space="preserve">
-    <value>變體</value>
-  </data>
-  <data name="Rebuild_Cache" xml:space="preserve">
-    <value>重建緩存</value>
-  </data>
-  <data name="Cache" xml:space="preserve">
-    <value>緩存操作</value>
-  </data>
-  <data name="Load_Sets" xml:space="preserve">
-    <value>加載道具集文件</value>
-  </data>
-  <data name="Scan_For_Sets" xml:space="preserve">
-    <value>掃描新道具集</value>
-  </data>
-  <data name="Standard_Modpack" xml:space="preserve">
-    <value>標準 Mod 包</value>
-  </data>
-  <data name="FileName" xml:space="preserve">
-    <value>文件名</value>
-  </data>
-  <data name="Inspect" xml:space="preserve">
-    <value>檢查</value>
-  </data>
-  <data name="ItemPlural" xml:space="preserve">
-    <value>道具</value>
-  </data>
-  <data name="Usage" xml:space="preserve">
-    <value>用法</value>
-  </data>
-  <data name="Skeleton" xml:space="preserve">
-    <value>骨骼</value>
-  </data>
-  <data name="FullModel_Export_Location" xml:space="preserve">
-    <value>導出位置：</value>
-  </data>
-  <data name="Full_Model_Name" xml:space="preserve">
-    <value>完整模型名稱</value>
-  </data>
-  <data name="Model_Skeleton" xml:space="preserve">
-    <value>模型骨架</value>
-  </data>
-  <data name="Creating_Modpack" xml:space="preserve">
-    <value>創建 Mod 包</value>
-  </data>
-  <data name="Loading_Items" xml:space="preserve">
-    <value>加載道具列表...</value>
-  </data>
-  <data name="Please_Wait" xml:space="preserve">
-    <value>請稍等...</value>
-  </data>
-  <data name="Updating_Cache" xml:space="preserve">
-    <value>正在更新緩存</value>
-  </data>
-  <data name="Updating_Cache_Message" xml:space="preserve">
-    <value>如果安裝了多個 Mod，這可能需要 30-60 秒...</value>
-  </data>
-  <data name="Working_Ellipsis" xml:space="preserve">
-    <value>處理中...</value>
-  </data>
-  <data name="Face" xml:space="preserve">
-    <value>臉</value>
-  </data>
-  <data name="Skin" xml:space="preserve">
-    <value>皮膚</value>
-  </data>
-  <data name="Download_Backups" xml:space="preserve">
-    <value>下載索引備份</value>
-  </data>
-  <data name="Index_Backups_Url" xml:space="preserve">
-    <value>NONE</value>
-  </data>
-  <data name="Viewport_Disclaimer" xml:space="preserve">
-    <value>TexTools 模型顯示只是一個近似值，可能無法對遊戲中的視覺效果百分之百準確</value>
-  </data>
-  <data name="Tools" xml:space="preserve">
-    <value>工具</value>
-  </data>
-  <data name="Version_Latest" xml:space="preserve">
-    <value>最新（測試版）</value>
-  </data>
-  <data name="Version_Stable" xml:space="preserve">
-    <value>穩定版本</value>
-  </data>
-  <data name="Extract_Raw" xml:space="preserve">
-    <value>提取原始文件</value>
-  </data>
-  <data name="Import_Raw" xml:space="preserve">
-    <value>導入原始文件</value>
-  </data>
-  <data name="Raw_File_Operations" xml:space="preserve">
-    <value>原始文件操作</value>
-  </data>
-  <data name="Clean_Up_ModList" xml:space="preserve">
-    <value>整理 Mod 列表</value>
-  </data>
-  <data name="Manage_ModList" xml:space="preserve">
-    <value>管理 Mod 列表</value>
-  </data>
-  <data name="Recover_Space" xml:space="preserve">
-    <value>回收未使用的空間</value>
-  </data>
-  <data name="Backup_Modpack_Creator" xml:space="preserve">
-    <value>備份 Mod 包創建器</value>
-  </data>
-  <data name="Backup_Modpack_Importer" xml:space="preserve">
-    <value>備份 Mod 包導入器</value>
-  </data>
-  <data name="Modpacks_To_Include" xml:space="preserve">
-    <value>Mod 包要包括</value>
-  </data>
-  <data name="Backup_Modpack" xml:space="preserve">
-    <value>備份 Mod 包</value>
-  </data>
-  <data name="Deselect_All" xml:space="preserve">
-    <value>全部取消選擇</value>
-  </data>
-  <data name="Next_Page" xml:space="preserve">
-    <value>下一頁&gt;</value>
-  </data>
-  <data name="By Category" xml:space="preserve">
-    <value>按類別</value>
-  </data>
-  <data name="By Set" xml:space="preserve">
-    <value>按集合</value>
-  </data>
-  <data name="HD Texture" xml:space="preserve">
-    <value>高清紋理</value>
-  </data>
-  <data name="Metadata" xml:space="preserve">
-    <value>元數據</value>
-  </data>
-  <data name="Tex Path" xml:space="preserve">
-    <value>紋理路徑</value>
-  </data>
-  <data name="Maintained and Updated by" xml:space="preserve">
-    <value>維護和更新人</value>
-  </data>
-  <data name="Copy From:" xml:space="preserve">
-    <value>複製自：</value>
-  </data>
-  <data name="Copy To:" xml:space="preserve">
-    <value>複製到：</value>
-  </data>
-  <data name="Copy File" xml:space="preserve">
-    <value>複製文件</value>
-  </data>
-  <data name="Copy Model" xml:space="preserve">
-    <value>複製模型</value>
-  </data>
-  <data name="Default Modpack URL" xml:space="preserve">
-    <value>默認 Mod 包的 URL</value>
-  </data>
-  <data name="Synchronize View Tabs" xml:space="preserve">
-    <value>同步視圖選項卡</value>
-  </data>
-  <data name="Remember Race Selection" xml:space="preserve">
-    <value>記住種族選擇</value>
-  </data>
-  <data name="Default Race" xml:space="preserve">
-    <value>默認種族</value>
-  </data>
-  <data name="External Model Viewer Type" xml:space="preserve">
-    <value>外部模型查看器類型</value>
-  </data>
-  <data name="Export Complete Skeletons" xml:space="preserve">
-    <value>導出完整骨架</value>
-  </data>
-  <data name="TexTools Version" xml:space="preserve">
-    <value>TexTools 版本</value>
-  </data>
-  <data name="Body Material Auto-Assign" xml:space="preserve">
-    <value>身體材質自動指定</value>
-  </data>
-  <data name="/FILE PATH/" xml:space="preserve">
-    <value>/文件路徑/</value>
-  </data>
-  <data name="File Name:" xml:space="preserve">
-    <value>文件名：</value>
-  </data>
-  <data name="First Root Name:" xml:space="preserve">
-    <value>第一個根名稱：</value>
-  </data>
-  <data name="Model Level Item:" xml:space="preserve">
-    <value>模型級道具：</value>
-  </data>
-  <data name="Material Level Item:" xml:space="preserve">
-    <value>材質級道具：</value>
-  </data>
-  <data name="Warning Text" xml:space="preserve">
-    <value>警告文本</value>
-  </data>
-  <data name="Affected Items" xml:space="preserve">
-    <value>受影響的道具</value>
-  </data>
-  <data name="Parent Files" xml:space="preserve">
-    <value>父文件</value>
-  </data>
-  <data name="Sibling Files" xml:space="preserve">
-    <value>同級文件</value>
-  </data>
-  <data name="Child Files" xml:space="preserve">
-    <value>子文件</value>
-  </data>
-  <data name="Extract Raw File" xml:space="preserve">
-    <value>提取原始文件</value>
-  </data>
-  <data name="Copy Raw File" xml:space="preserve">
-    <value>複製原始文件</value>
-  </data>
-  <data name="Copy Model File" xml:space="preserve">
-    <value>複製模型文件</value>
-  </data>
-  <data name="File Info" xml:space="preserve">
-    <value>文件信息</value>
-  </data>
-  <data name="File Path:" xml:space="preserve">
-    <value>文件路徑：</value>
-  </data>
-  <data name="Extract File" xml:space="preserve">
-    <value>提取文件</value>
-  </data>
-  <data name="Import Raw File" xml:space="preserve">
-    <value>導入原始文件</value>
-  </data>
-  <data name="Destination Path:" xml:space="preserve">
-    <value>目標路徑：</value>
-  </data>
-  <data name="File is Decompressed Type 2 Data" xml:space="preserve">
-    <value>文件是解壓縮的類型2數據</value>
-  </data>
-  <data name="Import File" xml:space="preserve">
-    <value>導入文件</value>
-  </data>
-  <data name="Copy Row" xml:space="preserve">
-    <value>複製行</value>
-  </data>
-  <data name="Paste Row" xml:space="preserve">
-    <value>粘貼行</value>
-  </data>
-  <data name="Material - Colorset Row Settings - Row ~" xml:space="preserve">
-    <value>材質-顏色集行設置-行~</value>
-  </data>
-  <data name="Save" xml:space="preserve">
-    <value>保存</value>
-  </data>
-  <data name="Diffuse Color:" xml:space="preserve">
-    <value>漫反射顏色：</value>
-  </data>
-  <data name="Specular Power:" xml:space="preserve">
-    <value>鏡面反射強度：</value>
-  </data>
-  <data name="Edit Raw" xml:space="preserve">
-    <value>編輯原始數據</value>
-  </data>
-  <data name="Specular Color:" xml:space="preserve">
-    <value>鏡面反射顏色：</value>
-  </data>
-  <data name="Gloss:" xml:space="preserve">
-    <value>光澤度：</value>
-  </data>
-  <data name="Emissive Color:" xml:space="preserve">
-    <value>自發光顏色：</value>
-  </data>
-  <data name="Tile Material:" xml:space="preserve">
-    <value>陶瓷材質：</value>
-  </data>
-  <data name="Tile Count X:" xml:space="preserve">
-    <value>陶瓷計數 X：</value>
-  </data>
-  <data name="Tile Count Y:" xml:space="preserve">
-    <value>陶瓷計數 Y：</value>
-  </data>
-  <data name="Tile Skew X:" xml:space="preserve">
-    <value>陶瓷傾斜 X：</value>
-  </data>
-  <data name="Tile Skew Y:" xml:space="preserve">
-    <value>陶瓷傾斜 Y：</value>
-  </data>
-  <data name="Dye Settings" xml:space="preserve">
-    <value>染色設置</value>
-  </data>
-  <data name="Dye Template:" xml:space="preserve">
-    <value>染色模板：</value>
-  </data>
-  <data name="Apply to Diffuse" xml:space="preserve">
-    <value>使用漫反射</value>
-  </data>
-  <data name="Apply to Specular" xml:space="preserve">
-    <value>使用鏡面反射</value>
-  </data>
-  <data name="Apply to Emissive" xml:space="preserve">
-    <value>使用自發光</value>
-  </data>
-  <data name="Apply to Gloss" xml:space="preserve">
-    <value>使用光澤度</value>
-  </data>
-  <data name="Apply to Specular Power" xml:space="preserve">
-    <value>使用鏡面反射強度</value>
-  </data>
-  <data name="Preview Dye #" xml:space="preserve">
-    <value>染色預覽 #</value>
-  </data>
-  <data name="Copy Dye Values to Row" xml:space="preserve">
-    <value>複製染色效果到行</value>
-  </data>
-  <data name="RowNumber" xml:space="preserve">
-    <value>行編號</value>
-  </data>
-  <data name="Items in Variant (Identical Items)" xml:space="preserve">
-    <value>變體道具</value>
-  </data>
-  <data name="Items with same Material Set" xml:space="preserve">
-    <value>具有相同材質集的道具</value>
-  </data>
-  <data name="Items with same Model" xml:space="preserve">
-    <value>具有相變體型的道具</value>
-  </data>
-  <data name="Select Item" xml:space="preserve">
-    <value>選擇道具</value>
-  </data>
-  <data name="Item Selection" xml:space="preserve">
-    <value>道具選擇</value>
-  </data>
-  <data name="Raw Value Editor" xml:space="preserve">
-    <value>原始值編輯器</value>
-  </data>
-  <data name="Red" xml:space="preserve">
-    <value>紅</value>
-  </data>
-  <data name="Green" xml:space="preserve">
-    <value>綠</value>
-  </data>
-  <data name="Blue" xml:space="preserve">
-    <value>藍</value>
-  </data>
-  <data name="Item Converter" xml:space="preserve">
-    <value>道具轉換器</value>
-  </data>
-  <data name="Select Source Item" xml:space="preserve">
-    <value>選擇源道具</value>
-  </data>
-  <data name="Source:" xml:space="preserve">
-    <value>來源：</value>
-  </data>
-  <data name="Destination:" xml:space="preserve">
-    <value>目標：</value>
-  </data>
-  <data name="Source Variants:" xml:space="preserve">
-    <value>源變體：</value>
-  </data>
-  <data name="Destination Variants:" xml:space="preserve">
-    <value>目標變體：</value>
-  </data>
-  <data name="Make all destination variants identical" xml:space="preserve">
-    <value>使所有目標變體相同</value>
-  </data>
-  <data name="Create Modpack from Affected Items" xml:space="preserve">
-    <value>從受影響的道具創建 Mod 包</value>
-  </data>
-  <data name="Affected Files" xml:space="preserve">
-    <value>受影響的文件</value>
-  </data>
-  <data name="Simple" xml:space="preserve">
-    <value>簡單</value>
-  </data>
-  <data name="Preset:" xml:space="preserve">
-    <value>預設：</value>
-  </data>
-  <data name="Copy Visibility Settings" xml:space="preserve">
-    <value>複製可見性設置</value>
-  </data>
-  <data name="Paste Visibility Settings" xml:space="preserve">
-    <value>粘貼可見性設置</value>
-  </data>
-  <data name="Advanced" xml:space="preserve">
-    <value>高級</value>
-  </data>
-  <data name="IMC Variant:" xml:space="preserve">
-    <value>IMC 變體：</value>
-  </data>
-  <data name="[3] Some Cool Item Name" xml:space="preserve">
-    <value>[3] 一些很酷的道具名稱</value>
-  </data>
-  <data name="Material Set:" xml:space="preserve">
-    <value>材質集：</value>
-  </data>
-  <data name="VFX ID:" xml:space="preserve">
-    <value>視效 ID：</value>
-  </data>
-  <data name="SFX ID:" xml:space="preserve">
-    <value>特效 ID：</value>
-  </data>
-  <data name="Decal ID:" xml:space="preserve">
-    <value>貼花 ID：</value>
-  </data>
-  <data name="Anim ID:" xml:space="preserve">
-    <value>Anim ID：</value>
-  </data>
-  <data name="Visible Variant Parts" xml:space="preserve">
-    <value>可見變體部件</value>
-  </data>
-  <data name="Apply to All Variants" xml:space="preserve">
-    <value>適用於所有變體</value>
-  </data>
-  <data name="Show Paths" xml:space="preserve">
-    <value>顯示路徑</value>
-  </data>
-  <data name="Set:" xml:space="preserve">
-    <value>裝備：</value>
-  </data>
-  <data name="Slot:" xml:space="preserve">
-    <value>位置：</value>
-  </data>
-  <data name="Hands(glv)" xml:space="preserve">
-    <value>手（glv）</value>
-  </data>
-  <data name="[7] Bogarter's Gloves of Doing Cool Things" xml:space="preserve">
-    <value>[7] 整理 Mod 列表</value>
+  <data name="Race Information" xml:space="preserve">
+    <value>種族信息</value>
   </data>
   <data name="RaceGenderScalingEditor" xml:space="preserve">
     <value>種族性別比例編輯器</value>
   </data>
-  <data name="Minimum Height Multiplier:" xml:space="preserve">
-    <value>最小高度倍增器：</value>
+  <data name="Racial Models" xml:space="preserve">
+    <value>種族模型</value>
   </data>
-  <data name="Maximum Height Multiplier:" xml:space="preserve">
-    <value>最大高度倍增器：</value>
-  </data>
-  <data name="Minimum Tail/Ear Multiplier:" xml:space="preserve">
-    <value>最小尾巴/耳朵倍增器：</value>
-  </data>
-  <data name="Maximum Tail/Ear Multiplier:" xml:space="preserve">
-    <value>最大尾巴/耳朵倍增器：</value>
-  </data>
-  <data name="Minimum Bust X Multiplier:" xml:space="preserve">
-    <value>最小胸圍 X 軸倍增器：</value>
-  </data>
-  <data name="Maximum Bust X Multiplier:" xml:space="preserve">
-    <value>最大胸圍 X 軸倍增器：</value>
-  </data>
-  <data name="Minimum Bust Y Multiplier:" xml:space="preserve">
-    <value>最小胸圍 Y 軸倍增器：</value>
-  </data>
-  <data name="Maximum Bust Y Multiplier:" xml:space="preserve">
-    <value>最大胸圍 Y 軸倍增器：</value>
-  </data>
-  <data name="Minimum Bust Z Multiplier:" xml:space="preserve">
-    <value>最小胸圍 Z 軸倍增器：</value>
-  </data>
-  <data name="Maximum Bust Z Multiplier:" xml:space="preserve">
-    <value>最大胸圍 Z 軸倍增器：</value>
-  </data>
-  <data name="Restore Defaults" xml:space="preserve">
-    <value>恢復默認設置</value>
+  <data name="Racial Settings - {0} - {1}" xml:space="preserve">
+    <value>種族設置-{0}-{1}</value>
   </data>
   <data name="Racial Settings Editor" xml:space="preserve">
     <value>種族設置編輯器</value>
   </data>
-  <data name="Select a Race/Gender to customize:." xml:space="preserve">
-    <value>選擇要自定義的種族/性別：</value>
+  <data name="Racial Settings: {0} - {1}" xml:space="preserve">
+    <value>種族設置: {0}-{1}</value>
   </data>
-  <data name="Extra Skeleton Settings" xml:space="preserve">
-    <value>額外骨骼設置</value>
+  <data name="Raw" xml:space="preserve">
+    <value>原始</value>
   </data>
-  <data name="Each race must have an extra skeleton set in order to have /visor settings work in-game." xml:space="preserve">
-    <value>爲了讓 /visor 設置在遊戲中起作用，每個種族都必須設置額外的骨架。</value>
+  <data name="Raw File Operations" xml:space="preserve">
+    <value>原始文件操作</value>
   </data>
-  <data name="Animation Type:" xml:space="preserve">
-    <value>動畫類型：</value>
+  <data name="Raw Files" xml:space="preserve">
+    <value>原始文件</value>
+  </data>
+  <data name="Raw Shader Parameters" xml:space="preserve">
+    <value>原始着色器參數</value>
+  </data>
+  <data name="Raw Value Editor" xml:space="preserve">
+    <value>原始值編輯器</value>
+  </data>
+  <data name="Raw_File_Operations" xml:space="preserve">
+    <value>原始文件操作</value>
+  </data>
+  <data name="Reaper Transformation" xml:space="preserve">
+    <value>釤鐮客夜遊魂衣</value>
+  </data>
+  <data name="Rebuild Cache" xml:space="preserve">
+    <value>重建緩存</value>
+  </data>
+  <data name="RebuildFlag" xml:space="preserve">
+    <value>重建標誌</value>
+  </data>
+  <data name="Rebuild_Cache" xml:space="preserve">
+    <value>重建緩存</value>
+  </data>
+  <data name="Recover Unused Space" xml:space="preserve">
+    <value>恢復未使用的空間</value>
+  </data>
+  <data name="Recover_Space" xml:space="preserve">
+    <value>回收未使用的空間</value>
+  </data>
+  <data name="Red" xml:space="preserve">
+    <value>紅</value>
+  </data>
+  <data name="Redirect imports to Lumina" xml:space="preserve">
+    <value>將導入重定向到 Lumina</value>
+  </data>
+  <data name="Reflection" xml:space="preserve">
+    <value>反光</value>
+  </data>
+  <data name="Reflection:" xml:space="preserve">
+    <value>反光：</value>
+  </data>
+  <data name="Remember Race Selection" xml:space="preserve">
+    <value>記住種族選擇</value>
+  </data>
+  <data name="Remove" xml:space="preserve">
+    <value>移除</value>
+  </data>
+  <data name="Remove Attribute" xml:space="preserve">
+    <value>刪除屬性</value>
+  </data>
+  <data name="Remove Item" xml:space="preserve">
+    <value>刪除道具</value>
+  </data>
+  <data name="Remove Shape" xml:space="preserve">
+    <value>刪除形狀</value>
+  </data>
+  <data name="Removed_Mesh" xml:space="preserve">
+    <value>移除的網格
+刪除的網格數：</value>
+  </data>
+  <data name="Removed_MeshParts" xml:space="preserve">
+    <value>已刪除此網格的網格部件
+
+
+刪除的部件號：</value>
+  </data>
+  <data name="Removed_MeshParts_Note" xml:space="preserve">
+    <value>對以下這些移除的部件進行更改不會產生任何影響</value>
+  </data>
+  <data name="Removed_Mesh_Note" xml:space="preserve">
+    <value>對上述刪除的網格所做的更改不會產生任何效果</value>
+  </data>
+  <data name="Remove_Part_Attribute" xml:space="preserve">
+    <value>移除部件屬性</value>
+  </data>
+  <data name="Rename" xml:space="preserve">
+    <value>改名</value>
+  </data>
+  <data name="Report_Bug" xml:space="preserve">
+    <value>報告 Bug</value>
+  </data>
+  <data name="Reset_to_Default" xml:space="preserve">
+    <value>默認</value>
+  </data>
+  <data name="Restore Defaults" xml:space="preserve">
+    <value>恢復默認設置</value>
+  </data>
+  <data name="Review Affected Items" xml:space="preserve">
+    <value>審查受影響的道具</value>
+  </data>
+  <data name="Review [{0}] Total File(s)" xml:space="preserve">
+    <value>查看 [{0}] 個總文件</value>
   </data>
   <data name="Rotation A:" xml:space="preserve">
     <value>旋轉 A：</value>
-  </data>
-  <data name="Rotation of the j_ex_met_va bone in degrees." xml:space="preserve">
-    <value>j_ex_met_va 骨骼的旋轉度。</value>
-  </data>
-  <data name="Rotation of the j_ex_met_vb bone in degrees." xml:space="preserve">
-    <value>j_ex_met_vb 骨骼的旋轉度。</value>
   </data>
   <data name="Rotation B:" xml:space="preserve">
     <value>旋轉 B：</value>
@@ -1392,632 +2112,185 @@
   <data name="Rotation C:" xml:space="preserve">
     <value>旋轉 C：</value>
   </data>
-  <data name="Unknown High:" xml:space="preserve">
-    <value>未知高：</value>
+  <data name="Rotation of the j_ex_met_va bone in degrees." xml:space="preserve">
+    <value>j_ex_met_va 骨骼的旋轉度。</value>
   </data>
-  <data name="Unknown Low:" xml:space="preserve">
-    <value>未知低：</value>
+  <data name="Rotation of the j_ex_met_vb bone in degrees." xml:space="preserve">
+    <value>j_ex_met_vb 骨骼的旋轉度。</value>
   </data>
   <data name="Rotation of the j_ex_met_vc bone in degrees." xml:space="preserve">
     <value>j_ex_met_vc 骨骼的旋轉度。</value>
   </data>
-  <data name="Racial Models" xml:space="preserve">
-    <value>種族模型</value>
+  <data name="RowNumber" xml:space="preserve">
+    <value>行編號</value>
   </data>
-  <data name="Visibility Settings" xml:space="preserve">
-    <value>可見性設置</value>
+  <data name="Save" xml:space="preserve">
+    <value>保存</value>
   </data>
-  <data name="Variant Settings" xml:space="preserve">
-    <value>變體設置</value>
+  <data name="Save_Directory" xml:space="preserve">
+    <value>Mod 導出資源保存文件夾</value>
   </data>
-  <data name="Apply Deformation Shapes" xml:space="preserve">
-    <value>應用變形形狀</value>
-  </data>
-  <data name="Apply Shapes" xml:space="preserve">
-    <value>應用形狀</value>
-  </data>
-  <data name="Export Full Model" xml:space="preserve">
-    <value>導出完整模型</value>
-  </data>
-  <data name="Full Model Viewer" xml:space="preserve">
-    <value>完整模型查看器</value>
-  </data>
-  <data name="Colorset Row Highlight Selection" xml:space="preserve">
-    <value>顏色集行高亮顯示選擇</value>
-  </data>
-  <data name="Highlighted Row:" xml:space="preserve">
-    <value>高亮顯示的行：</value>
-  </data>
-  <data name="Apply" xml:space="preserve">
-    <value>運用</value>
-  </data>
-  <data name="Model Editor" xml:space="preserve">
-    <value>模型編輯器</value>
-  </data>
-  <data name="Group:" xml:space="preserve">
-    <value>組：</value>
-  </data>
-  <data name="Part:" xml:space="preserve">
-    <value>部件：</value>
-  </data>
-  <data name="Remove Shape" xml:space="preserve">
-    <value>刪除形狀</value>
-  </data>
-  <data name="Remove Attribute" xml:space="preserve">
-    <value>刪除屬性</value>
-  </data>
-  <data name="Model Scale:" xml:space="preserve">
-    <value>模型比例：</value>
-  </data>
-  <data name="Old Model Size:" xml:space="preserve">
-    <value>舊模型尺寸：</value>
-  </data>
-  <data name="Warning Text Goes Here" xml:space="preserve">
-    <value>此處顯示警告文本</value>
-  </data>
-  <data name="11 Meters" xml:space="preserve">
-    <value>11 米</value>
-  </data>
-  <data name="New Model Size:" xml:space="preserve">
-    <value>新模型尺寸：</value>
-  </data>
-  <data name="Model Importer" xml:space="preserve">
-    <value>模型導入器</value>
-  </data>
-  <data name="Use Existing" xml:space="preserve">
-    <value>使用現有的</value>
-  </data>
-  <data name="Use Original Shape Data" xml:space="preserve">
-    <value>使用原始形狀數據</value>
-  </data>
-  <data name="Clear UV2" xml:space="preserve">
-    <value>清除 UV2</value>
-  </data>
-  <data name="Clear Vertex Color" xml:space="preserve">
-    <value>清除頂點顏色</value>
-  </data>
-  <data name="Force UV1 to [1,-1]" xml:space="preserve">
-    <value>強制 UV1 to [1,-1]</value>
-  </data>
-  <data name="Clone UV1 to UV2" xml:space="preserve">
-    <value>將 UV1 克隆到 UV2</value>
-  </data>
-  <data name="Clear Vertex Alpha" xml:space="preserve">
-    <value>清除頂點 Alpha</value>
-  </data>
-  <data name="Automatically Adjust Scale" xml:space="preserve">
-    <value>自動調整比例</value>
-  </data>
-  <data name="Override Incoming Race:" xml:space="preserve">
-    <value>覆蓋傳入種族：</value>
-  </data>
-  <data name="Open Editor" xml:space="preserve">
-    <value>打開編輯器</value>
-  </data>
-  <data name="Viewer Options" xml:space="preserve">
-    <value>查看器選項</value>
-  </data>
-  <data name="Standard Modpack Creator" xml:space="preserve">
-    <value>標準 Mod 包創建器</value>
-  </data>
-  <data name="StandardModpackCreatorItemSelect" xml:space="preserve">
-    <value>選擇標準 Mod 包創建器</value>
-  </data>
-  <data name="Final Review" xml:space="preserve">
-    <value>最終審查</value>
-  </data>
-  <data name="Currently Added Items" xml:space="preserve">
-    <value>當前添加的道具</value>
-  </data>
-  <data name="105 Total Files" xml:space="preserve">
-    <value>105 個文件</value>
-  </data>
-  <data name="Item Name" xml:space="preserve">
-    <value>道具名稱</value>
-  </data>
-  <data name="Selected [7] Model Files" xml:space="preserve">
-    <value>選定的 [7] 個模型文件</value>
-  </data>
-  <data name="Remove Item" xml:space="preserve">
-    <value>刪除道具</value>
-  </data>
-  <data name="StandardModpackFileSelect" xml:space="preserve">
-    <value>選擇標準 Mod 包文件</value>
-  </data>
-  <data name="Item Level" xml:space="preserve">
-    <value>道具級別</value>
-  </data>
-  <data name="Next" xml:space="preserve">
-    <value>下一個</value>
-  </data>
-  <data name="CompleteModpackFilesReview" xml:space="preserve">
-    <value>完成 Mod 包文件審查</value>
-  </data>
-  <data name="Metadata Files" xml:space="preserve">
-    <value>元數據文件</value>
-  </data>
-  <data name="Model Files" xml:space="preserve">
-    <value>模型文件</value>
-  </data>
-  <data name="Material Files" xml:space="preserve">
-    <value>材質文件</value>
-  </data>
-  <data name="Texture Files" xml:space="preserve">
-    <value>紋理文件</value>
-  </data>
-  <data name="File Count" xml:space="preserve">
-    <value>文件計數</value>
-  </data>
-  <data name="Confirm" xml:space="preserve">
-    <value>確認</value>
-  </data>
-  <data name="StandardModpackFinalize" xml:space="preserve">
-    <value>標準 Mod 包最終確認</value>
-  </data>
-  <data name="Create Modpack" xml:space="preserve">
-    <value>創建 Mod 包</value>
-  </data>
-  <data name="Create As:" xml:space="preserve">
-    <value>創建爲：</value>
-  </data>
-  <data name="CompleteModpackLevelSelect" xml:space="preserve">
-    <value>選擇完成 Mod 包級別</value>
-  </data>
-  <data name="Select Modification Level" xml:space="preserve">
-    <value>選擇修改級別</value>
-  </data>
-  <data name="All Files" xml:space="preserve">
-    <value>所有文件</value>
-  </data>
-  <data name="StandardModpackSharedItems" xml:space="preserve">
-    <value>標準 Mod 包共享道具</value>
-  </data>
-  <data name="Modifications at this level will affect the following items:" xml:space="preserve">
-    <value>此級別的修改將影響以下道具：</value>
-  </data>
-  <data name="Include Child Files" xml:space="preserve">
-    <value>包括子文件</value>
-  </data>
-  <data name="Add New" xml:space="preserve">
-    <value>添加新內容</value>
-  </data>
-  <data name="Choose Destination Items" xml:space="preserve">
-    <value>選擇目標道具</value>
-  </data>
-  <data name="Continue" xml:space="preserve">
-    <value>繼續</value>
-  </data>
-  <data name="Texture File Name Reference" xml:space="preserve">
-    <value>紋理文件名參考</value>
-  </data>
-  <data name="Normal:" xml:space="preserve">
-    <value>法線：</value>
-  </data>
-  <data name="Specular:" xml:space="preserve">
-    <value>鏡面反射：</value>
-  </data>
-  <data name="Diffuse:" xml:space="preserve">
-    <value>漫反射：</value>
-  </data>
-  <data name="Transparency:" xml:space="preserve">
-    <value>透明度：</value>
-  </data>
-  <data name="Shader:" xml:space="preserve">
-    <value>着色器：</value>
-  </data>
-  <data name="Material Path" xml:space="preserve">
-    <value>紋理路徑</value>
-  </data>
-  <data name="Use Shared Textures" xml:space="preserve">
-    <value>使用共享紋理</value>
-  </data>
-  <data name="Use Unique Textures" xml:space="preserve">
-    <value>使用唯一紋理</value>
-  </data>
-  <data name="Colorset:" xml:space="preserve">
-    <value>顏色集：</value>
-  </data>
-  <data name="View Raw Values" xml:space="preserve">
-    <value>查看原始值</value>
-  </data>
-  <data name="Copy Material" xml:space="preserve">
-    <value>複製材質</value>
-  </data>
-  <data name="Paste Material" xml:space="preserve">
-    <value>粘貼材質</value>
-  </data>
-  <data name="Disable/Delete" xml:space="preserve">
-    <value>禁用/刪除</value>
-  </data>
-  <data name="Backfaces:" xml:space="preserve">
-    <value>背面：</value>
-  </data>
-  <data name="ADD NEW MATERIAL" xml:space="preserve">
-    <value>添加新材質</value>
-  </data>
-  <data name="EDIT ALL MATERIAL SETS" xml:space="preserve">
-    <value>編輯所有材質集</value>
-  </data>
-  <data name="EDIT MATERIAL" xml:space="preserve">
-    <value>編輯材質</value>
-  </data>
-  <data name="Rename" xml:space="preserve">
-    <value>改名</value>
-  </data>
-  <data name="Other" xml:space="preserve">
-    <value>其他</value>
-  </data>
-  <data name="Settings" xml:space="preserve">
-    <value>設定</value>
-  </data>
-  <data name="View" xml:space="preserve">
-    <value>檢視</value>
-  </data>
-  <data name="DAE_file_to_import" xml:space="preserve">
-    <value>被導入的 DAE 文件</value>
-  </data>
-  <data name="DAE_Info" xml:space="preserve">
-    <value>DAE 信息</value>
-  </data>
-  <data name="Export_DAE_file" xml:space="preserve">
-    <value>導出 DAE 文件</value>
-  </data>
-  <data name="Export_DAE_Materials" xml:space="preserve">
-    <value>導出 DAE 和材質</value>
-  </data>
-  <data name="Set: e0123" xml:space="preserve">
-    <value>裝備：e0123</value>
-  </data>
-  <data name="Slot: Head(met)" xml:space="preserve">
-    <value>位置：頭（帽子）</value>
-  </data>
-  <data name="Variant: 5" xml:space="preserve">
-    <value>變體：5</value>
-  </data>
-  <data name="Material Set: 3" xml:space="preserve">
-    <value>材質集：3</value>
-  </data>
-  <data name="Race Information" xml:space="preserve">
-    <value>種族信息</value>
-  </data>
-  <data name="Model Used" xml:space="preserve">
-    <value>使用的模型</value>
-  </data>
-  <data name="Material Used" xml:space="preserve">
-    <value>使用的材質</value>
-  </data>
-  <data name="Copy_File" xml:space="preserve">
-    <value>複製原始文件</value>
-  </data>
-  <data name="Reflection:" xml:space="preserve">
-    <value>反光：</value>
-  </data>
-  <data name="VFX -" xml:space="preserve">
-    <value>視效 -</value>
-  </data>
-  <data name="VFX:" xml:space="preserve">
-    <value>視效：</value>
-  </data>
-  <data name="Multi:" xml:space="preserve">
-    <value>反射：</value>
-  </data>
-  <data name="Manage Mod List" xml:space="preserve">
-    <value>管理 Mod 列表</value>
-  </data>
-  <data name="Clean Up Modlist" xml:space="preserve">
-    <value>整理 Mod 列表</value>
-  </data>
-  <data name="Recover Unused Space" xml:space="preserve">
-    <value>恢復未使用的空間</value>
-  </data>
-  <data name="Standard Modpack" xml:space="preserve">
-    <value>標準 Mod 包</value>
-  </data>
-  <data name="Backup Modpack" xml:space="preserve">
-    <value>備份 Mod 包</value>
-  </data>
-  <data name="Edit Racial Settings" xml:space="preserve">
-    <value>編輯種族設置</value>
-  </data>
-  <data name="Auto-Assign Skin Materials" xml:space="preserve">
-    <value>自動指定皮膚材質</value>
-  </data>
-  <data name="Raw File Operations" xml:space="preserve">
-    <value>原始文件操作</value>
-  </data>
-  <data name="Light" xml:space="preserve">
-    <value>亮</value>
-  </data>
-  <data name="Dark" xml:space="preserve">
-    <value>暗</value>
-  </data>
-  <data name="Download Index Backups" xml:space="preserve">
-    <value>下載索引備份</value>
-  </data>
-  <data name="Cache Operations" xml:space="preserve">
-    <value>緩存操作</value>
-  </data>
-  <data name="Rebuild Cache" xml:space="preserve">
-    <value>重建緩存</value>
-  </data>
-  <data name="Load Item Sets File" xml:space="preserve">
-    <value>加載道具集文件</value>
+  <data name="Scalp" xml:space="preserve">
+    <value>頭皮</value>
   </data>
   <data name="Scan for new Item Sets" xml:space="preserve">
     <value>掃描新道具集</value>
   </data>
-  <data name="Mesh" xml:space="preserve">
-    <value>網格</value>
+  <data name="Scan_For_Sets" xml:space="preserve">
+    <value>掃描新道具集</value>
   </data>
-  <data name="HIGHLIGHT COLORSET ROW" xml:space="preserve">
-    <value>突出顯示顏色集行</value>
+  <data name="Search" xml:space="preserve">
+    <value>搜索</value>
   </data>
-  <data name="ADD TO FMV" xml:space="preserve">
-    <value>添加到查看器</value>
+  <data name="Search_dot" xml:space="preserve">
+    <value>搜索...</value>
   </data>
-  <data name="Off" xml:space="preserve">
-    <value>關閉</value>
+  <data name="Select a Race/Gender to customize:." xml:space="preserve">
+    <value>選擇要自定義的種族/性別：</value>
   </data>
-  <data name="MDL Path" xml:space="preserve">
-    <value>模型路徑</value>
+  <data name="Select Destination Item" xml:space="preserve">
+    <value>選擇目標道具</value>
   </data>
-  <data name="Enable /visor" xml:space="preserve">
-    <value>啓用/查看器</value>
+  <data name="Select Item" xml:space="preserve">
+    <value>選擇道具</value>
   </data>
-  <data name="Instant" xml:space="preserve">
-    <value>瞬間</value>
+  <data name="Select Modification Level" xml:space="preserve">
+    <value>選擇修改級別</value>
   </data>
-  <data name="Animated" xml:space="preserve">
-    <value>有生氣的</value>
+  <data name="Select one or more materials to include.  Automatically includes all textures used." xml:space="preserve">
+    <value>選擇一個或多個要包括的材質，自動包括使用的所有紋理。</value>
   </data>
-  <data name="Own" xml:space="preserve">
-    <value>自己</value>
+  <data name="Select one or more models to include.  Automatically includes all materials and textures used.  (Excluding racial skin materials)" xml:space="preserve">
+    <value>選擇要包括的一個或多個模型，自動包括使用的所有材質和紋理。（不包括種族皮膚材料）</value>
   </data>
-  <data name="Item Information" xml:space="preserve">
-    <value>道具信息</value>
+  <data name="Select one or more textures to include.  Does not include any other files." xml:space="preserve">
+    <value>選擇要包括的一個或多個紋理，不包括任何其他文件。</value>
   </data>
-  <data name="Used by {0}/{1} Variants" xml:space="preserve">
-    <value>由 {0}/{1} 變體使用</value>
+  <data name="Select Source Item" xml:space="preserve">
+    <value>選擇源道具</value>
   </data>
-  <data name="Used by {0} Other Materials" xml:space="preserve">
-    <value>由 {0} 其他材質使用</value>
+  <data name="Select {0} Files" xml:space="preserve">
+    <value>選擇 {0} 文件</value>
   </data>
-  <data name="Material Editor" xml:space="preserve">
-    <value>材質編輯器</value>
+  <data name="Selected All Files - [{0}] Total File(s)" xml:space="preserve">
+    <value>已選擇所有文件-[{0}]個總文件</value>
   </data>
-  <data name="Default" xml:space="preserve">
-    <value>默認</value>
+  <data name="Selected [7] Model Files" xml:space="preserve">
+    <value>選定的 [7] 個模型文件</value>
   </data>
-  <data name="Dyeable Furniture" xml:space="preserve">
-    <value>可染色傢俱</value>
+  <data name="Selected [{0}] {1} File(s) - [{2}] Total File(s)" xml:space="preserve">
+    <value>已選擇 [{0}] {1} 個文件 - [{2}] 個總文件</value>
   </data>
-  <data name="Furniture" xml:space="preserve">
-    <value>傢俱</value>
+  <data name="Select_Active" xml:space="preserve">
+    <value>選擇激活的</value>
   </data>
-  <data name="Glass" xml:space="preserve">
-    <value>玻璃</value>
+  <data name="Select_All" xml:space="preserve">
+    <value>選擇所有</value>
   </data>
-  <data name="Hair" xml:space="preserve">
-    <value>頭髮</value>
+  <data name="Select_a_file_dot" xml:space="preserve">
+    <value>選擇一個文件...</value>
   </data>
-  <data name="Hide Backfaces" xml:space="preserve">
-    <value>隱藏背面</value>
+  <data name="Select_Language" xml:space="preserve">
+    <value>選擇語言</value>
   </data>
-  <data name="Iris" xml:space="preserve">
-    <value>虹膜</value>
+  <data name="Select_Mod" xml:space="preserve">
+    <value>選擇 Mod</value>
   </data>
-  <data name="Item Load Error" xml:space="preserve">
-    <value>道具加載錯誤</value>
+  <data name="Set All Together:" xml:space="preserve">
+    <value>集合：</value>
   </data>
-  <data name="Loading usage data..." xml:space="preserve">
-    <value>正在加載需要使用的數據...</value>
+  <data name="Set:" xml:space="preserve">
+    <value>裝備：</value>
   </data>
-  <data name="No Texture Selected" xml:space="preserve">
-    <value>未選擇紋理</value>
-  </data>
-  <data name="Show Backfaces" xml:space="preserve">
-    <value>顯示背面</value>
-  </data>
-  <data name="Standard" xml:space="preserve">
-    <value>標準</value>
-  </data>
-  <data name="Texture File Error" xml:space="preserve">
-    <value>紋理文件錯誤</value>
-  </data>
-  <data name="This race uses {0}'s body material(s)." xml:space="preserve">
-    <value>此種族使用 {0} 的身體材質。</value>
-  </data>
-  <data name="This race's model uses {0}'s material(s)." xml:space="preserve">
-    <value>此種族的模型使用 {0} 的材質。</value>
-  </data>
-  <data name="CacheOK" xml:space="preserve">
-    <value>緩存正常</value>
-  </data>
-  <data name="CacheVersionUpdate" xml:space="preserve">
-    <value>緩存版本更新</value>
-  </data>
-  <data name="Creating Initial Backups" xml:space="preserve">
-    <value>創建初始備份</value>
-  </data>
-  <data name="DiffuseSpecular" xml:space="preserve">
-    <value>漫反射鏡面反射</value>
-  </data>
-  <data name="Index Access Error" xml:space="preserve">
-    <value>索引訪問錯誤</value>
-  </data>
-  <data name="InvalidData" xml:space="preserve">
-    <value>無效數據</value>
-  </data>
-  <data name="LanguageChanged" xml:space="preserve">
-    <value>語言改變</value>
-  </data>
-  <data name="Lumina Directory Error." xml:space="preserve">
-    <value>Lumina 目錄錯誤。</value>
-  </data>
-  <data name="ManualRequest" xml:space="preserve">
-    <value>手動請求</value>
-  </data>
-  <data name="Monster" xml:space="preserve">
-    <value>怪物</value>
-  </data>
-  <data name="NoCache" xml:space="preserve">
-    <value>無緩存</value>
-  </data>
-  <data name="RebuildFlag" xml:space="preserve">
-    <value>重建標誌</value>
-  </data>
-  <data name="TexToolsModPack TTMP (*.ttmp;*.ttmp2)|*.ttmp;*.ttmp2" xml:space="preserve">
-    <value>TexTools Mod 包 TTMP (*.ttmp;*.ttmp2)|*.ttmp;*.ttmp2</value>
-  </data>
-  <data name="Editing Multiple Materials: Material" xml:space="preserve">
-    <value>編輯多個材質：材質  </value>
-  </data>
-  <data name="New Material" xml:space="preserve">
-    <value>新材質</value>
-  </data>
-  <data name="New Material: Material" xml:space="preserve">
-    <value>新材質：材質</value>
-  </data>
-  <data name="New Materials" xml:space="preserve">
-    <value>新材質</value>
-  </data>
-  <data name="New Materials: Material" xml:space="preserve">
-    <value>新材質：材質</value>
-  </data>
-  <data name="New Racial Material" xml:space="preserve">
-    <value>新種族材質</value>
-  </data>
-  <data name="Updated {0}/{1} Material Sets..." xml:space="preserve">
-    <value>已更新 {0}/{1} 個材質集...</value>
-  </data>
-  <data name="BodyNoPores" xml:space="preserve">
-    <value>身體無孔</value>
-  </data>
-  <data name="BodyWithHair" xml:space="preserve">
-    <value>身體和頭髮</value>
-  </data>
-  <data name="FaceBright" xml:space="preserve">
-    <value>臉高光</value>
-  </data>
-  <data name="FaceNoPores" xml:space="preserve">
-    <value>臉無孔</value>
-  </data>
-  <data name="ColorSet" xml:space="preserve">
-    <value>顏色集</value>
-  </data>
-  <data name="Decal" xml:space="preserve">
-    <value>貼花</value>
-  </data>
-  <data name="Diffuse" xml:space="preserve">
-    <value>漫反射</value>
-  </data>
-  <data name="HQ Icon" xml:space="preserve">
-    <value>高清圖標</value>
-  </data>
-  <data name="Icon" xml:space="preserve">
-    <value>圖標</value>
-  </data>
-  <data name="Mask" xml:space="preserve">
-    <value>遮罩</value>
-  </data>
-  <data name="Material Set: --" xml:space="preserve">
-    <value>材質集：--</value>
-  </data>
-  <data name="Material Set: {0}" xml:space="preserve">
-    <value>材質集：{0}</value>
-  </data>
-  <data name="Material:" xml:space="preserve">
-    <value>材質：</value>
-  </data>
-  <data name="Multi" xml:space="preserve">
-    <value>反射</value>
-  </data>
-  <data name="Normal" xml:space="preserve">
-    <value>法線</value>
+  <data name="Set: e0123" xml:space="preserve">
+    <value>裝備：e0123</value>
   </data>
   <data name="Set: {0}" xml:space="preserve">
     <value>集： {0}</value>
   </data>
-  <data name="Slot: --" xml:space="preserve">
-    <value>位置：--</value>
+  <data name="Settings" xml:space="preserve">
+    <value>設定</value>
   </data>
-  <data name="Slot: Unknown ({0})" xml:space="preserve">
-    <value>位置：未知（{0}）</value>
+  <data name="SFX ID:" xml:space="preserve">
+    <value>特效 ID：</value>
   </data>
-  <data name="Slot: {0} ({1})" xml:space="preserve">
-    <value>位置：{0} ({1})</value>
+  <data name="Shader:" xml:space="preserve">
+    <value>着色器：</value>
   </data>
-  <data name="Specular" xml:space="preserve">
-    <value>鏡面反射</value>
+  <data name="Shape Info Count:" xml:space="preserve">
+    <value>形狀信息計數：</value>
   </data>
-  <data name="UI Elements" xml:space="preserve">
-    <value>UI 元素</value>
+  <data name="ShapeDescription1_line1" xml:space="preserve">
+    <value>這將禁用此網格的所有形狀數據。</value>
   </data>
-  <data name="Variant: --" xml:space="preserve">
-    <value>變體：--</value>
+  <data name="ShapeDescription1_line2" xml:space="preserve">
+    <value>如果道具與其他道具組合時出現鏤空，請使用這些選項。</value>
   </data>
-  <data name="Variant: {0}" xml:space="preserve">
-    <value>變體：{0}</value>
+  <data name="ShapeDescription1_line3" xml:space="preserve">
+    <value>以後的版本將提供更多形狀數據選項。</value>
   </data>
-  <data name="AlphaLimiter" xml:space="preserve">
-    <value>透明限制器</value>
+  <data name="ShapeDescription2_line1" xml:space="preserve">
+    <value>此網格沒有形狀數據。</value>
   </data>
-  <data name="Equipment1" xml:space="preserve">
-    <value>裝備1</value>
+  <data name="ShapeDescription2_line2" xml:space="preserve">
+    <value>選項被禁用。</value>
   </data>
-  <data name="Face1" xml:space="preserve">
-    <value>臉1</value>
+  <data name="Shapes" xml:space="preserve">
+    <value>形狀</value>
   </data>
-  <data name="Furniture1" xml:space="preserve">
-    <value>傢俱1</value>
+  <data name="Shin" xml:space="preserve">
+    <value>小腿</value>
   </data>
-  <data name="Furniture10" xml:space="preserve">
-    <value>傢俱10</value>
+  <data name="Shoes" xml:space="preserve">
+    <value>鞋子</value>
   </data>
-  <data name="Furniture11" xml:space="preserve">
-    <value>傢俱11</value>
+  <data name="Shorts" xml:space="preserve">
+    <value>短褲</value>
   </data>
-  <data name="Furniture12" xml:space="preserve">
-    <value>傢俱12</value>
+  <data name="Show Affected Items" xml:space="preserve">
+    <value>顯示受影響的道具</value>
   </data>
-  <data name="Furniture13" xml:space="preserve">
-    <value>傢俱13</value>
+  <data name="Show Backfaces" xml:space="preserve">
+    <value>顯示背面</value>
   </data>
-  <data name="Furniture2" xml:space="preserve">
-    <value>傢俱2</value>
+  <data name="Show Paths" xml:space="preserve">
+    <value>顯示路徑</value>
   </data>
-  <data name="Furniture3" xml:space="preserve">
-    <value>傢俱3</value>
+  <data name="Show Skeleton" xml:space="preserve">
+    <value>顯示骨架</value>
   </data>
-  <data name="Furniture4" xml:space="preserve">
-    <value>傢俱4</value>
+  <data name="Sibling Files" xml:space="preserve">
+    <value>同級文件</value>
   </data>
-  <data name="Furniture5" xml:space="preserve">
-    <value>傢俱5</value>
+  <data name="Simple" xml:space="preserve">
+    <value>簡單</value>
   </data>
-  <data name="Furniture6" xml:space="preserve">
-    <value>傢俱6</value>
+  <data name="Simple_ModPack" xml:space="preserve">
+    <value>簡單 Mod 包</value>
   </data>
-  <data name="Furniture7" xml:space="preserve">
-    <value>傢俱7</value>
+  <data name="Simple_ModPack_Creator" xml:space="preserve">
+    <value>簡單 Mod 創建器</value>
   </data>
-  <data name="Furniture8" xml:space="preserve">
-    <value>傢俱8</value>
+  <data name="Simple_ModPack_Importer" xml:space="preserve">
+    <value>簡單 Mod 包導入器</value>
   </data>
-  <data name="Furniture9" xml:space="preserve">
-    <value>傢俱9</value>
+  <data name="Single" xml:space="preserve">
+    <value>單選</value>
   </data>
-  <data name="Hair1" xml:space="preserve">
-    <value>頭髮1</value>
+  <data name="Single_Selection" xml:space="preserve">
+    <value>單選</value>
   </data>
-  <data name="Hair2" xml:space="preserve">
-    <value>頭髮2</value>
+  <data name="Size_colon" xml:space="preserve">
+    <value>大小：</value>
   </data>
-  <data name="Occlusion" xml:space="preserve">
-    <value>遮擋</value>
+  <data name="Skeleton" xml:space="preserve">
+    <value>骨骼</value>
   </data>
-  <data name="Raw Shader Parameters" xml:space="preserve">
-    <value>原始着色器參數</value>
+  <data name="Skin" xml:space="preserve">
+    <value>皮膚</value>
+  </data>
+  <data name="Skin Race" xml:space="preserve">
+    <value>皮膚種族</value>
   </data>
   <data name="SkinColor" xml:space="preserve">
     <value>皮膚顏色</value>
@@ -2040,11 +2313,209 @@
   <data name="SkinWetnessLerp" xml:space="preserve">
     <value>皮膚溼度 Lerp</value>
   </data>
-  <data name="Emissive" xml:space="preserve">
-    <value>自發光</value>
+  <data name="Skin_Color" xml:space="preserve">
+    <value>皮膚顏色</value>
   </data>
-  <data name="Raw" xml:space="preserve">
-    <value>原始</value>
+  <data name="Skin_Color_Note_Info" xml:space="preserve">
+    <value>注意：皮膚顏色與紋理中的默認皮膚顏色混合，其他的都是直接的顏色。</value>
+  </data>
+  <data name="Sleeveless Top" xml:space="preserve">
+    <value>無袖上衣</value>
+  </data>
+  <data name="Slot" xml:space="preserve">
+    <value>部位</value>
+  </data>
+  <data name="Slot:" xml:space="preserve">
+    <value>位置：</value>
+  </data>
+  <data name="Slot: --" xml:space="preserve">
+    <value>位置：--</value>
+  </data>
+  <data name="Slot: Head(met)" xml:space="preserve">
+    <value>位置：頭（帽子）</value>
+  </data>
+  <data name="Slot: Unknown ({0})" xml:space="preserve">
+    <value>位置：未知（{0}）</value>
+  </data>
+  <data name="Slot: {0} ({1})" xml:space="preserve">
+    <value>位置：{0} ({1})</value>
+  </data>
+  <data name="Sort_By_colon" xml:space="preserve">
+    <value>排序依據：</value>
+  </data>
+  <data name="Source Variants:" xml:space="preserve">
+    <value>源變體：</value>
+  </data>
+  <data name="Source:" xml:space="preserve">
+    <value>來源：</value>
+  </data>
+  <data name="Specular" xml:space="preserve">
+    <value>鏡面反射</value>
+  </data>
+  <data name="Specular Color:" xml:space="preserve">
+    <value>鏡面反射顏色：</value>
+  </data>
+  <data name="Specular Power:" xml:space="preserve">
+    <value>鏡面反射強度：</value>
+  </data>
+  <data name="Specular:" xml:space="preserve">
+    <value>鏡面反射：</value>
+  </data>
+  <data name="Standalone_Non_ModPack" xml:space="preserve">
+    <value>孤立（非 Mod 包）</value>
+  </data>
+  <data name="Standard" xml:space="preserve">
+    <value>標準</value>
+  </data>
+  <data name="Standard Modpack" xml:space="preserve">
+    <value>標準 Mod 包</value>
+  </data>
+  <data name="Standard Modpack Creator" xml:space="preserve">
+    <value>標準 Mod 包創建器</value>
+  </data>
+  <data name="StandardModpackCreatorItemSelect" xml:space="preserve">
+    <value>選擇標準 Mod 包創建器</value>
+  </data>
+  <data name="StandardModpackFileSelect" xml:space="preserve">
+    <value>選擇標準 Mod 包文件</value>
+  </data>
+  <data name="StandardModpackFinalize" xml:space="preserve">
+    <value>標準 Mod 包最終確認</value>
+  </data>
+  <data name="StandardModpackSharedItems" xml:space="preserve">
+    <value>標準 Mod 包共享道具</value>
+  </data>
+  <data name="Standard_Modpack" xml:space="preserve">
+    <value>標準 Mod 包</value>
+  </data>
+  <data name="Start_Over" xml:space="preserve">
+    <value>初始化</value>
+  </data>
+  <data name="Synchronize View Tabs" xml:space="preserve">
+    <value>同步視圖選項卡</value>
+  </data>
+  <data name="System Settings" xml:space="preserve">
+    <value>系統設置</value>
+  </data>
+  <data name="Tail Races Only" xml:space="preserve">
+    <value>僅限有尾種族</value>
+  </data>
+  <data name="Tattoo Color" xml:space="preserve">
+    <value>紋身顏色</value>
+  </data>
+  <data name="TD_Model" xml:space="preserve">
+    <value>3D 模型</value>
+  </data>
+  <data name="Tex Path" xml:space="preserve">
+    <value>紋理路徑</value>
+  </data>
+  <data name="TexTools User" xml:space="preserve">
+    <value>TexTools 用戶</value>
+  </data>
+  <data name="TexTools Version" xml:space="preserve">
+    <value>TexTools 版本</value>
+  </data>
+  <data name="TexToolsModPack TTMP (*.ttmp;*.ttmp2)|*.ttmp;*.ttmp2" xml:space="preserve">
+    <value>TexTools Mod 包 TTMP (*.ttmp;*.ttmp2)|*.ttmp;*.ttmp2</value>
+  </data>
+  <data name="Texture" xml:space="preserve">
+    <value>紋理</value>
+  </data>
+  <data name="Texture -" xml:space="preserve">
+    <value>紋理 -</value>
+  </data>
+  <data name="Texture File Error" xml:space="preserve">
+    <value>紋理文件錯誤</value>
+  </data>
+  <data name="Texture File Name Reference" xml:space="preserve">
+    <value>紋理文件名參考</value>
+  </data>
+  <data name="Texture Files" xml:space="preserve">
+    <value>紋理文件</value>
+  </data>
+  <data name="Texture Files(*.DDS;*.BMP;*.PNG) |*.DDS;*.BMP;*.PNG" xml:space="preserve">
+    <value>紋理文件 (*.DDS;*.BMP;*.PNG) |*.DDS;*.BMP;*.PNG</value>
+  </data>
+  <data name="Textures" xml:space="preserve">
+    <value>紋理</value>
+  </data>
+  <data name="Texture_Map" xml:space="preserve">
+    <value>紋理 Map</value>
+  </data>
+  <data name="Texture_Options" xml:space="preserve">
+    <value>紋理選項</value>
+  </data>
+  <data name="The new item(s) this mod will apply to instead." xml:space="preserve">
+    <value>此 Mod 將應用於的新道具。</value>
+  </data>
+  <data name="The original item(s) this mod applied to." xml:space="preserve">
+    <value>此 Mod 應用於的原始道具。</value>
+  </data>
+  <data name="Theme" xml:space="preserve">
+    <value>主題</value>
+  </data>
+  <data name="This race uses {0}'s body material(s)." xml:space="preserve">
+    <value>此種族使用 {0} 的身體材質。</value>
+  </data>
+  <data name="This race's model uses {0}'s material(s)." xml:space="preserve">
+    <value>此種族的模型使用 {0} 的材質。</value>
+  </data>
+  <data name="This_will_only_affect_shared_races" xml:space="preserve">
+    <value>這隻會影響共享種族</value>
+  </data>
+  <data name="This_will_only_affect_shared_races1" xml:space="preserve">
+    <value>這隻會影響共享種族</value>
+  </data>
+  <data name="Tile Count X:" xml:space="preserve">
+    <value>陶瓷計數 X：</value>
+  </data>
+  <data name="Tile Count Y:" xml:space="preserve">
+    <value>陶瓷計數 Y：</value>
+  </data>
+  <data name="Tile Material:" xml:space="preserve">
+    <value>陶瓷材質：</value>
+  </data>
+  <data name="Tile Skew X:" xml:space="preserve">
+    <value>陶瓷傾斜 X：</value>
+  </data>
+  <data name="Tile Skew Y:" xml:space="preserve">
+    <value>陶瓷傾斜 Y：</value>
+  </data>
+  <data name="Tools" xml:space="preserve">
+    <value>工具</value>
+  </data>
+  <data name="Total File(s)" xml:space="preserve">
+    <value>文件總數</value>
+  </data>
+  <data name="Transform Count:" xml:space="preserve">
+    <value>變換計數：</value>
+  </data>
+  <data name="Transforms" xml:space="preserve">
+    <value>變換</value>
+  </data>
+  <data name="Translucency" xml:space="preserve">
+    <value>半透明性</value>
+  </data>
+  <data name="Transparency:" xml:space="preserve">
+    <value>透明度：</value>
+  </data>
+  <data name="Tutorials" xml:space="preserve">
+    <value>指南</value>
+  </data>
+  <data name="Type" xml:space="preserve">
+    <value>類型</value>
+  </data>
+  <data name="UI Elements" xml:space="preserve">
+    <value>UI 元素</value>
+  </data>
+  <data name="UI_SearchStatus_Max" xml:space="preserve">
+    <value>圖標值最多爲 6 位，請重試。</value>
+  </data>
+  <data name="UI_SearchStatus_Numeric" xml:space="preserve">
+    <value>輸入只能是數字，請重試。</value>
+  </data>
+  <data name="UI_Search_NothingFound" xml:space="preserve">
+    <value>找不到圖標 {0} 的數據，請嘗試其他。</value>
   </data>
   <data name="Undyable" xml:space="preserve">
     <value>不可染色</value>
@@ -2052,251 +2523,11 @@
   <data name="Undyed" xml:space="preserve">
     <value>未染色</value>
   </data>
-  <data name="Value Editor" xml:space="preserve">
-    <value>值編輯器</value>
-  </data>
-  <data name="Material - Colorset Row Editor - Row #{0}" xml:space="preserve">
-    <value>材質-顏色集行設置 #{0}</value>
-  </data>
-  <data name="Hrothgar Male" xml:space="preserve">
-    <value>硌獅族男性</value>
-  </data>
-  <data name="Hrothgar_Male" xml:space="preserve">
-    <value>硌獅族男性</value>
-  </data>
-  <data name="Import_ModPack_Wizard1" xml:space="preserve">
-    <value>導入 Mod 包嚮導</value>
-  </data>
-  <data name="Previous_Page1" xml:space="preserve">
-    <value>&lt;上一頁</value>
-  </data>
-  <data name="Texture Files(*.DDS;*.BMP;*.PNG) |*.DDS;*.BMP;*.PNG" xml:space="preserve">
-    <value>紋理文件 (*.DDS;*.BMP;*.PNG) |*.DDS;*.BMP;*.PNG</value>
-  </data>
-  <data name="This_will_only_affect_shared_races1" xml:space="preserve">
-    <value>這隻會影響共享種族</value>
-  </data>
-  <data name="Viera Female" xml:space="preserve">
-    <value>維埃拉女性</value>
-  </data>
-  <data name="Visor Settings" xml:space="preserve">
-    <value>Visor 設置</value>
-  </data>
-  <data name="0.039x (Legacy Fix)" xml:space="preserve">
-    <value>0.039x（舊版修復）</value>
-  </data>
-  <data name="Attribute Index:" xml:space="preserve">
-    <value>屬性索引：</value>
-  </data>
-  <data name="Bare Hands" xml:space="preserve">
-    <value>赤手</value>
-  </data>
-  <data name="Bodysuit" xml:space="preserve">
-    <value>連體衣</value>
-  </data>
-  <data name="Bone Count:" xml:space="preserve">
-    <value>骨骼計數：</value>
-  </data>
-  <data name="Bone List Index:" xml:space="preserve">
-    <value>骨骼列表索引：</value>
-  </data>
-  <data name="Bone Start Offset:" xml:space="preserve">
-    <value>骨骼起始偏移：</value>
-  </data>
-  <data name="Custom" xml:space="preserve">
-    <value>自定義</value>
-  </data>
-  <data name="Data Block Count:" xml:space="preserve">
-    <value>數據塊計數：</value>
-  </data>
-  <data name="Data Block:" xml:space="preserve">
-    <value>數據塊：</value>
-  </data>
-  <data name="Data Offset:" xml:space="preserve">
-    <value>數據偏移量：</value>
-  </data>
-  <data name="Data Type:" xml:space="preserve">
-    <value>數據類型：</value>
-  </data>
-  <data name="Data Usage:" xml:space="preserve">
-    <value>數據使用：</value>
-  </data>
-  <data name="Final Confirmation" xml:space="preserve">
-    <value>最終確認</value>
-  </data>
-  <data name="Full Helmet" xml:space="preserve">
-    <value>全頭盔</value>
-  </data>
-  <data name="Glasses" xml:space="preserve">
-    <value>眼鏡</value>
-  </data>
-  <data name="Hat" xml:space="preserve">
-    <value>帽子</value>
-  </data>
-  <data name="Index Count:" xml:space="preserve">
-    <value>索引計數：</value>
-  </data>
-  <data name="Index Data Offset:" xml:space="preserve">
-    <value>索引數據偏移量：</value>
-  </data>
-  <data name="Index Offset:" xml:space="preserve">
-    <value>索引偏移：</value>
-  </data>
-  <data name="Invalid Selection" xml:space="preserve">
-    <value>無效的選擇</value>
-  </data>
-  <data name="Leotard" xml:space="preserve">
-    <value>緊身衣褲</value>
-  </data>
-  <data name="Long Boots" xml:space="preserve">
-    <value>長靴</value>
-  </data>
-  <data name="Long Gloves" xml:space="preserve">
-    <value>長手套</value>
-  </data>
-  <data name="Long-Sleeve Top" xml:space="preserve">
-    <value>長袖上衣</value>
-  </data>
-  <data name="Material Index:" xml:space="preserve">
-    <value>材質索引：</value>
-  </data>
-  <data name="Mesh Part Count:" xml:space="preserve">
-    <value>網格部件計數：</value>
-  </data>
-  <data name="Mesh Part Index:" xml:space="preserve">
-    <value>網格部件索引：</value>
-  </data>
-  <data name="Mid Boots" xml:space="preserve">
-    <value>中靴</value>
-  </data>
-  <data name="Mid Gloves" xml:space="preserve">
-    <value>中手套</value>
-  </data>
-  <data name="Note: Some skeletons are not available for some races." xml:space="preserve">
-    <value>注意：有些骨架不適用於某些種族。</value>
-  </data>
-  <data name="Open Helmet" xml:space="preserve">
-    <value>開放式頭盔</value>
-  </data>
-  <data name="Pants" xml:space="preserve">
-    <value>內褲</value>
-  </data>
-  <data name="Pants and Shoes" xml:space="preserve">
-    <value>內褲和鞋子</value>
-  </data>
-  <data name="Racial Settings - {0} - {1}" xml:space="preserve">
-    <value>種族設置-{0}-{1}</value>
-  </data>
-  <data name="Racial Settings: {0} - {1}" xml:space="preserve">
-    <value>種族設置: {0}-{1}</value>
-  </data>
-  <data name="Select Destination Item" xml:space="preserve">
-    <value>選擇目標道具</value>
-  </data>
-  <data name="Set All Together:" xml:space="preserve">
-    <value>集合：</value>
-  </data>
-  <data name="Shoes" xml:space="preserve">
-    <value>鞋子</value>
-  </data>
-  <data name="Shorts" xml:space="preserve">
-    <value>短褲</value>
-  </data>
-  <data name="Sleeveless Top" xml:space="preserve">
-    <value>無袖上衣</value>
+  <data name="UNIDENTIFIABLE FILE -" xml:space="preserve">
+    <value>無法識別的文件 - </value>
   </data>
   <data name="Unknown" xml:space="preserve">
     <value>未知</value>
-  </data>
-  <data name="Vertex Count:" xml:space="preserve">
-    <value>頂點計數：</value>
-  </data>
-  <data name="Vertex Data Offset 0:" xml:space="preserve">
-    <value>頂點數據偏移0：</value>
-  </data>
-  <data name="Vertex Data Offset 1:" xml:space="preserve">
-    <value>頂點數據偏移1：</value>
-  </data>
-  <data name="Vertex Data Offset 2:" xml:space="preserve">
-    <value>頂點數據偏移2：</value>
-  </data>
-  <data name="Vertex Entry Size 0:" xml:space="preserve">
-    <value>頂點條目大小0：</value>
-  </data>
-  <data name="Vertex Entry Size 1:" xml:space="preserve">
-    <value>頂點條目大小1：</value>
-  </data>
-  <data name="Vertex Entry Size 2:" xml:space="preserve">
-    <value>頂點條目大小2：</value>
-  </data>
-  <data name="Attribute Count:" xml:space="preserve">
-    <value>屬性計數：</value>
-  </data>
-  <data name="Attribute Offset Count:" xml:space="preserve">
-    <value>屬性偏移計數：</value>
-  </data>
-  <data name="Bone Index (Mesh)" xml:space="preserve">
-    <value>骨骼索引（網格）</value>
-  </data>
-  <data name="Bone Index (Mesh) {0}" xml:space="preserve">
-    <value>骨骼索引（網格）{0}</value>
-  </data>
-  <data name="Bone Index (Part)" xml:space="preserve">
-    <value>骨骼索引（部件）</value>
-  </data>
-  <data name="Bone List Count:" xml:space="preserve">
-    <value>骨骼列表計數：</value>
-  </data>
-  <data name="Bone Offset Count:" xml:space="preserve">
-    <value>骨骼偏移計數：</value>
-  </data>
-  <data name="Bounding Box" xml:space="preserve">
-    <value>邊界盒</value>
-  </data>
-  <data name="Data Blocks" xml:space="preserve">
-    <value>數據塊</value>
-  </data>
-  <data name="Extra LoD Count:" xml:space="preserve">
-    <value>額外 LoD 計數：</value>
-  </data>
-  <data name="Extra Mesh Count:" xml:space="preserve">
-    <value>額外網格數：</value>
-  </data>
-  <data name="Extras" xml:space="preserve">
-    <value>額外</value>
-  </data>
-  <data name="Index Size:" xml:space="preserve">
-    <value>索引大小：</value>
-  </data>
-  <data name="Index Start:" xml:space="preserve">
-    <value>索引起始：</value>
-  </data>
-  <data name="Material Count:" xml:space="preserve">
-    <value>材質計數：</value>
-  </data>
-  <data name="Material Offset Count:" xml:space="preserve">
-    <value>材質偏移計數：</value>
-  </data>
-  <data name="Mesh Count:" xml:space="preserve">
-    <value>網格計數：</value>
-  </data>
-  <data name="Mesh End:" xml:space="preserve">
-    <value>網格結束：</value>
-  </data>
-  <data name="Mesh Offset:" xml:space="preserve">
-    <value>網格偏移：</value>
-  </data>
-  <data name="Mesh Sum:" xml:space="preserve">
-    <value>網格總和：</value>
-  </data>
-  <data name="Shape Info Count:" xml:space="preserve">
-    <value>形狀信息計數：</value>
-  </data>
-  <data name="Transform Count:" xml:space="preserve">
-    <value>變換計數：</value>
-  </data>
-  <data name="Transforms" xml:space="preserve">
-    <value>變換</value>
   </data>
   <data name="Unknown 0 Size:" xml:space="preserve">
     <value>未知0大小：</value>
@@ -2364,8 +2595,107 @@
   <data name="Unknown 9:" xml:space="preserve">
     <value>未知9：</value>
   </data>
+  <data name="Unknown High:" xml:space="preserve">
+    <value>未知高：</value>
+  </data>
+  <data name="Unknown Low:" xml:space="preserve">
+    <value>未知低：</value>
+  </data>
+  <data name="Updated {0}/{1} Material Sets..." xml:space="preserve">
+    <value>已更新 {0}/{1} 個材質集...</value>
+  </data>
+  <data name="Update_TEX" xml:space="preserve">
+    <value>刷新紋理</value>
+  </data>
+  <data name="Updating_Cache" xml:space="preserve">
+    <value>正在更新緩存</value>
+  </data>
+  <data name="Updating_Cache_Message" xml:space="preserve">
+    <value>如果安裝了多個 Mod，這可能需要 30-60 秒...</value>
+  </data>
+  <data name="Usage" xml:space="preserve">
+    <value>用法</value>
+  </data>
+  <data name="Use Existing" xml:space="preserve">
+    <value>使用現有的</value>
+  </data>
+  <data name="Use Original Shape Data" xml:space="preserve">
+    <value>使用原始形狀數據</value>
+  </data>
+  <data name="Use Shared Textures" xml:space="preserve">
+    <value>使用共享紋理</value>
+  </data>
+  <data name="Use Unique Textures" xml:space="preserve">
+    <value>使用唯一紋理</value>
+  </data>
+  <data name="Used by {0} Other Materials" xml:space="preserve">
+    <value>由 {0} 其他材質使用</value>
+  </data>
+  <data name="Used by {0}/{1} Variants" xml:space="preserve">
+    <value>由 {0}/{1} 變體使用</value>
+  </data>
+  <data name="Use_Currently_Modded_Item" xml:space="preserve">
+    <value>使用現有的的 Mod 道具</value>
+  </data>
+  <data name="Value Editor" xml:space="preserve">
+    <value>值編輯器</value>
+  </data>
+  <data name="Variant" xml:space="preserve">
+    <value>變體</value>
+  </data>
+  <data name="Variant Settings" xml:space="preserve">
+    <value>變體設置</value>
+  </data>
+  <data name="Variant: --" xml:space="preserve">
+    <value>變體：--</value>
+  </data>
+  <data name="Variant: 5" xml:space="preserve">
+    <value>變體：5</value>
+  </data>
+  <data name="Variant: {0}" xml:space="preserve">
+    <value>變體：{0}</value>
+  </data>
+  <data name="Variants" xml:space="preserve">
+    <value>變體</value>
+  </data>
   <data name="Vector Count:" xml:space="preserve">
     <value>頂點計數：</value>
+  </data>
+  <data name="Version {0}" xml:space="preserve">
+    <value>版本 {0}</value>
+  </data>
+  <data name="Version {0} {0}" xml:space="preserve">
+    <value>版本 {0} {0}</value>
+  </data>
+  <data name="Version_colon" xml:space="preserve">
+    <value>版本：</value>
+  </data>
+  <data name="Version_Latest" xml:space="preserve">
+    <value>最新（測試版）</value>
+  </data>
+  <data name="Version_Stable" xml:space="preserve">
+    <value>穩定版本</value>
+  </data>
+  <data name="Vertex Count:" xml:space="preserve">
+    <value>頂點計數：</value>
+  </data>
+  <data name="Vertex Data Offset 0:" xml:space="preserve">
+    <value>頂點數據偏移0：</value>
+  </data>
+  <data name="Vertex Data Offset 1:" xml:space="preserve">
+    <value>頂點數據偏移1：</value>
+  </data>
+  <data name="Vertex Data Offset 2:" xml:space="preserve">
+    <value>頂點數據偏移2：</value>
+  </data>
+  <data name="Vertex Entry Size 0:" xml:space="preserve">
+    <value>頂點條目大小0：</value>
+  </data>
+  <data name="Vertex Entry Size 1:" xml:space="preserve">
+    <value>頂點條目大小1：</value>
+  </data>
+  <data name="Vertex Entry Size 2:" xml:space="preserve">
+    <value>頂點條目大小2：</value>
   </data>
   <data name="Vertex Offset:" xml:space="preserve">
     <value>頂點偏移：</value>
@@ -2373,95 +2703,80 @@
   <data name="Vertex Size:" xml:space="preserve">
     <value>頂點大小：</value>
   </data>
-  <data name="Everything" xml:space="preserve">
-    <value>任何</value>
+  <data name="Vertex_Colors" xml:space="preserve">
+    <value>頂點顏色</value>
   </data>
-  <data name="Item: {0}&#xA;Inclusion Level: {1}&#xA;Primary Files:{2}&#xA;Total Files:{3}" xml:space="preserve">
-    <value>道具：{0}
-包含級別：{1}
-主文件：{2}
-總文件：{3}</value>
+  <data name="Vertex_Data_Structure" xml:space="preserve">
+    <value>頂點數據結構</value>
   </data>
-  <data name="ModPack" xml:space="preserve">
-    <value>Mod 包</value>
+  <data name="VFX -" xml:space="preserve">
+    <value>視效 -</value>
   </data>
-  <data name="Selected All Files - [{0}] Total File(s)" xml:space="preserve">
-    <value>已選擇所有文件-[{0}]個總文件</value>
+  <data name="VFX File Path" xml:space="preserve">
+    <value>視效文件路徑</value>
   </data>
-  <data name="Selected [{0}] {1} File(s) - [{2}] Total File(s)" xml:space="preserve">
-    <value>已選擇 [{0}] {1} 個文件 - [{2}] 個總文件</value>
+  <data name="VFX ID:" xml:space="preserve">
+    <value>視效 ID：</value>
   </data>
-  <data name="TexTools User" xml:space="preserve">
-    <value>TexTools 用戶</value>
+  <data name="VFX:" xml:space="preserve">
+    <value>視效：</value>
   </data>
-  <data name="Total File(s)" xml:space="preserve">
-    <value>文件總數</value>
+  <data name="Viera Female" xml:space="preserve">
+    <value>維埃拉女性</value>
   </data>
-  <data name="3D Models ({0})|{1}" xml:space="preserve">
-    <value>三維模型 ({0})|{1}</value>
+  <data name="View" xml:space="preserve">
+    <value>檢視</value>
   </data>
-  <data name="Add Attributes..." xml:space="preserve">
-    <value>添加屬性...</value>
+  <data name="View Raw Values" xml:space="preserve">
+    <value>查看原始值</value>
   </data>
-  <data name="Change Destination Item" xml:space="preserve">
-    <value>更改目標道具</value>
+  <data name="Viewer Options" xml:space="preserve">
+    <value>查看器選項</value>
   </data>
-  <data name="Choose New Item" xml:space="preserve">
-    <value>選擇新道具</value>
+  <data name="Viewport_Disclaimer" xml:space="preserve">
+    <value>TexTools 模型顯示只是一個近似值，可能無法對遊戲中的視覺效果百分之百準確</value>
   </data>
-  <data name="Default Base View Model" xml:space="preserve">
-    <value>默認基礎視圖模型</value>
+  <data name="View_Github_Repo" xml:space="preserve">
+    <value>顯示 Github 倉庫</value>
   </data>
-  <data name="Demo (HelixToolkitDX)" xml:space="preserve">
-    <value>演示（HelixToolkitDX）</value>
+  <data name="Visibility Settings" xml:space="preserve">
+    <value>可見性設置</value>
   </data>
-  <data name="Final Modpack Review" xml:space="preserve">
-    <value>最終 Mod 包審查</value>
+  <data name="Visible Variant Parts" xml:space="preserve">
+    <value>可見變體部件</value>
   </data>
-  <data name="GroupName" xml:space="preserve">
-    <value>組名</value>
+  <data name="Visit_Website" xml:space="preserve">
+    <value>官網</value>
   </data>
-  <data name="Image Files(*.BMP;*.JPG;*.GIF;*.PNG)|*.BMP;*.JPG;*.GIF;*.PNG" xml:space="preserve">
-    <value>圖像文件 (*.BMP;*.JPG;*.GIF;*.PNG)|*.BMP;*.JPG;*.GIF;*.PNG</value>
+  <data name="Visor Settings" xml:space="preserve">
+    <value>Visor 設置</value>
   </data>
-  <data name="Make All Variants Identical" xml:space="preserve">
-    <value>使所有變體相同</value>
+  <data name="Waist" xml:space="preserve">
+    <value>腰</value>
   </data>
-  <data name="meters" xml:space="preserve">
-    <value>單位</value>
+  <data name="Warning Text" xml:space="preserve">
+    <value>警告文本</value>
   </data>
-  <data name="Modifications at the {0} level will affect (at least) the following [{1}] item(s):" xml:space="preserve">
-    <value>{0} 級別的修改將影響（至少）以下 [{1}] 道具：</value>
+  <data name="Warning Text Goes Here" xml:space="preserve">
+    <value>此處顯示警告文本</value>
   </data>
-  <data name="ModPacks" xml:space="preserve">
-    <value>Mod 包</value>
+  <data name="Working_Ellipsis" xml:space="preserve">
+    <value>處理中...</value>
   </data>
-  <data name="Review Affected Items" xml:space="preserve">
-    <value>審查受影響的道具</value>
+  <data name="Wrist" xml:space="preserve">
+    <value>手腕</value>
   </data>
-  <data name="Review [{0}] Total File(s)" xml:space="preserve">
-    <value>查看 [{0}] 個總文件</value>
+  <data name="XIV_Mod_Archive" xml:space="preserve">
+    <value>XIV Mod Archive</value>
   </data>
-  <data name="Select {0} Files" xml:space="preserve">
-    <value>選擇 {0} 文件</value>
+  <data name="You may choose new items for this modpack to apply to, if desired. Press [Continue] when done." xml:space="preserve">
+    <value>如果需要，您可以選擇此 Mod 包要應用的新道具。完成後按 [繼續]。</value>
   </data>
-  <data name="Show Affected Items" xml:space="preserve">
-    <value>顯示受影響的道具</value>
+  <data name="[3] Some Cool Item Name" xml:space="preserve">
+    <value>[3] 一些很酷的道具名稱</value>
   </data>
-  <data name="Single" xml:space="preserve">
-    <value>單選</value>
-  </data>
-  <data name="The new item(s) this mod will apply to instead." xml:space="preserve">
-    <value>此 Mod 將應用於的新道具。</value>
-  </data>
-  <data name="The original item(s) this mod applied to." xml:space="preserve">
-    <value>此 Mod 應用於的原始道具。</value>
-  </data>
-  <data name="Version {0}" xml:space="preserve">
-    <value>版本 {0}</value>
-  </data>
-  <data name="Version {0} {0}" xml:space="preserve">
-    <value>版本 {0} {0}</value>
+  <data name="[7] Bogarter's Gloves of Doing Cool Things" xml:space="preserve">
+    <value>[7] 整理 Mod 列表</value>
   </data>
   <data name="[Loading]" xml:space="preserve">
     <value>[正在加載]</value>
@@ -2493,322 +2808,7 @@
   <data name="{0} Texture File(s)" xml:space="preserve">
     <value>{0} 個紋理文件</value>
   </data>
-  <data name="Show Skeleton" xml:space="preserve">
-    <value>顯示骨架</value>
-  </data>
-  <data name="Arrow" xml:space="preserve">
-    <value>Arrow</value>
-  </data>
-  <data name="Au Ra F Face Unique" xml:space="preserve">
-    <value>敖龍族女性臉</value>
-  </data>
-  <data name="Belt" xml:space="preserve">
-    <value>皮帶</value>
-  </data>
-  <data name="Boot" xml:space="preserve">
-    <value>靴子</value>
-  </data>
-  <data name="Ear" xml:space="preserve">
-    <value>耳朵</value>
-  </data>
-  <data name="Elbow" xml:space="preserve">
-    <value>肘部</value>
-  </data>
-  <data name="Excess Detail" xml:space="preserve">
-    <value>多餘細節</value>
-  </data>
-  <data name="Facial Hair" xml:space="preserve">
-    <value>面部毛髮</value>
-  </data>
-  <data name="Gauss Barrel" xml:space="preserve">
-    <value>Gauss Barrel</value>
-  </data>
-  <data name="Glove" xml:space="preserve">
-    <value>手套</value>
-  </data>
-  <data name="Gorget" xml:space="preserve">
-    <value>Gorget</value>
-  </data>
-  <data name="Horn" xml:space="preserve">
-    <value>角質</value>
-  </data>
-  <data name="Knee" xml:space="preserve">
-    <value>膝</value>
-  </data>
-  <data name="Knee Pad" xml:space="preserve">
-    <value>護膝墊</value>
-  </data>
-  <data name="Miqo'te Ears" xml:space="preserve">
-    <value>貓魅族耳朵</value>
-  </data>
-  <data name="Miqo'te Long Hair Unique" xml:space="preserve">
-    <value>貓魅族長髮</value>
-  </data>
-  <data name="Neck" xml:space="preserve">
-    <value>脖子</value>
-  </data>
-  <data name="Non-Tail Races Only" xml:space="preserve">
-    <value>僅限無尾種族</value>
-  </data>
-  <data name="Quiver Arrow 1" xml:space="preserve">
-    <value>Quiver Arrow 1</value>
-  </data>
-  <data name="Quiver Arrow 2" xml:space="preserve">
-    <value>Quiver Arrow 2</value>
-  </data>
-  <data name="Quiver Arrow 3" xml:space="preserve">
-    <value>Quiver Arrow 3</value>
-  </data>
-  <data name="Reaper Transformation" xml:space="preserve">
-    <value>釤鐮客夜遊魂衣</value>
-  </data>
-  <data name="Scalp" xml:space="preserve">
-    <value>頭皮</value>
-  </data>
-  <data name="Shin" xml:space="preserve">
-    <value>小腿</value>
-  </data>
-  <data name="Tail Races Only" xml:space="preserve">
-    <value>僅限有尾種族</value>
-  </data>
-  <data name="Waist" xml:space="preserve">
-    <value>腰</value>
-  </data>
-  <data name="Wrist" xml:space="preserve">
-    <value>手腕</value>
-  </data>
-  <data name="Default Author" xml:space="preserve">
-    <value>默認作者</value>
-  </data>
-  <data name="Furniture Color" xml:space="preserve">
-    <value>傢俱顏色</value>
-  </data>
-  <data name="Hair Highlight Color" xml:space="preserve">
-    <value>頭髮高亮顏色</value>
-  </data>
-  <data name="Lip Color" xml:space="preserve">
-    <value>嘴脣顏色</value>
-  </data>
-  <data name="Redirect imports to Lumina" xml:space="preserve">
-    <value>將導入重定向到 Lumina</value>
-  </data>
-  <data name="Skin Race" xml:space="preserve">
-    <value>皮膚種族</value>
-  </data>
-  <data name="System Settings" xml:space="preserve">
-    <value>系統設置</value>
-  </data>
-  <data name="Tattoo Color" xml:space="preserve">
-    <value>紋身顏色</value>
-  </data>
-  <data name="- Material Set:" xml:space="preserve">
-    <value>- 材質集：</value>
-  </data>
-  <data name="Equipment" xml:space="preserve">
-    <value>裝備</value>
-  </data>
   <data name="| Hidden Parts:" xml:space="preserve">
     <value>| 隱藏部分：</value>
-  </data>
-  <data name="BodyDisableBreastPhysics" xml:space="preserve">
-    <value>身體禁用乳房物理</value>
-  </data>
-  <data name="BodyHideGorget" xml:space="preserve">
-    <value>身體隱藏護喉甲</value>
-  </data>
-  <data name="BodyHideLongGloves" xml:space="preserve">
-    <value>身體隱藏長手套</value>
-  </data>
-  <data name="BodyHideMidGloves" xml:space="preserve">
-    <value>身體隱藏中手套</value>
-  </data>
-  <data name="BodyHideShortGloves" xml:space="preserve">
-    <value>身體隱藏短手套</value>
-  </data>
-  <data name="BodyHideWaist" xml:space="preserve">
-    <value>身體隱藏腰部</value>
-  </data>
-  <data name="BodyShowBracelet" xml:space="preserve">
-    <value>身體顯示手鐲</value>
-  </data>
-  <data name="BodyShowHand" xml:space="preserve">
-    <value>身體顯示手</value>
-  </data>
-  <data name="BodyShowHead" xml:space="preserve">
-    <value>身體顯示頭</value>
-  </data>
-  <data name="BodyShowLeg" xml:space="preserve">
-    <value>身體顯示腿</value>
-  </data>
-  <data name="BodyShowNecklace" xml:space="preserve">
-    <value>身體顯示項鍊</value>
-  </data>
-  <data name="BodyShowTail" xml:space="preserve">
-    <value>身體顯示尾巴</value>
-  </data>
-  <data name="Decompress Type 2 Data" xml:space="preserve">
-    <value>解壓縮類型2數據</value>
-  </data>
-  <data name="EnableBodyFlags" xml:space="preserve">
-    <value>啓用身體標記</value>
-  </data>
-  <data name="EnableFootFlags" xml:space="preserve">
-    <value>啓用足部標記</value>
-  </data>
-  <data name="EnableHandFlags" xml:space="preserve">
-    <value>啓用手部標記</value>
-  </data>
-  <data name="EnableHeadFlags" xml:space="preserve">
-    <value>啓用頭部標記</value>
-  </data>
-  <data name="EnableLegFlags" xml:space="preserve">
-    <value>啓用腿部標記</value>
-  </data>
-  <data name="Female" xml:space="preserve">
-    <value>女性</value>
-  </data>
-  <data name="File Path Display" xml:space="preserve">
-    <value>文件路徑顯示</value>
-  </data>
-  <data name="FootHideAnkle" xml:space="preserve">
-    <value>足部隱藏腳踝</value>
-  </data>
-  <data name="FootHideCalf" xml:space="preserve">
-    <value>足部隱藏小腿</value>
-  </data>
-  <data name="FootHideKnee" xml:space="preserve">
-    <value>足部隱藏膝蓋</value>
-  </data>
-  <data name="HandHideElbow" xml:space="preserve">
-    <value>手部隱藏肘部</value>
-  </data>
-  <data name="HandHideForearm" xml:space="preserve">
-    <value>手部隱藏前臂</value>
-  </data>
-  <data name="HandShowBracelet" xml:space="preserve">
-    <value>手部顯示手鐲</value>
-  </data>
-  <data name="HandShowRingL" xml:space="preserve">
-    <value>手部顯示左手戒指</value>
-  </data>
-  <data name="HandShowRingR" xml:space="preserve">
-    <value>手部顯示右手戒指</value>
-  </data>
-  <data name="HeadHideHair" xml:space="preserve">
-    <value>頭部隱藏頭髮</value>
-  </data>
-  <data name="HeadHideNeck" xml:space="preserve">
-    <value>頭部隱藏頸部</value>
-  </data>
-  <data name="HeadHideScalp" xml:space="preserve">
-    <value>頭部隱藏頭皮</value>
-  </data>
-  <data name="HeadShowEarAura" xml:space="preserve">
-    <value>頭部顯示耳朵敖龍族</value>
-  </data>
-  <data name="HeadShowEarHuman" xml:space="preserve">
-    <value>頭部顯示耳朵人類</value>
-  </data>
-  <data name="HeadShowEarMiqo" xml:space="preserve">
-    <value>頭部顯示耳朵貓魅族</value>
-  </data>
-  <data name="HeadShowEarrings" xml:space="preserve">
-    <value>頭部顯示耳環</value>
-  </data>
-  <data name="HeadShowEarringsAura" xml:space="preserve">
-    <value>頭部顯示耳環敖龍族</value>
-  </data>
-  <data name="HeadShowEarringsHuman" xml:space="preserve">
-    <value>頭部顯示耳環人類</value>
-  </data>
-  <data name="HeadShowEarViera" xml:space="preserve">
-    <value>頭部顯示耳朵維埃拉族</value>
-  </data>
-  <data name="HeadShowHairOverride" xml:space="preserve">
-    <value>頭部顯示頭髮替代</value>
-  </data>
-  <data name="HeadShowHrothgarHat" xml:space="preserve">
-    <value>頭部顯示硌獅族帽子</value>
-  </data>
-  <data name="HeadShowNecklace" xml:space="preserve">
-    <value>頭部顯示項鍊</value>
-  </data>
-  <data name="HeadShowVieraHat" xml:space="preserve">
-    <value>頭部顯示維埃拉族帽子</value>
-  </data>
-  <data name="HeadUnknownHelmet1" xml:space="preserve">
-    <value>頭部未知頭盔1</value>
-  </data>
-  <data name="HeadUnknownHelmet2" xml:space="preserve">
-    <value>頭部未知頭盔2</value>
-  </data>
-  <data name="LegBootUnknown" xml:space="preserve">
-    <value>腿靴未知</value>
-  </data>
-  <data name="LegHideHalfBoot" xml:space="preserve">
-    <value>腿部隱藏半靴</value>
-  </data>
-  <data name="LegHideKneePads" xml:space="preserve">
-    <value>腿部隱藏護膝</value>
-  </data>
-  <data name="LegHideShortBoot" xml:space="preserve">
-    <value>腿部隱藏短靴</value>
-  </data>
-  <data name="LegShowFoot" xml:space="preserve">
-    <value>腿部顯示腳部</value>
-  </data>
-  <data name="LegShowTail" xml:space="preserve">
-    <value>腿部顯示尾巴</value>
-  </data>
-  <data name="Male" xml:space="preserve">
-    <value>男性</value>
-  </data>
-  <data name="Material Folder" xml:space="preserve">
-    <value>材質文件夾</value>
-  </data>
-  <data name="VFX File Path" xml:space="preserve">
-    <value>視效文件路徑</value>
-  </data>
-  <data name="AVFX" xml:space="preserve">
-    <value>視覺特效</value>
-  </data>
-  <data name="Include all files used by this item.  Automatically includes all metadata, models, materials, and textures used.  (Excluding racial skin materials)" xml:space="preserve">
-    <value>包括此道具使用的所有文件。自動包括使用的所有元數據、模型、材質和紋理。（不包括種族皮膚材料）</value>
-  </data>
-  <data name="Raw Files" xml:space="preserve">
-    <value>原始文件</value>
-  </data>
-  <data name="Select one or more materials to include.  Automatically includes all textures used." xml:space="preserve">
-    <value>選擇一個或多個要包括的材質，自動包括使用的所有紋理。</value>
-  </data>
-  <data name="Select one or more models to include.  Automatically includes all materials and textures used.  (Excluding racial skin materials)" xml:space="preserve">
-    <value>選擇要包括的一個或多個模型，自動包括使用的所有材質和紋理。（不包括種族皮膚材料）</value>
-  </data>
-  <data name="Select one or more textures to include.  Does not include any other files." xml:space="preserve">
-    <value>選擇要包括的一個或多個紋理，不包括任何其他文件。</value>
-  </data>
-  <data name="Texture -" xml:space="preserve">
-    <value>紋理 -</value>
-  </data>
-  <data name="UNIDENTIFIABLE FILE -" xml:space="preserve">
-    <value>無法識別的文件 - </value>
-  </data>
-  <data name="Import Item Selection" xml:space="preserve">
-    <value>導入道具選擇</value>
-  </data>
-  <data name="Item List" xml:space="preserve">
-    <value>道具列表</value>
-  </data>
-  <data name="Metadata Options" xml:space="preserve">
-    <value>元數據選項</value>
-  </data>
-  <data name="You may choose new items for this modpack to apply to, if desired. Press [Continue] when done." xml:space="preserve">
-    <value>如果需要，您可以選擇此 Mod 包要應用的新道具。完成後按 [繼續]。</value>
-  </data>
-  <data name="Create" xml:space="preserve">
-    <value>新增</value>
-  </data>
-  <data name="Create New Material" xml:space="preserve">
-    <value>創建新材質</value>
   </data>
 </root>
