@@ -478,6 +478,11 @@ namespace FFXIV_TexTools.Views
                 return;
             }
 
+            if (root == null)
+            {
+                root = item.GetRoot();
+            }
+
             SelectedItem = item;
 
             TextureMapComboBox.Items.Clear();
