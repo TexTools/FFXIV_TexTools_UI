@@ -98,6 +98,20 @@ namespace FFXIV_TexTools.Views.Wizard
             DataContext = this;
             InitializeComponent();
 
+            // Defer initial setup until after the Localization sweep runs.
+            // SetupUi sets OptionsList.SelectedIndex, which fires SelectionChanged
+            // and writes opt.Description into OptionDescriptionTextBox.Text by
+            // direct assignment -- and that value would otherwise be rewritten if
+            // it case-insensitively matches a resource key (e.g. a description that
+            // is just "Green"). Subsequent SetupUi calls (from Edit/Add/Move
+            // handlers) run after Loaded and are unaffected, so they keep calling
+            // SetupUi directly.
+            Loaded += InitialSetupUi;
+        }
+
+        private void InitialSetupUi(object sender, RoutedEventArgs e)
+        {
+            Loaded -= InitialSetupUi;
             SetupUi();
         }
 

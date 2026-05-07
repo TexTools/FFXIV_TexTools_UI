@@ -1,4 +1,4 @@
-﻿// FFXIV TexTools
+// FFXIV TexTools
 // Copyright © 2019 Rafael Gonzalez - All Rights Reserved
 // 
 // This program is free software: you can redistribute it and/or modify
@@ -144,12 +144,6 @@ namespace FFXIV_TexTools.Views.Wizard
             _Data = data;
             _Path = path;
 
-
-            ModPackNameLabel.Content = data.MetaPage.Name;
-            ModPackAuthorLabel.Content = data.MetaPage.Author;
-            ModPackVersionLabel.Content = data.MetaPage.Version;
-            ModPackDescription.Text = data.MetaPage.Description;
-            ModPackUrlLabel.Text = data.MetaPage.Url;
             ModPackUrlLabel.PreviewMouseLeftButtonDown += ModPackUrlLabel_PreviewMouseLeftButtonDown;
 
             if (string.IsNullOrWhiteSpace(data.MetaPage.Image) || !File.Exists(data.MetaPage.Image))
@@ -176,6 +170,28 @@ namespace FFXIV_TexTools.Views.Wizard
             }
             CurrentIndex = 0;
             Closing += ImportWizardWindow_Closing;
+
+            // Defer modpack metadata until after the Localization sweep (hooked by
+            // resx:Localization.Enabled) runs, otherwise values that match a resource
+            // key get rewritten -- e.g. author "GREEN" -> "Green". Loaded handlers
+            // fire in registration order, so this runs after the sweep has detached.
+            Loaded += ApplyModpackMetadata;
+        }
+
+        /// <summary>
+        /// Applies modpack-supplied strings to the header controls after the
+        /// Localization sweep has run, so they aren't accidentally translated.
+        /// </summary>
+        private void ApplyModpackMetadata(object sender, RoutedEventArgs e)
+        {
+            // Unhook in case Loaded fires again on re-attach.
+            Loaded -= ApplyModpackMetadata;
+
+            ModPackNameLabel.Content = _Data.MetaPage.Name;
+            ModPackAuthorLabel.Content = _Data.MetaPage.Author;
+            ModPackVersionLabel.Content = _Data.MetaPage.Version;
+            ModPackDescription.Text = _Data.MetaPage.Description;
+            ModPackUrlLabel.Text = _Data.MetaPage.Url;
 
             SetTitle();
         }

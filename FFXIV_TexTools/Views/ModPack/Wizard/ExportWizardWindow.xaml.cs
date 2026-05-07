@@ -154,11 +154,21 @@ namespace FFXIV_TexTools.Views
             WizardControl.CanHelp = false;
             ModPackName.Focus();
 
-            ModPackAuthor.Text = String.IsNullOrWhiteSpace(Settings.Default.Default_Author) ? "TexTools User".L() : Settings.Default.Default_Author;
-            ModPackUrl.Text = Settings.Default.Default_Modpack_Url;
             ModPackVersion.Text = "1.0.0";
             UpdateButtons();
             SetTitle();
+
+            // Defer values pulled from user settings until after the Localization
+            // sweep runs, otherwise a saved Default_Author / Default_Modpack_Url
+            // that matches a resource key (e.g. "Green") gets rewritten.
+            Loaded += ApplyDefaultsFromSettings;
+        }
+
+        private void ApplyDefaultsFromSettings(object sender, RoutedEventArgs e)
+        {
+            Loaded -= ApplyDefaultsFromSettings;
+            ModPackAuthor.Text = String.IsNullOrWhiteSpace(Settings.Default.Default_Author) ? "TexTools User".L() : Settings.Default.Default_Author;
+            ModPackUrl.Text = Settings.Default.Default_Modpack_Url;
         }
 
         #region Private Properties

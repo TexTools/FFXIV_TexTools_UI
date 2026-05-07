@@ -39,13 +39,23 @@ namespace FFXIV_TexTools.Views
             _vm = vm;
             InitializeComponent();
 
+            BackButton.Click += BackButton_Click;
+            CreateModpackButton.Click += CreateModpackButton_Click;
+
+            // Defer the initial metadata text values until after the Localization
+            // sweep runs, otherwise a name like "Green Modpack" or a saved
+            // Default_Author that matches a resource key gets rewritten.
+            Loaded += ApplyInitialMetadata;
+        }
+
+        private void ApplyInitialMetadata(object sender, RoutedEventArgs e)
+        {
+            Loaded -= ApplyInitialMetadata;
             var firstItem = _vm.Entries[0].Item;
             ModPackName.Text = firstItem.Name + " Modpack".L();
             ModPackAuthor.Text = String.IsNullOrWhiteSpace(Settings.Default.Default_Author) ? "TexTools User".L() : Settings.Default.Default_Author;
             ModPackUrl.Text = Settings.Default.Default_Modpack_Url;
             ModPackVersion.Text = "1.0.0";
-            BackButton.Click += BackButton_Click;
-            CreateModpackButton.Click += CreateModpackButton_Click;
         }
 
         private void CreateModpackButton_Click(object sender, RoutedEventArgs e)

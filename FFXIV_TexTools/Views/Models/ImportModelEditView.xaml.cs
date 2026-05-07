@@ -119,9 +119,21 @@ namespace FFXIV_TexTools.Views.Models
             _viewModel = new ImportModelEditViewModel(this, _newModel, _oldModel);
             DataContext = _viewModel;
 
-            _ = SetupUi();
+            // Defer the setup cascade until after the Localization sweep runs.
+            // SetupUi -> viewmodel.SetupUi -> MeshNumberBox.SelectedIndex = 0
+            // ultimately writes the active material's name into
+            // MaterialPathTextBox.Text by direct assignment, and that value would
+            // otherwise be rewritten if it case-insensitively matches a resource
+            // key (e.g. a material named "GREEN" comes out as "Green").
+            Loaded += InitialSetupUi;
 
             Closing += ImportModelEditView_Closing;
+        }
+
+        private void InitialSetupUi(object sender, RoutedEventArgs e)
+        {
+            Loaded -= InitialSetupUi;
+            _ = SetupUi();
         }
 
         private void ImportModelEditView_Closing(object sender, System.ComponentModel.CancelEventArgs e)
