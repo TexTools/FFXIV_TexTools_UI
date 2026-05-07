@@ -164,7 +164,7 @@ namespace FFXIV_TexTools.Views
             Loaded += ApplyDefaultsFromSettings;
         }
 
-        private void ApplyDefaultsFromSettings(object sender, RoutedEventArgs e)
+        private void ApplyDefaultsFromSettings(object sender, System.Windows.RoutedEventArgs e)
         {
             Loaded -= ApplyDefaultsFromSettings;
             ModPackAuthor.Text = String.IsNullOrWhiteSpace(Settings.Default.Default_Author) ? "TexTools User".L() : Settings.Default.Default_Author;
