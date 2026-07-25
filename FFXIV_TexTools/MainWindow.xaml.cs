@@ -91,7 +91,7 @@ namespace FFXIV_TexTools
         private static MainWindow _mainWindow;
         public readonly System.Windows.Forms.IWin32Window Win32Window;
 
-        public static readonly string BetaSuffix = null;
+        public static readonly string BetaSuffix = "BETA";
 
         public static string[] _Args;
         public static bool IsBetaVersion {
