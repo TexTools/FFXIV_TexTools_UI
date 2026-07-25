@@ -164,7 +164,11 @@ namespace FFXIV_TexTools.Views.Simple
         {
             if (owner == null)
             {
-                owner = MainWindow.GetMainWindow();
+                var mw = MainWindow.GetMainWindow();
+                if (mw != null && mw.MainWindowLoaded)
+                {
+                    owner = MainWindow.GetMainWindow();
+                }
             }
 
             var wind = new FileListImporter(files, modpackPath);

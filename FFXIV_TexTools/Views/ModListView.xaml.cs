@@ -36,6 +36,9 @@ using xivModdingFramework.Mods.Enums;
 using System.Windows.Shapes;
 using System.Collections.Generic;
 using SharpDX;
+using FFXIV_TexTools.Views.Controls;
+using static FFXIV_TexTools.ViewModels.ModListViewModel;
+using xivModdingFramework.Helpers;
 
 namespace FFXIV_TexTools.Views
 {
@@ -110,6 +113,8 @@ namespace FFXIV_TexTools.Views
                     else
                     {
                         await (DataContext as ModListViewModel).UpdateList(selectedItem, _cts);
+                        modToggleButton.IsEnabled = false;
+                        modDeleteButton.IsEnabled = false;
                     }
                 }
                 else
@@ -275,17 +280,29 @@ namespace FFXIV_TexTools.Views
                 return;
             }
 
+            var wind = ViewHelpers.GetWin32Window(this);
             await LockUi("Deleting Mod".L(), "Please wait...".L(), this);
             try
             {
-                if ((ModListTreeView.SelectedItem as Category).ParentCategory.Name.Equals("ModPacks"))
+                var cat = (ModListTreeView.SelectedItem as Category);
+
+                if (cat == null) return;
+
+                var catName = cat.Name;
+                if (catName == UIStrings.Standalone_Non_ModPack)
                 {
-                    if (FlexibleMessageBox.Show(
+                    catName = "";
+                }
+
+                if (cat.ParentCategory.Name.Equals("ModPacks"))
+                {
+                    if (FlexibleMessageBox.Show(wind,
                             UIMessages.DeleteModPackMessage,
                             UIMessages.DeleteModPackTitle,
                             MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == System.Windows.Forms.DialogResult.Yes)
                     {
-                        await Modding.DeleteModPack((ModListTreeView.SelectedItem as Category).Name, MainWindow.UserTransaction);
+
+                        await Modding.DeleteModPack(catName, MainWindow.UserTransaction);
                         (DataContext as ModListViewModel).RemoveModPack();
                     }
 
@@ -298,13 +315,13 @@ namespace FFXIV_TexTools.Views
                     foreach (var selectedModItem in selectedItems)
                     {
                         await Modding.DeleteMod(selectedModItem.ModItem.FilePath, MainWindow.UserTransaction);
-                        await (DataContext as ModListViewModel).RemoveItem(selectedModItem, (Category)ModListTreeView.SelectedItem);
+                        await (DataContext as ModListViewModel).RemoveItem(selectedModItem, cat);
                     }
                 }
             }
             catch (Exception Ex)
             {
-                FlexibleMessageBox.Show("Unable to delete Mod or Modpack.\n\nError: ".L() + Ex.Message, "Mod Delete Error".L(), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                FlexibleMessageBox.Show(wind,"Unable to delete Mod or Modpack.\n\nError: ".L() + Ex.Message, "Mod Delete Error".L(), MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally {
                 await UnlockUi(this);
@@ -315,6 +332,42 @@ namespace FFXIV_TexTools.Views
         {
             (DataContext as ModListViewModel).Dispose();
             _cts?.Dispose();
+        }
+
+        private void CopyPath_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender == null) return;
+
+            var ml = (sender as FrameworkElement).DataContext as ModListModel;
+            if (ml == null) return;
+
+
+            try
+            {
+                System.Windows.Clipboard.SetText(ml.FilePath);
+            }
+            catch
+            {
+                // No-Op
+            }
+
+        }
+
+        private async void OpenFile_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender == null) return;
+
+            var ml = (sender as FrameworkElement).DataContext as ModListModel;
+            if (ml == null) return;
+
+
+            try
+            {
+                await SimpleFileViewWindow.OpenFile(ml.FilePath);
+            } catch (Exception Ex)
+            {
+                Trace.WriteLine(Ex);
+            }
         }
     }
 }

@@ -25,6 +25,8 @@ using Image = SixLabors.ImageSharp.Image;
 using SixLabors.ImageSharp;
 using Point = SixLabors.ImageSharp.Point;
 using xivModdingFramework.Helpers;
+using xivModdingFramework.Mods;
+using SixLabors.ImageSharp.Formats.Png;
 
 namespace FFXIV_TexTools.Views.Textures
 {
@@ -41,14 +43,20 @@ namespace FFXIV_TexTools.Views.Textures
 
         private static SaveFileDialog SaveDialog = new SaveFileDialog()
         {
-            Filter = "Image Files|*.dds;*.png;*.tga;*.bmp;*.tex",
+            Filter = ViewHelpers.ConverterImageSaveFilter,
             Title = "Save Image File",
         };
-
-        private static TgaEncoder Encoder = new TgaEncoder() { 
-            BitsPerPixel = TgaBitsPerPixel.Pixel32, 
-            Compression = TgaCompression.None 
+        public static TgaEncoder TgaEncoder = new TgaEncoder()
+        {
+            BitsPerPixel = TgaBitsPerPixel.Pixel32,
+            Compression = TgaCompression.None
         };
+
+        public static PngEncoder PngEncoder = new PngEncoder()
+        {
+            BitDepth = PngBitDepth.Bit16
+        };
+
 
         public event PropertyChangedEventHandler PropertyChanged;
         private string _MaskPath;
@@ -155,7 +163,14 @@ namespace FFXIV_TexTools.Views.Textures
 
                 using (var mainImage = Image.LoadPixelData<Rgba32>(result.PixelData, result.Width, result.Height))
                 {
-                    mainImage.SaveAsTga(outPath, Encoder);
+                    if (outPath.ToLower().EndsWith(".png"))
+                    {
+                        mainImage.Save(outPath, PngEncoder);
+                    }
+                    else
+                    {
+                        mainImage.Save(outPath, TgaEncoder);
+                    }
                 }
 
             }

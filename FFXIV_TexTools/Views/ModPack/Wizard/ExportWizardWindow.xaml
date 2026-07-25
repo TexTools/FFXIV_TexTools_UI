@@ -66,7 +66,9 @@
                                 <TextBox x:Name="ModPackName" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.Mod_Pack_Name}}" Grid.Column="1" Grid.Row="0" Margin="5" TabIndex="0"/>
                                 <xctk:MaskedTextBox x:Name="ModPackVersion" input:InputMethod.IsInputMethodEnabled="False" Mask="0.9.9" Text="1 . 0 . 0" Grid.Column="1" Grid.Row="1" Margin="5" MinHeight="26"  TabIndex="2"  PreviewMouseUp="ModPackVersion_PreviewMouseUp" InsertKeyMode="Overwrite" VerticalContentAlignment="Bottom" Padding="0,0,0,2" />
 
-                            </Grid>
+                                <Button Grid.Row="2" Grid.Column="1" Margin="5" Content="Shrink Modpack" Click="ShrinkModpack_Click"/>
+
+                                </Grid>
                             <Grid Grid.Column="1">
                                 <Grid>
                                     <Grid.RowDefinitions>

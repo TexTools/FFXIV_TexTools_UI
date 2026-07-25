@@ -55,6 +55,15 @@ namespace FFXIV_TexTools.Views.Metadata
                 femaleButton.SetValue(Grid.ColumnProperty, clanId);
                 FemaleGrid.Children.Add(femaleButton);
             }
+            Closing += RacialSettingsEditor_Closing;
+        }
+
+        private void RacialSettingsEditor_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if(Owner != null)
+            {
+                Owner.Activate();
+            }
         }
 
         private Button MakeButton(XivSubRace race, XivGender gender)
@@ -73,13 +82,19 @@ namespace FFXIV_TexTools.Views.Metadata
             return btn;
         }
 
-        private void Btn_Click(object sender, RoutedEventArgs e)
+        private async void Btn_Click(object sender, RoutedEventArgs e)
         {
             var context = ((ButtonContext)((Button)e.Source).DataContext);
             var wind = new RaceGenderScalingEditor(context.Race, context.Gender) { Owner = this };
             wind.WindowStartupLocation = WindowStartupLocation.CenterOwner;
 
-            _ = wind.Init();
+            try
+            {
+                await wind.Init();
+            } catch(Exception ex)
+            {
+                ViewHelpers.ShowError("Racial Settings Error", "An error occurred in the racial settings menu: \n\n" + ex.Message);
+            }
         }
 
         private void DoneButton_Click(object sender, RoutedEventArgs e)

@@ -46,6 +46,8 @@ using TeximpNet;
 using TeximpNet.DDS;
 using xivModdingFramework.Cache;
 using xivModdingFramework.Exd.FileTypes;
+using xivModdingFramework.General;
+using xivModdingFramework.General.DataContainers;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Items.Categories;
@@ -206,7 +208,7 @@ namespace FFXIV_TexTools.Views
         /// <summary>
         /// Extra search filter criterion.  Lets us filter out unsupported items.
         /// </summary>
-        private bool Filter(IItem item)
+        private bool Filter(IItem item, XivDependencyRoot root)
         {
             return true;
         }
@@ -433,7 +435,13 @@ namespace FFXIV_TexTools.Views
 
                 if (SelectedItem != null)
                 {
-                    ItemList_ItemSelected(this, SelectedItem);
+                    if(SelectedItem != null)
+                    {
+                        ItemList_ItemSelected(SelectedItem, SelectedItem.GetRoot());
+                    } else
+                    {
+                        ItemList_ItemSelected(null, null);
+                    }
                 }
             }
             finally
@@ -463,16 +471,19 @@ namespace FFXIV_TexTools.Views
             OptionImage.Source = res.Image;
         }
 
-        private void ItemList_ItemSelected(object sender, IItem item)
+        private void ItemList_ItemSelected(IItem item, XivDependencyRoot root)
         {
             if(item == null)
             {
                 return;
             }
 
-            SelectedItem = item;
+            if (root == null)
+            {
+                root = item.GetRoot();
+            }
 
-            var root = item.GetRoot();
+            SelectedItem = item;
 
             TextureMapComboBox.Items.Clear();
             ModelTypeComboBox.Items.Clear();
@@ -622,7 +633,6 @@ namespace FFXIV_TexTools.Views
             if (ModelTypeComboBox.Items.Count > 0)
             {
                 AddCurrentModelButton.IsEnabled = true;
-                AdvOptionsButton.IsEnabled = true;
                 AddRawModel.IsEnabled = true;
                 ModelTypeComboBox.SelectedIndex = 0;
 
@@ -631,7 +641,6 @@ namespace FFXIV_TexTools.Views
             {
                 AddCurrentModelButton.IsEnabled = false;
                 AddRawModel.IsEnabled = false;
-                AdvOptionsButton.IsEnabled = false;
             }
 
             if (MaterialComboBox.Items.Count > 0)
@@ -958,12 +967,17 @@ namespace FFXIV_TexTools.Views
         /// </summary>
         private async void AdvOptionsButton_Click(object sender, RoutedEventArgs e)
         {
+            await ShowModelImporter();
+        }
+
+        private async Task ShowModelImporter(string file = null)
+        {
             var selectedFile = ModelTypeComboBox.SelectedItem as FileEntry;
-            var itemModel = (IItemModel) SelectedItem;
+            var itemModel = (IItemModel)SelectedItem;
             LockCount++;
             try
             {
-                var result = await ImportModelView.ImportModel(selectedFile.Path, itemModel, null, false, Window.GetWindow(this));
+                var result = await ImportModelView.ImportModel(selectedFile.Path, itemModel, file, false, Window.GetWindow(this), true);
                 if (!result.Success)
                 {
                     return;
@@ -982,7 +996,6 @@ namespace FFXIV_TexTools.Views
             {
                 LockCount--;
             }
-
         }
 
         /// <summary>
@@ -1107,6 +1120,58 @@ namespace FFXIV_TexTools.Views
                 LockCount--;
             }
         }
+        private void AddRgspManipulations(RacialGenderScalingParameter rgsp)
+        {
+            if (SelectedOption == null) return;
+
+
+            if (SelectedOption.StandardData.Manipulations == null)
+            {
+                SelectedOption.StandardData.Manipulations = new List<PMPManipulationWrapperJson>();
+            }
+
+            LockCount++;
+            try
+            {
+                var toRemove = new List<PMPManipulationWrapperJson>();
+                var manips = SelectedOption.StandardData.Manipulations;
+
+                var entries = PMPRspManipulationJson.FromRgspEntry(rgsp);
+
+
+                foreach (var m in manips)
+                {
+                    var rm = m.GetManipulation() as PMPRspManipulationJson;
+                    if (rm == null) continue;
+
+                    if(entries.Any(x => x.SubRace == rm.SubRace && x.Attribute == rm.Attribute)){
+                        toRemove.Add(m);
+                    }
+
+                }
+
+                foreach (var m in toRemove)
+                {
+                    manips.Remove(m);
+                }
+
+                var wrapped = new List<PMPRspManipulationWrapperJson>();
+
+                foreach(var e in entries)
+                {
+                    var w = new PMPRspManipulationWrapperJson() { Manipulation = e, Type = "Rsp" };
+                    wrapped.Add(w);
+                }
+
+                manips.AddRange(wrapped);
+                SelectedOption.StandardData.SortManipulations();
+                UpdateManipulationText();
+            }
+            finally
+            {
+                LockCount--;
+            }
+        }
 
         private async void AddMetadataButton_Click(object sender, RoutedEventArgs e)
         {
@@ -1215,7 +1280,7 @@ namespace FFXIV_TexTools.Views
             ModpackContents.UnselectAll();
         }
 
-        private void AddButton_Click(object sender, RoutedEventArgs e)
+        private async void AddButton_Click(object sender, RoutedEventArgs e)
         {
             foreach (var i in ModpackContents.SelectedItems)
             {
@@ -1226,7 +1291,21 @@ namespace FFXIV_TexTools.Views
                     Path = item.FilePath
                 };
 
-                _ = AddFile(fi, item.StorageInfo);
+                if (fi.Path.EndsWith(".meta"))
+                {
+                    var data = await TransactionDataHandler.GetUncompressedFile(item.StorageInfo);
+                    var meta = await ItemMetadata.Deserialize(data);
+                    AddMetadataManipulations(meta);
+                } else if (fi.Path.EndsWith(".rgsp"))
+                {
+                    var data = await TransactionDataHandler.GetUncompressedFile(item.StorageInfo);
+                    var n = new RacialGenderScalingParameter(data);
+                    AddRgspManipulations(n);
+                }
+                else
+                {
+                    await AddFile(fi, item.StorageInfo);
+                }
             }
         }
 
@@ -1246,6 +1325,12 @@ namespace FFXIV_TexTools.Views
             var result = openFileDialog.ShowDialog();
 
             if (result != System.Windows.Forms.DialogResult.OK) return;
+
+            if(Path.GetExtension(openFileDialog.FileName) != ".mdl")
+            {
+                await ShowModelImporter(openFileDialog.FileName);
+                return;
+            }
 
             LockCount++;
             try

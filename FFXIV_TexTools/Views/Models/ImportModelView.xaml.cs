@@ -47,12 +47,10 @@ namespace FFXIV_TexTools.Views.Models
         private ImportModelViewModel _viewModel;
         private byte[] _data;
 
-        // Height to expand to when opening the log window.
-
-        public ImportModelView(string internalPath, IItem referenceItem, Action<ModelImportResult> onComplete = null, string startingFilePath = null, bool simpleMode = false)
+        public ImportModelView(string internalPath, IItem referenceItem, Action<ModelImportResult> onComplete = null, string startingFilePath = null, bool simpleMode = false, bool clearEmptyMaterials = false)
         {
             InitializeComponent();
-            _viewModel = new ImportModelViewModel(this, internalPath, referenceItem, onComplete, startingFilePath, simpleMode);
+            _viewModel = new ImportModelViewModel(this, internalPath, referenceItem, onComplete, startingFilePath, simpleMode, clearEmptyMaterials);
             DataContext = _viewModel;
             Closing += ImportModelView_Closing;
         }
@@ -106,7 +104,7 @@ namespace FFXIV_TexTools.Views.Models
         }
 
 
-        public static async Task<ModelImportResult> ImportModel(string path, IItem referenceItem = null, string startingFilePath = null, bool simpleMode = false, Window windowOwner = null)
+        public static async Task<ModelImportResult> ImportModel(string path, IItem referenceItem = null, string startingFilePath = null, bool simpleMode = false, Window windowOwner = null, bool clearEmptyMaterials = false)
         {
 
             if (windowOwner == null)
@@ -123,7 +121,7 @@ namespace FFXIV_TexTools.Views.Models
                 }
             }
 
-            var imView = new ImportModelView(path, referenceItem, OnComplete, startingFilePath, simpleMode) { Owner = windowOwner };
+            var imView = new ImportModelView(path, referenceItem, OnComplete, startingFilePath, simpleMode, clearEmptyMaterials) { Owner = windowOwner };
             imView.WindowStartupLocation = WindowStartupLocation.CenterOwner;
 
 
@@ -151,11 +149,8 @@ namespace FFXIV_TexTools.Views.Models
             CancelButton.IsEnabled = enabled;
             ImportButton.IsEnabled = enabled;
             EditButton.IsEnabled = enabled;
-            ClearUV2Button.IsEnabled = enabled;
             CloneUV1Button.IsEnabled = enabled;
-            ClearVColorButton.IsEnabled = enabled;
-            ClearVAlphaButton.IsEnabled = enabled;
-            UseOriginalShapeDataButton.IsEnabled = enabled;
+            UseImportedTangentButton.IsEnabled = enabled;
             ShiftUVsButton.IsEnabled = enabled;
             FileNameTextBox.IsEnabled = enabled;
             UseExistingButton.IsEnabled = enabled;

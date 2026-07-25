@@ -17,6 +17,7 @@
 using FFXIV_TexTools.Helpers;
 using FFXIV_TexTools.Properties;
 using FFXIV_TexTools.Resources;
+using FFXIV_TexTools.Views;
 using FFXIV_TexTools.Views.Models;
 using System;
 using System.Collections.Generic;
@@ -467,27 +468,12 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         private void FillSkeletonComboBox()
         {
-            var deformRaceList = new List<XivRace>
+            var deformRaceList = new List<XivRace>();
+            foreach(XivRace race in Enum.GetValues(typeof(XivRace)))
             {
-                XivRace.Hyur_Midlander_Male,
-                XivRace.Hyur_Midlander_Female,
-                XivRace.Hyur_Highlander_Male,
-                XivRace.Hyur_Highlander_Female,
-                XivRace.Elezen_Male,
-                XivRace.Elezen_Female,
-                XivRace.Miqote_Male,
-                XivRace.Miqote_Female,
-                XivRace.Roegadyn_Male,
-                XivRace.Roegadyn_Female,
-                XivRace.Lalafell_Male,
-                XivRace.Lalafell_Female,
-                XivRace.AuRa_Male,
-                XivRace.AuRa_Female,
-                XivRace.Hrothgar_Male,
-                XivRace.Hrothgar_Female,
-                XivRace.Viera_Male,
-                XivRace.Viera_Female
-            };
+                if ((int)race < 100) continue;
+                deformRaceList.Add(race);
+            }
 
             foreach (var xivRace in deformRaceList)
             {
@@ -803,12 +789,22 @@ namespace FFXIV_TexTools.ViewModels
                     .FirstOrDefault();
                 bTex.MaterialPath = newMaterial;
 
+                var tx = MainWindow.DefaultTransaction;
                 var mtrlPath = Mtrl.GetMtrlPath(tempMdlPath, newMaterial, mtrlVariant);
-                var mtrl = await Mtrl.GetXivMtrl(mtrlPath);
+                var mtrl = await Mtrl.GetXivMtrl(mtrlPath, false, tx);
 
-                var colors = ModelTexture.GetCustomColors();
-                colors.InvertNormalGreen = false;
-                var modelMaps = await ModelTexture.GetModelMaps(mtrl, false, colors, -1, MainWindow.UserTransaction);
+                ModelTextureData modelMaps;
+                if (ViewHelpers.ShouldUseUserColors(tempMdlPath))
+                {
+                    var colors = ModelTexture.GetCustomColors();
+                    colors.InvertNormalGreen = false;
+                    modelMaps = await ModelTexture.GetModelMaps(mtrl, false, colors, -1, tx);
+                }
+                else
+                {
+                    // Non-chara path: skip the color override pipeline entirely.
+                    modelMaps = await ModelTexture.GetModelMapsWithoutUserColors(mtrl, false, highlightedRow: -1, tx: tx);
+                }
 
                 // Reindex the material dictionary as materials may have sorted differently
                 ReIndexMaterialDictionary(ttModel, materialDictionary, modelMaps);
@@ -848,9 +844,18 @@ namespace FFXIV_TexTools.ViewModels
 
                 var mtrlPath = Mtrl.GetMtrlPath(tempMdlPath, newMaterial, mtrlVariant);
                 var mtrl = await Mtrl.GetXivMtrl(mtrlPath);
-                var colors = ModelTexture.GetCustomColors();
-                colors.InvertNormalGreen = false;
-                var modelMaps = await ModelTexture.GetModelMaps(mtrl, false, colors, -1, MainWindow.UserTransaction);
+                ModelTextureData modelMaps;
+                if (ViewHelpers.ShouldUseUserColors(tempMdlPath))
+                {
+                    var colors = ModelTexture.GetCustomColors();
+                    colors.InvertNormalGreen = false;
+                    modelMaps = await ModelTexture.GetModelMaps(mtrl, false, colors, -1, MainWindow.UserTransaction);
+                }
+                else
+                {
+                    // Non-chara path: skip the color override pipeline entirely.
+                    modelMaps = await ModelTexture.GetModelMapsWithoutUserColors(mtrl, false, highlightedRow: -1, tx: MainWindow.UserTransaction);
+                }
 
                 materialDictionary[0] = modelMaps;
             }
@@ -916,9 +921,18 @@ namespace FFXIV_TexTools.ViewModels
                         {
                             var mtrlPath = Mtrl.GetMtrlPath(tempMdlPath, material);
                             var mtrl = await Mtrl.GetXivMtrl(mtrlPath);
-                            var colors = ModelTexture.GetCustomColors();
-                            colors.InvertNormalGreen = false;
-                            var modelMaps = await ModelTexture.GetModelMaps(mtrl, false, colors, -1, MainWindow.UserTransaction);
+                            ModelTextureData modelMaps;
+                            if (ViewHelpers.ShouldUseUserColors(tempMdlPath))
+                            {
+                                var colors = ModelTexture.GetCustomColors();
+                                colors.InvertNormalGreen = false;
+                                modelMaps = await ModelTexture.GetModelMaps(mtrl, false, colors, -1, MainWindow.UserTransaction);
+                            }
+                            else
+                            {
+                                // Non-chara path: skip the color override pipeline entirely.
+                                modelMaps = await ModelTexture.GetModelMapsWithoutUserColors(mtrl, false, highlightedRow: -1, tx: MainWindow.UserTransaction);
+                            }
 
                             materialDictionary[matLoc.First().Key] = modelMaps;
                         }
@@ -988,6 +1002,11 @@ namespace FFXIV_TexTools.ViewModels
         /// </summary>
         private void Remove(object obj)
         {
+            if (ModelList.Count == 0 || ModelList == null)
+            {
+                return;
+            }
+
             if (ModelList.Count == 1)
             {
                 ViewportVM.ClearAll();

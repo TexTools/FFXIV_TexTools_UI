@@ -37,6 +37,7 @@ using xivModdingFramework.Mods.FileTypes;
 using xivModdingFramework.Mods.FileTypes.PMP;
 using xivModdingFramework.Mods.Interfaces;
 using Image = SixLabors.ImageSharp.Image;
+using xivModdingFramework.Mods;
 
 namespace FFXIV_TexTools.Views
 {
@@ -153,11 +154,21 @@ namespace FFXIV_TexTools.Views
             WizardControl.CanHelp = false;
             ModPackName.Focus();
 
-            ModPackAuthor.Text = String.IsNullOrWhiteSpace(Settings.Default.Default_Author) ? "TexTools User".L() : Settings.Default.Default_Author;
-            ModPackUrl.Text = Settings.Default.Default_Modpack_Url;
             ModPackVersion.Text = "1.0.0";
             UpdateButtons();
             SetTitle();
+
+            // Defer values pulled from user settings until after the Localization
+            // sweep runs, otherwise a saved Default_Author / Default_Modpack_Url
+            // that matches a resource key (e.g. "Green") gets rewritten.
+            Loaded += ApplyDefaultsFromSettings;
+        }
+
+        private void ApplyDefaultsFromSettings(object sender, System.Windows.RoutedEventArgs e)
+        {
+            Loaded -= ApplyDefaultsFromSettings;
+            ModPackAuthor.Text = String.IsNullOrWhiteSpace(Settings.Default.Default_Author) ? "TexTools User".L() : Settings.Default.Default_Author;
+            ModPackUrl.Text = Settings.Default.Default_Modpack_Url;
         }
 
         #region Private Properties
@@ -437,7 +448,7 @@ namespace FFXIV_TexTools.Views
 
             var sfd = new SaveFileDialog();
             sfd.Filter = ViewHelpers.ModpackFileFilter;
-            sfd.FileName = Data.MetaPage.Name + ".pmp";
+            sfd.FileName = Data.MetaPage.Name + "." + Settings.Default.Default_Modpack_Format;
             sfd.InitialDirectory = Path.GetFullPath(Settings.Default.ModPack_Directory);
 
             if(sfd.ShowDialog() != System.Windows.Forms.DialogResult.OK)
@@ -489,6 +500,8 @@ namespace FFXIV_TexTools.Views
             }
             finally
             {
+
+                CleanupInvalidData();
                 await UnlockUi();
             }
 
@@ -499,6 +512,14 @@ namespace FFXIV_TexTools.Views
             }
 
 
+        }
+
+        private void CleanupInvalidData()
+        {
+            var idx = CurrentIndex;
+            CurrentIndex = 0;
+            Data = Data;
+            CurrentIndex = idx;
         }
 
         private void RemoveImage_Click(object sender, System.Windows.RoutedEventArgs e)
@@ -525,6 +546,41 @@ namespace FFXIV_TexTools.Views
             else
             {
                 Title = "Create Modpack - Page " + CurrentIndex;
+            }
+        }
+
+        private async void ShrinkModpack_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+
+            var imgSize = Settings.Default.MaxImageSize > 0 ? Settings.Default.MaxImageSize.ToString() : "No Limit";
+            if(!this.ShowConfirmation("Shrink Confirmation", "This will:\n"
+                + "\n- Shrink all Textures to your current Max Image Size: " + imgSize
+                + "\n- Resave/Repack all MDLs in the modpack."
+                + "\n- Generate missing Mipmaps, and remove unnecessary Mipmaps."
+                + "\n- Resize invalid-sized textures."
+                + "\n- Repack all Textures in the modpack (for TTMPs)."
+                + "\n- Remove unused files from the modpack."
+                + "\n\n This will NOT update Endwalker files (other than MDLs) for Dawntrail."))
+            {
+                return;
+            }
+
+            var settings = new ShrinkRay.ShrinkRaySettings();
+            settings.MaxTextureSize = Settings.Default.MaxImageSize;
+
+            try
+            {
+                await LockUi();
+                var res = await ShrinkRay.ShrinkModpack(Data, settings);
+                Data = res;
+            }
+            catch(Exception ex)
+            {
+                this.ShowError("Shrink Ray Failure", "Unable to shrink modpack:\n\n" + ex.Message);
+            }
+            finally
+            {
+                await UnlockUi();
             }
         }
     }

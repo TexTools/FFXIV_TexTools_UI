@@ -340,7 +340,18 @@ namespace FFXIV_TexTools.Views.Item
 
                 // This is where we can listen for files getting modified.
                 var fRoot = XivCache.GetFilePathRoot(changedFile);
-                if(Root == fRoot)
+
+                var isHairRoot = false;
+                if(fRoot != null && Root != null && Root.Info.PrimaryType == XivItemType.human && Root.Info.SecondaryType == XivItemType.hair)
+                {
+                    var hRoot = Mtrl.GetHairMaterialRoot(Root.Info);
+                    if(hRoot == fRoot.Info)
+                    {
+                        isHairRoot = true;
+                    }
+                }
+
+                if(Root == fRoot || isHairRoot)
                 {
                     // File is contained in our root...
                     var keys = GetFileKeys(changedFile);
@@ -350,7 +361,14 @@ namespace FFXIV_TexTools.Views.Item
 
                         // But is not already listed in our file structure.
                         // This means we need to reload the item.
+
+                        foreach( var c in FileControls)
+                        {
+                            var fc = c.FileControl;
+                            fc?.CancelPendingReload();
+                        }
                         _DebouncedRebuildComboBoxes(Item);
+
                     } else if (changedFile.EndsWith(".mdl"))
                     {
                         _ModelsNeedingValidation.Add(changedFile);
@@ -418,7 +436,7 @@ namespace FFXIV_TexTools.Views.Item
 
                 var mtrls = modelEntry.Count(x => x.Key.EndsWith(".mtrl"));
                 // If the materials don't match...
-                if (mtrls != materials.Count || modelEntry.Any(x => !materials.Contains(x.Key) && x.Key.EndsWith(".mtrl")))
+                if (mtrls < materials.Count || materials.Any(x => !modelEntry.ContainsKey(x)))
                 {
                     // Then we need to reload the item.
                     await SetItem(Item);
@@ -500,15 +518,7 @@ namespace FFXIV_TexTools.Views.Item
 
         private async void OnMetadataSaved(FileViewControl sender, bool success)
         {
-            try
-            {
-                // Always reload the item on Metadata reload, to be safe.
-                await SetItem(Item, Item.GetRoot().Info.GetRootFile());
-            }
-            catch
-            {
-                // No-Op, just safety catch.
-            }
+            // Don't need to reload here because TX trigger will do it already.
         }
 
         /// <summary>
@@ -644,7 +654,7 @@ namespace FFXIV_TexTools.Views.Item
             }
             catch(Exception ex) 
             {
-                this.ShowError("Item Load Error", "An error occurred while loading the item:\n\n" + ex.Message);
+                this.ShowWarning("Item Load Error", "An error occurred while loading the item:\n\n" + ex.Message);
                 return false;
             }
             finally
@@ -688,7 +698,7 @@ namespace FFXIV_TexTools.Views.Item
 
             var variantString = "";
             var asIm = Item as IItemModel;
-            if (asIm != null && Imc.UsesImc(Root) && asIm != null && asIm.ModelInfo != null && asIm.ModelInfo.ImcSubsetID >= 0)
+            if (asIm != null && Imc.UsesImc(asIm) && asIm.ModelInfo != null && asIm.ModelInfo.ImcSubsetID >= 0)
             {
                 variantString += " - Variant " + asIm.ModelInfo.ImcSubsetID;
 
@@ -696,7 +706,7 @@ namespace FFXIV_TexTools.Views.Item
                 var mSetId = await Imc.GetMaterialSetId(asIm, false, tx);
                 if (mSetId >= 0)
                 {
-                    variantString += "/Material Set " + mSetId;
+                    variantString += "/Material Version " + mSetId;
                 }
             }
 
@@ -771,11 +781,30 @@ namespace FFXIV_TexTools.Views.Item
 
             if (Root == null)
             {
+                var asFake = Item as SimpleItemModel;
+                if(asFake != null)
+                {
+                    Files.Add(asFake.ModelPath, new Dictionary<string, HashSet<string>>());
+                    return;
+                }
+
                 Files.Add("", new Dictionary<string, HashSet<string>>());
                 return;
             }
 
             var models = await Root.GetModelFiles(tx);
+            if ((Item as IItemModel)?.SecondaryCategory == XivStrings.Facewear)
+            {
+                foreach (var race in XivRaces.PlayableRaces)
+                {
+                    var path = Root.Info.GetModelPath(race);
+                    if (!string.IsNullOrWhiteSpace(path) && !models.Contains(path) && await tx.FileExists(path))
+                    {
+                        models.Add(path);
+                    }
+                }
+            }
+
             foreach (var m in models)
             {
                 if (await tx.FileExists(m))
@@ -784,7 +813,7 @@ namespace FFXIV_TexTools.Views.Item
                 }
             }
 
-                if (Files.Count == 0)
+            if (Files.Count == 0)
             {
                 Files.Add("", new Dictionary<string, HashSet<string>>());
             }
@@ -798,7 +827,9 @@ namespace FFXIV_TexTools.Views.Item
         /// <returns></returns>
         private async Task GetMaterials(ModTransaction tx)
         {
-            if(Root == null)
+            var asFake = Item as SimpleItemModel;
+            var isFake = asFake != null;
+            if(Root == null && !isFake)
             {
                 if (Files.Count >= 1)
                 {
@@ -820,7 +851,8 @@ namespace FFXIV_TexTools.Views.Item
             }
 
             HashSet<string> foundMaterials = new HashSet<string>();
-            if (Root.Info.PrimaryType == XivItemType.human && Root.Info.SecondaryType == XivItemType.body)
+            if (Root != null && ((Root.Info.PrimaryType == XivItemType.human && Root.Info.SecondaryType == XivItemType.body)
+                || Root.Info.IsHumanMaterialVersionException()))
             {
                 // Exceptions class.
                 var materials = await Root.GetMaterialFiles(-1, tx, false);
@@ -862,15 +894,21 @@ namespace FFXIV_TexTools.Views.Item
                         var model = file.Key;
 
                         if (string.IsNullOrWhiteSpace(model)) break;
-                        var materials = await Root.GetVariantShiftedMaterials(model, materialSet, tx);
+                        HashSet<string> materials;
+                        if (Root != null)
+                        {
+                            materials = await Root.GetVariantShiftedMaterials(model, materialSet, tx);
+                        } else
+                        {
+                            materials = new HashSet<string>(await Mdl.GetReferencedMaterialPaths(model, materialSet, false, false, tx));
+                        }
                         foundMaterials.UnionWith(materials);
 
                         foreach (var mat in materials)
                         {
-                            if (!Files[model].ContainsKey(mat))
+                            if (await tx.FileExists(mat))
                             {
-
-                                if (await tx.FileExists(mat))
+                                if (!Files[model].ContainsKey(mat))
                                 {
                                     Files[model].Add(mat, new HashSet<string>());
                                 }
@@ -881,48 +919,27 @@ namespace FFXIV_TexTools.Views.Item
             }
 
 
-            var orphanMaterials = await Root.GetModdedMaterials(materialSet, tx);
-            if (Root.Info.SecondaryType != null)
-            {
-                // If there is a secondary ID, just snap these onto the first entry, because there's only one model (or 0).
-                var entry = Files.First().Value;
-                foreach (var orph in orphanMaterials)
+            if(Root != null) { 
+                var orphanMaterials = await Root.GetModdedMaterials(materialSet, tx);
+                if(Root.Info.PrimaryType == XivItemType.human && Root.Info.SecondaryType == XivItemType.hair)
                 {
-                    if (foundMaterials.Contains(orph)) continue;
-                    if (!entry.ContainsKey(orph)) {
+                    var hairRoot = new XivDependencyRoot(Mtrl.GetHairMaterialRoot(Root.Info));
 
-                        if (await tx.FileExists(orph))
-                        {
-                            entry.Add(orph, new HashSet<string>());
-                        }
+                    if (hairRoot != null && hairRoot != Root) {
+                        var extras = await hairRoot.GetModdedMaterials(materialSet, tx);
+                        orphanMaterials.UnionWith(extras);
                     }
                 }
-            }
-            else
-            {
-                foreach (var orph in orphanMaterials)
-                {
-                    //if (foundMaterials.Contains(orph)) continue;
 
-                    // This goes to the matching fake-secondary entry, if there is one.
-                    // Ex. on Equipment, the race is a fake primary value.
-                    var primary = IOUtil.GetPrimaryIdFromFileName(orph);
-                    var match = Files.FirstOrDefault(x => IOUtil.GetPrimaryIdFromFileName(x.Key) == primary);
-                    if(match.Key != null && match.Value != null && !string.IsNullOrWhiteSpace(primary))
+                if (Root.Info.SecondaryType != null)
+                {
+                    // If there is a secondary ID, just snap these onto the first entry, because there's only one model (or 0).
+                    var entry = Files.First().Value;
+                    foreach (var orph in orphanMaterials)
                     {
-                        if (!match.Value.ContainsKey(orph))
-                        {
-                            if (await tx.FileExists(orph))
-                            {
-                                match.Value.Add(orph, new HashSet<string>());
-                            }
-                        }
-                    }
-                    else
-                    {
-                        var entry = Files.First().Value;
-                        if (!entry.ContainsKey(orph))
-                        {
+                        if (foundMaterials.Contains(orph)) continue;
+                        if (!entry.ContainsKey(orph)) {
+
                             if (await tx.FileExists(orph))
                             {
                                 entry.Add(orph, new HashSet<string>());
@@ -930,10 +947,40 @@ namespace FFXIV_TexTools.Views.Item
                         }
                     }
                 }
-            }
+                else
+                {
+                    foreach (var orph in orphanMaterials)
+                    {
+                        //if (foundMaterials.Contains(orph)) continue;
 
-            if (Root != null)
-            {
+                        // This goes to the matching fake-secondary entry, if there is one.
+                        // Ex. on Equipment, the race is a fake primary value.
+                        var primary = IOUtil.GetPrimaryIdFromFileName(orph);
+                        var match = Files.FirstOrDefault(x => IOUtil.GetPrimaryIdFromFileName(x.Key) == primary);
+                        if(match.Key != null && match.Value != null && !string.IsNullOrWhiteSpace(primary))
+                        {
+                            if (!match.Value.ContainsKey(orph))
+                            {
+                                if (await tx.FileExists(orph))
+                                {
+                                    match.Value.Add(orph, new HashSet<string>());
+                                }
+                            }
+                        }
+                        else
+                        {
+                            var entry = Files.First().Value;
+                            if (!entry.ContainsKey(orph))
+                            {
+                                if (await tx.FileExists(orph))
+                                {
+                                    entry.Add(orph, new HashSet<string>());
+                                }
+                            }
+                        }
+                    }
+                }
+
                 var variant = -1;
                 if (asIm != null && asIm.ModelInfo != null)
                 {
@@ -982,7 +1029,8 @@ namespace FFXIV_TexTools.Views.Item
                 return;
             }
 
-            if (Root == null)
+            var fake = Item as SimpleItemModel;
+            if (Root == null && fake == null)
             {
                 var uiItem = Item as XivUi;
                 var asChar = Item as XivCharacter;
@@ -1035,7 +1083,14 @@ namespace FFXIV_TexTools.Views.Item
                     }
                     else
                     {
-                        textures = await Mtrl.GetTexturePathsFromMtrlPath(mtrl, false, false, tx);
+                        try
+                        {
+                            textures = await Mtrl.GetTexturePathsFromMtrlPath(mtrl, false, false, tx);
+                        }
+                        catch
+                        {
+                            //this.ShowWarning("Unable to read Material")
+                        }
                     }
 
                     foreach(var tex in textures)
@@ -1062,6 +1117,10 @@ namespace FFXIV_TexTools.Views.Item
                 if (model == "")
                 {
                     Models.Add(new KeyValuePair<string, string>("--", ""));
+                    break;
+                } else if(Root == null)
+                {
+                    Models.Add(new KeyValuePair<string, string>(model, model));
                     break;
                 }
 
@@ -1154,6 +1213,11 @@ namespace FFXIV_TexTools.Views.Item
             }
 
             var userRace = XivRaces.GetXivRaceFromDisplayName(Settings.Default.Default_Race_Selection);
+            if (userRace == default)
+            {
+                // Default race setting not valid
+                return null;
+            }
             return GetRacialModel(userRace);
         }
 
@@ -1973,6 +2037,12 @@ namespace FFXIV_TexTools.Views.Item
         {
             try
             {
+                foreach (var c in FileControls)
+                {
+                    var fc = c.FileControl;
+                    fc?.CancelPendingReload();
+                }
+
                 await await Dispatcher.InvokeAsync(async () =>
                 {
                     var tx = MainWindow.DefaultTransaction;

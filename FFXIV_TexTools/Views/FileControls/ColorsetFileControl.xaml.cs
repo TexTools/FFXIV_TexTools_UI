@@ -48,6 +48,8 @@ using Xceed.Wpf.Toolkit;
 using xivModdingFramework.Helpers;
 using System.Diagnostics;
 using FFXIV_TexTools.Resources;
+using xivModdingFramework.Textures;
+using FFXIV_TexTools.Views.Textures;
 
 namespace FFXIV_TexTools.Views.Controls
 {
@@ -199,8 +201,6 @@ namespace FFXIV_TexTools.Views.Controls
             SpecularColorPicker.SelectedColorChanged += SpecularColorPicker_SelectedColorChanged; ;
             EmissiveColorPicker.SelectedColorChanged += EmissiveColorPicker_SelectedColorChanged; ;
 
-            SpecularPowerBox.TextChanged += ValueChanged;
-            GlossBox.TextChanged += ValueChanged;
 
             TileIdBox.SelectionChanged += ValueChanged;
             TileSkewXBox.TextChanged += ValueChanged;
@@ -208,21 +208,28 @@ namespace FFXIV_TexTools.Views.Controls
             TileCountXBox.TextChanged += ValueChanged;
             TileCountYBox.TextChanged += ValueChanged;
             TileOpacityBox.TextChanged += ValueChanged;
-            TileUnknownBox.TextChanged += ValueChanged;
+
+            ShaderEffectBox.TextChanged += ValueChanged;
+            EffectOpacityBox.TextChanged += ValueChanged;
+            EffectUnknownA.TextChanged += ValueChanged;
+            EffectUnknownB.TextChanged += ValueChanged;
+            EffectUnknownR.TextChanged += ValueChanged;
+
+            DiffuseAlphaBox.TextChanged += ValueChanged;
+            SpecAlphaBox.TextChanged += ValueChanged;
+            EmissAlphaBox.TextChanged += ValueChanged;
 
 
             RoughnessBox.TextChanged += ValueChanged;
             MetallicBox.TextChanged += ValueChanged;
             PbrUnknownBox.TextChanged += ValueChanged;
-            TileUnknownBox.TextChanged += ValueChanged;
             AnisotropyBlendingBox.TextChanged += ValueChanged;
             ShaderTemplateBox.TextChanged += ValueChanged;
 
-
-            FresnelAlbedoBox.TextChanged += ValueChanged;
-            FresnelUnknownBox.TextChanged += ValueChanged;
-            FresnelYBox.TextChanged += ValueChanged;
-            FresnelZBox.TextChanged += ValueChanged;
+            SheenTintRateBox.TextChanged += ValueChanged;
+            SheenUnknownBox.TextChanged += ValueChanged;
+            SheenRateBox.TextChanged += ValueChanged;
+            SheenApertureBox.TextChanged += ValueChanged;
 
 
             DyePreviewIdBox.ItemsSource = PreviewDyeCollection;
@@ -300,7 +307,8 @@ namespace FFXIV_TexTools.Views.Controls
             return new Dictionary<string, string>()
             {
                 { ".mtrl", "FFXIV Material" },
-                { ".dds", "DDS Image" }
+                { ".dds", "DDS Image" },
+                //{ ".tga", "TGA Image" }
             };
         }
 
@@ -342,6 +350,10 @@ namespace FFXIV_TexTools.Views.Controls
                 mtrl.ColorSetDyeData = csetData.DyeData;
                 return Mtrl.XivMtrlToUncompressedMtrl(mtrl);
             }
+            else if (ext == ".tga")
+            {
+                throw new Exception("TGA is supported for Colorset Export only.");
+            }
             else
             {
                 throw new NotImplementedException();
@@ -371,6 +383,27 @@ namespace FFXIV_TexTools.Views.Controls
             if(ext == ".mtrl")
             {
                 File.WriteAllBytes(externalFilePath, await INTERNAL_GetUncompressedData());
+                return true;
+            }
+            else if(ext == ".tga")
+            {
+                var tex = await Mtrl.GetColorsetXivTex(Material);
+                var pix = await tex.GetRawPixels();
+
+                await TextureHelpers.ModifyPixels((offset) =>
+                {
+                    pix[offset + 3] = 255;
+                }, tex.Width, tex.Height);
+
+                using var img = SixLabors.ImageSharp.Image.LoadPixelData<Rgba32>(pix, tex.Width, tex.Height);
+
+                img.SaveAsTga(externalFilePath,
+                    new SixLabors.ImageSharp.Formats.Tga.TgaEncoder()
+                    {
+                        BitsPerPixel = SixLabors.ImageSharp.Formats.Tga.TgaBitsPerPixel.Pixel32,
+                        Compression = SixLabors.ImageSharp.Formats.Tga.TgaCompression.None
+                    });
+
                 return true;
             }
             else
@@ -433,20 +466,20 @@ namespace FFXIV_TexTools.Views.Controls
 
         private void SetDyeBitLabels()
         {
-            if (DawnTrail)
+            if (Material == null || Material.ShaderPack != ShaderHelpers.EShaderPack.CharacterLegacy)
             {
                 DyeBit0.Content = "Dye Diffuse";
-                DyeBit1.Content = "Dye Specular(?)";
+                DyeBit1.Content = "Dye Specular";
                 DyeBit2.Content = "Dye Emissive";
-                DyeBit3.Content = "Dye Emissive Alpha(?)";
+                DyeBit3.Content = "Dye Emissive Unknown";
                 DyeBit4.Content = "Dye Metallic";
                 DyeBit5.Content = "Dye Roughness";
-                DyeBit6.Content = "Dye Fresnel Y";
-                DyeBit7.Content = "Dye Fresnel Z";
-                DyeBit8.Content = "Dye Fresnel Albedo";
+                DyeBit6.Content = "Dye Sheen Rate";
+                DyeBit7.Content = "Dye Sheen Aperture";
+                DyeBit8.Content = "Dye Sheen Tint Rate";
                 DyeBit9.Content = "Dye Anisotropy";
-                DyeBit10.Content = "Dye Tile Unknown";
-                DyeBit11.Content = "Dye Wetness(?)";
+                DyeBit10.Content = "Dye Sphere Map ID";
+                DyeBit11.Content = "Dye Sphere Map Opacity";
                 DyeBit5.Visibility = Visibility.Visible;
                 DyeBit6.Visibility = Visibility.Visible;
                 DyeBit7.Visibility = Visibility.Visible;
@@ -456,18 +489,14 @@ namespace FFXIV_TexTools.Views.Controls
                 DyeBit11.Visibility = Visibility.Visible;
 
                 ShaderTemplateBox.Visibility = Visibility.Visible;
-                ShaderTemplateBox.Visibility = Visibility.Visible;
 
                 PbrGroup.Visibility = Visibility.Visible;
                 FresnelGroup.Visibility = Visibility.Visible;
+                ShaderEffectsGroup.Visibility = Visibility.Visible;
 
-                EditCol6.Visibility = Visibility.Visible;
-                TileOpacityBox.Visibility = Visibility.Visible;
-                TileOpacityLabel.Visibility = Visibility.Visible;
-                DyeChannelBox.Visibility = Visibility.Visible;
-                DyeChannelLabel.Visibility = Visibility.Visible;
+                DiffuseAlphaLabel.Content = "Diffuse Unknown";
+                SpecAlphaLabel.Content = "Specular Unknown";
 
-                TileUnknownBox.Visibility = Visibility.Visible;
             }
             else
             {
@@ -476,6 +505,9 @@ namespace FFXIV_TexTools.Views.Controls
                 DyeBit2.Content = "Dye Emissive";
                 DyeBit3.Content = "Dye Specular Power";
                 DyeBit4.Content = "Dye Gloss";
+
+                DiffuseAlphaLabel.Content = "Gloss";
+                SpecAlphaLabel.Content = "Specular Power";
 
                 DyeBit5.Visibility = Visibility.Collapsed;
                 DyeBit6.Visibility = Visibility.Collapsed;
@@ -490,15 +522,8 @@ namespace FFXIV_TexTools.Views.Controls
 
                 PbrGroup.Visibility = Visibility.Collapsed;
                 FresnelGroup.Visibility = Visibility.Collapsed;
+                ShaderEffectsGroup.Visibility = Visibility.Collapsed;
 
-                EditCol6.Visibility = Visibility.Collapsed;
-                TileOpacityBox.Visibility = Visibility.Collapsed;
-                TileOpacityLabel.Visibility = Visibility.Collapsed;
-                DyeChannelBox.Visibility = Visibility.Collapsed;
-                DyeChannelLabel.Visibility = Visibility.Collapsed;
-
-
-                TileUnknownBox.Visibility = Visibility.Collapsed;
             }
         }
 
@@ -669,57 +694,39 @@ namespace FFXIV_TexTools.Views.Controls
 
 
 
-            if (Material.ColorSetData.Count > 256)
-            {
-                // Dawntrail flipped these two values.
-                SpecularPowerBox.Text = RowData[1][3].ToString();
-                GlossBox.Text = RowData[0][3].ToString();
-            }
-            else
-            {
-                SpecularPowerBox.Text = RowData[0][3].ToString();
-                GlossBox.Text = RowData[1][3].ToString();
-            }
-
-            if (_columnCount == 4)
-            {
-                TileIdBox.SelectedValue = (int)(Math.Floor(RowData[2][3] * 64));
-                TileCountXBox.Text = RowData[3][0].ToString();
-                TileCountYBox.Text = RowData[3][3].ToString();
-                TileSkewXBox.Text = RowData[3][1].ToString();
-                TileSkewYBox.Text = RowData[3][2].ToString();
-            }
-            else
-            {
+            DiffuseAlphaBox.Text = RowData[0][3].ToString();
+            SpecAlphaBox.Text = RowData[1][3].ToString();
+            EmissAlphaBox.Text = RowData[2][3].ToString();
 
 
-                FresnelYBox.Text = RowData[3][0].ToString();
-                FresnelAlbedoBox.Text = RowData[3][1].ToString();
-                FresnelZBox.Text = RowData[3][2].ToString();
-                FresnelUnknownBox.Text = RowData[3][3].ToString();
+            SheenRateBox.Text = RowData[3][0].ToString();
+            SheenTintRateBox.Text = RowData[3][1].ToString();
+            SheenApertureBox.Text = RowData[3][2].ToString();
+            SheenUnknownBox.Text = RowData[3][3].ToString();
 
 
-                RoughnessBox.Text = RowData[4][0].ToString();
-                PbrUnknownBox.Text = RowData[4][1].ToString();
-                MetallicBox.Text = RowData[4][2].ToString();
-                AnisotropyBlendingBox.Text = RowData[4][3].ToString();
+            RoughnessBox.Text = RowData[4][0].ToString();
+            PbrUnknownBox.Text = RowData[4][1].ToString();
+            MetallicBox.Text = RowData[4][2].ToString();
+            AnisotropyBlendingBox.Text = RowData[4][3].ToString();
 
 
-                WetnessBox.Text = RowData[5][1].ToString();
+            EffectUnknownR.Text = RowData[5][0].ToString();
+            EffectOpacityBox.Text = RowData[5][1].ToString();
+            EffectUnknownB.Text = RowData[5][2].ToString();
+            EffectUnknownA.Text = RowData[5][3].ToString();
 
 
-                ShaderTemplateBox.Text = RowData[6][0].ToString();
-                TileIdBox.SelectedValue = (int)(Math.Floor(RowData[6][1] * 64));
-                TileOpacityBox.Text = RowData[6][2].ToString();
-                TileUnknownBox.Text = RowData[6][3].ToString();
+            ShaderTemplateBox.Text = RowData[6][0].ToString();
+            TileIdBox.SelectedValue = (int)(Math.Floor(RowData[6][1] * 64));
+            TileOpacityBox.Text = RowData[6][2].ToString();
+            ShaderEffectBox.Text = RowData[6][3].ToString();
 
 
-                TileCountXBox.Text = RowData[7][0].ToString();
-                TileCountYBox.Text = RowData[7][3].ToString();
-                TileSkewXBox.Text = RowData[7][1].ToString();
-                TileSkewYBox.Text = RowData[7][2].ToString();
-
-            }
+            TileCountXBox.Text = RowData[7][0].ToString();
+            TileCountYBox.Text = RowData[7][3].ToString();
+            TileSkewXBox.Text = RowData[7][1].ToString();
+            TileSkewYBox.Text = RowData[7][2].ToString();
 
 
 
@@ -795,14 +802,14 @@ namespace FFXIV_TexTools.Views.Controls
             await _vm.SetColorsetRow(RowId, _columnCount, dyeId);
         }
 
-        private byte ColorHalfToByte(Half half)
+        public static byte ColorHalfToByte(Half half)
         {
             var b = (byte)Math.Round((Math.Sqrt(half) * 255));
 
             return b;
         }
 
-        private Half ColorByteToHalf(byte b)
+        public static Half ColorByteToHalf(byte b)
         {
             var f = (b / 255.0f);
             var half = f * f;
@@ -882,8 +889,18 @@ namespace FFXIV_TexTools.Views.Controls
         /// <param name="mtrl"></param>
         /// <param name="row"></param>
         /// <returns></returns>
-        public async Task SetMaterial(XivMtrl material, int row = 0)
+        public async Task SetMaterial(XivMtrl material, int row = -1)
         {
+            if(row < 0)
+            {
+                if(RowId >= 0)
+                {
+                    row = RowId;
+                } else
+                {
+                    row = 0;
+                }
+            }
             Material = material;
             if (Material == null) return;
 
@@ -959,7 +976,7 @@ namespace FFXIV_TexTools.Views.Controls
 
                 PreviewDyeCollection.Clear();
                 PreviewDyeCollection.Add(new KeyValuePair<int, string>(-1, "Undyed".L()));
-                for (ushort i = 0; i < 128; i++)
+                for (ushort i = 0; i < 255; i++)
                 {
                     var name = "Dye " + i.ToString();
                     if (dyes.ContainsKey(i))
@@ -970,22 +987,6 @@ namespace FFXIV_TexTools.Views.Controls
                 }
                 DyePreviewIdBox.SelectedValue = -1;
 
-
-                if (!LegacyShader)
-                {
-                    GlossBox.Visibility = Visibility.Collapsed;
-                    GlossLabel.Visibility = Visibility.Collapsed;
-                    SpecularPowerBox.Visibility = Visibility.Collapsed;
-                    SpecularPowerLabel.Visibility = Visibility.Collapsed;
-                }
-                else
-                {
-                    // Gloss/Spec Power only work on legacy shaders.
-                    GlossBox.Visibility = Visibility.Visible;
-                    GlossLabel.Visibility = Visibility.Visible;
-                    SpecularPowerBox.Visibility = Visibility.Visible;
-                    SpecularPowerLabel.Visibility = Visibility.Visible;
-                }
 
                 await _vm.SetMaterial(Material, DyeTemplateFile);
                 await SetRow(row);
@@ -1066,154 +1067,126 @@ namespace FFXIV_TexTools.Views.Controls
             try
             {
                 float fl;
-                if (DawnTrail && LegacyShader)
-                {
-                    // Gloss/Spec Power on Dawntrail Materials.
-                    fl = 1.0f;
-                    float.TryParse(SpecularPowerBox.Text, out fl);
-                    RowData[1][3] = new Half(fl);
 
-                    fl = 1.0f;
-                    float.TryParse(GlossBox.Text, out fl);
-                    RowData[0][3] = new Half(fl);
-                }
-                else if (!DawnTrail)
-                {
-                    // Original Endwalker gloss/spec power assignment.
-                    fl = 1.0f;
-                    float.TryParse(SpecularPowerBox.Text, out fl);
-                    RowData[0][3] = new Half(fl);
+                fl = 1.0f;
+                float.TryParse(DiffuseAlphaBox.Text, out fl);
+                RowData[0][3] = new Half(fl);
 
-                    fl = 1.0f;
-                    float.TryParse(GlossBox.Text, out fl);
-                    RowData[1][3] = new Half(fl);
-                }
+                fl = 1.0f;
+                float.TryParse(SpecAlphaBox.Text, out fl);
+                RowData[1][3] = new Half(fl);
 
-                if (DawnTrail)
-                {
-                    fl = 0.0f;
-                    float.TryParse(FresnelYBox.Text, out fl);
-                    RowData[3][0] = new Half(fl);
-
-                    fl = 0.0f;
-                    float.TryParse(FresnelAlbedoBox.Text, out fl);
-                    RowData[3][1] = new Half(fl);
-
-                    fl = 0.0f;
-                    float.TryParse(FresnelZBox.Text, out fl);
-                    RowData[3][2] = new Half(fl);
-
-                    fl = 0.0f;
-                    float.TryParse(FresnelUnknownBox.Text, out fl);
-                    RowData[3][3] = new Half(fl);
+                fl = 1.0f;
+                float.TryParse(EmissAlphaBox.Text, out fl);
+                RowData[2][3] = new Half(fl);
 
 
-                    fl = 0.0f;
-                    float.TryParse(RoughnessBox.Text, out fl);
-                    RowData[4][0] = new Half(fl);
+                fl = 0.0f;
+                float.TryParse(SheenRateBox.Text, out fl);
+                RowData[3][0] = new Half(fl);
 
-                    fl = 0.0f;
-                    float.TryParse(PbrUnknownBox.Text, out fl);
-                    RowData[4][1] = new Half(fl);
+                fl = 0.0f;
+                float.TryParse(SheenTintRateBox.Text, out fl);
+                RowData[3][1] = new Half(fl);
 
-                    fl = 0.0f;
-                    float.TryParse(MetallicBox.Text, out fl);
-                    RowData[4][2] = new Half(fl);
+                fl = 0.0f;
+                float.TryParse(SheenApertureBox.Text, out fl);
+                RowData[3][2] = new Half(fl);
 
-                    fl = 0.0f;
-                    float.TryParse(AnisotropyBlendingBox.Text, out fl);
-                    RowData[4][3] = new Half(fl);
+                fl = 0.0f;
+                float.TryParse(SheenUnknownBox.Text, out fl);
+                RowData[3][3] = new Half(fl);
+
+                fl = 0.0f;
+                float.TryParse(RoughnessBox.Text, out fl);
+                RowData[4][0] = new Half(fl);
+
+                fl = 0.0f;
+                float.TryParse(PbrUnknownBox.Text, out fl);
+                RowData[4][1] = new Half(fl);
+
+                fl = 0.0f;
+                float.TryParse(MetallicBox.Text, out fl);
+                RowData[4][2] = new Half(fl);
+
+                fl = 0.0f;
+                float.TryParse(AnisotropyBlendingBox.Text, out fl);
+                RowData[4][3] = new Half(fl);
+
+                fl = 0.0f;
+                float.TryParse(EffectUnknownR.Text, out fl);
+                RowData[5][0] = new Half(fl);
+
+                fl = 0.0f;
+                float.TryParse(EffectOpacityBox.Text, out fl);
+                RowData[5][1] = new Half(fl);
+
+                fl = 0.0f;
+                float.TryParse(EffectUnknownB.Text, out fl);
+                RowData[5][2] = new Half(fl);
+
+                fl = 0.0f;
+                float.TryParse(EffectUnknownA.Text, out fl);
+                RowData[5][3] = new Half(fl);
+
+                fl = 0.0f;
+                float.TryParse(ShaderTemplateBox.Text, out fl);
+                RowData[6][0] = new Half(fl);
 
 
-                    fl = 0.0f;
-                    float.TryParse(WetnessBox.Text, out fl);
-                    RowData[5][1] = new Half(fl);
+                RowData[6][1] = new Half((((int)TileIdBox.SelectedValue) + 0.5f) / 64.0f);
 
+                fl = 0.0f;
+                float.TryParse(TileOpacityBox.Text, out fl);
+                RowData[6][2] = new Half(fl);
 
-                    fl = 0.0f;
-                    float.TryParse(ShaderTemplateBox.Text, out fl);
-                    RowData[6][0] = new Half(fl);
+                fl = 0.0f;
+                float.TryParse(ShaderEffectBox.Text, out fl);
+                RowData[6][3] = new Half(fl);
 
-                    RowData[6][1] = new Half((((int)TileIdBox.SelectedValue) + 0.5f) / 64.0f);
+                fl = 16.0f;
+                float.TryParse(TileCountXBox.Text, out fl);
+                RowData[7][0] = new Half(fl);
 
-                    fl = 0.0f;
-                    float.TryParse(TileOpacityBox.Text, out fl);
-                    RowData[6][2] = new Half(fl);
+                fl = 16.0f;
+                float.TryParse(TileCountYBox.Text, out fl);
+                RowData[7][3] = new Half(fl);
 
-                    fl = 0.0f;
-                    float.TryParse(TileUnknownBox.Text, out fl);
-                    RowData[6][3] = new Half(fl);
+                fl = 0f;
+                float.TryParse(TileSkewXBox.Text, out fl);
+                RowData[7][1] = new Half(fl);
 
-                    fl = 16.0f;
-                    float.TryParse(TileCountXBox.Text, out fl);
-                    RowData[7][0] = new Half(fl);
+                fl = 0f;
+                float.TryParse(TileSkewYBox.Text, out fl);
+                RowData[7][2] = new Half(fl);
 
-                    fl = 16.0f;
-                    float.TryParse(TileCountYBox.Text, out fl);
-                    RowData[7][3] = new Half(fl);
-
-                    fl = 0f;
-                    float.TryParse(TileSkewXBox.Text, out fl);
-                    RowData[7][1] = new Half(fl);
-
-                    fl = 0f;
-                    float.TryParse(TileSkewYBox.Text, out fl);
-                    RowData[7][2] = new Half(fl);
-
-
-                }
 
                 uint modifier = (uint)0;
                 if (DyeTemplateIdBox.SelectedValue != null)
                 {
 
-                    // Assigning Dye Info
-                    if (DawnTrail)
+                    var v = (ushort)DyeTemplateIdBox.SelectedValue;
+                    uint templateId = v;
+                    var shifted = templateId << 16;
+                    modifier |= shifted;
+
+                    var channel = (uint)DyeChannelBox.SelectedValue;
+                    shifted = channel << 27;
+                    modifier |= shifted;
+
+                    for (int i = 0; i < DyeBoxes.Count; i++)
                     {
-                        var v = (ushort)DyeTemplateIdBox.SelectedValue;
-                        uint templateId = v;
-                        var shifted = templateId << 16;
-                        modifier |= shifted;
-
-                        var channel = (uint)DyeChannelBox.SelectedValue;
-                        shifted = channel << 27;
-                        modifier |= shifted;
-
-                        for (int i = 0; i < DyeBoxes.Count; i++)
+                        if (DyeBoxes[i].IsChecked == true)
                         {
-                            if (DyeBoxes[i].IsChecked == true)
-                            {
-                                shifted = (uint)(0x01 << i);
-                                modifier |= shifted;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        var v = (ushort)DyeTemplateIdBox.SelectedValue;
-                        uint templateId = v;
-                        var shifted = templateId << 5;
-                        modifier |= shifted;
-
-                        // Only 5 dye bits for Endwalker.
-                        for (int i = 0; i < 5; i++)
-                        {
-                            if (DyeBoxes[i].IsChecked == true)
-                            {
-                                shifted = (uint)(0x01 << i);
-                                modifier |= shifted;
-                            }
+                            shifted = (uint)(0x01 << i);
+                            modifier |= shifted;
                         }
                     }
                 }
 
 
 
-                var _dyeSize = 2;
-                if (DawnTrail)
-                {
-                    _dyeSize = 4;
-                }
+                var _dyeSize = 4;
 
 
                 var offset = RowId * _dyeSize;
@@ -1264,7 +1237,7 @@ namespace FFXIV_TexTools.Views.Controls
 
         private void RawAssignColorPixel(int col, string name, ColorPicker picker)
         {
-            if (!RawEditPixel(col, name, true))
+            if (!RawEditPixel(col, name, false))
             {
                 return;
             }
@@ -1525,7 +1498,7 @@ namespace FFXIV_TexTools.Views.Controls
             {
                 var dyeId = (int)DyePreviewIdBox.SelectedValue;
 
-                ApplyDye(RowId, dyeId);
+                ApplyDye(RowId, dyeId, -1);
 
                 // Reload the UI.
                 await SetMaterial(Material, RowId);
@@ -1537,25 +1510,10 @@ namespace FFXIV_TexTools.Views.Controls
         }
         private async void CopyAllDyeValuesButton_Click(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                var dyeId = (int)DyePreviewIdBox.SelectedValue;
-                
-                for(int i = 0; i < _rowCount; i++)
-                {
-                    ApplyDye(i, dyeId);
-                }
-
-                // Reload the UI.
-                await SetMaterial(Material, RowId);
-            }
-            catch (Exception ex)
-            {
-                this.ShowError("Unknown Error", "An error occurred:\n\n" + ex.Message);
-            }
+            DyeContextMenu.IsOpen = true;
         }
 
-        private void ApplyDye(int rowId, int dyeId)
+        private void ApplyDye(int rowId, int dyeId, int channel)
         {
             ushort dyeTemplateId = STM.GetTemplateKeyFromMaterialData(Material.ColorSetDyeData, rowId);
             var template = DyeTemplateFile.GetTemplate(dyeTemplateId);
@@ -1563,7 +1521,7 @@ namespace FFXIV_TexTools.Views.Controls
             var templateType = LegacyShader ? STM.EStainingTemplate.Endwalker : STM.EStainingTemplate.Dawntrail;
 
             if (template == null) return;
-            if (dyeId < 0 || dyeId >= 128) return;
+            if (dyeId < 0 || dyeId > 254) return;
 
             uint dyeData = 0;
             if (Material.ColorSetDyeData.Length == 0)
@@ -1584,8 +1542,9 @@ namespace FFXIV_TexTools.Views.Controls
             var rowData = GetRowData(rowId);
             for (int i = 0; i < dyeCount; i++)
             {
+                uint dyeChannel = dyeData << 3 >> 30;
                 var shifted = (uint)(0x1 << i);
-                if ((dyeData & shifted) > 0)
+                if ((dyeData & shifted) > 0 && (dyeChannel == channel || channel < 0))
                 {
                     // Apply this template dye value to the row.
                     var data = template.GetData(i, dyeId);
@@ -1631,8 +1590,53 @@ namespace FFXIV_TexTools.Views.Controls
             if (ColorsetRowViewport != null)
             {
                 ColorsetRowViewport.Dispose();
+                _vm.Dispose();
             }
             CopyUpdated -= OnCopyUpdated;
+        }
+
+        private async Task DyeAllRows(int channel)
+        {
+            try
+            {
+                var dyeId = (int)DyePreviewIdBox.SelectedValue;
+
+                for (int i = 0; i < _rowCount; i++)
+                {
+                    ApplyDye(i, dyeId, channel);
+                }
+
+                // Reload the UI.
+                await SetMaterial(Material, RowId);
+            }
+            catch (Exception ex)
+            {
+                this.ShowError("Unknown Error", "An error occurred:\n\n" + ex.Message);
+            }
+        }
+        private void DyeChannel1_Click(object sender, RoutedEventArgs e)
+        {
+            _ = DyeAllRows(0);
+        }
+
+        private void DyeChannel2_Click(object sender, RoutedEventArgs e)
+        {
+            _ = DyeAllRows(1);
+        }
+
+        private void DyeChannel3_Click(object sender, RoutedEventArgs e)
+        {
+            _ = DyeAllRows(2);
+        }
+
+        private void DyeChannel4_Click(object sender, RoutedEventArgs e)
+        {
+            _ = DyeAllRows(3);
+        }
+
+        private void DyeAllChannels_Click(object sender, RoutedEventArgs e)
+        {
+            _ = DyeAllRows(-1);
         }
     }
 }

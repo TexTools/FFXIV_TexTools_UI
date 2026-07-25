@@ -88,7 +88,6 @@ namespace FFXIV_TexTools.ViewModels
             var slot = ViewHelpers.GetModelSlot(model.Source);
 
             SharpDX.BoundingBox? boundingBox = null;
-            ModelModifiers.CalculateTangents(model);
 
             // Remove any existing models of the same item type
             RemoveSlot(slot);
@@ -364,7 +363,7 @@ namespace FFXIV_TexTools.ViewModels
                 models.Add(kv.Value.TtModel.Source);
             }
 
-            var boneDict = TTModel.ResolveFullBoneHeirarchy(race, models.ToList());
+            var boneDict = TTModel.ResolveFullBoneHeirarchy(race, models.ToList(), null, MainWindow.DefaultTransaction);
 
             // Fill in any missing bones that we couldn't otherwise figure out, if possible.
             var missingBones = new List<string>();

@@ -70,18 +70,11 @@ namespace FFXIV_TexTools.ViewModels
 
         public ObservableElement3DCollection Models { get; } = new ObservableElement3DCollection();
 
-        public Viewport3DViewModel()
+        public Viewport3DViewModel() : base()
         {
             Title = "";
             SubTitle = "";
 
-            // Eat exception to not immediately crash in VirtualBox
-            try
-            {
-                EffectsManager = new CustomEffectsManager();
-            } catch { }
-
-            Camera = new PerspectiveCamera();
             Camera.CameraInternal.PropertyChanged += CameraInternal_PropertyChanged;
 
             BackgroundColor = Properties.Settings.Default.BG_Color;
@@ -276,12 +269,6 @@ namespace FFXIV_TexTools.ViewModels
             // Push all the potentially CPU intense stuff onto a new thread.
             await Task.Run(async () =>
             {
-                if (newModel && originalModel != _Model)
-                {
-                    // Only recalculate if an actually new-new model, since this doesn't change on shape application.
-                    ModelModifiers.CalculateTangents(model);
-                }
-
                 if (newModel)
                 {
                     lock (_Geometry)
@@ -379,6 +366,7 @@ namespace FFXIV_TexTools.ViewModels
                                 EmissiveMap = emissive,
                                 DiffuseMapSampler = sampler
                             };
+
 
                             lock (_Materials)
                             {
@@ -788,7 +776,7 @@ namespace FFXIV_TexTools.ViewModels
             }
         }
 
-        private int _ReflectionValue  = 5;
+        private int _ReflectionValue  = 2;
         public int ReflectionValue
         {
             get => _ReflectionValue;

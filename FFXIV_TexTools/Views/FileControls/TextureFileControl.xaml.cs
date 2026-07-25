@@ -229,8 +229,8 @@ namespace FFXIV_TexTools.Views.Controls
             {
                 encoder = new BmpEncoder()
                 {
-                    SupportTransparency = true,
-                    BitsPerPixel = BmpBitsPerPixel.Pixel32
+                    SupportTransparency = false,
+                    BitsPerPixel = BmpBitsPerPixel.Pixel24
                 };
             }
             else if (ext == ".png")
@@ -377,13 +377,27 @@ namespace FFXIV_TexTools.Views.Controls
         {
             return "Texture";
         }
+
+        protected override KeyValuePair<string, string> GetDefaultExtension()
+        {
+            if (Settings.Default.Default_Image_Format == "tga")
+            {
+                return new KeyValuePair<string, string>(".tga", "TGA Image");
+            } else if (Settings.Default.Default_Image_Format == "png")
+            {
+                return new KeyValuePair<string, string>(".png", "PNG Image");
+            } else
+            {
+                return new KeyValuePair<string, string>(".dds", "DDS Image");
+            }
+        }
         public override Dictionary<string, string> GetValidFileExtensions()
         {
             return new Dictionary<string, string>()
             {
                 { ".dds", "DDS Image" },
-                { ".png", "PNG Image" },
                 { ".tga", "TGA Image" },
+                { ".png", "PNG Image" },
                 { ".bmp", "Bitmap Image" },
                 { ".tex", "FFXIV Texture" },
                 { ".atex", "FFXIV VFX Texture" },
@@ -438,11 +452,24 @@ namespace FFXIV_TexTools.Views.Controls
                 var b = BlueChecked ? 1.0f : 0.0f;
                 var a = AlphaChecked ? 1.0f : 0.0f;
 
-                if(ImageEffect == null)
+                var allChannels = RedChecked && GreenChecked && BlueChecked && AlphaChecked;
+
+                if(ImageEffect == null && !allChannels)
                 {
                     ImageEffect = new ColorChannels();
                 }
-                ImageEffect.Channel = new System.Windows.Media.Media3D.Point4D(r, g, b, a);
+
+                if (!allChannels)
+                {
+                    ImageEffect.Channel = new System.Windows.Media.Media3D.Point4D(r, g, b, a);
+                } else
+                {
+                    if (ImageEffect != null)
+                    {
+                        ImageEffect.Dispose();
+                    }
+                    ImageEffect = null;
+                }
                 OnPropertyChanged(nameof(ImageEffect));
 
 
@@ -750,22 +777,22 @@ namespace FFXIV_TexTools.Views.Controls
 
         private async void ResizeImage_Click(object sender, RoutedEventArgs e)
         {
-            var tex = Texture;
-            if (PixelChanges)
-            {
-                tex = (XivTex)Texture.Clone();
-
-                await Tex.MergePixelData(tex, PixelData);
-            }
-
-            var res = ResizeImageWindow.ShowResizeWindow(this, tex);
-            if (res == null) 
-            {
-                return;
-            }
-
             try
             {
+                var tex = Texture;
+                if (PixelChanges)
+                {
+                    tex = (XivTex)Texture.Clone();
+
+                    await Tex.MergePixelData(tex, PixelData);
+                }
+
+                var res = ResizeImageWindow.ShowResizeWindow(this, tex);
+                if (res == null) 
+                {
+                    return;
+                }
+
                 _Texture = res;
                 PixelData = await Texture.GetRawPixels();
                 UnsavedChanges = true;
@@ -776,8 +803,7 @@ namespace FFXIV_TexTools.Views.Controls
             }
             catch(Exception ex)
             {
-                // Should never hit this, but safety.
-                Trace.WriteLine(ex);
+                this.ShowError("Resize Error", "Unable to resize image:\n\n" + ex.Message);
             }
         }
     }

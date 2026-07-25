@@ -30,6 +30,8 @@ namespace FFXIV_TexTools.Views.Models
         public ObservableCollection<KeyValuePair<double, string>> SizeMultiplierSource = new ObservableCollection<KeyValuePair<double, string>>();
         public ObservableCollection<KeyValuePair<int, string>> MdlVersionSource = new ObservableCollection<KeyValuePair<int, string>>();
 
+        private bool _CloseConfirmed = false;
+
         public ImportModelEditView(TTModel newModel, TTModel oldModel)
         {
             InitializeComponent();
@@ -117,13 +119,37 @@ namespace FFXIV_TexTools.Views.Models
             _viewModel = new ImportModelEditViewModel(this, _newModel, _oldModel);
             DataContext = _viewModel;
 
-            _ = SetupUi();
+            // Defer the setup cascade until after the Localization sweep runs.
+            // SetupUi -> viewmodel.SetupUi -> MeshNumberBox.SelectedIndex = 0
+            // ultimately writes the active material's name into
+            // MaterialPathTextBox.Text by direct assignment, and that value would
+            // otherwise be rewritten if it case-insensitively matches a resource
+            // key (e.g. a material named "GREEN" comes out as "Green").
+            Loaded += InitialSetupUi;
 
             Closing += ImportModelEditView_Closing;
         }
 
+        private void InitialSetupUi(object sender, RoutedEventArgs e)
+        {
+            Loaded -= InitialSetupUi;
+            _ = SetupUi();
+        }
+
         private void ImportModelEditView_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            if (!_CloseConfirmed)
+            {
+                if (!this.ShowConfirmation("Model Editor Cancel Confirmation", "Any changes you made in the model editor will be lost.\n\nAre you sure you wish to cancel these changes?"))
+                {
+                    e.Cancel = true;
+                    return;
+                } else
+                {
+                    _CloseConfirmed = true;
+                }
+            }
+
             if (null != Owner)
             {
                 Owner.Activate();
@@ -162,11 +188,14 @@ namespace FFXIV_TexTools.Views.Models
             }
             var val = (int)MdlVersionComboBox.SelectedValue;
             _newModel.MdlVersion = (ushort)val;
+
+            _CloseConfirmed = true;
             DialogResult = true;
         }
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
+            _CloseConfirmed = true;
             DialogResult = false;
         }
 
@@ -253,7 +282,46 @@ namespace FFXIV_TexTools.Views.Models
             {
                 return;
             }
-            ModifyPartWindow.ShowPartModifier(mg.Parts[part], this);
+            ModifyVerticesWindow.ShowVertexModifier(mg.Parts[part], _newModel, this);
+            _viewModel.UpdateFlow();
+        }
+
+        private void ModifyMesh_Click(object sender, RoutedEventArgs e)
+        {
+            var mesh = (int)MeshNumberBox.SelectedValue;
+            if (_newModel.MeshGroups.Count <= mesh || mesh < 0)
+            {
+                return;
+            }
+            var mg = _newModel.MeshGroups[mesh];
+
+            ModifyVerticesWindow.ShowVertexModifier(mg, _newModel, this);
+            _viewModel.UpdateFlow();
+        }
+
+        private void ModifyModel_Click(object sender, RoutedEventArgs e)
+        {
+            ModifyVerticesWindow.ShowVertexModifier(_newModel, _newModel, this);
+            _viewModel.UpdateFlow();
+        }
+
+        private async void AssignHeels_Click(object sender, RoutedEventArgs e)
+        {
+            var mesh = (int)MeshNumberBox.SelectedValue;
+            var part = (int)PartNumberBox.SelectedValue;
+            var atr = ModelModifiers.AssignHeelAttribute(_newModel);
+            await SetupUi();
+
+            MeshNumberBox.SelectedValue = mesh;
+            PartNumberBox.SelectedValue = part;
+
+            if (!string.IsNullOrWhiteSpace(atr))
+            {
+                this.ShowInfo("Heel Offset Assigned", "The heel offset attribute: " + atr + " has been assigned to the first available part in the model.");
+            } else
+            {
+                this.ShowInfo("No Attribute Assigned", "The mesh either does not stick through the floor, or is not a valid target for the heels plugin.\n\nThe model attributes have not been changed.");
+            }
         }
     }
 }

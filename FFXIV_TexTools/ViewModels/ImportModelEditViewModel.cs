@@ -27,7 +27,7 @@ using xivModdingFramework.Models.Helpers;
 
 namespace FFXIV_TexTools.ViewModels
 {
-    public class ImportModelEditViewModel
+    public class ImportModelEditViewModel : INotifyPropertyChanged
     {
 
 
@@ -38,11 +38,17 @@ namespace FFXIV_TexTools.ViewModels
         private readonly Regex ImcAttributeRegex = new Regex("^atr_([a-z]{2})_([a-j])$");
 
         private readonly Regex DefaultSkinRegex = new Regex("\\/mt_c[0-9]{4}b0001_a\\.mtrl");
+        private readonly Regex SkinBRegex = new Regex("\\/mt_c[0-9]{4}b0001_b\\.mtrl");
+        private readonly Regex SkinBiboRegex = new Regex("\\/mt_c[0-9]{4}b0001_bibo\\.mtrl");
         private readonly Regex ItemMaterialRegex = new Regex("\\/mt_c([0-9]{4})[e|a][0-9]{4}_[a-z0-9]{3}_([a-z])+\\.mtrl");
         private const string SkinMaterial = "/mt_c0101b0001_a.mtrl";
+        private const string SkinBMaterial = "/mt_c0101b0001_b.mtrl";
+        private const string SkinBiboMaterial = "/mt_c0101b0001_bibo.mtrl";
         private readonly KeyValuePair<string, string> DefaultTag = new KeyValuePair<string, string>("_!ADDNEW!_", "Add Attributes...".L());
         private readonly KeyValuePair<string, string> CustomTag = new KeyValuePair<string, string>("_!CUSTOM!_", "Custom".L());
-        private readonly KeyValuePair<string, string> SkinTag = new KeyValuePair<string, string>(SkinMaterial, "Skin".L());
+        private readonly KeyValuePair<string, string> SkinTag = new KeyValuePair<string, string>(SkinMaterial, "Skin A (Gen2/Vanilla)".L());
+        private readonly KeyValuePair<string, string> SkinBTag = new KeyValuePair<string, string>(SkinBMaterial, "Skin B (Gen3/TBSE)".L());
+        private readonly KeyValuePair<string, string> SkinBiboTag = new KeyValuePair<string, string>(SkinBiboMaterial, "Skin Bibo (Bibo+)".L());
         private readonly string UnknownText = "Unknown".L();
 
         private float OldModelSize;
@@ -53,6 +59,176 @@ namespace FFXIV_TexTools.ViewModels
         private HashSet<string> RootMaterials = new HashSet<string>();
 
         private XivDependencyRoot _root;
+
+        public void UpdateFlow()
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(EnableAnisotropy)));
+        }
+
+
+        public bool DisableShadows
+        {
+            get {
+                return (_newModel.Flags & EMeshFlags1.ShadowDisabled) != 0;
+            }
+            set
+            {
+                if (value)
+                {
+                    _newModel.Flags |= EMeshFlags1.ShadowDisabled;
+                } else
+                {
+                    _newModel.Flags &= ~EMeshFlags1.ShadowDisabled;
+                }
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DisableShadows)));
+            }
+        }
+        public bool DisableLightShadow
+        {
+            get
+            {
+                return (_newModel.Flags & EMeshFlags1.LightShadowDisabled) != 0;
+            }
+            set
+            {
+                if (value)
+                {
+                    _newModel.Flags |= EMeshFlags1.LightShadowDisabled;
+                }
+                else
+                {
+                    _newModel.Flags &= ~EMeshFlags1.LightShadowDisabled;
+                }
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DisableLightShadow)));
+            }
+        }
+        public bool EnableAnisotropy
+        {
+            get
+            {
+                return _newModel.AnisotropicLightingEnabled;
+            }
+            set
+            {
+                _newModel.AnisotropicLightingEnabled = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(EnableAnisotropy)));
+            }
+        }
+        public bool DisableWavingAnimation
+        {
+            get
+            {
+                return (_newModel.Flags & EMeshFlags1.WavingAnimationDisabled) != 0;
+            }
+            set
+            {
+                if (value)
+                {
+                    _newModel.Flags |= EMeshFlags1.WavingAnimationDisabled;
+                }
+                else
+                {
+                    _newModel.Flags &= ~EMeshFlags1.WavingAnimationDisabled;
+                }
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DisableWavingAnimation)));
+            }
+        }
+        public bool EnableLightingReflection
+        {
+            get
+            {
+                return (_newModel.Flags & EMeshFlags1.LightingReflectionEnabled) != 0;
+            }
+            set
+            {
+                if (value)
+                {
+                    _newModel.Flags |= EMeshFlags1.LightingReflectionEnabled;
+                }
+                else
+                {
+                    _newModel.Flags &= ~EMeshFlags1.LightingReflectionEnabled;
+                }
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(EnableLightingReflection)));
+            }
+        }
+        public bool UnknownFlag
+        {
+            get
+            {
+                return (_newModel.Flags & EMeshFlags1.Unknown10) != 0;
+            }
+            set
+            {
+                if (value)
+                {
+                    _newModel.Flags |= EMeshFlags1.Unknown10;
+                }
+                else
+                {
+                    _newModel.Flags &= ~EMeshFlags1.Unknown10;
+                }
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(UnknownFlag)));
+            }
+        }
+        public bool OccludeRain
+        {
+            get
+            {
+                return (_newModel.Flags & EMeshFlags1.RainOcclusionEnabled) != 0;
+            }
+            set
+            {
+                if (value)
+                {
+                    _newModel.Flags |= EMeshFlags1.RainOcclusionEnabled;
+                }
+                else
+                {
+                    _newModel.Flags &= ~EMeshFlags1.RainOcclusionEnabled;
+                }
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(OccludeRain)));
+            }
+        }
+        public bool OccludeSnow
+        {
+            get
+            {
+                return (_newModel.Flags & EMeshFlags1.SnowOcclusionEnabled) != 0;
+            }
+            set
+            {
+                if (value)
+                {
+                    _newModel.Flags |= EMeshFlags1.SnowOcclusionEnabled;
+                }
+                else
+                {
+                    _newModel.Flags &= ~EMeshFlags1.SnowOcclusionEnabled;
+                }
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(OccludeSnow)));
+            }
+        }
+        public bool OccludeDust
+        {
+            get
+            {
+                return (_newModel.Flags & EMeshFlags1.DustOcclusionEnabled) != 0;
+            }
+            set
+            {
+                if (value)
+                {
+                    _newModel.Flags |= EMeshFlags1.DustOcclusionEnabled;
+                }
+                else
+                {
+                    _newModel.Flags &= ~EMeshFlags1.DustOcclusionEnabled;
+                }
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(OccludeDust)));
+            }
+        }
+
 
         private TTMeshGroup GetGroup()
         {
@@ -100,6 +276,14 @@ namespace FFXIV_TexTools.ViewModels
                 if (result.Success)
                 {
                     m.Material = SkinMaterial;
+                }
+                if(SkinBRegex.IsMatch(m.Material))
+                {
+                    m.Material = SkinBMaterial;
+                }
+                if (SkinBiboRegex.IsMatch(m.Material))
+                {
+                    m.Material = SkinBiboMaterial;
                 }
             }
 
@@ -276,6 +460,7 @@ namespace FFXIV_TexTools.ViewModels
         }
         private void ModelTypeComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
+            if (_view.ModelTypeComboBox.SelectedValue == null) return;
             var val = (EMeshType)_view.ModelTypeComboBox.SelectedValue;
             var m = GetGroup();
             m.MeshType = val;
@@ -317,9 +502,11 @@ namespace FFXIV_TexTools.ViewModels
             if (!_view.MaterialsSource.Contains(SkinTag))
             {
                 _view.MaterialsSource.Add(SkinTag);
+                _view.MaterialsSource.Add(SkinBTag);
+                _view.MaterialsSource.Add(SkinBiboTag);
 
                 // Get our root materials, if we have any
-                foreach(var m in RootMaterials)
+                foreach (var m in RootMaterials)
                 {
                     AddMaterial(m);
                 }
@@ -511,7 +698,7 @@ namespace FFXIV_TexTools.ViewModels
                 }
 
 
-                var validator = new Regex("[^a-z0-9._=]");
+                var validator = new Regex("[^a-z0-9._=\\-]");
                 attr = validator.Replace(attr, "");
                 if (attr == "") return;
 
@@ -564,7 +751,7 @@ namespace FFXIV_TexTools.ViewModels
                 foreach (var shpKv in p.ShapeParts)
                 {
                     var shape = shpKv.Value;
-                    if (!shape.Name.StartsWith("shp_")) continue;
+                    if (!shape.Name.StartsWith("shp")) continue;
                     shapeNames.Add(shape.Name);
                 }
             }
@@ -669,6 +856,7 @@ namespace FFXIV_TexTools.ViewModels
         // Sets the material selection at the UI level
         private void SetMaterial(string mat)
         {
+            mat = mat.Trim();
             var element = _view.MaterialsSource.FirstOrDefault(x => x.Key == mat);
             if (element.Key != null)
             {
@@ -992,5 +1180,7 @@ namespace FFXIV_TexTools.ViewModels
             { "shp_nse_d", "Nose d" },
             { "shp_nse_e", "Nose e" },
         };
+
+        public event PropertyChangedEventHandler PropertyChanged;
     }
 }

@@ -51,7 +51,7 @@
                     <ColumnDefinition Width="1*"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
 
-                <Label Content="Material Set:" Margin="0" FontSize="16" Grid.Row="0" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"/>
+                <Label Content="Material Ver:" Margin="0" FontSize="16" Grid.Row="0" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"/>
                 <ComboBox x:Name="MaterialSetBox" Grid.Row="0" Grid.Column="1" Margin="5" />
                 <Button Grid.Row="0" x:Name="AddMaterialSetButton" Margin="0" VerticalAlignment="Center" Click="AddMaterialSetButton_Click" Grid.Column="2" HorizontalAlignment="Left" FontSize="10" Panel.ZIndex="100">
                     <iconPacks:PackIconFontAwesome  Kind="PlusSolid" Height="12"/>

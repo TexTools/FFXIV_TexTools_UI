@@ -65,5 +65,11 @@ namespace FFXIV_TexTools.Views
             LanguageCode = "zh";
             Close();
         }
+
+        private void TraditionalChineseBtn_Click(object sender, RoutedEventArgs e)
+        {
+            LanguageCode = "tc";
+            Close();
+        }
     }
 }

@@ -186,9 +186,15 @@ namespace FFXIV_TexTools.Views.Models
             // Show the export dialog
             var fullModelExportDialog = new FullModelExportDialogView(_fmvm.SelectedSkeleton.Name) {Owner = this};
 
-            if (fullModelExportDialog.ShowDialog() == true)
+            try
             {
-                await Export(fullModelExportDialog.ModelName);
+                if (fullModelExportDialog.ShowDialog() == true)
+                {
+                    await Export(fullModelExportDialog.ModelName);
+                }
+            } catch(Exception ex)
+            {
+                this.ShowError("Model Export Error", "An error occurred while exporting the model:\n\n" + ex.Message);
             }
         }
 
@@ -250,19 +256,12 @@ namespace FFXIV_TexTools.Views.Models
             foreach(var mdl in fmViewPortVM.shownModels.Select(x => x.Value.TtModel))
             {
                 var m = (TTModel) mdl.Clone();
-
-                if (Settings.Default.ShiftExportUV)
-                {
-                    // This is not a typo.  Because we haven't flipped the UV yet, we need to -1, not +1.
-                    ModelModifiers.ShiftImportUV(m);
-                }
-                
                 models.Add(m);
             }
 
             
 
-            TTModel.SaveFullToFile(dbPath, _fmvm.SelectedSkeleton.XivRace, models);
+            TTModel.SaveFullToFile(dbPath, _fmvm.SelectedSkeleton.XivRace, models, null, MainWindow.DefaultTransaction, Settings.Default.ShiftExportUV);
 
             var proc = new Process
             {

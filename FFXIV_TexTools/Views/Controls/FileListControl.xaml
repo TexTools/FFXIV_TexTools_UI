@@ -56,14 +56,10 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="120"></ColumnDefinition>
                 <ColumnDefinition Width="120"></ColumnDefinition>
-                <ColumnDefinition Width="120"></ColumnDefinition>
-                <ColumnDefinition Width="120"></ColumnDefinition>
                 <ColumnDefinition Width="1*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <Button Grid.Column="0" Content="Select All" VerticalAlignment="Center" Margin="10,0,10,0" Click="SelectAll_Click"/>
-            <Button Grid.Column="1" Content="Clear All" VerticalAlignment="Center" Margin="10,0,10,0" Click="ClearAll_Click"/>
-            <Button Grid.Column="2" Content="Select Visible" VerticalAlignment="Center" Margin="10,0,10,0" Click="SelectVisible_Click"/>
-            <Button Grid.Column="3" Content="Clear Visible" VerticalAlignment="Center" Margin="10,0,10,0" Click="ClearVisible_Click"/>
+            <Button Grid.Column="0" Content="{Binding Path=SelectAllText, FallbackValue=Select All}" VerticalAlignment="Center" Margin="10,0,10,0" Click="SelectAll_Click"/>
+            <Button Grid.Column="1" Content="{Binding Path=ClearAllText, FallbackValue=Clear All}" VerticalAlignment="Center" Margin="10,0,10,0" Click="ClearAll_Click"/>
             <Label Grid.Column="4" HorizontalAlignment="Left" VerticalAlignment="Center" Content="{Binding Path=SelectedCountLabel}"></Label>
         </Grid>
     </Grid>

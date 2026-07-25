@@ -48,6 +48,7 @@ using System.Threading;
 using System.CodeDom;
 using xivModdingFramework.Helpers;
 using SharpDX;
+using xivModdingFramework.Models.DataContainers;
 
 namespace FFXIV_TexTools.Views.Controls
 {
@@ -97,6 +98,8 @@ namespace FFXIV_TexTools.Views.Controls
         private bool _MTRL_LOADING = false;
 
         private XivMtrl _Material;
+
+        private XivMtrl _OriginalMaterial;
         public XivMtrl Material
         {
             get
@@ -226,7 +229,10 @@ namespace FFXIV_TexTools.Views.Controls
             // The incoming data is an uncompressed MTRL file.
             var mtrl = Mtrl.GetXivMtrl(data, path);
 
+
+
             Material = mtrl;
+            _OriginalMaterial = (XivMtrl) mtrl.Clone();
             return true;
         }
 
@@ -257,7 +263,24 @@ namespace FFXIV_TexTools.Views.Controls
 
         protected override async Task<bool> INTERNAL_WriteModFile(ModTransaction tx)
         {
+            foreach (var tex in Material.Textures)
+            {
+                if (string.IsNullOrEmpty(tex.TexturePath)) continue;
 
+                tex.TexturePath = tex.TexturePath.ToLower().Trim();
+                if (!IOUtil.IsFFXIVInternalPath(tex.TexturePath))
+                {
+                    if (!tex.TexturePath.Contains("/") && tex.TexturePath.EndsWith(".tex"))
+                    {
+                        tex.TexturePath = Material.GetTextureRootDirectory() + "/" + tex.TexturePath;
+                    }
+                }
+
+                if (!IOUtil.IsFFXIVInternalPath(tex.TexturePath) || !tex.TexturePath.EndsWith(".tex"))
+                {
+                    throw new InvalidDataException("Texture path is not a valid FFXIV texture path: " + tex.TexturePath);
+                }
+            }
 
             // We override this in order to use MTRL's import function, which checks for missing texture files, etc.
             await Mtrl.ImportMtrl(Material, ReferenceItem, XivStrings.TexTools, true, tx);
@@ -313,10 +336,10 @@ namespace FFXIV_TexTools.Views.Controls
                 }
 
                 var newMtrl = await Mtrl.GetXivMtrl(changedFile, false, tx);
-
                 var result = Mtrl.CompareMaterials(Material, newMtrl);
+                var originalResult = Mtrl.CompareMaterials(_OriginalMaterial, newMtrl);
 
-                if (result.OtherDifferences)
+                if (result.OtherDifferences && originalResult.OtherDifferences)
                 {
                     // If parts other than the colorset were changed, we need to prompt a reload.
                     return true;
@@ -325,7 +348,7 @@ namespace FFXIV_TexTools.Views.Controls
                 if (!result.ColorsetDifferences)
                 {
                     // Nothing actually changed, don't bother reloading.
-                    return true;
+                    return false;
                 }
 
 
@@ -360,11 +383,13 @@ namespace FFXIV_TexTools.Views.Controls
         {
             if(Material == null || Material.ColorSetDataSize <= 0)
             {
+                ForceAddColorsetButton.Visibility = Visibility.Visible;
                 ColorsetImage.Source = null;
                 return;
             }
             try
             {
+                ForceAddColorsetButton.Visibility = Visibility.Collapsed;
 
                 ImageSource imageSource = null;
                 var pixels = new byte[0];
@@ -423,7 +448,7 @@ namespace FFXIV_TexTools.Views.Controls
 
         private EShaderPack _LastShpk;
 
-        private void ShaderComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void ShaderComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (Material == null)
             {
@@ -438,6 +463,7 @@ namespace FFXIV_TexTools.Views.Controls
                 return;
             }
 
+
             UnsavedChanges = true;
 
             if (ShaderComboBox.SelectedValue == null || _MTRL_LOADING)
@@ -445,6 +471,7 @@ namespace FFXIV_TexTools.Views.Controls
                 _LastShpk = ShaderPack;
                 return;
             }
+
             if (_LastShpk == EShaderPack.Unknown || ShaderPack == EShaderPack.Unknown)
             {
                 // Don't mess with anything if we were on a broken state before, or are transitioning to one.
@@ -467,19 +494,35 @@ namespace FFXIV_TexTools.Views.Controls
                 return;
             }
 
+            var res = FlexibleMessageBox.Show(ViewHelpers.GetWin32Window(this), "Are you sure you wish to change shader pack?\nThis will reset the Shader settings (Keys/Constants).\n\nIt is advised in most cases to copy an existing material or load a preset when changing Shaders."
+                , "Shader Change Confirmation", System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Warning);
 
-            // Create or purge colorset as necessary.
-            if(ShaderPack != EShaderPack.Character)
+            if(res != System.Windows.Forms.DialogResult.Yes)
+            {
+                ShaderPack = _LastShpk;
+                return;
+            }
+
+
+
+            if (ShaderPack.UsesColorset() && (Material.ColorSetData == null || Material.ColorSetData.Count == 0))
+            {
+                Material.ColorSetData = new List<Half>();
+                for(int i = 0; i < 32; i++)
+                {
+                    Material.ColorSetData.AddRange(EndwalkerUpgrade.GetDefaultColorsetRow(ShaderPack));
+                    Material.ColorSetDyeData = new byte[128];
+                }
+
+            } else if (!ShaderPack.UsesColorset() && (Material.ColorSetData == null || Material.ColorSetData.Count != 0))
             {
                 Material.ColorSetData = new List<Half>();
                 Material.ColorSetDyeData = new byte[0];
-            } else
-            {
-                var length = 1024;
-                var dyeLength = 128;
-                Material.ColorSetData = new List<Half>(new Half[length]);
-                Material.ColorSetDyeData = new byte[dyeLength];
             }
+
+            await UpdateColorsetImage();
+            OnPropertyChanged(nameof(ColorsetEnabled));
+
 
             // Reset shader vars.
             Material.ShaderKeys = new List<ShaderKey>();
@@ -493,7 +536,7 @@ namespace FFXIV_TexTools.Views.Controls
             help.ShowDialog();
         }
 
-        private void NewSharedButton_Click(object sender, RoutedEventArgs e)
+        private void MakeUnique_Click(object sender, RoutedEventArgs e)
         {
             if (Material == null)
             {
@@ -501,22 +544,7 @@ namespace FFXIV_TexTools.Views.Controls
             }
             foreach (var tex in Material.Textures)
             {
-                var path = Material.GetTextureRootDirectoy() + "/" + Material.GetDefaultTexureName(Material.ResolveFullUsage(tex), false);
-                tex.TexturePath = path;
-            }
-            UnsavedChanges = true;
-            UpdateTextureList();
-        }
-
-        private void NewUniqueButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (Material == null)
-            {
-                return;
-            }
-            foreach (var tex in Material.Textures)
-            {
-                var path = Material.GetTextureRootDirectoy() + "/" + Material.GetDefaultTexureName(Material.ResolveFullUsage(tex), true);
+                var path = Material.GetTextureRootDirectory() + "/" + Material.GetUniqueTextureName(Material.ResolveFullUsage(tex));
                 tex.TexturePath = path;
             }
             UnsavedChanges = true;
@@ -764,7 +792,7 @@ namespace FFXIV_TexTools.Views.Controls
                 enabled = true;
             }
 
-            list.Add(("Save to all Material Sets".L(), SaveAllVersions, enabled));
+            list.Add(("Save to all Material Versions".L(), SaveAllVersions, enabled));
 
             return list;
         }
@@ -839,6 +867,28 @@ namespace FFXIV_TexTools.Views.Controls
         {
             TilingModeContextMenu.PlacementTarget = TilingModeButton;
             TilingModeContextMenu.IsOpen = true;
+        }
+
+        private void ForceAddColorset_Click(object sender, RoutedEventArgs e)
+        {
+            if(Material.ColorSetDataSize != 1024)
+            {
+                Material.ColorSetData = new List<Half>(1024);
+                for(int i = 0; i <32; i++)
+                {
+                    Material.ColorSetData.AddRange(EndwalkerUpgrade.GetDefaultColorsetRow(Material.ShaderPack));
+                }
+                Material.ColorSetDyeData = new byte[128];
+
+                if(Material.AdditionalData.Length != 4)
+                {
+                    Material.AdditionalData = new byte[4];
+                }
+                Material.AdditionalData[0] = 0x3C;
+                Material.AdditionalData[1] = 0x05;
+
+                _ = UpdateColorsetImage();
+            }
         }
     }
 }

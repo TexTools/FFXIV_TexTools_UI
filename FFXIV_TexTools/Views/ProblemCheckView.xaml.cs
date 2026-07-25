@@ -100,10 +100,12 @@ namespace FFXIV_TexTools.Views
                 AddText("\t\u2714", "Green");
                 AddBreak();
 
+                /*
+                // Why was this added? This seems unsafe.
                 AddText($"Removing Empty DAT Files...", secondaryTextColor);
                 await CheckDatSizes();
                 AddText("\t\u2714", "Green");
-                AddBreak();
+                AddBreak();*/
 
                 AddText($"\n{UIStrings.ProblemCheck_ModList}\n", secondaryTextColor);
                 await CheckMods(progress);

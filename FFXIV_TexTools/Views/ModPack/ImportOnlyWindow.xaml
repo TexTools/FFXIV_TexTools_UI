@@ -1,0 +1,38 @@
+﻿<mah:MetroWindow x:Class="FFXIV_TexTools.Views.ImportOnlyWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="Importing Modpack" Width="460" SizeToContent="Height" ResizeMode="NoResize">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40"/>
+            <RowDefinition/>
+            <RowDefinition Height="40"/>
+        </Grid.RowDefinitions>
+
+        <Label Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0" FontWeight="Bold" Content="{Binding Path=ImportText}"/>
+
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="100"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <Label HorizontalAlignment="Right" VerticalAlignment="Center" Content="Action:" Margin="10,0"/>
+            <ComboBox Grid.Column="1" Margin="10,0" VerticalAlignment="Center" ItemsSource="{Binding Path=Actions}" DisplayMemberPath="Key" SelectedValuePath="Value" SelectedValue="{Binding Path=SelectedAction}"></ComboBox>
+
+        </Grid>
+
+        <Grid Grid.Row="2">
+            <Button VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0" Content="Cancel" Width="150" Click="Cancel_Click"/>
+            <Button VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10,0" Content="Continue" Width="150" Click="Continue_Click"/>
+        </Grid>
+        
+    </Grid>
+</mah:MetroWindow>

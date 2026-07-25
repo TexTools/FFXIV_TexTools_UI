@@ -12,6 +12,7 @@ using static xivModdingFramework.Materials.DataContainers.TextureSampler;
 using SharpDX;
 using xivModdingFramework.Textures.FileTypes;
 using System.Text.RegularExpressions;
+using System.Windows.Shapes;
 
 namespace FFXIV_TexTools.Views.Controls
 {
@@ -214,6 +215,17 @@ namespace FFXIV_TexTools.Views.Controls
             }
             MinLoDBox.ItemsSource = MinimumLoDSource;
 
+            var msetRegex = new Regex("\\/v[0-9]{4}\\/");
+
+            var mtrlPath = mtrl.MTRLPath;
+            if (mtrlPath != null && msetRegex.IsMatch(mtrlPath))
+            {
+                UniqueButton.IsEnabled = true;
+            }
+            else
+            {
+                UniqueButton.IsEnabled = false;
+            }
 
             // UI config has to go after Initialize.
             LoDBiasSlider.Minimum = -8.0f;
@@ -363,16 +375,10 @@ namespace FFXIV_TexTools.Views.Controls
             e.Handled = regex.IsMatch(e.Text);
         }
 
-        private void SharedPath_Click(object sender, RoutedEventArgs e)
-        {
-
-            var path = _Material.GetTextureRootDirectoy() + "/" + _Material.GetDefaultTexureName(_Material.ResolveFullUsage(Texture), false);
-            TexturePath = path;
-        }
 
         private void UniquePath_Click(object sender, RoutedEventArgs e)
         {
-            var path = _Material.GetTextureRootDirectoy() + "/" + _Material.GetDefaultTexureName(_Material.ResolveFullUsage(Texture), true);
+            var path = _Material.GetTextureRootDirectory() + "/" + _Material.GetUniqueTextureName(_Material.ResolveFullUsage(Texture), true);
             TexturePath = path;
         }
     }

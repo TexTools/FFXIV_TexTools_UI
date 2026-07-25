@@ -126,9 +126,10 @@ namespace FFXIV_TexTools.Views.Simple
 
             DataContext = this;
             InitializeComponent();
-            FileList.SetFiles(files);
+            FileList.SetFiles(files, false);
 
             ModpackAuthor = Properties.Settings.Default.Default_Author;
+            ModpackUrl = Properties.Settings.Default.Default_Modpack_Url;
             ModpackVersion = "1.0";
 
             FileList.SelectionChanged += FileList_SelectionChanged;
@@ -185,7 +186,7 @@ namespace FFXIV_TexTools.Views.Simple
                 Filter = ViewHelpers.ModpackFileFilter,
                 Title = "Save Modpack...",
                 InitialDirectory = startingFolder,
-                FileName = pathSafe + ".pmp"
+                FileName = pathSafe + "." + Settings.Default.Default_Modpack_Format
             };
 
             if (sfd.ShowDialog() != System.Windows.Forms.DialogResult.OK)

@@ -831,7 +831,10 @@ namespace FFXIV_TexTools.Helpers
                     try
                     {
                         var mainWindow = MainWindow.GetMainWindow();
-                        owner = mainWindow.Win32Window;
+                        if (mainWindow != null)
+                        {
+                            owner = mainWindow.Win32Window;
+                        }
                     } catch
                     {
                         // No-Op.

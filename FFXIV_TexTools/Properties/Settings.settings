@@ -102,12 +102,15 @@
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="UseOriginalShapeDataForFace" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
+      <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="Default_Modpack_Url" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="AutoMaterialFix" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="ApplyColorsToNonChara" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="FixPreDawntrailOnImport" Type="System.Boolean" Scope="User">
@@ -139,6 +142,21 @@
     </Setting>
     <Setting Name="CompressEndwalkerUpgradeTextures" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="UseImportedTangents" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="Default_Image_Format" Type="System.String" Scope="User">
+      <Value Profile="(Default)">dds</Value>
+    </Setting>
+    <Setting Name="Default_Modpack_Format" Type="System.String" Scope="User">
+      <Value Profile="(Default)">pmp</Value>
+    </Setting>
+    <Setting Name="UseAutoHeels" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="PenumbraRedrawMode" Type="System.String" Scope="User">
+      <Value Profile="(Default)">RedrawAll</Value>
     </Setting>
   </Settings>
 </SettingsFile>

@@ -20,6 +20,7 @@ using System.Windows.Shapes;
 using xivModdingFramework.Cache;
 using xivModdingFramework.Items.Interfaces;
 using xivModdingFramework.Variants.FileTypes;
+using xivModdingFramework.Mods;
 
 namespace FFXIV_TexTools.Views.Wizard
 {
@@ -38,6 +39,15 @@ namespace FFXIV_TexTools.Views.Wizard
             {
                 Group.Name = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(GroupName)));
+            }
+        }
+        public string GroupDescription
+        {
+            get => Group.Description;
+            set
+            {
+                Group.Description = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(GroupDescription)));
             }
         }
         public ushort Variant
@@ -72,6 +82,15 @@ namespace FFXIV_TexTools.Views.Wizard
             {
                 Group.ImcData.AllVariants = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AllVariants)));
+            }
+        }
+        public bool OnlyAttributes
+        {
+            get => Group.ImcData.OnlyAttributes;
+            set
+            {
+                Group.ImcData.OnlyAttributes = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(OnlyAttributes)));
             }
         }
 
@@ -152,16 +171,15 @@ namespace FFXIV_TexTools.Views.Wizard
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ItemSetText)));
         }
 
-        private bool ItemSelectFunc(IItem item)
+        private bool ItemSelectFunc(IItem item, XivDependencyRoot root)
         {
             if (item == null) return false;
             if (item.GetRoot() == null) return false;
             return true;
         }
 
-        private bool ItemFilterFunc(IItem item)
+        private bool ItemFilterFunc(IItem item, XivDependencyRoot root)
         {
-            var root = item.GetRootInfo();
             return Imc.UsesImc(root);
         }
 

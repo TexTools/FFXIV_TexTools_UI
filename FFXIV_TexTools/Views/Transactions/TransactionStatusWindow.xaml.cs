@@ -1,7 +1,9 @@
 ﻿using FFXIV_TexTools.Helpers;
 using FFXIV_TexTools.Properties;
 using FFXIV_TexTools.Resources;
+using FFXIV_TexTools.Views.Controls;
 using FFXIV_TexTools.Views.Projects;
+using FolderSelect;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -21,7 +23,6 @@ using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using WK.Libraries.BetterFolderBrowserNS;
 using xivModdingFramework.Cache;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Mods;
@@ -489,7 +490,7 @@ namespace FFXIV_TexTools.Views.Transactions
                 if(!XivCache.GameWriteEnabled && MainWindow.UserTransaction.Settings.Target == ETransactionTarget.GameFiles)
                 {
                     var res = FlexibleMessageBox.Show(ViewHelpers.GetWin32Window(Window.GetWindow(this)),
-                        "You are committing to the live FFXIV game files while SAFE mode is enabled.\n\nAre you SURE this is what you meant to do?", "Safe Mode Write Confirmation", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1);
+                        "You are committing to the live FFXIV game files while SAFE mode is enabled.\n\nThis will alter your real, live FFXIV Game Files.\n\nAre you SURE this is what you meant to do?", "Safe Mode Write Confirmation", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1);
                     if(res != System.Windows.Forms.DialogResult.OK)
                     {
                         return;
@@ -665,7 +666,23 @@ namespace FFXIV_TexTools.Views.Transactions
             }
         }
 
-        static BetterFolderBrowser PenumbraAttachDialog = new BetterFolderBrowser();
+        private async void FileListBoxItem_DoubleClick(object sender, RoutedEventArgs e)
+        {
+            if (sender is ListBoxItem item && item.DataContext is string filePath)
+            {
+                try
+                {
+                    await SimpleFileViewWindow.OpenFile(filePath);
+                }
+                catch (Exception Ex)
+                {
+                    Trace.WriteLine(Ex);
+                }
+            }
+        }
+
+        static FolderSelectDialog PenumbraAttachDialog = new FolderSelectDialog();
+
         private async void AttachPenumbra_Click(object sender, RoutedEventArgs e)
         {
 
@@ -687,19 +704,26 @@ namespace FFXIV_TexTools.Views.Transactions
 
             PenumbraAttachDialog.Title = "Select Penumbra Mod Folder...";
 
-            var res = PenumbraAttachDialog.ShowDialog();
-            if (res != System.Windows.Forms.DialogResult.OK)
+            PenumbraAttachDialog.InitialDirectory = PenumbraAPI.GetPenumbraDirectory();
+
+            if (!PenumbraAttachDialog.ShowDialog())
             {
                 return;
             }
-            
+
+            var path = Path.GetFullPath(Path.Combine(PenumbraAttachDialog.FileName, "meta.json"));
+            if (!File.Exists(path))
+            {
+                ViewHelpers.ShowError("Invalid Penumbra Mod Folder", "The selected folder was not a valid Penumbra mod folder.\nPlease select an individual Penumbra Mod folder.");
+                return;
+            }
+
             _AutoCommit = false;
             _KeepOpen = false;
 
-
             var backupFolder = Path.Combine(Path.GetTempPath(), "TexTools_Transaction_Backup");
             IOUtil.DeleteTempDirectory(backupFolder);
-            IOUtil.CopyFolder(PenumbraAttachDialog.SelectedPath, backupFolder);
+            IOUtil.CopyFolder(PenumbraAttachDialog.FileName, backupFolder);
 
             var tx = MainWindow.UserTransaction;
             if(tx == null)
@@ -708,14 +732,14 @@ namespace FFXIV_TexTools.Views.Transactions
                 {
                     StorageType = xivModdingFramework.SqPack.FileTypes.EFileStorageType.UncompressedIndividual,
                     Target = ETransactionTarget.PenumbraModFolder,
-                    TargetPath = PenumbraAttachDialog.SelectedPath,
+                    TargetPath = PenumbraAttachDialog.FileName,
                     Unsafe = false
                 };
                 tx = await ModTransaction.BeginTransaction(true, null, settings, true, true);
                 MainWindow.UserTransaction = tx;
             }
 
-             await PenumbraAttachHandler.Attach(PenumbraAttachDialog.SelectedPath, MainWindow.UserTransaction);
+             await PenumbraAttachHandler.Attach(PenumbraAttachDialog.FileName, MainWindow.UserTransaction);
         }
 
         private void Close_Click(object sender, RoutedEventArgs e)

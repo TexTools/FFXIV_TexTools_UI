@@ -1,6 +1,7 @@
 ﻿using FFXIV_TexTools.Helpers;
 using FFXIV_TexTools.Resources;
 using FFXIV_TexTools.ViewModels;
+using FFXIV_TexTools.Views;
 using FFXIV_TexTools.Views.Controls;
 using System;
 using System.Collections.Generic;
@@ -45,8 +46,8 @@ using SharpDX;
 using ControlzEx.Standard;
 using System.Windows.Media.Media3D;
 using System.Runtime.CompilerServices;
-using WK.Libraries.BetterFolderBrowserNS;
 using System.Text.RegularExpressions;
+using FolderSelect;
 
 namespace FFXIV_TexTools.Views.Controls
 {
@@ -88,6 +89,8 @@ namespace FFXIV_TexTools.Views.Controls
             DataContext = this;
             InitializeComponent();
             ViewportVM = new Viewport3DViewModel();
+
+            DebouncedUpdateVisual = ViewHelpers.CancellableDebounce(InvokeUpdateVisual, _DEBOUNCE_TIME);
 
             if (Configuration.EnvironmentConfiguration.TT_Unshared_Rendering)
                 _CanvasRenderer = new Helpers.ViewportCanvasRenderer(Viewport, AlternateViewportCanvas);
@@ -136,13 +139,19 @@ namespace FFXIV_TexTools.Views.Controls
             return data;
         }
 
+        public override void CancelPendingReload()
+        {
+            base.CancelPendingReload();
+            DebouncedUpdateVisual(true);
+        }
+
         protected override async Task<bool> INTERNAL_LoadFile(byte[] data, string path, IItem referenceItem, ModTransaction tx)
         {
             ShowModelStatus(UIStrings.ModelStatus_Loading);
             // The data coming in here is an uncompressed .mdl file.
             return await Task.Run(async () =>
             {
-                return await LoadModel(Mdl.GetTTModel(data, path));
+                return await LoadModel(await Mdl.GetTTModel(data, path));
             });
         }
         protected async Task<bool> LoadModel(TTModel model) {
@@ -246,30 +255,63 @@ namespace FFXIV_TexTools.Views.Controls
         {
             // We override this to perform material validation first.
             Model.Source = InternalFilePath;
+
+            foreach (var mtrl in Model.Materials)
+            {
+                if (string.IsNullOrEmpty(mtrl)) continue;
+
+                if (!mtrl.StartsWith("/") && !IOUtil.IsFFXIVInternalPath(mtrl) || !mtrl.EndsWith(".mtrl"))
+                {
+                    throw new InvalidDataException("Material path is not a valid FFXIV material path: " + mtrl);
+                }
+            }
+
             await Mdl.FillMissingMaterials(Model, ReferenceItem, XivStrings.TexTools, tx);
             return await base.INTERNAL_WriteModFile(tx);   
         }
+
+        private static bool _FullUpdateRequested = false;
         protected override async Task<bool> ShouldUpdateOnFileChange(string changedFile)
         {
+            // We do not use the baseline functionality here since
+            // models can have 'partial reloads.  Thus we always return false.
             if(changedFile == InternalFilePath)
             {
-                return true;
+                _FullUpdateRequested = true;
+                DebouncedUpdateVisual(false);
             }
 
             if(Model == null || _MaterialPaths == null)
             {
-                return true;
+                _FullUpdateRequested = true;
+                DebouncedUpdateVisual(false);
             }
 
             if(_ChildFiles.Contains(changedFile))
             {
                 // Queue visual update if one of our constituent files chnaged, doesn't really matter if it fails.
-                _ = await Dispatcher.InvokeAsync(async () =>
-                {
-                    await UpdateVisual();
-                });
+                DebouncedUpdateVisual(false);
             }
             return false;
+        }
+
+        private Action<bool> DebouncedUpdateVisual;
+
+        private async void InvokeUpdateVisual()
+        {
+            _ = await Dispatcher.InvokeAsync(async () =>
+            {
+                if (_FullUpdateRequested)
+                {
+                    await ReloadFile();
+                }
+                else
+                {
+                    await UpdateVisual();
+                }
+
+                _FullUpdateRequested = false;
+            });
         }
 
         public override string GetNiceName()
@@ -374,7 +416,7 @@ namespace FFXIV_TexTools.Views.Controls
 
                 FmvButtonEnabled = true;
                 // Disable FMV button if we're an unsupported type.
-                if (Model.IsInternal)
+                if (Model.HasPath)
                 {
                     var modelRoot = await XivCache.GetFirstRoot(Model.Source);
                     if (modelRoot == null ||
@@ -470,13 +512,6 @@ namespace FFXIV_TexTools.Views.Controls
                 var mtrlList = new List<XivMtrl>();
 
 
-                var root = await XivCache.GetFirstRoot(InternalFilePath);
-                if (root == null)
-                {
-                    return;
-                }
-
-
                 for (int i = 0; i < materials.Count; i++)
                 {
                     var originalFilePath = materials[i];
@@ -523,10 +558,18 @@ namespace FFXIV_TexTools.Views.Controls
                     // ModelMap generation needs to go on another thread always.
                     tasks.Add(Task.Run(async () =>
                     {
-                        var colors = ModelTexture.GetCustomColors();
-                        colors.InvertNormalGreen = false;
-
-                        var modelMaps = await ModelTexture.GetModelMaps(xivMtrl, false, colors, ViewportVM.HighlightedColorsetRow, tx);
+                        ModelTextureData modelMaps;
+                        if (ViewHelpers.ShouldUseUserColors(InternalFilePath))
+                        {
+                            var colors = ModelTexture.GetCustomColors();
+                            colors.InvertNormalGreen = false;
+                            modelMaps = await ModelTexture.GetModelMaps(xivMtrl, false, colors, ViewportVM.HighlightedColorsetRow, tx);
+                        }
+                        else
+                        {
+                            // Non-chara path: skip the color override pipeline entirely.
+                            modelMaps = await ModelTexture.GetModelMapsWithoutUserColors(xivMtrl, false, highlightedRow: ViewportVM.HighlightedColorsetRow, tx: tx);
+                        }
 
                         lock (textureList)
                         {
@@ -665,7 +708,7 @@ namespace FFXIV_TexTools.Views.Controls
 
         private void FullModel_Click(object sender, RoutedEventArgs e)
         {
-            if (Model == null || !Model.IsInternal) return;
+            if (Model == null || !Model.HasPath) return;
             try
             {
                 // Load a clean copy of the model.
@@ -839,18 +882,18 @@ namespace FFXIV_TexTools.Views.Controls
 
         private async void ExportTextures_Click(object sender, RoutedEventArgs e)
         {
-            var bf = new BetterFolderBrowser();
-            bf.Title = "Select Export Folder";
+            var fsd = new FolderSelectDialog();
+            fsd.Title = "Select Export Folder";
 
             var path = Path.GetFullPath(Path.Combine(GetDefaultSaveDirectory() + "../RawTextures/"));
             Directory.CreateDirectory(path);
-            bf.RootFolder = path;
+            fsd.InitialDirectory = path;
 
-            if (bf.ShowDialog() != DialogResult.OK)
+            if (!fsd.ShowDialog())
             {
                 return;
             }
-            path = bf.SelectedFolder;
+            path = fsd.FileName;
 
 
             try
@@ -864,7 +907,7 @@ namespace FFXIV_TexTools.Views.Controls
                         set = await Imc.GetMaterialSetId(im, false, MainWindow.DefaultTransaction);
                     }
                     Model.Source = InternalFilePath;
-                    await Mdl.ExportAllTextures(Model, bf.SelectedPath, set, MainWindow.DefaultTransaction);
+                    await Mdl.ExportAllTextures(Model, fsd.FileName, set, MainWindow.DefaultTransaction);
                 });
             } catch(Exception ex)
             {
@@ -951,19 +994,19 @@ namespace FFXIV_TexTools.Views.Controls
 
         private async void ExportPbrTextures_Click(object sender, RoutedEventArgs e)
         {
-            var bf = new BetterFolderBrowser();
-            bf.Title = "Select Export Folder";
+            var fsd = new FolderSelectDialog();
+            fsd.Title = "Select Export Folder";
 
             var path = Path.GetFullPath(Path.Combine(GetDefaultSaveDirectory(), "PbrTextures"));
             Directory.CreateDirectory(path);
-            bf.RootFolder = path;
+            fsd.InitialDirectory = path;
 
-            if (bf.ShowDialog() != DialogResult.OK)
+            if (!fsd.ShowDialog())
             {
                 return;
             }
 
-            path = bf.SelectedFolder;
+            path = fsd.FileName;
 
             // Because the export for model expects an actual file path, not a folder path.
             path = Path.GetFullPath(Path.Combine(path, "asdf.fbx"));

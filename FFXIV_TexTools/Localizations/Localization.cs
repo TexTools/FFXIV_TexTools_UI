@@ -131,6 +131,10 @@ namespace FFXIV_TexTools.Resources
             var list = new List<(PropertyInfo PropertyInfo, Object Target)>();
             foreach (var elm in elmList.Keys)
             {
+                //Auto-translating the contents of a ComboBox is probably always a mistake, because the item list is not auto-translated
+                if (elm is ComboBox)
+                    continue;
+
                 //GetStringPropertyInfos(elmList, list, elm);
                 var info= GetStringPropertyInfo(elm.GetType());
                 if (info == null)

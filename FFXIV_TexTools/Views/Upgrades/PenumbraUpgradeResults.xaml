@@ -1,0 +1,67 @@
+﻿<Window x:Class="FFXIV_TexTools.Views.Upgrades.PenumbraUpgradeResults"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FFXIV_TexTools.Views.Upgrades"
+        mc:Ignorable="d"
+        Title="Penumbra Upgrade Details" Height="450" Width="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <Border Margin="4" BorderBrush="Gray" BorderThickness="1" Grid.Column="0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="80"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Label Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" Content="Successful"></Label>
+                <TextBlock Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" FontStyle="Italic" TextWrapping="Wrap" Margin="5" FontSize="10">
+            Successful mods only indicate that TT tried/changed something.  It does not guarantee a fully working mod.
+                </TextBlock>
+                <ListBox Grid.Row="2" Grid.Column="0" Margin="5" ItemsSource="{Binding Path=Successful}"></ListBox>
+                
+            </Grid>
+        </Border>
+        <Border Margin="4" BorderBrush="Gray" BorderThickness="1" Grid.Column="1">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="80"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+
+                <Label Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" Content="Failed"></Label>
+                <TextBlock Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center" FontStyle="Italic" TextWrapping="Wrap" Margin="5" FontSize="10">
+            Failed mods were unable to be processed by TT.  This is usually due to mod packing issues or corrupt files.
+                </TextBlock>
+                <ListBox Grid.Row="2" Grid.Column="1" Margin="5" ItemsSource="{Binding Path=Failed}"></ListBox>
+            </Grid>
+        </Border>
+        <Border Margin="4" BorderBrush="Gray" BorderThickness="1" Grid.Column="2">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="80"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Label Grid.Row="0" Grid.Column="2" HorizontalAlignment="Center" Content="Unchanged"></Label>
+
+
+                <TextBlock Grid.Row="1" Grid.Column="2" HorizontalAlignment="Center" FontStyle="Italic" TextWrapping="Wrap" Margin="5" FontSize="10">
+            Unchanged mods were not updated by TexTools.  This typically means the mod either does not need updating, was already processed by another tool (Ex. Penumbra), or requires manual updating.
+                </TextBlock>
+
+                <ListBox Grid.Row="2" Grid.Column="2" Margin="5" ItemsSource="{Binding Path=Unchanged}"></ListBox>
+
+            </Grid>
+        </Border>
+
+    </Grid>
+</Window>

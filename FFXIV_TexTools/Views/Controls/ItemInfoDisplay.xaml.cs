@@ -128,10 +128,10 @@ namespace FFXIV_TexTools.Views.Controls
             var mSet = await Imc.GetMaterialSetId(_item, false, tx);
             if (mSet > 0)
             {
-                MaterialSetLabel.Text = $"Material Set: {mSet._()}".L();
+                MaterialSetLabel.Text = $"Material Version: {mSet._()}".L();
             } else
             {
-                MaterialSetLabel.Text = $"Material Set: --".L();
+                MaterialSetLabel.Text = $"Material Version: --".L();
             }
 
             var races = XivRaces.PlayableRaces;

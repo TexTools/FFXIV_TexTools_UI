@@ -12,6 +12,7 @@
             <RowDefinition Height="40"/>
             <RowDefinition Height="40"/>
             <RowDefinition Height="40"/>
+            <RowDefinition Height="40"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="100"/>
@@ -22,8 +23,12 @@
 
         <Label Content="Race:" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Center"></Label>
         <Label Content="Gender:" Grid.Row="2" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Center"></Label>
+        <Label Content="Skeleton:" Grid.Row="3" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Center"></Label>
         
         <ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding Path=Races}" DisplayMemberPath="Key" SelectedValuePath="Value" SelectedValue="{Binding Path=Race}" VerticalAlignment="Center"/>
         <ComboBox Grid.Row="2" Grid.Column="1" ItemsSource="{Binding Path=Genders}" DisplayMemberPath="Key" SelectedValuePath="Value" SelectedValue="{Binding Path=Gender}" VerticalAlignment="Center"/>
+
+
+        <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding Path=SkeletonId}" VerticalAlignment="Center"/>
     </Grid>
 </UserControl>

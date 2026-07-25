@@ -124,7 +124,7 @@ namespace FFXIV_TexTools.Views
                     if (modpackEntry.ModpackName == UIStrings.Standalone_Non_ModPack)
                     {
                         modsInModpack = from mods in allMods
-                                        where !mods.ItemName.Equals(string.Empty) && mods.ModPack == null
+                                        where string.IsNullOrWhiteSpace(mods.ModPack)
                                         select mods;
                     }
                     else
@@ -209,7 +209,7 @@ namespace FFXIV_TexTools.Views
             if (selectedModpackName == UIStrings.Standalone_Non_ModPack)
             {
                 modsInModpack = (from mods in allMods
-                                 where !mods.ItemName.Equals(string.Empty) && mods.ModPack == null
+                                 where string.IsNullOrWhiteSpace(mods.ModPack)
                                  select mods).ToList();
             }
             else

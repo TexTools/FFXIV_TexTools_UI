@@ -152,7 +152,7 @@ namespace FFXIV_TexTools.Views.Metadata
                 SaveButton.IsEnabled = false;
                 ResetButton.Content = "Working...".L();
 
-                await CMP.DisableRgspMod(Race, Gender, MainWindow.DefaultTransaction);
+                await CMP.DisableRgspMod(Race, Gender, MainWindow.UserTransaction);
 
                 this.Close();
             }

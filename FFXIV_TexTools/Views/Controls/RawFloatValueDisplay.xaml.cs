@@ -37,6 +37,7 @@ namespace FFXIV_TexTools.Views.Controls
             RedBox.Text = red.ToString();
             GreenBox.Text = green.ToString();
             BlueBox.Text = blue.ToString();
+            AlphaLabel.Visibility = Visibility.Collapsed;
             AlphaBox.Visibility = Visibility.Collapsed;
 
         }
@@ -63,7 +64,10 @@ namespace FFXIV_TexTools.Views.Controls
                 Red = float.Parse(RedBox.Text);
                 Green = float.Parse(GreenBox.Text);
                 Blue = float.Parse(BlueBox.Text);
-                Alpha = float.Parse(AlphaBox.Text);
+                if (!string.IsNullOrWhiteSpace(AlphaBox.Text))
+                {
+                    Alpha = float.Parse(AlphaBox.Text);
+                }
 
                 DialogResult = true;
             } catch

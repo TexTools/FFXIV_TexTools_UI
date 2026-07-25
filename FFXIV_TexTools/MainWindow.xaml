@@ -60,6 +60,11 @@
             </Menu.ItemsPanel>
             <MenuItem Header="{Binding Source={x:Static resx:UIStrings.Mods}}">
                 <MenuItem x:Name="Menu_ModList" Header="{Binding Source={x:Static resx:UIStrings.Manage_ModList}}" Click="Menu_ModList_Click"/>
+                <MenuItem Header="All Mods...">
+                    <MenuItem x:Name="Menu_EnableAll" Header="{Binding Source={x:Static resx:UIStrings.Enable_All_Mods}}" Command="{Binding EnableAllModsCommand}"/>
+                    <MenuItem x:Name="Menu_DisableAll" Header="{Binding Source={x:Static resx:UIStrings.Disable_All_Mods}}" Command="{Binding DisableAllModsCommand}"/>
+                    <MenuItem x:Name="Menu_DeleteAll" Header="Delete All Mods" Click="Menu_StartOver_Click"/>
+                </MenuItem>
 
                 <MenuItem x:Name="Menu_CreateModPack" Header="{Binding Source={x:Static resx:UIStrings.Create_Modpack}}">
                     <MenuItem x:Name="Menu_MakeModpackWizard" Header="Advanced" Click="Menu_MakeModpackWizard_Click"/>
@@ -68,14 +73,14 @@
                     <MenuItem x:Name="Menu_MakeBackupModpack" Header="Create Backup" Click="Menu_MakeBackupModpack_Click"/>
                 </MenuItem>
                 <MenuItem x:Name="Menu_ImportModpack" Header="{Binding Source={x:Static resx:UIStrings.Import_ModPacks}}" Click="Menu_ImportModpack_Click"/>
-                <MenuItem x:Name="Menu_DisableAll" Header="{Binding Source={x:Static resx:UIStrings.Disable_All_Mods}}" Command="{Binding DisableAllModsCommand}"/>
-                <MenuItem x:Name="Menu_EnableAll" Header="{Binding Source={x:Static resx:UIStrings.Enable_All_Mods}}" Command="{Binding EnableAllModsCommand}"/>
+                <MenuItem Header="Import Modpack to Penumbra" Click="Menu_ImportModpackPenumbra_Click"/>
             </MenuItem>
             <MenuItem Header="{Binding Source={x:Static resx:UIStrings.View}}" StaysOpenOnClick="True">
                 <MenuItem x:Name="Menu_ProjectManager" Header="Project Manager" Click="Menu_ProjectManager_Click"/>
                 <MenuItem Header="Transaction Manager" Click="TransactionStatus_Click"/>
                 <MenuItem Header="New Item Viewer" Click="ItemViewer_Click"/>
                 <MenuItem Header="New File Viewer" Click="FileViewerButton_Click"/>
+                <MenuItem Header="View Model as Item" Click="ViewBGPart_Click"/>
                 <MenuItem x:Name="Menu_FullModelViewer" Header="Full Model Viewer" Click="FullModelViewer_Click"/>
                 <MenuItem x:Name="Menu_RacialScaling" Header="Racial Settings Editor" Click="Menu_RacialScaling_Click"/>
             </MenuItem>
@@ -89,8 +94,11 @@
                 </MenuItem>
 
                 <MenuItem Header="Dawntrail Upgrades">
-                    <MenuItem Header="Upgrade Modpack" Click="UpdateModpack_Click"/>
+                    <MenuItem Header="About Upgrades" Click="AboutUpgrades_Click"/>
+                    <MenuItem Header="Upgrade Modpack(s)" Click="UpdateModpack_Click"/>
+                    <MenuItem x:Name="PenumbraUpgradeButton" Header="Upgrade Penumbra Library" Click="UpdatePenumbra_Click"/>
                     <MenuItem Header="Index Texture Creator" Click="IndexTextureCreator_Click"/>
+                    <MenuItem Header="Gear Mask Converter" Click="GearMaskConverter_Click"/>
                     <MenuItem Header="Hair Texture Converter" Click="HairTextureConverter_Click"/>
                     <MenuItem Header="Eye Diffuse Creator" Click="IrisDiffuseCreator_Click"/>
                 </MenuItem>
@@ -103,8 +111,8 @@
 
                 <MenuItem Header="{Binding Source={x:Static resx:UIStrings.Raw_File_Operations}}">
                     <MenuItem Header="Import FFXIV Folder Tree" Click="Menu_ImportFolder_Click"/>
-                    <MenuItem x:Name="Menu_ExtractRaw" Header="{Binding Source={x:Static resx:UIStrings.Extract_Raw}}" Click="Menu_ExtractRaw_Click"/>
-                    <MenuItem x:Name="Menu_ImportRaw" Header="{Binding Source={x:Static resx:UIStrings.Import_Raw}}" Click="Menu_ImportRaw_Click"/>
+                    <MenuItem x:Name="Menu_ExtractRaw" Header="{Binding Source={x:Static resx:UIStrings.Extract_File}}" Click="Menu_ExtractRaw_Click"/>
+                    <MenuItem x:Name="Menu_ImportRaw" Header="{Binding Source={x:Static resx:UIStrings.Import_File}}" Click="Menu_ImportRaw_Click"/>
                     <MenuItem x:Name="Menu_CopyFile" Header="{Binding Source={x:Static resx:UIStrings.Copy_File}}" Click="Menu_CopyFile_Click"/>
                 </MenuItem>
 

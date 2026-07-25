@@ -29,7 +29,7 @@
             <TextBlock x:Name="SetLabel" Text="Set: e0123" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             <TextBlock x:Name="SlotLabel" Text="Slot: Head(met)" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             <TextBlock x:Name="VariantLabel" Text="Variant: 5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            <TextBlock x:Name="MaterialSetLabel" Text="Material Set: 3" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <TextBlock x:Name="MaterialSetLabel" Text="Material Version: 3" HorizontalAlignment="Center" VerticalAlignment="Center"/>
         </UniformGrid>
         <GroupBox Grid.Row="2" Grid.RowSpan="3" Header="Race Information">
             <Grid x:Name="RacialGrid">
@@ -51,7 +51,7 @@
         <GroupBox Grid.Column="1" Grid.Row="2" Header="Items in Variant (Identical Items)">
             <ListBox x:Name="SameVariantBox"></ListBox>
         </GroupBox>
-        <GroupBox Grid.Column="1" Grid.Row="3" Header="Items with same Material Set">
+        <GroupBox Grid.Column="1" Grid.Row="3" Header="Items with same Material Version">
             <ListBox x:Name="SameMaterialBox"></ListBox>
         </GroupBox>
         <GroupBox Grid.Column="1" Grid.Row="4" Header="Items with same Model">

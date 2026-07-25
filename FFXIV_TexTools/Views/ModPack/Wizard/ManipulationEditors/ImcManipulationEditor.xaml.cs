@@ -59,7 +59,8 @@ namespace FFXIV_TexTools.Views.Wizard.ManipulationEditors
             {
                 if (value == null) return;
                 var id = PmpIdentifierJson.FromRoot(value.Info);
-                
+
+                Manipulation.ObjectType = PMPExtensions.XivItemTypeToPenumbraObject[value.Info.PrimaryType];
                 Manipulation.EquipSlot = id.EquipSlot;
                 Manipulation.BodySlot = id.BodySlot;
                 Manipulation.PrimaryId = id.PrimaryId;
@@ -90,7 +91,7 @@ namespace FFXIV_TexTools.Views.Wizard.ManipulationEditors
             Manipulation.Entry = PMPImcManipulationJson.PMPImcEntry.FromXivImc(e);
         }
 
-        private bool ItemSelectFunc(IItem item)
+        private bool ItemSelectFunc(IItem item, XivDependencyRoot root)
         {
             var asIm = item as IItemModel;
             if (asIm == null) return false;
@@ -98,7 +99,7 @@ namespace FFXIV_TexTools.Views.Wizard.ManipulationEditors
             return true;
         }
 
-        private bool ItemFilterFunc(IItem item)
+        private bool ItemFilterFunc(IItem item, XivDependencyRoot root)
         {
             var asIm = item as IItemModel;
             if (asIm == null) return false;

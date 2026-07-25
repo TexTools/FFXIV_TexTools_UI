@@ -75,5 +75,10 @@ namespace FFXIV_TexTools.Views
         {
             UpdateLanguage("zh", "TexTools重新启动以应用更改。");
         }
+
+        private void TraditionalChineseBtn_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            UpdateLanguage("tc", "TexTools重新啓動以應用更改。");
+        }
     }
 }

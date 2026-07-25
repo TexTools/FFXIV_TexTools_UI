@@ -421,7 +421,7 @@ namespace FFXIV_TexTools.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool UseOriginalShapeDataForFace {
             get {
                 return ((bool)(this["UseOriginalShapeDataForFace"]));
@@ -452,6 +452,18 @@ namespace FFXIV_TexTools.Properties {
             }
             set {
                 this["AutoMaterialFix"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ApplyColorsToNonChara {
+            get {
+                return ((bool)(this["ApplyColorsToNonChara"]));
+            }
+            set {
+                this["ApplyColorsToNonChara"] = value;
             }
         }
         
@@ -572,6 +584,66 @@ namespace FFXIV_TexTools.Properties {
             }
             set {
                 this["CompressEndwalkerUpgradeTextures"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool UseImportedTangents {
+            get {
+                return ((bool)(this["UseImportedTangents"]));
+            }
+            set {
+                this["UseImportedTangents"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("dds")]
+        public string Default_Image_Format {
+            get {
+                return ((string)(this["Default_Image_Format"]));
+            }
+            set {
+                this["Default_Image_Format"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("pmp")]
+        public string Default_Modpack_Format {
+            get {
+                return ((string)(this["Default_Modpack_Format"]));
+            }
+            set {
+                this["Default_Modpack_Format"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool UseAutoHeels {
+            get {
+                return ((bool)(this["UseAutoHeels"]));
+            }
+            set {
+                this["UseAutoHeels"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("RedrawAll")]
+        public string PenumbraRedrawMode {
+            get {
+                return ((string)(this["PenumbraRedrawMode"]));
+            }
+            set {
+                this["PenumbraRedrawMode"] = value;
             }
         }
     }

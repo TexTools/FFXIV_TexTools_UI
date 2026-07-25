@@ -37,6 +37,9 @@ namespace FFXIV_TexTools.Views.Controls
 
     public abstract class FileViewControl : System.Windows.Controls.UserControl, INotifyPropertyChanged, IDisposable
     {
+
+        public const int _DEBOUNCE_TIME = 1000;
+
         public delegate void FileDeletedEventHandler(string internalPath);
         public event FileDeletedEventHandler FileDeleted;
 
@@ -146,14 +149,14 @@ namespace FFXIV_TexTools.Views.Controls
             TxWatcher.UserTxStarted += OnUserTransactionStarted;
 
 
-            DebouncedUpdate = ViewHelpers.Debounce<string>(_UpdateOnMainThread, 200);
+            DebouncedUpdate = ViewHelpers.CancellableDebounce<string>(_UpdateOnMainThread, _DEBOUNCE_TIME);
 
 
             IsEnabled = false;
         }
 
 
-        private Action<string> DebouncedUpdate;
+        private Action<string, bool> DebouncedUpdate;
 
         private void OnUserTransactionStarted(ModTransaction tx)
         {
@@ -204,7 +207,7 @@ namespace FFXIV_TexTools.Views.Controls
             {
                 _UpdateQueued = true;
                 // File was deleted.
-                DebouncedUpdate(InternalFilePath);
+                DebouncedUpdate(InternalFilePath, false);
                 FileDeleted?.Invoke(InternalFilePath);
                 return;
             }
@@ -215,7 +218,7 @@ namespace FFXIV_TexTools.Views.Controls
                 if (await ShouldUpdateOnFileChange(changedFile))
                 {
                     _UpdateQueued = true;
-                    DebouncedUpdate(InternalFilePath);
+                    DebouncedUpdate(InternalFilePath, false);
                 }
             });
         }
@@ -237,7 +240,6 @@ namespace FFXIV_TexTools.Views.Controls
 
         private async void  _UpdateOnMainThread(string file)
         {
-            Trace.WriteLine("Main Thread Update Called: " + file);
             try
             {
                 await await Dispatcher.InvokeAsync(async () =>
@@ -392,6 +394,10 @@ namespace FFXIV_TexTools.Views.Controls
 
         public abstract void INTERNAL_ClearFile();
 
+        public virtual void CancelPendingReload()
+        {
+            DebouncedUpdate(null, true);
+        }
 
         protected bool _LOADING = false;
         /// <summary>
@@ -405,7 +411,6 @@ namespace FFXIV_TexTools.Views.Controls
         /// <returns></returns>
         public virtual async Task<bool> LoadInternalFile(string internalFile, bool forceOriginal = false, IItem referenceItem = null, byte[] decompData = null)
         {
-
             if (_LOADING)
             {
                 // Safety reject.
@@ -724,9 +729,9 @@ namespace FFXIV_TexTools.Views.Controls
         /// This function is expected to catch and handle its own errors.
         /// </summary>
         /// <returns></returns>
-        public async Task<bool> SaveCurrentFile(ModTransaction tx = null)
+        public async Task<bool> SaveCurrentFile(ModTransaction tx = null, bool ignoreWarning = false)
         {
-            if (!this.CheckFileWrite())
+            if ((!ignoreWarning) && !this.CheckFileWrite())
             {
                 return false;
             }
@@ -786,8 +791,8 @@ namespace FFXIV_TexTools.Views.Controls
 
         protected virtual async Task<bool> INTERNAL_WriteModFile(ModTransaction tx)
         {
-            var data = await GetCompressedData();
-            await Dat.WriteModFile(data, InternalFilePath, XivStrings.TexTools, ReferenceItem, tx);
+            var data = await GetUncompressedData();
+            await Dat.WriteModFile(data, InternalFilePath, XivStrings.TexTools, ReferenceItem, tx, false);
             return true;
         }
 
@@ -848,7 +853,7 @@ namespace FFXIV_TexTools.Views.Controls
             }
 
             var ofd = GetOpenDialog();
-            var res = ofd.ShowDialog();
+            var res = ofd.ShowDialog(ViewHelpers.GetWin32Window(this));
             if(res != DialogResult.OK)
             {
                 return false;
@@ -1056,7 +1061,7 @@ namespace FFXIV_TexTools.Views.Controls
                     _SaveDialog.Filter = ext.Value + " Files|*" + ext.Key;
                 }
 
-                var res = _SaveDialog.ShowDialog();
+                var res = _SaveDialog.ShowDialog(ViewHelpers.GetWin32Window(this));
                 if (res != DialogResult.OK)
                 {
                     return false;

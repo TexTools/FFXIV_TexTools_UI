@@ -136,12 +136,12 @@
                                 <RowDefinition/>
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
-                            <ListBox x:Name="IncludedModsList" Grid.Row="0" Margin="5" DisplayMemberPath="Name" SelectionChanged="IncludedModsList_SelectionChanged" SelectionMode="Multiple"/>
+                            <ListBox x:Name="IncludedModsList" Grid.Row="0" Margin="5" DisplayMemberPath="Name" SelectionChanged="IncludedModsList_SelectionChanged" SelectionMode="Extended"/>
                             <Button x:Name="RemoveModItemButton" Grid.Row="1" Content="{Binding Source={x:Static resx:UIStrings.Remove}}" Click="RemoveModItemButton_Click"/>
                         </Grid>
                     </GroupBox>
 
-                    <GroupBox Grid.Row="2" Header="Penumbra Manipulations">
+                    <GroupBox Grid.Row="2" Header="Metadata Manipulations">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition></RowDefinition>
@@ -205,8 +205,7 @@
                                 <ComboBox x:Name="ModelTypeComboBox" Grid.Row="0" Grid.Column="0" mah:TextBoxHelper.Watermark="{Binding Source={x:Static resx:UIStrings.Model_Type}}" VerticalAlignment="Center" Margin="5,0" DisplayMemberPath="Name"/>
                                 <CheckBox x:Name="ModelIncludeChildFilesBox" Content="Include Child Files" IsChecked="True" Grid.Row="0" Grid.Column="1" Margin="5,0" VerticalAlignment="Center"/>
                                 <Button x:Name="AddCurrentModelButton" Grid.Column="2" Content="Add Existing" VerticalAlignment="Center" Margin="5,0" Click="AddCurrentModelButton_Click" IsEnabled="False"  ToolTip="{x:Static resx:UIStrings.AddToModpackTooltip}"/>
-                                <Button x:Name="AdvOptionsButton" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="1" Content="Add With Custom Settings" VerticalAlignment="Center" Margin="5,0" Click="AdvOptionsButton_Click" IsEnabled="False" HorizontalAlignment="Right" Width="180"  ToolTip="{x:Static resx:UIStrings.AddCustomToModpackTooltip}"/>
-                                <Button x:Name="AddRawModel" Grid.Column="2" Grid.Row="2" Content="Load" VerticalAlignment="Center" Margin="5,0" Click="AddRawModel_Click" IsEnabled="False"  ToolTip="{x:Static resx:UIStrings.LoadToModpackTooltip}"/>
+                                <Button x:Name="AddRawModel" Grid.Column="2" Grid.Row="1" Content="Load" VerticalAlignment="Center" Margin="5,0" Click="AddRawModel_Click" IsEnabled="False"  ToolTip="{x:Static resx:UIStrings.LoadToModpackTooltip}"/>
                             </Grid>
                         </GroupBox>
                     </TabItem>
@@ -272,7 +271,7 @@
                                     <Button x:Name="DeselectAllButton" Click="DeselectAllButton_Click" Content="{Binding Source={x:Static resx:UIStrings.Deselect_All}}" Grid.Column="2" VerticalAlignment="Center" Margin="5,0" IsEnabled="False" />
                                     <Button x:Name="AddButton" Click="AddButton_Click" Content="Add File(s)" Grid.Column="3" VerticalAlignment="Center" Margin="5,0" IsEnabled="False" />
                                 </Grid>
-                                <ListView Style="{x:Null}" x:Name="ModpackContents" Grid.Row="1" SelectionMode="Multiple" SelectionChanged="ModpackContents_SelectionChanged" BorderBrush="Black" BorderThickness="0,1" AlternationCount="2">
+                                <ListView Style="{x:Null}" x:Name="ModpackContents" Grid.Row="1" SelectionMode="Extended" SelectionChanged="ModpackContents_SelectionChanged" BorderBrush="Black" BorderThickness="0,1" AlternationCount="2">
                                     <ListView.View>
                                     <GridView  x:Name="GridViewCol">
                                         <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Path=Name}"/>

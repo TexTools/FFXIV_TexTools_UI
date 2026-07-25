@@ -69,14 +69,16 @@ namespace FFXIV_TexTools.Views.Controls
         private bool _READY = false;
         private bool _SILENT = false;
 
+        public delegate void ItemEventHandler(IItem item, XivDependencyRoot root);
+
         // Fired when tree finishes loading.
         public event EventHandler ItemsLoaded;
 
         // Fired whenever the selected item actually changes.  (NULLs and Duplicates are filtered out)
-        public event EventHandler<IItem> ItemSelected;
+        public event ItemEventHandler ItemSelected;
 
         // Fired any time the UI selection event fires, regardless of the selection.
-        public event EventHandler<IItem> RawItemSelected;
+        public event ItemEventHandler RawItemSelected;
 
         // Fired whenever the user clicks the confirmation, or double clicks an item.
         public event EventHandler<IItem> ItemConfirmed;
@@ -89,7 +91,7 @@ namespace FFXIV_TexTools.Views.Controls
         public Func<string, string, object, Task> LockUiFunction;
         public Func<object, Task> UnlockUiFunction;
 
-        public Func<IItem, bool> ExtraSearchFunction;
+        public Func<IItem, XivDependencyRoot, bool> ExtraSearchFunction;
 
         public bool StartExpanded = false;
 
@@ -276,6 +278,50 @@ namespace FFXIV_TexTools.Views.Controls
 
         private void PreloadBaseCategories()
         {
+            var weapons = new ItemTreeElement(null, null, XivStrings.Weapons);
+            CategoryElements.Add(weapons);
+
+            weapons.Children.Add(new ItemTreeElement(null, null, XivWeaponType.Shield.GetNiceName()));
+
+            weapons.Children.Add(new ItemTreeElement(null, null, XivWeaponType.Sword.GetNiceName()));
+            weapons.Children.Add(new ItemTreeElement(null, null, XivWeaponType.Axe.GetNiceName()));
+            weapons.Children.Add(new ItemTreeElement(null, null, XivWeaponType.Broadsword.GetNiceName()));
+            weapons.Children.Add(new ItemTreeElement(null, null, XivWeaponType.Gunblade.GetNiceName()));
+
+            weapons.Children.Add(new ItemTreeElement(null, null, XivWeaponType.Staff.GetNiceName()));
+            weapons.Children.Add(new ItemTreeElement(null, null, XivWeaponType.Orrery.GetNiceName()));
+            weapons.Children.Add(new ItemTreeElement(null, null, XivWeaponType.Nouliths.GetNiceName()));
+
+            weapons.Children.Add(new ItemTreeElement(null, null, XivWeaponType.Fists.GetNiceName()));
+            weapons.Children.Add(new ItemTreeElement(null, null, XivWeaponType.Lance.GetNiceName()));
+            weapons.Children.Add(new ItemTreeElement(null, null, XivWeaponType.Daggers.GetNiceName()));
+            weapons.Children.Add(new ItemTreeElement(null, null, XivWeaponType.Katana.GetNiceName()));
+            weapons.Children.Add(new ItemTreeElement(null, null, XivWeaponType.Scythe.GetNiceName()));
+            weapons.Children.Add(new ItemTreeElement(null, null, XivWeaponType.Twinfangs.GetNiceName()));
+            weapons.Children.Add(new ItemTreeElement(null, null, XivWeaponType.Bow.GetNiceName()));
+            weapons.Children.Add(new ItemTreeElement(null, null, XivWeaponType.Gun.GetNiceName()));
+            weapons.Children.Add(new ItemTreeElement(null, null, XivWeaponType.Glaives.GetNiceName()));
+            weapons.Children.Add(new ItemTreeElement(null, null, XivWeaponType.Wand.GetNiceName()));
+            weapons.Children.Add(new ItemTreeElement(null, null, XivWeaponType.Book.GetNiceName()));
+            weapons.Children.Add(new ItemTreeElement(null, null, XivWeaponType.Rapier.GetNiceName()));
+            weapons.Children.Add(new ItemTreeElement(null, null, XivWeaponType.Brush.GetNiceName()));
+            weapons.Children.Add(new ItemTreeElement(null, null, XivWeaponType.Cane.GetNiceName()));
+
+
+            weapons.Children.Add(new ItemTreeElement(null, null, XivWeaponType.Saw.GetNiceName()));
+            weapons.Children.Add(new ItemTreeElement(null, null, XivWeaponType.CrossPeinHammer.GetNiceName()));
+            weapons.Children.Add(new ItemTreeElement(null, null, XivWeaponType.RaisingHammer.GetNiceName()));
+            weapons.Children.Add(new ItemTreeElement(null, null, XivWeaponType.LapidaryHammer.GetNiceName()));
+            weapons.Children.Add(new ItemTreeElement(null, null, XivWeaponType.Needle.GetNiceName()));
+            weapons.Children.Add(new ItemTreeElement(null, null, XivWeaponType.RoundKnife.GetNiceName()));
+            weapons.Children.Add(new ItemTreeElement(null, null, XivWeaponType.Alembic.GetNiceName()));
+            weapons.Children.Add(new ItemTreeElement(null, null, XivWeaponType.CulinaryKnife.GetNiceName()));
+
+            weapons.Children.Add(new ItemTreeElement(null, null, XivWeaponType.Pickaxe.GetNiceName()));
+            weapons.Children.Add(new ItemTreeElement(null, null, XivWeaponType.Hatchet.GetNiceName()));
+            weapons.Children.Add(new ItemTreeElement(null, null, XivWeaponType.FishingRod.GetNiceName()));
+
+
             var gear = new ItemTreeElement(null, null, XivStrings.Gear);
             CategoryElements.Add(gear);
 
@@ -285,25 +331,24 @@ namespace FFXIV_TexTools.Views.Controls
             gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Legs));
             gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Feet));
 
-
-            gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Main_Hand));
-            gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Off_Hand));
-            gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Dual_Wield));
-            gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Two_Handed));
-
-            gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Earring));
-            gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Neck));
-            gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Wrists));
-            gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Rings));
-
             gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Head_Body));
             gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Body_Hands));
             gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Body_Hands_Legs));
             gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Body_Hands_Legs_Feet));
+            gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Body_Legs));
+            gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Body_Legs_Feet));
             gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Legs_Feet));
             gear.Children.Add(new ItemTreeElement(null, null, XivStrings.All));
 
-            gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Food));
+            //gear.Children.Add(new ItemTreeElement(null, null, XivStrings.Food));
+
+
+            var accessories = new ItemTreeElement(null, null, XivStrings.Accessories);
+            CategoryElements.Add(accessories);
+            accessories.Children.Add(new ItemTreeElement(null, null, XivStrings.Earring));
+            accessories.Children.Add(new ItemTreeElement(null, null, XivStrings.Neck));
+            accessories.Children.Add(new ItemTreeElement(null, null, XivStrings.Wrists));
+            accessories.Children.Add(new ItemTreeElement(null, null, XivStrings.Rings));
         }
 
         private async Task<List<IItem>> BuildCategoryTree()
@@ -335,20 +380,29 @@ namespace FFXIV_TexTools.Views.Controls
 
 
                 // Find our second level parent, if we have one.
-                if (!string.IsNullOrWhiteSpace(item.SecondaryCategory) && item.Name != item.SecondaryCategory)
+                if (!string.IsNullOrWhiteSpace(item.SecondaryCategory))
                 {
+                    // Always look for an existing matching node first (covers pre-created
+                    // category stubs, e.g. Accessoires > Poignets).
                     secondLevel = topLevel.Children.FirstOrDefault(x => x.DisplayName == item.SecondaryCategory);
-                    if (secondLevel == null)
+
+                    // Only create a new second-level node when:
+                    //   (a) none exists, AND
+                    //   (b) the item's name doesn't equal the category name.
+                    // Condition (b) is the original "face paint/equipment decal" exception -
+                    // for items whose name *is* the category, we don't want to invent a stub
+                    // category just to hold a single same-named item. But when a matching
+                    // category was already created (pre-loaded or built up by sibling items),
+                    // routing the item through it is correct.
+                    if (secondLevel == null && item.Name != item.SecondaryCategory)
                     {
-                        //Create it if it doesn't exist.
                         secondLevel = new ItemTreeElement(topLevel, null, item.SecondaryCategory);
                         topLevel.Children.Add(secondLevel);
                     }
                 }
 
-                if (item.Name != item.SecondaryCategory)
+                if (secondLevel != null)
                 {
-                    // Special catch for face paint/equipment decal category.
                     catParent = secondLevel;
                 }
 
@@ -646,9 +700,8 @@ namespace FFXIV_TexTools.Views.Controls
                 return;
             }
 
-
             if (RawItemSelected != null) {
-                RawItemSelected.Invoke(null, item);
+                RawItemSelected.Invoke(item, element.Root);
             }
 
             // If we re-selected the same item, selection doesn't escape this controller (didn't actually change).
@@ -657,7 +710,7 @@ namespace FFXIV_TexTools.Views.Controls
             _selectedItem = item;
             if (ItemSelected != null)
             {
-                ItemSelected.Invoke(this, _selectedItem);
+                ItemSelected.Invoke(_selectedItem, element.Root);
             }
         }
 
@@ -708,7 +761,7 @@ namespace FFXIV_TexTools.Views.Controls
                 _selectedItem = item;
 
                 // Manually invoke this in case the item isn't in the filter currently.
-                ItemSelected.Invoke(this, _selectedItem);
+                ItemSelected?.Invoke(_selectedItem, e.Root);
             }
             else
             {
@@ -716,7 +769,7 @@ namespace FFXIV_TexTools.Views.Controls
                 if (_selectedItem != item)
                 {
                     _selectedItem = item;
-                    ItemSelected.Invoke(this, _selectedItem);
+                    ItemSelected?.Invoke(_selectedItem, _selectedItem.GetRoot());
                 }
 
             }
@@ -785,7 +838,7 @@ namespace FFXIV_TexTools.Views.Controls
             if (!_READY) return;
             if (SelectedItem != null && ItemConfirmed != null)
             {
-                ItemConfirmed.Invoke(this, _selectedItem);
+                ItemConfirmed.Invoke(null, _selectedItem);
             }
         }
 
@@ -887,7 +940,7 @@ namespace FFXIV_TexTools.Views.Controls
                     }
 
                     // If we have an extra search criteria supplied by an outside function, it has to pass that, too.
-                    iMatch = ((ExtraSearchFunction(e.Item) || subHits) && iMatch);
+                    iMatch = ((ExtraSearchFunction(e.Item, e.Root) || subHits) && iMatch);
 
                 }
             }
