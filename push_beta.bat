@@ -33,6 +33,7 @@ cd ../../
 git checkout develop
 git add ./lib/*
 git commit -m "Update Framework Reference to Beta %patchver%"
+git push
 git checkout beta
 git merge develop --no-ff --no-commit
 git commit -m "Beta %patchver%"
@@ -43,12 +44,5 @@ git push --tags
 echo Returning to Develop branch...
 cd ./lib/xivmoddingframework
 git checkout develop
-git merge beta --ff-only 
-git push
-
-cd ../../
-git checkout develop
-git merge beta --ff-only
-git push
 
 pause
