@@ -58,9 +58,9 @@ exit /b 0
 REM --- publish current develop to origin/develop and origin/beta, plus tag ----
 :publish
 git tag -a %patchver% -m "Beta %patchver%" || exit /b 1
-git push origin develop                    || exit /b 1
-git push origin develop:beta               || exit /b 1
-git push origin refs/tags/%patchver%       || exit /b 1
+git push org develop                    || exit /b 1
+git push org develop:beta               || exit /b 1
+git push org refs/tags/%patchver%       || exit /b 1
 exit /b 0
 
 :popfail
