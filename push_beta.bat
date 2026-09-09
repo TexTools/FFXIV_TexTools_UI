@@ -1,54 +1,72 @@
 @ECHO OFF
+setlocal EnableExtensions
 
 echo ==== Pushing update to BETA branch ====
+
 if not exist FFXIV_TexTools.sln (
-	echo TexTools.sln not found -- Incorrect working directory.
-	EXIT
+    echo TexTools.sln not found -- incorrect working directory.
+    goto :fail
 )
 
 if "%~1"=="" (
-	SET /P patchver= Enter Version number. [In the form of 'v2.x.x.x']: 
-) ELSE (
-	set patchver=%1
+    set /P patchver= Enter Version number. [In the form of 'v2.x.x.x']: 
+) else (
+    set patchver=%~1
 )
 
-if  %patchver%=="" (
-	echo Update cancelled.  No version number provided.
-	EXIT
+if "%patchver%"=="" (
+    echo Update cancelled.  No version number provided.
+    goto :fail
 )
 
-echo Creating BETA update %patchver% for Framework Repo...
+echo.
+echo Publishing %patchver% for Framework repo...
 pause
-cd ./lib/xivmoddingframework
-git checkout beta
-git merge develop --no-ff --no-commit
-git commit -m "Beta %patchver%"
-git tag -a %patchver% -m "Beta %patchver%"
-git push
-git push --tags
 
-echo Creating BETA update %patchver% for UI Repo...
+pushd .\lib\xivmoddingframework || goto :fail
+git checkout develop            || goto :popfail
+call :publish                   || goto :popfail
+popd
+
+echo.
+echo Publishing %patchver% for UI repo...
 pause
-cd ../../
-git checkout develop
+
+REM Do not check out another branch in this repo while this script is running.
+for /f %%b in ('git rev-parse --abbrev-ref HEAD') do set curbranch=%%b
+if not "%curbranch%"=="develop" (
+    echo UI repo is on '%curbranch%', expected 'develop'.  Check out develop and re-run.
+    goto :fail
+)
+
 git add ./lib/*
-git commit -m "Update Framework Reference to Beta %patchver%"
-git checkout beta
-git merge develop --no-ff --no-commit
-git commit -m "Beta %patchver%"
-git tag -a %patchver% -m "Beta %patchver%"
-git push
-git push --tags
+git diff --cached --quiet
+if errorlevel 1 (
+    git commit -m "Update Framework Reference to Beta %patchver%" || goto :fail
+) else (
+    echo No framework reference change to commit.
+)
 
-echo Returning to Develop branch...
-cd ./lib/xivmoddingframework
-git checkout develop
-git merge beta --ff-only 
-git push
+call :publish || goto :fail
 
-cd ../../
-git checkout develop
-git merge beta --ff-only
-git push
-
+echo.
+echo Done.  develop and beta both at %patchver%.  Still on develop in both repos.
 pause
+exit /b 0
+
+
+REM --- publish current develop to origin/develop and origin/beta, plus tag ----
+:publish
+git tag -a %patchver% -m "Beta %patchver%" || exit /b 1
+git push org develop                    || exit /b 1
+git push org develop:beta               || exit /b 1
+git push org refs/tags/%patchver%       || exit /b 1
+exit /b 0
+
+:popfail
+popd
+:fail
+echo.
+echo *** ABORTED -- nothing further was pushed. ***
+pause
+exit /b 1
